@@ -149,32 +149,19 @@ function LayerSelectionPopup(props) {
     }
 
     const selectLayer = (layer) => {
-        if (ifFileShapeSource(layer.source) && layer.properties.layerShapeName) {
-            const jsonLayer = copy(layer)
+        if (layer.source === "area of interest_source") {
 
-            const featureLayer = { ...jsonLayer.layer };
-            const feature = parseUserDefinedLayerFeature(jsonLayer, featureLayer)
+            props.setStateApp((state) => ({
+                ...state,
+                selectedParcel: null,
+                selectedShape: null,
+                selectedUserDefinedLayer: null,
+                expandedCard: false,
+                popupOpen: false,
+                showAddShapePopup: false,
+                layerSelectionPopup: false,
+            }));
 
-            if (props.map)
-                drawBoundary(props.map, feature);
-
-            props.setStateApp((state) => {
-                return {
-                    ...state,
-                    selectedUserDefinedLayer: jsonLayer,
-                    selectedParcel: null,
-                };
-            });
-            props.setStateApp((state) => {
-                if (!state.showDrawShapesPopup && state.shapeEditMode !== 'redraw') {
-                    props.createUDPopUp(feature.properties);
-                }
-                return state;
-            });
-            props.map?.resize?.();
-
-            return
-        } else if (layer.source === "area of interest_source") {
             const selectedUserDefinedLayer = copy(layer)
             props.setStateApp((state) => {
                 if (state.isDrawing) return state;
@@ -206,6 +193,33 @@ function LayerSelectionPopup(props) {
                 }
                 return state;
             });
+            return
+        }
+
+        if (ifFileShapeSource(layer.source) && layer.properties.layerShapeName) {
+            const jsonLayer = copy(layer)
+
+            const featureLayer = { ...jsonLayer.layer };
+            const feature = parseUserDefinedLayerFeature(jsonLayer, featureLayer)
+
+            if (props.map)
+                drawBoundary(props.map, feature);
+
+            props.setStateApp((state) => {
+                return {
+                    ...state,
+                    selectedUserDefinedLayer: jsonLayer,
+                    selectedParcel: null,
+                };
+            });
+            props.setStateApp((state) => {
+                if (!state.showDrawShapesPopup && state.shapeEditMode !== 'redraw') {
+                    props.createUDPopUp(feature.properties);
+                }
+                return state;
+            });
+            props.map?.resize?.();
+
             return
         }
 
@@ -258,7 +272,7 @@ function LayerSelectionPopup(props) {
                             <LayerSelectionIcon className={classes.icons} />
                         </Grid>
                         <Grid item>
-                            Available Layers 123
+                            Available Layers
                         </Grid>
                     </Grid>
                 </Grid>
