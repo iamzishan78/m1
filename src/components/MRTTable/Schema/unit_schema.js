@@ -42,7 +42,7 @@ const UnitMeta = {
 	isInFiniteScroll: true,
 	columnVirtualization: true,
 	fetchMetaData: {
-		category: 'Unit',
+		category: 'Unit', // enable to show custom field inside unit grid
 	},
 	TableSchema: [
 		{
