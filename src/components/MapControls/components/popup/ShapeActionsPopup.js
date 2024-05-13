@@ -375,7 +375,13 @@ const ShapeActionsPopup = (props) => {
 
   const actionAOI = () => {
     if (isLine()) return;
-    props.selectedFeature.properties.sdType = "interest";
+
+    try {
+      if (props.selectedFeature.properties.sdType !== "interest") props.selectedFeature.properties.sdType = "interest"
+    } catch (error) {
+      console.log('error', error);
+    }
+
     toggleSpatialDataCard(!showSpatialDataCard);
   };
 
