@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
-export const GET_LOGGED_IN_USER = gql`
-  mutation getLoggedInUser($user: UserInput) {
-    login(user: $user) {
+export const BYPASS_LOGIN_MUTATION = gql`
+  mutation bypassLogin($email: String) {
+    bypassLogin(email: $email) {
       success
       message
       sessionData

@@ -248,7 +248,7 @@ function WellCard() {
   ) {
     return stateApp.selectedWell ? (
       !stateExpandableCard.expanded ? (
-        <div style={{ height: "100%", padding: "9px" }}>
+        <div style={{ height: "100%", padding: "9px" }} data-testid="well-card">
           <Card>
             <CardActions
               classes={{

@@ -374,9 +374,11 @@ export default function M1neralHeaders() {
 
         {(() => {
           switch (jobStateValues.jobType) {
+            case 'AGREEMENT_PROVISIONS':
             case 'AGREEMENT_HEADER':
             case 'SHAPE_TO_M1_LAYER':
             case 'UNITS':
+            case 'TRACTS':
               return (
                 <>
                   <div style={{ ...medium_text, ...padding_div_top }}>
@@ -419,64 +421,15 @@ export default function M1neralHeaders() {
                     </Select>
                   </div>
 
-                  {jobStateValues.jobType !== 'UNITS' && (
+                  {!['UNITS', 'TRACTS'].includes(jobStateValues.jobType) && (
                     <div style={{ ...text_grey }}>
                       *Note: Existing{' '}
                       {jobStateValues?.transferData?.selectedPlatformCategory?.label} will be
                       matched on M1neral ID
-                      {jobStateValues?.transferData?.selectedPlatformCategory?.label ===
-                        'Agreements' && ' or Agreement Number'}
+                      {(jobStateValues?.transferData?.selectedPlatformCategory?.label ===
+                        'Agreements' || jobStateValues.jobType === 'AGREEMENT_PROVISIONS') && ' or Agreement Number'}
                     </div>
                   )}
-                </>
-              );
-            case 'AGREEMENT_PROVISIONS':
-              return (
-                <>
-                  <div style={{ ...medium_text, ...padding_div_top }}>
-                    Select an import option for your data
-                  </div>
-                  <div>
-                    <Select
-                      variant="outlined"
-                      style={{
-                        width: '400px',
-                        marginTop: '10px',
-                        marginBottom: '10px',
-                        height: 40,
-                      }}
-                      labelId="agreement-outlined-label"
-                      id="agreement-outlined"
-                      value={jobStateValues.selectedShapeLayerOption}
-                      dense
-                      fullWidth
-                      onChange={e => {
-                        jobController.updateState({
-                          selectedShapeLayerOption: e.target.value,
-                        })
-                      }}
-                    >
-                      {shapeTransferOptions.map(option => (
-                        <MenuItem
-                          id={`${option.label}`}
-                          style={{
-                            display:
-                              jobStateValues.selectedShapeLayerOption === option
-                                ? 'none'
-                                : 'inherit',
-                          }}
-                          value={option.key}
-                        >
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </div>
-
-                  <div style={{ ...text_grey }}>
-                    *Note: Existing agreements will be matched on M1neral ID or Agreement
-                    Number
-                  </div>
                 </>
               );
             case 'AGREEMENT_COMMENTS':
