@@ -231,13 +231,13 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       if (!isNaN(parseFloat(calculatedOfferPrice)))
         setIsOfferPriceOverridden(calculatedOfferPrice !== owner.offer_price && !isNaN(parseFloat(offer_price)));
       if (!isNaN(parseFloat(calculatedMaxOfferPrice)))
-        setIsOfferPriceOverridden(calculatedMaxOfferPrice !== owner.max_offer_price && !isNaN(parseFloat(max_offer_price)));
+        setIsMaxOfferPriceOverridden(calculatedMaxOfferPrice !== owner.max_offer_price && !isNaN(parseFloat(max_offer_price)));
 
       if (!isNaN(parseFloat(uUnitPricingInterest)))
         setIsTargetPriceOverridden(parseFloat(uUnitPricing) !== parseFloat(uUnitPricingInterest) && !isNaN(parseFloat(uUnitPricingInterest)));
 
       if (!isNaN(parseFloat(uMaxUnitPricingInterest)))
-        setIsTargetPriceOverridden(parseFloat(uMaxUnitPricing) !== parseFloat(uMaxUnitPricingInterest) && !isNaN(parseFloat(uMaxUnitPricingInterest)));
+        setIsMaxPriceOverridden(parseFloat(uMaxUnitPricing) !== parseFloat(uMaxUnitPricingInterest) && !isNaN(parseFloat(uMaxUnitPricingInterest)));
 
       reset(owner);
     }
