@@ -150,26 +150,20 @@ function LayerSelectionPopup(props) {
 
     const selectLayer = (layer) => {
         if (layer.source === "area of interest_source") {
-
-            props.setStateApp((state) => ({
-                ...state,
-                selectedParcel: null,
-                selectedShape: null,
-                selectedUserDefinedLayer: null,
-                expandedCard: false,
-                popupOpen: false,
-                showAddShapePopup: false,
-                layerSelectionPopup: false,
-            }));
-
             const selectedUserDefinedLayer = copy(layer)
             props.setStateApp((state) => {
                 if (state.isDrawing) return state;
                 state = {
                     ...state,
+
+                    selectedParcel: null,
+                    selectedShape: null,
+                    expandedCard: false,
+                    popupOpen: false,
+                    showAddShapePopup: false,
+                    layerSelectionPopup: false,
                     showShapeActionsPopup: true,
                     selectedUserDefinedLayer,
-                    selectedParcel: null,
                     openDrawShapesControl: true,
                 };
                 drawBoundary(props.map, selectedUserDefinedLayer);
