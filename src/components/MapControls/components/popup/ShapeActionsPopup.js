@@ -4,10 +4,7 @@ import get from "lodash/get";
 import { useHistory } from "react-router-dom";
 import * as turf from "@turf/turf";
 import hat from "hat";
-import { Menu, MenuItem } from "@material-ui/core";
-import { Grid } from "@material-ui/core";
-import Modal from "@material-ui/core/Modal";
-import Button from "@material-ui/core/Button";
+import { Menu, MenuItem, Dialog, Grid } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -45,6 +42,7 @@ import { calculateLandArea } from "components/Shared/functions/shapeLayer";
 import ShapeEditActions from "components/MapControls/components/popup/ShapeEditActions";
 import ShapeTypeMenu from "./ShapeTypeMenu";
 import { jobController } from "hookstate/jobStateController";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 
 // const useStyles = makeStyles({
@@ -965,25 +963,25 @@ const ShapeActionsPopup = (props) => {
           </div>
         )}
       </Fragment>
-      <Modal
+
+      <Dialog
+        className={classes.dialog}
         open={isDeleteModal}
         onClose={handleDeleteAoiModal}
-        aria-labelledby="delete-modal-title"
-        aria-describedby="delete-modal-description"
+        fullWidth={false}
+        maxWidth="sm"
       >
-        <div className={classes.modalContainer}>
-          <h2 id="delete-modal-title">Are you sure?</h2>
-          <p id="delete-modal-description">Are you sure want to remove this shape?</p>
-          <div className={classes.buttonContainer}>
-            <Button variant="contained" className={classes.button} onClick={handleDeleteAoiModal}>
-              Back
-            </Button>
-            <Button variant="contained" className={classes.button} onClick={deleteAOI}>
-              Delete
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        <DeleteConfirmationDialogContent
+          header={`Delete AOI Shape`}
+          onClose={handleDeleteAoiModal}
+          deleteFunc={deleteAOI}
+          m1nSelectedRowsIds={null}
+          setM1nSelectedRowsIndexes={() => { }}
+        >
+          Are you sure want to delete the selected shape?
+        </DeleteConfirmationDialogContent>
+      </Dialog>
+
       <LimitExceedPopUp open={limitExceed} onClose={() => setLimitExceed(false)} />
       {convertTaxOwnerModal && (
         <ConvertTaxOwnerToContactContainer
