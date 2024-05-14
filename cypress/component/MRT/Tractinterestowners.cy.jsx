@@ -19,7 +19,7 @@ describe('Tract Interest Owners Table', () => {
             defaultFilters: [
               {
                 field: 'shape._id',
-                value: '65a9129609723f222ab5a4e8',
+                value: '65ad8feaece38d4e03777ba2',
               },
               {
                 field: 'contact.IsDeleted',
@@ -50,20 +50,15 @@ describe('Tract Interest Owners Table', () => {
       alias => {
         // Selecting all rows for deletion
         cy.get(`[data-testid="over-ride-select-all-div"] input`).click();
-
         // Clicking on the delete icon button to delete selected rows
         cy.get('.MuiButtonBase-root[data-testid="delete-icon-button"]').click();
-
         // Confirming the deletion
         cy.get('.MuiButtonBase-root[data-testid="delete-confirm"]').click();
-
         // Waiting for the delete response and processing the response data
         cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(deleteResponse => {
           const data = deleteResponse?.response?.body?.data?.gridGenericRemove.data;
-
           // Asserting that the status code is 200 for successful deletion
           expect(deleteResponse?.response?.statusCode).to.eq(200);
-
           // Waiting for some time before reverting the deletion
           cy.wait(1000).then(() => {
             // Building payload for reverting the deletion
@@ -72,7 +67,6 @@ describe('Tract Interest Owners Table', () => {
               variables: { data },
               query: REVERTCYPRESSDELETE.loc.source.body,
             };
-
             // Making a request to revert the deletion
             cy.request({
               method: 'POST',
