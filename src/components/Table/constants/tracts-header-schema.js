@@ -7,10 +7,6 @@ import { addTrailingZeros, formatDate } from 'components/Shared/functions';
 
 const TractsHeadCells = (isSnapGrid = false) => [
   {
-    name: "_id",
-    options: { filter: false, display: false, sort: false, viewColumns: false },
-  },
-  {
     /// this is the control column for tracts
     name: "name",
     label: "Tract Name",
@@ -35,6 +31,12 @@ const TractsHeadCells = (isSnapGrid = false) => [
         );
       },
     },
+  },
+  {
+    name: "m1neral_id",
+    label: 'M1neral System ID',
+    options: {
+    filter: false, display: false, sort: false, viewColumns: true },
   },
   {
     name: "State",
