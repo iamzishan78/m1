@@ -7,6 +7,17 @@ import { addTrailingZeros, formatDate } from 'components/Shared/functions';
 
 const TractsHeadCells = (isSnapGrid = false) => [
   {
+    name: "_id",
+    options: {
+    filter: false, display: false, sort: false, viewColumns: false },
+  },
+  {
+    name: "m1neral_id",
+    label: 'M1neral System ID',
+    options: {
+    filter: false, display: false, sort: false, viewColumns: true },
+  },
+  {
     /// this is the control column for tracts
     name: "name",
     label: "Tract Name",
@@ -25,18 +36,12 @@ const TractsHeadCells = (isSnapGrid = false) => [
               e?.stopPropagation();
               history.push(`/map/parcels/${tableMeta.rowData[0]}`, { showTractsBreadcrumb: !isSnapGrid });
             }}
-            value={splitNumber?.[0] ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}` : tableMeta?.rowData[2]}
+            value={splitNumber?.[0] ? `${splitNumber?.[0]} - ${tableMeta?.rowData[3]}` : tableMeta?.rowData[3]}
             link={`/map/parcels/${tableMeta.rowData[0]}`}
           />
         );
       },
     },
-  },
-  {
-    name: "m1neral_id",
-    label: 'M1neral System ID',
-    options: {
-    filter: false, display: false, sort: false, viewColumns: true },
   },
   {
     name: "State",
