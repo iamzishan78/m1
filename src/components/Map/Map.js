@@ -1277,6 +1277,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           };
         });
         drawBoundary(map, selectedUserDefinedLayer);
+        //interests_source replace this key with area of interest_source in complete app
       } else if (feature.source === "area of interest_source" && !drawMode.includes("draw") && !drawMode.includes("drag")) {
         setStateApp((state) => {
           if (state.isDrawing) return state;
