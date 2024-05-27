@@ -207,7 +207,7 @@ function CheckDetailsTable(props) {
                     className={classes.multiSelectionTopBarButtons}
                     onClick={() => handleInputModeClick()}
                 >
-                    INPUT MODE ik
+                    INPUT MODE
                 </Button>
             </div>
         </>
