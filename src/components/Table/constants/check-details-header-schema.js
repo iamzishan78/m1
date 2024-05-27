@@ -32,7 +32,6 @@ const RevenueStatementHeadCells = [
 			sort: true, filter: false,
 
 			customRender: (value, tableMeta) => {
-				console.log('tableMeta.rowData', tableMeta.rowData?.[23]);
 				const clickable = tableMeta.rowData?.[23]
 				if (clickable) {
 					return (
