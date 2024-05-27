@@ -3,10 +3,33 @@ import { Typography } from "@material-ui/core";
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 import vf_number from "components/Shared/valueformatters/vf_number";
 import { GlobalStickyStyles } from "GlobalSettings";
+import DeleteIcon from '@material-ui/icons/Delete';
+import { makeStyles } from "@material-ui/core/styles";
+import { Tooltip } from '@mui/material';
 
 const getFormattedValue = (value) => {
 	return <Typography>{value ? vf_number(value) : <span style={{ color: 'rgb(149,149,149)' }}>--</span>}</Typography>;
 }
+
+const useStyles = makeStyles({
+	deleteIcon: {
+		color: 'red',
+		verticalAlign: 'middle',
+		marginLeft: '8px', // optional: adds some space between text and icon
+	},
+});
+
+
+const DeletedPropertyName = ({ value }) => {
+	const classes = useStyles();
+
+	return (
+		<Tooltip title="This Property is Deleted">
+			{value} <DeleteIcon className={classes.deleteIcon} />
+		</Tooltip>
+	);
+};
+
 
 const RevenueStatementHeadCells = [
 	{
@@ -51,7 +74,7 @@ const RevenueStatementHeadCells = [
 							? tableMeta?.rowData[3] ? `${value?.split("_")?.[0]} - ${tableMeta?.rowData[3]}` : value
 							: tableMeta?.rowData[3]
 
-					return <>{value}</>
+					return <DeletedPropertyName value={value} />
 				}
 			}
 		},
