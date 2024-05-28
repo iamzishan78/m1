@@ -12,10 +12,12 @@ import QuickActionPanel from "components/Land/components/QuickActionPanel";
 import { AdminManagementRoutes } from "utils/data";
 import Map from "./components/Map";
 import AdminSettings from "components/Shared/AdminSettings";
+import Flattening from "components/Admin/Flattening"
 
 const Components = {
   Map,
   AdminSettings,
+  Flattening
 };
 
 export default function Admin() {
