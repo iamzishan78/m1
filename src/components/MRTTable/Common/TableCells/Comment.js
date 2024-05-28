@@ -4,7 +4,7 @@ import Button from '@material-ui/core/Button';
 import ChatIcon from '@material-ui/icons/Chat';
 import { tableGlobalController } from 'hookstate/tableController';
 
-function CommentCell({ value, id, targetLabel }) {
+function CommentCell({ value, id, targetLabel, type = 'comments' }) {
 	return (
 		<Tooltip title={!value || value === 0 ? 'Add Comments' : 'View Comments'} placement="top">
 			<Button
@@ -15,7 +15,7 @@ function CommentCell({ value, id, targetLabel }) {
 					e.stopPropagation();
 					tableGlobalController.updateState({
 						dialog: {
-							type: 'comments',
+							type: type,
 							value,
 							targetSourceId: id,
 							targetLabel,

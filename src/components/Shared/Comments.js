@@ -586,6 +586,7 @@ export default function Comments(props) {
               setComment={setComment}
               showActions={showActions}
               setShowActions={setShowActions}
+              containsComments={props?.containsComments}
             // setEditCommentId={setEditCommentId}
             // isEdit={isEdit}
             // setIsEdit={setIsEdit}

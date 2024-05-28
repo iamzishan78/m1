@@ -30,7 +30,9 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiAutocomplete-endAdornment": {
       display: "none",
     },
-    "& .MuiInputBase-input": { color: "transparent", caretColor: "black", paddingTop: '0 !important' },
+    "& .MuiInputBase-input": { caretColor: "black", paddingTop: '0 !important',
+      color: ({ containsComments }) => containsComments ? "transparent" : "inherit",
+     },
     "& .MuiInputBase-inputMultiline": {
       height: "205px !important",
       overflow: "overlay",
@@ -185,7 +187,7 @@ export default function DealComment({
   const [showCommentTypeDialog, setShowCommentTypeDialog] = useState(false);
   const [selectedCommentType, setSelectedCommentType] = useState("General");
   const [commentTypeDialogBox, setCommentTypeDialogBox] = useState(false);
-  const classes = useStyles({ fieldWidth, commentTypeDialogBox, collapsed: isCollapsed && !isEdit });
+  const classes = useStyles({ fieldWidth, commentTypeDialogBox, collapsed: isCollapsed && !isEdit, containsComments: props?.containsComments });
   (function () {
     var target = $("#colorText");
     const scrollDiv = function () {

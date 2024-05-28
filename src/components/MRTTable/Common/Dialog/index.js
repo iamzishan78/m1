@@ -13,6 +13,7 @@ import CommentDialog from './CommentDialog';
 import TagDialog from './TagDialog';
 import ExportConfirmationDialog from './ConfirmationDialog/ExportConfirmation';
 import { globalStateController } from 'hookstate/globalStateController';
+import Comments from "components/Shared/Comments";
 
 function AllDialogs(props) {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
@@ -73,6 +74,11 @@ function AllDialogs(props) {
 				</Dialog>
 			)}
 
+			{type === "commentsWithTags" && (
+				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
+					<Comments {...rest} hideSharedCommentCheck={props.hideSharedCommentCheck} containsComments={true}/>								
+				</Dialog>
+			)}
 			{type === 'convertContactSlideout' && (<MultipleOwnerToContactDrawerContainer
 				onClose={() => {
 					rest.onRemoveRows(null, true);
