@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Autocomplete, TextField, Button } from '@mui/material';
-
 import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
+import { FLATTENNING } from 'graphQL/useMutationRunFlattening';
+import { useMutation } from "@apollo/client";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: () => ({
@@ -30,24 +31,96 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const flatteningModels = [
-  'CheckDetail', // CheckDetail_Flat, CheckDetailInterestsComparison_Flat
-  'CustomLayer', // Shape_Flat
-  'ShapeOwnerDescriptor', // ShapeOwner_Flat
-  'Contact', // Contact_Flat
-  'Check', // Check_Flat
-  'File', // Document_Flat
-  'Activity', // Activity_Flat
-  'ShapeTractDescriptor', // ShapeTract_Flat
-  'WellDescriptor', // WellInterest_Flat
-  'ShapeWellDescriptor', // ShapeWellInterest_Flat
-  'Campaign', // Campaign_Flat
-  'Property', // Property_Flat
-  'PropertyDescriptor', // PropertyInterest_Flat
-  'MyWell', // MyWell_Flat
-  'MyWellProduction', // MyWellProduction_Flat
-  'ShapeFile', // ShapeFile_Flat
-  'ParcelDescriptor', // RunsheetInstrument_Flat
-  'Notification', // Notification_Flat
+
+  {
+    modelName: 'CheckDetail', // CheckDetail_Flat, CheckDetailInterestsComparison_Flat
+    isMSHandler: true
+  },
+
+  {
+    modelName: 'CustomLayer', // Shape_Flat
+    isMSHandler: true
+  },
+
+  {
+    modelName: 'ShapeOwnerDescriptor', // ShapeOwner_Flat
+    isMSHandler: true
+  },
+
+  {
+    modelName: 'Contact', // Contact_Flat
+    isMSHandler: true
+  },
+
+  {
+    modelName: 'Check', // Check_Flat
+    isMSHandler: true
+  },
+
+  {
+    modelName: 'File', // Document_Flat
+    isMSHandler: false
+  },
+
+  {
+    modelName: 'Activity', // Activity_Flat
+    isMSHandler: true
+  },
+
+  {
+    modelName: 'ShapeTractDescriptor', // ShapeTract_Flat
+    isMSHandler: false
+  },
+
+  {
+    modelName: 'WellDescriptor', // WellInterest_Flat
+    isMSHandler: false
+  },
+
+  {
+    modelName: 'ShapeWellDescriptor', // ShapeWellInterest_Flat
+    isMSHandler: false
+  },
+
+  {
+    modelName: 'Campaign', // Campaign_Flat
+    isMSHandler: true
+  },
+
+  {
+    modelName: 'Property', // Property_Flat
+    isMSHandler: true
+  },
+
+  {
+    modelName: 'PropertyDescriptor', // PropertyInterest_Flat
+    isMSHandler: true
+  },
+
+  {
+    modelName: 'MyWell', // MyWell_Flat
+    isMSHandler: true
+  },
+
+  {
+    modelName: 'MyWellProduction', // MyWellProduction_Flat
+    isMSHandler: true
+  },
+
+  {
+    modelName: 'ShapeFile', // ShapeFile_Flat
+    isMSHandler: true
+  },
+
+  {
+    modelName: 'ParcelDescriptor', // RunsheetInstrument_Flat
+    isMSHandler: true
+  },
+
+  {
+    modelName: 'Notification', // Notification_Flat
+    isMSHandler: true
+  }
 ];
 
 
@@ -58,21 +131,26 @@ export default function Flattening() {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [warning, setWarning] = useState(false);
 
+  const [RunFlattening, { data, loading, error }] = useMutation(FLATTENNING);
+
+
   const handleAutocompleteChange = (event, value) => {
     setSelectedOptions(value);
-    setWarning(value?.length > 2);
+    setWarning(value.length > 2);
   };
 
   const handleClick = () => {
-
+    RunFlattening({
+      variables: {
+        models: selectedOptions
+      }
+    })
   }
 
+  const memoizedFlatteningModels = useMemo(() => flatteningModels, []);
+
   return (
-    <div
-      style={{
-        marginTop: "65px",
-      }}
-    >
+    <div style={{ marginTop: "65px" }}>
       <Grid
         container
         direction="row"
@@ -82,21 +160,31 @@ export default function Flattening() {
       >
         <Autocomplete
           disablePortal
-          id="flattening-drop-down"
-          multiple={true}
-          options={flatteningModels}
+          id="combo-box-demo"
+          multiple
+          options={memoizedFlatteningModels}
           value={selectedOptions}
           onChange={handleAutocompleteChange}
+          getOptionLabel={(option) => option.modelName}
           sx={{ width: 300 }}
           renderInput={(params) => <TextField {...params} label="Flattening" />}
-
         />
 
-        <Button variant="contained" onClick={handleClick} color="primary" className={classes.addDataButton} disabled={warning}>
+        <Button
+          variant="contained"
+          onClick={handleClick}
+          color="primary"
+          className={classes.addDataButton}
+          disabled={warning}
+        >
           Run Flattening
         </Button>
       </Grid>
-      {warning && <div style={{ color: 'red', marginTop: '10px', marginLeft: '20px' }}>You can run flattening only on 2 index at a time.</div>}
+      {warning && (
+        <div style={{ color: 'red', marginTop: '10px', marginLeft: '20px' }}>
+          You can run flattening only on 2 index at a time.
+        </div>
+      )}
     </div>
-  )
+  );
 }
