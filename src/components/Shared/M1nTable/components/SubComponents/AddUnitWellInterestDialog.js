@@ -136,34 +136,48 @@ function AddUnitInterestDialog(props) {
     return !Object.values(tempValid).reduce((acc, cur) => acc + cur)
   }
 
+  // Function to handle the save operation
   const handleSave = () => {
+    // Set the loading state to true
     setLoading(true);
+
+    // Check if there is an existing well interest
     if (props.wellInterest) {
+      // Update the existing well interest
       updateShapeWellInterests({
+        // Pass the necessary variables for the update mutation
         variables: {
           wellInterests: [{
-            id: props.wellInterest._id,
-            shapeType: props.shapeType,
-            globalWellId: selectedWell.Id,
-            wellName: selectedWell.WellName,
-            ...getValues(),
+            id: props.wellInterest._id, // ID of the existing well interest
+            shapeType: props.shapeType, // Type of shape
+            globalWellId: selectedWell.Id, // Global ID of the selected well
+            wellName: selectedWell.WellName, // Name of the selected well
+            ...getValues(), // Spread the rest of the values obtained from the form
           }]
         },
-        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
+        // Specify the queries to be refetched after the mutation
+        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
+        // Await the refetch queries to complete before proceeding
+        awaitRefetchQueries: true
       });
     } else {
+      // Add a new well interest
       addShapeWellInterest({
+        // Pass the necessary variables for the add mutation
         variables: {
           wellInterest: {
-            globalWellId: selectedWell.Id,
-            userId: stateApp.user.mongoId,
-            shapeType: props.shapeType,
-            shapeId: props.shapeId,
-            wellName: selectedWell.WellName,
-            ...getValues(),
+            globalWellId: selectedWell.Id, // Global ID of the selected well
+            userId: stateApp.user.mongoId, // User ID of the current user
+            shapeType: props.shapeType, // Type of shape
+            shapeId: props.shapeId, // ID of the shape
+            wellName: selectedWell.WellName, // Name of the selected well
+            ...getValues(), // Spread the rest of the values obtained from the form
           }
         },
-        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getShapeSummaryDetails"], awaitRefetchQueries: true
+        // Specify the queries to be refetched after the mutation
+        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getShapeSummaryDetails"],
+        // Await the refetch queries to complete before proceeding
+        awaitRefetchQueries: true
       });
     }
   }
