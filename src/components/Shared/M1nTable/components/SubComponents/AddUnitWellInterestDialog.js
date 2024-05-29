@@ -145,6 +145,7 @@ function AddUnitInterestDialog(props) {
             id: props.wellInterest._id,
             shapeType: props.shapeType,
             globalWellId: selectedWell.Id,
+            wellName: selectedWell.WellName,
             ...getValues(),
           }]
         },
@@ -158,6 +159,7 @@ function AddUnitInterestDialog(props) {
             userId: stateApp.user.mongoId,
             shapeType: props.shapeType,
             shapeId: props.shapeId,
+            wellName: selectedWell.WellName,
             ...getValues(),
           }
         },
