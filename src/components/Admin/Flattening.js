@@ -142,7 +142,8 @@ export default function Flattening() {
   const handleClick = () => {
     RunFlattening({
       variables: {
-        models: selectedOptions
+        models: selectedOptions,
+        chunkSize: 300
       }
     })
   }
