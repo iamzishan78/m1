@@ -79,5 +79,8 @@ describe('Property interest details ESHOC Table', () => {
       },
       { wait: false }
     );
+    cy.get('input[type="checkbox"]').first().click();
+    cy.get('button.MuiButtonBase-root.MuiIconButton-root[aria-label="delete"]').click();
+    cy.contains('span.MuiButton-label', 'Delete').click();
   });
 });
