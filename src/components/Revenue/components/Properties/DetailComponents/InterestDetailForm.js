@@ -122,7 +122,7 @@ const InterestDetailForm = (props) => {
             ...values,
             interestType: values.interestType.name,
             owner: values.owner._id ? values.owner._id : null,
-            propertyId: id,
+            propertyId: props.propertyId || id,
           },
         },
       });
