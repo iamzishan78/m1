@@ -9,6 +9,7 @@ import { addCustomShapeProperties, drawBoundary } from "../../components/DrawSha
 import { spatialDataAttributes } from "../DrawShapes/constants";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { jobController } from "hookstate/jobStateController";
+import { copy } from "components/Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -138,7 +139,7 @@ export default function ShapeAOIPopup(props) {
       sdGrossAcres: "",
       // sdNotes: dataNotes
     };
-    const { currentFeature } = stateApp;
+    const currentFeature = copy(stateApp.currentFeature);
 
     addCustomShapeProperties(currentFeature, stateApp.draw);
     spatialDataAttributes.forEach((attribute) => {

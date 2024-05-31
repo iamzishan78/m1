@@ -79,7 +79,7 @@ function RevenuePropertiesTable(props) {
   }, [props.revenueSearchQuery, props.filterToggle, refetchData]);
 
   useEffect(() => {
-    // setESFilters(props.initialFilters);
+    setESFilters(props.initialFilters);
     // eslint-disable-next-line
   }, [props.initialFilters]);
 

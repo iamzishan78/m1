@@ -1410,7 +1410,7 @@ function SubTable(props) {
                 customRender: (value, tableMeta) => {
                   if (props.targetLabel === "unit" || props.targetLabel === 'campaignUnit') {
                     const targetSourceId = tableMeta.rowData[0];
-                    const commentValue = tableMeta.rowData[22];
+                    const commentValue = props.targetLabel === "unit" ? tableMeta.rowData[tableMeta.rowData.length - 2] : tableMeta.rowData[22];
 
                     const path = `/${column.label === 'Contact Name' ? 'contact/details' : 'map/units'}/${tableMeta.rowData[0]}`
 

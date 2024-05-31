@@ -92,7 +92,7 @@ const OwnersPerUnitMeta = {
 			isExport: 'name',
 			header: 'Owner Name',
 			Cell: ({ renderedCellValue, row }) => {
-				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
+				const isPurchased = [true, 'true', 'True'].includes(row?.original?.contact?.isPurchased);
 				return (
 					<div
 						style={{
@@ -120,6 +120,7 @@ const OwnersPerUnitMeta = {
 							{isPurchased && (
 								<FeatureFlag feature={FEATURES.IDICORE}>
 									<MonetizationOnIcon
+									 data-testid="monetization-icon"
 										style={{
 											marginLeft: '10px',
 											color: "gray"

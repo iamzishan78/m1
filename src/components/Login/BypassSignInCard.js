@@ -1,85 +1,86 @@
-import React, { useState, useEffect } from "react";
-import { withStyles, makeStyles } from "@material-ui/core/styles";
-import InputBase from "@material-ui/core/InputBase";
-import { Card, Button } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import styled from "styled-components";
+import React, { useState, useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { Card, Button } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import { useHistory } from "react-router-dom";
-import queryString from 'query-string'
+import { useHistory } from 'react-router-dom';
+import queryString from 'query-string';
+import { TextField } from '@mui/material';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   select: {
-    color: "white",
+    color: 'white',
   },
   card: {
-    width: "400px",
-    height: "425px",
+    width: '400px',
+    // height: "425px",
     alignItems: 'center',
     // backgroundColor: theme.palette.secondary.dark,
-    backgroundColor: "#0e111a",
+    backgroundColor: '#0e111a',
     fontFamily: theme.typography.fontFamily,
   },
 
   cardFooter: {
-    paddingBottom: "0px",
-    paddingTop: "45px",
-    color: "white",
-    fontSize: ".75rem",
-    float: "left",
-    marginLeft: "30px",
+    paddingBottom: '0px',
+    paddingTop: '45px',
+    color: 'white',
+    fontSize: '.75rem',
+    float: 'left',
+    marginLeft: '30px',
   },
 
   aadButton: {
-    backgroundColor: "#17aadd",
-    width: "125px",
-    lineHeight: "1.4",
-    marginTop: "65px",
-    paddingTop: "12px",
-    paddingBottom: "12px",
-    color: "#fff",
-    "&:hover": {
-      backgroundColor: "#f0cfb3",
+    backgroundColor: '#17aadd',
+    width: '125px',
+    lineHeight: '1.4',
+    marginTop: '65px',
+    marginBottom: '40px',
+    paddingTop: '12px',
+    paddingBottom: '12px',
+    color: '#fff',
+    '&:hover': {
+      backgroundColor: '#f0cfb3',
     },
   },
   signupLink: {
-    textDecoration: "none",
+    textDecoration: 'none',
     color: theme.palette.secondary.main,
-    cursor: "pointer",
-    "&:hover": {
-      color: "#e4a773",
+    cursor: 'pointer',
+    '&:hover': {
+      color: '#e4a773',
     },
   },
   errorSection: {
-    margin: "12px 90px",
-    padding: "10px",
-    color: "#E4A773",
-    background: "#e4a77347",
-    maxHeight: "90px",
-    overflowY: "auto",
-    "&::-webkit-scrollbar": {
-      width: "0.75em",
-      height: "0.75em",
+    margin: '12px 90px',
+    padding: '10px',
+    color: '#E4A773',
+    background: '#e4a77347',
+    maxHeight: '90px',
+    overflowY: 'auto',
+    '&::-webkit-scrollbar': {
+      width: '0.75em',
+      height: '0.75em',
     },
 
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "#929292",
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#929292',
       borderRadius: 10,
     },
   },
   termsAndPrivacy: {
-    color: "#fff",
-    "& a": {
-      color: "#fff",
-      textDecoration: "none",
-      "&:hover": {
+    color: '#fff',
+    '& a': {
+      color: '#fff',
+      textDecoration: 'none',
+      '&:hover': {
         color: theme.palette.secondary.main,
       },
     },
   },
 }));
 
-const M1neralLogoNavNoAuth = (props) => (
+const M1neralLogoNavNoAuth = props => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 11320 2490"
@@ -106,52 +107,25 @@ const M1neralLogoNavNoAuth = (props) => (
 );
 
 const M1neralLogo2 = styled(M1neralLogoNavNoAuth)`
-width: 200px;
-padding-top: 50px;
-padding-bottom: 20px;
+  width: 200px;
+  padding-top: 50px;
+  padding-bottom: 20px;
 `;
 
-
-const BootstrapInput = withStyles((theme) => ({
-  root: {
-    "label + &": {
-      marginTop: theme.spacing(3),
-    },
-  },
-  input: {
-    borderRadius: 4,
-    backgroundColor: theme.palette.common.white,
-    border: "1px solid #ced4da",
-    fontSize: 16,
-    width: "280px",
-    height: "25px",
-    padding: "10px",
-    marginTop: "10px",
-    transition: theme.transitions.create(["border-color", "box-shadow"]),
-    fontFamily: [
-      "-apple-system",
-      "BlinkMacSystemFont",
-      '"Segoe UI"',
-      "Roboto",
-      '"Helvetica Neue"',
-      "Arial",
-      "sans-serif",
-      '"Apple Color Emoji"',
-      '"Segoe UI Emoji"',
-      '"Segoe UI Symbol"',
-    ].join(","),
-  },
-}))(InputBase);
-
-const SignInCard = (props) => {
+const BypassSignInCard = props => {
   const { handleAADSignIn } = props;
 
   const classes = useStyles();
 
-  const history = useHistory()
-  const query = queryString.parse(history?.location?.search)
+  const history = useHistory();
+  const query = queryString.parse(history.location.search);
 
-  const [tenant, setTenant] = useState(props.tenant || query.tenant ? props.tenant || query.tenant : "");
+  const sessionTenant = window.sessionStorage.getItem('tenantName');
+
+  const [tenant, setTenant] = useState(
+    props.tenant || query.tenant || sessionTenant ? props.tenant || query.tenant || sessionTenant : ''
+  );
+  const [email, setEmail] = useState('');
   const [error, setError] = useState(null);
   const [tenantFlags, setTenantFlags] = useState({
     error: false,
@@ -160,45 +134,39 @@ const SignInCard = (props) => {
   });
 
   useEffect(() => {
-    if (tenant.trim() !== "" && tenant === props.tenant) {
-      signInAAD()
+    if (tenant.trim() !== '' && tenant === props.tenant) {
+      signInAAD();
     }
   }, [props.tenant]);
 
-  const updateTenantFlags = (errorText) => {
+  const updateTenantFlags = (errorText, t = '') => {
     setTenantFlags({
       error: true,
-      placeholder: "i.e. M1neral",
+      placeholder: 'i.e. M1neral',
       autoFocus: true,
     });
-    setTenant("");
+    setTenant(t);
     errorText ? setError(errorText) : setError(null);
   };
 
-  const onEnterKey = (e) => {
-    if (tenant.trim() === "") {
-      updateTenantFlags();
-    } else {
-      if (e.keyCode === 13) {
-        e.preventDefault();
-        setError(null);
-        handleAADSignIn(tenant, updateTenantFlags);
-      }
+  const onEnterKey = e => {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      setError(null);
+      handleAADSignIn(tenant, updateTenantFlags, email);
     }
   };
 
   const signInAAD = async () => {
-    if (tenant.trim() === "") {
-      updateTenantFlags();
+    if (tenant.trim() === '' || !email) {
+      updateTenantFlags('Not a valid workspace or email', tenant.trim());
     } else {
       setError(null);
-      await handleAADSignIn(tenant, updateTenantFlags);
+      await handleAADSignIn(tenant, updateTenantFlags, email);
 
-      history.push(history.location.pathname)
+      history.push(history.location.pathname);
     }
   };
-
-
 
   const renderAADButtonAndLoader = props.ready ? (
     <CircularProgress color="secondary" size={28} className={classes.loader} />
@@ -210,15 +178,13 @@ const SignInCard = (props) => {
       id="workSpaceSignin"
       className={classes.aadButton}
       onClick={signInAAD}
-      onKeyDown={(e) => onEnterKey(e)}
+      onKeyDown={e => onEnterKey(e)}
     >
       Sign In
     </Button>
   );
 
   return (
-
-
     <div>
       <Grid
         container
@@ -228,9 +194,7 @@ const SignInCard = (props) => {
         justify="center"
         style={{ minHeight: 'calc(100vh - 70px)' }}
       >
-
         <Card square={true} className={classes.card}>
-
           <div>
             <M1neralLogo2 />
           </div>
@@ -239,24 +203,35 @@ const SignInCard = (props) => {
             <React.Fragment>
               <div
                 style={{
-                  marginTop: "55px",
-                  fontSize: "14px",
-                  fontWeight: "900",
-                  fontFamily: "Tahoma, Geneva, sans-serif",
-                  color: "white",
-                  textAlign: "left",
-                  marginLeft: "75px",
+                  marginTop: '55px',
+                  fontSize: '14px',
+                  fontWeight: '900',
+                  fontFamily: 'Tahoma, Geneva, sans-serif',
+                  color: 'white',
+                  textAlign: 'left',
+                  marginLeft: '75px',
                 }}
               >
                 Sign in with your workspace name
               </div>
-              <BootstrapInput
+
+              <TextField
+                id="workspace-name-text"
+                sx={{
+                  '& input': {
+                    backgroundColor: '#fff',
+                    borderRadius: '0.25rem',
+                  },
+                  width: '70%',
+                  marginTop: '1rem',
+                }}
                 error={tenantFlags.error}
-                placeholder={tenantFlags.placeholder}
+                helperText={error}
+                placeholder={tenantFlags.placeholder || 'Workspace'}
                 autoFocus={tenantFlags.autoFocus}
-                autoComplete="true"
-                onKeyDown={(e) => onEnterKey(e)}
-                onChange={(e) => setTenant(e.target.value)}
+                onKeyDown={e => onEnterKey(e)}
+                onChange={e => setTenant(e.target.value)}
+                value={tenant}
                 onBlur={() => {
                   setError(null);
                   setTenantFlags({
@@ -268,41 +243,56 @@ const SignInCard = (props) => {
                 onClick={() => {
                   setError(null);
                 }}
-                value={tenant}
+              />
+              <TextField
+                id="email-text"
+                type="email"
+                sx={{
+                  '& input': {
+                    backgroundColor: '#fff',
+                    borderRadius: '0.25rem',
+                  },
+                  width: '70%',
+                  marginTop: '1rem',
+                }}
+                error={tenantFlags.error}
+                helperText={error}
+                placeholder={(tenantFlags.placeholder && 'username@m1neral.com') || 'Email'}
+                onKeyDown={e => onEnterKey(e)}
+                onChange={e => setEmail(e.target.value)}
+                value={email}
+                onBlur={() => {
+                  setError(null);
+                  setTenantFlags({
+                    error: false,
+                    placeholder: null,
+                    autoFocus: false,
+                  });
+                }}
               />
               <>
                 {renderAADButtonAndLoader}
-                {error && (
-                  <p id="errorSection" className={classes.errorSection}>
-                    {error}
-                  </p>
-                )}
               </>
             </React.Fragment>
           ) : (
-            <CircularProgress
-              color="secondary"
-              size={50}
-              className={classes.loader}
-            />
+            <CircularProgress color="secondary" size={50} className={classes.loader} />
           )}
         </Card>
-
       </Grid>
 
       <div
         style={{
-          color: "#fff",
+          color: '#fff',
         }}
       >
-        © 2024 M1neral, LLC. All Rights Reserved.
+        © 2023 M1neral, LLC. All Rights Reserved.
       </div>
 
       <div className={classes.termsAndPrivacy}>
         <a href="https://m1neral.com/TOS.pdf" target="_blank" rel="noreferrer">
           Terms of Service
         </a>
-        {" | "}
+        {' | '}
         <a href="https://m1neral.com/Privacy.pdf" target="_blank" rel="noreferrer">
           Privacy Policy
         </a>
@@ -315,4 +305,4 @@ function areEqual(prevProps, nextProps) {
   return Object.is(prevProps.tenant, nextProps.tenant);
 }
 
-export default React.memo(SignInCard, areEqual);
+export default React.memo(BypassSignInCard, areEqual);

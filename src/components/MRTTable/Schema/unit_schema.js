@@ -41,6 +41,9 @@ const UnitMeta = {
 	maxTableHeight: 'calc(100vh - 215px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
+	fetchMetaData: {
+		category: 'Unit', // enable to show custom field inside unit grid
+	},
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,

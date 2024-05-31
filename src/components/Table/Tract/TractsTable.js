@@ -46,6 +46,7 @@ function TractsTable(props) {
     hits = hits.map((hit) => {
       // mapping calculatedNra field 
       hit.calculatedNra = hit.netRoyalityAcres?.calculatedNra;
+      hit.m1neral_id = hit._id;
       hit.tags =
         hit?.tags?.length > 0
           ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]

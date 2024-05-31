@@ -137,7 +137,7 @@ function LayerSelectionPopup(props) {
             const properties = layer?.properties
             if (layer.source === 'wellsVT') {
                 return `${properties.api}-${properties.wellName}`
-            } else if (layer.source === 'parcels_source') {
+            } else if (layer.source === 'parcels_source' || layer.source === 'area of interest_source') {
                 return properties.shapeLabel
             } else if (layer.source === 'units_source') {
                 return `${properties.uNumber ? properties.uNumber + '-' : ''}${properties.shapeLabel}`
@@ -149,6 +149,47 @@ function LayerSelectionPopup(props) {
     }
 
     const selectLayer = (layer) => {
+        if (layer.source === "area of interest_source") {
+            const selectedUserDefinedLayer = copy(layer)
+            props.setStateApp((state) => {
+                if (state.isDrawing) return state;
+                state = {
+                    ...state,
+
+                    selectedParcel: null,
+                    selectedShape: null,
+                    expandedCard: false,
+                    popupOpen: false,
+                    showAddShapePopup: false,
+                    layerSelectionPopup: false,
+                    showShapeActionsPopup: true,
+                    selectedUserDefinedLayer,
+                    openDrawShapesControl: true,
+                };
+                drawBoundary(props.map, selectedUserDefinedLayer);
+                if (!state.editDraw) {
+                    state = {
+                        ...state,
+                        showDrawShapesPopup: !state.showDrawShapesPopup,
+                        editDraw: true,
+                    };
+                } else {
+                    state = {
+                        ...state,
+                        editDraw: false,
+                        currentFeature: undefined,
+                        isAbstractedLayersPolygon: false,
+                        multiSelectLandGrids: false,
+                        selectedAbstracts: [],
+                        showShapeActionsPopup: false,
+                        showDrawShapesPopup: false,
+                    };
+                }
+                return state;
+            });
+            return
+        }
+
         if (ifFileShapeSource(layer.source) && layer.properties.layerShapeName) {
             const jsonLayer = copy(layer)
 

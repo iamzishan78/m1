@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import MRTTable from 'components/MRTTable';
 import { basic_timeouts } from '../../cypressUtils/data';
 import _ from 'lodash';
@@ -7,7 +8,7 @@ describe('Unit Interest Owners Table', () => {
   beforeEach(() => {
     cy.interceptAndWait(
       ['getESSimpleSearch', 'shapeowners_flat'],
-      (alias) => {
+      alias => {
         cy.viewport(1600, 1200).mount(
           <MRTTable
             name="OwnersPerUnitTable"
@@ -29,7 +30,7 @@ describe('Unit Interest Owners Table', () => {
           }
         );
 
-        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then((response) => {
+        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
           responseHits = response.response.body.data.getESSimpleSearch.hits;
         });
       },
@@ -96,27 +97,28 @@ describe('Unit Interest Owners Table', () => {
 
     cy.interceptAndWait(
       ['initializeExportJob'],
-      (alias) => {
+      alias => {
         cy.get('[data-testid="export-contact-and-purchse-icon-checkbox"]').click();
 
         cy.get(
           '.MuiButtonBase-root[data-testid="export-contact-and-purchse-confirm-button"]'
         ).click();
 
-        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then((jobResponse) => {
+        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(jobResponse => {
           const jobId = jobResponse.response.body.data.initializeExportJob.job._id;
 
-          //response.body.data.initializeExportJob.job._id
-
-          const callback = (res) => {
+          const callback = res => {
             const datasets = res.resultsPayload.datasets;
             let exportData = _.find(datasets, { dataset: 'exportContacts' }) || {};
             exportData = exportData.exportResponse;
 
             expect(responseHits).to.have.lengthOf(exportData.length);
 
-            const gridFullName = `${responseHits[0]?.firstName} ${responseHits[0]?.lastName}`;
-            const exportFullNameObj = _.find(exportData, { 'Full Name': gridFullName }) || {};
+            const gridFullName =
+              responseHits[0]?.name ||
+              `${responseHits[0]?.firstName} ${responseHits[0]?.lastName}`;
+            const exportFullNameObj =
+              _.find(exportData, { 'Full Name': gridFullName }) || {};
 
             expect(exportFullNameObj['Full Name']).to.equal(gridFullName);
           };
@@ -126,7 +128,37 @@ describe('Unit Interest Owners Table', () => {
       },
       { wait: false }
     );
+    //done
+  });
 
+  it('should verify purchased icon in contact link', () => {
+    const purschasedContact = responseHits.find(
+      (hit) => hit.contact && hit.contact.isPurchased === true
+    );
+    const contactName =
+      purschasedContact?.name ||
+      `${purschasedContact?.firstName} ${purschasedContact?.lastName}`;
+
+    cy.get(`[data-testid="MoreVertIcon"]`).first().click();
+    cy.wait(basic_timeouts.shorTimeout);
+    cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
+    cy.wait(basic_timeouts.shorTimeout);
+    cy.get(`[data-testid="MoreVertIcon"]`).first().click();
+    cy.wait(basic_timeouts.shorTimeout);
+    cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
+    cy.wait(basic_timeouts.shorTimeout);
+    cy.get(
+      '[data-testid="sentinelStart"] + div ul li:nth-child(9):eq(1)'
+    ).click();
+    cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
+
+    cy.mrtFilterBySearch({
+      value: contactName,
+      columnlabel: 'Owner Name',
+      alias: 'Owner Name',
+    });
+
+    cy.get('[data-testid="monetization-icon"]').should('exist');
     //done
   });
 });
