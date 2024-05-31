@@ -27,6 +27,7 @@ const onClickedRow = selectedRow => {
 			shapeId: customLayer?._id,
 			uAcres: customLayer?.shapeJson?.properties?.uAcres,
 			uUnitPricing: customLayer?.shapeJson?.properties?.uUnitPricing,
+			uMaxUnitPricing: customLayer?.shapeJson?.properties?.uMaxUnitPricing,
 			shapeType: 'Unit',
 			selectedRow,
 		},
@@ -409,9 +410,29 @@ const OwnersPerUnitMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'uUnitPricingInterest',
+			accessorKey: 'uUnitPricingInterest',
+			header: 'Target Price/NRA',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'offer_price',
 			accessorKey: 'offer_price',
 			header: 'Target Offer Price',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'uMaxUnitPricingInterest',
+			accessorKey: 'uMaxUnitPricingInterest',
+			header: 'Max Price/NRA',
 			isSearchField: false,
 			type: 'number',
 			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
