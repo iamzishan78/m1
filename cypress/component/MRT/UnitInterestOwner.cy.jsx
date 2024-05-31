@@ -78,7 +78,37 @@ describe('Unit Interest Owners Table', () => {
       },
       { wait: false }
     );
+    //done
+  });
 
+  it('should verify purchased icon in contact link', () => {
+    const purschasedContact = responseHits.find(
+      (hit) => hit.contact && hit.contact.isPurchased === true
+    );
+    const contactName =
+      purschasedContact?.name ||
+      `${purschasedContact?.firstName} ${purschasedContact?.lastName}`;
+
+    cy.get(`[data-testid="MoreVertIcon"]`).first().click();
+    cy.wait(basic_timeouts.shorTimeout);
+    cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
+    cy.wait(basic_timeouts.shorTimeout);
+    cy.get(`[data-testid="MoreVertIcon"]`).first().click();
+    cy.wait(basic_timeouts.shorTimeout);
+    cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
+    cy.wait(basic_timeouts.shorTimeout);
+    cy.get(
+      '[data-testid="sentinelStart"] + div ul li:nth-child(9):eq(1)'
+    ).click();
+    cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
+
+    cy.mrtFilterBySearch({
+      value: contactName,
+      columnlabel: 'Owner Name',
+      alias: 'Owner Name',
+    });
+
+    cy.get('[data-testid="monetization-icon"]').should('exist');
     //done
   });
 });
