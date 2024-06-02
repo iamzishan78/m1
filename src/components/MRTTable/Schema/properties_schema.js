@@ -93,6 +93,7 @@ const PropertiesMeta = {
       accessorFn: row => row?.wells,
       id: 'wells.apiNumber',
       header: 'Well API#',
+      isExport: "apiNumber",
       Cell: ({ renderedCellValue }) => {
         if (renderedCellValue?.length > 0) return renderedCellValue?.length > 1 ? "MULTIPLE" : renderedCellValue[0].apiNumber
         else return ""
@@ -104,6 +105,7 @@ const PropertiesMeta = {
       accessorFn: row => row?.wells,
       id: 'wells.wellName',
       header: 'Well Name',
+      isExport: "wellName",
       Cell: ({ renderedCellValue }) => {
         if (renderedCellValue?.length > 0) return renderedCellValue?.length > 1 ? "MULTIPLE" : renderedCellValue[0].wellName
         else return ""

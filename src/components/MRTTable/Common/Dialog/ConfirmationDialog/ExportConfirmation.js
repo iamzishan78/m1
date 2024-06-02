@@ -74,10 +74,11 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 			sortOrder = { field: fieldName, order: tableStateValues.sorting[0]?.desc ? 'desc' : 'asc' };
 		}
 
-		filteredTableSchema = filteredTableSchema?.map(({ name, label, esKey }) => ({
+		filteredTableSchema = filteredTableSchema?.map(({ name, label, esKey, type }) => ({
 			name,
 			label,
 			esKey,
+			type
 		}));
 
 		const query = tableStateValues?.globalFilter ? `*${tableStateValues?.globalFilter}*` : '*';
