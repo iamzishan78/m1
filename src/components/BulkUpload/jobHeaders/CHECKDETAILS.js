@@ -372,7 +372,7 @@ const checkDetailsKeys = [
     {
         label: "Sales Date",
         mapped_key: "",
-        required: false,
+        required: true,
         actual_key: "date",
     },
     {

@@ -200,7 +200,7 @@ export default function M1neralHeaders() {
         })
       }
       if (['CHECKDETAILS'].includes(jobStateValues.jobType)) {
-        if (!return_obj["lineNumber"]) {
+        if (!return_obj["lineNumber"] || !return_obj["date"]) {
           filtered_data_to_send.push(null)
           continue;
         }
@@ -449,7 +449,7 @@ export default function M1neralHeaders() {
             case 'CHECKDETAILS':
               return (
                 <div style={{ ...text_grey }}>
-                  * Line Number is required to be <br /> populated before
+                  * Line Number and Sales Date is required to be <br /> populated before
                   uploading check details.
                 </div>
               );
