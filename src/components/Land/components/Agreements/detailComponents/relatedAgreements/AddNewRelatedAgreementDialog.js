@@ -33,9 +33,11 @@ const agreementParams = [
   { key: "agreementStatus", label: "Status" },
 ];
 
+// One of the following keys will be used based on the data from agreement
+// Agreement Name can be same thats why used Agreement Number first
 const filterKey = [
-  "shapeJson.properties.agreementName.keyword",
   "shapeJson.properties.agreementNumber.keyword",
+  "shapeJson.properties.agreementName.keyword",
   "shapeJson.properties.layerSubType.keyword",
   'name.keyword',
   'shapeJson.properties.shapeLabel.keyword'
