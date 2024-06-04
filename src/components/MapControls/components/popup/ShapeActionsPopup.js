@@ -964,6 +964,7 @@ const ShapeActionsPopup = (props) => {
         )}
       </Fragment>
 
+      {/*  new dialog used and removed old one */}
       <Dialog
         className={classes.dialog}
         open={isDeleteModal}
