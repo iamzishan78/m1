@@ -29,6 +29,7 @@ import DeleteConfirmationDialogContent from "components/Shared/M1nTable/componen
 // contexts
 import { WellCardContext } from "components/WellCard/WellCardContext";
 import { AppContext } from "AppContext";
+import { tableGlobalController } from "hookstate/tableController";
 
 
 function NumberFormatCustom(props) {
@@ -154,6 +155,7 @@ function AddWellInterestDialog(props) {
     onCompleted: () => {
       setLoading(false);
       handleClose();
+      refetchTable()
     },
     refetchQueries: [
       "getContactWells",
@@ -165,6 +167,7 @@ function AddWellInterestDialog(props) {
   });
   const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, {
     onCompleted: () => {
+      refetchTable()
       setLoading(false);
       handleClose();
     },
@@ -218,6 +221,10 @@ function AddWellInterestDialog(props) {
     []
   );
 
+  const refetchTable = () => {
+    tableGlobalController.refetch();
+  }
+
   useEffect(() => {
     getInterestOwnerTypes();
     getInterestTypes();
@@ -251,21 +258,21 @@ function AddWellInterestDialog(props) {
     if (stateApp.activeWellInterest) {
       setInitializing(true)
       setSelectedWell({
-        Id: stateApp.activeWellInterest.wellId,
-        WellName: stateApp.activeWellInterest.wellName,
-        ApiNumber: stateApp.activeWellInterest.api,
-        LeaseId: stateApp.activeWellInterest.leaseId,
-        Lease: stateApp.activeWellInterest.lease,
-        LeaseAcreage: stateApp.activeWellInterest.leaseAcres
+        Id: stateApp.activeWellInterest.wellId || stateApp.activeWellInterest.well._id,
+        WellName: stateApp.activeWellInterest.wellName || stateApp.activeWellInterest.well.wellName,
+        ApiNumber: stateApp.activeWellInterest.api || stateApp.activeWellInterest.well.apiNumber,
+        LeaseId: stateApp.activeWellInterest.leaseId || stateApp.activeWellInterest.well.leaseId,
+        Lease: stateApp.activeWellInterest.lease || stateApp.activeWellInterest.well.lease,
+        LeaseAcreage: stateApp.activeWellInterest.leaseAcres || stateApp.activeWellInterest.well.leaseAcres
       });
-      setFormLeaseName(stateApp.activeWellInterest.lease);
-      setFormLeaseAcres(stateApp.activeWellInterest.leaseAcres);
+      setFormLeaseName(stateApp.activeWellInterest.lease || stateApp.activeWellInterest.well.lease);
+      setFormLeaseAcres(stateApp.activeWellInterest.leaseAcres || stateApp.activeWellInterest.well.leaseAcres);
       setFormOwnerName(stateApp.activeWellInterest.interestOwner);
       setFormInterestOwnerType(stateApp.activeWellInterest.interestOwnerType);
       setFormInterestType(stateApp.activeWellInterest.type);
       setFormInterestAmount(stateApp.activeWellInterest.amount);
       setFormRoyaltyAcres(stateApp.activeWellInterest.nra);
-      setFormTaxValue(stateApp.activeWellInterest.taxValue);
+      setFormTaxValue(stateApp.activeWellInterest.taxValue || stateApp.activeWellInterest.value);
     }
   }, [stateApp.activeWellInterest]);
 

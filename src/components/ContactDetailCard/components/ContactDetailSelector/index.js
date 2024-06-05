@@ -11,7 +11,6 @@ import { TabPanel } from "components/Shared/TabPanels";
 import ContactDetailedInfo from "components/ContactDetailedInfo/ContactDetailedInfo";
 import ActivitiesTable from "components/Table/Activities/ActivitiesTable";
 import RelatedContactsTable from "components/Table/Contact/RelatedContactTable";
-import ContactWellInterestTable from "components/Table/Contact/ContactWellInterestTable";
 import ContactParcelInterestTable from "components/Table/Contact/ContactParcelInterestTable";
 import ContactTaxRollInterestTable from "components/Table/Contact/ContactTaxRollInterestTable";
 import ContactRelatedAgreementTable from "components/Table/Contact/ContactRelatedAgreementTable";
@@ -198,6 +197,9 @@ function MapGridCard(props) {
     defaultFilters: [
       { field: 'contact._id', value: props.contactData._id || '' },
     ],
+    customProps: {
+      contactId: props.contactData._id
+    }
   }), [props.contactData._id]);
 
   return (
@@ -279,18 +281,7 @@ function MapGridCard(props) {
                       />
                     )}
                     {searchTapValue.value === "wellInterests" && (
-
-                      <>
-                        {/* <ContactWellInterestTable
-                        parent="assocTaxRollInterests"
-                        header={"Well Interests"}
-                        targetLabel="well"
-                        contactId={props.contactData._id}
-                        id="wellInterestsTable"
-                        showTracks
-                      /> */}
-                        <MRTTable name="ContactWellInterestTable" overrideMeta={contactWellInterestoverrideMeta} />
-                      </>
+                      <MRTTable name="ContactWellInterestTable" overrideMeta={contactWellInterestoverrideMeta} />
                     )}
                     {searchTapValue.value === "unitInterests" && (
                       <UnitInterestsTable

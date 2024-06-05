@@ -3,8 +3,24 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { addTrailingZeros } from 'components/Shared/functions';
+import WellInterestToolBar from "components/MRTTable/TablesOverride/ContactDetailWellInterestTable/WellInterestToolbar"
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 const esIndex = 'wellinterests_flat';
+
+
+const onClickedRow = selectedRow => {
+  const Controller = tableController('ContactWellInterestTable');
+  const { contactId } = Controller.getValue('customProps');
+  tableGlobalController.updateState({
+    dialog: {
+      type: "addAndUpdateWell",
+      contactId,
+      activeWellInterest: selectedRow,
+    },
+  });
+};
+
 
 const ContactWellInterestMeta = {
   esIndex,
@@ -17,6 +33,8 @@ const ContactWellInterestMeta = {
   isInFiniteScroll: true,
   columnVirtualization: true,
   defaultSort: { field: "_ts", order: "desc" },
+  CustomToolBar: WellInterestToolBar,
+  onClickedRow,
   TableSchema: [
     {
       ...CommonSchema.MONGO_ID,
