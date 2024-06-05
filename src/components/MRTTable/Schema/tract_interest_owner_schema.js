@@ -469,6 +469,14 @@ const TractPerUnitMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'dataSource.keyword',
+			accessorKey: 'dataSource',
+			id: 'dataSource',
+			header: 'Data Source',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'deals.name.keyword',
 			accessorKey: 'deals.name',
 			isExport: 'dealsName',
