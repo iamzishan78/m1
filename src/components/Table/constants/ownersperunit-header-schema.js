@@ -255,6 +255,7 @@ const OwnersPerUnitHeadCells = [
   },
   {
     name: "commentsCounter",
+    esKey: "commentsCount",
     label: " ",
     options: {
       filter: false,
