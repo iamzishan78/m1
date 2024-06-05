@@ -14,9 +14,11 @@ import GenericMeta from './generic-schema';
 import ShapesFilesGenericMeta from './shapefiles_generic_schema';
 import PropertiesMeta from './properties_schema';
 import RevenueStatementsMeta from './revenue_statements_schema';
+import ContactWellInterestMeta from "./contact_well_Interest_schema"
 
 export const SCHEMA = {
 	ContactTable: ContactMeta,
+	ContactWellInterestTable: ContactWellInterestMeta,
 	CampaignContactTable: ContactMeta,
 	ComparisonTable: ComparisonMeta,
 	PropertyIntrestTable: PropertyIntrestMeta,
