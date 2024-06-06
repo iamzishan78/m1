@@ -244,7 +244,7 @@ export const analyticsManagementRoutes = {
     search: false,
     isDefault: false,
     hideSearch: false,
-    isExcluded: true 
+    isExcluded: true
   },
 };
 
@@ -514,6 +514,7 @@ export const AdminManagementRoutes = {
     search: true,
     isDefault: true,
     noCheck: true,
+    showSettingString: true,
   },
   LAND: {
     featureFlag: "LANDMODULE",
@@ -523,6 +524,7 @@ export const AdminManagementRoutes = {
     value: "Activities",
     search: true,
     isDefault: true,
+    showSettingString: true,
   },
   REVENUE: {
     featureFlag: "REVENUEMODULE",
@@ -532,6 +534,15 @@ export const AdminManagementRoutes = {
     value: "Activities",
     search: true,
     isDefault: true,
+    showSettingString: true,
+  },
+  FLATTENING: {
+    featureFlag: "AlWAYSSHOW",
+    title: "Flattening",
+    link: "/admin/runflattening",
+    component: "Flattening",
+    noCheck: true,
+    showSettingString: false,
   },
   // CUSTOMIZATIONS: {
   //   featureFlag: "CONTACTSUBMENU",
