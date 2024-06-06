@@ -59,6 +59,11 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     padding: theme.spacing(2, 4, 3),
   },
+  imageWrapper: {
+    display: "flex",
+    justifyContent: "center",
+    width: "100%"
+  },
   viewerHeader: {
     minHeight: "35px",
     width: "100%",
@@ -105,6 +110,11 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
       a.download = viewFile.name;
       a.click();
     }
+  };
+
+  const ExtenstionGetter = (name) => {
+    let fileExtension = name?.slice(name.lastIndexOf(".") + 1)?.toLowerCase();
+    return fileExtension;
   };
 
   return (
@@ -230,47 +240,51 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
                   </IconButton>
                 </div>
               </Grid>
-
-              <div className={classes.docViewSection}>
-                <Document
-                  style={{ display: "grid", justifyContent: "center", width: "100%" }}
-                  file={stateApp?.viewDoc?.uri}
-                  onLoadSuccess={onDocumentLoadSuccess}
-                  loading={
-                    <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-                      <CircularProgress />
+                { new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(ExtenstionGetter(stateApp?.viewDoc?.name)) ? (
+                  <div className={classes.imageWrapper}>
+                    <img src={stateApp?.viewDoc.uri} alt={stateApp?.viewDoc.name} className={classes.forImage}></img>
+                  </div>
+                  ) : (<div className={classes.docViewSection}>
+                    <Document
+                      style={{ display: "grid", justifyContent: "center", width: "100%" }}
+                      file={stateApp?.viewDoc?.uri}
+                      onLoadSuccess={onDocumentLoadSuccess}
+                      loading={
+                        <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                          <CircularProgress />
+                        </div>
+                      }
+                    >
+                      {pdfState?.map((value, key) => {
+                        return (
+                          <Page
+                            key={key}
+                            pageNumber={value}
+                            scale={zoom}
+                            style={{ display: "grid", justifyContent: "center", width: "100%" }}
+                          />
+                        );
+                      })}
+                    </Document>
+                    <div className={classes.ZoomIcons}>
+                      {" "}
+                      <IconButton
+                        onClick={() => {
+                          setzoom(zoom + 0.25);
+                        }}
+                      >
+                        <ZoomInIcon fontSize={"large"} />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => {
+                          setzoom(zoom - 0.25);
+                        }}
+                      >
+                        <ZoomOutIcon fontSize={"large"} />
+                      </IconButton>
                     </div>
-                  }
-                >
-                  {pdfState?.map((value, key) => {
-                    return (
-                      <Page
-                        key={key}
-                        pageNumber={value}
-                        scale={zoom}
-                        style={{ display: "grid", justifyContent: "center", width: "100%" }}
-                      />
-                    );
-                  })}
-                </Document>
-                <div className={classes.ZoomIcons}>
-                  {" "}
-                  <IconButton
-                    onClick={() => {
-                      setzoom(zoom + 0.25);
-                    }}
-                  >
-                    <ZoomInIcon fontSize={"large"} />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => {
-                      setzoom(zoom - 0.25);
-                    }}
-                  >
-                    <ZoomOutIcon fontSize={"large"} />
-                  </IconButton>
-                </div>
-              </div>
+                  </div>)
+                }
             </div>
           )}
         </>
