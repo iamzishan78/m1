@@ -627,3 +627,7 @@ export const bypassTenants = [
   // "Providence",
   // "Pheasant"
 ];
+
+export const OWNERTYPE = {
+  CORPORATION: "CORPORATION" 
+}
