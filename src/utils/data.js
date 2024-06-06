@@ -234,6 +234,16 @@ export const analyticsManagementRoutes = {
     isDefault: true,
     hideSearch: true,
   },
+  ADVANCED_SEARCH: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Advanced Search",
+    link: "/analytics/advancedSearch",
+    component: "AdvancedSearch",
+    value: "AdvancedSearch",
+    search: true,
+    isDefault: true,
+    hideSearch: true,
+  },
   REVENUE_PROPERTY_DETAILS: {
     featureFlag: "CONTACTSUBMENU",
     title: "Revenue",
