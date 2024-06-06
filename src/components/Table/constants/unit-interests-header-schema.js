@@ -219,11 +219,11 @@ const UnitInterestsHeadCells = [
         }
     },
     {
-        name: "net_acres", label: "Net Acres", esKey: 'net_acres', 
-        options: { 
+        name: "net_acres", label: "Net Acres", esKey: 'net_acres',
+        options: {
             dbName: "net_acres",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
 
@@ -236,19 +236,19 @@ const UnitInterestsHeadCells = [
         }
     },
     {
-        name: "unitTractId", label: "Unit Tract ID", esKey: 'unitTractId', 
-        options: { 
+        name: "unitTractId", label: "Unit Tract ID", esKey: 'unitTractId',
+        options: {
             dbName: "unitTractId",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
     {
-        name: "tractAcres", label: "Unit Tract Acres", esKey: 'tractAcres', 
-        options: { 
+        name: "tractAcres", label: "Unit Tract Acres", esKey: 'tractAcres',
+        options: {
             dbName: "tractAcres",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
     {
@@ -585,9 +585,10 @@ const UnitInterestsHeadCells = [
     },
     {
         name: "commentsCounter",
+        esKey: "commentsCount",
         label: " ",
         options: {
-            dbName: "comments.comment",
+            dbName: "commentsCount",
             filter: false,
             searchable: false,
             sort: true,

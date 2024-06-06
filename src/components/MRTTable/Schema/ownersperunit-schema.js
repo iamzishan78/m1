@@ -120,7 +120,7 @@ const OwnersPerUnitMeta = {
 							{isPurchased && (
 								<FeatureFlag feature={FEATURES.IDICORE}>
 									<MonetizationOnIcon
-									 data-testid="monetization-icon"
+										data-testid="monetization-icon"
 										style={{
 											marginLeft: '10px',
 											color: "gray"
@@ -616,7 +616,7 @@ const OwnersPerUnitMeta = {
 			...CommonSchema.COMMENTS,
 			Cell: ({ renderedCellValue, row }) => {
 				const id = row.getValue('ownerEntity');
-				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'Unit Ownership'} />;
+				return <CommentCell id={id} value={row?.original?.commentsCount} targetLabel={'Unit Ownership'} />;
 			},
 		},
 
