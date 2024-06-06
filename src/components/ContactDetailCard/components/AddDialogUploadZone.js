@@ -329,7 +329,7 @@ const Documents = memo((props) => {
                     >
                       <div 
                         onClick={() => {
-                          if ((fileExtension === "pdf") || (new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension))) {
+                          if ((fileExtension === "pdf") || (new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension))) { // Enable view doc for images and pdf
                             setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: value.name } });
                           } else {
                             handleViewFile(files?.getFileDescriptors[key].fileId);

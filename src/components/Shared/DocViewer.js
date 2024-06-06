@@ -113,7 +113,10 @@ const DocViewer = ({ DocStyle = { transform: `translate(0%, -100%)` }, divCondit
   };
 
   const ExtenstionGetter = (name) => {
+    // Find the last occurrence of the '.' character in the file name
     let fileExtension = name?.slice(name.lastIndexOf(".") + 1)?.toLowerCase();
+
+    // Return the file extension in lowercase
     return fileExtension;
   };
 
