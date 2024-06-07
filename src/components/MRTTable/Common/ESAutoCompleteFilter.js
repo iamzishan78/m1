@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { tableController } from 'hookstate/tableController';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
+import vf_currency from "components/Shared/valueformatters/vf_currency.js";
 
 function ESAutoCompleteFilter({
 	tableKey,
@@ -80,7 +81,10 @@ function ESAutoCompleteFilter({
 			options = _.uniqWith(options, (a, b) => a.label === b.label);
 		}
 
-		options = options.filter(op => op.value);
+		options = options.filter((op) => {
+			op.label = formatValue(op.label) // format value to show $ sign as prefix
+			return op.value;
+		});
 
 		setStateIfDeepEqual(setOptions, filterSelectOptions || options);
 	}, [filtersData, filterValue]);
@@ -119,13 +123,22 @@ function ESAutoCompleteFilter({
 		}
 	}
 	const id = Array.isArray(field) ? field.join(' ') : field
+
+	// format value to show filter value & option with $ sign as prefix
+	const formatValue = (value) => {
+		if (field === 'shapeJson.properties.uMaxUnitPricing.keyword' || field === 'shapeJson.properties.uUnitPricing.keyword') {
+			value = vf_currency(value);
+		}
+		return value; 
+	}
+
 	return (
 		<Autocomplete
 			multiple={multiple}
 			id={`${id}-filter-autocomplete`}
 			options={multiple ? options?.filter(item => !filterValue.includes(item.value)) : options}
 			loading={loading}
-			value={filterValue}
+			value={formatValue(filterValue)}
 			renderInput={params => (
 				<TextField
 					{...params}
