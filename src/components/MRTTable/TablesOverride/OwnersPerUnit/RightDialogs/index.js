@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { tableGlobalController } from 'hookstate/tableController';
-import AddUnitOwnerDialogContent from 'components/Shared/M1nTable/components/SubComponents/AddUnitOwnerDialogContent';
+import AddUnitOwnerDialogContent from 'components/MRTTable/TablesOverride/OwnersPerUnit/RightDialogs/AddUnitOwnerDialogContent';
 import RecalculateSlideout from 'components/Table/Shape/RecalculateSlideout';
 
 function OwnerPerUnitTableDialogs() {

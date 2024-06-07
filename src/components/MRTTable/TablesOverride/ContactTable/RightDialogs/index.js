@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import { tableGlobalController } from 'hookstate/tableController';
-import AddContactDialogContent from 'components/Shared/M1nTable/components/SubComponents/AddContactDialogContent';
+import AddContactDialogContent from 'components/MRTTable/TablesOverride/ContactTable/RightDialogs/addContact';
 import MergeContactDrawer from 'components/Shared/M1nTable/components/SubComponents/MergeContactDrawer';
 import SendMailersDialogContent from 'components/Shared/M1nTable/components/SubComponents/SendMailersDialogContent';
 

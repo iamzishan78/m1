@@ -1,0 +1,91 @@
+import { entityTypeOptions } from "components/ContactDetailedInfo/helper";
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+
+const contactForm = () => {
+  const formFields = [
+    {
+      label: "First Name",
+      name: "firstName"
+    },
+    {
+      label: "Middle Name",
+      name: "middleName"
+    },
+    {
+      label: "Last Name",
+      name: "lastName"
+    },
+    {
+      label: "Entity Type",
+      name: "ownerType",
+      defaultOptions: entityTypeOptions,
+      renderField: "autoComplete",
+      variables: {
+        esIndex: "contacts_flat",
+        filterKey: "ownerType.keyword",
+        size: 10000,
+      },
+      query: GET_ES_FILTER_LIST,
+      getOptions: (apiRes) => {
+        const filterData = apiRes.data.getESFilterList.hits.map(
+          (hit) => hit.key
+        );
+        return filterData
+      }
+    },
+    {
+      label: "Home phone",
+      name: "homePhone"
+    },
+    {
+      label: "Mobile Phone",
+      name: "mobilePhone"
+    },
+    {
+      label: "Email",
+      name: "primaryEmail"
+    },
+    {
+      label: "Address #1",
+      name: "address1"
+    },
+    {
+      label: "Address #2",
+      name: "address2"
+    },
+    {
+      label: "City",
+      name: "city"
+    },
+    {
+      label: "State",
+      name: "state"
+    },
+    {
+      label: "Zip Code",
+      name: "zip"
+    },
+    {
+      label: "Country",
+      name: "country"
+    },
+    {
+      label: "Contact Owner",
+      name: "contactOwner",
+      renderField: "autoComplete",
+      query: GETMONGOUSERS,
+      getOptions: (apiRes) => {
+        const filterData = apiRes.data.allMongoUsers.map(user => ({
+          value: user._id,
+          label: user.name,
+        }))
+        return filterData
+      }
+    },
+  ]
+
+  return formFields
+}
+
+export default contactForm;

@@ -1,29 +1,18 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
-import AutorenewIcon from '@material-ui/icons/Autorenew';
 import { Grid } from '@material-ui/core';
-import get from 'lodash/get';
+import _ from "lodash";
 
 import { useMutation, useLazyQuery } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { addTrailingZeros } from 'components/Shared/functions';
-import { Controller, useForm } from 'react-hook-form';
-import EntityType from 'components/ContactDetailCard/components/FieldContent/EntityType';
-import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
-import AssociatedDealField from 'components/ContactDetailCard/components/FieldContent/AssociatedDealField';
-import { popupController } from 'hookstate/popupStateController';
+
+import { useForm } from 'react-hook-form';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import { setStateIfDeepEqual } from 'components/Shared/functions';
 import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
@@ -32,23 +21,16 @@ import { showErrorMessage, showSuccessMessage } from '../../../../../../src/acti
 import { UPDATEPARCELOWNER } from 'graphQL/useMutationUpdateParcelOwner';
 import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 import { ADDOWNERTOAPARCEL } from 'graphQL/useMutationAddOwnerToAParcel';
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
-import { AppContext } from 'AppContext';
 import { tableGlobalController } from 'hookstate/tableController';
-import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
-import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
-import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
-import ContactStatus from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
-import { Status } from 'components/ContactDetailCard/components/FieldContent';
-
-const qtrOptions = ['E2', 'NE', 'NW', 'N2', 'SE', 'SW', 'S2', 'W2'];
+import contactSubForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/contactSubForm';
+import parcelOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/parcelOwnerForm';
+import { sideDialogController, tractInterestOwnerState } from 'hookstate/sideDialogController';
+import { globalStateController } from 'hookstate/globalStateController';
+import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
+import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 
 const useStyles = makeStyles(theme => ({
-  maxWidth: {
-    width: '100%',
-  },
   dialogContent: {
     '& header': {
       position: 'absolute',
@@ -72,95 +54,55 @@ const useStyles = makeStyles(theme => ({
   move: {
     zIndex: 10000,
   },
-  baseValueChanged: {
-    width: '100%',
-    '& .MuiInputBase-input': {
-      color: 'dodgerblue',
-      fontWeight: 'bold',
-    },
-  },
   addContactButton: {
     float: "right",
     display: "flex",
     alignItems: "center",
-    // marginTop: "15px",
     cursor: "pointer",
   },
   addContactButtonSelected: {
     float: "right",
     display: "flex",
     alignItems: "center",
-    // marginTop: "15px",
     cursor: "pointer",
     color: `${theme.palette.secondary.main} !important`,
   },
-
   personAddIcon: {
     color: `${theme.palette.secondary.main} !important`,
     fill: `${theme.palette.secondary.main} !important`,
   }
 }));
 
-const toNumber = value => (value ? parseInt(value.replace(/\$/g, '').replace(/\,/g, '')) : null);
 
 export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRow, ...props }) {
   const dispatch = useDispatch();
   const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
-  const calculateOfferPrice = (nra, offer) => {
-    return parseFloat((parseFloat(nra || 0) * parseFloat(offer || 0)).toFixed(2));
-  };
-  const { uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing } = props?.customLayer?.shapeJson?.properties;
   const tenantName = window.sessionStorage.getItem('tenantName');
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const { control } = useForm();
-  const [newOwner, setNewOwner] = useState({
-    surface_interest: null,
-    ownerType: null,
-    cost_bearing: null,
-    cost_bearing_high_value: null,
-    cost_free_high_value: null,
-    mineral_interest: null,
-    royalty_interest: null,
-    orri: null,
-    unknown_interest: null,
-    record_title: null,
-    operating_rights: null,
-    nri: null,
-    net_acres: null,
-    company_net_acres: null,
-    depthFrom: '',
-    depthTo: '',
-    nra: null,
-    qtr: [null, null, null, null],
-    customLayer: props.customLayerId,
-    deals: [],
-    dataSource: ''
-  });
-  const [newContact, setNewContact] = useState({
-    firstName: '',
-    middleName: '',
-    lastName: '',
-    mobilePhone: '',
-    homePhone: '',
-    primaryEmail: '',
-    address1: '',
-    address2: '',
-    city: '',
-    state: '',
-    zip: '',
-  });
-  const [isNraOverridden, setIsNRAOverridden] = useState(false);
-  const [leaseStatusList, setLeaseStatusList] = useState([]);
-  const [isAcresOverridden, setIsAcresOverridden] = useState(false);
-  const [isOfferPriceOverridden, setIsOfferPriceOverridden] = useState(false);
-  const [isMaxOfferPriceOverridden, setIsMaxOfferPriceOverridden] = useState(false);
-  const [isOfferPriceNMAOverridden, setIsOfferPriceNMAOverridden] = useState(false);
-  const [isMaxOfferPriceNMAOverridden, setIsMaxOfferPriceNMAOverridden] = useState(false);
-  const [parcelOwnersRadioBValue, setParcelOwnersRadioBValue] = useState('true');
-  const [showAddNewContactFields, setShowAddNewContactFields] = useState(false);
-  const [statusOptions, setStatusOptions] = useState([]);
 
-  const [nameAutValue, setNameAutValue] = useState({ name: '', _id: null });
+  const formState = sideDialogController("tractInterestDialog").useCompleteState()
+  const formStateValues = formState?.get({ noproxy: true });
+
+  const { user } = globalStateController.useState(['user']);
+  const getUser = user.get({ noproxy: true });
+
+  const {
+    control,
+    reset,
+    getValues,
+    setValue,
+    watch
+  } = useForm();
+
+  const formJson = useMemo(() => {
+    const formFunction = formStateValues?.newOwner ? contactSubForm : parcelOwnerForm;
+    return formFunction({
+      getValues,
+      setValue,
+      tenantName,
+      state: props?.customLayer?.state
+    });
+  }, [formStateValues?.newOwner, formState?.rerenderJson]);
+
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
   const [nameAutInputValue, NameAutInputValue] = useState('');
   const setNameAutInputValue = newState => {
@@ -168,123 +110,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   };
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
-
-  useEffect(() => {
-    if (selectedRow) {
-      console.log(selectedRow)
-      const {
-        cost_bearing,
-        cost_bearing_high_value,
-        cost_free_high_value,
-        surface_interest,
-        ownerType,
-        mineral_interest,
-        royalty_interest,
-        orri,
-        unknown_interest,
-        record_title,
-        operating_rights,
-        nri,
-        depthFrom,
-        depthTo,
-        company_net_acres,
-        net_acres,
-        nra,
-        customLayer,
-        name,
-        ownerEntity,
-        qtr,
-        deals,
-        grossAcres,
-        max_offer_price,
-        offer_price,
-        offer_price_nma,
-        contact,
-        max_offer_price_nma,
-        nonExecRightsOnly,
-        leaseStatus,
-        campaignPriority,
-        campaignName,
-        seller_asking_price,
-        competitor_offer_price,
-        actual_offer_price,
-        dataSource
-      } = selectedRow;
-      setNameAutValue({ name, _id: ownerEntity });
-
-      setNewOwner({
-        surface_interest: surface_interest ? parseFloat(surface_interest).toFixed(8) : null,
-        ownershipType: ownerType || null,
-        cost_bearing: cost_bearing || null,
-        cost_bearing_high_value: toNumber(cost_bearing_high_value) || null,
-        cost_free_high_value: toNumber(cost_free_high_value) || null,
-        mineral_interest: mineral_interest ? parseFloat(mineral_interest).toFixed(8) : null,
-        royalty_interest: royalty_interest ? parseFloat(royalty_interest).toFixed(8) : null,
-        orri: orri ? parseFloat(orri).toFixed(8) : null,
-        seller_asking_price: seller_asking_price || null,
-        competitor_offer_price: competitor_offer_price || null,
-        actual_offer_price: actual_offer_price || null,
-        unknown_interest: unknown_interest || null,
-        record_title: record_title || null,
-        operating_rights: operating_rights || null,
-        nri: nri || null,
-        net_acres: net_acres || null,
-        company_net_acres: company_net_acres || null,
-        nra: nra || null,
-        depthFrom: depthFrom || '',
-        depthTo: depthTo || '',
-        dataSource: dataSource || '',
-        qtr: qtr || [null, null, null, null],
-        nonExecRightsOnly,
-        leaseStatus,
-        customLayer,
-        campaignPriority,
-        campaignName,
-        deals,
-        status: contact?.status,
-        contactStatus: contact?.contactStatus,
-        max_offer_price: parseFloat(parseFloat(max_offer_price)?.toFixed(2)),
-        offer_price: parseFloat(parseFloat(offer_price)?.toFixed(2)),
-        offer_price_nma: parseFloat(parseFloat(offer_price_nma)?.toFixed(2)),
-        max_offer_price_nma: parseFloat(parseFloat(max_offer_price_nma)?.toFixed(2))
-      });
-
-      const calculatedNRA = calculateStandardNraForTract(
-        grossAcres,
-        mineral_interest,
-        royalty_interest,
-        orri,
-        workspaceSettings
-      );
-      if (!isNaN(parseFloat(calculatedNRA)))
-        setIsNRAOverridden(
-          !isNaN(parseFloat(nra)) && parseFloat(calculatedNRA) !== parseFloat(nra)
-        );
-
-      const calculatedAcres = calculateNetAcres(mineral_interest);
-      if (!isNaN(parseFloat(calculatedAcres)))
-        setIsAcresOverridden(
-          !isNaN(parseFloat(net_acres)) &&
-          parseFloat(calculatedAcres) !== parseFloat(net_acres)
-        );
-
-      if (depthTo === 'All depths' && depthFrom === 'All depths') setParcelOwnersRadioBValue('true');
-      else setParcelOwnersRadioBValue('false');
-
-      let calculatedOfferPrice = calculateOfferPrice(nra, uUnitPricing);
-      let calculatedMaxOfferPrice = calculateOfferPrice(nra, uMaxUnitPricing);
-      let calculatedOfferPriceNMA = calculateOfferPrice(net_acres, uUnitPricingNMA);
-      let calculatedMaxOfferPriceNMA = calculateOfferPrice(net_acres, uMaxUnitPricingNMA);
-      if (!isNaN(parseFloat(calculatedOfferPrice)))
-        setIsOfferPriceOverridden(calculatedOfferPrice !== parseFloat(parseFloat(offer_price).toFixed(2)) && !isNaN(parseFloat(offer_price)));
-      if (!isNaN(parseFloat(calculatedMaxOfferPrice)))
-        setIsMaxOfferPriceOverridden(calculatedMaxOfferPrice !== parseFloat(parseFloat(max_offer_price).toFixed(2)) && !isNaN(parseFloat(max_offer_price)));
-      if (!isNaN(parseFloat(calculatedOfferPriceNMA)))
-        setIsOfferPriceNMAOverridden(calculatedOfferPriceNMA !== parseFloat(parseFloat(offer_price_nma).toFixed(2)) && !isNaN(parseFloat(offer_price_nma)));
-      if (!isNaN(parseFloat(calculatedMaxOfferPriceNMA)))
-        setIsMaxOfferPriceNMAOverridden(calculatedMaxOfferPriceNMA !== parseFloat(parseFloat(max_offer_price_nma).toFixed(2)) && !isNaN(parseFloat(max_offer_price_nma)));
-    }
-  }, [selectedRow]);
 
   // CONTACT
 
@@ -296,88 +121,23 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     }
   );
 
-  const [getLeaseStatusList, { data: leaseStatusListRes }] = useLazyQuery(GET_ES_FILTER_LIST, {
-    fetchPolicy: 'no-cache',
-  });
-
-  const [getCampaignPriorityList, { data: priorityList }] = useLazyQuery(GET_ES_FILTER_LIST, {
-    fetchPolicy: 'no-cache',
-  });
-
-  const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
-
-  useEffect(() => {
-    getFilters({
-      variables: {
-        esIndex: 'contacts_flat',
-        filterKey: 'status.keyword',
-        size: 50,
-      },
-    });
-  }, []);
-
   const [addContact, { data: addContactData }] = useMutation(ADDCONTACT);
 
   const [addOwnerToAParcel, { data: mutationData }] = useMutation(ADDOWNERTOAPARCEL);
 
   const [updateParcelOwner, { data: updateData }] = useMutation(UPDATEPARCELOWNER);
 
+  const [updateContact] = useMutation(UPDATECONTACT);
+
   useEffect(() => {
-    if (get(addContactData, 'addContact.contact')) {
-      setNameAutValue({
+    if (_.get(addContactData, 'addContact.contact')) {
+      const contact = {
         name: addContactData.addContact.contact.name,
         _id: addContactData.addContact.contact._id,
-      });
+      }
+      sideDialogController("tractInterestDialog").updateState({ name: contact?.name, ownerEntity: contact?._id, relatedObject: contact?._id })
     }
   }, [addContactData]);
-
-  useEffect(() => {
-    if (filtersData?.getESFilterList?.hits) {
-      const allFiltersData = filtersData.getESFilterList.hits.map(hit => hit.key);
-      let filterData = filtersData.getESFilterList.hits.map(hit => hit.key);
-      for (let i = 0; i < contactStatusOptions.length; i++) {
-        filterData = filterData.filter(d => d !== contactStatusOptions[i].value && d !== contactStatusOptions[i].label);
-      }
-      for (let i = 0; i < contactStatusOptions.length; i++) {
-        if (
-          (contactStatusOptions[i].notInclude && allFiltersData.find(d => d === contactStatusOptions[i].value)) ||
-          !contactStatusOptions[i].notInclude
-        ) {
-          filterData.push(contactStatusOptions[i].label);
-        }
-      }
-      setStatusOptions(filterData);
-    }
-  }, [filtersData]);
-
-  useEffect(() => {
-    getLeaseStatusList({
-      variables: {
-        esIndex: 'shapeowners_flat',
-        filterKey: 'leaseStatus.keyword',
-        size: 50,
-      },
-    });
-  }, [getLeaseStatusList]);
-
-  useEffect(() => {
-    getCampaignPriorityList({
-      variables: {
-        esIndex: 'shapeowners_flat',
-        filterKey: 'campaignPriority.keyword',
-        size: 50,
-      },
-    });
-  }, [getCampaignPriorityList]);
-
-  useEffect(() => {
-    const uniqueList = Array.from(new Set(["HBP", "Leased", "Unleased", ...get(leaseStatusListRes, 'getESFilterList.hits', [])?.map(owner => owner.key)]));
-    const formattedList = uniqueList.map(leaseStatus => ({
-      _id: leaseStatus,
-      name: leaseStatus,
-    }));
-    setLeaseStatusList(formattedList);
-  }, [leaseStatusListRes])
 
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
@@ -415,8 +175,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       if (type.success) {
         dispatch(
           showSuccessMessage(
-            nameAutValue && nameAutValue.name
-              ? `${nameAutValue.name} was successfully ${type.name}ed`
+            formStateValues?.name
+              ? `${formStateValues?.name} was successfully ${type.name}ed`
               : `The owner was successfully ${type.name}ed`
           )
         );
@@ -426,132 +186,147 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         dispatch(showErrorMessage('Error occurred'));
       }
 
-      setStateApp(state => ({
-        ...state,
+      window.setStateApp((stateApp) => ({
+        ...stateApp,
         universalCircularLoaderAct: false,
       }));
       tableGlobalController.refetch()
     }
   }, [mutationData, updateData]);
 
-  const emptyStates = () => {
-    setNewOwner({
-      surface_interest: null,
-      ownershipType: null,
-      cost_bearing: null,
-      cost_bearing_high_value: null,
-      cost_free_high_value: null,
-      mineral_interest: null,
-      royalty_interest: null,
-      orri: null,
-      unknown_interest: null,
-      record_title: null,
-      operating_rights: null,
-      company_net_acres: null,
-      nri: null,
-      net_acres: null,
-      depthFrom: '',
-      depthTo: '',
-      dataSource: '',
-      nra: null,
-      qtr: [null, null, null, null],
-      customLayer: props.customLayerId,
-      deals: [],
-    });
-    setParcelOwnersRadioBValue('true');
-    setNameAutValue(null);
-    setNameAutInputValue('');
-    setSelectedRow && setSelectedRow(null);
-  };
+  useEffect(() => {
+    const { uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing } = props?.customLayer?.shapeJson?.properties;
+    sideDialogController("tractInterestDialog").updateState({
+      uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing
+    })
+
+  }, [props?.customLayer?.shapeJson?.properties])
+
+  useEffect(() => {
+    sideDialogController("tractInterestDialog").updateState({
+      workspaceSettings
+    })
+  }, [workspaceSettings])
+
 
   const handleClickDialogClose = () => {
     props.onClose();
-    emptyStates();
+    sideDialogController("tractInterestDialog").reset()
+  };
+
+  const handleUpdateContact = ownerToAdd => {
+    if (
+      ((ownerToAdd?.contactStatus || selectedRow?.contactStatus) &&
+        selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
+      ((ownerToAdd?.status || selectedRow?.status) &&
+        selectedRow?.status !== ownerToAdd.status) ||
+      ((ownerToAdd?.ownerType || selectedRow?.ownerType) &&
+        selectedRow?.ownerType !== ownerToAdd.ownerType) ||
+      ((ownerToAdd?.campaignPriority || selectedRow?.campaignPriority) &&
+        selectedRow?.campaignPriority !== ownerToAdd.campaignPriority) ||
+      ((ownerToAdd?.campaignName || selectedRow?.campaignName) &&
+        selectedRow?.campaignName !== ownerToAdd.campaignName) ||
+      ownerToAdd?.campaignName ||
+      selectedRow?.campaignName !== ownerToAdd.campaignName
+    ) {
+      updateContact({
+        variables: {
+          contact: {
+            _id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
+            contactStatus: ownerToAdd.contactStatus,
+            status: ownerToAdd.status,
+            lastUpdateBy: getUser?._id,
+            ownerType: ownerToAdd.ownerType,
+            campaignPriority: ownerToAdd.campaignPriority,
+          },
+        },
+      });
+    }
+
   };
 
   const handleClickAdd = e => {
     e.preventDefault();
-    if (nameAutValue) {
-      const ownerToAdd = { ...newOwner };
-      if (ownerToAdd.nra) {
-        ownerToAdd.nra = addTrailingZeros(parseFloat(ownerToAdd.nra).toFixed(8));
-      }
-      if (parcelOwnersRadioBValue === 'true') {
-        ownerToAdd.depthFrom = 'All depths';
-        ownerToAdd.depthTo = 'All depths';
-      }
-
-      if (nameAutValue._id && nameAutValue.name) {
-        // now that we are using descriptors we ONLY want the contact _id
-        ownerToAdd.ownerEntity = nameAutValue._id;
-        ownerToAdd.name = nameAutValue.name;
-      }
-
-      if (selectedRow) {
-        ownerToAdd._id = selectedRow._id;
-        updateParcelOwner({
-          variables: {
-            parcelOwner: {
-              ...ownerToAdd,
-              createBy: stateApp.user.mongoId,
-              lastUpdateBy: stateApp.user.mongoId,
-            },
-          },
-          refetchQueries: [
-            'getparcelOwners',
-            'getContactParcelInterests',
-            'getContactParcelInterest',
-            'getESSimpleSearch',
-            'getCustomLayer'
-          ],
-          awaitRefetchQueries: true,
-        });
-      } else {
-        const relatedObject = showAddNewContactFields ? {
-          ...ownerToAdd,
-          ...newContact,
-        } : (ownerToAdd?.ownerEntity._id || ownerToAdd?.ownerEntity);
-        addOwnerToAParcel({
-          variables: {
-            parcelOwner: {
-              newOwner: showAddNewContactFields,
-              ...ownerToAdd,
-              relatedObject,
-              createBy: stateApp.user.mongoId,
-              lastUpdateBy: stateApp.user.mongoId,
-            },
-          },
-          refetchQueries: [
-            'getCustomLayer',
-            // causing timing issue since getCustomLayer also calls this query
-            'getparcelOwners',
-            'getContactParcelInterests',
-            'getContactParcelInterest',
-            'getESSimpleSearch',
-          ],
-          awaitRefetchQueries: true,
-        });
-      }
-
-      setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
+    const parcelOwnerFormValue = getValues();
+    const qtr = [parcelOwnerFormValue?.qtr1 || null, parcelOwnerFormValue?.qtr2 || null, parcelOwnerFormValue?.qtr3 || null, parcelOwnerFormValue?.qtr4 || null]
+    sideDialogController("tractInterestDialog").updateState({
+      ...parcelOwnerFormValue,
+      qtr: qtr,
+      customLayer: props.customLayerId,
+    })
+    if (formStateValues?.newOwner) {
+      sideDialogController("tractInterestDialog").updateState({ relatedObject: { ...parcelOwnerFormValue } })
+    } else {
+      handleUpdateContact(formStateValues)
     }
+
+    if (selectedRow) {
+      updateParcelOwner({
+        variables: {
+          parcelOwner: {
+            _id: selectedRow?._id,
+            ...formStateValues,
+            deals: formStateValues?.deals || [],
+            createBy: getUser?._id,
+            lastUpdateBy: getUser?._id,
+          },
+        },
+        refetchQueries: [
+          'getparcelOwners',
+          'getContactParcelInterests',
+          'getContactParcelInterest',
+          'getESSimpleSearch',
+          'getCustomLayer'
+        ],
+        awaitRefetchQueries: true,
+      });
+    } else {
+      addOwnerToAParcel({
+        variables: {
+          parcelOwner: {
+            ...formStateValues,
+            deals: formStateValues?.deals || [],
+            createBy: getUser?._id,
+            lastUpdateBy: getUser?._id,
+          },
+        },
+        refetchQueries: [
+          'getCustomLayer',
+          'getparcelOwners',
+          'getContactParcelInterests',
+          'getContactParcelInterest',
+          'getESSimpleSearch',
+        ],
+        awaitRefetchQueries: true,
+      });
+    }
+
+    setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
   };
 
-  const selectedParcel = popupController.getValue('selectedParcel');
+  useEffect(() => {
+    if (selectedRow) {
+      const filteredSelectedRow = _.pick(selectedRow, Object.keys(tractInterestOwnerState));
+      const rowData = _.merge({}, tractInterestOwnerState, filteredSelectedRow);
 
-  const calculateNetAcres = interest => {
-    const selectedParcel = popupController.getValue('selectedParcel');
-    if (!interest) return null;
-    const netAcres = addTrailingZeros(
-      selectedParcel?.sdGrossAcres ? (selectedParcel.sdGrossAcres * interest).toFixed(8) : null
-    );
-    return netAcres;
-  };
+      (rowData?.depthFrom === "All depths" && rowData?.depthTo === "All depths") ? rowData.depthBoth = "true" : rowData.depthBoth = "false"
+      rowData.qtr1 = selectedRow?.qtr?.[0]
+      rowData.qtr2 = selectedRow?.qtr?.[1]
+      rowData.qtr3 = selectedRow?.qtr?.[2]
+      rowData.qtr4 = selectedRow?.qtr?.[3]
+      rowData.contactStatus = selectedRow?.contact?.contactStatus
+      rowData.status = selectedRow?.contact?.status
+      rowData.relatedObject = selectedRow?.contactId || selectedRow?.ownerEntity
+      sideDialogController("tractInterestDialog").updateState(rowData)
+      reset(rowData)
+    }
+  }, [selectedRow]);
 
   const classes = useStyles();
+
   return (
     <div className={classes.move}>
-      <RightDialog open handleClickDialogClose={props.onClose} width="700px">
+      <RightDialog open handleClickDialogClose={handleClickDialogClose} width="500px">
         <Grid container display="flex" direction="row" justifyContent="space-between" alignItems="center">
           <Grid item md={10} xs={10}>
             <DialogTitle id="customized-dialog-title" style={{ fontWeight: 'bold' }}>
@@ -563,11 +338,9 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
               size="small"
               component="span"
               style={{
-                background: 'transparent',
-                align: 'center',
                 float: 'right',
               }}
-              onClick={props.onClose}
+              onClick={handleClickDialogClose}
             >
               <KeyboardTabBlackIcon />
             </IconButton>
@@ -576,1214 +349,58 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         <DialogContent className={classes.dialogContent}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <h3 style={{ float: "left" }}>Name</h3>
-              {!selectedRow && (<div className={showAddNewContactFields ? classes.addContactButtonSelected : classes.addContactButton} onClick={() => setShowAddNewContactFields(!showAddNewContactFields)}>
-                <PersonAddOutlinedIcon className={showAddNewContactFields ? classes.personAddIcon : null} />
+              {!formStateValues?.newOwner && <h3 style={{ float: "left" }}>Name</h3>}
+              {!selectedRow && (<div className={formStateValues?.newOwner ? classes.addContactButtonSelected : classes.addContactButton}
+                onClick={() => {
+                  sideDialogController("tractInterestDialog").updateState({ newOwner: !formStateValues?.newOwner })
+                }}>
+                <PersonAddOutlinedIcon className={formStateValues?.newOwner ? classes.personAddIcon : null} />
                 <p>&nbsp;Add new</p>
               </div>)}
-              <AutocompEntityNamesVirtualizeList
-                mongoEntitiesArray={mongoEntitiesArray}
-                setMongoEntitiesArray={setMongoEntitiesArray}
-                nameAutValue={nameAutValue}
-                setNameAutValue={setNameAutValue}
-                nameAutInputValue={nameAutInputValue}
-                setNameAutInputValue={setNameAutInputValue}
-                hasNextPage={hasNextPage}
-                isNextPageLoading={isNextPageLoading}
-                loadNextPage={loadNextPage}
-                disabled={showAddNewContactFields}
-                placeholder={"Search existing contact"}
-                addNew
-                addNewOnClick={value => {
-                  const contact = { name: value };
-                  addContact({
-                    variables: {
-                      contact: {
-                        ...contact,
-                        createBy: stateApp.user.mongoId,
-                        lastUpdateBy: stateApp.user.mongoId,
+              {!formStateValues?.newOwner &&
+                <AutocompEntityNamesVirtualizeList
+                  mongoEntitiesArray={mongoEntitiesArray}
+                  setMongoEntitiesArray={setMongoEntitiesArray}
+                  nameAutValue={formStateValues?.name}
+                  setNameAutValue={(contact) => {
+                    sideDialogController("tractInterestDialog").updateState({ name: contact?.name, ownerEntity: contact?._id, relatedObject: contact?._id })
+                  }}
+                  nameAutInputValue={nameAutInputValue}
+                  setNameAutInputValue={setNameAutInputValue}
+                  hasNextPage={hasNextPage}
+                  isNextPageLoading={isNextPageLoading}
+                  loadNextPage={loadNextPage}
+                  disabled={formStateValues?.newOwner}
+                  placeholder={"Search existing contact"}
+                  addNew
+                  addNewOnClick={value => {
+                    const contact = { name: value };
+                    sideDialogController("tractInterestDialog").updateState({ name: value })
+                    setValue('name', value)
+                    addContact({
+                      variables: {
+                        contact: {
+                          ...contact,
+                          createBy: getUser?._id,
+                          lastUpdateBy: getUser?._id,
+                        },
                       },
-                    },
-                    refetchQueries: ['getPaginatedContacts', 'getContact'],
-                    awaitRefetchQueries: true,
-                  });
-                }}
-              />
-            </Grid>
-            {!showAddNewContactFields &&
-              <Grid item xs={12}>
-                <h3>Entity Type</h3>
-                <Controller
-                  control={control}
-                  name="ownershipType"
-                  render={(props) => (
-                    <EntityType
-                      className={classes.maxWidth}
-                      setDocumentType={(value) => {
-                        setNewOwner({
-                          ...newOwner,
-                          ownerType: value ? addTrailingZeros(value.name) : null,
-                        });
-                      }}
-                      value={newOwner?.ownershipType || newOwner?.ownerType || nameAutValue?.ownerType || ""}
-                    />
-                  )}
-                />
-              </Grid>
-            }
-
-            {showAddNewContactFields &&
-              <>
-                <Grid item xs={12}>
-                  <h3>First Name</h3>
-                  <TextField
-                    id="firstName"
-                    size="small"
-                    className={classes.maxWidth}
-                    multiline
-                    value={newContact.firstName}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        firstName: e.target.value,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <h3>Middle Name</h3>
-                  <TextField
-                    id="middleName"
-                    size="small"
-                    className={classes.maxWidth}
-                    multiline
-                    value={newContact.middleName}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        middleName: e.target.value,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <h3>Last Name</h3>
-                  <TextField
-                    id="lastName"
-                    size="small"
-                    className={classes.maxWidth}
-                    multiline
-                    value={newContact.lastName}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        lastName: e.target.value,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <h3>Entity Type</h3>
-                  <EntityType
-                    className={classes.maxWidth}
-                    setDocumentType={value => {
-                      let val = value.name;
-                      const data = contactStatusOptions.find(s => s.label === val);
-                      if (data) {
-                        val = data.value;
-                      }
-                      setNewContact({
-                        ...newContact,
-                        ownerType: val,
-                      });
-                    }}
-                    value={newContact.ownerType ?? ''}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <h3>Home phone</h3>
-                  <TextField
-                    id="homePhone"
-                    size="small"
-                    className={classes.maxWidth}
-                    multiline
-                    value={newContact.homePhone}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        homePhone: e.target.value,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <h3>Mobile Phone</h3>
-                  <TextField
-                    id="mobilePhone"
-                    size="small"
-                    // placeholder="E.g. xxx-xxx-xxxx"
-                    className={classes.maxWidth}
-                    multiline
-                    value={newContact.mobilePhone}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        mobilePhone: e.target.value,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <h3>Email</h3>
-                  <TextField
-                    id="email"
-                    size="small"
-                    // placeholder="E.g. jacob@m1neral.com"
-                    className={classes.maxWidth}
-                    multiline
-                    value={newContact.primaryEmail}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        primaryEmail: e.target.value,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <h3>Address #1</h3>
-                  <TextField
-                    id="address1"
-                    size="small"
-                    className={classes.maxWidth}
-                    multiline
-                    autoComplete="nope"
-                    value={newContact.address1}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        address1: e.target.value,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <h3>Address #2</h3>
-                  <TextField
-                    id="address2"
-                    size="small"
-                    className={classes.maxWidth}
-                    multiline
-                    autoComplete="nope"
-                    value={newContact.address2}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        address2: e.target.value,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <h3>City</h3>
-                  <TextField
-                    id="city"
-                    size="small"
-                    className={classes.maxWidth}
-                    multiline
-                    value={newContact.city}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        city: e.target.value,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <h3>State</h3>
-                  <TextField
-                    id="state"
-                    size="small"
-                    className={classes.maxWidth}
-                    multiline
-                    value={newContact.state}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        state: e.target.value,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <h3>Zip Code</h3>
-                  <TextField
-                    id="zipCode"
-                    size="small"
-                    className={classes.maxWidth}
-                    multiline
-                    value={newContact.zip}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        zip: e.target.value,
-                      });
-                    }}
-                  />
-                </Grid>
-              </>
-            }
-
-            <Grid item xs={12}>
-              <h3>Surface Interest</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={classes.maxWidth}
-                value={newOwner.surface_interest}
-                onChange={e => {
-                  const { value } = e.target;
-                  setNewOwner({
-                    ...newOwner,
-                    surface_interest: value ? addTrailingZeros(e.target.value) : null,
-                  });
-                }}
-                onBlur={e => {
-                  const value = e.target.value || 0
-                  setNewOwner({
-                    ...newOwner,
-                    surface_interest: parseFloat(value).toFixed(8),
-                  });
-                }}
-                onWheel={e => e.target.blur()}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <h3>Mineral Interest</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={classes.maxWidth}
-                value={newOwner.mineral_interest}
-                onChange={e => {
-                  const { value } = e.target;
-                  const net_acres = !isAcresOverridden ? calculateNetAcres(value) : newOwner.net_acres;
-                  const nra = !isNraOverridden
-                    ? calculateStandardNraForTract(selectedParcel?.sdGrossAcres, value, newOwner.royalty_interest, newOwner.orri, workspaceSettings)
-                    : newOwner.nra;
-                  setNewOwner(newOwner => ({
-                    ...newOwner,
-                    mineral_interest: value ? addTrailingZeros(value) : null,
-                    net_acres,
-                    nra,
-                  }));
-                }}
-                onBlur={e => {
-                  const value = e.target.value || 0
-                  setNewOwner({
-                    ...newOwner,
-                    mineral_interest: parseFloat(value).toFixed(8),
-                  });
-                }}
-                onWheel={e => e.target.blur()}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <h3>Non-Exec Rights Only</h3>
-              <Autocomplete
-                options={[{ label: "Yes", value: "Yes" }, { label: "No", value: "No" }]}
-                getOptionLabel={option => option.label}
-                getOptionSelected={(option, value) => option.value === value}
-                value={newOwner?.nonExecRightsOnly ? { label: newOwner?.nonExecRightsOnly, value: newOwner?.nonExecRightsOnly } : null}
-                onChange={(e, newInputValue) => {
-                  setNewOwner({
-                    ...newOwner,
-                    nonExecRightsOnly: newInputValue?.value,
-                  })
-                }}
-                renderInput={params => (
-                  <TextField {...params} size="small" className={classes.maxWidth} multiline />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <h3>Royalty Interest (Lease)</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={classes.maxWidth}
-                value={newOwner.royalty_interest}
-                onChange={e => {
-                  const { value } = e.target;
-                  setNewOwner({
-                    ...newOwner,
-                    royalty_interest: value ? addTrailingZeros(e.target.value) : null,
-                    nra: !isNraOverridden ? calculateStandardNraForTract(selectedParcel?.sdGrossAcres, newOwner.mineral_interest, e.target.value, newOwner.orri, workspaceSettings) : newOwner.nra,
-                  });
-                }}
-                onBlur={e => {
-                  const value = e.target.value || 0
-                  setNewOwner({
-                    ...newOwner,
-                    royalty_interest: parseFloat(value).toFixed(8),
-                  });
-                }}
-                onWheel={e => e.target.blur()}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <h3>Overriding Royalty Interest (ORRI)</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={classes.maxWidth}
-                value={newOwner.orri}
-                onChange={e => {
-                  const { value } = e.target;
-                  setNewOwner({
-                    ...newOwner,
-                    orri: value ? addTrailingZeros(e.target.value) : null,
-                    nra: !isNraOverridden ? calculateStandardNraForTract(selectedParcel?.sdGrossAcres, newOwner.mineral_interest, newOwner.royalty_interest, value, workspaceSettings) : newOwner.nra,
-                  });
-                }}
-                onBlur={e => {
-                  const value = e.target.value || 0
-                  setNewOwner({
-                    ...newOwner,
-                    orri: parseFloat(value).toFixed(8),
-                  });
-                }}
-                onWheel={e => e.target.blur()}
-              />
-            </Grid>
-            {/* <Grid item xs={12}>
-              <h3>Record Title</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={classes.maxWidth}
-                value={newOwner.record_title}
-                onChange={e => {
-                  const { value } = e.target;
-                  setNewOwner({
-                    ...newOwner,
-                    record_title: value ? addTrailingZeros(e.target.value) : null,
-                  });
-                }}
-                onWheel={e => e.target.blur()}
-              />
-            </Grid> */}
-            <Grid item xs={12}>
-              <h3>Working Interest</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={classes.maxWidth}
-                value={newOwner.operating_rights}
-                onChange={e => {
-                  const { value } = e.target;
-                  setNewOwner({
-                    ...newOwner,
-                    operating_rights: value ? addTrailingZeros(e.target.value) : null,
-                  });
-                }}
-                onWheel={e => e.target.blur()}
-              />
-            </Grid>
-            {/* <Grid item xs={12}>
-              <h3>Net Revenue Interest (NRI)</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={classes.maxWidth}
-                value={newOwner.nri}
-                onChange={e => {
-                  const { value } = e.target;
-                  const netAcres = calculateNetAcres(newOwner.mineral_interest);
-                  setNewOwner({
-                    ...newOwner,
-                    nri: value ? addTrailingZeros(e.target.value) : null,
-                    nra: !isNraOverridden
-                      ? calculateStandardNraForTract(selectedParcel?.sdGrossAcres, newOwner.mineral_interest, newOwner.royalty_interest, newOwner.orri, workspaceSettings)
-                      : newOwner.nra,
-                  });
-                }}
-                onBlur={e => {
-                  const value = e.target.value || 0
-                  setNewOwner({
-                    ...newOwner,
-                    nri: parseFloat(value).toFixed(8),
-                  });
-                }}
-                onWheel={e => e.target.blur()}
-              />
-            </Grid> */}
-            <Grid item xs={12}>
-              <h3>Net Acres</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={isAcresOverridden ? classes.baseValueChanged : classes.maxWidth}
-                value={newOwner.net_acres}
-                onChange={e => {
-                  const value = addTrailingZeros(e.target.value);
-                  const netAcres = calculateNetAcres(newOwner.mineral_interest);
-                  setIsAcresOverridden(parseFloat(netAcres) !== parseFloat(value));
-                  setNewOwner(newOwner => ({
-                    ...newOwner,
-                    net_acres: value,
-                    nra: !isNraOverridden
-                      ? calculateStandardNraForTract(selectedParcel?.sdGrossAcres, newOwner.mineral_interest, newOwner.royalty_interest, newOwner.orri, workspaceSettings)
-                      : newOwner.nra,
-                    offer_price_nma: calculateOfferPrice(value, uUnitPricingNMA),
-                    max_offer_price_nma: calculateOfferPrice(value, uMaxUnitPricingNMA),
-                  }));
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      {isAcresOverridden && (
-                        <IconButton
-                          aria-label="toggle royality-acres"
-                          onClick={() => {
-                            const netAcres = calculateNetAcres(newOwner.mineral_interest);
-                            setIsAcresOverridden(false);
-                            setNewOwner(newOwner => ({
-                              ...newOwner,
-                              net_acres: netAcres,
-                              nra: !isNraOverridden
-                                ? calculateStandardNraForTract(selectedParcel?.sdGrossAcres, newOwner.mineral_interest, newOwner.royalty_interest, newOwner.orri, workspaceSettings)
-                                : newOwner.nra,
-                            }));
-                          }}
-                        >
-                          <AutorenewIcon />
-                        </IconButton>
-                      )}
-                    </InputAdornment>
-                  ),
-                }}
-                onWheel={e => e.target.blur()}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <h3>Target Offer Price (NMA)</h3>
-
-              <Controller
-                control={control}
-                name="offer_price_nma"
-                render={props => (
-                  <TextField
-                    size="small"
-                    value={newOwner?.offer_price_nma}
-                    inputRef={props.ref}
-                    onWheel={e => e.target.blur()}
-                    onChange={e => {
-                      const value = parseFloat(e.target.value).toFixed(2);
-                      const calculatedOfferPrice = calculateOfferPrice(newOwner?.net_acres, uUnitPricingNMA);
-                      setIsOfferPriceNMAOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice));
-                      props.onChange(value);
-                      setNewOwner(newOwner => ({
-                        ...newOwner,
-                        offer_price_nma: value,
-                      }));
-                    }}
-                    className={isOfferPriceNMAOverridden ? classes.baseValueChanged : classes.maxWidth}
-                    InputProps={{
-                      inputComponent: CurrencyFormatCustom,
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          {isOfferPriceNMAOverridden && (
-                            <IconButton
-                              aria-label="toggle offer_price_nma"
-                              onClick={() => {
-                                setIsOfferPriceNMAOverridden(false);
-                                setNewOwner(newOwner => ({
-                                  ...newOwner,
-                                  offer_price_nma: calculateOfferPrice(newOwner?.net_acres, uUnitPricingNMA),
-                                }));
-                              }}
-                            >
-                              <AutorenewIcon />
-                            </IconButton>
-                          )}
-                        </InputAdornment>
-                      ),
-                    }}
-                    fullWidth
-                    defaultValue=""
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <h3>Max Offer Price (NMA)</h3>
-
-              <Controller
-                control={control}
-                name="max_offer_price_nma"
-                render={props => (
-                  <TextField
-                    size="small"
-                    value={newOwner?.max_offer_price_nma}
-                    inputRef={props.ref}
-                    onWheel={e => e.target.blur()}
-                    onChange={e => {
-                      const value = parseFloat(e.target.value).toFixed(2);
-                      const calculatedOfferPrice = calculateOfferPrice(newOwner?.net_acres, uMaxUnitPricingNMA);
-                      setIsMaxOfferPriceNMAOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice));
-                      props.onChange(value);
-                      setNewOwner(newOwner => ({
-                        ...newOwner,
-                        max_offer_price_nma: value,
-                      }));
-                    }}
-                    className={isMaxOfferPriceNMAOverridden ? classes.baseValueChanged : classes.maxWidth}
-                    InputProps={{
-                      inputComponent: CurrencyFormatCustom,
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          {isMaxOfferPriceNMAOverridden && (
-                            <IconButton
-                              aria-label="toggle max_offer_price_nma"
-                              onClick={() => {
-                                setIsMaxOfferPriceNMAOverridden(false);
-                                setNewOwner(newOwner => ({
-                                  ...newOwner,
-                                  max_offer_price_nma: calculateOfferPrice(newOwner?.net_acres, uMaxUnitPricingNMA),
-                                }));
-                              }}
-                            >
-                              <AutorenewIcon />
-                            </IconButton>
-                          )}
-                        </InputAdornment>
-                      ),
-                    }}
-                    fullWidth
-                    defaultValue=""
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <h3>Net Royalty Acres (NRA)</h3>
-              <TextField
-                id="standard-number"
-                type="number"
-                size="small"
-                className={isNraOverridden ? classes.baseValueChanged : classes.maxWidth}
-                value={newOwner.nra}
-                onChange={e => {
-                  const value = addTrailingZeros(e.target.value);
-                  const nra = calculateStandardNraForTract(selectedParcel?.sdGrossAcres, newOwner.mineral_interest, newOwner.royalty_interest, newOwner.orri, workspaceSettings);
-                  setIsNRAOverridden(parseFloat(nra) !== parseFloat(value));
-                  setNewOwner({
-                    ...newOwner,
-                    nra: value || null,
-                    offer_price: calculateOfferPrice(value, uUnitPricing),
-                    max_offer_price: calculateOfferPrice(value, uMaxUnitPricing)
-                  });
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      {isNraOverridden && (
-                        <IconButton
-                          aria-label="toggle royality-acres"
-                          onClick={() => {
-                            const nra = calculateStandardNraForTract(selectedParcel?.sdGrossAcres, newOwner.mineral_interest, newOwner.royalty_interest, newOwner.orri, workspaceSettings)
-                            setIsNRAOverridden(false);
-                            setNewOwner({ ...newOwner, nra });
-                          }}
-                        >
-                          <AutorenewIcon />
-                        </IconButton>
-                      )}
-                    </InputAdornment>
-                  ),
-                }}
-                onWheel={e => e.target.blur()}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <h3>Target Offer Price (per NRA)</h3>
-
-              <Controller
-                control={control}
-                name="offer_price"
-                render={props => (
-                  <TextField
-                    size="small"
-                    value={newOwner?.offer_price}
-                    inputRef={props.ref}
-                    onWheel={e => e.target.blur()}
-                    onChange={e => {
-                      const value = parseFloat(e.target.value).toFixed(2);
-                      const calculatedOfferPrice = calculateOfferPrice(newOwner?.nra, uUnitPricing);
-                      setIsOfferPriceOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice));
-                      props.onChange(value);
-                      setNewOwner(newOwner => ({
-                        ...newOwner,
-                        offer_price: value,
-                      }));
-                    }}
-                    className={isOfferPriceOverridden ? classes.baseValueChanged : classes.maxWidth}
-                    InputProps={{
-                      inputComponent: CurrencyFormatCustom,
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          {isOfferPriceOverridden && (
-                            <IconButton
-                              aria-label="toggle offer_price"
-                              onClick={() => {
-                                setIsOfferPriceOverridden(false);
-                                setNewOwner(newOwner => ({
-                                  ...newOwner,
-                                  offer_price: calculateOfferPrice(newOwner?.nra, uUnitPricing),
-                                }));
-                              }}
-                            >
-                              <AutorenewIcon />
-                            </IconButton>
-                          )}
-                        </InputAdornment>
-                      ),
-                    }}
-                    fullWidth
-                    defaultValue=""
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <h3>Max Offer Price (per NRA)</h3>
-
-              <Controller
-                control={control}
-                name="max_offer_price"
-                render={props => (
-                  <TextField
-                    size="small"
-                    value={newOwner?.max_offer_price}
-                    inputRef={props.ref}
-                    onWheel={e => e.target.blur()}
-                    onChange={e => {
-                      const value = parseFloat(e.target.value).toFixed(2);
-                      const calculatedOfferPrice = calculateOfferPrice(newOwner?.nra, uMaxUnitPricing);
-                      setIsMaxOfferPriceOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice));
-                      props.onChange(value);
-                      setNewOwner(newOwner => ({
-                        ...newOwner,
-                        max_offer_price: value,
-                      }));
-                    }}
-                    className={isMaxOfferPriceOverridden ? classes.baseValueChanged : classes.maxWidth}
-                    InputProps={{
-                      inputComponent: CurrencyFormatCustom,
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          {isMaxOfferPriceOverridden && (
-                            <IconButton
-                              aria-label="toggle max_offer_price"
-                              onClick={() => {
-                                setIsMaxOfferPriceOverridden(false);
-                                setNewOwner(newOwner => ({
-                                  ...newOwner,
-                                  max_offer_price: calculateOfferPrice(newOwner?.nra, uMaxUnitPricing),
-                                }));
-                              }}
-                            >
-                              <AutorenewIcon />
-                            </IconButton>
-                          )}
-                        </InputAdornment>
-                      ),
-                    }}
-                    fullWidth
-                    defaultValue=""
-                  />
-                )}
-              />
-            </Grid>
-
-
-            <Grid item xs={12}>
-              <h3>Company Net Acres</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={classes.maxWidth}
-                value={newOwner.company_net_acres}
-                onChange={e => {
-                  const { value } = e.target;
-                  setNewOwner({
-                    ...newOwner,
-                    company_net_acres: value ? addTrailingZeros(e.target.value) : null,
-                  });
-                }}
-                onWheel={e => e.target.blur()}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <h3>Seller Asking Price</h3>
-
-              <Controller
-                control={control}
-                name="seller_asking_price"
-                render={props => (
-                  <TextField
-                    size="small"
-                    value={newOwner.seller_asking_price}
-                    inputRef={props.ref}
-                    onWheel={e => e.target.blur()}
-                    onChange={e => {
-                      props.onChange(e.target.value);
-                      setNewOwner({
-                        ...newOwner,
-                        seller_asking_price: e.target.value || null,
-                      });
-                    }}
-                    InputProps={{
-                      inputComponent: CurrencyFormatCustom,
-                    }}
-                    fullWidth
-                    defaultValue=""
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <h3>Competitor Offer Price</h3>
-              <Controller
-                control={control}
-                name="competitor_offer_price"
-                render={props => (
-                  <TextField
-                    size="small"
-                    value={newOwner.competitor_offer_price}
-                    inputRef={props.ref}
-                    onWheel={e => e.target.blur()}
-                    onChange={e => {
-                      props.onChange(e.target.value);
-                      setNewOwner({
-                        ...newOwner,
-                        competitor_offer_price: e.target.value || null,
-                      });
-                    }}
-                    InputProps={{
-                      inputComponent: CurrencyFormatCustom,
-                    }}
-                    fullWidth
-                    defaultValue=""
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <h3>Actual Offer Price</h3>
-              <Controller
-                control={control}
-                name="actual_offer_price"
-                render={props => (
-                  <TextField
-                    size="small"
-                    value={newOwner.actual_offer_price}
-                    inputRef={props.ref}
-                    onWheel={e => e.target.blur()}
-                    onChange={e => {
-                      props.onChange(e.target.value);
-                      setNewOwner({
-                        ...newOwner,
-                        actual_offer_price: e.target.value || null,
-                      });
-                    }}
-                    InputProps={{
-                      inputComponent: CurrencyFormatCustom,
-                    }}
-                    fullWidth
-                    defaultValue=""
-                  />
-                )}
-              />
-            </Grid>
-            {tenantName === 'Providence' && (
-              <>
-                <Grid item xs={12}>
-                  <h3>Cost Bearing</h3>
-                  <TextField
-                    id="standard-number"
-                    type="text"
-                    size="small"
-                    className={classes.maxWidth}
-                    value={newOwner.cost_bearing}
-                    onChange={e => {
-                      const { value } = e.target;
-                      setNewOwner({
-                        ...newOwner,
-                        cost_bearing: value || null,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <h3>Cost Free High Value</h3>
-                  <TextField
-                    id="standard-number"
-                    type="text"
-                    size="small"
-                    className={classes.maxWidth}
-                    value={newOwner.cost_free_high_value}
-                    InputProps={{
-                      inputComponent: CurrencyFormatCustom,
-                    }}
-                    onChange={e => {
-                      const value = addTrailingZeros(e.target.value);
-                      setNewOwner({
-                        ...newOwner,
-                        cost_free_high_value: Number(value) || null,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <h3>Cost Bearing High Value</h3>
-                  <TextField
-                    id="standard-number"
-                    type="text"
-                    size="small"
-                    className={classes.maxWidth}
-                    InputProps={{
-                      inputComponent: CurrencyFormatCustom,
-                    }}
-                    value={newOwner.cost_bearing_high_value}
-                    onChange={e => {
-                      const value = addTrailingZeros(e.target.value);
-                      setNewOwner({
-                        ...newOwner,
-                        cost_bearing_high_value: Number(value) || null,
-                      });
-                    }}
-                  />
-                </Grid>
-              </>
-            )}
-            {props?.customLayer?.state !== 'TX' && (
-              <>
-                <Grid item xs={3}>
-                  <h3>QTR 1</h3>
-                  <Autocomplete
-                    options={qtrOptions}
-                    getOptionLabel={option => option}
-                    value={newOwner.qtr[0]}
-                    onChange={(e, newInputValue) => {
-                      const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
-                      qtr[0] = newInputValue || '';
-                      setNewOwner({
-                        ...newOwner,
-                        qtr,
-                      });
-                    }}
-                    renderInput={params => (
-                      <TextField {...params} size="small" className={classes.maxWidth} multiline />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <h3>QTR 2</h3>
-                  <Autocomplete
-                    options={qtrOptions}
-                    getOptionLabel={option => option}
-                    value={newOwner.qtr[1]}
-                    onChange={(e, newInputValue) => {
-                      const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
-                      qtr[1] = newInputValue || '';
-                      setNewOwner({
-                        ...newOwner,
-                        qtr,
-                      });
-                    }}
-                    renderInput={params => (
-                      <TextField {...params} size="small" className={classes.maxWidth} multiline />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <h3>QTR 3</h3>
-                  <Autocomplete
-                    options={qtrOptions}
-                    getOptionLabel={option => option}
-                    value={newOwner.qtr[2]}
-                    onChange={(e, newInputValue) => {
-                      const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
-                      qtr[2] = newInputValue || '';
-                      setNewOwner({
-                        ...newOwner,
-                        qtr,
-                      });
-                    }}
-                    renderInput={params => (
-                      <TextField {...params} size="small" className={classes.maxWidth} multiline />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <h3>QTR 4</h3>
-                  <Autocomplete
-                    options={qtrOptions}
-                    getOptionLabel={option => option}
-                    value={newOwner.qtr[3]}
-                    onChange={(e, newInputValue) => {
-                      const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
-                      qtr[3] = newInputValue || '';
-                      setNewOwner({
-                        ...newOwner,
-                        qtr,
-                      });
-                    }}
-                    renderInput={params => (
-                      <TextField {...params} size="small" className={classes.maxWidth} multiline />
-                    )}
-                  />
-                </Grid>
-              </>
-            )}
-
-            <Grid item xs={12}>
-              <h3>Contact Status</h3>
-
-              <Controller
-                control={control}
-                defaultValue={newOwner?.contactStatus ? newOwner?.contactStatus : ''}
-                name="contactStatus"
-                render={props => (
-                  <ContactStatus
-                    className={classes.maxWidth}
-                    setValue={value => {
-                      let val = value.name;
-                      props.onChange(val);
-                      setNewOwner({
-                        ...newOwner,
-                        contactStatus: val,
-                      });
-                    }}
-                    value={props.value ? props.value : ''}
-                    fieldKey="contactStatus"
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <h3>Contact Stage</h3>
-
-              <Controller
-                control={control}
-                defaultValue={newOwner?.status ? newOwner?.status : ''}
-                name="status"
-                render={props => (
-                  <Status
-                    className={classes.maxWidth}
-                    options={statusOptions}
-                    value={props.value}
-                    setDocumentType={value => {
-                      let val = value.name;
-                      const data = contactStatusOptions.find(s => s.label === val);
-                      if (data) {
-                        val = data.value;
-                      }
-                      props.onChange(val);
-                      setNewOwner({
-                        ...newOwner,
-                        status: val,
-                      });
-                    }}
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <h3>Campaign Names</h3>
-
-              <Controller
-                control={control}
-                name="campaignName"
-                render={params => (
-                  <CampaignNameField
-                    {...params}
-                    value={newOwner?.campaignName}
-                    className={classes.maxWidth}
-                    onChange={(values, id) => {
-                      params.onChange(values);
-                      setNewOwner({
-                        ...newOwner,
-                        campaignName: values,
-                      });
-                    }}
-                    fullWidth
-                    targetLabel="Contact"
-                    simpleChips
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <h3>Campaign Priority</h3>
-              <Controller
-                control={control}
-                name="campaignPriority"
-                render={params => (
-                  <AutoCompleteWithAddNew
-                    {...params}
-                    value={newOwner?.campaignPriority}
-                    // variant="outlined"
-                    setValue={value => {
-                      if (value?._id) params.onChange({ _id: value._id, name: value.name });
-                      else params.onChange(null);
-                      if (value?._id === 'newEntity') delete value._id;
-                      setNewOwner({
-                        ...newOwner,
-                        campaignPriority: value.name,
-                      });
-                    }}
-                    options={get(priorityList, 'getESFilterList.hits', [])?.map(payor => ({
-                      _id: get(payor, `original.hits.hits.${0}._id`),
-                      name: payor.key,
-                    }))}
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <h3>Lease Status</h3>
-              <Controller
-                control={control}
-                name="leaseStatus"
-                render={params => (
-                  <AutoCompleteWithAddNew
-                    {...params}
-                    value={newOwner?.leaseStatus}
-                    setValue={value => {
-                      if (value?._id) params.onChange({ _id: value._id, name: value.name });
-                      else params.onChange(null);
-                      if (value?._id === 'newEntity') delete value._id;
-                      setNewOwner({
-                        ...newOwner,
-                        leaseStatus: value?.name,
-                      });
-                    }}
-                    options={leaseStatusList}
-                  />
-                )}
-              />
-            </Grid>
-
-
-
-            <Grid item xs={12}>
-              <h3>Associated Deals</h3>
-
-              <Controller
-                control={control}
-                name="deals"
-                render={params => (
-                  <AssociatedDealField
-                    {...params}
-                    className={classes.maxWidth}
-                    onChange={(values, id) => {
-                      setNewOwner({
-                        ...newOwner,
-                        deals: values || [],
-                      });
-                      params.onChange(values);
-                    }}
-                    value={newOwner?.deals}
-                    fullWidth
-                    targetLabel="Contact"
-                    simpleChips
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12}>
-                <h3>Data Source</h3>
-
-                <Controller
-                  control={control}
-                  name="dataSource"
-                  render={(props) => (
-                    <TextField
-                      size="small"
-                      type="text"
-                      value={newOwner.dataSource}
-                      fullWidth
-                      onChange={e => {
-                        setNewOwner({
-                          ...newOwner,
-                          dataSource: e.target.value,
-                        });
-                      }}
-                    />
-                  )}
-                />
-              </Grid>
-            <Grid item xs={12}>
-              <h3>Depth Restrictions</h3>
-              <RadioGroup
-                row
-                value={parcelOwnersRadioBValue}
-                onChange={event => {
-                  setParcelOwnersRadioBValue(event.target.value);
-                }}
-              >
-                <FormControlLabel value="true" control={<Radio />} label="All Depths" />
-                <FormControlLabel value="false" control={<Radio />} label="Footages/Formations" />
-              </RadioGroup>
-            </Grid>
-
-            {parcelOwnersRadioBValue === 'false' && (
-              <Grid item xs={12}>
-                <h3>Depth From</h3>
-                <TextField
-                  size="small"
-                  className={classes.maxWidth}
-                  multiline
-                  value={newOwner.depthFrom}
-                  onChange={e => {
-                    setNewOwner({
-                      ...newOwner,
-                      depthFrom: e.target.value,
+                      refetchQueries: ['getPaginatedContacts', 'getContact'],
+                      awaitRefetchQueries: true,
                     });
                   }}
                 />
-              </Grid>
-            )}
-            {parcelOwnersRadioBValue === 'false' && (
-              <Grid item xs={12}>
-                <h3>Depth To</h3>
-                <TextField
-                  size="small"
-                  className={classes.maxWidth}
-                  multiline
-                  value={newOwner.depthTo}
-                  onChange={e => {
-                    setNewOwner({
-                      ...newOwner,
-                      depthTo: e.target.value,
-                    });
-                  }}
-                />
-              </Grid>
-            )}
+              }
+            </Grid>
+
+            <CommonForm
+              FormJson={formJson}
+              control={control}
+              reset={reset}
+              watch={watch}
+              DialogKey={"tractInterestDialog"}
+            />
+
           </Grid>
         </DialogContent>
         <DialogActions className={classes.dialogAction}>
@@ -1797,7 +414,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
           </Button>
           <Button
             className={classes.secondary}
-            disabled={((!nameAutValue || !nameAutValue.name || nameAutValue.name === '') && !showAddNewContactFields) ? true : false}
+            disabled={((!formStateValues?.name) && !formStateValues?.newOwner) ? true : false}
             onClick={handleClickAdd}
             color="secondary"
             style={{ marginBottom: '40px', marginRight: '20px' }}
