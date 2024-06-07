@@ -303,8 +303,10 @@ export default function BuyContactsInfoDialogContent(props) {
                           fontSize="small"
                           style={{ cursor: "pointer", float: "right" }}
                           onClick={() => {
-                            let reducedRows = [...props.rows];
-                            reducedRows.splice(index, 1);
+                            const validId = validContactData[index].id;
+                            const reducedRows = props.rows.filter(item =>
+                              item.contactId !== validId && item._id !== validId && item.contact._id !== validId
+                            );
                             props.setRows(reducedRows);
                           }}
                         />
