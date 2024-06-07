@@ -107,6 +107,7 @@ function CheckDetailsTable(props) {
             hit.county = hit.property?.county;
             hit.date = hit.date ? convert_date(hit.date) : null;
             hit.propertyId = hit?.property?._id;
+            hit.clickable = !hit?.property?.IsDeleted
             return hit;
         });
     };
