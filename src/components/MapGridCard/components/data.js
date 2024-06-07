@@ -6,6 +6,7 @@ import FolderIcon from "@material-ui/icons/Folder";
 import OperatorIcon from "components/Shared/svgIcons/operator";
 import TaxOwnerIcon from "@material-ui/icons/AccountBalance";
 import LayersIcon from "@material-ui/icons/Layers";
+import LocationOnIcon from "@material-ui/icons/LocationOn";
 
 export const platformDataWellsInitialData = [
   { index: 0, value: 'well', Icon: WellIcon, label: 'Wells', shapeGrid: true },
@@ -15,6 +16,13 @@ export const platformDataWellsInitialData = [
     value: 'operator',
     Icon: OperatorIcon,
     label: 'Operators',
+    shapeGrid: true,
+  },
+  {
+    index: 3,
+    value: 'places',
+    Icon: LocationOnIcon,
+    label: 'Places',
     shapeGrid: true,
   },
 ];
