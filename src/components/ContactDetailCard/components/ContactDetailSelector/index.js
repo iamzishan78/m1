@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useMemo } from "react";
 import { get } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "AppContext";
@@ -11,7 +11,6 @@ import { TabPanel } from "components/Shared/TabPanels";
 import ContactDetailedInfo from "components/ContactDetailedInfo/ContactDetailedInfo";
 import ActivitiesTable from "components/Table/Activities/ActivitiesTable";
 import RelatedContactsTable from "components/Table/Contact/RelatedContactTable";
-import ContactWellInterestTable from "components/Table/Contact/ContactWellInterestTable";
 import ContactParcelInterestTable from "components/Table/Contact/ContactParcelInterestTable";
 import ContactTaxRollInterestTable from "components/Table/Contact/ContactTaxRollInterestTable";
 import ContactRelatedAgreementTable from "components/Table/Contact/ContactRelatedAgreementTable";
@@ -26,6 +25,7 @@ import { CONTACT_SUMMARY } from "graphQL/useQueryContactSummary";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import moment from "moment";
 import sortBy from 'lodash/sortBy';
+import MRTTable from 'components/MRTTable';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -191,10 +191,19 @@ function MapGridCard(props) {
       const sortedPurchaseData = sortBy(props.purchaseData, (item) => moment(item.sysDateTime).valueOf()).reverse();
       setSortedPurchaseData(sortedPurchaseData); // Update the state with the sorted purchase data
     }
-}, [props.purchaseData]);
+  }, [props.purchaseData]);
+
+  const contactWellInterestoverrideMeta = useMemo(() => ({
+    defaultFilters: [
+      { field: 'contact._id', value: props.contactData._id || '' },
+    ],
+    customProps: {
+      contactId: props.contactData._id
+    }
+  }), [props.contactData._id]);
 
   return (
-    <div className={classes.card}>
+    <div className={classes.card} >
       <Card className={classes.dockMenu}>
         {selectedOwner ? (
           <OwnersSummaryCard />
@@ -272,14 +281,7 @@ function MapGridCard(props) {
                       />
                     )}
                     {searchTapValue.value === "wellInterests" && (
-                      <ContactWellInterestTable
-                        parent="assocTaxRollInterests"
-                        header={"Well Interests"}
-                        targetLabel="well"
-                        contactId={props.contactData._id}
-                        id="wellInterestsTable"
-                        showTracks
-                      />
+                      <MRTTable name="ContactWellInterestTable" overrideMeta={contactWellInterestoverrideMeta} />
                     )}
                     {searchTapValue.value === "unitInterests" && (
                       <UnitInterestsTable
@@ -327,7 +329,7 @@ function MapGridCard(props) {
           </div>
         )}
       </Card>
-    </div>
+    </div >
   );
 }
 
