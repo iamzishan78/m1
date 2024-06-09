@@ -364,6 +364,7 @@ function AddDealDialog(props) {
   const [titleFocus, setTitleFocus] = useState(false);
   const [label, setLabel] = useState("");
   const [closedPrice, setClosedPrice] = useState("");
+  const [totalNRA, setTotalNRA] = useState("");
   const [stageId, setStageId] = useState(null);
   const [dealPosition, setDealPosition] = useState(null);
   const [dealState, setDealState] = useState(null);
@@ -688,6 +689,7 @@ function AddDealDialog(props) {
       setDealState(card.status ? card.status : null);
       setLabel(card.offerPrice ? card.offerPrice : "");
       setClosedPrice(card.closedPrice ? card.closedPrice : "");
+      setTotalNRA(card.totalNRA ? card.totalNRA : "");
       setDescription(card.notes ? card.notes : "");
       // setPipelineId
       settingNewPipeWithDefaultStage(card.pipeline ? card.pipeline : null, false);
@@ -727,6 +729,7 @@ function AddDealDialog(props) {
     setTitle("");
     setLabel("");
     setClosedPrice("");
+    setTotalNRA("");
     setDescription("");
     setStageId(null);
     setDealState(null);
@@ -827,6 +830,7 @@ function AddDealDialog(props) {
         notes: description ? description.trim() : null,
         status: dealState ? dealState : "open",
         closedPrice: closedPrice,
+        totalNRA: totalNRA,
         receivedDate: selectedReceivedDate && selectedReceivedDate !== "" ? new Date(`${selectedReceivedDate}T08:00`).toUTCString() : null,
         bidDate: selectedBidDate && selectedBidDate !== "" ? new Date(`${selectedBidDate}T08:00`).toUTCString() : null,
         dueDate: selectedDueDate && selectedDueDate !== "" ? new Date(`${selectedDueDate}T08:00`).toUTCString() : null,
@@ -1674,6 +1678,38 @@ function AddDealDialog(props) {
                                   }}
                                   InputProps={{
                                     inputComponent: NumberFormatCustom,
+                                    classes: {
+                                      root: classes.customDataTextInputRoot,
+                                      focused: classes.focused,
+                                      notchedOutline: classes.notchedOutline,
+                                    },
+                                  }}
+                                />
+                              </Grid>
+                            </Grid>
+                          </FormControl>
+                          <FormControl variant="outlined" fullWidth size="small">
+                            <Grid container className={classes.gridStyle}>
+                              <Grid item xs={3}>
+                                <div>Total NRA</div>
+                              </Grid>
+                              <Grid item xs={9}>
+                                <TextField
+                                  margin="dense"
+                                  variant="outlined"
+                                  value={totalNRA}
+                                  error={isNaN(totalNRA)}
+                                  helperText={
+                                    isNaN(totalNRA)
+                                      ? "Total NRA must be a valid number"
+                                      : ""
+                                  }
+                                  className={classes.inputFieldCustomTextInput}
+                                  fullWidth
+                                  onChange={(e) => {
+                                    setTotalNRA(e.target.value);
+                                  }}
+                                  InputProps={{
                                     classes: {
                                       root: classes.customDataTextInputRoot,
                                       focused: classes.focused,
