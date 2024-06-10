@@ -9,13 +9,15 @@ const TractsHeadCells = (isSnapGrid = false) => [
   {
     name: "_id",
     options: {
-    filter: false, display: false, sort: false, viewColumns: false },
+      filter: false, display: false, sort: false, viewColumns: false, download: false,
+    },
   },
   {
     name: "m1neral_id",
     label: 'M1neral System ID',
     options: {
-    filter: false, display: false, sort: false, viewColumns: true },
+      filter: false, display: false, sort: false, viewColumns: true
+    },
   },
   {
     /// this is the control column for tracts
