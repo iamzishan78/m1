@@ -834,7 +834,7 @@ function Search() {
       }
 
       //// if mapboxSearch
-      if (newValue && newValue.Source === "mapboxSearch" && newValue.center) {
+      if (newValue && newValue.center && (newValue.Source === "mapboxSearch" || newValue.Source === "places")) {
         let minLong, maxLong, minLat, maxLat;
         if (newValue.bbox) [minLong, minLat, maxLong, maxLat] = newValue.bbox;
 
