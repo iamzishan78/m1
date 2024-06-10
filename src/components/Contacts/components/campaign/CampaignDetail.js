@@ -272,7 +272,7 @@ const CampaignDetail = ({ viewDoc }) => {
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();
-                            updateCampaignInformation("name", e.target.value.trim())
+                            inputRef.current.blur();
                           }
                         }}
                         onBlur={({ target }) => updateCampaignInformation("name", target.value.trim())}
