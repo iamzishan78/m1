@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -8,7 +8,7 @@ import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 import { Grid } from '@material-ui/core';
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 
-import { useMutation } from '@apollo/client';
+import { useMutation, useLazyQuery } from '@apollo/client';
 import { ADD_OWNER_TOA_SHAPE } from 'graphQL/useMutationAddOwnerToAShape';
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 import { makeStyles } from '@material-ui/core/styles';
@@ -24,7 +24,8 @@ import { globalStateController } from 'hookstate/globalStateController';
 import contactSubForm from 'components/Shared/FormsFieldsData/FormsJson/UnitDetailInterestOwner/contactSubForm';
 import unitInterestOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/UnitDetailInterestOwner/unitInterestOwnerForm';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
-
+import AddIcon from "@material-ui/icons/Add";
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -79,14 +80,24 @@ const useStyles = makeStyles((theme) => ({
   personAddIcon: {
     color: `${theme.palette.secondary.main} !important`,
     fill: `${theme.palette.secondary.main} !important`,
-  }
+  },
+  addDataButton: {
+    backgroundColor: "white",
+    color: "black",
+    textTransform: "capitalize",
+    "&:hover": {
+      backgroundColor: theme.palette.common.white,
+      opacity: 0.15,
+    },
+  },
 }));
 
-export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, uUnitPricing, ...props }) {
+export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, uUnitPricing, metaDataCategory, ...props }) {
   const dispatch = useDispatch();
 
   const formState = sideDialogController("unitInterestDialog").useCompleteState()
   const formStateValues = formState?.get({ noproxy: true });
+  const [metafields, setMetaFields] = useState([]);
 
   const { user } = globalStateController.useState(['user']);
   const getUser = user.get({ noproxy: true });
@@ -102,6 +113,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
   const [updateContact] = useMutation(UPDATECONTACT);
 
+  const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
   useEffect(() => {
     sideDialogController("unitInterestDialog").updateState({
@@ -247,6 +259,24 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
   };
 
+  useEffect(() => {
+    if (!metaDataCategory) return;
+
+    getMetaData({
+      variables: {
+        user: getUser?._id,
+        category: metaDataCategory,
+      },
+    });
+  }, [metaDataCategory, user]);
+
+  useEffect(() => {
+    if (!metaDataRes?.getMetaData?.metaData) return;
+
+    setMetaFields(metaDataRes?.getMetaData?.metaData);
+  }, [metaDataRes]);
+
+
   const classes = useStyles();
 
   const formJson = useMemo(() => {
@@ -254,8 +284,9 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     return formFunction({
       getValues,
       setValue,
+      metafields
     });
-  }, [formStateValues?.newOwner, formState?.rerenderJson]);
+  }, [formStateValues?.newOwner, formState?.rerenderJson, metafields]);
 
   return (
     <div className={classes.move}>
@@ -286,6 +317,23 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
           </Grid>
           <DialogContent className={classes.dialogContent}>
             <Grid container spacing={2}>
+              {!selectedRow &&
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.addDataButton}
+                  startIcon={<AddIcon />}
+                  onClick={() => {
+                    globalStateController.updateState({
+                      showFieldModal: true,
+                    });
+                    props.onClose()
+                  }}
+                >
+                  Add Custom Data
+                </Button>
+              }
+
               <Grid item xs={12}>
                 {!formStateValues?.newOwner && <h3 style={{ float: "left" }}>Name</h3>}
                 {!selectedRow && (<div className={formStateValues?.newOwner ? classes.addContactButtonSelected : classes.addContactButton}

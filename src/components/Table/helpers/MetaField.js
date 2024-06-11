@@ -41,6 +41,7 @@ import { UPDATE_META_DATA } from "graphQL/useMutationUpdateMetaData";
 import { colorPallete } from "components/Table/helpers";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { tableController, tableGlobalController } from "hookstate/tableController";
+import { globalStateController } from "hookstate/globalStateController";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -171,6 +172,10 @@ const categoryOptions = [
   {
     label: "Campaigns",
     value: "Campaign Name"
+  },
+  {
+    label: "Unit Interest Owners",
+    value: "Unit Interest Owners"
   },
   {
     label: "All (contacts, docs, flow, agreement, etc.)",
@@ -327,7 +332,8 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
 
   useEffect(() => {
     return () => {
-      tableGlobalController.reInitialized();
+      if ((!!tableKey))
+        tableGlobalController.reInitialized();
     };
   }, []);
 
@@ -339,8 +345,7 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
       showFieldModal: false,
       selectedMeta: null,
     }));
-
-    TableController?.updateState?.({
+    globalStateController.updateState({
       showFieldModal: false,
     });
   };
@@ -412,7 +417,7 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
       maxWidth="md"
       open={true}
       onClose={() => {
-        TableController?.updateState?.({
+        globalStateController.updateState({
           showFieldModal: false,
         });
         setStateApp((stateApp) => ({

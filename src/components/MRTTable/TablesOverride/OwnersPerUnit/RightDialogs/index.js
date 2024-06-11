@@ -35,6 +35,7 @@ function OwnerPerUnitTableDialogs() {
 					shapeType={rest?.shapeType}
 					selectedRow={rest?.selectedRow}
 					onClose={handleCloseDialog}
+					metaDataCategory={"Unit Interest Owners"}
 				/>
 			)}
 

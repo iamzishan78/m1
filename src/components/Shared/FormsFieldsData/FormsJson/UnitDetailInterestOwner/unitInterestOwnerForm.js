@@ -13,7 +13,7 @@ const calculateOfferPrice = nra => {
   return parseFloat((parseFloat(nra || 0) * parseFloat(uUnitPricing || 0)).toFixed(2));
 };
 
-const unitInterestOwnerForm = ({ getValues, setValue }) => {
+const unitInterestOwnerForm = ({ getValues, setValue, metafields }) => {
 
   const formFields = [
     {
@@ -303,7 +303,18 @@ const unitInterestOwnerForm = ({ getValues, setValue }) => {
 
   ]
 
-  return formFields;
+  const customDataJson = metafields.map(field => ({
+    label: field.label,
+    name: field.esKey,
+    renderField: field.type === "dropdown" ? "autoComplete" : field.type,
+    defaultOptions: field.type === "dropdown" ? field.dropdownOptions.map(op => ({
+      value: op.value,
+      label: op.value,
+    })) : [],
+  }));
+
+  return [...formFields, ...customDataJson];
+
 }
 
 export default unitInterestOwnerForm;
