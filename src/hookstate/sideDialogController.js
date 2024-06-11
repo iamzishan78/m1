@@ -60,6 +60,7 @@ export const unitInterestOwnerState = {
   tractAcres: null,
   dataSource: null,
   taxYear: null,
+  custom_data: null,
 }
 
 export const contactState = {
