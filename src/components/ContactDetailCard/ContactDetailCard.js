@@ -751,7 +751,7 @@ function ContactDetailCard(props) {
 
       <div className={classes.mainGridContainer}>
         <Grid container className={classes.leftColumn} id="leftColumn">
-          {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === "pdf" ? (
+          {stateApp.viewDoc ? (
             <DocViewer
               divCondition={true}
               DocStyle={{
