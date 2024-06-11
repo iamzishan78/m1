@@ -83,7 +83,8 @@ export default function SummaryFields({ contactData }) {
           contactInterests: {
             nraSum: getCommaValue(_contact.contactInterests.nraSum),
             offerPriceSum: getCommaValue(_contact.contactInterests.offerPriceSum),
-            maxOfferPriceSum: getCommaValue(_contact.contactInterests.maxOfferPriceSum)
+            maxOfferPriceSum: getCommaValue(_contact.contactInterests.maxOfferPriceSum),
+            closedPriceSum: getCommaValue(_contact.contactInterests.closedPriceSum)
           }
         };
       }
@@ -141,6 +142,8 @@ export default function SummaryFields({ contactData }) {
       return get(contactData, "evaluatedContactInterests.offerPriceSum")?.toFixed(2) !== _value?.toFixed(2);
     } else if (key.includes("maxOfferPriceSum")) {
       return get(contactData, "evaluatedContactInterests.maxOfferPriceSum")?.toFixed(2) !== _value?.toFixed(2);
+    } else if (key.includes("closedPriceSum")) {
+      return get(contactData, "evaluatedContactInterests.closedPriceSum")?.toFixed(2) !== _value?.toFixed(2);
     }
     return false;
   }
@@ -167,7 +170,7 @@ export default function SummaryFields({ contactData }) {
                   useEffect(() => {
                     if (initialized.current) return
 
-                    if (field.key.includes('offerPriceSum') || field.key.includes('nraSum') || field.key.includes('maxOfferPriceSum')) {
+                    if (field.key.includes('offerPriceSum') || field.key.includes('nraSum') || field.key.includes('maxOfferPriceSum') || field.key.includes('closedPriceSum')) {
                       let value = field.value ?? params.value;
                       if (value) {
                         initialized.current = true
@@ -199,7 +202,7 @@ export default function SummaryFields({ contactData }) {
                               // params.onChange(parseFloat(event.target.value).toFixed(2));
                             }
 
-                            if (field.key.includes('offerPriceSum') || field.key.includes('nraSum') || field.key.includes('maxOfferPriceSum')) currValue = parseFloat(currValue.replace(/[^\d.-]/g, ''))
+                            if (field.key.includes('offerPriceSum') || field.key.includes('nraSum') || field.key.includes('maxOfferPriceSum') || field.key.includes('closedPriceSum')) currValue = parseFloat(currValue.replace(/[^\d.-]/g, ''))
 
                             const prevValue = get(contactData, field.key) || ''
 
@@ -238,7 +241,7 @@ export default function SummaryFields({ contactData }) {
                                         const key = `evaluatedContactInterests.${field.key.split(".")[1]}`;
 
                                         let value = get(contactData, key)
-                                        if (field.key.includes('offerPriceSum') || field.key.includes('nraSum') || field.key.includes('maxOfferPriceSum')) {
+                                        if (field.key.includes('offerPriceSum') || field.key.includes('nraSum') || field.key.includes('maxOfferPriceSum') || field.key.includes('closedPriceSum')) {
                                           value = parseFloat(value).toFixed(2);
                                         }
 
