@@ -30,6 +30,9 @@ import { resetESTableToggle } from "hookstate";
 import { Modals } from 'styles/Modal';
 import { tableGlobalController } from 'hookstate/tableController';
 import { globalStateController } from 'hookstate/globalStateController';
+import RelatedContact from "components/MRTTable/Common/Dialog/BulkUpdate/RelatedContact"
+import { ADD_RELATED_CONTACTS } from "graphQL/useMutationRelatedContact";
+
 
 const styles = () => ({
   topHeading: { fontWeight: 'bold' },
@@ -86,6 +89,113 @@ const styles = () => ({
 
 const useStyles = makeStyles(styles);
 
+function SelectedField({ field, setFieldKey, setCampaigns, setContactOwner, contactOwner, fieldKey, campaigns }) {
+  let filterKey = '';
+  switch (field) {
+    case 'Contact Owner':
+      return (
+        <ContactAutoComplete
+          value={contactOwner}
+          onChange={(e, user) => {
+            const value = user && user.value ? user.value : '';
+            setFieldKey(value);
+            setContactOwner(value);
+          }}
+        />
+      );
+    case 'Campaign Name':
+      // filterKey = 'campaignName.keyword'
+      return (
+        <CampaignNameField
+          value={fieldKey}
+          className={classes.maxWidth}
+          onChange={(values, id) => {
+            setFieldKey(values);
+            setCampaigns([...campaigns, { _id: id, campaignName: values[values.length - 1] }])
+          }}
+          fullWidth
+          targetLabel="Contact"
+          simpleChips
+        />
+      );
+    case 'Stage':
+      filterKey = 'status.keyword';
+      break;
+    case 'Status':
+      filterKey = 'contactStatus.keyword';
+      break;
+    case 'Industry Type':
+    case 'Lead Source':
+    case 'Territory':
+      return (
+        <TextField
+          placeholder="Enter a value"
+          value={fieldKey}
+          onChange={({ target }) => {
+            setFieldKey(target.value);
+          }}
+          autoFocus={inputFocused}
+          className={classes.fullWidth}
+        />
+      );
+    case 'Time Zone':
+      return (
+        <Autocomplete
+          id="combo-box-demo"
+          options={timeZoneOptions}
+          onChange={(e, newValue) => {
+            setFieldKey(newValue);
+          }}
+          value={fieldKey}
+          renderInput={params => <TextField {...params} size="small" placeholder="Select Timezone" />}
+        />
+      );
+    case 'Tags':
+      return (
+        <Autocomplete
+          multiple
+          className={classes.chip}
+          id="update-contacts-tags"
+          options={publicTags?.publicTags || []}
+          getOptionLabel={option => option}
+          value={fieldKey || []}
+          onChange={(e, newTagsArr) => setFieldKey(newTagsArr)}
+          renderInput={params => <TextField {...params} variant="outlined" className={classes.input} />}
+        />
+      );
+    // .. etc
+    case 'Entity Type':
+      filterKey = 'ownerType.keyword';
+      return (
+        <EntityType
+          setDocumentType={value => {
+            setFieldKey(value._id);
+          }}
+          value={fieldKey}
+        />
+      );
+    case 'Related Contact':
+      return (
+        <RelatedContact setFieldKey={setFieldKey} />
+      )
+    default:
+  }
+
+  if (filterKey) {
+    return (
+      <FieldBulkAutoComplete
+        value={fieldKey || []}
+        placeholder={`Select ${field}`}
+        filterKey={filterKey}
+        onChange={(e, fieldKey) => {
+          setFieldKey(fieldKey.value);
+        }}
+      />
+    );
+  }
+  return '';
+}
+
 export default function AssignOwnerToContactDrawer({
   onClose,
   rows,
@@ -106,7 +216,6 @@ export default function AssignOwnerToContactDrawer({
   const [field, setField] = useState('');
   const [fieldKey, setFieldKey] = useState();
   const [loading, setLoading] = useState(false);
-  const [inputFocused, _setFocused] = useState(false);
   const [campaigns, setCampaigns] = useState([]);
   const [rowsLoading, setRowsLoading] = useState(false);
 
@@ -139,6 +248,13 @@ export default function AssignOwnerToContactDrawer({
     },
   });
 
+  const [addRelatedContacts, { data: response, loading: isSubmitting }] = useMutation(ADD_RELATED_CONTACTS, {
+    onCompleted: () => {
+      tableGlobalController.refetch();
+    },
+  })
+
+
   const fieldsToUpdate = [
     { title: 'Campaign Name', value: 'campaignName' },
     { title: 'Contact Owner', value: 'contactOwner' },
@@ -150,6 +266,7 @@ export default function AssignOwnerToContactDrawer({
     { title: 'Tags', value: 'contactStatus' },
     { title: 'Territory', value: 'territory' },
     { title: 'Time Zone', value: 'timeZone' },
+    { title: 'Related Contact', value: 'relatedcontact' },
   ];
 
   useEffect(() => {
@@ -254,6 +371,37 @@ export default function AssignOwnerToContactDrawer({
           Loader.errorToast('contact-creation', errorMsg);
         }
       );
+    } else if (field === 'Related Contact') {
+      addRelatedContacts({
+        variables: {
+          relationshipType: fieldKey?.relationshipType,
+          descriptorObject: fieldKey?.descriptorObject?.value,
+          relatedObject: contactIds,
+          userId: getUser?._id,
+        }
+      }).then(
+        (res) => {
+          resetESTableToggle.set(!resetESTableToggle.get())
+          if (res.data && res.data.addRelatedContacts) {
+            const { success, message } = res.data.addRelatedContacts;
+
+            if (success) {
+              Loader.successToast('contact-creation', message);
+              showSuccessMessage('Contacts Updated Successfuly');
+            } else {
+              Loader.errorToast('contact-creation', message);
+            }
+          } else {
+            Loader.errorToast('contact-creation', errorMsg);
+          }
+        },
+        err => {
+          // eslint-disable-next-line no-console
+          console.log(err);
+          Loader.errorToast('contact-creation', errorMsg);
+        }
+      );
+
     }
     else {
       const fieldToUpdate = { [fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value]: fieldKey }
@@ -406,112 +554,6 @@ export default function AssignOwnerToContactDrawer({
     setLoading(false);
   };
 
-  // eslint-disable-next-line react/no-unstable-nested-components
-  function SelectedField() {
-    let filterKey = '';
-    switch (field) {
-      case 'Contact Owner':
-        return (
-          <ContactAutoComplete
-            value={contactOwner}
-            onChange={(e, user) => {
-              const value = user && user.value ? user.value : '';
-              setFieldKey(value);
-              setContactOwner(value);
-            }}
-          />
-        );
-      case 'Campaign Name':
-        // filterKey = 'campaignName.keyword'
-        return (
-          <CampaignNameField
-            value={fieldKey}
-            className={classes.maxWidth}
-            onChange={(values, id) => {
-              setFieldKey(values);
-              setCampaigns([...campaigns, { _id: id, campaignName: values[values.length - 1] }])
-            }}
-            fullWidth
-            targetLabel="Contact"
-            simpleChips
-          />
-        );
-      case 'Stage':
-        filterKey = 'status.keyword';
-        break;
-      case 'Status':
-        filterKey = 'contactStatus.keyword';
-        break;
-      case 'Industry Type':
-      case 'Lead Source':
-      case 'Territory':
-        return (
-          <TextField
-            placeholder="Enter a value"
-            value={fieldKey}
-            onChange={({ target }) => {
-              setFieldKey(target.value);
-            }}
-            autoFocus={inputFocused}
-            onFocus={() => _setFocused(true)}
-            onBlur={() => _setFocused}
-            className={classes.fullWidth}
-          />
-        );
-      case 'Time Zone':
-        return (
-          <Autocomplete
-            id="combo-box-demo"
-            options={timeZoneOptions}
-            onChange={(e, newValue) => {
-              setFieldKey(newValue);
-            }}
-            value={fieldKey}
-            renderInput={params => <TextField {...params} size="small" placeholder="Select Timezone" />}
-          />
-        );
-      case 'Tags':
-        return (
-          <Autocomplete
-            multiple
-            className={classes.chip}
-            id="update-contacts-tags"
-            options={publicTags?.publicTags || []}
-            getOptionLabel={option => option}
-            value={fieldKey || []}
-            onChange={(e, newTagsArr) => setFieldKey(newTagsArr)}
-            renderInput={params => <TextField {...params} variant="outlined" className={classes.input} />}
-          />
-        );
-      // .. etc
-      case 'Entity Type':
-        filterKey = 'ownerType.keyword';
-        return (
-          <EntityType
-            setDocumentType={value => {
-              setFieldKey(value._id);
-            }}
-            value={fieldKey}
-          />
-        );
-      default:
-    }
-
-    if (filterKey) {
-      return (
-        <FieldBulkAutoComplete
-          value={fieldKey || []}
-          placeholder={`Select ${field}`}
-          filterKey={filterKey}
-          onChange={(e, fieldKey) => {
-            setFieldKey(fieldKey.value);
-          }}
-        />
-      );
-    }
-    return '';
-  }
-
   return (
     <RightDialog open width="700px">
       {rowsLoading ? (
@@ -592,7 +634,15 @@ export default function AssignOwnerToContactDrawer({
                   <Typography style={{ fontWeight: 'bold', marginTop: '30px' }}>{field}</Typography>
                 </Grid>
                 <Grid item>
-                  <SelectedField />
+                  <SelectedField
+                    field={field}
+                    setFieldKey={setFieldKey}
+                    setCampaigns={setCampaigns}
+                    setContactOwner={setContactOwner}
+                    contactOwner={contactOwner}
+                    fieldKey={fieldKey}
+                    campaigns={campaigns}
+                  />
                 </Grid>
               </Grid>
             </Box>

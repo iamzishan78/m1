@@ -6,6 +6,12 @@ export const ADD_RELATED_CONTACT = gql`
   }
 `;
 
+export const ADD_RELATED_CONTACTS = gql`
+  mutation addRelatedContacts($descriptorObject: ID!, $relationshipType: String!, $relatedObject: [ID]!, $userId: ID!) {
+    addRelatedContacts(descriptorObject: $descriptorObject, relationshipType: $relationshipType, relatedObject: $relatedObject, userId: $userId)
+  }
+`;
+
 
 export const DELETE_RELATED_CONTACT = gql`
   mutation deleteRelatedContacts($descriptorObjects: [ID]!, $relatedObject: ID!) {
