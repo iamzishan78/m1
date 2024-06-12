@@ -16,7 +16,7 @@ describe('Unit Interest Owners Table', () => {
               defaultFilters: [
                 {
                   field: 'shape._id',
-                  value: '65eeef41f1e14c0724bee441',
+                  value: '66695705caec050a1613921d',
                 },
                 {
                   field: 'contact.IsDeleted',
@@ -126,7 +126,6 @@ describe('Unit Interest Owners Table', () => {
       },
       { wait: false }
     );
-    //done
   });
 
   it('should verify purchased icon in contact link', () => {
@@ -155,6 +154,5 @@ describe('Unit Interest Owners Table', () => {
     });
 
     cy.get('[data-testid="monetization-icon"]').should('exist');
-    //done
   });
 });
