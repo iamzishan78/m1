@@ -229,9 +229,10 @@ const TabLabels = ({ labels, value, setValue }) => {
 function MapGridCard(props) {
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
+  const layerIndex = platformDataInitialData.findIndex(data => data.value === 'layer');
 
   // function state
-  const [searchTapValue, SearchTapValue] = useState(stateApp.layerGridCard ? platformDataInitialData[3] : platformDataInitialData[0]);
+  const [searchTapValue, SearchTapValue] = useState(stateApp.layerGridCard ? platformDataInitialData[layerIndex] : platformDataInitialData[0]);
   const [viewportTapValue, ViewportTapValue] = useState(0);
   const [dockMenu, SetDockMenu] = useState("bottom");
   const [trackedTapValue, TrackedTapValue] = useState(0);
@@ -351,7 +352,7 @@ function MapGridCard(props) {
     if (!stateApp.layerGridCard) {
       SearchTapValue(platformDataInitialData[0])
     } else {
-      SearchTapValue(platformDataInitialData[3])
+      SearchTapValue(platformDataInitialData[layerIndex])
     }
   }, [stateApp.layerGridCard]);
 
