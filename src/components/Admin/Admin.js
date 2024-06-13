@@ -20,6 +20,11 @@ const Components = {
   Flattening
 };
 
+function isM1neralAddress(email) {
+  return email.endsWith('@m1neral.com');
+}
+
+
 export default function Admin() {
   const location = useLocation();
   const [stateApp] = useContext(AppContext);
@@ -52,6 +57,9 @@ export default function Admin() {
 
   useEffect(() => {
     const allPaths = JSON.parse(JSON.stringify(AdminManagementRoutes));
+    if (!isM1neralAddress(stateApp.user.email)) {
+      delete allPaths["FLATTENING"]
+    }
     const feature = stateApp.user?.features?.find((feature) => feature.name === FEATURES.CONTACTSUBMENU);
     // const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.ANALYTICSSUBMENU);
     const allAllowedPaths = {};

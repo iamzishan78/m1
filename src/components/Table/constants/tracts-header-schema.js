@@ -237,7 +237,7 @@ const TractsHeadCells = (isSnapGrid = false) => [
     esKey: "shapeJson.properties.campaignName.keyword",
     options: {
       customRender: (value) => {
-        return (Array.isArray(value) && value.length > 0) ? value.join(", ") : value;
+        return (typeof value !== "string") && value ? value?.join(", ") : value;
       },
       setCellProps: () => ({ style: { minWidth: "200px" } }),
       sort: true,
