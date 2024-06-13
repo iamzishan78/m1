@@ -81,6 +81,7 @@ function RelatedContact({ setFieldKey }) {
       <div style={{ marginTop: '20px' }}>
         <Autocomplete
           id="search-contacts"
+          data-testid={"contact-search-drop-down"}
           getOptionSelected={(option, value) => option.name === value.name}
           getOptionLabel={(option) => option.name}
           options={formattedContactOptions}
@@ -93,6 +94,7 @@ function RelatedContact({ setFieldKey }) {
           renderInput={(params) => (
             <TextField
               {...params}
+              data-testid={"contact-search-text-field"}
               label="Search Contact"
               variant="outlined"
               size="small"
@@ -113,12 +115,20 @@ function RelatedContact({ setFieldKey }) {
       <div style={{ marginTop: '30px' }}>
         <Autocomplete
           id="combo-box-demo 1"
+          data-testid={"relation-ship-drop-down"}
           options={RelationshipTypeOptions}
           onChange={(e, newValue) => {
             setRelationshipType(newValue);
           }}
           value={relationshipType}
-          renderInput={params => <TextField {...params} size="small" variant="outlined" placeholder="Select Relation" />}
+          renderInput={params => (
+            <TextField {...params}
+              data-testid={"relation-ship-text-field"}
+              size="small"
+              variant="outlined"
+              placeholder="Select Relation"
+            />
+          )}
         />
 
       </div>
