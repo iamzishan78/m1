@@ -8,7 +8,7 @@ describe('Unit Interest Owners Table', () => {
   beforeEach(() => {
     cy.interceptAndWait(
       ['getESSimpleSearch', 'shapeowners_flat'],
-      alias => {
+      (alias) => {
         cy.viewport(1600, 1200).mount(
           <MRTTable
             name="OwnersPerUnitTable"
@@ -16,7 +16,7 @@ describe('Unit Interest Owners Table', () => {
               defaultFilters: [
                 {
                   field: 'shape._id',
-                  value: '65eeef41f1e14c0724bee441',
+                  value: '66695705caec050a1613921d',
                 },
                 {
                   field: 'contact.IsDeleted',
@@ -30,7 +30,7 @@ describe('Unit Interest Owners Table', () => {
           }
         );
 
-        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
+        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then((response) => {
           responseHits = response.response.body.data.getESSimpleSearch.hits;
         });
       },
@@ -73,14 +73,14 @@ describe('Unit Interest Owners Table', () => {
 
                         // Added buffer of 1 because we show values on frontend upto 2 decimal points and caluclation can differ from 1
                         expect(parseInt(targetOfferPrice.split('.')[0] || '0')).to.oneOf([
-                          parseInt((nra * targetPriceInterest).toString().split('.')[0]) - 1,
-                          parseInt((nra * targetPriceInterest).toString().split('.')[0]),
-                          parseInt((nra * targetPriceInterest).toString().split('.')[0]) + 1,
+                          parseInt((nra * targetPriceInterest).toString().split('.')[0]) || 0 - 1,
+                          parseInt((nra * targetPriceInterest).toString().split('.')[0]) || 0,
+                          parseInt((nra * targetPriceInterest).toString().split('.')[0]) || 0 + 1,
                         ]);
                         expect(parseInt(maxOfferPrice.split('.')[0] || '0')).to.oneOf([
-                          parseInt((nra * maxOfferPriceInterest).toString().split('.')[0]) - 1,
-                          parseInt((nra * maxOfferPriceInterest).toString().split('.')[0]),
-                          parseInt((nra * maxOfferPriceInterest).toString().split('.')[0]) + 1,
+                          parseInt((nra * maxOfferPriceInterest).toString().split('.')[0]) || 0 - 1,
+                          parseInt((nra * maxOfferPriceInterest).toString().split('.')[0] || 0),
+                          parseInt((nra * maxOfferPriceInterest).toString().split('.')[0]) || 0 + 1,
                         ]);
                       });
                   });
@@ -97,17 +97,17 @@ describe('Unit Interest Owners Table', () => {
 
     cy.interceptAndWait(
       ['initializeExportJob'],
-      alias => {
+      (alias) => {
         cy.get('[data-testid="export-contact-and-purchse-icon-checkbox"]').click();
 
         cy.get(
           '.MuiButtonBase-root[data-testid="export-contact-and-purchse-confirm-button"]'
         ).click();
 
-        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(jobResponse => {
+        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then((jobResponse) => {
           const jobId = jobResponse.response.body.data.initializeExportJob.job._id;
 
-          const callback = res => {
+          const callback = (res) => {
             const datasets = res.resultsPayload.datasets;
             let exportData = _.find(datasets, { dataset: 'exportContacts' }) || {};
             exportData = exportData.exportResponse;
@@ -115,12 +115,10 @@ describe('Unit Interest Owners Table', () => {
             expect(responseHits).to.have.lengthOf(exportData.length);
 
             const gridFullName =
-              responseHits[0]?.name ||
+              responseHits[0]?.contact?.entityDetail?.name ||
               `${responseHits[0]?.firstName} ${responseHits[0]?.lastName}`;
-            const exportFullNameObj =
-              _.find(exportData, { 'Full Name': gridFullName }) || {};
 
-            expect(exportFullNameObj['Full Name']).to.equal(gridFullName);
+            expect(exportData[0]['Full Name']).to.equal(gridFullName);
           };
 
           cy.pollJobStatus({ jobId, callback });
@@ -128,7 +126,6 @@ describe('Unit Interest Owners Table', () => {
       },
       { wait: false }
     );
-    //done
   });
 
   it('should verify purchased icon in contact link', () => {
@@ -136,7 +133,7 @@ describe('Unit Interest Owners Table', () => {
       (hit) => hit.contact && hit.contact.isPurchased === true
     );
     const contactName =
-      purschasedContact?.name ||
+      purschasedContact?.contact?.entityDetail?.name ||
       `${purschasedContact?.firstName} ${purschasedContact?.lastName}`;
 
     cy.get(`[data-testid="MoreVertIcon"]`).first().click();
@@ -147,9 +144,7 @@ describe('Unit Interest Owners Table', () => {
     cy.wait(basic_timeouts.shorTimeout);
     cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
     cy.wait(basic_timeouts.shorTimeout);
-    cy.get(
-      '[data-testid="sentinelStart"] + div ul li:nth-child(9):eq(1)'
-    ).click();
+    cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(9):eq(1)').click();
     cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
 
     cy.mrtFilterBySearch({
@@ -159,6 +154,5 @@ describe('Unit Interest Owners Table', () => {
     });
 
     cy.get('[data-testid="monetization-icon"]').should('exist');
-    //done
   });
 });

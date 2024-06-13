@@ -30,9 +30,9 @@ export const platformDataWellsInitialData = [
 export const platformDataInitialData = [
   ...platformDataWellsInitialData,
 
-  { index: 3, value: "layer", Icon: LayersIcon, label: "Layer", isLayer: true },
+  { index: 4, value: "layer", Icon: LayersIcon, label: "Layer", isLayer: true },
   // { index: 3, value: "lease", Icon: LeaseIcon, label: "Leases" },
-  { index: 4, value: "landgrid", Icon: LeaseIcon, label: "Land Grid", shapeGrid: false, featureFlag: 'LANDGRIDSEARCH' },
+  { index: 5, value: "landgrid", Icon: LeaseIcon, label: "Land Grid", shapeGrid: false, featureFlag: 'LANDGRIDSEARCH' },
   // { index: 4, value: "contacts", Icon: ContactIcon, label: "Contacts", shapeGrid: false },
 ];
 
