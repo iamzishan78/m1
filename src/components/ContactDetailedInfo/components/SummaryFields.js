@@ -84,7 +84,7 @@ export default function SummaryFields({ contactData }) {
             nraSum: getCommaValue(_contact.contactInterests.nraSum),
             offerPriceSum: getCommaValue(_contact.contactInterests.offerPriceSum),
             maxOfferPriceSum: getCommaValue(_contact.contactInterests.maxOfferPriceSum),
-            closedPriceSum: getCommaValue(_contact.contactInterests.closedPriceSum)
+            closedPriceSum: getCommaValue(_contact.contactInterests.closedPriceSum) // Add thousand comma seprator to closedPriceSum
           }
         };
       }
@@ -143,7 +143,7 @@ export default function SummaryFields({ contactData }) {
     } else if (key.includes("maxOfferPriceSum")) {
       return get(contactData, "evaluatedContactInterests.maxOfferPriceSum")?.toFixed(2) !== _value?.toFixed(2);
     } else if (key.includes("closedPriceSum")) {
-      return get(contactData, "evaluatedContactInterests.closedPriceSum")?.toFixed(2) !== _value?.toFixed(2);
+      return get(contactData, "evaluatedContactInterests.closedPriceSum")?.toFixed(2) !== _value?.toFixed(2); // allow user to override closedPriceSum value
     }
     return false;
   }
@@ -170,7 +170,7 @@ export default function SummaryFields({ contactData }) {
                   useEffect(() => {
                     if (initialized.current) return
 
-                    if (field.key.includes('offerPriceSum') || field.key.includes('nraSum') || field.key.includes('maxOfferPriceSum') || field.key.includes('closedPriceSum')) {
+                    if (field.key.includes('offerPriceSum') || field.key.includes('nraSum') || field.key.includes('maxOfferPriceSum') || field.key.includes('closedPriceSum')) { // allow user to override closedPrimeSum
                       let value = field.value ?? params.value;
                       if (value) {
                         initialized.current = true
