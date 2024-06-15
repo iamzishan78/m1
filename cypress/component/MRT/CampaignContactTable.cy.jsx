@@ -1,6 +1,22 @@
 /* eslint-disable no-undef */
 import MRTTable from "components/MRTTable";
 import { basic_timeouts } from "../../../cypress/cypressUtils/data";
+import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
+import ldata from "../../fixtures/ldata.json";
+import { headers } from "../../cypressUtils/cypressHeaders";
+
+const updateContactPayload = {
+  operationName: "UpdateContact",
+  variables: {
+    contact: {
+      _id: "65ad9213ede1b8fc69df499f",
+      lastUpdateBy: "659ce7cf97935e0ffa857858",
+      campaignName: ["contact campaign (Cypress do not Delete)"],
+    },
+    ignoreResponse: true,
+  },
+  query: UPDATECONTACT.loc.source.body,
+};
 
 const columns = [
   {
@@ -11,20 +27,27 @@ const columns = [
 
 describe("Campaign Contact Table", () => {
   beforeEach(() => {
-    cy.interceptAndWait(["getESSimpleSearch", "contacts_flat"], () => {
-      cy.viewport(1600, 1200).mount(
-        <MRTTable
-          name="CampaignContactTable"
-          overrideMeta={{
-            defaultFilters: [
-              {
-                field: "campaignName.keyword",
-                value: "contact campaign (Cypress do not Delete)",
-              },
-            ],
-          }}
-        />
-      );
+    cy.request({
+      method: "POST",
+      url: ldata.url,
+      headers: headers,
+      body: updateContactPayload,
+    }).then((response) => {
+      cy.interceptAndWait(["getESSimpleSearch", "contacts_flat"], () => {
+        cy.viewport(1600, 1200).mount(
+          <MRTTable
+            name="CampaignContactTable"
+            overrideMeta={{
+              defaultFilters: [
+                {
+                  field: "campaignName.keyword",
+                  value: "contact campaign (Cypress do not Delete)",
+                },
+              ],
+            }}
+          />
+        );
+      });
     });
   });
 
