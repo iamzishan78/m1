@@ -13,6 +13,8 @@ const countyColumn = {
   type: "string",
 };
 
+let responseHits = [];
+
 describe("Unit Table", () => {
   beforeEach(() => {
     cy.interceptAndWait(["getESSimpleSearch", "shapes_flat"], () => {
@@ -87,5 +89,65 @@ describe("Unit Table", () => {
     cy.get("table thead th div.Mui-TableHeadCell-Content-Wrapper")
       .contains("Total Unit Interest")
       .should("exist");
+  });
+
+  it('Open Bulk Update for Unit Grid', () => {
+    // Intercept and wait for a specific API call ('getESSimpleSearch') and perform actions after the call is made
+    cy.interceptAndWait(
+      ['getESSimpleSearch'],
+      (alias) => {
+        // Set the viewport size to simulate a desktop environment
+        cy.viewport(1600, 1200).mount(<MRTTable   name="UnitTable" 
+          overrideMeta={{
+            tabLabels: ['Units', 'Unit Interests'],
+          }}
+        />, {
+          // Pass custom settings to the MRTTable component for the test
+          mrtOverrideMeta: {
+            tabLabels: ['Units', 'Unit Interests'],
+          },
+        });
+        // Wait for the API call to finish with a custom timeout and process the response
+        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then((response) => {
+          // Store the hits from the API response for later assertions or usage
+          responseHits = response.response.body.data.getESSimpleSearch.hits;
+        });
+      },
+      { wait: false } // Do not automatically wait for the intercepted request
+    );
+
+    // Select only the first 5 records
+    cy.get('input[type="checkbox"]').not('[aria-label="Toggle select all"]').each((checkbox, index) => {
+      if (index < 5) {
+        cy.wrap(checkbox).click();
+      }
+    });
+
+
+    // Initiate the bulk update process by clicking the bulk update button
+    cy.get('[data-testid="bulk-update"]').click();
+
+    // Find and interact with the field selection autocomplete input for choosing "Campaign Name"
+    cy.get('[data-testid="select-field-autocomplete"]', { timeout: 10000})
+    .should('be.visible')
+    .click({ force: true })
+
+    // Add custom CSS to adjust z-index
+    cy.addCustomCSS(`
+      .MuiAutocomplete-popper {
+        z-index: 9999 !important; // Adjust z-index as needed
+      }
+    `);
+
+    // Focus the input field and type
+    cy.get('[data-testid="select-field-autocomplete"] input', { timeout: 10000 })
+    .should('be.visible')
+    .click({ force: true })
+    .clear()
+
+    // Ensure the dropdown is visible
+    cy.get('.MuiAutocomplete-popper', { timeout: 10000 })
+    .should('be.visible');
+
   });
 });
