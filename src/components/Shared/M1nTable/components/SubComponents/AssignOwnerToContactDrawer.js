@@ -368,7 +368,7 @@ export default function AssignOwnerToContactDrawer({
     const contactIds = rows.map(row => row.contactId || row._id);
 
     const errorMsg = 'Failed to assign to contact owner';
-    Loader.createToast('contact-creation', 'Contact Bulk Update in progress');
+    Loader.createToast('contact-creation', `${ (rest.header === 'UnitTable') ? 'Unit' : 'Contact'} Bulk Update in progress`);
 
     if (field === 'Contact Owner') {
       assignOwnerToContact({
@@ -551,7 +551,28 @@ export default function AssignOwnerToContactDrawer({
               },
               refetchQueries: ["getESPaginatedList", "getESFilterList", "getCustomLayer"],
               awaitRefetchQueries: true,
-            })
+            }).then(res => {
+              resetESTableToggle.set(!resetESTableToggle.get())
+              if (res.data && res.data.updateShapes) {
+                const success = res.data.updateShapes.success
+                if (success) {
+                  Loader.successToast('contact-creation', "Updated")
+                  showSuccessMessage(`${field} Bulk Updated Successfully`)
+                  if (rest.onBulkUpdateComplete)
+                    rest.onBulkUpdateComplete()
+                } else {
+                  Loader.errorToast('contact-creation', "Updated")
+                }
+              } else {
+                Loader.errorToast('contact-creation', 'Failed');
+              }
+            },
+              err => {
+                // eslint-disable-next-line no-console
+                console.log(err);
+                Loader.errorToast('contact-creation', errorMsg);
+              }
+            );
 
           break;
 
