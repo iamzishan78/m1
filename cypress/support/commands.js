@@ -98,9 +98,7 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null, alias = 
 })
 
 Cypress.Commands.add('interceptAndWait', (dataKeys, interceptionFunction, options = { wait: true }, url = baseUrls[workSpace]) => {
-
-    const alias = dataKeys[0] + uuid();
-    cy.log(alias)
+    const alias = dataKeys[0];
 
     cy.intercept('POST', url, req => {
 
@@ -147,6 +145,14 @@ Cypress.Commands.add('interceptApiByIndex', (operationName, esIndex) => {
         }
     });
 })
+
+Cypress.Commands.add('addCustomCSS', (cssCode) => {
+    cy.window().then((win) => {
+      const style = win.document.createElement('style');
+      style.innerHTML = cssCode;
+      win.document.head.appendChild(style);
+    });
+  });
 
 // This command is to check api was successful or not
 Cypress.Commands.add('verifyApiResponse', (apiTitle) => {
