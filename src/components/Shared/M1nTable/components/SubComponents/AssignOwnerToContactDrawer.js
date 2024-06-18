@@ -381,7 +381,7 @@ export default function AssignOwnerToContactDrawer({
           contactIds,
           objectType: rest.header === "UnitTable" ? 'unit' : 'contact',
         },
-        refetchQueries: ["getESContacts"],
+        refetchQueries: rest.header === "UnitTable" ? ["getESSimpleSearch"] : ["getESContacts"],
         awaitRefetchQueries: true,
       }).then(
         (res) => {
