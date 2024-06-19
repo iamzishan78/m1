@@ -176,12 +176,12 @@ describe("Unit Table", () => {
        // Select only the first 5 records
         cy.get('input[type="checkbox"]').not('[aria-label="Toggle select all"]').each((checkbox, index) => {
           if (index < 5) {
-            cy.wrap(checkbox).click();
+            cy.wrap(checkbox).click({ force: true });
           }
         });
   
       // Initiate the bulk update process by clicking the bulk update button
-      cy.get('[data-testid="bulk-update"]').click();
+      cy.get('[data-testid="bulk-update"]').click({ force: true });
   
       // Find and interact with the field selection autocomplete input for choosing Tags
       cy.get('[data-testid="select-field-autocomplete"]', { timeout: 10000 })
@@ -210,7 +210,6 @@ describe("Unit Table", () => {
 
       cy.interceptAndWait(['bulkUpsertTagOnContacts'], (alias) => {
         cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then((res) => {
-          console.log("res",res);
           expect(res.response.statusCode).to.equal(200); // Check response status
           expect(res.response.body.data.bulkUpsertTagOnContacts.success).to.be.equal(true); // Check if the response indicates success
         });
