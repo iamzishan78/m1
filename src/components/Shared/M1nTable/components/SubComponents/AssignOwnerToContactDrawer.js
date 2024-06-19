@@ -35,6 +35,7 @@ import RelatedContact from "components/MRTTable/Common/Dialog/BulkUpdate/Related
 import { ADD_RELATED_CONTACTS } from "graphQL/useMutationRelatedContact";
 import { copy } from 'components/Shared/functions';
 import set from "lodash/set";
+import { CurrencyFormatCustomWithoutPrefix } from "components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix";
 
 const styles = () => ({
   topHeading: { fontWeight: 'bold' },
@@ -285,8 +286,8 @@ export default function AssignOwnerToContactDrawer({
 
   const unitTableFields = [
     { title: 'Campaign Name', value: 'campaignName' },
-     { title: 'Max Pricing', value: 'timeZone' },
-    { title: 'Target Pricing', value: 'timeZone' },
+     { title: 'Max Pricing (Per NRA)', value: 'uMaxUnitPricing' },
+    { title: 'Target Pricing (Per NRA)', value: 'uUnitPricing' },
     { title: 'Tags', value: 'contactStatus' }
   ];
   
@@ -463,6 +464,44 @@ export default function AssignOwnerToContactDrawer({
         }
       );
 
+    } else if (field === 'Max Pricing (Per NRA)' || field === 'Target Pricing (Per NRA)') {
+      const shapesToUpdate = rows.map(row =>  {
+        const customlayer = updateCampaign(copy(row.shapeJson), fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value, fieldKey);
+          return {
+            customLayer: customlayer,
+            customLayerId: row._id,
+            userId: getUser?._id,
+          }
+        });
+
+        updateShapes({
+          variables: {
+            shapes: shapesToUpdate,
+          },
+          refetchQueries: ["getESPaginatedList", "getESFilterList", "getCustomLayer"],
+          awaitRefetchQueries: true,
+        }).then(res => {
+          resetESTableToggle.set(!resetESTableToggle.get())
+          if (res.data && res.data.updateShapes) {
+            const success = res.data.updateShapes.success
+            if (success) {
+              Loader.successToast('contact-creation', "Updated")
+              showSuccessMessage(`${field} Bulk Updated Successfully`)
+              if (rest.onBulkUpdateComplete)
+                rest.onBulkUpdateComplete()
+            } else {
+              Loader.errorToast('contact-creation', "Updated")
+            }
+          } else {
+            Loader.errorToast('contact-creation', 'Failed');
+          }
+        },
+          err => {
+            // eslint-disable-next-line no-console
+            console.log(err);
+            Loader.errorToast('contact-creation', errorMsg);
+          }
+        );
     }
     else {
       const fieldToUpdate = { [fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value]: fieldKey }
