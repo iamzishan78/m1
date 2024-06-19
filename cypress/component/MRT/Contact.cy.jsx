@@ -154,7 +154,7 @@ describe('Contact Table', () => {
   });
 
   it('Sorts by Name & Last Updated & Primary Address', () => {
-    cy.wait(100);
+    cy.wait(1000);
 
     cy.mrtSortColumn({ column: columns[0] });
     cy.mrtSortColumn({ column: columns[1] });
