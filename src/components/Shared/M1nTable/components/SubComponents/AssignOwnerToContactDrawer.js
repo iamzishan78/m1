@@ -264,7 +264,7 @@ export default function AssignOwnerToContactDrawer({
   });
   const [updateShapes] = useMutation(UPDATE_SHAPES, {
     ...options,
-    refetchQueries: ['getESPaginatedList', 'getCustomLayer'],
+    refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
   });
   const [assignOwnerToContact] = useMutation(ASSIGN_OWNER_TO_CONTACT, options);
   const [updateBulkContact] = useMutation(UPDATEBULKCONTACT, options);
@@ -549,7 +549,7 @@ export default function AssignOwnerToContactDrawer({
               variables: {
                 shapes: shapesToUpdate,
               },
-              refetchQueries: ["getESPaginatedList", "getCustomLayer"],
+              refetchQueries: ["getESPaginatedList", "getESFilterList", "getCustomLayer"],
               awaitRefetchQueries: true,
             }).then(res => {
               resetESTableToggle.set(!resetESTableToggle.get())
