@@ -272,16 +272,16 @@ describe("Unit Table", () => {
 
     // Retrieve and store the name of the campaign selected for the update
     cy.get('[aria-labelledby="alert-dialog-slide-title"] [data-testid="campaign-name-chip"]')
-      .eq(0)
-      .invoke('text')
-      .then((campaignName) => {
-        // Intercept and wait for the 'getESSimpleSearch' API call again after clicking the action button to submit the update
-        cy.interceptAndWait(['updateShapes'], () => {
-          cy.get('[data-testid="action-button"]', { timeout: 5000 }).click();
-        });
-        cy.wait(10000);
-        // Assert that the campaign name displayed in the UI matches the one selected for the update
-        cy.get('[data-testid="campaign-name-chip"]').eq(0).should('have.text', campaignName);
+    .eq(0)
+    .invoke('text')
+    .then((campaignName) => {
+      // Intercept and wait for the 'getESSimpleSearch' API call again after clicking the action button to submit the update
+      cy.interceptAndWait(['updateShapes'], () => {
+        cy.get('[data-testid="action-button"]', { timeout: 5000 }).click();
       });
+      cy.wait(10000);
+      // Assert that the campaign name displayed in the UI matches the one selected for the update
+      cy.get('[data-testid="campaign-name-chip"]').eq(0).should('have.text', campaignName);
+    });
   });
 });
