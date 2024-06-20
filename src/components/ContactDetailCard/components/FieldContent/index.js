@@ -204,7 +204,6 @@ export default function FieldContent({
 
     // Iterate over fieldNames and assign corresponding values from content object
     fieldNames.forEach(field => fields[field] = content[field]);
-
     // Check if editContent exists and has more than one property, return if true
     // if editContent has more than one property we don't need to close popup on blur
     if (Object.keys(editContent || {})?.length > 1) return;
@@ -507,6 +506,8 @@ export default function FieldContent({
           content={inputsArray}
           onClick={handleEditClick}
           isCopy={true}
+          setEditContent={setEditContent}
+          editContent={content}
         />
       )}
       {fieldType === FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />}
