@@ -5,6 +5,7 @@ import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import get from "lodash/get";
 import { TextField, CircularProgress } from "@material-ui/core";
 
+// Options for the relationship type dropdown
 const RelationshipTypeOptions = [
   'Child',
   'Cousin',
@@ -12,15 +13,18 @@ const RelationshipTypeOptions = [
   'Spouse'
 ]
 
+// The main component function
 function RelatedContact({ setFieldKey }) {
+  // useLazyQuery hook to get ES search results
   const [getESSearch, { data: esFilter, loading }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
     fetchPolicy: "no-cache",
   });
 
+  // State variables for selected contact and relationship type
   const [descriptorObject, setDescriptorObject] = useState();
   const [relationshipType, setRelationshipType] = useState();
 
-
+  // Function to fetch contacts based on search input
   const getContacts = (search = "") => {
     getESSearch({
       variables: {
@@ -46,15 +50,17 @@ function RelatedContact({ setFieldKey }) {
     });
   }
 
+  // Fetch contacts on component mount
   useEffect(() => {
     getContacts()
   }, [])
 
+  // Handle input change to fetch new contacts based on user input
   const onInputChange = (_, value) => {
     getContacts(value);
   }
 
-
+  // Update parent component's state when descriptorObject or relationshipType changes
   useEffect(() => {
     if (descriptorObject && relationshipType) {
       setFieldKey({
@@ -66,6 +72,7 @@ function RelatedContact({ setFieldKey }) {
     }
   }, [descriptorObject, relationshipType]);
 
+  // Memoize contact options to avoid unnecessary recalculations
   const formattedContactOptions = useMemo(() => {
     const options = get(esFilter, "getESSimpleSearch.hits", []).map(option => ({
       value: option._id,
@@ -136,4 +143,5 @@ function RelatedContact({ setFieldKey }) {
   )
 }
 
+// Memoize the component to prevent unnecessary re-renders
 export default memo(RelatedContact)

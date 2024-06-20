@@ -196,7 +196,7 @@ function RelatedContactsTable(props) {
         options={{
           ...props.options,
           onRowClick: (rowData, { dataIndex, rowIndex }) => {
-            props.setDrawer && props.setDrawer("agrmt-existing");
+            props.setDrawer && props.setDrawer("agrmt-existing"); // add check Only call the function if it passes 
             selectRow({ ...props.rows[dataIndex] });
           },
           customToolbar: () => {

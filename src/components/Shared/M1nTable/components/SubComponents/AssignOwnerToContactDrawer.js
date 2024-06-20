@@ -89,112 +89,134 @@ const styles = () => ({
 
 const useStyles = makeStyles(styles);
 
+/**
+ * Component that renders different input fields based on the provided field type.
+ * @param {Object} props - Component props.
+ * @param {string} props.field - Field type to render.
+ * @param {Function} props.setFieldKey - Function to set the field value.
+ * @param {Function} props.setCampaigns - Function to set the campaigns array.
+ * @param {Function} props.setContactOwner - Function to set the contact owner.
+ * @param {string} props.contactOwner - Current contact owner value.
+ * @param {string} props.fieldKey - Current field value.
+ * @param {Array} props.campaigns - Current campaigns array.
+ */
 function SelectedField({ field, setFieldKey, setCampaigns, setContactOwner, contactOwner, fieldKey, campaigns }) {
-  let filterKey = '';
+  let filterKey = ''; // Initialize filterKey variable to determine specific filter criteria
+
+  // Switch statement to render different input fields based on the field type
   switch (field) {
     case 'Contact Owner':
+      // Renders autocomplete field for selecting contact owner
       return (
         <ContactAutoComplete
           value={contactOwner}
           onChange={(e, user) => {
             const value = user && user.value ? user.value : '';
-            setFieldKey(value);
-            setContactOwner(value);
+            setFieldKey(value); // Sets the field key value
+            setContactOwner(value); // Sets the contact owner value
           }}
         />
       );
     case 'Campaign Name':
-      // filterKey = 'campaignName.keyword'
+      // Renders field for updating campaign name
+      // filterKey is not set for this case
       return (
         <CampaignNameField
           value={fieldKey}
-          className={classes.maxWidth}
+          className={classes.maxWidth} // Uses CSS class 'maxWidth'
           onChange={(values, id) => {
-            setFieldKey(values);
-            setCampaigns([...campaigns, { _id: id, campaignName: values[values.length - 1] }])
+            setFieldKey(values); // Sets the field key value
+            setCampaigns([...campaigns, { _id: id, campaignName: values[values.length - 1] }]); // Updates campaigns array
           }}
-          fullWidth
-          targetLabel="Contact"
-          simpleChips
+          fullWidth // Renders field with full width
+          targetLabel="Contact" // Sets target label to 'Contact'
+          simpleChips // Uses simple chips for rendering
         />
       );
     case 'Stage':
-      filterKey = 'status.keyword';
+      filterKey = 'status.keyword'; // Sets filterKey to 'status.keyword' for filtering by stage
       break;
     case 'Status':
-      filterKey = 'contactStatus.keyword';
+      filterKey = 'contactStatus.keyword'; // Sets filterKey to 'contactStatus.keyword' for filtering by status
       break;
     case 'Industry Type':
     case 'Lead Source':
     case 'Territory':
+      // Renders text field for entering values for industry type, lead source, or territory
       return (
         <TextField
           placeholder="Enter a value"
           value={fieldKey}
           onChange={({ target }) => {
-            setFieldKey(target.value);
+            setFieldKey(target.value); // Sets the field key value based on input
           }}
-          autoFocus={inputFocused}
-          className={classes.fullWidth}
+          autoFocus={inputFocused} // Automatically focuses on input if inputFocused is true
+          className={classes.fullWidth} // Uses CSS class 'fullWidth'
         />
       );
     case 'Time Zone':
+      // Renders autocomplete field for selecting time zone
       return (
         <Autocomplete
           id="combo-box-demo"
-          options={timeZoneOptions}
+          options={timeZoneOptions} // Provides time zone options for selection
           onChange={(e, newValue) => {
-            setFieldKey(newValue);
+            setFieldKey(newValue); // Sets the field key value based on selected time zone
           }}
-          value={fieldKey}
-          renderInput={params => <TextField {...params} size="small" placeholder="Select Timezone" />}
+          value={fieldKey} // Current selected time zone value
+          renderInput={params => <TextField {...params} size="small" placeholder="Select Timezone" />} // Renders input field for selecting time zone
         />
       );
     case 'Tags':
+      // Renders autocomplete field for selecting multiple tags
       return (
         <Autocomplete
-          multiple
-          className={classes.chip}
+          multiple // Allows selecting multiple tags
+          className={classes.chip} // Uses CSS class 'chip' for styling
           id="update-contacts-tags"
-          options={publicTags?.publicTags || []}
-          getOptionLabel={option => option}
-          value={fieldKey || []}
-          onChange={(e, newTagsArr) => setFieldKey(newTagsArr)}
-          renderInput={params => <TextField {...params} variant="outlined" className={classes.input} />}
+          options={publicTags?.publicTags || []} // Provides options for tags selection
+          getOptionLabel={option => option} // Retrieves label for each tag option
+          value={fieldKey || []} // Current selected tags array
+          onChange={(e, newTagsArr) => setFieldKey(newTagsArr)} // Sets the field key value based on selected tags array
+          renderInput={params => <TextField {...params} variant="outlined" className={classes.input} />} // Renders input field for selecting tags
         />
       );
-    // .. etc
+    // Additional cases can be added as needed for different field types
+
     case 'Entity Type':
-      filterKey = 'ownerType.keyword';
+      filterKey = 'ownerType.keyword'; // Sets filterKey to 'ownerType.keyword' for filtering by entity type
       return (
         <EntityType
           setDocumentType={value => {
-            setFieldKey(value._id);
+            setFieldKey(value._id); // Sets the field key value based on selected entity type
           }}
-          value={fieldKey}
+          value={fieldKey} // Current selected entity type value
         />
       );
     case 'Related Contact':
+      // Renders component for selecting related contacts
       return (
         <RelatedContact setFieldKey={setFieldKey} />
-      )
+      );
     default:
   }
 
+  // Conditional rendering based on filterKey value
   if (filterKey) {
     return (
       <FieldBulkAutoComplete
-        value={fieldKey || []}
-        placeholder={`Select ${field}`}
-        filterKey={filterKey}
+        value={fieldKey || []} // Current selected value or empty array
+        placeholder={`Select ${field}`} // Placeholder text for the field
+        filterKey={filterKey} // Sets filter key based on field type
         onChange={(e, fieldKey) => {
-          setFieldKey(fieldKey.value);
+          setFieldKey(fieldKey.value); // Sets the field key value based on selected value
         }}
       />
     );
   }
-  return '';
+  return ''; // Default case returns an empty string
 }
+
 
 export default function AssignOwnerToContactDrawer({
   onClose,
@@ -248,6 +270,7 @@ export default function AssignOwnerToContactDrawer({
     },
   });
 
+  //add RelatedContacts Api 
   const [addRelatedContacts, { data: response, loading: isSubmitting }] = useMutation(ADD_RELATED_CONTACTS, {
     onCompleted: () => {
       tableGlobalController.refetch();
@@ -372,6 +395,7 @@ export default function AssignOwnerToContactDrawer({
         }
       );
     } else if (field === 'Related Contact') {
+      // calling addRelatedContacts api
       addRelatedContacts({
         variables: {
           relationshipType: fieldKey?.relationshipType,
