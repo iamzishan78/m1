@@ -10,3 +10,10 @@ export const UPDATELAYERSETTINGS = gql`
     }
   }
 `;
+
+// Mutation to update all layer settings for the user
+export const UPDATE_ALL_USER_LAYERS_SETTINGS = gql`
+  mutation updateAllUserLayersVisibility($layersToShow: [String]) {
+    updateAllUserLayersVisibility(layersToShow: $layersToShow)
+  }
+`;

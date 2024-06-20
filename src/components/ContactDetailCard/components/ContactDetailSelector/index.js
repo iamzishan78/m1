@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useMemo } from "react";
 import { get } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "AppContext";
@@ -11,7 +11,6 @@ import { TabPanel } from "components/Shared/TabPanels";
 import ContactDetailedInfo from "components/ContactDetailedInfo/ContactDetailedInfo";
 import ActivitiesTable from "components/Table/Activities/ActivitiesTable";
 import RelatedContactsTable from "components/Table/Contact/RelatedContactTable";
-import ContactWellInterestTable from "components/Table/Contact/ContactWellInterestTable";
 import ContactParcelInterestTable from "components/Table/Contact/ContactParcelInterestTable";
 import ContactTaxRollInterestTable from "components/Table/Contact/ContactTaxRollInterestTable";
 import ContactRelatedAgreementTable from "components/Table/Contact/ContactRelatedAgreementTable";
@@ -24,6 +23,9 @@ import { contactDetailInitialData } from "./data";
 
 import { CONTACT_SUMMARY } from "graphQL/useQueryContactSummary";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import moment from "moment";
+import sortBy from 'lodash/sortBy';
+import MRTTable from 'components/MRTTable';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -148,6 +150,8 @@ function MapGridCard(props) {
   const userGridViewFilters = useSelector(({ session }) => session.userGridViewSettings?.filters);
 
   const dispatch = useDispatch();
+  // Initialize state to hold sorted purchase data
+  const [sortedPurchaseData, setSortedPurchaseData] = useState([]);
 
   useEffect(() => {
     if (props.contactData._id)
@@ -181,8 +185,25 @@ function MapGridCard(props) {
     }
   };
 
+  useEffect(() => {
+    if (props.purchaseData.length > 0) {
+      // Sort the purchase data by the system date time in descending order (latest first)
+      const sortedPurchaseData = sortBy(props.purchaseData, (item) => moment(item.sysDateTime).valueOf()).reverse();
+      setSortedPurchaseData(sortedPurchaseData); // Update the state with the sorted purchase data
+    }
+  }, [props.purchaseData]);
+
+  const contactWellInterestoverrideMeta = useMemo(() => ({
+    defaultFilters: [
+      { field: 'contact._id', value: props.contactData._id || '' },
+    ],
+    customProps: {
+      contactId: props.contactData._id
+    }
+  }), [props.contactData._id]);
+
   return (
-    <div className={classes.card}>
+    <div className={classes.card} >
       <Card className={classes.dockMenu}>
         {selectedOwner ? (
           <OwnersSummaryCard />
@@ -225,7 +246,7 @@ function MapGridCard(props) {
                 <Grid item md={10} style={{ padding: "0px" }}>
                   <div style={{ position: "relative" }} classes={classes.gridTables}>
                     {searchTapValue.value === "contactInformation" && (
-                      <ContactDetailedInfo user={stateApp.user} purchaseData={props.purchaseData} contactData={props.contactData} />
+                      <ContactDetailedInfo user={stateApp.user} purchaseData={sortedPurchaseData} contactData={props.contactData} />
                     )}
                     {searchTapValue.value === "activities" && (
                       <ActivitiesTable
@@ -260,14 +281,7 @@ function MapGridCard(props) {
                       />
                     )}
                     {searchTapValue.value === "wellInterests" && (
-                      <ContactWellInterestTable
-                        parent="assocTaxRollInterests"
-                        header={"Well Interests"}
-                        targetLabel="well"
-                        contactId={props.contactData._id}
-                        id="wellInterestsTable"
-                        showTracks
-                      />
+                      <MRTTable name="ContactWellInterestTable" overrideMeta={contactWellInterestoverrideMeta} />
                     )}
                     {searchTapValue.value === "unitInterests" && (
                       <UnitInterestsTable
@@ -315,7 +329,7 @@ function MapGridCard(props) {
           </div>
         )}
       </Card>
-    </div>
+    </div >
   );
 }
 

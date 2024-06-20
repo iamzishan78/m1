@@ -25,6 +25,7 @@ import CustomAvatar from "components/Shared/ui/CustomAvatar";
 import moment from "moment";
 import { getRandomColor } from "components/Shared/functions/ui.js";
 import vf_currency from "../Shared/valueformatters/vf_currency.js";
+import vf_number from "../Shared/valueformatters/vf_number.js";
 import DocViewer from "../Shared/DocViewer";
 import { validateEmail } from "components/_Login/loginHelpers";
 import { GETPIPELINE } from "graphQL/useQueryPipeline";
@@ -173,6 +174,7 @@ const CARD_FIELD_MAPPER = {
   closeDate: { label: "Close Date", format: (value) => formatDate(value) },
   offerPrice: { label: "Offer Price", format: (value) => vf_currency(value) },
   closedPrice: { label: "Closed Price", format: (value) => vf_currency(value) },
+  totalNRA: { label: "Total NRA", format: (value) => vf_number(value) },
 };
 
 const Transact = () => {

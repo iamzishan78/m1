@@ -74,6 +74,7 @@ function ParcelAgreementTable(props) {
             hit.effectiveDate = hit.effectiveDate ? moment(hit.effectiveDate).format('MM/DD/YYYY') : ''
             hit.executionDate = hit.executionDate ? moment(hit.executionDate).format('MM/DD/YYYY') : ''
             hit.fileDate = hit.fileDate ? moment(hit.fileDate).format('MM/DD/YYYY') : ''
+            hit.commentsCounter = hit.comments ? hit.comments.length : 0;
             if (hit?.tags?.length > 0) {
                 const tags = hit.tags.map((tag) => tag.tag)
                 if (tags[0])

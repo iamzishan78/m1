@@ -327,19 +327,20 @@ const Documents = memo((props) => {
                       }
                       interactive
                     >
-                      <div>
+                      <div 
+                        onClick={() => {
+                          if ((fileExtension === "pdf") || (new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension))) { // Enable view doc for images and pdf
+                            setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: value.name } });
+                          } else {
+                            handleViewFile(files?.getFileDescriptors[key].fileId);
+                          }
+                        }}
+                      >
                         {new RegExp(["jpg", "jpeg", "png", "bmp"].join("|")).test(fileExtension) ? (
                           <img src={value.uri} alt={value.name} className={classes.forImage}></img>
                         ) : (
                           <div
                             className={classes.forImageContainer}
-                            onClick={() => {
-                              if (fileExtension === "pdf") {
-                                setStateApp({ ...stateApp, viewDoc: { uri: value.uri, name: value.name } });
-                              } else {
-                                handleViewFile(files?.getFileDescriptors[key].fileId);
-                              }
-                            }}
                           >
                             {get_file_icon(fileExtension)}
                           </div>

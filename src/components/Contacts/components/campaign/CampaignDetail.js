@@ -102,6 +102,7 @@ const CampaignDetail = ({ viewDoc }) => {
   const [upsertCampaign] = useMutation(UPDATE_CAMPAIGN);
 
   const { control, watch, reset } = useForm();
+  const inputRef = useRef(null);
 
   const campaignName = watch("name", "");
   const classes = useStyles({ name: campaignName, metaCollapse });
@@ -253,6 +254,7 @@ const CampaignDetail = ({ viewDoc }) => {
                         placeholder="Click to enter campaign name"
                         required
                         multiline
+                        inputRef={inputRef}
                         error={!campaignName}
                         helperText={!campaignName ? "Enter campaign name to get started" : ""}
                         // onChange={({ target }) => setTitle(target.value)}
@@ -262,6 +264,16 @@ const CampaignDetail = ({ viewDoc }) => {
                             focused: classes.focused,
                             notchedOutline: classes.notchedOutline,
                           },
+                        }}
+                        onFocus={(e) => {
+                          // Set focus on the input element when the TextField is clicked
+                          inputRef.current && inputRef.current.focus();
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            inputRef.current.blur();
+                          }
                         }}
                         onBlur={({ target }) => updateCampaignInformation("name", target.value.trim())}
                         data-testid="campaign-name-text-field"

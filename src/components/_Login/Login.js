@@ -104,7 +104,7 @@ const Login = (props) => {
 
   let history = props.history;
 
-  const handleLogin = (loginResp, userMapSettings, authGraphQLResponse, authGraphQLToken) => {
+  const handleLogin = (loginResp, userMapSettings, authGraphQLResponse, authGraphQLToken, authUser) => {
     let mongoUser,
       sessionData,
       mapVars = stateApp.mapVars,
@@ -141,7 +141,7 @@ const Login = (props) => {
       features: sessionData.features,
       tenantId: sessionData.tenantId,
       mongoId: mongoUser._id,
-      roles: mongoUser.roles,
+      roles: authUser?.roles || mongoUser.roles,
       authToken: globalStateValues.bypassLogin ? sessionData.token : authGraphQLResponse.authenticationToken,
       accessToken: globalStateValues.bypassLogin ? sessionData.token : authGraphQLToken.idToken,
       authTokenExpires,
@@ -537,7 +537,7 @@ const Login = (props) => {
     }
     const userSettingsResp = await userSettings(mongoUser._id, authGraphQLResponse.authenticationToken, authGraphQLToken.idToken, 'baseMap');
 
-    handleLogin(loginResp, userSettingsResp, authGraphQLResponse, authGraphQLToken);
+    handleLogin(loginResp, userSettingsResp, authGraphQLResponse, authGraphQLToken, authUser);
   }
 
   async function loginUser(user, authToken, idToken) {

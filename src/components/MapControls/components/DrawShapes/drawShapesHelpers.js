@@ -226,7 +226,11 @@ export const getNewShapeFromSelectedQuarters = (currentFeature, selectedQuarters
     if (index === 0) {
       newShape = quarterPolygons[selectedQuarter]
     } else {
-      newShape = turf.union(quarterPolygons[selectedQuarter], newShape);
+      try {
+        newShape = turf.union(quarterPolygons[selectedQuarter], newShape);
+      } catch (e) {
+        console.log(e)
+      }
     }
   });
 

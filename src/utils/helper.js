@@ -272,6 +272,28 @@ export const getAddressUrl = (owner) => {
   return address;
 };
 
+export const getZillowAddressUrl = (owner) => {  // create and return zillow link from the address
+  let address = "https://www.zillow.com/homes/";
+  const { address1, city, state, zip } = owner;  
+
+  if (address1) address += `${encodeURIComponent(address1)},`;
+  if (city) address += `${encodeURIComponent(city)},`;
+  if (state) address += `${encodeURIComponent(state)},`;
+  if (zip) address += `${encodeURIComponent(zip)}`;
+
+  // Adding '_rb' to the end of the Zillow link
+  address += "_rb/";
+
+  return address;
+};
+
+// Function to generate the OpenCorporates search URL for a given company name.
+export const getOpenCorporatesUrl = (companyName) => {
+  const baseUrl = 'https://opencorporates.com/companies?q=';
+  const encodedCompanyName = encodeURIComponent(companyName);
+  return `${baseUrl}${encodedCompanyName}`;
+}
+ 
 export const getMapFilters = (stateNav, searchInput, gridPolygonString, format) => {
   const extendSearchQuery = searchInput
 

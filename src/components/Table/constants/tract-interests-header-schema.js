@@ -339,7 +339,7 @@ const TractInterestsHeadCells = [
         },
     },
 
-  
+
 
 
     {
@@ -491,6 +491,7 @@ const TractInterestsHeadCells = [
     },
     {
         name: "commentsCounter",
+        esKey: "commentsCount",
         label: " ",
         options: {
             ignoreGlobal: true,

@@ -12,6 +12,7 @@ import ActivitiesDashboard from "components/Activities/components/ActivitiesDash
 import RigsCard from "components/Dashboard/components/RigsCard";
 import PermitsCard from "components/Dashboard/components/PermitsCard";
 import ProdCard from "components/Dashboard/components/ProdCard";
+import AdvancedSearch from "components/Land/components/AdvancedSearch";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import QuickActionPanel from "components/Land/components/QuickActionPanel";
 import { analyticsManagementRoutes } from "utils/data";
@@ -24,7 +25,8 @@ const Components = {
   RigsCard: RigsCard,
   PermitsCard: PermitsCard,
   ProdCard: ProdCard,
-  RevenuePropertyDetails 
+  RevenuePropertyDetails,
+  AdvancedSearch: AdvancedSearch
 };
 
 export default function Analytics() {

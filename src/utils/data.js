@@ -234,6 +234,16 @@ export const analyticsManagementRoutes = {
     isDefault: true,
     hideSearch: true,
   },
+  ADVANCED_SEARCH: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Advanced Search",
+    link: "/analytics/advancedSearch",
+    component: "AdvancedSearch",
+    value: "AdvancedSearch",
+    search: true,
+    isDefault: true,
+    hideSearch: true,
+  },
   REVENUE_PROPERTY_DETAILS: {
     featureFlag: "CONTACTSUBMENU",
     title: "Revenue",
@@ -514,6 +524,7 @@ export const AdminManagementRoutes = {
     search: true,
     isDefault: true,
     noCheck: true,
+    showSettingString: true,
   },
   LAND: {
     featureFlag: "LANDMODULE",
@@ -523,6 +534,7 @@ export const AdminManagementRoutes = {
     value: "Activities",
     search: true,
     isDefault: true,
+    showSettingString: true,
   },
   REVENUE: {
     featureFlag: "REVENUEMODULE",
@@ -532,6 +544,15 @@ export const AdminManagementRoutes = {
     value: "Activities",
     search: true,
     isDefault: true,
+    showSettingString: true,
+  },
+  FLATTENING: {
+    featureFlag: "AlWAYSSHOW",
+    title: "Flattening",
+    link: "/admin/runflattening",
+    component: "Flattening",
+    noCheck: true,
+    showSettingString: false,
   },
   // CUSTOMIZATIONS: {
   //   featureFlag: "CONTACTSUBMENU",
@@ -627,3 +648,7 @@ export const bypassTenants = [
   // "Providence",
   // "Pheasant"
 ];
+
+export const OWNERTYPE = {
+  CORPORATION: "CORPORATION" 
+}

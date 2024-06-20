@@ -6,6 +6,8 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import vf_currency from "components/Shared/valueformatters/vf_currency.js";
+import vf_number from 'components/Shared/valueformatters/vf_number';
 
 const esIndex = 'shapes_flat';
 
@@ -40,6 +42,9 @@ const UnitMeta = {
 	maxTableHeight: 'calc(100vh - 215px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
+	fetchMetaData: {
+		category: 'Unit', // enable to show custom field inside unit grid
+	},
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
@@ -126,7 +131,7 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uAcres.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uAcres,
+			accessorFn: row => vf_number(row?.shapeJson?.properties?.uAcres),
 			id: 'shapeJson.properties.uAcres',
 			header: 'Unit Acres',
 		},
@@ -159,7 +164,7 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uUnitPricing.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uUnitPricing,
+			accessorFn: row => vf_currency(row?.shapeJson?.properties?.uUnitPricing), // format value with $ sign 
 			id: 'shapeJson.properties.uUnitPricing',
 			header: 'Target Price/Acre',
 		},
@@ -167,7 +172,7 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uMaxUnitPricing.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uMaxUnitPricing,
+			accessorFn: row => vf_currency(row?.shapeJson?.properties?.uMaxUnitPricing), // format value with $ sign
 			id: 'shapeJson.properties.uMaxUnitPricing',
 			header: 'Max Price/Acre',
 		},
@@ -238,6 +243,8 @@ const UnitMeta = {
 
 				return <FlyToMap id={id} type='unit' />;
 			},
+			isHiddenFieldExport: true, // Hide location field from the export csv
+			hidden: true, // Hide location field from the export
 		},
 	],
 };

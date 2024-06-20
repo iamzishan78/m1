@@ -6,6 +6,7 @@ export const showIfUserDefinedLayer = (stateApp) => {
     return stateApp.selectedUserDefinedLayer !== null &&
         stateApp.currentFeature?.source !== "parcels_source" &&
         stateApp.currentFeature?.source !== "units_source" &&
+        stateApp.currentFeature?.source !== "area of interest_source" &&
         stateApp.currentFeature?.source !== "interests_source" &&
 
         stateApp.currentFeature?.source !== "agreements_source" &&
@@ -29,7 +30,7 @@ export const ifDefaultLayers = (identifier) => {
 }
 
 export const ifDefaultSources = (source) => {
-    return source === "parcels_source" || source === "interests_source" || source === "units_source" || source === "agreements_source" ||
+    return source === "parcels_source" || ["interests_source", "area of interest_source"].includes(source) || source === "units_source" || source === "agreements_source" ||
         source === "contracts_source" || source === "deeds_source" || source === "leases_source" || source === "surfaces_source"
 }
 
@@ -39,7 +40,9 @@ export const ifGenericShapeSource = (source) => {
 }
 
 export const ifFileShapeSource = source => {
+    // Check if source is not in predefined sources and isn't a serach layer
     return ![
+        'area of interest_source',
         'interests_source',
         'units_source',
         'agreements_source',
@@ -48,7 +51,7 @@ export const ifFileShapeSource = source => {
         'leases_source',
         'surfaces_source',
         'parcels_source',
-    ].includes(source);
+    ].includes(source) && !source.includes('_from_search_user_defined_source');
 };
 
 export const setLayerLabelLayout = (layerId, labelLayout) => {

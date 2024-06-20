@@ -19,7 +19,7 @@ export default function LandAppBar() {
         <Grid container direction="row" display="flex" justify="flex-start" alignItems="center">
           <Grid item md={2.5}>
             <Typography variant="h5" style={{ color: "black", fontWeight: "bold" }}>
-              {activeModule.title} Settings
+              {activeModule.title} {activeModule.showSettingString && 'Settings'}
             </Typography>
           </Grid>
         </Grid>

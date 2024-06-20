@@ -6,22 +6,27 @@ import ldata from '../../fixtures/ldata.json';
 import { headers } from '../../cypressUtils/cypressHeaders';
 import { basic_timeouts } from '../../cypressUtils/data';
 
+// Generate a unique source ID using UUID v4
 const sourceId = uuid();
 
+// Define the filename for the CSV file
 const fileName = 'Checkdetail Test Upload.csv';
 
-// let job = null;
-
-describe('BulkUpload Component Check Details Uplaod', () => {
+// Describe block for the test suite
+describe('BulkUpload Component Check Details Upload', () => {
+  // Before each test case, mount the BulkUpload component
   beforeEach(() => {
     cy.viewport(1800, 1200).mount(
       <BulkUpload routes={[]} initialJobType="CHECKDETAILS" />
     );
   });
 
-  it('Check Details Uplaod works', () => {
+  // Test case for Check Details Upload functionality
+  it('Check Details Upload works', () => {
+    // Type the generated source ID into the input field
     cy.get('#sourceId').type(sourceId);
 
+    // Select the CSV file using the file input
     cy.get('[data-testid="csv-dropzone"] input', { force: true }).selectFile(
       `cypress/files/${fileName}`,
       {
@@ -29,32 +34,38 @@ describe('BulkUpload Component Check Details Uplaod', () => {
       }
     );
 
+    // Wait for 500 milliseconds
     cy.wait(500);
 
+    // Click the Continue button
     cy.get('#Continue-button').click();
 
+    // Wait for 500 milliseconds
     cy.wait(500);
 
+    // Intercept and wait for the createJob request, then perform assertions
     cy.interceptAndWait(
       ['createJob'],
       alias => {
-        cy.get('#Upload-button').click();
+        cy.get('#Upload-button').click(); // Click the Upload button
 
         cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
-          const jobId = response.request.body.variables.jobId;
+          const jobId = response.request.body.variables.jobId; // Extract jobId from the response
 
           const callback = res => {
-            // job = res;
+            // Callback function
           };
 
-          cy.pollJobStatus({ jobId, callback });
+          cy.pollJobStatus({ jobId, callback }); // Poll the job status
         });
       },
-      { wait: false }
+      { wait: false } // Set wait option to false
     );
   });
 
-  it('Check Details Uplaod is verified', () => {
+  // Test case for verifying the Check Details Upload
+  it('Check Details Upload is verified', () => {
+    // Send a request to verify the Check Details Upload
     cy.request({
       method: 'POST',
       url: ldata.url,
@@ -64,18 +75,19 @@ describe('BulkUpload Component Check Details Uplaod', () => {
         variables: {
           sourceId,
           purchaserName: 'Cypress Test Upload',
-          propertyNames: ['1397122.1', '1397122.2'],
+          propertyNames: ['Test Property 1', 'Test Property 2'],
           propertyNumbers: ['1397122.1', '1397122.2'],
           propertyCount: 2,
           checkCount: 1,
           checkDetailCount: 5,
         },
-        query: VERIFY_CHECK_DETAIL_JOB.loc.source.body,
+        query: VERIFY_CHECK_DETAIL_JOB.loc.source.body, // GraphQL query
       },
-      timeout: basic_timeouts.longTimeout,
+      timeout: basic_timeouts.longTimeout, // Set timeout
     }).then(response => {
-      const res = response.body.data.verifyCheckDetailsJob;
+      const res = response.body.data.verifyCheckDetailsJob; // Extract response data
 
+      // Log assertions
       Cypress.log({
         name: 'Property Count Match',
         message: res.data.doesPopertyCountMatch,
@@ -101,8 +113,9 @@ describe('BulkUpload Component Check Details Uplaod', () => {
         message: res.data.propertiesLinkedCorrectly,
       });
 
-      expect(response.status).to.equal(200);
-      expect(res.success).to.be.equal(true);
+      // Assertions
+      expect(response.status).to.equal(200); // Check response status
+      expect(res.success).to.be.equal(true); // Check if the response indicates success
     });
   });
 });

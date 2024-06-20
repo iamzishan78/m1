@@ -31,6 +31,7 @@ function OwnerPerUnitTableDialogs() {
 					shapeId={rest?.shapeId}
 					uAcres={rest?.uAcres}
 					uUnitPricing={rest?.uUnitPricing}
+					uMaxUnitPricing={rest?.uMaxUnitPricing}
 					shapeType={rest?.shapeType}
 					selectedRow={rest?.selectedRow}
 					onClose={handleCloseDialog}

@@ -134,6 +134,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     qtr: [null, null, null, null],
     customLayer: props.customLayerId,
     deals: [],
+    dataSource: ''
   });
   const [newContact, setNewContact] = useState({
     firstName: '',
@@ -170,6 +171,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
   useEffect(() => {
     if (selectedRow) {
+      console.log(selectedRow)
       const {
         cost_bearing,
         cost_bearing_high_value,
@@ -205,8 +207,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         campaignName,
         seller_asking_price,
         competitor_offer_price,
-        actual_offer_price
-
+        actual_offer_price,
+        dataSource
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
 
@@ -231,6 +233,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         nra: nra || null,
         depthFrom: depthFrom || '',
         depthTo: depthTo || '',
+        dataSource: dataSource || '',
         qtr: qtr || [null, null, null, null],
         nonExecRightsOnly,
         leaseStatus,
@@ -449,6 +452,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       net_acres: null,
       depthFrom: '',
       depthTo: '',
+      dataSource: '',
       nra: null,
       qtr: [null, null, null, null],
       customLayer: props.customLayerId,
@@ -1710,6 +1714,28 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 )}
               />
             </Grid>
+            <Grid item xs={12}>
+                <h3>Data Source</h3>
+
+                <Controller
+                  control={control}
+                  name="dataSource"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="text"
+                      value={newOwner.dataSource}
+                      fullWidth
+                      onChange={e => {
+                        setNewOwner({
+                          ...newOwner,
+                          dataSource: e.target.value,
+                        });
+                      }}
+                    />
+                  )}
+                />
+              </Grid>
             <Grid item xs={12}>
               <h3>Depth Restrictions</h3>
               <RadioGroup
