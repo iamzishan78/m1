@@ -41,6 +41,7 @@ import { UPDATE_META_DATA } from "graphQL/useMutationUpdateMetaData";
 import { colorPallete } from "components/Table/helpers";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { tableController, tableGlobalController } from "hookstate/tableController";
+import { globalStateController } from "hookstate/globalStateController";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -340,6 +341,10 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
       selectedMeta: null,
     }));
 
+    // Using for metaa fields other then grid
+    globalStateController?.updateState?.({
+      showFieldModal: false,
+    });
     TableController?.updateState?.({
       showFieldModal: false,
     });

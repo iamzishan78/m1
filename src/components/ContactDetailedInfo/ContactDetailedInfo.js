@@ -6,7 +6,10 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import Button from '@material-ui/core/Button';
+import AddIcon from "@material-ui/icons/Add";
 import { useHistory } from "react-router-dom";
+import { useLazyQuery } from '@apollo/client';
 import { Grid, Box, FormControlLabel, FormGroup, Switch } from "@material-ui/core";
 import moment from "moment";
 
@@ -18,6 +21,9 @@ import {
   featureFlagChanges,
 } from "components/ContactDetailedInfo/helper";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
+import { globalStateController } from "hookstate/globalStateController";
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+
 
 const AntSwitch = withStyles((theme) => ({
   root: {
@@ -196,6 +202,18 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     padding: "20px 2px 4px 2px",
   },
+  addDataButton: {
+    position: "relative",
+    bottom: "10px",
+    right: "20px",
+    backgroundColor: "white",
+    color: "black",
+    textTransform: "capitalize",
+    "&:hover": {
+      backgroundColor: theme.palette.common.white,
+      opacity: 0.15,
+    },
+  },
 }));
 
 export default function DetailInfo(props) {
@@ -203,6 +221,12 @@ export default function DetailInfo(props) {
   const [showEmpty, setShowEmpty] = useState(true);
   const [selectedTab, setSelectedTab] = useState("Basic Info");
   const [selectedPurchaseData, setSelectedPurchaseData] = useState("");
+
+  // State for Custom_Data fields
+  const [metafields, setMetaFields] = useState([]);
+
+  const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
+
   const classes = useStyles();
   let history = useHistory();
   const [loading, setLoading] = useState(false);
@@ -226,6 +250,22 @@ export default function DetailInfo(props) {
     }
     update();
   }, [props.contactData]);
+
+  // Will get custom data on first render
+  useEffect(() => {
+    getMetaData({
+      variables: {
+        user: null,
+        category: "Contacts",
+      },
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!metaDataRes?.getMetaData?.metaData) return;
+
+    setMetaFields(metaDataRes?.getMetaData?.metaData);
+  }, [metaDataRes]);
 
   const handleEmptyFields = () => {
     setShowEmpty(!showEmpty);
@@ -288,6 +328,19 @@ export default function DetailInfo(props) {
         </div>
 
         <Box display="flex" justifyContent="flex-end">
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.addDataButton}
+            startIcon={<AddIcon />}
+            onClick={() => {
+              globalStateController.updateState({
+                showFieldModal: true,
+              });
+            }}
+          >
+            Add Custom Data
+          </Button>
           <ToggleEmptyFieldButton />
           <h4
             className={classes.viewAll}
@@ -358,7 +411,7 @@ export default function DetailInfo(props) {
 
             {basicInfExp && (
               <>
-                {Object.entries(getBasicInfoExpContent(props.contactData)).map(([key, row]) => {
+                {Object.entries(getBasicInfoExpContent(props.contactData, metafields)).map(([key, row]) => {
                   if (showEmpty) {
                     return (
                       <React.Fragment key={key}>

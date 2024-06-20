@@ -51,6 +51,10 @@ const ContactMeta = {
 	},
 	isInFiniteScroll: true,
 	columnVirtualization: true,
+	// Fetching Meta data for grid
+	fetchMetaData: {
+		category: 'Contacts', // enable to show custom field inside unit grid
+	},
 	search: {
 		fields: ["name^4", "_all"]
 	},

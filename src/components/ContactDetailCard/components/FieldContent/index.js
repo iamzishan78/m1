@@ -215,6 +215,28 @@ export default function FieldContent({
 
 
   const handleUpdating = (val = null) => {
+    const customData = {};
+
+    // Iterate over the keys of the original object
+    for (const key in editContent) {
+      if (editContent.hasOwnProperty(key)) {
+        // Check if the key starts with 'custom_data.'
+        if (key.startsWith('custom_data.')) {
+          // Extract the custom field name
+          const customField = key.split('custom_data.')[1];
+          // Add the custom field to the nested object
+          customData[customField] = editContent[key];
+          // Delete the original flat custom_data field
+          delete editContent[key];
+        }
+      }
+    }
+
+    // If there are nested custom data fields, add them to the original object
+    if (Object.keys(customData).length > 0) {
+      editContent.custom_data = customData;
+    }
+
     if (fieldType == FieldTypes.Contact) {
       let trimmedEditContent = {
         _id: id,
@@ -513,14 +535,14 @@ export default function FieldContent({
       {fieldType === FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />}
       {isPurchased && <CopyPurchaseInfo updateContact={updateContact} userId={stateApp.user.mongoId} content={content} contactId={id} />}
       {textArray.length > 0 && name === 'Address' ? // show google map and zillow icon when address exists
-          <>
-            <Link onClick={() => window.open(getAddressUrl(content), "_blank")}>
-              <GoogleMapIcon />
-            </Link>
-            <Link onClick={() => window.open(getZillowAddressUrl(content), "_blank")}>
-              <ZillowIcon />
-            </Link>
-          </>
+        <>
+          <Link onClick={() => window.open(getAddressUrl(content), "_blank")}>
+            <GoogleMapIcon />
+          </Link>
+          <Link onClick={() => window.open(getZillowAddressUrl(content), "_blank")}>
+            <ZillowIcon />
+          </Link>
+        </>
 
         : ""
       }
