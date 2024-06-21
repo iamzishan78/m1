@@ -353,7 +353,7 @@ export default function FieldContent({
             />
           );
       } else if (editContent.hasOwnProperty(fieldName)) {
-        const metaField = metafields.find((meta) => meta?.esKey === fieldName);
+        const metaField = metafields ? metafields.find((meta) => meta?.esKey === fieldName) : null;
         inputsArray.push(
           fieldName === "contactStatus" ? (
             <ContactStatus
@@ -445,7 +445,7 @@ export default function FieldContent({
               showUnderline
               showChevron={true}
               index={"contacts"}
-              dropdownOptions={metaField.dropdownOptions}
+              dropdownOptions={metaField?.dropdownOptions}
               column={metaField}
               value={editContent[fieldName] === null ? "" : editContent[fieldName]}
               onCustomKeyChange={(value) => {
