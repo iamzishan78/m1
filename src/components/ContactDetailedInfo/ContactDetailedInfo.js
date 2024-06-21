@@ -426,6 +426,7 @@ export default function DetailInfo(props) {
                             isMerged={!!props.contactData.mergedContacts}
                             content={row.data}
                             linkType={row.linkType}
+                            metafields={metafields}
                           >
                             {row.inner}
                           </FieldContent>
