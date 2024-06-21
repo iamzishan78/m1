@@ -5,6 +5,7 @@ import moment from 'moment';
 import ldata from '../../fixtures/ldata.json';
 import { headers } from '../../cypressUtils/cypressHeaders';
 import { REVERTCYPRESSDELETE } from 'graphQL/useMutationCommonCypressRevert';
+import { UPDATE_META_DATA } from 'graphQL/useMutationUpdateMetaData.js';
 
 let responseHits = [];
 
@@ -65,6 +66,47 @@ describe('Contact Table', () => {
       },
       { wait: false }
     );
+  });
+
+  it('reverts the cypress custom field in grid', () => {
+    cy.request({
+      method: 'POST',
+      url: ldata.url,
+      headers: headers,
+      body: {
+        operationName: 'updateMetaData',
+        variables: {
+          metaData: {
+            _id: '66755aa80eb70363fa42cc58',
+            isDeleted: false,
+          },
+        },
+        query: UPDATE_META_DATA.loc.source.body,
+      },
+    });
+  });
+
+  it('verifies the cypress custom field in grid and pin/unpin menu', () => {
+    cy.get('table thead th div.Mui-TableHeadCell-Content-Wrapper')
+      .contains('cypress test custom field')
+      .should('exist');
+    cy.get('[data-testid="ViewColumnIcon"]').click();
+    cy.contains('span', 'cypress test custom field').should('exist');
+    cy.request({
+      method: 'POST',
+      url: ldata.url,
+      headers: headers,
+      body: {
+        operationName: 'updateMetaData',
+        variables: {
+          metaData: {
+            _id: '66755aa80eb70363fa42cc58',
+            isDeleted: true,
+          },
+        },
+        query: UPDATE_META_DATA.loc.source.body,
+      },
+    });
   });
 
   it('Sorts by Name & Last Updated & Primary Address', () => {
