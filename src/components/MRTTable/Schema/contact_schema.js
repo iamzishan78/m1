@@ -12,8 +12,55 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import Loaders from 'components/Loaders';
+import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact.js';
+import { copy } from 'utils/helper';
+import { isEmpty, pickBy } from 'lodash';
+import { globalStateController } from 'hookstate/globalStateController';
+import { tableGlobalController } from 'hookstate/tableController';
 
 const esIndex = 'contacts_flat';
+
+const onCustomKeyChange = async (client, row, value, item) => {
+	const loaderId = `upadting-${row?._id}`;
+
+	try {
+
+		// Starting update loader
+		const user = globalStateController.getValue('user');
+		Loaders.createToast(loaderId, 'Updation in Progress');
+
+		// Copying all custom data of user
+		const customData = copy(row?.custom_data) ?? {};
+		const filteredCustomData = pickBy(
+			customData,
+			value => value !== '' && !isEmpty(value)
+		);
+
+		const contact = {
+			_id: row._id,
+			custom_data: {
+				...filteredCustomData,
+				[item.name]: value,
+			},
+		};
+
+		// Runnig mutation
+		await client.mutate({
+			variables: {
+				contact,
+				ignoreResponse: true
+			},
+			mutation: UPDATECONTACT,
+		});
+
+		// Updating loader for process completion
+		Loaders.successToast(loaderId, 'Updation Complete');
+		tableGlobalController.refetch();
+	} catch (err) {
+		Loaders.errorToast(loaderId, 'Failed to Update');
+	}
+};
 
 const ContactMeta = {
 	esIndex,
@@ -55,6 +102,7 @@ const ContactMeta = {
 	fetchMetaData: {
 		category: 'Contacts', // enable to show custom field inside unit grid
 	},
+	onCustomKeyChange,
 	search: {
 		fields: ["name^4", "_all"]
 	},
