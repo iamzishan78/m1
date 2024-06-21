@@ -2,6 +2,9 @@
 import React from 'react';
 import ContactDetailCard from 'components/ContactDetailCard/ContactDetailCard';
 import { basic_timeouts } from '../../cypressUtils/data';
+import { UPDATE_META_DATA } from 'graphQL/useMutationUpdateMetaData.js';
+import { headers } from '../../cypressUtils/cypressHeaders';
+import ldata from '../../fixtures/ldata.json';
 
 const addresses = [
   {
@@ -23,20 +26,69 @@ describe('ContactDetailsSection', () => {
   beforeEach(() => {
     cy.interceptAndWait(['getContact'], () => {
       // Mounting the ContactDetailCard component with predefined props
-      cy.viewport(1600, 1200).mount(
-        <ContactDetailCard contactId="65ad9213ede1b8fc69df499f" />,
-        {
-          // Providing additional props for test case execution
-          testCase: {
-            contactId: '65ad9213ede1b8fc69df499f',
-          },
-        }
-      );
+      cy.viewport(1600, 1200).mount(<ContactDetailCard contactId="65ad9213ede1b8fc69df499f" />, {
+        // Providing additional props for test case execution
+        testCase: {
+          contactId: '65ad9213ede1b8fc69df499f',
+        },
+      });
     });
   });
 
   let addDealName = 'test deal';
   let updateDealName = 'test deal updated';
+
+  // Test case to verify the functionality of custom meta data
+  it('verifies custom meta data functionality', () => {
+    // Opening  popup
+    cy.contains('span', 'Add Custom Data').click();
+    cy.get('input[placeholder="e.g. Priority, Stage, Status"]')
+      .click()
+      .type('cypress test custom field');
+
+    // Click on the Select component to open the dropdown
+    cy.get('input[id^="react-select-"]').first().click({ force: true });
+
+    // Choose the option with the text "Text"
+    cy.get('div[id^="react-select-"]').contains('Text').click();
+
+    // Intercepting addMetaDaa Api to get metadata Id
+    cy.interceptAndWait(
+      ['addMetaData'],
+      (alias) => {
+        cy.contains('span', 'Create Field').click();
+
+        cy.wait(alias).then((creationResponse) => {
+          expect(creationResponse?.response?.statusCode).to.eq(200);
+          expect(creationResponse?.response?.body?.data?.addMetaData?.success).to.eq(true);
+          const metaDataId = creationResponse?.response?.body?.data?.addMetaData?.newGridView?._id;
+
+          // Scroll to the element and verify that it is visible
+          cy.contains('p.dataLabels', 'cypress test custom field')
+            .scrollIntoView()
+            .should('be.visible');
+
+          // Delete created custom field
+          cy.request({
+            method: 'POST',
+            url: ldata.url,
+            headers: headers,
+            body: {
+              operationName: 'updateMetaData',
+              variables: {
+                metaData: {
+                  _id: metaDataId,
+                  isDeleted: true,
+                },
+              },
+              query: UPDATE_META_DATA.loc.source.body,
+            },
+          });
+        });
+      },
+      { wait: false }
+    );
+  });
 
   // Test case to verify contact deal creation
   it('Add contact deal', () => {
@@ -63,10 +115,10 @@ describe('ContactDetailsSection', () => {
     // Waiting for the creation response and processing the response data
     cy.interceptAndWait(
       ['addDeal'],
-      alias => {
+      (alias) => {
         cy.get('[data-testid="add-deal-icon-button"]').click();
 
-        cy.wait(alias).then(creationResponse => {
+        cy.wait(alias).then((creationResponse) => {
           expect(creationResponse?.response?.statusCode).to.eq(200);
           expect(creationResponse?.response?.body?.data?.addDeal?.success).to.eq(true);
           addDealName = creationResponse?.response?.body?.data?.addDeal?.deal?.name;
@@ -103,10 +155,10 @@ describe('ContactDetailsSection', () => {
     // Waiting for the creation response and processing the response data
     cy.interceptAndWait(
       ['updateDeal'],
-      alias => {
+      (alias) => {
         cy.get('.MuiButtonBase-root[data-testid="add-deal-icon-button"]').click();
 
-        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(updateResponse => {
+        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then((updateResponse) => {
           expect(updateResponse?.response?.statusCode).to.eq(200);
           expect(updateResponse?.response?.body?.data?.updateDeal?.success).to.eq(true);
           updateDealName = updateResponse?.response?.body?.data?.updateDeal?.deal?.name;
@@ -140,11 +192,11 @@ describe('ContactDetailsSection', () => {
     // Waiting for the creation response and processing the response data
     cy.interceptAndWait(
       ['updateDeal'],
-      alias => {
+      (alias) => {
         // Click on delete dialog button
         cy.get('#deleteButton').click();
 
-        cy.wait(alias, { timeout: 100000 }).then(deleteResponse => {
+        cy.wait(alias, { timeout: 100000 }).then((deleteResponse) => {
           expect(deleteResponse?.response?.statusCode).to.eq(200);
           expect(deleteResponse?.response?.body?.data?.updateDeal?.success).to.eq(true);
         });
@@ -157,17 +209,13 @@ describe('ContactDetailsSection', () => {
   it('Updates Secondary Adderss', () => {
     cy.get('[data-testid="Secondary Address"]') // Get the element with data-testid "Secondary Address"
       .invoke('text') // Get the text content of the element
-      .then(text => {
+      .then((text) => {
         // Execute the following code after getting the text
         // Determine which address to use based on whether the text includes the address1Alt property of the first or second address
-        const address = text.includes(addresses[0].address1Alt)
-          ? addresses[1]
-          : addresses[0];
+        const address = text.includes(addresses[0].address1Alt) ? addresses[1] : addresses[0];
 
         // Find and click on the pencil icon within the "Secondary Address" element
-        cy.get('[data-testid="Secondary Address"]')
-          .find('#contPencilIcon')
-          .click({ force: true }); // Use force to click even if the element is covered
+        cy.get('[data-testid="Secondary Address"]').find('#contPencilIcon').click({ force: true }); // Use force to click even if the element is covered
 
         // Clear and type new values for address fields
         cy.get('#fieldContentInputaddress1Alt').clear().type(address.address1Alt);
