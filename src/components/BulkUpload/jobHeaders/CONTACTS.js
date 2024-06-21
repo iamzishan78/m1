@@ -29,6 +29,13 @@ export default [
         required: false,
         actual_key: "entityDetail.middleName",
     },
+    // Added county field in file format
+    {
+        label: "County",
+        mapped_key: "",
+        required: false,
+        actual_key: "county",
+    },
     {
         label: "Suffix",
         mapped_key: "",
