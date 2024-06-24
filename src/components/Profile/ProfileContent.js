@@ -93,7 +93,6 @@ const ProfileContent = () => {
   const {
     fields: { email,  about, fullname, displayName, jobTitle, phone, profileImage }
   } = stateProfile;
-  console.log("stateprofile",stateProfile);
   const onChange = ({ name, value }) => {
     let disectFullname = {};
 
