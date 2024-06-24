@@ -74,7 +74,7 @@ function UnitToolbar({ table, tableKey }) {
 
 	return (
 		<>
-			{isSomethingSelected && (
+			{isSomethingSelected && ( // show bulk update button when row of unit grid is selected
 				<BulkUpdate isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} />
 			)}
 		</>
