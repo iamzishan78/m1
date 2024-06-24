@@ -284,7 +284,7 @@ export default function AssignOwnerToContactDrawer({
   })
 
 
-  const unitTableFields = [
+  const unitTableFields = [ // Add unit grid fields for bulk update
     { title: 'Campaign Name', value: 'campaignName' },
      { title: 'Max Pricing (Per NRA)', value: 'uMaxUnitPricing' },
     { title: 'Target Pricing (Per NRA)', value: 'uUnitPricing' },
@@ -352,15 +352,15 @@ export default function AssignOwnerToContactDrawer({
     if (field.includes('originalProperties.Meridian')) set(shape.properties, 'originalProperties.PrincipalMeridian', value);
     /* -------------------------------- Data Fix -------------------------------- */
 
-    set(shape.properties, field, value);
+    set(shape.properties, field, value); // Set field and its value in shapeJson 
 
     const customLayer = {};
 
     if (field.includes('originalProperties')) {
       set(shape.properties, field.replace('originalProperties.', '').toLowerCase(), value);
     }
-    customLayer.shape = JSON.stringify(shape);
-    customLayer.shapeJson = shape;
+    customLayer.shape = JSON.stringify(shape); // Assign updated shape
+    customLayer.shapeJson = shape; // Assign updated shapeJson
 
     return customLayer;
   };
@@ -465,8 +465,12 @@ export default function AssignOwnerToContactDrawer({
       );
 
     } else if (field === 'Max Pricing (Per NRA)' || field === 'Target Pricing (Per NRA)') {
-      const shapesToUpdate = rows.map(row =>  {
+        // Map through each row to create an array of shapes to update
+        const shapesToUpdate = rows.map(row =>  {
+        // Update the campaign with the new value and fieldKey, creating a custom layer for each row
         const customlayer = updateCampaign(copy(row.shapeJson), fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value, fieldKey);
+
+          // Return an object with the updated custom layer information
           return {
             customLayer: customlayer,
             customLayerId: row._id,
@@ -474,32 +478,40 @@ export default function AssignOwnerToContactDrawer({
           }
         });
 
+        // Update the shapes with the new data
         updateShapes({
           variables: {
             shapes: shapesToUpdate,
           },
-          refetchQueries: ["getESPaginatedList", "getESFilterList", "getCustomLayer"],
+          refetchQueries: ["getESPaginatedList", "getESFilterList", "getCustomLayer"], // Refetch these queries after the update
           awaitRefetchQueries: true,
         }).then(res => {
+          // Toggle the reset state for the table to refresh its data
           resetESTableToggle.set(!resetESTableToggle.get())
+
+        // Check if the response data is present and updateShapes was successful
           if (res.data && res.data.updateShapes) {
             const success = res.data.updateShapes.success
             if (success) {
+              // Show a success toast and message if the update was successful
               Loader.successToast('contact-creation', "Updated")
               showSuccessMessage(`${field} Bulk Updated Successfully`)
+            
+              // Call the onBulkUpdateComplete callback if it exists
               if (rest.onBulkUpdateComplete)
                 rest.onBulkUpdateComplete()
             } else {
+                // Show an error toast if the update was not successful
               Loader.errorToast('contact-creation', "Updated")
             }
           } else {
+            // Show an error toast if the response data is not as expected
             Loader.errorToast('contact-creation', 'Failed');
           }
         },
           err => {
-            // eslint-disable-next-line no-console
-            console.log(err);
-            Loader.errorToast('contact-creation', errorMsg);
+          console.log(err);
+          Loader.errorToast('contact-creation', errorMsg);
           }
         );
     }

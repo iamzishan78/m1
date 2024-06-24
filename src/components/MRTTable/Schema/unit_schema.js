@@ -59,7 +59,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 const UnitMeta = {
 	esIndex,
 	pageSize: 50,
-	CustomToolBar: UnitToolbar,
+	CustomToolBar: UnitToolbar, // Add custom toolbar for showing bulkupdate button
 	pagination: {
 		pageIndex: 0,
 		pageSize: 50,
