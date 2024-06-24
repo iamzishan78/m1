@@ -66,7 +66,6 @@ const Profile = () => {
         <TabPanel value={tab} index={1}>
           <NotificationSettings />
         </TabPanel>
-        <ProfileActions />
       </Dialog>
     </div>
   );
