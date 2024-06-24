@@ -133,6 +133,11 @@ export const getBasicInfoContent = (contactData) => {
       data: { ownerType: ownerType },
       linkType: LinkTypes.None,
     },
+    // Added county for basic info
+    "County": {
+      data: { county: contactData?.county },
+      linkType: LinkTypes.None,
+    },
     "Primary Address": {
       data: {
         address1: contactData?.address1,
