@@ -166,10 +166,10 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         return isOverride
       },
       onBlur: (value) => {
-        console.log('value', value)
-        const numericValue = parseFloat(value.slice(1));
+        const cleanedValue = value.replace(/[$,]/g, '');
+        const numericValue = parseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
-        return parseFloat(formattedValue).toFixed(8)
+        return formattedValue;
       },
       InputProps: {
         inputComponent: CurrencyFormatCustom,
@@ -204,10 +204,10 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         return isOverride
       },
       onBlur: (value) => {
-        console.log('value', value)
-        const numericValue = parseFloat(value.slice(1));
+        const cleanedValue = value.replace(/[$,]/g, '');
+        const numericValue = parseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
-        return parseFloat(formattedValue).toFixed(8)
+        return formattedValue;
       },
       InputProps: {
         inputComponent: CurrencyFormatCustom,
@@ -290,11 +290,10 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         return isOverride
       },
       onBlur: (value) => {
-        console.log('value', value)
-        const numericValue = parseFloat(value.slice(1));
-
+        const cleanedValue = value.replace(/[$,]/g, '');
+        const numericValue = parseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
-        return parseFloat(formattedValue).toFixed(8)
+        return formattedValue;
       },
       InputProps: {
         inputComponent: CurrencyFormatCustom,
@@ -332,11 +331,10 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         return isOverride
       },
       onBlur: (value) => {
-        console.log('value', value)
-        const numericValue = parseFloat(value.slice(1));
-
+        const cleanedValue = value.replace(/[$,]/g, '');
+        const numericValue = parseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
-        return parseFloat(formattedValue).toFixed(8)
+        return formattedValue;
       },
       InputProps: {
         inputComponent: CurrencyFormatCustom,
@@ -370,11 +368,10 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         inputComponent: CurrencyFormatCustom,
       },
       onBlur: (value) => {
-        console.log('value', value)
-        const numericValue = parseFloat(value.slice(1));
-
+        const cleanedValue = value.replace(/[$,]/g, '');
+        const numericValue = parseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
-        return parseFloat(formattedValue).toFixed(8)
+        return formattedValue;
       },
     },
     {
@@ -384,12 +381,10 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         inputComponent: CurrencyFormatCustom,
       },
       onBlur: (value) => {
-        console.log('value', value)
-
-        const numericValue = parseFloat(value.slice(1));
-
+        const cleanedValue = value.replace(/[$,]/g, '');
+        const numericValue = parseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
-        return parseFloat(formattedValue).toFixed(8)
+        return formattedValue;
       },
     },
     {
@@ -399,11 +394,10 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         inputComponent: CurrencyFormatCustom,
       },
       onBlur: (value) => {
-        console.log('value', value)
-        const numericValue = parseFloat(value.slice(1));
-
+        const cleanedValue = value.replace(/[$,]/g, '');
+        const numericValue = parseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
-        return parseFloat(formattedValue).toFixed(8)
+        return formattedValue;
       },
     },
   ]
