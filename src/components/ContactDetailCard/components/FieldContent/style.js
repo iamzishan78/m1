@@ -9,10 +9,16 @@ const useStyles = makeStyles((theme) => ({
     },
     borderRadius: "4px",
     "& #contPencilIcon, & #mergeTypeIcon, & #copyIcon": {
-      visibility: "hidden",
+      display: "none",
     },
     "&:hover #contPencilIcon, &:hover #mergeTypeIcon, &:hover #copyIcon": {
-      visibility: "visible",
+      display: "block",
+    },
+    "& #GoogleMapIcon" : {
+      marginLeft: "-11px !Important",
+    },
+    "&:hover #GoogleMapIcon" : {
+      marginLeft: "5px !Important",
     },
   },
   pencilIcon: {

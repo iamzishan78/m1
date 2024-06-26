@@ -491,13 +491,17 @@ export default function FieldContent({
   ) : (
     <span>
       {childrenLeft && !onlyChildren && children ? children : ""}
+      <span style={{ 
+        marginTop: "4px",
+        display: "inline-block"
+      }}>
       {textArray.length > 0
         ? onlyChildren
           ? children
             ? children
             : ""
           : textArray.join(", ")
-        : `${name ? name + " " : ""} Not Available`}
+        : `${name ?  name + " " : ""} Not Available`} </span>
       {!onlyChildren && !disabled && (
         <PencilEditIcon
           handleUpdating={handleUpdating}
