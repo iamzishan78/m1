@@ -48,11 +48,34 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       label: "Surface Interest",
       name: "surface_interest",
       type: "number",
+      onBlur: (value) => {
+        setValue('surface_interest', parseFloat(value).toFixed(8))
+        return parseFloat(value).toFixed(8)
+      }
     },
     {
       label: "Mineral Interest",
       name: "mineral_interest",
       type: "number",
+      onBlur: (value) => {
+        const { net_acres, nra, royalty_interest, orri } = getValues() || {}
+        setValue('mineral_interest', parseFloat(value).toFixed(8))
+
+
+        if (!net_acres) {
+          const netAcres = calculateNetAcres(value)
+          setValue('net_acres', netAcres)
+        }
+
+        if (!nra) {
+          const selectedParcel = popupController.getValue('selectedParcel');
+          const workspaceSettings = sideDialogController("tractInterestDialog").getValue('workspaceSettings')
+
+          const calculatedNra = calculateStandardNraForTract(selectedParcel?.sdGrossAcres, value, royalty_interest, orri, workspaceSettings)
+          setValue('nra', calculatedNra)
+        }
+        return parseFloat(value).toFixed(8)
+      },
     },
     {
       label: "Non-Exec Rights Only",
@@ -84,7 +107,11 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
 
         const netAcres = calculateNetAcres(mineral_interest);
         const isOverride = parseFloat(netAcres) !== parseFloat(value)
-        sideDialogController("tractInterestDialog").updateState({ 'showNetAcresRecalculate': isOverride, rerenderJson: isOverride })
+        sideDialogController("tractInterestDialog").updateState({
+          'showNetAcresRecalculate': isOverride,
+          rerenderJson: isOverride,
+          netAcresOverRideValue: value
+        })
         return isOverride
       },
       onChange: (value) => {
