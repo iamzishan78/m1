@@ -180,10 +180,11 @@ const unitInterestOwnerForm = ({ getValues, setValue, metafields }) => {
         inputComponent: CurrencyFormatCustom,
       },
       onBlur: (value) => {
-        const numericValue = parseFloat(value.slice(1));
+        const cleanedValue = value.replace(/[$,]/g, '');
+        const numericValue = parseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
-        return parseFloat(formattedValue).toFixed(8)
-      },
+        return formattedValue;
+      }
     },
     {
       label: "Competitor Offer Price",
@@ -192,10 +193,11 @@ const unitInterestOwnerForm = ({ getValues, setValue, metafields }) => {
         inputComponent: CurrencyFormatCustom,
       },
       onBlur: (value) => {
-        const numericValue = parseFloat(value.slice(1));
+        const cleanedValue = value.replace(/[$,]/g, '');
+        const numericValue = parseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
-        return parseFloat(formattedValue).toFixed(8)
-      },
+        return formattedValue;
+      }
     },
     {
       label: "Target Price/NRA",
@@ -216,9 +218,10 @@ const unitInterestOwnerForm = ({ getValues, setValue, metafields }) => {
       },
 
       onBlur: (value) => {
-        const numericValue = parseFloat(value.slice(1));
+        const cleanedValue = value.replace(/[$,]/g, '');
+        const numericValue = parseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
-        return parseFloat(formattedValue).toFixed(8)
+        return formattedValue;
       },
       InputProps: {
         inputComponent: CurrencyFormatCustom,
@@ -255,9 +258,10 @@ const unitInterestOwnerForm = ({ getValues, setValue, metafields }) => {
         return isOverride
       },
       onBlur: (value) => {
-        const numericValue = parseFloat(value.slice(1));
+        const cleanedValue = value.replace(/[$,]/g, '');
+        const numericValue = parseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
-        return parseFloat(formattedValue).toFixed(8)
+        return formattedValue;
       },
       InputProps: {
         inputComponent: CurrencyFormatCustom,
@@ -298,9 +302,10 @@ const unitInterestOwnerForm = ({ getValues, setValue, metafields }) => {
       },
 
       onBlur: (value) => {
-        const numericValue = parseFloat(value.slice(1));
+        const cleanedValue = value.replace(/[$,]/g, '');
+        const numericValue = parseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
-        return parseFloat(formattedValue).toFixed(8)
+        return formattedValue;
       },
       InputProps: {
         inputComponent: CurrencyFormatCustom,
@@ -337,9 +342,10 @@ const unitInterestOwnerForm = ({ getValues, setValue, metafields }) => {
         return isOverride
       },
       onBlur: (value) => {
-        const numericValue = parseFloat(value.slice(1));
+        const cleanedValue = value.replace(/[$,]/g, '');
+        const numericValue = parseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
-        return parseFloat(formattedValue).toFixed(8)
+        return formattedValue;
       },
       InputProps: {
         inputComponent: CurrencyFormatCustom,
@@ -368,10 +374,11 @@ const unitInterestOwnerForm = ({ getValues, setValue, metafields }) => {
         inputComponent: CurrencyFormatCustom,
       },
       onBlur: (value) => {
-        const numericValue = parseFloat(value.slice(1));
+        const cleanedValue = value.replace(/[$,]/g, '');
+        const numericValue = parseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
-        return parseFloat(formattedValue).toFixed(8)
-      },
+        return formattedValue;
+      }
     },
     {
       label: "Contact Status",
