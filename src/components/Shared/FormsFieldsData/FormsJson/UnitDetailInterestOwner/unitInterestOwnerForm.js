@@ -8,12 +8,16 @@ import { entityTypeOptions } from "components/ContactDetailedInfo/helper";
 import { calculateStandardNraForUnit } from "utils/calculatedNraHelper"
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
-const calculateOfferPrice = nra => {
-  const uUnitPricing = sideDialogController("unitInterestDialog").getValue('uUnitPricing')
+const calculateOfferPrice = (nra, uUnitPricing = 0) => {
+  if (!uUnitPricing) {
+    uUnitPricing = sideDialogController("unitInterestDialog").getValue('uUnitPricing');
+  }
   return parseFloat((parseFloat(nra || 0) * parseFloat(uUnitPricing || 0)).toFixed(2));
 };
 
 const unitInterestOwnerForm = ({ getValues, setValue, metafields }) => {
+
+  const uUnitPricing = sideDialogController("unitInterestDialog").getValue('uUnitPricing')
 
   const formFields = [
     {
@@ -127,10 +131,13 @@ const unitInterestOwnerForm = ({ getValues, setValue, metafields }) => {
         const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
         const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri, nri, workspaceSettings })
 
-        setValue('offer_price', calculateOfferPrice(calculatedNra));
         const isOverride = parseFloat(calculatedNra) !== parseFloat(value)
         sideDialogController("unitInterestDialog").updateState({ 'showNetRoyaltyAcresRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
+      },
+      onChange: (value) => {
+        setValue('nra', value);
+        setValue('offer_price', calculateOfferPrice(value));
       },
       InputProps: {
         endAdornment: (
@@ -171,7 +178,6 @@ const unitInterestOwnerForm = ({ getValues, setValue, metafields }) => {
         inputComponent: CurrencyFormatCustom,
       },
       onBlur: (value) => {
-        console.log('value', value)
         const numericValue = parseFloat(value.slice(1));
         const formattedValue = numericValue.toFixed(8);
         return parseFloat(formattedValue).toFixed(8)
@@ -184,12 +190,55 @@ const unitInterestOwnerForm = ({ getValues, setValue, metafields }) => {
         inputComponent: CurrencyFormatCustom,
       },
       onBlur: (value) => {
-        console.log('value', value)
-
         const numericValue = parseFloat(value.slice(1));
         const formattedValue = numericValue.toFixed(8);
         return parseFloat(formattedValue).toFixed(8)
       },
+    },
+    {
+      label: "Target Price/NRA",
+      name: "uUnitPricingInterest",
+      defaultValue: uUnitPricing,
+      isValueOverridden: (value) => {
+        if (!value) return
+
+        const isOverride = value !== parseFloat(uUnitPricing).toFixed(2)
+        sideDialogController("unitInterestDialog").updateState({ 'showTargetPrice/NraRecalculate': isOverride, rerenderJson: isOverride })
+        return isOverride
+      },
+      onChange: (value) => {
+        const { nra } = getValues() || {}
+
+        setValue('uUnitPricingInterest', value)
+        setValue('offer_price', calculateOfferPrice(nra, value));
+      },
+
+      onBlur: (value) => {
+        const numericValue = parseFloat(value.slice(1));
+        const formattedValue = numericValue.toFixed(8);
+        return parseFloat(formattedValue).toFixed(8)
+      },
+      InputProps: {
+        inputComponent: CurrencyFormatCustom,
+        endAdornment: (
+          <InputAdornment position="end">
+            {!!sideDialogController('unitInterestDialog').getValue('showTargetPrice/NraRecalculate') && (
+              <IconButton
+                aria-label="toggle offer_price"
+                onClick={() => {
+                  const { nra } = getValues() || {}
+
+                  setValue('uUnitPricingInterest', uUnitPricing)
+                  setValue('offer_price', calculateOfferPrice(nra))
+                }}
+              >
+                <AutorenewIcon />
+              </IconButton>
+            )}
+          </InputAdornment>
+        ),
+      }
+
     },
     {
       label: "Target Offer Price",
@@ -204,7 +253,6 @@ const unitInterestOwnerForm = ({ getValues, setValue, metafields }) => {
         return isOverride
       },
       onBlur: (value) => {
-        console.log('value', value)
         const numericValue = parseFloat(value.slice(1));
         const formattedValue = numericValue.toFixed(8);
         return parseFloat(formattedValue).toFixed(8)

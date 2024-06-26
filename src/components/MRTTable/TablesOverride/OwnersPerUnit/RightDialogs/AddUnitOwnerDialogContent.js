@@ -286,7 +286,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       setValue,
       metafields
     });
-  }, [formStateValues?.newOwner, formState?.rerenderJson, metafields]);
+  }, [formStateValues?.newOwner, formState?.rerenderJson, metafields, formState.uUnitPricing, formState.uAcres]);
 
   return (
     <div className={classes.move}>
