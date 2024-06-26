@@ -20,6 +20,7 @@ function RadioComponent({ control, item, DialogKey }) {
       <Controller
         control={control}
         name={name}
+        defaultValue={options.length && options[0]?.value}
         render={props => (
           <RadioGroup
             row
