@@ -57,6 +57,10 @@ function AutoCompleteComponent({ control, item }) {
     callQuery()
   }, [])
 
+  useEffect(() => {
+    setOptions(defaultOptions)
+  }, [defaultOptions])
+
   return (
     <Grid item xs={12}>
       <h3>{label}</h3>
