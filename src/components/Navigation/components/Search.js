@@ -479,7 +479,7 @@ function Search() {
         setLoading(false);
         return undefined;
       }
-      if (searchOption === "location") {
+      if (searchOption === "location" || searchOption === "places") {
         callMapboxSearch({ input: searchInputValue }, searchTop, (results) => {
           let newOptions = [];
           if (results) {
@@ -488,7 +488,7 @@ function Search() {
                 return {
                   ...result,
                   Id: result.id,
-                  Source: "mapboxSearch",
+                  Source: (searchOption === "places") ? "places" : "mapboxSearch",
                   Score: result.relevance ? result.relevance : 0,
                   Primary: result.text ? result.text : "",
                   Secondary: result.place_name
@@ -834,7 +834,7 @@ function Search() {
       }
 
       //// if mapboxSearch
-      if (newValue && newValue.Source === "mapboxSearch" && newValue.center) {
+      if (newValue && newValue.center && (newValue.Source === "mapboxSearch" || newValue.Source === "places")) {
         let minLong, maxLong, minLat, maxLat;
         if (newValue.bbox) [minLong, minLat, maxLong, maxLat] = newValue.bbox;
 
@@ -896,6 +896,7 @@ function Search() {
           if (option.Source === landGridIndexName) return "Land Grid";
           if (option.Source === contactIndexName) return "Contacts";
           if (option.Source === "mapboxSearch") return "Locations";
+          if (option.Source === "places") return "Places";
           if (option.layer === "unit") return "Units";
           if (option.layer === "parcel") return "Tracts";
           if (option.Source === "loader") return "loader";
@@ -1122,7 +1123,7 @@ function Search() {
                                             <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small />
                                           )}
                                           {option.Source === leaseIndexName && <LeaseIcon className={classes.icon} color={"#757575"} />}
-                                          {option.Source === "mapboxSearch" && <LocationOnIcon className={classes.icon} />}
+                                          {((option.Source === "mapboxSearch") || (option.Source === "places")) && <LocationOnIcon className={classes.icon} />}
                                         </Grid>
                                         <Grid item xs>
                                           {parts.map((part, index) => (
@@ -1205,7 +1206,7 @@ function Search() {
                     //will need to change this to something different
                     <PersonIcon className={classes.icon} color={"#757575"} />
                   )}
-                  {option.Source === "mapboxSearch" && <LocationOnIcon className={classes.icon} />}
+                  {((option.Source === "mapboxSearch") || (option.Source === "places")) && <LocationOnIcon className={classes.icon} />}
                 </Grid>
                 <Grid item xs>
                   {parts.map((part, index) => (

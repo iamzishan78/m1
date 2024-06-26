@@ -54,6 +54,9 @@ import { NavigationContext } from "../Navigation/NavigationContext";
 import { toggleRightColumn } from "actions/ContactDetailCard";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
+import { OWNERTYPE } from 'utils/data';
+import { getOpenCorporatesUrl } from "utils/helper";
+import OpenCorporatesIcon from "components/Shared/svgIcons/OpenCorporatesIcon";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -673,6 +676,12 @@ function ContactDetailCard(props) {
                         )}
                       </span>
                     )}
+                    {/* Display the OpenCorporates icon and link for corporation contacts. */}
+                    {(contactData.ownerType === OWNERTYPE.CORPORATION && (
+                        <Link onClick={() => window.open(getOpenCorporatesUrl(getName(contactData)), "_blank")}>
+                         <OpenCorporatesIcon />
+                       </Link>)   
+                    )}
                   </FieldContent>
                 </h2>
                 <FieldContent
@@ -681,7 +690,6 @@ function ContactDetailCard(props) {
                     name="Address"
                     id={contactData._id}
                     entity={contactData.entity}
-                    disabled
                     content={{
                       address1: contactData.address1,
                       address2: contactData.address2,
@@ -690,6 +698,8 @@ function ContactDetailCard(props) {
                       zip: contactData.zip,
                       country: contactData.country,
                     }}
+                    onlyChildren={false} // add props inorder to show copy and edit options
+                    disabled={false}
                   />
               </div>
               <div className={classes.tagsContainer}>
@@ -742,7 +752,7 @@ function ContactDetailCard(props) {
 
       <div className={classes.mainGridContainer}>
         <Grid container className={classes.leftColumn} id="leftColumn">
-          {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === "pdf" ? (
+          {stateApp.viewDoc ? (
             <DocViewer
               divCondition={true}
               DocStyle={{

@@ -6,6 +6,7 @@ import FolderIcon from "@material-ui/icons/Folder";
 import OperatorIcon from "components/Shared/svgIcons/operator";
 import TaxOwnerIcon from "@material-ui/icons/AccountBalance";
 import LayersIcon from "@material-ui/icons/Layers";
+import LocationOnIcon from "@material-ui/icons/LocationOn";
 
 export const platformDataWellsInitialData = [
   { index: 0, value: 'well', Icon: WellIcon, label: 'Wells', shapeGrid: true },
@@ -17,14 +18,21 @@ export const platformDataWellsInitialData = [
     label: 'Operators',
     shapeGrid: true,
   },
+  {
+    index: 3,
+    value: 'places',
+    Icon: LocationOnIcon,
+    label: 'Places',
+    shapeGrid: true,
+  },
 ];
 
 export const platformDataInitialData = [
   ...platformDataWellsInitialData,
 
-  { index: 3, value: "layer", Icon: LayersIcon, label: "Layer", isLayer: true },
+  { index: 4, value: "layer", Icon: LayersIcon, label: "Layer", isLayer: true },
   // { index: 3, value: "lease", Icon: LeaseIcon, label: "Leases" },
-  { index: 4, value: "landgrid", Icon: LeaseIcon, label: "Land Grid", shapeGrid: false, featureFlag: 'LANDGRIDSEARCH' },
+  { index: 5, value: "landgrid", Icon: LeaseIcon, label: "Land Grid", shapeGrid: false, featureFlag: 'LANDGRIDSEARCH' },
   // { index: 4, value: "contacts", Icon: ContactIcon, label: "Contacts", shapeGrid: false },
 ];
 

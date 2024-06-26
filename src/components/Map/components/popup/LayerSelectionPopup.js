@@ -137,7 +137,7 @@ function LayerSelectionPopup(props) {
             const properties = layer?.properties
             if (layer.source === 'wellsVT') {
                 return `${properties.api}-${properties.wellName}`
-            } else if (layer.source === 'parcels_source' || layer.source === 'area of interest_source') { // Check if the source of the layer is 'parcels_source' or 'area of interest_source'
+            } else if (layer.source === 'parcels_source' || ["interests_source", "area of interest_source"].includes(layer.source)) { // Check if the source of the layer is 'parcels_source' or 'area of interest_source'
                 // Return the shape label in both cases
                 return properties.shapeLabel
             } else if (layer.source === 'units_source') {
@@ -151,7 +151,7 @@ function LayerSelectionPopup(props) {
 
     const selectLayer = (layer) => {
         // Check if the layer source is "area of interest_source"
-        if (layer.source === "area of interest_source") {
+        if (["interests_source", "area of interest_source"].includes(layer.source)) {
             // Create a copy of the layer
             const selectedUserDefinedLayer = copy(layer)
             // Update the application state using setStateApp

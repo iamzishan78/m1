@@ -354,6 +354,7 @@ export default function DocumentDrawer(props) {
           DocumentDrawer: false,
           selectedDocument: {},
         });
+        setFileData(null); // set fileData null on deleting file
         setFileIdToDelete(null);
         setNewDocument(documentInitial);
         setNameAutValueParty1({ name: "", _id: null });
@@ -721,9 +722,9 @@ export default function DocumentDrawer(props) {
                           <IconButton
                             size="small"
                             disabled={selectedType === "existing"}
-                            onClick={() => {
+                            onClick={(e) => {
                               setOpenDeleteConfirmDialog(true);
-                              setFileIdToDelete(stateApp.selectedDocument.fileId);
+                              setFileIdToDelete(value.id); // Pass fieldId in parameters
                             }}
                           >
                             <DeleteIcon />
