@@ -15,7 +15,7 @@ const calculateOfferPrice = (nra, uUnitPricing = 0) => {
   return parseFloat((parseFloat(nra || 0) * parseFloat(uUnitPricing || 0)).toFixed(2));
 };
 
-const unitInterestOwnerForm = ({ getValues, setValue, metafields }) => {
+const unitInterestOwnerForm = ({ getValues, setValue, metafields = [] }) => {
 
   const uUnitPricing = sideDialogController("unitInterestDialog").getValue('uUnitPricing')
   const uMaxUnitPricing = sideDialogController("unitInterestDialog").getValue('uMaxUnitPricing')
