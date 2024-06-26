@@ -279,9 +279,6 @@ const unitInterestOwnerForm = ({ getValues, setValue, metafields }) => {
         ),
       }
     },
-
-
-
     {
       label: "Max Price/NRA",
       name: "uMaxUnitPricingInterest",
@@ -327,8 +324,6 @@ const unitInterestOwnerForm = ({ getValues, setValue, metafields }) => {
       }
 
     },
-
-
     {
       label: "Max Offer Price",
       name: "max_offer_price",
@@ -366,8 +361,18 @@ const unitInterestOwnerForm = ({ getValues, setValue, metafields }) => {
         ),
       }
     },
-
-
+    {
+      label: "Actual Offer Price",
+      name: "actual_offer_price",
+      InputProps: {
+        inputComponent: CurrencyFormatCustom,
+      },
+      onBlur: (value) => {
+        const numericValue = parseFloat(value.slice(1));
+        const formattedValue = numericValue.toFixed(8);
+        return parseFloat(formattedValue).toFixed(8)
+      },
+    },
     {
       label: "Contact Status",
       name: "contactStatus",
