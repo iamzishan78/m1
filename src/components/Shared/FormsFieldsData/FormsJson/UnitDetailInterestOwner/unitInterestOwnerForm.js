@@ -18,6 +18,7 @@ const calculateOfferPrice = (nra, uUnitPricing = 0) => {
 const unitInterestOwnerForm = ({ getValues, setValue, metafields }) => {
 
   const uUnitPricing = sideDialogController("unitInterestDialog").getValue('uUnitPricing')
+  const uMaxUnitPricing = sideDialogController("unitInterestDialog").getValue('uMaxUnitPricing')
 
   const formFields = [
     {
@@ -138,6 +139,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, metafields }) => {
       onChange: (value) => {
         setValue('nra', value);
         setValue('offer_price', calculateOfferPrice(value));
+        setValue('max_offer_price', calculateOfferPrice(value, uMaxUnitPricing))
       },
       InputProps: {
         endAdornment: (
@@ -277,6 +279,95 @@ const unitInterestOwnerForm = ({ getValues, setValue, metafields }) => {
         ),
       }
     },
+
+
+
+    {
+      label: "Max Price/NRA",
+      name: "uMaxUnitPricingInterest",
+      defaultValue: uMaxUnitPricing,
+      isValueOverridden: (value) => {
+        if (!value) return
+
+        const isOverride = value !== parseFloat(uMaxUnitPricing).toFixed(2)
+        sideDialogController("unitInterestDialog").updateState({ 'showMaxPrice/NraRecalculate': isOverride, rerenderJson: isOverride })
+        return isOverride
+      },
+      onChange: (value) => {
+        const { nra } = getValues() || {}
+
+        setValue('uMaxUnitPricingInterest', value)
+        setValue('max_offer_price', calculateOfferPrice(nra, value));
+      },
+
+      onBlur: (value) => {
+        const numericValue = parseFloat(value.slice(1));
+        const formattedValue = numericValue.toFixed(8);
+        return parseFloat(formattedValue).toFixed(8)
+      },
+      InputProps: {
+        inputComponent: CurrencyFormatCustom,
+        endAdornment: (
+          <InputAdornment position="end">
+            {!!sideDialogController('unitInterestDialog').getValue('showMaxPrice/NraRecalculate') && (
+              <IconButton
+                aria-label="toggle offer_price"
+                onClick={() => {
+                  const { nra } = getValues() || {}
+
+                  setValue('uMaxUnitPricingInterest', uMaxUnitPricing)
+                  setValue('max_offer_price', calculateOfferPrice(nra, uMaxUnitPricing))
+                }}
+              >
+                <AutorenewIcon />
+              </IconButton>
+            )}
+          </InputAdornment>
+        ),
+      }
+
+    },
+
+
+    {
+      label: "Max Offer Price",
+      name: "max_offer_price",
+      isValueOverridden: (value) => {
+        if (!value) return
+        const { nra } = getValues() || {}
+
+        const calculatedOfferPrice = calculateOfferPrice(nra, uMaxUnitPricing);
+        const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
+        sideDialogController("unitInterestDialog").updateState({ 'showMaxOfferRecalculate': isOverride, rerenderJson: isOverride })
+        return isOverride
+      },
+      onBlur: (value) => {
+        const numericValue = parseFloat(value.slice(1));
+        const formattedValue = numericValue.toFixed(8);
+        return parseFloat(formattedValue).toFixed(8)
+      },
+      InputProps: {
+        inputComponent: CurrencyFormatCustom,
+        endAdornment: (
+          <InputAdornment position="end">
+            {!!sideDialogController('unitInterestDialog').getValue('showMaxOfferRecalculate') && (
+              <IconButton
+                aria-label="toggle offer_price"
+                onClick={() => {
+                  const { nra } = getValues() || {}
+
+                  setValue('max_offer_price', calculateOfferPrice(nra, uMaxUnitPricing))
+                }}
+              >
+                <AutorenewIcon />
+              </IconButton>
+            )}
+          </InputAdornment>
+        ),
+      }
+    },
+
+
     {
       label: "Contact Status",
       name: "contactStatus",

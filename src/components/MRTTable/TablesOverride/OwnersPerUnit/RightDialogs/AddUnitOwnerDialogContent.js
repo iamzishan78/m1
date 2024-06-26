@@ -92,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, uUnitPricing, metaDataCategory, ...props }) {
+export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, uUnitPricing, uMaxUnitPricing, metaDataCategory, ...props }) {
   const dispatch = useDispatch();
 
   const formState = sideDialogController("unitInterestDialog").useCompleteState()
@@ -117,10 +117,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
   useEffect(() => {
     sideDialogController("unitInterestDialog").updateState({
-      uAcres, uUnitPricing,
+      uAcres, uUnitPricing, uMaxUnitPricing
     })
 
-  }, [uAcres, uUnitPricing])
+  }, [uAcres, uUnitPricing, uMaxUnitPricing])
 
   useEffect(() => {
     sideDialogController("unitInterestDialog").updateState({
@@ -286,7 +286,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       setValue,
       metafields
     });
-  }, [formStateValues?.newOwner, formState?.rerenderJson, metafields, formState.uUnitPricing, formState.uAcres]);
+  }, [formStateValues?.newOwner, formState?.rerenderJson, metafields, formState.uUnitPricing, formState.uAcres, formState.uMaxUnitPricing]);
 
   return (
     <div className={classes.move}>
