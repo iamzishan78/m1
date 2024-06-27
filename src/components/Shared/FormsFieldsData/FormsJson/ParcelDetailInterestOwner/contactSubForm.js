@@ -1,5 +1,5 @@
 
-import parcelOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/parcelOwnerForm';
+import parcelOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/parcel_interest_owner_form_schema';
 
 const contactSubForm = ({ getValues, setValue, tenantName, state }) => {
   const formFields = [

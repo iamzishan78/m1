@@ -8,11 +8,11 @@ import { sideDialogController } from 'hookstate/sideDialogController';
 import { Controller } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
 
-function CommonForm({ FormJson, control, watch, DialogKey }) {
+function CommonForm({ formSchema, control, watch, dialogKey }) {
 
   return (
     <>
-      {FormJson.map((item, index) => (
+      {formSchema.map((item, index) => (
         <React.Fragment key={item.name}>
           {
             item.renderField === "autoComplete" ? (
@@ -32,7 +32,7 @@ function CommonForm({ FormJson, control, watch, DialogKey }) {
                       {...props}
                       value={props?.value}
                       onChange={(values, id) => {
-                        sideDialogController(DialogKey).updateState({ [item.name]: values })
+                        sideDialogController(dialogKey).updateState({ [item.name]: values })
                         props.onChange(values);
                       }}
                       fullWidth
@@ -53,7 +53,7 @@ function CommonForm({ FormJson, control, watch, DialogKey }) {
                     <AssociatedDealField
                       {...props}
                       onChange={(values, id) => {
-                        sideDialogController(DialogKey).updateState({ [item.name]: values })
+                        sideDialogController(dialogKey).updateState({ [item.name]: values })
                         props.onChange(values);
                       }}
                       value={props.value}
@@ -69,7 +69,7 @@ function CommonForm({ FormJson, control, watch, DialogKey }) {
                 key={index}
                 item={item}
                 control={control}
-                DialogKey={DialogKey}
+                dialogKey={dialogKey}
               />
             ) : (
               <TextFieldComponent

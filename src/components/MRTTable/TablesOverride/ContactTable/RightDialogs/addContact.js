@@ -10,7 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import { tableGlobalController } from 'hookstate/tableController';
-import contactForm from 'components/Shared/FormsFieldsData/FormsJson/ContactGrid/contactjson';
+import contactForm from 'components/Shared/FormsFieldsData/FormsJson/ContactGrid/contact_form_schema';
 import { sideDialogController } from 'hookstate/sideDialogController';
 import { globalStateController } from 'hookstate/globalStateController';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
@@ -74,7 +74,7 @@ export default function AddContactDialogContent(props) {
 
   const { firstName } = getValues() || {}
 
-  const formJson = useMemo(() => {
+  const formSchema = useMemo(() => {
     return contactForm();
   }, [formState?.rerenderJson]);
 
@@ -138,11 +138,11 @@ export default function AddContactDialogContent(props) {
       </Grid>
       <DialogContent className={classes.dialogContent}>
         <CommonForm
-          FormJson={formJson}
+          formSchema={formSchema}
           control={control}
           reset={reset}
           watch={watch}
-          DialogKey={'contactDialog'}
+          dialogKey={'contactDialog'}
         />
       </DialogContent>
       <div className={classes.dialogFooter}>

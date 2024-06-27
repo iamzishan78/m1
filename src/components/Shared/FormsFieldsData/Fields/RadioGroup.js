@@ -4,13 +4,13 @@ import { Grid, Radio, RadioGroup, FormControlLabel, TextField } from '@mui/mater
 import { Controller } from "react-hook-form";
 import { sideDialogController } from "hookstate/sideDialogController";
 
-function RadioComponent({ control, item, DialogKey }) {
+function RadioComponent({ control, item, dialogKey }) {
   const {
     name,
     label,
     options = [],
   } = item;
-  const formState = sideDialogController(DialogKey).useState(['depthBoth'])
+  const formState = sideDialogController(dialogKey).useState(['depthBoth'])
   const formStateValues = formState.stateValues
 
   return (
@@ -27,7 +27,7 @@ function RadioComponent({ control, item, DialogKey }) {
             value={props.value}
             onChange={event => {
               props.onChange(event.target.value);
-              sideDialogController(DialogKey).updateState({ [item.name]: event.target.value })
+              sideDialogController(dialogKey).updateState({ [item.name]: event.target.value })
             }}
           >
             {options.map((option, index) => (
@@ -58,7 +58,7 @@ function RadioComponent({ control, item, DialogKey }) {
                   variant="standard"
                   onChange={e => {
                     props.onChange(e.target.value);
-                    sideDialogController(DialogKey).updateState({ "depthFrom": e.target.value })
+                    sideDialogController(dialogKey).updateState({ "depthFrom": e.target.value })
                   }}
                 />
               )}
@@ -78,7 +78,7 @@ function RadioComponent({ control, item, DialogKey }) {
                   variant="standard"
                   onChange={e => {
                     props.onChange(e.target.value);
-                    sideDialogController(DialogKey).updateState({ "depthTo": e.target.value })
+                    sideDialogController(dialogKey).updateState({ "depthTo": e.target.value })
                   }}
                 />
               )}

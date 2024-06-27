@@ -1,5 +1,5 @@
 
-import unitInterestOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/UnitDetailInterestOwner/unitInterestOwnerForm';
+import unitInterestOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/UnitDetailInterestOwner/unit_interest_owner_form_schema';
 
 const contactSubForm = ({ getValues, setValue }) => {
   const formFields = [

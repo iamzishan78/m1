@@ -22,7 +22,7 @@ import { tableGlobalController } from 'hookstate/tableController';
 import { sideDialogController, unitInterestOwnerState } from 'hookstate/sideDialogController';
 import { globalStateController } from 'hookstate/globalStateController';
 import contactSubForm from 'components/Shared/FormsFieldsData/FormsJson/UnitDetailInterestOwner/contactSubForm';
-import unitInterestOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/UnitDetailInterestOwner/unitInterestOwnerForm';
+import unitInterestOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/UnitDetailInterestOwner/unit_interest_owner_form_schema';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import AddIcon from "@material-ui/icons/Add";
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
@@ -279,7 +279,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
   const classes = useStyles();
 
-  const formJson = useMemo(() => {
+  const formSchema = useMemo(() => {
     const formFunction = formStateValues?.newOwner ? contactSubForm : unitInterestOwnerForm;
     return formFunction({
       getValues,
@@ -357,11 +357,11 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
 
               <CommonForm
-                FormJson={formJson}
+                formSchema={formSchema}
                 control={control}
                 reset={reset}
                 watch={watch}
-                DialogKey={"unitInterestDialog"}
+                dialogKey={"unitInterestDialog"}
               />
 
             </Grid>
