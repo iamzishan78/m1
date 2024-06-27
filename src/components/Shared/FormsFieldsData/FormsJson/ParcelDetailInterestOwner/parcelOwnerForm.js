@@ -573,6 +573,10 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       renderField: "associatedDeals"
     },
     {
+      label: "Data Source",
+      name: "dataSource",
+    },
+    {
       label: "Depth Restrictions",
       name: "depthBoth",
       renderField: "radioButton",
