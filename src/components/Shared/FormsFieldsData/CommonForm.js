@@ -13,11 +13,10 @@ function CommonForm({ FormJson, control, watch, DialogKey }) {
   return (
     <>
       {FormJson.map((item, index) => (
-        <React.Fragment key={index}>
+        <React.Fragment key={item.name}>
           {
             item.renderField === "autoComplete" ? (
               <AutoCompleteComponent
-                key={index}
                 item={item}
                 control={control}
               />

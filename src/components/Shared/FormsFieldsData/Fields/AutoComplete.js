@@ -57,9 +57,6 @@ function AutoCompleteComponent({ control, item }) {
     callQuery()
   }, [])
 
-  useEffect(() => {
-    setOptions(defaultOptions)
-  }, [item])
 
   return (
     <Grid item xs={12}>
