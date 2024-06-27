@@ -50,16 +50,16 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
       name: "mineral_interest",
       type: "number",
       onBlur: (value) => {
-        const { net_acres, nra, royalty_interest, orri } = getValues() || {}
+        const { royalty_interest, orri } = getValues() || {}
         setValue('mineral_interest', parseFloat(value).toFixed(8))
 
 
-        if (!net_acres) {
+        if (!sideDialogController("tractInterestDialog").getValue('showNetAcresRecalculate')) {
           const netAcres = calculateNetAcres(value)
           setValue('net_acres', netAcres)
         }
 
-        if (!nra) {
+        if (!sideDialogController("tractInterestDialog").getValue('showNraRecalculate')) {
           const selectedParcel = popupController.getValue('selectedParcel');
           const workspaceSettings = sideDialogController("tractInterestDialog").getValue('workspaceSettings')
 
@@ -80,10 +80,10 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
       name: "royalty_interest",
       type: "number",
       onBlur: (value) => {
-        const { mineral_interest, nra, orri } = getValues() || {}
+        const { mineral_interest, orri } = getValues() || {}
         setValue('royalty_interest', parseFloat(value).toFixed(8))
 
-        if (!nra) {
+        if (!sideDialogController("tractInterestDialog").getValue('showNraRecalculate')) {
           const selectedParcel = popupController.getValue('selectedParcel');
           const workspaceSettings = sideDialogController("tractInterestDialog").getValue('workspaceSettings')
 
@@ -101,7 +101,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
         const { mineral_interest, royalty_interest, nra, orri } = getValues() || {}
         setValue('orri', parseFloat(value).toFixed(8))
 
-        if (!nra) {
+        if (!sideDialogController("tractInterestDialog").getValue('showNraRecalculate')) {
           const selectedParcel = popupController.getValue('selectedParcel');
           const workspaceSettings = sideDialogController("tractInterestDialog").getValue('workspaceSettings')
 
@@ -133,13 +133,13 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
         return isOverride
       },
       onBlur: (value) => {
-        const { mineral_interest, nra, royalty_interest, orri } = getValues() || {}
+        const { mineral_interest, royalty_interest, orri } = getValues() || {}
         const selectedParcel = popupController.getValue('selectedParcel');
         const workspaceSettings = sideDialogController("tractInterestDialog").getValue('workspaceSettings')
         const uUnitPricingNMA = sideDialogController("tractInterestDialog").getValue('uUnitPricingNMA')
         const uMaxUnitPricingNMA = sideDialogController("tractInterestDialog").getValue('uMaxUnitPricingNMA')
         setValue('net_acres', value)
-        if (!nra) {
+        if (!sideDialogController("tractInterestDialog").getValue('showNraRecalculate')) {
           const calculatedNra = calculateStandardNraForTract(selectedParcel?.sdGrossAcres, mineral_interest, royalty_interest, orri, workspaceSettings)
           setValue('nra', calculatedNra)
         }
@@ -159,7 +159,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
                   const { mineral_interest, nra, royalty_interest, orri } = getValues() || {}
                   const netAcres = calculateNetAcres(mineral_interest);
                   setValue('net_acres', netAcres)
-                  if (!nra) {
+                  if (!sideDialogController("tractInterestDialog").getValue('showNraRecalculate')) {
                     const calculatedNra = calculateStandardNraForTract(selectedParcel?.sdGrossAcres, mineral_interest, royalty_interest, orri, workspaceSettings)
                     setValue('nra', calculatedNra)
                   }
@@ -522,6 +522,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
       },
       query: GET_ES_FILTER_LIST,
       getOptions: (apiRes) => {
+        if (!apiRes?.data?.getESFilterList?.hits) return []
         const filterData = apiRes.data.getESFilterList.hits.map(
           (hit) => hit.key
         );
@@ -540,6 +541,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
       },
       query: GET_ES_FILTER_LIST,
       getOptions: (apiRes) => {
+        if (!apiRes?.data?.getESFilterList?.hits) return []
         const filterData = apiRes.data.getESFilterList.hits.map(
           (hit) => hit.key
         );
@@ -562,6 +564,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
       },
       query: GET_ES_FILTER_LIST,
       getOptions: (apiRes) => {
+        if (!apiRes?.data?.getESFilterList?.hits) return []
         const filterData = apiRes.data.getESFilterList.hits.map(
           (hit) => hit.key
         );
@@ -579,6 +582,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
       },
       query: GET_ES_FILTER_LIST,
       getOptions: (apiRes) => {
+        if (!apiRes?.data?.getESFilterList?.hits) return []
         const filterData = apiRes.data.getESFilterList.hits.map(
           (hit) => hit.key
         );
