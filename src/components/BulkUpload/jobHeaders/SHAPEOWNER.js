@@ -6,6 +6,13 @@ fields.splice(CONTACTS_FIELDS.length - 1, 1)
 // eslint-disable-next-line import/no-anonymous-default-export
 export default [
     ...fields,
+    // Added contact level tags key
+    {
+        label: "Owner Tags",
+        mapped_key: "",
+        required: false,
+        actual_key: "contact.tags"
+    },
     {
         label: "Shape Id",
         mapped_key: "",
@@ -200,7 +207,7 @@ export default [
         actual_key: "comment"
     },
     {
-        label: "Tags",
+        label: "Unit Tags",
         mapped_key: "",
         required: false,
         actual_key: "shape.tags"

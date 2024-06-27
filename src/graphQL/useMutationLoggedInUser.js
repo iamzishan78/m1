@@ -1,5 +1,6 @@
+import gql from "graphql-tag";
 
-export const GET_LOGGED_IN_USER = `
+export const GET_LOGGED_IN_USER = gql`
   mutation getLoggedInUser($user: UserInput) {
     login(user: $user) {
       success
@@ -12,6 +13,7 @@ export const GET_LOGGED_IN_USER = `
         displayName
         adUserId
         rolePrivileges
+        roles
         }
       }
     }

@@ -12,11 +12,18 @@ import QuickActionPanel from "components/Land/components/QuickActionPanel";
 import { AdminManagementRoutes } from "utils/data";
 import Map from "./components/Map";
 import AdminSettings from "components/Shared/AdminSettings";
+import Flattening from "components/Admin/Flattening"
 
 const Components = {
   Map,
   AdminSettings,
+  Flattening
 };
+
+function isM1neralAddress(email) {
+  return email.endsWith('@m1neral.com');
+}
+
 
 export default function Admin() {
   const location = useLocation();
@@ -50,6 +57,9 @@ export default function Admin() {
 
   useEffect(() => {
     const allPaths = JSON.parse(JSON.stringify(AdminManagementRoutes));
+    if (!isM1neralAddress(stateApp.user.email)) {
+      delete allPaths["FLATTENING"]
+    }
     const feature = stateApp.user?.features?.find((feature) => feature.name === FEATURES.CONTACTSUBMENU);
     // const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.ANALYTICSSUBMENU);
     const allAllowedPaths = {};

@@ -137,7 +137,8 @@ function LayerSelectionPopup(props) {
             const properties = layer?.properties
             if (layer.source === 'wellsVT') {
                 return `${properties.api}-${properties.wellName}`
-            } else if (layer.source === 'parcels_source') {
+            } else if (layer.source === 'parcels_source' || ["interests_source", "area of interest_source"].includes(layer.source)) { // Check if the source of the layer is 'parcels_source' or 'area of interest_source'
+                // Return the shape label in both cases
                 return properties.shapeLabel
             } else if (layer.source === 'units_source') {
                 return `${properties.uNumber ? properties.uNumber + '-' : ''}${properties.shapeLabel}`
@@ -149,6 +150,56 @@ function LayerSelectionPopup(props) {
     }
 
     const selectLayer = (layer) => {
+        // Check if the layer source is "area of interest_source"
+        if (["interests_source", "area of interest_source"].includes(layer.source)) {
+            // Create a copy of the layer
+            const selectedUserDefinedLayer = copy(layer)
+            // Update the application state using setStateApp
+            props.setStateApp((state) => {
+                // If drawing mode is active, return the current state
+
+                if (state.isDrawing) return state;
+                // Update state with various properties related to layer selection and UI control visibility
+
+                state = {
+                    ...state,
+
+                    selectedParcel: null,
+                    selectedShape: null,
+                    expandedCard: false,
+                    popupOpen: false,
+                    showAddShapePopup: false,
+                    layerSelectionPopup: false,
+                    showShapeActionsPopup: true,
+                    selectedUserDefinedLayer,
+                    openDrawShapesControl: true,
+                };
+                drawBoundary(props.map, selectedUserDefinedLayer);
+                // If editDraw is not active, toggle the draw shapes popup and set editDraw to true
+
+                if (!state.editDraw) {
+                    state = {
+                        ...state,
+                        showDrawShapesPopup: !state.showDrawShapesPopup,
+                        editDraw: true,
+                    };
+                } else {
+                    state = {
+                        ...state,
+                        editDraw: false,
+                        currentFeature: undefined,
+                        isAbstractedLayersPolygon: false,
+                        multiSelectLandGrids: false,
+                        selectedAbstracts: [],
+                        showShapeActionsPopup: false,
+                        showDrawShapesPopup: false,
+                    };
+                }
+                return state;
+            });
+            return
+        }
+
         if (ifFileShapeSource(layer.source) && layer.properties.layerShapeName) {
             const jsonLayer = copy(layer)
 

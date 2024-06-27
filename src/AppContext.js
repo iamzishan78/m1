@@ -8,6 +8,8 @@ import { heatLayers, baseMapLayers } from "./LayerConfig";
 import { useHookStateApp } from "hookstate";
 import { globalStateController } from 'hookstate/globalStateController';
 import { popupController } from "hookstate/popupStateController";
+import queryString from 'query-string';
+import { apolloClientEndpointDev, isDev } from "utils/helper";
 
 const AppContext = createContext([{}, () => { }]);
 
@@ -206,10 +208,16 @@ const AppProvider = (props) => {
 
   useEffect(() => {
     async function wait() {
-      let tenantName = window.sessionStorage.getItem("tenantName");
+      const query = queryString.parse(window.location.search);
 
-      if (tenantName) {
-        let tenant = tenantsCredentials(tenantName);
+      let tenantName = window.sessionStorage.getItem('tenantName');
+
+      if (query.tenant && globalStateController.isBypassTenant(query.tenant)) tenantName = query.tenant || tenantName;
+
+      let tenant = tenantsCredentials(tenantName);
+      if (tenant) {
+        window.sessionStorage.setItem('tenantName', tenantName);
+
         tenant.apolloOriginalClientEndpoint = tenant.apolloClientEndpoint;
         tenant.apolloClientEndpoint = isDev && tenantName === "localhost" ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
         let myMSALObjInt = MSALObj(tenant);
@@ -299,14 +307,11 @@ const AppProvider = (props) => {
   );
 };
 
-const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
-const isDev = process.env.NODE_ENV === "development";
-
 const setApolloHeaders = (config, authToken, idToken) => {
   if (!config) config = {};
   if (!config.headers) config.headers = {};
   config.headers["X-ZUMO-AUTH"] = authToken;
-  if (isDev) config.headers["X-MS-TOKEN-AAD-ID-TOKEN"] = idToken;
+  if (isDev || globalStateController.getValue('bypassLogin')) config.headers["X-MS-TOKEN-AAD-ID-TOKEN"] = idToken;
   return config;
 };
 

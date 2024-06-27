@@ -3,12 +3,21 @@ import { GlobalStickyStyles } from "GlobalSettings";
 
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 import { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
-import { formatDate } from 'components/Shared/functions';
+import { addTrailingZeros, formatDate } from 'components/Shared/functions';
 
 const TractsHeadCells = (isSnapGrid = false) => [
   {
     name: "_id",
-    options: { filter: false, display: false, sort: false, viewColumns: false },
+    options: {
+      filter: false, display: false, sort: false, viewColumns: false, download: false,
+    },
+  },
+  {
+    name: "m1neral_id",
+    label: 'M1neral System ID',
+    options: {
+      filter: false, display: false, sort: false, viewColumns: true
+    },
   },
   {
     /// this is the control column for tracts
@@ -29,7 +38,7 @@ const TractsHeadCells = (isSnapGrid = false) => [
               e?.stopPropagation();
               history.push(`/map/parcels/${tableMeta.rowData[0]}`, { showTractsBreadcrumb: !isSnapGrid });
             }}
-            value={splitNumber?.[0] ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}` : tableMeta?.rowData[2]}
+            value={splitNumber?.[0] ? `${splitNumber?.[0]} - ${tableMeta?.rowData[3]}` : tableMeta?.rowData[3]}
             link={`/map/parcels/${tableMeta.rowData[0]}`}
           />
         );
@@ -123,11 +132,23 @@ const TractsHeadCells = (isSnapGrid = false) => [
     },
   },
   {
+    name: "calculatedNra",
+    label: "Tract NRA",
+    esKey: "shapeJson.properties.netRoyalityAcres.calculatedNra.keyword",
+    options: {
+      dbName: "shapeJson.properties.netRoyalityAcres.calculatedNra",
+    },
+  },
+  {
     label: "Exec Net Acres",
     name: "execNetAcres",
     esKey: "shapeJson.properties.execNetAcres.keyword",
     options: {
       dbName: "shapeJson.properties.execNetAcres.keyword",
+      customRender: (value) => {
+        // rounding interest values
+        return <p>{value ? addTrailingZeros(parseFloat(value).toFixed(8)) : ""}</p>;
+      },
     },
   },
   {
@@ -136,6 +157,10 @@ const TractsHeadCells = (isSnapGrid = false) => [
     esKey: "shapeJson.properties.nonExecNetAcres.keyword",
     options: {
       dbName: "shapeJson.properties.nonExecNetAcres.keyword",
+      customRender: (value) => {
+        // rounding interest values
+        return <p>{value ? addTrailingZeros(parseFloat(value).toFixed(8)) : ""}</p>;
+      },
     },
   },
   {
@@ -212,7 +237,7 @@ const TractsHeadCells = (isSnapGrid = false) => [
     esKey: "shapeJson.properties.campaignName.keyword",
     options: {
       customRender: (value) => {
-        return (typeof (value !== "string")) && value ? value?.join(", ") : value;
+        return (typeof value !== "string") && value ? value?.join(", ") : value;
       },
       setCellProps: () => ({ style: { minWidth: "200px" } }),
       sort: true,

@@ -344,6 +344,18 @@ const checkDetailsKeys = [
         actual_key: "property.internalID",
     },
     {
+        label: "Property Name",
+        mapped_key: "",
+        required: false,
+        actual_key: "property.name",
+    },
+    {
+        label: "Operator Name",
+        mapped_key: "",
+        required: false,
+        actual_key: "property.operator",
+    },
+    {
         label: "Owner Number",
         mapped_key: "",
         required: false,
@@ -360,7 +372,7 @@ const checkDetailsKeys = [
     {
         label: "Sales Date",
         mapped_key: "",
-        required: false,
+        required: true,
         actual_key: "date",
     },
     {

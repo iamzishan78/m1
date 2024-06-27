@@ -428,13 +428,15 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       }
       return;
     }
-    // if (!stateApp[keys[type]] || paramId !== stateApp[keys[type]]?.id) {
+    // Send a GraphQL query to fetch a custom layer from the server
     const { data: layer } = await client.query({
       query: CUSTOMLAYER,
       variables: {
-        id: paramId,
+        id: paramId, // Pass the paramId variable as a query variable
       },
     });
+    // Check if the response contains a property named 'customLayer' and if it's truthy
+    // If a customLayer exists and is truthy, initialize the map at 'customLayer' location
     if (layer?.customLayer) {
       let jsonLayer = JSON.parse(layer.customLayer.shape);
       if (layer.customLayer.shapeJson) jsonLayer = copy(layer.customLayer.shapeJson);
@@ -473,8 +475,10 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         popupOpen: false,
         expandedCard: true,
       }));
+    } else {
+      // If the customLayer doesn't exist or is falsy, redirect the user to the home page
+      history.push('/');
     }
-    // }
   }
 
   useEffect(() => {
@@ -484,7 +488,13 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
   useEffect(() => {
     if (paramId) {
-      getCustomLayer();
+      try {
+        // Attempt to fetch the custom layer if `paramId` exists using `getCustomLayer` function
+        getCustomLayer();
+      } catch (err) {
+        // If an error occurs during the fetch operation, redirect to the home page
+        history.push('/');
+      }
     }
   }, [loading, paramId, map]);
 
@@ -894,7 +904,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           if (feature.geometry.type == "Point") {
             output = feature;
           } else {
-            output = { ...turf.centroid(feature), properties: feature.properties };
+            try {
+              output = { ...turf.centroid(feature), properties: feature.properties };
+            } catch (e) {
+              output = null;
+            }
           }
 
           return output;
@@ -1263,7 +1277,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           };
         });
         drawBoundary(map, selectedUserDefinedLayer);
-      } else if (feature.source === "interests_source" && !drawMode.includes("draw") && !drawMode.includes("drag")) {
+        //interests_source replace this key with area of interest_source in complete app
+      } else if (["interests_source", "area of interest_source"].includes(feature.source) && !drawMode.includes("draw") && !drawMode.includes("drag")) {
         setStateApp((state) => {
           if (state.isDrawing) return state;
           state = {
@@ -1439,6 +1454,9 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         layers: [...layers],
       });
 
+      // Get if features have a Search Cluster
+      const hasSearchCluster = features.some(f => f.layer.id === 'Search-clusters');
+
       if (!(window.event.ctrlKey && window.event.metaKey) && hoverUdIds.length > 0) {
         for (let i = 0; i < hoverUdIds.length; i++) {
           map.setFeatureState({ source: "parcels_source", id: hoverUdIds[i] }, { hover: false });
@@ -1539,7 +1557,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
             ifDefaultLayers(layerId) ||
             layerId === "Tracked Owners" ||
             layerId === "Tags Filter" ||
-            layerId === "Search" ||
+            ((layerId === "Search" || layerId === "Search-line")
+              && !hasSearchCluster) ||
             layerId === "recent_submitted_permits" ||
             layerId === "recent_submitted_permit_laterals":
             wellPointClick(feature);
@@ -1588,7 +1607,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
       let wellsFeatures = map.queryRenderedFeatures(polygon, { layers: ['wellpoints'] });
       features = features.concat(wellsFeatures)
-      features = features.filter((feature) => feature.source !== 'interests_source')
+      // features = features.filter((feature) => feature.source !== 'area of interest_source')
 
       let coordinates = [e.lngLat.lng, e.lngLat.lat];
       setTimeout(() => {

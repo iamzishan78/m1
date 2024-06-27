@@ -331,7 +331,7 @@ export default function HeaderSection(props) {
                       onChange={(e) => {
                         params.onChange(e.target.value);
                       }}
-                      onBlur={(e) => handleUpdate("name", e.target.value)}
+                      onBlur={(e) => updatePropertyData("name", e.target.value)}
                     />
                   )}
                 />
@@ -359,7 +359,7 @@ export default function HeaderSection(props) {
                       onChange={(e) => {
                         params.onChange(e.target.value);
                       }}
-                      onBlur={(e) => handleUpdate("number", e.target.value)}
+                      onBlur={(e) => updatePropertyData("number", e.target.value)}
                     />
                   )}
                 />
@@ -482,7 +482,7 @@ export default function HeaderSection(props) {
                       onChange={(e) => {
                         params.onChange(e.target.value);
                       }}
-                      onBlur={(e) => handleUpdate("purchaserNumber", e.target.value)}
+                      onBlur={(e) => updatePropertyData("purchaserNumber", e.target.value)}
                     />
                   )}
                 />
@@ -545,7 +545,7 @@ export default function HeaderSection(props) {
                       onChange={(e) => {
                         params.onChange(e.target.value);
                       }}
-                      onBlur={(e) => handleUpdate("internalID", e.target.value)}
+                      onBlur={(e) => updatePropertyData("internalID", e.target.value)}
                     />
                   )}
                 />
@@ -573,7 +573,7 @@ export default function HeaderSection(props) {
                       onChange={(e) => {
                         params.onChange(e.target.value);
                       }}
-                      onBlur={(e) => handleUpdate("description", e.target.value)}
+                      onBlur={(e) => updatePropertyData("description", e.target.value)}
                     />
                   )}
                 />
@@ -938,7 +938,7 @@ export default function HeaderSection(props) {
                           params.onChange(value?.name || "");
                         }}
                         onBlur={(e) => {
-                          handleUpdate("internalCompany", e.target.value || "");
+                          updatePropertyData("internalCompany", e.target.value || "");
                         }}
                       />
                     );

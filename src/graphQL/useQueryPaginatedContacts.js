@@ -65,7 +65,6 @@ export const PAGINATEDCONTACTSQUERY = gql`
           campaignName
           contactStatus
         }
-        cursor
       }
       pageInfo {
         hasNextPage

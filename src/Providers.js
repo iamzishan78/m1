@@ -25,6 +25,8 @@ import Notifications from "./components/Notifications/Notifications";
 import { Provider as ReduxProvider } from "react-redux";
 import configureStore from "./store";
 import { globalStateController } from "hookstate/globalStateController";
+import { getSession } from "utils/user";
+
 // user management
 const store = configureStore(/ provide initial state if any /);
 //app theme overrides to the default material-ui theme found here https://material-ui.com/customization/default-theme/#explore
@@ -120,6 +122,13 @@ function Providers({ children, headersData }) {
   // }, [stateApp]);
 
   const updateApolloClient = (endpoint, token, idToken) => {
+    const session = getSession();
+
+    if (globalStateController.getValue('bypassLogin') && session && !token) {
+      idToken = session.accessToken;
+      token = session.accessToken;
+    }
+
     let fetchOptions = { headers: [] };
     if (token) fetchOptions.headers['X-ZUMO-AUTH'] = token
     if (idToken) fetchOptions.headers['X-MS-TOKEN-AAD-ID-TOKEN'] = idToken

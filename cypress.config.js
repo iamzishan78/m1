@@ -11,8 +11,8 @@ module.exports = defineConfig({
   experimentalMemoryManagement: true,
 
   env: {
-    // localhost, m1production, m1staging, frontier
-    TENENT: 'm1staging'
+    // localhost, m1production, m1staging, frontier, m1cypress
+    TENENT: 'm1cypress'
   },
 
   e2e: {

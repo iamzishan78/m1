@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-  - ahmadfaraz/cypress-component-testing
+  - master
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -15,13 +15,12 @@ variables:
 steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: '16.15.0'
+      versionSpec: '21.7.3'
     displayName: 'Install Node.js'
 
-  - task: Npm@1
-    inputs:
-      command: 'install'
-    displayName: 'Npm Install'
+  - script: |
+      yarn install
+    displayName: 'Yarn Install'
 
   - script: |
       sed -i "s/cypress open/cypress open --env TENENT='$(TENENT)'/" ./package.json

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Grid } from "@material-ui/core";
 import { IconButton } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -17,15 +17,20 @@ function PencilEditIcon({
     content,
     handleUpdating,
     isCopy = false,
+    editContent,
+    setEditContent
 }) {
     const classes = useStyles();
+    const [copied, setCopied] = useState(false); // Add new state for updating copy icon tooltip value
+
+    
     return (
         <React.Fragment>
             <EditionPopover anchorEl={anchorEl} setAnchorEl={setAnchorEl}>
                 <Grid container spacing={0} style={{ width: "200px" }}>
                     <Grid className={classes.buttonsRow} item xs={12}>
                         <Button
-                            variant="contained"
+                            data-testid='checkIcon'
                             size="small"
                             variant="outlined"
                             className={classes.popoverButton}
@@ -37,12 +42,12 @@ function PencilEditIcon({
                             {" "}
                         </Button>
                         <Button
-                            variant="contained"
                             size="small"
                             variant="outlined"
                             className={classes.popoverButton}
                             startIcon={<ClearSharpIcon />}
                             onClick={() => {
+                                setEditContent({ ...editContent}) // reset content to default value on click of close icon 
                                 setAnchorEl(null);
                             }}
                         >
@@ -53,16 +58,20 @@ function PencilEditIcon({
                     {content.map((textF, i) => (
                         <Grid key={i} item xs={12} style={{ marginBottom: "8px" }}>
                             {textF}
-                        </Grid>
-                    ))}
+                        </Grid>)
+                    )}
                 </Grid>
             </EditionPopover>
             {isCopy && (
-                <Tooltip title={"Copy"} placement="top">
+                <Tooltip title={copied ? "Copied" : "Copy"}  placement="top">
                     <IconButton
                         size="small"
                         onClick={(e) => {
+                            setCopied(true);
                             onClick(e, true);
+                            setTimeout(() => { // Show copied to user after copying the value
+                                setCopied(false);
+                            }, 1500);
                         }}
                     >
                         <CopyIcon id="copyIcon" />

@@ -7,6 +7,8 @@ import { useMutation } from '@apollo/client';
 import { ProfileContext } from "../../Profile/ProfileContext";
 import { GET_USER_NOTES } from "graphQL/useQueryGetNote";
 import { useLazyQuery } from "@apollo/client";
+import { globalStateController } from 'hookstate/globalStateController';
+
 const useStyles = makeStyles((theme) => ({
   notes: {
     backgroundColor: "#FFFCDC",
@@ -27,10 +29,11 @@ function Notepad() {
   const [stateProfile, setStateProfile] = useContext(ProfileContext);
   const [getNote, { data }] = useLazyQuery(GET_USER_NOTES);
   useEffect(() => {
-    if (stateProfile?.fields?._id) {
+    const user = globalStateController.getValue('user');
+    if (stateProfile?.fields?._id || user) {
       getNote({
           variables: {
-            userId: stateProfile?.fields?._id,
+            userId: stateProfile?.fields?._id ||  user?._id, 
           },
         })
     }
@@ -39,8 +42,8 @@ function Notepad() {
     setDescription(data?.getUserNotes?.description)
   }, [data]);
   const [createNote] = useMutation(CREATE_NOTE, {
-    variables: { content: { description, userId:  stateProfile.fields._id} },
-    refetchQueries: [{ query: GET_USER_NOTES, variables: { userId: stateProfile.fields._id } }],
+    variables: { content: { description, userId:  stateProfile?.fields?._id || globalStateController.getValue('user')?._id } },
+    refetchQueries: [{ query: GET_USER_NOTES, variables: { userId: stateProfile?.fields?._id || globalStateController.getValue('user')?._id } }],
   });
   const handleCreateNote = useCallback(async () => {
     await createNote();
@@ -69,6 +72,7 @@ function Notepad() {
       }}
       className={classes.notes}
       onBlur={handleBlur}
+      data-testid="notes-description-text-area"
     />
     </Fragment>
     

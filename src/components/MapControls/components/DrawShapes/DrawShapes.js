@@ -243,10 +243,10 @@ export default function DrawShapes() {
         ...state,
         currentFeature: selectedUserDefinedLayer,
         // selectedParcel: selectedUserDefinedLayer.source === 'parcels_source' ? selectedUserDefinedLayer : null,
-        selectedAoi: selectedUserDefinedLayer.source === "interests_source" ? selectedUserDefinedLayer : null,
+        selectedAoi: ["interests_source", "area of interest_source"].includes(selectedUserDefinedLayer.source) ? selectedUserDefinedLayer : null,
       }));
       if (
-        selectedUserDefinedLayer.source === "interests_source" &&
+        ["interests_source", "area of interest_source"].includes(selectedUserDefinedLayer.source) &&
         showShapeActionsPopup === true &&
         selectedParcel === null &&
         selectedShape === null

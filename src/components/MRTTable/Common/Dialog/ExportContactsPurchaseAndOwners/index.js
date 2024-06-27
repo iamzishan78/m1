@@ -70,6 +70,7 @@ const ExportContactsAndPurchase = ({
   open,
   shapeType,
   sort,
+  columns,
   contactIdKey,
 }) => {
   const classes = useStyles();
@@ -110,6 +111,14 @@ const ExportContactsAndPurchase = ({
     }
 
     onClose();
+    let sortOrder = {};
+
+    if (Object.keys(sort).length > 0) {
+      // Using column name as a field key beacause it has .keyword appended based on its type
+      const column = columns.find(col => col.accessorKey === sort?.field);
+      sortOrder = { field: column?.name || sort?.field, order: sort?.order };
+    }
+
     dispatch(execCommonAsyncExportJobAction.STARTED({
       jobType: 'EXPORTCSV',
       client,
@@ -121,7 +130,7 @@ const ExportContactsAndPurchase = ({
         search,
         filters,
         esIndex,
-        sort,
+        sort: sortOrder,
         isSelectAll: isAllRowsSelected,
         contactIdKey,
         datasets,

@@ -11,7 +11,7 @@ import { copy } from 'components/Shared/functions';
 import { headers } from '../../../cypressUtils/cypressHeaders';
 /* ---------------------------------- Data ---------------------------------- */
 let selectedShape = {
-  id: '65b0c87166115215f9155bc4',
+  id: '65eeef41f1e14c0724bee441',
 };
 
 const getLayerPayload = {
@@ -24,7 +24,7 @@ const getLayerPayload = {
 Cypress.Commands.add('setMapData', ({ testId, value }) => {
   cy.get(`[data-testid="data-cell-${testId}"]`, {
     timeout: basic_timeouts.midTimeout,
-  }).trigger('mouseover');
+  }).trigger('mouseover', { force: true });
 
   cy.interceptAndWait(['getESSimpleFilter'], () => {
     cy.wait(basic_timeouts.shorTimeout);
@@ -64,14 +64,14 @@ describe('Restore Unit for ShapeDetailCard.cy.jsx if Deleted', () => {
       url: ldata.url,
       headers: headers,
       body: getLayerPayload,
-    }).then(response => {
+    }).then((response) => {
       if (!response?.body?.data?.customLayer)
         cy.request({
           method: 'POST',
           url: ldata.url,
           headers: headers,
           body: updateLayerPayload,
-        }).then(response => {
+        }).then((response) => {
           expect(response.status).to.eq(200);
         });
       else expect(response.status).to.eq(200);
@@ -86,7 +86,7 @@ describe('ShapeDetailCard Component', () => {
       url: ldata.url,
       headers: headers,
       body: getLayerPayload,
-    }).then(response => {
+    }).then((response) => {
       selectedShape = response?.body?.data?.customLayer;
       let jsonLayer;
       if (selectedShape.shapeJson) jsonLayer = copy(selectedShape.shapeJson);
@@ -100,7 +100,7 @@ describe('ShapeDetailCard Component', () => {
         id: selectedShape._id,
       };
 
-      cy.interceptAndWait(['getCustomLayer'], alias => {
+      cy.interceptAndWait(['getCustomLayer'], (alias) => {
         popupController.updateState({ selectedShape });
         cy.viewport(1600, 1200).mount(
           <ExpandableCardProvider
@@ -171,27 +171,20 @@ describe('ShapeDetailCard Component', () => {
     // Verifying that the overridden class is removed from target offer price and NRA fields
     cy.get('tbody > tr').contains('1').click({ force: true });
 
-    cy.get('[data-testid="target-offer-price-field"]').should(
-      'not.have.class',
-      'overridden'
-    );
+    cy.get('[data-testid="target-offer-price-field"]').should('not.have.class', 'overridden');
     cy.get('[data-testid="nra-field"]').should('not.have.class', 'overridden');
   });
 
-  it(
-    'IF TX ( State=CO,County=Denver ) ELSE ( State=TX,County=Austin )',
-    retries.fiveTries,
-    () => {
-      const state = selectedShape.state;
-      if (state === 'TX') {
-        cy.setMapData({ testId: 'State', value: 'CO' });
-        cy.setMapData({ testId: 'County', value: 'Denver' });
-      } else {
-        cy.setMapData({ testId: 'State', value: 'TX' });
-        cy.setMapData({ testId: 'County', value: 'Austin' });
-      }
+  it('IF TX ( State=CO,County=Denver ) ELSE ( State=TX,County=Austin )', retries.fiveTries, () => {
+    const state = selectedShape.state;
+    if (state === 'TX') {
+      cy.setMapData({ testId: 'State', value: 'CO' });
+      cy.setMapData({ testId: 'County', value: 'Denver' });
+    } else {
+      cy.setMapData({ testId: 'State', value: 'TX' });
+      cy.setMapData({ testId: 'County', value: 'Austin' });
     }
-  );
+  });
 
   it(
     'IF TX ( Survey=ABBOTT, L, Block=37 T1N ) ELSE ( Township=035S,Range=055W )',

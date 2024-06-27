@@ -3,9 +3,10 @@ import moment from "moment";
 import { getSession } from "utils/user";
 import { wellsKeys } from "utils/data";
 import { tenantsCredentials } from "components/Login/AADAuthConfig";
+import { globalStateController } from "hookstate/globalStateController";
 
-const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
-const isDev = process.env.REACT_APP_NODE_ENV === "development";
+export const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
+export const isDev = process.env.REACT_APP_NODE_ENV === "development";
 const decimalForamtter = new Intl.NumberFormat('en-US', {
   style: 'decimal',
   useGrouping: true,
@@ -63,7 +64,7 @@ export const getURL = () => {
 export const getHeaders = () => {
   const session = getSession();
   const headers = { "X-ZUMO-AUTH": session.authToken };
-  if (isDev) {
+  if (isDev || globalStateController.getValue('bypassLogin')) {
     headers["X-MS-TOKEN-AAD-ID-TOKEN"] = session.accessToken;
   }
   return headers;
@@ -271,6 +272,28 @@ export const getAddressUrl = (owner) => {
   return address;
 };
 
+export const getZillowAddressUrl = (owner) => {  // create and return zillow link from the address
+  let address = "https://www.zillow.com/homes/";
+  const { address1, city, state, zip } = owner;  
+
+  if (address1) address += `${encodeURIComponent(address1)},`;
+  if (city) address += `${encodeURIComponent(city)},`;
+  if (state) address += `${encodeURIComponent(state)},`;
+  if (zip) address += `${encodeURIComponent(zip)}`;
+
+  // Adding '_rb' to the end of the Zillow link
+  address += "_rb/";
+
+  return address;
+};
+
+// Function to generate the OpenCorporates search URL for a given company name.
+export const getOpenCorporatesUrl = (companyName) => {
+  const baseUrl = 'https://opencorporates.com/companies?q=';
+  const encodedCompanyName = encodeURIComponent(companyName);
+  return `${baseUrl}${encodedCompanyName}`;
+}
+ 
 export const getMapFilters = (stateNav, searchInput, gridPolygonString, format) => {
   const extendSearchQuery = searchInput
 
