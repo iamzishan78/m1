@@ -87,11 +87,37 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       label: "Royalty Interest (Lease)",
       name: "royalty_interest",
       type: "number",
+      onBlur: (value) => {
+        const { mineral_interest, nra, orri } = getValues() || {}
+        setValue('royalty_interest', parseFloat(value).toFixed(8))
+
+        if (!nra) {
+          const selectedParcel = popupController.getValue('selectedParcel');
+          const workspaceSettings = sideDialogController("tractInterestDialog").getValue('workspaceSettings')
+
+          const calculatedNra = calculateStandardNraForTract(selectedParcel?.sdGrossAcres, mineral_interest, value, orri, workspaceSettings)
+          setValue('nra', calculatedNra)
+        }
+        return parseFloat(value).toFixed(8)
+      },
     },
     {
       label: "Overriding Royalty Interest (ORRI)",
       name: "orri",
       type: "number",
+      onBlur: (value) => {
+        const { mineral_interest, royalty_interest, nra, orri } = getValues() || {}
+        setValue('orri', parseFloat(value).toFixed(8))
+
+        if (!nra) {
+          const selectedParcel = popupController.getValue('selectedParcel');
+          const workspaceSettings = sideDialogController("tractInterestDialog").getValue('workspaceSettings')
+
+          const calculatedNra = calculateStandardNraForTract(selectedParcel?.sdGrossAcres, mineral_interest, royalty_interest, value, workspaceSettings)
+          setValue('nra', calculatedNra)
+        }
+        return parseFloat(value).toFixed(8)
+      },
     },
     {
       label: "Working Interest",
@@ -114,7 +140,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         })
         return isOverride
       },
-      onChange: (value) => {
+      onBlur: (value) => {
         const { mineral_interest, nra, royalty_interest, orri } = getValues() || {}
         const selectedParcel = popupController.getValue('selectedParcel');
         const workspaceSettings = sideDialogController("tractInterestDialog").getValue('workspaceSettings')
@@ -127,6 +153,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         }
         setValue('offer_price_nma', calculateOfferPrice(value, uUnitPricingNMA))
         setValue('max_offer_price_nma', calculateOfferPrice(value, uMaxUnitPricingNMA))
+        return value
       },
       InputProps: {
         endAdornment: (
