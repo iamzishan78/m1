@@ -21,8 +21,7 @@ import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIco
 import { tableGlobalController } from 'hookstate/tableController';
 import { sideDialogController, unitInterestOwnerState } from 'hookstate/sideDialogController';
 import { globalStateController } from 'hookstate/globalStateController';
-import contactSubForm from 'components/Shared/FormsFieldsData/FormsJson/UnitDetailInterestOwner/contactSubForm';
-import unitInterestOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/UnitDetailInterestOwner/unit_interest_owner_form_schema';
+import unitInterestOwnerForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/UnitDetailInterestOwner/unit_interest_owner_form_schema';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import AddIcon from "@material-ui/icons/Add";
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
@@ -280,11 +279,11 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const classes = useStyles();
 
   const formSchema = useMemo(() => {
-    const formFunction = formStateValues?.newOwner ? contactSubForm : unitInterestOwnerForm;
-    return formFunction({
+    return unitInterestOwnerForm({
       getValues,
       setValue,
-      metafields
+      newOwner: formStateValues?.newOwner,
+      metafields,
     });
   }, [formStateValues?.newOwner, formState?.rerenderJson, metafields, formState.uUnitPricing, formState.uAcres, formState.uMaxUnitPricing]);
 

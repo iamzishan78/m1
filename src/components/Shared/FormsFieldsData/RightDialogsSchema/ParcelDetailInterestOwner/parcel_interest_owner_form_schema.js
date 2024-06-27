@@ -3,12 +3,12 @@ import IconButton from '@material-ui/core/IconButton';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
-import { entityTypeOptions } from "components/ContactDetailedInfo/helper";
 import { popupController } from 'hookstate/popupStateController';
 import { addTrailingZeros } from 'components/Shared/functions';
 import { sideDialogController } from "hookstate/sideDialogController"
 import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import contactForm from "components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema"
 
 const calculateNetAcres = interest => {
   const selectedParcel = popupController.getValue('selectedParcel');
@@ -23,27 +23,19 @@ const calculateOfferPrice = (nra, offer) => {
   return parseFloat((parseFloat(nra || 0) * parseFloat(offer || 0)).toFixed(2));
 };
 
-const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
+const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) => {
+
+  const contactFields = []
+  const tractInterestFields = []
+  if (newOwner) {
+    let contactArray = contactForm()
+    contactFields.splice(-2)
+    contactFields.push(...contactArray)
+  } else {
+    tractInterestFields.push(contactForm()[3])
+  }
 
   const formFields = [
-    {
-      label: "Entity Type",
-      name: "ownerType",
-      defaultOptions: entityTypeOptions,
-      renderField: "autoComplete",
-      variables: {
-        esIndex: "contacts_flat",
-        filterKey: "ownerType.keyword",
-        size: 10000,
-      },
-      query: GET_ES_FILTER_LIST,
-      getOptions: (apiRes) => {
-        const filterData = apiRes.data.getESFilterList.hits.map(
-          (hit) => hit.key
-        );
-        return filterData
-      }
-    },
     {
       label: "Surface Interest",
       name: "surface_interest",
@@ -616,7 +608,9 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
 
   formFields.push(...otherFields);
 
-  return formFields;
+  tractInterestFields.push(...formFields)
+  return [...contactFields, ...tractInterestFields];
+
 
 };
 

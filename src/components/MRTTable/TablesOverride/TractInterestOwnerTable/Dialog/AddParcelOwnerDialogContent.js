@@ -23,8 +23,7 @@ import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 import { ADDOWNERTOAPARCEL } from 'graphQL/useMutationAddOwnerToAParcel';
 import { tableGlobalController } from 'hookstate/tableController';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
-import contactSubForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/contactSubForm';
-import parcelOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/parcel_interest_owner_form_schema';
+import parcelOwnerForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/ParcelDetailInterestOwner/parcel_interest_owner_form_schema';
 import { sideDialogController, tractInterestOwnerState } from 'hookstate/sideDialogController';
 import { globalStateController } from 'hookstate/globalStateController';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
@@ -94,12 +93,12 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   } = useForm();
 
   const formSchema = useMemo(() => {
-    const formFunction = formStateValues?.newOwner ? contactSubForm : parcelOwnerForm;
-    return formFunction({
+    return parcelOwnerForm({
       getValues,
       setValue,
       tenantName,
-      state: props?.customLayer?.state
+      state: props?.customLayer?.state,
+      newOwner: formStateValues?.newOwner,
     });
   }, [formStateValues?.newOwner, formState?.rerenderJson]);
 

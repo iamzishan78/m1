@@ -10,7 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import { tableGlobalController } from 'hookstate/tableController';
-import contactForm from 'components/Shared/FormsFieldsData/FormsJson/ContactGrid/contact_form_schema';
+import contactForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
 import { sideDialogController } from 'hookstate/sideDialogController';
 import { globalStateController } from 'hookstate/globalStateController';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';

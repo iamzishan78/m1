@@ -4,9 +4,9 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import IconButton from '@material-ui/core/IconButton';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
-import { entityTypeOptions } from "components/ContactDetailedInfo/helper";
 import { calculateStandardNraForUnit } from "utils/calculatedNraHelper"
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import contactForm from "components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema"
 
 const calculateOfferPrice = (nra, uUnitPricing = 0) => {
   if (!uUnitPricing) {
@@ -15,30 +15,20 @@ const calculateOfferPrice = (nra, uUnitPricing = 0) => {
   return parseFloat((parseFloat(nra || 0) * parseFloat(uUnitPricing || 0)).toFixed(2));
 };
 
-const unitInterestOwnerForm = ({ getValues, setValue, metafields = [] }) => {
+const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] }) => {
 
   const uUnitPricing = sideDialogController("unitInterestDialog").getValue('uUnitPricing')
   const uMaxUnitPricing = sideDialogController("unitInterestDialog").getValue('uMaxUnitPricing')
-
+  const contactFields = []
+  const unitInterestFields = []
+  if (newOwner) {
+    let contactArray = contactForm()
+    contactFields.splice(-2)
+    contactFields.push(...contactArray)
+  } else {
+    unitInterestFields.push(contactForm()[3])
+  }
   const formFields = [
-    {
-      label: "Entity Type",
-      name: "ownerType",
-      defaultOptions: entityTypeOptions,
-      renderField: "autoComplete",
-      variables: {
-        esIndex: "contacts_flat",
-        filterKey: "ownerType.keyword",
-        size: 10000,
-      },
-      query: GET_ES_FILTER_LIST,
-      getOptions: (apiRes) => {
-        const filterData = apiRes.data.getESFilterList.hits.map(
-          (hit) => hit.key
-        );
-        return filterData
-      }
-    },
     {
       label: "Working Interest",
       name: "working_interest",
@@ -454,6 +444,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, metafields = [] }) => {
 
   ]
 
+  unitInterestFields.push(...formFields)
   const customDataJson = metafields.map(field => ({
     label: field.label,
     name: field.esKey,
@@ -464,7 +455,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, metafields = [] }) => {
     })) : [],
   }));
 
-  return [...formFields, ...customDataJson];
+  return [...contactFields, ...unitInterestFields, ...customDataJson];
 
 }
 
