@@ -448,8 +448,8 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
   const customDataJson = metafields.map(field => ({
     label: field.label,
     name: field.esKey,
-    renderField: field.type === "dropdown" ? "autoComplete" : field.type,
-    defaultOptions: field.type === "dropdown" ? field.dropdownOptions.map(op => ({
+    renderField: (field.type === "dropdown" || field.type === "multiselect") ? "autoComplete" : field.type,
+    defaultOptions: (field.type === "dropdown" || field.type === "multiselect") ? field.dropdownOptions.map(op => ({
       value: op.value,
       label: op.value,
     })) : [],
