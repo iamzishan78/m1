@@ -15,8 +15,51 @@ import { addTrailingZeros } from 'components/Shared/functions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import UnitIcon from 'components/Shared/svgIcons/unit';
+import Loaders from 'components/Loaders';
+import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
+import { copy } from 'utils/helper';
+import { isEmpty, pickBy } from 'lodash';
+import { globalStateController } from 'hookstate/globalStateController';
 
 const esIndex = 'shapeowners_flat';
+
+const onCustomKeyChange = async (client, row, value, item) => {
+	const loaderId = `upadting-${row?._id}`;
+
+	try {
+		const user = globalStateController.getValue('user');
+		Loaders.createToast(loaderId, 'Updation in Progress');
+
+		const customData = copy(row?.custom_data) ?? {};
+		const filteredCustomData = pickBy(
+			customData,
+			value => value !== '' && !isEmpty(value)
+		);
+
+		const shapeOwners = {
+			_id: row._id,
+			custom_data: {
+				...filteredCustomData,
+				[item.name]: value,
+			},
+		};
+
+		await client.mutate({
+			variables: {
+				shapeOwners,
+				shapeType: 'Unit',
+				userId: user._id
+			},
+			mutation: UPDATE_SHAPE_OWNERS,
+		});
+
+		Loaders.successToast(loaderId, 'Updation Complete');
+		tableGlobalController.refetch();
+	} catch (err) {
+		Loaders.errorToast(loaderId, 'Failed to Update');
+	}
+};
+
 
 const onClickedRow = selectedRow => {
 	const Controller = tableController('OwnersPerUnitTable');
@@ -60,8 +103,12 @@ const OwnersPerUnitMeta = {
 			left: '300px',
 		},
 	},
+	fetchMetaData: {
+		category: 'Unit Interest Owners', // enable to show custom field inside unit grid
+	},
 	CustomToolBar: OwnersPerUnitToolBar,
 	onClickedRow,
+	onCustomKeyChange,
 	defaultSort: { field: '_ts', order: 'asc' },
 	maxTableHeight: 'calc(100vh - 489px)',
 	height: '767px',
