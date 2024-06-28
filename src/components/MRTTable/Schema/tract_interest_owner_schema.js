@@ -1,3 +1,7 @@
+import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import NameCell from 'components/MRTTable/TablesOverride/OwnersPerUnit/TableCell/NameCell';
 import ListChips from 'components/Common/ListChips';
@@ -80,9 +84,47 @@ const TractPerUnitMeta = {
 			accessorFn: row => row?.contact?.entityDetail?.name,
 			id: 'contact.entityDetail.name',
 			header: 'Owner Name',
-			Cell: ({ renderedCellValue, row }) => (
-				<NameCell renderedCellValue={renderedCellValue} isPurchased={row.getValue('contact.isPurchased')} />
-			),
+			Cell: ({ renderedCellValue, row }) => {
+				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
+				return (
+					<div
+						style={{
+							display: 'flex',
+							flexDirection: 'row',
+							alignItems: 'center',
+						}}
+					>
+						<p
+							style={{
+								display: 'flex',
+								flexDirection: 'row',
+								alignItems: 'center',
+								minWidth: '300px',
+								marginLeft: '10px',
+							}}
+						>
+							<ColumnWithLink
+								value={renderedCellValue}
+								link={`/contact/details/${row.getValue('ownerEntity')}`}
+								onClick={e => {
+									e.stopPropagation();
+								}}
+							/>
+							{isPurchased && (
+								<FeatureFlag feature={FEATURES.IDICORE}>
+									<MonetizationOnIcon
+										style={{
+											marginLeft: '10px',
+											color: "gray"
+										}}
+
+									/>
+								</FeatureFlag>
+							)}
+						</p>
+					</div>
+				)
+			}
 		},
 
 		{
