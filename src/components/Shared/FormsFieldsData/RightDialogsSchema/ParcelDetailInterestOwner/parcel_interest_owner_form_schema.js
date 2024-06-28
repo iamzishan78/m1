@@ -28,11 +28,11 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
   const contactFields = []
   const tractInterestFields = []
   if (newOwner) {
-    let contactArray = contactForm()
+    let contactArray = contactForm({ getValues, setValue })
     contactFields.splice(-2)
     contactFields.push(...contactArray)
   } else {
-    tractInterestFields.push(contactForm()[3])
+    tractInterestFields.push(contactForm({ getValues, setValue })[3])
   }
 
   const formFields = [

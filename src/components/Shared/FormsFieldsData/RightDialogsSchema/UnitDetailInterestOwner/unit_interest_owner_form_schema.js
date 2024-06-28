@@ -22,11 +22,11 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
   const contactFields = []
   const unitInterestFields = []
   if (newOwner) {
-    let contactArray = contactForm()
+    let contactArray = contactForm({ getValues, setValue })
     contactFields.splice(-2)
     contactFields.push(...contactArray)
   } else {
-    unitInterestFields.push(contactForm()[3])
+    unitInterestFields.push(contactForm({ getValues, setValue })[3])
   }
   const formFields = [
     {

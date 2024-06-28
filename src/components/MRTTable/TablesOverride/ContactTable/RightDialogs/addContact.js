@@ -69,13 +69,17 @@ export default function AddContactDialogContent(props) {
     control,
     reset,
     getValues,
+    setValue,
     watch
   } = useForm();
 
   const { firstName } = getValues() || {}
 
   const formSchema = useMemo(() => {
-    return contactForm();
+    return contactForm({
+      getValues,
+      setValue,
+    });
   }, [formState?.rerenderJson]);
 
   const [addContact, { loading }] = useMutation(ADDCONTACT);

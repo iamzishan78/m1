@@ -2,7 +2,27 @@ import { entityTypeOptions } from "components/ContactDetailedInfo/helper";
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
-const contactForm = () => {
+const phonenumber = inputtxt => {
+  if (inputtxt.match(/^([0-9]||-|\(|\)|\.|,)+$/) !== null) {
+    return true;
+  }
+  return false;
+};
+const email = inputtxt => {
+  if (inputtxt.match(/^(([0-9a-zA-Z]|\.)+@?[0-9a-zA-Z]*\.?[0-9a-zA-Z]*)?$/) !== null) {
+    return true;
+  }
+  return false;
+};
+
+const zipCopde = inputtxt => {
+  if (inputtxt.match(/^([0-9]+-?[0-9]*)?$/) !== null) {
+    return true;
+  }
+  return false;
+};
+
+const contactForm = ({ getValues, setValue }) => {
   const formFields = [
     {
       label: "First Name",
@@ -37,16 +57,35 @@ const contactForm = () => {
     {
       label: "Home phone",
       name: "homePhone",
-      type: "number",
+      onChange: (value) => {
+        if (phonenumber(value)) {
+          setValue('homePhone', value)
+        } else {
+          setValue('homePhone', '')
+        }
+      }
     },
     {
       label: "Mobile Phone",
       name: "mobilePhone",
-      type: "number",
+      onChange: (value) => {
+        if (phonenumber(value)) {
+          setValue('mobilePhone', value)
+        } else {
+          setValue('mobilePhone', '')
+        }
+      }
     },
     {
       label: "Email",
-      name: "primaryEmail"
+      name: "primaryEmail",
+      onChange: (value) => {
+        if (email(value)) {
+          setValue('primaryEmail', value)
+        } else {
+          setValue('primaryEmail', '')
+        }
+      }
     },
     {
       label: "Address #1",
@@ -67,7 +106,13 @@ const contactForm = () => {
     {
       label: "Zip Code",
       name: "zip",
-      type: "number",
+      onChange: (value) => {
+        if (zipCopde(value)) {
+          setValue('zip', value)
+        } else {
+          setValue('zip', null)
+        }
+      }
     },
     {
       label: "Country",
