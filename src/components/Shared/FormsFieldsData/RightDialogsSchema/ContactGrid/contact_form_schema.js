@@ -36,11 +36,13 @@ const contactForm = () => {
     },
     {
       label: "Home phone",
-      name: "homePhone"
+      name: "homePhone",
+      type: "number",
     },
     {
       label: "Mobile Phone",
-      name: "mobilePhone"
+      name: "mobilePhone",
+      type: "number",
     },
     {
       label: "Email",
@@ -64,7 +66,8 @@ const contactForm = () => {
     },
     {
       label: "Zip Code",
-      name: "zip"
+      name: "zip",
+      type: "number",
     },
     {
       label: "Country",

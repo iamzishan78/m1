@@ -71,10 +71,9 @@ function AutoCompleteComponent({ control, item }) {
               options={options}
               getOptionLabel={option => option.label}
               getOptionSelected={(option, value) => option.value === value}
-              value={{ label: props.value || '', value: props.value || '' }}
+              value={typeof props.value === 'object' ? props.value : { label: props.value || '', value: props.value || '' }}
               onChange={(e, option) => {
-                props.onChange(option ? option?.value : null)
-
+                props.onChange(option ? option : null)
               }}
               renderInput={params => (
                 <TextField {...params} size="small" multiline variant="standard" />
