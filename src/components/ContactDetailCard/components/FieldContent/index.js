@@ -491,6 +491,7 @@ export default function FieldContent({
   ) : (
     <span>
       {childrenLeft && !onlyChildren && children ? children : ""}
+      {/* Wrap the contact details tab title inside span to fix it position */}
       <span style={{ 
         marginTop: "4px",
         display: "inline-block"

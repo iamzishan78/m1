@@ -9,16 +9,16 @@ const useStyles = makeStyles((theme) => ({
     },
     borderRadius: "4px",
     "& #contPencilIcon, & #mergeTypeIcon, & #copyIcon": {
-      display: "none",
+      display: "none", // use display none to remove extra space between icon and title
     },
     "&:hover #contPencilIcon, &:hover #mergeTypeIcon, &:hover #copyIcon": {
       display: "block",
     },
     "& #GoogleMapIcon" : {
-      marginLeft: "-11px !Important",
+      marginLeft: "-11px !Important", // Remove space between contact title and icon 
     },
     "&:hover #GoogleMapIcon" : {
-      marginLeft: "5px !Important",
+      marginLeft: "5px !Important", // Add space on hovering the title
     },
   },
   pencilIcon: {
