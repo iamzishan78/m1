@@ -88,13 +88,13 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters }) => {
       }
     },
   });
-  const [getContactAnalytics] = useLazyQuery(GET_CONTACT_ANALYTICS, {
+  const [getAuditReportingAnalytics] = useLazyQuery(GET_CONTACT_ANALYTICS, {
 
     fetchPolicy: "no-cache",
 
     onCompleted: (data) => {
-      if (data?.getContactAnalytics) {
-        setContactData(data?.getContactAnalytics);
+      if (data?.getAuditReportingAnalytics) {
+        setContactData(data?.getAuditReportingAnalytics);
       }
     },
   });
@@ -123,7 +123,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters }) => {
       xaxis: [],
     });
     if (activeModule.title === 'Audit Reporting') {
-      getContactAnalytics({
+      getAuditReportingAnalytics({
         variables: {
           search: {
             fields: ["name", "_all"],

@@ -27,7 +27,6 @@ import Chip from '@material-ui/core/Chip';
 import { TableFilterList } from "mui-datatables";
 
 export const getFilters = (appliedFilters) => {
-  debugger
   let filters = [];
   if (appliedFilters) {
     let range = [];

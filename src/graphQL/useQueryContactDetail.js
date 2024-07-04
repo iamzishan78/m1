@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const GET_CONTACT_ANALYTICS = gql`
-  query getContactAnalytics($search: esSearchInput, $filters: [esFilterInput]) {
-    getContactAnalytics(
+  query getAuditReportingAnalytics($search: esSearchInput, $filters: [esFilterInput]) {
+    getAuditReportingAnalytics(
       search: $search,
       filters: $filters,
     )
