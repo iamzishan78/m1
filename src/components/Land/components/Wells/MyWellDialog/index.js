@@ -345,7 +345,7 @@ export default function MyWellDialog(props) {
                 )}
                 {activePanel === "Revenue Properties" && (
                   // show revenue properties here
-                  <RevenueProperties platformWell={platformWell} properties={get(platformWell, "properties", [])} />
+                  <RevenueProperties platformWell={platformWell} properties={get(platformWell, "properties", [])} propertyDescriptor={get(platformWell, "propertyDescriptor", [])} />
                 )}
                 {activePanel === "Agreements" && (
                   // show agreements list here
