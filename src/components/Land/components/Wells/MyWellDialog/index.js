@@ -157,7 +157,6 @@ export default function MyWellDialog(props) {
   const classes = useStyles();
   const [activePanel, setPanel] = useState("Add New Well");
   const [platformWell, setPlatformWell] = useState();
-  const [myWellData, setMyWellData] = useState();
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const { stateValues } = globalStateController.useState(['testCase']);
@@ -332,8 +331,8 @@ export default function MyWellDialog(props) {
               <RightActionsPanel
                 activePanel={activePanel}
                 setPanel={setPanel}
-                propertiesCount={get(myWellData, "myWellByGlobalId.myWell.properties", []).length}
-                agreementsCount={get(myWellData, "myWellByGlobalId.myWell.shapes", []).length}
+                propertiesCount={get(platformWell, "properties", []).length}
+                agreementsCount={get(platformWell, "shapes", []).length}
               />
               <div style={{ paddingRight: "60px", height: "93vh", overflow: "auto" }}>
                 {activePanel === "Add New Well" && (
@@ -346,7 +345,7 @@ export default function MyWellDialog(props) {
                 )}
                 {activePanel === "Revenue Properties" && (
                   // show revenue properties here
-                  <RevenueProperties platformWell={platformWell} properties={get(myWellData, "myWellByGlobalId.myWell.properties", [])} />
+                  <RevenueProperties platformWell={platformWell} properties={get(platformWell, "properties", [])} propertyDescriptor={get(platformWell, "propertyDescriptor", [])} />
                 )}
                 {activePanel === "Agreements" && (
                   // show agreements list here
