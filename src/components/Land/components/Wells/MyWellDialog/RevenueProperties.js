@@ -35,17 +35,17 @@ import { UPSERT_WELL_DESCRIPTOR } from "graphQL/useMutationWellDescriptor";
 const propertyInterestParams = [
   {
     type: "text", label: "Well NRI", key: "interestAmount", valueFormatter: (value, key) => {
-      return value?.length > 1 ? "MULTIPLE" : value?.[0][key];
+      return value && value.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0][key]) : "";
     }
   },
   {
     type: "text", label: "Interest Type", key: "interestType", valueFormatter: (value, key) => {
-      return value?.length > 1 ? "MULTIPLE" : value?.[0][key];
+      return value && value.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0][key]) : "";
     }
   },
   {
     type: "text", label: "Cost Free", key: "costFree", valueFormatter: (value, key) => {
-      return value?.length > 1 ? "MULTIPLE" : value?.[0][key];
+      return value && value.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0][key]) : "";
     }
   },
 ]

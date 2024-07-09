@@ -309,7 +309,7 @@ const wellsColumnHeaders = [
       sort: true,
       filter: true,
       customRender: (value) => {
-        return <p>{value?.length > 1 ? "MULTIPLE" : value?.[0]}</p>
+        return <p>{value && value?.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0]) : ""}</p>;
       },
     },
   },
@@ -321,7 +321,7 @@ const wellsColumnHeaders = [
       sort: true,
       filter: true,
       customRender: (value) => {
-        return <p>{value?.length > 1 ? "MULTIPLE" : value?.[0]}</p>
+        return <p>{value && value?.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0]) : ""}</p>;
       },
     },
   },
@@ -333,7 +333,7 @@ const wellsColumnHeaders = [
       sort: true,
       filter: true,
       customRender: (value) => {
-        return <p>{value?.length > 1 ? "MULTIPLE" : value?.[0]}</p>
+        return <p>{value && value?.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0]) : ""}</p>;
       },
     },
   },
@@ -345,7 +345,7 @@ const wellsColumnHeaders = [
       sort: true,
       filter: true,
       customRender: (value) => {
-        return <p>{value?.length > 1 ? "MULTIPLE" : value?.[0]}</p>
+        return <p>{value && value?.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0]) : ""}</p>;
       },
     },
   },
