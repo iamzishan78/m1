@@ -139,7 +139,7 @@ function Map({
 	let classes = useStyles({
 		drawingCircle: stateApp.draw && stateApp.draw.getMode() === "drag_circle" ? true : false,
 		expandedPanel: mapLayersPanelExtended ? true : false,
-	  });
+	});
 
 	const dispatch = useDispatch();
 	const { searchInputValue } = useSelector(({ MapGridCard }) => MapGridCard);
@@ -775,7 +775,7 @@ function Map({
 			);
 			newMap.addControl(new mapboxgl.NavigationControl(), "top-left");
 
-			
+
 
 			/// / selecting the rect after draw
 			const CostumDrawRectangle = { ...DrawRectangle };
