@@ -1,0 +1,30 @@
+import React, { memo } from "react";
+import { Button } from "@material-ui/core";
+import {
+  tableGlobalController,
+} from "hookstate/tableController";
+import { globalStateController } from "hookstate/globalStateController";
+import MyWellDialog from "components/Land/components/Wells/MyWellDialog";
+
+function WellsToolBar() {
+  const { stateValues } = tableGlobalController.useState(['addWellDialog']);
+  const { stateValues: testCaseStateValues } = globalStateController.useState(['testCase']);
+  const addWell = () => {
+    tableGlobalController.updateState({
+      addWellDialog: {
+        type: "addWell",
+        showDialog: true
+      }
+    });
+  };
+  return (
+    <>
+      {(window.location.pathname.includes("/land/wells") || testCaseStateValues.testCase) && (<Button variant="contained" color="primary" onClick={addWell}>
+        + ADD WELL
+      </Button>)}
+      {stateValues?.addWellDialog?.showDialog && <MyWellDialog />}
+    </>
+  );
+}
+
+export default memo(WellsToolBar);

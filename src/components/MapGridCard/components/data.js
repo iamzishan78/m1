@@ -11,30 +11,30 @@ import OperatorIcon from "components/Shared/svgIcons/operator";
 
 export const platformDataWellsInitialData = [
   { index: 0, value: 'well', Icon: WellIcon, label: 'Wells', shapeGrid: true },
-  // { index: 1, value: "mywell", Icon: WellIcon, label: "My Wells", mapGrid: true },
-  { index: 2, value: 'owner', Icon: TaxOwnerIcon, label: 'Tax Owners', shapeGrid: true },
-  {
-    index: 3,
-    value: 'operator',
-    Icon: OperatorIcon,
-    label: 'Operators',
-    shapeGrid: true,
-  },
+  { index: 1, value: 'owner', Icon: TaxOwnerIcon, label: 'Tax Owners', shapeGrid: true },
+  { index: 2, value: "mywell", Icon: WellIcon, label: "My Wells", mapGrid: true },
   // {
-  //   index: 4,
-  //   value: 'places',
-  //   Icon: LocationOnIcon,
-  //   label: 'Places',
+  //   index: 3,
+  //   value: 'operator',
+  //   Icon: OperatorIcon,
+  //   label: 'Operators',
   //   shapeGrid: true,
   // },
 ];
 
 export const platformDataInitialData = [
-  ...platformDataWellsInitialData,
-
-  { index: 4, value: "layer", Icon: LayersIcon, label: "Layer", isLayer: true },
+  platformDataWellsInitialData[0],
+  platformDataWellsInitialData[1],
+  {
+    index: 2,
+    value: 'places',
+    Icon: LocationOnIcon,
+    label: 'Places',
+    shapeGrid: true,
+  },
+  { index: 3, value: "layer", Icon: LayersIcon, label: "Layer", isLayer: true },
   // { index: 3, value: "lease", Icon: LeaseIcon, label: "Leases" },
-  { index: 5, value: "landgrid", Icon: LeaseIcon, label: "Land Grid", shapeGrid: false, featureFlag: 'LANDGRIDSEARCH' },
+  { index: 4, value: "landgrid", Icon: LeaseIcon, label: "Land Grid", shapeGrid: false, featureFlag: 'LANDGRIDSEARCH' },
   // { index: 4, value: "contacts", Icon: ContactIcon, label: "Contacts", shapeGrid: false },
 ];
 

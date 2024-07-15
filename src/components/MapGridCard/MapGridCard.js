@@ -628,6 +628,21 @@ function MapGridCard(props) {
                           isSnapGrid
                         />
                       )}
+                      {searchTapValue.value === 'mywell' && (
+                        <MRTTable
+                          name="MyWellsTable"
+                          overrideMeta={{
+                            toolbarInternalActions: {
+                              onClose,
+                              style: {
+                                marginRight: '0.5rem',
+                              },
+                            },
+                            maxTableHeight: '45vh',
+                            filterLayerType: 'My Wells'
+                          }}
+                        />
+                      )}
                     </Fragment>
                   </div>
 
