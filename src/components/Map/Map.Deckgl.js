@@ -1247,6 +1247,14 @@ function Map({
 		}
 	}, [stateApp.toggle3d]);
 
+	useEffect(() => {
+
+		// Map will be reset if we move to another page 
+		return () => {
+			layerController.resetMap()
+		}
+	}, [])
+
 	return (
 		<div className={classes.mapWrapper}>
 			<div className={classes.map} style={{ width }} ref={mapEl} id="map">
