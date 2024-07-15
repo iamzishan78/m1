@@ -1,7 +1,22 @@
 import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import TractPerUnitToolBar from "components/MRTTable/TablesOverride/TractPerUnit/TractPerUnitToolBar";
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 const esIndex = 'shapetracts_flat';
+
+const onClickedRow = selectedRow => {
+	const Controller = tableController('UnitTractTable');
+	const { customLayer } = Controller.getValue('customProps');
+	tableGlobalController.updateState({
+		dialog: {
+			type: 'addTractToUnit',
+			shapeId: customLayer?._id,
+			shapeType: 'Unit',
+			selectedRow,
+		},
+	});
+};
 
 const TractMeta = {
 	esIndex,
@@ -15,6 +30,8 @@ const TractMeta = {
 	maxTableHeight: 'calc(100vh - 550px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
+	CustomToolBar: TractPerUnitToolBar,
+	onClickedRow,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
