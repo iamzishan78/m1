@@ -1,19 +1,16 @@
 import React from "react";
 import { AppContext } from "../../../AppContext";
-import { makeStyles, fade } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Search from "./Search";
 import Tooltip from "@material-ui/core/Tooltip";
 import GridOnIcon from "@material-ui/icons/GridOn";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
-import { useDispatch, useSelector } from "react-redux";
-import { toggleMapGridCardAtived } from "actions";
 import PostAddOutlinedIcon from "@material-ui/icons/PostAddOutlined";
 import { useLocation } from "react-router-dom";
 import { CircularProgress } from "@material-ui/core";
-
-// import SearchByTypeSelectField from "components/MapGridCard/components/SearchByTypeSelectField";
-
+import { globalStateController } from "hookstate/globalStateController";
+import { mapControlsController } from "hookstate/mapControlsController";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#1c2233",
     borderRadius: "25px",
     minWidth: "unset",
-    padding: '0 10px 0 0', 
+    padding: '0 10px 0 0',
     // "&:hover ": {
     //   backgroundColor: "#626687",
     //   borderRadius: "25px",
@@ -62,18 +59,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function GridIcon({ setStateApp }) {
-  const dispatch = useDispatch();
+function GridIcon() {
   const classes = useStyles();
-  const { mapGridCardActivated } = useSelector(({ MapGridCard }) => MapGridCard);
+
+  const { mapControlsStateValues } = mapControlsController.useState(['mapGridCardActivated'], 'mapControlsStateValues');
+
   return (
     <Tooltip title="Search Grid">
       <Button
         id="snapGridButton"
-        className={mapGridCardActivated ? classes.selected : classes.gridOnIcon}
+        className={mapControlsStateValues.mapGridCardActivated ? classes.selected : classes.gridOnIcon}
         onClick={() => {
-          setStateApp((stateApp) => ({ ...stateApp, selectedDataset: { name: 'M1 Platform' } }))
-          dispatch(toggleMapGridCardAtived());
+          mapControlsController.updateState({ selectedDataset: { name: 'M1 Platform' }, expandedPanel: false })
+          mapControlsController.toggleMapGridCardAtived();
         }}
       >
         <GridOnIcon fontSize="25" />
@@ -82,38 +80,61 @@ function GridIcon({ setStateApp }) {
   );
 }
 
-export default function SearchBarWithToggleButton() {
+const Loader = () => {
+  const [stateApp] = React.useContext(AppContext);
+  const { stateValues } = globalStateController.useState(['layerLoading'])
+  let { layerLoading } = stateValues
+  layerLoading = !!Object.values(layerLoading).find((layer) => layer);
+
+  return <>
+    {(stateApp.searchLoader || layerLoading) && (
+      <CircularProgress key="loader" style={{ position: "absolute", right: "-38px", top: "8px" }} size={28} color="secondary" />
+    )}
+  </>
+}
+
+const GridIconComponent = () => {
   const classes = useStyles();
-  const [stateApp, setStateApp] = React.useContext(AppContext);
-  const { mapGridCardActivated } = useSelector(({ MapGridCard }) => MapGridCard);
+
   let location = useLocation();
+
+  return <>
+    {location.pathname === "/documents" ? (
+      <Tooltip title="Add Document">
+        <Button
+          className={classes.gridOnIcon}
+          onClick={() => {
+            window.setStateApp(stateApp => ({ ...stateApp, DocumentDrawer: true }));
+          }}
+        >
+          <PostAddOutlinedIcon />
+        </Button>
+      </Tooltip>
+    ) : (
+      <GridIcon />
+    )}
+  </>
+}
+
+export function SearchBarWithToggleButton() {
+  const classes = useStyles();
+
+  const { mapControlsStateValues } = mapControlsController.useState(['mapGridCardActivated'], 'mapControlsStateValues');
+
   return (
     <div className={classes.root}>
-      {!mapGridCardActivated && (
+      {!mapControlsStateValues.mapGridCardActivated && (
         <ButtonGroup variant="text" color="primary" aria-label="text primary button group">
 
           {/* <SearchByTypeSelectField/> */}
           <Search />
 
-          {location.pathname === "/documents" ? (
-            <Tooltip title="Add Document">
-              <Button
-                className={classes.gridOnIcon}
-                onClick={() => {
-                  setStateApp({ ...stateApp, DocumentDrawer: true });
-                }}
-              >
-                <PostAddOutlinedIcon />
-              </Button>
-            </Tooltip>
-          ) : (
-            <GridIcon setStateApp={setStateApp} />
-          )}
+          <GridIconComponent />
         </ButtonGroup>
       )}
-      {stateApp.searchLoader && (
-        <CircularProgress key="loader" style={{ position: "absolute", right: "-38px", top: "8px" }} size={28} color="secondary" />
-      )}
+      <Loader />
     </div>
   );
 }
+
+export default React.memo(SearchBarWithToggleButton)

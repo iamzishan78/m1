@@ -60,7 +60,6 @@ const initialValue = {
   filterOwnerWellInterestSum: null,
   filterOwnerCount: null,
   filterDrawing: [],
-  filterTrackedWells: false,
   filterTrackedOwners: false,
   searchInputValue: null,
   lastSearch: null,
@@ -143,6 +142,8 @@ const initialValue = {
 
 const NavigationContextProvider = (props) => {
   const [stateNav, setStateNav] = useState(initialValue);
+
+  window.setStateNav = setStateNav;
 
   const navResetAll = () => {
     setStateNav(initialValue);

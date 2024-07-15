@@ -1,42 +1,36 @@
-import React, { useContext, useEffect } from "react";
-import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import { NavigationContext } from "../NavigationContext";
+import React, { useContext } from 'react';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { NavigationContext } from '../NavigationContext';
 
 const statusList = [
-  "ACTIVE",
-  "CANCELLED PERMIT",
-  "COMPLETED - NOT ACTIVE",
-  "DRILLED UNCOMPLETED (DUC)",
-  "EXPIRED PERMIT",
-  "P&A",
-  "PERMIT",
-  "PERMIT - EXISTING WELL",
-  "PERMIT - NEW DRILL",
-  "SHUTIN",
-  "UNKNOWN",
+  'ACTIVE',
+  'CANCELLED PERMIT',
+  'COMPLETED - NOT ACTIVE',
+  'DRILLED UNCOMPLETED (DUC)',
+  'EXPIRED PERMIT',
+  'P&A',
+  'PERMIT',
+  'PERMIT - EXISTING WELL',
+  'PERMIT - NEW DRILL',
+  'SHUTIN',
+  'UNKNOWN',
 ];
 
 export default function FilterWellStatusJ() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [statusName, setStatusName] = React.useState(stateNav.statusName ? stateNav.statusName : []);
 
-  const handleStatusChange = (value) => {
-    let filter;
-    if (value && value.length) {
-      filter = ["match", ["get", "wellStatus"], value, true, false];
-      setStateNav((stateNav) => ({ ...stateNav, statusName: value }));
-      setStatusName(value);
-    } else {
-      filter = null;
-      setStateNav((stateNav) => ({ ...stateNav, statusName: [] }));
-    }
-    setStateNav((stateNav) => ({ ...stateNav, filterWellStatus: filter }));
+  const handleStatusChange = value => {
+    layerFiltersController.setWellsVariables('wellStatus', value);
+
+    setStateNav(stateNav => ({ ...stateNav, statusName: value || [] }));
   };
 
   return (
     <Autocomplete
-      ChipProps={{ color: "secondary" }}
+      ChipProps={{ color: 'secondary' }}
       defaultValue={stateNav.statusName}
       value={stateNav.statusName}
       onChange={(event, newValue) => {
@@ -44,7 +38,7 @@ export default function FilterWellStatusJ() {
       }}
       multiple
       options={statusList}
-      renderInput={(params) => <TextField {...params} variant="outlined" label="Well Status" placeholder="" fullWidth={true} />}
+      renderInput={params => <TextField {...params} variant="outlined" label="Well Status" placeholder="" fullWidth />}
       disableListWrap
       id="virtualize-well-statuses"
     // style={{ maxWidth: 300, minWidth: 120 }}
