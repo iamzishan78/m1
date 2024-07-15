@@ -939,7 +939,7 @@ function Map({
 				});
 			}
 			const { filterBasin, filterAOI, filterParcel, filterDrawing } = navController.getValues(['filterBasin', 'filterAOI', 'filterParcel', 'filterDrawing'])
-			if (filterBasin || filterAOI || filterParcel || filterDrawing[1]) {
+			if (filterBasin || filterAOI || filterParcel || (filterDrawing && filterDrawing[1])) {
 				let features = [];
 				features = [
 					...features,
