@@ -1,5 +1,4 @@
-import React, { useContext } from "react";
-import { AppContext } from "../../AppContext";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
@@ -9,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setMapGridCardState } from "../../actions";
 import WellInterestsTopSumary from "./components/WellInterestsTopSumary";
 import M1nTable from "../Shared/M1nTable/M1nTable";
+import { mapControlsController } from "hookstate/mapControlsController";
 
 const useStyles = makeStyles((theme) => ({
   gridWidthScroll: {
@@ -52,9 +52,11 @@ const useStyles = makeStyles((theme) => ({
 
 export default function OwnersSummaryCard(props) {
   const dispatch = useDispatch();
-  const { selectedOwner, mapGridCardActivated } = useSelector(({ MapGridCard }) => MapGridCard);
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const classes = useStyles({ mapGridCardActivated });
+  const { selectedOwner } = useSelector(({ MapGridCard }) => MapGridCard);
+
+  const { mapControlsStateValues } = mapControlsController.useState(['mapGridCardActivated'], 'mapControlsStateValues');
+
+  const classes = useStyles({ mapGridCardActivated: mapControlsStateValues.mapGridCardActivated });
 
   return (
     <Grid container className={`cancelDraggableEffect  ${classes.mainPanelsDiv}`} spacing={0}>
@@ -70,13 +72,9 @@ export default function OwnersSummaryCard(props) {
                   selectedOwnerWellIntsSummary: null,
                 })
               );
-              setStateApp((stateApp) => ({
+              window.setStateApp((stateApp) => ({
                 ...stateApp,
                 wellListFromSearch: [],
-                // selectedWellId: null,
-                // selectedWell: null,
-                // wellSelectedCoordinates: null,
-                // popupOpen: false,
               }));
             }}
           >

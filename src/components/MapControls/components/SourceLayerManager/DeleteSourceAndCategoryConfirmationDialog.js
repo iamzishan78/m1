@@ -8,7 +8,6 @@ import { useMutation } from "@apollo/client";
 import { AppContext } from "AppContext";
 import { useDispatch } from "react-redux";
 import { setMainMapState, showErrorMessage, showSuccessMessage } from "actions";
-import { MapControlsContext } from "../../MapControlsContext";
 import { UPDATE_MANY_LAYER } from "graphQL/useMutationUpdateManyLayer";
 import { UPDATE_DATASET } from "graphQL/useMutationDataset";
 import { Modals } from "styles/Modal";
@@ -18,7 +17,6 @@ import { REMOVE_LAYER_GROUP } from "graphQL/useMutationLayerGroup";
 export default function DeleteSourceAndCategoryConfirmationDialog(props) {
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [, setStateMapControls] = useContext(MapControlsContext);
   const [updateDataset] = useMutation(UPDATE_DATASET, { refetchQueries: ["getDatasets"], awaitRefetchQueries: true });
 
   const [updateManyLayer, { data: layersDeleted }] = useMutation(UPDATE_MANY_LAYER);
@@ -58,10 +56,6 @@ export default function DeleteSourceAndCategoryConfirmationDialog(props) {
 
   const handleAccept = () => {
     setStateApp((state) => ({ ...state, universalCircularLoaderAct: true }));
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      // selectedControl: 'layer'
-    }));
 
     if (isSource) {
       props.actionItem.dataset.IsDeleted = true

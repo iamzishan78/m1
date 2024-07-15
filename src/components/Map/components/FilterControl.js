@@ -10,16 +10,12 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Collapse from "@material-ui/core/Collapse";
 import { CircularProgress } from "@material-ui/core";
-import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
-import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import DeleteIcon from "@material-ui/icons/Delete";
-import SelectAllIcon from "@material-ui/icons/SelectAll";
 import MyLocationIcon from "@material-ui/icons/MyLocation";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
-import { makeStyles, useTheme, withStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../../AppContext";
-import { NavigationContext } from "../../Navigation/NavigationContext";
 import { BULKTRACKALLUNTRACKALL } from "../../../graphQL/useMutationBulkTrackAllUntrackAll";
 import { WELLSOWNERSQUERY } from "../../../graphQL/useQueryWellsOwners";
 import MenuIcon from "@material-ui/icons/Menu";
@@ -28,6 +24,8 @@ import { deepEqualObjects } from "../../Shared/functions";
 import { useDispatch } from "react-redux";
 import { showErrorMessage, showSuccessMessage } from "../../../actions";
 import Tooltip from "@material-ui/core/Tooltip";
+import { popupController } from "hookstate/popupStateController";
+import { navController } from "hookstate/navStateController";
 
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
@@ -157,7 +155,6 @@ function FilterControl() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openTrack, setOpenTrack] = useState(false);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateNav, setStateNav] = useContext(NavigationContext);
   const [isTrackWells, setTrackWells] = useState(false);
   const [isTrackOwners, setTrackOwners] = useState(false);
   const [trackingOwners, setTrackingOwners] = useState(false);
@@ -224,15 +221,13 @@ function FilterControl() {
   };
 
   const handleRemoveFilter = () => {
-    setStateNav((stateNav) => ({
-      ...stateNav,
-      drawingMode: null,
-      filterFeatureId: null,
-      filterDrawing: [],
-    }));
+    navController.updateState({ drawingMode: null, filterFeatureId: null, filterDrawing: [] })
+
+    popupController.updateState({
+      popupOpen: false,
+    });
     setStateApp((stateApp) => ({
       ...stateApp,
-      popupOpen: false,
       zoomFault: null,
       hugeRequest: null,
     }));

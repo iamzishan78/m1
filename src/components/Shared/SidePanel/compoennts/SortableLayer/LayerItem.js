@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/styles";
-import * as turf from "@turf/turf";
-import { Box, CircularProgress, Grid, ListItemIcon } from "@material-ui/core";
+import { Box, Grid, ListItemIcon } from "@material-ui/core";
 
 import { Flipped } from "react-flip-toolkit";
 import { useSelector } from "react-redux";
@@ -17,6 +16,7 @@ import Typography from "@material-ui/core/Typography";
 // icons
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { mapStateController } from "hookstate/mapStateController";
 import { globalStateController } from "hookstate/globalStateController";
 
 const useStyles = makeStyles((theme) => ({
@@ -66,10 +66,9 @@ const useStyles = makeStyles((theme) => ({
 
 const LayerItem = React.memo((props) => {
   const [hoverItemIndex, setHoverItem] = useState(-1);
-  const [zoomLoading, setZoomLoading] = useState(false);
   const colors = useSelector(({ MainMap }) => MainMap);
 
-  const { id, depth, data, onToggleCollapse, onToggleGroup, updateLayer, onDragEnd, onDragBegin, map } = props;
+  const { id, depth, data, onToggleCollapse, onToggleGroup, updateLayer, onDragEnd, onDragBegin } = props;
   const itemRef = React.useRef({ id: -1, depth: -1, data: {} });
   const { type, collapsed, name } = data;
 
@@ -104,59 +103,16 @@ const LayerItem = React.memo((props) => {
     muted: useIsClosestDragging() || isDragging,
   });
 
-  const handleLayerZoomClick = (data) => {
-    const bbox = data.defaultSettings?.bbox
-    if (bbox)
-      return map?.fitBounds(
-        [
-          [bbox[0], bbox[1]], // southwestern corner of the bounds
-          [bbox[2], bbox[3]], // northeastern corner of the bounds
-        ],
-        { padding: { top: 40, bottom: 40, left: 40, right: 40 }, easing: () => 1 }
-      );
-
-    const sourceName = data.layerPaintProps[0].sourceProps
-    let sourceUrl = map?.getSource(sourceName)?._data;
-    if (sourceUrl) {
-      fetchData(sourceUrl, map)
-    }
-    else {
-      setZoomLoading(true)
-      const intervalId = setInterval(() => {
-        let sourceUrl = map?.getSource(sourceName)?._data;
-        if (sourceUrl) {
-          fetchData(sourceUrl, map)
-          clearInterval(intervalId);
-        }
-      }, 1000);
-    }
-
-
-    function fetchData(sourceUrl, map) {
-      fetch(sourceUrl)
-        .then((response) => response.json())
-        .then((response) => {
-          setZoomLoading(false)
-          let features = response?.features.filter((feature) => feature.properties.layerGeometry === data.layerGeometry)
-          if (data.layerShapeName) {
-            features = features.filter((feature) => feature.properties.layerShapeName === data.layerShapeName)
-          }
-          var combined = turf.combine(turf.featureCollection(features))
-          const bbox = turf.bbox(combined)
-          map?.fitBounds(
-            [
-              [bbox[0], bbox[1]], // southwestern corner of the bounds
-              [bbox[2], bbox[3]] // northeastern corner of the bounds
-            ],
-            { padding: { top: 40, bottom: 40, left: 40, right: 40 }, easing: () => 1, }
-          )
-        })
-        .catch((error) => {
-          setZoomLoading(false)
-          console.log(error);
-        });
-    }
-  }
+  const handleLayerZoomClick = bbox => {
+    window.mapRef?.fitBounds(
+      [
+        [bbox[0], bbox[1]], // southwestern corner of the bounds
+        [bbox[2], bbox[3]], // northeastern corner of the bounds
+      ],
+      { padding: { top: 40, bottom: 40, left: 40, right: 40 }, easing: () => 1 }
+    );
+    mapStateController.moved();
+  };
 
   return (
     <Flipped flipId={id}>
@@ -209,16 +165,11 @@ const LayerItem = React.memo((props) => {
                   )}
                 </Box>
                 <div className="zoom-section">
-                  {
-                    zoomLoading ? <CircularProgress size={20} disableShrink color="secondary" /> :
-                      <>
-                        {type !== "group" && data.visiable && data.file && (
-                          <ListItemIcon onClick={() => handleLayerZoomClick(data)}>
-                            <ZoomInIcon htmlColor="#ffff" />
-                          </ListItemIcon>
-                        )}
-                      </>
-                  }
+                  {type !== 'group' && data.visiable && data.file && data.defaultSettings?.bbox && (
+                    <ListItemIcon onClick={() => handleLayerZoomClick(data.defaultSettings.bbox)}>
+                      <ZoomInIcon htmlColor="#ffff" />
+                    </ListItemIcon>
+                  )}
                 </div>
 
               </Grid>

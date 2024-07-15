@@ -1,7 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { useMutation, useApolloClient } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
-import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
@@ -24,10 +23,11 @@ import { showErrorMessage } from "../../../actions";
 import { getDefaultSettings, SimpleOrShapeFileImport } from './addUserHelper'
 import Loader from "components/Loaders";
 import { uploadFileData } from "components/Shared/functions";
-import { BlockBlobClient } from "@azure/storage-blob";
 import { Box, Checkbox, FormControlLabel } from "@material-ui/core";
 import { ADD_DATASET } from "graphQL/useMutationDataset";
 import { ADD_LAYER_GROUP } from "graphQL/useMutationLayerGroup";
+import { chunkArray } from 'array-chunk-by-size';
+import { mapControlsController } from "hookstate/mapControlsController";
 
 const Alert = (props) => {
   return <MuiAlert elevation={5} variant="filled" {...props} />;
@@ -47,14 +47,12 @@ const useStyles = makeStyles((theme) => ({
 export default function AddUserGroupData(props) {
   const dispatch = useDispatch();
   const classes = useStyles();
-  const [stateMapControls, setStateMapControls] = useContext(
-    MapControlsContext
-  );
+  const { fileUploadedContent, fileUploadedOriginalContent, mapControlsStateValues } = mapControlsController.useState(['fileUploadedContent', 'fileUploadedOriginalContent'], 'mapControlsStateValues');
   const [isOpen, setIsOpen] = useState(true);
   const [inputFiles, setInputFiles] = useState(
-    stateMapControls.fileUploadedContent
+    mapControlsStateValues.fileUploadedContent
   );
-  const [inputOriginalFile, setInputOriginalFile] = useState(stateMapControls.fileUploadedOriginalContent);
+  const [inputOriginalFile, setInputOriginalFile] = useState(mapControlsStateValues.fileUploadedOriginalContent);
   const [layerNames, setLayerNames] = useState([]);
   const [groupName, setGroupName] = useState("");
   const [isCreateLayers, setIsCreateLayers] = useState(true);
@@ -65,7 +63,6 @@ export default function AddUserGroupData(props) {
 
   const [stateApp, setStateApp] = useContext(AppContext);
   const client = useApolloClient();
-  const [addFile] = useMutation(ADDFILE);
   const [addDataset] = useMutation(ADD_DATASET, { refetchQueries: ["getDatasets"], awaitRefetchQueries: true });
   const [addLayerGroup] = useMutation(ADD_LAYER_GROUP, {
     refetchQueries: ["getLayerGroups"],
@@ -75,28 +72,26 @@ export default function AddUserGroupData(props) {
   const groupId = uuid()
 
   useEffect(() => {
-    if (stateMapControls.fileUploadedContent) {
+    if (mapControlsStateValues.fileUploadedContent) {
 
-      stateMapControls.fileUploadedContent.fileNames.forEach((fileName) => {
+      mapControlsStateValues.fileUploadedContent.fileNames.forEach((fileName) => {
         layerNames.push(fileName)
       })
       setLayerNames([...layerNames])
-      setGroupName(stateMapControls.fileUploadedContent.groupName)
-      setInputOriginalFile(stateMapControls.fileUploadedOriginalContent)
+      setGroupName(mapControlsStateValues.fileUploadedContent.groupName)
+      setInputOriginalFile(mapControlsStateValues.fileUploadedOriginalContent)
 
-      setInputFiles(stateMapControls.fileUploadedContent);
+      setInputFiles(mapControlsStateValues.fileUploadedContent);
     }
-  }, [stateMapControls.fileUploadedContent, stateMapControls.fileUploadedOriginalContent]);
+  }, [fileUploadedContent, fileUploadedOriginalContent]);
 
   const handleCancel = () => {
     setIsOpen(false);
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
+    mapControlsController.updateState({
       layerAddControl: null,
       fileUploadedContent: null,
       fileUploadedOriginalContent: null,
-      // selectedControl: 'layer'
-    }));
+    })
     setNotReturn(false);
   };
 
@@ -106,8 +101,7 @@ export default function AddUserGroupData(props) {
       ...stateApp,
       universalCircularLoaderAct: false,
     }));
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
+    mapControlsController.updateState({
       layerAddControl: null,
       fileUploadedContent: null,
       fileUploadedOriginalContent: null,
@@ -115,7 +109,7 @@ export default function AddUserGroupData(props) {
       addLayer: false,
       manageSourceLayer: false,
       manageLayer: false,
-    }));
+    })
     setNotReturn(false);
   };
 
@@ -153,98 +147,71 @@ export default function AddUserGroupData(props) {
     }
   }
 
-  const uploadFile = (fileData, fileContent, sourceProps, originalFileId) => {
-    const url = fileData.addFile.file.uri;
-    const interal_key = fileData.addFile.file.internalKey;
-    const file_id = fileData.addFile.file.id;
-    const file_name = fileData.addFile.file.name;
+  const addLayer = async (fileData, fileContent, sourceProps, originalFileId) => {
+    try {
+      const file_id = fileData.addFile.file.id;
 
-    if (file_id) {
-      const content = JSON.stringify(fileContent);
+      if (file_id) {
+        if (isCreateLayers) {
+          if (fileContent.featureTypes.length > 1) {
+            const layerGroup = { name: groupName, groupId: groupId, createBy: stateApp.user.mongoId }
+            addLayerGroup({ variables: { userId: stateApp.user.mongoId, layerGroup } })
+          }
+          for (let index = 0; index < fileContent.featureTypes.length; index++) {
+            const type = fileContent.featureTypes[index];
 
-      const blockBlobClient = new BlockBlobClient(url);
-      blockBlobClient.uploadBrowserData(content, {
-        maxSingleShotSize: 4 * 1024 * 1024,
-        blobHTTPHeaders: {
-          blobContentDisposition: `attachment; filename="${file_name}"`,
-          blobContentType: "text/plain; charset=UTF-8"
-        },
-        metadata: {
-          Internalkey: interal_key
-        }
-      })
-        .then((response) => {
-          return response._response.bodyAsText
-        })
-        .then(async () => {
-          // if iscreate layer is selected only then create the layers 
+            const layerName = layerNames[index]
+            const layerShapeName = fileContent.fileNames[index]
+            const defaultSettings = getDefaultSettings(type, layerName, sourceProps)
+            defaultSettings.bbox = fileContent.bboxes[index];
 
-          // Zip is added
-          // TODO: Check Data Add
-
-          if (isCreateLayers) {
-            if (fileContent.featureTypes.length > 1) {
-              const layerGroup = { name: groupName, groupId: groupId, createBy: stateApp.user.mongoId }
-              addLayerGroup({ variables: { userId: stateApp.user.mongoId, layerGroup } })
-            }
-            for (let index = 0; index < fileContent.featureTypes.length; index++) {
-              const type = fileContent.featureTypes[index];
-
-              const layerName = layerNames[index]
-              const layerShapeName = fileContent.fileNames[index]
-              const defaultSettings = getDefaultSettings(type, layerName, sourceProps)
-
-              await client.mutate({
-                mutation: ADDLAYER,
-                variables: {
-                  layer: {
-                    layerName,
-                    layerShapeName,
-                    groupName: fileContent.featureTypes.length === 1 ? null : groupName,
-                    groupId: fileContent.featureTypes.length === 1 ? null : groupId,
-                    layerGeometry: type,
-                    identifier: layerName + uuid(),
-                    layerType: "file layer",
-                    layerCategory: "UD layer",
-                    public: true,
-                    createBy: stateApp.user.mongoId,
-                    file: file_id,
-                    originalFile: originalFileId,
-                    defaultSettings,
-                  },
+            await client.mutate({
+              mutation: ADDLAYER,
+              variables: {
+                layer: {
+                  layerName,
+                  layerShapeName,
+                  groupName: fileContent.featureTypes.length === 1 ? null : groupName,
+                  groupId: fileContent.featureTypes.length === 1 ? null : groupId,
+                  layerGeometry: type,
+                  identifier: layerName + uuid(),
+                  layerType: "file layer",
+                  layerCategory: "UD layer",
+                  public: true,
+                  createBy: stateApp.user.mongoId,
+                  file: file_id,
+                  originalFile: originalFileId,
+                  defaultSettings,
                 },
-                refetchQueries: index === fileContent.featureTypes.length - 1 ? ["getAllLayerSettingsByUser"] : [],
-                awaitRefetchQueries: true,
-              });
+              },
+              refetchQueries: index === fileContent.featureTypes.length - 1 ? ["getAllLayerSettingsByUser"] : [],
+              awaitRefetchQueries: true,
+            });
 
-              if (index === fileContent.featureTypes.length - 1) {
-                await SimpleOrShapeFileImport({ stateApp, setStateApp, client, file_id, sourceProps })
-                handleClose();
-              }
+            if (index === fileContent.featureTypes.length - 1) {
+              await SimpleOrShapeFileImport({ stateApp, setStateApp, client, file_id, sourceProps })
+              handleClose();
             }
           }
-
-          else {
-            await SimpleOrShapeFileImport({ stateApp, setStateApp, client, file_id, sourceProps })
-            setStateApp((stateApp) => ({
-              ...stateApp,
-              universalCircularLoaderAct: false,
-            }));
-            handleClose();
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-          Loader.successToast('errorToast', error)
+        }
+        else {
+          await SimpleOrShapeFileImport({ stateApp, setStateApp, client, file_id, sourceProps })
           setStateApp((stateApp) => ({
             ...stateApp,
             universalCircularLoaderAct: false,
           }));
-          dispatch(showErrorMessage("Geojson is invalid"));
           handleClose();
-
-          //// remove mongo file
-        });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      Loader.successToast('errorToast', error)
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        universalCircularLoaderAct: false,
+      }));
+      dispatch(showErrorMessage("Geojson is invalid"));
+      handleClose();
     }
   }
 
@@ -254,31 +221,48 @@ export default function AddUserGroupData(props) {
     } else {
       setStateApp((stateApp) => ({
         ...stateApp,
-        universalCircularLoaderAct: true,
+        universalCircularLoaderAct: {
+          localLoader: true,
+          text: 'This may take some time depending on the file size',
+          textStyles: {
+            backgroundColor: 'white',
+            color: 'green',
+          }
+        },
       }));
 
       const userId = stateApp.user.mongoId;
-      const fileName = groupName.trim().toLowerCase().replace(" ", "_") + ".geojson";
+      const fileName = groupName.trim().toLowerCase().replace(" ", "_") + ".zip";
       let originalFileId = ''
+      let originalFile
+      const size = 80 * 1024 * 1024;
+      let smallerArrays = chunkArray({ input: mapControlsStateValues?.fileUploadedContent?.features, bytesSize: size });
+      let start = 0
+      const chunkSizes = smallerArrays.map((smallerArray) => {
+        const chunk = { start, end: start + smallerArray.length }
+        start += smallerArray.length
+        return chunk
+      })
+      smallerArrays = undefined
+
       if (inputOriginalFile) {
-        const originalFile = await client.mutate({
+        originalFile = await client.mutate({
           mutation: ADDFILE,
           variables: {
-            fileName: inputOriginalFile.fileName,
+            fileName,
+            custom_data: {
+              totalFeatures: mapControlsStateValues?.fileUploadedContent?.features?.length,
+              chunkSizes,
+              originalFileName: inputOriginalFile.fileName,
+            },
             userId,
           },
         })
         if (originalFile.data.addFile.file.id) {
           originalFileId = originalFile.data.addFile.file.id
-          uploadFileData(originalFile.data.addFile.file, inputOriginalFile)
+          await uploadFileData(originalFile.data.addFile.file, inputOriginalFile)
         }
       }
-      const file = await addFile({
-        variables: {
-          fileName,
-          userId,
-        },
-      });
 
       await addDataset({
         variables: {
@@ -286,9 +270,10 @@ export default function AddUserGroupData(props) {
             fileName: inputOriginalFile.fileName,
             sourceName: groupName,
             // categories: layerNames.map((layerName, index) => ({ name: layerName, layerGeometry: stateMapControls.fileUploadedContent.featureTypes[index] })),
-            categories: layerNames.map((layerName, index) => ({ name: layerName, layerGeometry: stateMapControls.fileUploadedContent.featureTypes[index], layerShapeName: stateMapControls.fileUploadedContent.fileNames?.[index] })),
-            types: stateMapControls.fileUploadedContent.featureTypes,
-            file: file.data.addFile.file.id,
+            categories: layerNames.map((layerName, index) => ({ name: layerName, layerGeometry: mapControlsStateValues.fileUploadedContent.featureTypes[index], layerShapeName: mapControlsStateValues.fileUploadedContent.fileNames?.[index] })),
+            types: mapControlsStateValues.fileUploadedContent.featureTypes,
+            // file: file.data.addFile.file.id,
+            file: originalFileId,
             originalFile: originalFileId,
             public: true,
             createBy: stateApp.user.mongoId,
@@ -296,8 +281,8 @@ export default function AddUserGroupData(props) {
         },
       });
 
-      if (file?.data?.addFile?.success) {
-        uploadFile(file.data, stateMapControls.fileUploadedContent, groupName + uuid() + "_source", originalFileId)
+      if (originalFile?.data?.addFile?.success) {
+        addLayer(originalFile.data, mapControlsStateValues.fileUploadedContent, groupName + uuid() + "_source", originalFileId)
       }
     }
   };
@@ -321,7 +306,14 @@ export default function AddUserGroupData(props) {
   const handleURLinput = async () => {
     setStateApp((stateApp) => ({
       ...stateApp,
-      universalCircularLoaderAct: true,
+      universalCircularLoaderAct: {
+        localLoader: true,
+        text: 'This may take some time depending on the file size',
+        textStyles: {
+          backgroundColor: 'white',
+          color: 'green',
+        }
+      },
     }));
 
     let fileContent = await handleFileAsync(url);
@@ -351,7 +343,7 @@ export default function AddUserGroupData(props) {
         </Typography>
 
         <TextField
-          defaultValue={stateMapControls.fileUploadedContent.groupName}
+          defaultValue={mapControlsStateValues.fileUploadedContent.groupName}
           focused
           required
           margin="dense"
@@ -363,7 +355,7 @@ export default function AddUserGroupData(props) {
         />
 
         {
-          stateMapControls.fileUploadedContent.featureTypes.map((layer, i) =>
+          mapControlsStateValues.fileUploadedContent.featureTypes.map((layer, i) =>
             <TextField
               focused
               required
@@ -390,7 +382,7 @@ export default function AddUserGroupData(props) {
           label="Auto-Add Source Data to Map Layers"
         />
 
-        {!stateMapControls.fileUploadedContent && (
+        {!mapControlsStateValues.fileUploadedContent && (
           <TextField
             required
             autoFocus

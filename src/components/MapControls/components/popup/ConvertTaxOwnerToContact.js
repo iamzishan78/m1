@@ -21,6 +21,7 @@ import { NavigationContext } from "components/Navigation/NavigationContext";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
+import { drawController } from "hookstate/drawStateController";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,12 +67,14 @@ const ConvertTaxOwnerToContact = ({
   const classes = useStyles();
   const [stateApp] = useContext(AppContext);
   const [stateNav] = useContext(NavigationContext);
-  const { currentFeature, user } = stateApp;
+  const { user } = stateApp;
   const [newTagsIds, setNewTagsIds] = useState([]);
   const [searchCampaign, setSearchCampaign] = useState("");
   const [includeFilter, setIncludeFilter] = useState(true);
   const [campaigns, setCampaigns] = useState([]);
   const { control, getValues, watch } = useForm();
+
+  const { selectedPolygonString } = drawController.useState(['selectedPolygonString'], 'drawStateValues');
 
   const contactStatus = watch("contactStatus", contactStatusOptions[0].value);
   const contactOwner = watch("contactOwner", null);
@@ -87,7 +90,7 @@ const ConvertTaxOwnerToContact = ({
   useEffect(() => {
     if (!includeFilter) {
       getShapeOwnersAndCountAction({
-        currentFeature: currentFeature,
+        currentFeature: drawController.getValue('currentFeature'),
         userId: user.mongoId,
       });
     }
@@ -98,7 +101,7 @@ const ConvertTaxOwnerToContact = ({
     if (includeFilter) {
       const { filters, search } = getMapFilters(stateNav, "", "");
       getMapFilterShapeOwnersAndCountAction({
-        currentFeature: currentFeature,
+        currentFeature: drawController.getValue('currentFeature'),
         userId: user.mongoId,
         filters,
         search,
@@ -116,11 +119,11 @@ const ConvertTaxOwnerToContact = ({
     stateNav.spudDateTo,
     stateNav.permitDateFrom,
     stateNav.permitDateTo,
-    stateApp.gridPolygonString,
     stateNav.completetionDateFrom,
     stateNav.completetionDateTo,
     stateNav.firstProdDateFrom,
     stateNav.firstProdDateTo,
+    selectedPolygonString
   ]);
 
   const setTagId = (id) => {

@@ -1,7 +1,6 @@
 import React, { useContext, useState, useMemo } from "react";
 import { useMutation } from "@apollo/client";
 import { v4 as uuid } from "uuid";
-import { MapControlsContext } from "../../MapControlsContext";
 import { Typography, Paper, Grid, Button, IconButton, Divider, FormControlLabel, Switch, ClickAwayListener, TextField } from "@material-ui/core";
 import { Close as CloseIcon } from "@material-ui/icons";
 import { getDefaultSettings } from "../addUserHelper";
@@ -9,6 +8,7 @@ import { ADDLAYER } from "graphQL/useMutationAddLayer";
 import { AppContext } from "AppContext";
 import { ColorPickerStyledBox, useLayerStyle, useStyles, WidthPicker } from "./Common";
 import { Autocomplete } from "@material-ui/lab";
+import { mapControlsController } from "hookstate/mapControlsController";
 
 function NewLayerManager(props) {
   const [stateApp] = useContext(AppContext);
@@ -25,7 +25,6 @@ function NewLayerManager(props) {
 
   const { layerName, setLayerName, width, setWidth, fillColor, setFillColor, layerLabelVisibility, setLayerLabelVisibility, layerClickability, setLayerClickability, strokeColor, setStrokeColor, handleLayerChange
   } = useLayerStyle(layer)
-  const [, setStateMapControls] = useContext(MapControlsContext);
 
   const [source, setSource] = useState()
   const [selectCategory, setCategory] = useState()
@@ -68,7 +67,7 @@ function NewLayerManager(props) {
   }
 
   const handleClose = () => {
-    setStateMapControls((stateMapControls) => ({ ...stateMapControls, manageLayer: false }));
+    mapControlsController.updateState({ manageLayer: false })
   }
 
   // useEffect(() => {

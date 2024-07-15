@@ -29,6 +29,7 @@ import { AutoCompleteLandgrid } from "components/Shared/Forms/Fields/AutoComplet
 import { US_STATES_CODES } from "utils/data";
 import filterConsts from "components/Table/TableAddDialog/Common/filterConsts";
 import { hookstate, useHookstate } from "@hookstate/core";
+import { globalStateController } from "hookstate/globalStateController";
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps, loading }) {
   const dispatch = useDispatch();
@@ -369,6 +370,7 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
                           <Grid item md={10}>
                             {data.label || "-"}
                           </Grid>
+
                           <Grid item md={2}>
                             {
                               <EditIconComponent data={data} dataKey={`${data.key}key`} onClick={() => {
@@ -378,8 +380,10 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
                                   setStateApp((stateApp) => ({
                                     ...stateApp,
                                     selectedMeta: data,
-                                    showFieldModal: true,
                                   }));
+                                  globalStateController.updateState({
+                                    showFieldModal: true,
+                                  });
                                 }
                               }} classes={classes} />
                             }

@@ -1,0 +1,1270 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+// react imports
+import React, { useContext, useState, useRef, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+
+// custom components
+import './popup.css';
+import gjv from 'geojson-validation';
+
+// 3rd party packages
+import mapboxgl from 'mapbox-gl';
+import * as turf from '@turf/turf';
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from 'mapbox-gl-draw-circle';
+import StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
+import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
+import { useLazyQuery, useApolloClient } from '@apollo/client';
+
+// material-ui
+import { makeStyles } from '@material-ui/core/styles';
+
+import _ from 'lodash';
+
+import parseLinkHeader from 'parse-link-header';
+import { drawShapeStyles, findBoundsMap } from 'components/MapControls/commonHelper';
+import {
+	layersWithSelectedShapeKey,
+} from 'components/Shared/functions/shapeLayer';
+
+import './Map.css';
+import { popupController } from 'hookstate/popupStateController';
+import { navController } from 'hookstate/navStateController';
+import { globalStateController } from 'hookstate/globalStateController';
+import { layerRefs } from 'hookstate';
+import { setMainMapState } from '../../actions';
+import { copy } from '../Shared/functions';
+import DefaultFiltersTest from './filtersDefaultTest';
+import MarkerIcon from './sprites/marker-icon.png';
+import MapGridCardProvider from '../MapGridCard/MapGridProvider';
+import { drawBoundary, drawWellBoundary } from '../MapControls/components/DrawShapes/drawShapesHelpers';
+import HugeRequest from './components/HugeRequest';
+import ZoomFault from './components/ZoomFault';
+import { SRMode } from './MapBoxDrawRotate/index';
+
+// queries
+import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
+import { ALLLAYERSETTINGSBYUSER } from '../../graphQL/useQueryAllLayerSettingsByUser';
+
+// contexts
+import { AppContext } from '../../AppContext';
+
+import DeckGL from './DeckGL';
+import onFeatureClick from './DeckGL/helpers/onFeatureClick';
+import { getClickedFeature } from './DeckGL/helpers/common';
+import { layerController } from 'hookstate/layerStateController';
+import MapControls from 'components/MapControls/MapControls';
+import SpeedDialComponent from 'components/MapControls/SpeedDialComponent';
+import DeckGlLayer from './DeckGL/helpers/DeckGlLayer';
+import onRightClick from './DeckGL/helpers/onRightClick';
+import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
+import { convertToTitleCase } from 'components/Shared/M1nTable/components/MUIDataTable/utils';
+import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
+import { RIGSQUERY } from "graphQL/useQueryRigs";
+import { drawController } from 'hookstate/drawStateController';
+import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
+
+const useStyles = makeStyles(() => ({
+	mapWrapper: {
+		width: '100%',
+	},
+	map: {
+		position: 'absolute',
+		top: '0px',
+		bottom: '0',
+		left: '0',
+		width: '100%',
+		height: '100vh',
+		overflow: 'hidden !important',
+		'& a.mapboxgl-ctrl-logo, .mapboxgl-ctrl.mapboxgl-ctrl-attrib, .mapboxgl-ctrl-compass': {
+			display: 'none',
+		},
+		'& .mapboxgl-canvas-container > canvas': {
+			cursor: ({ drawingCircle }) => (drawingCircle ? 'crosshair' : 'inherit'),
+			height: '100vh',
+			width: '100% !important',
+		},
+		'& .mapboxgl-popup-close-button': { display: 'none' },
+		"& .mapboxgl-ctrl-group": { backgroundColor: "#0e111a" },
+		"& .mapboxgl-ctrl button.mapboxgl-ctrl-zoom-in .mapboxgl-ctrl-icon": { backgroundImage: "url('data:image/svg+xml;charset=utf-8,%3Csvg width=\"29\" height=\"29\" viewBox=\"0 0 29 29\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"%23FFFFFF\"%3E%3Cpath d=\"M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5z\"/%3E%3C/svg%3E')" },
+		"& .mapboxgl-ctrl button.mapboxgl-ctrl-zoom-out .mapboxgl-ctrl-icon": { backgroundImage: "url('data:image/svg+xml;charset=utf-8,%3Csvg width=\"29\" height=\"29\" viewBox=\"0 0 29 29\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"%23FFFFFF\"%3E%3Cpath d=\"M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-9z\"/%3E%3C/svg%3E')" },
+		"& .mapboxgl-ctrl-top-left": {
+			marginTop: "140px",
+			marginLeft: ({ expandedPanel }) => expandedPanel ? "425px" : "2px"
+		} // Update zoom icon position on toggle side bar
+	},
+	filterPopup: {
+		'& .mapboxgl-popup-tip': {
+			display: 'none',
+		},
+	},
+	footerLeftLogo: {
+		position: 'absolute',
+		bottom: '5px',
+		zIndex: '1',
+		left: '10px',
+	},
+	portal: {
+		position: 'absolute',
+		top: '45%',
+		left: '47%',
+		transform: 'translate(-50%, -50%)',
+	},
+}));
+
+// let hoveredAbstractId = null;
+
+function Map({
+	type,
+	paramId,
+	expandedPanel = true,
+	openSpeedDial = true,
+	width,
+	hideShape = false,
+	layerPadding = null,
+}) {
+	// context states
+	const globalState = globalStateController.useState(['layers']);
+	const { filterDrawing, navStateValues } = navController.useState(['filterDrawing'], 'navStateValues')
+	const { selectedShapeFile, popupStateValues } = popupController.useState(['selectedShapeFile'], 'popupStateValues');
+	const [stateApp, setStateApp] = useContext(AppContext);
+
+	const client = useApolloClient();
+	const history = useHistory();
+	const mapLayersPanelExtended = useSelector(({ MainMap }) => MainMap.mapLayersPanelExtended);
+
+	// styles
+	let classes = useStyles({
+		drawingCircle: stateApp.draw && stateApp.draw.getMode() === "drag_circle" ? true : false,
+		expandedPanel: mapLayersPanelExtended ? true : false,
+	  });
+
+	const dispatch = useDispatch();
+	const { searchInputValue } = useSelector(({ MapGridCard }) => MapGridCard);
+	const removeLayerFromMap = useSelector(({ MainMap }) => MainMap.removeLayerFromMap);
+
+	const [mapStyles, MapStyles] = useState([]);
+	const setMapStyles = state => {
+		if (mapStyles !== state) {
+			MapStyles(state);
+		}
+	};
+
+	const [map, Map] = useState(null);
+	const setMap = state => {
+		if (map !== state) {
+			Map(state);
+		}
+	};
+	const [draw, Draw] = useState(null);
+	const setDraw = state => {
+		if (draw !== state) {
+			Draw(state);
+		}
+	};
+	const [drawingFilterFeatureId, DrawingFilterFeatureId] = useState(null);
+	const setDrawingFilterFeatureId = state => {
+		if (drawingFilterFeatureId !== state) {
+			DrawingFilterFeatureId(state);
+		}
+	};
+
+	const mapEl = useRef(null);
+
+	// hacky but having to use a ref for valid state during map on event callback
+
+	mapboxgl.accessToken = stateApp.mapboxglAccessToken;
+
+	const [loading, Loading] = useState(true);
+
+	const setLoading = state => {
+		if (loading !== state) {
+			Loading(state);
+		}
+	};
+
+	// queries
+	const [getAllLayerSettingsByUser, { data: layerStates }] = useLazyQuery(ALLLAYERSETTINGSBYUSER);
+	const [getRigs, { data: rigData }] = useLazyQuery(RIGSQUERY);
+
+	/// //end/////////temporary
+
+	const fitOverBounds = () => {
+		let { maxLat, minLat, maxLong, minLong } = stateApp.fitBounds || {};
+
+		const latDif = maxLat - minLat;
+		const longDif = maxLong - minLong;
+
+		if (latDif === 0) {
+			maxLat = maxLat + 0.005 > 90 ? 89.995 : maxLat + 0.005;
+			minLat = minLat - 0.005 < -90 ? -89.995 : minLat - 0.005;
+		} else {
+			maxLat = maxLat + latDif * 0.08 > 90 ? 89.995 : maxLat + latDif * 0.08;
+			minLat = minLat - latDif * 0.08 < -90 ? -89.995 : minLat - latDif * 0.08;
+		}
+
+		if (longDif === 0) {
+			maxLong = maxLong + 0.005 > 180 ? 179.995 : maxLong + 0.005;
+			minLong = minLong - 0.005 < -180 ? -179.995 : minLong - 0.005;
+		} else {
+			maxLong = maxLong + longDif * 0.08 > 180 ? 179.995 : maxLong + latDif * 0.08;
+			maxLong = maxLong - longDif * 0.08 < -180 ? -179.995 : maxLong - latDif * 0.08;
+		}
+
+		return {
+			maxLat,
+			minLat,
+			maxLong,
+			minLong,
+		};
+	};
+
+	const fetchStyles = async abortController => {
+		const token =
+			'&access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw';
+		let link = 'https://api.mapbox.com/styles/v1/m1neral?&sortby=modified';
+		const reqOptions = {
+			method: 'GET',
+			mode: 'cors',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+				'Cache-Control': 'max-age=0',
+			},
+		};
+
+		const { signal } = abortController;
+
+		let styleTypes = ['Satellite', 'Basic', 'Dark', 'Light', 'Outdoors'];
+		const isDarkMapAllowed = false; // Set this to the appropriate value
+		if (!isDarkMapAllowed) styleTypes = styleTypes.filter(style => style !== 'Dark');
+		let recurseLimit = 5;
+
+		try {
+			const styles = await styleTypes.reduce(async (stylesPromise, styleType) => {
+				const styles = await stylesPromise;
+				if (!styles.find(style => style.name === styleType) && recurseLimit > 0) {
+					--recurseLimit;
+					const response = await fetch(new Request(link + token, reqOptions), { signal });
+					const data = await response.json();
+					link = parseLinkHeader(response.headers.get('Link'))?.next?.url;
+					styles.push(
+						..._.uniqBy(
+							data.filter(
+								style =>
+									styleTypes.includes(style.name) &&
+									!styles.find(el => el.name === style.name)
+							),
+							'name'
+						)
+					);
+				}
+				return styles;
+			}, []);
+
+			return styles;
+		} catch (error) {
+			// Handle any errors here
+			console.error('Error occurred:', error);
+			throw error; // Rethrow the error to be caught outside
+		}
+	};
+
+	useEffect(async () => {
+		const abortController = new AbortController();
+		await getRigs({});
+		fetchStyles(abortController)
+			.then((styles) => {
+				setMapStyles(styles);
+				setStateApp((state) => ({
+					...state,
+					mapStyles: styles,
+				}));
+			})
+			.catch((error) => {
+				// Handle any errors from fetchStyles
+				console.error('fetchStyles error:', error);
+			});
+
+		popupController.updateState({
+			popupOpen: !!(
+				popupController.getValue('wellSelectedCoordinates')?.length > 0 &&
+				searchInputValue
+			),
+			expandedCard: false,
+		});
+
+		// clean up
+		return function cleanup() {
+			try {
+				abortController.abort();
+			} catch (err) {
+				console.log("🚀 ~ cleanup ~ err:", err.message);
+			}
+
+			layerController.resetMap();
+
+			setStateApp(state => ({
+				...state,
+				viewDoc: null,
+			}));
+		};
+	}, []);
+
+	const getElasticWell = async (paramId) => {
+		const { data: well } = await client.query({
+			query: GET_ES_PAGINATED_LIST,
+			variables: {
+				esIndex: "platformData:wells",
+				pagination: {
+					first: 1,
+					keep_alive: "1micros"
+				},
+				search: `_id:${paramId.toLowerCase()}`,
+				filters: [],
+				sort: [],
+			},
+		});
+		const wellFeature = { ...well.getESPaginatedList.hits[0] };
+		if (wellFeature?.Id) wellFeature.id = wellFeature.Id;
+		const interval = setInterval(() => {
+			if (window.mapRef) {
+				layerController.updateState({ clickedFeature: { object: { id: paramId } } })
+				popupController.updateState({
+					selectedWellId: paramId.toLowerCase(),
+					wellSelectedCoordinates: [wellFeature.longitude, wellFeature.latitude],
+					popupOpen: false,
+					expandedCard: true,
+				});
+				if (wellFeature?.longitude)
+					drawWellBoundary([wellFeature.longitude, wellFeature.latitude])
+				popupController.fitWellBounds(wellFeature);
+				clearInterval(interval)
+			}
+		}, 100);
+	}
+
+	useEffect(() => {
+		if (rigData && rigData.rigs && rigData.rigs.length > 0) {
+			layerController.updateState({
+				rigsData: rigData.rigs,
+			});
+		}
+	}, [rigData]);
+
+	async function getCustomLayer(paramId) {
+		const keys = { parcels: 'selectedParcel', ...layersWithSelectedShapeKey(), wells: 'selectedWell' };
+		const { data: layer } = await client.query({
+			query: CUSTOMLAYER,
+			variables: {
+				id: paramId,
+			},
+		});
+		if (layer?.customLayer) {
+			let layers = globalStateController.getValue('layers');
+			if (!layers || layers?.length === 0) {
+				const { data } = await client.query({
+					query: LAYERSETTINGSBYUSER,
+					variables: {
+						userId: stateApp.user.mongoId,
+						identifier: convertToTitleCase(layer.customLayer.layer + 's')
+					},
+				});
+				layers = globalStateController.getValue('layers');
+				if ((!layers || layers?.length === 0) && data?.layerSettingsByUser) {
+					globalStateController.updateState({
+						deckLayer: data.layerSettingsByUser
+					})
+				}
+			}
+
+			let jsonLayer = JSON.parse(layer.customLayer.shape);
+			if (layer.customLayer.shapeJson) jsonLayer = copy(layer.customLayer.shapeJson);
+
+			jsonLayer.layer = { id: layer.customLayer.layer };
+			jsonLayer.id = layer.customLayer._id;
+
+			const interval = setInterval(() => {
+				if (window.mapRef) {
+					findBoundsMap([jsonLayer], window.mapRef, layerPadding);
+					drawBoundary(jsonLayer);
+
+					layerController.updateState({ clickedFeature: { object: { id: paramId } } })
+					popupController.updateState({
+						[keys[type]]: {
+							...jsonLayer.properties,
+							feature: jsonLayer,
+							id: layer.customLayer._id,
+						},
+						...(type === "parcels" ? { selectedShape: null } : {}),
+						popupOpen: false,
+						expandedCard: true,
+					});
+					clearInterval(interval)
+				}
+			}, 100);
+		}
+		else {
+			history.push('/');
+		}
+	}
+
+	useEffect(() => {
+		if (!window.mapRef || !popupStateValues.selectedShapeFile) return;
+
+		popupController.updateState({ popupOpen: false })
+
+		const combined = turf.combine(turf.featureCollection([popupStateValues.selectedShapeFile]))
+		const bbox = turf.bbox(combined)
+		window.mapRef.fitBounds(
+			[
+				[bbox[0], bbox[1]], // southwestern corner of the bounds
+				[bbox[2], bbox[3]] // northeastern corner of the bounds
+			],
+			{ padding: { top: 40, bottom: 700, left: 400, right: 40 }, easing: () => 1, }
+		)
+
+		const layers = globalStateController.getValue('layers');
+
+		const layer = layers.find(l => popupStateValues.selectedShapeFile.properties?.layerShapeName === l.layerShapeName);
+
+		udLayerClickHandler(popupStateValues.selectedShapeFile, layer);
+	}, [selectedShapeFile])
+
+	useEffect(() => {
+		const clickedFeature = layerController.getValue('clickedFeature')
+		if (paramId && clickedFeature?.object?.id !== paramId) {
+			try {
+				if (type === 'wells') {
+					getElasticWell(paramId)
+				} else {
+					getCustomLayer(paramId);
+				}
+			} catch (e) {
+				history.push('/')
+			}
+		}
+	}, [paramId]);
+
+	useEffect(() => {
+		if (stateApp.user && stateApp.user.mongoId) {
+			setLoading(true);
+
+			getAllLayerSettingsByUser({
+				variables: {
+					userId: stateApp.user.mongoId,
+				},
+			});
+		}
+	}, [stateApp.user]);
+
+	useEffect(() => {
+		if (layerStates && layerStates.allLayerSettingsByUser) {
+			const layers = copy(layerStates.allLayerSettingsByUser);
+			setStateApp(state => ({
+				...state,
+				layers,
+			}));
+			globalState.layers.set(layers);
+			stateApp.layers = layers
+		}
+	}, [layerStates]);
+
+	/// / remove the layer and it's source from the map after it's deleted
+	const removeLayer = layer => {
+		const paintProps = layer.layerPaintProps;
+		if (!paintProps?.length) return;
+
+		for (let i = paintProps.length - 1; i >= 0; i--) {
+			const prop = paintProps[i];
+
+			// -> remove layer
+			const layerId = layer.layerType === 'file layer' ? layer.identifier : prop.id;
+			if (map.getLayer(layerId)) map.removeLayer(layerId);
+
+			if (prop.clusterProps) {
+				if (map.getLayer(`${layerId}-clusters-counts`)) map.removeLayer(`${layerId}-clusters-counts`);
+
+				if (map.getLayer(`${layerId}-clusters`)) map.removeLayer(`${layerId}-clusters`);
+			}
+
+			const { layers } = map.getStyle();
+			// -> remove source
+			const sourceId = prop.sourceProps;
+			const sourceLayers = layers.filter(layer => layer.source === sourceId);
+			if (map?.getSource(sourceId) && sourceLayers.length === 0) map.removeSource(sourceId);
+			if (map?.getSource(`${sourceId}_point`)) map.removeSource(`${sourceId}_point`);
+			if (map?.getSource(`${sourceId}_filter`)) map.removeSource(`${sourceId}_filter`);
+		}
+	};
+
+	useEffect(() => {
+		if (removeLayerFromMap && map) {
+			removeLayerFromMap.forEach(layer => {
+				removeLayer(layer);
+			});
+			dispatch(setMainMapState({ removeLayerFromMap: null }));
+		}
+	}, [removeLayerFromMap]);
+
+	useEffect(() => {
+		// USE EFFECT FOR BASEMAP LAYER HANDLING
+		const mapLayers = copy(globalState.stateValues.layers);
+		if (!stateApp.baseMapLayers || stateApp.baseMapLayers.length === 0 || !map) return;
+		const landLayer = mapLayers?.find(layer => layer.identifier === 'Land Grid');
+		const baseMapLandIndex = stateApp.baseMapLayers.findIndex(layer => layer.name === 'Land Grid');
+		const landLayerVisible = landLayer?.layerSettings?.visiable && landLayer?.layerSettings?.showable
+
+		if (!landLayerVisible && stateApp.checkedBaseLayers.includes(baseMapLandIndex)) {
+			setStateApp(state => ({
+				...state,
+				checkedBaseLayers: stateApp.checkedBaseLayers.filter(l => l !== baseMapLandIndex),
+			}));
+		}
+		if (landLayerVisible && !stateApp.checkedBaseLayers.includes(baseMapLandIndex)) {
+			setStateApp(state => ({
+				...state,
+				checkedBaseLayers: [...stateApp.checkedBaseLayers, baseMapLandIndex],
+			}));
+		}
+	}, [map, stateApp.baseMapLayers, globalState.layers]);
+
+	useEffect(() => {
+		// USE EFFECT FOR BASEMAP LAYER HANDLING
+		const mapLayers = copy(stateApp.layers);
+		if (stateApp.baseMapLayers && stateApp.baseMapLayers.length > 0 && map) {
+			const landLayer = mapLayers?.find(layer => layer.identifier === 'Land Grid');
+			const baseMapLandIndex = stateApp.baseMapLayers.findIndex(layer => layer.name === 'Land Grid');
+			if (!landLayer?.layerSettings?.visiable && stateApp.checkedBaseLayers.includes(baseMapLandIndex)) {
+				return;
+			}
+			stateApp.baseMapLayers.forEach((l, index) => {
+				if (l.name === 'Land Grid' && !stateApp.checkedBaseLayers.includes(index)) {
+					if (landLayer) {
+						landLayer.layerSettings.visiable = false;
+						setStateApp(state => ({ ...state, layers: [...mapLayers] }));
+					}
+				}
+
+				l.id.forEach(k => {
+					if (map.getLayer(k)) {
+						map.setLayoutProperty(k, 'visibility', 'none');
+					}
+				});
+			});
+
+			if (stateApp.checkedBaseLayers.length > 0) {
+				const layers = stateApp.checkedBaseLayers.slice(0);
+				layers.sort((a, b) => b - a);
+				if (layers.length > 0) {
+					let belowlayer = null;
+					for (let k = layers.length - 1; k >= 0; k--) {
+						const i = layers[k];
+						if (stateApp.baseMapLayers[i].name === 'Land Grid') {
+							if (landLayer) {
+								landLayer.layerSettings.visiable = true;
+								setStateApp(state => ({ ...state, layers: [...mapLayers] }));
+							}
+							continue;
+						}
+						const currentLayerArray = stateApp.baseMapLayers[i].id;
+						// eslint-disable-next-line no-loop-func
+						currentLayerArray.forEach(j => {
+							const mapLayer = map.getLayer(j);
+							if (typeof mapLayer !== 'undefined') {
+								if (map.getLayer(j)) {
+									map.setLayoutProperty(j, 'visibility', 'visible');
+									if (belowlayer != null) {
+										map.moveLayer(j, belowlayer);
+									}
+									belowlayer = j;
+								}
+							}
+						});
+					}
+				}
+			}
+		}
+	}, [map, stateApp.checkedBaseLayers, stateApp.baseMapLayers]);
+
+	useEffect(() => {
+		// USE EFFECT FOR HEATMAP LAYER HANDLES
+		if (stateApp.heatLayers && stateApp.heatLayers.length > 0 && map) {
+			stateApp.heatLayers.forEach(l => {
+				l.id.forEach(k => {
+					if (map.getLayer(k)) {
+						map.setLayoutProperty(k, 'visibility', 'none');
+					}
+				});
+			});
+
+			if (stateApp.checkedHeats.length > 0) {
+				const layers = stateApp.checkedHeats.slice(0);
+				layers.sort((a, b) => b - a);
+				if (layers.length > 0) {
+					let belowlayer = null;
+					for (let k = layers.length - 1; k >= 0; k--) {
+						const i = layers[k];
+						const currentLayerArray = stateApp.heatLayers[i].id;
+						// eslint-disable-next-line no-loop-func
+						currentLayerArray.forEach(j => {
+							const mapLayer = map.getLayer(j);
+							if (typeof mapLayer !== 'undefined') {
+								if (map.getLayer(j)) {
+									map.setLayoutProperty(j, 'visibility', 'visible');
+									if (belowlayer != null) {
+										map.moveLayer(j, belowlayer);
+									}
+									belowlayer = j;
+								}
+							}
+						});
+					}
+				}
+			}
+		}
+	}, [map, stateApp.checkedHeats, stateApp.heatLayers]);
+
+	useEffect(() => {
+		// sets style of map when changed in Map Controls
+		if (stateApp.selectedLayerId && map) {
+			if (stateApp.selectedLayerId) {
+				map.setStyle(stateApp.selectedLayerId);
+			}
+		}
+	}, [map, stateApp.selectedLayerId]);
+
+	useEffect(() => {
+		if (map) {
+			setStateApp(stateApp => ({
+				...stateApp,
+				mapVars: {
+					...stateApp.mapVars,
+					zoom: map.getZoom(),
+					center: map.getCenter(),
+					pitch: map.getPitch(),
+					bearing: map.getBearing(),
+				},
+			}));
+			setMap(null);
+		}
+	}, [stateApp.mapVars.styleId]);
+
+	function getIndex(value, arr, prop) {
+		for (let i = 0; i < arr.length; i++) {
+			if (arr[i][prop] === value) {
+				return i;
+			}
+		}
+		return -1; // to handle the case where the value doesn't exist
+	}
+
+	useEffect(() => {
+		if (!map || !mapStyles) return;
+
+		let index = getIndex(stateApp.mapVars.styleId, mapStyles, 'name');
+		if (index === -1) {
+			index = 0;
+		}
+
+		map.setStyle(`mapbox://styles/m1neral/${mapStyles[index]?.id}`);
+	}, [stateApp.mapVars.styleId, mapStyles]);
+
+	useEffect(() => {
+		if (map) {
+			setStateApp(stateApp => ({
+				...stateApp,
+				mapVars: stateApp.defaultMapVars,
+			}));
+			map.jumpTo({
+				center: [stateApp.defaultMapVars.center.lng, stateApp.defaultMapVars.center.lat],
+				zoom: stateApp.defaultMapVars.zoom,
+			});
+		}
+	}, [stateApp.defaultMapVars]);
+
+	useEffect(() => {
+		const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
+
+		if (!sourceId) return;
+
+		if (map) {
+			const featuresList = map?.getSource(sourceId)?._data.features || [];
+			for (let i = 0; i < featuresList.length; i++) {
+				const id = featuresList[i].properties.Id;
+				map.setFeatureState({ source: sourceId, id }, { click: stateApp.filterSelectAllAbstract });
+			}
+		}
+	}, [stateApp.filterSelectAllAbstract, map]);
+
+	// if this isn't fast enough we can try to only recalc length for features on the tile boundary
+	// if feature is entirely within a tile we difinitively know the length
+	// if it is on the tile boundary we know that the vector feature "may" cross tile boundaries so don't know the true
+	// length from a single tile
+	async function findBadLinestrings(map, tile) {
+		if (!tile) return;
+		let repaint = false;
+		const renderedLineStrings = [];
+		tile.querySourceFeatures(renderedLineStrings, {
+			filter: ['in', ['geometry-type'], ['literal', ['LineString', 'MultiLineString']]],
+			sourceLayer: 'wells',
+		});
+		renderedLineStrings.forEach(feature => {
+			const geometryLength = map.getFeatureState({
+				source: 'wellsVT',
+				sourceLayer: 'wells',
+				id: feature.id,
+			})?.geometryLength;
+			const newGeometryLength = Math.round(turf.length(feature.geometry, { units: 'feet' }), 0);
+			if (newGeometryLength > 20000 && !(geometryLength >= newGeometryLength)) {
+				map.setFeatureState(
+					{
+						source: 'wellsVT',
+						sourceLayer: 'wells',
+						id: feature.id,
+					},
+					{
+						geometryLength: Math.max(newGeometryLength, geometryLength || -1),
+					}
+				);
+				repaint = true;
+			}
+		});
+
+		if (repaint) {
+			map.triggerRepaint();
+		}
+	}
+
+	useEffect(() => {
+		if (mapStyles.length <= 0) return;
+
+		const initializeMap = ({ setMap, mapEl, setStateApp, setDraw }) => {
+			const { id } = mapEl.current;
+
+			let index = getIndex(stateApp.mapVars.styleId, mapStyles, 'name');
+			if (index === -1) {
+				index = 0;
+			}
+			const newMap = new mapboxgl.Map({
+				container: `${id}`,
+				style: `mapbox://styles/m1neral/${mapStyles[index]?.id}`,
+				center: stateApp.mapVars.center,
+				zoom: stateApp.mapVars.zoom,
+				pitch: stateApp.mapVars.pitch,
+				bearing: stateApp.mapVars.bearing,
+			});
+
+			/// optimized interactions w/ map
+			newMap.scrollZoom.enable();
+			newMap.dragPan.enable();
+			newMap.dragRotate.enable();
+			newMap.keyboard.enable();
+			// newMap.doubleClickZoom.disable();
+			newMap.boxZoom.enable();
+			newMap.touchZoomRotate.enable();
+
+			newMap.addControl(
+				new mapboxgl.ScaleControl({
+					maxWidth: 80,
+					unit: 'imperial',
+				}),
+				'bottom-right'
+			);
+			newMap.addControl(new mapboxgl.NavigationControl(), "top-left");
+
+			
+
+			/// / selecting the rect after draw
+			const CostumDrawRectangle = { ...DrawRectangle };
+			CostumDrawRectangle.onClick = function onClick(state, e) {
+				// if state.startPoint exist, means its second click
+				// change to  simple_select mode
+				if (state.startPoint && state.startPoint[0] !== e.lngLat.lng && state.startPoint[1] !== e.lngLat.lat) {
+					// eslint-disable-next-line react/no-this-in-sfc
+					this.updateUIClasses({ mouse: 'pointer' });
+					state.endPoint = [e.lngLat.lng, e.lngLat.lat];
+					// eslint-disable-next-line react/no-this-in-sfc
+					this.changeMode('simple_select', {
+						featuresId: state.rectangle.id,
+					});
+					// eslint-disable-next-line react/no-this-in-sfc
+					this.setSelected(state.rectangle.id); /// / selecting the rect after draw
+				}
+				// on first click, save clicked point coords as starting for  rectangle
+				const startPoint = [e.lngLat.lng, e.lngLat.lat];
+				state.startPoint = startPoint;
+			};
+
+			const Draw = new MapboxDraw({
+				displayControlsDefault: false,
+				userProperties: true,
+				styles: drawShapeStyles,
+				modes: {
+					...MapboxDraw.modes,
+					static: StaticMode,
+					draw_circle: CircleMode,
+					drag_circle: DragCircleMode,
+					direct_select: DirectMode,
+					simple_select: SimpleSelectMode,
+					draw_rectangle: CostumDrawRectangle,
+					tx_poly: SRMode,
+				},
+			});
+			newMap.addControl(Draw);
+
+			newMap.on('sourcedata', e => {
+				if (e.sourceId === 'wellsVT') {
+					findBadLinestrings(e.target, e.tile);
+				}
+			});
+
+			const interval = setInterval(() => {
+				let isDragging = false;
+				let isDrawing = false;
+				if (newMap.__deck) {
+					window.mapRef?.on('draw.actionable', () => {
+						// console.log(window.drawRef?.getMode())
+						isDrawing = !['direct_select', 'simple_select'].includes(window.drawRef?.getMode());
+					});
+					newMap.__deck?.setProps({
+						onDragStart: () => {
+							isDragging = true;
+						},
+						onDragEnd: () => {
+							isDragging = false;
+						},
+						getCursor: ({ isHovering }) =>
+							isDrawing ? 'crosshair' : isDragging ? 'grabbing' : isHovering ? 'pointer' : 'grab',
+						onClick: ({ x, y, coordinate }, { rightButton, srcEvent }) => {
+							const drawMode = window.drawRef?.getMode();
+
+							if (drawMode?.includes('draw') || drawMode?.includes('drag')) {
+								window.mapRef?.resize();
+								return;
+							}
+
+							if (rightButton || srcEvent.shiftKey) {
+								onRightClick({ x, y, coordinate });
+								return;
+							}
+
+							const getLandGrid = window.event.ctrlKey || window.event.metaKey || drawController.getValue('multiSelectLandGrids');
+
+							const { clickedFeature, layer } = getClickedFeature({ x, y, getLandGrid });
+							const previousClickedFeature = layerController.getValue('clickedFeature')
+							const clickOnSameFeature = previousClickedFeature && previousClickedFeature?.object?.id === clickedFeature?.object?.id
+							if (!clickedFeature || clickOnSameFeature) {
+								popupController.reset();
+								if (!['', '/'].includes(window.location.pathname))
+									history.replace({ pathname: "/" });
+								return;
+							}
+							if (!getLandGrid)
+								drawBoundary(clickedFeature.object);
+
+							layerController.updateState({ clickedFeature })
+							onFeatureClick(clickedFeature, layer);
+						},
+					});
+					clearInterval(interval);
+				}
+			}, 500);
+
+			newMap.on('load', () => {
+				window.mapRef = newMap;
+				window.drawRef = Draw;
+				layerController.resetMapStates(true);
+
+				setStateApp(state => ({
+					...state,
+					map: newMap,
+				}));
+
+				newMap.loadImage(MarkerIcon, (error, image) => {
+					if (error) throw error;
+					// add image to the active style and make it SDF-enabled
+					newMap.addImage('marker-icon', image, { sdf: true });
+				});
+				setTimeout(() => {
+					new DeckGlLayer({
+						layerId: 'top_deck_layer',
+						type: 'ScatterplotLayer',
+						props: {
+							data: [],
+						},
+					});
+
+					new DeckGlLayer({
+						layerId: 'first_deck_layer',
+						type: 'ScatterplotLayer',
+						beforeLayer: 'top_deck_layer',
+						props: {
+							data: [],
+						},
+					});
+				}, 0);
+
+				// FOR aoi_labels
+				newMap.addSource('aoi_label_source', {
+					type: 'geojson',
+					data: {
+						type: 'FeatureCollection',
+						features: [],
+					},
+				});
+
+				setDraw(Draw);
+				setMap(newMap);
+				setLoading(false);
+			});
+		};
+
+		if (!map) {
+			initializeMap({ setMap, mapEl, setStateApp, setDraw });
+		}
+	}, [map, mapStyles]);
+
+	// Use effect for removing shape filter
+	useEffect(() => {
+		if (!loading) {
+			if (navStateValues.filterDrawing && navStateValues.filterDrawing.length === 0) {
+				if (draw) draw.delete(drawingFilterFeatureId);
+				navController.updateState({ drawingMode: null })
+				setDrawingFilterFeatureId(null);
+				popupController.updateState({
+					popupOpen: false,
+				});
+			}
+			const { filterBasin, filterAOI, filterParcel, filterDrawing } = navController.getValues(['filterBasin', 'filterAOI', 'filterParcel', 'filterDrawing'])
+			if (filterBasin || filterAOI || filterParcel || filterDrawing[1]) {
+				let features = [];
+				features = [
+					...features,
+					...map.querySourceFeatures('wellsVT', {
+						filter: ['==', ['geometry-type'], 'LineString'],
+						sourceLayer: 'wells',
+					}),
+				];
+				features = [
+					...features,
+					...map.querySourceFeatures('recentsub_permits_source', { sourceLayer: 'recent_submitted_permit_laterals' }),
+				];
+
+				navController.updateState({ filterIntersectingWellLines: features })
+			}
+		}
+	}, [filterDrawing]);
+
+	useEffect(() => {
+		if (draw && navStateValues.filterDrawing?.length === 2) {
+			const feature = navStateValues.filterDrawing[1];
+			setDrawingFilterFeatureId(feature.id);
+			draw.delete(feature.id);
+			draw.add(feature);
+		}
+	}, [draw]);
+
+	useEffect(
+		() => () => {
+			if (!map) return;
+
+			const list = document.getElementById('searchBar');
+			if (list && list.childNodes && list.childNodes.length > 0) {
+				list.removeChild(list.childNodes[0]);
+			}
+			const zoom = map.getZoom();
+			const center = map.getCenter();
+			const pitch = map.getPitch();
+			const bearing = map.getBearing();
+
+			setStateApp(stateApp => ({
+				...stateApp,
+				mapVars: {
+					...stateApp.mapVars,
+					zoom,
+					center,
+					pitch,
+					bearing,
+				},
+			}));
+
+			// Loading state is not being handled and causes undefined mapList Array
+			// Added '?' to mapList, temp fix to avoid undefined errors.
+			const mapList = document.getElementById('map');
+			if (mapList?.childNodes?.length > 1) {
+				mapList.removeChild(mapList.childNodes[1]);
+				mapList.removeChild(mapList.childNodes[1]);
+				mapList.removeChild(mapList.childNodes[1]);
+			}
+		},
+		[map]
+	);
+
+	useEffect(() => {
+		/// /// USE EFFECT TO MANAGE THE FLY TO FEATURE
+
+		if (map && stateApp.flyTo) {
+			const zVal = 12;
+
+			popupController.setState({
+				wellSelectedCoordinates: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
+			});
+
+			map.jumpTo({
+				center: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
+				zoom: stateApp.flyTo.zoom ? stateApp.flyTo.zoom : zVal,
+			});
+		}
+	}, [map, stateApp.flyTo]);
+
+	useEffect(() => {
+		/// /// USE EFFECT TO MANAGE THE FIT BOUNDS TO FEATURE
+
+		if (
+			map &&
+			stateApp.fitBounds &&
+			stateApp.fitBounds.maxLat &&
+			stateApp.fitBounds.minLat &&
+			stateApp.fitBounds.maxLong &&
+			stateApp.fitBounds.minLong
+		) {
+			const bounds = fitOverBounds();
+			try {
+				if (typeof bounds?.minLong !== 'undefined')
+					map.fitBounds(
+						[
+							[bounds.minLong, bounds.minLat],
+							[bounds.maxLong, bounds.maxLat],
+						],
+						{
+							easing: () => 1,
+						}
+					);
+			} catch (e) {
+				//
+			}
+		}
+	}, [map, stateApp.fitBounds]);
+
+	useEffect(() => {
+		if (map && stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0) {
+			if (stateApp.wellListFromSearch.length > 1) {
+				const findBounds = shape => {
+					if (gjv.valid(shape)) {
+						const bbox = turf.bbox(shape);
+						return {
+							minLong: bbox[0],
+							minLat: bbox[1],
+							maxLong: bbox[2],
+							maxLat: bbox[3],
+						};
+					}
+					return null;
+				};
+
+				const formatIt = mdata => ({
+					type: 'FeatureCollection',
+					features: mdata
+						.filter(feature => (feature.latitude && feature.longitude) || (feature.Latitude && feature.Longitude))
+						.map(feature => {
+							if (feature.latitude && feature.longitude) {
+								return {
+									type: 'Feature',
+									properties: feature,
+									geometry: {
+										type: 'Point',
+										coordinates: [feature.longitude, feature.latitude],
+									},
+								};
+							}
+							return {
+								type: 'Feature',
+								properties: feature,
+								geometry: {
+									type: 'Point',
+									coordinates: [feature.Longitude, feature.Latitude],
+								},
+							};
+						}),
+				});
+				setStateApp(state => ({
+					...state,
+					searchLoader: false,
+					fitBounds: findBounds(formatIt(stateApp.wellListFromSearch)),
+				}));
+			} else if (
+				stateApp.wellListFromSearch[0] &&
+				stateApp.wellListFromSearch[0].latitude &&
+				stateApp.wellListFromSearch[0].longitude
+			) {
+				map.jumpTo({
+					center: {
+						lng: stateApp.wellListFromSearch[0].longitude,
+						lat: stateApp.wellListFromSearch[0].latitude,
+					},
+					zoom: 12,
+				});
+				setStateApp(state => ({
+					...state,
+					searchLoader: false,
+				}));
+			}
+		}
+	}, [map, stateApp.wellListFromSearch]);
+
+	useEffect(() => {
+		if (map && stateApp?.findLocation?.location?.length > 0) {
+			const findLocationGeoJson = {
+				type: 'FeatureCollection',
+				features: [
+					{
+						type: 'Feature',
+						properties: stateApp.findLocation,
+						geometry: {
+							type: 'Point',
+							coordinates: stateApp?.findLocation?.location,
+						},
+					},
+				],
+			};
+			if (map?.getSource('find_location')) map?.getSource('find_location').setData(findLocationGeoJson);
+			map.moveLayer(`find_location_layer`);
+
+			map.jumpTo({
+				center: {
+					lng: stateApp.findLocation.location[0],
+					lat: stateApp.findLocation.location[1],
+				},
+				zoom: 17,
+			});
+
+			setStateApp(state => ({
+				...state,
+				searchLoader: false,
+			}));
+		}
+	}, [map, stateApp.findLocation]);
+
+	useEffect(() => {
+		if (map && stateApp.landGridListFromSearch && stateApp.landGridListFromSearch.length > 0) {
+			const findBounds = shape => {
+				if (gjv.valid(shape)) {
+					const bbox = turf.bbox(shape);
+					return {
+						minLong: bbox[0],
+						minLat: bbox[1],
+						maxLong: bbox[2],
+						maxLat: bbox[3],
+					};
+				}
+				return null;
+			};
+
+			const formatIt = mdata => ({
+				type: 'FeatureCollection',
+				features: mdata.map(feature => ({
+					type: 'Feature',
+					...JSON.parse(feature.shape),
+				})),
+			});
+
+			setStateApp(state => ({
+				...state,
+				searchLoader: false,
+				fitBounds: findBounds(formatIt(stateApp.landGridListFromSearch)),
+			}));
+		}
+	}, [map, stateApp.landGridListFromSearch]);
+
+	useEffect(() => {
+		if (map && stateApp.toggleZoomOut) {
+			if (stateApp.toggleZoomOut === true) {
+				map.jumpTo({
+					center: stateApp.defaultMapVars.center,
+					zoom: stateApp.defaultMapVars.zoom,
+					pitch: stateApp.defaultMapVars.pitch,
+					bearing: stateApp.defaultMapVars.bearing,
+				});
+
+				// let flying = null;
+
+				// map.on('flystart', () => {
+				// 	flying = true;
+				// });
+
+				// map.on('flyend', () => {
+				// 	flying = false;
+				// });
+
+				// map.on('moveend', () => {
+				// 	if (flying) {
+				// 		setStateApp(stateApp => ({
+				// 			...stateApp,
+				// 			mapVars: {
+				// 				...stateApp.mapVars,
+				// 				zoom: map.getZoom(),
+				// 				center: map.getCenter(),
+				// 				pitch: map.getPitch(),
+				// 				bearing: map.getBearing(),
+				// 			},
+				// 		}));
+				// 		map.fire('flyend');
+				// 	}
+				// });
+
+				setStateApp(stateApp => ({ ...stateApp, toggleZoomOut: null }));
+			}
+		}
+	}, [stateApp.toggleZoomOut]);
+
+	useEffect(() => {
+		// use effect to toggle the map into a 3d state
+
+		if (map && stateApp.toggle3d) {
+			if (stateApp.toggle3d === true) {
+				if (map.getPitch() === 0 && map.getBearing() === 0) {
+					map.setPitch(70);
+					map.setBearing(20);
+				} else {
+					map.setPitch(0);
+					map.setBearing(0);
+				}
+				setStateApp(stateApp => ({
+					...stateApp,
+					mapVars: {
+						...stateApp.mapVars,
+						zoom: map.getZoom(),
+						center: map.getCenter(),
+						pitch: map.getPitch(),
+						bearing: map.getBearing(),
+					},
+				}));
+				setStateApp(stateApp => ({ ...stateApp, toggle3d: null }));
+			}
+		}
+	}, [stateApp.toggle3d]);
+
+	return (
+		<div className={classes.mapWrapper}>
+			<div className={classes.map} style={{ width }} ref={mapEl} id="map">
+				{map ? <DefaultFiltersTest /> : null}
+				<div className={classes.footerLeftLogo}>
+					<img src="icons/M1LogoWhiteTransparent.png" alt="logo" width="150" />
+				</div>
+			</div>
+
+			<DeckGL hideShape={hideShape} />
+			<SpeedDialComponent expandedPanel={expandedPanel} openSpeedDial={openSpeedDial} />
+			<MapControls />
+			<ZoomFault zoomFaultStatus={stateApp.zoomFault} />
+			<HugeRequest />
+
+			<MapGridCardProvider />
+		</div>
+	);
+}
+
+export default React.memo(Map);

@@ -240,7 +240,7 @@ export const handleLayerChangeOnQtr = (stateApp, layerData, qtrQtr, qtr) => {
     let layerDataCopy = copy(layerData)
 
     let newShape = {}
-    const drawFeature = stateApp?.draw?.getAll()?.features[0]
+    const drawFeature = window.drawRef?.getAll()?.features[0]
     if (drawFeature) {
         feature.geometry = drawFeature.geometry
         newShape = getDrawAdustedShape(feature, values)

@@ -1,444 +1,231 @@
-import React, { useContext, useEffect, useState, Fragment, useRef } from "react";
-import { useMutation, useLazyQuery } from "@apollo/client";
-import { get } from "lodash";
-import union from "@turf/union";
-// STATE MANAGEMENT
-import { MapControlsContext } from "components/MapControls/MapControlsContext";
-import { AppContext } from "AppContext";
-// STYLES - Material UI Required Components
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
-// COMPONENTS
-import ShapeActionsPopup from "../popup/ShapeActionsPopup";
-import DrawShapePopup from "../popup/DrawShapesPopup";
-import ShapeAOIPopup from "../popup/ShapeAOIPopup";
-// HELPERS
-import { addCustomShapeProperties } from "./drawShapesHelpers";
-import { makeStyles } from "@material-ui/core";
-import IconButton from "@material-ui/core/IconButton";
-import Tooltip from "@material-ui/core/Tooltip";
+import React, { useEffect, Fragment, useRef } from 'react';
+import { useMutation } from '@apollo/client';
+import { get } from 'lodash';
 
-import { UPSERTCUSTOMLAYER } from "graphQL/useMutationUpsertCustomLayer";
-import { USERBYEMAIL } from "graphQL/useQueryUserByEmail";
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import { makeStyles } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import CloseIcon from '@material-ui/icons/Close';
+import { useDispatch } from 'react-redux';
 
-import CloseIcon from "@material-ui/icons/Close";
-import { useDispatch } from "react-redux";
-import { setMapGridCardState } from "actions";
-import { clearMapAndCloseShapeActionsPopup, setFeatureProperty, drawShapeLayerToggle } from "components/MapControls/commonHelper";
+import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
+import { globalStateController } from 'hookstate/globalStateController';
+import { popupController } from 'hookstate/popupStateController';
+import { drawController } from 'hookstate/drawStateController';
+import ShapeAOIPopup from '../popup/ShapeAOIPopup';
+import DrawShapePopup from '../popup/DrawShapesPopup';
+import ShapeActionsPopup from '../popup/ShapeActionsPopup';
+import { mapControlsController } from 'hookstate/mapControlsController';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   mapOverlay: {
-    position: "fixed",
-    minWidth: "320px",
-    bottom: "20px",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    background: "rgba(1, 17, 51, 1.0)",
-    color: "#fff",
-    borderRadius: "25px",
+    position: 'fixed',
+    minWidth: '320px',
+    bottom: '20px',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    background: 'rgba(1, 17, 51, 1.0)',
+    color: '#fff',
+    borderRadius: '25px',
   },
   mapOverlayInner: {
-    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
-    borderRadius: "3px",
-    padding: "10px 20px",
+    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+    borderRadius: '3px',
+    padding: '10px 20px',
   },
   popUp: {
-    minWidth: "320px",
-    padding: "10px 20px",
-    borderRadius: "15px",
-    backgroundColor: "#ffffff",
+    minWidth: '320px',
+    padding: '10px 20px',
+    borderRadius: '15px',
+    backgroundColor: '#ffffff',
   },
   content: {
-    flexDirection: "row",
-    display: "flex",
-    placeContent: "center space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    display: 'flex',
+    placeContent: 'center space-between',
+    alignItems: 'center',
   },
   label: {
-    margin: "0 10px",
-    fontWeight: "bold",
+    margin: '0 10px',
+    fontWeight: 'bold',
   },
   actions: {
-    display: "flex",
-    alignItems: "center",
-    marginLeft: "20px",
-    "& button": {
-      marginLeft: "5px",
-      marginRight: "5px",
+    display: 'flex',
+    alignItems: 'center',
+    marginLeft: '20px',
+    '& button': {
+      marginLeft: '5px',
+      marginRight: '5px',
     },
-    "& svg": {
-      color: "#fff",
-      "&:hover": {
-        color: "rgb(102 146 202)",
+    '& svg': {
+      color: '#fff',
+      '&:hover': {
+        color: 'rgb(102 146 202)',
       },
-      "&.selected": {
-        color: "rgb(102 146 202)",
+      '&.selected': {
+        color: 'rgb(102 146 202)',
       },
     },
   },
   disableAction: {
-    "& svg": {
-      color: "#717171",
+    '& svg': {
+      color: '#717171',
     },
   },
   selectedAction: {
-    "& svg": {
-      color: "rgb(102 146 202)",
+    '& svg': {
+      color: 'rgb(102 146 202)',
     },
   },
   whiteText: {
-    color: "#fff",
-    "&:hover": {
-      color: "rgb(102 146 202)",
+    color: '#fff',
+    '&:hover': {
+      color: 'rgb(102 146 202)',
     },
   },
   gray: {
-    color: "#777",
-    "&:hover": {
-      color: "#777",
+    color: '#777',
+    '&:hover': {
+      color: '#777',
     },
-    "& svg": {
-      color: "#777",
-      "&:hover": {
-        color: "#777",
+    '& svg': {
+      color: '#777',
+      '&:hover': {
+        color: '#777',
       },
-      "&.selected": {
-        color: "#777",
+      '&.selected': {
+        color: '#777',
       },
     },
-    "& svg.close": {
-      color: "#fff",
-      "&:hover": {
-        color: "rgb(102 146 202)",
+    '& svg.close': {
+      color: '#fff',
+      '&:hover': {
+        color: 'rgb(102 146 202)',
       },
     },
   },
   clearAction: {
-    color: "rgb(102 146 202)",
+    color: 'rgb(102 146 202)',
   },
   footer: {
-    margin: "5px 0",
+    margin: '5px 0',
   },
   divider: {
-    borderRight: "1px solid",
-    backgroundColor: "white",
-    height: "20px",
+    borderRight: '1px solid',
+    backgroundColor: 'white',
+    height: '20px',
     opacity: 0.8,
-    margin: "5px",
+    margin: '5px',
   },
   multiSelectCheck: {
-    display: "flex",
-    alignItems: "center",
-    "& button": {
-      marginLeft: "5px",
-      marginRight: "5px",
+    display: 'flex',
+    alignItems: 'center',
+    '& button': {
+      marginLeft: '5px',
+      marginRight: '5px',
     },
-    "& svg": {
-      color: "green",
+    '& svg': {
+      color: 'green',
     },
   },
   buttonContainer: {
-    display: "flex",
-    backgroundColor: "#fff",
-    justifyContent: "space-evenly",
+    display: 'flex',
+    backgroundColor: '#fff',
+    justifyContent: 'space-evenly',
   },
   button: {
-    width: "40%",
-    justifyContent: "space-evenly",
-    backgroundColor: "light gray",
-    color: "dark gray",
+    width: '40%',
+    justifyContent: 'space-evenly',
+    backgroundColor: 'light gray',
+    color: 'dark gray',
   },
   modalContainer: {
-    background: "white",
-    width: "500px",
-    textAlign: "center",
-    padding: "15px",
-    position: "absolute",
-    left: "50%",
-    top: "50%",
-    transform: "translate(-50%, -50%)",
+    background: 'white',
+    width: '500px',
+    textAlign: 'center',
+    padding: '15px',
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%, -50%)',
   },
   parcelPopover: {
-    "& .MuiPopover-paper": {
-      left: "49% !important",
-      top: "auto !important",
-      bottom: "98px !important",
+    '& .MuiPopover-paper': {
+      left: '49% !important',
+      top: 'auto !important',
+      bottom: '98px !important',
     },
-    "& .Mui-disabled": {
-      paddingBottom: "10px",
-      borderBottom: "1px solid lightgrey",
+    '& .Mui-disabled': {
+      paddingBottom: '10px',
+      borderBottom: '1px solid lightgrey',
     },
-    "& .MuiMenuItem-root": {
-      "&:hover": {
-        color: "rgba(23, 170, 221, 1)",
+    '& .MuiMenuItem-root': {
+      '&:hover': {
+        color: 'rgba(23, 170, 221, 1)',
       },
     },
   },
   convertPopoverGrid: {
     paddingRight: theme.spacing(3),
-    color: "black",
+    color: 'black',
   },
   hoverGrid: {
-    "&:hover": {
-      color: 'gray'
-    }
+    '&:hover': {
+      color: 'gray',
+    },
   },
   convertPopover: {
-    "& .MuiPopover-paper": {
-      left: "47% !important",
-      top: "auto !important",
-      bottom: "98px !important",
+    '& .MuiPopover-paper': {
+      left: '47% !important',
+      top: 'auto !important',
+      bottom: '98px !important',
     },
-    "& .Mui-disabled": {
-      paddingBottom: "10px",
-      borderBottom: "1px solid lightgrey",
+    '& .Mui-disabled': {
+      paddingBottom: '10px',
+      borderBottom: '1px solid lightgrey',
     },
-    "& .MuiMenuItem-root": {
-      "&:hover": {
-        color: "gray",
+    '& .MuiMenuItem-root': {
+      '&:hover': {
+        color: 'gray',
       },
     },
   },
   convertMenuColor: {
     color: 'black',
-    "&:hover": {
-      color: theme.palette.info.main
-    }
+    '&:hover': {
+      color: theme.palette.info.main,
+    },
   },
-  downloadIcon: { width: "30px", height: "28px", },
-  contactIcon: { width: "35px", height: "20px", },
+  downloadIcon: { width: '30px', height: '28px' },
+  contactIcon: { width: '35px', height: '20px' },
   areaExceed: {
-    fontSize: 16, marginTop: 10
-  }
+    fontSize: 16,
+    marginTop: 10,
+  },
 }));
 
-export default function DrawShapes() {
+const AddShapePopup = ({ onlyAddShape, upsertCustomLayer }) => {
   const dispatch = useDispatch();
   const classes = useStyles();
-  const [showSpatialDataCard, toggleSpatialDataCard] = useState(false);
-  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const [upsertCustomLayer, { data: customLayerInsertedData }] = useMutation(UPSERTCUSTOMLAYER);
 
-  const eventsConfiguredRef = useRef(false);
+  const { drawStateValues } = drawController.useState(['currentFeature', 'showDataCard'], 'drawStateValues');
 
-  const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
+  const actionClose = (...props) => drawController.actionClose(dispatch, ...props);
 
-  const [user, setUser] = useState({ _id: "" });
+  const isAOI = drawStateValues.currentFeature?.properties?.sdType === 'interest';
 
-  useEffect(() => {
-    const customLayer = get(customLayerInsertedData, "upsertCustomLayer.customLayer");
-    if (customLayer) {
-      setStateApp((state) => ({
-        ...state,
-        selectedAoi: customLayer,
-      }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [customLayerInsertedData]);
+  return (
+    <>
+      {/* --------------------------- for edit/create AOI -------------------------- */}
+      {drawStateValues.showDataCard && isAOI && <ShapeAOIPopup upsertCustomLayer={upsertCustomLayer} />}
 
-  useEffect(() => {
-    const { selectedUserDefinedLayer, showShapeActionsPopup, selectedParcel, selectedShape } = stateApp;
-    if (selectedUserDefinedLayer) {
-      setStateApp((state) => ({
-        ...state,
-        currentFeature: selectedUserDefinedLayer,
-        // selectedParcel: selectedUserDefinedLayer.source === 'parcels_source' ? selectedUserDefinedLayer : null,
-        selectedAoi: ["interests_source", "area of interest_source"].includes(selectedUserDefinedLayer.source) ? selectedUserDefinedLayer : null,
-      }));
-      if (
-        ["interests_source", "area of interest_source"].includes(selectedUserDefinedLayer.source) &&
-        showShapeActionsPopup === true &&
-        selectedParcel === null &&
-        selectedShape === null
-      ) {
-        toggleSpatialDataCard(true);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stateApp.selectedUserDefinedLayer]);
-
-  useEffect(() => {
-    if (stateApp && stateApp.user && stateApp.user.email) {
-      getUserByEmail({
-        variables: {
-          userEmail: stateApp.user.email,
-        },
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stateApp.user.email]);
-
-  useEffect(() => {
-    if (dataUser && dataUser.userByEmail) {
-      setUser(dataUser.userByEmail);
-    }
-  }, [dataUser]);
-
-  useEffect(() => {
-    if (!eventsConfiguredRef.current) {
-      const { map } = stateApp;
-
-      map.on("draw.update", ({ features, action }) => {
-        if (action === "move" || action === "change_coordinates") {
-          const [feature] = features;
-          // Don't run when shape is in rotate state
-          if (feature?.properties?.isrotate) {
-            return
-          }
-          const { draw } = stateApp;
-          if (feature) {
-            addCustomShapeProperties(feature, draw);
-          }
-          setStateApp((stateApp) => {
-            return {
-              ...stateApp,
-              popupOpen: false,
-              currentFeature: feature,
-              featureOrMapShape: feature,
-              editDraw: true,
-            };
-          });
-        }
-      });
-
-      map.on("draw.create", ({ features }) => {
-        const [feature] = features;
-        const { draw } = stateApp;
-        if (feature) {
-          addCustomShapeProperties(feature, draw);
-        }
-        setFeatureProperty(draw, feature.id, "shapeEdit", false);
-
-        let currentFeature = feature;
-        setStateApp((state) => {
-
-          drawShapeLayerToggle(state, state.lastSelectedDrawMode === "draw_polygon" ? "visible" : "none");
-          if (state.reDrawShape) {
-            state.currentFeature.geometry = feature.geometry
-          }
-          else if (state.currentFeature && !state.reDrawShape) {
-            const newFeature = union(feature, state.currentFeature);
-            state.currentFeature.geometry = newFeature.geometry
-            state.enableEdit = true
-          }
-          currentFeature = state?.currentFeature ? state.currentFeature : feature;
-          return { ...state, editDraw: false, showShapeActionsPopup: true, currentFeature, reDrawShape: false }
-        });
-        setTimeout(() => {
-
-          setStateApp((state) => {
-            draw.deleteAll();
-            draw.add(currentFeature)
-            addCustomShapeProperties(currentFeature, draw);
-            setFeatureProperty(draw, currentFeature.id, "shapeEdit", false);
-            draw.changeMode("simple_select");
-            // isDrawing: false
-            return { ...state, currentFeature }
-
-          });
-        }, 10);
-      });
-
-      map.on("draw.selectionchange", ({ features }) => {
-        const [feature] = features;
-        // Don't run when shape is in rotate state
-        if (feature?.properties?.isrotate) {
-          return
-        }
-        if (feature && !feature.id.includes("edit_polygon")) {
-          setStateApp((stateApp) => {
-            let currentFeature = feature;
-            // if (stateApp.currentFeature) {
-            //   currentFeature = union(feature, stateApp.currentFeature);
-            //   currentFeature.id = stateApp.currentFeature.id
-            //   currentFeature.properties.id = stateApp.currentFeature.id;
-            // }
-            return {
-              ...stateApp,
-              // popupOpen: false,
-              currentFeature,
-              featureOrMapShape: currentFeature,
-            };
-          });
-        }
-        // else {
-        //   setStateApp((state) => {
-        //     return {
-        //       ...state,
-        //       editDraw: false,
-        //     };
-        //   });
-        // }
-        setStateApp((stateApp) => {
-          // if (!stateApp.shapeEdit) {
-          //   stateApp.draw.changeMode("static");
-          // } else if (stateApp.draw.get(stateApp.currentFeature?.id) || stateApp.draw.get(stateApp.featureOrMapShape?.id)) {
-          //   stateApp.draw.changeMode("direct_select", {
-          //     featureId: stateApp?.currentFeature?.id || stateApp?.featureOrMapShape?.id,
-          //   });
-          // }
-          const { features } = stateApp.draw.getAll();
-          drawShapeLayerToggle(stateApp, stateApp.shapeEdit || !features ||
-            features.length === 0 || stateApp.lastSelectedDrawMode === "draw_polygon" ? "visible" : "none");
-          return stateApp;
-        });
-      });
-
-      eventsConfiguredRef.current = true;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stateApp.map, stateApp.currentFeature]);
-
-  // useEffect(() => {
-  //   setStateApp((state) => ({ ...state, editDraw: !!stateApp.currentFeature }));
-  // }, [setStateApp, stateApp.currentFeature]);
-
-  const actionClose = (additionalProps = {}) => {
-    clearMapAndCloseShapeActionsPopup(stateApp, setStateApp);
-
-    // Removing layer of AOI Label
-    if (stateApp.map.getLayer("aoi_label_layer")) {
-      stateApp.map.removeLayer("aoi_label_layer");
-    }
-    setStateApp((state) => ({
-      ...state,
-      gridPolygonString: "",
-      selectedAoi: null,
-      shapeEditMode: state.shapeEditMode === 'redraw' ? "" : state.shapeEditMode,
-      shapeGridWellsCount: 0,
-      shapeGridOwnersCount: 0,
-      changeDrawShapeType: false,
-      reDrawShape: false,
-      currentFeature: state.showAddShapePopup ? undefined : state.currentFeature,
-      showAddShapePopup: false,
-      ...additionalProps
-    }));
-    dispatch(
-      setMapGridCardState({
-        mapGridCardActiveTap: 0,
-      })
-    );
-    toggleSpatialDataCard(false);
-  };
-
-  const handleClose = () => {
-    setStateMapControls({ ...stateMapControls, anchorEl: null });
-  };
-
-  const renderAddShapePopup = (onlyAddShape) => (
-    <Fragment>
-      {showSpatialDataCard &&
-        stateApp.currentFeature?.properties?.sdType === "interest" && ( // for edit/create AOI
-          <ShapeAOIPopup upsertCustomLayer={upsertCustomLayer} user={user} toggleSpatialDataCard={toggleSpatialDataCard} />
-        )}
       <div className={classes.mapOverlay}>
         <div className={classes.mapOverlayInner}>
           <div className={classes.content}>
             <ShapeActionsPopup
               classes={classes}
-              selectedFeature={stateApp.currentFeature}
-              toggleSpatialDataCard={toggleSpatialDataCard}
-              showSpatialDataCard={showSpatialDataCard}
+              selectedFeature={drawStateValues.currentFeature}
               popupCloseAction={actionClose}
               onlyAddShape={onlyAddShape}
             >
@@ -453,43 +240,147 @@ export default function DrawShapes() {
           </div>
         </div>
       </div>
-    </Fragment>
-  )
+    </>
+  );
+};
 
-  return (
-    <Fragment>
-      {((stateApp.showDrawShapesPopup && !stateApp.currentFeature) || (stateApp.changeDrawShapeType) || stateApp.reDrawShape) && (
-        <ClickAwayListener onClickAway={handleClose}>
-          <div className={classes.mapOverlay}>
-            <div className={classes.mapOverlayInner}>
-              <div className={classes.content}>
-                <DrawShapePopup handleClose={handleClose} classes={classes}>
-                  <span className={classes.clearAction}>
-                    <Tooltip title="Close">
-                      <IconButton size="small" onClick={actionClose} aria-label="Close" className={classes.clearAction}>
-                        <CloseIcon className="close" fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </span>
-                </DrawShapePopup>
-              </div>
+export default function DrawShapes() {
+  const dispatch = useDispatch();
+  const classes = useStyles();
+  const [upsertCustomLayer, { data: customLayerInsertedData }] = useMutation(UPSERTCUSTOMLAYER);
+
+  const { mapReady, globalStateValues } = globalStateController.useState(['mapReady'], 'globalStateValues');
+  const popupState = popupController.useState(['selectedUserDefinedLayer', 'selectedParcel', 'selectedShape']);
+  const drawState = drawController.useState([
+    'showShapeActionsPopup',
+    'currentFeature',
+    'showAddShapePopup',
+    'lastSelectedDrawMode',
+    'reDrawShape',
+    'shapeEdit',
+    'shapeEditMode',
+    'showDrawShapesPopup',
+    'changeDrawShapeType',
+    'editDraw',
+  ]);
+  const drawStateValues = drawState.stateValues;
+
+  const eventsConfiguredRef = useRef(false);
+
+  useEffect(() => {
+    const customLayer = get(customLayerInsertedData, 'upsertCustomLayer.customLayer');
+
+    if (!customLayer) return;
+
+    drawController.updateState({
+      selectedAoi: customLayer,
+    });
+  }, [customLayerInsertedData]);
+
+  useEffect(() => {
+    const { showShapeActionsPopup } = drawStateValues;
+    const { selectedUserDefinedLayer, selectedParcel, selectedShape } = popupState.stateValues;
+
+    if (!selectedUserDefinedLayer) return;
+
+    const isAOI = ['interests_source', 'area of interest_source'].includes(selectedUserDefinedLayer.source);
+
+    drawController.updateState({
+      currentFeature: selectedUserDefinedLayer,
+      selectedAoi: isAOI ? selectedUserDefinedLayer : null,
+    });
+
+    if (isAOI && showShapeActionsPopup && !selectedParcel && !selectedShape) drawController.setShowDataCard(true);
+  }, [popupState.selectedUserDefinedLayer]);
+
+  useEffect(() => {
+    if (!globalStateValues.mapReady) return;
+
+    if (eventsConfiguredRef.current) return;
+
+    /* ------------------------------ Run Only Once ----------------------------- */
+
+    window.mapRef?.on('draw.update', drawController.drawUpdateListener);
+
+    window.mapRef?.on('draw.create', drawController.drawCreateListener);
+
+    window.mapRef?.on('draw.selectionchange', drawController.drawSelectionChangeListener);
+
+    eventsConfiguredRef.current = true;
+  }, [drawState.currentFeature, mapReady]);
+
+  const actionClose = (...props) => drawController.actionClose(dispatch, ...props);
+
+  const handleClose = () => mapControlsController.updateState({ anchorEl: null });
+
+  const { currentFeature } = drawStateValues;
+
+  const showDrawShapePopup =
+    (drawStateValues.showDrawShapesPopup && !currentFeature) ||
+    drawStateValues.changeDrawShapeType ||
+    drawStateValues.reDrawShape;
+
+  const showAddAndEditShapePopup =
+    (drawStateValues.editDraw || drawStateValues.showShapeActionsPopup) &&
+    currentFeature &&
+    !drawStateValues.changeDrawShapeType &&
+    !drawStateValues.reDrawShape &&
+    !currentFeature.id?.includes('draw_polygon') &&
+    !currentFeature.id?.includes('drag_circle') &&
+    !currentFeature.id?.includes('draw_rectangle') &&
+    !currentFeature.id?.includes('edit_polygon');
+
+  if (!globalStateValues.mapReady) return null;
+
+  if (showDrawShapePopup)
+    return (
+      <ClickAwayListener onClickAway={handleClose}>
+        <div className={classes.mapOverlay}>
+          <div className={classes.mapOverlayInner}>
+            <div className={classes.content}>
+              <DrawShapePopup handleClose={handleClose} classes={classes}>
+                <span className={classes.clearAction}>
+                  <Tooltip title="Close">
+                    <IconButton size="small" onClick={actionClose} aria-label="Close" className={classes.clearAction}>
+                      <CloseIcon className="close" fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </span>
+              </DrawShapePopup>
             </div>
           </div>
-        </ClickAwayListener>
-      )}
-      {(stateApp.editDraw || stateApp.showShapeActionsPopup) &&
-        stateApp.currentFeature !== undefined &&
-        !stateApp.changeDrawShapeType &&
-        !stateApp.reDrawShape &&
-        !stateApp.currentFeature.id?.includes("draw_polygon") &&
-        !stateApp.currentFeature.id?.includes("drag_circle") &&
-        !stateApp.currentFeature.id?.includes("draw_rectangle") &&
-        !stateApp.currentFeature.id?.includes("edit_polygon") ? (
-        renderAddShapePopup()
-      ) : null}
-      {stateApp.showAddShapePopup ? (
-        renderAddShapePopup(true)
-      ) : null}
-    </Fragment>
-  );
+        </div>
+      </ClickAwayListener>
+    );
+
+  if (showAddAndEditShapePopup || drawStateValues.showAddShapePopup)
+    return <AddShapePopup onlyAddShape={!!drawStateValues.showAddShapePopup} upsertCustomLayer={upsertCustomLayer} />;
+
+  return null;
+
+  // return (
+  // 	<>
+  // 		{showDrawShapePopup && (
+  // 			<ClickAwayListener onClickAway={handleClose}>
+  // 				<div className={classes.mapOverlay}>
+  // 					<div className={classes.mapOverlayInner}>
+  // 						<div className={classes.content}>
+  // 							<DrawShapePopup handleClose={handleClose} classes={classes}>
+  // 								<span className={classes.clearAction}>
+  // 									<Tooltip title="Close">
+  // 										<IconButton size="small" onClick={actionClose} aria-label="Close" className={classes.clearAction}>
+  // 											<CloseIcon className="close" fontSize="small" />
+  // 										</IconButton>
+  // 									</Tooltip>
+  // 								</span>
+  // 							</DrawShapePopup>
+  // 						</div>
+  // 					</div>
+  // 				</div>
+  // 			</ClickAwayListener>
+  // 		)}
+  // 		{showAddAndEditShapePopup && <AddShapePopup upsertCustomLayer={upsertCustomLayer} />}
+  // 		{drawStateValues.showAddShapePopup && <AddShapePopup onlyAddShape upsertCustomLayer={upsertCustomLayer} />}
+  // 	</>
+  // );
 }

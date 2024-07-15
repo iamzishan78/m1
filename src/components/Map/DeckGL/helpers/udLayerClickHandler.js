@@ -1,0 +1,125 @@
+import polylabel from 'polylabel';
+import * as turf from '@turf/turf';
+
+import {
+	ifDefaultIdentifier,
+	ifGenericShapeIdentifier,
+} from 'components/Shared/functions/shapeLayer';
+import { popupController } from 'hookstate/popupStateController';
+import { drawController } from 'hookstate/drawStateController';
+import { layerController } from 'hookstate/layerStateController';
+import { findBoundsMap } from 'components/MapControls/commonHelper';
+
+const udLayerClickHandler = (feature, stateLayer) => {
+	const history = layerController.getValue('history');
+
+	let selectedUserDefinedLayer;
+	selectedUserDefinedLayer = {
+		...feature,
+	};
+
+	const { isDrawing, editDraw, showDrawShapesPopup, shapeEditMode } =
+		drawController.getValues([
+			'isDrawing',
+			'editDraw',
+			'showDrawShapesPopup',
+			'shapeEditMode',
+		]);
+
+	if (isDrawing) return;
+
+	let popupStateVal;
+	let isFileLayer = false;
+
+	if (ifGenericShapeIdentifier(feature.identifier)) {
+		const newPath = `/map/${feature.identifier.toLowerCase()}/${feature.properties.id}`;
+		if (history?.location.pathname !== newPath) history?.replace(newPath);
+
+		popupStateVal = {
+			expandedCard: true,
+			selectedShape: { ...feature.properties, feature: selectedUserDefinedLayer },
+		};
+	} else if (feature.identifier === 'Parcels') {
+		popupStateVal = {
+			expandedCard: true,
+			selectedParcel: { ...feature.properties, feature: selectedUserDefinedLayer },
+		};
+	} else if (['Interests', 'Area of Interest'].includes(feature.identifier)) {
+		let drawStateVal;
+
+		popupStateVal = {
+			selectedUserDefinedLayer,
+		};
+
+		if (!editDraw) {
+			drawStateVal = {
+				editDraw: true,
+				showShapeActionsPopup: true,
+				showDrawShapesPopup: !showDrawShapesPopup,
+			};
+		} else {
+			drawController.reset();
+		}
+
+		if (drawStateVal) drawController.updateState(drawStateVal);
+	} else {
+		// For user defined layers details popup
+		let shapeCenter;
+		const featureLayer = { ...feature.layer, ...stateLayer };
+		if (
+			(featureLayer.layerGeometry === 'LineString' &&
+				feature.geometry.type === 'LineString') ||
+			(featureLayer.layerGeometry === 'MultiLineString' &&
+				feature.geometry.type === 'LineString')
+		) {
+			const lineLength = turf.length(feature.geometry, { units: 'miles' });
+			const lineCenterGeometry = turf.along(feature.geometry, lineLength / 2, {
+				units: 'miles',
+			});
+			shapeCenter = lineCenterGeometry.geometry.coordinates;
+		} else if (
+			(featureLayer.layerGeometry === 'Circle' &&
+				feature.geometry.type === 'MultiPolygon') ||
+			(featureLayer.layerGeometry === 'Point' &&
+				feature.geometry.coordinates.length === 2)
+		) {
+			shapeCenter = feature.geometry.coordinates;
+		} else if (
+			featureLayer.layerGeometry === 'Polygon' &&
+			feature.geometry.type === 'Polygon'
+		) {
+			shapeCenter = polylabel(feature.geometry.coordinates);
+		} else {
+			shapeCenter = turf.centroid(feature.geometry)?.geometry?.coordinates;
+		}
+		selectedUserDefinedLayer = {
+			...feature,
+			properties: {
+				...feature.properties,
+				shapeCenter,
+			},
+			layer: featureLayer,
+			geometry: feature.geometry || feature._geometry,
+		};
+		feature = selectedUserDefinedLayer;
+
+		isFileLayer = true
+		popupStateVal = {
+			selectedUserDefinedLayer,
+		};
+	}
+
+	if (
+		(!showDrawShapesPopup || ifDefaultIdentifier(feature.identifier)) &&
+		shapeEditMode !== 'redraw'
+	)
+		popupController.createUDPopUp(feature.properties);
+
+	if (!isFileLayer)
+		findBoundsMap([feature], window.mapRef);
+	popupController.setState(popupStateVal);
+
+	window.mapRef?.resize();
+};
+
+export default udLayerClickHandler;

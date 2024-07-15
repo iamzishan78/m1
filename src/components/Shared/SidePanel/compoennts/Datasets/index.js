@@ -15,8 +15,6 @@ import { copy } from "components/Shared/functions";
 
 import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem, } from "../style";
 import { AppContext } from "AppContext";
-import { useDispatch } from "react-redux";
-import { setMapGridCardState } from "actions";
 import { snapGridSideBarData } from "components/MapGridCard/components/data";
 import { GET_DATASETS } from "graphQL/useQueryDataset";
 import { USER_MAP_SETTINGS_QUERY } from "graphQL/useQueryUserMapSettings";
@@ -24,9 +22,8 @@ import { scrollbarStyle } from "styles/common";
 import DatasetMenu from "./Menu";
 import { UPDATEMANYLAYERSETTINGS } from "graphQL/useMutationUpdateManyLayerSettings";
 import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
-import { MapControlsContext } from "components/MapControls/MapControlsContext";
-import { hookStateApp } from "hookstate";
-
+import { mapControlsController } from "hookstate/mapControlsController";
+import { globalState } from "hookstate/initialStates";
 
 const useStyles = makeStyles((theme) => ({
     root: (props) => ({
@@ -98,18 +95,13 @@ const useStyles = makeStyles((theme) => ({
 const DatasetsMemo = memo(Datasets);
 export default function DatasetsContainer(props) {
     const [stateApp, setStateApp] = useContext(AppContext);
-
-    const setStateAppCallback = useCallback(setStateApp, [])
-    const stateAppMemo = useMemo(() => ({ layers: stateApp.layers, user: stateApp.user, selectedDataset: stateApp.selectedDataset }), [stateApp])
-
-    return <DatasetsMemo stateApp={stateAppMemo} setStateApp={setStateAppCallback} {...props} />
+    const setStateAppCallback = useCallback(setStateApp, [setStateApp])
+    const stateAppMemo = useMemo(() => ({ layers: stateApp.layers, user: stateApp.user }), [stateApp.layers, stateApp.user])
+    return <DatasetsMemo stateApp={stateAppMemo} setStateApp={setStateAppCallback} headerButton={props.headerButton} search={props.search} />
 }
 
 function Datasets({ headerButton, search, stateApp, setStateApp }) {
-
     const classes = useStyles();
-    const [_, setStateMapControls] = useContext(MapControlsContext);
-    const dispatch = useDispatch();
 
     const [getDatasets, { data: _datasets }] = useLazyQuery(GET_DATASETS);
     const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
@@ -157,23 +149,21 @@ function Datasets({ headerButton, search, stateApp, setStateApp }) {
             return []
     }, [_datasets, mapSettings, search, changedDataset])
 
-    const getBorderColor = useCallback((name) => (stateApp?.selectedDataset?.sourceName === name ? '#05aff0' : '#263451'), [stateApp.selectedDataset])
+    const { selectedDataset, mapControlsStateValues } = mapControlsController.useState(['selectedDataset'], 'mapControlsStateValues');
+
+    const getBorderColor = useCallback((name) => (mapControlsStateValues.selectedDataset?.sourceName === name ? '#05aff0' : '#263451'), [selectedDataset])
 
     const onItemClick = (dataset) => {
-        dispatch(setMapGridCardState({ mapGridCardActivated: false }));
-        if (dataset.sourceName === 'M1 Platform' && stateApp?.selectedDataset?.sourceName !== dataset.sourceName) {
-            setStateApp((state) => ({ ...state, layerGridCard: false }));
-            dispatch(setMapGridCardState({ mapGridCardActivated: true }));
+        const stateToUpdate = { mapGridCardActivated: false, selectedDataset: dataset };
+        if (dataset.sourceName === 'M1 Platform' && mapControlsStateValues.selectedDataset?.sourceName !== dataset.sourceName) {
+            stateToUpdate.layerGridCard = false;
+            stateToUpdate.mapGridCardActivated = true;
         } else {
-            setStateApp((state) => ({
-                ...state,
-                selectedLayer: { ...dataset.categories[0] },
-                layerGridCard: true,
-            }));
-            dispatch(setMapGridCardState({ mapGridCardActivated: true }));
+            stateToUpdate.selectedLayer = { ...dataset.categories[0] };
+            stateToUpdate.layerGridCard = true;
+            stateToUpdate.mapGridCardActivated = true;
         }
-
-        setStateApp((state) => ({ ...state, selectedDataset: dataset }))
+        mapControlsController.updateState(stateToUpdate);
     }
 
     const handleRemove = (dataset, value) => {
@@ -181,14 +171,14 @@ function Datasets({ headerButton, search, stateApp, setStateApp }) {
         setChangedDataset({ ...dataset })
 
         const layersSettingsToUpdate = [];
-        hookStateApp.layers.get({ noproxy: true }).forEach((clayer, layerIndex) => {
+        globalState.layers.get({ noproxy: true }).forEach((clayer, layerIndex) => {
             if (clayer.file === dataset.file) {
                 layersSettingsToUpdate.push({
                     _id: clayer._id,
                     layerSettings: { ...clayer.layerSettings, showable: value }
                 });
 
-                hookStateApp.layers[layerIndex].merge({
+                globalState.layers[layerIndex].merge({
                     layerSettings: {
                         ...clayer.layerSettings,
                         showable: value
@@ -214,15 +204,13 @@ function Datasets({ headerButton, search, stateApp, setStateApp }) {
     }
 
     const handleTransfer = (dataset) => {
-        setStateApp((state) => ({ ...state, selectedDataset: dataset }))
-
-        setStateMapControls((stateMapControls) => ({
-            ...stateMapControls,
+        mapControlsController.updateState({
             manageSourceLayer: false,
             manageLayer: false,
             manageTransferData: true,
-            selectedLayer: null,
-        }));
+            selectedLayerControl: null,
+            selectedDataset: dataset,
+        })
     }
 
     return (
@@ -278,5 +266,3 @@ function Datasets({ headerButton, search, stateApp, setStateApp }) {
         </>
     );
 }
-
-// export default React.memo(Datasets, deepEqualObjects);

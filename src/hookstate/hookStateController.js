@@ -3,10 +3,13 @@ import { useHookstate } from '@hookstate/core';
 const statesHelper = (keys, keysVal, stateValuesKey = 'stateValues') => {
   const retObj = { [stateValuesKey]: {} };
   Object.keys(keysVal).forEach((k, index) => {
-    retObj[stateValuesKey][[keys[index]]] = keysVal[k].get({ noproxy: true });
+    Object.defineProperty(retObj[stateValuesKey], [keys[index]], {
+      get() {
+        return keysVal[k].get({ noproxy: true });
+      },
+    });
     retObj[[keys[index]]] = keysVal[k];
   });
-
   return retObj;
 };
 
