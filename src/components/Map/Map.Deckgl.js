@@ -139,7 +139,7 @@ function Map({
 	let classes = useStyles({
 		drawingCircle: stateApp.draw && stateApp.draw.getMode() === "drag_circle" ? true : false,
 		expandedPanel: mapLayersPanelExtended ? true : false,
-	  });
+	});
 
 	const dispatch = useDispatch();
 	const { searchInputValue } = useSelector(({ MapGridCard }) => MapGridCard);
@@ -775,7 +775,7 @@ function Map({
 			);
 			newMap.addControl(new mapboxgl.NavigationControl(), "top-left");
 
-			
+
 
 			/// / selecting the rect after draw
 			const CostumDrawRectangle = { ...DrawRectangle };
@@ -939,7 +939,7 @@ function Map({
 				});
 			}
 			const { filterBasin, filterAOI, filterParcel, filterDrawing } = navController.getValues(['filterBasin', 'filterAOI', 'filterParcel', 'filterDrawing'])
-			if (filterBasin || filterAOI || filterParcel || filterDrawing[1]) {
+			if (filterBasin || filterAOI || filterParcel || (filterDrawing && filterDrawing[1])) {
 				let features = [];
 				features = [
 					...features,
@@ -1246,6 +1246,14 @@ function Map({
 			}
 		}
 	}, [stateApp.toggle3d]);
+
+	useEffect(() => {
+
+		// Map will be reset if we move to another page 
+		return () => {
+			layerController.resetMap()
+		}
+	}, [])
 
 	return (
 		<div className={classes.mapWrapper}>

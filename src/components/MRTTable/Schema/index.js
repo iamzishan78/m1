@@ -15,6 +15,7 @@ import ShapesFilesGenericMeta from './shapefiles_generic_schema';
 import PropertiesMeta from './properties_schema';
 import RevenueStatementsMeta from './revenue_statements_schema';
 import ContactWellInterestMeta from "./contact_well_Interest_schema"
+import MyWellsMeta from './my_wells_schema';
 
 export const SCHEMA = {
 	ContactTable: ContactMeta,
@@ -37,4 +38,5 @@ export const SCHEMA = {
 	ShapesFilesGenericTable: ShapesFilesGenericMeta,
 	PropertiesTable: PropertiesMeta,  //main property Grid => /revenue/properties
 	RevenueStatementsTable: RevenueStatementsMeta, // Revenue Statement grid => revenue/statements
+	MyWellsTable: MyWellsMeta,
 };
