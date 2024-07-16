@@ -18,6 +18,7 @@ const layerFiltersControllerHandler = state => ({
 		const updatedVariables = {
 			...filters.variables,
 			filters: variables.filters,
+			search: variables.search
 		};
 
 		if (!deepEqual(filters.variables, updatedVariables)) {

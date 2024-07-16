@@ -85,8 +85,8 @@ const LayerControls = ({ layer, updateLayer, isHover }) => {
                 data-testid={`layer-${layer.name}-toggle`}
                 disabled={
                   !ifLayerHaveData(layer)
-                    ? classes.disabledLayerTitle
-                    : ""
+                    ? !!classes.disabledLayerTitle
+                    : false
                 }
                 checked={isChecked}
                 onChange={() => handleToggleVisibilty(layer)}

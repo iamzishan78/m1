@@ -112,8 +112,14 @@ const AgreementMeta = {
       header: 'Agreement',
       Cell: ({ row }) => {
         let value = row?.original?.shapeJson.properties.agreementNumber
+        let layer = row?.original?.layer
         value = value?.toString();
         const splitNumber = value?.split("_");
+        let link = ''
+        if (window.location.pathname.includes('/land/'))
+          link = `/land/agreement/details/${row?.original?._id}`
+        else
+          link = `/map/${layer}s/${row?.original?._id}`
         return (
           <div
             style={{
@@ -148,7 +154,7 @@ const AgreementMeta = {
                   value={splitNumber?.[0]
                     ? `${splitNumber?.[0].trim()} - ${row?.original?.shapeJson?.properties?.agreementName}`
                     : row?.original?.shapeJson?.properties?.agreementName}
-                  link={`/land/agreement/details/${row?.original?._id}`}
+                  link={link}
                   onClick={e => {
                     e.stopPropagation();
                   }}
