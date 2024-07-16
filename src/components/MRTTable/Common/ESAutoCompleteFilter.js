@@ -161,7 +161,8 @@ function ESAutoCompleteFilter({
 			id={`${id}-filter-autocomplete`}
 			options={multiple ? options?.filter(item => !filterValue.includes(item.value)) : options}
 			loading={loading}
-			value={formatValue(filterValue)}
+			filterOptions={(options) => options}
+			value={filterValue}
 			renderInput={params => (
 				<TextField
 					{...params}
