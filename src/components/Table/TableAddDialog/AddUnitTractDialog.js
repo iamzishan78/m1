@@ -130,12 +130,13 @@ function AddUnitTractDialog(props) {
       updateShapeTract({
         variables: {
           shapeTracts: [{
-            _id: selectedShapeLayer._id,
             name: selectedShapeLayer.name,
             shapeId: props.shapeId,
+            parcelId: selectedShapeLayer.parcelId,
             ...getValues(),
           }],
           shapeType: props.shapeType,
+          selectedTractToUpdate: props.seletedTract._id,
         }
       });
       setStateApp(state => ({ ...state, universalCircularLoaderAct: true }))
