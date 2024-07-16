@@ -6,6 +6,7 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 import { SCHEMA } from './Schema';
 import { useApolloClient } from '@apollo/client';
 import { globalStateController } from 'hookstate/globalStateController';
+import { copy } from '../Shared/functions/index';
 
 function Table({ tableKey, hideSharedCommentCheck }) {
 	const { tableProps, tablePropsState, classes } = useTableESSimple(tableKey);
@@ -26,7 +27,7 @@ function Table({ tableKey, hideSharedCommentCheck }) {
 function MRTTable({ tableKey, name, overrideMeta = {}, hideSharedCommentCheck = true }) {
 	const client = useApolloClient();
 	const meta = SCHEMA[name];
-	const extendedMeta = { ...meta, ...overrideMeta, ...globalStateController.getValue('cypress')?.mrtOverrideMeta };
+	const extendedMeta = { ...copy(meta), ...overrideMeta, ...globalStateController.getValue('cypress')?.mrtOverrideMeta };
 	tableKey = tableKey || name; // table key should be different if two tables with same name exist in same screen.
 	const Controller = tableController(tableKey);
 	const { reInitialized } = tableGlobalController.useState(['reInitialized']);

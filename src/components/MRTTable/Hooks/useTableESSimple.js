@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { tableController } from 'hookstate/tableController';
 import useHandleQuery from './useHandleQuery';
+import useHandleAdditionalQueries from './useHandleAdditionalQueries';
 import ToolbarActions from '../Common/ToolbarActions';
 import ToolbarInternalActions from '../Common/ToolbarInternalActions';
 import { tableESSimpleFilterModeOtions } from '../utils/data';
@@ -21,6 +22,8 @@ const useTableESSimple = tableKey => {
 		tableState,
 		tableStateValues,
 	});
+
+	useHandleAdditionalQueries({ tableKey, tableState, tableStateValues });
 
 	const useStyles = makeStyles(() => ({
 		table: tableStateValues?.tableCss || {},
