@@ -41,8 +41,7 @@ const getEmptyGroupAndLayer = (group, type) => {
 const dnd = isMobile ? TouchBackend : HTML5Backend;
 const SortableLayer = ({ mongoId, search }) => {
   const [layerMap, setLayerMap] = useState([])
-  const [panelItems, setPanelItems] = useState([])
-  const { layers, stateValues } = globalStateController.useState(['layers', 'previousLayers'])
+  const { layers, panelItems, stateValues } = globalStateController.useState(['layers', 'previousLayers', 'panelItems'])
   const [getLayerGroups, { data: layerGroupData }] = useLazyQuery(GET_LAYER_GROUPS);
 
   useEffect(() => {
@@ -50,7 +49,7 @@ const SortableLayer = ({ mongoId, search }) => {
   }, [getLayerGroups])
 
   useEffect(() => {
-    if ((stateValues?.layers?.length > 0 && panelItems.length === 0) || (layerGroupData?.getLayerGroups && !deepEqual(stateValues.layers, stateValues.previousLayers))) {
+    if (layerGroupData?.getLayerGroups && !deepEqual(stateValues.layers, stateValues.previousLayers)) {
       const hookStateAppLayers = stateValues.layers
       const layerGroups = layerGroupData?.getLayerGroups
       const groupHandled = [];
@@ -131,15 +130,15 @@ const SortableLayer = ({ mongoId, search }) => {
         globalStateController.updateState({ emptyGroups: emptyGroups.map(g => g.groupId) })
       }
 
-      setPanelItems(layerAndGroups)
+      globalStateController.updateState({ panelItems: layerAndGroups })
     }
   }, [layers, layerGroupData?.getLayerGroups])
 
   useEffect(() => {
     if (search)
-      setLayerMap(panelItems.filter((i) => (i.layerName ?? i.name).toLowerCase().includes(search.toLowerCase())))
+      setLayerMap(stateValues.panelItems.filter((i) => (i.layerName ?? i.name).toLowerCase().includes(search.toLowerCase())))
     else {
-      setLayerMap(panelItems)
+      setLayerMap(stateValues.panelItems)
     }
   }, [panelItems, search])
 
@@ -149,7 +148,7 @@ const SortableLayer = ({ mongoId, search }) => {
         (layerMap && layerMap[0]?.type ? (
           <DndProvider backend={dnd}>
             <ContextProvider>
-              {layerMap.length > 0 && <FileTree layerMap={layerMap} panelItems={panelItems} />}
+              {layerMap.length > 0 && <FileTree layerMap={layerMap} panelItems={stateValues.panelItems} />}
             </ContextProvider>
           </DndProvider>
         ) : (
