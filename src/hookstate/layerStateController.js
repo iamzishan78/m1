@@ -692,12 +692,17 @@ const layerStateControllerHandler = state => {
 				window.mapRef.moveLayer('boundary-layer');
 		},
 		changeLayerPosition: (currentLayer, beforeLayer) => {
-			if (!currentLayer || !beforeLayer) return;
+			if (!currentLayer) return;
 
-			DeckGlLayer.moveLayer(
-				`${currentLayer?.identifier}_${currentLayer._id}`,
-				`${beforeLayer?.identifier}_${beforeLayer._id}`
+			if (currentLayer && !beforeLayer) DeckGlLayer.moveLayer(
+				`${currentLayer?.identifier}_${currentLayer._id}`
 			);
+
+			else
+				DeckGlLayer.moveLayer(
+					`${currentLayer?.identifier}_${currentLayer._id}`,
+					`${beforeLayer?.identifier}_${beforeLayer._id}`
+				);
 		},
 		resetMapStates: (mapReady = false) => {
 			const rigsData = layerController.getValue('rigsData');
