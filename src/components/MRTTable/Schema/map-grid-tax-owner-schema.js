@@ -3,6 +3,7 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import IsContactCell from '../TablesOverride/TaxOwnerTable/TableCells/IsContactCell';
 import WellFlyToMap from '../TablesOverride/TaxOwnerTable/TableCells/wells_coordinates_fly_map';
 import { tableController } from 'hookstate/tableController';
+import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 
 
 
@@ -28,7 +29,7 @@ const TaxOwnerMeta = {
             accessorKey: 'id',
         },
         {
-            ...CommonSchema.COMMON_COLUMN,
+            ...CommonSchema.INITAIL_PINNED,
             name: "ownerName.keyword",
             accessorKey: 'ownerName',
             header: "Name",
