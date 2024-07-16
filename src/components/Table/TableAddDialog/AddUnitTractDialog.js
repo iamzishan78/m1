@@ -85,7 +85,7 @@ function AddUnitTractDialog(props) {
         ...state,
         universalCircularLoaderAct: false,
       }));
-      tableGlobalController.refetch()
+      tableGlobalController.refetch() // refresh MRTtable data on add or update
     }
   }, [mutationData, updateData]);
 
@@ -136,7 +136,7 @@ function AddUnitTractDialog(props) {
             ...getValues(),
           }],
           shapeType: props.shapeType,
-          selectedTractToUpdate: props.seletedTract._id,
+          selectedTractToUpdate: props.seletedTract._id, // Pass selectedTract id for replace tract with current selected tract
         }
       });
       setStateApp(state => ({ ...state, universalCircularLoaderAct: true }))

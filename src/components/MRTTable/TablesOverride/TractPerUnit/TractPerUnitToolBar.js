@@ -1,31 +1,10 @@
 import React, { memo } from 'react';
-import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import { useApolloClient } from '@apollo/client';
 import Button from '@material-ui/core/Button';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import AddUnitTractDialog from "components/Table/TableAddDialog/AddUnitTractDialog";
 
 const useStyles = makeStyles(() => ({
-	disabledTopBarButtons: {
-		fontWeight: '600',
-		color: '#fff',
-		border: '1px solid #B3B3B3',
-		'&:hover': {
-			backgroundColor: '#263451',
-			color: '#fff',
-		},
-	},
-	selectTopBarButtons: {
-		backgroundColor: 'rgba(1, 17, 51, 1)',
-		color: '#fff !important',
-		fontWeight: '600',
-		'&:hover': {
-			backgroundColor: '#263451',
-			color: '#fff !important',
-		},
-	},
-
 	multiSelectionTopBarButtons: {
 		margin: '0px 5px',
 		fontWeight: '600',
@@ -57,7 +36,6 @@ function TractPerUnitToolBar({ table, tableKey }) {
 	const tableStateValues = tableState.stateValues;
 	const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection || {})?.length ? true : false;
 	const isAllRowsSelected = table.getIsAllRowsSelected();
-	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
 
 	const { stateValues } = tableGlobalController.useState(['dialog']);

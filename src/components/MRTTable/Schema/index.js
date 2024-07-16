@@ -38,5 +38,5 @@ export const SCHEMA = {
 	ShapesFilesGenericTable: ShapesFilesGenericMeta,
 	PropertiesTable: PropertiesMeta,  //main property Grid => /revenue/properties
 	RevenueStatementsTable: RevenueStatementsMeta, // Revenue Statement grid => revenue/statements
-	UnitTractTable: UnitTractsMeta,
+	UnitTractTable: UnitTractsMeta, // UnitDetailCard => tracts
 };
