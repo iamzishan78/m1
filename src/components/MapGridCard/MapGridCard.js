@@ -14,13 +14,7 @@ import TabPanels, { TabPanel } from "components/Shared/TabPanels";
 import DockMenu from "./DockMenu";
 import ShapeGridWellsTable from "components/Table/Wells/ShapeGridWellsTable";
 import ShapeGridTaxOwnersTable from "components/Table/TaxOwners/ShapeGridTaxOwnersTable";
-import MapGridWellsTable from "components/Table/Wells/MapGridWellsTable";
-import MapGridTaxOwnersTable from "components/Table/TaxOwners/MapGridTaxOwnersTable";
-import MapGridOperatorTable from "components/Table/Operator/MapGridOperatorTable";
 import MapGridContactTable from "components/Table/Contact/MapGridContactTable";
-import MapGridUnitTable from "components/Table/Unit/MapGridUnitTable";
-import AgreementsTable from "components/Table/Agreement/AgreementsTable";
-import TractsTable from "components/Table/Tract/TractsTable";
 
 import SearchPanel from "./components/SearchPanel";
 import { platformDataInitialData, platformDataWellsInitialData, snapGridSideBarData } from "./components/data";
@@ -229,12 +223,12 @@ const TabLabels = ({ labels, value, setValue }) => {
 
 function MapGridCard(props) {
   // contexts
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
+
   const { drawStateValues } = drawController.useState(['selectedPolygonString'], 'drawStateValues');
 
   const { layerGridCard, selectedLayer, mapControlsStateValues } = mapControlsController.useState(['selectedLayer', 'selectedDataset', 'layerGridCard', 'mapGridCardActivated'], 'mapControlsStateValues');
   const layerIndex = platformDataInitialData.findIndex(data => data.value === 'layer');
-
   // function state
   const [searchTapValue, SearchTapValue] = useState(mapControlsStateValues.layerGridCard ? platformDataInitialData[layerIndex] : platformDataInitialData[0]);
   const [viewportTapValue, ViewportTapValue] = useState(0);
@@ -253,7 +247,6 @@ function MapGridCard(props) {
     mapControlsController.updateState({ selectedDataset: null, mapGridCardActivated: false, });
     dispatch(
       setMapGridCardState({
-        mapGridCardActivated: false,
         selectedOwner: null,
         selectedOwnerWellIntsSummary: null,
       })
@@ -526,15 +519,19 @@ function MapGridCard(props) {
                   <div style={{ position: "relative" }} classes={classes.gridTables}>
                     <Fragment>
                       {searchTapValue.value === "well" && (
-                        <MapGridWellsTable
-                          dense
-                          parent="search"
-                          customOptions={options}
-                          targetLabel={searchTapValue.value}
-                          header={<SearchPanel {...commonProps} />}
-                          showTags
-                          showComments
-                          showTracks
+                        <MRTTable
+                          name="WellsTable"
+                          overrideMeta={{
+                            toolbarInternalActions: {
+                              onClose,
+                              style: {
+                                marginRight: '0.5rem',
+                              },
+                            },
+                            maxTableHeight: '45vh',
+                            filterLayerType: 'Wells'
+                          }}
+
                         />
                       )}
                       {searchTapValue.value === "owner" && drawStateValues.selectedPolygonString && (
@@ -547,28 +544,15 @@ function MapGridCard(props) {
                         />
                       )}
                       {searchTapValue.value === "owner" && !drawStateValues.selectedPolygonString && (
-                        <MapGridTaxOwnersTable
-                          dense
-                          parent="search"
-                          customOptions={options}
-                          targetLabel={searchTapValue.value}
-                          header={<SearchPanel {...commonProps} />}
-                          showTags
-                          showComments
-                          showTracks
-                        />
-                      )}
-                      {searchTapValue.value === "operator" && (
-                        <MapGridOperatorTable
-                          dense
-                          parent="search"
-                          customOptions={options}
-                          targetLabel={searchTapValue.value}
-                          header={<SearchPanel {...commonProps} />}
-                          showTags
-                          showComments
-                          showTracks
-                        />
+                        <MRTTable name="TaxOwnerTable" overrideMeta={{
+                          toolbarInternalActions: {
+                            onClose,
+                            style: {
+                              marginRight: '0.5rem',
+                            },
+                          },
+                          maxTableHeight: '45vh',
+                        }} />
                       )}
                       {searchTapValue.value === "layer" && (
                         <MRTTable
@@ -593,39 +577,49 @@ function MapGridCard(props) {
                         />
                       )}
                       {searchTapValue.value === "unit" && (
-                        <MapGridUnitTable
-                          id="MapGridUnitTable"
-                          dense
-                          parent="search"
-                          customOptions={options}
-                          targetLabel={searchTapValue.value}
-                          header={<SearchPanel {...commonProps} />}
-                          isSnapGrid
+                        <MRTTable
+                          name="UnitTable"
+                          overrideMeta={{
+                            toolbarInternalActions: {
+                              onClose,
+                              style: {
+                                marginRight: '0.5rem',
+                              },
+                            },
+                            maxTableHeight: '45vh',
+                            filterLayerType: 'Units'
+                          }}
                         />
                       )}
                       {searchTapValue.value === "agreement" && (
-                        <AgreementsTable
-                          id="MapGridAgreementsTable"
-                          isCheckboxSticky={true}
-                          dense
-                          esIndex={'shapes_flat'}
-                          parent="search"
-                          customOptions={options}
-                          targetLabel={searchTapValue.value}
-                          header={<SearchPanel {...commonProps} />}
-                          isSnapGrid
+                        <MRTTable
+                          name="AgreementTable"
+                          overrideMeta={{
+                            toolbarInternalActions: {
+                              onClose,
+                              style: {
+                                marginRight: '0.5rem',
+                              },
+                            },
+                            maxTableHeight: '45vh',
+                            filterLayerType: 'Agreements'
+                          }}
                         />
                       )}
-                      {searchTapValue.value === "tract" && (
-                        <TractsTable
-                          id="MapGridTractsTable"
-                          dense
-                          esIndex={'shapes_flat'}
-                          parent="search"
-                          customOptions={options}
-                          targetLabel={searchTapValue.value}
-                          header={<SearchPanel {...commonProps} />}
-                          isSnapGrid
+
+                      {searchTapValue.value === 'tract' && (
+                        <MRTTable
+                          name="TractsTable"
+                          overrideMeta={{
+                            toolbarInternalActions: {
+                              onClose,
+                              style: {
+                                marginRight: '0.5rem',
+                              },
+                            },
+                            maxTableHeight: '45vh',
+                            filterLayerType: 'Parcels'
+                          }}
                         />
                       )}
                       {searchTapValue.value === 'mywell' && (
@@ -669,7 +663,6 @@ function MapGridCard(props) {
                       header={
                         <TabLabels
                           labels={[
-                            `Wells (${stateApp.trackedwells ? stateApp.trackedwells.length : 0})`,
                             `Tax Owners (${stateApp.owners ? stateApp.owners.length : 0})`,
                           ]}
                           value={trackedTapValue}
@@ -683,7 +676,6 @@ function MapGridCard(props) {
                       header={
                         <TabLabels
                           labels={[
-                            `Wells (${stateApp.trackedwells ? stateApp.trackedwells.length : 0})`,
                             `Tax Owners (${stateApp.owners ? stateApp.owners.length : 0})`,
                           ]}
                           value={trackedTapValue}

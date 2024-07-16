@@ -3,6 +3,7 @@ import ComparisonMeta from './comparison_schema';
 import PropertyIntrestMeta from './property_interest_schema';
 import OwnersPerUnitMeta from './ownersperunit-schema';
 import TractPerUnitMeta from './tract_interest_owner_schema';
+import AgreementMeta from './agreement_schema';
 import UnitMeta from './unit_schema';
 import UnitInterestMeta from './unit_interest_schema';
 import TractUnitsMeta from './tract_units_schema';
@@ -16,6 +17,8 @@ import PropertiesMeta from './properties_schema';
 import RevenueStatementsMeta from './revenue_statements_schema';
 import ContactWellInterestMeta from "./contact_well_Interest_schema"
 import MyWellsMeta from './my_wells_schema';
+import WellsMeta from './wells_schema';
+import TaxOwnerMeta from './map-grid-tax-owner-schema';
 
 export const SCHEMA = {
 	ContactTable: ContactMeta,
@@ -25,6 +28,8 @@ export const SCHEMA = {
 	PropertyIntrestTable: PropertyIntrestMeta,
 	OwnersPerUnitTable: OwnersPerUnitMeta, // unit detail => Interest owner grid schema
 	TractPerUnitTable: TractPerUnitMeta, // tract detail => Interest owner grid schema
+	TractsTable: TractMeta,
+	AgreementTable: AgreementMeta,
 	UnitTable: UnitMeta,
 	CampaignUnitTable: UnitMeta,
 	UnitInterestTable: UnitInterestMeta,
@@ -39,4 +44,6 @@ export const SCHEMA = {
 	PropertiesTable: PropertiesMeta,  //main property Grid => /revenue/properties
 	RevenueStatementsTable: RevenueStatementsMeta, // Revenue Statement grid => revenue/statements
 	MyWellsTable: MyWellsMeta,
+	WellsTable: WellsMeta,
+	TaxOwnerTable: TaxOwnerMeta,
 };
