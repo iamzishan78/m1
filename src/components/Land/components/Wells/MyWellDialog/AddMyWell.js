@@ -17,6 +17,7 @@ import _ from "underscore";
 
 import { UPSERT_MY_WELL } from "graphQL/useMutationUpsertMyWell";
 import { useMutation } from "@apollo/client";
+import { tableGlobalController } from "hookstate/tableController";
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, name, ...other } = props;
@@ -74,7 +75,11 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
   const classes = useStyles();
 
   const [foundWells, setFoundWells] = useState([]);
-  const [upsertMyWell, { loading: upsertWellLoading }] = useMutation(UPSERT_MY_WELL);
+  const [upsertMyWell, { loading: upsertWellLoading }] = useMutation(UPSERT_MY_WELL, {
+    onCompleted: () => {
+      tableGlobalController.refetch();
+    }
+  });
 
   const { control, reset } = useForm();
   useEffect(() => {

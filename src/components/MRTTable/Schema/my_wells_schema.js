@@ -8,14 +8,17 @@ import { globalStateController } from "hookstate/globalStateController";
 
 const esIndex = 'mywells_flat';
 
-const mergeProperties = (parent, property) => {
+const mergeProperties = (parent, property, type) => {
   if (!Array.isArray(parent)) {
     return <p>{parent?.[property] || ''}</p>;
   }
 
   let mergedRecord = '';
   parent.forEach(prop => {
-    mergedRecord += prop?.[property] ? ' ' + prop?.[property] : '';
+    if (type === 'date')
+      mergedRecord += prop?.[property] ? ' ' + formatDate(prop?.[property]) : '';
+    else
+      mergedRecord += prop?.[property] ? ' ' + prop?.[property] : '';
   });
   return <p>{mergedRecord}</p>;
 }
@@ -62,13 +65,7 @@ const MyWellsMeta = {
             value={row?.original?.wellData?.wellName}
             link={`/land/well/details/${row?.original?.wellData?.Id}?mongoWellId=${row?.original?._id}`}
             onClickForTestCase={() => {
-              globalStateController.updateState({
-                testCase: {
-                  name: 'MyWellsNameUpdate',
-                  globalWellId: row?.original?.wellData?.Id,
-                  mongoWellId: row?.original?._id,
-                },
-              });
+              globalStateController.handleMyWellTestCase(row?.original?.wellData?.Id, row?.original?._id)
               tableGlobalController.updateState({
                 addWellDialog: {
                   type: 'addWell',
@@ -299,13 +296,7 @@ const MyWellsMeta = {
       id: 'properties.effectiveDate',
       header: 'Effective Date',
       type: 'date',
-      Cell: ({ renderedCellValue, row }) => {
-        let mergeDate = '';
-        row?.original?.properties?.forEach(prop => {
-          mergeDate += prop?.effectiveDate ? ' ' + formatDate(prop?.effectiveDate) : '';
-        });
-        return <>{mergeDate}</>;
-      },
+      Cell: ({ row }) => mergeProperties(row?.original?.properties, "effectiveDate", 'date')
     },
     {
       ...CommonSchema.COMMON_COLUMN,
