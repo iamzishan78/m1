@@ -124,8 +124,8 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				pit: data.pit,
 			},
 			pagination,
-			isLoading: tableState?.additionalQueries?.length ? true : false,
-			isFetching: tableState?.additionalQueries?.length ? true : false,
+			isLoading: false,
+			isFetching: false,
 			isError: false,
 			...Controller.getGenericState(rows),
 		});

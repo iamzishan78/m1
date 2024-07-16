@@ -2,6 +2,7 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import IsContactCell from '../TablesOverride/TaxOwnerTable/TableCells/IsContactCell';
 import WellFlyToMap from '../TablesOverride/TaxOwnerTable/TableCells/wells_coordinates_fly_map';
+import { tableController } from 'hookstate/tableController';
 
 
 
@@ -18,7 +19,8 @@ const TaxOwnerMeta = {
     isInFiniteScroll: true,
     isDeleteDisabled: true,
     columnVirtualization: true,
-    additionalQueries: ['isContact'],
+    getIdsFromRows: rows => rows?.map(row => row?.id) || [],
+    additionalQueries: ['isContact', 'comments'],
     TableSchema: [
         {
             ...CommonSchema.HIDDEN,
@@ -78,10 +80,19 @@ const TaxOwnerMeta = {
         },
         {
             ...CommonSchema.COMMENTS,
-            Cell: ({ renderedCellValue, row }) => {
+            Cell: ({ row }) => {
                 const id = row.getValue('id');
-                const targetLabel = 'Tax Owner';
-                return <CommentCell id={id} value={renderedCellValue?.length} targetLabel={targetLabel} />;
+                const { stateValues } = tableController('TaxOwnerTable').useState([
+                    'commentsCounter',
+                ]);
+                const comment = stateValues?.commentsCounter?.find((comment) => comment._id === id)
+                return (
+                    <CommentCell
+                        id={id}
+                        value={comment?.total}
+                        targetLabel={'well'}
+                    />
+                );
             },
         },
         {

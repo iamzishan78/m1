@@ -32,6 +32,15 @@ const FlyToMap = ({ id, type, row }) => {
     history.push(`/map/units/${unitId}`);
   };
 
+  const openWellPopUp = wellId => {
+    dispatch(
+      setMapGridCardState({
+        mapGridCardActivated: false,
+      })
+    );
+    history.push(`/map/wells/${wellId}`);
+  };
+
   const openShapePopup = selectedShapeFile => {
     popupController.updateState({
       selectedShapeFile,
@@ -46,6 +55,10 @@ const FlyToMap = ({ id, type, row }) => {
 
       case 'shapefile':
         openShapePopup(row);
+        break;
+
+      case 'wells':
+        openWellPopUp(id);
         break;
 
       default:

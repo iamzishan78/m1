@@ -20,6 +20,8 @@ const WellsMeta = {
     columnVirtualization: true,
     geoKey: 'geoJSON',
     asyncRowSelection: true,
+    getIdsFromRows: rows => rows?.map(row => row?._id) || [],
+    additionalQueries: ['comments'],
     TableSchema: [
         {
             ...CommonSchema.HIDDEN,
@@ -32,7 +34,7 @@ const WellsMeta = {
             accessorKey: '_id',
         },
         {
-            ...CommonSchema.COMMON_COLUMN,
+            ...CommonSchema.INITAIL_PINNED,
             id: "api",
             header: "API",
             name: "api.keyword",
@@ -117,12 +119,16 @@ const WellsMeta = {
         },
         {
             ...CommonSchema.COMMENTS,
-            Cell: ({ renderedCellValue, row }) => {
+            Cell: ({ row }) => {
                 const id = row.getValue('_id');
+                const { stateValues } = tableController('WellsTable').useState([
+                    'commentsCounter',
+                ]);
+                const comment = stateValues?.commentsCounter?.find((comment) => comment._id === id)
                 return (
                     <CommentCell
                         id={id}
-                        value={renderedCellValue?.length}
+                        value={comment?.total}
                         targetLabel={'well'}
                     />
                 );
@@ -137,7 +143,7 @@ const WellsMeta = {
             Cell: ({ row }) => {
                 const id = row.getValue('_id');
 
-                return <FlyToMap id={id} type='shape' shape="wells" disabled={!id} />;
+                return <FlyToMap id={id} type='wells' disabled={!id} />;
             },
         },
     ]

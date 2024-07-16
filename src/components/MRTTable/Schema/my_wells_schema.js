@@ -3,7 +3,7 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import WellsToolbar from "components/MRTTable/TablesOverride/MyWellsTable/WellsToolbar";
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import { formatDate } from "components/Shared/functions";
-import { tableGlobalController } from "hookstate/tableController";
+import { tableController, tableGlobalController } from "hookstate/tableController";
 import { globalStateController } from "hookstate/globalStateController";
 
 const esIndex = 'mywells_flat';
@@ -38,6 +38,8 @@ const MyWellsMeta = {
   },
   isInFiniteScroll: true,
   columnVirtualization: true,
+  getIdsFromRows: rows => rows?.map(row => row?._id) || [],
+  additionalQueries: ['comments'],
   TableSchema: [
     {
       ...CommonSchema.HIDDEN,
@@ -332,10 +334,19 @@ const MyWellsMeta = {
     },
     {
       ...CommonSchema.COMMENTS,
-      Cell: ({ renderedCellValue, row }) => {
+      Cell: ({ row }) => {
         const id = row.getValue('_id');
-        const targetLabel = 'well';
-        return <CommentCell id={id} value={renderedCellValue?.length} targetLabel={targetLabel} />;
+        const { stateValues } = tableController('MyWellsTable').useState([
+          'commentsCounter',
+        ]);
+        const comment = stateValues?.commentsCounter?.find((comment) => comment._id === id)
+        return (
+          <CommentCell
+            id={id}
+            value={comment?.total}
+            targetLabel={'well'}
+          />
+        );
       },
     }
   ],
