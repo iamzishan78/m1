@@ -104,7 +104,7 @@ export const drawInitialState = {
     lastSelectedDrawMode: 'none',
     shapeActionsFilterSelected: false,
     selectedAction: '',
-    changeDrawShapeType: false,
+    addShape: false,
 };
 
 export const drawState = hookstate(copy(drawInitialState));

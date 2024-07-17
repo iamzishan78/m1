@@ -59,7 +59,6 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
         window.drawRef?.delete(feature.id);
         window.drawRef?.add(feature);
       }
-      actionFullEdit(false);
     }
   };
 
@@ -106,7 +105,6 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
         return feature;
       });
 
-      // actionFullEdit(false);
     }
   };
 

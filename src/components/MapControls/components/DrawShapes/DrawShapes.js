@@ -214,7 +214,6 @@ const AddShapePopup = ({ onlyAddShape, upsertCustomLayer }) => {
   const actionClose = (...props) => drawController.actionClose(dispatch, ...props);
 
   const isAOI = drawStateValues.currentFeature?.properties?.sdType === 'interest';
-
   return (
     <>
       {/* --------------------------- for edit/create AOI -------------------------- */}
@@ -260,8 +259,8 @@ export default function DrawShapes() {
     'shapeEdit',
     'shapeEditMode',
     'showDrawShapesPopup',
-    'changeDrawShapeType',
     'editDraw',
+    'addShape'
   ]);
   const drawStateValues = drawState.stateValues;
 
@@ -283,7 +282,7 @@ export default function DrawShapes() {
 
     if (!selectedUserDefinedLayer) return;
 
-    const isAOI = ['interests_source', 'area of interest_source'].includes(selectedUserDefinedLayer.source);
+    const isAOI = selectedUserDefinedLayer?.properties?.sdType === 'interest';
 
     drawController.updateState({
       currentFeature: selectedUserDefinedLayer,
@@ -317,13 +316,12 @@ export default function DrawShapes() {
 
   const showDrawShapePopup =
     (drawStateValues.showDrawShapesPopup && !currentFeature) ||
-    drawStateValues.changeDrawShapeType ||
+    drawStateValues.addShape ||
     drawStateValues.reDrawShape;
 
   const showAddAndEditShapePopup =
     (drawStateValues.editDraw || drawStateValues.showShapeActionsPopup) &&
     currentFeature &&
-    !drawStateValues.changeDrawShapeType &&
     !drawStateValues.reDrawShape &&
     !currentFeature.id?.includes('draw_polygon') &&
     !currentFeature.id?.includes('drag_circle') &&

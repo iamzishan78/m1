@@ -39,6 +39,8 @@ import { drawBoundary, clearSelectedAbstracts, } from '../DrawShapes/drawShapesH
 import { mapControlsController } from 'hookstate/mapControlsController';
 import { Dialog } from '@mui/material';
 import DeleteConfirmationDialogContent from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
+import { isEmpty } from 'lodash';
+import { layerController } from 'hookstate/layerStateController';
 
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
@@ -62,6 +64,7 @@ const ShapeActionsPopup = (props) => {
     featureToEdit,
     selectedAoi,
     currentFeature,
+    shapeEdit,
     shapeEditMode,
     showAddShapePopup,
     shapeActionsFilterSelected,
@@ -172,7 +175,7 @@ const ShapeActionsPopup = (props) => {
   const layerType = featureToEdit?.properties?.layerType || featureToEdit?.properties?.sdType || featureToEdit?.properties?.layerSubType;
 
   const enableEditOnly = shapeTypeLayers.includes(layerType);
-  const isAoi = selectedAoi?.layer?.id === 'interest';
+  const isAoi = selectedAoi?.properties?.sdType === 'interest';
   const isCreateParcelMenu = Boolean(anchorEl);
   const isShapeResizeMode = shapeTypeLayers.includes(layerType);
 
@@ -240,7 +243,9 @@ const ShapeActionsPopup = (props) => {
           IsDeleted: true,
         },
       },
-    });
+    }).then(() => {
+      layerController.resetBounds(selectedAoi.identifier)
+    });;
 
     // Deleting Shape from map
     window.drawRef?.delete(currentFeature?.id);
@@ -387,7 +392,7 @@ const ShapeActionsPopup = (props) => {
         <span className={`${classes.actions} ${drawController.isLine() ? classes.gray : ''}`}>
           {isShapeResizeMode ? (
             <ShapeEditActions
-              shapeEdit={drawState.stateValues.shapeEdit}
+              shapeEdit={shapeEdit}
               shapeEditMode={shapeEditMode}
               actionFullEdit={(...props) => drawController.actionClose(dispatch, ...props)}
             />
@@ -490,32 +495,33 @@ const ShapeActionsPopup = (props) => {
                 data-testid="add-shape"
                 onClick={() => {
                   window.drawRef?.changeMode('static');
-                  drawController.updateState({ changeDrawShapeType: true });
+                  drawController.updateState({ addShape: true });
                 }}
               >
-                <AddBox className={drawState.stateValues.shapeEdit ? 'selected' : ''} />
+                <AddBox className={''} />
               </IconButton>
             </Tooltip>
           )}
 
-          <Tooltip
-            title="Edit Active Shape"
-            className={onlyAddShape || selectedAction === 'edit-aoi' ? classes.disableAction : ''}
-          >
-            <IconButton
-              size="small"
-              aria-label="Edit Active Shape"
-              disabled={onlyAddShape}
-              onClick={() => {
-                if (!isShapeResizeMode) {
-                  drawController.actionEdit();
-                }
-              }}
+          {
+            (isEmpty(currentFeature?.properties) || isAoi) && <Tooltip
+              title="Edit Active Shape"
+              className={onlyAddShape || selectedAction === 'edit-aoi' ? classes.disableAction : ''}
             >
-              <EditIcon className={drawState.stateValues.shapeEdit ? 'selected' : ''} />
-            </IconButton>
-          </Tooltip>
-
+              <IconButton
+                size="small"
+                aria-label="Edit Active Shape"
+                disabled={onlyAddShape}
+                onClick={() => {
+                  if (!isShapeResizeMode) {
+                    drawController.actionEdit(false);
+                  }
+                }}
+              >
+                <EditIcon className={''} />
+              </IconButton>
+            </Tooltip>
+          }
           {currentFeature?.properties.shapeLabel && !enableEditOnly && (
             <Tooltip
               title="Delete Active Shape"

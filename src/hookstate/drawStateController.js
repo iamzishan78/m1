@@ -86,6 +86,7 @@ const drawStateControllerHandler = state => {
 			editDraw: false,
 			reDrawShape: false,
 			showShapeActionsPopup: true,
+			addShape: false,
 			currentFeature: currentFeatureUpdate,
 		});
 
@@ -157,7 +158,7 @@ const drawStateControllerHandler = state => {
 			currentFeature: null,
 			selectedAoi: null,
 			shapeEditMode: shapeEditMode === 'redraw' ? '' : showAddShapePopup,
-			changeDrawShapeType: false,
+			addShape: false,
 			reDrawShape: false,
 			showAddShapePopup: false,
 			selectedPolygonString: '',
@@ -222,12 +223,12 @@ const drawStateControllerHandler = state => {
 			drawController.updateState({
 				lastSelectedDrawMode: shape.mode,
 				shapeToExtend: currentFeature,
-				changeDrawShapeType: false,
+				addShape: false,
 			});
 		} else {
 			drawController.updateState({
 				lastSelectedDrawMode: shape.mode,
-				changeDrawShapeType: false,
+				addShape: false,
 			});
 
 			handleClose();
@@ -297,7 +298,7 @@ const drawStateControllerHandler = state => {
 			multiSelectLandGrids: false,
 			showShapeActionsPopup: true,
 			reDrawShape: false,
-			changeDrawShapeType: false,
+			addShape: false,
 		});
 
 		addCustomShapeProperties(newFeature, window.drawRef);
@@ -307,38 +308,6 @@ const drawStateControllerHandler = state => {
 
 	/* -------------------------- ShapeAOIPopup Actions ------------------------- */
 
-	const updateSourceAndAoiLayer = currentFeature => {
-		window.mapRef?.getSource('aoi_label_source').setData({
-			type: 'FeatureCollection',
-			features: [currentFeature],
-		});
-
-		// Add a symbol layer
-		window.mapRef?.addLayer({
-			id: 'aoi_label_layer',
-			type: 'symbol',
-			source: 'aoi_label_source',
-			layout: {
-				'text-field': ['get', 'shapeLabel'],
-				'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-				'text-size': 40,
-				'text-anchor': 'center',
-				'text-justify': 'center',
-			},
-		});
-
-		drawController.updateState({
-			currentFeature,
-		});
-		const drewShapeOnMap = window.drawRef?.get(currentFeature.id);
-		if (drewShapeOnMap) {
-			window.drawRef?.setFeatureProperty(
-				currentFeature.id,
-				'shapeLabel',
-				currentFeature.properties.shapeLabel
-			);
-		}
-	};
 
 	const handleSaveAOIToShape = (dataName, upsertCustomLayer) => {
 		const dataType = 'interest';
@@ -384,11 +353,9 @@ const drawStateControllerHandler = state => {
 				refetchQueries: ['getCustomLayers'],
 				// awaitRefetchQueries: true,
 			}).then((result) => {
-				jobController.toggleBulkUpload()
-				layerController.resetBounds(result?.data?.upsertCustomLayer?.customLayer?.layer)
+				layerController.resetBounds(result?.data?.upsertCustomLayer?.customLayer?.shapeJson?.identifier)
 			});
 
-			updateSourceAndAoiLayer(currentFeature);
 		}
 
 		state.merge({ showDataCard: true });
@@ -442,11 +409,8 @@ const drawStateControllerHandler = state => {
 				refetchQueries: ['getCustomLayers'],
 				awaitRefetchQueries: true,
 			}).then((res) => {
-				jobController.toggleBulkUpload()
-				layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)
+				layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.shapeJson?.identifier)
 			});;
-
-			updateSourceAndAoiLayer(currentFeature);
 		}
 
 		state.merge({ showDataCard: true });
@@ -516,14 +480,11 @@ const drawStateControllerHandler = state => {
 		// If filter is applied, then remove it
 		clearFilter();
 
-		let changeDrawShapeType = drawController.getValue('changeDrawShapeType');
-
 		if (!shapeEdit && currentFeature?.geometry?.type) {
 			window.drawRef?.changeMode('direct_select', {
 				featureId: selectedFeature.id,
 			});
 		} else {
-			changeDrawShapeType = true
 			window.drawRef?.changeMode('static');
 		}
 
@@ -535,7 +496,6 @@ const drawStateControllerHandler = state => {
 		drawController.updateState({
 			currentFeature: selectedFeature,
 			shapeEdit: !shapeEdit,
-			changeDrawShapeType
 		});
 		if (selectedAoi) drawController.setSelectedAction('edit-aoi');
 		else if (enableEditOnly) drawController.setSelectedAction('edit-shape');
@@ -911,11 +871,11 @@ const drawStateControllerHandler = state => {
 		const customLayerData = {
 			shapeJson,
 			shape: JSON.stringify(shapeJson),
-			layer: selectedAoi.layer.id,
+			layer: selectedAoi.properties.sdType,
 			user: user.mongoId,
 		};
 
-		if (selectedAoi.layer.id === 'interest') {
+		if (selectedAoi.properties.sdType === 'interest') {
 			customLayerData.name = currentFeature?.properties.shapeLabel;
 		}
 		addCustomShapeProperties(currentFeature, window.drawRef);
@@ -928,8 +888,7 @@ const drawStateControllerHandler = state => {
 			refetchQueries: ['getCustomLayers'],
 			awaitRefetchQueries: true,
 		}).then(() => {
-			jobController.toggleBulkUpload()
-			layerController.resetBounds(customLayerData?.shapeJson?.identifier || customLayerData?.shapeJson?.layer?.id)
+			layerController.resetBounds(selectedAoi.identifier)
 		});
 		setTimeout(() => actionClose(dispatch), 0);
 	};

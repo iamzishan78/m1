@@ -430,7 +430,7 @@ const layerStateControllerHandler = state => {
 		// Return if we not get any data	
 		if (!layerData) return;
 		const labelProps = dbLayer.layerPaintProps?.find?.(prop => prop.labelProps)?.labelProps;
-		let geoJson = makeGeoJSON(layerData, null, labelProps);
+		let geoJson = makeGeoJSON(layerData, labelProps);
 		// changing layer visibility
 		const visible = dbLayer?.layerSettings?.visiable;
 		if (map.getLayer(`${layerId}-clusters`) && map.getLayer(`${layerId}-cluster-count`) && map.getLayer(`${layerId}-unclustered-point`)) {
@@ -646,10 +646,8 @@ const layerStateControllerHandler = state => {
 				const layerData = data;
 
 				let geoJson = null;
-				const extraFeatures = [];
 				if (!Array.isArray(layerData)) return;
-				geoJson = makeGeoJSON(layerData, extraFeatures, labelProps);
-				geoJson.features = geoJson.features.concat(extraFeatures);
+				geoJson = makeGeoJSON(layerData, labelProps);
 				if (deckLayers[layerId]?.getData?.feedData)
 					deckLayers[layerId].getData.feedData(geoJson.features);
 			},
