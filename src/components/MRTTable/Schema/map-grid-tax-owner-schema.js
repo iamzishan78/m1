@@ -3,9 +3,6 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import IsContactCell from '../TablesOverride/TaxOwnerTable/TableCells/IsContactCell';
 import WellFlyToMap from '../TablesOverride/TaxOwnerTable/TableCells/wells_coordinates_fly_map';
 import { tableController } from 'hookstate/tableController';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
-
-
 
 const esIndex = 'platformData:globalowner';
 

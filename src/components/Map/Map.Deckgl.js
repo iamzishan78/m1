@@ -33,6 +33,7 @@ import './Map.css';
 import { popupController } from 'hookstate/popupStateController';
 import { navController } from 'hookstate/navStateController';
 import { globalStateController } from 'hookstate/globalStateController';
+import { mapStateController } from 'hookstate/mapStateController';
 import { layerRefs } from 'hookstate';
 import { setMainMapState } from '../../actions';
 import { copy } from '../Shared/functions';
@@ -65,6 +66,7 @@ import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
 import { RIGSQUERY } from "graphQL/useQueryRigs";
 import { drawController } from 'hookstate/drawStateController';
 import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
+
 
 const useStyles = makeStyles(() => ({
 	mapWrapper: {
@@ -129,6 +131,7 @@ function Map({
 	const globalState = globalStateController.useState(['layers']);
 	const { filterDrawing, navStateValues } = navController.useState(['filterDrawing'], 'navStateValues')
 	const { selectedShapeFile, popupStateValues } = popupController.useState(['selectedShapeFile'], 'popupStateValues');
+	const { mapStateValues } = mapStateController.useState(['mapVars', 'defaultMapVars', 'toggle3d', 'toggleZoomOut'], 'mapStateValues');
 	const [stateApp, setStateApp] = useContext(AppContext);
 
 	const client = useApolloClient();
@@ -278,10 +281,7 @@ function Map({
 		fetchStyles(abortController)
 			.then((styles) => {
 				setMapStyles(styles);
-				setStateApp((state) => ({
-					...state,
-					mapStyles: styles,
-				}));
+				mapStateController.updateState({ mapStyles: styles })
 			})
 			.catch((error) => {
 				// Handle any errors from fetchStyles
@@ -638,19 +638,18 @@ function Map({
 
 	useEffect(() => {
 		if (map) {
-			setStateApp(stateApp => ({
-				...stateApp,
+			mapStateController.updateState({
 				mapVars: {
-					...stateApp.mapVars,
+					...mapStateValues.mapVars,
 					zoom: map.getZoom(),
 					center: map.getCenter(),
 					pitch: map.getPitch(),
 					bearing: map.getBearing(),
-				},
-			}));
+				}
+			})
 			setMap(null);
 		}
-	}, [stateApp.mapVars.styleId]);
+	}, [mapStateValues.mapVars.styleId]);
 
 	function getIndex(value, arr, prop) {
 		for (let i = 0; i < arr.length; i++) {
@@ -664,26 +663,23 @@ function Map({
 	useEffect(() => {
 		if (!map || !mapStyles) return;
 
-		let index = getIndex(stateApp.mapVars.styleId, mapStyles, 'name');
+		let index = getIndex(mapStateValues.mapVars.styleId, mapStyles, 'name');
 		if (index === -1) {
 			index = 0;
 		}
 
 		map.setStyle(`mapbox://styles/m1neral/${mapStyles[index]?.id}`);
-	}, [stateApp.mapVars.styleId, mapStyles]);
+	}, [mapStateValues.mapVars.styleId, mapStyles]);
 
 	useEffect(() => {
 		if (map) {
-			setStateApp(stateApp => ({
-				...stateApp,
-				mapVars: stateApp.defaultMapVars,
-			}));
+			mapStateController.updateState({ mapVars: mapStateValues.defaultMapVars })
 			map.jumpTo({
-				center: [stateApp.defaultMapVars.center.lng, stateApp.defaultMapVars.center.lat],
-				zoom: stateApp.defaultMapVars.zoom,
+				center: [mapStateValues.defaultMapVars.center.lng, mapStateValues.defaultMapVars.center.lat],
+				zoom: mapStateValues.defaultMapVars.zoom,
 			});
 		}
-	}, [stateApp.defaultMapVars]);
+	}, [mapStateValues.defaultMapVars]);
 
 	useEffect(() => {
 		const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
@@ -744,17 +740,17 @@ function Map({
 		const initializeMap = ({ setMap, mapEl, setStateApp, setDraw }) => {
 			const { id } = mapEl.current;
 
-			let index = getIndex(stateApp.mapVars.styleId, mapStyles, 'name');
+			let index = getIndex(mapStateValues.mapVars.styleId, mapStyles, 'name');
 			if (index === -1) {
 				index = 0;
 			}
 			const newMap = new mapboxgl.Map({
 				container: `${id}`,
 				style: `mapbox://styles/m1neral/${mapStyles[index]?.id}`,
-				center: stateApp.mapVars.center,
-				zoom: stateApp.mapVars.zoom,
-				pitch: stateApp.mapVars.pitch,
-				bearing: stateApp.mapVars.bearing,
+				center: mapStateValues.mapVars.center,
+				zoom: mapStateValues.mapVars.zoom,
+				pitch: mapStateValues.mapVars.pitch,
+				bearing: mapStateValues.mapVars.bearing,
 			});
 
 			/// optimized interactions w/ map
@@ -980,16 +976,15 @@ function Map({
 			const pitch = map.getPitch();
 			const bearing = map.getBearing();
 
-			setStateApp(stateApp => ({
-				...stateApp,
+			mapStateController.updateState({
 				mapVars: {
-					...stateApp.mapVars,
+					...mapStateValues.mapVars,
 					zoom,
 					center,
 					pitch,
 					bearing,
-				},
-			}));
+				}
+			})
 
 			// Loading state is not being handled and causes undefined mapList Array
 			// Added '?' to mapList, temp fix to avoid undefined errors.
@@ -1180,51 +1175,25 @@ function Map({
 	}, [map, stateApp.landGridListFromSearch]);
 
 	useEffect(() => {
-		if (map && stateApp.toggleZoomOut) {
-			if (stateApp.toggleZoomOut === true) {
+		if (map && mapStateValues.toggleZoomOut) {
+			if (mapStateValues.toggleZoomOut === true) {
 				map.jumpTo({
-					center: stateApp.defaultMapVars.center,
-					zoom: stateApp.defaultMapVars.zoom,
-					pitch: stateApp.defaultMapVars.pitch,
-					bearing: stateApp.defaultMapVars.bearing,
+					center: mapStateValues.defaultMapVars.center,
+					zoom: mapStateValues.defaultMapVars.zoom,
+					pitch: mapStateValues.defaultMapVars.pitch,
+					bearing: mapStateValues.defaultMapVars.bearing,
 				});
 
-				// let flying = null;
-
-				// map.on('flystart', () => {
-				// 	flying = true;
-				// });
-
-				// map.on('flyend', () => {
-				// 	flying = false;
-				// });
-
-				// map.on('moveend', () => {
-				// 	if (flying) {
-				// 		setStateApp(stateApp => ({
-				// 			...stateApp,
-				// 			mapVars: {
-				// 				...stateApp.mapVars,
-				// 				zoom: map.getZoom(),
-				// 				center: map.getCenter(),
-				// 				pitch: map.getPitch(),
-				// 				bearing: map.getBearing(),
-				// 			},
-				// 		}));
-				// 		map.fire('flyend');
-				// 	}
-				// });
-
-				setStateApp(stateApp => ({ ...stateApp, toggleZoomOut: null }));
+				mapStateController.updateState({ toggleZoomOut: null })
 			}
 		}
-	}, [stateApp.toggleZoomOut]);
+	}, [mapStateValues.toggleZoomOut]);
 
 	useEffect(() => {
 		// use effect to toggle the map into a 3d state
 
-		if (map && stateApp.toggle3d) {
-			if (stateApp.toggle3d === true) {
+		if (map && mapStateValues.toggle3d) {
+			if (mapStateValues.toggle3d === true) {
 				if (map.getPitch() === 0 && map.getBearing() === 0) {
 					map.setPitch(70);
 					map.setBearing(20);
@@ -1232,20 +1201,19 @@ function Map({
 					map.setPitch(0);
 					map.setBearing(0);
 				}
-				setStateApp(stateApp => ({
-					...stateApp,
+				mapStateController.updateState({
 					mapVars: {
-						...stateApp.mapVars,
+						...mapStateValues.mapVars,
 						zoom: map.getZoom(),
 						center: map.getCenter(),
 						pitch: map.getPitch(),
 						bearing: map.getBearing(),
 					},
-				}));
-				setStateApp(stateApp => ({ ...stateApp, toggle3d: null }));
+					toggle3d: null
+				})
 			}
 		}
-	}, [stateApp.toggle3d]);
+	}, [mapStateValues.toggle3d]);
 
 	useEffect(() => {
 

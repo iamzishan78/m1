@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import mapboxgl from "mapbox-gl";
 import { AppContext } from "../../../AppContext";
 import { uid } from "uid";
+import { mapStateController } from "hookstate/mapStateController";
 
 const useStyles = makeStyles((theme) => ({
   MSWrapper: {
@@ -129,6 +130,7 @@ export default function CardDetailsMap() {
     if (mapStyles.length > 0) {
       const SET_INITIAL_MAP_STYLE = "Satellite";
       var index = getIndex(SET_INITIAL_MAP_STYLE, mapStyles, "name");
+      const mapVars = mapStateController.getValue('mapVars')
 
       const initializeMap = ({ setMap, mapEl, setStateApp }) => {
         let id = mapEl.current.id;
@@ -155,10 +157,10 @@ export default function CardDetailsMap() {
           newMap = new mapboxgl.Map({
             container: `${id}`,
             style: "mapbox://styles/m1neral/" + mapStyles[index].id,
-            center: stateApp.mapVars.center,
-            zoom: stateApp.mapVars.zoom,
-            pitch: stateApp.mapVars.pitch,
-            bearing: stateApp.mapVars.bearing,
+            center: mapVars.center,
+            zoom: mapVars.zoom,
+            pitch: mapVars.pitch,
+            bearing: mapVars.bearing,
           });
 
         var el = document.createElement("div");

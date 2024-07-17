@@ -18,6 +18,7 @@ import { popupController } from "hookstate/popupStateController";
 import { drawController } from "hookstate/drawStateController";
 import { layerRefs } from "hookstate";
 import { mapControlsController } from "hookstate/mapControlsController";
+import { mapStateController } from "hookstate/mapStateController";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -227,17 +228,11 @@ export function SpeedDialComponent(props) {
     }
 
     if (action === 'threed') {
-      setStateApp((stateApp) => ({
-        ...stateApp,
-        toggle3d: !stateApp.toggle3d,
-      }));
+      mapStateController.updateState({ toggle3d: !mapStateController.getValue('toggle3d') })
     }
 
     if (action === 'zoomout') {
-      setStateApp((stateApp) => ({
-        ...stateApp,
-        toggleZoomOut: !stateApp.toggleZoomOut,
-      }));
+      mapStateController.updateState({ toggleZoomOut: !mapStateController.getValue('toggleZoomOut') })
     }
 
     if (window.drawRef && window.drawRef.getMode() !== "simple_select") {

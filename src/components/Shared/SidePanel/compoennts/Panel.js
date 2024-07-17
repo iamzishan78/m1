@@ -51,6 +51,7 @@ import { NavigationContext } from "components/Navigation/NavigationContext";
 import AddGroup from "./AddGroup";
 import { mapControlsController } from "hookstate/mapControlsController";
 import { layerController } from "hookstate/layerStateController";
+import { mapStateController } from "hookstate/mapStateController";
 
 const layerIcons = [
   {
@@ -196,8 +197,9 @@ const StyledSecondaryMenu = () => {
 
 function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems }) {
   const { selectedControl, expandedPanel, mapControlsStateValues } = mapControlsController.useState(['selectedControl', 'expandedPanel'], 'mapControlsStateValues');
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateNav, setStateNav] = useContext(NavigationContext);
+  const { mapStateValues } = mapStateController.useState(['mapVars', 'defaultMapVars'], 'mapStateValues');
+  const [stateApp] = useContext(AppContext);
+  const [stateNav] = useContext(NavigationContext);
   const [totalFilterCount, setTotalFilterCount] = useState(null);
   const [totalHitMapCount, setTotalHitMapCount] = useState(null);
   const [updateUserMapSettings, { data: updatedMapSettings }] = useMutation(UPDATE_USER_MAP_SETTINGS);
@@ -261,7 +263,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
   useEffect(() => {
     const mapDefaultPosition = get(updatedMapSettings, "updateUserMapSettings.settings.settings.mapDefaultPosition");
     // Only when position is changed and not style
-    if (mapDefaultPosition && !deepEqualObjects(stateApp.defaultMapVars.center, mapDefaultPosition.center)) {
+    if (mapDefaultPosition && !deepEqualObjects(mapStateValues.defaultMapVars.center, mapDefaultPosition.center)) {
       if (mapDefaultPosition) {
         dispatch(showSuccessMessage("Map Default Position saved."));
       } else if (updatedMapSettings) {
@@ -274,13 +276,12 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
   const setMapVars = (settings) => {
     if (settings) {
       // setSettings(settings);
-      setStateApp((stateApp) => ({
-        ...stateApp,
+      mapStateController.updateState({
         defaultMapVars: {
-          ...stateApp.defaultMapVars,
+          ...mapStateValues.defaultMapVars,
           ...settings,
-        },
-      }));
+        }
+      })
     }
   };
 
@@ -296,15 +297,15 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
   const setBaseMap = (style, type) => {
     const map = window.mapRef;
     layerController.resetMapStates();
-    setStateApp((stateApp) => ({
-      ...stateApp,
+    mapStateController.updateState({
       mapVars: {
-        ...stateApp.mapVars,
+        ...mapStateValues.mapVars,
         center: map.getCenter(),
         zoom: map.getZoom(),
         styleId: style.name
-      },
-    }));
+      }
+    })
+
     updateUserMapSettings({
       variables: {
         settings: {
@@ -476,7 +477,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
             </StyledMenuSecondaryHeaderItem>
 
             {/* base Stuff */}
-            {type === "base" && <BasemapImageBox mapStyles={mapStyles} setBaseMap={setBaseMap} currentStyle={stateApp.mapVars.styleId} title={title} />}
+            {type === "base" && <BasemapImageBox mapStyles={mapStyles} setBaseMap={setBaseMap} currentStyle={mapStateValues.mapVars.styleId} title={title} />}
 
             {type === "layer" && mapControlsStateValues.expandedPanel && (<SortableLayer search={search} mongoId={stateApp.user.mongoId} />)}
             {type === "base" && (
@@ -486,8 +487,8 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
                 </Collapse>
                 <MapPositions
                   setMapDefaultPosition={setMapDefaultPosition}
-                  defaultMapVars={stateApp.defaultMapVars}
-                  mapVars={stateApp.mapVars}
+                  defaultMapVars={mapStateValues.defaultMapVars}
+                  mapVars={mapStateValues.mapVars}
                 />
               </Box>
             )}

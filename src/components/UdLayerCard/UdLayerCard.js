@@ -17,6 +17,7 @@ import { popupController } from "hookstate/popupStateController";
 import { drawController } from "hookstate/drawStateController";
 import { layerRefs } from "hookstate";
 import { mapControlsController } from "hookstate/mapControlsController";
+import { mapStateController } from "hookstate/mapStateController";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -144,12 +145,11 @@ function UdLayerCard(props) {
         }
       }
     }
-
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      toggle3d: action === "threed" ? !stateApp.toggle3d : stateApp.toggle3d,
-      toggleZoomOut: action === "zoomout" ? !stateApp.toggleZoomOut : stateApp.toggleZoomOut,
-    }));
+    const { toggle3d, toggleZoomOut } = mapStateController.getValues(['toggle3d', 'toggleZoomOut'])
+    mapStateController.updateState({
+      toggle3d: action === "threed" ? !toggle3d : toggle3d,
+      toggleZoomOut: action === "zoomout" ? !toggleZoomOut : toggleZoomOut,
+    })
 
     if (window.drawRef && window.drawRef.getMode() !== "simple_select") {
       drawController.updateState({
