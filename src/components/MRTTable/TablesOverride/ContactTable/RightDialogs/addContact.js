@@ -102,6 +102,7 @@ export default function AddContactDialogContent(props) {
       variables: {
         contact: {
           ...formStateValues,
+          ownerType: formStateValues?.ownerType ? formStateValues?.ownerType?.value : null,
           createBy: getUser?._id,
           lastUpdateBy: getUser?._id,
         },
