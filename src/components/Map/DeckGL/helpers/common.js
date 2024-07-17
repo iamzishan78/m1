@@ -59,15 +59,40 @@ export const getLayerData = (identifier, dataId, data) => {
 };
 
 export const getShapeLabelProps = (shape, labelProps) => {
+	const label = shape.properties?.[
+		labelProps?.symbolProps?.['text-field']?.match(
+			/\{(.*?)\}/
+		)?.[1] || 'shapeLabel'
+	] || shape.properties?.shapeLabel
+
+	const [minX, minY, maxX, maxY] = turf.bbox(shape);
+
+	// Calculate distances in meters using turf.distance
+	const bottomLeft = [minX, minY];
+	const bottomRight = [maxX, minY];
+	const topLeft = [minX, maxY];
+
+	const bboxWidth = turf.distance(bottomLeft, bottomRight, { units: 'meters' });
+	const bboxHeight = turf.distance(bottomLeft, topLeft, { units: 'meters' });
+
+	// Estimate text dimensions based on length
+	const textLength = label.length;
+	const maxTextWidth = bboxWidth * 0.9; // 90% of the bounding box width
+	const maxTextHeight = bboxHeight * 0.9; // 90% of the bounding box height
+
+	// Assuming a base size of 100 meters, adjust size based on the bounding box
+	const baseSize = 100;
+	const adjustedWidth = baseSize * (maxTextWidth / (textLength * baseSize * 0.6)); // 0.6 is an approximate width factor per character
+	const adjustedHeight = baseSize * (maxTextHeight / baseSize);
+
+	// Return the smaller of the two adjusted sizes
+	const textSize = Math.min(adjustedWidth, adjustedHeight);
+
 	return {
 		...turf.centroid(shape),
 		properties: {
-			label:
-				shape.properties?.[
-				labelProps?.symbolProps?.['text-field']?.match(
-					/\{(.*?)\}/
-				)?.[1] || 'shapeLabel'
-				] || shape.properties?.shapeLabel,
+			label: label,
+			textSize
 		},
 	}
 }
@@ -529,7 +554,9 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 	});
 
 	if (labelProps && labelProps.visibility !== 'none') {
-		props.getTextSize = 100;
+		props.getTextSize = (f) => {
+			return f.properties.textSize
+		};
 		props.textMaxWidth = 500;
 		props.pointType = 'text';
 		props.textFontFamily = 'Poppins';
