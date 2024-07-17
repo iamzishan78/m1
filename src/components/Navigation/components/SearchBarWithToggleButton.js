@@ -70,8 +70,8 @@ function GridIcon() {
         id="snapGridButton"
         className={mapControlsStateValues.mapGridCardActivated ? classes.selected : classes.gridOnIcon}
         onClick={() => {
-          mapControlsController.updateState({ selectedDataset: { name: 'M1 Platform' }, expandedPanel: false })
           mapControlsController.toggleMapGridCardAtived();
+          mapControlsController.updateState({ selectedDataset: { name: 'M1 Platform' }, expandedPanel: false, layerGridCard: false })
         }}
       >
         <GridOnIcon fontSize="25" />

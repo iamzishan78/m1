@@ -228,9 +228,9 @@ function MapGridCard(props) {
   const { drawStateValues } = drawController.useState(['selectedPolygonString'], 'drawStateValues');
 
   const { layerGridCard, selectedLayer, mapControlsStateValues } = mapControlsController.useState(['selectedLayer', 'selectedDataset', 'layerGridCard', 'mapGridCardActivated'], 'mapControlsStateValues');
-  const layerIndex = platformDataInitialData.findIndex(data => data.value === 'layer');
+  const layerInitialData = platformDataInitialData.find(data => data.value === 'layer');
   // function state
-  const [searchTapValue, SearchTapValue] = useState(mapControlsStateValues.layerGridCard ? platformDataInitialData[layerIndex] : platformDataInitialData[0]);
+  const [searchTapValue, SearchTapValue] = useState(mapControlsStateValues.layerGridCard ? layerInitialData : platformDataInitialData[0]);
   const [viewportTapValue, ViewportTapValue] = useState(0);
   const [dockMenu, SetDockMenu] = useState("bottom");
   const [trackedTapValue, TrackedTapValue] = useState(0);
@@ -263,23 +263,7 @@ function MapGridCard(props) {
         },
       ];
     }
-    // if (searchInput) {
-    //   searchQuery = [{
-    //     bool: {
-    //       should: [
-    //         {
-    //           wildcard: {
-    //             "properties": {
-    //               value: `*${searchInput.toLowerCase()}*`,
-    //               case_insensitive: true
-    //             }
-    //           }
-    //         }
-    //       ]
-    //     }
-    //   }];
-    // }
-
+    tableGlobalController.reInitialized();
     return {
       toolbarInternalActions: {
         onClose,
@@ -343,13 +327,15 @@ function MapGridCard(props) {
             },
           ],
     };
+
+
   }, [selectedLayer]);
 
   React.useEffect(() => {
     if (!mapControlsStateValues.layerGridCard) {
       SearchTapValue(platformDataInitialData[0])
     } else {
-      SearchTapValue(platformDataInitialData[layerIndex])
+      SearchTapValue(layerInitialData)
     }
   }, [layerGridCard]);
 
@@ -507,7 +493,7 @@ function MapGridCard(props) {
                           <ListItemIcon>
                             <Icon />
                           </ListItemIcon>
-                          <ListItemText primary={row.name} />
+                          <ListItemText style={{ wordWrap: 'break-word' }} primary={row.name} />
                         </ListItem>
                       )
                     }

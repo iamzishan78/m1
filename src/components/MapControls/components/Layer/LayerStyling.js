@@ -114,7 +114,7 @@ function LayerStyling() {
                   </Box>
 
                 </Grid>
-                <Grid style={{ padding: '25px 25px 0 0' }}>
+                <Grid style={{ padding: '5px 27px 4px 0px' }}>
                   <Tooltip title="Grid">
                     <IconButton size="small" aria-label="Grid" className={classes.gridOnIcon} onClick={() => {
                       mapControlsController.updateState({ layerGridCard: true, mapGridCardActivated: true })
