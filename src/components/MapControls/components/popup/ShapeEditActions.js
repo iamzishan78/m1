@@ -122,6 +122,7 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
     }
   };
 
+  const isMultiPolygon = feature?.geometry?.type === "MultiPolygon"
   return (
     <>
       <Tooltip title="Redraw Shape">
@@ -137,12 +138,13 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
 
       <Tooltip title="Resize Shape">
         <IconButton
+          disabled={!!isMultiPolygon}
           size="small"
           aria-label="Resize Shape"
           data-testid="resize-shape"
           onClick={() => onPreciseEdit(_shapeEditMode !== 'resize' ? 'resize' : '')}
         >
-          <AspectRatioIcon color="secondary" className={_shapeEditMode === 'resize' ? 'selected' : ''} />
+          <AspectRatioIcon color="colorDisabled" className={_shapeEditMode === 'resize' ? 'selected' : isMultiPolygon ? 'disabled' : ''} />
         </IconButton>
       </Tooltip>
 

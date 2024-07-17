@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useMutation } from '@apollo/client';
 import { get } from 'lodash';
 
@@ -65,6 +65,9 @@ const useStyles = makeStyles(theme => ({
       },
       '&.selected': {
         color: 'rgb(102 146 202)',
+      },
+      '&.disabled': {
+        color: '#777',
       },
     },
   },

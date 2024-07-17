@@ -160,7 +160,6 @@ function Datasets({ headerButton, search, stateApp, setStateApp }) {
             stateToUpdate.mapGridCardActivated = true;
         } else {
             stateToUpdate.selectedLayer = { ...dataset.categories[0] };
-            console.log(stateToUpdate.selectedLayer)
             stateToUpdate.layerGridCard = true;
             stateToUpdate.mapGridCardActivated = true;
         }
