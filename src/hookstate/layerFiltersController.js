@@ -148,7 +148,7 @@ const layerFiltersControllerHandler = state => ({
 		layerController.removeLayers();
 		setTimeout(() => {
 			state.polygonFilter.set(polygon);
-		}, 0);
+		}, 100);
 	},
 });
 

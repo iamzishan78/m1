@@ -309,22 +309,23 @@ const drawStateControllerHandler = state => {
 	/* -------------------------- ShapeAOIPopup Actions ------------------------- */
 
 
-	const handleSaveAOIToShape = (dataName, upsertCustomLayer) => {
+	const handleSaveAOIToShape = ({ dataName, upsertCustomLayer, updateCustomLayer }) => {
 		const dataType = 'interest';
-		const currentFeature = drawController.getValue('currentFeature');
+		const { currentFeature, selectedAoi } = drawController.getValues([
+			'currentFeature',
+			'selectedAoi',
+		]);
 
 		const spatialData = {
 			sdType: dataType,
-			shapeLabel: dataName,
+			shapeLabel: dataName || currentFeature?.properties.shapeLabel,
 			projectName: '',
 			sdGrossAcres: '',
 		};
+
+		addCustomShapeProperties(currentFeature, window.drawRef);
+
 		spatialDataAttributes.forEach(attribute => {
-			window.drawRef?.setFeatureProperty(
-				currentFeature?.id,
-				attribute,
-				spatialData[attribute]
-			);
 			if (
 				spatialData[attribute] != null ||
 				typeof spatialData[attribute] !== 'undefined'
@@ -348,69 +349,26 @@ const drawStateControllerHandler = state => {
 				user: user.mongoId,
 			};
 
-			upsertCustomLayer({
-				variables: { customLayer: customLayerData },
-				refetchQueries: ['getCustomLayers'],
-				// awaitRefetchQueries: true,
-			}).then((result) => {
-				layerController.resetBounds(result?.data?.upsertCustomLayer?.customLayer?.shapeJson?.identifier)
-			});
-
-		}
-
-		state.merge({ showDataCard: true });
-	};
-
-	const handleEditAOIToShape = (dataName, updateCustomLayer) => {
-		const dataType = 'interest';
-
-		// save data onto geoJSON properties fields
-		const spatialData = {
-			sdType: dataType,
-			shapeLabel: dataName,
-			projectName: '',
-			sdGrossAcres: '',
-			// sdNotes: dataNotes
-		};
-		const { currentFeature, selectedAoi } = drawController.getValues([
-			'currentFeature',
-			'selectedAoi',
-		]);
-
-		addCustomShapeProperties(currentFeature, window.drawRef);
-
-		spatialDataAttributes.forEach(attribute => {
-			if (
-				spatialData[attribute] != null ||
-				typeof spatialData[attribute] !== 'undefined'
-			) {
-				if (currentFeature) currentFeature.properties[attribute] = spatialData[attribute];
+			if (upsertCustomLayer)
+				upsertCustomLayer({
+					variables: { customLayer: customLayerData },
+					refetchQueries: ['getCustomLayers'],
+					// awaitRefetchQueries: true,
+				}).then((result) => {
+					layerController.resetBounds(result?.data?.upsertCustomLayer?.customLayer?.shapeJson?.identifier)
+				});
+			else if (updateCustomLayer) {
+				updateCustomLayer({
+					variables: {
+						customLayerId: selectedAoi?.id,
+						customLayer: customLayerData,
+					},
+					refetchQueries: ['getCustomLayers'],
+					awaitRefetchQueries: true,
+				}).then((res) => {
+					layerController.resetBounds(selectedAoi.identifier)
+				});;
 			}
-		});
-
-		const user = globalStateController.getValue('user');
-
-		// //////cleaning the selected title opinion and redirecting to title opinion page//
-		if (user && user.mongoId !== '') {
-			const customLayerId = selectedAoi.id;
-
-			const customLayerData = {
-				shapeJson: currentFeature,
-				shape: JSON.stringify(currentFeature),
-				layer: dataType,
-				name: spatialData.shapeLabel,
-				user: user.mongoId,
-			};
-			updateCustomLayer({
-				variables: {
-					customLayerId,
-					customLayer: customLayerData,
-				},
-				refetchQueries: ['getCustomLayers'],
-				awaitRefetchQueries: true,
-			}).then((res) => {
-				layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.shapeJson?.identifier)
-			});;
 		}
 
 		state.merge({ showDataCard: true });
@@ -855,44 +813,6 @@ const drawStateControllerHandler = state => {
 		updateSelectedLayerFeature(dispatch, layerData);
 	};
 
-	const confirmEditing = (updateCustomLayer, dispatch) => {
-		const { selectedAoi, currentFeature } = drawController.getValues([
-			'selectedAoi',
-			'currentFeature',
-		]);
-
-		const user = globalStateController.getValue('user');
-
-		const shapeJson = {
-			...currentFeature,
-			shapeArea: calculateLandArea(currentFeature),
-			shapeCenter: calculateShapeCenter(currentFeature?.geometry),
-		};
-		const customLayerData = {
-			shapeJson,
-			shape: JSON.stringify(shapeJson),
-			layer: selectedAoi.properties.sdType,
-			user: user.mongoId,
-		};
-
-		if (selectedAoi.properties.sdType === 'interest') {
-			customLayerData.name = currentFeature?.properties.shapeLabel;
-		}
-		addCustomShapeProperties(currentFeature, window.drawRef);
-
-		updateCustomLayer({
-			variables: {
-				customLayerId: selectedAoi.id || selectedAoi._id,
-				customLayer: customLayerData,
-			},
-			refetchQueries: ['getCustomLayers'],
-			awaitRefetchQueries: true,
-		}).then(() => {
-			layerController.resetBounds(selectedAoi.identifier)
-		});
-		setTimeout(() => actionClose(dispatch), 0);
-	};
-
 	const confirmShapeEditing = (updateCustomLayer, dispatch, history) => {
 		const { featureToEdit, shapeEditMode, currentFeature } = drawController.getValues([
 			'featureToEdit',
@@ -995,7 +915,6 @@ const drawStateControllerHandler = state => {
 
 		/* ----- ShapeAOIPopup Actions ---- */
 		handleSaveAOIToShape,
-		handleEditAOIToShape,
 		/* ----- ShapeAOIPopup Actions ----- */
 
 		/* --- ShapeActionsPopup Actions -- */
@@ -1009,8 +928,8 @@ const drawStateControllerHandler = state => {
 		saveAndOpenParcelDetail,
 		saveAndOpenShapeDetail,
 		updateAndOpenShapeDetail,
-		confirmEditing,
 		confirmShapeEditing,
+		applyFilter,
 		/* --- ShapeActionsPopup Actions -- */
 
 		setShowDataCard: showDataCard => state.merge({ showDataCard }),
