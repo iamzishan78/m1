@@ -1045,6 +1045,7 @@ function Map({
 	}, [map, stateApp.fitBounds]);
 
 	useEffect(() => {
+		layerController.updateState({ wellListFromSearch: stateApp.wellListFromSearch })
 		if (map && stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0) {
 			if (stateApp.wellListFromSearch.length > 1) {
 				const findBounds = shape => {

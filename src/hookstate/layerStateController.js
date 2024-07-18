@@ -32,6 +32,7 @@ import { mapControlsController } from './mapControlsController';
 import { NotificationManager } from 'react-notifications';
 import { debounce } from 'lodash';
 import { layerState, layerStateInitialState } from './initialStates';
+import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
 const getWellColor = w => {
 	switch (w.properties.wellType) {
@@ -523,7 +524,16 @@ const layerStateControllerHandler = state => {
 				}
 			);
 		});
+
+		map.on('click', `${layerId}-unclustered-point`, (e) => {
+			const features = map.queryRenderedFeatures(e.point, {
+				layers: [`${layerId}-unclustered-point`]
+			});
+			drawWellBoundary(features[0].geometry.coordinates)
+			popupController.updateState({ wellSelectedCoordinates: features[0].geometry.coordinates, selectedWellId: features[0].properties.id })
+		});
 	};
+
 
 	const handleStaticMapBoxLayer = dbLayer => {
 		const map = window.mapRef;
