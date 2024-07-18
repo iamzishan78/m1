@@ -30,6 +30,7 @@ const udLayerClickHandler = (feature, stateLayer) => {
 
 	let popupStateVal;
 	let isFileLayer = false;
+	const isAoi = ['Interests', 'Area of Interest'].includes(feature.identifier)
 
 	if (ifGenericShapeIdentifier(feature.identifier)) {
 		const newPath = `/map/${feature.identifier.toLowerCase()}/${feature.properties.id}`;
@@ -44,7 +45,7 @@ const udLayerClickHandler = (feature, stateLayer) => {
 			expandedCard: true,
 			selectedParcel: { ...feature.properties, feature: selectedUserDefinedLayer },
 		};
-	} else if (['Interests', 'Area of Interest'].includes(feature.identifier)) {
+	} else if (isAoi) {
 		let drawStateVal;
 
 		popupStateVal = {
@@ -62,6 +63,15 @@ const udLayerClickHandler = (feature, stateLayer) => {
 		}
 
 		if (drawStateVal) drawController.updateState(drawStateVal);
+
+		findBoundsMap([feature], window.mapRef, {
+			top: 300, bottom: 300, left: 300, right: 300
+		});
+		popupController.setState(popupStateVal);
+
+		window.mapRef?.resize();
+		return
+
 	} else {
 		// For user defined layers details popup
 		let shapeCenter;

@@ -206,14 +206,6 @@ const ShapeActionsPopup = (props) => {
     if (drawController.getValue('shapeActionsFilterSelected')) {
       // drawController.applyFilter();
     }
-
-    if (currentFeature?.properties.shapeLabel && window.mapRef?.getLayer('aoi_label_layer')) {
-      // Changing the AOI source
-      window.mapRef?.getSource('aoi_label_source').setData({
-        type: 'FeatureCollection',
-        features: [currentFeature],
-      });
-    }
   }, [drawState.currentFeature]);
 
   const saveAndOpenShapeDetail = useCallback(
@@ -555,7 +547,7 @@ const ShapeActionsPopup = (props) => {
                     aria-label="Set Boundary"
                     disabled={onlyAddShape}
                     onClick={() => {
-                      if (selectedAction === 'edit-aoi') drawController.confirmEditing(updateCustomLayer, dispatch);
+                      if (selectedAction === 'edit-aoi') drawController.handleSaveAOIToShape({ updateCustomLayer, dispatch })
                       else if (selectedAction === 'edit-shape' || shapeEditMode === 'redraw' || shapeEditMode === 'fullEdit')
                         drawController.confirmShapeEditing(updateCustomLayer, dispatch, history);
                     }}

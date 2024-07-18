@@ -81,13 +81,11 @@ export default function ShapeAOIPopup(props) {
                   setShowError(true);
                   return;
                 }
-
-                drawController.handleSaveAOIToShape(e.target.value, upsertCustomLayer);
+                drawController.handleSaveAOIToShape({ dataName: e.target.value, upsertCustomLayer });
 
                 return;
               }
-
-              drawController.handleEditAOIToShape(e.target.value, updateCustomLayer);
+              drawController.handleSaveAOIToShape({ dataName: e.target.value, updateCustomLayer });
             }
           }}
         />
