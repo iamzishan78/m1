@@ -160,6 +160,11 @@ export const formatDate = (date, simple = true) => {
   return moment.parseZone(new Date(date)).format(simple ? 'MM/DD/YY' : 'MMMM D, YYYY');
 }
 
+export const formatDateTime = (date) => {
+  if (!date) return '--';
+  return moment.parseZone(new Date(date)).format('M/D/YYYY, hh:mm A');
+};
+
 export const isValidDate = (dateString) => {
   // Attempt to create a new Date object
   const date = new Date(dateString);

@@ -15,8 +15,11 @@ import ShapesFilesGenericMeta from './shapefiles_generic_schema';
 import PropertiesMeta from './properties_schema';
 import RevenueStatementsMeta from './revenue_statements_schema';
 import ContactWellInterestMeta from "./contact_well_Interest_schema"
+import ActivityMeta from './activity_schema';
+
 
 export const SCHEMA = {
+	ActivityTable: ActivityMeta,
 	ContactTable: ContactMeta,
 	ContactWellInterestTable: ContactWellInterestMeta,
 	CampaignContactTable: ContactMeta,
