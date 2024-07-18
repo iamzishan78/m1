@@ -540,9 +540,6 @@ function Map({
 		if (stateApp.baseMapLayers && stateApp.baseMapLayers.length > 0 && map) {
 			const landLayer = mapLayers?.find(layer => layer.identifier === 'Land Grid');
 			const baseMapLandIndex = stateApp.baseMapLayers.findIndex(layer => layer.name === 'Land Grid');
-			if (!landLayer?.layerSettings?.visiable && stateApp.checkedBaseLayers.includes(baseMapLandIndex)) {
-				return;
-			}
 			stateApp.baseMapLayers.forEach((l, index) => {
 				if (l.name === 'Land Grid' && !stateApp.checkedBaseLayers.includes(index)) {
 					if (landLayer) {
