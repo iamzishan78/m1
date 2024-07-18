@@ -8,21 +8,6 @@ import { globalStateController } from "hookstate/globalStateController";
 
 const esIndex = 'mywells_flat';
 
-const mergeProperties = (parent, property, type) => {
-  if (!Array.isArray(parent)) {
-    return <p>{parent?.[property] || ''}</p>;
-  }
-
-  let mergedRecord = '';
-  parent.forEach(prop => {
-    if (type === 'date')
-      mergedRecord += prop?.[property] ? ' ' + formatDate(prop?.[property]) : '';
-    else
-      mergedRecord += prop?.[property] ? ' ' + prop?.[property] : '';
-  });
-  return <p>{mergedRecord}</p>;
-}
-
 const MyWellsMeta = {
   esIndex,
   pageSize: 50,
@@ -93,7 +78,9 @@ const MyWellsMeta = {
       accessorFn: row => row?.properties?.internalID,
       id: 'properties.internalID',
       header: 'Internal ID',
-      Cell: ({ row }) => mergeProperties(row?.original?.properties, "internalID"),
+      Cell: ({ row }) => {
+        return <>{row?.original?.properties?.[0]?.internalID}</>
+      },
     },
     {
       ...CommonSchema.COMMON_COLUMN,
@@ -101,7 +88,9 @@ const MyWellsMeta = {
       accessorFn: row => row?.properties?.name,
       id: 'properties.name',
       header: 'Property Name',
-      Cell: ({ row }) => mergeProperties(row?.original?.properties, "name"),
+      Cell: ({ row }) => {
+        return <>{row?.original?.properties?.[0]?.name}</>
+      },
     },
     {
       ...CommonSchema.COMMON_COLUMN,
@@ -194,7 +183,7 @@ const MyWellsMeta = {
       id: 'wellData.PermitDate',
       header: 'Permit Date',
       type: 'date',
-      Cell: ({ renderedCellValue, row }) => {
+      Cell: ({ row }) => {
         return <>{formatDate(row?.original?.wellData?.PermitDate)}</>
       },
     },
@@ -205,7 +194,7 @@ const MyWellsMeta = {
       id: 'wellData.SpudDate',
       header: 'Spud Date',
       type: 'date',
-      Cell: ({ renderedCellValue, row }) => {
+      Cell: ({ row }) => {
         return <>{formatDate(row?.original?.wellData?.SpudDate)}</>
       },
     },
@@ -216,7 +205,7 @@ const MyWellsMeta = {
       id: 'wellData.CompletionDate',
       header: 'Completion Date',
       type: 'date',
-      Cell: ({ renderedCellValue, row }) => {
+      Cell: ({ row }) => {
         return <>{formatDate(row?.original?.wellData?.CompletionDate)}</>
       },
     },
@@ -227,7 +216,7 @@ const MyWellsMeta = {
       id: 'wellData.FirstProdDate',
       header: 'First Prod Date',
       type: 'date',
-      Cell: ({ renderedCellValue, row }) => {
+      Cell: ({ row }) => {
         return <>{formatDate(row?.original?.wellData?.FirstProdDate)}</>
       },
     },
@@ -265,7 +254,9 @@ const MyWellsMeta = {
       accessorFn: row => row?.properties?.status,
       id: 'properties.status',
       header: 'Pay Status',
-      Cell: ({ row }) => mergeProperties(row?.original?.properties, "status")
+      Cell: ({ row }) => {
+        return <>{row?.original?.properties?.[0]?.status}</>
+      },
     },
     {
       ...CommonSchema.COMMON_COLUMN,
@@ -273,40 +264,54 @@ const MyWellsMeta = {
       accessorFn: row => row?.properties?.divOrderStatus,
       id: 'properties.divOrderStatus',
       header: 'DO Status',
-      Cell: ({ row }) => mergeProperties(row?.original?.properties, "divOrderStatus")
+      Cell: ({ row }) => {
+        return <>{row?.original?.properties?.[0]?.divOrderStatus}</>
+      },
     },
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'properties.interestType.keyword',
-      accessorFn: row => row?.properties?.interestType,
-      id: 'properties.interestType',
+      name: 'propertyDescriptor.interestType.keyword',
+      accessorFn: row => row?.propertyDescriptor?.interestType,
+      id: 'propertyDescriptor.interestType',
       header: 'Interest Type',
-      Cell: ({ row }) => mergeProperties(row?.original?.properties, "interestType")
+      Cell: ({ row }) => {
+        const value = row?.original?.propertyDescriptor
+        return <p>{value && value?.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0]?.interestType) : ""}</p>;
+      },
     },
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'properties.interestAmount.keyword',
-      accessorFn: row => row?.properties?.interestAmount,
-      id: 'properties.interestAmount',
+      name: 'propertyDescriptor.interestAmount.keyword',
+      accessorFn: row => row?.propertyDescriptor?.interestAmount,
+      id: 'propertyDescriptor.interestAmount',
       header: 'Interest Amount',
-      Cell: ({ row }) => mergeProperties(row?.original?.properties, "interestAmount")
+      Cell: ({ row }) => {
+        const value = row?.original?.propertyDescriptor
+        return <p>{value && value?.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0]?.interestAmount) : ""}</p>;
+      },
     },
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'properties.effectiveDate',
-      accessorFn: row => row?.properties?.effectiveDate,
-      id: 'properties.effectiveDate',
+      name: 'propertyDescriptor.effectiveDate',
+      accessorFn: row => row?.propertyDescriptor?.effectiveDate,
+      id: 'propertyDescriptor.effectiveDate',
       header: 'Effective Date',
       type: 'date',
-      Cell: ({ row }) => mergeProperties(row?.original?.properties, "effectiveDate", 'date')
+      Cell: ({ row }) => {
+        const value = row?.original?.propertyDescriptor
+        return <p>{value && value?.length > 0 ? (value.length > 1 ? "MULTIPLE" : formatDate(value[0]?.effectiveDate)) : ""}</p>;
+      },
     },
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'properties.costFree.keyword',
-      accessorFn: row => row?.properties?.costFree,
-      id: 'properties.costFree',
+      name: 'propertyDescriptor.costFree.keyword',
+      accessorFn: row => row?.propertyDescriptor?.costFree,
+      id: 'propertyDescriptor.costFree',
       header: 'Cost Free',
-      Cell: ({ row }) => mergeProperties(row?.original?.properties, "costFree")
+      Cell: ({ row }) => {
+        const value = row?.original?.propertyDescriptor
+        return <p>{value && value?.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0]?.costFree) : ""}</p>;
+      },
     },
     {
       ...CommonSchema.COMMON_COLUMN,
@@ -314,7 +319,9 @@ const MyWellsMeta = {
       accessorFn: row => row?.properties?.internalCompany,
       id: 'properties.internalCompany',
       header: 'Internal Company',
-      Cell: ({ row }) => mergeProperties(row?.original?.properties, "internalCompany")
+      Cell: ({ row }) => {
+        return <>{row?.original?.properties?.[0]?.internalCompany}</>
+      },
     },
     {
       ...CommonSchema.COMMON_COLUMN,
@@ -322,7 +329,9 @@ const MyWellsMeta = {
       accessorFn: row => row?.properties?.acquisitionID,
       id: 'properties.acquisitionID',
       header: 'Acquisition',
-      Cell: ({ row }) => mergeProperties(row?.original?.properties, "acquisitionID")
+      Cell: ({ row }) => {
+        return <>{row?.original?.properties?.[0]?.acquisitionID}</>
+      },
     },
     {
       ...CommonSchema.COMMON_COLUMN,
@@ -330,7 +339,9 @@ const MyWellsMeta = {
       accessorFn: row => row?.properties?.prospectID,
       id: 'properties.prospectID',
       header: 'Prospect',
-      Cell: ({ row }) => mergeProperties(row?.original?.properties, "prospectID")
+      Cell: ({ row }) => {
+        return <>{row?.original?.properties?.[0]?.prospectID}</>
+      },
     },
     {
       ...CommonSchema.COMMENTS,
