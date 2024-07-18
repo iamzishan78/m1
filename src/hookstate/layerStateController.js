@@ -187,6 +187,10 @@ const LayerMeta = {
 			getProps: layerId => {
 				return {
 					data: deckLayers[layerId].getData([]),
+					pointRadiusMinPixels: 5,
+					lineWidthMinPixels: 2,
+					pointRadiusMaxPixels: 15,
+					lineWidthMaxPixels: 10,
 				};
 			},
 		},
