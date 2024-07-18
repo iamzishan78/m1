@@ -25,6 +25,7 @@ import { drawController } from "hookstate/drawStateController";
 import MRTTable from "components/MRTTable";
 import { mapControlsController } from "hookstate/mapControlsController";
 import { tableGlobalController } from "hookstate/tableController";
+import { layerFiltersController } from "hookstate/layerFiltersController";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -245,6 +246,7 @@ function MapGridCard(props) {
   const onClose = (e) => {
     e.stopPropagation();
     mapControlsController.updateState({ selectedDataset: null, mapGridCardActivated: false, });
+    layerFiltersController.clearWellsFilters()
     dispatch(
       setMapGridCardState({
         selectedOwner: null,
