@@ -217,12 +217,13 @@ const AddShapePopup = ({ onlyAddShape, upsertCustomLayer }) => {
   const actionClose = (...props) => drawController.actionClose(dispatch, ...props);
 
   const isAOI = drawStateValues.currentFeature?.properties?.sdType === 'interest';
+  const { mapControlsStateValues } = mapControlsController.useState(['mapGridCardActivated'], 'mapControlsStateValues');
   return (
     <>
       {/* --------------------------- for edit/create AOI -------------------------- */}
       {drawStateValues.showDataCard && isAOI && <ShapeAOIPopup upsertCustomLayer={upsertCustomLayer} />}
 
-      <div className={classes.mapOverlay}>
+      <div className={classes.mapOverlay} style={mapControlsStateValues.mapGridCardActivated ? { bottom: '530px' } : {}}>
         <div className={classes.mapOverlayInner}>
           <div className={classes.content}>
             <ShapeActionsPopup
