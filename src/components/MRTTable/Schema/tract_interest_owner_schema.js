@@ -523,6 +523,10 @@ const TractPerUnitMeta = {
 			accessorKey: 'deals.name',
 			isExport: 'dealsName',
 			header: 'Associated Deals',
+			handleArrayExport: {
+				esType: "collection",
+				actualKey: "name"
+			},
 			isSearchField: true,
 			Cell: ({ row }) => {
 				return (
