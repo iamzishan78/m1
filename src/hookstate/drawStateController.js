@@ -791,9 +791,9 @@ const drawStateControllerHandler = state => {
 			},
 		}).then(() => {
 			jobController.toggleBulkUpload()
-			const newPath = `/map/${layerData.shapeJson.properties.layerSubType}s/${layerData._id}`;
+			const newPath = `/map/${layerData.layer}s/${layerData._id}`;
 			if (history.location.pathname !== newPath) history.replace(newPath);
-			layerController.resetBounds(customLayerData?.shapeJson?.identifier || customLayerData?.shapeJson?.layer?.id)
+			layerController.resetBounds(customLayerData?.shapeJson?.identifier || customLayerData?.shapeJson?.layer?.id || customLayerData?.layer)
 		});
 		const jsonLayer = copy(customLayerData.shapeJson);
 		jsonLayer.layer = { id: customLayerData.layer };
