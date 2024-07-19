@@ -3,6 +3,7 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import Analytics from 'components/Shared/svgIcons/analytics';
 import { formatDateTime, formatDate } from 'components/Shared/functions';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 
 const esIndex = 'checkdetails_flat';
 
@@ -38,7 +39,7 @@ const RevenueCheckDetailMeta = {
         {
             ...CommonSchema.INITAIL_PINNED,
             name: 'check.checkNumber.keyword',
-            accessorFn: row => row?.check?.checkNumber,
+            accessorKey: "check.checkNumber",
             header: 'Check Number',
             Cell: ({ renderedCellValue, row }) => (
                 <div
@@ -61,22 +62,19 @@ const RevenueCheckDetailMeta = {
         {
             ...CommonSchema.COMMON_COLUMN,
             name: 'property.name.keyword',
-            accessorFn: row => row?.property?.name,
-            id: 'property.name',
+            accessorKey: "property.name",
             header: 'Property',
         },
         {
             ...CommonSchema.COMMON_COLUMN,
             name: 'check.payor.name.keyword',
-            accessorFn: row => row?.check?.payor?.name,
-            id: 'check.payor.name',
+            accessorKey: "check.payor.name",
             header: 'Payor',
         },
         {
             ...CommonSchema.COMMON_COLUMN,
             name: 'check.checkDate',
-            accessorFn: row => row?.check?.checkDate,
-            accessorKey: 'check.checkDate',
+            accessorKey: "check.checkDate",
             header: "Check Date",
             isHiddenFieldExport: true,
             type: 'date',
@@ -87,21 +85,18 @@ const RevenueCheckDetailMeta = {
         {
             ...CommonSchema.COMMON_COLUMN,
             name: 'property.ownerNumber.keyword',
-            accessorFn: row => row?.property?.ownerNumber,
-            id: 'property.ownerNumber',
+            accessorKey: "property.ownerNumber",
             header: 'Owner Number',
         },
         {
             ...CommonSchema.COMMON_COLUMN,
             name: 'property._owner.name.keyword',
-            accessorFn: row => row?.property?._owner?.name,
-            id: 'property._owner.name',
+            accessorKey: "property._owner.name",
             header: 'Owner',
         },
         {
             ...CommonSchema.COMMON_COLUMN,
             name: 'check.depositDate',
-            accessorFn: row => row?.check?.depositDate,
             accessorKey: 'check.depositDate',
             header: "Deposit Date",
             isHiddenFieldExport: true,
@@ -110,6 +105,129 @@ const RevenueCheckDetailMeta = {
                 return <>{formatDate(row?.original?.check?.depositDate)}</>
             },
         },
+        {
+			...CommonSchema.COMMON_COLUMN,
+			name: 'check.checkAmount',
+			accessorKey: 'check.checkAmount',
+			header: 'Check Amount',
+			Cell: ({ renderedCellValue }) => <>{vf_currency_to_fixed(renderedCellValue)}</>,
+		},
+
+        {
+			...CommonSchema.COMMON_COLUMN,
+			name: 'check.source.keyword',
+            accessorKey: 'check.source',
+			header: 'Source',
+		},
+
+        {
+			...CommonSchema.COMMON_COLUMN,
+			name: 'check.sourceId.keyword',
+            accessorKey: 'check.sourceId',
+			header: 'Source Id',
+		},
+        {
+			...CommonSchema.COMMON_COLUMN,
+			name: 'property.number.keyword',
+            accessorKey: 'property.number',
+			header: 'Payor Property #',
+		},
+        {
+			...CommonSchema.COMMON_COLUMN,
+			name: 'property.state.keyword',
+            accessorKey: 'property.state',
+			header: 'State',
+		},
+
+        {
+			...CommonSchema.COMMON_COLUMN,
+			name: 'property.county.keyword',
+            accessorKey: 'property.county',
+			header: 'County',
+		},
+        {
+			...CommonSchema.COMMON_COLUMN,
+			name: 'product.keyword',
+            accessorKey: 'product',
+			header: 'Product',
+		},
+        {
+			...CommonSchema.COMMON_COLUMN,
+			name: 'date',
+            accessorKey: 'date',
+			header: 'Sales Date',
+		},
+        {
+			...CommonSchema.COMMON_COLUMN,
+			name: 'disbursement',
+            accessorKey: 'disbursement',
+			header: 'Decimal Interest',
+		},
+        {
+			...CommonSchema.COMMON_COLUMN,
+			name: 'interestType.keyword',
+            accessorKey: 'interestType',
+			header: 'Type',
+		},
+        {
+			...CommonSchema.COMMON_COLUMN,
+			name: 'price',
+            accessorKey: 'price',
+			header: 'Avg Price',
+		},
+        {
+			...CommonSchema.COMMON_COLUMN,
+            name: "grossPropertyVolume",
+            accessorKey: 'grossPropertyVolume',
+			header: 'Prop Gross Volume',
+		},
+        {
+			...CommonSchema.COMMON_COLUMN,
+			name: 'grossPropertyValue',
+            accessorKey: 'grossPropertyValue',
+			header: 'Prop Gross Revenue',
+		},
+        {
+			...CommonSchema.COMMON_COLUMN,
+			name: 'grossOwnerVolume',
+            accessorKey: 'grossOwnerVolume',
+			header: 'Gross Owner Volume',
+		},
+        {
+			...CommonSchema.COMMON_COLUMN,
+			name: 'grossOwnerValue',
+            accessorKey: 'grossOwnerValue',
+			header: 'Owner Gross Revenue',
+		},
+        {
+			...CommonSchema.COMMON_COLUMN,
+			name: 'ownerTax',
+            accessorKey: 'ownerTax',
+			header: 'Owner Tax Amt',
+		},
+        {
+			...CommonSchema.COMMON_COLUMN,
+			name: 'taxType.keyword',
+            accessorKey: 'taxType',
+			header: 'Tax Type',
+		},
+        {
+			...CommonSchema.COMMON_COLUMN,
+			name: 'ownerDeducts',
+            accessorKey: 'ownerDeducts',
+			header: 'Deduct Amt',
+		},
+        {
+			...CommonSchema.COMMON_COLUMN,
+			name: 'netOwnerValue',
+            accessorKey: 'netOwnerValue',
+			header: 'Owner Net Rev',
+		},
+        {
+			...CommonSchema.HIDDEN,
+			name: 'propertyId',
+			accessorKey: 'propertyId',
+		},
     ]
 }
 export default RevenueCheckDetailMeta;

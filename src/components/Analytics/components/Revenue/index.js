@@ -409,7 +409,6 @@ export default function RevenueAnalytics(props) {
 
       {tabs[tab] === 'Check Details' && (
         <div className={`${classes.sectionCard}`}>
-          <CheckDetailsSection header="Check Details" loadMore={loadMore} />
           <MRTTable name="RevenueCheckDetailTable" />
         </div>
       )}
