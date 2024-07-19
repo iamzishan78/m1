@@ -32,6 +32,7 @@ import { mapControlsController } from './mapControlsController';
 import { NotificationManager } from 'react-notifications';
 import { debounce } from 'lodash';
 import { layerState, layerStateInitialState } from './initialStates';
+import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
 const getWellColor = w => {
 	switch (w.properties.wellType) {
@@ -187,6 +188,10 @@ const LayerMeta = {
 			getProps: layerId => {
 				return {
 					data: deckLayers[layerId].getData([]),
+					pointRadiusMinPixels: 5,
+					lineWidthMinPixels: 2,
+					pointRadiusMaxPixels: 15,
+					lineWidthMaxPixels: 10,
 				};
 			},
 		},
@@ -519,7 +524,16 @@ const layerStateControllerHandler = state => {
 				}
 			);
 		});
+
+		map.on('click', `${layerId}-unclustered-point`, (e) => {
+			const features = map.queryRenderedFeatures(e.point, {
+				layers: [`${layerId}-unclustered-point`]
+			});
+			drawWellBoundary(features[0].geometry.coordinates)
+			popupController.updateState({ wellSelectedCoordinates: features[0].geometry.coordinates, selectedWellId: features[0].properties.id })
+		});
 	};
+
 
 	const handleStaticMapBoxLayer = dbLayer => {
 		const map = window.mapRef;
@@ -635,8 +649,7 @@ const layerStateControllerHandler = state => {
 			polygonFilter,
 			filters: isFileLayer ? generateFileFilters(dbLayer) : filters,
 			onData: data => {
-				if (!data || data.length === 0) return;
-
+				if (!Array.isArray(data) || data.length === 0) return;
 				if (filters?.allowedTypes?.length > 0) {
 					data = data.filter(f =>
 						filters.allowedTypes.includes(f?.shapeJson?.geometry?.type)

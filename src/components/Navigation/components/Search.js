@@ -55,6 +55,7 @@ import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-
 import { SHAPE_TYPE } from "components/Navigation/components/Utils/consts";
 import { popupController } from "hookstate/popupStateController";
 import { mapControlsController } from "hookstate/mapControlsController";
+import { layerController } from "hookstate/layerStateController";
 
 const landGridIndexName = "landgrid-index";
 const leaseIndexName = "lease-index-m1corev3";
@@ -336,7 +337,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
   const [searchHistoryList, setSearchHistoryList] = React.useState([]);
 
   const { mapControlsStateValues } = mapControlsController.useState(['mapGridCardActivated'], 'mapControlsStateValues');
-
+  const { layerStateValues } = layerController.useState(['wellListFromSearch'], 'layerStateValues')
   // loaders
   const [loading, setLoading] = React.useState(false);
   const history = useHistory();
@@ -487,8 +488,11 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
       if (searchInputValue === "") {
         setOptions(value ? [value] : []);
         setValue(null);
-        if (!stateApp.toggleLayerActivityValue)
-          setStateApp((state) => ({ ...state, wellListFromSearch: [], landGridListFromSearch: [] }));
+        if (!stateApp.toggleLayerActivityValue) {
+          layerController.updateState({ wellListFromSearch: [] })
+          setStateApp((state) => ({ ...state, landGridListFromSearch: [] }));
+        }
+
         setLoading(false);
         return undefined;
       }
@@ -553,8 +557,8 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
           ...stateApp,
           fitBounds: null,
           searchLoader: false,
-          wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
         }));
+        layerController.updateState({ wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray] })
 
         stateApp.toggleLayersActivity("Search", true);
       } else {
@@ -562,8 +566,8 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
         setStateApp((stateApp) => ({
           ...stateApp,
           searchLoader: false,
-          wellListFromSearch: [],
         }));
+        layerController.updateState({ wellListFromSearch: [] })
       }
     }
   }, [dataOwnerWells]);
@@ -583,9 +587,9 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
         setStateApp(stateApp => ({
           ...stateApp,
           fitBounds: null,
-          searchLoader: false,
-          wellListFromSearch: [...dataOperatorWells.operatorLatsLonsArray],
+          searchLoader: false
         }));
+        layerController.updateState({ wellListFromSearch: [...dataOperatorWells.operatorLatsLonsArray] })
 
         stateApp.toggleLayersActivity("Search", true);
       } else {
@@ -593,8 +597,8 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
         setStateApp((stateApp) => ({
           ...stateApp,
           searchLoader: false,
-          wellListFromSearch: [],
         }));
+        layerController.updateState({ wellListFromSearch: [] })
       }
     }
   }, [dataOperatorWells]);
@@ -615,8 +619,8 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
           ...stateApp,
           fitBounds: null,
           searchLoader: false,
-          wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
         }));
+        layerController.updateState({ wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray] })
 
         stateApp.toggleLayersActivity("Search", true);
       } else {
@@ -624,8 +628,8 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
         setStateApp((stateApp) => ({
           ...stateApp,
           searchLoader: false,
-          wellListFromSearch: [],
         }));
+        layerController.updateState({ wellListFromSearch: [] })
       }
     }
   }, [dataLeaseWells]);
@@ -651,8 +655,8 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
         setStateApp((stateApp) => ({
           ...stateApp,
           searchLoader: false,
-          wellListFromSearch: [],
         }));
+        layerController.updateState({ wellListFromSearch: [] })
       }
     }
   }, [dataLandGridGeom]);
@@ -668,23 +672,22 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
               selectedWell: null,
               fitBounds: null,
               searchLoader: false,
-              wellListFromSearch: [...dataContactWells.contactWells],
             }
             : {
               ...stateApp,
               fitBounds: null,
               searchLoader: false,
-              wellListFromSearch: [...dataContactWells.contactWells],
             }
         );
+        layerController.updateState({ wellListFromSearch: [...dataContactWells.contactWells] })
         stateApp.toggleLayersActivity("Search", true);
       } else {
         stateApp.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
           searchLoader: false,
-          wellListFromSearch: [],
         }));
+        layerController.updateState({ wellListFromSearch: [] })
       }
     }
   }, [dataContactWells]);
@@ -758,14 +761,16 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
         setStateApp((stateApp) => ({
           ...stateApp,
           fitBounds: null,
+        }));
+        layerController.updateState({
           wellListFromSearch: [
             {
               id: newValue.Id,
               longitude: newValue.Longitude,
               latitude: newValue.Latitude,
-            },
-          ],
-        }));
+            }
+          ]
+        })
         stateApp.toggleLayersActivity("Search", true);
       }
 
@@ -847,15 +852,17 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
 
         setStateApp((stateApp) => ({
           ...stateApp,
+          fitBounds: newValue.bbox ? { maxLat, minLat, maxLong, minLong } : null,
+        }));
+        layerController.updateState({
           wellListFromSearch: [
             {
               id: newValue.Id,
               longitude: newValue.center[0],
               latitude: newValue.center[1],
-            },
-          ],
-          fitBounds: newValue.bbox ? { maxLat, minLat, maxLong, minLong } : null,
-        }));
+            }
+          ]
+        })
         stateApp.toggleLayersActivity("Search", true);
       }
     }
@@ -1009,7 +1016,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
                     <InputAdornment className={classes.endAdornmentIcon}>
                       <div>
                         {((searchInputValue && searchInputValue !== "") ||
-                          (stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0)) && (
+                          (layerStateValues.wellListFromSearch && layerStateValues.wellListFromSearch.length > 0)) && (
                             <Tooltip title="Clear" placement="top">
                               <IconButton
                                 size="small"
@@ -1021,10 +1028,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
                                       searchResultData: [],
                                     })
                                   );
-                                  setStateApp((state) => ({
-                                    ...state,
-                                    wellListFromSearch: [],
-                                  }));
+                                  layerController.updateState({ wellListFromSearch: [] })
                                 }}
                               >
                                 <ClearIcon htmlColor="#fff" />

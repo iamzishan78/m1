@@ -132,6 +132,7 @@ function Map({
 	const { filterDrawing, navStateValues } = navController.useState(['filterDrawing'], 'navStateValues')
 	const { selectedShapeFile, popupStateValues } = popupController.useState(['selectedShapeFile'], 'popupStateValues');
 	const { mapStateValues } = mapStateController.useState(['mapVars', 'defaultMapVars', 'toggle3d', 'toggleZoomOut'], 'mapStateValues');
+	const { wellListFromSearch, layerStateValues } = layerController.useState(['wellListFromSearch'], 'layerStateValues')
 	const [stateApp, setStateApp] = useContext(AppContext);
 
 	const client = useApolloClient();
@@ -1045,8 +1046,8 @@ function Map({
 	}, [map, stateApp.fitBounds]);
 
 	useEffect(() => {
-		if (map && stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0) {
-			if (stateApp.wellListFromSearch.length > 1) {
+		if (map && layerStateValues.wellListFromSearch && layerStateValues.wellListFromSearch.length > 0) {
+			if (layerStateValues.wellListFromSearch.length > 1) {
 				const findBounds = shape => {
 					if (gjv.valid(shape)) {
 						const bbox = turf.bbox(shape);
@@ -1088,17 +1089,17 @@ function Map({
 				setStateApp(state => ({
 					...state,
 					searchLoader: false,
-					fitBounds: findBounds(formatIt(stateApp.wellListFromSearch)),
+					fitBounds: findBounds(formatIt(layerStateValues.wellListFromSearch)),
 				}));
 			} else if (
-				stateApp.wellListFromSearch[0] &&
-				stateApp.wellListFromSearch[0].latitude &&
-				stateApp.wellListFromSearch[0].longitude
+				layerStateValues.wellListFromSearch[0] &&
+				layerStateValues.wellListFromSearch[0].latitude &&
+				layerStateValues.wellListFromSearch[0].longitude
 			) {
 				map.jumpTo({
 					center: {
-						lng: stateApp.wellListFromSearch[0].longitude,
-						lat: stateApp.wellListFromSearch[0].latitude,
+						lng: layerStateValues.wellListFromSearch[0].longitude,
+						lat: layerStateValues.wellListFromSearch[0].latitude,
 					},
 					zoom: 12,
 				});
@@ -1108,7 +1109,7 @@ function Map({
 				}));
 			}
 		}
-	}, [map, stateApp.wellListFromSearch]);
+	}, [map, wellListFromSearch]);
 
 	useEffect(() => {
 		if (map && stateApp?.findLocation?.location?.length > 0) {

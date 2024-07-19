@@ -8,6 +8,7 @@ import { useLazyQuery } from '@apollo/client';
 import { OWNERSLATSLONS } from "graphQL/useQueryOwnerLatsLonsArray";
 import { popupController } from 'hookstate/popupStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
+import { layerController } from 'hookstate/layerStateController';
 
 const useStyles = makeStyles(() => ({
     icons: {
@@ -45,10 +46,9 @@ const WellFlyToMap = ({ id, disabled = false }) => {
                 });
             window.setStateApp(stateApp => ({
                 ...stateApp,
-                fitBounds: null,
-                wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
+                fitBounds: null
             }));
-
+            layerController.updateState({ wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray] })
             mapControlsController.updateState({ mapGridCardActivated: false });
         }
 

@@ -1,10 +1,19 @@
 import { BlockBlobClient } from '@azure/storage-blob';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, initial, join, last, split } from 'lodash';
 import moment from 'moment';
 
 export * from './deepEqual';
 export * from './setStateIfDeepEqual';
 export * from './getPolygonString';
+
+export const getFileExtension = (filename) => {
+  const parts = split(filename, '.');
+  return parts.length > 1 ? last(parts) : '';
+};
+export const getFileName = (filename) => {
+  const parts = split(filename, '.');
+  return join(initial(parts), '.');
+};
 
 export const generateRandomString = (length = 24) => {
   var result = '';

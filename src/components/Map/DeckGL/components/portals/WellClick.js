@@ -2,7 +2,6 @@ import { memo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useApolloClient } from '@apollo/client';
 
-import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
 import { popupController } from 'hookstate/popupStateController';

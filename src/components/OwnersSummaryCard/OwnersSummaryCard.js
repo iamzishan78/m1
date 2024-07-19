@@ -9,6 +9,7 @@ import { setMapGridCardState } from "../../actions";
 import WellInterestsTopSumary from "./components/WellInterestsTopSumary";
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import { mapControlsController } from "hookstate/mapControlsController";
+import { layerController } from "hookstate/layerStateController";
 
 const useStyles = makeStyles((theme) => ({
   gridWidthScroll: {
@@ -72,10 +73,7 @@ export default function OwnersSummaryCard(props) {
                   selectedOwnerWellIntsSummary: null,
                 })
               );
-              window.setStateApp((stateApp) => ({
-                ...stateApp,
-                wellListFromSearch: [],
-              }));
+              layerController.updateState({ wellListFromSearch: [] })
             }}
           >
             Interest Owners

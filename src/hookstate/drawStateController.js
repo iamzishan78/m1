@@ -149,11 +149,6 @@ const drawStateControllerHandler = state => {
 		drawBoundary();
 		clearSelectedAbstracts();
 
-		// Removing layer of AOI Label
-		if (window.mapRef?.getLayer('aoi_label_layer')) {
-			window.mapRef?.removeLayer('aoi_label_layer');
-		}
-
 		drawController.updateState({
 			currentFeature: null,
 			selectedAoi: null,
@@ -478,7 +473,7 @@ const drawStateControllerHandler = state => {
 
 	const actionShowWellsAndOwners = dispatch => {
 		if (isLine()) return;
-
+		layerFiltersController.clearWellsFilters()
 		const selectedFeature = drawController.getValue('currentFeature');
 
 		drawController.updateState({

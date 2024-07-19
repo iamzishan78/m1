@@ -107,7 +107,6 @@ const AppProvider = (props) => {
     zoomFault: null,
     hugeRequest: null,
     currentFeature: undefined,
-    wellListFromSearch: [],
     landGridListFromSearch: [],
     wellListFromTagsFilter: [],
     viewportWells: null,

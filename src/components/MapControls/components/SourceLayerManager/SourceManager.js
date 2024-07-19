@@ -517,7 +517,7 @@ function SourceManager(props) {
     });
 
     layerTypes.forEach((layerType) => {
-      fileNames.push(`${geo.fileName || name} - ${layerType}`);
+      fileNames.push(`${geo.fileName || geo.name || name} - ${layerType}`);
     });
 
     // Create a MultiPoint geometry from the FeatureCollection's coordinates

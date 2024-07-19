@@ -136,6 +136,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 import { GET_VIEW_TOKEN_URI } from "graphQL/useQueryGetViewTokenUri";
 import { navController } from "hookstate/navStateController";
+import { layerController } from "hookstate/layerStateController";
 
 
 // suppress debug console logs
@@ -725,15 +726,17 @@ function SubTable(props) {
         selectedWell: null,
         selectedWellId: null,
         wellSelectedCoordinates: null,
+        fitBounds: newValue.bbox ? { maxLat, minLat, maxLong, minLong } : null,
+      }));
+      layerController.updateState({
         wellListFromSearch: [
           {
             id: newValue.Id,
             longitude: newValue.center[0],
             latitude: newValue.center[1],
           },
-        ],
-        fitBounds: newValue.bbox ? { maxLat, minLat, maxLong, minLong } : null,
-      }));
+        ]
+      })
       stateApp.toggleLayersActivity("Search", true);
     }
   };
@@ -934,21 +937,17 @@ function SubTable(props) {
               fitBounds: null,
               selectedWellId: dataOwnerWells.ownerLatsLonsArray[0].id.toLowerCase(),
               wellSelectedCoordinates: [dataOwnerWells.ownerLatsLonsArray[0].longitude, dataOwnerWells.ownerLatsLonsArray[0].latitude],
-              wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
             }
             : {
               ...stateApp,
               fitBounds: null,
-              wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
             }
         );
+        layerController.updateState({ wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray] })
         stateApp.toggleLayersActivity("Search", true);
       } else {
         stateApp.toggleLayersActivity("Search", false);
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          wellListFromSearch: [],
-        }));
+        layerController.updateState({ wellListFromSearch: [] })
       }
       // unmount
       dispatch(setMapGridCardState({ mapGridCardActivated: false }));
@@ -973,21 +972,17 @@ function SubTable(props) {
                 dataOperatorWells.operatorLatsLonsArray[0].longitude,
                 dataOperatorWells.operatorLatsLonsArray[0].latitude,
               ],
-              wellListFromSearch: [...dataOperatorWells.operatorLatsLonsArray],
             }
             : {
               ...stateApp,
               fitBounds: null,
-              wellListFromSearch: [...dataOperatorWells.operatorLatsLonsArray],
             }
         );
+        layerController.updateState({ wellListFromSearch: [...dataOperatorWells.operatorLatsLonsArray] })
         stateApp.toggleLayersActivity("Search", true);
       } else {
         stateApp.toggleLayersActivity("Search", false);
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          wellListFromSearch: [],
-        }));
+        layerController.updateState({ wellListFromSearch: [] })
       }
       // unmount
       dispatch(setMapGridCardState({ mapGridCardActivated: false }));
@@ -1009,21 +1004,17 @@ function SubTable(props) {
               fitBounds: null,
               selectedWellId: dataLeaseWells.leaseLatsLonsArray[0].id.toLowerCase(),
               wellSelectedCoordinates: [dataLeaseWells.leaseLatsLonsArray[0].longitude, dataLeaseWells.leaseLatsLonsArray[0].latitude],
-              wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
             }
             : {
               ...stateApp,
               fitBounds: null,
-              wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
             }
         );
+        layerController.updateState({ wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray] })
         stateApp.toggleLayersActivity("Search", true);
       } else {
         stateApp.toggleLayersActivity("Search", false);
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          wellListFromSearch: [],
-        }));
+        layerController.updateState({ wellListFromSearch: [] })
       }
     }
   }, [dataLeaseWells]);
