@@ -649,8 +649,7 @@ const layerStateControllerHandler = state => {
 			polygonFilter,
 			filters: isFileLayer ? generateFileFilters(dbLayer) : filters,
 			onData: data => {
-				if (!data || data.length === 0) return;
-
+				if (!Array.isArray(data) || data.length === 0) return;
 				if (filters?.allowedTypes?.length > 0) {
 					data = data.filter(f =>
 						filters.allowedTypes.includes(f?.shapeJson?.geometry?.type)
