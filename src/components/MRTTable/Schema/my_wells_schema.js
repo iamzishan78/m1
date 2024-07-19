@@ -183,6 +183,7 @@ const MyWellsMeta = {
       id: 'wellData.PermitDate',
       header: 'Permit Date',
       type: 'date',
+      isSearchField: false,
       Cell: ({ row }) => {
         return <>{formatDate(row?.original?.wellData?.PermitDate)}</>
       },
@@ -194,6 +195,7 @@ const MyWellsMeta = {
       id: 'wellData.SpudDate',
       header: 'Spud Date',
       type: 'date',
+      isSearchField: false,
       Cell: ({ row }) => {
         return <>{formatDate(row?.original?.wellData?.SpudDate)}</>
       },
@@ -205,6 +207,7 @@ const MyWellsMeta = {
       id: 'wellData.CompletionDate',
       header: 'Completion Date',
       type: 'date',
+      isSearchField: false,
       Cell: ({ row }) => {
         return <>{formatDate(row?.original?.wellData?.CompletionDate)}</>
       },
@@ -216,6 +219,7 @@ const MyWellsMeta = {
       id: 'wellData.FirstProdDate',
       header: 'First Prod Date',
       type: 'date',
+      isSearchField: false,
       Cell: ({ row }) => {
         return <>{formatDate(row?.original?.wellData?.FirstProdDate)}</>
       },
@@ -226,6 +230,7 @@ const MyWellsMeta = {
       accessorFn: row => row?.wellData?.measuredDepth,
       id: 'wellData.measuredDepth',
       header: 'Measured Depth',
+      isSearchField: false,
     },
     {
       ...CommonSchema.COMMON_COLUMN,
@@ -233,6 +238,7 @@ const MyWellsMeta = {
       accessorFn: row => row?.wellData?.TrueVerticalDepth,
       id: 'wellData.TrueVerticalDepth',
       header: 'TVD',
+      isSearchField: false,
     },
     {
       ...CommonSchema.COMMON_COLUMN,
@@ -240,6 +246,7 @@ const MyWellsMeta = {
       accessorFn: row => row?.wellData?.lateralLength,
       id: 'wellData.lateralLength',
       header: 'Lateral Length',
+      isSearchField: false,
     },
     {
       ...CommonSchema.COMMON_COLUMN,
@@ -285,6 +292,7 @@ const MyWellsMeta = {
       accessorFn: row => row?.propertyDescriptor?.interestAmount,
       id: 'propertyDescriptor.interestAmount',
       header: 'Interest Amount',
+      isSearchField: false,
       Cell: ({ row }) => {
         const value = row?.original?.propertyDescriptor
         return <p>{value && value?.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0]?.interestAmount) : ""}</p>;
@@ -297,6 +305,7 @@ const MyWellsMeta = {
       id: 'propertyDescriptor.effectiveDate',
       header: 'Effective Date',
       type: 'date',
+      isSearchField: false,
       Cell: ({ row }) => {
         const value = row?.original?.propertyDescriptor
         return <p>{value && value?.length > 0 ? (value.length > 1 ? "MULTIPLE" : formatDate(value[0]?.effectiveDate)) : ""}</p>;
