@@ -32,9 +32,11 @@ const useTableESSimple = tableKey => {
 
 	const localizationOptions = {
 		filterCustomFilterFn: 'AutoComplete',
+		selectedCountOfRowCountRowsSelected: `${Object.keys(tableStateValues?.rowSelection || {})?.length} of ${tableStateValues?.data.total} row(s) selected`
 	};
-	if (tableStateValues.rowSelection)
-		localizationOptions.selectedCountOfRowCountRowsSelected = `${Object.keys(tableStateValues?.rowSelection)?.length} of ${tableStateValues?.data.total} row(s) selected`;
+
+	if (tableStateValues.asyncRowSelection && !tableStateValues.isSubSetSelect)
+		localizationOptions.selectedCountOfRowCountRowsSelected = `${tableStateValues?.data.total} of ${tableStateValues?.data.total} row(s) selected`;
 
 	const { CustomToolBar } = tableStateValues;
 	return {
@@ -136,6 +138,17 @@ const useTableESSimple = tableKey => {
 				const missingNumbers = _.difference(allNumbers, _.keys(newstate).map(Number));
 				const selectAll = (tableStateValues.data?.rows?.length === Object.keys(newstate)?.length) && !missingNumbers.length;
 				if (selectAll) {
+					if (tableStateValues.asyncRowSelection) {
+						for (let i = 0; i < tableStateValues?.data?.rows?.length; i++) {
+							newstate[i] = true
+						}
+						Controller.setColumnCheck(newstate)
+						Controller.updateState({
+							onScrollCheck: true,
+							isSubSetSelect: null
+						})
+						return
+					}
 					for (let i = 0; i < tableStateValues.data?.total; i++) {
 						newstate[i] = true
 					}
@@ -154,9 +167,12 @@ const useTableESSimple = tableKey => {
 					newstate = {}
 					if (tableStateValues?.isSubSetSelect) {
 						Controller.updateState({
-							isSubSetSelect: null
+							isSubSetSelect: null,
 						});
 					}
+					Controller.updateState({
+						onScrollCheck: false
+					});
 				}
 				Controller.setColumnCheck(newstate)
 			},
@@ -177,9 +193,9 @@ const useTableESSimple = tableKey => {
 					idArray.forEach(idValue => {
 						const newItem = {
 							id: idValue,
-							value: item.value,
+							value: item?.value,
 							type: item?.type,
-							columnType: column.type,
+							columnType: column?.type,
 						};
 						result.push(newItem);
 					});
