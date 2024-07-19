@@ -267,6 +267,7 @@ function MapGridCard(props) {
     }
     tableGlobalController.reInitialized();
     return {
+      filterLayerType: mapControlsStateValues.selectedLayer?.layerShapeName,
       toolbarInternalActions: {
         onClose,
         style: {
