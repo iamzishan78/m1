@@ -22,7 +22,7 @@ import { useDispatch } from "react-redux";
 import { showErrorMessage } from "../../../actions";
 import { getDefaultSettings, SimpleOrShapeFileImport } from './addUserHelper'
 import Loader from "components/Loaders";
-import { uploadFileData } from "components/Shared/functions";
+import { getFileExtension, uploadFileData } from "components/Shared/functions";
 import { Box, Checkbox, FormControlLabel } from "@material-ui/core";
 import { ADD_DATASET } from "graphQL/useMutationDataset";
 import { ADD_LAYER_GROUP } from "graphQL/useMutationLayerGroup";
@@ -232,7 +232,7 @@ export default function AddUserGroupData(props) {
       }));
 
       const userId = stateApp.user.mongoId;
-      const fileName = groupName.trim().toLowerCase().replace(" ", "_") + ".zip";
+      const fileName = groupName.trim().toLowerCase().replace(" ", "_") + `.${getFileExtension(inputOriginalFile.fileName)}`;
       let originalFileId = ''
       let originalFile
       const size = 80 * 1024 * 1024;
