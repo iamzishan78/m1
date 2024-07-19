@@ -562,7 +562,7 @@ const layerStateControllerHandler = state => {
 
 		const isFileLayer = dbLayer.layerType === 'file layer';
 		const isAgreementLayer = agreementLayerIdentifiers.includes(dbLayer.identifier);
-		const filterIdentifier = isAgreementLayer ? 'Agreements' : dbLayer.identifier;
+		const filterIdentifier = isAgreementLayer ? 'Agreements' : isFileLayer ? dbLayer.layerShapeName : dbLayer.identifier;
 
 		let { [filterIdentifier]: filters, polygonFilter } = layerFiltersController.getValues(
 			[filterIdentifier, 'polygonFilter']
@@ -639,7 +639,6 @@ const layerStateControllerHandler = state => {
 			});
 
 		updateLayer(dbLayer, updatedProps);
-
 		getBoundsQuery({
 			multiQuery: meta.multiQuery,
 			layerId,
@@ -647,7 +646,7 @@ const layerStateControllerHandler = state => {
 			boundingState,
 			geoField: meta.geoField,
 			polygonFilter,
-			filters: isFileLayer ? generateFileFilters(dbLayer) : filters,
+			filters: isFileLayer ? generateFileFilters(dbLayer, filters) : filters,
 			onData: data => {
 				if (!Array.isArray(data) || data.length === 0) return;
 				if (filters?.allowedTypes?.length > 0) {

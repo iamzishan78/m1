@@ -11,9 +11,13 @@ const layerFiltersControllerHandler = state => ({
 	setVariables: debounce((layerType, variables) => {
 		if (!layerType) return;
 
-		const filters = layerFilters[layerType].get({ noproxy: true });
+		let filters = layerFilters[layerType].get({ noproxy: true }) || {};
 
-		if (!filters.variables) return;
+		if (!filters?.variables) {
+			filters = {
+				variables: {}
+			}
+		}
 
 		const updatedVariables = {
 			...filters.variables,

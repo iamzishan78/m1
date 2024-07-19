@@ -472,7 +472,7 @@ export const getAdvancedSearch = (layerGeometry, mustQuery) =>
 			},
 		];
 
-export const generateFileFilters = layer => {
+export const generateFileFilters = (layer, _filters = { variables: {} }) => {
 	let mustQuery = [];
 	if (layer.layerShapeName) {
 		mustQuery = [
@@ -497,6 +497,7 @@ export const generateFileFilters = layer => {
 				advanceSearch,
 			},
 			filters,
+			..._filters.variables
 		},
 	};
 };
