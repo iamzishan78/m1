@@ -24,6 +24,7 @@ import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 import PurchasersDropdown from './PurchasersDropdown';
 import AcquisitionIdDropdown from './AcquisitionIdDropdown';
 
+
 const useStyles = makeStyles(theme => ({
   mainTabContainer: {
     display: 'flex',
@@ -409,6 +410,7 @@ export default function RevenueAnalytics(props) {
       {tabs[tab] === 'Check Details' && (
         <div className={`${classes.sectionCard}`}>
           <CheckDetailsSection header="Check Details" loadMore={loadMore} />
+          <MRTTable name="RevenueCheckDetailTable" />
         </div>
       )}
 
