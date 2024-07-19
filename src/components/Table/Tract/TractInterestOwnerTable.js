@@ -30,6 +30,7 @@ import { addTrailingZeros } from "components/Shared/functions";
 import { usetableStyles } from "../Styles";
 import { AssignOwnerToContactDrawerContainer } from "store/containers";
 import RecalculateSlideout from "../Shape/RecalculateSlideout";
+import { popupController } from "hookstate/popupStateController";
 
 const genericDataActions = ["comments", "tracks", "ifAreContacts"];
 const interestKeys = [
@@ -311,7 +312,7 @@ function TractInterestOwnerTable(props) {
                   setStateNav((stateNav) => ({
                     ...stateNav,
                     bulkUploadFromMap: true,
-                    bulkUploadParcel: stateApp.selectedParcel,
+                    bulkUploadParcel: popupController.getValue('selectedParcel'),
                   }));
                   history.push("/bulkupload");
                 },

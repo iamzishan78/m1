@@ -124,7 +124,7 @@ function Datasets({ headerButton, search, stateApp, setStateApp }) {
                 if (dataset.sourceName === 'M1 Platform') {
                     dataset.Icon = DatabaseIcon
                     dataset.visibility = true
-                    dataset.categoryCount = 5
+                    dataset.categoryCount = snapGridSideBarData.length
                     dataset.categories = snapGridSideBarData
                 } else {
                     dataset.Icon = FileDatasetIcon
