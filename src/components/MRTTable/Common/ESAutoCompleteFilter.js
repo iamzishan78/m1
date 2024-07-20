@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useLazyQuery } from '@apollo/client';
-import _ from 'lodash';
+import _, { debounce } from 'lodash';
 
 import { tableController } from 'hookstate/tableController';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
@@ -32,7 +32,7 @@ function ESAutoCompleteFilter({
 		'advanceSearch',
 	]);
 
-	const getFiltersAction = ({ afterKey } = {}) => {
+	const getFiltersAction = debounce(({ afterKey } = {}) => {
 		if (filtersData && multiple && filterValue?.length !== 0) return;
 		let search = ''
 		if (searchText.current) search = type === 'number' ? searchText.current : `*${searchText.current}*`;
@@ -70,7 +70,7 @@ function ESAutoCompleteFilter({
 				},
 			});
 		}
-	};
+	}, 700);
 
 	useEffect(() => {
 		const hits = filtersData?.getESSimpleFilter?.hits;
