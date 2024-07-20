@@ -47,6 +47,7 @@
     "apollo-link": "^1.2.14",
     "apollo-link-batch-http": "^1.2.14",
     "apollo-link-http": "^1.5.17",
+    "array-chunk-by-size": "^2.1.1",
     "array-move": "^4.0.0",
     "autosuggest-highlight": "^3.2.0",
     "chroma-js": "^2.1.2",
