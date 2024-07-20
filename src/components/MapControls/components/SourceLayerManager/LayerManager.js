@@ -34,12 +34,11 @@ import { UPDATE_MANY_LAYER } from "graphQL/useMutationUpdateManyLayer";
 import { useHistory } from "react-router-dom";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
-import { useHookstate } from '@hookstate/core';
-import { hookStateApp } from "hookstate";
 
 import { showInfoMessage } from "actions";
 import { useDispatch } from "react-redux";
 import Button from "@material-ui/core/Button";
+import { globalStateController } from "hookstate/globalStateController";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -177,7 +176,7 @@ export default function AddLayer(props) {
   const layer_limit = 50;
 
   const [stateApp] = useContext(AppContext);
-  const hookState = useHookstate(hookStateApp);
+  const { layers, stateValues } = globalStateController.useState(['layers'])
   const [openM1, setOpenM1] = React.useState(true);
   const [isOpenUserDefinedLayers, setIsOpenUserDefinedLayers] = React.useState(true);
   const [currentLayers, setCurrentLayers] = React.useState([]);
@@ -193,7 +192,7 @@ export default function AddLayer(props) {
 
   const updateStateLayers = (currentLayers) => {
     stateApp.layers = currentLayers;
-    hookStateApp.layers.set(currentLayers)
+    globalStateController.updateState({ layers: currentLayers })
   }
 
   useEffect(() => {
@@ -202,10 +201,10 @@ export default function AddLayer(props) {
   }, [currentLayers]);
 
   useEffect(() => {
-    if (!deepEqual(currentLayers, hookState.layers.get({ noproxy: true }))) {
-      setCurrentLayers(copy(hookState.layers.get({ noproxy: true })));
+    if (!deepEqual(currentLayers, stateValues.layers)) {
+      setCurrentLayers(copy(stateValues.layers));
     }
-  }, [currentLayers, hookState.layers]);
+  }, [currentLayers, layers]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -332,11 +331,11 @@ export default function AddLayer(props) {
   };
 
   const handleApplyChange = (currentLayers) => {
-    if (!deepEqual(currentLayers, hookState.layers.get({ noproxy: true }))) {
+    if (!deepEqual(currentLayers, stateValues.layers)) {
       const layersToUpdate = [];
       const layersSettingsToUpdate = [];
       for (let i = 0; i < currentLayers.length; i++) {
-        if (!deepEqualObjects(currentLayers[i], hookState.layers.get({ noproxy: true })[i])) {
+        if (!deepEqualObjects(currentLayers[i], stateValues.layers[i])) {
           layersSettingsToUpdate.push({
             _id: currentLayers[i]._id,
             layerSettings: currentLayers[i].layerSettings,
@@ -423,7 +422,7 @@ export default function AddLayer(props) {
                 <Collapse in={openM1} timeout="auto" unmountOnExit>
                   <List className={classes.list}>
                     {M1Layers?.filter(
-                      (layer) => !props.search || layer.layerName?.toLowerCase().includes(props.search)
+                      (layer) => (!props.search || layer.layerName?.toLowerCase().includes(props.search)) && layer.layerName !== 'Land Grid'
                     )?.map((layer, index) => {
                       const labelId = `m1layer-list-label-${index}`;
                       if (layer.layerName === "Recent Submitted Permits") {

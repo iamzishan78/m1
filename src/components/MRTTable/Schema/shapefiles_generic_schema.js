@@ -11,7 +11,7 @@ const ShapesFilesGenericMeta = {
 		pageSize: 25,
 	},
 	onClickedRow,
-	maxTableHeight: 'calc(100vh - 719px)',
+	maxTableHeight: 'calc(100vh - 660px)',
 	// isInFiniteScroll: true,
 	// columnVirtualization: true,
 	defaultFlterMode: 'multiselect',

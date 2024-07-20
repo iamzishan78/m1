@@ -102,7 +102,7 @@ const UnitInterestMeta = {
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
-	
+
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'contact.entityDetail.city.keyword',
@@ -367,6 +367,10 @@ const UnitInterestMeta = {
 			name: 'deals.name.keyword',
 			accessorKey: 'deals.name',
 			header: 'Associated Deals',
+			handleArrayExport: {
+				esType: "collection",
+				actualKey: "name"
+			},
 			Cell: ({ row }) => {
 				return (
 					<div>

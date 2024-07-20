@@ -1,10 +1,19 @@
 import { BlockBlobClient } from '@azure/storage-blob';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, initial, join, last, split } from 'lodash';
 import moment from 'moment';
 
 export * from './deepEqual';
 export * from './setStateIfDeepEqual';
 export * from './getPolygonString';
+
+export const getFileExtension = (filename) => {
+  const parts = split(filename, '.');
+  return parts.length > 1 ? last(parts) : '';
+};
+export const getFileName = (filename) => {
+  const parts = split(filename, '.');
+  return join(initial(parts), '.');
+};
 
 export const generateRandomString = (length = 24) => {
   var result = '';
@@ -157,7 +166,14 @@ export const getSelectedRowsFromProps = (props = {}) => {
 
 export const formatDate = (date, simple = true) => {
   if (!date) return '--'
-  return moment.parseZone(new Date(date)).format(simple ? 'MM/DD/YY' : 'MMMM D, YYYY');
+  return moment.parseZone(new Date(date)).format(simple ? 'MM/DD/YY' : 'YYYY-MM-DD');
+}
+
+export const processInBatches = async (promises, batchSize) => {
+  for (let i = 0; i < promises.length; i += batchSize) {
+    const batch = promises.slice(i, i + batchSize);
+    await Promise.all(batch);
+  }
 }
 
 export const isValidDate = (dateString) => {
@@ -166,4 +182,29 @@ export const isValidDate = (dateString) => {
 
   // Check if the date is a valid date and the input format is recognized
   return !isNaN(date.getTime());
+}
+
+export const getStartAndEndOfDay = (dateString) => {
+  // Create a Date object from the input string
+  const inputDate = new Date(dateString);
+
+  // Set the time to the start of the day (00:00:00)
+  const startOfDay = new Date(inputDate.getFullYear(), inputDate.getMonth(), inputDate.getDate(), 0, 0, 0, 0);
+
+  // Set the time to the end of the day (23:59:59)
+  const endOfDay = new Date(inputDate.getFullYear(), inputDate.getMonth(), inputDate.getDate(), 23, 59, 59, 999);
+
+  return {
+    startOfDay,
+    endOfDay,
+  };
+}
+
+export const isDateFormat = (inputString) => {
+  // Regular expression for MM/DD/YYYY format
+  const mmddyyy = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)\d\d$/;
+  const mmddyy = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d\d$/;
+
+  // Check if the inputString matches the date format
+  return mmddyyy.test(inputString) || mmddyy.test(inputString);
 }

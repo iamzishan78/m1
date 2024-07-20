@@ -5,11 +5,13 @@ import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import { GET_ES_AGGS_LIST } from 'graphQL/useQueryESAggsList';
 import { copy } from 'utils/helper';
-import { formatDate } from 'components/Shared/functions';
+import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { drawController } from 'hookstate/drawStateController';
 
 const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) => {
 	const Controller = tableController(tableKey);
 	const { refetch } = tableGlobalController.useState(['refetch']);
+	const { drawStateValues } = drawController.useState(['selectedPolygonString', 'currentFeature'], 'drawStateValues');
 	const resetPagination = useRef(false); // use to reset pagination in case of infinite scroll
 	const previousPagination = useRef(); // use to reset pagination in case of infinite scroll
 	const columnsType = useRef({}); // use to reset pagination in case of infinite scroll
@@ -26,8 +28,12 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			isFetching: true,
 			isError: false,
 		});
+		let metaField = {}
+		if (tableStateValues.sorting.length) {
+			metaField = TableSchema?.find(item => (item.accessorKey || item.id) === tableStateValues.sorting[0]?.id);
+		}
 
-		const sort = tableStateValues.sorting[0]
+		let sort = tableStateValues.sorting[0]
 			? {
 				field: (() => {
 					const sortingId = tableStateValues.sorting[0].id;
@@ -44,6 +50,23 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				order: tableStateValues.sorting[0].desc ? 'desc' : 'asc',
 			}
 			: tableState?.defaultSort?.get({ noproxy: true });
+		if (metaField?.isCustom) {
+			sort.unmapped_type = "keyword"
+		}
+
+		const filters = [...tableMeta?.defaultFilters || [], ...tableMeta?.filters || []];
+
+		if (
+			tableStateValues.geoKey &&
+			drawStateValues.selectedPolygonString &&
+			drawStateValues.currentFeature
+		) {
+			filters.push({
+				type: 'geo_intersects',
+				field: tableStateValues.geoKey,
+				value: drawStateValues.currentFeature.geometry,
+			});
+		}
 
 		let globalFilter = tableStateValues.globalFilter;
 
@@ -59,9 +82,12 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				advanceSearch: tableStateValues.advanceSearch,
 			},
 			sort,
-			filters: [...tableMeta.defaultFilters, ...tableMeta.filters],
+			filters,
 		};
 
+
+		if (tableStateValues.filterLayerType)
+			layerFiltersController.setVariables(tableStateValues.filterLayerType, variables);
 
 		const allSelectedRows = await client.query({
 			variables,
@@ -72,7 +98,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		let rows = copy(data.hits) || [];
 
 		rows.forEach(row => {
-			TableSchema.forEach(column => {
+			TableSchema?.forEach(column => {
 				const accessorKey = column.id || column.accessorKey;
 				if (!columnsType.current[accessorKey]) {
 					const rowWithValue = rows.find(row => get(row, accessorKey) !== null && get(row, accessorKey) !== undefined);
@@ -110,15 +136,15 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		const { TableSchema, defaultFilters, esIndex, filters } = tableMeta;
 		if (!TableSchema) return
 
-		const aggregationColumns = TableSchema.filter(column => column.Aggregation)?.map(column => column.Aggregation);
+		const aggregationColumns = TableSchema?.filter(column => column.Aggregation)?.map(column => column.Aggregation);
 
-		for (let i = 0; i < filters.length; i++) {
+		for (let i = 0; i < filters?.length; i++) {
 			if (Number.isInteger(filters[i].value)) {
 				filters[i].value = filters[i].value.toString();
 			}
 		}
 
-		if (aggregationColumns.length) {
+		if (aggregationColumns?.length) {
 			const result = await client.query({
 				variables: {
 					esIndex,
@@ -229,6 +255,16 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 						pageIndex,
 					};
 				}
+
+				if (tableStateValues.onScrollCheck) {
+					const startIndex = Object.keys(tableStateValues.rowSelection).length
+					const newstate = tableStateValues.rowSelection
+					for (let i = startIndex; i < startIndex + 50; i++) {
+						newstate[i] = true
+					}
+					Controller.setColumnCheck(newstate)
+				}
+
 				callQuery(pagination);
 			}
 		}, 10),

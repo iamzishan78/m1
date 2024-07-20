@@ -8,6 +8,7 @@ import { ExpandMore as ExpandMoreIcon, Close as ClearButton } from "@material-ui
 import { NavigationContext } from "components/Navigation/NavigationContext";
 //Components
 import * as LayerFiltersComponents from "components/Shared/SidePanel/compoennts/Filters";
+import { layerFiltersController } from "hookstate/layerFiltersController";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -131,13 +132,13 @@ const wellFiltersParams = [
   "filterFirstProdDateRange",
 ];
 const ownershipFiltersParams = ["interestName", "ownerTypeName", "filterOwnerCount", "filterHasOwnerCount", "filterOwnerConfidence"];
-const tagFiltersParams = ["selectedTags", "filterTrackedWells"];
+const tagFiltersParams = ["selectedTags"];
 const filterTypes = {
-  Geography: { component: "GeographyFilter", countKey: "geographyFilterCount" },
+  // Geography: { component: "GeographyFilter", countKey: "geographyFilterCount" },
   Wells: { component: "WellFilter", countKey: "wellFilterCount" },
-  Production: { component: "ProductionFilter", countKey: "productionFilterCount" },
-  Ownership: { component: "OwnershipFilter", countKey: "ownershipFilterCount" },
-  Tags: { component: "TagsFilter", countKey: "tagFilterCount" },
+  // Production: { component: "ProductionFilter", countKey: "productionFilterCount" },
+  // Ownership: { component: "OwnershipFilter", countKey: "ownershipFilterCount" },
+  // Tags: { component: "TagsFilter", countKey: "tagFilterCount" },
 };
 
 const LayerFilters = () => {
@@ -165,6 +166,7 @@ const LayerFilters = () => {
         resetFilters(geoFiltersParams);
         break;
       case "Wells":
+        layerFiltersController.clearWellsFilters();
         resetFilters(wellFiltersParams, {
           filterOperator: null,
           filterWellType: null,

@@ -387,12 +387,9 @@ const tableESStateControllerHandler = state => ({
 
 	setFilter: filter => {
 		const TableSchema = state.TableSchema.get({ noproxy: true }) || []
-		console.log('TableSchema', TableSchema)
 		const column = TableSchema?.find(
 			column => column.id === filter.field || column.accessorKey === filter.field
 		);
-
-		console.log('column', column)
 
 		if (column?.type === 'date') {
 			if (filter.type !== 'advanced') {

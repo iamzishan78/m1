@@ -5,12 +5,11 @@ import { TouchBackend } from "react-dnd-touch-backend";
 import { isMobile } from "react-device-detect";
 import FileTree from "./FileTree";
 import { ContextProvider } from "react-sortly";
-import { useHookstate } from '@hookstate/core';
-import { hookStateApp } from "hookstate";
 import { GET_LAYER_GROUPS } from "graphQL/useQueryLayerGroup";
 import { useLazyQuery } from "@apollo/client";
 import { Box, CircularProgress } from "@material-ui/core";
 import { globalStateController } from "hookstate/globalStateController";
+import { deepEqual } from "components/Shared/functions";
 
 const getEmptyGroupAndLayer = (group, type) => {
   if (type === 'layer')
@@ -42,8 +41,7 @@ const getEmptyGroupAndLayer = (group, type) => {
 const dnd = isMobile ? TouchBackend : HTML5Backend;
 const SortableLayer = ({ mongoId, search }) => {
   const [layerMap, setLayerMap] = useState([])
-  const [panelItems, setPanelItems] = useState([])
-  const hookState = useHookstate(hookStateApp);
+  const { layers, panelItems, stateValues } = globalStateController.useState(['layers', 'previousLayers', 'panelItems'])
   const [getLayerGroups, { data: layerGroupData }] = useLazyQuery(GET_LAYER_GROUPS);
 
   useEffect(() => {
@@ -51,8 +49,8 @@ const SortableLayer = ({ mongoId, search }) => {
   }, [getLayerGroups])
 
   useEffect(() => {
-    if (layerGroupData?.getLayerGroups) {
-      const hookStateAppLayers = hookState.layers.get({ noproxy: true })
+    if (layerGroupData?.getLayerGroups && !deepEqual(stateValues.layers, stateValues.previousLayers)) {
+      const hookStateAppLayers = stateValues.layers
       const layerGroups = layerGroupData?.getLayerGroups
       const groupHandled = [];
       const layerAndGroups = [];
@@ -87,7 +85,7 @@ const SortableLayer = ({ mongoId, search }) => {
               });
             }
             if (!item.groupId) {
-              const showable = item.layerSettings.showable && item.identifier !== "Tracked Owners" && item.identifier !== "Agreement";
+              const showable = item.layerSettings.showable && !["Tracked Owners", "Agreement", "Land Grid"].includes(item.identifier);
               layerAndGroups.push({
                 ...item,
                 visiable: item.layerSettings.visiable,
@@ -132,15 +130,15 @@ const SortableLayer = ({ mongoId, search }) => {
         globalStateController.updateState({ emptyGroups: emptyGroups.map(g => g.groupId) })
       }
 
-      setPanelItems(layerAndGroups)
+      globalStateController.updateState({ panelItems: layerAndGroups })
     }
-  }, [hookState.layers, layerGroupData?.getLayerGroups])
+  }, [layers, layerGroupData?.getLayerGroups])
 
   useEffect(() => {
     if (search)
-      setLayerMap(panelItems.filter((i) => (i.layerName ?? i.name).toLowerCase().includes(search.toLowerCase())))
+      setLayerMap(stateValues.panelItems.filter((i) => (i.layerName ?? i.name).toLowerCase().includes(search.toLowerCase())))
     else {
-      setLayerMap(panelItems)
+      setLayerMap(stateValues.panelItems)
     }
   }, [panelItems, search])
 
@@ -150,7 +148,7 @@ const SortableLayer = ({ mongoId, search }) => {
         (layerMap && layerMap[0]?.type ? (
           <DndProvider backend={dnd}>
             <ContextProvider>
-              {layerMap.length > 0 && <FileTree layerMap={layerMap} panelItems={panelItems} />}
+              {layerMap.length > 0 && <FileTree layerMap={layerMap} panelItems={stateValues.panelItems} />}
             </ContextProvider>
           </DndProvider>
         ) : (
@@ -164,4 +162,4 @@ const SortableLayer = ({ mongoId, search }) => {
   )
 }
 
-export default SortableLayer;
+export default React.memo(SortableLayer);

@@ -1,53 +1,48 @@
 import gjv from "geojson-validation";
 import * as turf from "@turf/turf";
+import { popupController } from "hookstate/popupStateController";
+import { drawController } from "hookstate/drawStateController";
+import { layerRefs } from "hookstate";
 
-export const clearMapAndCloseShapeActionsPopup = (stateApp, setStateApp) => {
-    const { draw, map, currentFeature } = stateApp;
-    drawShapeLayerToggle(stateApp, "visible")
+export const clearMapAndCloseShapeActionsPopup = () => {
+    const currentFeature = drawController.getValue('currentFeature');
+    drawShapeLayerToggle("visible")
 
     if (currentFeature?.id) {
-        setFeatureProperty(stateApp.draw, currentFeature.id, 'shapeEdit', true)
-        draw.delete(currentFeature?.id);
+        setFeatureProperty(window.drawRef, currentFeature.id, 'shapeEdit', true)
+        window.drawRef?.delete(currentFeature?.id);
     }
-    draw.deleteAll();
+    window.drawRef?.deleteAll();
 
-    draw.changeMode('simple_select');
-    setStateApp((state) => ({
-        ...state,
-        editDraw: false,
-        shapeEdit: false,
-        currentFeature: undefined,
-        featureToEdit: undefined,
-        shapeToExtend: undefined,
-        selectedUserDefinedLayer: null,
-        isAbstractedLayersPolygon: false,
-        multiSelectLandGrids: false,
-        selectedAbstracts: [],
-        isDrawing: false,
-        showShapeActionsPopup: false,
-        showDrawShapesPopup: false,
-    }));
+    window.drawRef?.changeMode('simple_select');
+
+    popupController.reset();
+    drawController.reset();
+
+    const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
+
+    if (!sourceId) return;
 
     // unselecting the grids
-    const featuresList = map?.getSource("abstract_geo_source")._data.features;
+    const featuresList = window.mapRef?.getSource(sourceId)._data.features;
     for (let i = 0; i < featuresList.length; i++) {
         const id = featuresList[i].properties.Id;
-        map.setFeatureState({ source: "abstract_geo_source", id: id }, { click: false });
+        window.mapRef?.setFeatureState({ source: sourceId, id: id }, { click: false });
     }
 };
 
 export const setFeatureProperty = (draw, drawFeatureID, field, value) => {
-    if (drawFeatureID !== '' && typeof draw === 'object' && draw.setFeatureProperty) {
+    if (drawFeatureID !== '' && typeof draw === 'object' && draw?.setFeatureProperty) {
         var feat = draw.get(drawFeatureID);
         if (feat) {
             draw.setFeatureProperty(drawFeatureID, field, value);
-            var feat = draw.get(drawFeatureID);
+            feat = draw.get(drawFeatureID);
             draw.add(feat)
         }
     }
 }
 
-export const drawShapeLayerToggle = (stateApp, value) => {
+export const drawShapeLayerToggle = (value) => {
     const layers = [
         'gl-draw-polygon-and-line-vertex-scale-icon',
         'gl-draw-polygon-rotate-point-icon',
@@ -60,30 +55,30 @@ export const drawShapeLayerToggle = (stateApp, value) => {
     ]
 
     layers.forEach((layer) => {
-        stateApp.map.moveLayer(layer + '.cold');
-        stateApp.map.moveLayer(layer + '.hot');
+        window.mapRef?.moveLayer(layer + '.cold');
+        window.mapRef?.moveLayer(layer + '.hot');
     })
 
-    // stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-scale-icon.cold');
-    // stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-scale-icon.hot');
+    // window.mapRef?.moveLayer('gl-draw-polygon-and-line-vertex-scale-icon.cold');
+    // window.mapRef?.moveLayer('gl-draw-polygon-and-line-vertex-scale-icon.hot');
 
-    // stateApp.map.moveLayer('gl-draw-polygon-midpoint.cold');
-    // stateApp.map.moveLayer('gl-draw-polygon-midpoint.hot');
-    // stateApp.map.moveLayer('gl-draw-polygon-stroke-active.hot');
-    // stateApp.map.moveLayer('gl-draw-polygon-stroke-active.cold');
+    // window.mapRef?.moveLayer('gl-draw-polygon-midpoint.cold');
+    // window.mapRef?.moveLayer('gl-draw-polygon-midpoint.hot');
+    // window.mapRef?.moveLayer('gl-draw-polygon-stroke-active.hot');
+    // window.mapRef?.moveLayer('gl-draw-polygon-stroke-active.cold');
 
 
-    // stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-inactive.cold');
-    // stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-inactive.hot');
-    // stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-stroke-inactive.cold');
-    // stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-stroke-inactive.hot');
+    // window.mapRef?.moveLayer('gl-draw-polygon-and-line-vertex-inactive.cold');
+    // window.mapRef?.moveLayer('gl-draw-polygon-and-line-vertex-inactive.hot');
+    // window.mapRef?.moveLayer('gl-draw-polygon-and-line-vertex-stroke-inactive.cold');
+    // window.mapRef?.moveLayer('gl-draw-polygon-and-line-vertex-stroke-inactive.hot');
 
-    stateApp.map.setLayoutProperty('gl-draw-polygon-midpoint.cold', "visibility", value);
-    stateApp.map.setLayoutProperty('gl-draw-polygon-midpoint.hot', "visibility", value);
-    stateApp.map.setLayoutProperty('gl-draw-polygon-and-line-vertex-inactive.cold', "visibility", value);
-    stateApp.map.setLayoutProperty('gl-draw-polygon-and-line-vertex-stroke-inactive.cold', "visibility", value);
-    stateApp.map.setLayoutProperty('gl-draw-polygon-and-line-vertex-inactive.hot', "visibility", value);
-    stateApp.map.setLayoutProperty('gl-draw-polygon-and-line-vertex-stroke-inactive.hot', "visibility", value);
+    window.mapRef?.setLayoutProperty('gl-draw-polygon-midpoint.cold', "visibility", value);
+    window.mapRef?.setLayoutProperty('gl-draw-polygon-midpoint.hot', "visibility", value);
+    window.mapRef?.setLayoutProperty('gl-draw-polygon-and-line-vertex-inactive.cold', "visibility", value);
+    window.mapRef?.setLayoutProperty('gl-draw-polygon-and-line-vertex-stroke-inactive.cold', "visibility", value);
+    window.mapRef?.setLayoutProperty('gl-draw-polygon-and-line-vertex-inactive.hot', "visibility", value);
+    window.mapRef?.setLayoutProperty('gl-draw-polygon-and-line-vertex-stroke-inactive.hot', "visibility", value);
 }
 
 export const findBoundsMap = (shapes, map, padding, onlySendBounds = false) => {
@@ -119,10 +114,19 @@ export const findBoundsMap = (shapes, map, padding, onlySendBounds = false) => {
                     }
                 }
             );
-        } catch (e) {
-            console.log(e);
+        } catch (err) {
+            // Removing padding for smaller screens
+            try {
+                if (bound.minLong && bound.minLat && bound.maxLong && bound.maxLat)
+                    map?.fitBounds([[bound.minLong, bound.minLat], [bound.maxLong, bound.maxLat]],
+                        {
+                            easing: () => 1,
+                        }
+                    );
+            } catch (err) {
+                console.log("🚀 ~ findBoundsMap ~ err:", err.message);
+            }
         }
-
     return { ...bound };
 };
 

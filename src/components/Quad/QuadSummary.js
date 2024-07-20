@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
 import { QuadContext } from "./QuadContext";
-import { AppContext } from "../../AppContext";
 import useQueryQuadChart from "../../graphQL/useQueryQuadChart";
 //material-ui components
 import {
@@ -21,6 +20,7 @@ import Chip from "@material-ui/core/Chip";
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { Select, FormControl, Divider } from "@material-ui/core";
+import { popupController } from "hookstate/popupStateController";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -147,12 +147,13 @@ function formatDecimal(number) {
 };
 
 export default function QuadSummary(props) {
-  const [stateApp] = useContext(AppContext);
   const [stateQuad, setStateQuad] = useContext(QuadContext);
   const classes = useStyles();
   const [dropDownValue, setDropDownValue] = useState({ value: DROPDOWN_ENUMS.CUMULATIVE });
   const [toggleAlignment, setToggleAlignment] = useState('cumulative');
   const [daily, setDaily] = useState(false);
+
+  const { stateValues } = popupController.useState(['selectedWell'])
 
   useEffect(() => {
     switch (dropDownValue.value) {
@@ -169,7 +170,7 @@ export default function QuadSummary(props) {
   }, [dropDownValue]);
 
   //graphQL
-  const { data, loading } = useQueryQuadChart(stateApp.selectedWell.id);
+  const { data, loading } = useQueryQuadChart(stateValues.selectedWell.id);
 
   useEffect(() => {
     if (!stateQuad.quadChart) {

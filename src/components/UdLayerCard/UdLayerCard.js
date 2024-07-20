@@ -11,9 +11,13 @@ import $ from "jquery";
 
 // contexts
 import { AppContext } from "../../AppContext";
-import { MapControlsContext } from "components/MapControls/MapControlsContext";
 import { clearMapAndCloseShapeActionsPopup } from "components/MapControls/commonHelper";
 import LayerIcon from "@material-ui/icons/Layers";
+import { popupController } from "hookstate/popupStateController";
+import { drawController } from "hookstate/drawStateController";
+import { layerRefs } from "hookstate";
+import { mapControlsController } from "hookstate/mapControlsController";
+import { mapStateController } from "hookstate/mapStateController";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -95,87 +99,63 @@ function UdLayerCard(props) {
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
 
-  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
-
   const handleCloseLeftSidePanel = () => {
     // close layer manager
-    setStateMapControls({
-      ...stateMapControls,
-      expandedPanel: false,
-      anchorEl: null,
-    });
+    console.log(2)
+
+    mapControlsController.setState({ expandedPanel: false })
   };
 
   const handleCloseShapeDrawer = () => {
-    const { map } = stateApp;
-    setStateApp((state) => ({
-      ...state,
-      editDraw: false,
-      // currentFeature: undefined,
-      isAbstractedLayersPolygon: false,
-      multiSelectLandGrids: false,
-      selectedAbstracts: [],
-      showShapeActionsPopup: false,
-      showDrawShapesPopup: false,
-      selectedShape: null,
-      selectedParcel: null
-    }));
-
-    // unselecting the grids
-    const featuresList = map?.getSource("abstract_geo_source")?._data?.features || [];
-    for (let i = 0; i < featuresList.length; i++) {
-      const id = featuresList[i].properties.Id;
-      map.setFeatureState({ source: "abstract_geo_source", id: id }, { click: false });
-    }
+    drawController.reset();
 
     // Removing layer of AOI Label
     if (stateApp.map?.getLayer("aoi_label_layer")) {
       stateApp.map?.removeLayer("aoi_label_layer");
     }
-    setStateApp((state) => ({
-      ...state,
-      selectedAoi: null,
-      featureOrMapShape: null,
-    }));
+
+    const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
+
+    if (!sourceId) return;
+
+    // unselecting the grids
+    const featuresList = window.mapRef?.getSource(sourceId)?._data?.features || [];
+    for (let i = 0; i < featuresList.length; i++) {
+      const id = featuresList[i].properties.Id;
+      window.mapRef?.setFeatureState({ source: sourceId, id: id }, { click: false });
+    }
   };
 
   const handleAddShapeClick = (e, action) => {
-    if (stateApp.expandedCard === true) {
+    if (!!popupController.getValue('expandedCard')) {
       handleCloseLeftSidePanel();
       handleCloseShapeDrawer();
     }
 
     if (e && action) {
       if (action === "draw") {
-        setStateMapControls({
-          ...stateMapControls,
-          selectedMapControl: action,
-          // selectedControl: 'layer',
-        });
+        mapControlsController.updateState({ selectedMapControl: action })
 
-        if (!stateApp.editDraw) {
-          setStateApp((state) => ({
-            ...state,
-            popupOpen: false,
-            showDrawShapesPopup: false,
-            editDraw: false,
-            showAddShapePopup: true,
-          }));
+        if (!drawController.getValue('editDraw')) {
+          popupController.reset();
+
+          drawController.updateState({ showAddShapePopup: true });
         } else {
           clearMapAndCloseShapeActionsPopup(stateApp, setStateApp);
         }
       }
     }
+    const { toggle3d, toggleZoomOut } = mapStateController.getValues(['toggle3d', 'toggleZoomOut'])
+    mapStateController.updateState({
+      toggle3d: action === "threed" ? !toggle3d : toggle3d,
+      toggleZoomOut: action === "zoomout" ? !toggleZoomOut : toggleZoomOut,
+    })
 
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      toggle3d: action === "threed" ? !stateApp.toggle3d : stateApp.toggle3d,
-      toggleZoomOut: action === "zoomout" ? !stateApp.toggleZoomOut : stateApp.toggleZoomOut,
-    }));
-
-    if (stateApp.draw && stateApp.draw.getMode() !== "simple_select") {
-      setStateApp({ ...stateApp, editDraw: false });
-      stateApp.draw.changeMode("simple_select");
+    if (window.drawRef && window.drawRef.getMode() !== "simple_select") {
+      drawController.updateState({
+        editDraw: false,
+      });
+      window.drawRef.changeMode("simple_select");
     }
   };
 
@@ -195,15 +175,11 @@ function UdLayerCard(props) {
         if (popUps[0]) popUps[0].remove();
       }
 
+      popupController.reset();
+      drawController.reset();
+
       setStateApp((state) => ({
         ...state,
-        popupOpen: false,
-        selectedWell: null,
-        selectedParcel: null,
-        selectedPermit: null,
-        expandedCard: false,
-        currentFeature: undefined,
-        selectedUserDefinedLayer: null,
         viewDoc: null,
       }));
     }

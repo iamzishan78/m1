@@ -1,12 +1,11 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { setMapGridCardState } from 'actions';
 import { useHistory } from 'react-router-dom';
 import Tooltip from '@material-ui/core/Tooltip';
 import { IconButton } from '@material-ui/core';
 import RoomIcon from '@material-ui/icons/Room';
 import { makeStyles } from '@material-ui/core/styles';
 import { popupController } from 'hookstate/popupStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
 
 const useStyles = makeStyles(() => ({
   icons: {
@@ -18,18 +17,13 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const FlyToMap = ({ id, type, row }) => {
+const FlyToMap = ({ id, type, shape, row, disabled = false }) => {
   const classes = useStyles();
-  const dispatch = useDispatch();
   const history = useHistory();
 
-  const openUnitDetailCard = unitId => {
-    dispatch(
-      setMapGridCardState({
-        mapGridCardActivated: false,
-      })
-    );
-    history.push(`/map/units/${unitId}`);
+  const openShapeDetailCard = shapeId => {
+    mapControlsController.updateState({ mapGridCardActivated: false });
+    history.push(`/map/${shape}/${shapeId}`);
   };
 
   const openShapePopup = selectedShapeFile => {
@@ -40,8 +34,8 @@ const FlyToMap = ({ id, type, row }) => {
 
   const handleClick = () => {
     switch (type) {
-      case 'unit':
-        openUnitDetailCard(id);
+      case 'shape':
+        openShapeDetailCard(id);
         break;
 
       case 'shapefile':
@@ -61,7 +55,7 @@ const FlyToMap = ({ id, type, row }) => {
         size={'medium'}
         color="secondary"
         className={`${classes.icons}`}
-        disabled={false}
+        disabled={disabled}
         onClick={e => {
           e.stopPropagation();
           handleClick();

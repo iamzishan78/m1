@@ -4,6 +4,7 @@ import { useForm, Controller } from "react-hook-form";
 import { withStyles } from "@material-ui/styles";
 import { Grid, Typography, FormControl, InputLabel, InputBase, Button } from "@material-ui/core";
 import { useStyles } from "./style";
+import { mapStateController } from "hookstate/mapStateController";
 
 const BootstrapInput = withStyles((theme) => ({
   root: {
@@ -45,11 +46,12 @@ const StyledTextField = (props) => (
 export default function MapPositions(props) {
   const classes = useStyles();
   const { control, handleSubmit, reset, watch } = useForm();
-  const { setMapDefaultPosition, defaultMapVars, mapVars } = props;
-
+  const { stateValues } = mapStateController.useState(['defaultMapVars', 'mapVars'])
+  const { setMapDefaultPosition } = props;
+  const { defaultMapVars, mapVars } = stateValues;
   const [centerError, setCenterError] = useState(false);
   const center = watch("center", "");
-
+  console.log(defaultMapVars, mapVars)
   useEffect(() => {
     if (defaultMapVars) {
       const vars = getVars(defaultMapVars);

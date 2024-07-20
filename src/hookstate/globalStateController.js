@@ -5,6 +5,7 @@ import { bypassTenants } from 'utils/data';
 
 const initialState = {
 	layers: [],
+	panelItems: [],
 	emptyGroups: [],
 	universalLoader: false,
 	layerLoading: {},
@@ -28,6 +29,16 @@ const globalStateControllerHandler = () => ({
 	},
 	setBypassLogin: tenant => globalState.bypassLogin.set(bypassTenants.includes(tenant)),
 	isBypassTenant: tenant => bypassTenants.map(t => t.toLowerCase()).includes(tenant.toLowerCase()),
+	handleMyWellTestCase: (globalWellId, mongoWellId) => {
+		if (globalStateController.getValue('cypress'))
+			globalStateController.updateState({
+				testCase: {
+					name: 'MyWellsNameUpdate',
+					globalWellId,
+					mongoWellId
+				},
+			});
+	}
 });
 
 export const globalStateController = {

@@ -21,6 +21,7 @@ import BypassSignInCard from "./BypassSignInCard";
 import { BYPASS_LOGIN_MUTATION } from "graphQL/useMutationBypassLogin";
 import { apolloClientEndpointDev, isDev } from "utils/helper";
 import { globalStateController } from "hookstate/globalStateController";
+import { mapStateController } from "hookstate/mapStateController";
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
@@ -107,8 +108,8 @@ const Login = (props) => {
   const handleLogin = (loginResp, userMapSettings, authGraphQLResponse, authGraphQLToken, authUser) => {
     let mongoUser,
       sessionData,
-      mapVars = stateApp.mapVars,
-      defaultMapVars = stateApp.defaultMapVars;
+      mapVars = mapStateController.getValue('mapVars'),
+      defaultMapVars = mapStateController.getValue('defaultMapVars');
     if (loginResp?.user) {
       mongoUser = loginResp.user;
       sessionData = loginResp.sessionData;
@@ -157,10 +158,9 @@ const Login = (props) => {
 
     setStateApp(state => ({
       ...state,
-      user,
-      mapVars,
-      defaultMapVars: defaultMapVars,
+      user
     }));
+    mapStateController.updateState({ mapVars, defaultMapVars })
     dispatch(setUserAction(user));
     dispatch(currentUserGridViewSettingsAction.STARTED(user._id));
     saveUserSession(user);

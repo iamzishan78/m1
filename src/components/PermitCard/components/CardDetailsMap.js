@@ -3,6 +3,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import mapboxgl from "mapbox-gl";
 import { AppContext } from "../../../AppContext";
 import { uid } from "uid";
+import { popupController } from "hookstate/popupStateController";
+import { mapStateController } from "hookstate/mapStateController";
 
 const useStyles = makeStyles((theme) => ({
   MSWrapper: {
@@ -41,6 +43,10 @@ export default function CardDetailsMap() {
   const mapEl = useRef(null);
   const [flyVar1, setFlyVar1] = useState([null]);
   mapboxgl.accessToken = stateApp.mapboxglAccessToken;
+
+  const { selectedWell, stateValues } = popupController.useState(['selectedWell'])
+  const { mapStateValues } = mapStateController.useState(['mapVars', 'defaultMapVars', 'toggle3d', 'toggleZoomOut'], 'mapStateValues');
+
 
   // useEffect(() => {
   //   const req = new Request(
@@ -82,8 +88,8 @@ export default function CardDetailsMap() {
   useEffect(() => {
     map.jumpTo({
       center: [
-        stateApp.selectedWell.longitude,
-        stateApp.selectedWell.latitude,
+        stateValues.selectedWell.longitude,
+        stateValues.selectedWell.latitude,
       ],
       zoom: 16,
       speed: 0.4,
@@ -102,14 +108,14 @@ export default function CardDetailsMap() {
         map.getBearing() === -10 &&
         map.getZoom() === 16
         // && map.getCenter()===[
-        //                       stateApp.selectedWell.longitude,
-        //                       stateApp.selectedWell.latitude,
+        //                       stateValues.selectedWell.longitude,
+        //                       stateValues.selectedWell.latitude,
         //                     ]
       ) {
         map.jumpTo({
           center: [
-            stateApp.selectedWell?.longitude,
-            stateApp.selectedWell?.latitude,
+            stateValues.selectedWell?.longitude,
+            stateValues.selectedWell?.latitude,
           ],
           zoom: 16,
           bearing: 540,
@@ -123,7 +129,7 @@ export default function CardDetailsMap() {
       }
     });
 
-  }, [stateApp.selectedWell]);
+  }, [selectedWell]);
 
   useEffect(() => {
     if (mapStyles.length > 0) {
@@ -136,16 +142,16 @@ export default function CardDetailsMap() {
         let newMap;
 
         if (
-          stateApp.selectedWell &&
-          stateApp.selectedWell.longitude &&
-          stateApp.selectedWell.latitude
+          stateValues.selectedWell &&
+          stateValues.selectedWell.longitude &&
+          stateValues.selectedWell.latitude
         )
           newMap = new mapboxgl.Map({
             container: `${id}`,
             style: "mapbox://styles/m1neral/" + mapStyles[index].id,
             center: [
-              stateApp.selectedWell.longitude,
-              stateApp.selectedWell.latitude,
+              stateValues.selectedWell.longitude,
+              stateValues.selectedWell.latitude,
             ],
             zoom: 5,
             pitch: 70,
@@ -155,10 +161,10 @@ export default function CardDetailsMap() {
           newMap = new mapboxgl.Map({
             container: `${id}`,
             style: "mapbox://styles/m1neral/" + mapStyles[index].id,
-            center: stateApp.mapVars.center,
-            zoom: stateApp.mapVars.zoom,
-            pitch: stateApp.mapVars.pitch,
-            bearing: stateApp.mapVars.bearing,
+            center: mapStateValues.mapVars.center,
+            zoom: mapStateValues.mapVars.zoom,
+            pitch: mapStateValues.mapVars.pitch,
+            bearing: mapStateValues.mapVars.bearing,
           });
 
         var el = document.createElement("div");
@@ -186,14 +192,14 @@ export default function CardDetailsMap() {
         newMap.addControl(new mapboxgl.NavigationControl(), "bottom-right");
 
         if (
-          stateApp.selectedWell &&
-          stateApp.selectedWell.longitude &&
-          stateApp.selectedWell.latitude
+          stateValues.selectedWell &&
+          stateValues.selectedWell.longitude &&
+          stateValues.selectedWell.latitude
         )
           new mapboxgl.Marker(el)
             .setLngLat([
-              stateApp.selectedWell.longitude,
-              stateApp.selectedWell.latitude,
+              stateValues.selectedWell.longitude,
+              stateValues.selectedWell.latitude,
             ])
             .addTo(newMap);
 
@@ -217,16 +223,16 @@ export default function CardDetailsMap() {
         });
 
         if (
-          stateApp.selectedWell &&
-          stateApp.selectedWell.longitude &&
-          stateApp.selectedWell.latitude
+          stateValues.selectedWell &&
+          stateValues.selectedWell.longitude &&
+          stateValues.selectedWell.latitude
         )
           setFlyVar1(true);
 
         // map.jumpTo({
         //     center: [
-        //       stateApp.selectedWell.longitude,
-        //       stateApp.selectedWell.latitude,
+        //       stateValues.selectedWell.longitude,
+        //       stateValues.selectedWell.latitude,
         //     ],
         //     // zoom: 16,
         //     bearing: 540,
@@ -242,8 +248,8 @@ export default function CardDetailsMap() {
         // map.on("flyend", function (e) {
         //     // map.jumpTo({
         //     //   center: [
-        //     //     stateApp.selectedWell.longitude,
-        //     //     stateApp.selectedWell.latitude,
+        //     //     stateValues.selectedWell.longitude,
+        //     //     stateValues.selectedWell.latitude,
         //     //   ],
         //     //   //zoom: 16,
         //     //   bearing: 180,
@@ -253,8 +259,8 @@ export default function CardDetailsMap() {
         //     // });
         //     map.jumpTo({
         //       // center: [
-        //       //   stateApp.selectedWell.longitude,
-        //       //   stateApp.selectedWell.latitude,
+        //       //   stateValues.selectedWell.longitude,
+        //       //   stateValues.selectedWell.latitude,
         //       // ],
         //       // //zoom: 16,
         //       bearing: 540,

@@ -76,20 +76,6 @@ const AppProvider = (props) => {
 
     // MAP CONTEXT vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
     mapStyles: [],
-    mapVars: {
-      zoom: 4.88,
-      center: { lng: -98.8, lat: 38 },
-      pitch: 0,
-      bearing: 0,
-      styleId: "Outdoors",
-    }, // move to a map context. check if this is somehow duplicated.
-    defaultMapVars: {
-      zoom: 4.88,
-      center: { lng: -98.8, lat: 38 },
-      pitch: 0,
-      bearing: 0,
-      styleId: "Outdoors",
-    }, // move to a map context
     wellSelectedCoordinates: [],
     universalCircularLoaderAct: false, //// set it to true to show a loader in the center of the viewport
 
@@ -116,14 +102,11 @@ const AppProvider = (props) => {
     selectedLayerId: null,
     openWellDetails: false,
     sourceLoaded: false,
-    toggle3d: null, // move to a map context
-    toggleZoomOut: null, // move to a map context
     map: null, // move to a map context
     draw: null,
     zoomFault: null,
     hugeRequest: null,
     currentFeature: undefined,
-    wellListFromSearch: [],
     landGridListFromSearch: [],
     wellListFromTagsFilter: [],
     viewportWells: null,

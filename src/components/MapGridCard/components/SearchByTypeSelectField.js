@@ -13,9 +13,9 @@ import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 import { Typography } from "@material-ui/core";
 import { platformDataInitialData, userDefinedInitialData } from "./data";
 
-import { useSelector } from "react-redux";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
+import { mapControlsController } from "hookstate/mapControlsController";
 
 const StyledMenu = withStyles({
   paper: {
@@ -101,7 +101,8 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, 
   const classes = useStyles({ backgroundColor, color });
   const [search, setSearch] = useState('');
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const { mapGridCardActivated } = useSelector(({ MapGridCard }) => MapGridCard);
+
+  const { mapControlsStateValues } = mapControlsController.useState(['mapGridCardActivated'], 'mapControlsStateValues');
 
   const platformData = useMemo(() => {
     let data = platformDataInitialData.filter((data) => !search || data.label.toLocaleLowerCase().includes(search.toLocaleLowerCase())).filter(data => isShapeGridOnly ? data.shapeGrid ? true : false : true)
@@ -128,7 +129,6 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, 
     setAnchorEl(null);
   };
 
-  const SelectedIcon = value.Icon
   return (
     <>
       <Button
@@ -165,7 +165,7 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, 
           </Grid>
 
           {platformData.map((icon) => {
-            if (mapGridCardActivated && !icon.shapeGrid) return false
+            if (mapControlsStateValues.mapGridCardActivated && !icon.shapeGrid) return false
             const Icon = icon.Icon
             return <FeatureFlag feature={FEATURES[icon.featureFlag]} noCheck={!FEATURES[icon.featureFlag]}>
               <StyledMenuItem key={icon.index} selected={icon.value === value.value} onClick={() => { handleChange(icon); handleClose(); }}>
@@ -186,7 +186,7 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, 
           </Grid>
 
           {userDefinedData.map((icon) => {
-            if (mapGridCardActivated && !icon.mapGrid) return false
+            if (mapControlsStateValues.mapGridCardActivated && !icon.mapGrid) return false
             const Icon = icon.Icon
             return <FeatureFlag feature={FEATURES[icon.featureFlag]} noCheck={!FEATURES[icon.featureFlag]}>
               <StyledMenuItem key={icon.index} selected={icon.value === value.value} onClick={() => { handleChange(icon); handleClose() }}>

@@ -1,11 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import Checkbox from "@material-ui/core/Checkbox";
 import DragIndicator from "@material-ui/icons/DragIndicator";
-import { MapControlsContext } from "components/MapControls/MapControlsContext";
-// import { AppContext } from "../../../../AppContext";
+
 import ListItem from "@material-ui/core/ListItem";
 import CancelOutlinedIcon from "@material-ui/icons/CancelOutlined";
 import ClickIcon from "../../../svgIcons/cursor-click.js";
@@ -15,10 +14,10 @@ import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
 import { UPDATELAYERSETTINGS } from "graphQL/useMutationUpdateLayerSettings";
 import { useMutation } from "@apollo/client";
 import Box from "@material-ui/core/Box";
-import { useSelector } from "react-redux";
 import { deepEqualObjects } from "../../../functions";
-import { getLayerColor } from "../common.js";
-import { useEffect } from "react";
+import { mapControlsController } from "hookstate/mapControlsController.js";
+import { ifLayerHaveData } from "../common.js";
+import { layerController } from "hookstate/layerStateController.js";
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -31,8 +30,8 @@ const useStyles = makeStyles((theme) => ({
 
 function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateApp, setStateApp }) {
   const [hoverItemIndex, setHoverItem] = useState(-1);
-  const colors = useSelector(({ MainMap }) => MainMap);
-  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
+
+  layerController.useState(['wellListFromSearch']);
 
   const classes = useStyles();
 
@@ -90,25 +89,8 @@ function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateA
     },
   }))(ListItem);
 
-  const ifLayerHaveData = (layer) => {
-    //// temporary disabling the Title Layer
-    if (layer.identifier === "Title") return false;
-    ////
-
-    if (
-      (layer.identifier === "User Tags" && !(stateApp.wellListFromTagsFilter && stateApp.wellListFromTagsFilter.length > 0)) ||
-      (layer.identifier === "Search" && !(stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0)) ||
-      (layer.identifier === "Tracked Owners" && !(stateApp.trackedOwnerWells && stateApp.trackedOwnerWells.length > 0))
-    )
-      return false;
-    return true;
-  };
-
   const handleColorPicker = (layer) => {
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      selectedLayer: layer,
-    }));
+    mapControlsController.updateState({ selectedLayerControl: layer })
   };
 
   const getLayerName = (layer) => {

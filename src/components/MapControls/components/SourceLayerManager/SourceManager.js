@@ -1,7 +1,6 @@
 import React, { useContext, useState, useEffect, Fragment, useCallback, useMemo, memo } from "react";
 import update from "immutability-helper";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
-import { MapControlsContext } from "../../MapControlsContext";
 import { AppContext } from "AppContext";
 import { Typography, Divider, MenuItem, Popper, ClickAwayListener, MenuList, Paper, Grow } from "@material-ui/core";
 import Dialog from "@material-ui/core/Dialog";
@@ -31,6 +30,7 @@ import UploadIcon from "components/Shared/svgIcons/uploadIcon";
 import EditableTextField from "components/Shared/components/Fields/EditableTextField";
 import { truncate } from "components/Shared/functions";
 import Button from "@material-ui/core/Button";
+import * as turf from '@turf/turf';
 
 
 // cra webpack hack to call this a png to get included in bundle
@@ -40,13 +40,13 @@ import { FEATURES } from "components/Shared/FeatureFlag/common";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
 import { UPDATE_DATASET } from "graphQL/useMutationDataset";
-import { hookStateApp } from "hookstate";
-import { useHookstate } from '@hookstate/core';
 
 import { showErrorMessage, showInfoMessage } from "actions";
 import { useDispatch } from "react-redux";
 import { Close as ClearButton } from "@material-ui/icons";
 import JSZip from 'jszip';
+import { globalStateController } from "hookstate/globalStateController";
+import { mapControlsController } from "hookstate/mapControlsController";
 
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
@@ -235,9 +235,8 @@ function SourceManager(props) {
   const dispatch = useDispatch();
   const source_limit = 50;
 
-  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const { stateApp, setStateApp } = props;
-  const hookState = useHookstate(hookStateApp);
+  const { layers, stateValues } = globalStateController.useState(['layers'])
   const [openM1, setOpenM1] = React.useState(true);
   const [isOpenUserSources, setIsOpenUserSources] = React.useState(true);
   const [openDataSets, setOpenDataSets] = React.useState({});
@@ -254,14 +253,14 @@ function SourceManager(props) {
 
   const updateStateLayers = (currentLayers) => {
     stateApp.layers = currentLayers;
-    hookStateApp.layers.set(currentLayers)
+    globalStateController.updateState({ layers: currentLayers });
   }
 
   useEffect(() => {
-    if (!deepEqual(currentLayers, hookState.layers.get({ noproxy: true }))) {
-      setCurrentLayers(copy(hookState.layers.get({ noproxy: true })));
+    if (!deepEqual(currentLayers, stateValues.layers)) {
+      setCurrentLayers(copy(stateValues.layers));
     }
-  }, [currentLayers, hookState.layers]);
+  }, [currentLayers, layers]);
 
   const M1Layers = React.useMemo(() => {
     const layers = currentLayers?.filter((layer) => layer.layerCategory === "M1 Layer" || ['Parcels', 'Agreements', 'Units', 'Area of Interest'].includes(layer.groupName || layer.layerName));
@@ -308,11 +307,11 @@ function SourceManager(props) {
   };
 
   const handleApplyChange = (currentLayers) => {
-    if (!deepEqual(currentLayers, hookState.layers.get({ noproxy: true }))) {
+    if (!deepEqual(currentLayers, stateValues.layers)) {
       const layersToUpdate = [];
       const layersSettingsToUpdate = [];
       for (let i = 0; i < currentLayers.length; i++) {
-        if (!deepEqualObjects(currentLayers[i], hookState.layers.get({ noproxy: true })[i])) {
+        if (!deepEqualObjects(currentLayers[i], stateValues.layers[i])) {
           layersSettingsToUpdate.push({
             _id: currentLayers[i]._id,
             layerSettings: currentLayers[i].layerSettings,
@@ -516,17 +515,27 @@ function SourceManager(props) {
         layerTypes.push(layerType);
       }
     });
+
     layerTypes.forEach((layerType) => {
-      fileNames.push(`${geo.fileName || name} - ${layerType}`);
+      fileNames.push(`${geo.fileName || geo.name || name} - ${layerType}`);
     });
-    return { layerTypes, fileNames };
+
+    // Create a MultiPoint geometry from the FeatureCollection's coordinates
+    const allCoordinates = turf.explode(geo).features.map(feature => feature.geometry.coordinates);
+    const multiPoint = turf.multiPoint(allCoordinates);
+
+    // Calculate the bounding box
+    const bbox = turf.bbox(multiPoint);
+
+    return { layerTypes, fileNames, bbox };
   };
 
   const singleGeojson = (geojson, groupName) => {
-    const { layerTypes, fileNames } = parseGeoForTypesAndNames(geojson, groupName);
+    const { layerTypes, fileNames, bbox } = parseGeoForTypesAndNames(geojson, groupName);
     geojson.fileNames = fileNames;
     geojson.featureTypes = layerTypes;
     geojson.groupName = groupName;
+    geojson.bboxes = [bbox];
     return geojson;
   };
 
@@ -601,24 +610,22 @@ function SourceManager(props) {
                 fetch("https://ogre.adc4gis.com/convert", requestOptions)
                   .then(response => response.json())
                   .then(result => {
-                    if (result.error) return reject(result)
                     const name = fileName.replace(".zip", "");
                     geojsons.push(result)
                     resolve({ data: singleGeojson(result, name), originalData: { file: fileData, fileName, fileType } });
                   })
-                  .catch(error => {
-                    console.log('error', error)
-                    console.log("🚀 ~ res=awaitnewPromise ~ error:", error)
-                  });
+                  .catch(error => console.log('error', error));
               });
             }
 
             let allFileNames = [];
             let allLayerTypes = [];
+            const allLayerBboxs = [];
             geojsons.forEach((geo) => {
-              const { layerTypes, fileNames } = parseGeoForTypesAndNames(geo, geo.name);
+              const { layerTypes, fileNames, bbox } = parseGeoForTypesAndNames(geo, geo.name);
               allLayerTypes = allLayerTypes.concat(layerTypes);
               allFileNames = allFileNames.concat(fileNames);
+              allLayerBboxs.push(bbox);
             });
             const merged = geojsonMerge.merge(geojsons);
             merged.features.forEach((feature, index) => {
@@ -626,6 +633,7 @@ function SourceManager(props) {
             })
             merged.fileNames = allFileNames;
             merged.featureTypes = allLayerTypes;
+            merged.bboxes = allLayerBboxs;
             merged.groupName = fileName.replace(".zip", "");
             resolve({ data: merged, originalData: { file: fileData, fileName, fileType } });
           });
@@ -644,7 +652,10 @@ function SourceManager(props) {
   async function handleFileInput(fileObj) {
     setStateApp((stateApp) => ({
       ...stateApp,
-      universalCircularLoaderAct: true,
+      universalCircularLoaderAct: {
+        localLoader: true,
+        text: 'This may take some time depending on the file size'
+      },
     }));
     let originalData;
     let fileContent = await handleFileAsync(fileObj);
@@ -661,13 +672,11 @@ function SourceManager(props) {
     }));
 
     if (fileContent?.featureTypes)
-      setStateMapControls({
-        ...stateMapControls,
-        // layerAddControl: fileContent.featureTypes?.length > 1 ? "addGroup" : "add",
+      mapControlsController.updateState({
         layerAddControl: "addGroup",
         fileUploadedContent: fileContent,
         fileUploadedOriginalContent: originalData,
-      });
+      })
   }
 
   const checkIfDeleteAllow = (layer) => {
@@ -718,7 +727,7 @@ function SourceManager(props) {
         onDelete={(fileObj) => { }}
         onAlert={(message, variant) => { }}
         filesLimit={1}
-        maxFileSize={10000000}
+        maxFileSize={104857600}
         dropzoneClass={classes.dropzoneClass}
         // acceptedFiles={[".geojson", ".zip", ".shp",]}
         dropzoneText={
@@ -755,7 +764,10 @@ function SourceManager(props) {
                   <Collapse in={openM1} timeout="auto" unmountOnExit>
                     <List className={classes.list}>
                       {M1Layers?.filter(
-                        (layer) => !props.search || layer.name?.toLowerCase().includes(props.search) || layer.layerName?.toLowerCase().includes(props.search)
+                        (layer) => {
+                          return (!props.search || layer.name?.toLowerCase().includes(props.search) || layer.layerName?.toLowerCase().includes(props.search)) && layer.layerName
+                            !== 'Land Grid';
+                        }
                       )?.map((layer, index) => {
                         const labelId = `m1layer-list-label-${index}`;
 

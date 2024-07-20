@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Container } from "@material-ui/core";
 import { useSelector } from "react-redux";
 
@@ -12,14 +12,14 @@ import { deepEqualObjects } from "components/Shared/functions";
 // Header Schemas
 import uniqBy from "lodash/uniqBy";
 
-import { AppContext } from "AppContext";
-
 // Utilities
 import { usetableStyles } from "../Styles";
+import { mapControlsController } from "hookstate/mapControlsController";
 
 function MapGridLayersTable(props) {
   const classes = usetableStyles();
-  const [stateApp] = useContext(AppContext);
+
+  const { selectedLayer, mapControlsStateValues } = mapControlsController.useState(['selectedLayer', 'selectedDataset'], 'mapControlsStateValues');
 
   const [_, setTableHeaders] = useState([])
   const searchInput = useSelector(
@@ -37,7 +37,7 @@ function MapGridLayersTable(props) {
         options: { ignoreGlobal: true, customRender: (value) => { return <div>{value}</div>; } }
       },
     ]
-    if (stateApp.selectedLayer.layerGeometry === 'Point') {
+    if (mapControlsStateValues.selectedLayer?.layerGeometry === 'Point') {
       predefinedCols.push({
         name: 'Lng', label: 'Lng',
         options: { customRender: (value) => { return <div>{value}</div>; } }
@@ -78,7 +78,7 @@ function MapGridLayersTable(props) {
       if (!newProperties.ID) {
         newProperties.ID = index + 1
       }
-      if (stateApp.selectedLayer.layerGeometry === 'Point') {
+      if (mapControlsStateValues.selectedLayer?.layerGeometry === 'Point') {
         newProperties.Lng = hit.geometry.coordinates[0]
         newProperties.Lat = hit.geometry.coordinates[1]
       }
@@ -90,9 +90,9 @@ function MapGridLayersTable(props) {
   useEffect(() => {
     let mustQuery = [];
     let searchQuery = [];
-    if (stateApp.selectedLayer?.layerShapeName) {
+    if (mapControlsStateValues.selectedLayer?.layerShapeName) {
       mustQuery = [{
-        "term": { "properties.layerShapeName": stateApp.selectedLayer?.layerShapeName }
+        "term": { "properties.layerShapeName": mapControlsStateValues.selectedLayer?.layerShapeName }
       }]
     }
     if (searchInput) {
@@ -113,7 +113,7 @@ function MapGridLayersTable(props) {
     }
 
     props.setTableMeta({
-      advanceSearch: stateApp.selectedLayer?.layerGeometry === 'Polygon' ? [{
+      advanceSearch: mapControlsStateValues.selectedLayer?.layerGeometry === 'Polygon' ? [{
         "bool": {
           "must": [
             ...mustQuery,
@@ -140,7 +140,7 @@ function MapGridLayersTable(props) {
               "bool": {
                 "should": [
                   {
-                    "term": { "properties.layerGeometry": stateApp.selectedLayer?.layerGeometry }
+                    "term": { "properties.layerGeometry": mapControlsStateValues.selectedLayer?.layerGeometry }
                   },
                 ]
               }
@@ -152,7 +152,7 @@ function MapGridLayersTable(props) {
       searchFields: ['*'],
       TableHeader: [],
       filters: [
-        { field: "file._id", value: [stateApp.selectedLayer?.file, stateApp.selectedLayer?.originalFile].filter(Boolean) },
+        { field: "file._id", value: [mapControlsStateValues.selectedLayer?.file, mapControlsStateValues.selectedLayer?.originalFile].filter(Boolean) },
       ],
       esIndex: "shapefile_flat",
       startPaginationAt: 25,
@@ -161,7 +161,7 @@ function MapGridLayersTable(props) {
     });
     // eslint-disable-next-line
   }, [
-    stateApp.selectedLayer,
+    selectedLayer,
     searchInput
   ]);
 
@@ -193,8 +193,8 @@ function MapGridLayersTable(props) {
         setColumnsBase={[]}
         {...props.esHocProps}
       />
-      {stateApp.selectedDataset?.fileName &&
-        <div style={{ position: 'absolute', fontWeight: 'bold', fontSize: '16px', bottom: '0px', right: '410px', padding: '13px 54px 16px 19px', borderBottom: '1px solid rgba(224, 224, 224, 1)', backgroundColor: '#F2F2F2' }}>{stateApp.selectedDataset?.fileName}</div>
+      {mapControlsStateValues.selectedDataset?.fileName &&
+        <div style={{ position: 'absolute', fontWeight: 'bold', fontSize: '16px', bottom: '0px', right: '410px', padding: '13px 54px 16px 19px', borderBottom: '1px solid rgba(224, 224, 224, 1)', backgroundColor: '#F2F2F2' }}>{mapControlsStateValues.selectedDataset?.fileName}</div>
       }
     </Container>
   );
