@@ -9,6 +9,7 @@ import { OWNERSLATSLONS } from "graphQL/useQueryOwnerLatsLonsArray";
 import { popupController } from 'hookstate/popupStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 import { layerController } from 'hookstate/layerStateController';
+import { history } from 'store';
 
 const useStyles = makeStyles(() => ({
     icons: {
@@ -20,23 +21,21 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const WellFlyToMap = ({ id, disabled = false }) => {
-    const classes = useStyles();
+export const useTaxOwnerWellFlyto = () => {
     const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(OWNERSLATSLONS);
 
 
-    const handleClick = async () => {
+    const handleFlyto = async (ownerId) => {
         await getOwnerWells({
             variables: {
-                ownerId: id,
+                ownerId,
             },
         });
     }
 
     useEffect(() => {
         if (dataOwnerWells && dataOwnerWells.ownerLatsLonsArray?.length) {
-
-            if (dataOwnerWells.ownerLatsLonsArray.length === 1)
+            if (dataOwnerWells.ownerLatsLonsArray.length === 1) {
                 popupController.setState({
                     selectedWellId: dataOwnerWells.ownerLatsLonsArray[0].id.toLowerCase(),
                     wellSelectedCoordinates: [
@@ -44,15 +43,24 @@ const WellFlyToMap = ({ id, disabled = false }) => {
                         dataOwnerWells.ownerLatsLonsArray[0].latitude,
                     ],
                 });
-            window.setStateApp(stateApp => ({
-                ...stateApp,
-                fitBounds: null
-            }));
-            layerController.updateState({ wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray] })
-            mapControlsController.updateState({ mapGridCardActivated: false });
+                window.setStateApp(stateApp => ({
+                    ...stateApp,
+                    fitBounds: null
+                }));
+                layerController.updateState({ wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray] })
+                history.push(`/map/wells/${dataOwnerWells.ownerLatsLonsArray[0].id.toLowerCase()}`);
+                mapControlsController.updateState({ mapGridCardActivated: false });
+            }
         }
 
     }, [dataOwnerWells]);
+
+    return { handleFlyto }
+}
+
+const WellFlyToMap = ({ id, disabled = false }) => {
+    const classes = useStyles();
+    const { handleFlyto } = useTaxOwnerWellFlyto()
 
     return (
         <Tooltip title="Fly To Map" placement="top" style={{ marginRight: '10px' }}>
@@ -64,7 +72,7 @@ const WellFlyToMap = ({ id, disabled = false }) => {
                 disabled={disabled}
                 onClick={e => {
                     e.stopPropagation();
-                    handleClick();
+                    handleFlyto(id);
                 }}
                 aria-label="fly"
             >

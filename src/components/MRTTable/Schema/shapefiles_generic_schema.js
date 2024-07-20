@@ -1,6 +1,8 @@
 import { get } from 'lodash';
 import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import { popupController } from 'hookstate/popupStateController';
+import { drawBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
 const onClickedRow = selectedRow => { };
 
@@ -40,8 +42,11 @@ const ShapesFilesGenericMeta = {
 					size: 70,
 					Cell: ({ row }) => {
 						const id = row.getValue('_id');
-
-						return <FlyToMap id={id} row={row.original} type='shapefile' />;
+						const Action = () => {
+							drawBoundary(row.original)
+							popupController.updateState({ selectedShapeFile: row.original })
+						}
+						return <FlyToMap id={id} action={Action} type='shapefile' />;
 					},
 				};
 
