@@ -17,6 +17,7 @@ const ShapesFilesGenericMeta = {
 	// isInFiniteScroll: true,
 	// columnVirtualization: true,
 	defaultFlterMode: 'multiselect',
+	globalSearch: true,
 	isGeneric: true,
 	enableHiding: false,
 	density: 'compact',
