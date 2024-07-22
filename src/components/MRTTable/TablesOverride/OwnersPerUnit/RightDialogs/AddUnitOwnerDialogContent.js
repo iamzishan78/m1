@@ -221,7 +221,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     } else {
       handleUpdateContact(formStateValues)
     }
-
+    const ownerType = formStateValues.ownerType && (formStateValues.ownerType.value || formStateValues.ownerType);
     if (selectedRow) {
       updateShapeOwners({
         variables: {
@@ -232,7 +232,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
               ...formStateValues,
               contactStatus: formStateValues.contactStatus && (formStateValues.contactStatus.value || formStateValues.contactStatus),
               status: formStateValues.status && (formStateValues.status.value || formStateValues.status),
-              ownerType: formStateValues.ownerType && (formStateValues.ownerType.value || formStateValues.ownerType),
+              ownerType,
               campaignPriority: formStateValues.campaignPriority && (formStateValues.campaignPriority.value || formStateValues.campaignPriority),
               shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),
               createBy: getUser?._id,
@@ -250,9 +250,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
           shapeType: props.shapeType,
           shapeOwner: {
             ...formStateValues,
+            relatedObject: {...formStateValues.relatedObject, ownerType},
             contactStatus: formStateValues.contactStatus && (formStateValues.contactStatus.value || formStateValues.contactStatus),
             status: formStateValues.status && (formStateValues.status.value || formStateValues.status),
-            ownerType: formStateValues.ownerType && (formStateValues.ownerType.value || formStateValues.ownerType),
+            ownerType,
             campaignPriority: formStateValues.campaignPriority && (formStateValues.campaignPriority.value || formStateValues.campaignPriority),
             shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),
             createBy: getUser?._id,
