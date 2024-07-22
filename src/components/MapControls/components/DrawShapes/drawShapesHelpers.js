@@ -145,7 +145,7 @@ export const drawBoundary = selectedUserDefinedLayer => {
           lineWidthUnits: "meters",
           getLineWidth: 100,
           getFillColor: [255, 255, 0],
-          getPointRadius: 200,
+          getPointRadius: 50,
         }),
       },
     });

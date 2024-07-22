@@ -424,10 +424,10 @@ function Map({
 		const bbox = turf.bbox(combined)
 		window.mapRef.fitBounds(
 			[
-				[bbox[0], bbox[1]], // southwestern corner of the bounds
-				[bbox[2], bbox[3]] // northeastern corner of the bounds
+				[bbox[0] - 0.03, bbox[1] - 0.03], // Southwest coordinates
+				[bbox[0] + 0.03, bbox[1] + 0.03]  // Northeast coordinates
 			],
-			{ padding: { top: 40, bottom: 700, left: 400, right: 40 }, easing: () => 1, }
+			{ padding: { top: 100, bottom: 200, left: 10, right: 100 }, easing: () => 1, }
 		)
 
 		const layers = globalStateController.getValue('layers');
