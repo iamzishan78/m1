@@ -47,7 +47,7 @@ const ShapesFilesGenericMeta = {
 							drawBoundary(row.original)
 							popupController.updateState({ selectedShapeFile: row.original })
 						}
-						return <FlyToMap id={id} action={Action} type='shapefile' />;
+						return <FlyToMap id={id} Action={Action} type='shapefile' />;
 					},
 				};
 
