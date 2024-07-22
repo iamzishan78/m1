@@ -16,6 +16,19 @@ function ESAutoCompleteFilter({
 	multiple,
 }) {
 	if (isComposite) field = field.split(',')
+	const searchMode = type === 'date' ? 'FE' : 'BE'
+	const searchMapping = {
+		FE: {
+			size: 10000,
+			searchText: () => "*",
+			filterOptions: undefined
+		},
+		BE: {
+			size: 100,
+			searchText: () => searchText.current,
+			filterOptions: (options) => options
+		}
+	}
 
 	const [getFilters, { data: filtersData, loading }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
 
@@ -34,18 +47,18 @@ function ESAutoCompleteFilter({
 
 	const getFiltersAction = debounce(({ afterKey } = {}) => {
 		if (filtersData && multiple && filterValue?.length !== 0) return;
-		let search = ''
-		if (searchText.current) search = type === 'number' ? searchText.current : `*${searchText.current}*`;
 
 		const filtersArray = [...filters, ...defaultFilters];
 		const currentFilterRef = {
 			filters,
 			defaultFilters,
-			searchText: searchText.current,
+			searchText: searchMapping[searchMode].searchText(),
 			afterKey
 		}
 		if (!_.isEqual(currentFilterRef, filtersRef.current)) {
-			filtersRef.current = filtersArray;
+			let search = ''
+			if (searchText.current) search = type === 'number' ? searchText.current : `*${searchText.current}*`;
+			filtersRef.current = currentFilterRef;
 			getFilters({
 				variables: {
 					esIndex,
@@ -64,7 +77,7 @@ function ESAutoCompleteFilter({
 						query: search,
 						field: typeof field === 'string' ? field : undefined,
 						fields: typeof field !== 'string' ? field : undefined,
-						size: 100,
+						size: searchMapping[searchMode].size,
 						afterKey
 					},
 				},
@@ -161,7 +174,7 @@ function ESAutoCompleteFilter({
 			id={`${id}-filter-autocomplete`}
 			options={multiple ? options?.filter(item => !filterValue.includes(item.value)) : options}
 			loading={loading}
-			filterOptions={(options) => options}
+			filterOptions={searchMapping[searchMode].filterOptions}
 			value={filterValue}
 			renderInput={params => (
 				<TextField

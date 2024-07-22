@@ -75,6 +75,7 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 			size: 350,
 			inputType: item?.type,
 			dbKey: item?.name,
+			isSearchField: !item.type === 'date',
 			Cell: ({ row }) => {
 				const value = _.get(row?.original, `custom_data.${item?.name}`)
 

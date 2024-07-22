@@ -58,7 +58,7 @@ const ShapesFilesGenericMeta = {
 			const value = rows.find(r => !!r[accessorKey])?.[accessorKey];
 
 			let filter = false;
-			let isSearchField = false;
+			let isSearchField = true;
 			let enableSorting = true;
 			let enableHiding = false;
 			let enableColumnFilter = true;
