@@ -80,7 +80,7 @@ const useStyles = makeStyles(() => ({
 		width: '100%',
 		height: '100vh',
 		overflow: 'hidden !important',
-		'& a.mapboxgl-ctrl-logo, .mapboxgl-ctrl.mapboxgl-ctrl-attrib, .mapboxgl-ctrl-compass': {
+		'& a.mapboxgl-ctrl-logo, .mapboxgl-ctrl.mapboxgl-ctrl-attrib': {
 			display: 'none',
 		},
 		'& .mapboxgl-canvas-container > canvas': {
@@ -89,13 +89,13 @@ const useStyles = makeStyles(() => ({
 			width: '100% !important',
 		},
 		'& .mapboxgl-popup-close-button': { display: 'none' },
-		"& .mapboxgl-ctrl-group": { backgroundColor: "#0e111a" },
-		"& .mapboxgl-ctrl button.mapboxgl-ctrl-zoom-in .mapboxgl-ctrl-icon": { backgroundImage: "url('data:image/svg+xml;charset=utf-8,%3Csvg width=\"29\" height=\"29\" viewBox=\"0 0 29 29\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"%23FFFFFF\"%3E%3Cpath d=\"M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5z\"/%3E%3C/svg%3E')" },
-		"& .mapboxgl-ctrl button.mapboxgl-ctrl-zoom-out .mapboxgl-ctrl-icon": { backgroundImage: "url('data:image/svg+xml;charset=utf-8,%3Csvg width=\"29\" height=\"29\" viewBox=\"0 0 29 29\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"%23FFFFFF\"%3E%3Cpath d=\"M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-9z\"/%3E%3C/svg%3E')" },
-		"& .mapboxgl-ctrl-top-left": {
-			marginTop: "140px",
-			marginLeft: ({ expandedPanel }) => expandedPanel ? "425px" : "2px"
-		} // Update zoom icon position on toggle side bar
+		// "& .mapboxgl-ctrl-group": { backgroundColor: "#0e111a" },
+		// "& .mapboxgl-ctrl button.mapboxgl-ctrl-zoom-in .mapboxgl-ctrl-icon": { backgroundImage: "url('data:image/svg+xml;charset=utf-8,%3Csvg width=\"29\" height=\"29\" viewBox=\"0 0 29 29\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"%23FFFFFF\"%3E%3Cpath d=\"M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5z\"/%3E%3C/svg%3E')" },
+		// "& .mapboxgl-ctrl button.mapboxgl-ctrl-zoom-out .mapboxgl-ctrl-icon": { backgroundImage: "url('data:image/svg+xml;charset=utf-8,%3Csvg width=\"29\" height=\"29\" viewBox=\"0 0 29 29\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"%23FFFFFF\"%3E%3Cpath d=\"M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-9z\"/%3E%3C/svg%3E')" },
+		// "& .mapboxgl-ctrl-top-left": {
+		// 	marginTop: "140px",
+		// 	marginLeft: ({ expandedPanel }) => expandedPanel ? "425px" : "2px"
+		// } // Update zoom icon position on toggle side bar
 	},
 	filterPopup: {
 		'& .mapboxgl-popup-tip': {
@@ -424,10 +424,10 @@ function Map({
 		const bbox = turf.bbox(combined)
 		window.mapRef.fitBounds(
 			[
-				[bbox[0], bbox[1]], // southwestern corner of the bounds
-				[bbox[2], bbox[3]] // northeastern corner of the bounds
+				[bbox[0] - 0.03, bbox[1] - 0.03], // Southwest coordinates
+				[bbox[0] + 0.03, bbox[1] + 0.03]  // Northeast coordinates
 			],
-			{ padding: { top: 40, bottom: 700, left: 400, right: 40 }, easing: () => 1, }
+			{ padding: { top: 100, bottom: 200, left: 10, right: 100 }, easing: () => 1, }
 		)
 
 		const layers = globalStateController.getValue('layers');
@@ -770,7 +770,28 @@ function Map({
 				}),
 				'bottom-right'
 			);
-			newMap.addControl(new mapboxgl.NavigationControl(), "top-left");
+			newMap.addControl(new mapboxgl.NavigationControl({showCompass: true}), "bottom-right");
+
+			const geoLocate = new mapboxgl.GeolocateControl({
+				positionOptions: {
+					enableHighAccuracy: true,
+				},
+				fitBoundsOptions: {
+					maxZoom: 24,
+				},
+				trackUserLocation: false,
+				showAccuracyCircle: true,
+				showUserLocation: true,
+			});
+			newMap.addControl(geoLocate, 'bottom-right');
+			geoLocate.on('geolocate', e => {
+				newMap.jumpTo({
+					center: [e.coords.longitude, e.coords.latitude],
+					zoom: 14,
+					pitch: 80,
+					bearing: 20,
+				});
+			});
 
 
 

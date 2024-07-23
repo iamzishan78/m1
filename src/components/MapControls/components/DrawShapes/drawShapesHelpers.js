@@ -126,7 +126,7 @@ export const drawBoundary = selectedUserDefinedLayer => {
 
   if (selectedUserDefinedLayer?.geometry) {
     const type = selectedUserDefinedLayer.geometry.type;
-    const radius = selectedUserDefinedLayer?.Source === "places" ? 5 : 200 
+    const radius = selectedUserDefinedLayer?.Source === "places" ? 5 : 50 
     const lineWidth = selectedUserDefinedLayer?.Source === "places" ? 5 : 100 
     new DeckGlLayer({
       layerId,

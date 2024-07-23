@@ -121,10 +121,10 @@ function MapGridLayersTable(props) {
               "bool": {
                 "should": [
                   {
-                    "term": { "properties.layerGeometry": "Polygon" }
+                    "term": { "properties.layerGeometry.keyword": "Polygon" }
                   },
                   {
-                    "term": { "properties.layerGeometry": "MultiPolygon" }
+                    "term": { "properties.layerGeometry.keyword": "MultiPolygon" }
                   },
                 ]
               },
@@ -140,7 +140,7 @@ function MapGridLayersTable(props) {
               "bool": {
                 "should": [
                   {
-                    "term": { "properties.layerGeometry": mapControlsStateValues.selectedLayer?.layerGeometry }
+                    "term": { "properties.layerGeometry.keyword": mapControlsStateValues.selectedLayer?.layerGeometry }
                   },
                 ]
               }
@@ -152,7 +152,7 @@ function MapGridLayersTable(props) {
       searchFields: ['*'],
       TableHeader: [],
       filters: [
-        { field: "file._id", value: [mapControlsStateValues.selectedLayer?.file, mapControlsStateValues.selectedLayer?.originalFile].filter(Boolean) },
+        { field: "file._id.keyword", value: [mapControlsStateValues.selectedLayer?.file, mapControlsStateValues.selectedLayer?.originalFile].filter(Boolean) },
       ],
       esIndex: "shapefile_flat",
       startPaginationAt: 25,

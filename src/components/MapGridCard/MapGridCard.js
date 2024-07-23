@@ -261,7 +261,7 @@ function MapGridCard(props) {
     if (mapControlsStateValues.selectedLayer?.layerShapeName) {
       mustQuery = [
         {
-          term: { 'properties.layerShapeName': mapControlsStateValues.selectedLayer?.layerShapeName },
+          term: { 'properties.layerShapeName.keyword': mapControlsStateValues.selectedLayer?.layerShapeName },
         },
       ];
     }
@@ -294,10 +294,10 @@ function MapGridCard(props) {
                     bool: {
                       should: [
                         {
-                          term: { 'properties.layerGeometry': 'Polygon' },
+                          term: { 'properties.layerGeometry.keyword': 'Polygon' },
                         },
                         {
-                          term: { 'properties.layerGeometry': 'MultiPolygon' },
+                          term: { 'properties.layerGeometry.keyword': 'MultiPolygon' },
                         },
                       ],
                     },
@@ -317,7 +317,7 @@ function MapGridCard(props) {
                       should: [
                         {
                           term: {
-                            'properties.layerGeometry':
+                            'properties.layerGeometry.keyword':
                               mapControlsStateValues.selectedLayer?.layerGeometry,
                           },
                         },
