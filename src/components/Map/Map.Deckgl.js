@@ -130,7 +130,7 @@ function Map({
 	// context states
 	const globalState = globalStateController.useState(['layers']);
 	const { filterDrawing, navStateValues } = navController.useState(['filterDrawing'], 'navStateValues')
-	const { selectedShapeFile, popupStateValues } = popupController.useState(['selectedShapeFile'], 'popupStateValues');
+	const { selectedShapeFile, selectedPlaces, popupStateValues } = popupController.useState(['selectedShapeFile', "selectedPlaces"], 'popupStateValues');
 	const { mapStateValues } = mapStateController.useState(['mapVars', 'defaultMapVars', 'toggle3d', 'toggleZoomOut'], 'mapStateValues');
 	const { wellListFromSearch, layerStateValues } = layerController.useState(['wellListFromSearch'], 'layerStateValues')
 	const [stateApp, setStateApp] = useContext(AppContext);
@@ -1096,12 +1096,18 @@ function Map({
 				layerStateValues.wellListFromSearch[0].latitude &&
 				layerStateValues.wellListFromSearch[0].longitude
 			) {
+				if (map && selectedPlaces) {
+					const places = selectedPlaces.get({
+						noproxy: true,
+					});
+					drawBoundary(places)
+				}
 				map.jumpTo({
 					center: {
 						lng: layerStateValues.wellListFromSearch[0].longitude,
 						lat: layerStateValues.wellListFromSearch[0].latitude,
 					},
-					zoom: 12,
+					zoom: selectedPlaces ? 16 : 12,
 				});
 				setStateApp(state => ({
 					...state,
@@ -1109,7 +1115,7 @@ function Map({
 				}));
 			}
 		}
-	}, [map, wellListFromSearch]);
+	}, [map, wellListFromSearch, selectedPlaces]);
 
 	useEffect(() => {
 		if (map && stateApp?.findLocation?.location?.length > 0) {

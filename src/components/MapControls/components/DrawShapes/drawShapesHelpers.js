@@ -126,6 +126,8 @@ export const drawBoundary = selectedUserDefinedLayer => {
 
   if (selectedUserDefinedLayer?.geometry) {
     const type = selectedUserDefinedLayer.geometry.type;
+    const radius = selectedUserDefinedLayer?.Source === "places" ? 5 : 200 
+    const lineWidth = selectedUserDefinedLayer?.Source === "places" ? 5 : 100 
     new DeckGlLayer({
       layerId,
       type: 'GeoJsonLayer',
@@ -143,9 +145,9 @@ export const drawBoundary = selectedUserDefinedLayer => {
         getLineWidth: 6,
         ...(type === 'Point' && {
           lineWidthUnits: "meters",
-          getLineWidth: 100,
+          getLineWidth: lineWidth,
           getFillColor: [255, 255, 0],
-          getPointRadius: 200,
+          getPointRadius: radius,
         }),
       },
     });

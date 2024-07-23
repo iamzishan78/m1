@@ -552,6 +552,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
               dataOwnerWells.ownerLatsLonsArray[0].longitude,
               dataOwnerWells.ownerLatsLonsArray[0].latitude,
             ],
+            selectedPlaces: null
           });
         setStateApp(stateApp => ({
           ...stateApp,
@@ -583,6 +584,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
               dataOperatorWells.operatorLatsLonsArray[0].longitude,
               dataOperatorWells.operatorLatsLonsArray[0].latitude,
             ],
+            selectedPlaces: null
           });
         setStateApp(stateApp => ({
           ...stateApp,
@@ -614,6 +616,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
               dataLeaseWells.leaseLatsLonsArray[0].longitude,
               dataLeaseWells.leaseLatsLonsArray[0].latitude,
             ],
+            selectedPlaces: null
           });
         setStateApp(stateApp => ({
           ...stateApp,
@@ -757,6 +760,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
         popupController.setState({
           selectedWellId: newValue.Id ? newValue.Id.toLowerCase() : null,
           wellSelectedCoordinates: [newValue.Longitude, newValue.Latitude],
+          selectedPlaces: null
         });
         setStateApp((stateApp) => ({
           ...stateApp,
@@ -848,6 +852,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
           selectedWell: null,
           selectedWellId: null,
           wellSelectedCoordinates: null,
+          selectedPlaces: newValue.Source === "mapboxSearch" ? null : newValue,
         })
 
         setStateApp((stateApp) => ({
