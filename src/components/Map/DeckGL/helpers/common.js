@@ -441,10 +441,10 @@ export const getAdvancedSearch = (layerGeometry, mustQuery) =>
 							bool: {
 								should: [
 									{
-										term: { 'properties.layerGeometry': 'Polygon' },
+										term: { 'properties.layerGeometry.keyword': 'Polygon' },
 									},
 									{
-										term: { 'properties.layerGeometry': 'MultiPolygon' },
+										term: { 'properties.layerGeometry.keyword': 'MultiPolygon' },
 									},
 								],
 							},
@@ -462,7 +462,7 @@ export const getAdvancedSearch = (layerGeometry, mustQuery) =>
 							bool: {
 								should: [
 									{
-										term: { 'properties.layerGeometry': layerGeometry },
+										term: { 'properties.layerGeometry.keyword': layerGeometry },
 									},
 								],
 							},
@@ -477,14 +477,14 @@ export const generateFileFilters = (layer, _filters = { variables: {} }) => {
 	if (layer.layerShapeName) {
 		mustQuery = [
 			{
-				term: { 'properties.layerShapeName': layer.layerShapeName },
+				term: { 'properties.layerShapeName.keyword': layer.layerShapeName },
 			},
 		];
 	}
 
 	const advanceSearch = getAdvancedSearch(layer.layerGeometry, mustQuery);
 
-	const filters = [{ field: 'file._id', value: [layer.file, layer.originalFile] }];
+	const filters = [{ field: 'file._id.keyword', value: [layer.file, layer.originalFile] }];
 
 	return {
 		variables: {
