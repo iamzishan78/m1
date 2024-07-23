@@ -324,7 +324,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
           </Grid>
           <DialogContent className={classes.dialogContent}>
             <Grid container spacing={2}>
-              {!selectedRow &&
+              {/* {!selectedRow &&
                 <Button
                   variant="contained"
                   color="primary"
@@ -339,7 +339,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 >
                   Add Custom Data
                 </Button>
-              }
+              } */}
 
               <Grid item xs={12}>
                 {!formStateValues?.newOwner && <h3 style={{ float: "left" }}>Name</h3>}
