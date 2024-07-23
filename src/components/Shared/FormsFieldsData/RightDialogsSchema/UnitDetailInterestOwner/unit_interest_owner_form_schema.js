@@ -196,7 +196,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
       isValueOverridden: (value) => {
         if (!value) return
 
-        const isOverride = value !== parseFloat(uUnitPricing).toFixed(2)
+        const isOverride = parseFloat(value.toString()).toFixed(2) !== parseFloat(uMaxUnitPricing).toFixed(2)
         sideDialogController("unitInterestDialog").updateState({ 'showTargetPrice/NraRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
@@ -280,7 +280,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
       isValueOverridden: (value) => {
         if (!value) return
 
-        const isOverride = value !== parseFloat(uMaxUnitPricing).toFixed(2)
+        const isOverride = parseFloat(value.toString()).toFixed(2) !== parseFloat(uMaxUnitPricing).toFixed(2)
         sideDialogController("unitInterestDialog").updateState({ 'showMaxPrice/NraRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },

@@ -92,7 +92,7 @@ function MapGridLayersTable(props) {
     let searchQuery = [];
     if (mapControlsStateValues.selectedLayer?.layerShapeName) {
       mustQuery = [{
-        "term": { "properties.layerShapeName": mapControlsStateValues.selectedLayer?.layerShapeName }
+        "term": { "properties.layerShapeName.keyword": mapControlsStateValues.selectedLayer?.layerShapeName }
       }]
     }
     if (searchInput) {
