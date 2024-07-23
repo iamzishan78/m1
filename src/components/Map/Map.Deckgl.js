@@ -1121,7 +1121,7 @@ function Map({
 					const places = selectedPlaces.get({
 						noproxy: true,
 					});
-					drawBoundary(places)
+					drawBoundary(places) // show dot on searched places coordinates
 				}
 				map.jumpTo({
 					center: {
