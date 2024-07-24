@@ -353,7 +353,7 @@ const drawStateControllerHandler = state => {
 			else if (updateCustomLayer) {
 				updateCustomLayer({
 					variables: {
-						customLayerId: selectedAoi?.id,
+						customLayerId: selectedAoi?.id || selectedAoi?._id,
 						customLayer: customLayerData,
 					},
 				}).then(() => {
