@@ -195,7 +195,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
   useEffect(() => {
     const { uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing } = props?.customLayer?.shapeJson?.properties;
-    console.log('in use', uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing);
     sideDialogController("tractInterestDialog").updateState({
       uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing
     })
@@ -246,7 +245,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   };
 
   const handleClickAdd = e => {
-    debugger
     e.preventDefault();
     const parcelOwnerFormValue = getValues();
     const qtr = [parcelOwnerFormValue?.qtr1 || null, parcelOwnerFormValue?.qtr2 || null, parcelOwnerFormValue?.qtr3 || null, parcelOwnerFormValue?.qtr4 || null]
@@ -255,13 +253,20 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       qtr: qtr,
       customLayer: props.customLayerId,
     })
+
+    const ownerType = formStateValues.ownerType && (formStateValues.ownerType.value || formStateValues.ownerType);
+
     if (formStateValues?.newOwner) {
-      sideDialogController("tractInterestDialog").updateState({ relatedObject: { ...parcelOwnerFormValue } })
+      sideDialogController("tractInterestDialog").updateState({
+        relatedObject: {
+          ...parcelOwnerFormValue,
+          ownerType,
+        }
+      })
     } else {
       handleUpdateContact(formStateValues)
     }
 
-    const ownerType = formStateValues.ownerType && (formStateValues.ownerType.value || formStateValues.ownerType);
     if (selectedRow) {
       updateParcelOwner({
         variables: {
