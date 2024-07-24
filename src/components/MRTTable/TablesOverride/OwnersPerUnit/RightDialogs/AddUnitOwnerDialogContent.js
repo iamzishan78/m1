@@ -216,12 +216,18 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       ...unitOwnerFormValue,
     })
 
+    const ownerType = formStateValues.ownerType && (formStateValues.ownerType.value || formStateValues.ownerType);
+
     if (formStateValues?.newOwner) {
-      sideDialogController("unitInterestDialog").updateState({ relatedObject: { ...unitOwnerFormValue } })
+      sideDialogController("unitInterestDialog").updateState({
+        relatedObject: {
+          ...unitOwnerFormValue,
+          ownerType
+        }
+      })
     } else {
       handleUpdateContact(formStateValues)
     }
-    const ownerType = formStateValues.ownerType && (formStateValues.ownerType.value || formStateValues.ownerType);
     if (selectedRow) {
       updateShapeOwners({
         variables: {
@@ -250,7 +256,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
           shapeType: props.shapeType,
           shapeOwner: {
             ...formStateValues,
-            relatedObject: {...formStateValues.relatedObject, ownerType},
             contactStatus: formStateValues.contactStatus && (formStateValues.contactStatus.value || formStateValues.contactStatus),
             status: formStateValues.status && (formStateValues.status.value || formStateValues.status),
             ownerType,

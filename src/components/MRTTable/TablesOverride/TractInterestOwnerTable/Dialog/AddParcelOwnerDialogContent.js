@@ -72,6 +72,19 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const extractValueRecursively = (obj) => {
+  if (obj === null || obj === undefined) return obj;
+
+  if (typeof obj === 'object' && !Array.isArray(obj)) {
+    return Object.keys(obj).reduce((acc, key) => {
+      acc[key] = extractValueRecursively(obj[key]?.value !== undefined ? obj[key]?.value : obj[key]);
+      return acc;
+    }, {});
+  }
+
+  return obj;
+};
+
 
 export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRow, ...props }) {
   const dispatch = useDispatch();
@@ -100,7 +113,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       state: props?.customLayer?.state,
       newOwner: formStateValues?.newOwner,
     });
-  }, [formStateValues?.newOwner, formState?.rerenderJson]);
+  }, [formStateValues?.newOwner, formState?.rerenderJson, formState?.uMaxUnitPricing, formState?.uUnitPricing, formState?.uUnitPricingNMA, formState?.uMaxUnitPricingNMA]);
 
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
   const [nameAutInputValue, NameAutInputValue] = useState('');
@@ -232,11 +245,11 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         variables: {
           contact: {
             _id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
-            contactStatus: ownerToAdd.contactStatus,
-            status: ownerToAdd.status,
+            contactStatus: ownerToAdd.contactStatus && (ownerToAdd.contactStatus.value || ownerToAdd.contactStatus),
+            status: ownerToAdd.status && (ownerToAdd.status.value || ownerToAdd.status),
             lastUpdateBy: getUser?._id,
-            ownerType: ownerToAdd.ownerType,
-            campaignPriority: ownerToAdd.campaignPriority,
+            ownerType: ownerToAdd.ownerType && (ownerToAdd.ownerType.value || ownerToAdd.ownerType),
+            campaignPriority: ownerToAdd.campaignPriority && (ownerToAdd.campaignPriority.value || ownerToAdd.campaignPriority),
           },
         },
       });
@@ -245,6 +258,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   };
 
   const handleClickAdd = e => {
+    debugger
     e.preventDefault();
     const parcelOwnerFormValue = getValues();
     const qtr = [parcelOwnerFormValue?.qtr1 || null, parcelOwnerFormValue?.qtr2 || null, parcelOwnerFormValue?.qtr3 || null, parcelOwnerFormValue?.qtr4 || null]
@@ -259,17 +273,18 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       handleUpdateContact(formStateValues)
     }
 
+    const ownerType = formStateValues.ownerType && (formStateValues.ownerType.value || formStateValues.ownerType);
     if (selectedRow) {
+      const parcelOwner = extractValueRecursively({
+        _id: selectedRow?._id,
+        ...formStateValues,
+        deals: formStateValues?.deals || [],
+        relatedObject: formStateValues.relatedObject,
+        createBy: getUser?._id,
+        lastUpdateBy: getUser?._id,
+      });
       updateParcelOwner({
-        variables: {
-          parcelOwner: {
-            _id: selectedRow?._id,
-            ...formStateValues,
-            deals: formStateValues?.deals || [],
-            createBy: getUser?._id,
-            lastUpdateBy: getUser?._id,
-          },
-        },
+        variables: { parcelOwner },
         refetchQueries: [
           'getparcelOwners',
           'getContactParcelInterests',
@@ -280,15 +295,15 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         awaitRefetchQueries: true,
       });
     } else {
+      const parcelOwner = extractValueRecursively({
+        ...formStateValues,
+        deals: formStateValues?.deals || [],
+        relatedObject: formStateValues.relatedObject,
+        createBy: getUser?._id,
+        lastUpdateBy: getUser?._id,
+      });
       addOwnerToAParcel({
-        variables: {
-          parcelOwner: {
-            ...formStateValues,
-            deals: formStateValues?.deals || [],
-            createBy: getUser?._id,
-            lastUpdateBy: getUser?._id,
-          },
-        },
+        variables: { parcelOwner },
         refetchQueries: [
           'getCustomLayer',
           'getparcelOwners',
