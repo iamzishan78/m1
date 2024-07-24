@@ -549,9 +549,9 @@ function Map({
 					}
 				}
 
-				l.id.forEach(k => {
-					if (map.getLayer(k)) {
-						map.setLayoutProperty(k, 'visibility', 'none');
+				l?.id?.forEach(k => {
+					if (map?.getLayer(k)) {
+						map?.setLayoutProperty(k, 'visibility', 'none');
 					}
 				});
 			});
@@ -1121,7 +1121,7 @@ function Map({
 					const places = selectedPlaces.get({
 						noproxy: true,
 					});
-					drawBoundary(places) // show dot on searched places coordinates
+					drawWellBoundary([places?.geometry?.coordinates[0], places?.geometry?.coordinates[1]]) // show dot on searched places coordinates
 				}
 				map.jumpTo({
 					center: {
