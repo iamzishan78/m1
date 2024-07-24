@@ -494,16 +494,16 @@ export default function DocumentDrawer(props) {
                   disableListWrap
                   className={classes.maxWidth}
                   options={
-                    documents?.getFiles
-                      ? documents?.getFiles?.map((doc) => {
-                        return {
-                          _id: doc.fileId,
-                          name: doc.documentName,
-                          number: doc.documentNumber,
-                          fileName: doc.fileName,
-                        };
-                      })
-                      : []
+                    Array.isArray(documents?.getFiles)
+                    ? documents.getFiles.map((doc) => {
+                      return {
+                        _id: doc?.fileId,
+                        name: doc?.documentName,
+                        number: doc?.documentNumber,
+                        fileName: doc?.fileName,
+                      }; 
+                    })
+                    : []
                   }
                   getOptionLabel={(option) => {
                     if (typeof option === "string") {
@@ -887,6 +887,7 @@ export default function DocumentDrawer(props) {
           disabled={(!fileData && !newDocument.fileId) || (selectedType === "existing" && !newDocument.fileId)}
           onClick={() => {
             if (selectedType === "existing") {
+              setLoader(true);
               addFile({
                 variables: {
                   fileName: newDocument.fileName,
