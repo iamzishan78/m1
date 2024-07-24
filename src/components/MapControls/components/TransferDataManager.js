@@ -119,10 +119,10 @@ export default function TransferDataManager(props) {
             "bool": {
               "should": [
                 {
-                  "term": { "properties.layerGeometry": "Polygon" }
+                  "term": { "properties.layerGeometry.keyword": "Polygon" }
                 },
                 {
-                  "term": { "properties.layerGeometry": "MultiPolygon" }
+                  "term": { "properties.layerGeometry.keyword": "MultiPolygon" }
                 }
               ]
             }
@@ -130,13 +130,13 @@ export default function TransferDataManager(props) {
             "bool": {
               "should": [
                 {
-                  "term": { "properties.layerGeometry": selectedSourceCategory.layerGeometry }
+                  "term": { "properties.layerGeometry.keyword": selectedSourceCategory.layerGeometry }
                 }
               ]
             }
           }],
         },
-        filters: [{ field: "file._id", value: [selectedSourceCategory?.file, selectedSourceCategory?.originalFile].filter(Boolean) }],
+        filters: [{ field: "file._id.keyword", value: [selectedSourceCategory?.file, selectedSourceCategory?.originalFile].filter(Boolean) }],
         pagination: {
           first: 5,
           after: null,
