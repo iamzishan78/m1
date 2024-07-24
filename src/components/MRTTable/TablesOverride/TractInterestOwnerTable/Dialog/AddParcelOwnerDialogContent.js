@@ -100,7 +100,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       state: props?.customLayer?.state,
       newOwner: formStateValues?.newOwner,
     });
-  }, [formStateValues?.newOwner, formState?.rerenderJson]);
+  }, [formStateValues?.newOwner, formState?.rerenderJson, formState?.uMaxUnitPricing, formState?.uUnitPricing, formState?.uUnitPricingNMA, formState?.uMaxUnitPricingNMA]);
 
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
   const [nameAutInputValue, NameAutInputValue] = useState('');
@@ -195,6 +195,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
   useEffect(() => {
     const { uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing } = props?.customLayer?.shapeJson?.properties;
+    console.log('in use', uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing);
     sideDialogController("tractInterestDialog").updateState({
       uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing
     })
