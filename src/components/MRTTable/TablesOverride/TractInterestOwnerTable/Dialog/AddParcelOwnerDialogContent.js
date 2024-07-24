@@ -72,6 +72,19 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const extractValueRecursively = (obj) => {
+  if (obj === null || obj === undefined) return obj;
+
+  if (typeof obj === 'object' && !Array.isArray(obj)) {
+    return Object.keys(obj).reduce((acc, key) => {
+      acc[key] = extractValueRecursively(obj[key]?.value !== undefined ? obj[key]?.value : obj[key]);
+      return acc;
+    }, {});
+  }
+
+  return obj;
+};
+
 
 export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRow, ...props }) {
   const dispatch = useDispatch();
@@ -262,20 +275,16 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
     const ownerType = formStateValues.ownerType && (formStateValues.ownerType.value || formStateValues.ownerType);
     if (selectedRow) {
+      const parcelOwner = extractValueRecursively({
+        _id: selectedRow?._id,
+        ...formStateValues,
+        deals: formStateValues?.deals || [],
+        relatedObject: formStateValues.relatedObject,
+        createBy: getUser?._id,
+        lastUpdateBy: getUser?._id,
+      });
       updateParcelOwner({
-        variables: {
-          parcelOwner: {
-            _id: selectedRow?._id,
-            ...formStateValues,
-            contactStatus: formStateValues.contactStatus && (formStateValues.contactStatus.value || formStateValues.contactStatus),
-            status: formStateValues.status && (formStateValues.status.value || formStateValues.status),
-            ownerType,
-            campaignPriority: formStateValues.campaignPriority && (formStateValues.campaignPriority.value || formStateValues.campaignPriority),
-            deals: formStateValues?.deals || [],
-            createBy: getUser?._id,
-            lastUpdateBy: getUser?._id,
-          },
-        },
+        variables: { parcelOwner },
         refetchQueries: [
           'getparcelOwners',
           'getContactParcelInterests',
@@ -286,19 +295,15 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         awaitRefetchQueries: true,
       });
     } else {
+      const parcelOwner = extractValueRecursively({
+        ...formStateValues,
+        deals: formStateValues?.deals || [],
+        relatedObject: formStateValues.relatedObject,
+        createBy: getUser?._id,
+        lastUpdateBy: getUser?._id,
+      });
       addOwnerToAParcel({
-        variables: {
-          parcelOwner: {
-            ...formStateValues,
-            contactStatus: formStateValues.contactStatus && (formStateValues.contactStatus.value || formStateValues.contactStatus),
-            status: formStateValues.status && (formStateValues.status.value || formStateValues.status),
-            ownerType,
-            campaignPriority: formStateValues.campaignPriority && (formStateValues.campaignPriority.value || formStateValues.campaignPriority),
-            deals: formStateValues?.deals || [],
-            createBy: getUser?._id,
-            lastUpdateBy: getUser?._id,
-          },
-        },
+        variables: { parcelOwner },
         refetchQueries: [
           'getCustomLayer',
           'getparcelOwners',
