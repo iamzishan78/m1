@@ -100,7 +100,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       state: props?.customLayer?.state,
       newOwner: formStateValues?.newOwner,
     });
-  }, [formStateValues?.newOwner, formState?.rerenderJson]);
+  }, [formStateValues?.newOwner, formState?.rerenderJson, formState?.uMaxUnitPricing, formState?.uUnitPricing, formState?.uUnitPricingNMA, formState?.uMaxUnitPricingNMA]);
 
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
   const [nameAutInputValue, NameAutInputValue] = useState('');
@@ -232,11 +232,11 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         variables: {
           contact: {
             _id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
-            contactStatus: ownerToAdd.contactStatus,
-            status: ownerToAdd.status,
+            contactStatus: ownerToAdd.contactStatus && (ownerToAdd.contactStatus.value || ownerToAdd.contactStatus),
+            status: ownerToAdd.status && (ownerToAdd.status.value || ownerToAdd.status),
             lastUpdateBy: getUser?._id,
-            ownerType: ownerToAdd.ownerType,
-            campaignPriority: ownerToAdd.campaignPriority,
+            ownerType: ownerToAdd.ownerType && (ownerToAdd.ownerType.value || ownerToAdd.ownerType),
+            campaignPriority: ownerToAdd.campaignPriority && (ownerToAdd.campaignPriority.value || ownerToAdd.campaignPriority),
           },
         },
       });
@@ -245,6 +245,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   };
 
   const handleClickAdd = e => {
+    debugger
     e.preventDefault();
     const parcelOwnerFormValue = getValues();
     const qtr = [parcelOwnerFormValue?.qtr1 || null, parcelOwnerFormValue?.qtr2 || null, parcelOwnerFormValue?.qtr3 || null, parcelOwnerFormValue?.qtr4 || null]
@@ -259,12 +260,17 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       handleUpdateContact(formStateValues)
     }
 
+    const ownerType = formStateValues.ownerType && (formStateValues.ownerType.value || formStateValues.ownerType);
     if (selectedRow) {
       updateParcelOwner({
         variables: {
           parcelOwner: {
             _id: selectedRow?._id,
             ...formStateValues,
+            contactStatus: formStateValues.contactStatus && (formStateValues.contactStatus.value || formStateValues.contactStatus),
+            status: formStateValues.status && (formStateValues.status.value || formStateValues.status),
+            ownerType,
+            campaignPriority: formStateValues.campaignPriority && (formStateValues.campaignPriority.value || formStateValues.campaignPriority),
             deals: formStateValues?.deals || [],
             createBy: getUser?._id,
             lastUpdateBy: getUser?._id,
@@ -284,6 +290,10 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         variables: {
           parcelOwner: {
             ...formStateValues,
+            contactStatus: formStateValues.contactStatus && (formStateValues.contactStatus.value || formStateValues.contactStatus),
+            status: formStateValues.status && (formStateValues.status.value || formStateValues.status),
+            ownerType,
+            campaignPriority: formStateValues.campaignPriority && (formStateValues.campaignPriority.value || formStateValues.campaignPriority),
             deals: formStateValues?.deals || [],
             createBy: getUser?._id,
             lastUpdateBy: getUser?._id,

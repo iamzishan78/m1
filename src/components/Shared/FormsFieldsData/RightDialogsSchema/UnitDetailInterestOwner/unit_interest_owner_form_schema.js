@@ -39,7 +39,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 
           const workspaceSettings = sideDialogController("unitInterestDialog").getValue('workspaceSettings')
           const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
-          const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest: value, royalty_interest, orri, nri, workspaceSettings })
+          const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest: parseFloat(value).toFixed(8), royalty_interest, orri, nri, workspaceSettings })
           setValue('nra', calculatedNra)
           setValue('offer_price', calculateOfferPrice(calculatedNra));
         }
@@ -58,7 +58,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 
           const workspaceSettings = sideDialogController("unitInterestDialog").getValue('workspaceSettings')
           const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
-          const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest: value, orri, nri, workspaceSettings })
+          const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest: parseFloat(value).toFixed(8), orri, nri, workspaceSettings })
           setValue('nra', calculatedNra)
           setValue('offer_price', calculateOfferPrice(calculatedNra));
         }
@@ -77,7 +77,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 
           const workspaceSettings = sideDialogController("unitInterestDialog").getValue('workspaceSettings')
           const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
-          const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri: value, nri, workspaceSettings })
+          const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri: parseFloat(value).toFixed(8), nri, workspaceSettings })
           setValue('nra', calculatedNra)
           setValue('offer_price', calculateOfferPrice(calculatedNra));
         }
@@ -97,7 +97,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 
           const workspaceSettings = sideDialogController("unitInterestDialog").getValue('workspaceSettings')
           const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
-          const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri, nri: value, workspaceSettings })
+          const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri, nri: parseFloat(value).toFixed(8), workspaceSettings })
           setValue('nra', calculatedNra)
           setValue('offer_price', calculateOfferPrice(calculatedNra));
         }

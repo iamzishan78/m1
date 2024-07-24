@@ -347,21 +347,17 @@ const drawStateControllerHandler = state => {
 			if (upsertCustomLayer)
 				upsertCustomLayer({
 					variables: { customLayer: customLayerData },
-					refetchQueries: ['getCustomLayers'],
-					// awaitRefetchQueries: true,
-				}).then((result) => {
-					layerController.resetBounds(result?.data?.upsertCustomLayer?.customLayer?.shapeJson?.identifier)
+				}).then(() => {
+					layerController.resetBounds('Area of Interest')
 				});
 			else if (updateCustomLayer) {
 				updateCustomLayer({
 					variables: {
-						customLayerId: selectedAoi?.id,
+						customLayerId: selectedAoi?.id || selectedAoi?._id,
 						customLayer: customLayerData,
 					},
-					refetchQueries: ['getCustomLayers'],
-					awaitRefetchQueries: true,
-				}).then((res) => {
-					layerController.resetBounds(selectedAoi.identifier)
+				}).then(() => {
+					layerController.resetBounds('Area of Interest')
 				});;
 			}
 		}
