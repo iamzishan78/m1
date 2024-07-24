@@ -236,7 +236,7 @@ const ShapeActionsPopup = (props) => {
         },
       },
     }).then(() => {
-      layerController.resetBounds(selectedAoi.identifier)
+      layerController.resetBounds('Area of Interest')
     });;
 
     // Deleting Shape from map
