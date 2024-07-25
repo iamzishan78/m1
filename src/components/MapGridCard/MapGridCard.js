@@ -26,6 +26,7 @@ import MRTTable from "components/MRTTable";
 import { mapControlsController } from "hookstate/mapControlsController";
 import { tableGlobalController } from "hookstate/tableController";
 import { layerFiltersController } from "hookstate/layerFiltersController";
+import { generateFileFilters } from "components/Map/DeckGL/helpers/common";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -256,79 +257,20 @@ function MapGridCard(props) {
   }
 
   const shapeFileTableOverride = useMemo(() => {
-    let mustQuery = [];
-    let searchQuery = [];
-    if (mapControlsStateValues.selectedLayer?.layerShapeName) {
-      mustQuery = [
-        {
-          term: { 'properties.layerShapeName.keyword': mapControlsStateValues.selectedLayer?.layerShapeName },
-        },
-      ];
-    }
+    // generic generateFileFilters used for files so that it remain consistent in all places.
+    const fileQuery = generateFileFilters({ fileLayer: mapControlsStateValues.selectedLayer })
     tableGlobalController.reInitialized();
     return {
       filterLayerType: mapControlsStateValues.selectedLayer?.layerShapeName,
+      maxTableHeight: '40vh',
       toolbarInternalActions: {
         onClose,
         style: {
           marginRight: '0.5rem',
         },
       },
-      defaultFilters: [
-        {
-          field: 'file._id',
-          value: [
-            mapControlsStateValues.selectedLayer?.file,
-            mapControlsStateValues.selectedLayer?.originalFile,
-          ].filter(Boolean),
-        },
-      ],
-      advanceSearch:
-        mapControlsStateValues.selectedLayer?.layerGeometry === 'Polygon'
-          ? [
-            {
-              bool: {
-                must: [
-                  ...mustQuery,
-                  {
-                    bool: {
-                      should: [
-                        {
-                          term: { 'properties.layerGeometry.keyword': 'Polygon' },
-                        },
-                        {
-                          term: { 'properties.layerGeometry.keyword': 'MultiPolygon' },
-                        },
-                      ],
-                    },
-                  },
-                  ...searchQuery,
-                ],
-              },
-            },
-          ]
-          : [
-            {
-              bool: {
-                must: [
-                  ...mustQuery,
-                  {
-                    bool: {
-                      should: [
-                        {
-                          term: {
-                            'properties.layerGeometry.keyword':
-                              mapControlsStateValues.selectedLayer?.layerGeometry,
-                          },
-                        },
-                      ],
-                    },
-                  },
-                  ...searchQuery,
-                ],
-              },
-            },
-          ],
+      defaultFilters: fileQuery.variables.filters,
+      advanceSearch: fileQuery.variables.search.advanceSearch
     };
 
 
