@@ -21,6 +21,7 @@ import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import M1neral_headers from "components/BulkUpload/jobHeaders";
 import { jobController } from "hookstate/jobStateController";
 import { mapControlsController } from "hookstate/mapControlsController";
+import { generateFileFilters } from "components/Map/DeckGL/helpers/common";
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -108,40 +109,11 @@ export default function TransferDataManager(props) {
   };
 
   const handleContinue = async () => {
+    // common generateFileFilters in all places to avoid query issues in future
+    const fileQuery = generateFileFilters({ fileLayer: selectedSourceCategory, pagination: { first: 5, after: null } })
     const sourceData = await client.query({
       query: GET_ES_SIMPLE_SEARCH,
-      variables: {
-        index: "shapefile_flat",
-        search: {
-          query: "",
-          fields: ['*'],
-          advanceSearch: selectedSourceCategory?.layerGeometry === 'Polygon' ? [{
-            "bool": {
-              "should": [
-                {
-                  "term": { "properties.layerGeometry.keyword": "Polygon" }
-                },
-                {
-                  "term": { "properties.layerGeometry.keyword": "MultiPolygon" }
-                }
-              ]
-            }
-          }] : [{
-            "bool": {
-              "should": [
-                {
-                  "term": { "properties.layerGeometry.keyword": selectedSourceCategory.layerGeometry }
-                }
-              ]
-            }
-          }],
-        },
-        filters: [{ field: "file._id.keyword", value: [selectedSourceCategory?.file, selectedSourceCategory?.originalFile].filter(Boolean) }],
-        pagination: {
-          first: 5,
-          after: null,
-        },
-      },
+      ...fileQuery
     });
     let columns = []
     sourceData.data.getESSimpleSearch.hits.forEach((hit) => {

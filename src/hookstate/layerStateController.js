@@ -646,7 +646,7 @@ const layerStateControllerHandler = state => {
 			boundingState,
 			geoField: meta.geoField,
 			polygonFilter,
-			filters: isFileLayer ? generateFileFilters(dbLayer, filters) : filters,
+			filters: isFileLayer ? generateFileFilters({ fileLayer: dbLayer, extendFilters: filters }) : filters,
 			onData: data => {
 				if (!Array.isArray(data) || data.length === 0) return;
 				if (filters?.allowedTypes?.length > 0) {
