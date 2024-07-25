@@ -22,7 +22,7 @@ function PropertyInterestDetailsTable(props) {
     refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
   });
 
-  const convertUtcToDate = (Date) => Date ? moment(Date).utc(true).format("MM/DD/YYYY") : null; 
+  const convertUtcToDate = (date) => date ? moment.utc(new Date(date)).format("MM/DD/YYYY") : null; 
 
   const formatHits = (hits) => {
     return hits.map((hit) => {
