@@ -12,7 +12,7 @@ export const showIfUserDefinedLayer = () => {
         !selectedUserDefinedLayer &&
         currentFeature?.source !== 'parcels_source' &&
         currentFeature?.source !== 'units_source' &&
-        !['interests_source', 'area of interest_source'].includes(currentFeature?.source) &&
+        !['Area of Interest'].includes(currentFeature?.identifier) &&
         currentFeature?.source !== 'agreements_source' &&
         currentFeature?.source !== 'contracts_source' &&
         currentFeature?.source !== 'deeds_source' &&

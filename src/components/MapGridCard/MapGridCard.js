@@ -258,21 +258,24 @@ function MapGridCard(props) {
 
   const shapeFileTableOverride = useMemo(() => {
     // generic generateFileFilters used for files so that it remain consistent in all places.
-    const fileQuery = generateFileFilters({ fileLayer: mapControlsStateValues.selectedLayer })
-    tableGlobalController.reInitialized();
-    return {
-      filterLayerType: mapControlsStateValues.selectedLayer?.layerShapeName,
-      maxTableHeight: '40vh',
-      toolbarInternalActions: {
-        onClose,
-        style: {
-          marginRight: '0.5rem',
+    if (mapControlsStateValues?.selectedLayer?.layerShapeName) {
+      const fileQuery = generateFileFilters({ fileLayer: mapControlsStateValues.selectedLayer })
+      tableGlobalController.reInitialized();
+      return {
+        filterLayerType: mapControlsStateValues.selectedLayer?.layerShapeName,
+        maxTableHeight: '40vh',
+        toolbarInternalActions: {
+          onClose,
+          style: {
+            marginRight: '0.5rem',
+          },
         },
-      },
-      defaultFilters: fileQuery.variables.filters,
-      advanceSearch: fileQuery.variables.search.advanceSearch
-    };
-
+        defaultFilters: fileQuery.variables.filters,
+        advanceSearch: fileQuery.variables.search.advanceSearch
+      };
+    } else {
+      return {}
+    }
 
   }, [selectedLayer]);
 
