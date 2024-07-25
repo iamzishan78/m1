@@ -1155,7 +1155,7 @@ function AddAgreementOwnerAndTractDialog(props) {
           handleSave();
         }}
         className={classes.footerButton}
-      // disabled={!selectedShapeLayer?._id}
+        disabled={!nameAutValue?._id}
       >
         {loading ? <CircularProgress size={14} /> : "Save"}
       </Button>

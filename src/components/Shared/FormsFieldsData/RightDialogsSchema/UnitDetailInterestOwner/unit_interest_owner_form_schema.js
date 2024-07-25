@@ -42,6 +42,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
           const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest: parseFloat(value).toFixed(8), royalty_interest, orri, nri, workspaceSettings })
           setValue('nra', calculatedNra)
           setValue('offer_price', calculateOfferPrice(calculatedNra));
+          setValue('max_offer_price', calculateOfferPrice(calculatedNra, uMaxUnitPricing));
         }
 
         return parseFloat(value).toFixed(8)
@@ -61,6 +62,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
           const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest: parseFloat(value).toFixed(8), orri, nri, workspaceSettings })
           setValue('nra', calculatedNra)
           setValue('offer_price', calculateOfferPrice(calculatedNra));
+          setValue('max_offer_price', calculateOfferPrice(calculatedNra, uMaxUnitPricing));
         }
 
         return parseFloat(value).toFixed(8)
@@ -80,6 +82,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
           const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri: parseFloat(value).toFixed(8), nri, workspaceSettings })
           setValue('nra', calculatedNra)
           setValue('offer_price', calculateOfferPrice(calculatedNra));
+          setValue('max_offer_price', calculateOfferPrice(calculatedNra, uMaxUnitPricing));
         }
 
         return parseFloat(value).toFixed(8)
@@ -100,6 +103,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
           const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri, nri: parseFloat(value).toFixed(8), workspaceSettings })
           setValue('nra', calculatedNra)
           setValue('offer_price', calculateOfferPrice(calculatedNra));
+          setValue('max_offer_price', calculateOfferPrice(calculatedNra, uMaxUnitPricing));
         }
 
         return parseFloat(value).toFixed(8)
@@ -146,6 +150,8 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 
                   setValue('nra', calculatedNra)
                   setValue('offer_price', calculateOfferPrice(calculatedNra));
+                  setValue('max_offer_price', calculateOfferPrice(calculatedNra, uMaxUnitPricing));
+
                 }}
               >
                 <AutorenewIcon />
@@ -196,7 +202,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
       isValueOverridden: (value) => {
         if (!value) return
 
-        const isOverride = parseFloat(value.toString()).toFixed(2) !== parseFloat(uMaxUnitPricing).toFixed(2)
+        const isOverride = parseFloat(value.toString()).toFixed(2) !== parseFloat(uUnitPricing).toFixed(2)
         sideDialogController("unitInterestDialog").updateState({ 'showTargetPrice/NraRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
