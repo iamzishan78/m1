@@ -258,7 +258,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   };
 
   const handleClickAdd = e => {
-    debugger
     e.preventDefault();
     const parcelOwnerFormValue = getValues();
     const qtr = [parcelOwnerFormValue?.qtr1 || null, parcelOwnerFormValue?.qtr2 || null, parcelOwnerFormValue?.qtr3 || null, parcelOwnerFormValue?.qtr4 || null]
