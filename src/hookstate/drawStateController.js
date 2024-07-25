@@ -454,17 +454,18 @@ const drawStateControllerHandler = state => {
 		const selectedFeature = drawController.getValue('currentFeature');
 
 		try {
-			if (selectedFeature.id)
+			// crashing issues fixed moved code in try catch block
+			if (selectedFeature?.id) {
 				window.drawRef?.changeMode('direct_select', { featureId: selectedFeature.id });
+				setFeatureProperty(window.drawRef, selectedFeature.id, 'shapeEdit', false);
+				drawShapeLayerToggle('none');
+				drawController.updateState({
+					currentFeature: selectedFeature,
+					shapeEdit: false,
+				});
+			}
 		} catch (err) {
-			//
 		}
-		setFeatureProperty(window.drawRef, selectedFeature.id, 'shapeEdit', false);
-		drawShapeLayerToggle('none');
-		drawController.updateState({
-			currentFeature: selectedFeature,
-			shapeEdit: false,
-		});
 	};
 
 	const actionShowWellsAndOwners = dispatch => {
@@ -485,7 +486,7 @@ const drawStateControllerHandler = state => {
 	const applyFilter = () => {
 		const selectedFeature = drawController.getValue('currentFeature');
 
-		layerFiltersController.setPolygonFilter(selectedFeature.geometry)
+		layerFiltersController.setPolygonFilter(selectedFeature?.geometry)
 
 		// Changing shape to Blue
 		window.drawRef?.changeMode('simple_select');
