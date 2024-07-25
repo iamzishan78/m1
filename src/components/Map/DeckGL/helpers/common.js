@@ -471,33 +471,30 @@ export const getAdvancedSearch = (layerGeometry, mustQuery) =>
 				},
 			},
 		];
-
-export const generateFileFilters = (layer, _filters = { variables: {} }) => {
+// Query made generic to support in both TransferData Manager and layerStateController
+export const generateFileFilters = ({ fileLayer, pagination = { first: 10000, after: null }, extendFilters = { variables: {} } }) => {
 	let mustQuery = [];
-	if (layer.layerShapeName) {
+	if (fileLayer.layerShapeName) {
 		mustQuery = [
 			{
-				term: { 'properties.layerShapeName.keyword': layer.layerShapeName },
+				term: { 'properties.layerShapeName.keyword': fileLayer.layerShapeName },
 			},
 		];
 	}
 
-	const advanceSearch = getAdvancedSearch(layer.layerGeometry, mustQuery);
+	const advanceSearch = getAdvancedSearch(fileLayer.layerGeometry, mustQuery);
 
-	const filters = [{ field: 'file._id.keyword', value: [layer.file, layer.originalFile] }];
+	const filters = [{ field: 'file._id.keyword', value: [fileLayer.file, fileLayer.originalFile] }];
 
 	return {
 		variables: {
 			index: 'shapefile_flat',
-			pagination: {
-				first: 10000,
-				after: null,
-			},
+			pagination,
 			search: {
 				advanceSearch,
 			},
 			filters,
-			..._filters.variables
+			...extendFilters.variables
 		},
 	};
 };
