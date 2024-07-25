@@ -100,7 +100,7 @@ export const shapeTypeLayers = ["unit", "agreement", "contract", "lease", "deed"
 export const defaultLayers = ["interest", "parcel", "unit", "contract", "lease", "deed", "surface"]
 export const agreementLayers = ["agreement", "contract", "lease", "deed", "surface"]
 
-export const agreementLayerIdentifiers = ['Deeds', 'Leases', 'Contracts', 'Surfaces'];;
+export const agreementLayerIdentifiers = ['Deeds', 'Leases', 'Contracts', 'Surfaces'];
 export const deckGlDataLayerIdentifiers = [...agreementLayerIdentifiers, 'Units', 'Parcels', 'Area of Interest', 'My Wells'];
 export const deckGlLandGridIdentifiers = ["AbstractGeo", "Pls", "Land Grid"];
 export const deckGlLayerIdentifiers = [...deckGlDataLayerIdentifiers, 'Wells', 'Recent Submitted Permits'/* , 'Rig Activity' */];

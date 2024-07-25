@@ -671,6 +671,12 @@ const layerStateControllerHandler = state => {
 			layerController.updateState({ client, history });
 		},
 		resetBounds: identifier => {
+			if (identifier === 'Agreements') {
+				['Deeds', 'Leases', 'Contracts', 'Surfaces'].forEach((type) => {
+					layerController.resetBounds(type);
+				})
+				return
+			}
 			const { boundingStates } = state.get({
 				noproxy: true,
 			});

@@ -30,7 +30,7 @@ const layerFiltersControllerHandler = state => ({
 			layerController.resetBounds(layerType);
 		}
 	}, 1000),
-	resetVariables: debounce(layerType => {
+	resetVariables: layerType => {
 		const initialVariables = layerFilterInitialState[layerType]?.variables;
 
 		if (!initialVariables) return;
@@ -41,7 +41,7 @@ const layerFiltersControllerHandler = state => ({
 			layerFilters[layerType]?.set({ ...filters, variables: initialVariables });
 			layerController.resetBounds(layerType);
 		}
-	}, 1000),
+	},
 	getBeforeLayer: index => {
 		const layers = globalStateController.getValue('layers');
 
@@ -147,6 +147,11 @@ const layerFiltersControllerHandler = state => ({
 			...variables,
 			filters: [],
 		});
+	},
+	clearSnapGridFilters: () => {
+		['Wells', 'Agreements', 'Units', 'Parcels'].forEach((key) => {
+			layerFiltersController.resetVariables(key)
+		})
 	},
 	setPolygonFilter: polygon => {
 		layerController.removeLayers();

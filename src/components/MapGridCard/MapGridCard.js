@@ -247,7 +247,7 @@ function MapGridCard(props) {
   const onClose = (e) => {
     e.stopPropagation();
     mapControlsController.updateState({ selectedDataset: null, mapGridCardActivated: false, });
-    layerFiltersController.clearWellsFilters()
+    layerFiltersController.clearSnapGridFilters()
     dispatch(
       setMapGridCardState({
         selectedOwner: null,
