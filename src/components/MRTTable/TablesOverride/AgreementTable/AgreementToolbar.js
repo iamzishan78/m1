@@ -14,23 +14,6 @@ function AgreementToolBar({ table, tableKey }) {
 
   return (
     <>
-      <ButtonGroup variant="contained" style={{ height: "40px" }} color="primary" aria-label="split button">
-        <Button
-          id="addDocument"
-          color="primary"
-          size="small"
-          aria-label="select merge strategy"
-          aria-haspopup="menu"
-          onClick={() => {
-            Controller.updateState({
-              metaFieldList: true,
-            });
-          }}
-        >
-          Meta Fields
-        </Button>
-      </ButtonGroup>
-
       {!!(tableStateValues?.metaFieldList) && <MetaFieldList tableKey={tableKey} />}
       {!!globalStateValues.showFieldModal && (
         <MetaField
