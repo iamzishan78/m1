@@ -40,6 +40,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
           const workspaceSettings = sideDialogController("unitInterestDialog").getValue('workspaceSettings')
           const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
           const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest: parseFloat(value).toFixed(8), royalty_interest, orri, nri, workspaceSettings })
+          // Update nra and offer prices
           setValue('nra', calculatedNra)
           setValue('offer_price', calculateOfferPrice(calculatedNra));
           setValue('max_offer_price', calculateOfferPrice(calculatedNra, uMaxUnitPricing));
@@ -60,6 +61,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
           const workspaceSettings = sideDialogController("unitInterestDialog").getValue('workspaceSettings')
           const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
           const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest: parseFloat(value).toFixed(8), orri, nri, workspaceSettings })
+          // Update nra and offer prices
           setValue('nra', calculatedNra)
           setValue('offer_price', calculateOfferPrice(calculatedNra));
           setValue('max_offer_price', calculateOfferPrice(calculatedNra, uMaxUnitPricing));
@@ -80,6 +82,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
           const workspaceSettings = sideDialogController("unitInterestDialog").getValue('workspaceSettings')
           const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
           const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri: parseFloat(value).toFixed(8), nri, workspaceSettings })
+          // Update nra and offer prices
           setValue('nra', calculatedNra)
           setValue('offer_price', calculateOfferPrice(calculatedNra));
           setValue('max_offer_price', calculateOfferPrice(calculatedNra, uMaxUnitPricing));
@@ -100,7 +103,8 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 
           const workspaceSettings = sideDialogController("unitInterestDialog").getValue('workspaceSettings')
           const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
-          const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri, nri: parseFloat(value).toFixed(8), workspaceSettings })
+          const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri, nri: parseFloat(value).toFixed(8), workspaceSettings }) 
+          // Update nra and offer prices
           setValue('nra', calculatedNra)
           setValue('offer_price', calculateOfferPrice(calculatedNra));
           setValue('max_offer_price', calculateOfferPrice(calculatedNra, uMaxUnitPricing));
@@ -126,11 +130,13 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
         const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
         const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri, nri, workspaceSettings })
 
+        // Check if the calculatedNra is overriden
         const isOverride = parseFloat(calculatedNra) !== parseFloat(value)
         sideDialogController("unitInterestDialog").updateState({ 'showNetRoyaltyAcresRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       onChange: (value) => {
+        // Update nra and offer prices
         setValue('nra', value);
         setValue('offer_price', calculateOfferPrice(value));
         setValue('max_offer_price', calculateOfferPrice(value, uMaxUnitPricing))
@@ -148,6 +154,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
                   const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
                   const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri, nri, workspaceSettings })
 
+                  // revert overriden values
                   setValue('nra', calculatedNra)
                   setValue('offer_price', calculateOfferPrice(calculatedNra));
                   setValue('max_offer_price', calculateOfferPrice(calculatedNra, uMaxUnitPricing));
@@ -202,6 +209,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
       isValueOverridden: (value) => {
         if (!value) return
 
+        // Check if the uUnitPricing is overriden
         const isOverride = parseFloat(value.toString()).toFixed(2) !== parseFloat(uUnitPricing).toFixed(2)
         sideDialogController("unitInterestDialog").updateState({ 'showTargetPrice/NraRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
@@ -249,6 +257,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
         const { nra } = getValues() || {}
 
         const calculatedOfferPrice = calculateOfferPrice(nra);
+        // Check if the offer_price is overriden
         const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
         sideDialogController("unitInterestDialog").updateState({ 'showTargetOfferRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
@@ -293,6 +302,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
       onChange: (value) => {
         const { nra } = getValues() || {}
 
+        // Update uMaxUnitPricingInterest and max_offer_price
         setValue('uMaxUnitPricingInterest', value)
         setValue('max_offer_price', calculateOfferPrice(nra, value));
       },
@@ -312,7 +322,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
                 aria-label="toggle offer_price"
                 onClick={() => {
                   const { nra } = getValues() || {}
-
+                  // revert overriden uMaxUnitPricingInterest and max_offer_price
                   setValue('uMaxUnitPricingInterest', uMaxUnitPricing)
                   setValue('max_offer_price', calculateOfferPrice(nra, uMaxUnitPricing))
                 }}
@@ -333,6 +343,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
         const { nra } = getValues() || {}
 
         const calculatedOfferPrice = calculateOfferPrice(nra, uMaxUnitPricing);
+        // Check if the max_offer_price is overriden
         const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
         sideDialogController("unitInterestDialog").updateState({ 'showMaxOfferRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
@@ -352,7 +363,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
                 aria-label="toggle offer_price"
                 onClick={() => {
                   const { nra } = getValues() || {}
-
+                  // revert overriden max_offer_price
                   setValue('max_offer_price', calculateOfferPrice(nra, uMaxUnitPricing))
                 }}
               >
