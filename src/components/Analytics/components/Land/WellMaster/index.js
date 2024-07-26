@@ -14,6 +14,8 @@ import WellMaster from "./WellMaster";
 import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 import { setStateIfDeepEqual } from "components/Shared/functions";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
+import MRTTable from 'components/MRTTable';
+
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -167,14 +169,7 @@ export default function ExhibitATabPanel() {
           </Grid>
         </Grid>
       </div> */}
-      <WellMaster
-        header="Well Master"
-        esFilters={esFilters}
-        targetLabel="acerage"
-        parent="AcerageDetail"
-        setESFilters={setESFilters}
-        landSearchQuery={stateApp.landAnalyticsSearchQuery}
-      />
+      <MRTTable name="WellMasterTable" />
     </>
   );
 }
