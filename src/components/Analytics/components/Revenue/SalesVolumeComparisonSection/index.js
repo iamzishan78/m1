@@ -3,7 +3,7 @@ import { useLazyQuery } from "@apollo/client";
 
 import AnalyticsCharts from "./AnalyticsCharts";
 import SalesVolumeComparisonTable from "./SalesVolumeComparisonTable";
-
+import MRTTable from 'components/MRTTable';
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 
 export default function SalesVolumeComparisonSection({ checkDetailsData, esFilters, loadMore }) {
@@ -47,7 +47,8 @@ export default function SalesVolumeComparisonSection({ checkDetailsData, esFilte
         checkDetailsData={checkDetailsData}
         setAssociatedWellIds={setAssociatedWellIds}
       />
-      <SalesVolumeComparisonTable
+      
+      {/* <SalesVolumeComparisonTable
         targetLabel="propertyInterest"
         parent="PropertyAssociatedWell"
         setPropertiesIds={setPropertiesIds}
@@ -55,7 +56,10 @@ export default function SalesVolumeComparisonSection({ checkDetailsData, esFilte
         esFilters={esFilters}
         recordCount={recordCount}
         setRecordCount={setRecordCount}
-      />
+      /> */}
+      <MRTTable name="SalesVolumeComparisonTable" 
+      // overrideMeta={overrideMeta} 
+      hideSharedCommentCheck />
     </>
   );
 }
