@@ -65,7 +65,7 @@ export default function CampaignAnalytics({ appliedFilters, contactSearchQuery }
       variables: {
         search: {
           fields: ["name", "_all"],
-          query: contactSearchQuery,
+          query: `*${contactSearchQuery}*`, // use contains expression
         },
         filters: getFilters(appliedFilters),
       },

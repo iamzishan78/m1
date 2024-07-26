@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
@@ -18,6 +18,8 @@ import { drawController } from "hookstate/drawStateController";
 import { layerRefs } from "hookstate";
 import { mapControlsController } from "hookstate/mapControlsController";
 import { mapStateController } from "hookstate/mapStateController";
+import FilterAltIcon from "components/Shared/svgIcons/FilterAltIcon";
+import { globalStateController } from "hookstate/globalStateController";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -99,20 +101,23 @@ function UdLayerCard(props) {
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
 
-  const handleCloseLeftSidePanel = () => {
-    // close layer manager
-    console.log(2)
+  // Use effect added that will revert any the shape filter and map will return to its normal position
+  useEffect(() => {
+    return () => {
+      if (globalStateController.getValue('udLayerFilter')) {
+        globalStateController.updateState(({ udLayerFilter: false }))
+        drawController.actionFilter()
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
+  const handleCloseLeftSidePanel = () => {
     mapControlsController.setState({ expandedPanel: false })
   };
 
   const handleCloseShapeDrawer = () => {
     drawController.reset();
-
-    // Removing layer of AOI Label
-    if (stateApp.map?.getLayer("aoi_label_layer")) {
-      stateApp.map?.removeLayer("aoi_label_layer");
-    }
 
     const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
 
@@ -210,6 +215,25 @@ function UdLayerCard(props) {
           className={classes.headerContainer}
           action={
             <div className={classes.headerIcons}>
+              {/* Filter support added back */}
+              <Tooltip title="Filter" placement="top">
+                <IconButton
+                  size="small"
+                  onClick={() => {
+                    globalStateController.updateState(({ udLayerFilter: !(!!globalStateController.getValue('udLayerFilter')) }))
+                    drawController.actionFilter()
+                    setTimeout(() => {
+                      popupController.updateState({ popupOpen: true });
+                    }, 0);
+
+                  }}
+                  aria-label="Filter"
+                  data-testid="filter-on-map"
+                >
+                  <FilterAltIcon color="secondary" />
+                </IconButton>
+              </Tooltip>
+
               <Tooltip title={"Add Shape to Layer"} placement="top">
                 <IconButton size={"small"} onClick={(e) => handleAddShapeClick(e, 'draw')} aria-label="close" className={classes.icons}>
                   <LayerIcon color="secondary" />

@@ -13,7 +13,6 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { tableGlobalController } from 'hookstate/tableController';
 import { copy } from "utils/helper";
-import { Rowing } from '@mui/icons-material';
 
 const esIndex = 'shapes_flat';
 
@@ -183,6 +182,7 @@ const UnitMeta = {
 		},
 
 		{
+			// Total unit NRA column
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.netRoyalityAcres.unitNra.keyword',
 			accessorFn: row => vf_number(row?.shapeJson?.properties?.netRoyalityAcres?.unitNra),

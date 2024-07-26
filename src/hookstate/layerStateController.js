@@ -646,7 +646,7 @@ const layerStateControllerHandler = state => {
 			boundingState,
 			geoField: meta.geoField,
 			polygonFilter,
-			filters: isFileLayer ? generateFileFilters(dbLayer, filters) : filters,
+			filters: isFileLayer ? generateFileFilters({ fileLayer: dbLayer, extendFilters: filters }) : filters,
 			onData: data => {
 				if (!Array.isArray(data) || data.length === 0) return;
 				if (filters?.allowedTypes?.length > 0) {
@@ -671,6 +671,12 @@ const layerStateControllerHandler = state => {
 			layerController.updateState({ client, history });
 		},
 		resetBounds: identifier => {
+			if (identifier === 'Agreements') {
+				['Deeds', 'Leases', 'Contracts', 'Surfaces'].forEach((type) => {
+					layerController.resetBounds(type);
+				})
+				return
+			}
 			const { boundingStates } = state.get({
 				noproxy: true,
 			});

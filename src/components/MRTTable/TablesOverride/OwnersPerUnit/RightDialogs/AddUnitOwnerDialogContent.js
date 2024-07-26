@@ -91,6 +91,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// Extracting values for getting value from autocomplete object
+const extractValueRecursively = (obj) => {
+  if (obj === null || obj === undefined) return obj;
+
+  if (typeof obj === 'object' && !Array.isArray(obj)) {
+    return Object.keys(obj).reduce((acc, key) => {
+      acc[key] = extractValueRecursively(obj[key]?.value !== undefined ? obj[key]?.value : obj[key]);
+      return acc;
+    }, {});
+  }
+
+  return obj;
+};
+
+
 export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, uUnitPricing, uMaxUnitPricing, metaDataCategory, ...props }) {
   const dispatch = useDispatch();
 
@@ -216,49 +231,53 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       ...unitOwnerFormValue,
     })
 
+    const ownerType = formStateValues.ownerType && (formStateValues.ownerType.value || formStateValues.ownerType);
+
     if (formStateValues?.newOwner) {
-      sideDialogController("unitInterestDialog").updateState({ relatedObject: { ...unitOwnerFormValue } })
+      sideDialogController("unitInterestDialog").updateState({
+        relatedObject: {
+          ...unitOwnerFormValue,
+          ownerType
+        }
+      })
     } else {
       handleUpdateContact(formStateValues)
     }
-    const ownerType = formStateValues.ownerType && (formStateValues.ownerType.value || formStateValues.ownerType);
     if (selectedRow) {
+      // Update shape owner object for autocompletes
+      const shapeOwner = extractValueRecursively({
+        _id: selectedRow?._id,
+        ...formStateValues,
+        deals: formStateValues?.deals || [],
+        relatedObject: formStateValues.relatedObject,
+        createBy: getUser?._id,
+        lastUpdateBy: getUser?._id,
+        shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),
+      });
       updateShapeOwners({
         variables: {
           shapeType: props.shapeType,
-          shapeOwners: [
-            {
-              _id: selectedRow?._id,
-              ...formStateValues,
-              contactStatus: formStateValues.contactStatus && (formStateValues.contactStatus.value || formStateValues.contactStatus),
-              status: formStateValues.status && (formStateValues.status.value || formStateValues.status),
-              ownerType,
-              campaignPriority: formStateValues.campaignPriority && (formStateValues.campaignPriority.value || formStateValues.campaignPriority),
-              shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),
-              createBy: getUser?._id,
-              lastUpdateBy: getUser?._id,
-            }
-          ],
+          shapeOwners: shapeOwner,
           userId: getUser?._id,
         },
         refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
         awaitRefetchQueries: true,
       });
     } else {
+      console.log(props)
+      // Update shape owner object for autocompletes
+      const shapeOwner = extractValueRecursively({
+        ...formStateValues,
+        deals: formStateValues?.deals || [],
+        relatedObject: formStateValues.relatedObject,
+        createBy: getUser?._id,
+        lastUpdateBy: getUser?._id,
+        shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),
+      });
       addOwnerToAShape({
         variables: {
           shapeType: props.shapeType,
-          shapeOwner: {
-            ...formStateValues,
-            relatedObject: {...formStateValues.relatedObject, ownerType},
-            contactStatus: formStateValues.contactStatus && (formStateValues.contactStatus.value || formStateValues.contactStatus),
-            status: formStateValues.status && (formStateValues.status.value || formStateValues.status),
-            ownerType,
-            campaignPriority: formStateValues.campaignPriority && (formStateValues.campaignPriority.value || formStateValues.campaignPriority),
-            shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),
-            createBy: getUser?._id,
-            lastUpdateBy: getUser?._id,
-          },
+          shapeOwner,
         },
         refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
         awaitRefetchQueries: true,

@@ -56,6 +56,7 @@ const FileTree = ({ layerMap, panelItems }) => {
               }
             }
             checkforUpdate(updateFn[index], item, current, 'name')
+            checkforUpdate(updateFn[index], item, current, 'layerName')
             checkforUpdate(updateFn[index], item, current, 'fileName')
             checkforUpdate(updateFn[index], item, current, 'fileUrl')
             if (item.layerSettings) {
@@ -66,7 +67,8 @@ const FileTree = ({ layerMap, panelItems }) => {
                 visiable: { $set: current.layerSettings.visiable },
                 layerPaintProps: { $set: current.layerPaintProps },
                 groupName: { $set: current.groupName },
-                layerName: { $set: current.layerName }
+                layerName: { $set: current.layerName },
+                name: { $set: current.name }
               }
             }
           }
