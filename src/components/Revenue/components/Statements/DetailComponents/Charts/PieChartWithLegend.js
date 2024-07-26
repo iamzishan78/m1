@@ -4,6 +4,7 @@ import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import { copy } from "utils/helper";
 import vf_number from "components/Shared/valueformatters/vf_number";
+import { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
 
 // Revenue Chart
 export default function PieChart({ chartData = [], type = "" }) {
@@ -56,14 +57,26 @@ export default function PieChart({ chartData = [], type = "" }) {
     // pieSeries.slices.template.stroke = am4core.color("#4a2abb");
     pieSeries.slices.template.strokeWidth = 2;
     pieSeries.slices.template.strokeOpacity = 1;
-    pieSeries.slices.template.tooltipText = "[font-size:16px]{category} {value} | {value.percent.formatNumber('#.##')}%[/]";
+    // pieSeries.slices.template.tooltipText = "[font-size:16px]{category} {value} | {value.percent.formatNumber('#.##')}%[/]";
+    pieSeries.slices.template.tooltipText = "[font-size:16px]{category}: [bold]{value}[/] | {value.percent.formatNumber('#.##')}%";
+
     pieSeries.tooltip.getFillFromObject = false;
     pieSeries.tooltip.label.fill = am4core.color("#000");
     pieSeries.tooltip.background.fill = am4core.color('#ffff');
     pieSeries.tooltip.getStrokeFromObject = true;
-    pieSeries.legendSettings.labelText = "[bold font-size:17px]{name}:[/] {value.value} | {value.percent.formatNumber('#.##')}%";
 
-    // Add a legend
+    const roundToTwoDecimalPlaces = (number) => {
+      return Math.round(number * 100) / 100;
+    };
+    
+    // Set Tooltip with currency formatter
+    pieSeries.slices.template.adapter.add("tooltipText", function (text, target) {
+      const rawValue = target.dataItem.values.value.value || 0;
+      const value = rawValue === 0 ? '0' : vf_currency_to_fixed(rawValue, 2);
+      const percent = roundToTwoDecimalPlaces(target.dataItem.values.value.percent);
+      return `[font-size:16px]{category}: ${value} | ${percent}%[/]`;
+    });
+
     chart.legend = new am4charts.Legend();
     chart.legend.useDefaultMarker = true;
     var markerTemplate = chart.legend.markers.template;
@@ -74,11 +87,22 @@ export default function PieChart({ chartData = [], type = "" }) {
     chart.legend.maxWidth = 400;
     chart.legend.scrollable = true;
 
-    // Setting "NET REVENUE" label
+    // Set legend label with currency formatter
+    chart.legend.labels.template.adapter.add("textOutput", function (text, target) {
+      if (target.dataItem && target.dataItem.dataContext) {
+        const rawValue = target.dataItem.values.value.value || 0;
+        const value = rawValue === 0 ? '0' : vf_currency_to_fixed(rawValue, 2);
+        const percent = roundToTwoDecimalPlaces(target.dataItem.values.value.percent);
+        return `${target.dataItem.dataContext.category}: ${value} | ${percent}%`;
+      }
+      return text;
+    });
+    
     const grossRevenue = chartData.find((d) => d.name === "Gross Revenue" || d.name === "Total Adjustments");
     if (grossRevenue) {
       let label = pieSeries.createChild(am4core.Label);
-      label.text = `${vf_number(Number(grossRevenue.value).toFixed(0))}`;
+      // label.text = `${vf_number(Number(grossRevenue.value).toFixed(0))}`;
+      label.text = `${vf_currency_to_fixed(Number(grossRevenue.value).toFixed(0))}`;
       label.horizontalCenter = "middle";
       label.verticalCenter = "middle";
       label.fontSize = 30;

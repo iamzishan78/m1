@@ -5,6 +5,7 @@ import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import { makeStyles } from "@material-ui/styles";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 import vf_number from "components/Shared/valueformatters/vf_number";
+import { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
 
 import { useLazyQuery } from "@apollo/client";
 import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
@@ -245,7 +246,7 @@ const SummarySection = ({ checkId }) => {
             aggs: { ownerTax: { sum: { field: "ownerTax" } } },
           },
           deductType: {
-            terms: { field: "deductType.keyword", "size": 10000  },
+            terms: { field: "deductType.keyword", "size": 10000 },
             aggs: { ownerDeducts: { sum: { field: "ownerDeducts" } } },
           },
         },
@@ -350,6 +351,7 @@ const SummarySection = ({ checkId }) => {
       adjustments.forEach((a) => {
         totalAdjustment += parseFloat(a.value);
       });
+
       adjustments.push({ name: "Total Adjustments", value: `${totalAdjustment}` });
       setAdjustmentSummaryDetails(adjustments);
     }
@@ -396,7 +398,7 @@ const SummarySection = ({ checkId }) => {
 
                             <div className="flex" style={{ minWidth: "60px", alignItems: "center", justifyContent: "center" }}>
                               <Typography varient="h6" className={classes.textTransform}>
-                                {vf_number(item.value)}
+                                {vf_currency_to_fixed(item.value, 2)}
                               </Typography>
                             </div>
                           </div>
@@ -464,16 +466,36 @@ const SummarySection = ({ checkId }) => {
                       </Grid>
 
                       <Grid item xs={2}>
-                        {product.grsProd}
+                        {product.grsProd === '-'
+                          ? product.grsProd
+                          : (() => {
+                            const grsProdValue = parseFloat(product.grsProd.replace(/,/g, ''));
+                            return isNaN(grsProdValue) ? 'Invalid value' : vf_currency_to_fixed(grsProdValue, 2);
+                          })()}
                       </Grid>
                       <Grid item xs={2}>
-                        {product.netProd}
+                        {product.netProd === '-'
+                          ? product.netProd
+                          : (() => {
+                            const netProdValue = parseFloat(product.netProd.replace(/,/g, ''));
+                            return isNaN(netProdValue) ? 'Invalid value' : vf_currency_to_fixed(netProdValue, 2);
+                          })()}
                       </Grid>
                       <Grid item xs={2}>
-                        {product.netRevenue}
+                        {product.netRevenue === '-'
+                          ? product.netRevenue
+                          : (() => {
+                            const netRevenueValue = parseFloat(product.netRevenue.replace(/,/g, ''));
+                            return isNaN(netRevenueValue) ? 'Invalid value' : vf_currency_to_fixed(netRevenueValue, 2);
+                          })()}
                       </Grid>
                       <Grid item xs={2}>
-                        {product.avgPrice}
+                        {product.avgPrice === '-'
+                          ? product.avgPrice
+                          : (() => {
+                            const avgPriceValue = parseFloat(product.avgPrice.replace(/,/g, ''));
+                            return isNaN(avgPriceValue) ? 'Invalid value' : vf_currency_to_fixed(avgPriceValue, 2);
+                          })()}
                       </Grid>
                       <Grid item xs={2}></Grid>
                     </Grid>
@@ -511,7 +533,7 @@ const SummarySection = ({ checkId }) => {
 
                       <div className="flex" style={{ minWidth: "60px", alignItems: "center", justifyContent: "center" }}>
                         <Typography varient="h6" className={classes.textTransform}>
-                          {vf_number(Number(item.value).toFixed(2))}
+                          {vf_currency_to_fixed(item.value, 2)}
                           {/* {item.name === "Total Adjustments" ? Number(item.value).toFixed(2) : wrapWithBrackets(Number(item.value).toFixed(2))} */}
                         </Typography>
                       </div>

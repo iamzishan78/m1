@@ -5,6 +5,7 @@ import * as am4charts from "@amcharts/amcharts4/charts";
 
 import { Button, ButtonGroup, Grid, Table, TableHead, TableRow, Typography, TableCell, TableBody } from "@material-ui/core";
 import vf_number from "components/Shared/valueformatters/vf_number";
+import { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
 import { removeCommasFromString } from "utils/helper";
 
 const useStyles = makeStyles(() => ({
@@ -112,6 +113,11 @@ const ProductChart = ({ productSummaryDetails }) => {
         pieSeries.labels.template.disabled = true;
         pieSeries.ticks.template.disabled = true;
 
+        const roundToTwoDecimalPlaces = (number) => {
+            return Math.round(number * 100) / 100;
+        };
+
+
         // Disable tooltips
         // pieSeries.slices.template.tooltipText = "";
 
@@ -119,13 +125,18 @@ const ProductChart = ({ productSummaryDetails }) => {
         // pieSeries.slices.template.stroke = am4core.color("#ffff");
         pieSeries.slices.template.strokeWidth = 2;
         pieSeries.slices.template.strokeOpacity = 1;
-        pieSeries.slices.template.tooltipText = "[font-size:16px]{category} {value} | {value.percent.formatNumber('#.##')}%[/]";
+
+        // Set Tooltip with currency formatter
+        pieSeries.slices.template.adapter.add("tooltipText", function (text, target) {
+            const rawValue = target.dataItem.values.value.value || 0;
+            const value = rawValue === 0 ? '0' : vf_currency_to_fixed(rawValue, 2);
+            const percent = roundToTwoDecimalPlaces(target.dataItem.values.value.percent);
+            return `[font-size:16px]{category}: ${value} | ${percent}%[/]`;
+        });
         pieSeries.tooltip.getFillFromObject = false;
         pieSeries.tooltip.label.fill = am4core.color("#000");
         pieSeries.tooltip.background.fill = am4core.color('#ffff');
         pieSeries.tooltip.getStrokeFromObject = true;
-        pieSeries.legendSettings.labelText = "[bold font-size:17px]{name}:[/] {value.value} | {value.percent.formatNumber('#.##')}%";
-        // pieSeries.slices.template.tooltipText = "[#ffff]{value}[/]";
 
         // Add a legend
         chart.legend = new am4charts.Legend();
@@ -134,11 +145,20 @@ const ProductChart = ({ productSummaryDetails }) => {
         // chart.legend.labels.template.disabled = true
 
 
-        // chart.legend.labels.template.text = `[bold font-size:17px]{name}:[/] {value.value} |`;
-        // chart.legend.valueLabels.template.text = `{value} | ${chart.legend.valueLabels.template.text}`;
         chart.legend.position = "right";
         chart.legend.maxWidth = 400;
         chart.legend.scrollable = true;
+
+        // Set legend label with currency formatter
+        chart.legend.labels.template.adapter.add("textOutput", function (text, target) {
+            if (target.dataItem && target.dataItem.dataContext) {
+                const rawValue = target.dataItem.values.value.value || 0;
+                const value = rawValue === 0 ? '0' : vf_currency_to_fixed(rawValue, 2);
+                const percent = roundToTwoDecimalPlaces(target.dataItem.values.value.percent !== undefined ? target.dataItem.values.value.percent : 0);
+                return `${target.dataItem.dataContext.category}: ${value} | ${percent}%`;
+            }
+            return text;
+        });
 
         var markerTemplate = chart.legend.markers.template;
         markerTemplate.width = 15;
@@ -218,13 +238,23 @@ const ProductChart = ({ productSummaryDetails }) => {
                             <TableBody>
                                 {data.production.table.map((item) => <TableRow style={{ height: '71px' }}>
                                     <TableCell scope="row" style={{ borderBottom: 'none' }}>
-                                        {valueFormatter(item.gross)} {item.unit}
+                                        {item.gross === 'NaN'
+                                            ? "-"
+                                            : (() => {
+                                                const grossProdValue = parseFloat(item.gross.replace(/,/g, ''));
+                                                return isNaN(grossProdValue) ? 'Invalid value' : vf_currency_to_fixed(grossProdValue, 2);
+                                            })()} {item.unit}
                                     </TableCell>
                                     <TableCell
                                         scope="row"
                                         style={{ borderBottom: 'none' }}
                                     >
-                                        {valueFormatter(item.net)} {item.unit}
+                                        {item.net === 'NaN'
+                                            ? "-"
+                                            : (() => {
+                                                const netProdValue = parseFloat(item.net.replace(/,/g, ''));
+                                                return isNaN(netProdValue) ? 'Invalid value' : vf_currency_to_fixed(netProdValue, 2);
+                                            })()} {item.unit}
                                     </TableCell>
                                 </TableRow>)}
 
