@@ -21,3 +21,17 @@ export const formatGridViewToMRT = (selectedGridView) => {
 
   return tableProperties
 }
+
+// Helper for extracting values
+export const extractValueRecursively = (obj) => {
+  if (obj === null || obj === undefined) return obj;
+
+  if (typeof obj === 'object' && !Array.isArray(obj)) {
+    return Object.keys(obj).reduce((acc, key) => {
+      acc[key] = extractValueRecursively(obj[key]?.value !== undefined ? obj[key]?.value : obj[key]);
+      return acc;
+    }, {});
+  }
+
+  return obj;
+};
