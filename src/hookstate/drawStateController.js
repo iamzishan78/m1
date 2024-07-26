@@ -348,7 +348,7 @@ const drawStateControllerHandler = state => {
 				upsertCustomLayer({
 					variables: { customLayer: customLayerData },
 				}).then(() => {
-					layerController.resetBounds('Area of Interest')
+					layerController.resetBounds('Area of Interest') // reset bounds as AOI
 				});
 			else if (updateCustomLayer) {
 				updateCustomLayer({
@@ -357,7 +357,7 @@ const drawStateControllerHandler = state => {
 						customLayer: customLayerData,
 					},
 				}).then(() => {
-					layerController.resetBounds('Area of Interest')
+					layerController.resetBounds('Area of Interest') // reset bounds as AOI
 				});;
 			}
 		}
