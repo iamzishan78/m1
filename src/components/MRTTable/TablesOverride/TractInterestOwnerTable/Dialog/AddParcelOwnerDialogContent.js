@@ -72,6 +72,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+// Extracting values for getting value from autocomplete object
 const extractValueRecursively = (obj) => {
   if (obj === null || obj === undefined) return obj;
 
@@ -274,6 +275,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
     const ownerType = formStateValues.ownerType && (formStateValues.ownerType.value || formStateValues.ownerType);
     if (selectedRow) {
+      // Update parcel owner object for autocompletes
       const parcelOwner = extractValueRecursively({
         _id: selectedRow?._id,
         ...formStateValues,
@@ -294,6 +296,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         awaitRefetchQueries: true,
       });
     } else {
+      // Update parcel owner object for autocompletes
       const parcelOwner = extractValueRecursively({
         ...formStateValues,
         deals: formStateValues?.deals || [],
