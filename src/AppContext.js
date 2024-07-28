@@ -5,7 +5,6 @@ import { MSALB2CObj, B2CTenantCredentials } from "./components/Login/AADB2CAuthC
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "./actions";
 import { heatLayers, baseMapLayers } from "./LayerConfig";
-import { useHookStateApp } from "hookstate";
 import { globalStateController } from 'hookstate/globalStateController';
 import { popupController } from "hookstate/popupStateController";
 import queryString from 'query-string';
@@ -185,8 +184,6 @@ const AppProvider = (props) => {
 
   window.setStateApp = setStateApp;
 
-  const { universalLoader } = useHookStateApp()
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -260,10 +257,12 @@ const AppProvider = (props) => {
     popupController.updateState({ selectedParcel: stateApp.selectedParcel });
   }, [stateApp.selectedParcel]);
 
+  const { globalState } = globalStateController.useState(['universalLoader'], 'globalState')
+
   return (
     <AppContext.Provider value={[stateApp, setStateApp]}>
       {props.children}
-      {(stateApp.universalCircularLoaderAct || universalLoader.get()) && (
+      {(stateApp.universalCircularLoaderAct || globalState.universalLoader) && (
         <div
           style={{
             position: "fixed",

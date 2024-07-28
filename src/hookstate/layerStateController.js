@@ -543,6 +543,12 @@ const layerStateControllerHandler = state => {
 			map.setLayoutProperty(meta?.id, "visibility", visible ? "visible" : "none");
 	}
 
+	const toggleLayersActivity = (identifier, value) => {
+		let layers = globalStateController.getValue('layers');
+		const layer = layers.find((layer) => layer.identifier.startsWith(identifier))
+		layerController.handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, visiable: value } })
+	}
+
 	const handleDeckLayer = dbLayer => {
 		const client = layerController.getValue('client');
 		if (!client) return;
@@ -699,6 +705,7 @@ const layerStateControllerHandler = state => {
 		handleDeckLayer,
 		handleMapBoxLayer,
 		removeLayers,
+		toggleLayersActivity,
 		handleChange: () => {
 			const showableLayers = getShowableLayers();
 			showableLayers.forEach(dbLayer => {

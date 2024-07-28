@@ -560,9 +560,9 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
         }));
         layerController.updateState({ wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray] })
 
-        stateApp.toggleLayersActivity("Search", true);
+        layerController.toggleLayersActivity("Search", true);
       } else {
-        stateApp.toggleLayersActivity("Search", false);
+        layerController.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
           searchLoader: false,
@@ -591,9 +591,9 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
         }));
         layerController.updateState({ wellListFromSearch: [...dataOperatorWells.operatorLatsLonsArray] })
 
-        stateApp.toggleLayersActivity("Search", true);
+        layerController.toggleLayersActivity("Search", true);
       } else {
-        stateApp.toggleLayersActivity("Search", false);
+        layerController.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
           searchLoader: false,
@@ -622,9 +622,9 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
         }));
         layerController.updateState({ wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray] })
 
-        stateApp.toggleLayersActivity("Search", true);
+        layerController.toggleLayersActivity("Search", true);
       } else {
-        stateApp.toggleLayersActivity("Search", false);
+        layerController.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
           searchLoader: false,
@@ -649,9 +649,9 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
             }
             : stateApp
         );
-        stateApp.toggleLayersActivity("Search", true);
+        layerController.toggleLayersActivity("Search", true);
       } else {
-        stateApp.toggleLayersActivity("Search", false);
+        layerController.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
           searchLoader: false,
@@ -680,9 +680,9 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
             }
         );
         layerController.updateState({ wellListFromSearch: [...dataContactWells.contactWells] })
-        stateApp.toggleLayersActivity("Search", true);
+        layerController.toggleLayersActivity("Search", true);
       } else {
-        stateApp.toggleLayersActivity("Search", false);
+        layerController.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
           searchLoader: false,
@@ -771,7 +771,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
             }
           ]
         })
-        stateApp.toggleLayersActivity("Search", true);
+        layerController.toggleLayersActivity("Search", true);
       }
 
       //// if owner
@@ -863,7 +863,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
             }
           ]
         })
-        stateApp.toggleLayersActivity("Search", true);
+        layerController.toggleLayersActivity("Search", true);
       }
     }
   };
