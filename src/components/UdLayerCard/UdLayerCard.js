@@ -101,17 +101,6 @@ function UdLayerCard(props) {
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
 
-  // Use effect added that will revert any the shape filter and map will return to its normal position
-  useEffect(() => {
-    return () => {
-      if (globalStateController.getValue('udLayerFilter')) {
-        globalStateController.updateState(({ udLayerFilter: false }))
-        drawController.actionFilter()
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   const handleCloseLeftSidePanel = () => {
     mapControlsController.setState({ expandedPanel: false })
   };
@@ -220,12 +209,9 @@ function UdLayerCard(props) {
                 <IconButton
                   size="small"
                   onClick={() => {
-                    globalStateController.updateState(({ udLayerFilter: !(!!globalStateController.getValue('udLayerFilter')) }))
+                    drawController.updateState({ editDraw: true });
                     drawController.actionFilter()
-                    setTimeout(() => {
-                      popupController.updateState({ popupOpen: true });
-                    }, 0);
-
+                    popupController.updateState({ popupOpen: false });
                   }}
                   aria-label="Filter"
                   data-testid="filter-on-map"
