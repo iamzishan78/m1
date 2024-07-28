@@ -593,6 +593,7 @@ const layerStateControllerHandler = state => {
 		let updatedProps = {
 			pickable,
 			visible,
+			showable: dbLayer.layerSettings.showable
 		};
 
 		const labelProps =
