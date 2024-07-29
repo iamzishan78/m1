@@ -19,6 +19,7 @@ export const calculateStandardNraForUnit = ({ uAcres, working_interest, royalty_
   let nra = parseFloat(uAcres || 0) * sumOfDecimalInterest
   if (isCustomType)
     nra /= divisor;
+  nra = isNaN(nra) ? 0 : nra;
   nra = addTrailingZeros(nra.toFixed(8));
   return nra;
 };
@@ -30,6 +31,7 @@ export const calculateStandardNraForTract = (tract_gross_acres, mineral_interest
   // Use safeParseFloat to remove NaN
   let nra = (safeParseFloat(tract_gross_acres) * safeParseFloat(mineral_interest) * (safeParseFloat(ri) + safeParseFloat(orri)))
   nra /= divisor;
+  nra = isNaN(nra) ? 0 : nra;
   nra = addTrailingZeros(nra.toFixed(8));
   return nra;
 };
