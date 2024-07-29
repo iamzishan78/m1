@@ -124,6 +124,8 @@ const OwnersPerUnitMeta = {
 			name: 'data.allocatedWater',
 			accessorKey: 'overShort',
 			header: 'Over/Short',
+			isSearchField: false, // disabled searching field
+			enableSorting: false, // disabled sorting field
 			Cell: ({ row }) => {
 				const renderedCellValue = row?.original?.overShort || 0;
 				return (
@@ -144,6 +146,8 @@ const OwnersPerUnitMeta = {
 			name: 'data.allocatedWater',
 			accessorKey: 'difference',
 			header: '% Difference',
+			isSearchField: false, // disabled searching field
+			enableSorting: false, // disabled sorting field
 			Cell: ({ row }) => {
 				const renderedCellValue = row?.original?.difference;
 				const overShort = row?.original?.overShort;
