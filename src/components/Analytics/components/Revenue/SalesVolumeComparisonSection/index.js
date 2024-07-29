@@ -48,17 +48,7 @@ export default function SalesVolumeComparisonSection({ checkDetailsData, esFilte
         setAssociatedWellIds={setAssociatedWellIds}
       />
       
-      {/* <SalesVolumeComparisonTable
-        targetLabel="propertyInterest"
-        parent="PropertyAssociatedWell"
-        setPropertiesIds={setPropertiesIds}
-        loadMore={{ ...loadMore, height: "calc(100vh - 710px)" }}
-        esFilters={esFilters}
-        recordCount={recordCount}
-        setRecordCount={setRecordCount}
-      /> */}
       <MRTTable name="SalesVolumeComparisonTable" 
-      // overrideMeta={overrideMeta} 
       hideSharedCommentCheck />
     </>
   );
