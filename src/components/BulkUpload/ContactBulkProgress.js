@@ -183,7 +183,7 @@ const ContactBulkProgress = () => {
           downloadResults(dataJobs.getJobsStatus.jobs[i], onCloseToast);
           if (dataJobs.getJobsStatus.jobs[i].type === "contacts")
             refetchQueryByName("checkIfOwnersAreContacts");
-            tableGlobalController.refetch();
+          tableGlobalController.refetch();
         } else if (status === "Failed") {
           Loader.errorToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast);
         } else {
