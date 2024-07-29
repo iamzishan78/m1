@@ -11,6 +11,7 @@ import { setReduxKey } from "store/actions/commonActions";
 import useRefetchHelper from "components/Shared/Hooks/useRefetchHelper";
 import { jobController } from "hookstate/jobStateController";
 import { debounce } from "lodash";
+import { tableGlobalController } from "hookstate/tableController";
 
 const ContactBulkProgress = () => {
   const [stateApp] = useContext(AppContext);
@@ -182,6 +183,7 @@ const ContactBulkProgress = () => {
           downloadResults(dataJobs.getJobsStatus.jobs[i], onCloseToast);
           if (dataJobs.getJobsStatus.jobs[i].type === "contacts")
             refetchQueryByName("checkIfOwnersAreContacts");
+          tableGlobalController.refetch();
         } else if (status === "Failed") {
           Loader.errorToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast);
         } else {
