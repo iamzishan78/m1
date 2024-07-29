@@ -1,7 +1,7 @@
 import { addTrailingZeros } from "components/Shared/functions";
 
 // Handle NaN while parsing
-const safeParseFloat = value => isNaN(parseFloat(value)) ? 0 : parseFloat(value);
+export const safeParseFloat = value => isNaN(parseFloat(value)) ? 0 : parseFloat(value);
 
 export const calculateNRAForAgreementOwnerAndTractDialog = (interest1, interest2, net_acres) => {
   if (!interest1 && !interest2) return null;

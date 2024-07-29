@@ -6,7 +6,7 @@ import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import { popupController } from 'hookstate/popupStateController';
 import { addTrailingZeros } from 'components/Shared/functions';
 import { sideDialogController } from "hookstate/sideDialogController"
-import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
+import { calculateStandardNraForTract, safeParseFloat } from 'utils/calculatedNraHelper';
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import contactForm from "components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema"
 
@@ -20,7 +20,8 @@ const calculateNetAcres = interest => {
 };
 
 const calculateOfferPrice = (nra, offer) => {
-  return parseFloat((parseFloat(nra || 0) * parseFloat(offer || 0)).toFixed(2));
+  // Use safeParseFloat to remove NaN
+  return safeParseFloat((safeParseFloat(nra || 0) * safeParseFloat(offer || 0)).toFixed(2));
 };
 
 const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) => {
@@ -46,8 +47,9 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
       name: "surface_interest",
       type: "number",
       onBlur: (value) => {
-        setValue('surface_interest', parseFloat(value).toFixed(8))
-        return parseFloat(value).toFixed(8)
+        setValue('surface_interest', safeParseFloat(value).toFixed(8))
+        // Return 0 if the value is empty string 
+        return safeParseFloat(value).toFixed(8)
       }
     },
     {
@@ -56,11 +58,11 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
       type: "number",
       onBlur: (value) => {
         const { royalty_interest, orri } = getValues() || {}
-        setValue('mineral_interest', parseFloat(value).toFixed(8))
+        setValue('mineral_interest', safeParseFloat(value).toFixed(8))
 
 
         if (!sideDialogController("tractInterestDialog").getValue('showNetAcresRecalculate')) {
-          const netAcres = calculateNetAcres(parseFloat(value).toFixed(8))
+          const netAcres = calculateNetAcres(safeParseFloat(value).toFixed(8))
           setValue('net_acres', netAcres)
           setValue('offer_price_nma', calculateOfferPrice(netAcres, uUnitPricingNMA))
           setValue('max_offer_price_nma', calculateOfferPrice(netAcres, uMaxUnitPricingNMA))
@@ -75,7 +77,8 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
           setValue('offer_price', calculateOfferPrice(calculatedNra, uUnitPricing))
           setValue('max_offer_price', calculateOfferPrice(calculatedNra, uMaxUnitPricing))
         }
-        return parseFloat(value).toFixed(8)
+        // Return 0 if the value is empty string 
+        return safeParseFloat(value).toFixed(8)
       },
     },
     {
@@ -90,7 +93,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
       type: "number",
       onBlur: (value) => {
         const { mineral_interest, orri } = getValues() || {}
-        setValue('royalty_interest', parseFloat(value).toFixed(8))
+        setValue('royalty_interest', safeParseFloat(value).toFixed(8))
 
         if (!sideDialogController("tractInterestDialog").getValue('showNraRecalculate')) {
           const selectedParcel = popupController.getValue('selectedParcel');
@@ -102,7 +105,8 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
           setValue('offer_price', calculateOfferPrice(calculatedNra, uUnitPricing))
           setValue('max_offer_price', calculateOfferPrice(calculatedNra, uMaxUnitPricing))
         }
-        return parseFloat(value).toFixed(8)
+        // Return 0 if the value is empty string 
+        return safeParseFloat(value).toFixed(8)
       },
     },
     {
@@ -111,7 +115,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
       type: "number",
       onBlur: (value) => {
         const { mineral_interest, royalty_interest, nra, orri } = getValues() || {}
-        setValue('orri', parseFloat(value).toFixed(8))
+        setValue('orri', safeParseFloat(value).toFixed(8))
 
         if (!sideDialogController("tractInterestDialog").getValue('showNraRecalculate')) {
           const selectedParcel = popupController.getValue('selectedParcel');
@@ -123,7 +127,8 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
           setValue('offer_price', calculateOfferPrice(calculatedNra, uUnitPricing))
           setValue('max_offer_price', calculateOfferPrice(calculatedNra, uMaxUnitPricing))
         }
-        return parseFloat(value).toFixed(8)
+        // Return 0 if the value is empty string 
+        return safeParseFloat(value).toFixed(8)
       },
     },
     {
@@ -139,7 +144,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
         const { mineral_interest } = getValues() || {}
 
         const netAcres = calculateNetAcres(mineral_interest);
-        const isOverride = parseFloat(netAcres) !== parseFloat(value)
+        const isOverride = safeParseFloat(netAcres) !== safeParseFloat(value)
         sideDialogController("tractInterestDialog").updateState({
           'showNetAcresRecalculate': isOverride,
           rerenderJson: isOverride,
@@ -202,13 +207,14 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
         if (!value) return
         const { net_acres } = getValues() || {};
         const calculatedOfferPrice = calculateOfferPrice(net_acres, uUnitPricingNMA);
-        const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
+        const isOverride = safeParseFloat(calculatedOfferPrice) !== safeParseFloat(value)
         sideDialogController("tractInterestDialog").updateState({ 'showTargetOfferPriceRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       onBlur: (value) => {
         const cleanedValue = value.replace(/[$,]/g, '');
-        const numericValue = parseFloat(cleanedValue);
+        // Use safeParseFloat to remove NaN
+        const numericValue = safeParseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
         return formattedValue;
       },
@@ -239,13 +245,14 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
         if (!value) return
         const { net_acres } = getValues() || {};
         const calculatedOfferPrice = calculateOfferPrice(net_acres, uMaxUnitPricingNMA);
-        const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
+        const isOverride = safeParseFloat(calculatedOfferPrice) !== safeParseFloat(value)
         sideDialogController("tractInterestDialog").updateState({ 'showMaxOfferPriceRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       onBlur: (value) => {
         const cleanedValue = value.replace(/[$,]/g, '');
-        const numericValue = parseFloat(cleanedValue);
+        // Use safeParseFloat to remove NaN
+        const numericValue = safeParseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
         return formattedValue;
       },
@@ -285,7 +292,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
         const { mineral_interest, royalty_interest, orri } = getValues() || {}
 
         const calculatedNra = calculateStandardNraForTract(selectedParcel?.sdGrossAcres, mineral_interest, royalty_interest, orri, workspaceSettings)
-        const isOverride = parseFloat(calculatedNra) !== parseFloat(value)
+        const isOverride = safeParseFloat(calculatedNra) !== safeParseFloat(value)
         sideDialogController("tractInterestDialog").updateState({ 'showNraRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
@@ -323,13 +330,14 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
         const { nra } = getValues() || {}
 
         const calculatedOfferPrice = calculateOfferPrice(nra, uUnitPricing);
-        const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
+        const isOverride = safeParseFloat(calculatedOfferPrice) !== safeParseFloat(value)
         sideDialogController("tractInterestDialog").updateState({ 'showTargetOfferRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       onBlur: (value) => {
         const cleanedValue = value.replace(/[$,]/g, '');
-        const numericValue = parseFloat(cleanedValue);
+        // Use safeParseFloat to remove NaN
+        const numericValue = safeParseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
         return formattedValue;
       },
@@ -362,13 +370,14 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
         const { nra } = getValues() || {}
 
         const calculatedOfferPrice = calculateOfferPrice(nra, uMaxUnitPricing);
-        const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
+        const isOverride = safeParseFloat(calculatedOfferPrice) !== safeParseFloat(value)
         sideDialogController("tractInterestDialog").updateState({ 'showMaxOfferRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       onBlur: (value) => {
         const cleanedValue = value.replace(/[$,]/g, '');
-        const numericValue = parseFloat(cleanedValue);
+        // Use safeParseFloat to remove NaN
+        const numericValue = safeParseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
         return formattedValue;
       },
@@ -404,7 +413,8 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
       },
       onBlur: (value) => {
         const cleanedValue = value.replace(/[$,]/g, '');
-        const numericValue = parseFloat(cleanedValue);
+        // Use safeParseFloat to remove NaN
+        const numericValue = safeParseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
         return formattedValue;
       },
@@ -417,7 +427,8 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
       },
       onBlur: (value) => {
         const cleanedValue = value.replace(/[$,]/g, '');
-        const numericValue = parseFloat(cleanedValue);
+        // Use safeParseFloat to remove NaN
+        const numericValue = safeParseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
         return formattedValue;
       },
@@ -430,7 +441,8 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
       },
       onBlur: (value) => {
         const cleanedValue = value.replace(/[$,]/g, '');
-        const numericValue = parseFloat(cleanedValue);
+        // Use safeParseFloat to remove NaN
+        const numericValue = safeParseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
         return formattedValue;
       },
