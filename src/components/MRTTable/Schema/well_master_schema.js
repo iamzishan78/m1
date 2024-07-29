@@ -5,35 +5,36 @@ import vf_number from "components/Shared/valueformatters/vf_number";
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
- const esIndex = 'mywells_flat';
+// Define Elasticsearch index name
+const esIndex = 'mywells_flat';
 
-
+// Define table metadata and configuration
 const WellMasterMeta = {
-    esIndex,
-    pageSize: 50,
+    esIndex, // Elasticsearch index
+    pageSize: 50, // Number of rows per page
     pagination: {
-        pageIndex: 0,
-        pageSize: 50,
+        pageIndex: 0, // Starting page index
+        pageSize: 50, // Number of rows per page
     },
     search: {
-        fields: ["name^4", "_all"]
+        fields: ["name^4", "_all"] // Fields for search functionality
     },
-    maxTableHeight: 'calc(100vh - 215px)',
-    isDeleteDisabled: true,
+    maxTableHeight: 'calc(100vh - 215px)', // Maximum table height
+    isDeleteDisabled: true, // Disable delete functionality
     gridViewSettings: {
-        label: 'Well Master',
-        Icon: Wells,
+        label: 'Well Master', // Label for grid view
+        Icon: Wells, // Icon for grid view
         cssOverride: {
-            top: '138px',
+            top: '138px', // CSS overrides for positioning
             left: '40px',
             marginLeft: '-9px',
         },
     },
-    isInFiniteScroll: true,
-    defaultSort: { field: "lastUpdateAt", order: "desc" },
+    isInFiniteScroll: true, // Enable infinite scroll
+    defaultSort: { field: "lastUpdateAt", order: "desc" }, // Default sorting
     TableSchema: [
         {
-            ...CommonSchema.MONGO_ID,
+            ...CommonSchema.MONGO_ID, // Common schema for MongoDB ID
             name: '_id',
             accessorKey: '_id',
         },
@@ -187,7 +188,7 @@ const WellMasterMeta = {
             Cell: ({ row }) => {
                 const value = row?.original?.wellData?.measuredDepth
                 return <p>{value ? vf_number(Math.floor(value)) : "--"}</p>
-              }
+            }
         },
         {
             ...CommonSchema.COMMON_COLUMN,
@@ -198,9 +199,9 @@ const WellMasterMeta = {
             Cell: ({ row }) => {
                 const value = row?.original?.wellData?.TrueVerticalDepth
                 return <p>{value ? vf_number(Math.floor(value)) : "--"}</p>
-              }
-          },
-          {
+            }
+        },
+        {
             ...CommonSchema.COMMON_COLUMN,
             name: 'wellData.lateralLength.keyword',
             accessorKey: 'wellData.lateralLength',
@@ -209,35 +210,35 @@ const WellMasterMeta = {
             Cell: ({ row }) => {
                 const value = row?.original?.wellData?.lateralLength
                 return <p>{value ? vf_number(Math.floor(value)) : "--"}</p>
-              }
-          },
-          {
+            }
+        },
+        {
             ...CommonSchema.COMMON_COLUMN,
             name: 'wellData.primaryFormation.keyword',
             accessorKey: 'wellData.primaryFormation',
             header: 'Formation',
-          },
-          {
+        },
+        {
             ...CommonSchema.COMMON_COLUMN,
             name: 'properties.status.keyword',
             accessorFn: row => row?.properties?.status,
             id: 'properties.status',
             header: 'Pay Status',
             Cell: ({ row }) => {
-              return <>{row?.original?.properties?.[0]?.status}</>
+                return <>{row?.original?.properties?.[0]?.status}</>; // Access nested properties
             },
-          },
-          {
+        },
+        {
             ...CommonSchema.COMMON_COLUMN,
             name: 'properties.divOrderStatus.keyword',
             accessorFn: row => row?.properties?.divOrderStatus,
             id: 'properties.divOrderStatus',
             header: 'DO Status',
             Cell: ({ row }) => {
-              return <>{row?.original?.properties?.[0]?.divOrderStatus}</>
+                return <>{row?.original?.properties?.[0]?.divOrderStatus}</>; // Access nested properties
             },
-          },
-          {
+        },
+        {
             ...CommonSchema.COMMON_COLUMN,
             name: 'propertyDescriptor.interestType.keyword',
             accessorFn: row => row?.propertyDescriptor?.interestType,
@@ -247,8 +248,8 @@ const WellMasterMeta = {
               const value = row?.original?.propertyDescriptor
               return <p>{value && value?.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0]?.interestType) : ""}</p>;
             },
-          },
-          {
+        },
+        {
             ...CommonSchema.COMMON_COLUMN,
             name: 'propertyDescriptor.interestAmount.keyword',
             accessorFn: row => row?.propertyDescriptor?.interestAmount,
@@ -256,11 +257,11 @@ const WellMasterMeta = {
             header: 'Interest Amount',
             isSearchField: false,
             Cell: ({ row }) => {
-              const value = row?.original?.propertyDescriptor
-              return <p>{value && value?.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0]?.interestAmount) : ""}</p>;
+                const value = row?.original?.propertyDescriptor;
+                return <p>{value && value?.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0]?.interestAmount) : ""}</p>; // Handle multiple values
             },
-          },
-          {
+        },
+        {
             ...CommonSchema.COMMON_COLUMN,
             name: 'propertyDescriptor.effectiveDate',
             accessorFn: row => row?.propertyDescriptor?.effectiveDate,
@@ -269,68 +270,68 @@ const WellMasterMeta = {
             type: 'date',
             isSearchField: false,
             Cell: ({ row }) => {
-              const value = row?.original?.propertyDescriptor
-              return <p>{value && value?.length > 0 ? (value.length > 1 ? "MULTIPLE" : formatDate(value[0]?.effectiveDate)) : ""}</p>;
+                const value = row?.original?.propertyDescriptor;
+                return <p>{value && value?.length > 0 ? (value.length > 1 ? "MULTIPLE" : formatDate(value[0]?.effectiveDate)) : ""}</p>; // Handle multiple values
             },
-          },
-          {
+        },
+        {
             ...CommonSchema.COMMON_COLUMN,
             name: 'propertyDescriptor.costFree.keyword',
             accessorFn: row => row?.propertyDescriptor?.costFree,
             id: 'propertyDescriptor.costFree',
             header: 'Cost Free',
             Cell: ({ row }) => {
-              const value = row?.original?.propertyDescriptor
-              return <p>{value && value?.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0]?.costFree) : ""}</p>;
+                const value = row?.original?.propertyDescriptor
+                return <p>{value && value?.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0]?.costFree) : ""}</p>; // Handle multiple values
             },
-          },
-          {
+        },
+        {
             ...CommonSchema.COMMON_COLUMN,
             name: 'properties.internalCompany.keyword',
             accessorFn: row => row?.properties?.internalCompany,
             id: 'properties.internalCompany',
             header: 'Internal Company',
             Cell: ({ row }) => {
-              return <>{row?.original?.properties?.[0]?.internalCompany}</>
+                return <>{row?.original?.properties?.[0]?.internalCompany}</> // Access nested properties
             },
-          },
-          {
+        },
+        {
             ...CommonSchema.COMMON_COLUMN,
             name: 'properties.acquisitionID.keyword',
             accessorFn: row => row?.properties?.acquisitionID,
             id: 'properties.acquisitionID',
             header: 'Acquisition',
             Cell: ({ row }) => {
-              return <>{row?.original?.properties?.[0]?.acquisitionID}</>
+                return <>{row?.original?.properties?.[0]?.acquisitionID}</> // Access nested properties
             },
-          },
-          {
+        },
+        {
             ...CommonSchema.COMMON_COLUMN,
             name: 'properties.prospectID.keyword',
             accessorFn: row => row?.properties?.prospectID,
             id: 'properties.prospectID',
             header: 'Prospect',
             Cell: ({ row }) => {
-              return <>{row?.original?.properties?.[0]?.prospectID}</>
+                return <>{row?.original?.properties?.[0]?.prospectID}</> // Access nested properties
             },
-          },
-          {
-            ...CommonSchema.COMMENTS,
+        },
+        {
+            ...CommonSchema.COMMENTS, // Common schema for comments
             Cell: ({ row }) => {
-              const id = row.getValue('_id');
-              const { stateValues } = tableController('MyWellsTable').useState([
-                'commentsCounter',
-              ]);
-              const comment = stateValues?.commentsCounter?.find((comment) => comment._id === id)
-              return (
-                <CommentCell
-                  id={id}
-                  value={comment?.total}
-                  targetLabel={'well'}
-                />
-              );
+                const id = row.getValue('_id');
+                const { stateValues } = tableController('MyWellsTable').useState([
+                    'commentsCounter',
+                ]);
+                const comment = stateValues?.commentsCounter?.find((comment) => comment._id === id);
+                return (
+                    <CommentCell
+                        id={id}
+                        value={comment?.total}
+                        targetLabel={'well'}
+                    />
+                );
             },
-          }
+        }
     ]
 }
 export default WellMasterMeta;

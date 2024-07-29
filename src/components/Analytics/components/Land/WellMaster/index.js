@@ -169,7 +169,8 @@ export default function ExhibitATabPanel() {
           </Grid>
         </Grid>
       </div> */}
-      <MRTTable name="WellMasterTable" />
+      {/* Display well master table using MRT Grid */}
+      <MRTTable name="WellMasterTable" /> 
     </>
   );
 }
