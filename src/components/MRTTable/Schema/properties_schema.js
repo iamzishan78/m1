@@ -33,7 +33,7 @@ const PropertiesMeta = {
       accessorKey: 'id',
     },
     {
-      ...CommonSchema.HIDDEN,
+      ...CommonSchema.MONGO_ID,
       name: '_id',
       accessorKey: '_id',
     },
