@@ -305,7 +305,7 @@ export default function BuyContactsInfoDialogContent(props) {
                           onClick={() => {
                             const validId = validContactData[index].id;
                             const reducedRows = props.rows.filter(item =>
-                              item.contactId !== validId && item._id !== validId && item.contact._id !== validId
+                              item?.contactId !== validId && item?._id !== validId && item?.contact?._id !== validId
                             );
                             props.setRows(reducedRows);
                           }}
