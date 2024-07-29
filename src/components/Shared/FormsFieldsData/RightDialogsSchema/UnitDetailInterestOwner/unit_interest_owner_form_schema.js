@@ -4,7 +4,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import IconButton from '@material-ui/core/IconButton';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
-import { calculateStandardNraForUnit } from "utils/calculatedNraHelper"
+import { calculateStandardNraForUnit, safeParseFloat } from "utils/calculatedNraHelper"
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import contactForm from "components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema"
 
@@ -12,7 +12,8 @@ const calculateOfferPrice = (nra, uUnitPricing = 0) => {
   if (!uUnitPricing) {
     uUnitPricing = sideDialogController("unitInterestDialog").getValue('uUnitPricing');
   }
-  return parseFloat((parseFloat(nra || 0) * parseFloat(uUnitPricing || 0)).toFixed(2));
+  // Use safeParseFloat to remove NaN
+  return safeParseFloat((safeParseFloat(nra || 0) * safeParseFloat(uUnitPricing || 0)).toFixed(2));
 };
 
 const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] }) => {
@@ -39,12 +40,15 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 
           const workspaceSettings = sideDialogController("unitInterestDialog").getValue('workspaceSettings')
           const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
-          const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest: value, royalty_interest, orri, nri, workspaceSettings })
+          const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest: parseFloat(value).toFixed(8), royalty_interest, orri, nri, workspaceSettings })
+          // Update nra and offer prices
           setValue('nra', calculatedNra)
           setValue('offer_price', calculateOfferPrice(calculatedNra));
+          setValue('max_offer_price', calculateOfferPrice(calculatedNra, uMaxUnitPricing));
         }
 
-        return parseFloat(value).toFixed(8)
+        // Return 0 if the value is empty string 
+        return safeParseFloat(value).toFixed(8)
       },
     },
     {
@@ -58,12 +62,15 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 
           const workspaceSettings = sideDialogController("unitInterestDialog").getValue('workspaceSettings')
           const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
-          const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest: value, orri, nri, workspaceSettings })
+          const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest: parseFloat(value).toFixed(8), orri, nri, workspaceSettings })
+          // Update nra and offer prices
           setValue('nra', calculatedNra)
           setValue('offer_price', calculateOfferPrice(calculatedNra));
+          setValue('max_offer_price', calculateOfferPrice(calculatedNra, uMaxUnitPricing));
         }
 
-        return parseFloat(value).toFixed(8)
+        // Return 0 if the value is empty string 
+        return safeParseFloat(value).toFixed(8)
       },
     },
     {
@@ -77,12 +84,15 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 
           const workspaceSettings = sideDialogController("unitInterestDialog").getValue('workspaceSettings')
           const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
-          const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri: value, nri, workspaceSettings })
+          const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri: parseFloat(value).toFixed(8), nri, workspaceSettings })
+          // Update nra and offer prices
           setValue('nra', calculatedNra)
           setValue('offer_price', calculateOfferPrice(calculatedNra));
+          setValue('max_offer_price', calculateOfferPrice(calculatedNra, uMaxUnitPricing));
         }
 
-        return parseFloat(value).toFixed(8)
+        // Return 0 if the value is empty string 
+        return safeParseFloat(value).toFixed(8)
       },
     },
     {
@@ -97,12 +107,15 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 
           const workspaceSettings = sideDialogController("unitInterestDialog").getValue('workspaceSettings')
           const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
-          const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri, nri: value, workspaceSettings })
+          const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri, nri: parseFloat(value).toFixed(8), workspaceSettings })
+          // Update nra and offer prices
           setValue('nra', calculatedNra)
           setValue('offer_price', calculateOfferPrice(calculatedNra));
+          setValue('max_offer_price', calculateOfferPrice(calculatedNra, uMaxUnitPricing));
         }
 
-        return parseFloat(value).toFixed(8)
+        // Return 0 if the value is empty string 
+        return safeParseFloat(value).toFixed(8)
       },
     },
     {
@@ -122,11 +135,13 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
         const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
         const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri, nri, workspaceSettings })
 
-        const isOverride = parseFloat(calculatedNra) !== parseFloat(value)
+        // Check if the calculatedNra is overriden
+        const isOverride = safeParseFloat(calculatedNra) !== safeParseFloat(value)
         sideDialogController("unitInterestDialog").updateState({ 'showNetRoyaltyAcresRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       onChange: (value) => {
+        // Update nra and offer prices
         setValue('nra', value);
         setValue('offer_price', calculateOfferPrice(value));
         setValue('max_offer_price', calculateOfferPrice(value, uMaxUnitPricing))
@@ -144,8 +159,11 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
                   const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
                   const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri, nri, workspaceSettings })
 
+                  // revert overriden values
                   setValue('nra', calculatedNra)
                   setValue('offer_price', calculateOfferPrice(calculatedNra));
+                  setValue('max_offer_price', calculateOfferPrice(calculatedNra, uMaxUnitPricing));
+
                 }}
               >
                 <AutorenewIcon />
@@ -171,7 +189,8 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
       },
       onBlur: (value) => {
         const cleanedValue = value.replace(/[$,]/g, '');
-        const numericValue = parseFloat(cleanedValue);
+        // Use safeParseFloat to remove NaN
+        const numericValue = safeParseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
         return formattedValue;
       }
@@ -184,7 +203,8 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
       },
       onBlur: (value) => {
         const cleanedValue = value.replace(/[$,]/g, '');
-        const numericValue = parseFloat(cleanedValue);
+        // Use safeParseFloat to remove NaN
+        const numericValue = safeParseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
         return formattedValue;
       }
@@ -196,7 +216,8 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
       isValueOverridden: (value) => {
         if (!value) return
 
-        const isOverride = value !== parseFloat(uUnitPricing).toFixed(2)
+        // Check if the uUnitPricing is overriden
+        const isOverride = safeParseFloat(value.toString()).toFixed(2) !== safeParseFloat(uUnitPricing).toFixed(2)
         sideDialogController("unitInterestDialog").updateState({ 'showTargetPrice/NraRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
@@ -209,7 +230,8 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 
       onBlur: (value) => {
         const cleanedValue = value.replace(/[$,]/g, '');
-        const numericValue = parseFloat(cleanedValue);
+        // Use safeParseFloat to remove NaN
+        const numericValue = safeParseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
         return formattedValue;
       },
@@ -243,13 +265,15 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
         const { nra } = getValues() || {}
 
         const calculatedOfferPrice = calculateOfferPrice(nra);
-        const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
+        // Check if the offer_price is overriden
+        const isOverride = safeParseFloat(calculatedOfferPrice) !== safeParseFloat(value)
         sideDialogController("unitInterestDialog").updateState({ 'showTargetOfferRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       onBlur: (value) => {
         const cleanedValue = value.replace(/[$,]/g, '');
-        const numericValue = parseFloat(cleanedValue);
+        // Use safeParseFloat to remove NaN
+        const numericValue = safeParseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
         return formattedValue;
       },
@@ -280,20 +304,22 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
       isValueOverridden: (value) => {
         if (!value) return
 
-        const isOverride = value !== parseFloat(uMaxUnitPricing).toFixed(2)
+        const isOverride = safeParseFloat(value.toString()).toFixed(2) !== safeParseFloat(uMaxUnitPricing).toFixed(2)
         sideDialogController("unitInterestDialog").updateState({ 'showMaxPrice/NraRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       onChange: (value) => {
         const { nra } = getValues() || {}
 
+        // Update uMaxUnitPricingInterest and max_offer_price
         setValue('uMaxUnitPricingInterest', value)
         setValue('max_offer_price', calculateOfferPrice(nra, value));
       },
 
       onBlur: (value) => {
         const cleanedValue = value.replace(/[$,]/g, '');
-        const numericValue = parseFloat(cleanedValue);
+        // Use safeParseFloat to remove NaN
+        const numericValue = safeParseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
         return formattedValue;
       },
@@ -306,7 +332,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
                 aria-label="toggle offer_price"
                 onClick={() => {
                   const { nra } = getValues() || {}
-
+                  // revert overriden uMaxUnitPricingInterest and max_offer_price
                   setValue('uMaxUnitPricingInterest', uMaxUnitPricing)
                   setValue('max_offer_price', calculateOfferPrice(nra, uMaxUnitPricing))
                 }}
@@ -327,13 +353,15 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
         const { nra } = getValues() || {}
 
         const calculatedOfferPrice = calculateOfferPrice(nra, uMaxUnitPricing);
-        const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
+        // Check if the max_offer_price is overriden
+        const isOverride = safeParseFloat(calculatedOfferPrice) !== safeParseFloat(value)
         sideDialogController("unitInterestDialog").updateState({ 'showMaxOfferRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       onBlur: (value) => {
         const cleanedValue = value.replace(/[$,]/g, '');
-        const numericValue = parseFloat(cleanedValue);
+        // Use safeParseFloat to remove NaN
+        const numericValue = safeParseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
         return formattedValue;
       },
@@ -346,7 +374,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
                 aria-label="toggle offer_price"
                 onClick={() => {
                   const { nra } = getValues() || {}
-
+                  // revert overriden max_offer_price
                   setValue('max_offer_price', calculateOfferPrice(nra, uMaxUnitPricing))
                 }}
               >
@@ -365,7 +393,8 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
       },
       onBlur: (value) => {
         const cleanedValue = value.replace(/[$,]/g, '');
-        const numericValue = parseFloat(cleanedValue);
+        // Use safeParseFloat to remove NaN
+        const numericValue = safeParseFloat(cleanedValue);
         const formattedValue = numericValue.toFixed(8);
         return formattedValue;
       }
