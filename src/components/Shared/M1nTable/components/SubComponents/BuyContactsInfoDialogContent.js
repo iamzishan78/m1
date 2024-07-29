@@ -25,6 +25,7 @@ import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
 import ErrorIcon from "@material-ui/icons/Error";
 import { Tooltip } from "@material-ui/core";
 import { tableGlobalController } from "hookstate/tableController";
+import { jobController } from "hookstate/jobStateController";
 
 const styles = (theme) => ({
   dialogTitle: {
@@ -88,7 +89,16 @@ export default function BuyContactsInfoDialogContent(props) {
   const [dataFetched, setDataFetched] = useState(false);
   const [currentCredits, setCurrentCredits] = useState(-1);
   const [rowsLoading, setRowsLoading] = useState(false);
+  const [mondoRes, setMondoRes] = useState([]);
+
   const modalClass = Modals();
+
+  const jobState = jobController.useState(
+    ['JobOutput'],
+    'jobStateValues'
+  );
+  const { jobStateValues } = jobState
+
 
   const [getFeatureQuota, { loading, data: quota }] =
     useLazyQuery(GET_FEATURE_QUOTA);
@@ -119,21 +129,27 @@ export default function BuyContactsInfoDialogContent(props) {
     useMutation(GET_IDICORE_DATA);
 
   useEffect(() => {
-    if (
-      idiCoreData?.getIdiCoreData?.success &&
-      idiCoreData?.getIdiCoreData?.data?.length > 0
-    ) {
+    if (idiCoreData?.getIdiCoreData?.success) {
+      jobController.updateState({
+        storeJobOutput: {
+          jobId: idiCoreData?.getIdiCoreData?.jobId
+        }
+      })
+      jobController.toggleBulkUpload()
       setDataFetched(true)
-      dispatch(showSuccessMessage("Contact data fetched successfully"));
+      dispatch(showSuccessMessage("The contact data is being fetched in the job and will be available shortly"));
       tableGlobalController.refetch();
     } else if (idiCoreData?.getIdiCoreData?.success === false) {
       setDataFetched(true)
       dispatch(showErrorMessage("An error occurred - please try again"));
-    } else if (idiCoreData?.getIdiCoreData?.success === true) {
-      setDataFetched(true)
-      dispatch(showErrorMessage("No data found for selected contact(s)"));
     }
   }, [idiCoreData]);
+
+  useEffect(() => {
+    if (jobStateValues?.JobOutput) {
+      setMondoRes(jobStateValues?.JobOutput?.outputs?.[1]?.mongoRes)
+    }
+  }, [jobState.JobOutput])
 
   function loadPersonData() {
     if (validContactData.length > currentCredits) {
@@ -281,9 +297,9 @@ export default function BuyContactsInfoDialogContent(props) {
                       {`${row.firstName} ${row.lastName}`}
                     </FormLabel>
                     <FormLabel className={modalClass.inputContent}>
-                      {dataFetched && (
+                      {mondoRes && (
                         <>
-                          {idiCoreData.getIdiCoreData.data?.find(contact => contact.contactId === row.id) ? (
+                          {mondoRes?.data?.find(contact => contact.contactId === row.id) ? (
                             <span className={classes.iconsSuccess}>
                               <Tooltip title='Data found for contact' >
                                 <CheckCircleIcon />
@@ -343,7 +359,7 @@ export default function BuyContactsInfoDialogContent(props) {
               onClick={() => {
                 loadPersonData();
               }}
-              disabled={buyNowClicked || idiLoading || validContactData.length === 0}
+              disabled={buyNowClicked || idiLoading || validContactData.length === 0 || mondoRes?.length}
               color="secondary"
               variant="contained"
             >

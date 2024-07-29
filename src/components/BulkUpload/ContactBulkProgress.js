@@ -18,9 +18,10 @@ const ContactBulkProgress = () => {
   const refetchHelper = useRefetchHelper()
   const refetchHelperDebounced = useMemo(() => debounce((requestPayload) => refetchHelper(requestPayload), 1000), []);
   const jobState = jobController.useState(
-    ['bulkUpload'],
+    ['bulkUpload', 'storeJobOutput'],
     'jobStateValues'
   );
+  const { jobStateValues } = jobState
 
   const dispatch = useDispatch();
 
@@ -82,6 +83,16 @@ const ContactBulkProgress = () => {
       }
     } else {
       stopPolling();
+    }
+  }, [dataJobs?.getJobsStatus]);
+
+  useEffect(() => {
+    if (dataJobs?.getJobsStatus?.jobs?.length > 0 && jobStateValues?.storeJobOutput) {
+      const targetJobOutput = dataJobs.getJobsStatus.jobs.find(
+        (job) => job._id === jobStateValues?.storeJobOutput?.jobId
+      );
+
+      jobController.updateState({ JobOutput: targetJobOutput?.jobOutput })
     }
   }, [dataJobs?.getJobsStatus]);
 
