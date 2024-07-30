@@ -96,7 +96,7 @@ const ContactBulkProgress = () => {
         (job) => job._id === jobStateValues?.storeJobOutput?.jobId
       );
       // Update job state with the found job output
-      jobController.updateState({ JobOutput: targetJobOutput?.jobOutput });
+      jobController.updateState({ JobOutput: targetJobOutput?.jobOutput, isJobCompleted: targetJobOutput?.status === 'Completed' });
     }
   }, [dataJobs?.getJobsStatus]); // Dependency array to rerun the effect when dataJobs?.getJobsStatus changes
 
@@ -199,10 +199,10 @@ const ContactBulkProgress = () => {
           if (dataJobs.getJobsStatus.jobs[i].type === "contacts")
             refetchQueryByName("checkIfOwnersAreContacts");
           // Refetch when its the status is completed for the last job iteration
-          if(i === dataJobs.getJobsStatus.jobs.length - 1) {
+          if (i === dataJobs.getJobsStatus.jobs.length - 1) {
             const { progress: jobProgress, totalProgress } = dataJobs.getJobsStatus.jobs[i];
             // Check if the current progress is equal to the total progress
-            if(jobProgress === totalProgress) {
+            if (jobProgress === totalProgress) {
               tableGlobalController.refetch();
             }
           }

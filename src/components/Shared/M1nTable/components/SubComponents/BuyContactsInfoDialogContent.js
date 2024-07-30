@@ -94,7 +94,7 @@ export default function BuyContactsInfoDialogContent(props) {
   const modalClass = Modals();
 
   const jobState = jobController.useState(
-    ['JobOutput'],
+    ['JobOutput', 'isJobCompleted'],
     'jobStateValues'
   );
   const { jobStateValues } = jobState
@@ -170,6 +170,12 @@ export default function BuyContactsInfoDialogContent(props) {
     }
   }, [jobState.JobOutput]); // Dependency array to rerun the effect when jobState.JobOutput changes
 
+  useEffect(() => {
+    return () => {
+      setMondoRes([])
+      jobController.updateState({ JobOutput: null, storeJobOutput: null });
+    }
+  }, [])
 
   function loadPersonData() {
     if (validContactData.length > currentCredits) {
@@ -317,7 +323,7 @@ export default function BuyContactsInfoDialogContent(props) {
                       {`${row.firstName} ${row.lastName}`}
                     </FormLabel>
                     <FormLabel className={modalClass.inputContent}>
-                      {mondoRes && (
+                      {jobStateValues?.isJobCompleted && (
                         <>
                           {mondoRes?.data?.find(contact => contact.contactId === row.id) ? (
                             <span className={classes.iconsSuccess}>
