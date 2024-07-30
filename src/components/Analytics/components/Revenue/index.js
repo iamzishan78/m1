@@ -118,7 +118,7 @@ const tabs = ['Income Statement', 'Check Details', 'Comparisons', 'Property Inte
 
 export default function RevenueAnalytics(props) {
   const classes = useStyles();
-  const [TableKey, setTableKey] = useState('ComparisonTable');
+  const [TableKey, setTableKey] = useState('ComparisonTable'); // make the table key dynamic inorder to used for both table
   const [filterToggle, setFilterToggle] = React.useState(false);
   const propertiesReportGroup = useSelector(({ Revenue }) => Revenue.propertiesReportGroup);
   const [tab, setTab] = useState(0);
@@ -133,8 +133,8 @@ export default function RevenueAnalytics(props) {
   const [comparisonReport, setComparisonReport] = useState('Check Detail Comparison');
   const [filters, setFilters] = useState([...(propertiesReportGroup || [])])
 
-  const comparisonTableState = tableController('ComparisonTable').useState(['filters', 'data']).stateValues;
-  const salesVolumeComparisonTableState = tableController('SalesVolumeComparisonTable').useState(['filters', 'data']).stateValues;
+  const comparisonTableState = tableController('ComparisonTable').useState(['filters', 'data']).stateValues; // get StateValues for ComparisonTable
+  const salesVolumeComparisonTableState = tableController('SalesVolumeComparisonTable').useState(['filters', 'data']).stateValues; // get StateValues for SalesVolumeComparisonTable
 
   const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 166px)' };
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
@@ -206,13 +206,18 @@ export default function RevenueAnalytics(props) {
     })();
   }, [comparisonTableState?.filters, comparisonTableState?.data?.total, salesVolumeComparisonTableState?.filters, salesVolumeComparisonTableState?.data?.total]);
 
-  const getTableStateValues = () => {
-    if (comparisonReport === 'Check Detail Comparison') {
-       return comparisonTableState
-    } else {
-      return salesVolumeComparisonTableState
-    }
-  }
+    // Function to get the appropriate table state values based on the comparison report type
+    const getTableStateValues = () => { 
+      // Check if the comparison report is 'Check Detail Comparison'
+      if (comparisonReport === 'Check Detail Comparison') {
+          // Return the comparison table state for 'Check Detail Comparison'
+          return comparisonTableState;
+      } else {
+          // Otherwise, return the sales volume comparison table state
+          return salesVolumeComparisonTableState;
+      }
+    };
+
 
   useEffect(() => {
     getCheckDetailData({
@@ -301,7 +306,7 @@ export default function RevenueAnalytics(props) {
       externalFilters[externalFilters.length] = { field: 'isMisMatchedInterest', value: true, type: 'term' }
       tableController(TableKey).clearFilter(externalFilters[0]?.field);
     } else {
-      tableController(TableKey).clearFilters();
+      tableController(TableKey).clearFilters(); // clear filter from the table state
       newFilter.forEach(filter => {
         const { field, value, type } = filter;
         let filterToAdd;
