@@ -86,15 +86,19 @@ const ContactBulkProgress = () => {
     }
   }, [dataJobs?.getJobsStatus]);
 
+  // useEffect hook to run side-effects when `dataJobs?.getJobsStatus` changes
   useEffect(() => {
+    // Check if there are jobs in dataJobs and storeJobOutput exists in jobStateValues
     if (dataJobs?.getJobsStatus?.jobs?.length > 0 && jobStateValues?.storeJobOutput) {
+      // Find the target job output that matches the stored jobId
       const targetJobOutput = dataJobs.getJobsStatus.jobs.find(
         (job) => job._id === jobStateValues?.storeJobOutput?.jobId
       );
-
-      jobController.updateState({ JobOutput: targetJobOutput?.jobOutput })
+      // Update job state with the found job output
+      jobController.updateState({ JobOutput: targetJobOutput?.jobOutput });
     }
-  }, [dataJobs?.getJobsStatus]);
+  }, [dataJobs?.getJobsStatus]); // Dependency array to rerun the effect when dataJobs?.getJobsStatus changes
+
 
   const onCloseToast = (jobId) => {
     updateJob({

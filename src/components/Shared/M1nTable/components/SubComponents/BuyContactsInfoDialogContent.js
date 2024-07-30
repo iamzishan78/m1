@@ -128,28 +128,48 @@ export default function BuyContactsInfoDialogContent(props) {
   const [getIdICoreData, { data: idiCoreData, loading: idiLoading }] =
     useMutation(GET_IDICORE_DATA);
 
+  // useEffect hook to run side-effects when `idiCoreData` changes
   useEffect(() => {
+    // Check if the idiCoreData response indicates success
     if (idiCoreData?.getIdiCoreData?.success) {
+      // Update job state with the jobId from idiCoreData
       jobController.updateState({
         storeJobOutput: {
           jobId: idiCoreData?.getIdiCoreData?.jobId
         }
-      })
-      jobController.toggleBulkUpload()
-      setDataFetched(true)
+      });
+
+      // Toggle the bulk upload state
+      jobController.toggleBulkUpload();
+
+      // Set dataFetched to true to indicate data has been fetched
+      setDataFetched(true);
+
+      // Dispatch a success message to the user
       dispatch(showSuccessMessage("The contact data is being fetched in the job and will be available shortly"));
+
+      // Refetch the table data
       tableGlobalController.refetch();
+
+      // Handle case when idiCoreData indicates failure
     } else if (idiCoreData?.getIdiCoreData?.success === false) {
-      setDataFetched(true)
+      // Set dataFetched to true to indicate data has been fetched (even though it failed)
+      setDataFetched(true);
+
+      // Dispatch an error message to the user
       dispatch(showErrorMessage("An error occurred - please try again"));
     }
-  }, [idiCoreData]);
+  }, [idiCoreData]); // Dependency array to rerun the effect when idiCoreData changes
 
+  // useEffect hook to run side-effects when `jobStateValues.JobOutput` changes
   useEffect(() => {
+    // Check if jobStateValues has JobOutput data
     if (jobStateValues?.JobOutput) {
-      setMondoRes(jobStateValues?.JobOutput?.outputs?.[1]?.mongoRes)
+      // Set MondoRes state with the mongoRes from jobStateValues
+      setMondoRes(jobStateValues?.JobOutput?.outputs?.[1]?.mongoRes);
     }
-  }, [jobState.JobOutput])
+  }, [jobState.JobOutput]); // Dependency array to rerun the effect when jobState.JobOutput changes
+
 
   function loadPersonData() {
     if (validContactData.length > currentCredits) {
