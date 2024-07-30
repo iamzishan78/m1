@@ -59,13 +59,21 @@ export default function CampaignAnalytics({ appliedFilters, contactSearchQuery }
       }
     },
   });
-
+  
+  // Wrap non-empty query with '*' to use a contains expression; otherwise, use '*'
+  const query = contactSearchQuery ? `*${contactSearchQuery}*` : '*';
   useEffect(() => {
     getCampaignAnalytics({
       variables: {
         search: {
-          fields: ["name", "_all"],
-          query: `*${contactSearchQuery}*`, // use contains expression
+          // Synced fileds with ESSimpleSeach
+          fields: [
+            "name.keyword",
+            "status.keyword",
+            "owner.name.keyword",
+            "tags.tag.keyword"
+          ],
+          query,
         },
         filters: getFilters(appliedFilters),
       },

@@ -60,7 +60,8 @@ function TextFieldComponent({ control, item, watch }) {
               onChange ? onChange(e.target.value) : props.onChange(e.target.value)
             }}
             onBlur={e => {
-              let value = e.target.value || ''
+              // In case of numbers we will send 0 and for string ''
+              let value = e.target.value || (type === "number" ? 0 : '');
               if (onBlur) value = onBlur(value)
               props.onChange(value)
             }}
