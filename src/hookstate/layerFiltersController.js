@@ -4,6 +4,7 @@ import { globalStateController } from './globalStateController';
 import { layerController } from './layerStateController';
 import { debounce } from 'lodash';
 import { layerFilterInitialState, layerFilters } from './initialStates';
+import { navController } from './navStateController';
 
 
 
@@ -132,6 +133,8 @@ const layerFiltersControllerHandler = state => ({
 			}
 		}
 
+		navController.updateState({ wellFilterCount: filters.length })
+
 		// eslint-disable-next-line no-use-before-define
 		layerFiltersController.setVariables('Wells', {
 			...variables,
@@ -157,6 +160,12 @@ const layerFiltersControllerHandler = state => ({
 		layerController.removeLayers();
 		setTimeout(() => {
 			state.polygonFilter.set(polygon);
+		}, 100);
+	},
+	setPolygonsFilter: polygons => {
+		layerController.removeLayers();
+		setTimeout(() => {
+			state.polygonsFilter.set(polygons);
 		}, 100);
 	},
 });
