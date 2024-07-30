@@ -183,7 +183,14 @@ const ContactBulkProgress = () => {
           downloadResults(dataJobs.getJobsStatus.jobs[i], onCloseToast);
           if (dataJobs.getJobsStatus.jobs[i].type === "contacts")
             refetchQueryByName("checkIfOwnersAreContacts");
-          tableGlobalController.refetch();
+          // Refetch when its the status is completed for the last job iteration
+          if(i === dataJobs.getJobsStatus.jobs.length - 1) {
+            const { progress: jobProgress, totalProgress } = dataJobs.getJobsStatus.jobs[i];
+            // Check if the current progress is equal to the total progress
+            if(jobProgress === totalProgress) {
+              tableGlobalController.refetch();
+            }
+          }
         } else if (status === "Failed") {
           Loader.errorToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast);
         } else {
