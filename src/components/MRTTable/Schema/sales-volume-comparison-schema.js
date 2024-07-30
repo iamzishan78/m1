@@ -35,6 +35,7 @@ const OwnersPerUnitMeta = {
 			name: 'property.number.keyword',
 			accessorKey: 'property.number',
 			header: 'Property Number',
+			isExternalFilter: true,
 		},
 		// Well API Number column with custom cell rendering
 		{
@@ -163,6 +164,12 @@ const OwnersPerUnitMeta = {
 				);
 			},
 		},
+		{
+			...CommonSchema.HIDDEN,
+			name: 'check.checkNumber.keyword',
+			accessorFn: row => row?.check?.checkNumber,
+			isExternalFilter: true,
+		}
 	],
 };
 

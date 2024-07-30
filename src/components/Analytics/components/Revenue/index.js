@@ -118,7 +118,7 @@ const tabs = ['Income Statement', 'Check Details', 'Comparisons', 'Property Inte
 
 export default function RevenueAnalytics(props) {
   const classes = useStyles();
-  const TableKey = 'ComparisonTable';
+  const [TableKey, setTableKey] = useState('ComparisonTable');
   const [filterToggle, setFilterToggle] = React.useState(false);
   const propertiesReportGroup = useSelector(({ Revenue }) => Revenue.propertiesReportGroup);
   const [tab, setTab] = useState(0);
@@ -133,8 +133,8 @@ export default function RevenueAnalytics(props) {
   const [comparisonReport, setComparisonReport] = useState('Check Detail Comparison');
   const [filters, setFilters] = useState([...(propertiesReportGroup || [])])
 
-  const tableState = tableController(TableKey).useState(['filters', 'data']);
-  const tableStateValues = tableState.stateValues;
+  const comparisonTableState = tableController('ComparisonTable').useState(['filters', 'data']).stateValues;
+  const salesVolumeComparisonTableState = tableController('SalesVolumeComparisonTable').useState(['filters', 'data']).stateValues;
 
   const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 166px)' };
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
@@ -167,9 +167,9 @@ export default function RevenueAnalytics(props) {
       getPropertyNumbers({
         variables: {
           index: 'checkdetailsinterestscomparison_flat',
-          filters: [...(tableStateValues?.filters || []), { field: 'property.IsDeleted', value: false, type: 'term' }],
+          filters: [...(getTableStateValues()?.filters || []), { field: 'property.IsDeleted', value: false, type: 'term' }],
           filterKey: 'property.number.keyword',
-          filterAggs: { query: '', field: 'property.number.keyword', size: tableStateValues?.data?.total || 0 },
+          filterAggs: { query: '', field: 'property.number.keyword', size: getTableStateValues()?.data?.total || 0 },
         },
         onCompleted: res => resolve(res?.getESSimpleFilter?.hits),
         onError: error => reject(error),
@@ -181,9 +181,9 @@ export default function RevenueAnalytics(props) {
       getCheckNumbers({
         variables: {
           index: 'checkdetailsinterestscomparison_flat',
-          filters: [...(tableStateValues?.filters || []), { field: "IsDeleted", value: false, type: 'term' }],
+          filters: [...(getTableStateValues()?.filters || []), { field: "IsDeleted", value: false, type: 'term' }],
           filterKey: 'check.checkNumber.keyword',
-          filterAggs: { query: '', field: 'check.checkNumber.keyword', size: tableStateValues?.data?.total || 0 },
+          filterAggs: { query: '', field: 'check.checkNumber.keyword', size: getTableStateValues()?.data?.total || 0 },
         },
         onCompleted: res => resolve(res?.getESSimpleFilter?.hits),
         onError: error => reject(error),
@@ -198,14 +198,21 @@ export default function RevenueAnalytics(props) {
   };
 
   useEffect(() => {
-    if (!tableStateValues?.data?.total) return;
+    if ((!comparisonTableState?.data?.total && comparisonReport === 'Check Detail Comparison') || (!salesVolumeComparisonTableState?.data?.total && comparisonReport === 'Sales Volume vs Reported Production')) return;
     (async () => {
       const { propertiesOptions, checkOptions } = await getPropertyOptions();
       setPropertyNumbers(propertiesOptions?.map(hit => hit.key) || [])
       setCheckNumbers(checkOptions?.map(hit => hit.key) || [])
     })();
-  }, [tableState?.filters, tableState?.data?.total]);
+  }, [comparisonTableState?.filters, comparisonTableState?.data?.total, salesVolumeComparisonTableState?.filters, salesVolumeComparisonTableState?.data?.total]);
 
+  const getTableStateValues = () => {
+    if (comparisonReport === 'Check Detail Comparison') {
+       return comparisonTableState
+    } else {
+      return salesVolumeComparisonTableState
+    }
+  }
 
   useEffect(() => {
     getCheckDetailData({
@@ -306,7 +313,15 @@ export default function RevenueAnalytics(props) {
         tableController(TableKey).setFilter(filterToAdd);
       });
     }
-  }, []);
+  }, [TableKey]);
+
+  useEffect(() => {
+    if (comparisonReport === 'Check Detail Comparison') {
+      setTableKey('ComparisonTable');  
+    } else {
+      setTableKey('SalesVolumeComparisonTable');
+    }
+  }, [comparisonReport])
 
   return (
     <>
@@ -425,7 +440,7 @@ export default function RevenueAnalytics(props) {
             checkNumbers={checkNumbers}
             extraFitlers={['propertyGroup', 'checkNumber', 'propertyNumber']}
             stateESKey="property."
-            isComparisonReport={comparisonReport === 'Check Detail Comparison'}
+            isComparisonReport={true}
           />
           {comparisonReport === 'Sales Volume vs Reported Production' ? (
             <SalesVolumeComparisonSection
@@ -442,7 +457,7 @@ export default function RevenueAnalytics(props) {
               />
               <div className={classes.revenueTableInfContainer}>
                 <Box sx={{ padding: '1em', marginLeft: '1em' }}>
-                  <MRTTable name={TableKey} />
+                  <MRTTable name={"ComparisonTable"} />
                 </Box>
               </div>
             </>
