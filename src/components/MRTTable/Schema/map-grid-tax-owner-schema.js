@@ -35,7 +35,6 @@ const TaxOwnerMeta = {
             Cell: ({ renderedCellValue, row }) => {
                 const { handleFlyto } = useTaxOwnerWellFlyto()
                 const id = row.getValue('id');
-                console.log(row?.original?.wellCount)
                 return row?.original?.wellCount ? <div
                     style={{
                         display: 'flex',
