@@ -166,7 +166,7 @@ export const getSelectedRowsFromProps = (props = {}) => {
 
 export const formatDate = (date, simple = true) => {
   if (!date) return '--'
-  return moment.parseZone(new Date(date)).format(simple ? 'MM/DD/YY' : 'YYYY-MM-DD');
+  return moment.parseZone(new Date(date)).format(simple ? 'MM/DD/YYYY' : 'YYYY-MM-DD');
 }
 
 export const processInBatches = async (promises, batchSize) => {

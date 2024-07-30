@@ -1,6 +1,8 @@
 import { get } from 'lodash';
 import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import { popupController } from 'hookstate/popupStateController';
+import { drawBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
 const onClickedRow = selectedRow => { };
 
@@ -11,10 +13,11 @@ const ShapesFilesGenericMeta = {
 		pageSize: 25,
 	},
 	onClickedRow,
-	maxTableHeight: 'calc(100vh - 660px)',
-	// isInFiniteScroll: true,
+	maxTableHeight: 'calc(100vh - 290px)',
+	isInFiniteScroll: true,
 	// columnVirtualization: true,
 	defaultFlterMode: 'multiselect',
+	globalSearch: true,
 	isGeneric: true,
 	enableHiding: false,
 	density: 'compact',
@@ -28,7 +31,6 @@ const ShapesFilesGenericMeta = {
 		const baseKeys = ['_id', 'id', 'geometry'];
 
 		keys.splice(3, 0, 'actions');
-
 		return keys.map(key => {
 			if (key === 'actions')
 				return {
@@ -40,8 +42,11 @@ const ShapesFilesGenericMeta = {
 					size: 70,
 					Cell: ({ row }) => {
 						const id = row.getValue('_id');
-
-						return <FlyToMap id={id} row={row.original} type='shapefile' />;
+						const Action = () => {
+							drawBoundary(row.original)
+							popupController.updateState({ selectedShapeFile: row.original })
+						}
+						return <FlyToMap id={id} Action={Action} type='shapefile' />;
 					},
 				};
 
@@ -52,7 +57,7 @@ const ShapesFilesGenericMeta = {
 			const value = rows.find(r => !!r[accessorKey])?.[accessorKey];
 
 			let filter = false;
-			let isSearchField = false;
+			let isSearchField = true;
 			let enableSorting = true;
 			let enableHiding = false;
 			let enableColumnFilter = true;

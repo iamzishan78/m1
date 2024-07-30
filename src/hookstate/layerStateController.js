@@ -543,6 +543,12 @@ const layerStateControllerHandler = state => {
 			map.setLayoutProperty(meta?.id, "visibility", visible ? "visible" : "none");
 	}
 
+	const toggleLayersActivity = (identifier, value) => {
+		let layers = globalStateController.getValue('layers');
+		const layer = layers.find((layer) => layer.identifier.startsWith(identifier))
+		layerController.handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, visiable: value } })
+	}
+
 	const handleDeckLayer = dbLayer => {
 		const client = layerController.getValue('client');
 		if (!client) return;
@@ -646,7 +652,7 @@ const layerStateControllerHandler = state => {
 			boundingState,
 			geoField: meta.geoField,
 			polygonFilter,
-			filters: isFileLayer ? generateFileFilters(dbLayer, filters) : filters,
+			filters: isFileLayer ? generateFileFilters({ fileLayer: dbLayer, extendFilters: filters }) : filters,
 			onData: data => {
 				if (!Array.isArray(data) || data.length === 0) return;
 				if (filters?.allowedTypes?.length > 0) {
@@ -671,6 +677,12 @@ const layerStateControllerHandler = state => {
 			layerController.updateState({ client, history });
 		},
 		resetBounds: identifier => {
+			if (identifier === 'Agreements') {
+				['Deeds', 'Leases', 'Contracts', 'Surfaces'].forEach((type) => {
+					layerController.resetBounds(type);
+				})
+				return
+			}
 			const { boundingStates } = state.get({
 				noproxy: true,
 			});
@@ -693,6 +705,7 @@ const layerStateControllerHandler = state => {
 		handleDeckLayer,
 		handleMapBoxLayer,
 		removeLayers,
+		toggleLayersActivity,
 		handleChange: () => {
 			const showableLayers = getShowableLayers();
 			showableLayers.forEach(dbLayer => {

@@ -182,6 +182,14 @@ const UnitMeta = {
 		},
 
 		{
+			// Total unit NRA column
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.netRoyalityAcres.unitNra.keyword',
+			accessorFn: row => vf_number(row?.shapeJson?.properties?.netRoyalityAcres?.unitNra),
+			header: 'Total Unit NRA'
+		},
+
+		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uStatus.keyword',
 			accessorFn: row => row?.shapeJson?.properties?.uStatus,

@@ -121,11 +121,11 @@ export const handleMRTSchema = ({
 
       schemaColumn.MultiSelect = function Comp({ column }) {
         const getValue = () => {
-            const selectedValues = column?.getFilterValue() || [];
-            const selectedLabels = column.columnDef.filterSelectOptions
-              .filter(option => selectedValues.includes(option.value))
-              .map(option => option.label);
-              return selectedLabels
+          const selectedValues = column?.getFilterValue() || [];
+          const selectedLabels = column.columnDef.filterSelectOptions
+            .filter(option => selectedValues.includes(option.value))
+            .map(option => option.label);
+          return selectedLabels
         }
         return (
           <div>
@@ -195,7 +195,7 @@ export const handleMRTSchema = ({
     ? search?.fields
     : _TableSchema
       .filter(column => column.isSearchField !== false)
-      .map(column => column.id || column.accessorKey);
+      .map(column => column.name || column.id || column.accessorKey);
 
   const ExternalFilter = _TableSchema
     .filter(column => column.isExternalFilter === true)

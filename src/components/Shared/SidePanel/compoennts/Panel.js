@@ -14,11 +14,6 @@ import Button from "@material-ui/core/Button";
 import { AppContext } from "../../../../AppContext";
 import List from "@material-ui/core/List";
 import LayersIcon from "@material-ui/icons/Layers";
-import MapDarkIcon from "../../pngImages/Dark.jpg";
-import MapOutdoorIcon from "../../pngImages/Outdoors.jpg";
-import MapSatelliteIcon from "../../pngImages/Satellite.jpg";
-import MapLightIcon from "../../pngImages/Light.jpg";
-import MapBasicIcon from "../../pngImages/Basic.jpg";
 import Collapse from "@material-ui/core/Collapse";
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
@@ -92,11 +87,11 @@ const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle
           >
             <Grid container alignContent="center" alignItems="center">
               <Grid item>
-                {style.name === "Outdoors" && <Box component="img" src={MapOutdoorIcon} />}
-                {style.name === "Satellite" && <Box component="img" src={MapSatelliteIcon} />}
-                {style.name === "Light" && <Box component="img" src={MapLightIcon} />}
-                {style.name === "Dark" && <Box component="img" src={MapDarkIcon} />}
-                {style.name === "Basic" && <Box component="img" src={MapBasicIcon} />}
+                {style.name === "Outdoors" && <Box component="img" src={'./icons/MapOutdoorIcon.jpeg'} />}
+                {style.name === "Satellite" && <Box component="img" src={'./icons/MapSatelliteIcon.jpeg'} />}
+                {style.name === "Light" && <Box component="img" src={'./icons/MapLightIcon.jpeg'} />}
+                {style.name === "Dark" && <Box component="img" src={'./icons/MapDarkIcon.jpeg'} />}
+                {style.name === "Basic" && <Box component="img" src={'./icons/MapBasicIcon.jpeg'} />}
               </Grid>
 
               <Grid item>
@@ -498,7 +493,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
         </StyledMenu>
         <StyledSecondaryMenu />
         <div className={classes.pulloutBox} onClick={() => togglePullout()}>
-          {mapControlsStateValues.expandedPanel ? <ArrowBackIosIcon id="arrowBackIcon" /> : <ArrowForwardIosIcon />}
+          {mapControlsStateValues.expandedPanel ? <ArrowBackIosIcon id="arrowBackIcon" /> : <ArrowForwardIosIcon className="svgouter" />}
         </div>
       </div>
     </div>

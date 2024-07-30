@@ -16,7 +16,6 @@ import { currentUserGridViewSettingsAction } from "store/actions/sessionActions"
 import { saveUserSession } from "utils/user";
 import Api from "api";
 
-import rock from "../../rock.png";
 import BypassSignInCard from "./BypassSignInCard";
 import { BYPASS_LOGIN_MUTATION } from "graphQL/useMutationBypassLogin";
 import { apolloClientEndpointDev, isDev } from "utils/helper";
@@ -669,12 +668,12 @@ const Login = (props) => {
   ) : (
     <div
       className={width > 2050 ? `${localClass.height_100} ${localClass.myRoot}` : localClass.myRoot}
-      style={{ backgroundImage: `url(${rock})` }}
+      style={{ backgroundImage: `url(/icons/rock.jpg)` }}
     >
       <div
         className={localClass.rootNewUser}
         style={{
-          backgroundImage: `url(${rock})`,
+          backgroundImage: `url(/icons/rock.jpg)`,
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",

@@ -1,8 +1,9 @@
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import IsContactCell from '../TablesOverride/TaxOwnerTable/TableCells/IsContactCell';
-import WellFlyToMap from '../TablesOverride/TaxOwnerTable/TableCells/wells_coordinates_fly_map';
+import WellFlyToMap, { useTaxOwnerWellFlyto } from '../TablesOverride/TaxOwnerTable/TableCells/wells_coordinates_fly_map';
 import { tableController } from 'hookstate/tableController';
+import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 
 const esIndex = 'platformData:globalowner';
 
@@ -31,6 +32,19 @@ const TaxOwnerMeta = {
             accessorKey: 'ownerName',
             header: "Name",
             getFilterByServerSide: true,
+            Cell: ({ renderedCellValue, row }) => {
+                const { handleFlyto } = useTaxOwnerWellFlyto()
+                const id = row.getValue('id');
+                console.log(row?.original?.wellCount)
+                return row?.original?.wellCount ? <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                    }}
+                >
+                    <ColumnWithLink value={renderedCellValue} onClick={() => handleFlyto(id)} />
+                </div> : <>{renderedCellValue}</>
+            },
         },
         {
             ...CommonSchema.COMMON_COLUMN,
