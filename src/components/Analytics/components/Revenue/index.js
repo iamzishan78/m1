@@ -457,9 +457,9 @@ export default function RevenueAnalytics(props) {
           ) : (
             <>
               <AnalyticsCards
-                esFilters={tableController(TableKey)?.getExternalFilter()}
+                esFilters={tableController("ComparisonTable")?.getExternalFilter()}
                 setESFilters={setESFilters}
-                esIndex={TableKey}
+                esIndex={"ComparisonTable"}
               />
               <div className={classes.revenueTableInfContainer}>
                 <Box sx={{ padding: '1em', marginLeft: '1em' }}>
