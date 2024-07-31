@@ -117,7 +117,7 @@ function WellMasterTable(props) {
           }}
           parent={props.parent}
           setColumnsBase={[]}
-          {...props.esHocProps}
+          {...props.esHocProps} // allow table to load more data on scrolling
           setRefetchData={setRefetchData}
           refetchData={refetchData}
         />
