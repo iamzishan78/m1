@@ -19,7 +19,7 @@ const ProductionDetailsHeaders = [
       label: "Date",
       editable: false,
       options: {
-        filter: false,
+        filter: true,
         sort: true,
         // sort: false,
         searchable: false,
@@ -34,7 +34,7 @@ const ProductionDetailsHeaders = [
       label: "Oil (BBL)",
       editable: false,
       options: {
-        filter: false,
+        filter: true,
         sort: true,
         // sort: false,
         searchable: false,
@@ -49,7 +49,7 @@ const ProductionDetailsHeaders = [
       label: "Gas (MCF)",
       editable: false,
       options: {
-        filter: false,
+        filter: true,
         sort: true,
         // sort: false,
         searchable: false,
@@ -64,7 +64,7 @@ const ProductionDetailsHeaders = [
       label: "H2O (BBL)",
       editable: false,
       options: {
-        filter: false,
+        filter: true,
         sort: true,
         // sort: false,
         searchable: false,
@@ -79,7 +79,7 @@ const ProductionDetailsHeaders = [
       label: "Allocated Oil (BBL)",
       editable: false,
       options: {
-        filter: false,
+        filter: true,
         sort: true,
         // sort: false,
         searchable: false,
@@ -94,7 +94,7 @@ const ProductionDetailsHeaders = [
       label: "Allocated Gas (MCF)",
       editable: false,
       options: {
-        filter: false,
+        filter: true,
         sort: true,
         // sort: false,
         searchable: false,
@@ -109,7 +109,7 @@ const ProductionDetailsHeaders = [
       label: "Allocated Water (BBL)",
       editable: false,
       options: {
-        filter: false,
+        filter: true,
         sort: true,
         // sort: false,
         searchable: false,
