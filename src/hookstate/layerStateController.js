@@ -570,8 +570,8 @@ const layerStateControllerHandler = state => {
 		const isAgreementLayer = agreementLayerIdentifiers.includes(dbLayer.identifier);
 		const filterIdentifier = isAgreementLayer ? 'Agreements' : isFileLayer ? dbLayer.layerShapeName : dbLayer.identifier;
 
-		let { [filterIdentifier]: filters, polygonFilter } = layerFiltersController.getValues(
-			[filterIdentifier, 'polygonFilter']
+		let { [filterIdentifier]: filters, polygonFilter, polygonsFilter } = layerFiltersController.getValues(
+			[filterIdentifier, 'polygonFilter', 'polygonsFilter']
 		);
 
 		const boundingState = handleBounds(
@@ -593,6 +593,7 @@ const layerStateControllerHandler = state => {
 		let updatedProps = {
 			pickable,
 			visible,
+			showable: dbLayer.layerSettings.showable
 		};
 
 		const labelProps =
@@ -652,6 +653,7 @@ const layerStateControllerHandler = state => {
 			boundingState,
 			geoField: meta.geoField,
 			polygonFilter,
+			polygonsFilter,
 			filters: isFileLayer ? generateFileFilters({ fileLayer: dbLayer, extendFilters: filters }) : filters,
 			onData: data => {
 				if (!Array.isArray(data) || data.length === 0) return;

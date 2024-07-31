@@ -410,7 +410,7 @@ function MapGridCard(props) {
                             <ListItemIcon>
                               <Icon />
                             </ListItemIcon>
-                            <ListItemText primary={row.label} />
+                            <ListItemText primary={row.gridLabel || row.label} />
                           </ListItem>
                         </FeatureFlag>
                       )
