@@ -302,9 +302,7 @@ export default function RevenueAnalytics(props) {
 
   const setESFilters = useCallback(newFilter => {
     if (newFilter.length === 0) {
-      let externalFilters = tableController(TableKey).getExternalFilter()
-      externalFilters[externalFilters.length] = { field: 'isMisMatchedInterest', value: true, type: 'term' }
-      tableController(TableKey).clearFilter(externalFilters[0]?.field);
+      tableController(TableKey).clearFilters(); // clear filter from the table state
     } else {
       tableController(TableKey).clearFilters(); // clear filter from the table state
       newFilter.forEach(filter => {

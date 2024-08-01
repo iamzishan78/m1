@@ -109,8 +109,22 @@ const LastCheckDateFilter = ({
         },
         type: "range",
       });
+    const updatedPropertyFilter = propertyFilter.map((filter) => {
+      if (filter.field.includes("wells")) {
+        // Remove the 'property.' prefix and start from 'wells'
+        return {
+          ...filter,
+          field: filter.field.replace('property.', '')
+        };
+      } 
+      // Return the filter unchanged if 'wells' is not in the field
+        return {
+          ...filter, 
+          field: stateESKey + filter.field 
+        }
+    });
 
-    if (propertyFilter[0]) filters.push({ ...propertyFilter[0], field: stateESKey + propertyFilter[0].field });
+    filters = [...filters, ...updatedPropertyFilter];
 
     if (status !== "ALL") {
       filters.push({
