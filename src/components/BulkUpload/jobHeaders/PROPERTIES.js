@@ -177,13 +177,13 @@ export default [
     {
         label: "Payor Prop #",
         mapped_key: "",
-        required: true,
+        required: false,
         actual_key: "property.purchaserNumber",
     },
     {
         label: "Payor",
         mapped_key: "",
-        required: true,
+        required: false,
         actual_key: "property.purchaser.name",
     },
     {
