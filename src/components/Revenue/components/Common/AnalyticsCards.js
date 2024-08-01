@@ -171,7 +171,7 @@ export default function AnalyticsCards({
 
   const getInPayCount = buckets => {
     const activeBucket = buckets.filter(
-      (item) => ["in pay", "inpay"].includes(item.key.toLowerCase()) && item
+      (item) => item.key.toLowerCase() === "inpay" && item
     );
     return activeBucket && activeBucket?.length > 0
       ? _.sumBy(activeBucket, "doc_count")
