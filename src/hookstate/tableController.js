@@ -75,6 +75,7 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 			size: 350,
 			inputType: item?.type,
 			dbKey: item?.name,
+			isSearchField: !item.type === 'date',
 			Cell: ({ row }) => {
 				const value = _.get(row?.original, `custom_data.${item?.name}`)
 
@@ -387,12 +388,9 @@ const tableESStateControllerHandler = state => ({
 
 	setFilter: filter => {
 		const TableSchema = state.TableSchema.get({ noproxy: true }) || []
-		console.log('TableSchema', TableSchema)
 		const column = TableSchema?.find(
 			column => column.id === filter.field || column.accessorKey === filter.field
 		);
-
-		console.log('column', column)
 
 		if (column?.type === 'date') {
 			if (filter.type !== 'advanced') {

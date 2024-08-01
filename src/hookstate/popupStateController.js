@@ -1,32 +1,16 @@
-import { hookstate, useHookstate } from '@hookstate/core';
 import mapboxgl from 'mapbox-gl';
-import { copy } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
 import { findBoundsMap } from 'components/MapControls/commonHelper';
+import {
+	drawBoundary,
+	drawWellBoundary,
+} from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+import { layerController } from './layerStateController';
+import { popupInitialState, popupState } from './initialStates';
 
-const initialState = {
-	popupOpen: false,
-	expandedCard: false,
-	layerSelectionPopup: false,
-	parcelDetailCardTabIndex: 0,
-	selectedUserDefinedLayer: null,
-	selectedShape: null,
-	selectedShapeFile: null,
-	selectedParcel: null,
-	selectedWell: null,
-	selectedWellId: null,
-	wellSelectedCoordinates: null,
-	selectedPermitId: null,
-	permitSelectedCoordinates: null,
-	selectionLayers: [],
-};
-
-export const popupState = hookstate(copy(initialState));
-export const usePopoupState = () => useHookstate(popupState);
-
-const popupStateControllerHandler = () => ({
+const popupStateControllerHandler = state => ({
 	createPopUp: (currentFeature, paramId) => {
-		if (!window.mapRef) return;
+		if (!window.mapRef || !currentFeature?.longitude || !currentFeature?.latitude) return;
 
 		const coordinates = [currentFeature.longitude, currentFeature.latitude];
 
@@ -64,9 +48,13 @@ const popupStateControllerHandler = () => ({
 				.setHTML(`<div id="popupContainer"></div>`)
 				.addTo(window.mapRef);
 	},
-	fitParcelBounds: () => findBoundsMap([popupState?.selectedParcel?.get({ noproxy: true })?.feature], window.mapRef),
-	fitWellBounds: () => {
-		const selectedWell = popupState?.selectedWell?.get({ noproxy: true });
+	fitParcelBounds: () =>
+		findBoundsMap(
+			[popupState?.selectedParcel?.get({ noproxy: true })?.feature],
+			window.mapRef
+		),
+	fitWellBounds: (wellFeature) => {
+		const selectedWell = wellFeature || popupState?.selectedWell?.get({ noproxy: true });
 
 		// mathematical formula for screen fit
 		const alpha = 0.01;
@@ -86,9 +74,15 @@ const popupStateControllerHandler = () => ({
 			}
 		}
 	},
+	reset: () => {
+		state.set({ ...popupInitialState });
+		drawBoundary();
+		drawWellBoundary();
+		layerController.updateState({ clickedFeature: null })
+	}, // reset whole state back to initial state
 });
 
 export const popupController = {
+	...hookStateController(popupState, popupInitialState),
 	...popupStateControllerHandler(popupState),
-	...hookStateController(popupState, initialState),
 };

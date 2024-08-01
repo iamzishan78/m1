@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -6,10 +6,10 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 // import TableHead from '@material-ui/core/TableHead';
 import TableRow from "@material-ui/core/TableRow";
-import { AppContext } from "../../../AppContext";
 import { Typography } from "@material-ui/core";
 import { useQueryWellStimulation } from "../../../graphQL/useQueryWellCompletionsAndStimulation";
 import moment from 'moment';
+import { popupController } from "hookstate/popupStateController";
 
 const useStyles = makeStyles({
   table: {
@@ -36,46 +36,48 @@ const useStyles = makeStyles({
       border: "2px solid #e3e3e3",
     },
   },
-  tableSize:{
-    height:'calc(100vh - 50vh) !important'
+  tableSize: {
+    height: 'calc(100vh - 50vh) !important'
   },
-  tableSize2:{
-    height:'calc(100vh - 50vh + 482px) !important'
+  tableSize2: {
+    height: 'calc(100vh - 50vh + 482px) !important'
   }
 });
 
 const headers = [
-    "STIMULATION DATE" , 
-    "START DATE",
-    "END DATE",
-    "SERVICE COMPANY",
-    "STAGES",
-    "TOTAL BASE H2O(GAL)",
-    "TOTAL BASE NON H2O(GAL)",
-    "TOTAL FRAC FLUID VOLUME",
-    "TOTAL BASE H2O MASS(LBS)",
-    "TOTAL PROPPANT MASS(LBS)",
-    "TOTAL FRAC FLUID MASS",
-    "FLUID TYPE",
-    "PRIMARY PROPPANT",
-    "CROSSLINK FLUID",
-    "SURFACTANT",
-    "CLAY CONTROL AGENT",
-    "ACID TYPE",
-    "ACID VOLUME",
-    "COMMENTS"
+  "STIMULATION DATE",
+  "START DATE",
+  "END DATE",
+  "SERVICE COMPANY",
+  "STAGES",
+  "TOTAL BASE H2O(GAL)",
+  "TOTAL BASE NON H2O(GAL)",
+  "TOTAL FRAC FLUID VOLUME",
+  "TOTAL BASE H2O MASS(LBS)",
+  "TOTAL PROPPANT MASS(LBS)",
+  "TOTAL FRAC FLUID MASS",
+  "FLUID TYPE",
+  "PRIMARY PROPPANT",
+  "CROSSLINK FLUID",
+  "SURFACTANT",
+  "CLAY CONTROL AGENT",
+  "ACID TYPE",
+  "ACID VOLUME",
+  "COMMENTS"
 ];
 
 export default function Simulation(props) {
   const classes = useStyles();
-  const [stateApp] = useContext(AppContext);
-  const { data, } = useQueryWellStimulation(stateApp.selectedWell.id);
+
+  const { stateValues } = popupController.useState(['selectedWell'])
+
+  const { data, } = useQueryWellStimulation(stateValues.selectedWell.id);
 
   const [stimulationData, setStimulationData] = useState(null);
 
   useEffect(() => {
 
-    if (typeof data !== "undefined" && typeof data.wellStimulation !== "undefined" ) {
+    if (typeof data !== "undefined" && typeof data.wellStimulation !== "undefined") {
       setStimulationData(data.wellStimulation);
     }
   }, [data]);
@@ -89,17 +91,17 @@ export default function Simulation(props) {
 
   return (
     <TableContainer className={classes.tableContainer}>
-    {stimulationData !== null ? (
-      <div className={props.showSummary? classes.tableSize:classes.tableSize2}>
-      <Table
-        aria-label="simple table"
-        className={classes.table}
-      >
-        <TableBody>
-          <TableRow className={classes.tableRow}>
-              {headers.map((head) => {
+      {stimulationData !== null ? (
+        <div className={props.showSummary ? classes.tableSize : classes.tableSize2}>
+          <Table
+            aria-label="simple table"
+            className={classes.table}
+          >
+            <TableBody>
+              <TableRow className={classes.tableRow}>
+                {headers.map((head) => {
                   return (
-                      head !== "COMMENTS" ?
+                    head !== "COMMENTS" ?
                       <TableCell key={head} scope="row" className={classes.rowName}>
                         {head}
                       </TableCell> :
@@ -107,82 +109,82 @@ export default function Simulation(props) {
                         {head}
                       </TableCell>
                   );
-              })
-          }     
-          </TableRow>
-          { stimulationData !== null && stimulationData.length > 0 && 
-          stimulationData.map((row, index) => (
-                      <TableRow key={index}>
-                        <TableCell>
-                          {moment(row.StimDate).format("MM-DD-YYYY")}
-                        </TableCell>
-                        <TableCell>
-                          {moment(row.StartDate).format("MM-DD-YYYY")}
-                        </TableCell>
-                        <TableCell>
-                          {moment(row.EndDate).format("MM-DD-YYYY")}
-                        </TableCell>
-                        <TableCell>
-                          {row.ServiceCompany}
-                        </TableCell>
-                        <TableCell>
-                          {row.NumberOfStages}
-                        </TableCell>
-                        <TableCell>
-                          {formatValue(row.TotalBaseWaterVolumeGallons)}
-                        </TableCell>
-                        <TableCell>
-                          {formatValue(row.TotalBaseNonWaterVolumeGallons)}
-                        </TableCell>
-                        <TableCell>
-                          {formatValue(row.TotalFracFluidVolume)}
-                        </TableCell>
-                        <TableCell>
-                          {formatValue(row.TotalBaseWaterMass)}
-                        </TableCell>
-                        <TableCell>
-                          {formatValue(row.TotalProppantMass)}
-                        </TableCell>
-                        <TableCell>
-                          {formatValue(row.TotalFracFluidMass)}
-                        </TableCell>
-                        <TableCell>
-                          {row.FluidType}
-                        </TableCell>
-                        <TableCell>
-                          {row.PrimaryProppantMaterial}
-                        </TableCell>
-                        <TableCell>
-                          {row.CrosslinkFluid}
-                        </TableCell>
-                        <TableCell>
-                          {row.Surfactant}
-                        </TableCell>
-                        <TableCell>
-                          {row.ClayControlAgent}
-                        </TableCell>
-                        <TableCell>
-                          {row.AcidType}
-                        </TableCell>
-                        <TableCell>
-                          {formatValue(row.AcidVolume)}
-                        </TableCell>
-                        <TableCell>
-                          {row.Comments}
-                        </TableCell>
-                      </TableRow>
-               ))
-          }     
-        </TableBody>
-      </Table>
-      <Typography color="textSecondary" align="center"> 
-      {stimulationData !== null && stimulationData.length === 0 ?
-        "No Stimulation records available" : ""
+                })
+                }
+              </TableRow>
+              {stimulationData !== null && stimulationData.length > 0 &&
+                stimulationData.map((row, index) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      {moment(row.StimDate).format("MM-DD-YYYY")}
+                    </TableCell>
+                    <TableCell>
+                      {moment(row.StartDate).format("MM-DD-YYYY")}
+                    </TableCell>
+                    <TableCell>
+                      {moment(row.EndDate).format("MM-DD-YYYY")}
+                    </TableCell>
+                    <TableCell>
+                      {row.ServiceCompany}
+                    </TableCell>
+                    <TableCell>
+                      {row.NumberOfStages}
+                    </TableCell>
+                    <TableCell>
+                      {formatValue(row.TotalBaseWaterVolumeGallons)}
+                    </TableCell>
+                    <TableCell>
+                      {formatValue(row.TotalBaseNonWaterVolumeGallons)}
+                    </TableCell>
+                    <TableCell>
+                      {formatValue(row.TotalFracFluidVolume)}
+                    </TableCell>
+                    <TableCell>
+                      {formatValue(row.TotalBaseWaterMass)}
+                    </TableCell>
+                    <TableCell>
+                      {formatValue(row.TotalProppantMass)}
+                    </TableCell>
+                    <TableCell>
+                      {formatValue(row.TotalFracFluidMass)}
+                    </TableCell>
+                    <TableCell>
+                      {row.FluidType}
+                    </TableCell>
+                    <TableCell>
+                      {row.PrimaryProppantMaterial}
+                    </TableCell>
+                    <TableCell>
+                      {row.CrosslinkFluid}
+                    </TableCell>
+                    <TableCell>
+                      {row.Surfactant}
+                    </TableCell>
+                    <TableCell>
+                      {row.ClayControlAgent}
+                    </TableCell>
+                    <TableCell>
+                      {row.AcidType}
+                    </TableCell>
+                    <TableCell>
+                      {formatValue(row.AcidVolume)}
+                    </TableCell>
+                    <TableCell>
+                      {row.Comments}
+                    </TableCell>
+                  </TableRow>
+                ))
+              }
+            </TableBody>
+          </Table>
+          <Typography color="textSecondary" align="center">
+            {stimulationData !== null && stimulationData.length === 0 ?
+              "No Stimulation records available" : ""
+            }
+          </Typography>
+        </div>
+      ) : <Typography align="center">Loading...</Typography>
       }
-      </Typography>
-    </div>
-    ) : <Typography align="center">Loading...</Typography>
-  }
-  </TableContainer>
+    </TableContainer>
   );
 }

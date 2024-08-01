@@ -320,11 +320,6 @@ export default function SpatialDataCard(props) {
               <MenuItem value="parcel">Parcel</MenuItem>
               <MenuItem value="unit">Unit</MenuItem>
               <MenuItem value="agreement">Agreement</MenuItem>
-              {/* {stateApp.currentFeature &&
-                stateApp.currentFeature.geometry.type === "Polygon" &&
-                !stateApp.currentFeature.properties.isCircle && (
-                  <MenuItem value="title">Title Opinion</MenuItem>
-                )} */}
             </Select>
           </FormControl>
         </div>

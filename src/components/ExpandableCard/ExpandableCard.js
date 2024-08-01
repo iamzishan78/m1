@@ -51,7 +51,10 @@ import { TRACKBYOBJECTID } from "../../graphQL/useQueryTrackByObjectId";
 import { AppContext } from "../../AppContext";
 import { ExpandableCardContext } from "./ExpandableCardContext";
 import { showInfoMessage } from "actions";
-import { copy } from "utils/helper";
+import { popupController } from "hookstate/popupStateController";
+import { drawController } from "hookstate/drawStateController";
+import { layerRefs } from "hookstate";
+import { globalStateController } from "hookstate/globalStateController";
 
 function ExpandableCard(props) {
   // initials
@@ -89,6 +92,10 @@ function ExpandableCard(props) {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [anchorEl, setAnchorEl] = useState();
 
+  const {
+    stateValues: { selectedShape, selectedParcel, selectedWell },
+  } = popupController.useState(['selectedShape', 'selectedParcel', 'selectedWell']);
+
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -121,7 +128,7 @@ function ExpandableCard(props) {
   const [trackByObjectId, { data: dataTrack }] = useLazyQuery(TRACKBYOBJECTID);
 
   const { backgroundColor, headerIcons, icons, headerLabelColor } = modifyExandableCardStyle(
-    stateApp.selectedShape || stateApp.selectedParcel
+    selectedShape || selectedParcel
   );
 
   const useStyles = makeStyles((theme) => ({
@@ -345,24 +352,23 @@ function ExpandableCard(props) {
     setHeight(cardHeightExpanded);
 
     if (props.targetLabel === "well" || props.targetLabel === "expandedWell") {
-      const newPath = `/map/wells/${stateApp.selectedWell.id}`;
+      const newPath = `/map/wells/${selectedWell.id}`;
       history.location.pathname !== newPath &&
-        history.replace({ path: newPath, search: window.location?.search }, { ...history.location.state });
-      setStateApp((state) => ({
-        ...state,
-        wellDetailCardOpen: true,
+        history.replace({ pathname: newPath, search: window.location?.search }, { ...history.location.state });
+      popupController.updateState({
         popupOpen: false,
-      }));
+        expandedCard: true,
+      });
+      popupController.fitWellBounds();
     } else if (props.targetLabel === "parcel" || props.targetLabel === "expandedParcel") {
-      setStateApp((state) => ({
-        ...state,
-        parcelDetailCardOpen: true,
+      popupController.updateState({
         popupOpen: false,
-      }));
-      const newPath = `/map/parcels/${stateApp.selectedParcel?.id}`;
+        expandedCard: true,
+      });
+      popupController.fitParcelBounds();
+      const newPath = `/map/parcels/${selectedParcel?.id}`;
       history.location.pathname !== newPath && history.replace(newPath);
     }
-    setStateApp((state) => ({ ...state, expandedCard: true }));
     setStateExpandableCard((state) => ({ ...state, expanded: true }));
   };
 
@@ -372,24 +378,26 @@ function ExpandableCard(props) {
     setCardTop(mouseY);
     setCardLeft(mouseX);
     setStateExpandableCard((state) => ({ ...state, expanded: false }));
-    setStateApp((state) => ({ ...state, expandedCard: false }));
     setWidth(cardWidth);
     setHeight(cardHeight);
-
-    // {showExpandableCard && !stateApp.expandedCard ? (
+    popupController.updateState({
+      expandedCard: false,
+    });
   };
 
-  const handleClose = () => {
+  const handleClose = (reset) => {
     if (parent === "map") {
-      if (stateApp?.selectedShape?.type === "agreement" && !stateApp?.selectedShape?.feature?.properties?.agreementNumber) {
-        dispatch(showInfoMessage("Agreement Number is required"));
-        return;
+      if (selectedShape?.type === "agreement" && !selectedShape?.feature?.properties?.agreementNumber) {
+        if (globalStateController.getValue('testCase') !== 'AgreementDraw') {
+          dispatch(showInfoMessage("Agreement Number is required"));
+          return;
+        }
       }
-      else if (stateApp?.selectedShape?.type === "unit" && !stateApp?.selectedShape?.feature?.properties?.uName) {
+      else if (selectedShape?.type === "unit" && !selectedShape?.feature?.properties?.uName) {
         dispatch(showInfoMessage("Unit Name is required"));
         return;
       }
-      else if (stateApp?.selectedParcel && !stateApp?.selectedParcel?.feature?.properties?.shapeLabel) {
+      else if (selectedParcel && !selectedParcel?.feature?.properties?.shapeLabel) {
         dispatch(showInfoMessage("Tract Name is required"));
         return;
       }
@@ -399,18 +407,13 @@ function ExpandableCard(props) {
         if (popUps[0]) popUps[0].remove();
       }
 
-      setStateApp((state) => ({
+      if (reset !== 'noreset') popupController.reset();
+
+      setStateApp(state => ({
         ...state,
-        popupOpen: false,
-        selectedWell: null,
-        selectedParcel: null,
-        selectedShape: null,
-        selectedPermit: null,
-        expandedCard: false,
         viewDoc: null,
         rotateableFeature: null,
       }));
-      // stateApp.selectedParcel?.id && history.replace({ pathname: '/' })
       history.replace({ pathname: "/" });
     }
     handleCloseExpandableCard();
@@ -419,10 +422,9 @@ function ExpandableCard(props) {
 
   const setDefaulTab = () => {
     if (props.targetLabel === "parcel") {
-      setStateApp((state) => ({
-        ...state,
+      popupController.updateState({
         parcelDetailCardTabIndex: 0,
-      }));
+      });
     }
   };
 
@@ -440,7 +442,7 @@ function ExpandableCard(props) {
           marginRight: "48px",
         }}
       >
-        {stateApp.selectedShape ? (
+        {selectedShape ? (
           <Grid container spacing={2} alignItems="center" className={classes.unitTitle} >
             <Grid item>
               <Avatar color="#1a2341">
@@ -450,9 +452,9 @@ function ExpandableCard(props) {
             <Grid item>
               <Box className="name">{title.length > 70 ? `${title.substr(0, 75).toUpperCase()}...` : title.toUpperCase()}</Box>
               <Box className="description">{subTitle}</Box>
-              {stateApp.selectedShape.type === "unit" && <Box className="type">Unit</Box>}
-              {stateApp.selectedShape.type === "agreement" && (
-                <Box className="type">{agreementTypes.find((at) => at.value === stateApp.selectedShape?.agreementType)?.label || ""}</Box>
+              {selectedShape.type === "unit" && <Box className="type">Unit</Box>}
+              {selectedShape.type === "agreement" && (
+                <Box className="type">{agreementTypes.find((at) => at.value === selectedShape?.agreementType)?.label || ""}</Box>
               )}
             </Grid>
           </Grid>
@@ -501,24 +503,28 @@ function ExpandableCard(props) {
   };
 
   const deleteFunc = async () => {
-    if (targetLabel === "parcel" || stateApp.selectedShape || targetLabel === "expandedParcel") {
+    if (targetLabel === "parcel" || selectedShape || targetLabel === "expandedParcel") {
       setDeleteLoading(true);
-      await deleteCustomLayer();
+      const layer = targetLabel === "parcel" ? { layerType: targetLabel } : selectedShape;
+      await deleteCustomLayer(layer);
       setDeleteLoading(false);
 
       // For clearing out selected abstract land grids
-      const { map } = stateApp;
       let popUps = document.getElementsByClassName("mapboxgl-popup");
       if (popUps[0]) popUps[0].remove();
 
-      for (let i = 0; i < stateApp.selectedAbstracts.length; i++) {
-        const id = stateApp.selectedAbstracts[i].properties.Id;
-        map.setFeatureState({ source: "abstract_geo_source", id }, { click: false });
+      const selectedAbstracts = drawController.getValue('selectedAbstracts');
+
+      for (let i = 0; i < selectedAbstracts.length; i++) {
+        const id = selectedAbstracts[i].properties.Id;
+        const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
+        if (sourceId)
+          window.mapRef?.setFeatureState({ source: sourceId, id }, { click: false });
       }
-      setStateApp((state) => ({
-        ...state,
+
+      drawController.updateState({
         selectedAbstracts: [],
-      }));
+      });
     } else if (targetLabel === "activity") {
       setDeleteLoading(true);
       await deleteActivity();
@@ -526,8 +532,8 @@ function ExpandableCard(props) {
     }
   };
 
-  const deleteCustomLayer = async () => {
-    await props.deleteCustomLayer(targetSourceId);
+  const deleteCustomLayer = async (layer) => {
+    await props.deleteCustomLayer(targetSourceId, layer);
     handleClose();
   };
 
@@ -536,34 +542,27 @@ function ExpandableCard(props) {
   };
 
   const handleEditParcelAndShape = () => {
-    setStateApp(state => {
-      const selectedFeature = state.selectedParcel?.feature || state.selectedShape?.feature;
+    handleClose('noreset');
 
-      let updatedFeature =
-        state.customLayers?.find?.(layer => layer?._id === selectedFeature?.id)
-          ?.shapeJson || selectedFeature;
-
-      if (updatedFeature) {
-        updatedFeature = copy({ ...selectedFeature, ...updatedFeature });
-        updatedFeature.id = selectedFeature.id;
-      }
-
-      return {
-        ...state,
-        popupOpen: false,
-        expandedCard: false,
-        showDrawShapesPopup: true,
-        selectedUserDefinedLayer: updatedFeature,
-        currentFeature: updatedFeature,
-        featureToEdit: updatedFeature,
-        shapeToExtend: updatedFeature,
-        openDrawShapesControl: true,
-        editParcelAndShape: true,
-        editDraw: true,
-        shapeEditMode: 'fullEdit',
-      };
+    drawController.updateState({
+      featureToEdit: selectedParcel?.feature || selectedShape?.feature,
+      currentFeature: selectedParcel?.feature || selectedShape?.feature,
+      shapeToExtend: selectedParcel?.feature || selectedShape?.feature,
+      showDrawShapesPopup: true,
+      showShapeActionsPopup: true,
+      editDraw: true,
+      shapeEditMode: 'fullEdit',
     });
-    handleClose();
+
+    popupController.setState({
+      // selectedUserDefinedLayer: selectedParcel?.feature || selectedShape?.feature,
+      popupOpen: false,
+      expandedCard: false,
+    });
+
+    setTimeout(() => {
+      drawController.actionEdit();
+    }, 10);
   };
 
   // BreadCrum for Document's well
@@ -579,12 +578,7 @@ function ExpandableCard(props) {
               className={classes.prevlocation}
               color="inherit"
               onClick={() => {
-                setStateApp({
-                  ...stateApp,
-                  selectedWell: null,
-                  selectedWellId: null,
-                  wellSelectedCoordinates: [],
-                });
+                popupController.reset();
                 history.push(history.location?.state?.link);
               }}
             >
@@ -628,7 +622,7 @@ function ExpandableCard(props) {
     );
   };
 
-  const subHeader = subTitle === ", " ? `${stateApp?.selectedShape?.state} - ${stateApp?.selectedShape?.county}` : (subTitle ? (subTitle.length > 35 ? `${subTitle.substr(0, 35)}...` : subTitle) : "");
+  const subHeader = subTitle === ", " ? `${selectedShape?.state} - ${selectedShape?.county}` : (subTitle ? (subTitle.length > 35 ? `${subTitle.substr(0, 35)}...` : subTitle) : "");
   return (
     <React.Fragment>
       {/* Dialog for deleting parcel  */}
@@ -694,8 +688,8 @@ function ExpandableCard(props) {
           classes={{ title: classes.title, subheader: classes.subheader }}
           action={
             <div className={classes.headerIcons}>
-              {(targetLabel === "parcel" || stateApp.selectedShape) && (
-                <Tooltip title={`Edit shape boundary`} placement="top">
+              {(targetLabel === "parcel" || selectedShape) && (
+                <Tooltip title={`Edit shape boundary`} data-testid='edit-shape-boundary' placement="top">
                   <IconButton
                     // size="small"
                     onClick={() => {
@@ -707,7 +701,7 @@ function ExpandableCard(props) {
                   </IconButton>
                 </Tooltip>
               )}
-              {targetLabel !== "activity" && targetLabel !== "contact" && targetLabel !== "parcel" && !stateApp?.selectedShape && (
+              {targetLabel !== "activity" && targetLabel !== "contact" && targetLabel !== "parcel" && !selectedShape && (
                 <CommentsWithIcon
                   objectId={targetSourceId.toLowerCase()}
                   targetLabel={props.targetLabel}
@@ -718,7 +712,7 @@ function ExpandableCard(props) {
               {targetLabel !== "activity" &&
                 targetLabel !== "contact" &&
                 targetLabel !== "parcel" &&
-                !stateApp?.selectedShape &&
+                !selectedShape &&
                 targetLabel !== "recent_submitted_permits" && (
                   <TaggerWithIcon
                     objectId={targetSourceId.toLowerCase()}
@@ -753,7 +747,7 @@ function ExpandableCard(props) {
                   targetLabel !== "well" &&
                   targetLabel !== "expandedWell" &&
                   targetLabel !== "parcel" &&
-                  !stateApp.selectedShape &&
+                  !selectedShape &&
                   targetLabel !== "expandedParcel" &&
                   targetLabel !== "recent_submitted_permits" ? (
                   <Tooltip title={"Shrink"} placement="top">
@@ -800,7 +794,7 @@ function ExpandableCard(props) {
                 )
               )}
               {stateExpandableCard.expanded &&
-                (["activity", "parcel", "expandedParcel"].includes(targetLabel) || stateApp.selectedShape) &&
+                (["activity", "parcel", "expandedParcel"].includes(targetLabel) || selectedShape) &&
                 title !== "Add Activity" && (
                   <Tooltip title={`Delete ${targetLabel}`} placement="top">
                     {isDeletingCustomLayer || deleteLoading ? (
@@ -821,7 +815,7 @@ function ExpandableCard(props) {
                               onClose={handleMenuClose}
                               className={classes.menu}
                             >
-                              <MenuItem onClick={openConfirmationDialog}>
+                              <MenuItem onClick={openConfirmationDialog} data-testid="delete-icon">
                                 <ListItemIcon>
                                   <DeleteIcon size="medium" />
                                 </ListItemIcon>

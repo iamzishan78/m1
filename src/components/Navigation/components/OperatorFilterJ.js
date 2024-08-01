@@ -1,23 +1,24 @@
-import React, { useState, useContext, useEffect } from "react";
-import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import { NavigationContext } from "../NavigationContext";
-import { useLazyQuery } from "@apollo/client";
-import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
-import { debounce } from "lodash";
+import React, { useState, useContext, useEffect } from 'react';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { useLazyQuery } from '@apollo/client';
+import { debounce } from 'lodash';
+
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { NavigationContext } from '../NavigationContext';
 
 export default function OperatorFilterJ() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [operatorName, setOperatorName] = React.useState(stateNav.operatorName);
   const [operatorList, setOperatorsList] = useState([]);
-  let [getFilters, { data: esOperatorsData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
-  const esIndex = "platformData:operator";
+  const [getFilters, { data: esOperatorsData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
+  const esIndex = 'platformData:operator';
   useEffect(() => {
     getFilters({
       variables: {
         esIndex,
-        filterKey: "operator.keyword",
-        search: "",
+        filterKey: 'operator.keyword',
+        search: '',
         size: 50,
       },
     });
@@ -25,31 +26,24 @@ export default function OperatorFilterJ() {
 
   useEffect(() => {
     if (esOperatorsData) {
-      const operatorList = esOperatorsData.getESFilterList?.hits?.map((item) => item.key);
+      const operatorList = esOperatorsData.getESFilterList?.hits?.map(item => item.key);
       setOperatorsList(operatorList);
     }
   }, [esOperatorsData]);
 
-  const handleOperatorChange = (value) => {
-    let filter;
-    if (value && value.length) {
-      filter = ["match", ["get", "operator"], value, true, false];
-      setStateNav((stateNav) => ({ ...stateNav, operatorName: value }));
-      setOperatorName(value);
-    } else {
-      filter = null;
-      setStateNav((stateNav) => ({ ...stateNav, operatorName: [] }));
-    }
-    setStateNav((stateNav) => ({ ...stateNav, filterOperator: filter }));
+  const handleOperatorChange = value => {
+    layerFiltersController.setWellsVariables('operator', value);
+
+    setStateNav(stateNav => ({ ...stateNav, operatorName: value || [] }));
   };
 
   const handleOperatorChangeByInput = React.useMemo(
     () =>
-      debounce((request, top, callback) => {
+      debounce(request => {
         getFilters({
           variables: {
             esIndex,
-            filterKey: "operator.keyword",
+            filterKey: 'operator.keyword',
             search: `${request}*`,
             size: 50,
           },
@@ -58,10 +52,9 @@ export default function OperatorFilterJ() {
     []
   );
 
-
   return (
     <Autocomplete
-      ChipProps={{ color: "secondary" }}
+      ChipProps={{ color: 'secondary' }}
       defaultValue={stateNav.operatorName}
       value={stateNav.operatorName}
       onChange={(event, newValue) => {
@@ -72,7 +65,7 @@ export default function OperatorFilterJ() {
         handleOperatorChangeByInput(newInputValue);
       }}
       options={operatorList}
-      renderInput={(params) => <TextField {...params} variant="outlined" label="Operator" placeholder="" fullWidth />}
+      renderInput={params => <TextField {...params} variant="outlined" label="Operator" placeholder="" fullWidth />}
       disableListWrap
       id="virtualize-operators"
     />

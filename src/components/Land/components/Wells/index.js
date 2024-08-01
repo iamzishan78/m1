@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
-import WellIcon from "components/Shared/svgIcons/well";
-import MyWellsGridTable from "components/Table/Wells/MyWellsGridTable";
 import WellsFilters from "components/Land/components/Wells/WellsFilters";
-import MyWellDialog from "components/Land/components/Wells/MyWellDialog";
+import MRTTable from "components/MRTTable";
+import { tableController, tableGlobalController } from "hookstate/tableController";
+import { AppContext } from "AppContext";
 import { globalStateController } from "hookstate/globalStateController";
 
 const useStyles = makeStyles((theme) => ({
@@ -22,68 +20,30 @@ function Wells({ defaultFilters = [] }) {
   const classes = useStyles();
   const { testCase, stateValues } = globalStateController.useState(['testCase']);
   const { id: globalWellId } = useParams();
+  const [stateApp] = useContext(AppContext);
+  const wellTableState = tableController("MyWellsTable").useState(["filters", "data"]).stateValues;
 
-  const [filters, setFilters] = useState(defaultFilters);
-  const [selectedWell, setSelectedWell] = useState();
-  const [showDialog, setDialog] = useState(false);
-  const loadMore = { type: "infiniteScroll", height: "calc(100vh - 166px)" };
   useEffect(() => {
-    if (globalWellId || (stateValues?.testCase?.globalWellId && stateValues?.testCase)) setDialog(true);
+    if (globalWellId || (stateValues?.testCase?.globalWellId && stateValues?.testCase)) {
+      tableGlobalController.updateState({
+        addWellDialog: {
+          type: "addWell",
+          showDialog: true
+        }
+      });
+    };
   }, [globalWellId, testCase?.globalWellId]);
 
-  const Header = () => {
-    return (
-      <div
-        style={{
-          width: "fit-content",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        <WellIcon opacity={1} />
-        <span
-          style={{
-            marginLeft: "10px",
-            fontSize: "16px",
-            fontWeight: "bold",
-          }}
-        >
-          Wells
-        </span>
-      </div>
-    );
-  };
-
-  const customToolbar = {
-    customToolbar: () => (
-      <div style={{ display: "inline", float: "left", marginRight: "15px", marginTop: "5px" }}>
-        <ButtonGroup variant="contained" color="primary" aria-label="split button">
-          <Button color="primary" className={classes.multiSelectionTopBarButtons} onClick={() => setDialog(true)}>
-            + Add Well
-          </Button>
-        </ButtonGroup>
-      </div>
-    ),
-  };
+  useEffect(() => {
+    tableController("MyWellsTable")?.setGlobalFilter(stateApp.landSearchQuery);
+  }, [stateApp.landSearchQuery]);
 
   return (
     <div className={classes.root}>
-      <WellsFilters filters={filters} setFilters={setFilters} />
-      <div className={classes.custom}>
-        <MyWellsGridTable
-          dense
-          filters={filters}
-          header={<Header />}
-          parent="WellsTable"
-          targetLabel="wells"
-          loadMore={loadMore}
-          showDialog={showDialog}
-          setDialog={setDialog}
-          // customOptions={customToolbar}
-          setSelectedWell={setSelectedWell}
-        />
+      <WellsFilters filters={wellTableState.filters} setFilters={tableController("MyWellsTable").setFilters} />
+      <div className={classes.custom} style={{ padding: '0rem 1.5rem 0rem 1.5rem' }}>
+        <MRTTable name="MyWellsTable" />
       </div>
-      {showDialog && <MyWellDialog selectedWell={selectedWell} setDialog={setDialog} />}
     </div>
   );
 }

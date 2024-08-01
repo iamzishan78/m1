@@ -1,6 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { MapControlsContext } from "../../MapControlsContext";
 import { AppContext } from "AppContext";
 import { Grid, Typography, Divider, Tooltip, Input } from "@material-ui/core";
 import { Close as CloseButton, Search as SearchIcon, Clear as ClearIcon } from "@material-ui/icons";
@@ -14,8 +13,8 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import { UPDATE_MANY_LAYER } from "graphQL/useMutationUpdateManyLayer";
 import SourceManager from "./SourceManager";
 import LayerManager from "./LayerManager";
-import { useHookstate } from '@hookstate/core';
-import { hookStateApp } from "hookstate";
+import { globalStateController } from "hookstate/globalStateController";
+import { mapControlsController } from "hookstate/mapControlsController";
 
 const useStyles = makeStyles((theme) => ({
     search: {
@@ -117,9 +116,8 @@ export default function SourceLayerManager(props) {
     const classes = useStyles();
     const [selectedType, setSelectedType] = useState('source');
 
-    const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
     const [stateApp] = useContext(AppContext);
-    const hookState = useHookstate(hookStateApp);
+    const { layers, stateValues } = globalStateController.useState(['layers'])
     const [currentLayers, setCurrentLayers] = React.useState([]);
 
     const [updateManyLayer] = useMutation(UPDATE_MANY_LAYER);
@@ -140,31 +138,30 @@ export default function SourceLayerManager(props) {
     };
 
     useEffect(() => {
-        if (!deepEqual(currentLayers, hookState.layers.get({ noproxy: true }))) {
-            setCurrentLayers(copy(hookState.layers.get({ noproxy: true })));
+        if (!deepEqual(currentLayers, stateValues.layers)) {
+            setCurrentLayers(copy(stateValues.layers));
         }
-    }, [currentLayers, hookState.layers]);
+    }, [currentLayers, layers]);
 
     const handleClose = () => {
-        setStateMapControls((stateMapControls) => ({
-            ...stateMapControls,
+        mapControlsController.updateState({
             addLayer: false,
             manageSourceLayer: false,
             manageLayer: false,
-        }));
+        })
     };
 
     const updateStateLayers = (currentLayers) => {
         stateApp.layers = currentLayers;
-        hookStateApp.layers.set(currentLayers)
+        globalStateController.updateState({ layers: currentLayers })
     }
 
     const handleApplyChange = () => {
-        if (!deepEqual(currentLayers, hookState.layers.get({ noproxy: true }))) {
+        if (!deepEqual(currentLayers, stateValues.layers)) {
             const layersToUpdate = [];
             const layersSettingsToUpdate = [];
             for (let i = 0; i < currentLayers.length; i++) {
-                if (!deepEqualObjects(currentLayers[i], hookState.layers.get({ noproxy: true }))) {
+                if (!deepEqualObjects(currentLayers[i], stateValues.layers)) {
                     layersSettingsToUpdate.push({
                         _id: currentLayers[i]._id,
                         layerSettings: currentLayers[i].layerSettings,

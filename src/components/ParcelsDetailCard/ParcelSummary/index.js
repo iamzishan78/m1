@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { copy } from "utils/helper";
 import { makeStyles } from "@material-ui/core/styles";
@@ -10,7 +10,6 @@ import PersonIcon from '@material-ui/icons/Person';
 import GavelIcon from '@material-ui/icons/Gavel';
 import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
 import CommentComponent from "components/Shared/CommentComponent";
-import ParcelTableInfo from './ParcelTableInfo'
 import SummaryTable from "components/ShapeDetailCard/Common/SummaryTable";
 import InputBase from '@material-ui/core/InputBase';
 import AddIcon from '@material-ui/icons/Add';
@@ -24,8 +23,8 @@ import { addTrailingZeros, getPolygonString } from "../../Shared/functions";
 import { getParcelOriginalProperties } from '../utils/GetParcelOriginalProps'
 import QtrQtrSelectorNew from "../../ShapeDetailCard/Common/QtrQtrSelectorNew";
 import MetaField from "components/Table/helpers/MetaField";
-import { AppContext } from "AppContext";
 import parcelDefaultData from "./parcelDefaultData";
+import { globalStateController } from "hookstate/globalStateController";
 
 const useStyles = makeStyles((theme) => ({
     summaryCard: {
@@ -254,7 +253,8 @@ export default function ParcelSummary(props) {
     const [search, setSearch] = useState('');
     const [parcelProperties, setProperties] = useState(props.properties);
     const [tableDataState, setTableDataState] = useState({});
-    const [stateApp, setStateApp] = useContext(AppContext);
+
+    const { globalStateValues } = globalStateController.useState(['showFieldModal'], 'globalStateValues');
 
     const classes = useStyles({ search });
 
@@ -314,10 +314,9 @@ export default function ParcelSummary(props) {
     // }
 
     const addCustomData = () => {
-        setStateApp((stateApp) => ({
-            ...stateApp,
+        globalStateController.updateState({
             showFieldModal: true,
-        }));
+        });
     };
 
     const addAgreementCustomData = (data) => {
@@ -431,7 +430,7 @@ export default function ParcelSummary(props) {
                     </Grid>
                 </Grid>
             </Grid>
-            {stateApp.showFieldModal && (
+            {globalStateValues.showFieldModal && (
                 <MetaField
                     customDataPrefix="shapeJson.properties.custom_data"
                     customDataPostfix=".keyword"

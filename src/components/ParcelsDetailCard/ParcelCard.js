@@ -26,10 +26,11 @@ import { GET_PARCELS_FILES_COUNT } from "graphQL/useQueryGetParcelFiles";
 import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
 
 // contexts
-import { AppContext } from "../../AppContext";
 import { ExpandableCardContext } from "../ExpandableCard/ExpandableCardContext";
 import { SHAPEWELLSCOUNT } from "graphQL/useQueryShapeWellsCount";
 import { getPolygonString } from "components/Shared/functions";
+import { popupController } from "hookstate/popupStateController";
+import { globalStateController } from "hookstate/globalStateController";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -111,9 +112,10 @@ export default function ParcelCard(props) {
   const parcelPLSS = useRef(false);
 
   // contexts
-  const [stateApp, setStateApp] = useContext(AppContext);
   const [stateExpandableCard] = useContext(ExpandableCardContext);
   const [wellNumber, setWellNumber] = useState();
+
+  const popupState = popupController.useState(['selectedParcel', 'parcelDetailCardTabIndex']);
 
   const [parcelObj, setParcelObj] = useState();
   const [parcelProperties, setProperties] = useState();
@@ -128,6 +130,8 @@ export default function ParcelCard(props) {
   const documentCount = dataParcelFiles?.getParcelFilesCount || 0;
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
 
+  const selectedParcel = popupState?.stateValues?.selectedParcel;
+
   useEffect(() => {
     if (dataShapeWellsCount) {
       setWellNumber(dataShapeWellsCount?.shapeWellsCount);
@@ -135,14 +139,14 @@ export default function ParcelCard(props) {
   }, [dataShapeWellsCount]);
 
   useEffect(() => {
-    if (stateApp.selectedParcel) {
+    if (selectedParcel) {
       getCustomLayer({
         variables: {
-          id: stateApp.selectedParcel.id,
+          id: selectedParcel.id,
         },
       });
     }
-  }, [stateApp.selectedParcel]);
+  }, [popupState.selectedParcel]);
 
   useEffect(() => {
     if (parcelObj) {
@@ -158,7 +162,7 @@ export default function ParcelCard(props) {
     if (parcelObj)
       getParcelFilesCount({
         variables: {
-          relatedObjectId: parcelObj?._id || stateApp.user.mongoId,
+          relatedObjectId: parcelObj?._id || globalStateController.getValue('user'),
           relatedObjectType: "Parcel",
         },
       });
@@ -180,13 +184,13 @@ export default function ParcelCard(props) {
     }
   }, [dataCustomLayer]);
   const handleOpenDetails = (tabIndex) => {
-    setStateApp((state) => ({
-      ...state,
+    popupController.updateState({
       expandedCard: true,
-      parcelDetailCardOpen: true,
       parcelDetailCardTabIndex: tabIndex,
       popupOpen: false,
-    }));
+    });
+
+    popupController.fitParcelBounds();
   };
   if (parcelObj && parcelObj.state === "TX") {
     parcelPLSS.current = true;
@@ -236,7 +240,7 @@ export default function ParcelCard(props) {
                   Acres
                 </Typography>
                 <Typography align="center" className={classes.text2} variant="caption">
-                  {stateApp.selectedParcel.sdGrossAcres || stateApp.selectedParcel.shapeArea}
+                  {selectedParcel.sdGrossAcres || selectedParcel.shapeArea}
                 </Typography>
               </div>
             </Button>
@@ -311,7 +315,7 @@ export default function ParcelCard(props) {
       <div style={{ height: "100%" }}>
         <Card className={classes.card}>
           <CardContent className={classes.content}>
-            <ParcelsDetailCard id={stateApp.selectedParcel.id} selectTabIndex={stateApp.parcelDetailCardTabIndex} />
+            <ParcelsDetailCard id={selectedParcel.id} selectTabIndex={popupState.stateValues.parcelDetailCardTabIndex} />
           </CardContent>
         </Card>
       </div>

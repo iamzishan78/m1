@@ -1,3 +1,20 @@
-.mapboxgl-popup {
-    transform: none !important;
-}
+/* .mapboxgl-popup {
+  transform: none !important;
+} */
+
+@font-face {
+    font-family: 'CalibriCustom';
+    src: url('https://db.onlinewebfonts.com/t/a78cfad3beb089a6ce86d4e280fa270b.eot');
+    src:
+      url('https://db.onlinewebfonts.com/t/a78cfad3beb089a6ce86d4e280fa270b.eot?#iefix')
+        format('embedded-opentype'),
+      url('https://db.onlinewebfonts.com/t/a78cfad3beb089a6ce86d4e280fa270b.woff2')
+        format('woff2'),
+      url('https://db.onlinewebfonts.com/t/a78cfad3beb089a6ce86d4e280fa270b.woff')
+        format('woff'),
+      url('https://db.onlinewebfonts.com/t/a78cfad3beb089a6ce86d4e280fa270b.ttf')
+        format('truetype'),
+      url('https://db.onlinewebfonts.com/t/a78cfad3beb089a6ce86d4e280fa270b.svg#Calibri')
+        format('svg');
+  }
+  

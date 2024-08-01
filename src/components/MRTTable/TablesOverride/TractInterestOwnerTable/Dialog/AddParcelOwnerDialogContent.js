@@ -73,7 +73,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-
 export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRow, ...props }) {
   const dispatch = useDispatch();
   const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
@@ -285,6 +284,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       });
     } else {
       // Fixed label value issue
+      // Update parcel owner object for autocompletes
       const parcelOwner = extractValueRecursively({
         ...formStateValues,
         deals: formStateValues?.deals || [],
@@ -368,6 +368,9 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   nameAutValue={formStateValues?.name}
                   setNameAutValue={(contact) => {
                     sideDialogController("tractInterestDialog").updateState({ name: contact?.name, ownerEntity: contact?._id, relatedObject: contact?._id })
+                    // Setting owner type when contact is selected
+                    if (contact?.ownerType)
+                      setValue('ownerType', { label: contact?.ownerType, value: contact?.ownerType })
                   }}
                   nameAutInputValue={nameAutInputValue}
                   setNameAutInputValue={setNameAutInputValue}

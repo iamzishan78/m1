@@ -26,18 +26,20 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import { makeStyles } from "@material-ui/core/styles";
-import ContactCardIcon from "components/Shared/svgIcons/contact_card";
-import ContactCardDisabledIcon from "components/Shared/svgIcons/contact_card_disabled";
 import { DeleteOutline as DeleteIcon, MoreVert as MoreVertIcon, Add as AddIcon, ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 import CommentsWithIcon from "components/Shared/CommentsWithIcon";
-import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { CREATE_AGREEMENT_PROVISION } from "graphQL/useMutationCreateAgreementProvision";
 import debounce from "lodash/debounce";
 import AutoCompleteWithNewOption from "components/Shared/Forms/Fields/AutoCompleteWithNewOption";
 import { GET_PROVISION_AUTOCOMPLETE_LIST } from "graphQL/useQueryGetProvisionAutoCompleteList";
 import { copy } from "components/Shared/functions";
+import Loader from 'components/Loaders';
+import { detailCardController } from "hookstate/detailCardController";
+import ResponsibleParty from "./ResponsibleParty";
+import { Autocomplete } from "@material-ui/lab";
+import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 
 const styles = makeStyles(() => ({
   root: {
@@ -127,6 +129,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
   let history = useHistory();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [, setStateNav] = useContext(NavigationContext);
+  const [users, setUsers] = useState([]);
   const [selectionProvision, setSelectedProvision] = useState("");
   const [frequenciesList, setFrequenciesList] = useState([]);
   const [provisionAutoCompleteList, setProvisionsList] = useState([]);
@@ -142,8 +145,12 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
     name: "provisions", // unique name for your Field Array
     // keyName: "id", default to "id", you can change the key name
   });
+  const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
+    fetchPolicy: "cache-and-network",
+  });
 
   useEffect(() => {
+    getAllMongoUsers();
     reset({ provisions });
   }, []);
 
@@ -154,6 +161,17 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
   useEffect(() => {
     reset({ provisions });
   }, [provisions]);
+
+  useEffect(() => {
+    if (userLists && userLists.allMongoUsers) {
+      setUsers(
+        userLists.allMongoUsers.map((user) => ({
+          value: user._id,
+          text: user.name,
+        }))
+      );
+    }
+  }, [userLists]);
 
   useEffect(() => {
     if (dataProvisionAutoCompleteList?.provisionAutoCompleteList) {
@@ -176,18 +194,40 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
       let addProvision = { agreement: id, type: provision.type, isDeleted: false, startDate: undefined, endDate: undefined };
       if (provision._id) {
         addProvision = { ...addProvision, isTemplate: false, applicable: true, templateRef: provision._id, user: stateApp.user.mongoId };
+        Loader.createToast('addRemoveProvision', 'Provision updation in Progress');
         upsertAgreementProvision({
           variables: { provision: { ...addProvision, isDeleted: false } },
           refetchQueries: ["getAgreementProvisions", "provisionAutoCompleteList"],
-        });
+        }).then(
+          res => {
+            Loader.successToast('addRemoveProvision', "Provision updation Success");
+            detailCardController.updateState({
+              isStandardProvisionsRefetch: true
+            });
+          },
+          () => {
+            Loader.errorToast('addRemoveProvision', 'Provision updation Failed');
+          }
+        );
       } else {
         append({ startDate: undefined, endDate: undefined });
       }
     } else {
+      Loader.createToast('addRemoveProvision', 'Provision updation in Progress');
       upsertAgreementProvision({
         variables: { provision: { agreement: id, type: provision.type, isDeleted: true } },
         refetchQueries: ["getAgreementProvisions", "provisionAutoCompleteList"],
-      });
+      }).then(
+        res => {
+          Loader.successToast('addRemoveProvision', "Provision updation Success");
+          detailCardController.updateState({
+            isStandardProvisionsRefetch: true
+          });
+        },
+        () => {
+          Loader.errorToast('addRemoveProvision', 'Provision updation Failed');
+        }
+      );
       // remove(fields.findIndex(p => p.type === provision.type))
     }
   };
@@ -196,11 +236,16 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
     const formValues = getValues();
     if (formValues?.provisions && formValues?.provisions[index]) {
       const provision = formValues.provisions[index];
+      const assignedOwner = provision.assignedOwner;
+      if (assignedOwner && typeof assignedOwner === 'object') {
+        provision.assignedOwner = assignedOwner.value;
+      }
       if (provision.type)
         upsertAgreementProvision({
           variables: {
             provision: { agreement: id, ...formValues.provisions[index], user: stateApp.user.mongoId, isDeleted: false },
           },
+          refetchQueries: ["getAgreementProvisions", "provisionAutoCompleteList"]
         });
     }
   }, 500);
@@ -312,6 +357,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                             <AutoCompleteWithNewOption
                               variant="outlined"
                               id="provisionType"
+                              label="Provision Type"
                               options={provisionAutoCompleteList}
                               value={value}
                               onChange={(_, value) => {
@@ -360,7 +406,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                         name={`provisions[${index}].value`}
                         inputRef={register()}
                         defaultValue={item.value}
-                        onChange={() => handleChange(item, index)}
+                        onBlur={() => handleChange(item, index)}
                       />
                     </FormControl>
                   </Grid>
@@ -423,7 +469,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                     />
                   </Grid>
 
-                  <Grid item md={2}    id={`frequency-${index}`}>
+                  <Grid item md={2} id={`frequency-${index}`}>
                     <Controller
                       control={control}
                       name={`provisions[${index}].frequency`}
@@ -443,100 +489,92 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                     />
                   </Grid>
 
-                  <Grid id={`partyName-${index}`}item md={4}>
+                  <Grid item md={2} id={`responsibleParty-${index}`}>
                     <Controller
                       control={control}
-                      name={`provisions[${index}].parties`}
-                      defaultValue={getParty(item)}
-                      render={({ onChange, value, ref }) => (
-                        <AutocompEntityNamesList
+                      name={`provisions[${index}].responsibleParty`}
+                      defaultValue={item?.responsibleParty?.name}
+                      render={(props) => (
+                        <ResponsibleParty
+                          value={props.value}
+                          handleChange={(value) => {
+                            handleChange(item, index);
+                            props.onChange(value?.name || null);
+                          }}
+                        />
 
-                          variant="outlined"
-                          margin=""
-                          size=""
-                          label="Party Name"
-                          nameAutValue={value}
-                          setNameAutValue={(value) => {
-                            if (value?._id) onChange([{ _id: value._id }]);
-                            else onChange([]);
+
+                      )}
+                    />
+
+                  </Grid>
+                  <Grid item md={2} id={`provisions-${index}`}>
+                    <Controller
+                      control={control}
+                      name={`provisions[${index}].ownerId`}
+                      render={(params) => (
+                        <Autocomplete
+                          options={users.filter((u) => u.text)}
+                          onChange={(e, user) => {
+                            const value = user?.value || null;
+                            params.onChange(value);
                             handleChange(item, index);
                           }}
+                          value={users.find((user) => user.value === params.value) || null}
+                          getOptionLabel={(option) => option.text}
+                          getOptionSelected={(option) => option.value === item.ownerId}
+                          renderInput={(params) => <TextField {...params} variant="outlined" label="Assigned To" />}
                         />
                       )}
                     />
                   </Grid>
                   <Grid item md={2} style={{ height: "0px" }}>
-                    <IconButton
-                      size={"medium"}
-                      color={currentParty?._id ? "primary" : "secondary"}
-                      onClick={(e) => {
-                        if (currentParty?._id) {
-                          e.stopPropagation();
-                          history.push(`/contact/details/${currentParty._id}`);
-                          setStateNav((stateApp) => ({
-                            ...stateApp,
-                            contactFromMap: true,
-                          }));
-                          setStateApp((stateApp) => ({
-                            ...stateApp,
-                            selectedContact: true,
-                            selectedContact: `${currentParty._id}`,
-                          }));
-                        }
-                      }}
-                      aria-label="show contact"
-                    >
-                      {currentParty?._id ? <ContactCardIcon /> : <ContactCardDisabledIcon />}
-                    </IconButton>
                     <CommentsWithIcon objectId={item._id} targetLabel={"provision"} iconZiseSmall />
-                    {hoverProvision === index ? (
-                      <PopupState variant="popover" popupId={`party-${index}-popover`}>
-                        {(popupState) => (
-                          <>
-                            <IconButton
-                              aria-controls={`party${index}Menu`}
-                              aria-haspopup="true"
-                              className={classes.menuIcon}
-                              onClick={(event) => setAnchorEl(event.currentTarget)}
-                              {...bindTrigger(popupState)}
-                            >
-                              <MoreVertIcon size="medium" id="moreVertIconProvision" />
-                            </IconButton>
-                            <Popover
-                              {...bindPopover(popupState)}
-                              anchorOrigin={{
-                                vertical: "bottom",
-                                horizontal: "center",
-                              }}
-                              transformOrigin={{
-                                vertical: "top",
-                                horizontal: "center",
-                              }}
-                            >
-                              <List className={classes.menu}>
-                                <ListItem
-                                  button
-                                  onClick={() => {
-                                    addRemoveProvision(false, item);
-                                    popupState.close();
-                                  }}
-                                >
-                                  <ListItemIcon>
-                                    <DeleteIcon size="medium" />
-                                  </ListItemIcon>
-                                  <ListItemText id="deleteProvision">Delete Provision/Obligation</ListItemText>
-                                </ListItem>
-                              </List>
-                            </Popover>
-                          </>
-                        )}
-                      </PopupState>
-                    ) : (
-                      <></>
-                    )}
+                    <PopupState variant="popover" popupId={`party-${index}-popover`}>
+                      {(popupState) => (
+                        <>
+                          <IconButton
+                            style={{ visibility: hoverProvision === index ? 'visible' : 'hidden' }}
+                            aria-controls={`party${index}Menu`}
+                            aria-haspopup="true"
+                            className={classes.menuIcon}
+                            onClick={(event) => setAnchorEl(event.currentTarget)}
+                            {...bindTrigger(popupState)}
+                          >
+                            <MoreVertIcon size="medium" id="moreVertIconProvision" />
+                          </IconButton>
+                          <Popover
+                            {...bindPopover(popupState)}
+                            anchorOrigin={{
+                              vertical: "bottom",
+                              horizontal: "center",
+                            }}
+                            transformOrigin={{
+                              vertical: "top",
+                              horizontal: "center",
+                            }}
+                          >
+                            <List className={classes.menu}>
+                              <ListItem
+                                button
+                                onClick={() => {
+                                  addRemoveProvision(false, item);
+                                  popupState.close();
+                                }}
+                              >
+                                <ListItemIcon>
+                                  <DeleteIcon size="medium" />
+                                </ListItemIcon>
+                                <ListItemText id="deleteProvision">Delete Provision/Obligation</ListItemText>
+                              </ListItem>
+                            </List>
+                          </Popover>
+                        </>
+                      )}
+                    </PopupState>
                   </Grid>
                 </Grid>
-              </Grid>
+              </Grid >
 
               <Grid item>
                 <TextField
@@ -549,10 +587,10 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                   name={`provisions[${index}].description`}
                   inputRef={register()}
                   defaultValue={item.description}
-                  onChange={() => handleChange(item, index)}
+                  onBlur={() => handleChange(item, index)}
                 />
               </Grid>
-            </Grid>
+            </Grid >
           );
         })}
         <Grid item>
@@ -570,7 +608,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
             Add another provision
           </Button>
         </Grid>
-      </Grid>
-    </Grid>
+      </Grid >
+    </Grid >
   );
 }

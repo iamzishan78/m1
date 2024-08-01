@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { copy } from "utils/helper";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
@@ -19,7 +19,6 @@ import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import { summaryStyles } from "components/ShapeDetailCard/style";
 import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 import QtrQtrSelectorNew from "components/ShapeDetailCard/Common/QtrQtrSelectorNew";
-import { AppContext } from "AppContext";
 import MetaField from "components/Table/helpers/MetaField";
 import { globalStateController } from "hookstate/globalStateController";
 
@@ -29,7 +28,8 @@ export default function UnitSummary(props) {
     const [search, setSearch] = useState("");
     const [unitProperties, setProperties] = useState(props.properties);
     const [tableDataState, setTableDataState] = useState({});
-    const [stateApp, setStateApp] = useContext(AppContext);
+
+    const { globalStateValues } = globalStateController.useState(['showFieldModal'], 'globalStateValues');
 
     const classes = summaryStyles({ search });
 
@@ -61,10 +61,9 @@ export default function UnitSummary(props) {
     //     props.setProperties({ ...props.properties, custom_data_arr: [...props.properties.custom_data_arr] });
     // };
     const addCustomData = () => {
-        setStateApp((stateApp) => ({
-            ...stateApp,
+        globalStateController.updateState({
             showFieldModal: true,
-        }));
+        });
     };
 
     const addAgreementCustomData = (data) => {
@@ -199,7 +198,7 @@ export default function UnitSummary(props) {
                     </Grid>
                 </Grid>
             </Grid>
-            {stateApp.showFieldModal && (
+            {globalStateValues.showFieldModal && (
                 <MetaField
                     customDataPrefix="shapeJson.properties.custom_data"
                     customDataPostfix=".keyword"

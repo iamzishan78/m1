@@ -33,6 +33,7 @@ import { useMutation } from "@apollo/client";
 // Helpers for area calcs
 import { area, convertArea, length } from "@turf/turf";
 import { jobController } from "hookstate/jobStateController";
+import { layerController } from "hookstate/layerStateController";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -291,7 +292,7 @@ export default function SpatialDataCardEdit(props) {
 
   const closeSpatialDataCard = () => {
     if (drawFeatureId) {
-      stateApp.draw.delete(drawFeatureId);
+      window.drawRef?.delete(drawFeatureId);
       setDrawFeatureId("");
     }
     // setStateApp({
@@ -323,8 +324,9 @@ export default function SpatialDataCardEdit(props) {
         },
         // refetchQueries: ["getCustomLayers"],
         // awaitRefetchQueries: true,
-      }).then(() => {
+      }).then((res) => {
         jobController.toggleBulkUpload()
+        layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)
       });
       props.closeSpatialDataCard();
     }
@@ -358,10 +360,10 @@ export default function SpatialDataCardEdit(props) {
     const { selectedFeature } = props;
     const featureId = selectedFeature.properties.id;
     const featureLabelId = featureId + "_label";
-    if (stateApp.draw) {
+    if (window.drawRef) {
       selectedFeature.id = `edit_polygon_${selectedFeature.properties.id}`;
-      stateApp.draw.add(selectedFeature);
-      stateApp.draw.changeMode("direct_select", {
+      window.drawRef.add(selectedFeature);
+      window.drawRef.changeMode("direct_select", {
         featureId: selectedFeature.id,
       });
       const { customLayers } = stateApp;
@@ -436,11 +438,6 @@ export default function SpatialDataCardEdit(props) {
               <MenuItem value="parcel">Parcel</MenuItem>
               <MenuItem value="unit">Unit</MenuItem>
               <MenuItem value="agreement">Agreement</MenuItem>
-              {/* {stateApp.currentFeature &&
-                stateApp.currentFeature.geometry.type === "Polygon" &&
-                !stateApp.currentFeature.properties.isCircle && (
-                  <MenuItem value="title">Title Opinion</MenuItem>
-                )} */}
             </Select>
           </FormControl>
         </div>
