@@ -178,7 +178,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const esCallData = {
-  "wells": {
+  "platform wells": {
     esIndex: "platformData:wells",
     search: (request) => `${request.input}`,
     searchFields: SHAPE_TYPE['wells'].SEARCH_FIELDS,
@@ -325,7 +325,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [value, setValue] = React.useState(null);
   const [searchDropDown, setSearchDropDown] = React.useState(platformDataInitialData[0]);
-  const [searchOption, setSearchOption] = React.useState("wells");
+  const [searchOption, setSearchOption] = React.useState("platform wells");
   const [options, setOptions] = React.useState([]);
   const [searchTop, setSearchTop] = React.useState(5);
   const [maxMinWellsScore, setMaxMinWellsScore] = React.useState([0, 0]);
@@ -870,7 +870,8 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
 
   const handleSearchPanelChange = (value) => {
     setSearchDropDown({ ...value })
-    setSearchOption(value.label.toLocaleLowerCase());
+    // Set either the gridlable or the simple lable
+    setSearchOption(value?.gridLabel?.toLocaleLowerCase() || value.label.toLocaleLowerCase());
   }
 
   //// setting the buttons header /////
@@ -905,7 +906,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
         groupBy={(option) => {
           if (option?.shapeJson?.properties?.type === "agreement") return "Agreements"
           if (option.Source === ownerCogIndexName) return "Tax Owners";
-          if (option.Source === wellCogIndexName) return "Wells";
+          if (option.Source === wellCogIndexName) return "Platform Wells";
           if (option.Source === operatorIndexName) return "Operators";
           if (option.Source === leaseIndexName) return "Leases";
           if (option.Source === landGridIndexName) return "Land Grid";
@@ -1088,7 +1089,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
                                         option.Source === ownerCogIndexName
                                           ? "tax owners"
                                           : option.Source === wellCogIndexName
-                                            ? "wells"
+                                            ? "platform wells"
                                             : option.Source === operatorIndexName
                                               ? "operators"
                                               : option.Source === leaseIndexName

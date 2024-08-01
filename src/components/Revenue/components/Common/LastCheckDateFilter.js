@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FormControl, Grid, InputLabel, Select, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { makeStyles } from "@material-ui/styles";
@@ -60,6 +60,8 @@ const LastCheckDateFilter = ({
   const [checkNumberFilter, setCheckNumberFilter] = useState();
   const [propertyNumberFilter, setPropertyNumberFilter] = useState();
 
+  const reportGroupFilters = useRef([])
+
   const propertiesReportGroup = useSelector(({ Revenue }) => Revenue.propertiesReportGroup);
 
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
@@ -91,7 +93,9 @@ const LastCheckDateFilter = ({
         filter.type !== "range" &&
         filter.field !== `${stateESKey}state.keyword` &&
         filter.field !== "check.checkNumber.keyword" &&
-        filter.field !== "property.number.keyword"
+        filter.field !== "property.number.keyword" &&
+        filter.field !== "status.keyword" &&
+        !reportGroupFilters.current.includes(filter.field)
     );
     if (checkNumberFilter) {
       filters.push({ field: "check.checkNumber.keyword", value: checkNumberFilter });
@@ -109,22 +113,29 @@ const LastCheckDateFilter = ({
         },
         type: "range",
       });
-    const updatedPropertyFilter = propertyFilter.map((filter) => {
-      if (filter.field.includes("wells")) {
-        // Remove the 'property.' prefix and start from 'wells'
-        return {
-          ...filter,
-          field: filter.field.replace('property.', '')
-        };
-      } 
-      // Return the filter unchanged if 'wells' is not in the field
-        return {
-          ...filter, 
-          field: stateESKey + filter.field 
-        }
-    });
+    // const updatedPropertyFilter = propertyFilter.map((filter) => {
+    //   if (filter.field.includes("wells")) {
+    //     // Remove the 'property.' prefix and start from 'wells'
+    //     return {
+    //       ...filter,
+    //       field: filter.field.replace('property.', '')
+    //     };
+    //   } 
+    //   // Return the filter unchanged if 'wells' is not in the field
+    //     return {
+    //       ...filter, 
+    //       field: stateESKey + filter.field 
+    //     }
+    // });
 
-    filters = [...filters, ...updatedPropertyFilter];
+    // filters = [...filters, ...updatedPropertyFilter];
+    if (stateESKey && propertyFilter[0])
+      filters.push({ ...propertyFilter[0], field: stateESKey + propertyFilter[0].field });
+    else
+      propertyFilter.forEach((filter) => {
+        filters = filters.filter((f) => f.field !== filter.field)
+        filters.push(filter)
+      })
 
     if (status !== "ALL") {
       filters.push({
@@ -135,6 +146,7 @@ const LastCheckDateFilter = ({
 
     setESFilters(filters);
     setFilterToggle(!filterToggle);
+    reportGroupFilters.current = propertyFilter.map((filter) => filter?.field)
   };
 
   return (
