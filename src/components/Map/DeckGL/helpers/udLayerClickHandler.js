@@ -9,6 +9,7 @@ import { popupController } from 'hookstate/popupStateController';
 import { drawController } from 'hookstate/drawStateController';
 import { layerController } from 'hookstate/layerStateController';
 import { findBoundsMap } from 'components/MapControls/commonHelper';
+import { drawBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
 const udLayerClickHandler = (feature, stateLayer) => {
 	const history = layerController.getValue('history');
@@ -51,6 +52,9 @@ const udLayerClickHandler = (feature, stateLayer) => {
 		popupStateVal = {
 			selectedUserDefinedLayer,
 		};
+
+		// Draw the AOI boundry
+		drawBoundary(selectedUserDefinedLayer);
 
 		if (!editDraw) {
 			drawStateVal = {
