@@ -19,6 +19,9 @@ import DetailsPanel from "./Details";
 import Information from "./Information";
 import AssociatedWells from "./AssociatedWells";
 import { DocumentContext } from "../DocumentContext";
+import Contacts from "components/FlowDrawer/Contacts";
+import { ADD_CONTACT_TO_FILE_DESCRIPTOR } from "graphQL/useMutationAddContactToFileDescriptor";
+
 
 const useStyles = makeStyles({
   drawer: {
@@ -207,6 +210,7 @@ export default function DocumentDrawer(props) {
   let [loader, setLoader] = useState(false);
 
   const [updateDocument] = useMutation(UPDATE_DOCUMENT);
+  const [addContactToFileDescriptor, { loading: addWellLoading }] = useMutation(ADD_CONTACT_TO_FILE_DESCRIPTOR);
 
   const handleDeleteCancel = () => {
     setFileIdToDelete(null);
@@ -411,6 +415,7 @@ export default function DocumentDrawer(props) {
               />
             )}
             {activePanel === "Wells" && <AssociatedWells />}
+            {activePanel === "Contacts" && <Contacts addSelectedContact={addSelectedContactToDocument} />}
             {activePanel === "Info" && <Information fileData={fileData} />}
           </div>
         </div>
@@ -418,6 +423,29 @@ export default function DocumentDrawer(props) {
     </div>
   );
 
+  const addSelectedContactToDocument = (contact) => {
+    let contactData = {
+      ...contact,
+      createdBy: stateApp?.user?._id,
+    };
+    addContactToFileDescriptor({
+      variables: { descriptorId: stateApp?.selectedDocument?._id, contactData: contactData },
+      awaitRefetchQueries: true,
+    }).then(({ data }) => {
+      const descriptorId = data.addContactToFileDescriptor._id;
+      const selectedDocument = stateApp.selectedDocument ?? {};
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        selectedDocument: { ...selectedDocument, _id: descriptorId },
+      }));
+      getWellsFromDocument({
+        variables: {
+          descriptorObject: descriptorId,
+        },
+      });
+    });
+  };
+  
   return (
     <div>
       <Drawer className={classes.drawer} anchor={"right"} open={stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0}>

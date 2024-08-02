@@ -5,6 +5,7 @@ import InfoOutlined from "@material-ui/icons/InfoOutlined";
 import WellIcon from "components/Shared/svgIcons/well";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
+import PersonIcon from "@material-ui/icons/Person";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,6 +60,11 @@ export default function Drawer(props) {
     Home: (props) => (
       <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary">
         <HomeIcon id="wellHomeIcon" {...props} />
+      </Badge>
+    ),
+    Contacts: (props) => (
+      <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary" badgeContent={wellsCount} >
+        <PersonIcon />
       </Badge>
     ),
     Wells: (props) => (
