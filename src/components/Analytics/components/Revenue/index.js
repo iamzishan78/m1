@@ -135,6 +135,7 @@ export default function RevenueAnalytics(props) {
 
   const comparisonTableState = tableController('ComparisonTable').useState(['filters', 'data']).stateValues; // get StateValues for ComparisonTable
   const salesVolumeComparisonTableState = tableController('SalesVolumeComparisonTable').useState(['filters', 'data']).stateValues; // get StateValues for SalesVolumeComparisonTable
+  const [esFilters, setEsFilters] = useState(tableController('ComparisonTable').getExternalFilter());
 
   const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 166px)' };
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
@@ -320,11 +321,13 @@ export default function RevenueAnalytics(props) {
   }, [TableKey]);
 
   useEffect(() => {
+    const newFilters = tableController(TableKey).getExternalFilter();
     if (comparisonReport === 'Check Detail Comparison') {
       setTableKey('ComparisonTable');  
     } else {
       setTableKey('SalesVolumeComparisonTable');
     }
+    setEsFilters(newFilters);
   }, [comparisonReport])
 
   return (
@@ -436,7 +439,7 @@ export default function RevenueAnalytics(props) {
           <LastCheckDateFilter
             field="date"
             esIndex={'checkdetailsinterestscomparison_flat'}
-            esFilters={tableController(TableKey).getExternalFilter()}
+            esFilters={esFilters}
             setESFilters={setESFilters}
             setFilterToggle={setFilterToggle}
             filterToggle={filterToggle}
@@ -449,7 +452,7 @@ export default function RevenueAnalytics(props) {
           {comparisonReport === 'Sales Volume vs Reported Production' ? (
             <SalesVolumeComparisonSection
               checkDetailsData={checkDetailsData}
-              esFilters={tableController(TableKey).getExternalFilter()}
+              esFilters={esFilters}
               loadMore={loadMore}
             />
           ) : (

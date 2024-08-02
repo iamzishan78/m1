@@ -84,7 +84,7 @@ const LastCheckDateFilter = ({
 
   useEffect(() => {
     updateFilters();
-  }, [toDate, fromDate, status, propertyFilter, checkNumberFilter, propertyNumberFilter]);
+  }, [toDate, fromDate, status, propertyFilter, checkNumberFilter, propertyNumberFilter, esFilters]);
 
   const updateFilters = () => {
     let filters = copy(esFilters) ?? [];
@@ -94,13 +94,11 @@ const LastCheckDateFilter = ({
         filter.field !== `${stateESKey}state.keyword` &&
         filter.field !== "check.checkNumber.keyword" &&
         filter.field !== "property.number.keyword" &&
-        filter.field !== "status.keyword" &&
-        !reportGroupFilters.current.includes(filter.field)
+        filter.field !== "status.keyword"
     );
     if (checkNumberFilter) {
       filters.push({ field: "check.checkNumber.keyword", value: checkNumberFilter });
     }
-
     if (propertyNumberFilter) {
       filters.push({ field: "property.number.keyword", value: propertyNumberFilter });
     }
@@ -113,24 +111,17 @@ const LastCheckDateFilter = ({
         },
         type: "range",
       });
-
-      const updatedPropertyFilter = propertyFilter.map((filter) => {
-        if (filter.field.includes("wells")) {
-          // Remove the 'property.' prefix and start from 'wells'
-          return {
-            ...filter,
-            field: filter.field.replace('property.', '')
-          };
-        } 
-        // Return the filter unchanged if 'wells' is not in the field
-          return {
-            ...filter, 
-            field: stateESKey + filter.field 
-          }
-      });
-
-    filters = [...filters, ...updatedPropertyFilter];
-
+  
+    const _propertyFilter = copy(propertyFilter)
+    filters = filters.filter((filter) => !reportGroupFilters.current.includes(filter.field))
+    _propertyFilter.forEach((filter) => {
+      const field = filter.field.includes("wells") ? filter.field.replace('property.', '') : stateESKey + filter.field
+      filters = filters.filter((f) => f.field !== field)
+      filter.field = field
+      filters.push({ ...filter })
+    })
+    reportGroupFilters.current = _propertyFilter.map((filter) => filter.field)
+  
     if (status !== "ALL") {
       filters.push({
         field: "status.keyword",
@@ -140,7 +131,6 @@ const LastCheckDateFilter = ({
 
     setESFilters(filters);
     setFilterToggle(!filterToggle);
-    reportGroupFilters.current = propertyFilter.map((filter) => filter?.field)
   };
 
   return (

@@ -15,7 +15,6 @@ export default function SalesVolumeComparisonSection({ checkDetailsData, esFilte
   const [getESSimpleFilter] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: "no-cache" });
 
   useEffect(() => {
-    if (!tableStateValues?.data?.total) return;
     (async () => {
       const formattedFilters = esFilters.map((filter) => {
         return filter.field === "check.checkDate" ? { ...filter, field: "date" } : filter;
@@ -26,7 +25,7 @@ export default function SalesVolumeComparisonSection({ checkDetailsData, esFilte
             index: "checkdetailsinterestscomparison_flat",
             filters: [...formattedFilters, { field: "property.IsDeleted", value: false, type: "term" }],
             filterKey: "property._id.keyword",
-            filterAggs: { query: "", field: "property._id.keyword", size: tableStateValues?.data?.total },
+            filterAggs: { query: "", field: "property._id.keyword", size: tableStateValues?.data?.total || 0 },
           },
           onCompleted: (res) => {
             if (res) {
