@@ -174,7 +174,9 @@ export default function ExhibitATabPanel() {
         </Grid>
       </div> */}
       {/* Display well master table using MRT Grid */}
-      <MRTTable name="WellMasterTable" /> 
+      <MRTTable name="WellMasterTable" overrideMeta={{
+        isDeleteDisabled: true, // Disable delete functionality
+      }} /> 
     </>
   );
 }
