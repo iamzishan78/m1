@@ -254,7 +254,7 @@ export default function AnalyticsCards({
       setCards(cardsDefault);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [totalCount, unmappedPropertyCount]);
+  }, [totalCount]);
 
   const handleFilterClick = (key) => {
     if (key === "inpay" || key === "notinpay") {
