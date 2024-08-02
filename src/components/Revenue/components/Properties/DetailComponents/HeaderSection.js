@@ -168,12 +168,12 @@ export default function HeaderSection(props) {
       //   );
       //   history.goBack();
       // }
-      if (!purchaser || !purchaserNumber) {
-        dispatch(
-          showInfoMessage("Payor and Payor Prop # are required.")
-        );
-        history.goBack();
-      }
+      // if (!purchaser || !purchaserNumber) {
+      //   dispatch(
+      //     showInfoMessage("Payor and Payor Prop # are required.")
+      //   );
+      //   history.goBack();
+      // }
     }
   }, [])
 
