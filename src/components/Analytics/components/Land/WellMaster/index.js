@@ -16,6 +16,7 @@ import { setStateIfDeepEqual } from "components/Shared/functions";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import MRTTable from 'components/MRTTable';
 import { tableController } from "hookstate/tableController";
+import Wells from 'components/Shared/svgIcons/well';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -176,6 +177,15 @@ export default function ExhibitATabPanel() {
       {/* Display well master table using MRT Grid */}
       <MRTTable name="WellMasterTable" overrideMeta={{
         isDeleteDisabled: true, // Disable delete functionality
+        gridViewSettings: {
+          label: 'Well Master', // Label for grid view
+          Icon: Wells, // Icon for grid view
+          cssOverride: {
+              top: '138px', // CSS overrides for positioning
+              left: '40px',
+              marginLeft: '-9px',
+          },
+      },
       }} /> 
     </>
   );
