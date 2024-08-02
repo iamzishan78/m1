@@ -15,7 +15,7 @@ import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 import { setStateIfDeepEqual } from "components/Shared/functions";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import MRTTable from 'components/MRTTable';
-
+import { tableController } from "hookstate/tableController";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -84,6 +84,10 @@ export default function ExhibitATabPanel() {
   const handleFilterChange = (field, newValue) => {
     setExtFilters({ ...externalFilters, [field]: newValue || "All" });
   };
+
+  useEffect(() => {
+    tableController("WellMasterTable")?.setGlobalFilter(stateApp.landAnalyticsSearchQuery === "*" ? "" : stateApp.landAnalyticsSearchQuery);
+  }, [stateApp.landAnalyticsSearchQuery]);
 
   return (
     <>

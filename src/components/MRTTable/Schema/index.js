@@ -19,7 +19,6 @@ import ContactWellInterestMeta from "./contact_well_Interest_schema"
 import MyWellsMeta from './my_wells_schema';
 import WellsMeta from './wells_schema';
 import TaxOwnerMeta from './map-grid-tax-owner-schema';
-import WellMasterMeta from './well_master_schema';
 
 
 export const SCHEMA = {
@@ -47,6 +46,6 @@ export const SCHEMA = {
 	RevenueStatementsTable: RevenueStatementsMeta, // Revenue Statement grid => revenue/statements
 	MyWellsTable: MyWellsMeta,
 	WellsTable: WellsMeta,
-	WellMasterTable: WellMasterMeta, // Well Master => analytics/land
+	WellMasterTable: MyWellsMeta, // Well Master => analytics/land
 	TaxOwnerTable: TaxOwnerMeta,
 };
