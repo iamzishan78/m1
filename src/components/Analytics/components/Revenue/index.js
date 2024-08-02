@@ -290,21 +290,20 @@ export default function RevenueAnalytics(props) {
 
   const setESFilters = useCallback(newFilter => {
     if (newFilter.length === 0) {
-      let externalFilters = tableController(TableKey).getExternalFilter()
-      externalFilters[externalFilters.length] = { field: 'isMisMatchedInterest', value: true, type: 'term' }
-      tableController(TableKey).clearFilter(externalFilters[0]?.field);
+      tableController(TableKey).setFilters([{ field: 'isMisMatchedInterest', value: true, type: 'term' }]);
     } else {
+      let filterToAdd = []
       newFilter.forEach(filter => {
         const { field, value, type } = filter;
-        let filterToAdd;
+
 
         if (field === 'date' || field === 'isMisMatchedInterest') {
-          filterToAdd = { field, value, type };
+          filterToAdd.push({ field, value, type });
         } else {
-          filterToAdd = { field, value };
+          filterToAdd.push({ field, value });
         }
-        tableController(TableKey).setFilter(filterToAdd);
       });
+      tableController(TableKey).setFilters(filterToAdd);
     }
   }, []);
 

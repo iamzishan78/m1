@@ -95,7 +95,7 @@ const LastCheckDateFilter = ({
         filter.field !== "check.checkNumber.keyword" &&
         filter.field !== "property.number.keyword" &&
         filter.field !== "status.keyword" &&
-        !reportGroupFilters.current.includes(filter.field)
+        !reportGroupFilters.current.includes(stateESKey + filter.field)
     );
     if (checkNumberFilter) {
       filters.push({ field: "check.checkNumber.keyword", value: checkNumberFilter });
@@ -114,13 +114,10 @@ const LastCheckDateFilter = ({
         type: "range",
       });
 
-    if (stateESKey && propertyFilter[0])
-      filters.push({ ...propertyFilter[0], field: stateESKey + propertyFilter[0].field });
-    else
-      propertyFilter.forEach((filter) => {
-        filters = filters.filter((f) => f.field !== filter.field)
-        filters.push(filter)
-      })
+    propertyFilter.forEach((filter) => {
+      filters = filters.filter((f) => f.field !== stateESKey + filter.field)
+      filters.push({ ...filter, field: stateESKey + filter.field })
+    })
 
     if (status !== "ALL") {
       filters.push({
@@ -131,7 +128,7 @@ const LastCheckDateFilter = ({
 
     setESFilters(filters);
     setFilterToggle(!filterToggle);
-    reportGroupFilters.current = propertyFilter.map((filter) => filter?.field)
+    reportGroupFilters.current = propertyFilter.map((filter) => stateESKey + filter.field)
   };
 
   return (
