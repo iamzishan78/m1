@@ -28,6 +28,7 @@ import { sideDialogController, tractInterestOwnerState } from 'hookstate/sideDia
 import { globalStateController } from 'hookstate/globalStateController';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
+import { extractValueRecursively } from 'components/MRTTable/utils/helper';
 
 const useStyles = makeStyles(theme => ({
   dialogContent: {
@@ -72,21 +73,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-// Extracting values for getting value from autocomplete object
-const extractValueRecursively = (obj) => {
-  if (obj === null || obj === undefined) return obj;
-
-  if (typeof obj === 'object' && !Array.isArray(obj)) {
-    return Object.keys(obj).reduce((acc, key) => {
-      acc[key] = extractValueRecursively(obj[key]?.value !== undefined ? obj[key]?.value : obj[key]);
-      return acc;
-    }, {});
-  }
-
-  return obj;
-};
-
-
 export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRow, ...props }) {
   const dispatch = useDispatch();
   const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
@@ -106,6 +92,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     watch
   } = useForm();
 
+  // Rendering form state onn nra related value changes
   const formSchema = useMemo(() => {
     return parcelOwnerForm({
       getValues,
@@ -242,6 +229,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       ownerToAdd?.campaignName ||
       selectedRow?.campaignName !== ownerToAdd.campaignName
     ) {
+      // Fixed label value issue
       updateContact({
         variables: {
           contact: {
@@ -273,9 +261,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       handleUpdateContact(formStateValues)
     }
 
-    const ownerType = formStateValues.ownerType && (formStateValues.ownerType.value || formStateValues.ownerType);
+    // Fixed label value issue
     if (selectedRow) {
-      // Update parcel owner object for autocompletes
       const parcelOwner = extractValueRecursively({
         _id: selectedRow?._id,
         ...formStateValues,
@@ -296,6 +283,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         awaitRefetchQueries: true,
       });
     } else {
+      // Fixed label value issue
       // Update parcel owner object for autocompletes
       const parcelOwner = extractValueRecursively({
         ...formStateValues,

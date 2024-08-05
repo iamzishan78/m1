@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { Grid, TextField, InputAdornment, CircularProgress } from "@material-ui/core";
 import { Autorenew as AutorenewIcon } from "@material-ui/icons";
 import EmailOutlinedIcon from "@material-ui/icons/EmailOutlined";
+import AddIcCallIcon from '@mui/icons-material/AddIcCall';
 import { makeStyles } from "@material-ui/core/styles";
 
 import vf_number from "components/Shared/valueformatters/vf_number";
@@ -215,16 +216,23 @@ export default function SummaryFields({ contactData }) {
                           disabled={field.disabled}
                           className={`${classes.field} ${isValueOveridden ? classes.baseValueChanged : null}`}
                           value={field.value ?? params.value}
-                          // If field type = "email", show msg icon adornment
+                          // If field type = "email", show mail icon adornment
                           // If field info is updating, show loading as adornment
+                          // If field is one of 'homePhone', 'mobilePhone', 'AltPhone', show phone icon adornment
                           // else show nothing
                           InputProps={{
                             inputComponent: field.type === "currency" ? CurrencyFormatCustom : field.key.includes('nraSum') ? NumberFormatComma : undefined,
                             endAdornment:
                               field.type === "email" && contactData[field.key] ? (
-                                <a href={"mailto:" + contactData.primaryEmail} className={classes.emailAdornment}>
+                                <a href={`mailto: ${contactData.primaryEmail}`} className={classes.emailAdornment}>
                                   <InputAdornment position="end">
                                     <EmailOutlinedIcon htmlColor="#757575" />
+                                  </InputAdornment>
+                                </a>
+                              ) : ['homePhone', 'mobilePhone', 'AltPhone'].includes(field.key) && contactData[field.key] ? (
+                                <a href={`tel: ${contactData[field.key]}`} className={classes.emailAdornment}>
+                                  <InputAdornment position="end">
+                                    <AddIcCallIcon htmlColor="#757575" />
                                   </InputAdornment>
                                 </a>
                               ) : activeLoadingField === field.key ? (
