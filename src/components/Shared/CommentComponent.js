@@ -182,7 +182,9 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
           get(eachComment, "commentType")
         ) !== "General" && (
           <span className={classes.commentTypeSection}>
-            {get(
+            {
+            // Displplay commentType
+            get(
               eachComment,
               "commentType.commentType"
             )}
@@ -366,6 +368,7 @@ export default function CommentComponent(props) {
 
   useEffect(() => {
     if (profilesData?.data?.profileByEmail?.profiles) {
+      // Set profile data
       setProfilesInfo(profilesData.data.profileByEmail.profiles);
     }
   }, [profilesData]);
@@ -666,6 +669,7 @@ export default function CommentComponent(props) {
                       round
                     />
                   ) : (
+                    // Either use pinned user's displayname or logged In user's
                     <Avatar name={profilesInfo[pinnedComment?.user?.email]?.displayName || profile?.displayName} size="38" round />
                   )}
                 </IconButton>
@@ -677,6 +681,7 @@ export default function CommentComponent(props) {
               >
                 <div>
                   <span className={classes.bold}>
+                  {/* Either use pinned user's displayname or logged In user's */}
                     {profilesInfo[pinnedComment?.user?.email]?.displayName || profile?.displayName}
                   </span>
                   {!isNaN(pinnedComment.ts) && (
@@ -806,6 +811,7 @@ export default function CommentComponent(props) {
                                 round
                               />
                             ) : (
+                              // Either use pinned user's displayname or logged In user's 
                               <Avatar
                                 name={profilesInfo[eachComment?.user?.email]?.displayName || profile?.displayName}
                                 size="38"
@@ -826,6 +832,7 @@ export default function CommentComponent(props) {
                         >
                           <div>
                             <span className={classes.bold}>
+                              {/* Either use pinned user's displayname or logged In user's */}
                               {profilesInfo[eachComment?.user?.email]?.displayName || profile?.displayName}
                             </span>
                             {eachComment?.commentType?.commentType ===
