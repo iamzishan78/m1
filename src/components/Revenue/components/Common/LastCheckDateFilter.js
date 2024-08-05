@@ -10,7 +10,7 @@ import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 import { MenuItem } from "material-ui";
 import { MuiThemeProvider } from "material-ui/styles";
 import { dateFilterToDate } from "utils/helper";
-import { copy } from "components/Shared/functions";
+import { copy, deepEqual } from "components/Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: {
@@ -128,8 +128,9 @@ const LastCheckDateFilter = ({
         value: status,
       });
     }
-
+    if (!deepEqual(filters, esFilters)) { // prevent from unnecessary re rendering 
     setESFilters(filters);
+    }
     setFilterToggle(!filterToggle);
   };
 
@@ -236,4 +237,4 @@ const LastCheckDateFilter = ({
   );
 };
 
-export default LastCheckDateFilter;
+export default React.memo(LastCheckDateFilter);
