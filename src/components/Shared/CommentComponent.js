@@ -647,7 +647,7 @@ export default function CommentComponent(props) {
   const pinnedCommentsJsx = React.useMemo(
     () => (
       <>
-        {pinnedComments?.map((pinnedComment, key) => (
+        {pinnedComments?.map((pinnedComment, key) => pinnedComment?.user?.name &&  (
           <Fragment key={key}>
             <Grid
               id="commentsArea"
@@ -783,7 +783,7 @@ export default function CommentComponent(props) {
               {commentsArray.map((eachComment, index) => {
                 let indexToShow =
                   commentsArray.length > 7 ? commentsArray.length - 7 : 0;
-                return (
+                return eachComment?.user?.name && (
                   <Fragment key={index}>
                     {(showAllComments || index >= indexToShow) && (
                       <Grid
