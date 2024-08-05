@@ -137,9 +137,9 @@ const ApexChart = ({ esFilters, checkData }) => {
 
       dateData.forEach((obj) => {
         const { label, data } = obj;
-        const monthYear = label.slice(0, 7);
+        const monthYear = label?.slice(0, 7);
 
-        if (!labels.includes(monthYear)) {
+        if (!labels?.includes(monthYear)) {
           sumByLabel[monthYear] = (sumByLabel[monthYear] || 0) + data;
           labels.push(monthYear);
         } else {
