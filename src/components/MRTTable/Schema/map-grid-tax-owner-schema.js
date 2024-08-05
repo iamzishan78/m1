@@ -17,7 +17,7 @@ const TaxOwnerMeta = {
     maxTableHeight: 'calc(100vh - 290px)',
     isInFiniteScroll: true,
     isDeleteDisabled: true,
-    columnVirtualization: true,
+    columnVirtualization: false,
     getIdsFromRows: rows => rows?.map(row => row?.id) || [],
     additionalQueries: ['isContact', 'comments'],
     TableSchema: [
