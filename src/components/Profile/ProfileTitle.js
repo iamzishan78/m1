@@ -26,16 +26,24 @@ const ProfileTitle = (props) => {
   const [stateProfile, setStateProfile] = useContext(ProfileContext);
   const [defaultProfile, setDefaultProfile] = useState(null);
 
-// Set the previous state if the dialog is closed without saving
+  // Destructure fields from stateProfile
+  const { fields } = stateProfile;
+
+  // Store the initial state when the dialog opens
   useEffect(() => {
-    if (!defaultProfile) {
+    // check if defaultProfile is null and any field is defined
+    if (!defaultProfile && Object.values(fields).some(field => field)) {
       setDefaultProfile(stateProfile);
     }
-  }, []);
+  }, [stateProfile, defaultProfile]);
 
   const handleClose = () => {
     setStateNav({ ...stateNav, isProfileOpen: false });
-    setStateProfile(defaultProfile)
+    
+    // Revert to the initial state if changes were not saved
+    if (defaultProfile) {
+      setStateProfile(defaultProfile);
+    }
   };
 
   return (
