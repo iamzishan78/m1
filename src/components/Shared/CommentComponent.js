@@ -184,8 +184,7 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
           <span className={classes.commentTypeSection}>
             {get(
               eachComment,
-              "commentType.commentType",
-              get(eachComment, "commentType")
+              "commentType.commentType"
             )}
           </span>
         )}
@@ -260,7 +259,7 @@ export default function CommentComponent(props) {
   const [editComment, setEditComment] = useState("");
   const [showAllComments, setShowAllComments] = useState(false);
   const [profilesInfo, setProfilesInfo] = useState({});
-  const [profileImage, setProfileImage] = useState(null);
+  const [profile, setProfile] = useState({});
   const [commentsArray, setCommentsArray] = useState([]);
   const [showActions, setShowActions] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -387,14 +386,8 @@ export default function CommentComponent(props) {
       profiledata.data.profileByEmail &&
       profiledata.data.profileByEmail.profile
     ) {
-      const {
-        data: {
-          profileByEmail: {
-            profile: { profileImage },
-          },
-        },
-      } = profiledata;
-      setProfileImage(profileImage);
+      const profile = profiledata.data.profileByEmail.profile
+      setProfile(profile);
     }
   }, [profiledata]);
 
@@ -647,7 +640,7 @@ export default function CommentComponent(props) {
   const pinnedCommentsJsx = React.useMemo(
     () => (
       <>
-        {pinnedComments?.map((pinnedComment, key) => pinnedComment?.user?.name &&  (
+        {pinnedComments?.map((pinnedComment, key) => (
           <Fragment key={key}>
             <Grid
               id="commentsArea"
@@ -665,7 +658,7 @@ export default function CommentComponent(props) {
                     <Avatar
                       src={
                         pinnedComment.isNew
-                          ? profileImage
+                          ? profile?.profileImage
                           : profilesInfo[pinnedComment?.user?.email]
                             .profileImage
                       }
@@ -673,7 +666,7 @@ export default function CommentComponent(props) {
                       round
                     />
                   ) : (
-                    <Avatar name={pinnedComment?.user?.name} size="38" round />
+                    <Avatar name={profilesInfo[pinnedComment?.user?.email]?.displayName || profile?.displayName} size="38" round />
                   )}
                 </IconButton>
               </Grid>
@@ -684,7 +677,7 @@ export default function CommentComponent(props) {
               >
                 <div>
                   <span className={classes.bold}>
-                    {pinnedComment?.user?.name}
+                    {profilesInfo[pinnedComment?.user?.email]?.displayName || profile?.displayName}
                   </span>
                   {!isNaN(pinnedComment.ts) && (
                     <ReactTimeAgo
@@ -741,7 +734,7 @@ export default function CommentComponent(props) {
         ))}
       </>
     ),
-    [pinnedComments, profileImage, profilesInfo, users]
+    [pinnedComments, profile, profilesInfo, users]
   );
 
   return (
@@ -783,7 +776,7 @@ export default function CommentComponent(props) {
               {commentsArray.map((eachComment, index) => {
                 let indexToShow =
                   commentsArray.length > 7 ? commentsArray.length - 7 : 0;
-                return eachComment?.user?.name && (
+                return (
                   <Fragment key={index}>
                     {(showAllComments || index >= indexToShow) && (
                       <Grid
@@ -805,7 +798,7 @@ export default function CommentComponent(props) {
                               <Avatar
                                 src={
                                   eachComment?.isNew
-                                    ? profileImage
+                                    ? profile?.profileImage
                                     : profilesInfo[eachComment?.user?.email]
                                       .profileImage
                                 }
@@ -814,7 +807,7 @@ export default function CommentComponent(props) {
                               />
                             ) : (
                               <Avatar
-                                name={eachComment?.user?.name}
+                                name={profilesInfo[eachComment?.user?.email]?.displayName || profile?.displayName}
                                 size="38"
                                 round
                               />
@@ -833,7 +826,7 @@ export default function CommentComponent(props) {
                         >
                           <div>
                             <span className={classes.bold}>
-                              {eachComment?.user?.name}
+                              {profilesInfo[eachComment?.user?.email]?.displayName || profile?.displayName}
                             </span>
                             {eachComment?.commentType?.commentType ===
                               "unitCreation" && (
@@ -1002,8 +995,8 @@ export default function CommentComponent(props) {
                   className={classes.commentView}
                 // style={{ top: "3px" }}
                 >
-                  {profileImage ? (
-                    <Avatar src={profileImage} size="38" round />
+                  {profile?.profileImage ? (
+                    <Avatar src={profile?.profileImage} size="38" round />
                   ) : (
                     <Avatar name={user.name} size="38" round />
                   )}
