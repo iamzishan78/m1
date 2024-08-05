@@ -184,13 +184,14 @@ const ProfileContent = () => {
             InputProps={{
               disableUnderline: true,
               classes: { input: classes.input },
+              inputProps: { maxLength: 50 }, // Limit the length to 50 characters
             }}
             FormHelperTextProps={{
               classes: { root: classes.helperText },
             }}
             label={"Display Name"}
             placeholder={"Display Name"}
-           // helperText={"This could be your nickname or first name"}
+            helperText={displayName?.length >= 50 && "Maximum length of 50 characters has reached"} // Helper text to display 
             name="displayName"
             value={displayName}
             onChange={({ target }) => onChange(target)}

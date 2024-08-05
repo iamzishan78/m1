@@ -1,7 +1,7 @@
 import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import UnitIcon from 'components/Shared/svgIcons/unit';
-import { formatDate } from 'components/Shared/functions';
+import _ from 'lodash';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';

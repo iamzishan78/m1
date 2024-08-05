@@ -28,6 +28,7 @@ const ComparisonMeta = {
 			name: 'check.checkNumber.keyword',
 			accessorFn: row => row?.check?.checkNumber,
 			id: 'check.checkNumber',
+			isExternalFilter: true,
 			header: 'Check Number',
 			Cell: ({ row, cell }) => {
 				const interestAmount = row.getValue('property.interest.interestAmount');

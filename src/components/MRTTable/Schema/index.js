@@ -19,6 +19,7 @@ import ContactWellInterestMeta from "./contact_well_Interest_schema"
 import MyWellsMeta from './my_wells_schema';
 import WellsMeta from './wells_schema';
 import TaxOwnerMeta from './map-grid-tax-owner-schema';
+import SalesVolumeComparisonMeta from './sales-volume-comparison-schema';
 
 export const SCHEMA = {
 	ContactTable: ContactMeta,
@@ -46,4 +47,5 @@ export const SCHEMA = {
 	MyWellsTable: MyWellsMeta,
 	WellsTable: WellsMeta,
 	TaxOwnerTable: TaxOwnerMeta,
+	SalesVolumeComparisonTable: SalesVolumeComparisonMeta, // Sales Volume comparison grid => analytrics/revenue
 };
