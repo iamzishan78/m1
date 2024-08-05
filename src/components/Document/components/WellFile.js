@@ -505,7 +505,7 @@ export default function DocumentDrawer(props) {
                         fileName: doc?.fileName,
                       };
                     })
-                  : [];
+                  : []
                   }
                   getOptionLabel={(option) => {
                     if (typeof option === "string") {
