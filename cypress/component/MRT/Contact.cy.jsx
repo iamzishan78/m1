@@ -5,6 +5,8 @@ import moment from 'moment';
 import ldata from '../../fixtures/ldata.json';
 import { headers } from '../../cypressUtils/cypressHeaders';
 import { REVERTCYPRESSDELETE } from 'graphQL/useMutationCommonCypressRevert';
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { DELETEACTIVITY } from 'graphQL/useMutationActivity';
 
 let responseHits = [];
 
@@ -23,6 +25,19 @@ const columns = [
     type: 'string',
   },
 ];
+
+const getElasticDataPayload = ({ index, search = null, filters = [], pagination = null }) => {
+  return {
+    operationName: 'getESSimpleSearch',
+    variables: {
+      index: index,
+      search: search,
+      filters: filters,
+      pagination: pagination,
+    },
+    query: GET_ES_SIMPLE_SEARCH.loc.source.body,
+  };
+};
 
 const checkPrimaryAddress = (job) => {
   cy.wrap(job.resultsPayload.datasets[0].exportResponse[0]['Primary Address'])
@@ -64,6 +79,77 @@ describe('Contact Table', () => {
         });
       },
       { wait: false }
+    );
+  });
+
+  it('verifies activity actions from contacts grid ', () => {
+    cy.get('button[title="Actions"]').first().scrollIntoView().click({ force: true });
+    cy.contains('li', 'Add call log').click();
+
+    // Type into the text field with data-testid 'activity-name-field'
+    cy.get('[data-testid="activity-name-field"]').scrollIntoView().type('New Activity');
+
+    cy.interceptAndWait(
+      ['addActivity'],
+      (alias) => {
+        // Click the Add button
+        cy.contains('span', 'Add').scrollIntoView().click();
+        // Wait for the API call to finish with a custom timeout and process the response
+        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then((response) => {
+          const activity = response.response.body.data.addActivity.activity;
+
+          // Getting the cotact activities
+          cy.request({
+            method: 'POST',
+            url: ldata.url,
+            headers: headers,
+            body: getElasticDataPayload({
+              index: 'activities_flat',
+              pagination: {
+                first: 25,
+                after: null,
+              },
+              search: {
+                query: null,
+                fields: ['name', '_all'],
+              },
+              filters: [
+                {
+                  field: 'contactName.keyword',
+                  value: activity.contactName,
+                },
+                {
+                  field: 'type.keyword',
+                  value: 'Expiration',
+                  notInclude: true,
+                },
+                {
+                  field: 'type.keyword',
+                  value: 'Option to Extend',
+                  notInclude: true,
+                },
+              ],
+            }),
+          }).then((esResponse) => {
+            const activities = esResponse.body.data.getESSimpleSearch.hits;
+            // Checking if the activity is attached with the contact
+            expect(activities.some((e) => e._id === activity._id)).to.eq(true);
+
+            // Deleting the created activity
+            cy.request({
+              method: 'POST',
+              url: ldata.url,
+              headers: headers,
+              body: {
+                operationName: 'deleteActivity',
+                variables: { id: activity._id },
+                query: DELETEACTIVITY.loc.source.body,
+              },
+            });
+          });
+        });
+      },
+      { wait: false } // Do not automatically wait for the intercepted request
     );
   });
 
