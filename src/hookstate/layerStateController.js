@@ -71,7 +71,7 @@ const getWellColor = w => {
 
 		// rgb(192, 0, 0)
 		default:
-			return [0, 0, 0];  // default semi-transparent dark for permitted
+			return [58, 58, 58];  // default dark for permitted
 	}
 };
 
