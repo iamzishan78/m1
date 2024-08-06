@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Drawer(props) {
   const classes = useStyles(props);
-  const { activePanel, setPanel, wellsCount } = props;
+  const { activePanel, setPanel, wellsCount, contactsCount } = props;
 
 
   const drawerIcons = {
@@ -63,7 +63,7 @@ export default function Drawer(props) {
       </Badge>
     ),
     Contacts: (props) => (
-      <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary" badgeContent={wellsCount} >
+      <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary" badgeContent={contactsCount}>
         <PersonIcon />
       </Badge>
     ),
