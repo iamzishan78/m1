@@ -195,9 +195,9 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   }, [mutationData, updateData]);
 
   useEffect(() => {
-    const { uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing } = props?.customLayer?.shapeJson?.properties;
+    const { uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing, leaseBonusPerAcre } = props?.customLayer?.shapeJson?.properties;
     sideDialogController("tractInterestDialog").updateState({
-      uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing
+      uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing, leaseBonusPerAcre
     })
 
   }, [props?.customLayer?.shapeJson?.properties])

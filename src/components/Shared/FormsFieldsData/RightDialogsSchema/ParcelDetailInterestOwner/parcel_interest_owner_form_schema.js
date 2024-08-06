@@ -33,6 +33,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
   const uMaxUnitPricing = sideDialogController("tractInterestDialog").getValue('uMaxUnitPricing')
   const uUnitPricingNMA = sideDialogController("tractInterestDialog").getValue('uUnitPricingNMA')
   const uMaxUnitPricingNMA = sideDialogController("tractInterestDialog").getValue('uMaxUnitPricingNMA')
+  const leaseBonusPerAcre = sideDialogController("tractInterestDialog").getValue('leaseBonusPerAcre')
   if (newOwner) {
     let contactArray = contactForm({ getValues, setValue })
     contactFields.splice(-2)
@@ -66,6 +67,8 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
           setValue('net_acres', netAcres)
           setValue('offer_price_nma', calculateOfferPrice(netAcres, uUnitPricingNMA))
           setValue('max_offer_price_nma', calculateOfferPrice(netAcres, uMaxUnitPricingNMA))
+          // Update bonus payment
+          setValue('bonus_payment', calculateOfferPrice(netAcres, leaseBonusPerAcre))
         }
 
         if (!sideDialogController("tractInterestDialog").getValue('showNraRecalculate')) {
@@ -166,6 +169,8 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
         }
         setValue('offer_price_nma', calculateOfferPrice(value, uUnitPricingNMA))
         setValue('max_offer_price_nma', calculateOfferPrice(value, uMaxUnitPricingNMA))
+        // Update bonus payment
+        setValue('bonus_payment', calculateOfferPrice(value, leaseBonusPerAcre))
         return value
       },
       InputProps: {
@@ -401,6 +406,47 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
           </InputAdornment>
         ),
       }
+    },
+    // Bonus payment field
+    {
+      label: "Bonus Payment",
+      name: "bonus_payment",
+      defaultValue: leaseBonusPerAcre,
+      isValueOverridden: (value) => {
+        if (!value) return false;
+        const { net_acres } = getValues() || {};
+
+        const calculatedBonusPayment = calculateOfferPrice(net_acres, leaseBonusPerAcre);
+        const isOverride = safeParseFloat(value) !== safeParseFloat(calculatedBonusPayment);
+
+        sideDialogController("tractInterestDialog").updateState({ 'showBonusPaymentRecalculate': isOverride, rerenderJson: isOverride })
+        return isOverride;
+      },
+      onBlur: (value) => {
+        const cleanedValue = value.replace(/[$,]/g, '');
+        // Use safeParseFloat to remove NaN
+        const numericValue = safeParseFloat(cleanedValue);
+        const formattedValue = numericValue.toFixed(8);
+        return formattedValue;
+      },
+      InputProps: {
+        inputComponent: CurrencyFormatCustom,
+        endAdornment: (
+          <InputAdornment position="end">
+            {!!sideDialogController("tractInterestDialog").getValue('showBonusPaymentRecalculate') && (
+              <IconButton
+                aria-label="toggle bonus_payment"
+                onClick={() => {
+                  const { net_acres } = getValues() || {}
+                  setValue('bonus_payment', calculateOfferPrice(net_acres, leaseBonusPerAcre))
+                }}
+              >
+                <AutorenewIcon />
+              </IconButton>
+            )}
+          </InputAdornment>
+        ),
+      },
     },
     {
       label: "Seller Asking Price",
