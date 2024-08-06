@@ -382,7 +382,8 @@ export default function Contacts(props) {
                         </ListItemSecondaryAction>
                       ) : (
                         <ListItemSecondaryAction
-                          onClick={() => {
+                          onClick={(event) => {
+                            event.stopPropagation();  // Stop the click event from propagating to the Accordion
                             props?.deleteContact(i, setMutationLoading);
                           }}
 
