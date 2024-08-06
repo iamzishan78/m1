@@ -35,15 +35,18 @@ const Profile = () => {
   const [defaultProfile, setDefaultProfile] = useState(null);
 
     // Destructure fields from stateProfile
-    const { fields: { displayName } } = stateProfile;
+    const { fields: { displayName }, isSaving } = stateProfile;
 
     useEffect(() => {
       // check if defaultProfile is null and displayName is defined
       if (!defaultProfile && displayName) {
         setDefaultProfile(stateProfile);
       }
+      else if(defaultProfile && isSaving) {
+        setDefaultProfile({...stateProfile, isSaving: false});
+      }
     }, [stateProfile]);
-  
+
     const handleClose = () => {
       setStateNav({ ...stateNav, isProfileOpen: false });
       // Revert the state
