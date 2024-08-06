@@ -35,7 +35,16 @@ import { layerState, layerStateInitialState } from './initialStates';
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
 const getWellColor = w => {
-	switch (w.properties.wellType) {
+	// Check if the well status is of Permit type
+	const isWellPermitStatus = [
+		'PERMIT',
+		'PERMIT - NEW DRILL',
+		'PERMIT - EXISTING WELL'
+	].includes(w?.properties?.wellStatus);
+
+	// Switch on whether wellStatus or wellType 
+	const switchType = isWellPermitStatus ? w.properties.wellStatus : w.properties.wellType;
+	switch (switchType) {
 		// rgb(2, 207, 53)
 		case 'OIL':
 		case 'OIL AND GAS':
