@@ -40,7 +40,7 @@ import { copy } from '../Shared/functions';
 import DefaultFiltersTest from './filtersDefaultTest';
 import MarkerIcon from './sprites/marker-icon.png';
 import MapGridCardProvider from '../MapGridCard/MapGridProvider';
-import { drawBoundary, drawWellBoundary } from '../MapControls/components/DrawShapes/drawShapesHelpers';
+import { drawBoundary, drawWellBoundary, drawPlaceBoundary } from '../MapControls/components/DrawShapes/drawShapesHelpers';
 import HugeRequest from './components/HugeRequest';
 import ZoomFault from './components/ZoomFault';
 import { SRMode } from './MapBoxDrawRotate/index';
@@ -1117,12 +1117,6 @@ function Map({
 				layerStateValues.wellListFromSearch[0].latitude &&
 				layerStateValues.wellListFromSearch[0].longitude
 			) {
-				if (map && selectedPlaces) {
-					const places = selectedPlaces.get({
-						noproxy: true,
-					});
-					drawWellBoundary([places?.geometry?.coordinates[0], places?.geometry?.coordinates[1]]) // show dot on searched places coordinates
-				}
 				map.jumpTo({
 					center: {
 						lng: layerStateValues.wellListFromSearch[0].longitude,
@@ -1136,7 +1130,31 @@ function Map({
 				}));
 			}
 		}
-	}, [map, wellListFromSearch, selectedPlaces]);
+	}, [map, wellListFromSearch, ]);
+
+	useEffect(() => {
+		if (map && selectedPlaces) {
+			const places = selectedPlaces.get({
+				noproxy: true,
+			});
+			if (!places) return;
+			const longitude  = places?.geometry?.coordinates[0]
+			const latitude  = places?.geometry?.coordinates[1]
+			drawPlaceBoundary([longitude, latitude]) // show dot on searched places coordinates
+			map.jumpTo({
+				center: {
+					lng: longitude,
+					lat: latitude,
+				},
+				zoom: 16,
+			}); // Jump to the selected place longitude & latitude
+			setStateApp(state => ({
+				...state,
+				searchLoader: false,
+			}));
+		}
+
+	}, [map, selectedPlaces]) // create separate effect for the selectedPlaces
 
 	useEffect(() => {
 		if (map && stateApp?.findLocation?.location?.length > 0) {
