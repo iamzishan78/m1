@@ -519,6 +519,7 @@ export default function DocumentDrawer(props) {
     await deleteContactFromDescriptor({
       variables: { descriptorId: stateApp?.selectedDocument?._id, contactId },
     });
+    props.refetchData(true); // refetch search data on delete
   };
   
   return (
