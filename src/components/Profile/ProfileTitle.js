@@ -3,10 +3,9 @@ import IconButton from "@material-ui/core/IconButton";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
-import React, { useContext } from "react";
-import { useHistory } from "react-router-dom";
+import React, { useContext, useState, useEffect } from "react";
 import { NavigationContext } from "../Navigation/NavigationContext";
-
+import { ProfileContext } from "./ProfileContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,9 +23,19 @@ const useStyles = makeStyles((theme) => ({
 const ProfileTitle = (props) => {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
+  const [stateProfile, setStateProfile] = useContext(ProfileContext);
+  const [defaultProfile, setDefaultProfile] = useState(null);
+
+// Set the previous state if the dialog is closed without saving
+  useEffect(() => {
+    if (!defaultProfile) {
+      setDefaultProfile(stateProfile);
+    }
+  }, []);
 
   const handleClose = () => {
     setStateNav({ ...stateNav, isProfileOpen: false });
+    setStateProfile(defaultProfile)
   };
 
   return (
