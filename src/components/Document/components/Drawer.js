@@ -514,12 +514,13 @@ export default function DocumentDrawer(props) {
 
   // delete contact from File Descriptor
   const deleteContact = async (index, setMutationLoading) => {
+    props.refetchData(false);
     const contactId  = contacts[index]?._id;
     setMutationLoading(contactId);
     await deleteContactFromDescriptor({
       variables: { descriptorId: stateApp?.selectedDocument?._id, contactId },
     });
-    props.refetchData(true); // refetch search data on delete
+    props.refetchData(contactId); // refetch search data on delete
   };
   
   return (
