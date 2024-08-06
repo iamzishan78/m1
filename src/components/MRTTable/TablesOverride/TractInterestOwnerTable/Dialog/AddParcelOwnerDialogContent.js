@@ -28,6 +28,7 @@ import { sideDialogController, tractInterestOwnerState } from 'hookstate/sideDia
 import { globalStateController } from 'hookstate/globalStateController';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
+import { extractValueRecursively } from 'components/MRTTable/utils/helper';
 
 const useStyles = makeStyles(theme => ({
   dialogContent: {
@@ -72,7 +73,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-
 export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRow, ...props }) {
   const dispatch = useDispatch();
   const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
@@ -92,6 +92,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     watch
   } = useForm();
 
+  // Rendering form state onn nra related value changes
   const formSchema = useMemo(() => {
     return parcelOwnerForm({
       getValues,
@@ -100,7 +101,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       state: props?.customLayer?.state,
       newOwner: formStateValues?.newOwner,
     });
-  }, [formStateValues?.newOwner, formState?.rerenderJson]);
+  }, [formStateValues?.newOwner, formState?.rerenderJson, formState?.uMaxUnitPricing, formState?.uUnitPricing, formState?.uUnitPricingNMA, formState?.uMaxUnitPricingNMA]);
 
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
   const [nameAutInputValue, NameAutInputValue] = useState('');
@@ -194,9 +195,9 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   }, [mutationData, updateData]);
 
   useEffect(() => {
-    const { uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing } = props?.customLayer?.shapeJson?.properties;
+    const { uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing, leaseBonusPerAcre } = props?.customLayer?.shapeJson?.properties;
     sideDialogController("tractInterestDialog").updateState({
-      uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing
+      uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing, leaseBonusPerAcre
     })
 
   }, [props?.customLayer?.shapeJson?.properties])
@@ -228,15 +229,16 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       ownerToAdd?.campaignName ||
       selectedRow?.campaignName !== ownerToAdd.campaignName
     ) {
+      // Fixed label value issue
       updateContact({
         variables: {
           contact: {
             _id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
-            contactStatus: ownerToAdd.contactStatus,
-            status: ownerToAdd.status,
+            contactStatus: ownerToAdd.contactStatus && (ownerToAdd.contactStatus.value || ownerToAdd.contactStatus),
+            status: ownerToAdd.status && (ownerToAdd.status.value || ownerToAdd.status),
             lastUpdateBy: getUser?._id,
-            ownerType: ownerToAdd.ownerType,
-            campaignPriority: ownerToAdd.campaignPriority,
+            ownerType: ownerToAdd.ownerType && (ownerToAdd.ownerType.value || ownerToAdd.ownerType),
+            campaignPriority: ownerToAdd.campaignPriority && (ownerToAdd.campaignPriority.value || ownerToAdd.campaignPriority),
           },
         },
       });
@@ -259,17 +261,18 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       handleUpdateContact(formStateValues)
     }
 
+    // Fixed label value issue
     if (selectedRow) {
+      const parcelOwner = extractValueRecursively({
+        _id: selectedRow?._id,
+        ...formStateValues,
+        deals: formStateValues?.deals || [],
+        relatedObject: formStateValues.relatedObject,
+        createBy: getUser?._id,
+        lastUpdateBy: getUser?._id,
+      });
       updateParcelOwner({
-        variables: {
-          parcelOwner: {
-            _id: selectedRow?._id,
-            ...formStateValues,
-            deals: formStateValues?.deals || [],
-            createBy: getUser?._id,
-            lastUpdateBy: getUser?._id,
-          },
-        },
+        variables: { parcelOwner },
         refetchQueries: [
           'getparcelOwners',
           'getContactParcelInterests',
@@ -280,15 +283,17 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         awaitRefetchQueries: true,
       });
     } else {
+      // Fixed label value issue
+      // Update parcel owner object for autocompletes
+      const parcelOwner = extractValueRecursively({
+        ...formStateValues,
+        deals: formStateValues?.deals || [],
+        relatedObject: formStateValues.relatedObject,
+        createBy: getUser?._id,
+        lastUpdateBy: getUser?._id,
+      });
       addOwnerToAParcel({
-        variables: {
-          parcelOwner: {
-            ...formStateValues,
-            deals: formStateValues?.deals || [],
-            createBy: getUser?._id,
-            lastUpdateBy: getUser?._id,
-          },
-        },
+        variables: { parcelOwner },
         refetchQueries: [
           'getCustomLayer',
           'getparcelOwners',
@@ -363,6 +368,9 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   nameAutValue={formStateValues?.name}
                   setNameAutValue={(contact) => {
                     sideDialogController("tractInterestDialog").updateState({ name: contact?.name, ownerEntity: contact?._id, relatedObject: contact?._id })
+                    // Setting owner type when contact is selected
+                    if (contact?.ownerType)
+                      setValue('ownerType', { label: contact?.ownerType, value: contact?.ownerType })
                   }}
                   nameAutInputValue={nameAutInputValue}
                   setNameAutInputValue={setNameAutInputValue}

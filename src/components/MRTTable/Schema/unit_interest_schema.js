@@ -257,14 +257,6 @@ const UnitInterestMeta = {
 			header: 'Unit Tract Acres',
 			isSearchField: false
 		},
-
-		// {
-		// 	...CommonSchema.COMMON_COLUMN,
-		// 	name: 'shape.shapeJson.properties.uUnitPricing.keyword',
-		// 	accessorKey: 'shape.shapeJson.properties.uUnitPricing',
-		// 	header: 'Price/NRA',
-		// },
-
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'offer_price',
@@ -277,12 +269,34 @@ const UnitInterestMeta = {
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'uUnitPricingInterest',
+			accessorKey: 'uUnitPricingInterest',
+			header: 'Target Price/NRA',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => {
+				return <p>{vf_currency_to_fixed(row?.original?.uUnitPricingInterest, 2)}</p>
+			},
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'max_offer_price',
 			accessorKey: 'max_offer_price',
 			header: 'Max Offer Price',
 			isSearchField: false,
 			Cell: ({ row }) => {
 				return <p>{vf_currency_to_fixed(row?.original?.max_offer_price, 2)}</p>
+			},
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'uMaxUnitPricingInterest',
+			accessorKey: 'uMaxUnitPricingInterest',
+			header: 'Max Price/NRA',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => {
+				return <p>{vf_currency_to_fixed(row?.original?.uMaxUnitPricingInterest, 2)}</p>
 			},
 		},
 		{

@@ -7,6 +7,7 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import { Warning as WarningIcon, CheckCircle } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import { formatDate } from 'components/Shared/functions';
+import vf_number from 'components/Shared/valueformatters/vf_number';
 
 // Define styles for tooltip
 const useStyles = makeStyles((theme) => ({
@@ -72,10 +73,11 @@ const RevenueStatementsMeta = {
     {
       ...CommonSchema.COMMON_COLUMN,
       name: 'checkAmount',
-      accessorFn: row => row?.checkAmount,
+      accessorFn: row => vf_number(row?.checkAmount), //Commma sperated checkamount after each thousand
       id: 'checkAmount',
       header: 'Check Amount',
       isSearchField: false,
+      Cell: ({ renderedCellValue }) => <>{vf_number(renderedCellValue)}</>,
     },
     // Column for Check Date
     {
@@ -151,7 +153,7 @@ const RevenueStatementsMeta = {
       name: 'sourceId.keyword',
       accessorFn: row => row?.sourceId,
       id: 'sourceId',
-      header: 'Check ID',
+      header: 'Source ID',
     },
     {
       ...CommonSchema.COMMON_COLUMN,

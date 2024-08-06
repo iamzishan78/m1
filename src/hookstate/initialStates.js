@@ -136,6 +136,7 @@ export const jobState = hookstate(copy(jobInitialState));
 
 export const layerFilterInitialState = {
     polygonFilter: null,
+    polygonsFilter: [],
     Units: {
         layerName: 'Units',
         allowedTypes: ['Polygon', 'MultiPolygon'],

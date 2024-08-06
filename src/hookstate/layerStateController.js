@@ -35,33 +35,43 @@ import { layerState, layerStateInitialState } from './initialStates';
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
 const getWellColor = w => {
-	switch (w.properties.wellType) {
+	// Check if the well status is of Permit type
+	const isWellPermitStatus = [
+		'PERMIT',
+		'PERMIT - NEW DRILL',
+		'PERMIT - EXISTING WELL'
+	].includes(w?.properties?.wellStatus);
+
+	// Switch on whether wellStatus or wellType 
+	const switchType = isWellPermitStatus ? w.properties.wellStatus : w.properties.wellType;
+	switch (switchType) {
+		
 		// rgb(2, 207, 53)
 		case 'OIL':
 		case 'OIL AND GAS':
-			return [2, 207, 53];
+			return [2, 207, 53];  // green
 
 		// rgb(230, 15, 15)
 		case 'GAS':
-			return [230, 15, 15];
+			return [230, 15, 15]; // red
 
 		// rgb(74, 211, 242)
 		case 'WATER':
-			return [74, 211, 242];
+			return [74, 211, 242]; // blue
 
 		// rgb(251, 152, 40)
 		case 'PERMIT':
 		case 'PERMIT - NEW DRILL':
 		case 'PERMIT - EXISTING WELL':
-			return [251, 152, 40];
+			return [251, 152, 40];  // orange
 
 		// rgba(30, 26, 26, 0.55)
 		case 'PERMITTED':
-			return [30, 26, 26, 0.55];
+			return [251, 152, 40];  // orange
 
 		// rgb(192, 0, 0)
 		default:
-			return [192, 0, 0];
+			return [0, 0, 0];  // default semi-transparent dark for permitted
 	}
 };
 
@@ -543,6 +553,12 @@ const layerStateControllerHandler = state => {
 			map.setLayoutProperty(meta?.id, "visibility", visible ? "visible" : "none");
 	}
 
+	const toggleLayersActivity = (identifier, value) => {
+		let layers = globalStateController.getValue('layers');
+		const layer = layers.find((layer) => layer.identifier.startsWith(identifier))
+		layerController.handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, visiable: value } })
+	}
+
 	const handleDeckLayer = dbLayer => {
 		const client = layerController.getValue('client');
 		if (!client) return;
@@ -564,8 +580,8 @@ const layerStateControllerHandler = state => {
 		const isAgreementLayer = agreementLayerIdentifiers.includes(dbLayer.identifier);
 		const filterIdentifier = isAgreementLayer ? 'Agreements' : isFileLayer ? dbLayer.layerShapeName : dbLayer.identifier;
 
-		let { [filterIdentifier]: filters, polygonFilter } = layerFiltersController.getValues(
-			[filterIdentifier, 'polygonFilter']
+		let { [filterIdentifier]: filters, polygonFilter, polygonsFilter } = layerFiltersController.getValues(
+			[filterIdentifier, 'polygonFilter', 'polygonsFilter']
 		);
 
 		const boundingState = handleBounds(
@@ -587,6 +603,7 @@ const layerStateControllerHandler = state => {
 		let updatedProps = {
 			pickable,
 			visible,
+			showable: dbLayer.layerSettings.showable
 		};
 
 		const labelProps =
@@ -646,7 +663,8 @@ const layerStateControllerHandler = state => {
 			boundingState,
 			geoField: meta.geoField,
 			polygonFilter,
-			filters: isFileLayer ? generateFileFilters(dbLayer, filters) : filters,
+			polygonsFilter,
+			filters: isFileLayer ? generateFileFilters({ fileLayer: dbLayer, extendFilters: filters }) : filters,
 			onData: data => {
 				if (!Array.isArray(data) || data.length === 0) return;
 				if (filters?.allowedTypes?.length > 0) {
@@ -671,6 +689,12 @@ const layerStateControllerHandler = state => {
 			layerController.updateState({ client, history });
 		},
 		resetBounds: identifier => {
+			if (identifier === 'Agreements') {
+				['Deeds', 'Leases', 'Contracts', 'Surfaces'].forEach((type) => {
+					layerController.resetBounds(type);
+				})
+				return
+			}
 			const { boundingStates } = state.get({
 				noproxy: true,
 			});
@@ -693,6 +717,7 @@ const layerStateControllerHandler = state => {
 		handleDeckLayer,
 		handleMapBoxLayer,
 		removeLayers,
+		toggleLayersActivity,
 		handleChange: () => {
 			const showableLayers = getShowableLayers();
 			showableLayers.forEach(dbLayer => {

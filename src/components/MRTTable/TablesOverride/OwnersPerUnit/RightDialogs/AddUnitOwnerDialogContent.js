@@ -25,6 +25,7 @@ import unitInterestOwnerForm from 'components/Shared/FormsFieldsData/RightDialog
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import AddIcon from "@material-ui/icons/Add";
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+import { extractValueRecursively } from 'components/MRTTable/utils/helper';
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -90,6 +91,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
+
 
 export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, uUnitPricing, uMaxUnitPricing, metaDataCategory, ...props }) {
   const dispatch = useDispatch();
@@ -216,48 +218,53 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       ...unitOwnerFormValue,
     })
 
+    const ownerType = formStateValues.ownerType && (formStateValues.ownerType.value || formStateValues.ownerType);
+
     if (formStateValues?.newOwner) {
-      sideDialogController("unitInterestDialog").updateState({ relatedObject: { ...unitOwnerFormValue } })
+      sideDialogController("unitInterestDialog").updateState({
+        relatedObject: {
+          ...unitOwnerFormValue,
+          ownerType
+        }
+      })
     } else {
       handleUpdateContact(formStateValues)
     }
-
     if (selectedRow) {
+      // Update shape owner object for autocompletes
+      const shapeOwner = extractValueRecursively({
+        _id: selectedRow?._id,
+        ...formStateValues,
+        deals: formStateValues?.deals || [],
+        relatedObject: formStateValues.relatedObject,
+        createBy: getUser?._id,
+        lastUpdateBy: getUser?._id,
+        shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),
+      });
       updateShapeOwners({
         variables: {
           shapeType: props.shapeType,
-          shapeOwners: [
-            {
-              _id: selectedRow?._id,
-              ...formStateValues,
-              contactStatus: formStateValues.contactStatus && (formStateValues.contactStatus.value || formStateValues.contactStatus),
-              status: formStateValues.status && (formStateValues.status.value || formStateValues.status),
-              ownerType: formStateValues.ownerType && (formStateValues.ownerType.value || formStateValues.ownerType),
-              campaignPriority: formStateValues.campaignPriority && (formStateValues.campaignPriority.value || formStateValues.campaignPriority),
-              shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),
-              createBy: getUser?._id,
-              lastUpdateBy: getUser?._id,
-            }
-          ],
+          shapeOwners: shapeOwner,
           userId: getUser?._id,
         },
         refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
         awaitRefetchQueries: true,
       });
     } else {
+      console.log(props)
+      // Update shape owner object for autocompletes
+      const shapeOwner = extractValueRecursively({
+        ...formStateValues,
+        deals: formStateValues?.deals || [],
+        relatedObject: formStateValues.relatedObject,
+        createBy: getUser?._id,
+        lastUpdateBy: getUser?._id,
+        shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),
+      });
       addOwnerToAShape({
         variables: {
           shapeType: props.shapeType,
-          shapeOwner: {
-            ...formStateValues,
-            contactStatus: formStateValues.contactStatus && (formStateValues.contactStatus.value || formStateValues.contactStatus),
-            status: formStateValues.status && (formStateValues.status.value || formStateValues.status),
-            ownerType: formStateValues.ownerType && (formStateValues.ownerType.value || formStateValues.ownerType),
-            campaignPriority: formStateValues.campaignPriority && (formStateValues.campaignPriority.value || formStateValues.campaignPriority),
-            shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),
-            createBy: getUser?._id,
-            lastUpdateBy: getUser?._id,
-          },
+          shapeOwner,
         },
         refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
         awaitRefetchQueries: true,
@@ -324,7 +331,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
           </Grid>
           <DialogContent className={classes.dialogContent}>
             <Grid container spacing={2}>
-              {!selectedRow &&
+              {/* {!selectedRow &&
                 <Button
                   variant="contained"
                   color="primary"
@@ -339,7 +346,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 >
                   Add Custom Data
                 </Button>
-              }
+              } */}
 
               <Grid item xs={12}>
                 {!formStateValues?.newOwner && <h3 style={{ float: "left" }}>Name</h3>}
