@@ -1167,7 +1167,7 @@ function AddDealDialog(props) {
     }
   }, [getDealResult]);
 
-  const gotoContact = (index) => {
+  const gotoContact = (index) => { // redirect to the contact details view on clicking contact name 
     setStateApp((stateApp) => ({
       ...stateApp,
       selectedContact: stateApp.activeDeal?.contacts[index]?._id,

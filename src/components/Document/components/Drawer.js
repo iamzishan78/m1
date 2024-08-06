@@ -365,13 +365,14 @@ export default function DocumentDrawer(props) {
     return contactDatalist
   }, [contacts]);
 
-  const gotoContact = (index) => {
+  const gotoContact = (index) => {  // redirect to the contact details view on clicking contact name 
     setStateApp((stateApp) => ({
       ...stateApp,
       selectedContact: contacts[index]?._id,
       dealDialog: false,
       transactBarView: "Documents",
     }));
+    // Close drawer and remove selected document on redirect to contact
     setStateApp({
       ...stateApp,
       DocumentDrawer: false,
