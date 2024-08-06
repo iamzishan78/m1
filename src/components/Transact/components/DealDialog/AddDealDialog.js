@@ -1226,7 +1226,7 @@ function AddDealDialog(props) {
     });
     let response = await result.data.removeDealDescriptor.success;
     if (response) {
-      getDeal();
+      refetchDeal(); // retech the deals data after delete
     } else {
       setMutationLoading(false);
     }
