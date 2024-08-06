@@ -1,8 +1,9 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Dialog from "@material-ui/core/Dialog";
 import { Tabs, Tab } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { NavigationContext } from "../Navigation/NavigationContext";
+import { ProfileContext } from "./ProfileContext";
 import ImageModal from "./ImageModal";
 import ProfileActions from "./ProfileActions";
 import ProfileContent from "./ProfileContent";
@@ -27,13 +28,29 @@ const useStyles = makeStyles((theme) => ({
 
 const Profile = () => {
   const [tab, setTab] = React.useState(0);
+  const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const { isProfileOpen } = stateNav;
-  const classes = useStyles();
+  const [stateProfile, setStateProfile] = useContext(ProfileContext);
+  const [defaultProfile, setDefaultProfile] = useState(null);
 
-  const handleClose = () => {
-    setStateNav({ ...stateNav, isProfileOpen: false });
-  };
+    // Destructure fields from stateProfile
+    const { fields: { displayName } } = stateProfile;
+
+    useEffect(() => {
+      // check if defaultProfile is null and displayName is defined
+      if (!defaultProfile && displayName) {
+        setDefaultProfile(stateProfile);
+      }
+    }, [stateProfile]);
+  
+    const handleClose = () => {
+      setStateNav({ ...stateNav, isProfileOpen: false });
+      // Revert the state
+      if (defaultProfile && defaultProfile?.fields?.displayName) {
+        setStateProfile(defaultProfile);
+      }
+    };
 
   const handleTabChange = (event, newValue) => {
     setTab(newValue);
@@ -48,7 +65,7 @@ const Profile = () => {
         classes={{ paper: classes.paper }}
       >
         {isProfileOpen && <ImageModal />}
-        <ProfileTitle />
+        <ProfileTitle handleClose={handleClose}/>
         <Tabs
           className={classes.tabs}
           value={tab}
