@@ -643,7 +643,7 @@ export default function CommentComponent(props) {
   const pinnedCommentsJsx = React.useMemo(
     () => (
       <>
-        {pinnedComments?.map((pinnedComment, key) => (
+        {pinnedComments?.map((pinnedComment, key) => pinnedComment?.user?.name &&  (
           <Fragment key={key}>
             <Grid
               id="commentsArea"
@@ -669,8 +669,7 @@ export default function CommentComponent(props) {
                       round
                     />
                   ) : (
-                    // Either use pinned user's displayname or logged In user's
-                    <Avatar name={profilesInfo[pinnedComment?.user?.email]?.displayName || profile?.displayName} size="38" round />
+                    <Avatar name={pinnedComment?.user?.name} size="38" round />
                   )}
                 </IconButton>
               </Grid>
@@ -681,8 +680,7 @@ export default function CommentComponent(props) {
               >
                 <div>
                   <span className={classes.bold}>
-                  {/* Either use pinned user's displayname or logged In user's */}
-                    {profilesInfo[pinnedComment?.user?.email]?.displayName || profile?.displayName}
+                  {pinnedComment?.user?.name}
                   </span>
                   {!isNaN(pinnedComment.ts) && (
                     <ReactTimeAgo
@@ -781,7 +779,7 @@ export default function CommentComponent(props) {
               {commentsArray.map((eachComment, index) => {
                 let indexToShow =
                   commentsArray.length > 7 ? commentsArray.length - 7 : 0;
-                return (
+                  return eachComment?.user?.name && (
                   <Fragment key={index}>
                     {(showAllComments || index >= indexToShow) && (
                       <Grid
@@ -811,9 +809,8 @@ export default function CommentComponent(props) {
                                 round
                               />
                             ) : (
-                              // Either use pinned user's displayname or logged In user's 
                               <Avatar
-                                name={profilesInfo[eachComment?.user?.email]?.displayName || profile?.displayName}
+                              name={eachComment?.user?.name}
                                 size="38"
                                 round
                               />
@@ -832,8 +829,7 @@ export default function CommentComponent(props) {
                         >
                           <div>
                             <span className={classes.bold}>
-                              {/* Either use pinned user's displayname or logged In user's */}
-                              {profilesInfo[eachComment?.user?.email]?.displayName || profile?.displayName}
+                            {eachComment?.user?.name}
                             </span>
                             {eachComment?.commentType?.commentType ===
                               "unitCreation" && (
