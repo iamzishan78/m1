@@ -8,6 +8,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { NavigationContext } from "../NavigationContext";
 import { useLazyQuery } from "@apollo/client";
 import { WELLGRID } from "../../../graphQL/useQueryWellGrId12345";
+import { navController } from "hookstate/navStateController";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -88,12 +89,14 @@ export default function FilterGrid12345({ gridNumber, label }) {
 
   const handleChange = (event, newValue) => {
     if (newValue === null) {
+      navController.handleWellsFilters({ field: `GrId${gridNumber}`, value: null });
       setStateNav({
         ...nullDesc(),
         [`GrId${gridNumber}`]: null,
       });
     } else {
       if (newValue && newValue[`GrId${gridNumber}`]) {
+        navController.handleWellsFilters({ field: `GrId${gridNumber}`, value: newValue[`GrId${gridNumber}`] });
         setStateNav({
           ...nullDesc(),
           [`GrId${gridNumber}`]: newValue[`GrId${gridNumber}`],

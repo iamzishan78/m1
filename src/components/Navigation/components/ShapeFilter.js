@@ -60,16 +60,7 @@ const ShapeFilter = ({ filterType, label }) => {
 
   const handleChange = (value) => {
     const shapes = rows.filter((row) => value.includes(row.name)).map((row) => row.shapeJson)
-    // findBoundsMap(aois, window.mapRef, {
-    //   top: 300, bottom: 300, left: 300, right: 300
-    // });
-    navController.updateState({
-      [controllerKey]: {
-        shapes,
-        value
-      }
-    })
-    navController.handleMapFilter()
+    navController.handleGeographyFilters({ field: controllerKey, value: { shapes, value } })
   };
 
   const handleScroll = (event) => {
