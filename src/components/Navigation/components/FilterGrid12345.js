@@ -80,25 +80,27 @@ export default function FilterGrid12345({ gridNumber, label }) {
 
   const nullDesc = () => {
     let stateNavObj = { ...stateNav, filterGeography: null };
-
+    let wellFiltersNull = []
     for (let i = gridNumber + 1; i <= 5; i++) {
       stateNavObj[`GrId${i}`] = null;
+      wellFiltersNull.push({ field: `GrId${i}`, value: null })
     }
-    return stateNavObj;
+    return { wellFiltersNull, stateNavObj };
   };
 
   const handleChange = (event, newValue) => {
+    const { wellFiltersNull, stateNavObj } = nullDesc()
     if (newValue === null) {
-      navController.handleWellsFilters({ field: `GrId${gridNumber}`, value: null });
+      navController.handleWellsFilters([...wellFiltersNull, { field: `GrId${gridNumber}`, value: null }]);
       setStateNav({
-        ...nullDesc(),
+        ...stateNavObj,
         [`GrId${gridNumber}`]: null,
       });
     } else {
       if (newValue && newValue[`GrId${gridNumber}`]) {
-        navController.handleWellsFilters({ field: `GrId${gridNumber}`, value: newValue[`GrId${gridNumber}`] });
+        navController.handleWellsFilters([...wellFiltersNull, { field: `GrId${gridNumber}`, value: newValue[`GrId${gridNumber}`] }]);
         setStateNav({
-          ...nullDesc(),
+          ...stateNavObj,
           [`GrId${gridNumber}`]: newValue[`GrId${gridNumber}`],
         });
       }
