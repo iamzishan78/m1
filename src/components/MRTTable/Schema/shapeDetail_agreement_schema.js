@@ -37,11 +37,11 @@ const AgreementMeta = {
 
     {
       ...CommonSchema.INITAIL_PINNED,
-      name: 'customLayer.shapeJson.properties.agreementNumber.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.agreementNumber',
+      name: 'shape.shapeJson.properties.agreementNumber.keyword',
+      accessorKey: 'shape.shapeJson.properties.agreementNumber',
       header: 'Agreement',
       Cell: ({ row }) => {
-        let value = row?.original?.customLayer?.shapeJson.properties.agreementNumber
+        let value = row?.original?.shape?.shapeJson.properties.agreementNumber
         value = value?.toString();
         const splitNumber = value?.split("_");
         return (
@@ -76,9 +76,9 @@ const AgreementMeta = {
               >
                 <ColumnWithLink
                   value={splitNumber?.[0]
-                    ? `${splitNumber?.[0].trim()} - ${row?.original?.customLayer?.shapeJson?.properties?.agreementName}`
-                    : row?.original?.customLayer?.shapeJson?.properties?.agreementName}
-                  link={`/land/agreement/details/${row?.original?.customLayer?._id}`}
+                    ? `${splitNumber?.[0].trim()} - ${row?.original?.shape?.shapeJson?.properties?.agreementName}`
+                    : row?.original?.shape?.shapeJson?.properties?.agreementName}
+                  link={`/land/agreement/details/${row?.original?.shape?._id}`}
                   onClick={e => {
                     e.stopPropagation();
                   }}
@@ -92,246 +92,246 @@ const AgreementMeta = {
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.agreementName.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.agreementName',
+      name: 'shape.shapeJson.properties.agreementName.keyword',
+      accessorKey: 'shape.shapeJson.properties.agreementName',
       header: 'Agreement Name',
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.agreementType.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.agreementType',
+      name: 'shape.shapeJson.properties.agreementType.keyword',
+      accessorKey: 'shape.shapeJson.properties.agreementType',
       header: 'Type',
       Cell: ({ row }) => {
 
 
-        const value = row?.original?.customLayer?.shapeJson?.properties?.agreementType
+        const value = row?.original?.shape?.shapeJson?.properties?.agreementType
         return <>{AgreementTypes[value] || ""}</>
       }
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.agreementSubtype.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.agreementSubtype',
+      name: 'shape.shapeJson.properties.agreementSubtype.keyword',
+      accessorKey: 'shape.shapeJson.properties.agreementSubtype',
       header: 'Agreement Subtype',
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.originalProperties.stateDetails.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.originalProperties.stateDetails',
+      name: 'shape.shapeJson.properties.originalProperties.stateDetails.keyword',
+      accessorKey: 'shape.shapeJson.properties.originalProperties.stateDetails',
       header: 'State',
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.originalProperties.County.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.originalProperties.County',
+      name: 'shape.shapeJson.properties.originalProperties.County.keyword',
+      accessorKey: 'shape.shapeJson.properties.originalProperties.County',
       header: 'County',
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.rightsType.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.rightsType',
+      name: 'shape.shapeJson.properties.rightsType.keyword',
+      accessorKey: 'shape.shapeJson.properties.rightsType',
       header: 'Rights',
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.grantor.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.grantor',
+      name: 'shape.shapeJson.properties.grantor.keyword',
+      accessorKey: 'shape.shapeJson.properties.grantor',
       header: 'Grantor (Party 1)',
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.grantee.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.grantee',
+      name: 'shape.shapeJson.properties.grantee.keyword',
+      accessorKey: 'shape.shapeJson.properties.grantee',
       header: 'Grantee (Party 2)',
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.agreementDate',
-      accessorKey: 'customLayer.shapeJson.properties.agreementDate',
+      name: 'shape.shapeJson.properties.agreementDate',
+      accessorKey: 'shape.shapeJson.properties.agreementDate',
       type: 'date',
       header: 'Agmt Date',
       isSearchField: false,
       Cell: ({ row }) => {
-        const value = row?.original?.customLayer?.shapeJson?.properties?.agreementDate
+        const value = row?.original?.shape?.shapeJson?.properties?.agreementDate
         return <>{formatDate(value)}</>
       }
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.effectiveDate.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.effectiveDate',
+      name: 'shape.shapeJson.properties.effectiveDate.keyword',
+      accessorKey: 'shape.shapeJson.properties.effectiveDate',
       header: 'Efftv Date',
       isSearchField: false,
       type: 'date',
       Cell: ({ row }) => {
-        return <>{formatDate(row?.original?.customLayer?.shapeJson?.properties?.effectiveDate)}</>
+        return <>{formatDate(row?.original?.shape?.shapeJson?.properties?.effectiveDate)}</>
       },
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.agreementTerm.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.agreementTerm',
+      name: 'shape.shapeJson.properties.agreementTerm.keyword',
+      accessorKey: 'shape.shapeJson.properties.agreementTerm',
       header: 'Primary Term (Mo)',
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.expirationDate.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.expirationDate',
+      name: 'shape.shapeJson.properties.expirationDate.keyword',
+      accessorKey: 'shape.shapeJson.properties.expirationDate',
       header: 'Exp Date',
       isSearchField: false,
       type: 'date',
       Cell: ({ row }) => {
-        return <>{formatDate(row?.original?.customLayer?.shapeJson?.properties?.expirationDate)}</>
+        return <>{formatDate(row?.original?.shape?.shapeJson?.properties?.expirationDate)}</>
       },
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.extensionTerm.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.extensionTerm',
+      name: 'shape.shapeJson.properties.extensionTerm.keyword',
+      accessorKey: 'shape.shapeJson.properties.extensionTerm',
       header: 'Extension Term (Mo)',
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.extensionDate.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.extensionDate',
+      name: 'shape.shapeJson.properties.extensionDate.keyword',
+      accessorKey: 'shape.shapeJson.properties.extensionDate',
       header: 'Extension Exp Date',
       isSearchField: false,
       type: 'date',
       Cell: ({ row }) => {
-        return <>{formatDate(row?.original?.customLayer?.shapeJson?.properties?.extensionDate)}</>
+        return <>{formatDate(row?.original?.shape?.shapeJson?.properties?.extensionDate)}</>
       },
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.bounusPayment.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.bounusPayment',
+      name: 'shape.shapeJson.properties.bounusPayment.keyword',
+      accessorKey: 'shape.shapeJson.properties.bounusPayment',
       header: 'Bonus Payment',
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.agmtRoyalty.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.agmtRoyalty',
+      name: 'shape.shapeJson.properties.agmtRoyalty.keyword',
+      accessorKey: 'shape.shapeJson.properties.agmtRoyalty',
       header: 'Agmt Royalty(%)',
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.agreementStatus.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.agreementStatus',
+      name: 'shape.shapeJson.properties.agreementStatus.keyword',
+      accessorKey: 'shape.shapeJson.properties.agreementStatus',
       header: 'Status',
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.acquisitionID.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.acquisitionID',
+      name: 'shape.shapeJson.properties.acquisitionID.keyword',
+      accessorKey: 'shape.shapeJson.properties.acquisitionID',
       header: 'Acquisition ID',
       size: 280,
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.acquisitionDate',
-      accessorKey: 'customLayer.shapeJson.properties.acquisitionDate',
+      name: 'shape.shapeJson.properties.acquisitionDate',
+      accessorKey: 'shape.shapeJson.properties.acquisitionDate',
       header: 'Acquisition Date',
       type: 'date',
       isSearchField: false,
       Cell: ({ row }) => {
-        return <>{formatDate(row?.original?.customLayer?.shapeJson?.properties?.acquisitionDate)}</>
+        return <>{formatDate(row?.original?.shape?.shapeJson?.properties?.acquisitionDate)}</>
       },
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.prospectID.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.prospectID',
+      name: 'shape.shapeJson.properties.prospectID.keyword',
+      accessorKey: 'shape.shapeJson.properties.prospectID',
       header: 'Prospect',
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.recordedDate.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.recordedDate',
+      name: 'shape.shapeJson.properties.recordedDate.keyword',
+      accessorKey: 'shape.shapeJson.properties.recordedDate',
       header: 'Recorded Date',
       type: 'date',
       isSearchField: false,
       Cell: ({ row }) => {
-        return <>{formatDate(row?.original?.customLayer?.shapeJson?.properties?.recordedDate)}</>
+        return <>{formatDate(row?.original?.shape?.shapeJson?.properties?.recordedDate)}</>
       },
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.recordedBook.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.recordedBook',
+      name: 'shape.shapeJson.properties.recordedBook.keyword',
+      accessorKey: 'shape.shapeJson.properties.recordedBook',
       header: 'Book',
       isSearchField: false,
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.recordedPage.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.recordedPage',
+      name: 'shape.shapeJson.properties.recordedPage.keyword',
+      accessorKey: 'shape.shapeJson.properties.recordedPage',
       header: 'Page',
       isSearchField: false,
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.recordedInstrumentNumber.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.recordedInstrumentNumber',
+      name: 'shape.shapeJson.properties.recordedInstrumentNumber.keyword',
+      accessorKey: 'shape.shapeJson.properties.recordedInstrumentNumber',
       header: 'Instrument #',
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.reportGrossAcres.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.reportGrossAcres',
+      name: 'shape.shapeJson.properties.reportGrossAcres.keyword',
+      accessorKey: 'shape.shapeJson.properties.reportGrossAcres',
       header: 'Report Gross',
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.grossAcres.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.grossAcres',
+      name: 'shape.shapeJson.properties.grossAcres.keyword',
+      accessorKey: 'shape.shapeJson.properties.grossAcres',
       header: 'Gross',
     },
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.netAcres.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.netAcres',
+      name: 'shape.shapeJson.properties.netAcres.keyword',
+      accessorKey: 'shape.shapeJson.properties.netAcres',
       header: 'Net',
     },
 
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.companyNetAcres.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.companyNetAcres',
+      name: 'shape.shapeJson.properties.companyNetAcres.keyword',
+      accessorKey: 'shape.shapeJson.properties.companyNetAcres',
       header: 'Company Net',
     },
 
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'customLayer.shapeJson.properties.netRoyalty.keyword',
-      accessorKey: 'customLayer.shapeJson.properties.netRoyalty',
+      name: 'shape.shapeJson.properties.netRoyalty.keyword',
+      accessorKey: 'shape.shapeJson.properties.netRoyalty',
       header: 'NRA',
     },
 
