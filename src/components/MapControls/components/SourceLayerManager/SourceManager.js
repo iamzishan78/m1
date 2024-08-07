@@ -664,8 +664,8 @@ function SourceManager(props) {
                     <List className={classes.list}>
                       {M1Layers?.filter(
                         (layer) => {
-                          return (!props.search || layer.name?.toLowerCase().includes(props.search) || layer.layerName?.toLowerCase().includes(props.search)) && layer.layerName
-                            !== 'Land Grid';
+                          return (!props.search || layer.name?.toLowerCase().includes(props.search) || layer.layerName?.toLowerCase().includes(props.search)) &&
+                            !['Land Grid', 'TX GLO Units', 'TX GLO Active Leases', 'Rig Activity'].includes(layer.layerName);
                         }
                       )?.map((layer, index) => {
                         const labelId = `m1layer-list-label-${index}`;

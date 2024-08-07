@@ -427,7 +427,8 @@ export default function AddLayer(props) {
                 <Collapse in={openM1} timeout="auto" unmountOnExit>
                   <List className={classes.list}>
                     {M1Layers?.filter(
-                      (layer) => (!props.search || layer.layerName?.toLowerCase().includes(props.search)) && layer.layerName !== 'Land Grid'
+                      (layer) => (!props.search || layer.layerName?.toLowerCase().includes(props.search)) && 
+                      !['Land Grid', 'TX GLO Units', 'TX GLO Active Leases', 'Rig Activity'].includes(layer.layerName)
                     )?.map((layer, index) => {
                       const labelId = `m1layer-list-label-${index}`;
                       if (layer.layerName === "Recent Submitted Permits") {
