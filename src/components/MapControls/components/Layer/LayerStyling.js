@@ -20,7 +20,7 @@ function LayerStyling() {
   const selectedLayer = mapControlsStateValues.selectedLayer
 
   const layerType = selectedLayer.layerPaintProps[0]?.paintType;
-  const { width, setWidth, fillColor, setFillColor, layerLabelVisibility, setLayerLabelVisibility, layerClickability, setLayerClickability, strokeColor, setStrokeColor, handleLayerChange
+  const { width, setWidth, fillColor, setFillColor, enablefillColor, setEnableFillColor, layerLabelVisibility, setLayerLabelVisibility, layerClickability, setLayerClickability, strokeColor, setStrokeColor, handleLayerChange
   } = useLayerStyle(selectedLayer)
 
   const [rows, setRows] = useState(0);
@@ -48,6 +48,7 @@ function LayerStyling() {
   const handleApplyChanges = () => {
     const hookStateAppLayers = globalStateController.getValue('layers')
 
+    // Checks to check if we wanted to run handleApplyChnages
     if (
       (hookStateAppLayers &&
         selectedLayer &&
@@ -57,7 +58,8 @@ function LayerStyling() {
             (strokeColor.alpha || strokeColor.alpha === 0)))) ||
       width ||
       selectedLayer.layerPaintProps[0]?.labelProps?.visibility !== layerLabelVisibility ||
-      selectedLayer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability
+      selectedLayer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability ||
+      selectedLayer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor
     ) {
       let { currentLayer } = handleLayerChange()
       //// saving to stateApp
@@ -176,11 +178,21 @@ function LayerStyling() {
                   }}
                 >
                   <Typography variant="h6">Fill Color</Typography>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={enablefillColor}
+                        onChange={(e) => setEnableFillColor(!enablefillColor)}
+                        size="small"
+                        data-testid="layer-fill-toggle"
+                      />
+                    }
+                  />
                   {layerType === "line" && <WidthPicker width={width} setWidth={setWidth} layerType={layerType} />}
                 </div>
-                <Paper id='fill-picker-box'>
+                {enablefillColor && <Paper id='fill-picker-box'>
                   <ColorPickerStyledBox value={fillColor} onChange={(color) => setFillColor(color)} />
-                </Paper>
+                </Paper>}
               </Grid>
               {strokeColor && (
                 <Grid item xs={12}>

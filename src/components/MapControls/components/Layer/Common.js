@@ -103,6 +103,9 @@ export const useLayerStyle = (layer) => {
     const initialLayerLabelVisibility = layer.layerPaintProps[0]?.labelProps?.visibility === 'none' ? 'none' : 'visible';
     const initialLayerClickable = layer.layerSettings?.interaction?.interactionDetail?.click
 
+    // Getting initiallayer fill and if it is not set setting it to true
+    const initialLayerEnableFill = !(layer.layerSettings?.interaction?.interactionDetail?.enablefillColor === false)
+
     const initialFillColor =
         layerType === "fill"
             ? ifRgbaConvt(layer.layerPaintProps[0]?.paintProps["fill-color"])
@@ -127,6 +130,9 @@ export const useLayerStyle = (layer) => {
     const [width, setWidth] = useState(initialWidth);
     const [layerName, setLayerName] = useState()
     const [fillColor, setFillColor] = useState(initialFillColor);
+
+    // Added state for enable layer fill
+    const [enablefillColor, setEnableFillColor] = useState(initialLayerEnableFill);
     const [layerLabelVisibility, setLayerLabelVisibility] = useState(initialLayerLabelVisibility);
     const [layerClickability, setLayerClickability] = useState(initialLayerClickable);
     const [strokeColor, setStrokeColor] = useState(initialStrokeColor);
@@ -148,7 +154,8 @@ export const useLayerStyle = (layer) => {
                         (strokeColor.alpha || strokeColor.alpha === 0)))) ||
             width ||
             layer.layerPaintProps[0]?.labelProps?.visibility !== layerLabelVisibility ||
-            layer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability
+            layer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability ||
+            layer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor
         ) {
             let currentLayer = { ...layer };
             let fColor;
@@ -166,6 +173,9 @@ export const useLayerStyle = (layer) => {
                 sColor = strokeColor.rgb.length === 3 ? "rgb(" + strokeColor.rgb.join() + ")" : "rgba(" + strokeColor.rgb.join() + ")";
             const layerSettings = copy(currentLayer.layerSettings);
             layerSettings.interaction.interactionDetail.click = layerClickability;
+
+            // Setting enable enablefillcolor
+            layerSettings.interaction.interactionDetail.enablefillColor = enablefillColor;
 
             if (currentLayer && currentLayer.layerPaintProps && currentLayer.layerPaintProps[0] && currentLayer.layerPaintProps[0].paintType) {
                 const layerPaintProps = copy(currentLayer.layerPaintProps);
@@ -399,5 +409,5 @@ export const useLayerStyle = (layer) => {
     };
 
 
-    return { layerName, setLayerName, width, setWidth, fillColor, setFillColor, layerLabelVisibility, setLayerLabelVisibility, layerClickability, setLayerClickability, strokeColor, setStrokeColor, handleLayerChange }
+    return { layerName, setLayerName, width, setWidth, fillColor, setFillColor, enablefillColor, setEnableFillColor, layerLabelVisibility, setLayerLabelVisibility, layerClickability, setLayerClickability, strokeColor, setStrokeColor, handleLayerChange }
 }

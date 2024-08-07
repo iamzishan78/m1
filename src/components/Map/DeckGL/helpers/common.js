@@ -503,6 +503,8 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 	const props = {};
 
 	dbLayer.layerPaintProps?.forEach(prop => {
+		// Getting layer interation settings
+		const layerInteraction = dbLayer.layerSettings?.interaction;
 		switch (prop.paintType) {
 			case 'fill':
 				const fillColor = prop.paintProps?.['fill-color'];
@@ -510,7 +512,8 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 				const fillStroke =
 					prop.paintProps?.['fill-outline-color'] || prop.paintProps?.['line-color'];
 
-				props.getFillColor = getRGBA(fillColor, fillOpacity);
+				// If fill color not enabled setting fill color to transparent	
+				props.getFillColor = layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : getRGBA(fillColor, fillOpacity);
 				props.defaultColor = getRGBA(fillColor, fillOpacity);
 				props.getLineColor = getRGBA(fillStroke);
 
@@ -524,7 +527,8 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 				const pointRadius = prop.paintProps?.['circle-radius'] || 1;
 				const pointWidth = prop.paintProps?.['circle-stroke-width'] || 1;
 
-				props.getFillColor = getRGBA(pointColor, pointOpacity);
+				// If fill color not enabled setting fill color to transparent
+				props.getFillColor = layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : getRGBA(pointColor, pointOpacity);
 				props.defaultColor = getRGBA(pointColor, pointOpacity);
 				props.getLineColor = getRGBA(pointStroke);
 
@@ -540,9 +544,11 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 
 				props.getLineWidth = lineWidth * 40;
 
+				// If fill color not enabled setting fill color to transparent
+				props.getFillColor = layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : props.getFillColor;
 				const getLineColor = getRGBA(lineColor, lineOpaciity);
 				if (!props.getLineColor || !isEqual(getLineColor, props.getFillColor))
-					props.getLineColor = getRGBA(lineColor, lineOpaciity);
+					props.getLineColor = layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : getRGBA(lineColor, lineOpaciity);
 
 				break;
 
