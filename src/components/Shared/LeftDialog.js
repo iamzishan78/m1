@@ -55,7 +55,7 @@ export default function AlertDialogSlide(props) {
   } = useSelector((state) => state.router);
 
   const isLeftMargin = useMemo(() => {
-    const isPadding = quickActionsPanelState && !!user?.features?.find((f) => f.name === FEATURES[activeModule.featureFlag]);
+    const isPadding = quickActionsPanelState && (pathname.includes("/revenue") || !!user?.features?.find((f) => f.name === FEATURES[activeModule.featureFlag]))
     return isPadding;
   }, [quickActionsPanelState]);
 
