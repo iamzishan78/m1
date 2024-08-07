@@ -162,7 +162,8 @@ const LastCheckDateFilter = ({
             />
           </Grid>
         )}
-        {extraFitlers.includes("status") && (
+        {/* commenting out as it is not working currently  --KC 2024-08-06 */}
+        {/* {extraFitlers.includes("status") && (
           <Grid item xs md={2}>
             <MuiThemeProvider>
               <FormControl variant="outlined" className={classes.formControl}>
@@ -183,7 +184,7 @@ const LastCheckDateFilter = ({
               </FormControl>
             </MuiThemeProvider>
           </Grid>
-        )}
+        )} */}
         {isComparisonReport && (
           <>
             {extraFitlers.includes("checkNumber") && (
