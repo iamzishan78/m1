@@ -220,8 +220,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
       ((ownerToAdd?.status || selectedRow?.status) &&
         selectedRow?.status !== ownerToAdd.status) ||
-      ((ownerToAdd.contactOwners.label || selectedRow?.contactOwners?.[0]) &&
-        selectedRow?.contactOwners?.[0] !== ownerToAdd.contactOwners.label) ||
+      ((ownerToAdd?.contactOwners?.label || selectedRow?.contactOwners?.[0]) &&
+        selectedRow?.contactOwners?.[0] !== ownerToAdd?.contactOwners?.label) ||
       ((ownerToAdd?.ownerType || selectedRow?.ownerType) &&
         selectedRow?.ownerType !== ownerToAdd.ownerType) ||
       ((ownerToAdd?.campaignPriority || selectedRow?.campaignPriority) &&
