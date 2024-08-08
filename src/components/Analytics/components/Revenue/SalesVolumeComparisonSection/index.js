@@ -6,7 +6,7 @@ import MRTTable from 'components/MRTTable';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 import { tableController } from 'hookstate/tableController';
 
-export default function SalesVolumeComparisonSection({ checkDetailsData, esFilters, loadMore }) {
+export default function SalesVolumeComparisonSection({ checkDetailsData, esFilters }) {
 	const [propertiesIds, setPropertiesIds] = useState([]);
 	const tableState = tableController('SalesVolumeComparisonTable').useState(['filters', 'data']);
 	const tableStateValues = tableState.stateValues;

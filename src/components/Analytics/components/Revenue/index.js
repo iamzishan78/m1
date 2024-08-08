@@ -23,6 +23,7 @@ import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 import PurchasersDropdown from './PurchasersDropdown';
 import AcquisitionIdDropdown from './AcquisitionIdDropdown';
 import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
+import { copy, deepEqual } from "components/Shared/functions";
 
 const useStyles = makeStyles(theme => ({
 	mainTabContainer: {
@@ -137,7 +138,7 @@ export default function RevenueAnalytics(props) {
 		'filters',
 		'data',
 	]).stateValues; // get StateValues for SalesVolumeComparisonTable
-	const [esFilters, setEsFilters] = useState(tableController('ComparisonTable').getExternalFilter());
+	const [esFilters, setEsFilters] = useState(tableController(TableKey).getExternalFilter());
 
 	const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 166px)' };
 	const [getDbMinValue] = useLazyQuery(GET_DB_MIN_VALUE, {
@@ -323,26 +324,33 @@ export default function RevenueAnalytics(props) {
 
 	const setESFilters = useCallback(
 		newFilter => {
-			if (newFilter.length === 0) {
-				tableController(TableKey).clearFilters(); // clear filter from the table state
-				// tableController(TableKey).setFilters([{ field: 'isMisMatchedInterest', value: true, type: 'term' }]);
+		let filterToAdd = []
+		// Check if `isMisMatchedInterest` exists in newFilter
+		const isMisMatchedInterestPresent = newFilter.some(filter => filter.field === 'isMisMatchedInterest');
+		// Always add the `isMisMatchedInterest` filter if not present in newFilter
+		if (!isMisMatchedInterestPresent) {
+		  filterToAdd.push({ field: 'isMisMatchedInterest', value: true, type: 'term' });
+		}
+		if (newFilter.length === 0) {
+		  tableController(TableKey).clearFilters(); // clear filter from the table state
+		  tableController(TableKey).setFilters(filterToAdd);
+		} else {
+		  tableController(TableKey).clearFilters(); // clear filter from the table state
+		
+		  newFilter.forEach(filter => {
+			const { field, value, type } = filter;
+			if (type) { // Check if the filter has a 'type' property
+			  filterToAdd.push({ field, value, type });   // If 'type' is present, add an object with field, value, and type to filterToAdd
 			} else {
-				let filterToAdd = [];
-				newFilter.forEach(filter => {
-					const { field, value, type, filterType } = filter;
-					if (filterType === 'date') {
-						filterToAdd.push({ field, value, type: 'advanced', searchType: 'betweenInclusive', columnType: 'date' });
-					} else if (field === 'isMisMatchedInterest') {
-						filterToAdd.push({ field, value, type });
-					} else {
-						filterToAdd.push({ field, value });
-					}
-				});
-				tableController(TableKey).setFilters(filterToAdd);
+			  filterToAdd.push({ field, value });    // If 'type' is not present, add an object with only field and value to filterToAdd
 			}
-		},
-		[TableKey]
-	);
+		  });
+		  tableController(TableKey).setFilters(filterToAdd); 
+		}
+		if (!deepEqual(copy(esFilters), copy(filterToAdd))) { // prevent from unnecessary re rendering 
+		  setEsFilters(filterToAdd);
+		}
+	}, [TableKey]);
 
 	return (
 		<>
@@ -362,6 +370,7 @@ export default function RevenueAnalytics(props) {
 					<Grid item xs md={2} style={{ marginTop: '2px', minWidth: '395px' }}>
 						<Autocomplete
 							size="small"
+							value={comparisonReport} // Controlled value
 							onChange={(event, newValue) => setComparisonReport(newValue)}
 							options={['Check Detail Comparison', 'Sales Volume vs Reported Production']}
 							renderInput={params => (
@@ -444,7 +453,7 @@ export default function RevenueAnalytics(props) {
 			{tabs[tab] === 'Comparisons' && (
 				<>
 					<LastCheckDateFilter
-						field="check.checkDate"
+					   	field="date"
 						esIndex={'checkdetailsinterestscomparison_flat'}
 						esFilters={esFilters}
 						setESFilters={setESFilters}
@@ -455,6 +464,7 @@ export default function RevenueAnalytics(props) {
 						extraFitlers={['propertyGroup', 'checkNumber', 'propertyNumber']}
 						stateESKey="property."
 						isComparisonReport={true}
+						tableKey={TableKey}
 					/>
 					{comparisonReport === 'Sales Volume vs Reported Production' ? (
 						<SalesVolumeComparisonSection

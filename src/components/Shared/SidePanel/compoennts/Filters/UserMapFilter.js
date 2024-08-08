@@ -12,7 +12,8 @@ import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } fr
 import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import { tableController, tableESState, tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { tableESState } from 'hookstate/initialStates';
 import _ from 'lodash';
 
 // Define custom styles using Material-UI's makeStyles hook

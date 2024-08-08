@@ -10,8 +10,9 @@ const SalesVolumeComparisonMeta = {
 		pageIndex: 0,
 		pageSize: 25,
 	},
-	maxTableHeight: 'calc(100vh - 540px)',
-	height: '767px',
+	defaultSort: { field: 'flatSyncAt', order: 'desc' },
+	maxTableHeight: 'calc(100vh - 440px)',
+	height: '540px',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
 	isDeleteDisabled: true, // Disable delete functionality
