@@ -254,6 +254,13 @@ const PropertiesMeta = {
     },
     {
       ...CommonSchema.COMMON_COLUMN,
+      name: 'owner.name.keyword',
+      accessorFn: row => row?.owner?.name,
+      id: 'owner.name',
+      header: 'Owner Name',
+    },
+    {
+      ...CommonSchema.COMMON_COLUMN,
       name: 'source.keyword',
       accessorFn: row => row?.source,
       id: 'source',

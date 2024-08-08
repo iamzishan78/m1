@@ -1,101 +1,73 @@
-import React, { useContext, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import moment from "moment";
-import { NavigationContext } from "../NavigationContext";
-import { Clear } from "@material-ui/icons";
-import { IconButton, TextField } from "@material-ui/core";
-import { useForm, Controller } from "react-hook-form";
+import React, { useContext, useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { Clear } from '@material-ui/icons';
+import { IconButton, TextField } from '@material-ui/core';
+import { useForm, Controller } from 'react-hook-form';
 
-const useStyles = makeStyles((theme) => ({
+import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { NavigationContext } from '../NavigationContext';
+import { navController } from 'hookstate/navStateController';
+
+const useStyles = makeStyles(() => ({
   root: {},
   datesRow: {
-    display: "flex",
-    flexDirection: "row",
-    margin: "12px 0"
+    display: 'flex',
+    flexDirection: 'row',
+    margin: '12px 0',
   },
   datePicker: {
-    margin: "5px",
-    "&& span": {
-      pointerEvents: "none",
+    margin: '5px',
+    '&& span': {
+      pointerEvents: 'none',
     },
-    "& .MuiIconButton-root": {
-      padding: "10px 0px",
+    '& .MuiIconButton-root': {
+      padding: '10px 0px',
     },
     '& input::-webkit-calendar-picker-indicator': {
-      filter:
-        'invert(1)',
+      filter: 'invert(1)',
     },
   },
   blue: {
-    "& .MuiInputBase-input": { color: "#17AADD" },
+    '& .MuiInputBase-input': { color: '#17AADD' },
   },
   dateRoot: {
-    color: "#ffffff",
-    "& input": {
+    color: '#ffffff',
+    '& input': {
       marginLeft: 12,
     },
   },
 }));
 
-
-export default function FilterDatePickerCompletetion(props) {
+export default function FilterDatePickerCompletetion({ labelDates }) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const { labelDates } = props;
-  const { control, reset } = useForm();
+  const { control } = useForm();
 
   useEffect(() => {
-    let filter = null;
+    const { completetionDateFrom, completetionDateTo } = stateNav;
 
-    if (stateNav.completetionDateFrom || stateNav.completetionDateTo) {
-      filter = ["all"];
+    const value = {
+      min: completetionDateFrom && new Date(completetionDateFrom).toISOString(),
+      max: completetionDateTo && new Date(completetionDateTo).toISOString(),
+    };
 
-      //// completetionDateFrom
-      filter.push([
-        ">=",
-        ["get", "completionDate"],
-        stateNav.completetionDateFrom
-          ? moment.parseZone(stateNav.completetionDateFrom).utc(true).valueOf()
-          : moment.parseZone(new Date("1900-01-01T00:00:00")).utc(true).valueOf(),
-      ]);
+    if (!completetionDateFrom) delete value.min;
+    if (!completetionDateTo) delete value.max;
 
-      //// completetionDateTo
-      filter.push([
-        "<=",
-        ["get", "completionDate"],
-        stateNav.completetionDateTo
-          ? moment.parseZone(stateNav.completetionDateTo).utc(true).valueOf()
-          : moment.parseZone(moment()).utc(true).valueOf(),
-      ]);
-    }
+    const type = 'date';
 
-    if (JSON.stringify(stateNav.filterCompletetionDateRange) !== JSON.stringify(filter))
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        filterCompletetionDateRange: filter,
-      }));
+    navController.handleWellsFilters({ field: `completionDate`, value, type });
   }, [stateNav.completetionDateFrom, stateNav.completetionDateTo, setStateNav]);
 
-  useEffect(() => {
-    if (!stateNav.filterPermitDateRange?.length && (stateNav.permitDateFrom || stateNav.permitDateTo)) {
-      const resetParams = { completetionDateFrom: null, completetionDateTo: null };
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        ...resetParams,
-      }));
-      reset(resetParams);
-    }
-  }, [stateNav.filterCompletetionDateRange]);
-
-  const handleStartDate = (date) => {
-    setStateNav((stateNav) => ({
+  const handleStartDate = date => {
+    setStateNav(stateNav => ({
       ...stateNav,
       completetionDateFrom: date,
     }));
   };
 
-  const handleEndDate = (date) => {
-    setStateNav((stateNav) => ({
+  const handleEndDate = date => {
+    setStateNav(stateNav => ({
       ...stateNav,
       completetionDateTo: date,
     }));
@@ -107,18 +79,18 @@ export default function FilterDatePickerCompletetion(props) {
         <Controller
           control={control}
           name="completetionDateFrom"
-          defaultValue={""}
-          render={(props) => (
+          defaultValue=""
+          render={({ value, onChange }) => (
             <TextField
               type="date"
-              label={labelDates + " " + "From"}
-              className={`${classes.datePicker} ${stateNav.completetionDateFrom ? classes.blue : ""}`}
+              label={`${labelDates} From`}
+              className={`${classes.datePicker} ${stateNav.completetionDateFrom ? classes.blue : ''}`}
               margin="dense"
               fullWidth
-              value={props.value}
-              onChange={(date) => {
+              value={value}
+              onChange={date => {
                 handleStartDate(date.target.value);
-                props.onChange(date.target.value);
+                onChange(date.target.value);
                 return { value: date };
               }}
               InputLabelProps={{
@@ -127,9 +99,9 @@ export default function FilterDatePickerCompletetion(props) {
               InputProps={{
                 endAdornment: (
                   <IconButton
-                    onClick={(event) => {
+                    onClick={event => {
                       handleStartDate(null);
-                      props.onChange(event);
+                      onChange(event);
                     }}
                   >
                     <Clear style={{ height: 22, width: 22 }} />
@@ -146,18 +118,18 @@ export default function FilterDatePickerCompletetion(props) {
         <Controller
           control={control}
           name="completetionDateTo"
-          defaultValue={""}
-          render={(props) => (
+          defaultValue=""
+          render={({ value, onChange }) => (
             <TextField
               type="date"
-              label={labelDates + " " + "To"}
-              className={`${classes.datePicker} ${stateNav.completetionDateTo ? classes.blue : ""}`}
+              label={`${labelDates} To`}
+              className={`${classes.datePicker} ${stateNav.completetionDateTo ? classes.blue : ''}`}
               margin="dense"
               fullWidth
-              value={props.value}
-              onChange={(date) => {
+              value={value}
+              onChange={date => {
                 handleEndDate(date.target.value);
-                props.onChange(date.target.value);
+                onChange(date.target.value);
                 return { value: date };
               }}
               InputLabelProps={{
@@ -166,9 +138,9 @@ export default function FilterDatePickerCompletetion(props) {
               InputProps={{
                 endAdornment: (
                   <IconButton
-                    onClick={(event) => {
+                    onClick={event => {
                       handleEndDate(null);
-                      props.onChange(event);
+                      onChange(event);
                     }}
                   >
                     <Clear style={{ height: 22, width: 22 }} />

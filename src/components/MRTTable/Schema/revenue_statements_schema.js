@@ -94,6 +94,7 @@ const RevenueStatementsMeta = {
       id: 'checkAmount',
       header: 'Check Amount',
       isSearchField: false,
+      Cell: ({ renderedCellValue }) => <>{vf_number(renderedCellValue)}</>,
     },
     // Column for Check Date
     {
@@ -169,7 +170,7 @@ const RevenueStatementsMeta = {
       name: 'sourceId.keyword',
       accessorFn: row => row?.sourceId,
       id: 'sourceId',
-      header: 'Check ID',
+      header: 'Source ID',
     },
     {
       ...CommonSchema.COMMON_COLUMN,
