@@ -41,7 +41,6 @@ const MyWellsMeta = {
       name: 'wellData.wellName',
       id: 'wellData.wellName',
       accessorKey: 'wellData?.wellName',
-      accessorFn: row => row?.wellData?.wellName,
       header: 'Well Name',
       Cell: ({ row }) => (
         <div
