@@ -10,10 +10,7 @@ import {
 import { useSelector } from "react-redux";
 import { AppContext } from "AppContext";
 
-import WellMaster from "./WellMaster";
-import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 import { setStateIfDeepEqual } from "components/Shared/functions";
-import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import MRTTable from 'components/MRTTable';
 import { tableController } from "hookstate/tableController";
 import Wells from 'components/Shared/svgIcons/well';
