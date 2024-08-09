@@ -34,6 +34,7 @@ export const GETPROFILE = gql`
         employer
         isSameFromAbove
         employerAddress
+        about
         investingEntities {
           entityInformation
           accountType

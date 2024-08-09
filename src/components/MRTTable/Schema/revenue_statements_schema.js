@@ -7,6 +7,8 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import { Warning as WarningIcon, CheckCircle } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import { formatDate } from 'components/Shared/functions';
+import { LocalAtm as CurrencyIcon } from "@material-ui/icons";
+import vf_number from 'components/Shared/valueformatters/vf_number';
 
 // Define styles for tooltip
 const useStyles = makeStyles((theme) => ({
@@ -35,6 +37,22 @@ const RevenueStatementsMeta = {
   maxTableHeight: 'calc(100vh - 500px)',
   isInFiniteScroll: true,
   columnVirtualization: true,
+  gridViewSettings: {
+    label: 'Revenue Statements Management',
+    module: 'RevenueStatements',
+    Icon: CurrencyIcon,
+    defaultView: {
+      name: 'All Revenue Statements',
+      type: 'Default',
+    },
+    handleDefaultView: (view, user) => {
+      return view;
+    },
+    cssOverride: {
+      top: '440px',
+      left: '5px',
+    },
+  },
   TableSchema: [
     // Hidden columns
     {
@@ -76,6 +94,7 @@ const RevenueStatementsMeta = {
       id: 'checkAmount',
       header: 'Check Amount',
       isSearchField: false,
+      Cell: ({ renderedCellValue }) => <>{vf_number(renderedCellValue)}</>,
     },
     // Column for Check Date
     {
@@ -151,7 +170,7 @@ const RevenueStatementsMeta = {
       name: 'sourceId.keyword',
       accessorFn: row => row?.sourceId,
       id: 'sourceId',
-      header: 'Check ID',
+      header: 'Source ID',
     },
     {
       ...CommonSchema.COMMON_COLUMN,
