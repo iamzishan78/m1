@@ -162,6 +162,20 @@ export default [
         required: false,
         actual_key: "propertyInterest.costFree",
     },
+    //Add End Date mapping
+    {
+        label: "End Date",
+        mapped_key: "",
+        required: false,
+        actual_key: "propertyInterest.endDate",
+    },
+    //Add Product Type mapping
+    {
+        label: "Product Type",
+        mapped_key: "",
+        required: false,
+        actual_key: "propertyInterest.productType",
+    },
     {
         label: "Associated Well API Numbers",
         mapped_key: "",

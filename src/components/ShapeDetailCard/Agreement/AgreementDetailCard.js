@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { set } from "lodash";
 import { useHistory } from "react-router-dom";
@@ -20,7 +20,6 @@ import AgreementOwnersTractsTable from "components/Table/Agreement/AgreementOwne
 import AssociatedTractsShapeTable from "components/Table/Wells/AssociatedTractsShapeTable";
 import Tags from "components/Shared/Tagger";
 import { showSuccessMessage, showErrorMessage, showInfoMessage } from "actions";
-import { AppContext } from "AppContext";
 import AgreementLegalDescriptionFields from "components/Land/components/Agreements/detailComponents/legalDescription/FieldsSection";
 import { DrawerContextProvider } from "components/Land/components/Agreements/detailComponents/DrawerContext";
 
@@ -29,7 +28,9 @@ import { detailCardStyles } from "../style";
 import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions";
 import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
 import moment from "moment";
+import { popupController } from "hookstate/popupStateController";
 import { jobController } from "hookstate/jobStateController";
+import { layerController } from "hookstate/layerStateController";
 
 export default function AgreementDetailCard(props) {
   const dispatch = useDispatch();
@@ -40,7 +41,6 @@ export default function AgreementDetailCard(props) {
   const [tractOwners, setTractOwners] = useState();
   const [infoMessage, setInfoMessage] = useState(false);
   const [properties, setProperties] = useState();
-  const [_, setStateApp] = useContext(AppContext);
   const [updateCustomLayer, { data: updatedUnit }] = useMutation(UPDATECUSTOMLAYER);
 
   const classes = detailCardStyles();
@@ -54,10 +54,7 @@ export default function AgreementDetailCard(props) {
   useEffect(() => {
     return history.listen((location) => {
       if (!properties?.agreementNumber && location && (typeof location === 'string' || Array.isArray(location)) && !location.includes(uniObj?._id)) {
-        setStateApp((state) => ({
-          ...state,
-          selectedShape: null,
-        }));
+        popupController.reset();
         history.goBack();
       }
     });
@@ -106,10 +103,9 @@ export default function AgreementDetailCard(props) {
         feature.id = customLayer._id;
         feature.properties.id = customLayer._id;
         feature.layer = { id: "unit" };
-        setStateApp((state) => ({
-          ...state,
+        popupController.updateState({
           selectedShape: { ...feature.properties, feature },
-        }));
+        });
       } else {
         dispatch(showErrorMessage("Failed to update unit"));
       }
@@ -180,10 +176,9 @@ export default function AgreementDetailCard(props) {
     shape.properties.shapeLabel = shapeLabel;
     shape.name = shapeLabel;
     shape.properties.name = shapeLabel;
-    setStateApp((state) => ({
-      ...state,
-      selectedShape: { ...state.selectedShape, shapeLabel },
-    }));
+    popupController.updateState({
+      selectedShape: { ...popupController.getValue('selectedShape'), shapeLabel },
+    });
     customLayer.shape = JSON.stringify(shape);
     customLayer.shapeJson = shape;
 
@@ -205,8 +200,9 @@ export default function AgreementDetailCard(props) {
       },
       refetchQueries: ["getMetaData"],
       awaitRefetchQueries: true,
-    }).then(() => {
+    }).then((res) => {
       jobController.toggleBulkUpload()
+      layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)
     });
   };
 
@@ -237,8 +233,9 @@ export default function AgreementDetailCard(props) {
         customLayerId: uniObj._id,
         customLayer,
       },
-    }).then(() => {
+    }).then((res) => {
       jobController.toggleBulkUpload()
+      layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)
     });
   };
 

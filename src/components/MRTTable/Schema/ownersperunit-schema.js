@@ -603,6 +603,10 @@ const OwnersPerUnitMeta = {
 			accessorFn: row => row?.deals?.name,
 			id: 'deals.name',
 			header: 'Associated Deals',
+			handleArrayExport: {
+				esType: "collection",
+				actualKey: "name"
+			},
 			isSearchField: false,
 			Cell: ({ row }) => {
 				return (

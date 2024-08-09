@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -6,9 +6,9 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 // import TableHead from '@material-ui/core/TableHead';
 import TableRow from "@material-ui/core/TableRow";
-import { AppContext } from "../../../AppContext";
 import { Typography } from "@material-ui/core";
 import { useQueryWellFormation } from "../../../graphQL/useQueryWellCompletionsAndStimulation";
+import { popupController } from "hookstate/popupStateController";
 
 const useStyles = makeStyles({
   table: {
@@ -29,7 +29,7 @@ const useStyles = makeStyles({
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: "#929292",
       borderRadius: 10,
-  },
+    },
     marginBottom: 20,
     background: "white",
   },
@@ -45,29 +45,31 @@ const useStyles = makeStyles({
       border: "2px solid #e3e3e3",
     },
   },
-  tableSize:{
-    height:'calc(100vh - 50vh) !important'
+  tableSize: {
+    height: 'calc(100vh - 50vh) !important'
   },
-  tableSize2:{
-    height:'calc(100vh - 50vh + 482px) !important'
+  tableSize2: {
+    height: 'calc(100vh - 50vh + 482px) !important'
   }
 });
 
 const headers = [
-    {name: "FORMATION NAME", width:"20%"},
-    {name: "TOP DEPTH (FT)", width:"20%"},
-    {name: "COMMENTS", width:"60%"},
+  { name: "FORMATION NAME", width: "20%" },
+  { name: "TOP DEPTH (FT)", width: "20%" },
+  { name: "COMMENTS", width: "60%" },
 ];
 
 export default function Formation(props) {
   const classes = useStyles();
-  const [stateApp] = useContext(AppContext);
-  const { data } = useQueryWellFormation(stateApp.selectedWell.id);
+
+  const { stateValues } = popupController.useState(['selectedWell'])
+
+  const { data } = useQueryWellFormation(stateValues.selectedWell.id);
 
   const [formationData, setFormationData] = useState(null);
 
   useEffect(() => {
-    if (typeof data !== "undefined" && typeof data.wellFormation !== "undefined" ) {
+    if (typeof data !== "undefined" && typeof data.wellFormation !== "undefined") {
       const group1 = [];
       const group2 = [];
       data.wellFormation.forEach(o => {
@@ -87,47 +89,47 @@ export default function Formation(props) {
   return (
     <TableContainer className={classes.tableContainer}>
       {formationData !== null ? (
-      <div className={props.showSummary? classes.tableSize:classes.tableSize2}>
-        <Table
-          aria-label="simple table"
-          className={classes.table}
-        >
-          <TableBody>
-            <TableRow className={classes.tableRow}>
+        <div className={props.showSummary ? classes.tableSize : classes.tableSize2}>
+          <Table
+            aria-label="simple table"
+            className={classes.table}
+          >
+            <TableBody>
+              <TableRow className={classes.tableRow}>
                 {headers.map((head) => {
-                    return (
-                        <TableCell key={head} scope="row" className={classes.rowName} style={{ width:head.width }}>
-                            {head.name}
-                        </TableCell>
-                    );
+                  return (
+                    <TableCell key={head} scope="row" className={classes.rowName} style={{ width: head.width }}>
+                      {head.name}
+                    </TableCell>
+                  );
                 })
-            }     
-            </TableRow>
-            { formationData !== null && formationData.length > 0 &&
-            formationData.map((row, index) => (
-                    <TableRow key={index + 1}>
-                      <TableCell>
-                        {row.ReportedFormationName}
-                      </TableCell>
-                      <TableCell>
+                }
+              </TableRow>
+              {formationData !== null && formationData.length > 0 &&
+                formationData.map((row, index) => (
+                  <TableRow key={index + 1}>
+                    <TableCell>
+                      {row.ReportedFormationName}
+                    </TableCell>
+                    <TableCell>
                       {formatValue(row.TopDepth)}
-                      </TableCell>
-                      <TableCell>
-                        {row.Comments}
-                      </TableCell>
-                    </TableRow>
+                    </TableCell>
+                    <TableCell>
+                      {row.Comments}
+                    </TableCell>
+                  </TableRow>
                 ))
-            }     
-          </TableBody>
-        </Table>
-        <Typography color="textSecondary" align="center"> 
-        {formationData !== null && formationData.length === 0 ?
-          "No Formation records available" : ""
-        }
-        </Typography>
-      </div>
+              }
+            </TableBody>
+          </Table>
+          <Typography color="textSecondary" align="center">
+            {formationData !== null && formationData.length === 0 ?
+              "No Formation records available" : ""
+            }
+          </Typography>
+        </div>
       ) : <Typography align="center">Loading...</Typography>
-    }
+      }
     </TableContainer>
   );
 }

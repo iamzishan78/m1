@@ -16,11 +16,11 @@ import { currentUserGridViewSettingsAction } from "store/actions/sessionActions"
 import { saveUserSession } from "utils/user";
 import Api from "api";
 
-import rock from "../../rock.png";
 import BypassSignInCard from "./BypassSignInCard";
 import { BYPASS_LOGIN_MUTATION } from "graphQL/useMutationBypassLogin";
 import { apolloClientEndpointDev, isDev } from "utils/helper";
 import { globalStateController } from "hookstate/globalStateController";
+import { mapStateController } from "hookstate/mapStateController";
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
@@ -107,8 +107,8 @@ const Login = (props) => {
   const handleLogin = (loginResp, userMapSettings, authGraphQLResponse, authGraphQLToken, authUser) => {
     let mongoUser,
       sessionData,
-      mapVars = stateApp.mapVars,
-      defaultMapVars = stateApp.defaultMapVars;
+      mapVars = mapStateController.getValue('mapVars'),
+      defaultMapVars = mapStateController.getValue('defaultMapVars');
     if (loginResp?.user) {
       mongoUser = loginResp.user;
       sessionData = loginResp.sessionData;
@@ -157,10 +157,9 @@ const Login = (props) => {
 
     setStateApp(state => ({
       ...state,
-      user,
-      mapVars,
-      defaultMapVars: defaultMapVars,
+      user
     }));
+    mapStateController.updateState({ mapVars, defaultMapVars })
     dispatch(setUserAction(user));
     dispatch(currentUserGridViewSettingsAction.STARTED(user._id));
     saveUserSession(user);
@@ -670,12 +669,12 @@ const Login = (props) => {
   ) : (
     <div
       className={width > 2050 ? `${localClass.height_100} ${localClass.myRoot}` : localClass.myRoot}
-      style={{ backgroundImage: `url(${rock})` }}
+      style={{ backgroundImage: `url(/icons/rock.jpg)` }}
     >
       <div
         className={localClass.rootNewUser}
         style={{
-          backgroundImage: `url(${rock})`,
+          backgroundImage: `url(/icons/rock.jpg)`,
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",

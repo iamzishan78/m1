@@ -28,8 +28,10 @@ const MapControlsContextProvider = (props) => {
     Draw: null,
     mapStyleList: [],
     expandedPanel: true,
-    openDrawShapesControl: false,
   });
+
+  window.setStateMapControls = setStateMapControls
+
   return <MapControlsContext.Provider value={[stateMapControls, setStateMapControls]}>{props.children}</MapControlsContext.Provider>;
 };
 

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -43,8 +43,9 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 	const handleExport = () => {
 		const rows = table.getSelectedRowModel().flatRows.map(row => row.original);
 		let isSelectAll = true;
-		let excludedIds = []
-		let total = tableStateValues?.data.total
+		let excludedIds = [];
+		let total = tableStateValues?.data.total;
+		let customProps = tableStateValues.customProps;
 		if (rows.length !== 0 && !(!!tableStateValues?.isAllRowsSelected) && !(tableStateValues?.isSubSetSelect)) {
 			isSelectAll = false;
 		} else if (!!tableStateValues?.isAllRowsSelected || tableStateValues?.isSubSetSelect) {
@@ -59,13 +60,20 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 			return (filteredColumns[accessorKey] === true && !obj.hasOwnProperty('enableColumnFilter')) || obj?.isHiddenFieldExport;
 		});
 
-		filteredTableSchema = filteredTableSchema?.map(({ name, header, accessorKey, id, isExport, type }) => ({
-			name,
-			label: header,
-			esKey: isExport || accessorKey || id,
-			type,
-			accessorKey: accessorKey || id,
-		}));
+		filteredTableSchema = filteredTableSchema?.map(({ name, header, accessorKey, id, isExport, type, handleArrayExport = {} }) => {
+			const { esType, referenceKey, referenceValueKey, actualKey } = handleArrayExport;
+			return {
+				name,
+				label: header,
+				esKey: isExport || accessorKey || id,
+				type,
+				accessorKey: accessorKey || id,
+				esType,
+				referenceKey,
+				referenceValue: customProps[referenceValueKey],
+				actualKey,
+			}
+		})
 
 		let sortOrder = {};
 		if (tableStateValues.sorting.length > 0) {
@@ -74,11 +82,15 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 			sortOrder = { field: fieldName, order: tableStateValues.sorting[0]?.desc ? 'desc' : 'asc' };
 		}
 
-		filteredTableSchema = filteredTableSchema?.map(({ name, label, esKey, type }) => ({
+		filteredTableSchema = filteredTableSchema?.map(({ name, label, esKey, type, esType, referenceKey, referenceValue, actualKey }) => ({
 			name,
 			label,
 			esKey,
-			type
+			type,
+			esType,
+			referenceKey,
+			referenceValue,
+			actualKey
 		}));
 
 		const query = tableStateValues?.globalFilter ? `*${tableStateValues?.globalFilter}*` : '*';

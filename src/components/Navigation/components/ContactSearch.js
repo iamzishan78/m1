@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import {
   InputAdornment,
@@ -13,6 +13,7 @@ import { fade, makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useSelector } from "react-redux";
+import { debounce } from "lodash";
 
 import { AppContext } from "AppContext";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
@@ -73,17 +74,45 @@ const ContactSearch = () => {
   const [search, setSearch] = useState(stateApp.contactSearchQuery);
   const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
 
+// Reset the state when path changes
   useEffect(() => {
     setSearch("");
-  }, [history.location.pathname]);
-
-  useEffect(() => {
     setStateApp((stateApp) => ({
       ...stateApp,
-      contactSearchQuery: search,
+      contactSearchQuery: "",
       isContactSearching: true,
     }));
-  }, [search, setStateApp]);
+  }, [history.location.pathname]);
+
+  // Create a debounced function
+  const debouncedSearch = useCallback(
+    debounce((value) => {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        contactSearchQuery: value,
+        isContactSearching: true,
+      }));
+    }, 1000),
+    [setStateApp]
+  );
+
+  // Handle search input change
+  const handleInputChange = (e) => {
+    const { value } = e.target;
+    setSearch(value);
+    debouncedSearch(value); // Call the debounced function
+  };
+
+   // Clear search input
+   const handleClearSearch = () => {
+    setSearch("");
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      contactSearchQuery: "",
+      isContactSearching: true,
+    }));
+  };
+
 
   const isAllowed = stateApp?.user?.features?.find(
     (f) => f.name === FEATURES.CONTACTSUBMENU
@@ -121,7 +150,7 @@ const ContactSearch = () => {
           <Grid item md={6}>
             <TextField
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={handleInputChange}
               style={{
                 margin: 0,
                 width: "100%",
@@ -148,7 +177,7 @@ const ContactSearch = () => {
                         className={`${classes.toggleBtn} ${stateApp.activityDisplayType === "table" &&
                           classes.activeBtn
                           }`}
-                        onClick={() => setSearch("")}
+                        onClick={handleClearSearch}
                       >
                         <ClearIcon />
                       </IconButton>

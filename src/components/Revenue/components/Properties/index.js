@@ -90,6 +90,9 @@ export default function Properties() {
   const [esFilters, ESFilters] = useState([]);
 
   const setESFilters = (newFilter) => {
+    if (newFilter.length === 0) {
+      ESFilters([])
+    }
     setStateIfDeepEqual(ESFilters, newFilter);
   };
 

@@ -90,7 +90,7 @@ const RevenueStatementsMeta = {
     {
       ...CommonSchema.COMMON_COLUMN,
       name: 'checkAmount',
-      accessorFn: row => row?.checkAmount,
+      accessorFn: row => vf_number(row?.checkAmount), //Commma sperated checkamount after each thousand
       id: 'checkAmount',
       header: 'Check Amount',
       isSearchField: false,

@@ -6,6 +6,7 @@ import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { NavigationContext } from "../NavigationContext";
 import { statesAbbNames, statesNames } from "./Utils/USAStates&Abb";
+import { navController } from "hookstate/navStateController";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -15,14 +16,23 @@ const useStyles = makeStyles((theme) => ({
   autoC: { "& input": { color: "#17AADD" } },
 }));
 
-const nullDesc = {
-  GrId1: null,
-  GrId2: null,
-  GrId3: null,
-  GrId4: null,
-  GrId5: null,
-  filterGeography: null,
-};
+const nullDesc = [
+  { field: 'GrId1', value: null },
+  { field: 'GrId2', value: null },
+  { field: 'GrId3', value: null },
+  { field: 'GrId4', value: null },
+  { field: 'GrId5', value: null },
+  { field: 'filterGeography', value: null },
+  { field: 'state', value: null },
+  { field: 'stateName', value: null },
+  { field: 'displayStateName', value: null },
+  { field: 'county', value: null },
+  { field: 'countyName', value: null },
+]
+const nullDesc_Obj = {}
+nullDesc.forEach((filter) => {
+  nullDesc_Obj[filter.field] = filter.value
+})
 
 export default function FilterStateName() {
   const classes = useStyles();
@@ -38,20 +48,18 @@ export default function FilterStateName() {
     if (newValue === null) {
       setStateNav((stateNav) => ({
         ...stateNav,
-        stateName: null,
-        displayStateName: null,
-        countyName: null,
-        ...nullDesc,
+        ...nullDesc_Obj,
       }));
+      navController.handleGeographyFilters(nullDesc)
     } else {
       const AbbName = statesAbbNames[statesNames.indexOf(newValue)];
       setStateNav((stateNav) => ({
         ...stateNav,
+        ...nullDesc_Obj,
         stateName: AbbName,
         displayStateName: newValue,
-        countyName: false,
-        ...nullDesc,
       }));
+      navController.handleGeographyFilters([...nullDesc, { field: 'state', value: AbbName }])
     }
   };
 

@@ -36,6 +36,7 @@ import { GET_PARCELS_FILES_COUNT } from "graphQL/useQueryGetParcelFiles";
 // value formatters
 import formatBOE from "../Shared/valueformatters/format_boe.js";
 import convert_date from "../Shared/valueformatters/convert_date.js";
+import { popupController } from "hookstate/popupStateController";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -171,6 +172,10 @@ function WellCard() {
   const [getWellFilesCount, { data: dataWellFiles }] = useLazyQuery(GET_PARCELS_FILES_COUNT, { fetchPolicy: "cache-and-network" });
   const documentCount = dataWellFiles?.getParcelFilesCount || 0;
 
+  const { selectedWell, stateValues } = popupController.useState(['expandedCard', 'selectedWell']);
+
+  const { selectedWell: selectedWellVal } = stateValues;
+
   useEffect(() => {
     if (!source) {
       setSource({
@@ -185,21 +190,19 @@ function WellCard() {
 
   useEffect(() => {
     getWellSummaryDetail({
-      variables: { id: stateApp.selectedWell.id },
+      variables: { id: selectedWellVal.id },
     });
     // getTenantWell({
-    //   variables: { globalWellId: stateApp.selectedWell.id },
+    //   variables: { globalWellId: selectedWellVal.id },
     // })
-  }, [stateApp.selectedWell]);
-
-  // console.log('selectedWell', stateApp.selectedWell);
+  }, [selectedWell]);
 
   useEffect(() => {
     if (dataWellSummary) {
       setWellData(dataWellSummary.wellSummaryDetail[0]);
       setStateWellCard((state) => ({
         ...state,
-        selectedWell: { ...dataWellSummary.wellSummaryDetail[0], tenantWellId: stateApp.selectedWell?.tenantWellId },
+        selectedWell: { ...dataWellSummary.wellSummaryDetail[0], tenantWellId: selectedWellVal?.tenantWellId },
       }));
     } else {
       setWellData(null);
@@ -208,7 +211,7 @@ function WellCard() {
 
   // useEffect(() => {
   //   if (dataTenantWell?.tenantWell?.tenantWellId &&
-  //     stateApp?.selectedWell?.tenantWellId !== dataTenantWell?.tenantWell?.tenantWellId) {
+  //     selectedWellVal.tenantWellId !== dataTenantWell?.tenantWell?.tenantWellId) {
   //     setStateApp((state) => ({
   //       ...state,
   //       selectedWell: {
@@ -220,33 +223,32 @@ function WellCard() {
   // }, [dataTenantWell]);
 
   useEffect(() => {
-    if (stateApp?.selectedWell?.tenantWellId)
+    if (selectedWellVal.tenantWellId)
       getWellFilesCount({
         variables: {
-          relatedObjectId: stateApp?.selectedWell?.tenantWellId,
+          relatedObjectId: selectedWellVal.tenantWellId,
           relatedObjectType: "Well",
         },
       });
-  }, [stateApp?.selectedWell?.tenantWellId]);
+  }, [selectedWell.tenantWellId]);
 
   const handleOpenDetails = (isOwner) => {
-    setStateApp((state) => ({
-      ...state,
+    popupController.updateState({
       expandedCard: true,
-      wellDetailCardOpen: true,
       wellDetailCardTabIndex: isOwner ? 1 : 0,
       popupOpen: false,
-    }));
+    });
+    popupController.fitWellBounds();
   };
 
   if (
-    stateApp.selectedWell &&
-    stateApp.selectedWell.wellStatus !== "PERMIT" &&
-    stateApp.selectedWell.wellStatus !== "PERMIT - EXISTING WELL" &&
-    stateApp.selectedWell.wellStatus !== "EXPIRED PERMIT" &&
-    stateApp.selectedWell.wellStatus !== "PERMIT - NEW DRILL"
+    selectedWellVal &&
+    selectedWellVal.wellStatus !== "PERMIT" &&
+    selectedWellVal.wellStatus !== "PERMIT - EXISTING WELL" &&
+    selectedWellVal.wellStatus !== "EXPIRED PERMIT" &&
+    selectedWellVal.wellStatus !== "PERMIT - NEW DRILL"
   ) {
-    return stateApp.selectedWell ? (
+    return selectedWellVal ? (
       !stateExpandableCard.expanded ? (
         <div style={{ height: "100%", padding: "9px" }} data-testid="well-card">
           <Card>
@@ -285,11 +287,11 @@ function WellCard() {
                     Last 12
                   </Typography>
                   <Typography align="center" className={classes.text2} variant="caption">
-                    {`${stateApp?.selectedWell?.wellType === "GAS" ?
-                      formatBOE(stateApp.selectedWell.lastTwelveMonthBOE * 6)
+                    {`${selectedWellVal?.wellType === "GAS" ?
+                      formatBOE(selectedWellVal?.lastTwelveMonthBOE * 6)
                       :
-                      formatBOE(stateApp.selectedWell.lastTwelveMonthBOE)} 
-                    ${stateApp?.selectedWell?.wellType === "GAS" ? "MCFE" : "BOE"}`}
+                      formatBOE(selectedWellVal?.lastTwelveMonthBOE)} 
+                    ${selectedWellVal?.wellType === "GAS" ? "MCFE" : "BOE"}`}
                   </Typography>
                 </div>
               </Button>
@@ -594,8 +596,8 @@ function WellCard() {
       <CircularProgress color="secondary" />
     );
   } else {
-    return stateApp.selectedWell ? (
-      !stateApp.expandedCard ? (
+    return selectedWellVal ? (
+      !stateValues.expandedCard ? (
         <div>
           <Card className={classes.card} data-testid="well-card" >
             <CardActions

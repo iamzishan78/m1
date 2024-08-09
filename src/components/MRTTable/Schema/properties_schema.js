@@ -48,8 +48,9 @@ const PropertiesMeta = {
       name: 'id',
       accessorKey: 'id',
     },
+    // Allow M1neral System ID to export in Grid
     {
-      ...CommonSchema.HIDDEN,
+      ...CommonSchema.MONGO_ID,
       name: '_id',
       accessorKey: '_id',
     },

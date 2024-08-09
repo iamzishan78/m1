@@ -13,7 +13,7 @@ export const useStyles = makeStyles((theme) => ({
   appBar: {
     height: "64px",
     background: "transparent",
-    zIndex: 1,
+    zIndex: 99,
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,

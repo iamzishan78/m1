@@ -2,6 +2,8 @@ import { spatialDataAttributes } from "./constants";
 import { area, convertArea, length } from "@turf/turf";
 import * as turf from "@turf/turf";
 import { SRCenter } from 'mapbox-gl-draw-scale-rotate-mode';
+import { drawController } from "hookstate/drawStateController";
+import DeckGlLayer from "components/Map/DeckGL/helpers/DeckGlLayer";
 
 export const calculateShapeCenter = (geo) => {
   const center = turf.center(geo);
@@ -21,7 +23,7 @@ export const addCustomShapeProperties = (feature, Draw) => {
           break;
         default:
       }
-      Draw.setFeatureProperty(feature.id, attribute, data);
+      Draw?.setFeatureProperty(feature.id, attribute, data);
     });
   } catch (e) {
     console.log(e);
@@ -79,117 +81,84 @@ export const createShapeLabelLayer = feature => {
     }
   };
 };
-export const drawWellBoundary = (map, coordinates) => {
-  if (map.getLayer("well-point")) map.removeLayer("well-point");
-  if (map?.getSource("well-select-point")) map.removeSource("well-select-point");
-  if (coordinates.length > 0) {
-    map.addSource("well-select-point", {
-      type: "geojson",
-      data: {
-        type: "FeatureCollection",
-        features: [
+
+export const drawWellBoundary = coordinates => {
+  if (!window.mapRef) return;
+
+  const layerId = 'boundary-layer';
+
+  if (window.mapRef.getLayer(layerId)) window.mapRef.removeLayer(layerId);
+
+  if (coordinates && coordinates.length > 0 && coordinates[0]) {
+    new DeckGlLayer({
+      layerId,
+      type: 'GeoJsonLayer',
+      beforeLayer: 'top_deck_layer',
+      props: {
+        data: [
           {
-            type: "Feature",
+            type: 'Feature',
             geometry: {
-              type: "Point",
+              type: 'Point',
               coordinates: coordinates,
             },
           },
         ],
-      },
-    });
-    map.addLayer({
-      id: "well-point",
-      type: "circle",
-      source: "well-select-point",
-      paint: {
-        "circle-radius": 5,
-        "circle-color": "yellow",
+        getFillColor: [255, 255, 0],
+        getLineColor: [255, 255, 0],
+        pointRadiusMinPixels: 2.5,
+        lineWidthMinPixels: 1.5,
+        pointRadiusMaxPixels: 10,
+        lineWidthMaxPixels: 8,
+        getPointRadius: 50,
+        getLineWidth: 20,
       },
     });
   }
-}
+};
 
+export const drawBoundary = selectedUserDefinedLayer => {
+  if (!window.mapRef) return;
 
-export const drawBoundary = (map, selectedUserDefinedLayer) => {
-  // let mapSourceData = map.getSource(source)._data;
-  // const idx = mapSourceData.features.findIndex(feature => feature.id === featureId)
+  const layerId = 'boundary-layer';
+
+  if (window.mapRef.getLayer(layerId)) window.mapRef.removeLayer(layerId);
 
   if (selectedUserDefinedLayer?.geometry) {
-    const type = selectedUserDefinedLayer.geometry.type
-    const geoJson = {
-      type: "Feature",
-      properties: {},
-      geometry: {
-        type: type,
-        coordinates: selectedUserDefinedLayer.geometry.coordinates
+    const type = selectedUserDefinedLayer.geometry.type;
+    new DeckGlLayer({
+      layerId,
+      type: 'GeoJsonLayer',
+      beforeLayer: 'top_deck_layer',
+      props: {
+        data: [
+          {
+            type: 'Feature',
+            geometry: selectedUserDefinedLayer.geometry,
+          },
+        ],
+        lineWidthUnits: "pixels",
+        getFillColor: [0, 0, 0, 0],
+        getLineColor: [255, 255, 0],
+        getLineWidth: 6,
+        ...(type === 'Point' && {
+          lineWidthUnits: "meters",
+          getLineWidth: 100,
+          getFillColor: [255, 255, 0],
+          getPointRadius: 50,
+        }),
       },
-    };
-
-    if (map?.getLayer("parcelBoundary")) {
-      map.removeLayer("parcelBoundary");
-    }
-
-    if (map?.getSource('boundary-line-source')) {
-      map.getSource('boundary-line-source').setData(geoJson);
-      if (map.getLayer('boundary-line')) {
-        map.removeLayer('boundary-line')
-      }
-    } else {
-      map?.addSource("boundary-line-source", {
-        type: "geojson",
-        data: geoJson
-      });
-    }
-
-    if (map?.getSource('boundary-point-source')) {
-      map?.getSource('boundary-point-source').setData(geoJson);
-      if (map?.getLayer('boundary-point')) {
-        map.removeLayer('boundary-point')
-      }
-    } else {
-      map?.addSource("boundary-point-source", {
-        type: "geojson",
-        data: geoJson
-      });
-    }
-
-    if (type === 'Point') {
-      map?.addLayer({
-        id: "boundary-point",
-        type: "circle",
-        source: "boundary-point-source",
-        paint: {
-          "circle-radius": 5,
-          "circle-color": "yellow",
-        },
-      });
-    } else {
-      map?.addLayer({
-        id: "boundary-line",
-        type: "line",
-        source: "boundary-line-source",
-        layout: {
-          "line-join": "round",
-          "line-cap": "round",
-        },
-        paint: {
-          "line-color": "#FFFF00",
-          "line-width": 6,
-        },
-      });
-    }
-
-  } else {
-    if (map?.getLayer('boundary-line')) {
-      map.removeLayer('boundary-line')
-    }
-    if (map?.getLayer('boundary-point')) {
-      map.removeLayer('boundary-point')
-    }
+    });
   }
-}
+};
 
+export const clearSelectedAbstracts = () => {
+  if (window.mapRef?.getLayer("Land Grid_selection"))
+    window.mapRef.removeLayer("Land Grid_selection");
+  drawController.updateState({
+    selectedAbstracts: [],
+  });
+}
 
 export const getNewShapeFromSelectedQuarters = (currentFeature, selectedQuarters) => {
   const quarters = ["SWSW", "NWSW", "SWNW", "NWNW", "SESW", "NESW", "SENW", "NENW", "SWSE", "NWSE", "SWNE", "NWNE", "SESE", "NESE", "SENE", "NENE"]
@@ -308,7 +277,7 @@ export const getRotateAbleShapeFromSelectedQuarters = (currentFeature, draw) => 
     multi.geometry.coordinates.push(polygon.geometry.coordinates)
   })
 
-  draw.add(multi)
+  draw?.add(multi)
 
   setTimeout(() => {
     changeModeToScaleRotate(draw)
@@ -317,6 +286,7 @@ export const getRotateAbleShapeFromSelectedQuarters = (currentFeature, draw) => 
 
 
 export const changeModeToScaleRotate = (draw) => {
+  if (!draw) return;
   const all = draw.getAll()
   const feature = all.features.find((f) => f.properties.isrotate)
   if (feature) {

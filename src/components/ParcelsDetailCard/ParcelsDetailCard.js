@@ -19,14 +19,16 @@ import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
 import { UPDATECUSTOMLAYER } from '../../graphQL/useMutationUpdateCustomLayer';
 import ParcelSummary from './ParcelSummary';
 import { copy } from 'utils/helper';
-import { popupController, popupState } from 'hookstate/popupStateController';
+import { popupController } from 'hookstate/popupStateController';
 import MRTTable from "components/MRTTable";
 import { tableController, tableGlobalController } from "hookstate/tableController";
 import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
+import { showSuccessMessage, showErrorMessage } from 'actions';
 import { jobController } from "hookstate/jobStateController";
-import { showSuccessMessage, showErrorMessage, setMapGridCardState } from 'actions';
 import { simpleTableGlobalController } from 'hookstate/simpleTableController';
 import { globalStateController } from 'hookstate/globalStateController';
+import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
 import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
@@ -236,11 +238,9 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
   const globalStateValues = globalState.stateValues;
 
   useEffect(() => {
-    dispatch(
-      setMapGridCardState({
-        mapGridCardActivated: false,
-      })
-    );
+    mapControlsController.updateState({
+      mapGridCardActivated: false,
+    });
   }, []);
 
   useEffect(() => {
@@ -368,7 +368,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 
     if (field === 'shapeLabel') {
       popupController.updateState({
-        selectedParcel: { ...popupState.selectedParcel?.get({ noproxy: true }), shapeLabel: value },
+        selectedParcel: { ...popupController.getValue('selectedParcel'), shapeLabel: value },
       });
       customLayer.name = value;
     }
@@ -379,8 +379,9 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
         customLayer,
         userId: globalStateController.getValue('user')?._id
       },
-    }).then(() => {
+    }).then((res) => {
       jobController.toggleBulkUpload()
+      layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)
     });
   };
 
@@ -400,8 +401,9 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
         customLayer,
         userId: globalStateController.getValue('user')?._id
       },
-    }).then(() => {
+    }).then((res) => {
       jobController.toggleBulkUpload()
+      layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)
     });
   };
 

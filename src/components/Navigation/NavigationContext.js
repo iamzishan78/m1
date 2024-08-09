@@ -60,7 +60,6 @@ const initialValue = {
   filterOwnerWellInterestSum: null,
   filterOwnerCount: null,
   filterDrawing: [],
-  filterTrackedWells: false,
   filterTrackedOwners: false,
   searchInputValue: null,
   lastSearch: null,

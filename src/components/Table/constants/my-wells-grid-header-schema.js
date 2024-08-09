@@ -33,13 +33,7 @@ const wellsColumnHeaders = [
       customRender: (value, tableMeta) => {
         const globalWellId = tableMeta.rowData[0];
         const onClick = () => {
-          if (globalStateController.getValue('cypress'))
-            globalStateController.updateState({
-              testCase: {
-                name: "MyWellsNameUpdate",
-                globalWellId
-              }
-            });
+          globalStateController.handleMyWellTestCase(globalWellId)
         }
         return <ColumnWithLink value={value} link={`/land/well/details/${globalWellId}`} onClickForTestCase={onClick} />;
       },

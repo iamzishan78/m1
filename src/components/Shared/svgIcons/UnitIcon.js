@@ -10,7 +10,7 @@ function Icon() {
       x="0px"
       y="0px"
       viewBox="0 0 125 125"
-      enable-background="new 0 0 125 125"
+      enableBackground="new 0 0 125 125"
       xml:space="preserve"
       width="40"
       height="40"
