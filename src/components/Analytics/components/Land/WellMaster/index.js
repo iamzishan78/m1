@@ -46,6 +46,7 @@ const useStyles = makeStyles((theme) => ({
 export default function ExhibitATabPanel() {
   const classes = useStyles();
   const [stateApp] = useContext(AppContext);
+  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 144px)" } // set table height for well master
   const propertiesReportGroup = useSelector(
     ({ Revenue }) => Revenue.propertiesReportGroup
   );

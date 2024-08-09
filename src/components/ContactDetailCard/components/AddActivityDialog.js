@@ -548,6 +548,7 @@ function AddActivityDialog(props) {
         value={activityName}
         onChange={(e) => setActivityName(e.target.value)}
         disabled={loading}
+        data-testid='activity-name-field'
       />
       <FormControl
         variant="outlined"

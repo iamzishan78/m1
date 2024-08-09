@@ -187,6 +187,14 @@ const tableData = [
         type: "currency",
         key: "uMaxUnitPricing",
     },
+    // Bonus payment filed
+    {
+        label: "Lease Bonus (per acre)",
+        type: "currency",
+        key: "leaseBonusPerAcre",
+        edit: true,
+        esKey: 'leaseBonusPerAcre',
+    },
     // {
     //     label: "Tract Status",
     //     type: "autocompletelandgrid",
