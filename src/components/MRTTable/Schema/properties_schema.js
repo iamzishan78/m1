@@ -25,7 +25,7 @@ const PropertiesMeta = {
   isInFiniteScroll: true,
   columnVirtualization: true,
   gridViewSettings: {
-    label: 'Properties Management',
+    label: 'Properties',
     module: 'Properties',
     Icon: CurrencyIcon,
     defaultView: {
