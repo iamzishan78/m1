@@ -169,7 +169,7 @@ const SalesVolumeComparisonMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'check.checkNumber.keyword',
 			accessorFn: row => row?.check?.checkNumber,
-			header: 'check number',
+			header: 'Check Number',
 			isExternalFilter: true,
 		}
 	],
