@@ -37,10 +37,16 @@ const MyWellsMeta = {
       accessorKey: '_id',
     },
     {
-      ...CommonSchema.INITAIL_PINNED,
+      ...CommonSchema.HIDDEN, // Added to allow search with this field too
       name: 'wellData.wellName',
-      id: 'wellData.wellName',
-      accessorKey: 'wellData?.wellName',
+      accessorKey: 'wellData?.WellName',
+      hidden: true,
+			isSearchField: true,
+    },
+    {
+      ...CommonSchema.INITAIL_PINNED,
+      name: 'wellData.WellName.keyword',
+      accessorKey: 'wellData.WellName',
       header: 'Well Name',
       Cell: ({ row }) => (
         <div
