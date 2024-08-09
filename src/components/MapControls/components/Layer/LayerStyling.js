@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { Typography, Paper, Grid, IconButton, Divider, FormControlLabel, Switch, Box, Tooltip, ClickAwayListener } from "@material-ui/core";
+import { Paper, Grid, IconButton, Divider, FormControlLabel, Switch, Box, Tooltip, ClickAwayListener } from "@material-ui/core";
 import { Close as CloseIcon } from "@material-ui/icons";
 import { UPDATELAYERSETTINGS } from "../../../../graphQL/useMutationUpdateLayerSettings";
 import GridOnIcon from "@material-ui/icons/GridOn";
@@ -12,10 +12,14 @@ import { ColorPickerStyledBox, useLayerStyle, useStyles, WidthPicker } from "./C
 import { globalStateController } from "hookstate/globalStateController";
 import { mapControlsController } from "hookstate/mapControlsController";
 import { layerController } from "hookstate/layerStateController";
+import { Typography, TextField } from '@mui/material';
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import { colorBasedAttributes } from "./ColorBasedAttributes";
+import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
+import { AppContext } from "AppContext";
 
 function LayerStyling() {
   const classes = useStyles();
-
   const { mapControlsStateValues, ...mapControlStates } = mapControlsController.useState(['selectedLayer'], 'mapControlsStateValues');
   const selectedLayer = mapControlsStateValues.selectedLayer
 
@@ -24,10 +28,24 @@ function LayerStyling() {
   } = useLayerStyle(selectedLayer)
 
   const [rows, setRows] = useState(0);
+  const [stateApp, setStateApp] = useContext(AppContext);
+  const [selectedValue, setSelectedValue] = useState(null);
+  const [displayColorPicker, setDisplayColorPicker] = useState(false);
 
   const [layerFeaturesCount, { data: layerDataCount }] = useLazyQuery(LAYERS_FEATURES_COUNT);
+  const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
   const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
+
+  useEffect(() => {
+    if (colorBasedAttributes[selectedLayer?.identifier]?.customMetaCategory)
+      getMetaData({
+        variables: {
+          user: stateApp.user?.mongoId,
+          category: colorBasedAttributes[selectedLayer?.identifier]?.customMetaCategory,
+        },
+      });
+  }, []);
 
   useEffect(() => {
     setRows(layerDataCount?.layerFeaturesCount || 0)
@@ -84,6 +102,16 @@ function LayerStyling() {
     }
     handleClose();
   };
+
+  const options = useMemo(() => {
+    const colorAttributes = colorBasedAttributes[selectedLayer?.identifier]?.keys || [];
+    const metaDataOptions = metaDataRes?.getMetaData?.metaData?.map((md) => ({
+      label: md.name,
+      value: md.esKey,
+    })) || [];
+
+    return [...colorAttributes, ...metaDataOptions];
+  }, [selectedLayer, metaDataRes]);
 
   return (
     <ClickAwayListener onClickAway={handleApplyChanges}>
@@ -190,9 +218,69 @@ function LayerStyling() {
                   />
                   {layerType === "line" && <WidthPicker width={width} setWidth={setWidth} layerType={layerType} />}
                 </div>
-                {enablefillColor && <Paper id='fill-picker-box'>
-                  <ColorPickerStyledBox value={fillColor} onChange={(color) => setFillColor(color)} />
-                </Paper>}
+                {enablefillColor && (<>
+                  <div style={{ margin: '8px 0' }}>
+                    <Typography style={{ fontSize: '1.2rem', margin: '8px 0' }}>Color based on</Typography>
+                    <Autocomplete
+                      options={options}
+                      getOptionLabel={(option) => option.label}
+                      value={selectedValue}
+                      onChange={(event, newValue) => {
+                        setSelectedValue(newValue);
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Select a field"
+                          variant="outlined"
+                          fullWidth
+                          InputProps={{
+                            ...params.InputProps,
+                            style: {
+                              height: '50px', // Adjust the height here
+                              padding: '0 14px',
+                            },
+                          }}
+                          InputLabelProps={{
+                            style: {
+                              lineHeight: '1.2',
+                            },
+                          }}
+                        />
+                      )}
+                      isOptionEqualToValue={(option, value) => option.value === value?.value}
+                    />
+                  </div>
+                  <div style={{ margin: '8px 0' }}>
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      onClick={() => setDisplayColorPicker(!displayColorPicker)}
+                      InputProps={{
+                        style: {
+                          height: '50px', // Customize the height here
+                          cursor: 'pointer',
+                        },
+                        startAdornment: (
+                          <div
+                            style={{
+                              width: '100px',
+                              height: '30px',
+                              backgroundColor: fillColor,
+                              // opacity: opacity,
+                              border: '1px solid #ccc',
+                              marginRight: '8px',
+                            }}
+                          />
+                        ),
+                      }}
+                    />
+                  </div>
+                  {displayColorPicker && <Paper id='fill-picker-box'>
+                    <ColorPickerStyledBox value={fillColor} onChange={(color) => setFillColor(color)} />
+                  </Paper>}
+                </>
+                )}
               </Grid>
               {strokeColor && (
                 <Grid item xs={12}>
