@@ -36,6 +36,7 @@ const SalesVolumeComparisonMeta = {
 			name: 'property.number.keyword',
 			accessorKey: 'property.number',
 			header: 'Property Number',
+			isExternalFilter: true,
 		},
 		// Well API Number column with custom cell rendering
 		{

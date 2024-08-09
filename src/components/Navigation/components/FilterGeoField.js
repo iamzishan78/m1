@@ -2,8 +2,8 @@ import React, { useContext } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { NavigationContext } from '../NavigationContext';
+import { navController } from 'hookstate/navStateController';
 
 const fieldList = [
   '8 MILE FLAT NORTH',
@@ -3856,7 +3856,7 @@ export default function FilterField() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
 
   const handleFieldChange = value => {
-    layerFiltersController.setWellsVariables('field', value);
+    navController.handleWellsFilters({ field: 'field', value });
 
     setStateNav(stateNav => ({ ...stateNav, fieldName: value || [] }));
   };

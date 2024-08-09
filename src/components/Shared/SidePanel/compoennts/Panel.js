@@ -42,11 +42,11 @@ import {
 import SortableLayer from "./SortableLayer";
 import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
 // Contexts
-import { NavigationContext } from "components/Navigation/NavigationContext";
 import AddGroup from "./AddGroup";
 import { mapControlsController } from "hookstate/mapControlsController";
 import { layerController } from "hookstate/layerStateController";
 import { mapStateController } from "hookstate/mapStateController";
+import { navController } from "hookstate/navStateController";
 
 const layerIcons = [
   {
@@ -193,9 +193,9 @@ const StyledSecondaryMenu = () => {
 function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems }) {
   const { selectedControl, expandedPanel, mapControlsStateValues } = mapControlsController.useState(['selectedControl', 'expandedPanel'], 'mapControlsStateValues');
   const { mapStateValues } = mapStateController.useState(['mapVars', 'defaultMapVars'], 'mapStateValues');
+  const { navStateValues } = navController.useState(['geographyFilterCount', 'wellFilterCount'], 'navStateValues')
+
   const [stateApp] = useContext(AppContext);
-  const [stateNav] = useContext(NavigationContext);
-  const [totalFilterCount, setTotalFilterCount] = useState(null);
   const [totalHitMapCount, setTotalHitMapCount] = useState(null);
   const [updateUserMapSettings, { data: updatedMapSettings }] = useMutation(UPDATE_USER_MAP_SETTINGS);
 
@@ -209,9 +209,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
   const [searchState, setSearchState] = useState(false);
   const [tab, setTab] = useState(0);
 
-  useEffect(() => {
-    setTotalFilterCount(stateNav.totalFilterCount);
-  }, [stateNav]);
+  const totalFilterCount = navStateValues.geographyFilterCount + navStateValues.wellFilterCount
 
   useEffect(() => {
     setTotalHitMapCount(stateApp.checkedHeats.length);

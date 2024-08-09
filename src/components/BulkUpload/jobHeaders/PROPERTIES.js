@@ -162,6 +162,20 @@ export default [
         required: false,
         actual_key: "propertyInterest.costFree",
     },
+    //Add End Date mapping
+    {
+        label: "End Date",
+        mapped_key: "",
+        required: false,
+        actual_key: "propertyInterest.endDate",
+    },
+    //Add Product Type mapping
+    {
+        label: "Product Type",
+        mapped_key: "",
+        required: false,
+        actual_key: "propertyInterest.productType",
+    },
     {
         label: "Associated Well API Numbers",
         mapped_key: "",
@@ -177,13 +191,13 @@ export default [
     {
         label: "Payor Prop #",
         mapped_key: "",
-        required: true,
+        required: false,
         actual_key: "property.purchaserNumber",
     },
     {
         label: "Payor",
         mapped_key: "",
-        required: true,
+        required: false,
         actual_key: "property.purchaser.name",
     },
     {
@@ -191,5 +205,26 @@ export default [
         mapped_key: "",
         required: false,
         actual_key: "property._id",
+    },
+    //Add End Date mapping
+    {
+        label: "End Date",
+        mapped_key: "",
+        required: false,
+        actual_key: "propertyInterest.endDate",
+    },
+    //Add Product Type mapping
+    {
+        label: "Product Type",
+        mapped_key: "",
+        required: false,
+        actual_key: "propertyInterest.productType",
+    },
+    //Add Property Comment mapping
+    {
+        label: "Property Comment",
+        mapped_key: "",
+        required: false,
+        actual_key: "comment",
     },
 ];

@@ -26,8 +26,7 @@ const onRightClick = ({ x, y, coordinate }) => {
     const layerIds = Object.keys(layerController.getValue('boundingStates') || {}).filter(
       layerId =>
         !layerId.startsWith('AbstractGeo') &&
-        !layerId.startsWith('Pls') &&
-        !layerId.startsWith('Area')
+        !layerId.startsWith('Pls')
     );
 
     const layers =

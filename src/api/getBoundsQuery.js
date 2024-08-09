@@ -89,6 +89,7 @@ const getBoundsQuery = async ({
   filters,
   multiQuery,
   polygonFilter,
+  polygonsFilter,
 }) => {
   const { isWellsQuery, isOneTimeQuery, isLandGridQuery } =
     queries[identifier] || queries['search'];
@@ -124,7 +125,7 @@ const getBoundsQuery = async ({
 
   globalStateController.setLayerLoading(layerId, true);
   let geoPolygons = [polygon];
-  if (multiQuery && !polygonFilter) {
+  if (multiQuery && !polygonFilter && polygonsFilter.length === 0) {
     geoPolygons = dividePolygon(polygon);
     if (zoom < 12 && isWellsQuery) {
       geoPolygons = [
@@ -154,12 +155,21 @@ const getBoundsQuery = async ({
     if (isLandGridQuery) {
       const polygonString = getPolygonString(geoPolygon);
       if (polygonString) variables.polygon = polygonString;
-    } else
+    } else {
+      if (polygonsFilter.length === 0)
+        variables.filters.push({
+          type: 'geo_intersects',
+          field: filters.geoBoundingField || geoField,
+          value: geoPolygon.geometry,
+        });
+
       variables.filters.push({
         type: 'geo_intersects',
         field: filters.geoBoundingField || geoField,
-        value: geoPolygon.geometry,
+        value: polygonsFilter,
       });
+    }
+
 
     const queryHandler = {
       identifier,

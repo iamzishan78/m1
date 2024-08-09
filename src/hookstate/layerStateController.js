@@ -35,33 +35,43 @@ import { layerState, layerStateInitialState } from './initialStates';
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
 const getWellColor = w => {
-	switch (w.properties.wellType) {
+	// Check if the well status is of Permit type
+	const isWellPermitStatus = [
+		'PERMIT',
+		'PERMIT - NEW DRILL',
+		'PERMIT - EXISTING WELL'
+	].includes(w?.properties?.wellStatus);
+
+	// Switch on whether wellStatus or wellType 
+	const switchType = isWellPermitStatus ? w.properties.wellStatus : w.properties.wellType;
+	switch (switchType) {
+		
 		// rgb(2, 207, 53)
 		case 'OIL':
 		case 'OIL AND GAS':
-			return [2, 207, 53];
+			return [2, 207, 53];  // green
 
 		// rgb(230, 15, 15)
 		case 'GAS':
-			return [230, 15, 15];
+			return [230, 15, 15]; // red
 
 		// rgb(74, 211, 242)
 		case 'WATER':
-			return [74, 211, 242];
+			return [74, 211, 242]; // blue
 
 		// rgb(251, 152, 40)
 		case 'PERMIT':
 		case 'PERMIT - NEW DRILL':
 		case 'PERMIT - EXISTING WELL':
-			return [251, 152, 40];
+			return [251, 152, 40];  // orange
 
 		// rgba(30, 26, 26, 0.55)
 		case 'PERMITTED':
-			return [30, 26, 26, 0.55];
+			return [251, 152, 40];  // orange
 
 		// rgb(192, 0, 0)
 		default:
-			return [192, 0, 0];
+			return [58, 58, 58];  // default dark for permitted
 	}
 };
 
@@ -549,6 +559,30 @@ const layerStateControllerHandler = state => {
 		layerController.handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, visiable: value } })
 	}
 
+	const reinitializeLayer = ({ meta, layerId, beforeLayerId, labelProps, pickable, visible }) => {
+		if (!deckLayers[layerId]) {
+			deckLayers[layerId] = {
+				getData: generateDataFunc(),
+				beforeLayerId,
+			};
+			const metaLayer = meta.layer;
+			new DeckGlLayer({
+				layerId: layerId,
+				type: metaLayer.type,
+				beforeLayer: beforeLayerId,
+				props: {
+					...metaLayer.getProps(layerId),
+					...meta.props?.[layerId],
+					...(labelProps && { getText: d => d.properties?.label }),
+					pickable,
+					visible,
+				},
+			});
+		}
+		DeckGlLayer.moveLayer(layerId, beforeLayerId);
+		deckLayers[layerId].beforeLayerId = beforeLayerId;
+	}
+
 	const handleDeckLayer = dbLayer => {
 		const client = layerController.getValue('client');
 		if (!client) return;
@@ -570,8 +604,8 @@ const layerStateControllerHandler = state => {
 		const isAgreementLayer = agreementLayerIdentifiers.includes(dbLayer.identifier);
 		const filterIdentifier = isAgreementLayer ? 'Agreements' : isFileLayer ? dbLayer.layerShapeName : dbLayer.identifier;
 
-		let { [filterIdentifier]: filters, polygonFilter } = layerFiltersController.getValues(
-			[filterIdentifier, 'polygonFilter']
+		let { [filterIdentifier]: filters, polygonFilter, polygonsFilter } = layerFiltersController.getValues(
+			[filterIdentifier, 'polygonFilter', 'polygonsFilter']
 		);
 
 		const boundingState = handleBounds(
@@ -593,6 +627,7 @@ const layerStateControllerHandler = state => {
 		let updatedProps = {
 			pickable,
 			visible,
+			showable: dbLayer.layerSettings.showable
 		};
 
 		const labelProps =
@@ -607,28 +642,7 @@ const layerStateControllerHandler = state => {
 			};
 		}
 
-		if (!deckLayers[layerId]) {
-			deckLayers[layerId] = {
-				getData: generateDataFunc(),
-				beforeLayerId,
-			};
-			deckLayers[layerId].getData = generateDataFunc();
-			const metaLayer = meta.layer;
-			new DeckGlLayer({
-				layerId: layerId,
-				type: metaLayer.type,
-				beforeLayer: beforeLayerId,
-				props: {
-					...metaLayer.getProps(layerId),
-					...meta.props?.[layerId],
-					...(labelProps && { getText: d => d.properties?.label }),
-					pickable,
-					visible,
-				},
-			});
-		}
-		DeckGlLayer.moveLayer(layerId, beforeLayerId);
-		deckLayers[layerId].beforeLayerId = beforeLayerId;
+		reinitializeLayer({ meta, layerId, beforeLayerId, labelProps, pickable, visible })
 
 		if (!boundingState.show?.current)
 			return updateLayer(dbLayer, {
@@ -652,20 +666,21 @@ const layerStateControllerHandler = state => {
 			boundingState,
 			geoField: meta.geoField,
 			polygonFilter,
+			polygonsFilter,
 			filters: isFileLayer ? generateFileFilters({ fileLayer: dbLayer, extendFilters: filters }) : filters,
 			onData: data => {
-				if (!Array.isArray(data) || data.length === 0) return;
-				if (filters?.allowedTypes?.length > 0) {
-					data = data.filter(f =>
-						filters.allowedTypes.includes(f?.shapeJson?.geometry?.type)
-					);
+				if (!Array.isArray(data)) return;
+				let geoJson = { features: [] };
+				if (data?.length > 0) {
+					if (filters?.allowedTypes?.length > 0) {
+						data = data.filter(f =>
+							filters.allowedTypes.includes(f?.shapeJson?.geometry?.type)
+						);
+					}
+					const layerData = data;
+					if (!Array.isArray(layerData)) return;
+					geoJson = makeGeoJSON(layerData, labelProps);
 				}
-
-				const layerData = data;
-
-				let geoJson = null;
-				if (!Array.isArray(layerData)) return;
-				geoJson = makeGeoJSON(layerData, labelProps);
 				if (deckLayers[layerId]?.getData?.feedData)
 					deckLayers[layerId].getData.feedData(geoJson.features);
 			},

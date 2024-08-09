@@ -7,6 +7,7 @@ import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import { calculateStandardNraForUnit } from "utils/calculatedNraHelper"
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import contactForm from "components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema"
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
 const calculateOfferPrice = (nra, uUnitPricing = 0) => {
   if (!uUnitPricing) {
@@ -103,7 +104,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 
           const workspaceSettings = sideDialogController("unitInterestDialog").getValue('workspaceSettings')
           const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
-          const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri, nri: parseFloat(value).toFixed(8), workspaceSettings }) 
+          const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri, nri: parseFloat(value).toFixed(8), workspaceSettings })
           // Update nra and offer prices
           setValue('nra', calculatedNra)
           setValue('offer_price', calculateOfferPrice(calculatedNra));
@@ -419,6 +420,25 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
         const filterData = apiRes.data.getESFilterList.hits.map(
           (hit) => hit.key
         );
+        return filterData
+      }
+    },
+    // Contact Owner field
+    {
+      label: "Contact Owner",
+      name: "contactOwners",
+      renderField: "autoComplete",
+      query: GETMONGOUSERS,
+      variables: {
+        esIndex: "contacts_flat",
+        filterKey: "contactOwner.keyword",
+        size: 10000,
+      },
+      getOptions: (apiRes) => {
+        const filterData = apiRes.data.allMongoUsers.map(user => ({
+          value: user._id,
+          label: user.name,
+        }))
         return filterData
       }
     },
