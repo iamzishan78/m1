@@ -200,6 +200,7 @@ export default [
         required: false,
         actual_key: "property.purchaser.name",
     },
+    //added pay status field
     {
         label: "Pay Status",
         mapped_key: "",
