@@ -36,7 +36,6 @@ function MRTFallback({ tableKey, error, resetErrorBoundary }) {
     TableSchema: schema,
   }), []);
 
-  console.log('fall back call');
   return (
     <div >
       <MRTTable name={tableKey} overrideMeta={overrideMeta} />
