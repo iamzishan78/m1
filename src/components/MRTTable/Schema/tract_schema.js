@@ -157,6 +157,14 @@ const TractMeta = {
 			id: 'shapeJson.properties.shapeArea',
 			header: 'Calc Acres',
 		},
+		// Added tract NRA column
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.netRoyalityAcres.calculatedNra.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.netRoyalityAcres?.calculatedNra,
+			id: 'shapeJson.properties.netRoyalityAcres.calculatedNra',
+			header: 'Tract NRA',
+		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.execNetAcres.keyword',

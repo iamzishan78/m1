@@ -75,7 +75,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
       if (aggsData?.getESAggsList?.aggregations?.grossAcresSum) {
         const grossAcresSum = aggsData.getESAggsList.aggregations.grossAcresSum.value.sum;
         setCardPoint(
-          (Math.round((grossAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + "K",
+          (Math.round((grossAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + "K",
           1
         );
         // props.onGrossAcresSum(
@@ -92,7 +92,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
       if (aggsData?.getESAggsList?.aggregations?.netAcresSum) {
         const netAcresSum = aggsData.getESAggsList.aggregations.netAcresSum.value;
         setCardPoint(
-          (Math.round((netAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + "K",
+          (Math.round((netAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + "K",
           2
         );
         // props.onNetAcresSum(
@@ -109,7 +109,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
       if (aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum) {
         const netRoyaltyAcresSum = aggsData.getESAggsList.aggregations.netRoyaltyAcresSum.value;
         setCardPoint(
-          (Math.round((netRoyaltyAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + "K",
+          (Math.round((netRoyaltyAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + "K",
           3
         );
         // props.onNetRoyaltyAcresSum(
@@ -158,12 +158,23 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     });
   };
 
+  const filters = esFilters.map(filter => {
+    const updatedField = filter.field === 'layer.keyword' && filter.value === 'parcel' 
+      ? 'shape.layer.keyword' 
+      : filter.field;
+
+    // Return a new object with the updated field, ensuring immutability
+    return {
+      ...filter,
+      field: updatedField,
+    };
+  });
   const tractsAnalytics = () => {
     getESAggsGrossAcresSum({
       variables: {
         esIndex: "shapeowners_flat",
         search: landSearchQuery ? `${landSearchQuery}*` : "",
-        filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters],
+        filters: [{ field: "shape.layer", value: "parcel" }, ...filters],
         aggs: {
           grossAcresSum: {
             scripted_metric: {
@@ -198,7 +209,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
       variables: {
         esIndex: "shapeowners_flat",
         search: landSearchQuery ? `${landSearchQuery}*` : "",
-        filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters],
+        filters: [{ field: "shape.layer", value: "parcel" }, ...filters],
         aggs: {
           netAcresSum: {
             sum: {
@@ -212,7 +223,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
       variables: {
         esIndex: "shapeowners_flat",
         search: landSearchQuery ? `${landSearchQuery}*` : "",
-        filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters],
+        filters: [{ field: "shape.layer", value: "parcel" }, ...filters],
         aggs: {
           netRoyaltyAcresSum: {
             sum: {
@@ -228,10 +239,10 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     if (totalCount > 0) {
       if (parent === "Agreements") {
         agreementAnalytics();
+      } else if (parent === "Tracts") {
+        // Get tract analytics data
+        tractsAnalytics();
       }
-    }
-    if (parent === "Tracts") {
-      tractsAnalytics();
     }
   };
 
@@ -239,7 +250,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     setCardPoint(totalCount, 0);
     getAggsCounts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [totalCount]);
+  }, [totalCount, esFilters]);
 
   return (
     <Grid container direction="row" display="flex" align="center" spacing={4} textAlign="left" className={classes.root}>
