@@ -27,7 +27,7 @@ import { getRandomColor } from "components/Shared/functions/ui.js";
 import vf_currency from "../Shared/valueformatters/vf_currency.js";
 import vf_number from "../Shared/valueformatters/vf_number.js";
 import DocViewer from "../Shared/DocViewer";
-import { validateEmail } from "components/Login/loginHelpers";
+import { validateEmail } from "components/_Login/loginHelpers";
 import { GETPIPELINE } from "graphQL/useQueryPipeline";
 import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
 import PipelinesFetchHoc from "components/Transact/components/Common/PipelinesFetchHoc";
@@ -587,18 +587,18 @@ const Transact = () => {
                 </>
               )
             }
-           
+
           </div>
         </header>
         {
           showDescription &&
           <div className={CardClasses.cardDescStyle}>{desc}</div>
         }
-        <Box display={"flex"} flexWrap="wrap" style={{ gap: '5px', paddingBottom: 5}}>
+        <Box display={"flex"} flexWrap="wrap" style={{ gap: '5px', paddingBottom: 5 }}>
           {
-            tags?.length > 0 && 
-            tags.map(tag => 
-                <Chip style={{ height: 25, background: tag.color || "powderblue", color: getOppositeHexColor(tag.color || "powderblue")}} label={tag.tag} />)
+            tags?.length > 0 &&
+            tags.map(tag =>
+              <Chip style={{ height: 25, background: tag.color || "powderblue", color: getOppositeHexColor(tag.color || "powderblue") }} label={tag.tag} />)
           }
         </Box>
       </article>

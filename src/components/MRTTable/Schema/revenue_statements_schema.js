@@ -9,7 +9,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import { formatDate } from 'components/Shared/functions';
 import { LocalAtm as CurrencyIcon } from "@material-ui/icons";
 import vf_number from 'components/Shared/valueformatters/vf_number';
-import { LocalAtm as CurrencyIcon } from "@material-ui/icons";
 
 // Define styles for tooltip
 const useStyles = makeStyles((theme) => ({

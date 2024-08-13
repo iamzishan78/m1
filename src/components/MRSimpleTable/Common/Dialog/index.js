@@ -12,11 +12,14 @@ import Loader from 'components/Loaders';
 import CommentDialog from './CommentDialog';
 import TagDialog from './TagDialog';
 import ExportConfirmationDialog from './ConfirmationDialog/ExportConfirmation';
+import { useMutation } from "@apollo/client";
+import { REMOVE_USERS} from "graphQL/userManagement";
 
 function AllDialogs() {
 	const { stateValues } = simpleTableGlobalController.useState(['dialog']);
 	const { type, ...rest } = stateValues.dialog || {};
 	const tableKey = rest?.tableKey;
+	const [removeUsers] = useMutation(REMOVE_USERS);
 
 	const handleCloseDialog = () => {
 		simpleTableGlobalController.updateState({
@@ -33,9 +36,31 @@ function AllDialogs() {
 		});
 	};
 
-	const deleteFunc = async dataToDelete => {
+	const deleteFunc = async (dataToDelete) => {
 		Loader.createToast('deletion', 'Deletion in Progress');
+	
+		const userIds = dataToDelete.mainRecord || [];
+	
+		if (userIds.length > 0) {
+			removeUsers({
+			  variables: {
+				userIds,
+			  },
+			}).then(
+			  (res) => {
+				if (res?.data?.removeUsers) {
+				  Loader.successToast('deletion');
+				  simpleTableGlobalController.refetch();
+				}
+			  },
+			  () => {
+				Loader.errorToast('deletion', 'Failed to delete row (s)');
+				simpleTableGlobalController.refetch();
+			  }
+			);
+		}
 	};
+	
 
 	return (
 		<>

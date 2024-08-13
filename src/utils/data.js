@@ -630,7 +630,7 @@ export const AdminManagementRoutes = {
 };
 
 export const bypassTenants = [
-  // "localhost",
+  "localhost",
   // "m1Preview",
   // "m1Staging",
   // "m1Production",

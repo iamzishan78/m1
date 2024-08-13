@@ -2,7 +2,7 @@ import moment from "moment";
 
 import { getSession } from "utils/user";
 import { wellsKeys } from "utils/data";
-import { tenantsCredentials } from "components/Login/AADAuthConfig";
+import { tenantsCredentials } from "components/_Login/AADAuthConfig";
 import { globalStateController } from "hookstate/globalStateController";
 
 export const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
