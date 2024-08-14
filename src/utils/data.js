@@ -649,6 +649,8 @@ export const bypassTenants = [
   // "Pheasant"
 ];
 
+export const simpleAuthBypass = false
+
 export const OWNERTYPE = {
-  CORPORATION: "CORPORATION" 
+  CORPORATION: "CORPORATION"
 }

@@ -27,7 +27,7 @@ import { getRandomColor } from "components/Shared/functions/ui.js";
 import vf_currency from "../Shared/valueformatters/vf_currency.js";
 import vf_number from "../Shared/valueformatters/vf_number.js";
 import DocViewer from "../Shared/DocViewer";
-import { validateEmail } from "components/_Login/loginHelpers";
+import { validateEmail } from "components/AzureLogin/loginHelpers";
 import { GETPIPELINE } from "graphQL/useQueryPipeline";
 import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
 import PipelinesFetchHoc from "components/Transact/components/Common/PipelinesFetchHoc";

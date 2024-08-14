@@ -646,18 +646,18 @@ const Login = (props) => {
   const renderBody = (
     <>
       <div className={localClass.cardContainer}>
-        {/* {globalStateValues.bypassLogin ?
+        {globalStateValues.bypassLogin ?
           <BypassSignInCard
             ready={loadingSigInButton}
             handleAADSignIn={handleBypassAADSignIn}
             tenant={!stateApp.myMSALObj ? queryString.parse(props.location.search).tenant : undefined}
-          /> : */}
-        <SignInCard
-          ready={loadingSigInButton}
-          handleAADSignIn={handleAADSignIn}
-          tenant={!stateApp.myMSALObj ? queryString.parse(props?.location?.search).tenant : undefined}
-        />
-        {/* } */}
+          /> :
+          <SignInCard
+            ready={loadingSigInButton}
+            handleAADSignIn={handleAADSignIn}
+            tenant={!stateApp.myMSALObj ? queryString.parse(props?.location?.search).tenant : undefined}
+          />
+        }
       </div>
     </>
   );
