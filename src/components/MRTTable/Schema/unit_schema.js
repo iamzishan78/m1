@@ -1,15 +1,59 @@
 import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import UnitIcon from 'components/Shared/svgIcons/unit';
-import { formatDate } from 'components/Shared/functions';
+import _ from 'lodash';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 import vf_currency from "components/Shared/valueformatters/vf_currency.js";
 import vf_number from 'components/Shared/valueformatters/vf_number';
+import Loader from 'components/Loaders';
+import { globalStateController } from 'hookstate/globalStateController';
+import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
+import { tableGlobalController } from 'hookstate/tableController';
+import { copy } from "utils/helper";
 
 const esIndex = 'shapes_flat';
+
+const onCustomKeyChange = async (client, row, value, item) => {
+	const loaderId = `upadting-${row?._id}`;
+
+	try {
+		Loader.createToast(loaderId, 'Updation in Progress');
+		const user = globalStateController.getValue('user')
+
+		const customData = copy(row?.shapeJson?.properties?.custom_data) ?? {};
+		const filteredCustomData = _.pickBy(customData, (value) => value !== "" && !_.isEmpty(value));
+
+		const shapeJson = {
+			...row?.shapeJson,
+			properties: {
+				...row?.shapeJson?.properties,
+				custom_data: {
+					...filteredCustomData,
+					[item.name]: value,
+				}
+			},
+		}
+
+		await client.mutate({
+			variables: {
+				customLayerId: row?._id,
+				userId: user?._id,
+				customLayer: {
+					shape: JSON.stringify(shapeJson),
+					shapeJson,
+				},
+			},
+			mutation: UPDATECUSTOMLAYER,
+		});
+		Loader.successToast(loaderId, 'Updation Complete');
+		tableGlobalController.refetch();
+	} catch (err) {
+		Loader.errorToast(loaderId, 'Updation in Complete');
+	}
+};
 
 const UnitMeta = {
 	esIndex,
@@ -45,6 +89,7 @@ const UnitMeta = {
 	fetchMetaData: {
 		category: 'Unit', // enable to show custom field inside unit grid
 	},
+	onCustomKeyChange,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
@@ -134,6 +179,14 @@ const UnitMeta = {
 			accessorFn: row => vf_number(row?.shapeJson?.properties?.uAcres),
 			id: 'shapeJson.properties.uAcres',
 			header: 'Unit Acres',
+		},
+
+		{
+			// Total unit NRA column
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.netRoyalityAcres.unitNra.keyword',
+			accessorFn: row => vf_number(row?.shapeJson?.properties?.netRoyalityAcres?.unitNra),
+			header: 'Total Unit NRA'
 		},
 
 		{

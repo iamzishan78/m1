@@ -15,6 +15,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: "#fff",
     padding: "0 16px",
+    position: "fixed"
   },
   top: {
     display: "flex",

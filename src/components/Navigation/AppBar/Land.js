@@ -10,6 +10,7 @@ import { useHistory } from "react-router-dom";
 import { useMutation } from "@apollo/client";
 import { UPSERTCUSTOMLAYER } from "graphQL/useMutationUpsertCustomLayer";
 import ButtonDropDown from "components/Shared/M1nTable/components/ButtonGroup";
+import { layerController } from "hookstate/layerStateController";
 
 export default function LandAppBar(props) {
   const { classes, user } = props;
@@ -54,6 +55,8 @@ export default function LandAppBar(props) {
 
           upsertCustomLayer({
             variables: { customLayer: customLayerData },
+          }).then((result) => {
+            layerController.resetBounds(result?.data?.upsertCustomLayer?.customLayer?.layer)
           });
         },
       },

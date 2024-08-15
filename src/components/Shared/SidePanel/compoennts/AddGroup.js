@@ -272,8 +272,8 @@ export default function AddGroup({ userId, above }) {
                 }}
               />
               <div className={classes.listContainer}>
-                {filterSearchedGroups.map((group) => (
-                  <LayerGroupItem key={group.id} layerGroup={group} />
+                {filterSearchedGroups.map((group, index) => (
+                  <LayerGroupItem key={`${group.id}_${index}`} layerGroup={group} />
                 ))}
               </div>
             </div>

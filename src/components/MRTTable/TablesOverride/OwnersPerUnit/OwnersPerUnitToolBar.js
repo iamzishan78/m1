@@ -10,6 +10,8 @@ import { navController } from 'hookstate/navStateController';
 import OwnerPerUnitTableDialogs from 'components/MRTTable/TablesOverride/OwnersPerUnit/RightDialogs';
 import { BulkUpdate, ExportData, ViewContactData, openSideDialog } from 'components/MRTTable/Common/CommonToolBarActions';
 import { NavigationContext } from 'components/Navigation/NavigationContext';
+import { globalStateController } from 'hookstate/globalStateController';
+import MetaField from "components/Table/helpers/MetaField";
 
 const useStyles = makeStyles(() => ({
 	disabledTopBarButtons: {
@@ -67,6 +69,8 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
+
+	const { globalStateValues } = globalStateController.useState(['showFieldModal'], 'globalStateValues');
 
 	const addOwnerToUnit = e => {
 		const { customLayer } = Controller.getValue('customProps');
@@ -218,6 +222,8 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 			)}
 
 			<OwnerPerUnitTableDialogs />
+			{globalStateValues.showFieldModal && <MetaField columns={[]} category="Unit Interest Owners" tableKey={tableKey} />}
+
 		</>
 	);
 }

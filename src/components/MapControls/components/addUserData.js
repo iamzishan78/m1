@@ -3,10 +3,7 @@ import { v4 as uuid } from "uuid";
 import shp from "shpjs";
 import { useMutation, useApolloClient } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
-import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
-import * as turf from "@turf/turf";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import Dialog from "@material-ui/core/Dialog";
@@ -24,8 +21,7 @@ import { showErrorMessage } from "../../../actions";
 import { getDefaultSettings, SimpleOrShapeFileImport } from './addUserHelper'
 
 import { BlockBlobClient } from "@azure/storage-blob";
-import { INITIALIZE_EXPORT_JOB } from "graphQL/useMutationinitializeExportJob";
-import { CREATE_JOB } from "graphQL/useMutationCreateJob";
+import { mapControlsController } from "hookstate/mapControlsController";
 
 const Alert = (props) => {
   return <MuiAlert elevation={5} variant="filled" {...props} />;
@@ -45,12 +41,11 @@ const useStyles = makeStyles((theme) => ({
 export default function AddUserData(props) {
   const dispatch = useDispatch();
   const classes = useStyles();
-  const [stateMapControls, setStateMapControls] = useContext(
-    MapControlsContext
-  );
+  const { fileUploadedContent, fileUploadedOriginalContent, mapControlsStateValues } = mapControlsController.useState(['fileUploadedContent', 'fileUploadedOriginalContent'], 'mapControlsStateValues');
+
   const [isOpen, setIsOpen] = useState(true);
   const [inputFiles, setInputFiles] = useState(
-    stateMapControls.fileUploadedContent
+    mapControlsStateValues.fileUploadedContent
   );
   const [layerName, setLayerName] = useState("");
   const [error, setErrorr] = useState(false);
@@ -67,22 +62,20 @@ export default function AddUserData(props) {
   const [addLayer, { data: newLayer }] = useMutation(ADDLAYER);
 
   useEffect(() => {
-    if (stateMapControls.fileUploadedContent) {
-      setInputFiles(stateMapControls.fileUploadedContent);
-      setLayerName(stateMapControls.fileUploadedContent.groupName)
+    if (mapControlsStateValues.fileUploadedContent) {
+      setInputFiles(mapControlsStateValues.fileUploadedContent);
+      setLayerName(mapControlsStateValues.fileUploadedContent.groupName)
 
     }
-  }, [stateMapControls.fileUploadedContent, stateMapControls.fileUploadedOriginalContent]);
+  }, [fileUploadedContent, fileUploadedOriginalContent]);
 
   const handleCancel = () => {
     setIsOpen(false);
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
+    mapControlsController.updateState({
       layerAddControl: null,
       fileUploadedContent: null,
-      fileUploadedOriginalContent: null,
-      // selectedControl: 'layer'
-    }));
+      fileUploadedOriginalContent: null
+    })
     setNotReturn(false);
   };
 
@@ -92,8 +85,7 @@ export default function AddUserData(props) {
       ...stateApp,
       universalCircularLoaderAct: false,
     }));
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
+    mapControlsController.updateState({
       layerAddControl: null,
       fileUploadedContent: null,
       fileUploadedOriginalContent: null,
@@ -101,7 +93,7 @@ export default function AddUserData(props) {
       addLayer: false,
       manageSourceLayer: false,
       manageLayer: false,
-    }));
+    })
     setNotReturn(false);
   };
 
@@ -245,12 +237,11 @@ export default function AddUserData(props) {
           ...stateApp,
           universalCircularLoaderAct: false,
         }));
-        setStateMapControls((stateMapControls) => ({
-          ...stateMapControls,
+        mapControlsController.updateState({
           addLayer: false,
           manageSourceLayer: false,
           manageLayer: false,
-        }));
+        })
         handleClose();
       }
     }
@@ -309,7 +300,7 @@ export default function AddUserData(props) {
       <DialogTitle>Create a new Source</DialogTitle>
       <DialogContent dividers>
         <TextField
-          defaultValue={stateMapControls.fileUploadedContent.groupName}
+          defaultValue={mapControlsStateValues.fileUploadedContent.groupName}
           focused
           required
           margin="dense"
@@ -326,7 +317,7 @@ export default function AddUserData(props) {
           }}
         />
 
-        {!stateMapControls.fileUploadedContent && (
+        {!mapControlsStateValues.fileUploadedContent && (
           <TextField
             required
             autoFocus

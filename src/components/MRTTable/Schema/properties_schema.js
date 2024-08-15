@@ -8,7 +8,7 @@ import WellIcon from "../../../components/Shared/svgIcons/well.js";
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink.js";
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
-
+import { LocalAtm as CurrencyIcon } from "@material-ui/icons";
 // Elasticsearch index for properties
 const esIndex = 'properties_flat';
 
@@ -24,6 +24,22 @@ const PropertiesMeta = {
   maxTableHeight: 'calc(100vh - 500px)',
   isInFiniteScroll: true,
   columnVirtualization: true,
+  gridViewSettings: {
+    label: 'Properties',
+    module: 'Properties',
+    Icon: CurrencyIcon,
+    defaultView: {
+      name: 'All Properties',
+      type: 'Default',
+    },
+    handleDefaultView: (view, user) => {
+      return view;
+    },
+    cssOverride: {
+      top: '440px',
+      left: '5px',
+    },
+  },
   // Definition of table schema
   TableSchema: [
     // Hidden columns
@@ -32,8 +48,9 @@ const PropertiesMeta = {
       name: 'id',
       accessorKey: 'id',
     },
+    // Allow M1neral System ID to export in Grid
     {
-      ...CommonSchema.HIDDEN,
+      ...CommonSchema.MONGO_ID,
       name: '_id',
       accessorKey: '_id',
     },
@@ -235,6 +252,13 @@ const PropertiesMeta = {
       accessorFn: row => row?.internalCompany,
       id: 'internalCompany',
       header: 'Internal Company',
+    },
+    {
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'owner.name.keyword',
+      accessorFn: row => row?.owner?.name,
+      id: 'owner.name',
+      header: 'Owner Name',
     },
     {
       ...CommonSchema.COMMON_COLUMN,

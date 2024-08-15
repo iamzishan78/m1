@@ -34,6 +34,7 @@ export const GETPROFILE = gql`
         employer
         isSameFromAbove
         employerAddress
+        about
         investingEntities {
           entityInformation
           accountType
@@ -76,6 +77,7 @@ export const GET_PROFILE_IMAGE = gql`
             success
             profile {
                 fullname
+                displayName
                 email
                 profileImage             
             }

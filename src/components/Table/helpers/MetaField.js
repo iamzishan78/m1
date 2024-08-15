@@ -174,6 +174,10 @@ const categoryOptions = [
     value: "Campaign Name"
   },
   {
+    label: "Unit Interest Owners",
+    value: "Unit Interest Owners"
+  },
+  {
     label: "All (contacts, docs, flow, agreement, etc.)",
     value: "All",
   },
@@ -328,7 +332,8 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
 
   useEffect(() => {
     return () => {
-      tableGlobalController.reInitialized();
+      if ((!!tableKey))
+        tableGlobalController.reInitialized();
     };
   }, []);
 
@@ -417,7 +422,7 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
       maxWidth="md"
       open={true}
       onClose={() => {
-        TableController?.updateState?.({
+        globalStateController.updateState({
           showFieldModal: false,
         });
         setStateApp((stateApp) => ({

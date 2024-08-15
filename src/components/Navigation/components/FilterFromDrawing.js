@@ -6,8 +6,8 @@ import { default as Rect } from "../../Shared/svgIcons/rectangle";
 import { FormLabel } from "@material-ui/core";
 import RadioButtonUncheckedIcon from "@material-ui/icons/RadioButtonUnchecked";
 import CancelIcon from "@material-ui/icons/Cancel";
-import { NavigationContext, DRAWING_MODES } from "../NavigationContext";
-import { AppContext } from "../../../AppContext";
+import { DRAWING_MODES } from "../NavigationContext";
+import { navController } from "hookstate/navStateController";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -34,44 +34,26 @@ const useStyles = makeStyles((theme) => ({
 
 export default function FilterFromDrawing(props) {
   const classes = useStyles();
-  const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [stateApp] = useContext(AppContext);
+  const { navStateValues } = navController.useState(['filterFeatureId'], 'navStateValues')
 
   const handleDrawPolygon = (event, e) => {
     let id = DRAWING_MODES.DRAW_POLYGON + Date.now();
-    setStateNav((stateNav) => ({
-      ...stateNav,
-      drawingMode: DRAWING_MODES.DRAW_POLYGON,
-      filterFeatureId: id,
-    }));
+    navController.updateState({ drawingMode: DRAWING_MODES.DRAW_POLYGON, filterFeatureId: id })
   };
 
   const handleDrawRect = (event, e) => {
     let id = DRAWING_MODES.DRAW_RECTANGLE + Date.now();
-    setStateNav((stateNav) => ({
-      ...stateNav,
-      drawingMode: DRAWING_MODES.DRAW_RECTANGLE,
-      filterFeatureId: id,
-    }));
+    navController.updateState({ drawingMode: DRAWING_MODES.DRAW_RECTANGLE, filterFeatureId: id })
   };
 
   const handleDrawCircle = (event, e) => {
     let id = DRAWING_MODES.DRAW_CIRCLE + Date.now();
-    setStateNav((stateNav) => ({
-      ...stateNav,
-      drawingMode: DRAWING_MODES.DRAW_CIRCLE,
-      filterFeatureId: id,
-    }));
+    navController.updateState({ drawingMode: DRAWING_MODES.DRAW_CIRCLE, filterFeatureId: id })
   };
 
   const handleRemoveFilter = (event, e) => {
-    stateApp.draw.changeMode("simple_select");
-    setStateNav((stateNav) => ({
-      ...stateNav,
-      drawingMode: null,
-      filterFeatureId: null,
-      filterDrawing: [],
-    }));
+    window.drawRef?.changeMode("simple_select");
+    navController.updateState({ drawingMode: null, filterFeatureId: null, filterDrawing: [] })
   };
 
   return (
@@ -79,8 +61,8 @@ export default function FilterFromDrawing(props) {
       <FormLabel> Filter by Shape: </FormLabel>
       <IconButton
         className={
-          stateNav.filterFeatureId &&
-            stateNav.filterFeatureId.includes("draw_polygon")
+          navStateValues.filterFeatureId &&
+            navStateValues.filterFeatureId.includes("draw_polygon")
             ? classes.buttonEnabled
             : classes.buttonDisabled
         }
@@ -91,8 +73,8 @@ export default function FilterFromDrawing(props) {
       </IconButton>
       <IconButton
         className={
-          stateNav.filterFeatureId &&
-            stateNav.filterFeatureId.includes("drag_circle")
+          navStateValues.filterFeatureId &&
+            navStateValues.filterFeatureId.includes("drag_circle")
             ? classes.buttonEnabled
             : classes.buttonDisabled
         }
@@ -103,8 +85,8 @@ export default function FilterFromDrawing(props) {
       </IconButton>
       <IconButton
         className={
-          stateNav.filterFeatureId &&
-            stateNav.filterFeatureId.includes("draw_rectangle")
+          navStateValues.filterFeatureId &&
+            navStateValues.filterFeatureId.includes("draw_rectangle")
             ? classes.buttonEnabled
             : classes.buttonDisabled
         }
