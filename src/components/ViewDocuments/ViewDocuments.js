@@ -18,6 +18,7 @@ import { useLazyQuery } from "@apollo/client";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "../../graphQL/useQueryViewFile";
 import DocViewer from "../Shared/DocViewer";
 import { isEmpty } from "lodash";
+import { useHistory } from "react-router-dom";
 
 // functions / value formatters
 import get_file_icon from "../Shared/functions/get_file_icon.js";
@@ -25,12 +26,18 @@ import get_file_icon from "../Shared/functions/get_file_icon.js";
 const useStyles = makeStyles((theme) => ({
   viewAllCard: {
     backgroundColor: "#ffffff",
+    height: "100%", // Ensure the container takes up the full available height
+    display: "flex",
+    flexDirection: "column", // position as column
+    overflow: 'auto',  // Add overflow hidden to parent to prevent unwanted overflow
   },
   header: {
     margin: "30px",
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
+    position: 'sticky', // make the header sticky at top
+    top: '0',
   },
   headerLeft: {
     flex: 3,
@@ -51,6 +58,9 @@ const useStyles = makeStyles((theme) => ({
   documentsList: {
     padding: 0,
     margin: "0 30px",
+    overflowY: "auto", // Make the list scrollable
+    flexGrow: 1, // Ensure the list expands to fill available space
+    // maxHeight: '33vh', // Ensure it doesn't exceed a certain height (adjust the value as needed)
   },
   document: {
     display: "flex",
@@ -143,6 +153,7 @@ const docs = [
 
 export default function ViewDocuments(props) {
   const classes = useStyles();
+  let history = useHistory();
   const [documentSearch, setDocumentSearch] = useState("");
   const [allDocuments, setAllDocuments] = useState([]);
   const [filteredDocuments, setFilteredDocuments] = useState([]);
@@ -258,8 +269,9 @@ export default function ViewDocuments(props) {
         </div>
       </div>
       <div className={classes.divider} />
-
-      <ul id="contactDocumentsList" className={classes.documentsList}>
+      {/* ad dnamic height on the basis of route */}
+      <ul id="contactDocumentsList" className={classes.documentsList}
+      style={{maxHeight: `${history.location.pathname.endsWith("/documents") ? '80vh' : '34vh'}`}}>
         {!!filesLoading && (
           <div style={{ display: "flex", justifyContent: "center" }}>
             <CircularProgress size="20px" />

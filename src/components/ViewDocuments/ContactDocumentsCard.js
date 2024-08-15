@@ -65,7 +65,7 @@ export default function ContactDocumentsCard(props) {
   };
 
   return contactData ? (
-    <div variant="outlined" style={{ marginTop: "80px" }}>
+    <div variant="outlined" style={{ height: '100%', marginTop: '30px' }}> {/* Height as 100% and marginTop as 30px*/}
       <ViewDocuments
         contactId={contactId}
         user_id={stateApp.user.email}
