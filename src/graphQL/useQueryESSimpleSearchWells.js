@@ -24,6 +24,7 @@ export const GET_ES_SIMPLE_WELLS = gql`
         id
         wellName
         wellType
+        wellStatus
         geoJSON
         # hasLine
         # latitude

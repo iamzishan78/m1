@@ -17,7 +17,7 @@ const TaxOwnerMeta = {
     maxTableHeight: 'calc(100vh - 290px)',
     isInFiniteScroll: true,
     isDeleteDisabled: true,
-    columnVirtualization: true,
+    columnVirtualization: false, // Turned off virtualization
     getIdsFromRows: rows => rows?.map(row => row?.id) || [],
     additionalQueries: ['isContact', 'comments'],
     TableSchema: [
@@ -35,7 +35,6 @@ const TaxOwnerMeta = {
             Cell: ({ renderedCellValue, row }) => {
                 const { handleFlyto } = useTaxOwnerWellFlyto()
                 const id = row.getValue('id');
-                console.log(row?.original?.wellCount)
                 return row?.original?.wellCount ? <div
                     style={{
                         display: 'flex',

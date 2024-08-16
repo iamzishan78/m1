@@ -51,7 +51,6 @@ export default function MapPositions(props) {
   const { defaultMapVars, mapVars } = stateValues;
   const [centerError, setCenterError] = useState(false);
   const center = watch("center", "");
-  console.log(defaultMapVars, mapVars)
   useEffect(() => {
     if (defaultMapVars) {
       const vars = getVars(defaultMapVars);

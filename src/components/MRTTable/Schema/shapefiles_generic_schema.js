@@ -13,8 +13,8 @@ const ShapesFilesGenericMeta = {
 		pageSize: 25,
 	},
 	onClickedRow,
-	maxTableHeight: 'calc(100vh - 660px)',
-	// isInFiniteScroll: true,
+	maxTableHeight: 'calc(100vh - 290px)',
+	isInFiniteScroll: true,
 	// columnVirtualization: true,
 	defaultFlterMode: 'multiselect',
 	globalSearch: true,
@@ -31,7 +31,6 @@ const ShapesFilesGenericMeta = {
 		const baseKeys = ['_id', 'id', 'geometry'];
 
 		keys.splice(3, 0, 'actions');
-
 		return keys.map(key => {
 			if (key === 'actions')
 				return {
