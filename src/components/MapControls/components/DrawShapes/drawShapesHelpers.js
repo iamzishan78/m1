@@ -141,12 +141,12 @@ export const drawPlaceBoundary = coordinates => { // Add separate fn for draw pl
         ],
         getFillColor: [255, 255, 0],
         getLineColor: [255, 255, 0],
-        pointRadiusMinPixels: 8,
+        pointRadiusMinPixels: 8, // Minimum pixel size for points
+        pointRadiusMaxPixels: 8, // Maximum pixel size for points
         lineWidthMinPixels: 5,
-        pointRadiusMaxPixels: 30,
-        lineWidthMaxPixels: 8,
-        getPointRadius: 30,
-        getLineWidth: 20,
+        lineWidthMaxPixels: 5,
+        getPointRadius: 8,
+        getLineWidth: 5,
       },
     });
   }
