@@ -129,7 +129,7 @@ const ProductChart = ({ productSummaryDetails }) => {
         // Set Tooltip with currency formatter
         pieSeries.slices.template.adapter.add("tooltipText", function (text, target) {
             const rawValue = target.dataItem.values.value.value || 0;
-            const value = rawValue === 0 ? '0' : vf_currency_to_fixed(rawValue, 2);
+            const value = rawValue === 0 ? '$0' : vf_currency_to_fixed(rawValue, 2);
             const percent = roundToTwoDecimalPlaces(target.dataItem.values.value.percent);
             return `[font-size:16px]{category}: ${value} | ${percent}%[/]`;
         });
@@ -153,7 +153,7 @@ const ProductChart = ({ productSummaryDetails }) => {
         chart.legend.labels.template.adapter.add("textOutput", function (text, target) {
             if (target.dataItem && target.dataItem.dataContext) {
                 const rawValue = target.dataItem.values.value.value || 0;
-                const value = rawValue === 0 ? '0' : vf_currency_to_fixed(rawValue, 2);
+                const value = rawValue === 0 ? '$0' : vf_currency_to_fixed(rawValue, 2);
                 const percent = roundToTwoDecimalPlaces(target.dataItem.values.value.percent !== undefined ? target.dataItem.values.value.percent : 0);
                 return `${target.dataItem.dataContext.category}: ${value} | ${percent}%`;
             }
