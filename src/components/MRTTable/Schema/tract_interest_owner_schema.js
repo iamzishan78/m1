@@ -85,7 +85,8 @@ const TractPerUnitMeta = {
 			id: 'contact.entityDetail.name',
 			header: 'Owner Name',
 			Cell: ({ renderedCellValue, row }) => {
-				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
+				// Check if the contact is purchased
+				const isPurchased = [true, 'true', 'True'].includes(row.getValue('contact.isPurchased'));
 				return (
 					<div
 						style={{
