@@ -1122,7 +1122,7 @@ function Map({
 						lng: layerStateValues.wellListFromSearch[0].longitude,
 						lat: layerStateValues.wellListFromSearch[0].latitude,
 					},
-					zoom: selectedPlaces ? 16 : 12,
+					zoom: 12,
 				});
 				setStateApp(state => ({
 					...state,
