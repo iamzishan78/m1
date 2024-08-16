@@ -879,7 +879,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
           selectedWell: null,
           selectedWellId: null,
           wellSelectedCoordinates: null,
-          selectedPlaces: newValue,
+          selectedPlaces: newValue, // Set search places in the mapbox
         })
 
         setStateApp((stateApp) => ({
