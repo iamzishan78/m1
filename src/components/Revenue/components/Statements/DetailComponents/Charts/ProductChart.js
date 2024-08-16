@@ -238,23 +238,13 @@ const ProductChart = ({ productSummaryDetails }) => {
                             <TableBody>
                                 {data.production.table.map((item) => <TableRow style={{ height: '71px' }}>
                                     <TableCell scope="row" style={{ borderBottom: 'none' }}>
-                                        {item.gross === 'NaN'
-                                            ? "-"
-                                            : (() => {
-                                                const grossProdValue = parseFloat(item.gross.replace(/,/g, ''));
-                                                return isNaN(grossProdValue) ? 'Invalid value' : vf_currency_to_fixed(grossProdValue, 2);
-                                            })()} {item.unit}
+                                        {valueFormatter(item.gross)} {item.unit}
                                     </TableCell>
                                     <TableCell
                                         scope="row"
                                         style={{ borderBottom: 'none' }}
                                     >
-                                        {item.net === 'NaN'
-                                            ? "-"
-                                            : (() => {
-                                                const netProdValue = parseFloat(item.net.replace(/,/g, ''));
-                                                return isNaN(netProdValue) ? 'Invalid value' : vf_currency_to_fixed(netProdValue, 2);
-                                            })()} {item.unit}
+                                        {valueFormatter(item.net)} {item.unit}
                                     </TableCell>
                                 </TableRow>)}
 

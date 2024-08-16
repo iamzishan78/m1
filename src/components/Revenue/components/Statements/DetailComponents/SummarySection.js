@@ -466,20 +466,10 @@ const SummarySection = ({ checkId }) => {
                       </Grid>
 
                       <Grid item xs={2}>
-                        {product.grsProd === '-'
-                          ? product.grsProd
-                          : (() => {
-                            const grsProdValue = parseFloat(product.grsProd.replace(/,/g, ''));
-                            return isNaN(grsProdValue) ? 'Invalid value' : vf_currency_to_fixed(grsProdValue, 2);
-                          })()}
+                      {product.grsProd}
                       </Grid>
                       <Grid item xs={2}>
-                        {product.netProd === '-'
-                          ? product.netProd
-                          : (() => {
-                            const netProdValue = parseFloat(product.netProd.replace(/,/g, ''));
-                            return isNaN(netProdValue) ? 'Invalid value' : vf_currency_to_fixed(netProdValue, 2);
-                          })()}
+                      {product.netProd}
                       </Grid>
                       <Grid item xs={2}>
                         {product.netRevenue === '-'
