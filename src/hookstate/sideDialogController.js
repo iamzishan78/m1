@@ -46,6 +46,7 @@ export const tractInterestOwnerState = {
   leaseStatus: null,
   depthFrom: "All depths",
   depthTo: "All depths",
+  dataSource: null,
   customLayer: null,
   relatedObject: null,
 }

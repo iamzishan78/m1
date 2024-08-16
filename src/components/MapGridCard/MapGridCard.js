@@ -26,6 +26,7 @@ import MRTTable from "components/MRTTable";
 import { mapControlsController } from "hookstate/mapControlsController";
 import { tableGlobalController } from "hookstate/tableController";
 import { layerFiltersController } from "hookstate/layerFiltersController";
+import { generateFileFilters } from "components/Map/DeckGL/helpers/common";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -246,7 +247,7 @@ function MapGridCard(props) {
   const onClose = (e) => {
     e.stopPropagation();
     mapControlsController.updateState({ selectedDataset: null, mapGridCardActivated: false, });
-    layerFiltersController.clearWellsFilters()
+    layerFiltersController.clearSnapGridFilters()
     dispatch(
       setMapGridCardState({
         selectedOwner: null,
@@ -256,81 +257,25 @@ function MapGridCard(props) {
   }
 
   const shapeFileTableOverride = useMemo(() => {
-    let mustQuery = [];
-    let searchQuery = [];
-    if (mapControlsStateValues.selectedLayer?.layerShapeName) {
-      mustQuery = [
-        {
-          term: { 'properties.layerShapeName': mapControlsStateValues.selectedLayer?.layerShapeName },
+    // generic generateFileFilters used for files so that it remain consistent in all places.
+    if (mapControlsStateValues?.selectedLayer?.layerShapeName) {
+      const fileQuery = generateFileFilters({ fileLayer: mapControlsStateValues.selectedLayer })
+      tableGlobalController.reInitialized();
+      return {
+        filterLayerType: mapControlsStateValues.selectedLayer?.layerShapeName,
+        maxTableHeight: '40vh',
+        toolbarInternalActions: {
+          onClose,
+          style: {
+            marginRight: '0.5rem',
+          },
         },
-      ];
+        defaultFilters: fileQuery.variables.filters,
+        advanceSearch: fileQuery.variables.search.advanceSearch
+      };
+    } else {
+      return {}
     }
-    tableGlobalController.reInitialized();
-    return {
-      filterLayerType: mapControlsStateValues.selectedLayer?.layerShapeName,
-      toolbarInternalActions: {
-        onClose,
-        style: {
-          marginRight: '0.5rem',
-        },
-      },
-      defaultFilters: [
-        {
-          field: 'file._id',
-          value: [
-            mapControlsStateValues.selectedLayer?.file,
-            mapControlsStateValues.selectedLayer?.originalFile,
-          ].filter(Boolean),
-        },
-      ],
-      advanceSearch:
-        mapControlsStateValues.selectedLayer?.layerGeometry === 'Polygon'
-          ? [
-            {
-              bool: {
-                must: [
-                  ...mustQuery,
-                  {
-                    bool: {
-                      should: [
-                        {
-                          term: { 'properties.layerGeometry': 'Polygon' },
-                        },
-                        {
-                          term: { 'properties.layerGeometry': 'MultiPolygon' },
-                        },
-                      ],
-                    },
-                  },
-                  ...searchQuery,
-                ],
-              },
-            },
-          ]
-          : [
-            {
-              bool: {
-                must: [
-                  ...mustQuery,
-                  {
-                    bool: {
-                      should: [
-                        {
-                          term: {
-                            'properties.layerGeometry':
-                              mapControlsStateValues.selectedLayer?.layerGeometry,
-                          },
-                        },
-                      ],
-                    },
-                  },
-                  ...searchQuery,
-                ],
-              },
-            },
-          ],
-    };
-
 
   }, [selectedLayer]);
 
@@ -465,7 +410,7 @@ function MapGridCard(props) {
                             <ListItemIcon>
                               <Icon />
                             </ListItemIcon>
-                            <ListItemText primary={row.label} />
+                            <ListItemText primary={row.gridLabel || row.label} />
                           </ListItem>
                         </FeatureFlag>
                       )

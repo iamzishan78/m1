@@ -427,7 +427,16 @@ const TractPerUnitMeta = {
 			type: 'number',
 			Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price)}</>,
 		},
-
+    	// Bonus payment column
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'bonus_payment',
+			accessorKey: 'bonus_payment',
+			header: 'Bonus Payment',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.bonus_payment)}</>,
+		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,

@@ -27,7 +27,13 @@ const StackedAreaChart = ({ id = "chartDiv3", items, monthsInterval }) => {
   useEffect(() => {
     const _data = [];
     monthsInterval?.forEach((month, index) => {
-      _data.push({ month });
+      // Convert month from "M/yyyy" to "01/MM/yyyy" to match "dd/MM/yyyy" format
+      const [m, y] = month.split('/');
+      const formattedDate = `01/${m.padStart(2, '0')}/${y}`;
+         
+      // Update the month property
+      _data.push({ month: formattedDate });
+
       Object.keys(items).forEach((item) => {
         let ownerVolumne = items[item].find((it) => it.name === (mode === 'production' ? 'OWNER VOLUME' : 'OWNER NET REVENUE'))
         let value = ownerVolumne.data[month]?.total
@@ -53,7 +59,15 @@ const StackedAreaChart = ({ id = "chartDiv3", items, monthsInterval }) => {
     let chart = am4core.create(id, am4charts.XYChart);
     chart.data = data;
 
-    chart.dateFormatter.inputDateFormat = "M/yyyy";
+    // Short the data based on the dates
+    chart.events.on("beforedatavalidated", function(ev) {
+      chart.data.sort(function(a, b) {
+        return (new Date(a.month)) - (new Date(b.month));
+      });
+    });
+
+    // Changed the date format to dd/MM/yyyy
+    chart.dateFormatter.inputDateFormat = "dd/MM/yyyy";
 
     let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
     dateAxis.dateFormats.setKey("month", "MMM yy");
