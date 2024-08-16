@@ -96,6 +96,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
             key: moment(new Date(hit.key)).format("MM/DD/YYYY"),
             key_as_string: hit.key_as_string || hit.key,
           }));
+          // making records unique
           hits = uniqBy(hits, "key")
           SetOptions(hits);
           setStateApp((state, props) => {
