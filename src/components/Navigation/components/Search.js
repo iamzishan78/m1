@@ -844,7 +844,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
       }
 
       //// if mapboxSearch
-      if (newValue && newValue.center && (newValue.Source === "mapboxSearch" || newValue.Source === "places")) {
+      if (newValue && newValue.center && (newValue.Source === "mapboxSearch")) {
         let minLong, maxLong, minLat, maxLat;
         if (newValue.bbox) [minLong, minLat, maxLong, maxLat] = newValue.bbox;
 
@@ -868,6 +868,24 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
             }
           ]
         })
+        layerController.toggleLayersActivity("Search", true);
+      }
+
+      if (newValue && newValue.center && (newValue.Source === "places")) {
+        let minLong, maxLong, minLat, maxLat;
+        if (newValue.bbox) [minLong, minLat, maxLong, maxLat] = newValue.bbox;
+
+        popupController.updateState({
+          selectedWell: null,
+          selectedWellId: null,
+          wellSelectedCoordinates: null,
+          selectedPlaces: newValue,
+        })
+
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          fitBounds: newValue.bbox ? { maxLat, minLat, maxLong, minLong } : null,
+        }));
         layerController.toggleLayersActivity("Search", true);
       }
     }
