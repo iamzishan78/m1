@@ -23,7 +23,6 @@ export function vf_currency_to_fixed(value, toFixed) {
     currency: "USD",
     minimumFractionDigits: toFixed, // Ensures at least 'toFixed' decimal places are displayed
     maximumFractionDigits: toFixed,  // Ensures at most 'toFixed' decimal places are displayed
-    maximumSignificantDigits: 21,
   });
 
   const valueFormatter = (v) => {
