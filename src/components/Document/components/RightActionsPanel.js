@@ -3,6 +3,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import HomeIcon from "@material-ui/icons/HomeOutlined";
 import InfoOutlined from "@material-ui/icons/InfoOutlined";
 import WellIcon from "components/Shared/svgIcons/well";
+import AgreementIcon from "components/Shared/svgIcons/agreements";
+import ContactIcon from "@material-ui/icons/Person";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
 
@@ -59,6 +61,16 @@ export default function Drawer(props) {
     Home: (props) => (
       <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary">
         <HomeIcon id="wellHomeIcon" {...props} />
+      </Badge>
+    ),
+    Contacts: (props) => (
+      <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary">
+        <ContactIcon {...props} />
+      </Badge>
+    ),
+    Agreements: (props) => (
+      <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary">
+        <AgreementIcon {...props} />
       </Badge>
     ),
     Wells: (props) => (

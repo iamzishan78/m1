@@ -18,6 +18,8 @@ import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 import DetailsPanel from "./Details";
 import Information from "./Information";
 import AssociatedWells from "./AssociatedWells";
+import AssociatedAgreements from "./AssociatedAgreements";
+import AssociatedContacts from "./AssociatedContacts";
 import { DocumentContext } from "../DocumentContext";
 
 const useStyles = makeStyles({
@@ -412,6 +414,8 @@ export default function DocumentDrawer(props) {
             )}
             {activePanel === "Wells" && <AssociatedWells />}
             {activePanel === "Info" && <Information fileData={fileData} />}
+            {activePanel === "Agreements" && <AssociatedAgreements />}
+            {activePanel === "Contacts" && <AssociatedContacts />}
           </div>
         </div>
       </div>
