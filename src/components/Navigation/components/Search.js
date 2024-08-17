@@ -852,7 +852,6 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
           selectedWell: null,
           selectedWellId: null,
           wellSelectedCoordinates: null,
-          selectedPlaces: newValue.Source === "mapboxSearch" ? null : newValue,
         })
 
         setStateApp((stateApp) => ({
@@ -894,7 +893,11 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
   const handleSearchPanelChange = (value) => {
     setSearchDropDown({ ...value })
     // Set either the gridlable or the simple lable
-    setSearchOption(value?.gridLabel?.toLocaleLowerCase() || value.label.toLocaleLowerCase());
+    const selectedSearchOptions = value?.gridLabel?.toLocaleLowerCase() || value.label.toLocaleLowerCase()
+    setSearchOption(selectedSearchOptions);
+    if (searchOption === 'places' && selectedSearchOptions !== 'places') {
+      popupController.reset(); // Reset the state when moving to other Search Item
+    }
   }
 
   //// setting the buttons header /////

@@ -4,6 +4,7 @@ import { findBoundsMap } from 'components/MapControls/commonHelper';
 import {
 	drawBoundary,
 	drawWellBoundary,
+	drawPlaceBoundary
 } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 import { layerController } from './layerStateController';
 import { popupInitialState, popupState } from './initialStates';
@@ -78,6 +79,7 @@ const popupStateControllerHandler = state => ({
 		state.set({ ...popupInitialState });
 		drawBoundary();
 		drawWellBoundary();
+		drawPlaceBoundary();
 		layerController.updateState({ clickedFeature: null })
 	}, // reset whole state back to initial state
 });

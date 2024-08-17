@@ -875,7 +875,10 @@ function Map({
 							const previousClickedFeature = layerController.getValue('clickedFeature')
 							const clickOnSameFeature = previousClickedFeature && previousClickedFeature?.object?.id === clickedFeature?.object?.id
 							if (!clickedFeature || clickOnSameFeature) {
-								popupController.reset();
+								const selectedPlace = selectedPlaces.get({noproxy: true})
+								if (!selectedPlace) { // Reset the state when slected search is not places
+									popupController.reset();
+								}
 								if (!['', '/'].includes(window.location.pathname))
 									history.replace({ pathname: "/" });
 								return;
