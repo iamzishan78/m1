@@ -147,6 +147,9 @@ export const drawPlaceBoundary = coordinates => { // Add separate fn for draw pl
         lineWidthMaxPixels: 5,
         getPointRadius: 8,
         getLineWidth: 5,
+        parameters: {
+          depthTest: false, // Disable depth testing to draw points on top
+        },
       },
     });
   }
