@@ -3,15 +3,22 @@ import { useLazyQuery } from "@apollo/client";
 
 // Queries
 import { GETWELLSFROMDOCUMENTS } from 'graphQL/useQueryGetWellsFromDocument'
+import { GETCONTACTSFROMDOCUMENTS } from 'graphQL/useQueryGetContactsFromDocument'
 
 
 const DocumentContext = createContext([{}, () => { }]);
 
 const DocumentContextProvider = (props) => {
   const [wells, setWells] = useState([]);
+  const [contacts, setContacts] = useState([]);
 
   //Queries
   const [getWellsFromDocument, { data: wellsFromDocument, loading: getWellsLoading }] = useLazyQuery(GETWELLSFROMDOCUMENTS, {
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
+  });
+
+  const [getContactsFromDocument, { data: contactsFromDocument, loading: getContactsLoading }] = useLazyQuery(GETCONTACTSFROMDOCUMENTS, {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
@@ -21,8 +28,13 @@ const DocumentContextProvider = (props) => {
     setWells(wellDescriptor?.wells)
   }, [wellsFromDocument])
 
+  useEffect(() => {
+    const contactDescriptor = contactsFromDocument?.getContactDescriptors[0]
+    setContacts(contactDescriptor?.contacts)
+  }, [contactsFromDocument])
+
   return (
-    <DocumentContext.Provider value={{ getWellsFromDocument, wells, getWellsLoading, wellsFromDocument, setWells }}>
+    <DocumentContext.Provider value={{ getWellsFromDocument, wells, getWellsLoading, wellsFromDocument, setWells, getContactsFromDocument, contactsFromDocument, getContactsLoading, contacts, setContacts }}>
       {props.children}
     </DocumentContext.Provider>
   );
