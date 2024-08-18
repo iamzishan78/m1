@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import clsx from "clsx";
+import get from "lodash/get";
 import { makeStyles } from "@material-ui/core/styles";
 import { Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import Drawer from "@material-ui/core/Drawer";
@@ -13,6 +14,7 @@ import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { useLazyQuery, useMutation } from "@apollo/client";
+import { useHistory } from "react-router-dom";
 import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 
 import DetailsPanel from "./Details";
@@ -21,6 +23,10 @@ import AssociatedWells from "./AssociatedWells";
 import AssociatedAgreements from "./AssociatedAgreements";
 import AssociatedContacts from "./AssociatedContacts";
 import { DocumentContext } from "../DocumentContext";
+import Contacts from "components/FlowDrawer/Contacts";
+// Mutations
+import { ADD_CONTACT_TO_FILE_DESCRIPTOR } from "graphQL/useMutationAddContactToFileDescriptor";
+import { DELETE_CONTACT_FROM_FILE_DESCRIPTOR } from "graphQL/useMutationDeleteContactFromFileDescriptor";
 
 const useStyles = makeStyles({
   drawer: {
@@ -155,6 +161,7 @@ const useStyles = makeStyles({
 });
 
 export default function DocumentDrawer(props) {
+  let history = useHistory();
   const classes = useStyles();
   const [activePanel, setPanel] = useState("Home");
   const [fileData, setFileData] = useState(null);
@@ -162,12 +169,17 @@ export default function DocumentDrawer(props) {
   const [anchorEl, setAnchorEl] = useState();
 
   const [stateApp, setStateApp] = React.useContext(AppContext);
-  const { getWellsFromDocument, wells } = React.useContext(DocumentContext);
+  const { getWellsFromDocument, wells, getContactsFromDocument, contacts } = React.useContext(DocumentContext);
 
-  // Fetching wells from descriptor
+  // Fetching wells & Contacts from descriptor
   useEffect(() => {
     if (!props.isRelatedDocuments)
       getWellsFromDocument({
+        variables: {
+          descriptorObject: stateApp.selectedDocument._id,
+        },
+      });
+      getContactsFromDocument({
         variables: {
           descriptorObject: stateApp.selectedDocument._id,
         },
@@ -209,6 +221,17 @@ export default function DocumentDrawer(props) {
   let [loader, setLoader] = useState(false);
 
   const [updateDocument] = useMutation(UPDATE_DOCUMENT);
+  const [addContactToFileDescriptor, { loading: addContactsLoading }] = useMutation(ADD_CONTACT_TO_FILE_DESCRIPTOR);
+
+    // Mutattions
+    const [deleteContactFromDescriptor] = useMutation(DELETE_CONTACT_FROM_FILE_DESCRIPTOR, {
+      onCompleted: () =>
+        getContactsFromDocument({
+          variables: {
+            descriptorObject: stateApp.selectedDocument._id,
+          },
+        }),
+    });
 
   const handleDeleteCancel = () => {
     setFileIdToDelete(null);
@@ -320,6 +343,47 @@ export default function DocumentDrawer(props) {
     setAnchorEl(null);
   };
 
+  const GettingContacts = useCallback(() => {
+    let contactDatalist = contacts?.map((value) => {
+        let contact = {};
+        
+        if (get(value, "entityDetail.name")) {
+            contact.name = get(value, "entityDetail.name");
+        } else if (get(value, "name")) {
+            contact.name = get(value, "name");
+        } else {
+            contact.name = "Empty";
+        }
+        
+        // Include other fields from the original object
+        contact._id = value._id;
+        contact.homePhone = value.homePhone || "";
+        contact.mobilePhone = value.mobilePhone || "";
+        contact.address1 = value.entityDetail.address1 || "";
+        contact.primaryEmail = value.primaryEmail || "";
+        
+        return contact;
+    });
+    return contactDatalist
+  }, [contacts]);
+
+  const gotoContact = (index) => {  // redirect to the contact details view on clicking contact name 
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      selectedContact: contacts[index]?._id,
+      dealDialog: false,
+      transactBarView: "Documents",
+    }));
+    // Close drawer and remove selected document on redirect to contact
+    setStateApp({
+      ...stateApp,
+      DocumentDrawer: false,
+      selectedDocument: {},
+      documentSearchQuery: "",
+    });
+    history.push(`/contact/details/${contacts[index]?._id}?return-url=${history.location.pathname}`);
+  };
+
   const DocumentDetail = (anchor) => (
     <div
       style={{ width: "500px", marginLeft: "15px" }}
@@ -388,7 +452,7 @@ export default function DocumentDrawer(props) {
           </div>
         </div>
         <div className={classes.contentRoot}>
-          {!props.isRelatedDocuments && <RightActionsPanel activePanel={activePanel} setPanel={setPanel} wellsCount={wells?.length} />}
+          {!props.isRelatedDocuments && <RightActionsPanel activePanel={activePanel} setPanel={setPanel} wellsCount={wells?.length} contactsCount={contacts?.length} />}
           <div className={!props.isRelatedDocuments ? classes.detailsFileWrapper : ""}>
             {activePanel === "Home" && (
               <DetailsPanel
@@ -413,6 +477,13 @@ export default function DocumentDrawer(props) {
               />
             )}
             {activePanel === "Wells" && <AssociatedWells />}
+            {activePanel === "Contacts" && <Contacts 
+              addSelectedContact={addSelectedContactToDocument}  
+              loading={addContactsLoading} 
+              deleteContact={deleteContact} 
+              GettingContacts={GettingContacts}
+              gotoContact={gotoContact}
+              />}
             {activePanel === "Info" && <Information fileData={fileData} />}
             {activePanel === "Agreements" && <AssociatedAgreements />}
             {activePanel === "Contacts" && <AssociatedContacts />}
@@ -422,6 +493,40 @@ export default function DocumentDrawer(props) {
     </div>
   );
 
+  const addSelectedContactToDocument = (contact) => {
+    let contactData = {
+      ...contact,
+      createdBy: stateApp?.user?._id,
+    };
+    addContactToFileDescriptor({
+      variables: { descriptorId: stateApp?.selectedDocument?._id, contactData: contactData },
+      awaitRefetchQueries: true,
+    }).then(({ data }) => {
+      const descriptorId = data.addContactToFileDescriptor._id;
+      const selectedDocument = stateApp.selectedDocument ?? {};
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        selectedDocument: { ...selectedDocument, _id: descriptorId },
+      }));
+      getContactsFromDocument({
+        variables: {
+          descriptorObject: descriptorId,
+        },
+      });
+    });
+  };
+
+  // delete contact from File Descriptor
+  const deleteContact = async (index, setMutationLoading) => {
+    props.refetchData(false);
+    const contactId  = contacts[index]?._id;
+    setMutationLoading(contactId);
+    await deleteContactFromDescriptor({
+      variables: { descriptorId: stateApp?.selectedDocument?._id, contactId },
+    });
+    props.refetchData(contactId); // refetch search data on delete
+  };
+  
   return (
     <div>
       <Drawer className={classes.drawer} anchor={"right"} open={stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0}>
