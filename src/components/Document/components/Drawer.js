@@ -20,6 +20,8 @@ import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 import DetailsPanel from "./Details";
 import Information from "./Information";
 import AssociatedWells from "./AssociatedWells";
+import AssociatedAgreements from "./AssociatedAgreements";
+import AssociatedContacts from "./AssociatedContacts";
 import { DocumentContext } from "../DocumentContext";
 import Contacts from "components/FlowDrawer/Contacts";
 // Mutations
@@ -483,6 +485,8 @@ export default function DocumentDrawer(props) {
               gotoContact={gotoContact}
               />}
             {activePanel === "Info" && <Information fileData={fileData} />}
+            {activePanel === "Agreements" && <AssociatedAgreements />}
+            {activePanel === "Contacts" && <AssociatedContacts />}
           </div>
         </div>
       </div>
