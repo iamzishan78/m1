@@ -17,6 +17,8 @@ import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
 import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import { NumberFormatComma } from "components/Shared/Forms/Formatting/NumberFormatComma";
+import TextSmsIcon from "components/Shared/svgIcons/textsms";
+import VoiceMailIcon from "components/Shared/svgIcons/voicemail";
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -45,6 +47,20 @@ const useStyles = makeStyles(() => ({
     },
     "& .MuiInputBase-root": {
       borderRadius: "7px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      // Hide the quick actions
+      "& #voicemail-icon, & #textsms-icon, & #call-icon, & #mail-icon": { 
+        visibility: "hidden",
+        opacity: 0,
+        transition: "visibility 0.3s, opacity 0.3s ease-in-out",
+      },
+      // Show the quick actions on hover
+      "&:hover #voicemail-icon, &:hover #textsms-icon, &:hover #call-icon, &:hover #mail-icon": {
+        visibility: "visible",
+        opacity: 1,
+      },
     },
   },
   emailAdornment: {
@@ -224,17 +240,32 @@ export default function SummaryFields({ contactData }) {
                             inputComponent: field.type === "currency" ? CurrencyFormatCustom : field.key.includes('nraSum') ? NumberFormatComma : undefined,
                             endAdornment:
                               field.type === "email" && contactData[field.key] ? (
-                                <a href={`mailto: ${contactData.primaryEmail}`} className={classes.emailAdornment}>
+                                <a id="mail-icon" href={`mailto: ${contactData.primaryEmail}`} className={classes.emailAdornment}>
                                   <InputAdornment position="end">
                                     <EmailOutlinedIcon htmlColor="#757575" />
                                   </InputAdornment>
                                 </a>
                               ) : ['homePhone', 'mobilePhone', 'AltPhone'].includes(field.key) && contactData[field.key] ? (
-                                <a href={`tel: ${contactData[field.key]}`} className={classes.emailAdornment}>
-                                  <InputAdornment position="end">
-                                    <AddIcCallIcon htmlColor="#757575" />
-                                  </InputAdornment>
-                                </a>
+                                <>
+                                {/* Phone quick actions icons */}
+                                  <a id="voicemail-icon" href={`tel: ${contactData[field.key]}`} className={classes.emailAdornment}>
+                                    <InputAdornment position="end">
+                                      <VoiceMailIcon htmlColor="#757575" />
+                                    </InputAdornment>
+                                  </a>
+                                  <a id="textsms-icon" href={`sms: ${contactData[field.key]}`} className={classes.emailAdornment}>
+                                    <InputAdornment position="end">
+                                      <TextSmsIcon htmlColor="#757575" />
+                                    </InputAdornment>
+                                  </a>
+                                  <a id="call-icon" href={`tel: ${contactData[field.key]}`} className={classes.emailAdornment}>
+                                    <InputAdornment position="end">
+                                      <AddIcCallIcon htmlColor="#757575" />
+                                    </InputAdornment>
+                                  </a>
+                                </>
+                              ) : activeLoadingField === field.key ? (
+                                <CircularProgress className={classes.loader} size={22} color="secondary" />
                               ) : activeLoadingField === field.key ? (
                                 <CircularProgress className={classes.loader} size={22} color="secondary" />
                               ) : (
