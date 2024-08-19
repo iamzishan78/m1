@@ -245,7 +245,7 @@ export default function SummaryFields({ contactData }) {
                                     <EmailOutlinedIcon htmlColor="#757575" />
                                   </InputAdornment>
                                 </a>
-                              ) : ['homePhone', 'mobilePhone', 'AltPhone'].includes(field.key) && contactData[field.key] ? (
+                              ) : field.isPhoneNumber && contactData[field.key] ? (
                                 <>
                                 {/* Phone quick actions icons */}
                                   <a id="voicemail-icon" href={`tel: ${contactData[field.key]}`} className={classes.emailAdornment}>

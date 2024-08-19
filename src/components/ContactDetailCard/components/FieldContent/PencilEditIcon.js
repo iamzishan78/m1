@@ -20,21 +20,17 @@ function PencilEditIcon({
     handleUpdating,
     isCopy = false,
     editContent,
-    setEditContent
+    setEditContent,
+    row
 }) {
     const classes = useStyles();
     const [copied, setCopied] = useState(false); // Add new state for updating copy icon tooltip value
-
-    // Mapping phone fields array
-    const phoneFieldKeys = ["homePhone", "mobilePhone", "AltPhone", "mobilephone2",
-     "mobilephone3", "homePhone2", "homePhone3", "AltPhone2", "AltPhone3"];
 
      // Destructure the first key-value pair from `editContent`
      const [editFieldKey, editFieldValue] = Object.entries(editContent || {})?.[0] || [];
      
      // Show voicemail and text SMS icons if the field is a non-empty phone field
-     const isPhoneField = editFieldKey && phoneFieldKeys.includes(editFieldKey) && editFieldValue;
-
+     const isPhoneField = editFieldKey && row?.isPhoneNumber && editFieldValue;
     return (
         <React.Fragment>
             <EditionPopover anchorEl={anchorEl} setAnchorEl={setAnchorEl}>

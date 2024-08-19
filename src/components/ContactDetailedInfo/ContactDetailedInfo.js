@@ -321,6 +321,7 @@ export default function DetailInfo(props) {
                           linkType={row.linkType}
                           isPurchased={selectedTab === "Purchased Info"}
                           name={key}
+                          row={row}
                         />
                       </Grid>
                     </React.Fragment>
@@ -348,6 +349,7 @@ export default function DetailInfo(props) {
                             isMerged={!!props.contactData.mergedContacts}
                             content={row.data}
                             linkType={row.linkType}
+                            row={row}
                           />
                         </Grid>
                       </React.Fragment>
@@ -373,6 +375,7 @@ export default function DetailInfo(props) {
                             isMerged={!!props.contactData.mergedContacts}
                             content={row.data}
                             linkType={row.linkType}
+                            row={row}
                           >
                             {row.inner}
                           </FieldContent>
@@ -405,6 +408,7 @@ export default function DetailInfo(props) {
                               isMerged={!!props.contactData.mergedContacts}
                               content={row.data}
                               linkType={row.linkType}
+                              row={row}
                             >
                               {row.inner}
                             </FieldContent>
@@ -456,6 +460,7 @@ export default function DetailInfo(props) {
                           content={row.data}
                           linkType={row.linkType}
                           isPurchased
+                          row={row}
                         />
                       </Grid>
                     </React.Fragment>
@@ -482,6 +487,7 @@ export default function DetailInfo(props) {
                             content={row.data}
                             linkType={row.linkType}
                             isPurchased
+                            row={row}
                           />
                         </Grid>
                       </React.Fragment>
@@ -510,6 +516,7 @@ export default function DetailInfo(props) {
                             content={row.data}
                             linkType={row.linkType}
                             isPurchased
+                            row={row}
                           >
                             {row.inner}
                           </FieldContent>
@@ -541,6 +548,7 @@ export default function DetailInfo(props) {
                               content={row.data}
                               linkType={row.linkType}
                               isPurchased
+                              row={row}
                             >
                               {row.inner}
                             </FieldContent>

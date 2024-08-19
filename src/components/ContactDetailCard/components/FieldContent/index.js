@@ -49,6 +49,7 @@ export default function FieldContent({
   isEdited = false,
   isMerged = false,
   disabled,
+  row,
   ...props
 }) {
   //////////// id - brings the contact id /////////////////////////////////////////////////////////////////////////
@@ -513,6 +514,7 @@ export default function FieldContent({
           isCopy={true}
           setEditContent={setEditContent}
           editContent={content}
+          row={row}
         />
       )}
       {fieldType === FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />}
