@@ -9,6 +9,8 @@ import CheckSharpIcon from "@material-ui/icons/CheckSharp";
 import Button from "@material-ui/core/Button";
 import useStyles from 'components/ContactDetailCard/components/FieldContent/style'
 import CopyIcon from "components/Shared/svgIcons/CopyIcon";
+import TextSmsIcon from "components/Shared/svgIcons/textsms";
+import VoiceMailIcon from "components/Shared/svgIcons/voicemail";
 
 function PencilEditIcon({
     onClick,
@@ -23,7 +25,16 @@ function PencilEditIcon({
     const classes = useStyles();
     const [copied, setCopied] = useState(false); // Add new state for updating copy icon tooltip value
 
-    
+    // Mapping phone fields array
+    const phoneFieldKeys = ["homePhone", "mobilePhone", "AltPhone", "mobilephone2",
+     "mobilephone3", "homePhone2", "homePhone3", "AltPhone2", "AltPhone3"];
+
+     // Destructure the first key-value pair from `editContent`
+     const [editFieldKey, editFieldValue] = Object.entries(editContent || {})?.[0] || [];
+     
+     // Show voicemail and text SMS icons if the field is a non-empty phone field
+     const isPhoneField = editFieldKey && phoneFieldKeys.includes(editFieldKey) && editFieldValue;
+
     return (
         <React.Fragment>
             <EditionPopover anchorEl={anchorEl} setAnchorEl={setAnchorEl}>
@@ -92,6 +103,31 @@ function PencilEditIcon({
                     />
                 </IconButton>
             </Tooltip>
+            { /* Show voicemail and testSMS icons if the field is a non-empty phone field*/}
+            { isPhoneField && ( <>
+            <Tooltip title={"Voice Mail"} placement="top">
+                <IconButton
+                    size="small"
+                    href={`tel:${editFieldValue}`}
+                >
+                    <VoiceMailIcon
+                        id="voiceMailIcon"
+                        className={classes.pencilIcon}
+                    />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title={"Text SMS"} placement="top">
+                <IconButton
+                    size="small"
+                    href={`sms:${editFieldValue}`}
+                >
+                    <TextSmsIcon
+                        id="textSmsIcon"
+                        className={classes.pencilIcon}
+                    />
+                </IconButton>
+            </Tooltip>
+            </> )}
         </React.Fragment>
     );
 }
