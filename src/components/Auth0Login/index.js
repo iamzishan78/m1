@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { globalStateController } from 'hookstate/globalStateController';
-import { msalConfig, tenantsCredentials } from 'components/_Login/AADAuthConfig';
+import { msalConfig, tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
 import * as msal from '@azure/msal-browser';
 import { USER_MAP_SETTINGS } from 'graphQL/useQueryUserMapSettings';
 import { setApolloHeaders } from 'AppContext';
@@ -13,7 +13,7 @@ import { currentUserGridViewSettingsAction } from 'store/actions/sessionActions'
 import { saveUserSession } from 'utils/user';
 import { useDispatch } from 'react-redux';
 
-const Login = props => {
+const Auth0Login = props => {
   const dispatch = useDispatch();
 
   const { isAuthenticated, isLoading, getIdTokenClaims, loginWithRedirect } = useAuth0();
@@ -213,4 +213,4 @@ const Login = props => {
   return null;
 };
 
-export default Login;
+export default Auth0Login;

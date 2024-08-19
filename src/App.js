@@ -4,10 +4,10 @@ import { Switch, Route } from "react-router-dom";
 //components
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import Login from "./components/_Login/Login";
-import _Login from "./components/Login";
-import SignUpCard from "./components/_Login/SignUpCard";
-import ForgotPassword from "./components/_Login/ForgotPassword";
+import Auth0Login from "./components/Auth0Login";
+import AzureLogin from "./components/AzureLogin";
+import SignUpCard from "./components/AzureLogin/SignUpCard";
+import ForgotPassword from "./components/AzureLogin/ForgotPassword";
 import NavigationProvider from "./components/Navigation/NavigationProvider";
 import MapProvider from "./components/Map/MapProvider";
 import TrackProvider from "./components/Track/TrackProvider";
@@ -46,7 +46,6 @@ import { useAuth0 } from '@auth0/auth0-react';
 
 const PrivateRoute = ({ component, ...options }) => {
   const user = globalStateController.getValue('user');
-  const bypassLogin = globalStateController.getValue('bypassLogin');
 
   const { isAuthenticated } = useAuth0();
 
@@ -63,9 +62,7 @@ const PrivateRoute = ({ component, ...options }) => {
   const finalComponent =
     user && (Date.parse(user.authTokenExpires) > Date.now() || isAuthenticated) && apolloClient && userSessionIsLoaded
       ? component
-      : bypassLogin ? _Login : (() => {
-        return Login;
-      })();
+      : globalStateController.isAuth0Bypass() ? Auth0Login : AzureLogin;
 
   return (
     <div>
