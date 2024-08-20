@@ -77,6 +77,7 @@ export const GET_PROFILE_IMAGE = gql`
             success
             profile {
                 fullname
+                displayName
                 email
                 profileImage             
             }

@@ -9,6 +9,7 @@ import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
 import ButtonDropDown from "components/Shared/M1nTable/components/ButtonGroup";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { copy } from "../functions";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: ({ isBackground, noPadding }) => ({
@@ -238,9 +239,7 @@ export default function ReportGroupHeader({
                     (view) => view.name === e.target.value
                   );
                   if (gridView) {
-                    setESFilters([
-                      ...gridView.filters
-                    ]);
+                    setESFilters(copy(gridView.filters));
                     setFilterToggle((value) => !value);
                     // selectGridView(gridView)
                   } else {

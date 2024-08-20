@@ -9,6 +9,7 @@ import { NavigationContext } from "components/Navigation/NavigationContext";
 //Components
 import * as LayerFiltersComponents from "components/Shared/SidePanel/compoennts/Filters";
 import { layerFiltersController } from "hookstate/layerFiltersController";
+import { navController } from "hookstate/navStateController";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -134,7 +135,7 @@ const wellFiltersParams = [
 const ownershipFiltersParams = ["interestName", "ownerTypeName", "filterOwnerCount", "filterHasOwnerCount", "filterOwnerConfidence"];
 const tagFiltersParams = ["selectedTags"];
 const filterTypes = {
-  // Geography: { component: "GeographyFilter", countKey: "geographyFilterCount" },
+  Geography: { component: "GeographyFilter", countKey: "geographyFilterCount" },
   Wells: { component: "WellFilter", countKey: "wellFilterCount" },
   // Production: { component: "ProductionFilter", countKey: "productionFilterCount" },
   // Ownership: { component: "OwnershipFilter", countKey: "ownershipFilterCount" },
@@ -144,6 +145,8 @@ const filterTypes = {
 const LayerFilters = () => {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
+
+  const { navStateValues } = navController.useState(['geographyFilterCount', 'wellFilterCount'], 'navStateValues')
 
   const resetFilters = (params, additionalParamsToReset = {}) => {
     const geoFiltersToReset = {};
@@ -163,6 +166,7 @@ const LayerFilters = () => {
   const clearFilters = (filterType) => {
     switch (filterType) {
       case "Geography":
+        navController.clearGeographyFilters()
         resetFilters(geoFiltersParams);
         break;
       case "Wells":
@@ -207,12 +211,12 @@ const LayerFilters = () => {
             id="panel1a-header"
             expandIcon={<ExpandMoreIcon />}
             defaultExpanded={index === 0}
-            style={{ borderLeft: stateNav[filterTypes[filterType].countKey] > 0 ? "5px solid #18aadd" : "transparent" }}
+            style={{ borderLeft: navStateValues[filterTypes[filterType].countKey] > 0 ? "5px solid #18aadd" : "transparent" }}
           >
             <Grid container direction="row" justify="space-between" alignItems="center">
               <Grid item className={classes.accordionHeading}>
                 <Typography style={{ padding: "15px 5px" }}>{filterType}</Typography>
-                {stateNav[filterTypes[filterType].countKey] > 0 && <Chip color="info" label={stateNav[filterTypes[filterType].countKey]} />}
+                {navStateValues[filterTypes[filterType].countKey] > 0 && <Chip color="info" label={navStateValues[filterTypes[filterType].countKey]} />}
               </Grid>
               <Grid item className={classes.clearIcon}>
                 <IconButton

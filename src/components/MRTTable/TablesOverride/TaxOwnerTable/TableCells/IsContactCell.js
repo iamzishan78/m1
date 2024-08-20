@@ -13,6 +13,8 @@ function IsContactCell({ id: ownerId, selectedRow: singleRow }) {
     const ownerContacts = stateValues.ownersWhoAreContact;
 
     const contact = ownerContacts?.find(contact => contact?.globalOwner === ownerId);
+    // Update alreadyCheckedOwnersLength state for refecting the checkIfOwnersAreContacts query
+    Controller.updateState({ alreadyCheckedOwnersLength: tableStateValues?.data?.rows || [] })
 
     useEffect(() => {
         if (selectedRows?.length) {

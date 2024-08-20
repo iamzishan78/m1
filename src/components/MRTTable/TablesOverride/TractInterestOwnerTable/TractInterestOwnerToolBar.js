@@ -51,7 +51,6 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 		'defaultFilters',
 		'isAllRowsSelected',
 		'rowSelection',
-		'defaultFilters',
 	]);
 	const tableStateValues = tableState.stateValues;
 

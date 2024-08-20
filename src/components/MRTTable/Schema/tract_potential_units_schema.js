@@ -2,6 +2,7 @@ import TractPotentialUnitsToolbar from "components/MRTTable/TablesOverride/Tract
 import { CommonSchema } from "./common_schema";
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
+import { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
 
 const esIndex = "shapes_flat";
 
@@ -95,18 +96,26 @@ const TractPotentialUnitsMeta = {
         {
             ...CommonSchema.COMMON_COLUMN,
             name: "shapeJson.properties.uUnitPricing.keyword",
-            accessorFn: (row) => row?.shapeJson?.properties?.uUnitPricing,
+            accessorKey: 'shapeJson.properties.uUnitPricing',
             id: "shapeJson.properties.uUnitPricing",
             header: "Target Unit Pricing (Per NRA)",
             size: 320,
+            Cell: ({ row }) => {
+                const value = row?.original?.shapeJson?.properties?.uUnitPricing
+                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+            },
         },
         {
             ...CommonSchema.COMMON_COLUMN,
             name: "shapeJson.properties.uMaxUnitPricing.keyword",
-            accessorFn: (row) => row?.shapeJson?.properties?.uMaxUnitPricing,
+            accessorKey: 'shapeJson.properties.uMaxUnitPricing',
             id: "shapeJson.properties.uMaxUnitPricing",
             header: "Max Unit Pricing (Per NRA)",
             size: 320,
+            Cell: ({ row }) => {
+                const value = row?.original?.shapeJson?.properties?.uMaxUnitPricing
+                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+            },
         },
         {
             ...CommonSchema.COMMON_COLUMN,
