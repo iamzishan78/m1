@@ -174,7 +174,7 @@ export default function DocumentAssociation({
                 <InputBase
                   id="searchInputDocuments"
                   autoComplete="off"
-                  placeholder="Search Agreements"
+                  placeholder={`Search ${title}`}
                   classes={{
                     root: classes.inputRoot,
                     input: classes.inputInput,

@@ -7,7 +7,6 @@ import AgreementIcon from "components/Shared/svgIcons/agreements";
 import ContactIcon from "@material-ui/icons/PermIdentity";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
-import PersonIcon from "@material-ui/icons/Person";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -55,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Drawer(props) {
   const classes = useStyles(props);
-  const { activePanel, setPanel, wellsCount, contactsCount } = props;
+  const { activePanel, setPanel, wellsCount } = props;
 
 
   const drawerIcons = {
@@ -65,8 +64,13 @@ export default function Drawer(props) {
       </Badge>
     ),
     Contacts: (props) => (
-      <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary" badgeContent={contactsCount}>
-        <PersonIcon />
+      <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary">
+        <ContactIcon {...props} />
+      </Badge>
+    ),
+    Agreements: (props) => (
+      <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary">
+        <AgreementIcon {...props} />
       </Badge>
     ),
     Wells: (props) => (

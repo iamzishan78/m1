@@ -5,6 +5,7 @@ import Avatar from "react-avatar";
 import SearchIcon from "@material-ui/icons/Search";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import AddIcon from "@material-ui/icons/Add";
+import { useHistory } from "react-router-dom";
 import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
 import PhoneIphoneIcon from '@material-ui/icons/PhoneIphone';
 import DomainOutlinedIcon from '@material-ui/icons/DomainOutlined';
@@ -17,6 +18,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import IconButton from "@material-ui/core/IconButton";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { REMOVEDEALDESCRIPTOR } from "../../graphQL/useMutationRemoveDealDescriptor";
 import Link from "@material-ui/core/Link";
 import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
 import './Contact.css'
@@ -93,6 +95,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 let contactDetail = {}
 export default function Contacts(props) {
+  let history = useHistory();
   const classes = useStyles();
   const [search, setSearch] = useState("");
   const [contacts, setContacts] = useState();
@@ -116,6 +119,7 @@ export default function Contacts(props) {
     nextFetchPolicy: "cache-first",
   });
   const [addNewContact, { data: addContactData }] = useMutation(ADDCONTACT);
+  const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
 
   const handleAccordionChange = (panel) => (event, isExpanded) => {
     setExpandedPanel(isExpanded ? panel : false);
@@ -133,7 +137,7 @@ export default function Contacts(props) {
   useEffect(() => {
     if (nameAutValue) {
       props.addSelectedContact(nameAutValue);
-      setContacts(props.GettingContacts());
+      GettingContacts();
       // setMutationLoading(true);
       setAddContact(false);
       setNameAutValue("");
@@ -214,12 +218,40 @@ export default function Contacts(props) {
     setFilteredContacts(filtered);
   }, [search, contacts]);
 
+  const GettingContacts = useCallback(() => {
+    let contactnames = stateApp.activeDeal?.contacts?.map((value) => {
+      if (get(value, "relatedObject.entityDetail.name")) {
+        return value.relatedObject.entityDetail.name;
+      } else if (get(value, "name")) {
+        return value.name;
+      } else {
+        return "Empty";
+      }
+    });
+    setContacts(contactnames);
+  }, [stateApp.activeDeal?.contacts]);
+
   useEffect(() => {
-    setContacts(props.GettingContacts()); // show contacts list in the slideout list
-  }, [search, props, props.GettingContacts]);
+    GettingContacts();
+  }, [search, props, GettingContacts]);
   useEffect(() => {
     setMutationLoading(props.loading);
   }, [props.loading]);
+
+  const DeleteContact = async (index) => {
+    const descriptorId = get(stateApp, `activeDeal.contacts[${index}].descriptorId`) || get(stateApp, `activeDeal.contacts[${index}]._id`);
+    let result = await removeDealDescriptor({
+      variables: { id: descriptorId, relatedObjectType: "Contact" },
+      refetchQueries: ["getPipeline", "getContactDeals"],
+      awaitRefetchQueries: true,
+    });
+    let response = await result.data.removeDealDescriptor.success;
+    if (response) {
+      props.getDeal();
+    } else {
+      setMutationLoading(false);
+    }
+  };
 
   const toggleAcordion = (c) => {
     if (c && c !== "" && c !== "Empty") {
@@ -232,6 +264,15 @@ export default function Contacts(props) {
     }
   }
 
+  const gotoContact = (index) => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      selectedContact: stateApp.activeDeal?.contacts[index]?._id,
+      dealDialog: false,
+      transactBarView: "Deal",
+    }));
+    history.push(`/contact/details/${stateApp.activeDeal?.contacts[index]?._id}?return-url=${history.location.pathname}`);
+  };
 
   return (
     <>
@@ -336,8 +377,8 @@ export default function Contacts(props) {
         </Grid>
 
         <List aria-label="contacts list">
-          {filteredContacts && filteredContacts?.length > 0 ? (
-            filteredContacts?.map((c, i) => (
+          {filteredContacts && filteredContacts.length > 0 ? (
+            filteredContacts.map((c, i) => (
               <>
                 <ListItem key={i}>
 
@@ -370,11 +411,11 @@ export default function Contacts(props) {
                           cursor: "pointer",
                         }}
                         color="primary"
-                        onClick={() => props?.gotoContact(i)}
+                        onClick={() => gotoContact(i)}
                       >
-                        <Typography>{c?.name ? c?.name : c}</Typography>
+                        <Typography>{c.name ? c.name : c}</Typography>
                       </Link>
-                      {(mutationLoading === stateApp?.activeDeal?.contacts?.[i]?._id || mutationLoading === filteredContacts?.[i]?._id) ? (
+                      {mutationLoading === stateApp.activeDeal?.contacts[i]?._id ? (
                         <ListItemSecondaryAction>
                           <IconButton edge="end" aria-label="delete">
                             <CircularProgress />
@@ -382,9 +423,9 @@ export default function Contacts(props) {
                         </ListItemSecondaryAction>
                       ) : (
                         <ListItemSecondaryAction
-                          onClick={(event) => {
-                            event.stopPropagation();  // Stop the click event from propagating to the Accordion
-                            props?.deleteContact(i, setMutationLoading);
+                          onClick={() => {
+                            DeleteContact(i);
+                            setMutationLoading(stateApp.activeDeal?.contacts[i]?._id);
                           }}
 
                         >
