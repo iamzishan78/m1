@@ -31,7 +31,7 @@ export default function AssociatedAgreements() {
   // searching existing Agreement
   const searchExistingShapes = (value) => {
     setSearch(value);
-    let existingShapes = stateApp.selectedDocument.shapeObj;
+    let existingShapes = stateApp?.selectedDocument?.shapeObj || [];
     if (value !== "") {
       const searchedShapes = existingShapes.filter((shape) =>
         shape.name.toLowerCase().includes(value.toLowerCase())

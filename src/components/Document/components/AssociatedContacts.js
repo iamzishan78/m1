@@ -34,7 +34,7 @@ export default function AssociatedContacts({ title }) {
   // searching existing Contact
   const searchExistingContacts = (value) => {
     setSearch(value);
-    let existingContacts = stateApp.selectedDocument.contacts;
+    let existingContacts = stateApp?.selectedDocument?.contacts || [];
     if (value !== "") {
       const searchedContacts = existingContacts.filter((contact) =>
         contact.name.toLowerCase().includes(value.toLowerCase())
