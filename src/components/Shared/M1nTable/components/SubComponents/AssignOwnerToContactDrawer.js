@@ -184,7 +184,25 @@ function SelectedField({ field, setFieldKey, setCampaigns, setContactOwner, cont
         />
       );
     // Additional cases can be added as needed for different field types
-
+    case 'Max Pricing (Per NRA)':
+    case 'Target Pricing (Per NRA)':
+      // Add text field for Max Pricing and Target Pricing bulk update
+      return (
+        <TextField
+          key={field} // Use key to force re-render and re-apply focus
+          placeholder={field}
+          value={fieldKey}
+          onChange={({ target }) => {
+            setFieldKey(target.value);
+          }}
+          autoFocus={true}  // This will automatically focus the field when rendered
+          className={classes.fullWidth}
+          InputProps={{
+            startAdornment: <InputAdornment position="start">$</InputAdornment>,
+            inputComponent: CurrencyFormatCustomWithoutPrefix,
+          }}
+      />
+    );
     case 'Entity Type':
       filterKey = 'ownerType.keyword'; // Sets filterKey to 'ownerType.keyword' for filtering by entity type
       return (
