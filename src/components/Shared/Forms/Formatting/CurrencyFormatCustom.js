@@ -20,6 +20,8 @@ export function CurrencyFormatCustom(props) {
       thousandSeparator
       // isNumericString
       prefix='$'
+      decimalScale={2} // This ensures the input will always have 2 decimal places
+      fixedDecimalScale={!!other?.value} // Conditionally apply fixedDecimalScale based on value
     />
   );
 }

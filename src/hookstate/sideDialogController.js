@@ -16,6 +16,7 @@ export const commonIterestOwnerStates = {
   max_offer_price: null,
   actual_offer_price: null,
   contactStatus: null,
+  closed_price: null, // Add new field closed price for unit interest owner
   status: null,
   campaignName: [],
   campaignPriority: null,
