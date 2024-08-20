@@ -105,7 +105,8 @@ export const useLayerStyle = (layer) => {
 
     // Getting initiallayer fill and if it is not set setting it to true
     const initialLayerEnableFill = !(layer.layerSettings?.interaction?.interactionDetail?.enablefillColor === false)
-
+    const initialLayerAttributeBasedColors = layer.layerSettings?.attributeBasedColors || {};
+    const initialLayerSelectedAttribute = layer.layerSettings?.selectedAttribute || null;
     const initialFillColor =
         layerType === "fill"
             ? ifRgbaConvt(layer.layerPaintProps[0]?.paintProps["fill-color"])
@@ -133,6 +134,9 @@ export const useLayerStyle = (layer) => {
 
     // Added state for enable layer fill
     const [enablefillColor, setEnableFillColor] = useState(initialLayerEnableFill);
+    const [selectedValue, setSelectedValue] = useState(initialLayerSelectedAttribute);
+    const [attributeBasedColors, setAttributeBasedColors] = useState(initialLayerAttributeBasedColors);
+
     const [layerLabelVisibility, setLayerLabelVisibility] = useState(initialLayerLabelVisibility);
     const [layerClickability, setLayerClickability] = useState(initialLayerClickable);
     const [strokeColor, setStrokeColor] = useState(initialStrokeColor);
@@ -155,7 +159,9 @@ export const useLayerStyle = (layer) => {
             width ||
             layer.layerPaintProps[0]?.labelProps?.visibility !== layerLabelVisibility ||
             layer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability ||
-            layer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor
+            layer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor ||
+            !_.isEqual(layer.layerSettings?.attributeBasedColors, attributeBasedColors) ||
+            layer.layerSettings?.selectedAttribute?.label !== selectedValue?.label
         ) {
             let currentLayer = { ...layer };
             let fColor;
@@ -176,6 +182,8 @@ export const useLayerStyle = (layer) => {
 
             // Setting enable enablefillcolor
             layerSettings.interaction.interactionDetail.enablefillColor = enablefillColor;
+            layerSettings.attributeBasedColors = attributeBasedColors
+            layerSettings.selectedAttribute = selectedValue
 
             if (currentLayer && currentLayer.layerPaintProps && currentLayer.layerPaintProps[0] && currentLayer.layerPaintProps[0].paintType) {
                 const layerPaintProps = copy(currentLayer.layerPaintProps);
@@ -409,5 +417,24 @@ export const useLayerStyle = (layer) => {
     };
 
 
-    return { layerName, setLayerName, width, setWidth, fillColor, setFillColor, enablefillColor, setEnableFillColor, layerLabelVisibility, setLayerLabelVisibility, layerClickability, setLayerClickability, strokeColor, setStrokeColor, handleLayerChange }
+    return {
+        layerName,
+        setLayerName,
+        width,
+        setWidth,
+        fillColor,
+        setFillColor,
+        enablefillColor,
+        setEnableFillColor,
+        selectedValue,
+        setSelectedValue,
+        attributeBasedColors,
+        setAttributeBasedColors,
+        layerLabelVisibility,
+        setLayerLabelVisibility,
+        layerClickability, setLayerClickability,
+        strokeColor,
+        setStrokeColor,
+        handleLayerChange
+    }
 }

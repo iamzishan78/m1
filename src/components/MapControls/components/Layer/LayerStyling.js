@@ -17,6 +17,8 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { colorBasedAttributes } from "./ColorBasedAttributes";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 import { AppContext } from "AppContext";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import { generateRandomColor } from "components/MapControls/commonHelper";
 
 function LayerStyling() {
   const classes = useStyles();
@@ -24,28 +26,63 @@ function LayerStyling() {
   const selectedLayer = mapControlsStateValues.selectedLayer
 
   const layerType = selectedLayer.layerPaintProps[0]?.paintType;
-  const { width, setWidth, fillColor, setFillColor, enablefillColor, setEnableFillColor, layerLabelVisibility, setLayerLabelVisibility, layerClickability, setLayerClickability, strokeColor, setStrokeColor, handleLayerChange
+  const {
+    width,
+    setWidth,
+    fillColor,
+    setFillColor,
+    enablefillColor,
+    setEnableFillColor,
+    attributeBasedColors,
+    selectedValue,
+    setSelectedValue,
+    setAttributeBasedColors,
+    layerLabelVisibility,
+    setLayerLabelVisibility,
+    layerClickability,
+    setLayerClickability,
+    strokeColor,
+    setStrokeColor,
+    handleLayerChange
   } = useLayerStyle(selectedLayer)
 
   const [rows, setRows] = useState(0);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [selectedValue, setSelectedValue] = useState(null);
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedOption, setSelectedOption] = useState('');
 
   const [layerFeaturesCount, { data: layerDataCount }] = useLazyQuery(LAYERS_FEATURES_COUNT);
+  const [getFiltersList, { data: filtersData, loading }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
+
   const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
   const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
 
   useEffect(() => {
-    if (colorBasedAttributes[selectedLayer?.identifier]?.customMetaCategory)
+    if (colorBasedAttributes[selectedLayer?.identifier]?.layerKey)
       getMetaData({
         variables: {
           user: stateApp.user?.mongoId,
-          category: colorBasedAttributes[selectedLayer?.identifier]?.customMetaCategory,
+          category: colorBasedAttributes[selectedLayer?.identifier]?.layerKey,
         },
       });
   }, []);
+
+  useEffect(() => {
+    const esIndex = "shapes_flat";
+    const layerType = colorBasedAttributes[selectedLayer?.identifier]?.layerKey.toLowerCase();
+    getFiltersList({
+      variables: {
+        search: "*",
+        filterKey: selectedValue?.value,
+        esIndex,
+        index: esIndex,
+        filters: [{ field: 'layer.keyword', value: layerType }],
+        size: 10000
+      },
+    });
+  }, [selectedValue])
 
   useEffect(() => {
     setRows(layerDataCount?.layerFeaturesCount || 0)
@@ -77,7 +114,9 @@ function LayerStyling() {
       width ||
       selectedLayer.layerPaintProps[0]?.labelProps?.visibility !== layerLabelVisibility ||
       selectedLayer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability ||
-      selectedLayer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor
+      selectedLayer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor ||
+      !_.isEqual(selectedLayer.layerSettings?.attributeBasedColors, attributeBasedColors) ||
+      selectedLayer.layerSettings?.selectedAttribute?.label !== selectedValue?.label
     ) {
       let { currentLayer } = handleLayerChange()
       //// saving to stateApp
@@ -112,6 +151,33 @@ function LayerStyling() {
 
     return [...colorAttributes, ...metaDataOptions];
   }, [selectedLayer, metaDataRes]);
+
+  const attroptions = useMemo(() => {
+    let options = [];
+    if (!filtersData?.getESFilterList?.hits || !selectedValue?.label) return [];
+    const filterKeys = filtersData?.getESFilterList?.hits.map((hit) => hit.key).filter((key) => !['', ' '].includes(key));
+    options = filterKeys.map((key) => {
+      const isColorOveridden = selectedOption?.label && (selectedOption?.label === key);
+      const randomColor = attributeBasedColors?.[selectedValue.label]?.[key] || generateRandomColor()
+      console.log(fillColor);
+
+      return {
+        label: key,
+        color: isColorOveridden ? '#' + fillColor.hex : randomColor
+      }
+    });
+    const attrColors = {
+      [selectedValue.label]: options.reduce((acc, opt) => {
+        acc[opt.label] = opt.color;
+        return acc;
+      }, {})
+    };
+    setAttributeBasedColors((prevAttrBaseColor) => ({
+      ...prevAttrBaseColor,
+      [selectedValue.label]: attrColors[selectedValue.label]
+    }));
+    return options;
+  }, [filtersData, fillColor]);
 
   return (
     <ClickAwayListener onClickAway={handleApplyChanges}>
@@ -251,30 +317,81 @@ function LayerStyling() {
                       isOptionEqualToValue={(option, value) => option.value === value?.value}
                     />
                   </div>
-                  <div style={{ margin: '8px 0' }}>
-                    <TextField
-                      variant="outlined"
-                      fullWidth
-                      onClick={() => setDisplayColorPicker(!displayColorPicker)}
-                      InputProps={{
-                        style: {
-                          height: '50px', // Customize the height here
-                          cursor: 'pointer',
-                        },
-                        startAdornment: (
-                          <div
-                            style={{
-                              width: '100px',
-                              height: '30px',
-                              backgroundColor: fillColor,
-                              // opacity: opacity,
-                              border: '1px solid #ccc',
-                              marginRight: '8px',
-                            }}
-                          />
-                        ),
+                  <div style={{ width: '485px', fontFamily: 'Arial, sans-serif' }}>
+                    <label htmlFor="color-dropdown" style={{ marginBottom: '8px', display: 'block' }}>Color based on</label>
+                    <div
+                      id="color-dropdown"
+                      style={{
+                        border: '1px solid #ccc',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        backgroundColor: '#fff',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
                       }}
-                    />
+                      onClick={() => setIsOpen(!isOpen)}
+                    >
+                      <span>{selectedValue ? selectedValue.label : ''}</span>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          width: '0',
+                          height: '0',
+                          marginLeft: '5px',
+                          verticalAlign: 'middle',
+                          borderLeft: '5.5px solid transparent',
+                          borderRight: '5.5px solid transparent',
+                          borderTop: '5.5px solid black',
+                          transition: 'transform 0.2s ease',
+                          transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                        }}
+                      ></span>
+                    </div>
+                    {isOpen && (
+                      <ul
+                        style={{
+                          listStyleType: 'none',
+                          margin: '8px 0 0 0',
+                          padding: '0',
+                          border: '1px solid #ccc',
+                          borderRadius: '4px',
+                          maxHeight: '200px',
+                          overflowY: 'auto',
+                          backgroundColor: '#fff',
+                        }}
+                      >
+                        {attroptions.map((option, index) => (
+                          <li
+                            key={index}
+                            onClick={() => {
+                              setSelectedOption(option);
+                              setFillColor(option.color);
+                              setDisplayColorPicker(!displayColorPicker);
+                            }}
+                            style={{
+                              padding: '12px',
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              cursor: 'pointer',
+                              backgroundColor: selectedOption?.label === option.label ? '#f0f0f0' : '#fff',
+                            }}
+                          >
+                            <span>{option.label}</span>
+                            <span
+                              style={{
+                                width: '60px',
+                                height: '30px',
+                                backgroundColor: option.color,
+                                border: '1px solid #ccc',
+                              }}
+                            ></span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                   {displayColorPicker && <Paper id='fill-picker-box'>
                     <ColorPickerStyledBox value={fillColor} onChange={(color) => setFillColor(color)} />

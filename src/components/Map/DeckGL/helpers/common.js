@@ -10,6 +10,7 @@ import {
 } from 'components/Shared/functions/shapeLayer';
 import { popupController } from 'hookstate/popupStateController';
 import { globalStateController } from 'hookstate/globalStateController';
+import { colorBasedAttributes } from 'components/MapControls/components/Layer/ColorBasedAttributes';
 
 export const random_hex_color_code = () => {
 	const n = (Math.random() * 0xfffff * 1000000).toString(16);
@@ -499,6 +500,28 @@ export const generateFileFilters = ({ fileLayer, pagination = { first: 10000, af
 	};
 };
 
+export const getLayerFillColor = (dbLayer, fillColor, fillOpacity) => {
+	const layerInteraction = dbLayer.layerSettings?.interaction;
+	const selectAttr = dbLayer.layerSettings?.selectedAttribute?.label;
+	return (d) => {
+		if (selectAttr) {
+			const path = colorBasedAttributes[dbLayer?.identifier]?.keys.find((key) => key.label === selectAttr);
+
+			let keys = path?.value.split('.').slice(1, -1);
+			let orKeys = keys.slice(0, -1);
+			if (path.orKey) {
+				orKeys.push(path.orKey)
+			}
+			let value = _.get(d, keys) || (path.orKey ? _.get(d, orKeys) : null);
+			if (value) {
+				const attrFillColor = dbLayer.layerSettings.attributeBasedColors[selectAttr][value]
+				if (attrFillColor) return getRGBA(attrFillColor, fillOpacity)
+			}
+		}
+		return layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : getRGBA(fillColor, fillOpacity)
+	}
+}
+
 export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 	const props = {};
 
@@ -512,8 +535,8 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 				const fillStroke =
 					prop.paintProps?.['fill-outline-color'] || prop.paintProps?.['line-color'];
 
-				// If fill color not enabled setting fill color to transparent	
-				props.getFillColor = layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : getRGBA(fillColor, fillOpacity);
+				// If fill color not enabled setting fill color to transparent
+				props.getFillColor = getLayerFillColor(dbLayer, fillColor, fillOpacity);
 				props.defaultColor = getRGBA(fillColor, fillOpacity);
 				props.getLineColor = getRGBA(fillStroke);
 
@@ -528,7 +551,7 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 				const pointWidth = prop.paintProps?.['circle-stroke-width'] || 1;
 
 				// If fill color not enabled setting fill color to transparent
-				props.getFillColor = layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : getRGBA(pointColor, pointOpacity);
+				props.getFillColor = getLayerFillColor(dbLayer, pointColor, pointOpacity);
 				props.defaultColor = getRGBA(pointColor, pointOpacity);
 				props.getLineColor = getRGBA(pointStroke);
 
