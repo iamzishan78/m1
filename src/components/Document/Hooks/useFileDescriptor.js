@@ -13,7 +13,7 @@ import { DELETEDESCRIPTORRELATEDFILE } from "graphQL/useMutationDeleteDescriptor
 //Query
 import { GET_ES_DOCUMENTS } from "graphQL/useQueryESDocuments";
 
-export default function useFileDescriptor(items) {
+export default function useFileDescriptor(items = []) {
   // Initials
   const [stateApp, setStateApp] = useContext(AppContext);
 
@@ -71,11 +71,12 @@ export default function useFileDescriptor(items) {
   const getSelectedItem = async (selection, relatedObjectType) => {
     const isExists = items.some((item) => selection._id === item._id);
 
+    if (isExists) return;
+
     let data = {
       ...selection,
       createdBy: stateApp?.user?._id,
     };
-    if (isExists) return;
 
     await addFile({
       variables: {
