@@ -455,6 +455,7 @@ function ContactDetailCard(props) {
   const [showShrinkColumnContent, setShowShrinkColumnContent] = useState(false);
   const [showActivityDialog, setActivityDialog] = useState(null);
   const [purchaseData, setPurchaseData] = useState([]);
+  const [actionActivityData, setActionActivityData] = useState(null); // State for actions activity data
 
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(null);
 
@@ -606,6 +607,25 @@ function ContactDetailCard(props) {
     return contact.name || `${get(contact, "firstName", "")} ${get(contact, "lastName", "")}`;
   };
   const togglePullout = () => dispatch(toggleRightColumn());
+
+  const handleQuickActionActivity = (data) => {
+    if(data) {
+       // Set actions activity data
+      const { phoneNumber, type } = data;
+      const isCall = type === 'call';
+      
+      const activityData = {
+        activity_name: isCall ? `Called ${getName(contactData)}` : `Texted ${getName(contactData)}`,
+        activity_type: type,
+        activity_outcome: isCall ? 'Left Message' : 'Sent Text',
+        activity_notes: isCall ? `Left VM at ${phoneNumber}` : `Sent text message to ${phoneNumber}`,
+        activity_status: { key: "Completed", value: true },
+      }
+
+      setActivityDialog(true);
+      setActionActivityData(activityData);
+    }
+  }
 
   return contactData ? (
     <div style={{ position: "absolute", top: "60px", maxHeight: "calc(100vh - 64px)", width: "100%", backgroundColor: "#F2F2F2" }}>
@@ -771,7 +791,7 @@ function ContactDetailCard(props) {
                   // marginTop: "20px",
                   textAlign: "center"
                 }}>
-                  <SummaryFields contactData={contactData} />
+                  <SummaryFields contactData={contactData} handleQuickActionActivity={handleQuickActionActivity}/>
                 </Grid>
               </div>
               <div className={classes.detailCardSection}>
@@ -787,6 +807,7 @@ function ContactDetailCard(props) {
                     purchaseData={purchaseData}
                     contactData={contactData}
                     onAddActivity={setActivityDialog}
+                    handleQuickActionActivity={handleQuickActionActivity}
                   />
                 </Grid>
               </div>
@@ -1012,6 +1033,7 @@ function ContactDetailCard(props) {
               id={props.id}
               contactData={contactData}
               selectedActivity={stateApp.selectedActivity}
+              actionActivityData={actionActivityData}
             />
           </RightDialog>
         )}

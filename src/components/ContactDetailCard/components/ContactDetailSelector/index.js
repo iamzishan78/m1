@@ -246,7 +246,12 @@ function MapGridCard(props) {
                 <Grid item md={10} style={{ padding: "0px" }}>
                   <div style={{ position: "relative" }} classes={classes.gridTables}>
                     {searchTapValue.value === "contactInformation" && (
-                      <ContactDetailedInfo user={stateApp.user} purchaseData={sortedPurchaseData} contactData={props.contactData} />
+                      <ContactDetailedInfo 
+                        user={stateApp.user}
+                        purchaseData={sortedPurchaseData} 
+                        contactData={props.contactData}
+                        handleQuickActionActivity={props.handleQuickActionActivity}
+                        />
                     )}
                     {searchTapValue.value === "activities" && (
                       <ActivitiesTable

@@ -9,6 +9,8 @@ import { Autorenew as AutorenewIcon } from "@material-ui/icons";
 import EmailOutlinedIcon from "@material-ui/icons/EmailOutlined";
 import AddIcCallIcon from '@mui/icons-material/AddIcCall';
 import { makeStyles } from "@material-ui/core/styles";
+import { IconButton } from "@material-ui/core";
+import Tooltip from "@material-ui/core/Tooltip";
 
 import vf_number from "components/Shared/valueformatters/vf_number";
 import AutoCompleteWithAddNew from 'components/ContactDetailCard/components/AutoCompleteWithAddNew'
@@ -65,6 +67,8 @@ const useStyles = makeStyles(() => ({
   },
   emailAdornment: {
     cursor: "pointer",
+    padding: "0px", // Remove extra padding
+    margin: "0 2px", // Adjust spacing between icons
   },
   baseValueChanged: {
     width: "100%",
@@ -75,7 +79,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function SummaryFields({ contactData }) {
+export default function SummaryFields({ contactData, handleQuickActionActivity }) {
   const classes = useStyles();
   const { control, reset } = useForm();
   const [activeLoadingField, setLoading] = useState();
@@ -240,29 +244,40 @@ export default function SummaryFields({ contactData }) {
                             inputComponent: field.type === "currency" ? CurrencyFormatCustom : field.key.includes('nraSum') ? NumberFormatComma : undefined,
                             endAdornment:
                               field.type === "email" && contactData[field.key] ? (
-                                <a id="mail-icon" href={`mailto: ${contactData.primaryEmail}`} className={classes.emailAdornment}>
-                                  <InputAdornment position="end">
-                                    <EmailOutlinedIcon htmlColor="#757575" />
-                                  </InputAdornment>
-                                </a>
+                                <InputAdornment position="end">
+                                  {/* Email quick actions icons */}
+                                  <Tooltip title={"Email"} placement="top">
+                                    <IconButton id="mail-icon" href={`mailto: ${contactData.primaryEmail}`} className={classes.emailAdornment}>
+                                      <EmailOutlinedIcon htmlColor="#757575" />
+                                    </IconButton>
+                                  </Tooltip>
+                                </InputAdornment>
                               ) : field.isPhoneNumber && contactData[field.key] ? (
                                 <>
                                 {/* Phone quick actions icons */}
-                                  <a id="voicemail-icon" href={`tel: ${contactData[field.key]}`} className={classes.emailAdornment}>
-                                    <InputAdornment position="end">
+                                <InputAdornment position="end">
+                                  <Tooltip title={"Voice Mail"} placement="top">
+                                    <IconButton id="voicemail-icon" className={classes.emailAdornment} onClick={() => handleQuickActionActivity({phoneNumber: contactData[field.key], type: 'call'})}>
                                       <VoiceMailIcon htmlColor="#757575" />
-                                    </InputAdornment>
-                                  </a>
-                                  <a id="textsms-icon" href={`sms: ${contactData[field.key]}`} className={classes.emailAdornment}>
-                                    <InputAdornment position="end">
+                                    </IconButton>
+                                  </Tooltip>
+                                </InputAdornment>
+
+                                <InputAdornment position="end">
+                                  <Tooltip title={"Text SMS"} placement="top">
+                                    <IconButton id="textsms-icon" className={classes.emailAdornment} onClick={() => handleQuickActionActivity({phoneNumber: contactData[field.key], type: 'text_message'})}>
                                       <TextSmsIcon htmlColor="#757575" />
-                                    </InputAdornment>
-                                  </a>
-                                  <a id="call-icon" href={`tel: ${contactData[field.key]}`} className={classes.emailAdornment}>
-                                    <InputAdornment position="end">
+                                    </IconButton>
+                                  </Tooltip>
+                                </InputAdornment>
+
+                                <InputAdornment position="end">
+                                  <Tooltip title={"Call"} placement="top">
+                                    <IconButton id="call-icon" href={`tel: ${contactData[field.key]}`} className={classes.emailAdornment}>
                                       <AddIcCallIcon htmlColor="#757575" />
-                                    </InputAdornment>
-                                  </a>
+                                    </IconButton>
+                                  </Tooltip>
+                                </InputAdornment>
                                 </>
                               ) : activeLoadingField === field.key ? (
                                 <CircularProgress className={classes.loader} size={22} color="secondary" />

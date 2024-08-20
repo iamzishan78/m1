@@ -176,7 +176,7 @@ const Activities = () => {
             ownerId: act.ownerId,
             type: act.type,
             name: act.name,
-            creator: { name: act?.createdBy?.name }
+            creator: { name: act?.createdBy?.name || act?.createBy }
             // isContact: act.contactId,
           };
         })

@@ -50,6 +50,7 @@ export default function FieldContent({
   isMerged = false,
   disabled,
   row,
+  handleQuickActionActivity,
   ...props
 }) {
   //////////// id - brings the contact id /////////////////////////////////////////////////////////////////////////
@@ -515,6 +516,7 @@ export default function FieldContent({
           setEditContent={setEditContent}
           editContent={content}
           row={row}
+          handleQuickActionActivity={handleQuickActionActivity}
         />
       )}
       {fieldType === FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />}

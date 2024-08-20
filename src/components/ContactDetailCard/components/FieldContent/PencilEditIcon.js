@@ -21,7 +21,8 @@ function PencilEditIcon({
     isCopy = false,
     editContent,
     setEditContent,
-    row
+    row,
+    handleQuickActionActivity
 }) {
     const classes = useStyles();
     const [copied, setCopied] = useState(false); // Add new state for updating copy icon tooltip value
@@ -104,7 +105,7 @@ function PencilEditIcon({
             <Tooltip title={"Voice Mail"} placement="top">
                 <IconButton
                     size="small"
-                    href={`tel:${editFieldValue}`}
+                    onClick={() => handleQuickActionActivity({phoneNumber: editFieldValue, type: 'call'})}
                 >
                     <VoiceMailIcon
                         id="voiceMailIcon"
@@ -115,7 +116,7 @@ function PencilEditIcon({
             <Tooltip title={"Text SMS"} placement="top">
                 <IconButton
                     size="small"
-                    href={`sms:${editFieldValue}`}
+                    onClick={() => handleQuickActionActivity({phoneNumber: editFieldValue, type: 'text_message'})}
                 >
                     <TextSmsIcon
                         id="textSmsIcon"
