@@ -47,6 +47,8 @@ import { mapControlsController } from "hookstate/mapControlsController";
 import { layerController } from "hookstate/layerStateController";
 import { mapStateController } from "hookstate/mapStateController";
 import { navController } from "hookstate/navStateController";
+// actions
+import { setActiveModule } from "store/actions/commonActions";
 
 const layerIcons = [
   {
@@ -363,6 +365,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 
   useEffect(() => {
     togglePullout()
+    dispatch(setActiveModule({})); // reset to default value on selecting map tab
   }, [])
 
   return (
