@@ -20,9 +20,6 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 //Query
 import ESSearchField from "components/Shared/Forms/Fields/ESSearchField";
 
-//Hook
-import useFileDescriptor from "../Hooks/useFileDescriptor";
-
 const useStyles = makeStyles((theme) => ({
   rootPadding: {
     padding: "6px 15px",
@@ -124,6 +121,11 @@ export default function DocumentAssociation({
   search,
   setSearch,
   relatedObjectType,
+  deleteDescriptorFile,
+  getSelectedItem,
+  addFileLoading,
+  deleteFileLoading,
+  updateDocumentLoading,
 }) {
   // Initials
   const classes = useStyles();
@@ -131,14 +133,6 @@ export default function DocumentAssociation({
   // States
   const [addSelection, setAddSelection] = useState(false);
   const [deletedRow, setDeletedRow] = useState("");
-
-  const {
-    deleteDescriptorFile,
-    getSelectedItem,
-    addFileLoading,
-    deleteFileLoading,
-    updateDocumentLoading,
-  } = useFileDescriptor(items);
 
   return (
     <div style={{ marginRight: "14px" }}>
@@ -246,7 +240,7 @@ export default function DocumentAssociation({
                     target="_blank"
                     rel="noreferrer"
                   >
-                    {shape.name}
+                    {shape?.name || shape?.entityDetail?.name || ''}
                   </a>
 
                   {deleteFileLoading && deletedRow === shape._id ? (

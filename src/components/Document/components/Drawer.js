@@ -162,12 +162,22 @@ export default function DocumentDrawer(props) {
   const [anchorEl, setAnchorEl] = useState();
 
   const [stateApp, setStateApp] = React.useContext(AppContext);
-  const { getWellsFromDocument, wells } = React.useContext(DocumentContext);
+  const { getWellsFromDocument, wells, getContactsFromDocument, contacts, getAgreementsFromDocument, shapes } = React.useContext(DocumentContext);
 
   // Fetching wells from descriptor
   useEffect(() => {
     if (!props.isRelatedDocuments)
       getWellsFromDocument({
+        variables: {
+          descriptorObject: stateApp.selectedDocument._id,
+        },
+      });
+      getContactsFromDocument({
+        variables: {
+          descriptorObject: stateApp.selectedDocument._id,
+        },
+      });
+      getAgreementsFromDocument({
         variables: {
           descriptorObject: stateApp.selectedDocument._id,
         },
@@ -388,7 +398,7 @@ export default function DocumentDrawer(props) {
           </div>
         </div>
         <div className={classes.contentRoot}>
-          {!props.isRelatedDocuments && <RightActionsPanel activePanel={activePanel} setPanel={setPanel} wellsCount={wells?.length} />}
+          {!props.isRelatedDocuments && <RightActionsPanel activePanel={activePanel} setPanel={setPanel} wellsCount={wells?.length} contactsCount={contacts?.length} shapesCount={shapes?.length}/>}
           <div className={!props.isRelatedDocuments ? classes.detailsFileWrapper : ""}>
             {activePanel === "Home" && (
               <DetailsPanel
