@@ -169,21 +169,21 @@ export default function DocumentDrawer(props) {
     if (!props.isRelatedDocuments)
       getWellsFromDocument({
         variables: {
-          descriptorObject: stateApp.selectedDocument._id,
+          descriptorObject: stateApp.selectedDocument?._id,
         },
       });
       getContactsFromDocument({
         variables: {
-          descriptorObject: stateApp.selectedDocument._id,
+          descriptorObject: stateApp.selectedDocument?._id,
         },
       });
       getAgreementsFromDocument({
         variables: {
-          descriptorObject: stateApp.selectedDocument._id,
+          descriptorObject: stateApp.selectedDocument?._id,
         },
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stateApp.selectedDocument._id]);
+  }, [stateApp.selectedDocument?._id]);
 
   const documentInitial = {
     documentName: "",
@@ -434,7 +434,7 @@ export default function DocumentDrawer(props) {
   
   return (
     <div>
-      <Drawer className={classes.drawer} anchor={"right"} open={stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0}>
+      <Drawer className={classes.drawer} anchor={"right"} open={stateApp.DocumentDrawer === true || Object.entries(stateApp?.selectedDocument || {}).length > 0}>
         <Dialog open={openDeleteConfirmDialog} onClose={handleDeleteCancel} style={{ zIndex: 99999999999 }}>
           <DeleteConfirmationDialogContent
             header="Delete Document"
