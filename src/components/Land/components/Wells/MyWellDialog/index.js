@@ -174,7 +174,11 @@ export default function MyWellDialog() {
   const history = useHistory();
   const client = useApolloClient();
 
-  const [deleteMyWell, { loading }] = useMutation(DELETE_MY_WELL);
+  const [deleteMyWell, { loading }] = useMutation(DELETE_MY_WELL, 
+    {
+      awaitRefetchQueries: true,
+    }
+  );
 
   const toggleDrawer = (anchor, open) => (event) => {
     if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
@@ -249,9 +253,14 @@ export default function MyWellDialog() {
         // added proper well id
         myWellId: platformWell?._id || platformWell?.tenantWellId
       },
-      refetchQueries: ["getESSimpleSearch"],
-      awaitRefetchQueries: true,
-    });
+    }).then(
+			res => {
+				tableGlobalController.refetch(); // refetch the MRTtable data 
+			},
+			() => {
+				tableGlobalController.refetch(); // refetch the MRTtable data
+			}
+		);
     handleCloseDialog();
   };
 
