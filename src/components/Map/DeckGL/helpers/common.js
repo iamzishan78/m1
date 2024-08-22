@@ -10,7 +10,7 @@ import {
 } from 'components/Shared/functions/shapeLayer';
 import { popupController } from 'hookstate/popupStateController';
 import { globalStateController } from 'hookstate/globalStateController';
-import { colorBasedAttributes } from 'components/MapControls/components/Layer/ColorBasedAttributes';
+import { colorBasedAttributes } from 'components/MapControls/components/Layer/LayerAttributes/ColorBasedAttributes';
 
 export const random_hex_color_code = () => {
 	const n = (Math.random() * 0xfffff * 1000000).toString(16);
@@ -500,6 +500,13 @@ export const generateFileFilters = ({ fileLayer, pagination = { first: 10000, af
 	};
 };
 
+export const getLayerStrokeColor = (dbLayer, strokeColor) => {
+	const layerInteraction = dbLayer.layerSettings?.interaction;
+	return (d) => {
+		return layerInteraction.interactionDetail?.enableStrokeColor === false ? [0, 0, 0, 0] : getRGBA(strokeColor)
+	}
+}
+
 export const getLayerFillColor = (dbLayer, fillColor, fillOpacity) => {
 	const layerInteraction = dbLayer.layerSettings?.interaction;
 	const selectAttr = dbLayer.layerSettings?.selectedAttribute?.label;
@@ -538,7 +545,7 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 				// If fill color not enabled setting fill color to transparent
 				props.getFillColor = getLayerFillColor(dbLayer, fillColor, fillOpacity);
 				props.defaultColor = getRGBA(fillColor, fillOpacity);
-				props.getLineColor = getRGBA(fillStroke);
+				props.getLineColor = getLayerStrokeColor(dbLayer, fillStroke);
 
 				break;
 
@@ -553,7 +560,7 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 				// If fill color not enabled setting fill color to transparent
 				props.getFillColor = getLayerFillColor(dbLayer, pointColor, pointOpacity);
 				props.defaultColor = getRGBA(pointColor, pointOpacity);
-				props.getLineColor = getRGBA(pointStroke);
+				props.getLineColor = getLayerStrokeColor(dbLayer, pointStroke);
 
 				props.getPointRadius = pointRadius * 40;
 				props.getLineWidth = pointWidth * 40;
@@ -571,7 +578,7 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 				props.getFillColor = layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : props.getFillColor;
 				const getLineColor = getRGBA(lineColor, lineOpaciity);
 				if (!props.getLineColor || !isEqual(getLineColor, props.getFillColor))
-					props.getLineColor = layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : getRGBA(lineColor, lineOpaciity);
+					props.getLineColor = layerInteraction.interactionDetail?.enableStrokeColor === false ? [0, 0, 0, 0] : getRGBA(lineColor, lineOpaciity);
 
 				break;
 

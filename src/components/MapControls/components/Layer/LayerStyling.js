@@ -8,17 +8,18 @@ import { getLayerColor } from "components/Shared/SidePanel/compoennts/common";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent.js";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import { LAYERS_FEATURES_COUNT } from "graphQL/useQueryLayerFeaturesCount";
-import { ColorPickerStyledBox, useLayerStyle, useStyles, WidthPicker } from "./Common";
+import { useLayerStyle, useStyles, WidthPicker } from "./Common";
 import { globalStateController } from "hookstate/globalStateController";
 import { mapControlsController } from "hookstate/mapControlsController";
 import { layerController } from "hookstate/layerStateController";
-import { Typography, TextField } from '@mui/material';
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import { colorBasedAttributes } from "./ColorBasedAttributes";
+import { Typography } from '@mui/material';
+import { colorBasedAttributes } from "./LayerAttributes/ColorBasedAttributes";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 import { AppContext } from "AppContext";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { generateRandomColor } from "components/MapControls/commonHelper";
+import AttrsAutocomplete from "./LayerAttributes/AttrsAutocomplete";
+import AttrsValuesDropdown from "./LayerAttributes/AttrsValuesDropdown";
 
 function LayerStyling() {
   const classes = useStyles();
@@ -33,9 +34,13 @@ function LayerStyling() {
     setFillColor,
     enablefillColor,
     setEnableFillColor,
+    enableStrokeColor,
+    setEnableStrokeColor,
     attributeBasedColors,
     selectedValue,
     setSelectedValue,
+    selectedStrokeValue,
+    setSelectedStrokeValue,
     setAttributeBasedColors,
     layerLabelVisibility,
     setLayerLabelVisibility,
@@ -48,12 +53,10 @@ function LayerStyling() {
 
   const [rows, setRows] = useState(0);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [displayColorPicker, setDisplayColorPicker] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
 
   const [layerFeaturesCount, { data: layerDataCount }] = useLazyQuery(LAYERS_FEATURES_COUNT);
-  const [getFiltersList, { data: filtersData, loading }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
+  const [getFiltersList, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
 
   const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
@@ -115,6 +118,7 @@ function LayerStyling() {
       selectedLayer.layerPaintProps[0]?.labelProps?.visibility !== layerLabelVisibility ||
       selectedLayer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability ||
       selectedLayer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor ||
+      selectedLayer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor !== enableStrokeColor ||
       !_.isEqual(selectedLayer.layerSettings?.attributeBasedColors, attributeBasedColors) ||
       selectedLayer.layerSettings?.selectedAttribute?.label !== selectedValue?.label
     ) {
@@ -136,7 +140,7 @@ function LayerStyling() {
           },
         },
       });
-
+      layerController.resetBounds(selectedLayer?.identifier)
       ////
     }
     handleClose();
@@ -159,7 +163,6 @@ function LayerStyling() {
     options = filterKeys.map((key) => {
       const isColorOveridden = selectedOption?.label && (selectedOption?.label === key);
       const randomColor = attributeBasedColors?.[selectedValue.label]?.[key] || generateRandomColor()
-      console.log(fillColor);
 
       return {
         label: key,
@@ -285,117 +288,18 @@ function LayerStyling() {
                   {layerType === "line" && <WidthPicker width={width} setWidth={setWidth} layerType={layerType} />}
                 </div>
                 {enablefillColor && (<>
-                  <div style={{ margin: '8px 0' }}>
-                    <Typography style={{ fontSize: '1.2rem', margin: '8px 0' }}>Color based on</Typography>
-                    <Autocomplete
-                      options={options}
-                      getOptionLabel={(option) => option.label}
-                      value={selectedValue}
-                      onChange={(event, newValue) => {
-                        setSelectedValue(newValue);
-                      }}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Select a field"
-                          variant="outlined"
-                          fullWidth
-                          InputProps={{
-                            ...params.InputProps,
-                            style: {
-                              height: '50px', // Adjust the height here
-                              padding: '0 14px',
-                            },
-                          }}
-                          InputLabelProps={{
-                            style: {
-                              lineHeight: '1.2',
-                            },
-                          }}
-                        />
-                      )}
-                      isOptionEqualToValue={(option, value) => option.value === value?.value}
-                    />
-                  </div>
-                  <div style={{ width: '485px', fontFamily: 'Arial, sans-serif' }}>
-                    <label htmlFor="color-dropdown" style={{ marginBottom: '8px', display: 'block' }}>Color based on</label>
-                    <div
-                      id="color-dropdown"
-                      style={{
-                        border: '1px solid #ccc',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        backgroundColor: '#fff',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                      }}
-                      onClick={() => setIsOpen(!isOpen)}
-                    >
-                      <span>{selectedValue ? selectedValue.label : ''}</span>
-                      <span
-                        style={{
-                          display: 'inline-block',
-                          width: '0',
-                          height: '0',
-                          marginLeft: '5px',
-                          verticalAlign: 'middle',
-                          borderLeft: '5.5px solid transparent',
-                          borderRight: '5.5px solid transparent',
-                          borderTop: '5.5px solid black',
-                          transition: 'transform 0.2s ease',
-                          transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                        }}
-                      ></span>
-                    </div>
-                    {isOpen && (
-                      <ul
-                        style={{
-                          listStyleType: 'none',
-                          margin: '8px 0 0 0',
-                          padding: '0',
-                          border: '1px solid #ccc',
-                          borderRadius: '4px',
-                          maxHeight: '200px',
-                          overflowY: 'auto',
-                          backgroundColor: '#fff',
-                        }}
-                      >
-                        {attroptions.map((option, index) => (
-                          <li
-                            key={index}
-                            onClick={() => {
-                              setSelectedOption(option);
-                              setFillColor(option.color);
-                              setDisplayColorPicker(!displayColorPicker);
-                            }}
-                            style={{
-                              padding: '12px',
-                              display: 'flex',
-                              justifyContent: 'space-between',
-                              alignItems: 'center',
-                              cursor: 'pointer',
-                              backgroundColor: selectedOption?.label === option.label ? '#f0f0f0' : '#fff',
-                            }}
-                          >
-                            <span>{option.label}</span>
-                            <span
-                              style={{
-                                width: '60px',
-                                height: '30px',
-                                backgroundColor: option.color,
-                                border: '1px solid #ccc',
-                              }}
-                            ></span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                  {displayColorPicker && <Paper id='fill-picker-box'>
-                    <ColorPickerStyledBox value={fillColor} onChange={(color) => setFillColor(color)} />
-                  </Paper>}
+                  <AttrsAutocomplete
+                    options={options}
+                    selectedValue={selectedValue}
+                    setSelectedValue={setSelectedValue}
+                  />
+                  <AttrsValuesDropdown
+                    selectedValue={selectedValue}
+                    attroptions={attroptions}
+                    setSelectedOption={setSelectedOption}
+                    setFillColor={setFillColor}
+                    fillColor={fillColor}
+                  />
                 </>
                 )}
               </Grid>
@@ -408,11 +312,34 @@ function LayerStyling() {
                     }}
                   >
                     <Typography variant="h6">Stroke Color</Typography>
-                    {layerType === "circle" && <WidthPicker width={width} setWidth={setWidth} layerType={layerType} />}
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={enableStrokeColor}
+                          onChange={(e) => setEnableStrokeColor(!enableStrokeColor)}
+                          size="small"
+                          data-testid="layer-stroke-toggle"
+                        />
+                      }
+                    />
                   </div>
-                  <Paper id='stroke-picker-box'>
-                    <ColorPickerStyledBox value={strokeColor} onChange={(color) => setStrokeColor(color)} />
-                  </Paper>
+                  {layerType === "circle" && <WidthPicker width={width} setWidth={setWidth} layerType={layerType} />}
+                  {enableStrokeColor && (
+                    <>
+                      <AttrsAutocomplete
+                        options={options}
+                        selectedValue={selectedStrokeValue}
+                        setSelectedValue={setSelectedStrokeValue}
+                      />
+                      <AttrsValuesDropdown
+                        selectedValue={selectedStrokeValue}
+                        attroptions={attroptions}
+                        setSelectedOption={setSelectedOption}
+                        setFillColor={setStrokeColor}
+                        fillColor={strokeColor}
+                      />
+                    </>
+                  )}
                 </Grid>
               )}
             </>}
