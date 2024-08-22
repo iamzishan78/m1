@@ -39,7 +39,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-function ContactActionMenu({ contactId, id, name, esIndex, dialogType }) {
+function ContactActionMenu({ id, name, esIndex, dialogType }) {
 	const [defaultActivityType, setDefaultAcitivityType] = useState('call');
 	const [openActivityDialog, setOpenActivityDialog] = useState(false);
 	const [stateApp] = useContext(AppContext);
@@ -100,7 +100,7 @@ function ContactActionMenu({ contactId, id, name, esIndex, dialogType }) {
 					<MenuItem className={classes.actionMenuItem} >
 						<Link
 							to={
-							`/contact/details/${contactId}/?tenant=${window.sessionStorage.getItem("tenantName")}`
+							`/contact/details/${id}/?tenant=${window.sessionStorage.getItem("tenantName")}`
 							}
 							className={classes.link}>
 							<ContactPageOutlinedIcon className={classes.menuIcons} />

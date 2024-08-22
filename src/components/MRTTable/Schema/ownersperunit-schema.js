@@ -679,11 +679,10 @@ const OwnersPerUnitMeta = {
 			name: 'actionMenu',
 			accessorKey: 'actionMenu',
 			Cell: ({ row }) => {
-				const id = row.getValue('_id');
 				const name = row.getValue('name');
 				const contactId = row.getValue('ownerEntity');
 
-				return <ContactActionMenu contactId={contactId} id={id} name={name} esIndex={esIndex} dialogType="dialog" />;
+				return <ContactActionMenu id={contactId} name={name} esIndex={esIndex} dialogType="dialog" />;
 			},
 		},
 	],
