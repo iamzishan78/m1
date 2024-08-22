@@ -1,6 +1,12 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { TextField } from '@mui/material';
 import { makeStyles } from '@material-ui/core/styles';
+import { useLazyQuery } from '@apollo/client';
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+import { colorBasedAttributes } from './ColorBasedAttributes';
+import { generateRandomColor } from 'components/MapControls/commonHelper';
+import { ColorPickerStyledBox } from '../Common';
+import { Paper } from '@material-ui/core';
 
 const useStyles = makeStyles(() => ({
     dropdownContainer: {
@@ -65,14 +71,63 @@ const useStyles = makeStyles(() => ({
 
 const AttrsValuesDropdown = ({
     selectedValue,
-    attroptions,
-    setSelectedOption,
+    selectedLayer,
     setFillColor,
     fillColor,
+    attributeBasedColors,
+    setAttributeBasedColors
 }) => {
     const classes = useStyles();
     const [isOpen, setIsOpen] = useState(false);
     const [displayColorPicker, setDisplayColorPicker] = useState(false);
+    const [selectedOption, setSelectedOption] = useState('');
+    const [getFiltersList, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
+
+    useEffect(() => {
+        const esIndex = "shapes_flat";
+        const layerType = colorBasedAttributes[selectedLayer?.identifier]?.layerKey.toLowerCase();
+        getFiltersList({
+            variables: {
+                search: "*",
+                filterKey: selectedValue?.value,
+                esIndex,
+                index: esIndex,
+                filters: [{ field: 'layer.keyword', value: layerType }],
+                size: 10000
+            },
+        });
+    }, [selectedValue])
+
+
+    const attroptions = useMemo(() => {
+        if (!filtersData?.getESFilterList?.hits || !selectedValue?.label) return [];
+
+        const filterKeys = filtersData.getESFilterList.hits
+            .map(hit => hit.key)
+            .filter(key => key.trim());
+
+        const options = filterKeys.map(key => {
+            const isColorOverridden = selectedOption?.label && selectedOption.label === key;
+            const randomColor = attributeBasedColors?.[selectedValue.label]?.[key] || generateRandomColor();
+            if (isColorOverridden)
+                console.log(fillColor);
+
+            return {
+                label: key,
+                color: isColorOverridden ? `#${fillColor.hex}` : randomColor
+            };
+        });
+
+        setAttributeBasedColors(prevColors => ({
+            ...prevColors,
+            [selectedValue.label]: options.reduce((acc, { label, color }) => {
+                acc[label] = color;
+                return acc;
+            }, {})
+        }));
+
+        return options;
+    }, [filtersData, fillColor]);
 
     return (
         <>

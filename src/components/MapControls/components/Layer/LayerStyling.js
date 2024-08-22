@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useMemo } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { Paper, Grid, IconButton, Divider, FormControlLabel, Switch, Box, Tooltip, ClickAwayListener } from "@material-ui/core";
+import { Grid, IconButton, Divider, FormControlLabel, Switch, Box, Tooltip, ClickAwayListener } from "@material-ui/core";
 import { Close as CloseIcon } from "@material-ui/icons";
 import { UPDATELAYERSETTINGS } from "../../../../graphQL/useMutationUpdateLayerSettings";
 import GridOnIcon from "@material-ui/icons/GridOn";
@@ -16,8 +16,6 @@ import { Typography } from '@mui/material';
 import { colorBasedAttributes } from "./LayerAttributes/ColorBasedAttributes";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 import { AppContext } from "AppContext";
-import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
-import { generateRandomColor } from "components/MapControls/commonHelper";
 import AttrsAutocomplete from "./LayerAttributes/AttrsAutocomplete";
 import AttrsValuesDropdown from "./LayerAttributes/AttrsValuesDropdown";
 
@@ -36,12 +34,14 @@ function LayerStyling() {
     setEnableFillColor,
     enableStrokeColor,
     setEnableStrokeColor,
-    attributeBasedColors,
     selectedValue,
     setSelectedValue,
     selectedStrokeValue,
     setSelectedStrokeValue,
+    attributeBasedColors,
     setAttributeBasedColors,
+    attributeBasedStrokeColors,
+    setAttributeBasedStrokeColors,
     layerLabelVisibility,
     setLayerLabelVisibility,
     layerClickability,
@@ -53,10 +53,8 @@ function LayerStyling() {
 
   const [rows, setRows] = useState(0);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [selectedOption, setSelectedOption] = useState('');
 
   const [layerFeaturesCount, { data: layerDataCount }] = useLazyQuery(LAYERS_FEATURES_COUNT);
-  const [getFiltersList, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
 
   const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
@@ -71,21 +69,6 @@ function LayerStyling() {
         },
       });
   }, []);
-
-  useEffect(() => {
-    const esIndex = "shapes_flat";
-    const layerType = colorBasedAttributes[selectedLayer?.identifier]?.layerKey.toLowerCase();
-    getFiltersList({
-      variables: {
-        search: "*",
-        filterKey: selectedValue?.value,
-        esIndex,
-        index: esIndex,
-        filters: [{ field: 'layer.keyword', value: layerType }],
-        size: 10000
-      },
-    });
-  }, [selectedValue])
 
   useEffect(() => {
     setRows(layerDataCount?.layerFeaturesCount || 0)
@@ -120,7 +103,9 @@ function LayerStyling() {
       selectedLayer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor ||
       selectedLayer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor !== enableStrokeColor ||
       !_.isEqual(selectedLayer.layerSettings?.attributeBasedColors, attributeBasedColors) ||
-      selectedLayer.layerSettings?.selectedAttribute?.label !== selectedValue?.label
+      !_.isEqual(selectedLayer.layerSettings?.attributeBasedStrokeColors, attributeBasedStrokeColors) ||
+      selectedLayer.layerSettings?.selectedAttribute?.label !== selectedValue?.label ||
+      selectedLayer.layerSettings?.selectedStrokeAttribute?.label !== selectedStrokeValue?.label
     ) {
       let { currentLayer } = handleLayerChange()
       //// saving to stateApp
@@ -155,32 +140,6 @@ function LayerStyling() {
 
     return [...colorAttributes, ...metaDataOptions];
   }, [selectedLayer, metaDataRes]);
-
-  const attroptions = useMemo(() => {
-    let options = [];
-    if (!filtersData?.getESFilterList?.hits || !selectedValue?.label) return [];
-    const filterKeys = filtersData?.getESFilterList?.hits.map((hit) => hit.key).filter((key) => !['', ' '].includes(key));
-    options = filterKeys.map((key) => {
-      const isColorOveridden = selectedOption?.label && (selectedOption?.label === key);
-      const randomColor = attributeBasedColors?.[selectedValue.label]?.[key] || generateRandomColor()
-
-      return {
-        label: key,
-        color: isColorOveridden ? '#' + fillColor.hex : randomColor
-      }
-    });
-    const attrColors = {
-      [selectedValue.label]: options.reduce((acc, opt) => {
-        acc[opt.label] = opt.color;
-        return acc;
-      }, {})
-    };
-    setAttributeBasedColors((prevAttrBaseColor) => ({
-      ...prevAttrBaseColor,
-      [selectedValue.label]: attrColors[selectedValue.label]
-    }));
-    return options;
-  }, [filtersData, fillColor]);
 
   return (
     <ClickAwayListener onClickAway={handleApplyChanges}>
@@ -295,10 +254,11 @@ function LayerStyling() {
                   />
                   <AttrsValuesDropdown
                     selectedValue={selectedValue}
-                    attroptions={attroptions}
-                    setSelectedOption={setSelectedOption}
-                    setFillColor={setFillColor}
+                    selectedLayer={selectedLayer}
                     fillColor={fillColor}
+                    setFillColor={setFillColor}
+                    attributeBasedColors={attributeBasedColors}
+                    setAttributeBasedColors={setAttributeBasedColors}
                   />
                 </>
                 )}
@@ -333,10 +293,11 @@ function LayerStyling() {
                       />
                       <AttrsValuesDropdown
                         selectedValue={selectedStrokeValue}
-                        attroptions={attroptions}
-                        setSelectedOption={setSelectedOption}
-                        setFillColor={setStrokeColor}
+                        selectedLayer={selectedLayer}
                         fillColor={strokeColor}
+                        setFillColor={setStrokeColor}
+                        attributeBasedColors={attributeBasedStrokeColors}
+                        setAttributeBasedColors={setAttributeBasedStrokeColors}
                       />
                     </>
                   )}

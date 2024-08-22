@@ -107,6 +107,7 @@ export const useLayerStyle = (layer) => {
     const initialLayerEnableFill = !(layer.layerSettings?.interaction?.interactionDetail?.enablefillColor === false)
     const initialLayerEnableStroke = !(layer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor === false)
     const initialLayerAttributeBasedColors = layer.layerSettings?.attributeBasedColors || {};
+    const initialLayerAttributeBasedStrokeColors = layer.layerSettings?.attributeBasedStrokeColors || {};
     const initialLayerSelectedAttribute = layer.layerSettings?.selectedAttribute || null;
     const initialLayerSelectedStrokeAttribute = layer.layerSettings?.selectedStrokeAttribute || null;
     const initialFillColor =
@@ -140,6 +141,7 @@ export const useLayerStyle = (layer) => {
     const [selectedValue, setSelectedValue] = useState(initialLayerSelectedAttribute);
     const [selectedStrokeValue, setSelectedStrokeValue] = useState(initialLayerSelectedStrokeAttribute);
     const [attributeBasedColors, setAttributeBasedColors] = useState(initialLayerAttributeBasedColors);
+    const [attributeBasedStrokeColors, setAttributeBasedStrokeColors] = useState(initialLayerAttributeBasedStrokeColors);
 
     const [layerLabelVisibility, setLayerLabelVisibility] = useState(initialLayerLabelVisibility);
     const [layerClickability, setLayerClickability] = useState(initialLayerClickable);
@@ -166,7 +168,9 @@ export const useLayerStyle = (layer) => {
             layer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor ||
             layer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor !== enableStrokeColor ||
             !_.isEqual(layer.layerSettings?.attributeBasedColors, attributeBasedColors) ||
-            layer.layerSettings?.selectedAttribute?.label !== selectedValue?.label
+            !_.isEqual(layer.layerSettings?.attributeBasedStrokeColors, attributeBasedStrokeColors) ||
+            layer.layerSettings?.selectedAttribute?.label !== selectedValue?.label ||
+            layer.layerSettings?.selectedStrokeAttribute?.label !== selectedStrokeValue?.label
         ) {
             let currentLayer = { ...layer };
             let fColor;
@@ -191,8 +195,13 @@ export const useLayerStyle = (layer) => {
             // Setting enable Stroke Color
             layerSettings.interaction.interactionDetail.enableStrokeColor = enableStrokeColor;
 
+            //Setting Fill color attributes
             layerSettings.attributeBasedColors = attributeBasedColors
             layerSettings.selectedAttribute = selectedValue
+
+            //Setting Stroke color attributes
+            layerSettings.attributeBasedStrokeColors = attributeBasedStrokeColors
+            layerSettings.selectedStrokeAttribute = selectedStrokeValue
 
             if (currentLayer && currentLayer.layerPaintProps && currentLayer.layerPaintProps[0] && currentLayer.layerPaintProps[0].paintType) {
                 const layerPaintProps = copy(currentLayer.layerPaintProps);
@@ -443,6 +452,8 @@ export const useLayerStyle = (layer) => {
         setSelectedStrokeValue,
         attributeBasedColors,
         setAttributeBasedColors,
+        attributeBasedStrokeColors,
+        setAttributeBasedStrokeColors,
         layerLabelVisibility,
         setLayerLabelVisibility,
         layerClickability, setLayerClickability,
