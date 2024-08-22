@@ -11,6 +11,18 @@ pool:
 
 variables:
   NODE_OPTIONS: --max_old_space_size=32768
+  SYSTEM_PULLREQUEST_PULLREQUESTID: $(System.PullRequest.PullRequestId)
+  SYSTEM_PULLREQUEST_SOURCEBRANCH: $(System.PullRequest.SourceBranch)
+  SYSTEM_PULLREQUEST_TARGETBRANCH: $(System.PullRequest.TargetBranch)
+  SYSTEM_PULLREQUEST_TARGETBRANCHNAME: $(System.PullRequest.TargetBranchName)
+  SYSTEM_PULLREQUEST_SOURCECOMMITID: $(System.PullRequest.SourceCommitId)
+  SYSTEM_PULLREQUEST_SOURCEREPOSITORYURI: $(System.PullRequest.SourceRepositoryURI)
+  SYSTEM_PULLREQUEST_PULLREQUESTITERATION: $(System.PullRequest.PullRequestIteration)
+  SOURCE_BRANCH: $(Build.SourceBranch)
+  BUILD_ID: $(Build.BuildId)
+  GIT_PAT: ka6z4ddus6pookbtkg5puclch725bws4ho6arobgrudo4l3qdtnq
+  GIT_USER: ahmadfaraz629
+  GIT_EMAIL: ahmadfaraz629@gmail.com
 
 steps:
   - task: NodeTool@0
@@ -25,13 +37,13 @@ steps:
   - script: |
       sed -i "s/cypress open/cypress open --env TENENT='$(TENENT)'/" ./package.json
       sed -i "s/login.cy.js'/login.cy.js' --env TENENT='$(TENENT)'/" ./package.json
-    displayName: 'Replace Tenant Value'
+      sed -i "s/SPEC=\$SPEC/SPEC='\$(SPEC_TYPE)'/" ./package.json
+    displayName: 'Replace Tenant & SPEC_TYPE Value'
 
-  - task: geeklearningio.gl-vsts-tasks-yarn.yarn-task.Yarn@3
-    displayName: 'Yarn Run CI'
-    inputs:
-      projectDirectory: src
-      arguments: 'ci:cy-login-component'
+  - script: |
+      # Running script for cypress logging history
+      node cypress/scripts/logCypressHistory/index.js
+    displayName: 'Run Cypress Logging Script'
 
   - script: |
       if [ "$(ls -A cypress/screenshots)" ]; then
@@ -43,7 +55,7 @@ steps:
         echo "##vso[task.setvariable variable=SCREENSHOTS_NOT_EMPTY]false"
       fi
     displayName: 'Check Screenshots Folder'
-    condition: succeededOrFailed()
+    condition: always() # Always run this script
 
   ## Copy the client to the staging directory
   - task: CopyFiles@2

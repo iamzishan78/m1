@@ -10,7 +10,7 @@ describe('Map Unit Detail Component', () => {
       cy.viewport(1800, 1200).mount(
         <MapProvider
           match={{
-            params: { paramId: '65eeef41f1e14c0724bee441', type: 'units' },
+            params: { paramId: '667d6d179661ee87114c841c', type: 'units' },
           }}
         />
       );

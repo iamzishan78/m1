@@ -50,6 +50,7 @@
     "array-chunk-by-size": "^2.1.1",
     "array-move": "^4.0.0",
     "autosuggest-highlight": "^3.2.0",
+    "btoa": "^1.2.1",
     "chroma-js": "^2.1.2",
     "comma-number": "^2.1.0",
     "connected-react-router": "^6.9.1",
@@ -205,6 +206,6 @@
     "@fortawesome/fontawesome-free": "^5.15.3",
     "cross-env": "^7.0.3",
     "cypress": "^13.6.3",
-    "start-server-and-test": "^1.14.0"
+    "start-server-and-test": "^1.15.4"
   }
 }

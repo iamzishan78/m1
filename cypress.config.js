@@ -1,6 +1,9 @@
 const { defineConfig } = require("cypress");
+const axios = require('axios');
+const { RESTORE_SPEC_DATA } = require("./src/graphQL/useMutationCypress");
 
 let globalData = { agreementData: {}, relatedTractData: {} };
+
 module.exports = defineConfig({
   projectId: "hzhfd6",
   chromeWebSecurity: false,
@@ -35,10 +38,55 @@ module.exports = defineConfig({
   },
 
   component: {
+    setupNodeEvents(on, config) {
+      // Update the cypress log history after execution of each spec
+      on('after:spec', async (spec, executionData) => {
+        const { UpsertCypressLog } = require("./cypress/scripts/logCypressHistory/upsertCypressLog");
+        const { prData, dummyPR } = require("./cypress/scripts/logCypressHistory/utils/constants.js");
+
+        const testCases = executionData.tests.map((test) => ({
+          testcase: test.title[1],
+          reason: test.displayError || '',
+          isPassed: test.state === 'passed',
+          isExecuted: true
+        }));
+
+        const specs = [
+          {
+            spec: spec.relative,
+            testcases: testCases
+          }
+        ]
+        await UpsertCypressLog({ pr: dummyPR, specs: specs })
+      });
+
+      // Restore data beforing running each spec
+      on('before:spec', async (spec) => {
+        const ldata = require('./cypress/fixtures/ldata.json');
+        const { headers } = require('./cypress/cypressUtils/cypressHeaders.js');
+
+        const cypressRestorePayload = {
+          operationName: "restoreSpecData",
+          variables: { spec: spec.relative },
+          query: RESTORE_SPEC_DATA.loc.source.body,
+        };
+
+        let response = await axios({
+          method: 'post',
+          url: ldata.url,
+          data: JSON.stringify(cypressRestorePayload),
+          headers: headers,
+        })
+
+        if(response.data.data.restoreSpecData)
+        console.log(response.data.data.restoreSpecData.message)
+      });
+
+    },
     devServer: {
       framework: "create-react-app",
       bundler: "webpack",
     },
-    specPattern: 'cypress/component/**/*.cy*'
+    specPattern: 'cypress/component/**/*.cy*',
   },
 });

@@ -11,7 +11,7 @@ import { copy } from 'components/Shared/functions';
 import { headers } from '../../../cypressUtils/cypressHeaders';
 /* ---------------------------------- Data ---------------------------------- */
 let selectedShape = {
-  id: '65eeef41f1e14c0724bee441',
+  id: '667d6d179661ee87114c841c',
 };
 
 const getLayerPayload = {
@@ -46,37 +46,6 @@ Cypress.Commands.add('setMapData', ({ testId, value }) => {
   cy.get('body').click();
 
   cy.get(`[data-testid="data-cell-${testId}"]`).contains(value);
-});
-
-describe('Restore Unit for ShapeDetailCard.cy.jsx if Deleted', () => {
-  it(`Restores Unit ${selectedShape.id}`, () => {
-    const updateLayerPayload = {
-      operationName: 'updateCustomLayer',
-      variables: {
-        customLayerId: selectedShape.id,
-        customLayer: { IsDeleted: false },
-      },
-      query: UPDATECUSTOMLAYER.loc.source.body,
-    };
-
-    cy.request({
-      method: 'POST',
-      url: ldata.url,
-      headers: headers,
-      body: getLayerPayload,
-    }).then((response) => {
-      if (!response?.body?.data?.customLayer)
-        cy.request({
-          method: 'POST',
-          url: ldata.url,
-          headers: headers,
-          body: updateLayerPayload,
-        }).then((response) => {
-          expect(response.status).to.eq(200);
-        });
-      else expect(response.status).to.eq(200);
-    });
-  });
 });
 
 describe('ShapeDetailCard Component', () => {
