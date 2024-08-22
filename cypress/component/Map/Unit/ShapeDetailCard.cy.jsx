@@ -109,7 +109,7 @@ describe('ShapeDetailCard Component', () => {
     // Selecting a row in the table and updating NRA and target offer price
     cy.get('tbody > tr').contains('1', { timeout: 5000 }).click({ force: true });
     cy.get('[data-testid="nra-field"] input').clear().type(100);
-    cy.get('[data-testid="target-offer-price-field"] input').clear().type(100);
+    cy.get('[data-testid="offer_price-field"] input').clear().type(100);
 
     // Intercepting API call for updating shape owners and waiting for completion
     cy.interceptAndWait(['updateShapeOwners'], () => {
@@ -140,7 +140,7 @@ describe('ShapeDetailCard Component', () => {
     // Verifying that the overridden class is removed from target offer price and NRA fields
     cy.get('tbody > tr').contains('1').click({ force: true });
 
-    cy.get('[data-testid="target-offer-price-field"]').should('not.have.class', 'overridden');
+    cy.get('[data-testid="offer_price-field"]').should('not.have.class', 'overridden');
     cy.get('[data-testid="nra-field"]').should('not.have.class', 'overridden');
   });
 

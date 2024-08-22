@@ -9,7 +9,8 @@
   "dependencies": {
     "@amcharts/amcharts4": "^4.10.16",
     "@apollo/client": "^3.3.19",
-    "msal": "^1.4.18",
+    "@auth0/auth0-react": "^2.2.4",
+    "@azure/msal": "^1.4.5",
     "@azure/msal-browser": "^2.12.1",
     "@azure/storage-blob": "^12.8.0",
     "@craco/craco": "^6.4.3",
@@ -89,6 +90,7 @@
     "material-ui-icons": "^1.0.0-beta.36",
     "material-ui-popup-state": "^1.8.4",
     "moment": "^2.29.1",
+    "msal": "^1.4.18",
     "mui-datatables": "^3.7.7",
     "my-server": "^2.0.7",
     "npm": "^7.20.1",

@@ -53,9 +53,11 @@ describe('Map Unit Detail Component', () => {
   it('Well card opens from unit well table link', () => {
     cy.wait(15000);
     // Clicking on the Wells tab to view well details
-    cy.get(`[data-testid="shape-detail-tab-Wells"]`, {
-      timeout: basic_timeouts.midTimeout,
-    }).click({ force: true });
+    cy.interceptAndWait(['getESPaginatedList'], () => {
+      cy.get(`[data-testid="shape-detail-tab-Wells"]`, {
+        timeout: basic_timeouts.midTimeout,
+      }).click({ force: true });
+    });
 
     // Intercepting and waiting for the getTenantWell request, then clicking on the first well link in the table
     cy.interceptAndWait(['getTenantWell'], () => {
