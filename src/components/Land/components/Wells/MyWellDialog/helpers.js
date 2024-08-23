@@ -3,7 +3,7 @@
  */
 export const wellParams = [
   { type: "text", label: "API Number", key: "api" },
-  { type: "text", label: "Well Name", key: "wellName" },
+  { type: "text", label: "Well Name *", key: "wellName" },
   { type: "text", label: "Operator", key: "operator" },
   { type: "text", label: "Well Type", key: "wellType" },
   { type: "text", label: "Well Profile", key: "WellBoreProfile" },

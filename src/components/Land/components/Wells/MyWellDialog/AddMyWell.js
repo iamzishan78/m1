@@ -75,13 +75,21 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
   const classes = useStyles();
 
   const [foundWells, setFoundWells] = useState([]);
+  const [wellName, setWellName] = useState('');
+
   const [upsertMyWell, { loading: upsertWellLoading, data: myWellData }] = useMutation(UPSERT_MY_WELL, {
     onCompleted: () => {
       tableGlobalController.refetch();
     }
   });
 
-  const { control, reset } = useForm();
+  const { control, reset, watch  } = useForm();
+  const wellNameValue = watch('wellName'); // Use the watch hook to monitor the 'wellName' field in the form.
+
+  useEffect(() => {
+    setWellName(wellNameValue);
+}, [wellNameValue]);
+
   useEffect(() => {
     if (platformWell) reset(platformWell);
   }, [platformWell, reset]);
@@ -125,7 +133,14 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
     []
   );
 
+  // Function to check if saving is allowed based on the 'wellName' value
+  const isSaveAllowed = () => {
+       // Check if 'wellName' is defined and not just whitespace after trimming
+    return (wellName && wellName?.trim() !== '');
+  };
+
   const handleSave = (key, value) => {
+    if (!isSaveAllowed()) return   // Check if saving is allowed using the isSaveAllowed function.
     upsertMyWell({
       variables: {
         myWell: { ...platformWell, _id: platformWell.id, [key]: value },
@@ -267,7 +282,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
                     params.onChange(value);
                   }}
                   onBlur={(event) => {
-                    const value = event.target.value;
+                    const value = event.target.value.trim(); // Remove leading/trailing whitespace
                     handleSave(param.esKey ?? param.key, param.type === "date" ? new Date(value) : value);
                   }}
                   disabled={upsertWellLoading}

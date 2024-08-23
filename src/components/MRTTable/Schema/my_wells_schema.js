@@ -50,7 +50,7 @@ const MyWellsMeta = {
         >
           <ColumnWithLink
             value={row?.original?.wellData?.wellName}
-            link={`/land/well/details/${row?.original?.wellData?.Id}?mongoWellId=${row?.original?._id}`}
+            link={`/land/well/details/${row?.original?.wellData?.id}?mongoWellId=${row?.original?._id}`}
             onClickForTestCase={() => {
               globalStateController.handleMyWellTestCase(row?.original?.wellData?.Id, row?.original?._id)
               tableGlobalController.updateState({
