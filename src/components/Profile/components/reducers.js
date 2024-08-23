@@ -40,6 +40,8 @@ export const ProfileTabReducer = (state, action) => {
             return { ...state, job_title: action.value };
         case 'employer':
             return { ...state, employer: action.value };
+        case 'about':
+            return { ...state, about: action.value };
         case 'employerAddress':
             return { ...state, isSameFromAbove: false, employerAddress: action.value };
         case 'investingExperience':

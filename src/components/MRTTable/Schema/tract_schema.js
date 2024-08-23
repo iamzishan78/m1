@@ -4,8 +4,53 @@ import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
+import Loader from 'components/Loaders';
+import { globalStateController } from 'hookstate/globalStateController';
+import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
+import { tableGlobalController } from 'hookstate/tableController';
+import { copy } from "utils/helper";
 
 const esIndex = 'shapes_flat';
+
+
+const onCustomKeyChange = async (client, row, value, item) => {
+	const loaderId = `upadting-${row?._id}`;
+
+	try {
+		Loader.createToast(loaderId, 'Updation in Progress');
+		const user = globalStateController.getValue('user')
+
+		const customData = copy(row?.shapeJson?.properties?.custom_data) ?? {};
+		const filteredCustomData = _.pickBy(customData, (value) => value !== "" && !_.isEmpty(value));
+
+		const shapeJson = {
+			...row?.shapeJson,
+			properties: {
+				...row?.shapeJson?.properties,
+				custom_data: {
+					...filteredCustomData,
+					[item.name]: value,
+				}
+			},
+		}
+
+		await client.mutate({
+			variables: {
+				customLayerId: row?._id,
+				userId: user?._id,
+				customLayer: {
+					shape: JSON.stringify(shapeJson),
+					shapeJson,
+				},
+			},
+			mutation: UPDATECUSTOMLAYER,
+		});
+		Loader.successToast(loaderId, 'Updation Complete');
+		tableGlobalController.refetch();
+	} catch (err) {
+		Loader.errorToast(loaderId, 'Updation in Complete');
+	}
+};
 
 const TractMeta = {
 	esIndex,
@@ -19,6 +64,7 @@ const TractMeta = {
 	maxTableHeight: 'calc(100vh - 550px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
+	onCustomKeyChange,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,

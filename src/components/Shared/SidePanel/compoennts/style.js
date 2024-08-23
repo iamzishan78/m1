@@ -26,18 +26,29 @@ export const theme = createTheme({
 
 export const useStyles = makeStyles((theme) => ({
   pulloutBox: {
-    height: "80px",
-    color: "white",
-    width: "20px",
+    height: "27px",
+    color: "black",
+    width: "27px",
     marginTop: "103px",
-    background: "#141d32",
+    marginLeft:"10px",
+    background: "#6a7485",
     cursor: "pointer",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     "& svg": {
-      transform: "scaleX(0.5)",
+      height:"13px",
+      stroke:"black",
+      strokeWidth:"3",
+      width:"100px",
+      display:"flex",
+      alignItems:"center",
+      justifyContent:"center",
+      marginLeft:"5px",
     },
+    "& .svgouter":{
+      marginLeft:"0 !important",
+    }
   },
   subHeaderItem: {
     backgroundColor: "#0e111a !important",

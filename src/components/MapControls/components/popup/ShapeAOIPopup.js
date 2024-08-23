@@ -1,15 +1,11 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 
 import { useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 
-import { AppContext } from "AppContext";
-import { addCustomShapeProperties, drawBoundary } from "../../components/DrawShapes/drawShapesHelpers";
-import { spatialDataAttributes } from "../DrawShapes/constants";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
-import { jobController } from "hookstate/jobStateController";
-import { copy } from "components/Shared/functions";
+import { drawController } from "hookstate/drawStateController";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,128 +48,16 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ShapeAOIPopup(props) {
   const classes = useStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const { shapeLabel } = stateApp.currentFeature.properties;
+
+  const drawState = drawController.useState(['currentFeature', 'selectedAoi']);
+
   const [showError, setShowError] = useState(false);
-  const { upsertCustomLayer, user, toggleSpatialDataCard } = props;
+  const { upsertCustomLayer } = props;
 
   //mutations
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
 
-  const updateSourceAndAoiLayer = (currentFeature) => {
-    const { map, draw } = stateApp;
-    stateApp.map?.getSource("aoi_label_source").setData({
-      type: "FeatureCollection",
-      features: [currentFeature],
-    });
-
-    // Add a symbol layer
-    map.addLayer({
-      id: "aoi_label_layer",
-      type: "symbol",
-      source: "aoi_label_source",
-      layout: {
-        "text-field": ["get", "shapeLabel"],
-        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-        "text-size": 40,
-        "text-anchor": "center",
-        "text-justify": "center",
-      },
-    });
-
-    setStateApp((state) => ({
-      ...state,
-      currentFeature,
-    }));
-    const drewShapeOnMap = draw.get(currentFeature.id);
-    if (drewShapeOnMap) {
-      draw.setFeatureProperty(currentFeature.id, "shapeLabel", currentFeature.properties.shapeLabel);
-    }
-  };
-
-  const handleSaveSpatialDataToShape = (dataName, dataType = "interest") => {
-    if (!dataName) {
-      setShowError(true);
-    } else {
-      const spatialData = {
-        sdType: dataType,
-        shapeLabel: dataName,
-        projectName: "",
-        sdGrossAcres: "",
-      };
-      spatialDataAttributes.forEach((attribute) => {
-        stateApp.draw.setFeatureProperty(stateApp.currentFeature.id, attribute, spatialData[attribute]);
-        if (spatialData[attribute] != null || typeof spatialData[attribute] !== "undefined") {
-          stateApp.currentFeature.properties[attribute] = spatialData[attribute];
-        }
-      });
-      stateApp.currentFeature.properties.id = stateApp.currentFeature.id;
-      drawBoundary(stateApp.map, stateApp.currentFeature)
-      if (user._id !== "") {
-        const customLayerData = {
-          shapeJson: stateApp.currentFeature,
-          shape: JSON.stringify(stateApp.currentFeature),
-          layer: dataType,
-          name: spatialData.shapeLabel,
-          user: user._id,
-        };
-
-        upsertCustomLayer({
-          variables: { customLayer: customLayerData },
-          refetchQueries: ["getCustomLayers"],
-          // awaitRefetchQueries: true,
-        });
-
-        updateSourceAndAoiLayer(stateApp.currentFeature);
-      }
-      toggleSpatialDataCard(false);
-    }
-  };
-
-  const handleEditSpatialDataToShape = (dataName, dataType = "interest") => {
-    // save data onto geoJSON properties fields
-    const spatialData = {
-      sdType: dataType,
-      shapeLabel: dataName,
-      projectName: "",
-      sdGrossAcres: "",
-      // sdNotes: dataNotes
-    };
-    const currentFeature = copy(stateApp.currentFeature);
-
-    addCustomShapeProperties(currentFeature, stateApp.draw);
-    spatialDataAttributes.forEach((attribute) => {
-      if (spatialData[attribute] != null || typeof spatialData[attribute] !== "undefined") {
-        currentFeature.properties[attribute] = spatialData[attribute];
-      }
-    });
-
-    // //////cleaning the selected title opinion and redirecting to title opinion page//
-    if (stateApp.user.mongoId !== "") {
-      const customLayerId = stateApp.selectedAoi.id;
-
-      const customLayerData = {
-        shapeJson: currentFeature,
-        shape: JSON.stringify(currentFeature),
-        layer: dataType,
-        name: spatialData.shapeLabel,
-        user: stateApp.user.mongoId,
-      };
-      updateCustomLayer({
-        variables: {
-          customLayerId: customLayerId,
-          customLayer: customLayerData,
-        },
-        refetchQueries: ["getCustomLayers"],
-        awaitRefetchQueries: true,
-      }).then(() => {
-        jobController.toggleBulkUpload()
-      });
-
-      updateSourceAndAoiLayer(currentFeature);
-    }
-    toggleSpatialDataCard(false);
-  };
+  const { shapeLabel } = drawState.stateValues.currentFeature?.properties || {};
 
   return (
     <div className={`${classes.root}`}>
@@ -191,11 +75,17 @@ export default function ShapeAOIPopup(props) {
           onKeyDown={(e) => {
             if (e.keyCode === 13) {
               e.preventDefault();
-              if (!stateApp.selectedAoi) {
-                handleSaveSpatialDataToShape(e.target.value);
-              } else {
-                handleEditSpatialDataToShape(e.target.value);
+
+              if (!drawState.stateValues.selectedAoi) {
+                if (!e.target.value) {
+                  setShowError(true);
+                  return;
+                }
+                drawController.handleSaveAOIToShape({ dataName: e.target.value, upsertCustomLayer });
+
+                return;
               }
+              drawController.handleSaveAOIToShape({ dataName: e.target.value, updateCustomLayer });
             }
           }}
         />

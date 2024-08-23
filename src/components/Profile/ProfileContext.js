@@ -32,6 +32,7 @@ const ProfileContextProvider = (props) => {
       emailNotifications: "",
       employer: "",
       employerAddress: "",
+      about:"",
       isSameFromAbove: false,
       investingEntities: [],
       investingPreferences: [],

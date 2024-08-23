@@ -138,6 +138,10 @@ export const getBasicInfoContent = (contactData) => {
       data: { county: contactData?.county },
       linkType: LinkTypes.None,
     },
+    "Account": {
+      data: { account: contactData?.account },
+      linkType: LinkTypes.None,
+    },
     "Primary Address": {
       data: {
         address1: contactData?.address1,
@@ -169,14 +173,15 @@ export const getBasicInfoContent = (contactData) => {
       data: { mobilePhone: contactData?.mobilePhone },
       linkType: LinkTypes.None,
     },
-    "Mobile Phone 2": {  // 3
-      data: { mobilephone2: contactData?.mobilephone2 },
-      linkType: LinkTypes.None,
-    },
-    "Primary Work Phone": { // 4
+    "Primary Work Phone": { // 3
       data: { AltPhone: contactData?.AltPhone },
       linkType: LinkTypes.None,
     },
+    "Mobile Phone 2": {  // 4
+      data: { mobilephone2: contactData?.mobilephone2 },
+      linkType: LinkTypes.None,
+    },
+
 
 
   };
@@ -241,6 +246,14 @@ export const getBasicInfoExpContent = (contactData) => {
     },
     "Email 3": {
       data: { email3: contactData?.email3 },
+      linkType: LinkTypes.None,
+    },
+    "Department": {
+      data: { department: contactData?.department },
+      linkType: LinkTypes.None,
+    },
+    "Title": {
+      data: { title: contactData?.title },
       linkType: LinkTypes.None,
     },
 

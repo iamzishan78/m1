@@ -8,13 +8,11 @@ import { UPDATELAYER } from "../../../graphQL/useMutationUpdateLayer";
 import { AppContext } from "../../../AppContext";
 import { useDispatch } from "react-redux";
 import { setMainMapState, showErrorMessage, showSuccessMessage } from "actions";
-import { MapControlsContext } from "../MapControlsContext";
 import { UPDATE_MANY_LAYER } from "graphQL/useMutationUpdateManyLayer";
 
 export default function DeleteConfirmationDialog(props) {
   const dispatch = useDispatch();
   const [, setStateApp] = useContext(AppContext);
-  const [, setStateMapControls] = useContext(MapControlsContext);
   const [updateLayer, { data: layerDeleted }] = useMutation(UPDATELAYER);
   const [updateManyLayer, { data: layersDeleted }] = useMutation(UPDATE_MANY_LAYER);
 
@@ -60,10 +58,6 @@ export default function DeleteConfirmationDialog(props) {
 
   const handleAccept = () => {
     setStateApp((state) => ({ ...state, universalCircularLoaderAct: true }));
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      // selectedControl: 'layer'
-    }));
 
     if (props.layer.type === "group") {
       updateManyLayer({

@@ -1,13 +1,12 @@
-import React, { useMemo, useContext } from "react";
+import React, { useMemo } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { get } from "lodash";
 
-import { MapControlsContext } from "components/MapControls/MapControlsContext";
 import SourceLayerManager from "components/MapControls/components/SourceLayerManager";
 import LayerStyling from "components/MapControls/components/Layer/LayerStyling";
 import NewLayerManager from "components/MapControls/components/Layer/NewLayerManager";
-import { AppContext } from "AppContext";
 import TransferDataManager from "components/MapControls/components/TransferDataManager";
+import { mapControlsController } from "hookstate/mapControlsController";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -23,8 +22,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Secondarypanel = () => {
-  const [stateMapControls] = useContext(MapControlsContext);
-  const [stateApp] = useContext(AppContext);
+  const { mapControlsStateValues } = mapControlsController.useState(
+    [
+      'manageLayer',
+      'manageSourceLayer',
+      'manageTransferData',
+      'selectedLayer',
+      'selectedLayerControl',
+    ],
+    'mapControlsStateValues'
+  );
 
   const leftPixels = useMemo(() => {
     return get(document.getElementById("layer-side-panel"), "style.minWidth", "0px");
@@ -34,10 +41,10 @@ const Secondarypanel = () => {
   const classes = useStyles({ leftPixels });
   return (
     <div className={classes.root}>
-      {stateMapControls.manageLayer && <NewLayerManager />}
-      {stateMapControls.manageSourceLayer && <SourceLayerManager />}
-      {stateMapControls.manageTransferData && <TransferDataManager />}
-      {stateMapControls.selectedLayer && <LayerStyling layer={stateApp.selectedLayer} fileName={stateApp.selectedLayer.fileName} />}
+      {mapControlsStateValues.manageLayer && <NewLayerManager />}
+      {mapControlsStateValues.manageSourceLayer && <SourceLayerManager />}
+      {mapControlsStateValues.manageTransferData && <TransferDataManager />}
+      {mapControlsStateValues.selectedLayerControl && <LayerStyling />}
     </div>
   );
 };

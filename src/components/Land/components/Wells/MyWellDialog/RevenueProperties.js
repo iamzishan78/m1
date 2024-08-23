@@ -31,16 +31,32 @@ import { useMutation } from "@apollo/client";
 // Mutations
 import { UPSERT_WELL_DESCRIPTOR } from "graphQL/useMutationWellDescriptor";
 
+
+const propertyInterestParams = [
+  {
+    type: "text", label: "Well NRI", key: "interestAmount", valueFormatter: (value, key) => {
+      return value && value.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0][key]) : "";
+    }
+  },
+  {
+    type: "text", label: "Interest Type", key: "interestType", valueFormatter: (value, key) => {
+      return value && value.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0][key]) : "";
+    }
+  },
+  {
+    type: "text", label: "Cost Free", key: "costFree", valueFormatter: (value, key) => {
+      return value && value.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0][key]) : "";
+    }
+  },
+]
+
 const propertyParams = [
-  { type: "text", label: "Well NRI", key: "interestAmount" },
-  { type: "text", label: "Interest Type", key: "interestType" },
   {
     type: "text",
     label: "Pay Status",
     key: "status",
     valueFormatter: (value) => statusData.find((sd) => sd.value === value)?.label ?? value,
   },
-  { type: "text", label: "Cost Free", key: "costFree" },
   { type: "text", label: "Div Order Status", key: "divOrderStatus" },
   { type: "text", label: "Internal Company", key: "internalCompany" },
   { type: "text", label: "Acquisition ID", key: "acquisitionID" },
@@ -139,7 +155,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ReveueProperties = ({ platformWell, properties }) => {
+const ReveueProperties = ({ platformWell, properties, propertyDescriptor }) => {
   // Initials
   let history = useHistory();
   const classes = useStyles();
@@ -204,7 +220,7 @@ const ReveueProperties = ({ platformWell, properties }) => {
                       setSearchState(false);
                     }, 300)
                   }
-                  onChange={(evt) => {}}
+                  onChange={(evt) => { }}
                 />
               </div>
             </Grid>
@@ -256,6 +272,18 @@ const ReveueProperties = ({ platformWell, properties }) => {
                 </AccordionSummary>
                 <AccordionDetails>
                   <div>
+                    {propertyInterestParams.map((param, index) => (
+                      <React.Fragment key={index}>
+                        <TextField
+                          margin="dense"
+                          label={param.label}
+                          value={param.valueFormatter(propertyDescriptor, param.key)}
+                          fullWidth
+                          defaultValue=""
+                          disabled
+                        />
+                      </React.Fragment>
+                    ))}
                     {propertyParams.map((param, index) => (
                       <React.Fragment key={index}>
                         <TextField

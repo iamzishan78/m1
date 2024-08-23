@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Grid, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -67,6 +67,7 @@ export default function Portfolio({
   setAllDateToNull = true
 }) {
   const classes = useStyles();
+  const [value, setValue] = useState(defaultRange ? defaultRange : CUSTOM_DATES.ALL_DATES)
   useEffect(() => {
     handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
 
@@ -110,12 +111,11 @@ export default function Portfolio({
       <Grid item xs md={datesInputWidth} style={{ marginTop: "2px", maxWidth: "30%" }}>
         <Autocomplete
           size="small"
+          value={value}
           onChange={(event, newValue) => {
-            if (newValue === null) {
-              handleDateTypeChange("This Month");
-            } else {
-              handleDateTypeChange(newValue);
-            }
+            const newVal = newValue ? newValue : defaultRange ? defaultRange : CUSTOM_DATES.ALL_DATES
+            handleDateTypeChange(newVal);
+            setValue(newVal)
           }}
           options={Object.values(CUSTOM_DATES).filter((value) => {
             if (!isProperties && value === "All Dates") return false;

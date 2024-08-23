@@ -9,6 +9,7 @@ import Skeleton from "@material-ui/lab/Skeleton";
 import React, { useContext } from "react";
 import { AppContext } from "../../AppContext";
 import { ProfileContext } from "./ProfileContext";
+import ProfileActions from "./ProfileActions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,6 +52,19 @@ const useStyles = makeStyles((theme) => ({
       borderRadius: 4,
       borderColor: "#ced4da",
     },
+    '&:disabled': {
+      backgroundColor: '#f9f8f8',
+    }
+  },
+  disabledLabel: {
+    color: 'rgba(0, 0, 0, 0.87) !important', // Custom color for disabled label
+  },
+  fullWidth: {
+    width: '100% !Important',
+  },
+  aboutMeInput: {
+    width: '100%',
+    marginRight: '0px'
   },
   button: {
     textTransform: "none",
@@ -77,7 +91,7 @@ const ProfileContent = () => {
   const [stateProfile, setStateProfile] = useContext(ProfileContext);
   const [app] = useContext(AppContext);
   const {
-    fields: { fullname, displayName, jobTitle, phone, profileImage }
+    fields: { email,  about, fullname, displayName, jobTitle, phone, profileImage }
   } = stateProfile;
   const onChange = ({ name, value }) => {
     let disectFullname = {};
@@ -170,13 +184,14 @@ const ProfileContent = () => {
             InputProps={{
               disableUnderline: true,
               classes: { input: classes.input },
+              inputProps: { maxLength: 50 }, // Limit the length to 50 characters
             }}
             FormHelperTextProps={{
               classes: { root: classes.helperText },
             }}
             label={"Display Name"}
             placeholder={"Display Name"}
-           // helperText={"This could be your nickname or first name"}
+            helperText={displayName?.length >= 50 && "Maximum length of 50 characters has reached"} // Helper text to display 
             name="displayName"
             value={displayName}
             onChange={({ target }) => onChange(target)}
@@ -212,17 +227,39 @@ const ProfileContent = () => {
               disableUnderline: true,
               error: true,
               classes: { input: classes.input },
+              inputProps: { maxLength: 20 }, // Limit the length to 20 characters
             }}
             FormHelperTextProps={{
               classes: { root: classes.helperText },
             }}
             label={"Phone number"}
             placeholder={formatPhone("555-555-5555")}
-            //helperText={"Enter your phone number"}
+            helperText={phone?.length >= 20 && "Maximum length of 20 characters has reached"} // Helper text to display 
             name="phone"
             value={formatPhone(phone)}
             onChange={({ target }) => onChange(target)}
           />
+          <Box pb={2.5} />
+          <TextField
+            InputLabelProps={{
+              classes: { 
+                root: classes.label, 
+                focused: classes.focused, 
+                disabled: classes.disabledLabel, // Apply custom styles for disabled label
+              },
+              shrink: true,
+            }}
+            InputProps={{
+              disableUnderline: true,
+              error: true,
+              classes: { input: classes.input },
+            }}
+            label={"Email"}
+            name="email"
+            value={email}
+            disabled={true}
+          />
+          
         </Grid>
         <Grid item sm={5}>
           {profileImage?.length > 0 ? (
@@ -260,7 +297,32 @@ const ProfileContent = () => {
               </Typography>
             </Box>
           )}
-
+          <ProfileActions />
+        </Grid>
+        <Grid sm={12}>
+        <Box pb={2.5} />
+          <TextField
+            InputLabelProps={{
+              classes: { 
+                root: classes.label, 
+                focused: classes.focused, 
+              },
+              shrink: true,
+            }}
+            InputProps={{
+              disableUnderline: true,
+              error: true,
+              classes: { input: classes.input +' '+ classes.aboutMeInput },
+            }}
+            label={"About me"}
+            name="about"
+            value={about}
+            multiline
+            fullWidth
+            className={classes.fullWidth} // Apply custom full width class
+            rows={2} // Sets the number of visible rows
+            onChange={({ target }) => onChange(target)}
+          />
         </Grid>
         {/* <Grid item sm={12} style={{paddingTop: 10, color: '#1daee1'}}>
           <Link to="/myaccount">

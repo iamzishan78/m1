@@ -1,3 +1,4 @@
+import { drawBoundary, drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 import React, { useState, createContext } from 'react'
 const ExpandableCardContext = createContext([{}, () => { }])
 
@@ -7,6 +8,8 @@ const ExpandableCardContextProvider = React.memo((props) => {
   })
   const handleCloseExpandableCard = () => {
     props.handleCloseExpandableCard();
+    drawBoundary();
+    drawWellBoundary();
   }
 
   return (

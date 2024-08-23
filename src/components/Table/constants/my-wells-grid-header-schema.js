@@ -33,13 +33,7 @@ const wellsColumnHeaders = [
       customRender: (value, tableMeta) => {
         const globalWellId = tableMeta.rowData[0];
         const onClick = () => {
-          if (globalStateController.getValue('cypress'))
-            globalStateController.updateState({
-              testCase: {
-                name: "MyWellsNameUpdate",
-                globalWellId
-              }
-            });
+          globalStateController.handleMyWellTestCase(globalWellId)
         }
         return <ColumnWithLink value={value} link={`/land/well/details/${globalWellId}`} onClickForTestCase={onClick} />;
       },
@@ -61,7 +55,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
+      customRender: (value) => <p>{value?.length ? value?.[0] : "--"}</p>,
     },
   },
   {
@@ -71,7 +65,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
+      customRender: (value) => <p>{value?.length ? value?.[0] : "--"}</p>,
     },
   },
   {
@@ -287,7 +281,7 @@ const wellsColumnHeaders = [
       sort: true,
       filter: true,
       customRender: (values) => (
-        <p>{values?.length ? values.map((value) => statusData.find((sd) => sd.value === value)?.label).join(", ") : "--"}</p>
+        <p>{values?.length ? values.map((value) => statusData.find((sd) => sd.value === value)?.label)?.[0] : "--"}</p>
       ),
     },
   },
@@ -298,46 +292,55 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
+      customRender: (value) => <p>{value?.length ? value?.[0] : "--"}</p>,
     },
   },
   {
     name: "interestType",
     label: "Interest Type",
-    esKey: "properties.interestType.keyword",
+    esKey: "propertyDescriptor.interestType.keyword",
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
+      customRender: (value) => {
+        return <p>{value && value?.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0]) : ""}</p>;
+      },
     },
   },
   {
     name: "interestAmount",
     label: "Interest Amount",
-    esKey: "properties.interestAmount.keyword",
+    esKey: "propertyDescriptor.interestAmount.keyword",
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
+      customRender: (value) => {
+        return <p>{value && value?.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0]) : ""}</p>;
+      },
     },
   },
   {
     name: "effectiveDate",
     label: "Effective Date",
-    esKey: "properties.effectiveDate",
+    esKey: "propertyDescriptor.effectiveDate",
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
+      customRender: (value) => {
+        return <p>{value && value?.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0]) : ""}</p>;
+      },
     },
   },
   {
     name: "costFree",
     label: "Cost Free",
-    esKey: "properties.costFree.keyword",
+    esKey: "propertyDescriptor.costFree.keyword",
     options: {
       sort: true,
       filter: true,
+      customRender: (value) => {
+        return <p>{value && value?.length > 0 ? (value.length > 1 ? "MULTIPLE" : value[0]) : ""}</p>;
+      },
     },
   },
   {
@@ -347,7 +350,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
+      customRender: (value) => <p>{value?.length ? value?.[0] : "--"}</p>,
     },
   },
   {
@@ -357,7 +360,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
+      customRender: (value) => <p>{value?.length ? value?.[0] : "--"}</p>,
     },
   },
   {
@@ -367,7 +370,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
+      customRender: (value) => <p>{value?.length ? value?.[0] : "--"}</p>,
     },
   },
 

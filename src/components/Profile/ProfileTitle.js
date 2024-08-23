@@ -3,10 +3,7 @@ import IconButton from "@material-ui/core/IconButton";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
-import React, { useContext } from "react";
-import { useHistory } from "react-router-dom";
-import { NavigationContext } from "../Navigation/NavigationContext";
-
+import React from "react";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,21 +18,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ProfileTitle = (props) => {
+const ProfileTitle = ({ handleClose }) => {
   const classes = useStyles();
-  const [stateNav, setStateNav] = useContext(NavigationContext);
-
-  const handleClose = () => {
-    setStateNav({ ...stateNav, isProfileOpen: false });
-  };
-
   return (
     <MuiDialogTitle disableTypography className={classes.root}>
       <Typography variant="h5">My Account Settings</Typography>
       <IconButton
         aria-label="close"
         className={classes.closeButton}
-        onClick={(e) => handleClose(e)}
+        onClick={handleClose}
       >
         <CloseIcon />
       </IconButton>

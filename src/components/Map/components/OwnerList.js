@@ -4,7 +4,6 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import { AppContext } from "../../../AppContext";
-import { NavigationContext } from "../../Navigation/NavigationContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -58,12 +57,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function OwnerList() {
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [stateApp, setStateApp] = useContext(MapContext);
+  const [stateApp] = useContext(AppContext);
   const classes = useStyles();
 
-  const handleClick = (owner) => {};
+  const handleClick = (owner) => { };
 
   return (
     <div className={classes.root}>

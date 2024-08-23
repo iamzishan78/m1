@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import Select, { defaultTheme, components } from "react-select";
 import { Waypoint } from "react-waypoint";
 import { useInView } from "react-intersection-observer";
@@ -8,8 +8,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Checkbox from "@material-ui/core/Checkbox";
 import { copy } from "components/Shared/functions";
 import EditIcon from "@material-ui/icons/Edit";
-import { AppContext } from "AppContext";
-import { tableController } from "hookstate/tableController";
+import { globalStateController } from "hookstate/globalStateController";
 
 const useStyles = makeStyles((theme) => ({
   myClass: {
@@ -35,8 +34,7 @@ const SelectField = ({
   const [dropDownValues, setDropDownValues] = useState([]);
   const [displayedOptions, setDisplayedOptions] = useState(100);
   const [options, setOptions] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const Controller = tableController(tableKey);
+  const [isOpen, setIsOpen] = useState(true);
 
   const defaultValue = {
     label: "--",
@@ -111,7 +109,7 @@ const SelectField = ({
                 spacing={0}
                 onClick={() => {
                   setIsOpen(false);
-                  Controller.updateState({
+                  globalStateController.updateState({
                     showFieldModal: true,
                   });
                   window.setStateApp((stateApp) => ({
@@ -256,9 +254,9 @@ const SelectField = ({
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Escape" && isOpen) {
+    if (e.key === "Escape") {
+      onSearchChange('')
       e.stopPropagation();
-      setIsOpen(!isOpen);
     }
   };
 
@@ -357,7 +355,7 @@ const SelectField = ({
       hideSelectedOptions={false}
       isClearable={false}
       id="searchForValue"
-      menuIsOpen
+      menuIsOpen={isOpen}
       onKeyDown={handleKeyDown}
       onChange={(e) => onSelectChange(e)}
       options={options

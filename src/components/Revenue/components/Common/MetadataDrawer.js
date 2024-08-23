@@ -302,7 +302,7 @@ export default function MetadataDrawer(props) {
                             {...params}
                             id="status-simple-select-outlined-label"
                             variant="outlined"
-                            value={data.approvalStatus ? data.approvalStatus : data.status ? data.status : ""}
+                            value={data?.approvalStatus ? data.approvalStatus : data?.status ? data.status : ""}
                             fullWidth
                             onChange={(e) => {
                               props.onUpdate({ approvalStatus: e.target.value });
@@ -422,8 +422,8 @@ export default function MetadataDrawer(props) {
           />
         </div>
         <div style={{
-            flex: '1 1 auto',
-            overflow: 'hidden'
+          flex: '1 1 auto',
+          overflow: 'hidden'
         }}>
           <CommentComponent
             targetLabel={targetLabel}

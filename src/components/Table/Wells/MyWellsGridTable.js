@@ -82,6 +82,7 @@ function MyWellsGridTable(props) {
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
       const properties = get(hit, "properties", []);
+      const properttInterest = get(hit, "propertyDescriptor", []);
       const propertiesKeys = {
         internalID: [],
         propertiesNames: [],
@@ -90,11 +91,14 @@ function MyWellsGridTable(props) {
         acquisitionID: [],
         internalCompany: [],
         divOrderStatus: [],
+      };
+
+      const propertyInterestKeys = {
         costFree: [],
         effectiveDate: [],
         interestAmount: [],
         interestType: [],
-      };
+      }
       properties.forEach((property) => {
         // pushing all the property keys to main object
         Object.keys(propertiesKeys).forEach((key) => {
@@ -103,10 +107,19 @@ function MyWellsGridTable(props) {
           propertiesKeys[key].push(_value);
         });
       });
+
+      properttInterest.forEach((propertyInterest) => {
+        Object.keys(propertyInterestKeys).forEach((key) => {
+          const _value = key.includes("Date") ? convert_date(propertyInterest[key]) : propertyInterest[key];
+          propertyInterestKeys[key].push(_value);
+        });
+      });
+
       hit = {
         ...hit,
         ...hit.wellData,
         ...propertiesKeys,
+        ...propertyInterestKeys,
         _id: hit._id,
         sort: hit.sort,
         permitApprovedDate: hit.wellData.permitApprovedDate ? convert_date(hit.wellData.permitApprovedDate) : null,

@@ -9,6 +9,7 @@ import WaterDropIcon from "./components/svgIcons/WaterDropIcon";
 import QuestionIcon from "@material-ui/icons/Help";
 import XIcon from "@material-ui/icons/HighlightOff";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
+import { popupController } from "hookstate/popupStateController";
 
 const useStyles = makeStyles((theme) => ({
   iconContainer: {
@@ -24,6 +25,8 @@ const useStyles = makeStyles((theme) => ({
 export default function WellApiCard() {
   let classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
+  const { popupStateValues } = popupController.useState(['expandedCard', 'selectedPermit'], 'popupStateValues');
+
   const WellApiIcon = () => {
     return <LocationOnIcon fontSize="large" />;
   };
@@ -43,8 +46,8 @@ export default function WellApiCard() {
         //className={classes.text2}
         variant="caption"
       >
-        {stateApp.selectedWell.api
-          ? stateApp.selectedWell.api.toUpperCase()
+        {popupStateValues.selectedWell
+          ? popupStateValues.selectedWell.api.toUpperCase()
           : "--"}
       </Typography>
     </div>

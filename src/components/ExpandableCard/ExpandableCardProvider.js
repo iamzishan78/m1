@@ -2,6 +2,7 @@ import React from "react";
 import { ExpandableCardContextProvider } from "./ExpandableCardContext";
 
 import ExpandableCard from "./ExpandableCard";
+
 function ExpandableCardProvider(props) {
   return (
     <ExpandableCardContextProvider handleCloseExpandableCard={props.handleCloseExpandableCard}>

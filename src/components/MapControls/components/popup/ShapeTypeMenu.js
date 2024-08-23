@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from "react";
+import React, { useState } from "react";
 import { FormControl, InputLabel, ListItem, ListItemText, Menu, MenuItem, Select } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/styles";
@@ -70,116 +70,114 @@ const ShapeTypeMenu = ({ shapeAnchorEl, setShapeAnchorEl, saveAndOpenShapeDetail
   const shapeActionClasses = useStyles();
 
   return (
-    <Fragment>
-      <Menu
-        id="simple-menu"
-        elevation={0}
-        getContentAnchorEl={null}
-        anchorEl={shapeAnchorEl}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
+    <Menu
+      id="simple-menu"
+      elevation={0}
+      getContentAnchorEl={null}
+      anchorEl={shapeAnchorEl}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      PaperProps={{
+        style: {
+          marginLeft: '173px',
+          minWidth: '334px'
+        },
+      }}
+      open={Boolean(shapeAnchorEl)}
+      onClose={() => setShapeAnchorEl(null)}
+      className={classes.parcelPopover}
+    >
+      <ListItem
+        style={{
+          flexDirection: "column",
+          justifyContent: "start",
+          alignItems: "start",
         }}
-        PaperProps={{
-          style: {
-            marginLeft: '173px',
-            minWidth: '334px'
-          },
-        }}
-        open={Boolean(shapeAnchorEl)}
-        onClose={() => setShapeAnchorEl(null)}
-        className={classes.parcelPopover}
       >
-        <ListItem
-          style={{
-            flexDirection: "column",
-            justifyContent: "start",
-            alignItems: "start",
-          }}
-        >
-          <ListItemText>
-            <h4
-              onClick={() => {
-                setSelectedType("new");
-              }}
-              className={selectedType === "new" ? shapeActionClasses.selectedType : shapeActionClasses.unSelectedType}
-            >
-              New {OPTIONS[type].label}
-            </h4>
-            <h4
-              onClick={() => {
-                setSelectedType("existing");
-              }}
-              className={selectedType === "existing" ? shapeActionClasses.selectedType : shapeActionClasses.unSelectedType}
-              style={{ marginLeft: "20px" }}
-            >
-              Existing {OPTIONS[type].label}
-            </h4>
-          </ListItemText>
-        </ListItem>
-        {
-          selectedType === "new" && <>
-            <FormControl variant="outlined" fullWidth className={shapeActionClasses.inputField} size="small">
-              <InputLabel id={`${type}-outlined-label`}>
-                {OPTIONS[type].label} Type
-              </InputLabel>
-              <Select
-                labelId={`${type}-outlined-label`}
-                defaultValue={'lease'}
-                id={`${type}-outlined`}
-                value={selectedShapeType}
-                fullWidth
-                onChange={(e) => { setSelectedShapeType(e.target.value) }}
-                label={`${OPTIONS[type].label} Type`}
-              >
-                {OPTIONS[type].types.map(({ value, label }) => (
-                  <MenuItem value={value}>{label}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </>
-        }
-        {
-          selectedType === 'existing' && <div
-            onKeyDown={e => {
-              if (e.key === 'n' || e.key === 'N')
-                e.stopPropagation()
-            }}>
-            <FormControl variant="outlined" fullWidth className={shapeActionClasses.inputField} size="small">
-              <AutoCompleteESShapeLayer label={`${OPTIONS[type].label} Search`} filters={[{ "field": OPTIONS[type].layerKey, "value": OPTIONS[type].layerType }]} setSelectedShapeLayer={setSelectedShape} searchFields={OPTIONS[type].searchFields} />
-            </FormControl>
-          </div>
-        }
-
-        <div className={shapeActionClasses.dialogFooter}>
-          <Button
-            variant="contained"
-            color="default"
-            size="medium"
-            className={classes.footerButton}
-            style={{ margin: "0px 15px 0px 0px" }}
-            onClick={() => { setShapeAnchorEl(null) }}
-          >
-            Cancel
-          </Button>
-
-          <Button
-            variant="contained"
-            color="primary"
-            id="addShapeButton"
-            size="medium"
-            disabled={selectedType === 'new' ? !selectedType : !selectedShape}
-            disableElevation
+        <ListItemText>
+          <h4
             onClick={() => {
-              selectedType === 'new' ? saveAndOpenShapeDetail(type, selectedShapeType) : updateAndOpenShapeDetail(selectedShape)
+              setSelectedType("new");
             }}
-            className={classes.footerButton}
+            className={selectedType === "new" ? shapeActionClasses.selectedType : shapeActionClasses.unSelectedType}
           >
-            Add Shape
-          </Button>
+            New {OPTIONS[type].label}
+          </h4>
+          <h4
+            onClick={() => {
+              setSelectedType("existing");
+            }}
+            className={selectedType === "existing" ? shapeActionClasses.selectedType : shapeActionClasses.unSelectedType}
+            style={{ marginLeft: "20px" }}
+          >
+            Existing {OPTIONS[type].label}
+          </h4>
+        </ListItemText>
+      </ListItem>
+      {
+        selectedType === "new" && <>
+          <FormControl variant="outlined" fullWidth className={shapeActionClasses.inputField} size="small">
+            <InputLabel id={`${type}-outlined-label`}>
+              {OPTIONS[type].label} Type
+            </InputLabel>
+            <Select
+              labelId={`${type}-outlined-label`}
+              defaultValue={'lease'}
+              id={`${type}-outlined`}
+              value={selectedShapeType}
+              fullWidth
+              onChange={(e) => { setSelectedShapeType(e.target.value) }}
+              label={`${OPTIONS[type].label} Type`}
+            >
+              {OPTIONS[type].types.map(({ value, label }) => (
+                <MenuItem value={value}>{label}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </>
+      }
+      {
+        selectedType === 'existing' && <div
+          onKeyDown={e => {
+            if (e.key === 'n' || e.key === 'N')
+              e.stopPropagation()
+          }}>
+          <FormControl variant="outlined" fullWidth className={shapeActionClasses.inputField} size="small">
+            <AutoCompleteESShapeLayer label={`${OPTIONS[type].label} Search`} filters={[{ "field": OPTIONS[type].layerKey, "value": OPTIONS[type].layerType }]} setSelectedShapeLayer={setSelectedShape} searchFields={OPTIONS[type].searchFields} />
+          </FormControl>
         </div>
-      </Menu>
-    </Fragment>
+      }
+
+      <div className={shapeActionClasses.dialogFooter}>
+        <Button
+          variant="contained"
+          color="default"
+          size="medium"
+          className={classes.footerButton}
+          style={{ margin: "0px 15px 0px 0px" }}
+          onClick={() => { setShapeAnchorEl(null) }}
+        >
+          Cancel
+        </Button>
+
+        <Button
+          variant="contained"
+          color="primary"
+          id="addShapeButton"
+          size="medium"
+          disabled={selectedType === 'new' ? !selectedType : !selectedShape}
+          disableElevation
+          onClick={() => {
+            selectedType === 'new' ? saveAndOpenShapeDetail(type, selectedShapeType) : updateAndOpenShapeDetail(selectedShape)
+          }}
+          className={classes.footerButton}
+        >
+          Add Shape
+        </Button>
+      </div>
+    </Menu>
   );
 };
 

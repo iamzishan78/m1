@@ -54,6 +54,7 @@ import AssociatedFlowDealDetails from "../AssociatedFlowDealDetails";
 import { createPortal } from "react-dom/cjs/react-dom.production.min";
 import ExistingDeal from "./ExistingDeal";
 import { GET_FLOW_ASSOCIATED_SUMMARY } from "graphQL/useQueryFlowAssociatedData";
+import { mapStateController } from "hookstate/mapStateController";
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -429,6 +430,8 @@ function AddDealDialog(props) {
 
   const [contact, setContact] = useState({});
 
+  const { mapStateValues } = mapStateController.useState(['mapVars'], 'mapStateValues');
+
   useEffect(() => {
     return () =>
       setStateTransact((stateTransact) => ({
@@ -765,11 +768,9 @@ function AddDealDialog(props) {
   useEffect(() => {
     if (
       stateApp?.activeDeal?.mapSettings?.mapDefaultPosition != null &&
-      stateApp?.mapVars !== stateApp?.activeDeal?.mapSettings?.mapDefaultPosition
+      mapStateValues?.mapVars !== stateApp?.activeDeal?.mapSettings?.mapDefaultPosition
     ) {
-      setStateApp((state) => {
-        return { ...state, mapVars: stateApp?.activeDeal?.mapSettings?.mapDefaultPosition };
-      });
+      mapStateController.updateState({ mapVars: stateApp?.activeDeal?.mapSettings?.mapDefaultPosition })
     }
   }, [mapSettings]);
 
@@ -1166,11 +1167,40 @@ function AddDealDialog(props) {
     }
   }, [getDealResult]);
 
+  const gotoContact = (index) => { // redirect to the contact details view on clicking contact name 
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      selectedContact: stateApp.activeDeal?.contacts[index]?._id,
+      dealDialog: false,
+      transactBarView: "Deal",
+    }));
+    history.push(`/contact/details/${stateApp.activeDeal?.contacts[index]?._id}?return-url=${history.location.pathname}`);
+  };
+
+  const GettingContacts = useCallback(() => {
+    let contactnames = stateApp.activeDeal?.contacts?.map((value) => {
+      if (get(value, "relatedObject.entityDetail.name")) {
+        return value.relatedObject.entityDetail.name;
+      } else if (get(value, "name")) {
+        return value.name;
+      } else {
+        return "Empty";
+      }
+    });
+    return contactnames;
+  }, [stateApp.activeDeal?.contacts]);
+
   const getView = () => {
     if (stateApp.transactBarView === "Documents") {
       return <Documents id={stateApp.activeDeal?._id} user_id={stateApp.user.email} isTransactPage={true} />;
     } else if (stateApp.transactBarView === "Contacts") {
-      return <Contacts addSelectedContact={addSelectedContactToDeal} loading={upsertDealDescriptorLoading} getDeal={refetchDeal} />;
+      return <Contacts 
+              addSelectedContact={addSelectedContactToDeal} 
+              loading={upsertDealDescriptorLoading}
+              gotoContact={gotoContact}
+              GettingContacts={GettingContacts}   
+              deleteContact={DeleteContact}         
+            />;
     } else if (stateApp.transactBarView === "Task Progress") {
       return (
         <DealTasksDetails
@@ -1183,6 +1213,22 @@ function AddDealDialog(props) {
           pipelineId={pipelineId}
         />
       );
+    }
+  };
+
+  const DeleteContact = async (index, setMutationLoading) => {
+    setMutationLoading(stateApp.activeDeal?.contacts[index]?._id);
+    const descriptorId = get(stateApp, `activeDeal.contacts[${index}].descriptorId`) || get(stateApp, `activeDeal.contacts[${index}]._id`);
+    let result = await removeDealDescriptor({
+      variables: { id: descriptorId, relatedObjectType: "Contact" },
+      refetchQueries: ["getPipeline", "getContactDeals"],
+      awaitRefetchQueries: true,
+    });
+    let response = await result.data.removeDealDescriptor.success;
+    if (response) {
+      refetchDeal(); // retech the deals data after delete
+    } else {
+      setMutationLoading(false);
     }
   };
 
@@ -1259,15 +1305,15 @@ function AddDealDialog(props) {
 
   const saveViewport = useCallback(() => {
     setMapSettings({
-      activeBaseMap: stateApp?.mapVars?.styleId,
+      activeBaseMap: mapStateValues?.mapVars?.styleId,
       mapDefaultPosition: {
-        zoom: stateApp?.mapVars?.zoom,
-        bearing: stateApp?.mapVars?.bearing,
-        pitch: stateApp?.mapVars?.pitch,
-        center: stateApp?.mapVars?.center,
+        zoom: mapStateValues?.mapVars?.zoom,
+        bearing: mapStateValues?.mapVars?.bearing,
+        pitch: mapStateValues?.mapVars?.pitch,
+        center: mapStateValues?.mapVars?.center,
       },
     });
-  }, [stateApp.mapVars]);
+  }, [mapStateValues.mapVars]);
 
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(null);
