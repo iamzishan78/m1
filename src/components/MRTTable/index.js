@@ -20,6 +20,13 @@ function MRTTable({ tableKey, name, overrideMeta = {}, hideSharedCommentCheck = 
 
 	useEffect(() => {
 		(async () => {
+			// Initializing global states
+			await tableGlobalController.initializeGlobalStates(client);
+		})()
+	}, []);
+
+	useEffect(() => {
+		(async () => {
 			await Controller.initialize(tableKey, extendedMeta, client);
 		})()
 

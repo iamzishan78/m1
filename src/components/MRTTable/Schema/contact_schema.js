@@ -12,6 +12,7 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import OwnerTypeCell from '../Common/TableCells/OwnerTypeCell';
 
 const esIndex = 'contacts_flat';
 
@@ -644,8 +645,8 @@ const ContactMeta = {
 			header: 'Contact Owner',
 			isExport: 'contactOwners[0].name',
 			Cell: ({ row }) => {
-				const name = row?.original?.contactOwners?.map(obj => obj.name)
-				return <p>{name?.[0]}</p>
+				let contactOwner = row?.original?.contactOwners?.[0];
+				return <OwnerTypeCell contactOwner={contactOwner} />
 			},
 		},
 

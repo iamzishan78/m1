@@ -1,4 +1,5 @@
 import { formatDate } from 'components/Shared/functions';
+import OwnerTypeCell from '../Common/TableCells/OwnerTypeCell';
 
 export const CommonSchema = {
 	COMMENTS: {
@@ -124,7 +125,9 @@ export const CommonSchema = {
 		isSearchField: false,
 		type: 'string',
 		Cell: ({ row }) => {
-			return <>{row.original?.createBy?.name}</>
+			// Passing contact owner in common component
+			let contactOwner = row.original?.createBy;
+			return <OwnerTypeCell contactOwner={contactOwner} />
 		},
 	},
 	CREATED_DATE: {
@@ -148,7 +151,9 @@ export const CommonSchema = {
 		isSearchField: false,
 		type: 'string',
 		Cell: ({ row }) => {
-			return <>{row.original?.lastUpdateBy?.name}</>
+			// Passing contact owner in common component
+			let contactOwner = row.original?.lastUpdateBy;
+			return <OwnerTypeCell contactOwner={contactOwner} />
 		},
 	},
 	LAST_UPDATED_DATE: {

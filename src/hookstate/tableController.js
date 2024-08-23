@@ -15,6 +15,7 @@ import { formatGridViewToMRT } from "components/MRTTable/utils/helper"
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
 import MRT_SelectCheckbox_OverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 import { handleMRTSchema, handleVisiblityMenu } from './helpers';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
 function isDateFormat(inputString) {
 	// Regular expression for MM/DD/YYYY format
@@ -600,6 +601,16 @@ const tableGlobalControllerHandler = state => ({
 	},
 	reInitialized: () => {
 		state.reInitialized.set(!state.reInitialized.get({ noproxy: true }));
+	},
+	initializeGlobalStates: async (client) => {
+		// Populating users state in tableGlobalController
+		const users = state.users.get({ noproxy: true });
+		if (users && users.length > 0) return;
+		const result = await client.query({
+			variables: {},
+			query: GETMONGOUSERS,
+		});
+		state.users.set(result?.data?.allMongoUsers);
 	}
 });
 
