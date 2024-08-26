@@ -45,7 +45,7 @@ const getWellColor = w => {
 	// Switch on whether wellStatus or wellType 
 	const switchType = isWellPermitStatus ? w.properties.wellStatus : w.properties.wellType;
 	switch (switchType) {
-		
+
 		// rgb(2, 207, 53)
 		case 'OIL':
 		case 'OIL AND GAS':
@@ -149,9 +149,7 @@ const LayerMeta = {
 				return {
 					data: deckLayers[layerId].getData([]),
 					pointRadiusMinPixels: 5,
-					lineWidthMinPixels: 2,
 					pointRadiusMaxPixels: 15,
-					lineWidthMaxPixels: 10,
 				};
 			},
 		},

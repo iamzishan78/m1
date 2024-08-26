@@ -66,7 +66,24 @@ export const useStyles = makeStyles((theme) => ({
     },
     fileName: {
         maxWidth: "464px"
-    }
+    },
+    slider: {
+        width: "350px !important",
+        color: 'purple', // Color of the slider
+        '& .MuiSlider-thumb': {
+            backgroundColor: 'purple', // Color of the thumb
+        },
+        '& .MuiSlider-track': {
+            backgroundColor: 'purple', // Color of the track
+        },
+        '& .MuiSlider-rail': {
+            backgroundColor: '#D1C4E9', // Color of the rail
+        },
+    },
+    valueBox: {
+        width: 90,
+        marginLeft: 10,
+    },
 }));
 
 export const WidthPicker = ({ width, setWidth, layerType }) => {
@@ -110,6 +127,7 @@ export const useLayerStyle = (layer) => {
     const initialLayerAttributeBasedStrokeColors = layer.layerSettings?.attributeBasedStrokeColors || {};
     const initialLayerSelectedAttribute = layer.layerSettings?.selectedAttribute || null;
     const initialLayerSelectedStrokeAttribute = layer.layerSettings?.selectedStrokeAttribute || null;
+    const initialStrokeWidth = layer.layerPaintProps[0]?.paintProps?.strokeWidth || 20;
     const initialFillColor =
         layerType === "fill"
             ? ifRgbaConvt(layer.layerPaintProps[0]?.paintProps["fill-color"])
@@ -146,6 +164,7 @@ export const useLayerStyle = (layer) => {
     const [layerLabelVisibility, setLayerLabelVisibility] = useState(initialLayerLabelVisibility);
     const [layerClickability, setLayerClickability] = useState(initialLayerClickable);
     const [strokeColor, setStrokeColor] = useState(initialStrokeColor);
+    const [strokeWidth, setStrokeWidth] = useState(initialWidth || initialStrokeWidth);
 
 
     useEffect(() => {
@@ -164,6 +183,7 @@ export const useLayerStyle = (layer) => {
                         (strokeColor.alpha || strokeColor.alpha === 0)))) ||
             width ||
             layer.layerPaintProps[0]?.labelProps?.visibility !== layerLabelVisibility ||
+            parseInt(layer.layerPaintProps[0]?.paintProps?.strokeWidth) !== parseInt(strokeWidth) ||
             layer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability ||
             layer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor ||
             layer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor !== enableStrokeColor ||
@@ -381,6 +401,15 @@ export const useLayerStyle = (layer) => {
                                 },
                             };
                         }
+                        if (strokeWidth) {
+                            layerPaintProps[i] = {
+                                ...layerPaintProps[i],
+                                paintProps: {
+                                    ...layerPaintProps[i].paintProps,
+                                    "strokeWidth": strokeWidth,
+                                },
+                            };
+                        }
                     } else if (layerType === "line" && layerPaintProps[i].paintProps) {
                         if (fColor) {
                             layerPaintProps[i] = {
@@ -459,6 +488,8 @@ export const useLayerStyle = (layer) => {
         layerClickability, setLayerClickability,
         strokeColor,
         setStrokeColor,
-        handleLayerChange
+        handleLayerChange,
+        strokeWidth,
+        setStrokeWidth
     }
 }

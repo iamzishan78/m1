@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useMemo } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { Grid, IconButton, Divider, FormControlLabel, Switch, Box, Tooltip, ClickAwayListener } from "@material-ui/core";
+import { Grid, IconButton, Divider, FormControlLabel, Switch, Tooltip, ClickAwayListener } from "@material-ui/core";
 import { Close as CloseIcon } from "@material-ui/icons";
 import { UPDATELAYERSETTINGS } from "../../../../graphQL/useMutationUpdateLayerSettings";
 import GridOnIcon from "@material-ui/icons/GridOn";
@@ -13,6 +13,7 @@ import { globalStateController } from "hookstate/globalStateController";
 import { mapControlsController } from "hookstate/mapControlsController";
 import { layerController } from "hookstate/layerStateController";
 import { Typography } from '@mui/material';
+import { Slider, TextField, Box } from '@mui/material';
 import { colorBasedAttributes } from "./LayerAttributes/ColorBasedAttributes";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 import { AppContext } from "AppContext";
@@ -48,7 +49,9 @@ function LayerStyling() {
     setLayerClickability,
     strokeColor,
     setStrokeColor,
-    handleLayerChange
+    handleLayerChange,
+    strokeWidth,
+    setStrokeWidth
   } = useLayerStyle(selectedLayer)
 
   const [rows, setRows] = useState(0);
@@ -99,6 +102,7 @@ function LayerStyling() {
             (strokeColor.alpha || strokeColor.alpha === 0)))) ||
       width ||
       selectedLayer.layerPaintProps[0]?.labelProps?.visibility !== layerLabelVisibility ||
+      parseInt(selectedLayer.layerPaintProps[0]?.paintProps?.strokeWidth) !== parseInt(strokeWidth) ||
       selectedLayer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability ||
       selectedLayer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor ||
       selectedLayer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor !== enableStrokeColor ||
@@ -301,6 +305,34 @@ function LayerStyling() {
                       />
                     </>
                   )}
+                  <Typography variant="h6" style={{ margin: "14px 0px 10px 0px" }}>Stroke Color</Typography>
+                  <Box display="flex" alignItems="center" justifyContent="space-between">
+                    <Slider
+                      value={strokeWidth}
+                      onChange={(e, val) => setStrokeWidth(val)}
+                      aria-labelledby="continuous-slider"
+                      className={classes.slider}
+                      valueLabelDisplay="on" // Shows the value above the thumb
+                    />
+                    <TextField
+                      value={strokeWidth}
+                      variant="outlined"
+                      type="number"
+                      onChange={(e) => {
+                        let width = e.target.value ? parseInt(e.target.value) : 0;
+                        if (width > 100) width = 100;
+                        if (width < 0) width = 0;
+                        setStrokeWidth(width)
+                      }
+                      }
+                      size="small"
+                      className={classes.valueBox}
+                      inputProps={{
+                        min: 0,
+                        max: 100,
+                      }}
+                    />
+                  </Box>
                 </Grid>
               )}
             </>}

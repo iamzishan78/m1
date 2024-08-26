@@ -539,6 +539,7 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 			case 'fill':
 				const fillColor = prop.paintProps?.['fill-color'];
 				const fillOpacity = prop.paintProps?.['fill-opacity'];
+				const strokeWidth = prop.paintProps?.['strokeWidth'];
 				const fillStroke =
 					prop.paintProps?.['fill-outline-color'] || prop.paintProps?.['line-color'];
 
@@ -546,6 +547,7 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 				props.getFillColor = getLayerFillColor(dbLayer, fillColor, fillOpacity);
 				props.defaultColor = getRGBA(fillColor, fillOpacity);
 				props.getLineColor = getLayerStrokeColor(dbLayer, fillStroke);
+				props.getLineWidth = strokeWidth || 20;
 
 				break;
 
