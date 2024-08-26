@@ -10,7 +10,8 @@ import Button from '@material-ui/core/Button';
 import AddIcon from "@material-ui/icons/Add";
 import { useHistory } from "react-router-dom";
 import { useLazyQuery } from '@apollo/client';
-import { Grid, Box, FormControlLabel, FormGroup, Switch } from "@material-ui/core";
+import { Grid, Box, FormControlLabel, FormGroup, Switch, InputAdornment, IconButton } from "@material-ui/core";
+import EditIcon from '@material-ui/icons/Edit';
 import moment from "moment";
 
 import {
@@ -156,6 +157,12 @@ const useStyles = makeStyles((theme) => ({
       borderLeft: "2px solid #C9C9C9",
       backgroundColor: "#EBEBEB",
       "& p": { margin: "8px 10px" },
+      "& .editIcon": {
+        visibility: "hidden",
+      },
+      "&:hover .editIcon": {
+        visibility: "visible",
+      },
     },
     "& a": { color: "#757575" },
   },
@@ -415,8 +422,34 @@ export default function DetailInfo(props) {
                   if (showEmpty) {
                     return (
                       <React.Fragment key={key}>
-                        <Grid item xs={3} className="fieldName">
-                          <p className="dataLabels">{featureFlagChanges(showGenericPhones, key)}</p>
+                        <Grid item xs={3} className="fieldName"
+                          {...(row.isMeta && {
+                            style: {
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            },
+                          })}
+                        >
+                          <p className="dataLabels">{featureFlagChanges(showGenericPhones, key)} </p>
+
+                          {/* Edit  Icon for meta fields */}
+                          {row?.isMeta && <InputAdornment className="editIcon" position="end">
+                            <IconButton
+                              aria-label="Edit Meta"
+                              style={{ padding: '6px' }}
+                              onClick={() => {
+                                globalStateController.updateState({ showFieldModal: true });
+                                window.setStateApp(stateApp => ({
+                                  ...stateApp,
+                                  selectedMeta: row?.rawMeta,
+                                  showFieldModal: true,
+                                }))
+                              }}
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          </InputAdornment>}
                         </Grid>
                         <Grid item xs={9}>
                           <FieldContent
@@ -448,8 +481,34 @@ export default function DetailInfo(props) {
                     ) {
                       return (
                         <React.Fragment key={key}>
-                          <Grid item xs={3} className="fieldName">
+                          <Grid item xs={3} className="fieldName"
+                            {...(row.isMeta && {
+                              style: {
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                              },
+                            })}
+                          >
                             <p className="dataLabels">{featureFlagChanges(showGenericPhones, key)}</p>
+
+                            {/* Edit  Icon for meta fields */}
+                            {row?.isMeta && <InputAdornment className="editIcon" position="end">
+                              <IconButton
+                                aria-label="Edit Meta"
+                                style={{ padding: '6px' }}
+                                onClick={() => {
+                                  globalStateController.updateState({ showFieldModal: true });
+                                  window.setStateApp(stateApp => ({
+                                    ...stateApp,
+                                    selectedMeta: row?.rawMeta,
+                                    showFieldModal: true,
+                                  }))
+                                }}
+                              >
+                                <EditIcon />
+                              </IconButton>
+                            </InputAdornment>}
                           </Grid>
                           <Grid item xs={9}>
                             <FieldContent

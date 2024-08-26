@@ -333,12 +333,15 @@ export const getBasicInfoExpContent = (contactData, metafields = []) => {
     },
   };
 
-  // Making key value pairs of custom_data fields
+  // Making key value pairs of custom_data fields 
+  // Also setting  raw meta for editing  custom meta data
   const customDataJson = metafields.reduce((acc, field) => {
     return {
       ...acc,
       [field.label]: {
+        rawMeta: field,
         label: field.label,
+        isMeta: true,
         data: { [field.esKey]: _.get(contactData, field.esKey) },
         renderField: field.type === "dropdown" ? "autoComplete" : field.type,
         defaultOptions: field.type === "dropdown" ? field.dropdownOptions.map(op => ({
