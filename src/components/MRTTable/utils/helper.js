@@ -37,3 +37,13 @@ export const extractValueRecursively = (obj) => {
 
   return obj;
 };
+
+// Helper for document type extraction
+export const getDocumentType = (name) => {
+  return name?.split('.')[name?.split('.')?.length - 1].toUpperCase() || '';
+}
+
+// Helper for document size extraction
+export const getDocumentSizeInKBs = (size) => {
+  return Math.round((size || 0)/ 1024) + " KB";
+}

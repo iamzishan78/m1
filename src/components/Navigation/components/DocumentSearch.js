@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { InputAdornment, TextField, IconButton, Tooltip } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
@@ -10,6 +10,7 @@ import Typography from "@material-ui/core/Typography";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Button from "@material-ui/core/Button";
 import { AppContext } from "../../../AppContext";
+import { tableController } from "hookstate/tableController";
 
 const useStyles = makeStyles((theme) => ({
   search: {
@@ -78,6 +79,11 @@ const DocumentSearch = () => {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [search, setSearch] = useState("");
+
+  // Set state of document table for searching
+  useEffect(() => {
+    tableController("DocumentTable").setGlobalFilter(search)
+  }, [search])
 
   return (
     <div className={classes.search}>

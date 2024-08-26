@@ -12,6 +12,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import EditIcon from "@material-ui/icons/Edit";
 import { metaDataColumnStateController } from "components/MRTTable/Common/MetaData/MetaDataColumnsController";
 import { tableController } from "hookstate/tableController";
+import { globalStateController } from "hookstate/globalStateController";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -79,7 +80,8 @@ function MetaFieldList({ tableKey }) {
   };
 
   const OpenFieldModelDialog = (row) => {
-    Controller.updateState({
+    // Use global state controller for meta field modal
+    globalStateController.updateState({
       showFieldModal: true,
     });
     if (row) {
