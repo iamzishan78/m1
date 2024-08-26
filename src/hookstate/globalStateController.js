@@ -15,7 +15,8 @@ const initialState = {
 	cypress: null,
 	testCase: null,
 	bypassLogin: simpleAuthBypass || false,
-	bypassType: ''
+	bypassType: '',
+	tenant: null
 };
 
 export const globalState = hookstate(copy(initialState));
@@ -29,10 +30,9 @@ const globalStateControllerHandler = () => ({
 			});
 	},
 	setBypassLogin: tenant => {
-		const bypass = simpleAuthBypass ? { bypassLogin: true, bypassType: 'SimpleBypass' } : { bypassLogin: bypassTenants.includes(tenant), bypassType: 'Auth0Bypass' }
+		const bypass = simpleAuthBypass ? { bypassLogin: true, bypassType: 'SimpleBypass' } : { bypassLogin: bypassTenants.includes(tenant.name), bypassType: 'Auth0Bypass' }
 		if (bypass.bypassLogin) {
-			globalState.bypassLogin.set(bypass.bypassLogin)
-			globalState.bypassType.set(bypass.bypassType)
+			globalStateController.updateState({ ...bypass, tenant })
 		}
 	},
 	isAuth0Bypass: () => globalStateController.getValue('bypassType') === 'Auth0Bypass',

@@ -157,7 +157,11 @@ const Auth0Login = props => {
     if (isLoading) return;
 
     if (!isAuthenticated) {
-      loginWithRedirect();
+      loginWithRedirect({
+        authorizationParams: {
+          organization: globalStateController.getValue('tenant').org_id,
+        }
+      });
 
       return;
     }
