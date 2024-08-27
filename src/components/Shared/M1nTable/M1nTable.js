@@ -2271,6 +2271,7 @@ function M1nTable(props) {
       setColumns([...DealsHeadCells]);
       setLoading(false);
     }
+    // add all the required dependencies
   }, [dataDeals, props.parent, props.contact]);
 
   useEffect(() => {
