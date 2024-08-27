@@ -109,12 +109,10 @@ const AttrsValuesDropdown = ({
         const options = filterKeys.map(key => {
             const isColorOverridden = selectedOption?.label && selectedOption.label === key;
             const randomColor = attributeBasedColors?.[selectedValue.label]?.[key] || generateRandomColor();
-            if (isColorOverridden)
-                console.log(fillColor);
 
             return {
                 label: key,
-                color: isColorOverridden ? `#${fillColor.hex}` : randomColor
+                color: isColorOverridden ? (fillColor.hex ? `#${fillColor.hex}` : fillColor) : randomColor
             };
         });
 
