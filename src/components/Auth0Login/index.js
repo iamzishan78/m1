@@ -67,10 +67,10 @@ const Auth0Login = props => {
       mongoId: mongoUser._id,
       roles: mongoUser.roles,
       authToken: bypassLogin
-        ? sessionData.token
+        ? sessionData.auth0Token
         : authGraphQLResponse.authenticationToken,
       accessToken: bypassLogin
-        ? sessionData.token
+        ? sessionData.auth0Token
         : authGraphQLToken.idToken,
       authTokenExpires,
       tenant: {
@@ -157,12 +157,8 @@ const Auth0Login = props => {
     if (isLoading) return;
 
     if (!isAuthenticated) {
-      loginWithRedirect({
-        authorizationParams: {
-          organization: globalStateController.getValue('tenant').org_id,
-        }
-      });
-
+      const org_id = window.sessionStorage.getItem('tenantOrgId') ? window.sessionStorage.getItem('tenantOrgId') : globalStateController.getValue('tenant').org_id
+      loginWithRedirect(org_id ? { authorizationParams: { organization: org_id } } : {});
       return;
     }
 
@@ -203,6 +199,7 @@ const Auth0Login = props => {
         window.location.replace(window.location.origin);
         return;
       };
+      window.sessionStorage.setItem("tenantOrgId", id.org_id);
 
       const userMapSettings = await userSettings(
         loginRes.user._id,
