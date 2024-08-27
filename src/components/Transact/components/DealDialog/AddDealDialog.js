@@ -1883,6 +1883,7 @@ function AddDealDialog(props) {
         </RightDialog>
         {stateApp.transactBarView === "Map" && (
           <div
+          // map position styling
             style={{
               position: "absolute",
               left: 0,
