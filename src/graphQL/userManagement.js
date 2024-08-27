@@ -60,8 +60,8 @@ export const UPDATE_USER = gql`
 
 // Mutation for removing users
 export const REMOVE_USERS = gql`
-  mutation removeUsers($userIds: [ID]) {
-    removeUsers(userIds: $userIds) {
+  mutation removeUsers($userIds: [ID], $orgId: String) {
+    removeUsers(userIds: $userIds, orgId:$orgId) {
       _id
       email
       displayName

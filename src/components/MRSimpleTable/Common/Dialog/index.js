@@ -13,7 +13,8 @@ import CommentDialog from './CommentDialog';
 import TagDialog from './TagDialog';
 import ExportConfirmationDialog from './ConfirmationDialog/ExportConfirmation';
 import { useMutation } from "@apollo/client";
-import { REMOVE_USERS} from "graphQL/userManagement";
+import { REMOVE_USERS } from "graphQL/userManagement";
+import { globalStateController } from 'hookstate/globalStateController';
 
 function AllDialogs() {
 	const { stateValues } = simpleTableGlobalController.useState(['dialog']);
@@ -38,29 +39,30 @@ function AllDialogs() {
 
 	const deleteFunc = async (dataToDelete) => {
 		Loader.createToast('deletion', 'Deletion in Progress');
-	
+
 		const userIds = dataToDelete.mainRecord || [];
-	
+
 		if (userIds.length > 0) {
 			removeUsers({
-			  variables: {
-				userIds,
-			  },
+				variables: {
+					userIds,
+					orgId: globalStateController.getValue('tenant').org_id
+				},
 			}).then(
-			  (res) => {
-				if (res?.data?.removeUsers) {
-				  Loader.successToast('deletion');
-				  simpleTableGlobalController.refetch();
+				(res) => {
+					if (res?.data?.removeUsers) {
+						Loader.successToast('deletion');
+						simpleTableGlobalController.refetch();
+					}
+				},
+				() => {
+					Loader.errorToast('deletion', 'Failed to delete row (s)');
+					simpleTableGlobalController.refetch();
 				}
-			  },
-			  () => {
-				Loader.errorToast('deletion', 'Failed to delete row (s)');
-				simpleTableGlobalController.refetch();
-			  }
 			);
 		}
 	};
-	
+
 
 	return (
 		<>
