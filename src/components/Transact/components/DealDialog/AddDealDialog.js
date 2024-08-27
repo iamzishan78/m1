@@ -124,6 +124,9 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiDialog-paper": {
       overflowY: "hidden",
     },
+    '& div[class^="makeStyles-panelContent-"]': {
+      height: "52%",
+    },
   },
   contentRoot: {
     overflowY: "overlay",
@@ -1880,11 +1883,12 @@ function AddDealDialog(props) {
         </RightDialog>
         {stateApp.transactBarView === "Map" && (
           <div
-            maxWidth="calc(100vw - 28vw)"
             style={{
-              position: "relative",
+              position: "absolute",
+              left: 0,
               "z-index": "9999",
-              width: "calc(100vw - 30vw)",
+              width: "71%",
+              height: "50%"
             }}
           >
             <MapProvider
