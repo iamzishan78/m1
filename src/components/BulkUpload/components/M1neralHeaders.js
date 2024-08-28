@@ -189,7 +189,8 @@ export default function M1neralHeaders() {
         //   filtered_data_to_send.push(null)
         //   continue;
         // }
-
+        
+        // remove the row if the value of approvalStatus is not correct
         if (return_obj["property.approvalStatus"]) {
             const formattedValue = return_obj["property.approvalStatus"].replace(/\s+/g, "").toLowerCase();
   
