@@ -46,7 +46,7 @@ function AllDialogs() {
 			removeUsers({
 				variables: {
 					userIds,
-					orgId: globalStateController.getValue('tenant').org_id
+					orgId: window.sessionStorage.getItem('tenantOrgId')
 				},
 			}).then(
 				(res) => {
