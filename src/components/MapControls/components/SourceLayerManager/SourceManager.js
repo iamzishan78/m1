@@ -759,7 +759,8 @@ function SourceManager(props) {
                               inputProps={{ "aria-label": "primary checkbox" }}
                             />
 
-                            <ListItemText id={labelId} primary={layer.layerName === "Parcels" ? "Tracts" : truncate(layer.layerName, 30)} />
+                            {/* Override layer source names of Parcel and Wells */}
+                            <ListItemText id={labelId} primary={layer.layerName === "Parcels" ? "Tracts" : layer.layerName === 'Wells' ? 'Platform Wells' : truncate(layer.layerName, 30)} />
 
                             {
                               (layer.layerName === 'Units') &&
