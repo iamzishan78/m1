@@ -17,7 +17,7 @@ import { saveUserSession } from "utils/user";
 import Api from "api";
 
 import BypassSignInCard from "./BypassSignInCard";
-import { BYPASS_LOGIN_MUTATION } from "graphQL/useMutationBypassLogin";
+import { SIMPLE_BYPASS_LOGIN_MUTATION } from "graphQL/useMutationBypassLogin";
 import { apolloClientEndpointDev, isDev } from "utils/helper";
 import { globalStateController } from "hookstate/globalStateController";
 import { mapStateController } from "hookstate/mapStateController";
@@ -400,7 +400,7 @@ const Login = (props) => {
 
     setTimeout(async () => {
       try {
-        const { data: { bypassLogin: loginResp } } = await Api.mutate(BYPASS_LOGIN_MUTATION, {
+        const { data: { simpleBypassLogin: loginResp } } = await Api.mutate(SIMPLE_BYPASS_LOGIN_MUTATION, {
           email
         })
 
