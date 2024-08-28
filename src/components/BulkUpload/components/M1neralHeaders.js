@@ -190,6 +190,15 @@ export default function M1neralHeaders() {
         //   continue;
         // }
 
+        if (return_obj["property.approvalStatus"]) {
+            const formattedValue = return_obj["property.approvalStatus"].replace(/\s+/g, "").toLowerCase();
+  
+            if (!["inpay","notinpay"].some(value => value=== formattedValue)) {
+              filtered_data_to_send.push(null)
+              continue;
+            }
+        }
+
         Object.keys(return_obj).forEach(key => {
           if (return_obj[key] instanceof Date) {
             return_obj[key] = return_obj[key].toISOString()
