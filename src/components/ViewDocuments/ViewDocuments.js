@@ -18,7 +18,6 @@ import { useLazyQuery } from "@apollo/client";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "../../graphQL/useQueryViewFile";
 import DocViewer from "../Shared/DocViewer";
 import { isEmpty } from "lodash";
-import { useHistory } from "react-router-dom";
 
 // functions / value formatters
 import get_file_icon from "../Shared/functions/get_file_icon.js";
@@ -153,7 +152,6 @@ const docs = [
 
 export default function ViewDocuments(props) {
   const classes = useStyles();
-  let history = useHistory();
   const [documentSearch, setDocumentSearch] = useState("");
   const [allDocuments, setAllDocuments] = useState([]);
   const [filteredDocuments, setFilteredDocuments] = useState([]);
@@ -269,9 +267,9 @@ export default function ViewDocuments(props) {
         </div>
       </div>
       <div className={classes.divider} />
-      {/* ad dnamic height on the basis of route */}
+        {/* add dynamic height on the basis of isExpanded appState */}
       <ul id="contactDocumentsList" className={classes.documentsList}
-      style={{maxHeight: `${history.location.pathname.endsWith("/documents") ? '80vh' : '34vh'}`}}>
+        style={{ maxHeight: stateApp?.isExpanded ? '80vh' : '34vh' }} >
         {!!filesLoading && (
           <div style={{ display: "flex", justifyContent: "center" }}>
             <CircularProgress size="20px" />

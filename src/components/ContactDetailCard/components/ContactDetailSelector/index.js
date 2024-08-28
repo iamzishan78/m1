@@ -137,7 +137,7 @@ const useStyles = makeStyles((theme) => ({
 
 function MapGridCard(props) {
   // contexts
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   const [getContactSummary, { data: contactSummaryData }] = useLazyQuery(CONTACT_SUMMARY);
 
@@ -192,6 +192,13 @@ function MapGridCard(props) {
       setSortedPurchaseData(sortedPurchaseData); // Update the state with the sorted purchase data
     }
   }, [props.purchaseData]);
+
+  // If the ducument component is loading as Associated data, isExpanded should be false
+  useEffect(() => {
+    if (searchTapValue?.value === 'documents') {
+      setStateApp((stateApp) => ({ ...stateApp, isExpanded: false }));
+    }
+  }, [searchTapValue, setStateApp]);
 
   const contactWellInterestoverrideMeta = useMemo(() => ({
     defaultFilters: [
