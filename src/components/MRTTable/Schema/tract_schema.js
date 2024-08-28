@@ -61,7 +61,7 @@ const TractMeta = {
 	},
 	defaultSort: { field: '_ts', order: 'desc' },
 	defaultFilters: [{ field: 'layer.keyword', value: 'parcel' }],
-	maxTableHeight: 'calc(100vh - 550px)',
+	maxTableHeight: 'calc(100vh - 450px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
 	onCustomKeyChange,

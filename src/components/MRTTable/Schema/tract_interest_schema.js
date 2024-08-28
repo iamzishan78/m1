@@ -21,9 +21,13 @@ const TractInterestsMeta = {
     { field: 'contact.IsDeleted', value: 'false' },
     { field: 'shape.IsDeleted', value: 'false' },
   ],
-  maxTableHeight: 'calc(100vh - 550px)',
+  maxTableHeight: 'calc(100vh - 450px)',
   isInFiniteScroll: true,
   columnVirtualization: true,
+  deletedKeys: { // Deletion keys mapping
+		mainRecord: { key: '_id' },
+		parentRecord: { key: 'shape._id' }
+	},
   TableSchema: [
     {
       ...CommonSchema.HIDDEN,

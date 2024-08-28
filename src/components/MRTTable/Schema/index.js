@@ -48,4 +48,5 @@ export const SCHEMA = {
 	WellsTable: WellsMeta,
 	TaxOwnerTable: TaxOwnerMeta,
 	SalesVolumeComparisonTable: SalesVolumeComparisonMeta, // Sales Volume comparison grid => analytrics/revenue
+	TractInterestsTable: TractInterestsMeta, // Tracts Interest schema
 };
