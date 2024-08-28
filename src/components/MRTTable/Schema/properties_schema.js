@@ -272,7 +272,7 @@ const PropertiesMeta = {
       name: 'approvalStatus.keyword',
       accessorFn: row => row?.approvalStatus,
       id: 'approvalStatus',
-      header: 'Status',
+      header: 'Approval Status',
     },
     // Columns for tags and comments
     {
