@@ -9,7 +9,9 @@ import moment from "moment";
 import { copy } from "utils/helper";
 import { useLazyQuery } from "@apollo/client";
 import { GET_ACTIVITY_TASK_PER_USER } from "graphQL/useQueryActivityTaskPerUser";
-
+import * as am4core from "@amcharts/amcharts4/core";
+import * as am4charts from "@amcharts/amcharts4/charts";
+import am4themes_animated from '@amcharts/amcharts4/themes/animated';
 
 const defaultSeriesTask = [
     {
@@ -116,8 +118,93 @@ export default function TrackTaskCard() {
     }, []);
 
     useEffect(() => {
-        console.log("taskperUser",taskperUser)
-    }, [taskperUser])
+        if (!taskperUser) return;
+
+        // Create chart instance
+        var chart = am4core.create("bar-chart", am4charts.XYChart);
+
+        // Define chart data
+        var chartData = [
+            {
+                year: "2021",
+                open: 2.5,
+                completed: 2.5,
+             
+            },
+            {
+                year: "2022",
+                open: 2.6,
+                completed: 2.7,
+            }
+        ];
+
+        // Set chart data
+        chart.data = chartData;
+
+        // Create Y-axis (Category Axis)
+        var categoryAxis = chart.yAxes.push(new am4charts.CategoryAxis());
+        categoryAxis.dataFields.category = "year";
+        categoryAxis.renderer.grid.template.location = 0;
+        categoryAxis.renderer.labels.template.fontSize = 16;
+        categoryAxis.renderer.labels.template.fontWeight = "bold";
+        categoryAxis.title.text = "Years";
+
+        // Create X-axis (Value Axis)
+        var valueAxis = chart.xAxes.push(new am4charts.ValueAxis());
+        valueAxis.title.text = "Values";
+
+        // Function to create a series for each region
+        function createSeries(field, name) {
+            var series = chart.series.push(new am4charts.ColumnSeries());
+            series.dataFields.valueX = field; // Set the value field to the corresponding region
+            series.dataFields.categoryY = "year"; // Set the category field to 'year'
+            series.name = name;
+            series.stacked = true; // Enable stacking of series
+            series.columns.template.tooltipText = "{name}: [bold]{valueX}[/]";
+            series.columns.template.fillOpacity = 0.8;
+
+            // Enable data labels
+            var labelBullet = series.bullets.push(new am4charts.LabelBullet());
+            labelBullet.label.text = "{valueX}"; // Display the value on each bar
+            labelBullet.label.fill = am4core.color("#fff");
+            labelBullet.locationX = 0.5; // Center the label
+            labelBullet.label.fontSize = 14;
+            labelBullet.label.fontWeight = "bold";
+
+             // Add image bullet to series
+             var imageBullet = series.bullets.push(new am4charts.Bullet());
+             var circle = imageBullet.createChild(am4core.Circle);
+             circle.radius = 18; // Circle radius
+             circle.fill = am4core.color("#fff");
+        }
+
+        // Create series for each region
+        createSeries("open", "Open");
+        createSeries("completed", "Completed");
+
+        // Add image bullets to series
+        chart.series.each(series => {
+            var imageBullet = series.bullets.push(new am4charts.Bullet());
+            var image = imageBullet.createChild(am4core.Image);
+            image.href = "https://picsum.photos/200/300"; // Set the path to your image
+            image.width = 30; // Adjust size as needed
+            image.height = 30;
+            image.horizontalCenter = "middle";
+            image.verticalCenter = "middle";
+            image.locationX = 0.5;
+            image.locationY = 0;
+            image.tooltipText = "Image Bullet"; // Optional tooltip text
+        });
+
+        // Add legend
+        chart.legend = new am4charts.Legend();
+
+        // Cleanup function to dispose of chart instance when component unmounts
+        return () => {
+            chart.dispose();
+        };
+    }, [taskperUser]);
+
 
     useEffect(() => {
         if (analyticsData?.activitiesCountByTaskStatusPerOwner) {
@@ -146,7 +233,7 @@ export default function TrackTaskCard() {
                 style={{ margin: "8px" }}
                 title={<Title />}
             />
-            {!loading && <StackedBarChart data={taskperUser} dataLabelEnabled />}
+            <div id={'bar-chart'} style={{ paddingTop: "40px", height: "80%", width: "70%" }} />
         </Fragment>
     )
 }
