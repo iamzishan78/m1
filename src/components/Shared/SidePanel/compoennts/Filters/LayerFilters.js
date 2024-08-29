@@ -166,7 +166,7 @@ const LayerFilters = () => {
   const clearFilters = (filterType) => {
     switch (filterType) {
       case "Geography":
-        navController.clearFilters()
+        navController.clearGeographyFilters()
         resetFilters(geoFiltersParams);
         break;
       case "Wells":

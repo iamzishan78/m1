@@ -155,7 +155,7 @@ const LayerItem = React.memo((props) => {
 
 
                 <Typography id={id} color="secondary" noWrap>
-                  {name}
+                  { name === 'Wells' ? 'Platform Wells' : name }
                 </Typography>
                 <Box paddingLeft={1} display="flex">
                   {type === "group" && (

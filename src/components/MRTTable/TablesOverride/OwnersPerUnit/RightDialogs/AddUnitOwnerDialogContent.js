@@ -25,6 +25,7 @@ import unitInterestOwnerForm from 'components/Shared/FormsFieldsData/RightDialog
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import AddIcon from "@material-ui/icons/Add";
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+import { extractValueRecursively } from 'components/MRTTable/utils/helper';
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -91,20 +92,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// Extracting values for getting value from autocomplete object
-const extractValueRecursively = (obj) => {
-  if (obj === null || obj === undefined) return obj;
-
-  if (typeof obj === 'object' && !Array.isArray(obj)) {
-    return Object.keys(obj).reduce((acc, key) => {
-      acc[key] = extractValueRecursively(obj[key]?.value !== undefined ? obj[key]?.value : obj[key]);
-      return acc;
-    }, {});
-  }
-
-  return obj;
-};
-
 
 export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, uUnitPricing, uMaxUnitPricing, metaDataCategory, ...props }) {
   const dispatch = useDispatch();
@@ -150,6 +137,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       rowData.contactStatus = selectedRow?.contact?.contactStatus
       rowData.status = selectedRow?.contact?.status
       rowData.relatedObject = selectedRow?.contactId || selectedRow?.ownerEntity
+      rowData.contactOwners = selectedRow?.contactOwners // auto-complete the contact owner in slideout
       sideDialogController("unitInterestDialog").updateState(rowData)
       reset(rowData)
     }
@@ -199,6 +187,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
       ((ownerToAdd.status || selectedRow?.status) &&
         selectedRow?.status !== ownerToAdd.status) ||
+      ((ownerToAdd?.contactOwners?.label || selectedRow?.contactOwners?.[0]) &&
+        selectedRow?.contactOwners?.[0] !== ownerToAdd?.contactOwners?.label) ||
       ((ownerToAdd.ownerType || selectedRow?.ownerType) &&
         selectedRow?.ownerType !== ownerToAdd.ownerType) ||
       ((ownerToAdd.campaignPriority || selectedRow?.campaignPriority) &&
@@ -214,6 +204,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             _id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
             contactStatus: ownerToAdd.contactStatus && (ownerToAdd.contactStatus.value || ownerToAdd.contactStatus),
             status: ownerToAdd.status && (ownerToAdd.status.value || ownerToAdd.status),
+            contactOwner: ownerToAdd.contactOwners && (ownerToAdd.contactOwners.label || ownerToAdd.contactOwners),
+            contactOwnerId: ownerToAdd.contactOwners && (ownerToAdd.contactOwners.value || ownerToAdd.contactOwners),
             lastUpdateBy: getUser?._id,
             ownerType: ownerToAdd.ownerType && (ownerToAdd.ownerType.value || ownerToAdd.ownerType),
             campaignPriority: ownerToAdd.campaignPriority && (ownerToAdd.campaignPriority.value || ownerToAdd.campaignPriority),

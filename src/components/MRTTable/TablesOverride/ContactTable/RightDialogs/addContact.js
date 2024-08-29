@@ -15,6 +15,7 @@ import { sideDialogController } from 'hookstate/sideDialogController';
 import { globalStateController } from 'hookstate/globalStateController';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import { useForm } from 'react-hook-form';
+import { extractValueRecursively } from 'components/MRTTable/utils/helper';
 
 const useStyles = makeStyles(theme => ({
 
@@ -98,15 +99,15 @@ export default function AddContactDialogContent(props) {
       ...contactFormValues
     })
 
+    // got required contact values
+    const contact = extractValueRecursively({
+      ...formStateValues,
+      ownerType: formStateValues?.ownerType ? formStateValues?.ownerType?.value : null,
+      createBy: getUser?._id,
+      lastUpdateBy: getUser?._id,
+    });
     await addContact({
-      variables: {
-        contact: {
-          ...formStateValues,
-          ownerType: formStateValues?.ownerType ? formStateValues?.ownerType?.value : null,
-          createBy: getUser?._id,
-          lastUpdateBy: getUser?._id,
-        },
-      },
+      variables: { contact },
       refetchQueries: ['getPaginatedContacts', 'getContact', 'getESContacts', 'getESSimpleSearch'],
       awaitRefetchQueries: true,
     });

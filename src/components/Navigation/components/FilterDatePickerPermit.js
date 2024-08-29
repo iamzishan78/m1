@@ -1,97 +1,71 @@
-import React, { useContext, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import moment from "moment";
-import { Clear } from "@material-ui/icons";
-import { NavigationContext } from "../NavigationContext";
-import { TextField, IconButton } from "@material-ui/core";
-import { useForm, Controller } from "react-hook-form";
+import React, { useContext, useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import moment from 'moment';
+import { Clear } from '@material-ui/icons';
+import { TextField, IconButton } from '@material-ui/core';
+import { useForm, Controller } from 'react-hook-form';
 
-const useStyles = makeStyles((theme) => ({
+import { NavigationContext } from '../NavigationContext';
+import { navController } from 'hookstate/navStateController';
+
+const useStyles = makeStyles(() => ({
   datesRow: {
-    display: "flex",
-    flexDirection: "row",
+    display: 'flex',
+    flexDirection: 'row',
   },
   datePicker: {
-    margin: "5px",
-    "&& span": {
-      pointerEvents: "none",
+    margin: '5px',
+    '&& span': {
+      pointerEvents: 'none',
     },
-    "& .MuiIconButton-root": {
-      padding: "10px 0px",
+    '& .MuiIconButton-root': {
+      padding: '10px 0px',
     },
     '& input::-webkit-calendar-picker-indicator': {
-      filter:
-        'invert(1)',
+      filter: 'invert(1)',
     },
   },
   blue: {
-    "& .MuiInputBase-input": { color: "#17AADD" },
+    '& .MuiInputBase-input': { color: '#17AADD' },
   },
   dateRoot: {
-    color: "#ffffff",
-    "& input": {
+    color: '#ffffff',
+    '& input': {
       marginLeft: 12,
     },
   },
 }));
 
-export default function FilterDatePickerPermit(props) {
+export default function FilterDatePickerPermit({ labelDates }) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const { labelDates } = props;
-  const { control, reset } = useForm();
+  const { control } = useForm();
 
   useEffect(() => {
-    let filter = null;
-    if (stateNav.permitDateFrom || stateNav.permitDateTo) {
-      filter = ["all"];
+    const { permitDateFrom, permitDateTo } = stateNav;
 
-      //// permitDateFrom
-      filter.push([
-        ">=",
-        ["get", "permitApprovedDate"],
-        stateNav.permitDateFrom
-          ? moment.parseZone(stateNav.permitDateFrom).utc(true).valueOf()
-          : moment.parseZone(new Date("1900-01-01T00:00:00")).utc(true).valueOf(),
-      ]);
+    const value = {
+      min: permitDateFrom && new Date(permitDateFrom).toISOString(),
+      max: permitDateTo && new Date(permitDateTo).toISOString(),
+    };
 
-      //// permitDateTo
-      filter.push([
-        "<=",
-        ["get", "permitApprovedDate"],
-        stateNav.permitDateTo
-          ? moment.parseZone(stateNav.permitDateTo).utc(true).valueOf()
-          : moment.parseZone(moment()).utc(true).valueOf(),
-      ]);
-    }
+    if (!permitDateFrom) delete value.min;
+    if (!permitDateTo) delete value.max;
 
-    if (JSON.stringify(stateNav.filterPermitDateRange) !== JSON.stringify(filter))
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        filterPermitDateRange: filter,
-      }));
+    const type = 'date';
+
+    navController.handleWellsFilters({ field: `permitApprovedDate`, value, type });
   }, [stateNav.permitDateFrom, stateNav.permitDateTo, setStateNav]);
 
-  useEffect(() => {
-    if (!stateNav.filterPermitDateRange?.length && (stateNav.permitDateFrom || stateNav.permitDateTo)) {
-      const resetParams = { permitDateFrom: null, permitDateTo: null };
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        ...resetParams,
-      }));
-      reset(resetParams);
-    }
-  }, [stateNav.filterPermitDateRange]);
-
-  const handleStartDate = (date) => {
-    setStateNav((stateNav) => ({
+  const handleStartDate = date => {
+    setStateNav(stateNav => ({
       ...stateNav,
       permitDateFrom: date,
     }));
   };
 
-  const handleEndDate = (date) => {
-    setStateNav((stateNav) => ({
+  const handleEndDate = date => {
+    setStateNav(stateNav => ({
       ...stateNav,
       permitDateTo: date,
     }));
@@ -103,30 +77,30 @@ export default function FilterDatePickerPermit(props) {
         <Controller
           control={control}
           name="permitDateFrom"
-          defaultValue={""}
-          render={(props) => (
+          defaultValue=""
+          render={({ value, onChange }) => (
             <TextField
               type="date"
-              label={labelDates + " " + "From"}
-              className={`${classes.datePicker} ${stateNav.permitDateFrom ? classes.blue : ""}`}
+              label={`${labelDates} From`}
+              className={`${classes.datePicker} ${stateNav.permitDateFrom ? classes.blue : ''}`}
               margin="dense"
               fullWidth
-              value={props.value}
-              onChange={(date) => {
+              value={value}
+              onChange={date => {
                 handleStartDate(date.target.value);
-                props.onChange(date.target.value);
+                onChange(date.target.value);
                 return { value: date };
               }}
               InputLabelProps={{
                 shrink: true,
               }}
               InputProps={{
-                inputProps: { max: moment().subtract(1, "day").format("yyyy-MM-DD") },
+                inputProps: { max: moment().subtract(1, 'day').format('yyyy-MM-DD') },
                 endAdornment: (
                   <IconButton
-                    onClick={(event) => {
+                    onClick={event => {
                       handleStartDate(null);
-                      props.onChange(event);
+                      onChange(event);
                     }}
                   >
                     <Clear style={{ height: 22, width: 22 }} />
@@ -142,34 +116,34 @@ export default function FilterDatePickerPermit(props) {
         <Controller
           control={control}
           name="permitDateTo"
-          defaultValue={""}
-          render={(props) => (
+          defaultValue=""
+          render={({ value, onChange }) => (
             <TextField
               type="date"
-              label={labelDates + " " + "To"}
-              className={`${classes.datePicker} ${stateNav.permitDateTo ? classes.blue : ""}`}
+              label={`${labelDates} To`}
+              className={`${classes.datePicker} ${stateNav.permitDateTo ? classes.blue : ''}`}
               margin="dense"
               fullWidth
-              value={props.value}
-              onChange={(date) => {
+              value={value}
+              onChange={date => {
                 handleEndDate(date.target.value);
-                props.onChange(date.target.value);
+                onChange(date.target.value);
               }}
               InputLabelProps={{
                 shrink: true,
               }}
               disableToolbar
-              KeyboardButtonProps={{ "aria-label": "change date" }}
+              KeyboardButtonProps={{ 'aria-label': 'change date' }}
               autoOk="true"
               format="MM/DD/YYYY"
               PopoverProps={{ disablePortal: false }}
               InputProps={{
-                inputProps: { max: moment().format("yyyy-MM-DD") },
+                inputProps: { max: moment().format('yyyy-MM-DD') },
                 endAdornment: (
                   <IconButton
-                    onClick={(event) => {
+                    onClick={event => {
                       handleEndDate(null);
-                      props.onChange(event);
+                      onChange(event);
                     }}
                   >
                     <Clear style={{ height: 22, width: 22 }} />

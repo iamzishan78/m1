@@ -110,7 +110,7 @@ export default function CustomDataFilters(props) {
     // Removing the keys that are already in agreementDetails
     allKeys = allKeys.filter(key => !(key.value.replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase()) in (agreementDetails || {})))
 
-    return allKeys.filter((key)=>!Array.isArray(key.label))
+    return allKeys.filter((key) => !Array.isArray(key.label))
   }, [customData, agreementDetails])
 
   const getValueOptions = useMemo(() => {
@@ -120,6 +120,7 @@ export default function CustomDataFilters(props) {
   }, [customData, selectedKey]);
 
   const handleKeyChange = (key) => {
+    if (!key) return
     setSelectedKey(key.value);
     setKey(key)
     setSelectedValue(null);

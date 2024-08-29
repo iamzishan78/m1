@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
     verticalAlign: "middle",
   },
   root: {
-    marginTop: "54px",
+    marginTop: "64px",
   },
   table: {
     borderTop: "solid 1px#E0E0E0",

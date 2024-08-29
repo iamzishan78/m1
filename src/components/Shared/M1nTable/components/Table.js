@@ -1117,7 +1117,7 @@ function SubTable(props) {
         if (ret_val[key]) {
           ret_val[key] = ret_val[key] + parseFloat(row[key]);
         } else {
-          ret_val[key] = parseFloat(row[key]);
+          ret_val[key] = row[key] ? parseFloat(row[key]) : 0; // Parse as float if value, otherwise 0
         }
       });
     });

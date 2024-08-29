@@ -40,6 +40,7 @@ function MRT_SelectCheckbox_OverRide({ row, selectAll, table, tableKey }) {
       'aria-label': selectAll
         ? localization.toggleSelectAll
         : localization.toggleSelectRow,
+      'data-testid': `row-check-box-${row?.id}`
     },
     onChange: row
       ? row?.getToggleSelectedHandler()

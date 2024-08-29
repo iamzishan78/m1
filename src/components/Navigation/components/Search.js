@@ -178,7 +178,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const esCallData = {
-  "wells": {
+  "platform wells": {
     esIndex: "platformData:wells",
     search: (request) => `${request.input}`,
     searchFields: SHAPE_TYPE['wells'].SEARCH_FIELDS,
@@ -325,7 +325,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [value, setValue] = React.useState(null);
   const [searchDropDown, setSearchDropDown] = React.useState(platformDataInitialData[0]);
-  const [searchOption, setSearchOption] = React.useState("wells");
+  const [searchOption, setSearchOption] = React.useState("platform wells");
   const [options, setOptions] = React.useState([]);
   const [searchTop, setSearchTop] = React.useState(5);
   const [maxMinWellsScore, setMaxMinWellsScore] = React.useState([0, 0]);
@@ -552,6 +552,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
               dataOwnerWells.ownerLatsLonsArray[0].longitude,
               dataOwnerWells.ownerLatsLonsArray[0].latitude,
             ],
+            selectedPlaces: null
           });
         setStateApp(stateApp => ({
           ...stateApp,
@@ -583,6 +584,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
               dataOperatorWells.operatorLatsLonsArray[0].longitude,
               dataOperatorWells.operatorLatsLonsArray[0].latitude,
             ],
+            selectedPlaces: null
           });
         setStateApp(stateApp => ({
           ...stateApp,
@@ -614,6 +616,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
               dataLeaseWells.leaseLatsLonsArray[0].longitude,
               dataLeaseWells.leaseLatsLonsArray[0].latitude,
             ],
+            selectedPlaces: null
           });
         setStateApp(stateApp => ({
           ...stateApp,
@@ -757,6 +760,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
         popupController.setState({
           selectedWellId: newValue.Id ? newValue.Id.toLowerCase() : null,
           wellSelectedCoordinates: [newValue.Longitude, newValue.Latitude],
+          selectedPlaces: null
         });
         setStateApp((stateApp) => ({
           ...stateApp,
@@ -840,7 +844,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
       }
 
       //// if mapboxSearch
-      if (newValue && newValue.center && (newValue.Source === "mapboxSearch" || newValue.Source === "places")) {
+      if (newValue && newValue.center && (newValue.Source === "mapboxSearch")) {
         let minLong, maxLong, minLat, maxLat;
         if (newValue.bbox) [minLong, minLat, maxLong, maxLat] = newValue.bbox;
 
@@ -865,12 +869,35 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
         })
         layerController.toggleLayersActivity("Search", true);
       }
+
+      if (newValue && newValue.center && (newValue.Source === "places")) {
+        let minLong, maxLong, minLat, maxLat;
+        if (newValue.bbox) [minLong, minLat, maxLong, maxLat] = newValue.bbox;
+
+        popupController.updateState({
+          selectedWell: null,
+          selectedWellId: null,
+          wellSelectedCoordinates: null,
+          selectedPlaces: newValue, // Set search places in the mapbox
+        })
+
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          fitBounds: newValue.bbox ? { maxLat, minLat, maxLong, minLong } : null,
+        }));
+        layerController.toggleLayersActivity("Search", true);
+      }
     }
   };
 
   const handleSearchPanelChange = (value) => {
     setSearchDropDown({ ...value })
-    setSearchOption(value.label.toLocaleLowerCase());
+    // Set either the gridlable or the simple lable
+    const selectedSearchOptions = value?.gridLabel?.toLocaleLowerCase() || value.label.toLocaleLowerCase()
+    setSearchOption(selectedSearchOptions);
+    if (searchOption === 'places' && selectedSearchOptions !== 'places') {
+      popupController.reset(); // Reset the state when moving to other Search Item
+    }
   }
 
   //// setting the buttons header /////
@@ -905,7 +932,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
         groupBy={(option) => {
           if (option?.shapeJson?.properties?.type === "agreement") return "Agreements"
           if (option.Source === ownerCogIndexName) return "Tax Owners";
-          if (option.Source === wellCogIndexName) return "Wells";
+          if (option.Source === wellCogIndexName) return "Platform Wells";
           if (option.Source === operatorIndexName) return "Operators";
           if (option.Source === leaseIndexName) return "Leases";
           if (option.Source === landGridIndexName) return "Land Grid";
@@ -1088,7 +1115,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
                                         option.Source === ownerCogIndexName
                                           ? "tax owners"
                                           : option.Source === wellCogIndexName
-                                            ? "wells"
+                                            ? "platform wells"
                                             : option.Source === operatorIndexName
                                               ? "operators"
                                               : option.Source === leaseIndexName

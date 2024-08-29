@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useLazyQuery } from '@apollo/client';
 import _, { debounce } from 'lodash';
@@ -11,7 +11,7 @@ import vf_currency from "components/Shared/valueformatters/vf_currency.js";
 function ESAutoCompleteFilter({
 	tableKey,
 	esIndex,
-	column: { field, label, type, custom, setFilterValue, filterValue, filterSelectOptions, isComposite },
+	column: { field, label, type, custom, defaultFilterOptions = [], setFilterValue, filterValue, filterSelectOptions, isComposite },
 	extendSearchQuery,
 	multiple,
 }) {
@@ -148,9 +148,15 @@ function ESAutoCompleteFilter({
 			filterValue = `${formattedGte} to ${formattedLte}`;
 		} else if (Array.isArray(filterValue)) {
 			filterValue = filterValue.map(val => formatDate(val));
+		} else if (typeof filterValue === 'boolean' || type === "defaultFiltersOptions") {
+			// If there are default filters, use them 
+			const requiredFilterValue = defaultFilterOptions?.find((option) => option?.value === filterValue)?.label;
+			filterValue = requiredFilterValue;
 		}
 	}
-	const id = Array.isArray(field) ? field.join(' ') : field
+	const id = Array.isArray(field) ? field.join(' ') : field;
+	// Filter out the options
+	const requiredOptions = defaultFilterOptions?.length > 0 ? defaultFilterOptions : (multiple ? options?.filter(item => !filterValue.includes(item.value)) : options);
 
 	// format value to show filter value & option with $ sign as prefix
 	const formatValue = (value) => {
@@ -172,10 +178,10 @@ function ESAutoCompleteFilter({
 		<Autocomplete
 			multiple={multiple}
 			id={`${id}-filter-autocomplete`}
-			options={multiple ? options?.filter(item => !filterValue.includes(item.value)) : options}
+			options={requiredOptions}
 			loading={loading}
 			filterOptions={searchMapping[searchMode].filterOptions}
-			value={filterValue}
+			value={formatValue(filterValue)}
 			renderInput={params => (
 				<TextField
 					{...params}
