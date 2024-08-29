@@ -123,27 +123,12 @@ export default function TrackTaskCard() {
         // Create chart instance
         var chart = am4core.create("bar-chart", am4charts.XYChart);
 
-        // Define chart data
-        var chartData = [
-            {
-                year: "2021",
-                open: 2.5,
-                completed: 2.5,
-             
-            },
-            {
-                year: "2022",
-                open: 2.6,
-                completed: 2.7,
-            }
-        ];
-
         // Set chart data
-        chart.data = chartData;
+        chart.data = taskperUser;
 
         // Create Y-axis (Category Axis)
         var categoryAxis = chart.yAxes.push(new am4charts.CategoryAxis());
-        categoryAxis.dataFields.category = "year";
+        categoryAxis.dataFields.category = "name";
         categoryAxis.renderer.grid.template.location = 0;
         categoryAxis.renderer.labels.template.fontSize = 16;
         categoryAxis.renderer.labels.template.fontWeight = "bold";
@@ -157,7 +142,7 @@ export default function TrackTaskCard() {
         function createSeries(field, name) {
             var series = chart.series.push(new am4charts.ColumnSeries());
             series.dataFields.valueX = field; // Set the value field to the corresponding region
-            series.dataFields.categoryY = "year"; // Set the category field to 'year'
+            series.dataFields.categoryY = "name"; // Set the category field to 'name'
             series.name = name;
             series.stacked = true; // Enable stacking of series
             series.columns.template.tooltipText = "{name}: [bold]{valueX}[/]";
@@ -168,34 +153,35 @@ export default function TrackTaskCard() {
             labelBullet.label.text = "{valueX}"; // Display the value on each bar
             labelBullet.label.fill = am4core.color("#fff");
             labelBullet.locationX = 0.5; // Center the label
-            labelBullet.label.fontSize = 14;
+            labelBullet.label.fontSize = 8;
             labelBullet.label.fontWeight = "bold";
 
-             // Add image bullet to series
-             var imageBullet = series.bullets.push(new am4charts.Bullet());
-             var circle = imageBullet.createChild(am4core.Circle);
-             circle.radius = 18; // Circle radius
-             circle.fill = am4core.color("#fff");
+            //  // Add image bullet to series
+            //  var imageBullet = series.bullets.push(new am4charts.Bullet());
+            //  var circle = imageBullet.createChild(am4core.Circle);
+            //  circle.radius = 18; // Circle radius
+            //  circle.fill = am4core.color("#fff");
         }
 
         // Create series for each region
         createSeries("open", "Open");
         createSeries("completed", "Completed");
 
-        // Add image bullets to series
-        chart.series.each(series => {
-            var imageBullet = series.bullets.push(new am4charts.Bullet());
-            var image = imageBullet.createChild(am4core.Image);
-            image.href = "https://picsum.photos/200/300"; // Set the path to your image
-            image.width = 30; // Adjust size as needed
-            image.height = 30;
-            image.horizontalCenter = "middle";
-            image.verticalCenter = "middle";
-            image.locationX = 0.5;
-            image.locationY = 0;
-            image.tooltipText = "Image Bullet"; // Optional tooltip text
-        });
+        // // Add image bullets to series
+        // chart.series.each(series => {
+        //     var imageBullet = series.bullets.push(new am4charts.Bullet());
+        //     var image = imageBullet.createChild(am4core.Image);
+        //     image.href = "https://picsum.photos/200/300"; // Set the path to your image
+        //     image.width = 30; // Adjust size as needed
+        //     image.height = 30;
+        //     image.horizontalCenter = "middle";
+        //     image.verticalCenter = "middle";
+        //     image.locationX = 0.5;
+        //     image.locationY = 0;
+        //     image.tooltipText = "Image Bullet"; // Optional tooltip text
+        // });
 
+         // Modify axis labels after chart is drawn
         // Add legend
         chart.legend = new am4charts.Legend();
 
@@ -208,22 +194,18 @@ export default function TrackTaskCard() {
 
     useEffect(() => {
         if (analyticsData?.activitiesCountByTaskStatusPerOwner) {
-            const chartData = { series: copy(defaultSeriesTask), xaxis: [] };
-            Object.entries(analyticsData?.activitiesCountByTaskStatusPerOwner).forEach((data, value) => {
-                if (data[1]?.name) {
-                    chartData.xaxis.push(data[1].name.substring(0, 10));
-                }
-                for (let i = 0; i < chartData.series.length; i++) {
-                    if (data[1]) {
-                        const count = data[1][chartData.series[i].key] ? data[1][chartData.series[i].key] : 0;
-                        chartData.series[i].data.push(count);
-                    } else {
-                        chartData.series[i].data.push(0);
-                    }
-
-                }
+            const chartData = analyticsData?.activitiesCountByTaskStatusPerOwner;
+          // Create an array of objects with required fields
+            const resultArray = Object.keys(analyticsData?.activitiesCountByTaskStatusPerOwner).map(email => {
+                const entry = chartData[email];
+                return {
+                    name: entry.name,
+                    open: entry.Open || 0, // Use 0 if Open is not defined
+                    completed: entry.Completed || 0, // Use 0 if Completed is not defined
+                    email: email
+                };
             });
-            setTaskperUser(JSON.parse(JSON.stringify(chartData)));
+            setTaskperUser(resultArray);
         }
     }, [analyticsData]);
 
@@ -233,7 +215,7 @@ export default function TrackTaskCard() {
                 style={{ margin: "8px" }}
                 title={<Title />}
             />
-            <div id={'bar-chart'} style={{ paddingTop: "40px", height: "80%", width: "70%" }} />
+            <div id={'bar-chart'} style={{ paddingTop: "40px", height: "80%", width: "80%" }} />
         </Fragment>
     )
 }
