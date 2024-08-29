@@ -132,20 +132,20 @@ export default function TrackTaskCard() {
         categoryAxis.renderer.grid.template.location = 0;
         categoryAxis.renderer.labels.template.fontSize = 16;
         categoryAxis.renderer.labels.template.fontWeight = "bold";
-        categoryAxis.title.text = "Years";
 
         // Create X-axis (Value Axis)
         var valueAxis = chart.xAxes.push(new am4charts.ValueAxis());
         valueAxis.title.text = "Values";
 
-        // Function to create a series for each region
-        function createSeries(field, name) {
+        // Function to create a series for each data field
+        function createSeries(field, name, color) {
             var series = chart.series.push(new am4charts.ColumnSeries());
-            series.dataFields.valueX = field; // Set the value field to the corresponding region
+            series.dataFields.valueX = field; // Set the value field to the corresponding data field
             series.dataFields.categoryY = "name"; // Set the category field to 'name'
             series.name = name;
             series.stacked = true; // Enable stacking of series
             series.columns.template.tooltipText = "{name}: [bold]{valueX}[/]";
+            series.columns.template.fill = am4core.color(color); // Assign color for each series
             series.columns.template.fillOpacity = 0.8;
 
             // Enable data labels
@@ -155,33 +155,12 @@ export default function TrackTaskCard() {
             labelBullet.locationX = 0.5; // Center the label
             labelBullet.label.fontSize = 8;
             labelBullet.label.fontWeight = "bold";
-
-            //  // Add image bullet to series
-            //  var imageBullet = series.bullets.push(new am4charts.Bullet());
-            //  var circle = imageBullet.createChild(am4core.Circle);
-            //  circle.radius = 18; // Circle radius
-            //  circle.fill = am4core.color("#fff");
         }
 
-        // Create series for each region
-        createSeries("open", "Open");
-        createSeries("completed", "Completed");
+        // Create series with different colors
+        createSeries("open", "Open", "#c55a11"); // Orange color for "Open"
+        createSeries("completed", "Completed", "#4472c4"); // Blue color for "Completed"
 
-        // // Add image bullets to series
-        // chart.series.each(series => {
-        //     var imageBullet = series.bullets.push(new am4charts.Bullet());
-        //     var image = imageBullet.createChild(am4core.Image);
-        //     image.href = "https://picsum.photos/200/300"; // Set the path to your image
-        //     image.width = 30; // Adjust size as needed
-        //     image.height = 30;
-        //     image.horizontalCenter = "middle";
-        //     image.verticalCenter = "middle";
-        //     image.locationX = 0.5;
-        //     image.locationY = 0;
-        //     image.tooltipText = "Image Bullet"; // Optional tooltip text
-        // });
-
-         // Modify axis labels after chart is drawn
         // Add legend
         chart.legend = new am4charts.Legend();
 
@@ -195,13 +174,13 @@ export default function TrackTaskCard() {
     useEffect(() => {
         if (analyticsData?.activitiesCountByTaskStatusPerOwner) {
             const chartData = analyticsData?.activitiesCountByTaskStatusPerOwner;
-          // Create an array of objects with required fields
+            // Create an array of objects with required fields
             const resultArray = Object.keys(analyticsData?.activitiesCountByTaskStatusPerOwner).map(email => {
                 const entry = chartData[email];
                 return {
                     name: entry.name,
-                    open: entry.Open || 0, // Use 0 if Open is not defined
                     completed: entry.Completed || 0, // Use 0 if Completed is not defined
+                    open: entry.Open || 0, // Use 0 if Open is not defined
                     email: email
                 };
             });
