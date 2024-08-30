@@ -92,7 +92,7 @@ const AttrsValuesDropdown = ({
                 filterKey: selectedValue?.value,
                 esIndex,
                 index: esIndex,
-                filters: [{ field: 'layer.keyword', value: layerType }],
+                filters: [layerType === 'agreement' ? { field: 'shapeJson.properties.layerType', value: layerType } : { field: 'layer.keyword', value: layerType }],
                 size: 10000
             },
         });
