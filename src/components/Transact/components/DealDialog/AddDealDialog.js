@@ -59,7 +59,7 @@ import { GET_DEAL_SHAPES } from "graphQL/useQueryDealShapes";
 import { globalStateController } from "hookstate/globalStateController";
 import { findBoundsMap } from "components/MapControls/commonHelper";
 import { mapControlsController } from "hookstate/mapControlsController";
-import { layerController } from "hookstate/layerStateController";
+import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { drawBoundary } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
 
 function NumberFormatCustom(props) {
@@ -117,9 +117,9 @@ export const useDealMapFlyto = () => {
       }
 
       useEffect(() => {
-        console.log("dataDealShapes: ", dataDealShapes)
         if (dataDealShapes && dataDealShapes.dealShapes?.length) {
           const formattedFeatures = formatIt(dataDealShapes.dealShapes).features;
+          const customLayerIds = dataDealShapes.dealShapes.map(shape => shape._id);
       
           if (formattedFeatures.length > 0 && window.mapRef) {  // Ensure we have valid formatted features
             findBoundsMap(formattedFeatures, window.mapRef, {
@@ -131,11 +131,20 @@ export const useDealMapFlyto = () => {
             formattedFeatures.map(feature => {
               drawBoundary(feature)
             })
-      
-            // setTimeout(() => {
-            //   layerController.updateState({ wellListFromSearch: [...dataDealShapes.dealShapes] });
-            //   layerController.toggleLayersActivity("Search", true);
-            // }, 0);
+
+            // Filter Units
+            layerFiltersController.setVariables("Units", {
+              filters: [
+                { field: "_id", value: customLayerIds }
+              ]
+            });
+
+            // Filter Units
+            layerFiltersController.setVariables("Parcels", {
+              filters: [
+                { field: "_id", value: customLayerIds }
+              ]
+            });
           }
       
           globalStateController.updateState({ universalLoader: false });
