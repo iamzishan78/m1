@@ -55,6 +55,12 @@ import { createPortal } from "react-dom/cjs/react-dom.production.min";
 import ExistingDeal from "./ExistingDeal";
 import { GET_FLOW_ASSOCIATED_SUMMARY } from "graphQL/useQueryFlowAssociatedData";
 import { mapStateController } from "hookstate/mapStateController";
+import { GET_DEAL_SHAPES } from "graphQL/useQueryDealShapes";
+import { globalStateController } from "hookstate/globalStateController";
+import { findBoundsMap } from "components/MapControls/commonHelper";
+import { mapControlsController } from "hookstate/mapControlsController";
+import { layerController } from "hookstate/layerStateController";
+import { drawBoundary } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -77,6 +83,67 @@ function NumberFormatCustom(props) {
     />
   );
 }
+
+const formatIt = (mdata) => {
+  return {
+    type: "FeatureCollection",
+    features: mdata
+      .filter((feature) => feature.geometry && feature.geometry.coordinates)
+      .map((feature) => {
+        return {
+          type: "Feature",
+          properties: feature,
+          geometry: {
+            type: feature.geometry.type,
+            coordinates: feature.geometry.coordinates,
+          },
+        };
+      }),
+  };
+};
+
+export const useDealMapFlyto = () => {
+  const [getDealShapes, { data: dataDealShapes }] = useLazyQuery(GET_DEAL_SHAPES, { fetchPolicy: "cache-and-network", skip: true });
+
+    const handleFlyto = async (contactIds, dealId ) => {
+        globalStateController.updateState({ universalLoader: true })
+  
+        await getDealShapes({
+          variables: {
+            contactIds,
+            dealId
+          },
+        });
+      }
+
+      useEffect(() => {
+        console.log("dataDealShapes: ", dataDealShapes)
+        if (dataDealShapes && dataDealShapes.dealShapes?.length) {
+          const formattedFeatures = formatIt(dataDealShapes.dealShapes).features;
+      
+          if (formattedFeatures.length > 0 && window.mapRef) {  // Ensure we have valid formatted features
+            findBoundsMap(formattedFeatures, window.mapRef, {
+              top: 50, bottom: 50, left: 50, right: 50,
+            });
+            mapControlsController.updateState({ mapGridCardActivated: false });
+
+            
+            formattedFeatures.map(feature => {
+              drawBoundary(feature)
+            })
+      
+            // setTimeout(() => {
+            //   layerController.updateState({ wellListFromSearch: [...dataDealShapes.dealShapes] });
+            //   layerController.toggleLayersActivity("Search", true);
+            // }, 0);
+          }
+      
+          globalStateController.updateState({ universalLoader: false });
+        }
+      }, [dataDealShapes]);
+
+    return { handleFlyto }
+  }
 
 NumberFormatCustom.propTypes = {
   inputRef: PropTypes.func.isRequired,
@@ -629,7 +696,7 @@ function AddDealDialog(props) {
 
   // TRACK
   const [trackByObjectId, { loading: loadingTrack, data: dataTrack }] = useLazyQuery(TRACKBYOBJECTID);
-
+  const { handleFlyto } = useDealMapFlyto();
   const [target, setTarget] = useState({});
 
   useEffect(() => {
@@ -638,7 +705,12 @@ function AddDealDialog(props) {
         addUpdateDeal(null, false);
       }
     }
-  }, [stateApp.transactBarView]);
+    if(stateApp.transactBarView === "Map" && window.mapRef) {
+      const dealId = stateApp.activeDeal?.cardId || stateApp.activeDeal?._id;
+      const contactIds = stateApp?.activeDeal?.contacts?.map(contact => contact._id) || [];
+      handleFlyto(contactIds, dealId);
+    }
+  }, [stateApp.transactBarView, window.mapRef]);
 
   useEffect(() => {
     if (dataTrack) {
@@ -1257,18 +1329,6 @@ function AddDealDialog(props) {
       variables: { fileIds: ID },
     });
   }, [files, uploadedFiles]);
-
-  const saveViewport = useCallback(() => {
-    setMapSettings({
-      activeBaseMap: mapStateValues?.mapVars?.styleId,
-      mapDefaultPosition: {
-        zoom: mapStateValues?.mapVars?.zoom,
-        bearing: mapStateValues?.mapVars?.bearing,
-        pitch: mapStateValues?.mapVars?.pitch,
-        center: mapStateValues?.mapVars?.center,
-      },
-    });
-  }, [mapStateValues.mapVars]);
 
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(null);
@@ -1898,25 +1958,6 @@ function AddDealDialog(props) {
                 },
               }}
             ></MapProvider>
-            <div
-              style={{
-                position: "relative",
-                float: "right",
-                "margin-right": "40px",
-                width: "fit-content",
-                "background-color": "#fff",
-                padding: "10px",
-              }}
-              className={classes.inputFieldDealName}
-            >
-              <Button
-                color="secondary"
-                variant="outlined"
-                onClick={saveViewport}
-              >
-                Save Viewport
-              </Button>
-            </div>
           </div>
         )}
       </div>
