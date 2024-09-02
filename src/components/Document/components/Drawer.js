@@ -166,22 +166,23 @@ export default function DocumentDrawer(props) {
 
   // Fetching wells from descriptor
   useEffect(() => {
-    if (!props.isRelatedDocuments)
+    if (!props.isRelatedDocuments){
       getWellsFromDocument({
         variables: {
           descriptorObject: stateApp.selectedDocument?._id,
         },
       });
-      getContactsFromDocument({
+        getContactsFromDocument({
         variables: {
           descriptorObject: stateApp.selectedDocument?._id,
         },
       });
-      getAgreementsFromDocument({
+       getAgreementsFromDocument({
         variables: {
           descriptorObject: stateApp.selectedDocument?._id,
         },
       });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.selectedDocument?._id]);
 

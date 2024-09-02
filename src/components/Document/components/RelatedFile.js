@@ -362,6 +362,8 @@ export default function RelatedFile(props) {
         relatedObjectId: props.relatedObjectId,
         relatedObjectType: props.relatedObjectType,
       },
+      refetchQueries: ["getParcelFiles"],
+      awaitRefetchQueries: true,
     }).then(() => {
 
       props.setShowDocumentSlider("");
