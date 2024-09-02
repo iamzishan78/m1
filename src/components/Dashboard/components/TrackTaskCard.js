@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect, } from 'react'
 import CardHeader from "@material-ui/core/CardHeader";
-import { Grid, Typography, TextField } from "@material-ui/core";
+import { Grid, Typography, TextField, CircularProgress } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { CUSTOM_DATES } from 'utils/data'
 import { makeStyles } from "@material-ui/styles";
@@ -86,6 +86,7 @@ const Title = ({
 };
 
 export default function TrackTaskCard() {
+    const classes = useStyles();
     const [analyticsData, setAnalyticsData] = useState([]);
     const [taskperUser, setTaskperUser] = useState([]);
     const [fromDate, setFromDate] = useState(null);
@@ -104,22 +105,22 @@ export default function TrackTaskCard() {
     const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
         fetchPolicy: "no-cache",
         onCompleted: (data) => {
-          if (data?.getESMinValue) {
-            setFromDate(`${moment(data?.getESMinValue).startOf("month").format("yyyy-MM-DD")}`);
-            setMinDate(data?.getESMinValue)
-          }
+            if (data?.getESMinValue) {
+                setFromDate(`${moment(data?.getESMinValue).startOf("month").format("yyyy-MM-DD")}`);
+                setMinDate(data?.getESMinValue)
+            }
         },
-      });
+    });
 
-      useEffect(() => {
+    useEffect(() => {
         getESMinValue({
-          variables: {
-            esIndex : "activities_flat",
-            field: "dateTime",
-            value_as_string: true,
-          },
+            variables: {
+                esIndex: "activities_flat",
+                field: "dateTime",
+                value_as_string: true,
+            },
         });
-      }, [getESMinValue]);
+    }, [getESMinValue]);
 
     const getFilters = (appliedFilters) => {
         let filters = [];
@@ -305,7 +306,11 @@ export default function TrackTaskCard() {
                     minDate={minDate}
                 />}
             />
-            <div id={'bar-chart'} style={{ paddingTop: "20px", paddingBottom: "40px", height: "90%", width: "90%" }} />
+            {(loading) ? (
+                <CircularProgress className={classes.progress} size={80} disableShrink color="secondary"></CircularProgress>
+            ) : (
+                <div id={'bar-chart'} style={{ paddingTop: "20px", paddingBottom: "40px", height: "90%", width: "90%" }} />
+            )}
         </Fragment>
     )
 }
@@ -325,7 +330,7 @@ function TaskFilters({
 
     const handleDateTypeChange = (date) => {
         handleCustomDateTypeChange(date, null, CUSTOM_DATES, setFromDate, setToDate, minDate)
-      }
+    }
 
     return (
         <div style={{ display: "flex" }}>
@@ -352,11 +357,11 @@ function TaskFilters({
                         size="small"
                         onChange={(event, newValue) => {
                             if (newValue === null) {
-                              handleDateTypeChange("This Month");
+                                handleDateTypeChange("This Month");
                             } else {
-                              handleDateTypeChange(newValue);
+                                handleDateTypeChange(newValue);
                             }
-                          }}
+                        }}
                         options={Object.values(CUSTOM_DATES)}
                         renderInput={(params) => (
                             <TextField
