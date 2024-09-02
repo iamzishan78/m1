@@ -13,6 +13,7 @@ import * as am4charts from "@amcharts/amcharts4/charts";
 import { getRangeFilters } from "utils/helper";
 import CustomAvatar from "components/Shared/ui/CustomAvatar";
 import ReactDOMServer from 'react-dom/server';
+import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
 
 const useStyles = makeStyles((theme) => ({
     actionBar: {
@@ -59,7 +60,6 @@ const Title = ({
     setFromDate,
     toDate,
     setToDate,
-    minDate,
 }) => {
     const classes = useStyles();
 
@@ -86,7 +86,7 @@ export default function TrackTaskCard() {
     const [analyticsData, setAnalyticsData] = useState([]);
     const [taskperUser, setTaskperUser] = useState([]);
     const [fromDate, setFromDate] = useState(null);
-    const [toDate, setToDate] = useState(null);
+    const [toDate, setToDate] = useState(moment(new Date()).format("yyyy-MM-DD"));
 
     const [getActivityAnalytics, { loading }] = useLazyQuery(GET_ACTIVITY_TASK_PER_USER, {
         fetchPolicy: "no-cache",
@@ -96,6 +96,25 @@ export default function TrackTaskCard() {
             }
         },
     });
+
+    const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
+        fetchPolicy: "no-cache",
+        onCompleted: (data) => {
+          if (data?.getESMinValue) {
+            setFromDate(`${moment(data?.getESMinValue).startOf("month").format("yyyy-MM-DD")}`);
+          }
+        },
+      });
+
+      useEffect(() => {
+        getESMinValue({
+          variables: {
+            esIndex : "activities_flat",
+            field: "dateTime",
+            value_as_string: true,
+          },
+        });
+      }, [getESMinValue]);
 
     const getFilters = (appliedFilters) => {
         let filters = [];
@@ -280,7 +299,7 @@ export default function TrackTaskCard() {
                     setToDate={setToDate}
                 />}
             />
-            <div id={'bar-chart'} style={{ paddingTop: "40px", paddingBottom: "40px", height: "95%", width: "90%" }} />
+            <div id={'bar-chart'} style={{ paddingTop: "20px", paddingBottom: "40px", height: "90%", width: "90%" }} />
         </Fragment>
     )
 }
@@ -290,7 +309,6 @@ function TaskFilters({
     setFromDate,
     toDate,
     setToDate,
-    minDate,
 }) {
 
     const classes = useStyles();
