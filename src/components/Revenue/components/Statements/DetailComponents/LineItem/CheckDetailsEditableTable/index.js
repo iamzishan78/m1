@@ -179,7 +179,8 @@ function CheckDetailsEditableTable(props) {
       set(row, `property.name`, "");
       set(row, `property.state`, "");
       set(row, `property.county`, "");
-      const { data: checkDetail } = await client.query({
+      let checkDetail
+      const { data: result1 } = await client.query({
         query: GET_ES_PAGINATED_LIST,
         variables: {
           esIndex: "properties_flat",
@@ -190,6 +191,23 @@ function CheckDetailsEditableTable(props) {
           },
         },
       });
+      if (result1?.getESPaginatedList?.hits.length) {
+        checkDetail = result1
+      } else {
+        const { data: result2 } = await client.query({
+          query: GET_ES_PAGINATED_LIST,
+          variables: {
+            esIndex: "properties_flat",
+            search: `name:"${value}"`,
+            pagination: {
+              first: 1,
+              keep_alive: "1micros",
+            },
+          },
+        });
+        checkDetail = result2
+      }
+
       let newProperty = {};
       if (checkDetail?.getESPaginatedList?.hits.length > 0) {
         newProperty = checkDetail.getESPaginatedList.hits[0];

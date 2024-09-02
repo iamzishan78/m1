@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Autocomplete, TextField, Button } from '@mui/material';
 import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
-import { FLATTENNING } from 'graphQL/useMutationRunFlattening';
-import { useMutation } from "@apollo/client";
+import { REINDEX } from 'graphQL/useMutationadminESOperations';
+import { useLazyQuery, useMutation } from "@apollo/client";
+import { GET_ES_OPERATIONS_MODELS } from "graphQL/useQueryadminESOperations";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: () => ({
@@ -30,37 +31,17 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const flatteningModels = [
-  'CheckDetail', // CheckDetail_Flat, CheckDetailInterestsComparison_Flat
-  'CustomLayer', // Shape_Flat
-  'ShapeOwnerDescriptor', // ShapeOwner_Flat
-  'Contact', // Contact_Flat
-  'Check', // Check_Flat
-  'File', // Document_Flat
-  'Activity', // Activity_Flat
-  'ShapeTractDescriptor', // ShapeTract_Flat
-  'WellDescriptor', // WellInterest_Flat
-  'ShapeWellDescriptor', // ShapeWellInterest_Flat
-  'Campaign', // Campaign_Flat
-  'Property', // Property_Flat
-  'PropertyDescriptor', // PropertyInterest_Flat
-  'MyWell', // MyWell_Flat 
-  'MyWellProduction', // MyWellProduction_Flat
-  'ShapeFile', // ShapeFile_Flat
-  'ParcelDescriptor', // RunsheetInstrument_Flat
-  'Notification', // Notification_Flat
-];
-
-
-export default function Flattening() {
+export default function Reindex() {
 
   const classes = useStyles();
 
+  const [getESOperationsModels, { data }] = useLazyQuery(GET_ES_OPERATIONS_MODELS);
+
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [warning, setWarning] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
 
-  const [RunFlattening, { data, loading, error }] = useMutation(FLATTENNING);
-
+  const [Reindex] = useMutation(REINDEX);
 
   const handleAutocompleteChange = (event, value) => {
     setSelectedOptions(value);
@@ -68,13 +49,19 @@ export default function Flattening() {
   };
 
   const handleClick = () => {
-    RunFlattening({
+    Reindex({
       variables: {
         models: selectedOptions,
-        chunkSize: 500
       }
     })
+    setShowMessage(true)
   }
+
+  useEffect(() => {
+    getESOperationsModels({
+      variables: { type: "reindex" },
+    });
+  }, [getESOperationsModels]);
 
   return (
     <div style={{ marginTop: "65px" }}>
@@ -89,11 +76,11 @@ export default function Flattening() {
           disablePortal
           id="combo-box-demo"
           multiple
-          options={flatteningModels}
+          options={data?.getESOperationsModels || []}
           value={selectedOptions}
           onChange={handleAutocompleteChange}
           sx={{ width: 300 }}
-          renderInput={(params) => <TextField {...params} label="Flattening" />}
+          renderInput={(params) => <TextField {...params} label="Reindex" />}
         />
 
         <Button
@@ -103,14 +90,22 @@ export default function Flattening() {
           className={classes.addDataButton}
           disabled={warning}
         >
-          Run Flattening
+          Run Reindex
         </Button>
       </Grid>
       {warning && (
         <div style={{ color: 'red', marginTop: '10px', marginLeft: '20px' }}>
-          You can run flattening only on 2 index at a time.
+          You should run reindexing only on 2 index at a time.
         </div>
       )}
+      {
+        showMessage &&
+        (
+          <div style={{ color: 'green', marginTop: '10px', marginLeft: '20px' }}>
+            Reindexing Process is Started
+          </div>
+        )
+      }
     </div>
   );
 }
