@@ -214,7 +214,7 @@ export default function TrackTaskCard() {
 
         // Create X-axis (Value Axis)
         var valueAxis = chart.xAxes.push(new am4charts.ValueAxis());
-        valueAxis.title.text = "Values";
+        valueAxis.renderer.labels.template.disabled = true;
 
 
         // Function to create a series for each data field
@@ -258,7 +258,7 @@ export default function TrackTaskCard() {
         titleLabel.verticalCenter = "bottom";
         titleLabel.adapter.add("y", (y, target) => {
             let chartWidth = target.parent.pixelHeight;
-            return ((chartWidth / 2) - 10); // Adjust the title's vertical position
+            return ((chartWidth / 2) - 38); // Adjust the title's vertical position
         });
         // Adjust position relative to the x-axis and legend
         titleLabel.adapter.add("x", (x, target) => {
