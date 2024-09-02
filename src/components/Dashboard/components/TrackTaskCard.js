@@ -158,50 +158,28 @@ export default function TrackTaskCard() {
         var categoryAxis = chart.yAxes.push(new am4charts.CategoryAxis());
         categoryAxis.dataFields.category = "email";
         categoryAxis.renderer.grid.template.location = 0;
+        categoryAxis.renderer.minGridDistance = 20;
         categoryAxis.renderer.labels.template.fontSize = 16;
         categoryAxis.renderer.labels.template.fontWeight = "bold";
 
-        function getInnermostChildNodes(node) {
-            let innermostNodes = [];
-
-            function traverse(node) {
-                if (!node) return; // base case: no node to process
-
-                // If the node has no children, it's an innermost node
-                if (node.childNodes.length === 0) {
-                    // debugger
-                    innermostNodes.push(node);
-                } else {
-                    // Otherwise, continue traversing child nodes
-                    node.childNodes.forEach(child => traverse(child));
-                }
-            }
-
-            traverse(node);
-            // debugger
-            return innermostNodes;
-        }
-
-
         // Use adapter to modify the displayed label
-        categoryAxis.renderer.labels.template.adapter.add("text", function (text, target) {
-            const node = get(cloneDeep(target), '_element.node');
-            console.log("node --------------", node)
-            console.log(" --------------", target._element)
-            const innermostNodes = getInnermostChildNodes(node);
-            console.log("innermostNodes 0 ---------", innermostNodes[0])
-            const f = cloneDeep(innermostNodes[0].textContent)
-            console.log("f", f)
-            // Array.from(f).forEach((tspan, index) => {
-            //     console.log(`Text content of tspan ${index + 1}:`, tspan.textContent);
-            // });
-            return text
+        categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
+            let name = text;
+            if (text) {
+                name = taskperUser.find((data) => data?.email === text).name
+            }
+            return name;
         });
-
 
         // Create X-axis (Value Axis)
         var valueAxis = chart.xAxes.push(new am4charts.ValueAxis());
         valueAxis.title.text = "Values";
+
+
+        // Use adapter to modify the displayed label
+        categoryAxis.renderer.labels.template.adapter.add("text", function (text, target) {
+            return text
+        });      
 
         // Function to create a series for each data field
         function createSeries(field, name, color) {
