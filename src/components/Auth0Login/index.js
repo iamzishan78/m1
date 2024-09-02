@@ -66,6 +66,7 @@ const Auth0Login = props => {
       tenantId: sessionData.tenantId,
       mongoId: mongoUser._id,
       roles: mongoUser.roles,
+      isAuth0: true,
       authToken: bypassLogin
         ? sessionData.auth0Token
         : authGraphQLResponse.authenticationToken,
@@ -82,7 +83,7 @@ const Auth0Login = props => {
         },
       },
     };
-
+    globalStateController.updateState({ user })
     window.setStateApp(state => ({
       ...state,
       user,
@@ -95,8 +96,7 @@ const Auth0Login = props => {
     window.setStateNav(stateNav => ({ ...stateNav, defaultOn: true }));
 
     // setLoadingSigInButton(false);
-
-    props.history.replace({
+    props.history.push({
       parhname: window.location.pathname,
       search: window.location?.search,
     });
