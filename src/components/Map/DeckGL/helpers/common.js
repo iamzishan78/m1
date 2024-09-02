@@ -512,7 +512,8 @@ export const getLayerFillColor = (dbLayer, fillColor, fillOpacity) => {
 	const selectAttr = dbLayer.layerSettings?.selectedAttribute?.label;
 	return (d) => {
 		if (selectAttr) {
-			const path = colorBasedAttributes[dbLayer?.identifier]?.keys.find((key) => key.label === selectAttr);
+			let path = colorBasedAttributes[dbLayer?.identifier]?.keys.find((key) => key.label === selectAttr);
+			if (!path) path = dbLayer.layerSettings?.selectedAttribute;
 
 			let keys = path?.value.split('.').slice(1, -1);
 			let orKeys = keys.slice(0, -1);
@@ -522,7 +523,7 @@ export const getLayerFillColor = (dbLayer, fillColor, fillOpacity) => {
 			let value = _.get(d, keys) || (path.orKey ? _.get(d, orKeys) : null);
 			if (value) {
 				const attrFillColor = dbLayer.layerSettings.attributeBasedColors[selectAttr][value]
-				if (attrFillColor) return getRGBA(attrFillColor, fillOpacity)
+				if (attrFillColor) return layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : getRGBA(attrFillColor, fillOpacity)
 			}
 		}
 		return layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : getRGBA(fillColor, fillOpacity)
