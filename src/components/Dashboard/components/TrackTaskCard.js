@@ -1,6 +1,6 @@
-import React, { Fragment, useState, useCallback, useContext, useEffect, } from 'react'
+import React, { Fragment, useState, useEffect, } from 'react'
 import CardHeader from "@material-ui/core/CardHeader";
-import { Grid, Typography, TextField, Button } from "@material-ui/core";
+import { Grid, Typography, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { CUSTOM_DATES } from 'utils/data'
 import { makeStyles } from "@material-ui/styles";
@@ -10,10 +10,9 @@ import { useLazyQuery } from "@apollo/client";
 import { GET_ACTIVITY_TASK_PER_USER } from "graphQL/useQueryActivityTaskPerUser";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
-import am4themes_animated from '@amcharts/amcharts4/themes/animated';
-import { cloneDeep } from 'lodash';
-import get from "lodash/get";
 import { getRangeFilters } from "utils/helper";
+import CustomAvatar from "components/Shared/ui/CustomAvatar";
+import ReactDOMServer from 'react-dom/server';
 
 const useStyles = makeStyles((theme) => ({
     actionBar: {
@@ -162,33 +161,30 @@ export default function TrackTaskCard() {
         categoryAxis.renderer.labels.template.fontSize = 16;
         categoryAxis.renderer.labels.template.fontWeight = "bold";
 
-        // Use adapter to modify the displayed label
-        // categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text, label) {
-        //     console.log("target",label)
-        //     let name = text;
-        //     if (text) {
-        //         name = taskperUser.find((data) => data?.email === text).name
-        //     }
-        //     return name;
-        // });
-
-        // Create X-axis (Value Axis)
-        var valueAxis = chart.xAxes.push(new am4charts.ValueAxis());
-        valueAxis.title.text = "Values";
 
         // Use adapter to modify the displayed label and include images
         categoryAxis.renderer.labels.template.adapter.add("html", function (text, label) {
             let name = "";
-            let imgSrc = "https://picsum.photos/id/237/200/300";
-
+            let profileImage = null; // Default to no profile image
             const userEmail = label?._dataItem?.properties?.category;
             if (userEmail) {
-                name = taskperUser.find((data) => data?.email === userEmail).name
+                const userData = taskperUser.find((data) => data?.email === userEmail);
+                name = userData?.name;
+                profileImage = userData?.profileImage; // Assume your data has a 'profileImage' field in Base64
             }
-            return `<div style="display: flex; align-items: center;">
-                        <img src="${imgSrc}" width="30" height="30" style="margin-right: 8px; border-radius: 50%;" />
-                        <span>${name ? name : ''}</span>
-                    </div>`;
+            if (profileImage) {
+                return `<div style="display: flex; align-items: center;">
+                    <img src="${profileImage}" width="30" height="30" style="margin-right: 8px; border-radius: 50%;" />
+                    <span>${name ? name : ''}</span>
+                </div>`;
+            } else {
+                const avatarString = ReactDOMServer.renderToString(<CustomAvatar email={userEmail} text={name} />);
+                return `<div style="display: flex; align-items: center;">
+                     <span style="margin-right:2px;">${avatarString}</span>
+                    <span>${name ? name : ''}</span>
+                </div>`;
+            }
+
         });
 
         // Create X-axis (Value Axis)
@@ -230,18 +226,19 @@ export default function TrackTaskCard() {
         titleLabel.text = "Task Status"; // Set your title text
         titleLabel.fontSize = 20;
         titleLabel.fontWeight = "bold";
+        titleLabel.align = "center";
         titleLabel.isMeasured = false;
         titleLabel.y = am4core.percent(0);
         titleLabel.horizontalCenter = "middle";
         titleLabel.verticalCenter = "bottom";
         titleLabel.adapter.add("y", (y, target) => {
             let chartWidth = target.parent.pixelHeight;
-            return ((chartWidth / 2) - 25); // Adjust the title's vertical position
+            return ((chartWidth / 2) - 10); // Adjust the title's vertical position
         });
         // Adjust position relative to the x-axis and legend
         titleLabel.adapter.add("x", (x, target) => {
             let chartWidth = target.parent.pixelWidth;
-            return chartWidth + 87; // Position 100% width + 40px
+            return chartWidth + 87;
         });
 
         // Make chart responsive
@@ -264,7 +261,8 @@ export default function TrackTaskCard() {
                     name: entry.name,
                     completed: entry.Completed || 0, // Use 0 if Completed is not defined
                     open: entry.Open || 0, // Use 0 if Open is not defined
-                    email: email
+                    email: email,
+                    profileImage: entry?.profileImage || ""
                 };
             });
             setTaskperUser(resultArray);
@@ -282,7 +280,7 @@ export default function TrackTaskCard() {
                     setToDate={setToDate}
                 />}
             />
-            <div id={'bar-chart'} style={{ paddingTop: "40px", height: "80%", width: "90%" }} />
+            <div id={'bar-chart'} style={{ paddingTop: "40px", paddingBottom: "40px", height: "95%", width: "90%" }} />
         </Fragment>
     )
 }
