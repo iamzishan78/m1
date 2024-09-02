@@ -9,6 +9,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { tableGlobalController } from 'hookstate/tableController';
 import { copy } from "utils/helper";
+import TractIcon from "components/Shared/svgIcons/tract";
 
 const esIndex = 'shapes_flat';
 
@@ -59,6 +60,26 @@ const TractMeta = {
 		pageIndex: 0,
 		pageSize: 50,
 	},
+	// Grid views for tract
+    gridViewSettings: {
+		label: 'Tracts',
+		module: 'Tracts',
+		Icon: TractIcon,
+		defaultView: {
+		  name: 'All Tracts',
+		  type: 'Default',
+		},
+		handleDefaultView: (view, user) => {
+		  if (view?.name === 'My Tracts') {
+			view.filters[0].value = user._id;
+		  }
+		  return view;
+		},
+		cssOverride: {
+		  top: '340px',
+		  left: '225px',
+		},
+	  },
 	defaultSort: { field: '_ts', order: 'desc' },
 	defaultFilters: [{ field: 'layer.keyword', value: 'parcel' }],
 	maxTableHeight: 'calc(100vh - 550px)',

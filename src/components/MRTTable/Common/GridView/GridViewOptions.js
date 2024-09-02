@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo } from 'react';
+import React, { useEffect, useState, memo, useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
 	TextField,
@@ -25,6 +25,7 @@ import { ADD_GRID_VIEW } from 'graphQL/useMutationAddGridView';
 
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import { globalStateController } from 'hookstate/globalStateController';
+import { mapControlsController } from "hookstate/mapControlsController";
 
 const useStyles = makeStyles(() => ({
 	container: {
@@ -98,6 +99,7 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 	const tableState = Controller.useState(['filters', 'columnVisibility', 'gridView', 'gridViewSettings']);
 	const tableStateValues = tableState.stateValues;
 	const classes = useStyles();
+	const { mapControlsStateValues: { mapGridCardActivated, expandedPanel } } = mapControlsController.useState([ 'mapGridCardActivated', 'expandedPanel'], 'mapControlsStateValues');
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user.get({ noproxy: true });
 
@@ -158,13 +160,22 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 		});
 	};
 
+	// Apply stylinng dynamically for mainn grid
+	const gridViewCss = useMemo(() => ({
+		maxHeight: tableStateValues?.gridViewSettings?.cssOverride?.maxHeight || '600px',
+		top: `${mapGridCardActivated ? '780px' : tableStateValues?.gridViewSettings?.cssOverride?.top} !important`,
+		left: `${mapGridCardActivated ? 
+			(expandedPanel ? '690px': '330px') 
+			: tableStateValues?.gridViewSettings?.cssOverride?.left}`,
+	}), [mapGridCardActivated, expandedPanel, tableStateValues])
+
 	return (
 		<LeftDialog
 			open
 			width="325px"
-			maxHeight={tableStateValues?.gridViewSettings?.cssOverride?.maxHeight || '600px'}
-			top={`${tableStateValues?.gridViewSettings?.cssOverride?.top} !important`}
-			left={tableStateValues?.gridViewSettings?.cssOverride?.left}
+			maxHeight={gridViewCss.maxHeight}
+			top={gridViewCss.top}
+			left={gridViewCss.left}
 			handleClickDialogClose={() =>
 				Controller.updateState({ gridView: { ...tableStateValues.gridView, showViewModal: false } })
 			}
