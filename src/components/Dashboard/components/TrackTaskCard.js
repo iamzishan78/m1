@@ -14,6 +14,7 @@ import { getRangeFilters } from "utils/helper";
 import CustomAvatar from "components/Shared/ui/CustomAvatar";
 import ReactDOMServer from 'react-dom/server';
 import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
+import { handleCustomDateTypeChange } from 'utils/helper';
 
 const useStyles = makeStyles((theme) => ({
     actionBar: {
@@ -60,6 +61,7 @@ const Title = ({
     setFromDate,
     toDate,
     setToDate,
+    minDate
 }) => {
     const classes = useStyles();
 
@@ -75,6 +77,7 @@ const Title = ({
                         setFromDate={setFromDate}
                         toDate={toDate}
                         setToDate={setToDate}
+                        minDate={minDate}
                     />
                 </div>
             </Grid>
@@ -87,6 +90,7 @@ export default function TrackTaskCard() {
     const [taskperUser, setTaskperUser] = useState([]);
     const [fromDate, setFromDate] = useState(null);
     const [toDate, setToDate] = useState(moment(new Date()).format("yyyy-MM-DD"));
+    const [minDate, setMinDate] = useState();
 
     const [getActivityAnalytics, { loading }] = useLazyQuery(GET_ACTIVITY_TASK_PER_USER, {
         fetchPolicy: "no-cache",
@@ -102,6 +106,7 @@ export default function TrackTaskCard() {
         onCompleted: (data) => {
           if (data?.getESMinValue) {
             setFromDate(`${moment(data?.getESMinValue).startOf("month").format("yyyy-MM-DD")}`);
+            setMinDate(data?.getESMinValue)
           }
         },
       });
@@ -297,6 +302,7 @@ export default function TrackTaskCard() {
                     setFromDate={setFromDate}
                     toDate={toDate}
                     setToDate={setToDate}
+                    minDate={minDate}
                 />}
             />
             <div id={'bar-chart'} style={{ paddingTop: "20px", paddingBottom: "40px", height: "90%", width: "90%" }} />
@@ -309,12 +315,17 @@ function TaskFilters({
     setFromDate,
     toDate,
     setToDate,
+    minDate
 }) {
 
     const classes = useStyles();
     const getFlaggedMoment = (moment) => {
         return moment >= 10 ? moment : `0${moment}`;
     };
+
+    const handleDateTypeChange = (date) => {
+        handleCustomDateTypeChange(date, null, CUSTOM_DATES, setFromDate, setToDate, minDate)
+      }
 
     return (
         <div style={{ display: "flex" }}>
@@ -340,8 +351,12 @@ function TaskFilters({
                     <Autocomplete
                         size="small"
                         onChange={(event, newValue) => {
-
-                        }}
+                            if (newValue === null) {
+                              handleDateTypeChange("This Month");
+                            } else {
+                              handleDateTypeChange(newValue);
+                            }
+                          }}
                         options={Object.values(CUSTOM_DATES)}
                         renderInput={(params) => (
                             <TextField
@@ -350,6 +365,7 @@ function TaskFilters({
                                 label="Date Range"
                                 placeholder=""
                                 style={{ backgroundColor: "white" }}
+
                             />
                         )}
                         defaultValue={CUSTOM_DATES.ALL_DATES}
