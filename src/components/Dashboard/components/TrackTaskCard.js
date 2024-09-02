@@ -174,13 +174,6 @@ export default function TrackTaskCard() {
         // Create X-axis (Value Axis)
         var valueAxis = chart.xAxes.push(new am4charts.ValueAxis());
         valueAxis.title.text = "Values";
-
-
-        // Use adapter to modify the displayed label
-        categoryAxis.renderer.labels.template.adapter.add("text", function (text, target) {
-            return text
-        });      
-
         // Function to create a series for each data field
         function createSeries(field, name, color) {
             var series = chart.series.push(new am4charts.ColumnSeries());
