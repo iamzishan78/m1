@@ -203,7 +203,7 @@ const Auth0Login = props => {
 
       const userMapSettings = await userSettings(
         loginRes.user._id,
-        loginRes.sessionData.token,
+        loginRes.sessionData.auth0Token || loginRes.sessionData.token,
         id.__raw,
       );
 

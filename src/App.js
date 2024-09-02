@@ -60,7 +60,7 @@ const PrivateRoute = ({ component, ...options }) => {
   }
 
   const finalComponent =
-    user && (Date.parse(user.authTokenExpires) > Date.now() || isAuthenticated) && apolloClient && userSessionIsLoaded
+    user && (Date.parse(user.authTokenExpires) > Date.now() || (globalStateController.isAuth0Bypass() && isAuthenticated)) && apolloClient && userSessionIsLoaded
       ? component
       : globalStateController.isAuth0Bypass() ? Auth0Login : AzureLogin;
 

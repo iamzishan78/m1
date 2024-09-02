@@ -21,6 +21,7 @@ import { SIMPLE_BYPASS_LOGIN_MUTATION } from "graphQL/useMutationBypassLogin";
 import { apolloClientEndpointDev, isDev } from "utils/helper";
 import { globalStateController } from "hookstate/globalStateController";
 import { mapStateController } from "hookstate/mapStateController";
+import { simpleAuthBypass } from "utils/data";
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
@@ -96,7 +97,6 @@ const Login = (props) => {
   const [, setStateNav] = useContext(NavigationContext);
 
   const { globalStateValues } = globalStateController.useState(['bypassLogin', 'bypassType'], 'globalStateValues');
-
   const localClass = localStyles();
   const [signingIn, setSigningIn] = useState(false);
   const [loadingSigInButton, setLoadingSigInButton] = useState(false);
@@ -304,7 +304,7 @@ const Login = (props) => {
 
     if (globalStateController.getValue('bypassLogin')) {
       window.sessionStorage.setItem("tenantName", tenant.name);
-
+      history.push(history.location.pathname)
       return;
     }
 
@@ -646,7 +646,7 @@ const Login = (props) => {
   const renderBody = (
     <>
       <div className={localClass.cardContainer}>
-        {globalStateValues.bypassLogin ?
+        {simpleAuthBypass ?
           <BypassSignInCard
             ready={loadingSigInButton}
             handleAADSignIn={handleBypassAADSignIn}
