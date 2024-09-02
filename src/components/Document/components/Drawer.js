@@ -166,6 +166,7 @@ export default function DocumentDrawer(props) {
 
   // Fetching wells from descriptor
   useEffect(() => {
+    // if there is no related document present do not call these queries
     if (!props.isRelatedDocuments){
       getWellsFromDocument({
         variables: {
