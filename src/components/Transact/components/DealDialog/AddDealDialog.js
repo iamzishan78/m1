@@ -124,12 +124,6 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiDialog-paper": {
       overflowY: "hidden",
     },
-    "& #layer-side-panel": {
-      height: "fit-content",
-    },
-    '& div[class^="makeStyles-panelContent-"]': {
-      height: "55%",
-    },
   },
   contentRoot: {
     overflowY: "overlay",
