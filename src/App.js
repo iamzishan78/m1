@@ -46,7 +46,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 
 const PrivateRoute = ({ component, ...options }) => {
   const user = globalStateController.getValue('user');
-
+  globalStateController.useState(['bypassLogin', 'bypassType']);
   const { isAuthenticated } = useAuth0();
 
   const userSessionIsLoaded = useSelector(({ session }) => session.isLoaded);

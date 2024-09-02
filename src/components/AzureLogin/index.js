@@ -95,7 +95,7 @@ const Login = (props) => {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [, setStateNav] = useContext(NavigationContext);
 
-  const { globalStateValues } = globalStateController.useState(['bypassLogin'], 'globalStateValues');
+  const { globalStateValues } = globalStateController.useState(['bypassLogin', 'bypassType'], 'globalStateValues');
 
   const localClass = localStyles();
   const [signingIn, setSigningIn] = useState(false);

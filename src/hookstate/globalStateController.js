@@ -21,7 +21,7 @@ const initialState = {
 
 export const globalState = hookstate(copy(initialState));
 
-const globalStateControllerHandler = () => ({
+const globalStateControllerHandler = (state) => ({
 	setLayerLoading: (type, value) => {
 		if (value !== globalState.layerLoading.get()[type])
 			globalState.layerLoading.set({
@@ -35,7 +35,7 @@ const globalStateControllerHandler = () => ({
 			globalStateController.updateState({ ...bypass, tenant })
 		}
 	},
-	isAuth0Bypass: () => globalStateController.getValue('bypassType') === 'Auth0Bypass',
+	isAuth0Bypass: () => state.bypassType.get({ noproxy: true }) === 'Auth0Bypass',
 	isBypassTenant: tenant => bypassTenants.map(t => t.toLowerCase()).includes(tenant.toLowerCase()),
 	handleMyWellTestCase: (globalWellId, mongoWellId) => {
 		if (globalStateController.getValue('cypress'))
