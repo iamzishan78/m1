@@ -163,18 +163,39 @@ export default function TrackTaskCard() {
         categoryAxis.renderer.labels.template.fontWeight = "bold";
 
         // Use adapter to modify the displayed label
-        categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text) {
-            let name = text;
-            if (text) {
-                name = taskperUser.find((data) => data?.email === text).name
+        // categoryAxis.renderer.labels.template.adapter.add("textOutput", function(text, label) {
+        //     console.log("target",label)
+        //     let name = text;
+        //     if (text) {
+        //         name = taskperUser.find((data) => data?.email === text).name
+        //     }
+        //     return name;
+        // });
+
+        // Create X-axis (Value Axis)
+        var valueAxis = chart.xAxes.push(new am4charts.ValueAxis());
+        valueAxis.title.text = "Values";
+
+        // Use adapter to modify the displayed label and include images
+        categoryAxis.renderer.labels.template.adapter.add("html", function (text, label) {
+            let name = "";
+            let imgSrc = "https://picsum.photos/id/237/200/300";
+
+            const userEmail = label?._dataItem?.properties?.category;
+            if (userEmail) {
+                name = taskperUser.find((data) => data?.email === userEmail).name
             }
-            return name;
+            return `<div style="display: flex; align-items: center;">
+                        <img src="${imgSrc}" width="30" height="30" style="margin-right: 8px; border-radius: 50%;" />
+                        <span>${name ? name : ''}</span>
+                    </div>`;
         });
 
         // Create X-axis (Value Axis)
         var valueAxis = chart.xAxes.push(new am4charts.ValueAxis());
         valueAxis.title.text = "Values";
-        
+
+
         // Function to create a series for each data field
         function createSeries(field, name, color) {
             var series = chart.series.push(new am4charts.ColumnSeries());
@@ -217,12 +238,12 @@ export default function TrackTaskCard() {
             let chartWidth = target.parent.pixelHeight;
             return ((chartWidth / 2) - 25); // Adjust the title's vertical position
         });
-       // Adjust position relative to the x-axis and legend
+        // Adjust position relative to the x-axis and legend
         titleLabel.adapter.add("x", (x, target) => {
             let chartWidth = target.parent.pixelWidth;
             return chartWidth + 87; // Position 100% width + 40px
         });
-  
+
         // Make chart responsive
         chart.responsive.enabled = true;
 
