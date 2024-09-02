@@ -174,6 +174,7 @@ export default function TrackTaskCard() {
         // Create X-axis (Value Axis)
         var valueAxis = chart.xAxes.push(new am4charts.ValueAxis());
         valueAxis.title.text = "Values";
+        
         // Function to create a series for each data field
         function createSeries(field, name, color) {
             var series = chart.series.push(new am4charts.ColumnSeries());
@@ -200,6 +201,30 @@ export default function TrackTaskCard() {
 
         // Add legend
         chart.legend = new am4charts.Legend();
+        chart.legend.position = "right"; // Position the legend to the right
+        chart.legend.marginLeft = 20; // Optional: add some margin
+
+        // Add label above the legend
+        let titleLabel = chart.plotContainer.createChild(am4core.Label);
+        titleLabel.text = "Task Status"; // Set your title text
+        titleLabel.fontSize = 20;
+        titleLabel.fontWeight = "bold";
+        titleLabel.isMeasured = false;
+        titleLabel.y = am4core.percent(0);
+        titleLabel.horizontalCenter = "middle";
+        titleLabel.verticalCenter = "bottom";
+        titleLabel.adapter.add("y", (y, target) => {
+            let chartWidth = target.parent.pixelHeight;
+            return ((chartWidth / 2) - 25); // Adjust the title's vertical position
+        });
+       // Adjust position relative to the x-axis and legend
+        titleLabel.adapter.add("x", (x, target) => {
+            let chartWidth = target.parent.pixelWidth;
+            return chartWidth + 87; // Position 100% width + 40px
+        });
+  
+        // Make chart responsive
+        chart.responsive.enabled = true;
 
         // Cleanup function to dispose of chart instance when component unmounts
         return () => {
@@ -236,7 +261,7 @@ export default function TrackTaskCard() {
                     setToDate={setToDate}
                 />}
             />
-            <div id={'bar-chart'} style={{ paddingTop: "40px", height: "80%", width: "80%" }} />
+            <div id={'bar-chart'} style={{ paddingTop: "40px", height: "80%", width: "90%" }} />
         </Fragment>
     )
 }
