@@ -9,6 +9,7 @@ import { UPDATE_DATASET } from 'graphQL/useMutationDataset';
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
+import { UPDATE_LAYER_GROUP } from 'graphQL/useMutationLayerGroup'
 import { basic_timeouts } from '../../cypressUtils/data';
 import ldata from '../../fixtures/ldata.json';
 import { headers } from '../../cypressUtils/cypressHeaders';
@@ -16,10 +17,10 @@ import { isEqual } from 'lodash';
 
 const { midTimeout, longTimeout, partialLongTimeout } = basic_timeouts;
 
-const fileName = 'surv025.zip';
-
-const sourceName = 'surv025';
-// const sourceName = 'surv025' + uuid();
+const fileName = 'surv025_cypress.zip';
+const layerGroupId = "c6b08669-351a-45d3-9d3f-b4eae295ce7f";
+const sourceName = 'surv025_cypress17790d02-9493-49b3-bcb2-c9e297ebecb4';
+// const sourceName = 'surv025_cypress' + uuid();
 
 const getBBox = map => {
   const bounds = map.getBounds();
@@ -55,9 +56,9 @@ const getIsGeometryWithinBbox = selectedUserDefinedLayer => {
 };
 
 const dataset = {
-  _id: '666ab3db82c81c2d8b7fdee3',
-  sourceName: 'surv025',
-  fileName: 'surv025.zip',
+  _id: '66c5fc9258902a170ff761cf',
+  sourceName: sourceName,
+  fileName: fileName,
   types: [
     'Point',
     'Point',
@@ -70,104 +71,115 @@ const dataset = {
   ],
   public: true,
   createBy: '659ce7cf97935e0ffa857858',
-  file: '666ab3da82c81c2d8b7fdede',
-  originalFile: '666ab3d982c81c2d8b7fded9',
+  file: '66c5fc8358902a170ff761ca',
+  originalFile: '66c5fc8358902a170ff761ca',
   IsDeleted: false,
   categories: [
     {
       name: 'surv025Abspt - Point',
       layerGeometry: 'Point',
       layerShapeName: 'surv025Abspt - Point',
-      file: '666ab3da82c81c2d8b7fdede',
-      originalFile: '666ab3d982c81c2d8b7fded9',
+      file: '66c5fc8358902a170ff761ca',
+      originalFile: '66c5fc8358902a170ff761ca',
       layerName: 'surv025Abspt - Point',
+      groupId: layerGroupId
     },
     {
-      name: 'surv025Abspt_ - Point',
+      name: 'surv025Abspt_ - Point',//
       layerGeometry: 'Point',
       layerShapeName: 'surv025Abspt_ - Point',
-      file: '666ab3da82c81c2d8b7fdede',
-      originalFile: '666ab3d982c81c2d8b7fded9',
+      file: '66c5fc8358902a170ff761ca',
+      originalFile: '66c5fc8358902a170ff761ca',
       layerName: 'surv025Abspt_ - Point',
+      groupId: layerGroupId
     },
     {
-      name: 'surv025l - LineString',
+      name: 'surv025l - LineString',//
       layerGeometry: 'LineString',
       layerShapeName: 'surv025l - LineString',
-      file: '666ab3da82c81c2d8b7fdede',
-      originalFile: '666ab3d982c81c2d8b7fded9',
+      file: '66c5fc8358902a170ff761ca',
+      originalFile: '66c5fc8358902a170ff761ca',
       layerName: 'surv025l - LineString',
+      groupId: layerGroupId
     },
     {
       name: 'surv025Labpt - Point',
       layerGeometry: 'Point',
       layerShapeName: 'surv025Labpt - Point',
-      file: '666ab3da82c81c2d8b7fdede',
-      originalFile: '666ab3d982c81c2d8b7fded9',
+      file: '66c5fc8358902a170ff761ca',
+      originalFile: '66c5fc8358902a170ff761ca',
       layerName: 'surv025Labpt - Point',
+      groupId: layerGroupId
     },
     {
       name: 'surv025Labpt_ - Point',
       layerGeometry: 'Point',
       layerShapeName: 'surv025Labpt_ - Point',
-      file: '666ab3da82c81c2d8b7fdede',
-      originalFile: '666ab3d982c81c2d8b7fded9',
+      file: '66c5fc8358902a170ff761ca',
+      originalFile: '66c5fc8358902a170ff761ca',
       layerName: 'surv025Labpt_ - Point',
+      groupId: layerGroupId
     },
     {
       name: 'surv025l_ - LineString',
       layerGeometry: 'LineString',
       layerShapeName: 'surv025l_ - LineString',
-      file: '666ab3da82c81c2d8b7fdede',
-      originalFile: '666ab3d982c81c2d8b7fded9',
+      file: '66c5fc8358902a170ff761ca',
+      originalFile: '66c5fc8358902a170ff761ca',
       layerName: 'surv025l_ - LineString',
+      groupId: layerGroupId
     },
     {
       name: 'surv025p - Polygon',
       layerGeometry: 'Polygon',
       layerShapeName: 'surv025p - Polygon',
-      file: '666ab3da82c81c2d8b7fdede',
-      originalFile: '666ab3d982c81c2d8b7fded9',
+      file: '66c5fc8358902a170ff761ca',
+      originalFile: '66c5fc8358902a170ff761ca',
       layerName: 'surv025p - Polygon',
+      groupId: layerGroupId
     },
     {
       name: 'surv025p_ - Polygon',
       layerGeometry: 'Polygon',
       layerShapeName: 'surv025p_ - Polygon',
-      file: '666ab3da82c81c2d8b7fdede',
-      originalFile: '666ab3d982c81c2d8b7fded9',
+      file: '66c5fc8358902a170ff761ca',
+      originalFile: '66c5fc8358902a170ff761ca',
       layerName: 'surv025p_ - Polygon',
+      groupId: layerGroupId
     },
   ],
-  name: 'surv025',
+  name: sourceName,
   categoryCount: 8,
   visibility: true,
 };
 
 const layerIds = [
-  '666ab3e1e2014c589a4144cf',
-  '666ab3e182c81c2d8b7fdeef',
-  '666ab3e2e2014c589a4144d6',
-  '666ab3e7e2014c589a4144d9',
-  '666ab3e7e2014c589a4144dc',
-  '666ab3e8e2014c589a4144df',
-  '666ab3e9e2014c589a4144e2',
-  '666ab3e9e2014c589a4144e5',
+  '66c5fcad58902a170ff76210',
+  '66c5fcaa58902a170ff7620d',
+  '66c5fca858902a170ff7620a',
+  '66c5fca558902a170ff76207',
+  '66c5fca258902a170ff76201',
+  '66c5fc9f58902a170ff761f9',
+  '66c5fc9c58902a170ff761ec',
+  '66c5fc9858902a170ff761d8',
 ];
+
 const layerSettings = [
-  '666ab3ede2014c589a4144f8',
-  '666ab3ede2014c589a4144f3',
-  '666ab3ede2014c589a4144f4',
-  '666ab3ede2014c589a4144f2',
-  '666ab3ede2014c589a4144f5',
-  '666ab3ede2014c589a4144f1',
-  '666ab3ede2014c589a4144f6',
-  '666ab3ede2014c589a4144f7',
+  '66c5fcbe1cb2dacb96fdcdfa',
+  '66c5fcbe1cb2dacb96fdcdf8',
+  '66c5fcbe1cb2dacb96fdcdfb',
+  '66c5fcbe1cb2dacb96fdcdf7',
+  '66c5fcbe1cb2dacb96fdcdf9',
+  '66c5fca158902a170ff761fd',
+  '66c5fca158902a170ff761fc',
+  '66c5fc9c58902a170ff761f0',
 ];
 
 const layers = layerIds.map(layerId => ({
   _id: layerId,
   IsDeleted: false,
+  groupId: layerGroupId,
+  groupName: sourceName
 }));
 const manySettings = layerSettings.map(layerSetting => ({
   _id: layerSetting,
@@ -228,9 +240,12 @@ describe('Map Component Shape File Upload', () => {
       variables: {
         settings: {
           user: '659ce7cf97935e0ffa857858',
-          type: 'DatasetVisibility',
+          type: 'LayerGroup',
           settings: {
-            '65cb5de3f20df7cc41118dc4': true,
+            'c6b08669-351a-45d3-9d3f-b4eae295ce7f': {
+              above:  "65afe15a569207a9e79ab089",
+              below: null
+            },
           },
         },
       },
@@ -338,15 +353,15 @@ describe('Map Component Shape File Upload', () => {
     // Waiting for a short timeout before executing assertions
     cy.wait(basic_timeouts.shorTimeout).then(() => {
       // Getting values from the popup controller for selectedShapeFile and selectedUserDefinedLayer
-      const { selectedShapeFile, selectedUserDefinedLayer } = popupController.getValues([
+      const { selectedUserDefinedLayer } = popupController.getValues([
         'selectedShapeFile',
         'selectedUserDefinedLayer',
       ]);
 
       // Expecting selectedShapeFile to be truthy
-      expect(!!selectedShapeFile).to.be.equal(true);
+      expect(!!selectedUserDefinedLayer).to.be.equal(true);
 
-      const isGeometryWithinBbox = getIsGeometryWithinBbox(selectedShapeFile);
+      const isGeometryWithinBbox = getIsGeometryWithinBbox(selectedUserDefinedLayer);
 
       // Expecting the geometry to be within the bbox
       expect(isGeometryWithinBbox).to.be.equal(true);
@@ -391,12 +406,10 @@ describe('Map Component Shape File Upload', () => {
 
     // Clicking on the deleteSource option and intercepting getDatasets request
     cy.get('#deleteSource', { timeout: longTimeout }).click();
-    cy.interceptAndWait(['getDatasets'], () => {
-      cy.get('#deleteConfirmation', { timeout: longTimeout }).click();
-    });
+    cy.get('#deleteConfirmation', { timeout: longTimeout }).click();
 
     // Verifying that the group related to the sourceName still exists
-    // cy.get(`[data-testid="group-${sourceName}"]`);
+    cy.get(`[data-testid="group-${sourceName}"]`);
   });
 
   it('Shapefile click works & boundary appears', () => {
@@ -416,17 +429,18 @@ describe('Map Component Shape File Upload', () => {
           const sourceLine = window.mapRef.getSource('boundary-line-source')?._data;
 
           // Getting values from the popup controller for selectedShapeFile and selectedUserDefinedLayer
-          const { selectedUserDefinedLayer } = popupController.getValues([
+          const { selectedUserDefinedLayer, selectedShapeFile } = popupController.getValues([
             'selectedShapeFile',
             'selectedUserDefinedLayer',
           ]);
 
+          console.log({selectedUserDefinedLayer, selectedShapeFile})
           const boundaryLine = {
             type: 'Feature',
             properties: {},
             geometry: {
-              type: selectedUserDefinedLayer.geometry.type,
-              coordinates: selectedUserDefinedLayer.geometry.coordinates,
+              type: selectedUserDefinedLayer?.geometry?.type,
+              coordinates: selectedUserDefinedLayer?.geometry?.coordinates,
             },
           };
 
