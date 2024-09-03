@@ -502,7 +502,24 @@ export const generateFileFilters = ({ fileLayer, pagination = { first: 10000, af
 
 export const getLayerStrokeColor = (dbLayer, strokeColor) => {
 	const layerInteraction = dbLayer.layerSettings?.interaction;
+	const selectAttr = dbLayer.layerSettings?.selectedStrokeAttribute?.label;
+
 	return (d) => {
+		if (selectAttr) {
+			let path = colorBasedAttributes[dbLayer?.identifier]?.keys.find((key) => key.label === selectAttr);
+			if (!path) path = dbLayer.layerSettings?.selectedStrokeAttribute;
+
+			let keys = path?.value.split('.').slice(1, -1);
+			let orKeys = keys.slice(0, -1);
+			if (path.orKey) {
+				orKeys.push(path.orKey)
+			}
+			let value = _.get(d, keys) || (path.orKey ? _.get(d, orKeys) : null);
+			if (value) {
+				const attrFillColor = dbLayer.layerSettings.attributeBasedStrokeColors[selectAttr][value]
+				if (attrFillColor) return layerInteraction.interactionDetail?.enableStrokeColor === false ? [0, 0, 0, 0] : getRGBA(attrFillColor)
+			}
+		}
 		return layerInteraction.interactionDetail?.enableStrokeColor === false ? [0, 0, 0, 0] : getRGBA(strokeColor)
 	}
 }
