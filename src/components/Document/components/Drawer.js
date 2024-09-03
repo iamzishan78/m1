@@ -173,7 +173,7 @@ export default function DocumentDrawer(props) {
 
   // Fetching wells & Contacts from descriptor
   useEffect(() => {
-    if (!props.isRelatedDocuments)
+    if (!props.isRelatedDocuments) {
       getWellsFromDocument({
         variables: {
           descriptorObject: stateApp.selectedDocument._id,
@@ -184,6 +184,7 @@ export default function DocumentDrawer(props) {
           descriptorObject: stateApp.selectedDocument._id,
         },
       });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.selectedDocument._id]);
 

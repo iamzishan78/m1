@@ -83,8 +83,13 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
     }
   });
 
-  const { control, reset, getValues  } = useForm();
+  const { control, watch, reset, getValues, } = useForm();
 
+  // Watch all form values
+  const watchedValues = watch();
+
+  // Check if all fields are filled
+  const isSaveDisabled = Object.values(watchedValues).some(value => value === '' || value === undefined);
 
   useEffect(() => {
     if (platformWell) reset(platformWell);
@@ -92,7 +97,8 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 
   useEffect(() => {
     if (myWellData) {
-      const globalWellId = myWellData?.upsertMyWell?.myWell?.wellData?.Id
+      const { wellData } = myWellData?.upsertMyWell?.myWell ?? {};
+      const globalWellId =  wellData?.Id ?? wellData?.id;
       if (globalWellId) {
         handleWellDetail({ Id: globalWellId });
       }
@@ -131,9 +137,21 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 
 
   const handleSave = (formData) => {
+    const processedValues = {};
+
+    Object.entries(formData).forEach(([key, value]) => {
+      const param = wellParams.find(p => (p.esKey ?? p.key) === key);
+      if (param) {
+        // Handle date conversion if needed
+        processedValues[key] = param.type === 'date'
+          ? new Date(value)
+          : value;
+      }
+    });
+
     upsertMyWell({
       variables: {
-        myWell: { ...platformWell, _id: platformWell.id, ...formData },
+        myWell: { ...platformWell, _id: platformWell.id, ...processedValues },
       },
       refetchQueries: ["getESSimpleSearch"],
       awaitRefetchQueries: true,
@@ -263,7 +281,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
                         : ""
                   }
                   onChange={(event) => {
-                    const value = event.target.value;
+                    const value = event.target.value.trim(); // Remove leading/trailing whitespace;
                     params.onChange(value);
                   }}
                   disabled={upsertWellLoading}
@@ -273,17 +291,21 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
           </Fragment>
         ))}
         {/* Add save button to save well data  */}
-        <Button 
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            const values = getValues();
-            handleSave(values);
-          }}
-          disabled={upsertWellLoading}
-        >
-          Save
-        </Button>
+        <div className={classes.dialogFooter}>
+          <Button
+            variant="contained"
+            color="secondary"
+            size="medium"
+            className={classes.footerButton}
+            onClick={() => {
+              const values = getValues();
+              handleSave(values);
+            }}
+            disabled={upsertWellLoading || (!isSaveDisabled && !platformWell.id)}
+          >
+            Save
+          </Button>
+        </div>
       </div>
     </div>
   );
