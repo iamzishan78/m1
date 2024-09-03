@@ -18,8 +18,8 @@ import { isEqual } from 'lodash';
 const { midTimeout, longTimeout, partialLongTimeout } = basic_timeouts;
 
 const fileName = 'surv025_cypress.zip';
-const layerGroupId = "c6b08669-351a-45d3-9d3f-b4eae295ce7f";
-const sourceName = 'surv025_cypress17790d02-9493-49b3-bcb2-c9e297ebecb4';
+const layerGroupId = "e6e273fa-8cae-42c6-98e6-69f97addedd1";
+const sourceName = 'surv025_cypress';
 // const sourceName = 'surv025_cypress' + uuid();
 
 const getBBox = map => {
@@ -56,7 +56,7 @@ const getIsGeometryWithinBbox = selectedUserDefinedLayer => {
 };
 
 const dataset = {
-  _id: '66c5fc9258902a170ff761cf',
+  _id: '66d70cb4d30f046db3a43ac0',
   sourceName: sourceName,
   fileName: fileName,
   types: [
@@ -71,34 +71,34 @@ const dataset = {
   ],
   public: true,
   createBy: '659ce7cf97935e0ffa857858',
-  file: '66c5fc8358902a170ff761ca',
-  originalFile: '66c5fc8358902a170ff761ca',
+  file: '66d70caad30f046db3a43a82',
+  originalFile: '66d70caad30f046db3a43a82',
   IsDeleted: false,
   categories: [
     {
       name: 'surv025Abspt - Point',
       layerGeometry: 'Point',
       layerShapeName: 'surv025Abspt - Point',
-      file: '66c5fc8358902a170ff761ca',
-      originalFile: '66c5fc8358902a170ff761ca',
+      file: '66d70caad30f046db3a43a82',
+      originalFile: '66d70caad30f046db3a43a82',
       layerName: 'surv025Abspt - Point',
       groupId: layerGroupId
     },
     {
-      name: 'surv025Abspt_ - Point',//
+      name: 'surv025Abspt_ - Point',
       layerGeometry: 'Point',
       layerShapeName: 'surv025Abspt_ - Point',
-      file: '66c5fc8358902a170ff761ca',
-      originalFile: '66c5fc8358902a170ff761ca',
+      file: '66d70caad30f046db3a43a82',
+      originalFile: '66d70caad30f046db3a43a82',
       layerName: 'surv025Abspt_ - Point',
       groupId: layerGroupId
     },
     {
-      name: 'surv025l - LineString',//
+      name: 'surv025l - LineString',
       layerGeometry: 'LineString',
       layerShapeName: 'surv025l - LineString',
-      file: '66c5fc8358902a170ff761ca',
-      originalFile: '66c5fc8358902a170ff761ca',
+      file: '66d70caad30f046db3a43a82',
+      originalFile: '66d70caad30f046db3a43a82',
       layerName: 'surv025l - LineString',
       groupId: layerGroupId
     },
@@ -106,8 +106,8 @@ const dataset = {
       name: 'surv025Labpt - Point',
       layerGeometry: 'Point',
       layerShapeName: 'surv025Labpt - Point',
-      file: '66c5fc8358902a170ff761ca',
-      originalFile: '66c5fc8358902a170ff761ca',
+      file: '66d70caad30f046db3a43a82',
+      originalFile: '66d70caad30f046db3a43a82',
       layerName: 'surv025Labpt - Point',
       groupId: layerGroupId
     },
@@ -115,8 +115,8 @@ const dataset = {
       name: 'surv025Labpt_ - Point',
       layerGeometry: 'Point',
       layerShapeName: 'surv025Labpt_ - Point',
-      file: '66c5fc8358902a170ff761ca',
-      originalFile: '66c5fc8358902a170ff761ca',
+      file: '66d70caad30f046db3a43a82',
+      originalFile: '66d70caad30f046db3a43a82',
       layerName: 'surv025Labpt_ - Point',
       groupId: layerGroupId
     },
@@ -124,8 +124,8 @@ const dataset = {
       name: 'surv025l_ - LineString',
       layerGeometry: 'LineString',
       layerShapeName: 'surv025l_ - LineString',
-      file: '66c5fc8358902a170ff761ca',
-      originalFile: '66c5fc8358902a170ff761ca',
+      file: '66d70caad30f046db3a43a82',
+      originalFile: '66d70caad30f046db3a43a82',
       layerName: 'surv025l_ - LineString',
       groupId: layerGroupId
     },
@@ -133,8 +133,8 @@ const dataset = {
       name: 'surv025p - Polygon',
       layerGeometry: 'Polygon',
       layerShapeName: 'surv025p - Polygon',
-      file: '66c5fc8358902a170ff761ca',
-      originalFile: '66c5fc8358902a170ff761ca',
+      file: '66d70caad30f046db3a43a82',
+      originalFile: '66d70caad30f046db3a43a82',
       layerName: 'surv025p - Polygon',
       groupId: layerGroupId
     },
@@ -142,8 +142,8 @@ const dataset = {
       name: 'surv025p_ - Polygon',
       layerGeometry: 'Polygon',
       layerShapeName: 'surv025p_ - Polygon',
-      file: '66c5fc8358902a170ff761ca',
-      originalFile: '66c5fc8358902a170ff761ca',
+      file: '66d70caad30f046db3a43a82',
+      originalFile: '66d70caad30f046db3a43a82',
       layerName: 'surv025p_ - Polygon',
       groupId: layerGroupId
     },
@@ -154,25 +154,25 @@ const dataset = {
 };
 
 const layerIds = [
-  '66c5fcad58902a170ff76210',
-  '66c5fcaa58902a170ff7620d',
-  '66c5fca858902a170ff7620a',
-  '66c5fca558902a170ff76207',
-  '66c5fca258902a170ff76201',
-  '66c5fc9f58902a170ff761f9',
-  '66c5fc9c58902a170ff761ec',
-  '66c5fc9858902a170ff761d8',
+  '66d70cb9d30f046db3a43ad2',
+  '66d70cb9d30f046db3a43ad6',
+  '66d70cbad30f046db3a43ad9',
+  '66d70cbad30f046db3a43ae2',
+  '66d70cbad30f046db3a43ae6',
+  '66d70cbbd30f046db3a43aeb',
+  '66d70cbcd30f046db3a43aee',
+  '66d70cbcd30f046db3a43af1',
 ];
 
 const layerSettings = [
-  '66c5fcbe1cb2dacb96fdcdfa',
-  '66c5fcbe1cb2dacb96fdcdf8',
-  '66c5fcbe1cb2dacb96fdcdfb',
-  '66c5fcbe1cb2dacb96fdcdf7',
-  '66c5fcbe1cb2dacb96fdcdf9',
-  '66c5fca158902a170ff761fd',
-  '66c5fca158902a170ff761fc',
-  '66c5fc9c58902a170ff761f0',
+  '66d70cc3d30f046db3a43b26',
+  '66d70cc2d30f046db3a43b1a',
+  '66d70cc2d30f046db3a43b15',
+  '66d70cc2d30f046db3a43b1b',
+  '66d70cc2d30f046db3a43b18',
+  '66d70cc2d30f046db3a43b16',
+  '66d70cc2d30f046db3a43b14',
+  '66d70cc2d30f046db3a43b17',
 ];
 
 const layers = layerIds.map(layerId => ({
@@ -242,7 +242,7 @@ describe('Map Component Shape File Upload', () => {
           user: '659ce7cf97935e0ffa857858',
           type: 'LayerGroup',
           settings: {
-            'c6b08669-351a-45d3-9d3f-b4eae295ce7f': {
+            'e6e273fa-8cae-42c6-98e6-69f97addedd1': {
               above:  "65afe15a569207a9e79ab089",
               below: null
             },
