@@ -474,11 +474,32 @@ export const getAdvancedSearch = (layerGeometry, mustQuery) =>
 // Query made generic to support in both TransferData Manager and layerStateController
 export const generateFileFilters = ({ fileLayer, pagination = { first: 10000, after: null }, extendFilters = { variables: {} } }) => {
 	let mustQuery = [];
+
+	// Making geojson file name
+	let geoJsonName = fileLayer.layerShapeName;
+	geoJsonName = fileLayer.layerShapeName.replace(` - ${fileLayer.layerGeometry}`, "");
+	geoJsonName = `${geoJsonName}.geojson`;
+	geoJsonName = geoJsonName.replace(" ", "_");
+	geoJsonName = `${geoJsonName} - ${fileLayer.layerGeometry}`;
+
+	// Altered query accordingly
 	if (fileLayer.layerShapeName) {
 		mustQuery = [
 			{
-				term: { 'properties.layerShapeName.keyword': fileLayer.layerShapeName },
-			},
+				bool: {
+					should: [{
+						term: {
+							'properties.layerShapeName.keyword': geoJsonName
+						}
+					},
+					{
+						term: {
+							'properties.layerShapeName.keyword': fileLayer.layerShapeName
+						}
+					}
+					]
+				}
+			}
 		];
 	}
 
