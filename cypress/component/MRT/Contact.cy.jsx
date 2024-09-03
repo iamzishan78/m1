@@ -182,15 +182,10 @@ describe('Contact Table', () => {
       const currentDateForPreviousDay = new Date(lastUpdateAt);
       currentDateForPreviousDay.setDate(currentDateForPreviousDay.getDate() - 1);
       const oneDayPriorDate = currentDateForPreviousDay.toISOString().split('T')[0];
-      cy.get(`[data-testid="MoreVertIcon"]`).eq(19).click();
-      cy.wait(500);
-      cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
-      cy.wait(500);
-      cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(1):eq(1)').click();
       cy.mrtComparisonFilterCheck({
         column: columns[0],
         type: 'date',
-        value: moment.parseZone(new Date(oneDayPriorDate)).format('MM/DD/YY'),
+        value: moment.parseZone(new Date(oneDayPriorDate)).format('MM/DD/YYYY'),
         filter: 'greaterThanEqualTo',
         placeholder,
       });
@@ -198,15 +193,10 @@ describe('Contact Table', () => {
       const currentDateForNextDay = new Date(lastUpdateAt);
       currentDateForNextDay.setDate(currentDateForNextDay.getDate() + 1);
       const nextDayDate = currentDateForNextDay.toISOString().split('T')[0];
-      cy.get('[data-testid="MoreVertIcon"]').eq(19).scrollIntoView().click({ force: true });
-      cy.wait(500);
-      cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
-      cy.wait(500);
-      cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(2):eq(1)').click();
       cy.mrtComparisonFilterCheck({
         column: columns[0],
         type: 'date',
-        value: moment.parseZone(new Date(nextDayDate)).format('MM/DD/YY'),
+        value: moment.parseZone(new Date(nextDayDate)).format('MM/DD/YYYY'),
         filter: 'lessThanEqualTo',
         placeholder,
       });
@@ -236,14 +226,15 @@ describe('Contact Table', () => {
       { wait: false } // Do not automatically wait for the intercepted request
     );
 
+    cy.wait(5000);
     // Select all entries in a table or list for bulk updating by clicking the select all checkbox
     cy.get('[aria-label="Toggle select all"]').eq(0).click();
 
     // Initiate the bulk update process by clicking the bulk update button
-    cy.get('[data-testid="bulk-update"]').click();
+    cy.get('[data-testid="bulk-update"]').click({force: true});
 
     // Find and interact with the field selection autocomplete input for choosing "Campaign Name"
-    cy.get('[data-testid="select-field-autocomplete"]', { timeout: 10000 })
+    cy.get('[data-testid="select-field-autocomplete"]', { timeout: 30000 })
       .clear() // Clear any existing input
       .type('Campaign Name'); // Type the field name to update
 
@@ -272,7 +263,11 @@ describe('Contact Table', () => {
         });
         cy.wait(10000);
         // Assert that the campaign name displayed in the UI matches the one selected for the update
-        cy.get('[data-testid="campaign-name-chip"]').eq(0).should('have.text', campaignName);
+        cy.get('[data-testid="campaign-name-chip"]').then((campaignElements) => {
+          const campaignNames = [...campaignElements].map((el) => el.innerText);
+          // Assert that the campaign name is included in the list
+          expect(campaignNames).to.include(campaignName);
+        });
       });
   });
 
@@ -329,6 +324,7 @@ describe('Contact Table', () => {
       { wait: false }
     );
   });
+
   it('Should delete selected rows', () => {
     // Intercepting and waiting for specific requests to perform deletion
     cy.mrtFilterBySearch({

@@ -50,7 +50,7 @@ describe('CheckDetails ESHOC Table', () => {
           url: ldata.url,
           headers: headers,
           body: getPropertyPayload({
-            propertyId: propertyId,
+            propertyId,
           }),
         }).then((getPropertyResponse) => {
           cy.wrap(getPropertyResponse.body.data.getProperty).should(

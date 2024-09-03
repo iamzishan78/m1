@@ -51,7 +51,7 @@ describe('Properties Table', () => {
 
     // Selectingn one test property
     cy.mrtFilterBySearch({
-      value: '10374.1',
+      value: '100687',
       columnlabel: 'Property',
       alias: 'Property',
     });
