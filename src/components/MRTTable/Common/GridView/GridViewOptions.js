@@ -25,7 +25,6 @@ import { ADD_GRID_VIEW } from 'graphQL/useMutationAddGridView';
 
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import { globalStateController } from 'hookstate/globalStateController';
-import { mapControlsController } from "hookstate/mapControlsController";
 
 const useStyles = makeStyles(() => ({
 	container: {
@@ -94,12 +93,11 @@ const viewOptions = [
 	},
 ];
 
-function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, defaultView, fetchGridViews }) {
+function GridViewOptions({ handleDefaultView, module, buttonRef, tableKey, allGridViews, defaultView, fetchGridViews }) {
 	const Controller = tableController(tableKey);
 	const tableState = Controller.useState(['filters', 'columnVisibility', 'gridView', 'gridViewSettings']);
 	const tableStateValues = tableState.stateValues;
 	const classes = useStyles();
-	const { mapControlsStateValues: { mapGridCardActivated, expandedPanel } } = mapControlsController.useState([ 'mapGridCardActivated', 'expandedPanel'], 'mapControlsStateValues');
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user.get({ noproxy: true });
 
@@ -161,19 +159,29 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 	};
 
 	// Apply stylinng dynamically for mainn grid
-	const gridViewCss = useMemo(() => ({
-		maxHeight: tableStateValues?.gridViewSettings?.cssOverride?.maxHeight || '600px',
-		top: `${mapGridCardActivated ? '780px' : tableStateValues?.gridViewSettings?.cssOverride?.top} !important`,
-		left: `${mapGridCardActivated ? 
-			(expandedPanel ? '690px': '330px') 
-			: tableStateValues?.gridViewSettings?.cssOverride?.left}`,
-	}), [mapGridCardActivated, expandedPanel, tableStateValues])
+	const gridViewCss = useMemo(() => {
+		let top, left = '0px';
+
+		if (buttonRef.current) {
+		   // Get the bounding rectangle of the button
+		   const rect = buttonRef.current.getBoundingClientRect();
+		   // Calculate top and left based on button position
+		   top = `${rect.bottom + window.scrollY}px`; // Button bottom + scroll position
+		   left = `${rect.left + window.scrollX}px`;  // Button left + scroll position
+		} 
+
+		return {
+			top,
+			left,
+		  };
+	}, [buttonRef.current])
 
 	return (
 		<LeftDialog
 			open
 			width="325px"
-			maxHeight={gridViewCss.maxHeight}
+			useLeftKey={true}
+			maxHeight={tableStateValues?.gridViewSettings?.cssOverride?.maxHeight || '600px'}
 			top={gridViewCss.top}
 			left={gridViewCss.left}
 			handleClickDialogClose={() =>
