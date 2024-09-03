@@ -18,6 +18,7 @@ import _ from "underscore";
 import { UPSERT_MY_WELL } from "graphQL/useMutationUpsertMyWell";
 import { useMutation } from "@apollo/client";
 import { tableGlobalController } from "hookstate/tableController";
+import Button from "@material-ui/core/Button";
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, name, ...other } = props;
@@ -82,7 +83,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
     }
   });
 
-  const { control, reset } = useForm();
+  const { control, reset, getValues  } = useForm();
 
 
   useEffect(() => {
@@ -129,10 +130,10 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
   );
 
 
-  const handleSave = (key, value) => {
+  const handleSave = (formData) => {
     upsertMyWell({
       variables: {
-        myWell: { ...platformWell, _id: platformWell.id, [key]: value },
+        myWell: { ...platformWell, _id: platformWell.id, ...formData },
       },
       refetchQueries: ["getESSimpleSearch"],
       awaitRefetchQueries: true,
@@ -147,12 +148,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
             <Autocomplete
               options={foundWells || []}
               onChange={async (e, well) => {
-                const myWell = await handleWellDetail(well);
-                upsertMyWell({
-                  variables: { myWell },
-                  refetchQueries: ["getESSimpleSearch"],
-                  awaitRefetchQueries: true,
-                })
+                await handleWellDetail(well);
               }}
               disabled={!!upsertWellLoading}
               value={platformWell}
@@ -270,16 +266,24 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
                     const value = event.target.value;
                     params.onChange(value);
                   }}
-                  onBlur={(event) => {
-                    const value = event.target.value.trim(); // Remove leading/trailing whitespace
-                    handleSave(param.esKey ?? param.key, param.type === "date" ? new Date(value) : value);
-                  }}
                   disabled={upsertWellLoading}
                 />
               )}
             ></Controller>
           </Fragment>
         ))}
+        {/* Add save button to save well data  */}
+        <Button 
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            const values = getValues();
+            handleSave(values);
+          }}
+          disabled={upsertWellLoading}
+        >
+          Save
+        </Button>
       </div>
     </div>
   );
