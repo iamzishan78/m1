@@ -226,7 +226,7 @@ export default function TrackTaskCard() {
             series.stacked = true; // Enable stacking of series
             series.columns.template.tooltipText = "{name}: [bold]{valueX}[/]";
             series.columns.template.fill = am4core.color(color); // Assign color for each series
-            series.columns.template.fillOpacity = 0.8;
+            series.columns.template.fillOpacity = 1;
 
             // Enable data labels  8
             var labelBullet = series.bullets.push(new am4charts.LabelBullet());
