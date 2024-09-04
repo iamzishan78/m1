@@ -12,12 +12,14 @@ import QuickActionPanel from "components/Land/components/QuickActionPanel";
 import { AdminManagementRoutes } from "utils/data";
 import Map from "./components/Map";
 import AdminSettings from "components/Shared/AdminSettings";
-import Flattening from "components/Admin/Flattening"
+import Flatten from "components/Admin/Flatten"
+import Reindex from "components/Admin/Reindex"
 
 const Components = {
   Map,
   AdminSettings,
-  Flattening
+  Flatten,
+  Reindex
 };
 
 function isM1neralAddress(email) {
@@ -59,6 +61,7 @@ export default function Admin() {
     const allPaths = JSON.parse(JSON.stringify(AdminManagementRoutes));
     if (!isM1neralAddress(stateApp.user.email)) {
       delete allPaths["FLATTENING"]
+      delete allPaths["REINDEX"]
     }
     const feature = stateApp.user?.features?.find((feature) => feature.name === FEATURES.CONTACTSUBMENU);
     // const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.ANALYTICSSUBMENU);

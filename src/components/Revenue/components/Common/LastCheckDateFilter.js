@@ -10,7 +10,7 @@ import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 import { MenuItem } from "material-ui";
 import { MuiThemeProvider } from "material-ui/styles";
 import { dateFilterToDate } from "utils/helper";
-import { copy } from "components/Shared/functions";
+import { copy, deepEqual } from "components/Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: {
@@ -84,7 +84,7 @@ const LastCheckDateFilter = ({
 
   useEffect(() => {
     updateFilters();
-  }, [toDate, fromDate, status, propertyFilter, checkNumberFilter, propertyNumberFilter]);
+  }, [toDate, fromDate, status, propertyFilter, checkNumberFilter, propertyNumberFilter, esFilters]);
 
   const updateFilters = () => {
     let filters = copy(esFilters) ?? [];
@@ -94,13 +94,11 @@ const LastCheckDateFilter = ({
         filter.field !== `${stateESKey}state.keyword` &&
         filter.field !== "check.checkNumber.keyword" &&
         filter.field !== "property.number.keyword" &&
-        filter.field !== "status.keyword" &&
-        !reportGroupFilters.current.includes(stateESKey + filter.field)
+        filter.field !== "status.keyword"
     );
     if (checkNumberFilter) {
       filters.push({ field: "check.checkNumber.keyword", value: checkNumberFilter });
     }
-
     if (propertyNumberFilter) {
       filters.push({ field: "property.number.keyword", value: propertyNumberFilter });
     }
@@ -113,22 +111,27 @@ const LastCheckDateFilter = ({
         },
         type: "range",
       });
-
-    propertyFilter.forEach((filter) => {
-      filters = filters.filter((f) => f.field !== stateESKey + filter.field)
-      filters.push({ ...filter, field: stateESKey + filter.field })
+  
+    const _propertyFilter = copy(propertyFilter)
+    filters = filters.filter((filter) => !reportGroupFilters.current.includes(filter.field))
+    _propertyFilter.forEach((filter) => {
+      const field = filter.field.includes("wells") ? filter.field.replace('property.', '') : stateESKey + filter.field
+      filters = filters.filter((f) => f.field !== field)
+      filter.field = field
+      filters.push({ ...filter })
     })
-
+    reportGroupFilters.current = _propertyFilter.map((filter) => filter.field)
+  
     if (status !== "ALL") {
       filters.push({
         field: "status.keyword",
         value: status,
       });
     }
-
+    if (!deepEqual(filters, esFilters)) { // prevent from unnecessary re rendering 
     setESFilters(filters);
+    }
     setFilterToggle(!filterToggle);
-    reportGroupFilters.current = propertyFilter.map((filter) => stateESKey + filter.field)
   };
 
   return (
@@ -159,7 +162,8 @@ const LastCheckDateFilter = ({
             />
           </Grid>
         )}
-        {extraFitlers.includes("status") && (
+        {/* commenting out as it is not working currently  --KC 2024-08-06 */}
+        {/* {extraFitlers.includes("status") && (
           <Grid item xs md={2}>
             <MuiThemeProvider>
               <FormControl variant="outlined" className={classes.formControl}>
@@ -180,7 +184,7 @@ const LastCheckDateFilter = ({
               </FormControl>
             </MuiThemeProvider>
           </Grid>
-        )}
+        )} */}
         {isComparisonReport && (
           <>
             {extraFitlers.includes("checkNumber") && (
@@ -234,4 +238,4 @@ const LastCheckDateFilter = ({
   );
 };
 
-export default LastCheckDateFilter;
+export default React.memo(LastCheckDateFilter);

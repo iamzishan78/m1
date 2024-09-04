@@ -104,6 +104,9 @@ const ValidationChart = ({
           JSON.stringify(orderBy(data, ["ReportDate"], ["desc"]).map((d) => ({ ...d, ReportDate: moment(d.ReportDate).format("MM/yyyy") })))
         )
       );
+    } else {
+      setAssociatedWellIds([]);
+      setWellProductionData([]);
     }
   }, [associatedWells, filter]);
 

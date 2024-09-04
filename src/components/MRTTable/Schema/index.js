@@ -22,6 +22,7 @@ import TaxOwnerMeta from './map-grid-tax-owner-schema';
 import ShapeDetailAgreementMeta from './shapeDetail_agreement_schema';
 import AgreementRelatedUnitsMeta from './agreement_relatedUnits_schema';
 import UnitRelatedAgreementMeta from './unit_relatedAgreements_schema';
+import SalesVolumeComparisonMeta from './sales-volume-comparison-schema';
 
 export const SCHEMA = {
 	ContactTable: ContactMeta,
@@ -52,5 +53,6 @@ export const SCHEMA = {
 	// Added related shape grids
 	ShapeDetailAgreementTable: ShapeDetailAgreementMeta,
 	AgreementRelatedUnitsTable: AgreementRelatedUnitsMeta,
-	UnitRelatedAgreementTable: UnitRelatedAgreementMeta
+	UnitRelatedAgreementTable: UnitRelatedAgreementMeta,
+	SalesVolumeComparisonTable: SalesVolumeComparisonMeta, // Sales Volume comparison grid => analytrics/revenue
 };

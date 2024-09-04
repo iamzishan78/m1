@@ -227,13 +227,14 @@ const ProfileContent = () => {
               disableUnderline: true,
               error: true,
               classes: { input: classes.input },
+              inputProps: { maxLength: 20 }, // Limit the length to 20 characters
             }}
             FormHelperTextProps={{
               classes: { root: classes.helperText },
             }}
             label={"Phone number"}
             placeholder={formatPhone("555-555-5555")}
-            //helperText={"Enter your phone number"}
+            helperText={phone?.length >= 20 && "Maximum length of 20 characters has reached"} // Helper text to display 
             name="phone"
             value={formatPhone(phone)}
             onChange={({ target }) => onChange(target)}

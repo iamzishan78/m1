@@ -2,15 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useLazyQuery } from "@apollo/client";
 
 import AnalyticsCharts from "./AnalyticsCharts";
-import SalesVolumeComparisonTable from "./SalesVolumeComparisonTable";
-
+import MRTTable from 'components/MRTTable';
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
+import { tableController } from 'hookstate/tableController';
 
 export default function SalesVolumeComparisonSection({ checkDetailsData, esFilters, loadMore }) {
   const [propertiesIds, setPropertiesIds] = useState([]);
   const [associatedWellIds, setAssociatedWellIds] = useState([]);
-
-  const [recordCount, setRecordCount] = useState(0);
+  const tableState = tableController("SalesVolumeComparisonTable").useState(['filters', 'data']);
+  const tableStateValues = tableState.stateValues;
 
   const [getESSimpleFilter] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: "no-cache" });
 
@@ -25,7 +25,7 @@ export default function SalesVolumeComparisonSection({ checkDetailsData, esFilte
             index: "checkdetailsinterestscomparison_flat",
             filters: [...formattedFilters, { field: "property.IsDeleted", value: false, type: "term" }],
             filterKey: "property._id.keyword",
-            filterAggs: { query: "", field: "property._id.keyword", size: recordCount },
+            filterAggs: { query: "", field: "property._id.keyword", size: tableStateValues?.data?.total || 0 },
           },
           onCompleted: (res) => {
             if (res) {
@@ -37,7 +37,7 @@ export default function SalesVolumeComparisonSection({ checkDetailsData, esFilte
         });
       });
     })();
-  }, [recordCount]);
+  }, [tableState?.data?.total, tableState?.filters,]);
 
   return (
     <>
@@ -47,15 +47,9 @@ export default function SalesVolumeComparisonSection({ checkDetailsData, esFilte
         checkDetailsData={checkDetailsData}
         setAssociatedWellIds={setAssociatedWellIds}
       />
-      <SalesVolumeComparisonTable
-        targetLabel="propertyInterest"
-        parent="PropertyAssociatedWell"
-        setPropertiesIds={setPropertiesIds}
-        loadMore={{ ...loadMore, height: "calc(100vh - 710px)" }}
-        esFilters={esFilters}
-        recordCount={recordCount}
-        setRecordCount={setRecordCount}
-      />
+      
+      <MRTTable name="SalesVolumeComparisonTable" 
+      hideSharedCommentCheck />
     </>
   );
 }
