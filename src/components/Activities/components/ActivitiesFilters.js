@@ -230,6 +230,7 @@ export default function CustomDatesActivities({
           </Grid>
         }
         {/* Show Entity dropdown for Audit Reporting tab only */}
+
         {
           activeModule.title == 'Audit Reporting' &&
           <Grid item xs={2} md={2} lg={2} xl={2} style={{ marginTop: "4px" }}>
@@ -462,6 +463,7 @@ const EntityFilter = ({
           variant="outlined"
           label={label}
           id="custom-entity-dropdown"
+          style={{ backgroundColor: "white" }}
         />
       )}
     />);

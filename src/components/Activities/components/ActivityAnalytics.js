@@ -88,7 +88,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters }) => {
       }
     },
   });
-  const [getAuditReportingAnalytics] = useLazyQuery(GET_CONTACT_ANALYTICS, {
+  const [getAuditReportingAnalytics,  { auditloading }] = useLazyQuery(GET_CONTACT_ANALYTICS, {
 
     fetchPolicy: "no-cache",
 
@@ -278,7 +278,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters }) => {
           <Card variant="outlined">
             <CardContent style={{ height: "265px", overflow: "auto" }}>
               <label>{activeModule.value == 'CRM' ? 'Activities Per Qualifier' : 'Updates Per User'}</label>
-              { !loading && <StackedBarChart data={activeModule.value == 'CRM' ? activitiesPerQualifier : updatesPerUser } />}
+              { (!loading && !auditloading)  && <StackedBarChart data={activeModule.value == 'CRM' ? activitiesPerQualifier : updatesPerUser} />}
             </CardContent>
           </Card>
         </Grid>
