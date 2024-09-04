@@ -185,6 +185,9 @@ export const drawBoundary = selectedUserDefinedLayer => {
           getFillColor: [255, 255, 0],
           getPointRadius: 50,
         }),
+        parameters: {
+          depthTest: false, // Disable depth testing to draw points on top
+        },
       },
     });
   }
