@@ -5,14 +5,16 @@ const {
 
 const GetCypressLog = async () => {
   try {
-    const { prData, dummyPR, SOURCE_BRANCH } = require('./utils/constants.js');
+    const { getPipelineData } = require('./utils/helpers.js');
+    const { prData, SOURCE_BRANCH } = getPipelineData();
+
     const ldata = require('../../fixtures/ldata.json');
     const { headers } = require('../../cypressUtils/cypressHeaders.js');
 
     const getCypressLogPayload = {
       operationName: 'getCypressLog',
       variables: {
-        prId: dummyPR.pullRequestId,
+        prId: prData.pullRequestId,
         sourceBranch: SOURCE_BRANCH,
       },
       query: GET_CYPRESS_LOG.loc.source.body,

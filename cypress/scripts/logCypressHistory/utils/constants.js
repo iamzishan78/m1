@@ -10,8 +10,8 @@ const prData = {
   pullRequestIteration: process.env.SYSTEM_PULLREQUEST_PULLREQUESTITERATION,
 };
 
-const MAX_PIPELINE_DURATION = 40 * 60 * 1000; // 40 minutes in milliseconds
-const PIPELINE_WARNING_THRESHOLD = 35 * 60 * 1000; // 35 minutes in milliseconds
+const MAX_PIPELINE_DURATION = 50 * 60 * 1000; // 50 minutes in milliseconds
+const PIPELINE_WARNING_THRESHOLD = 45 * 60 * 1000; // 45 minutes in milliseconds
 const PIPELLINE_CHECK_TIME = 1 * 60 * 1000; // 1 minutes in milliseconds
 
 const TENENT = process.env.TENENT;
@@ -23,8 +23,8 @@ const REPOSITORY_ID = '388272b2-6847-40a2-aa97-30d73a0d7e74';
 const CYPRESS_FILE_PATTERN = 'cypress/component/**/*.cy*';
 
 const dummyPR = {
-  pullRequestId: '4573',
-  sourceBranch: 'refs/heads/ahmadfaraz/cypress/data-restore',
+  pullRequestId: '6383',
+  sourceBranch: 'refs/heads/danyal/cypress/pipeline-testcases',
   targetBranch: 'refs/heads/master',
   targetBranchName: 'master',
   sourceCommitId: 'f2a35f91a3b1afa4cb5771ba7e3288bc5d26588e',
@@ -33,9 +33,12 @@ const dummyPR = {
   pullRequestIteration: '5',
 };
 
+const dummyBuildId = '1234';
+
 module.exports = {
   prData,
   dummyPR,
+  dummyBuildId,
   BUILD_ID,
   SOURCE_BRANCH,
   MAX_PIPELINE_DURATION,

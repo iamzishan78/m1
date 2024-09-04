@@ -14,9 +14,10 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
 (async function () {
   try {
     let cypressProcess;
-    const { prData, dummyPR } = require('./utils/constants.js');
-    const commits = await fetchGitCommits();
+    const { getPipelineData } = require('./utils/helpers.js');
+    const { prData } = getPipelineData();
 
+    const commits = await fetchGitCommits();
     // Fetch all system specs
     const systemSpecs = await fetchCypressSpecs();
 
@@ -38,7 +39,7 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
 
     // Upsert the cypress logs
     const { specsString } = await UpsertCypressLog({
-      pr: dummyPR,
+      pr: prData,
       specs: systemSpecs,
     });
 
@@ -66,7 +67,7 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
           if (isExecutionComplete && retries === 1) {
             console.log('Failed specs found. Triggering pipeline one more time...');
             const buildId = await triggerAzurePipeline();
-            await UpsertCypressLog({ pr: dummyPR, specs: systemSpecs, buildId: buildId, isFailedRetry: true});
+            await UpsertCypressLog({ pr: prData, specs: systemSpecs, buildId: buildId, isFailedRetry: true});
           }
           console.log('Exiting command with code: ', code)
           process.exit(code);

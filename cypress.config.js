@@ -43,7 +43,9 @@ module.exports = defineConfig({
       // Update the cypress log history after execution of each spec
       on('after:spec', async (spec, executionData) => {
         const { UpsertCypressLog } = require("./cypress/scripts/logCypressHistory/upsertCypressLog");
-        const { prData, dummyPR } = require("./cypress/scripts/logCypressHistory/utils/constants.js");
+        const { getPipelineData } = require("./cypress/scripts/logCypressHistory/utils/helpers.js");
+
+        const { prData } = getPipelineData();
 
         const testCases = executionData.tests.map((test) => ({
           testcase: test.title[1],
@@ -58,7 +60,7 @@ module.exports = defineConfig({
             testcases: testCases
           }
         ]
-        await UpsertCypressLog({ pr: dummyPR, specs: specs })
+        await UpsertCypressLog({ pr: prData, specs: specs })
       });
 
       // Restore data beforing running each spec

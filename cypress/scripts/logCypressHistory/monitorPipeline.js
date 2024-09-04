@@ -5,13 +5,14 @@ const { GetCypressLog } = require('./getCypressLog.js');
 
 const monitorPipeline = ({ getCypressProcess, specs }) => {
   const {
-    prData,
-    dummyPR,
-    BUILD_ID,
     MAX_PIPELINE_DURATION,
     PIPELINE_WARNING_THRESHOLD,
     PIPELLINE_CHECK_TIME,
   } = require('./utils/constants.js');
+
+  const { getPipelineData } = require('./utils/helpers.js'); 
+  const { prData, BUILD_ID } = getPipelineData();
+
   let startTime = Date.now();
 
   // Monitor elapsed time and trigger new pipeline
@@ -47,7 +48,7 @@ const monitorPipeline = ({ getCypressProcess, specs }) => {
           clearInterval(intervalId);
           const buildId = await triggerAzurePipeline();
           await UpsertCypressLog({
-            pr: dummyPR,
+            pr: prData,
             specs: specs,
             buildId: buildId,
           });
@@ -64,7 +65,6 @@ const monitorPipeline = ({ getCypressProcess, specs }) => {
       }
     }
 
-    console.log('Elapsed Time:', elapsedTime);
   }, PIPELLINE_CHECK_TIME); // Check every minute (adjust interval as needed)
 
   return intervalId;
