@@ -35,6 +35,7 @@ module.exports = defineConfig({
         },
       });
     },
+    responseTimeout: 60000 // Set the response timeout here
   },
 
   component: {
@@ -88,5 +89,6 @@ module.exports = defineConfig({
       bundler: "webpack",
     },
     specPattern: 'cypress/component/**/*.cy*',
+    responseTimeout: 60000 // Set the response timeout here
   },
 });

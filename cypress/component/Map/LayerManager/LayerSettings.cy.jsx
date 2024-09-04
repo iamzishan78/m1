@@ -27,7 +27,8 @@ describe('Map Component Layer Settings', () => {
     cy.interceptAndWait(['getAllLayerSettingsByUser'], () => {
       cy.viewport(1800, 1200).mount(<MapProvider match={{ params: {} }} />);
     });
-    cy.wait(100).then(() => {
+    
+    cy.waitUntilMapRefDefined().then(() => {
       window.mapRef.jumpTo({
         center: {
           lng: -99.13764727392922,
@@ -35,6 +36,7 @@ describe('Map Component Layer Settings', () => {
         },
         zoom: 10.5,
       });
+
       cy.wait(basic_timeouts.shorTimeout);
     });
   });

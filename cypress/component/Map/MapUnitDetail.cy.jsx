@@ -15,6 +15,9 @@ describe('Map Unit Detail Component', () => {
         />
       );
     });
+    cy.waitUntilMapRefDefined().then(() => {
+      cy.wait(basic_timeouts.shorTimeout);
+      });
   });
 
   it('Add well to unit works', () => {
@@ -37,9 +40,9 @@ describe('Map Unit Detail Component', () => {
       (alias) => {
         cy.get('#saveWellButton').click();
         cy.wait(alias, { timeout: 400000 }).then((res) => {
-          expect(res.response.body.data.addShapeWellInterest.success).to.be.equal(true);
+          expect(res?.response?.body?.data?.addShapeWellInterest?.success).to.be.equal(true);
 
-          const lease = res.request.body.variables.wellInterest.lease;
+          const lease = res?.request?.body?.variables?.wellInterest?.lease;
           // If lease is passed from frontend then we will check that in grid
           if (lease) {
             cy.get('tr').contains(lease);
@@ -75,7 +78,6 @@ describe('Map Unit Detail Component', () => {
   });
 
   it('should update field and check cutom field did not remove', () => {
-    cy.wait(25000);
     cy.get('[data-testid="data-cell-cypress test field (do not delete)"]', {
       timeout: basic_timeouts.longTimeout,
     }).click();

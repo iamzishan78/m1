@@ -106,7 +106,7 @@ describe('Contact Table', () => {
             body: getElasticDataPayload({
               index: 'activities_flat',
               pagination: {
-                first: 25,
+                first: 10000,
                 after: null,
               },
               search: {
@@ -214,7 +214,7 @@ describe('Contact Table', () => {
           // Pass custom settings to the MRTTable component for the test
           mrtOverrideMeta: {
             isDefaultGridView: false,
-            gridViewOverride: 'Purchased',
+            gridViewOverride: 'Cypress(do no delete)',
           },
         });
         // Wait for the API call to finish with a custom timeout and process the response

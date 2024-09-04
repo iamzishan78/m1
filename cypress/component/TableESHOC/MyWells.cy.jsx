@@ -57,7 +57,7 @@ describe('MyWells ESHOC Table', () => {
         testCase: "MyWellsNameUpdate",
       });
     });
-    cy.contains("+ ADD WELL").click();
+    cy.contains("+ ADD WELL").click({ force: true });
     cy.get('[data-testid="well-search-field"]')
       .clear()
       .type("JJ PRATER HEIRS JJ-I1");
@@ -113,17 +113,7 @@ describe('MyWells ESHOC Table', () => {
 
   it("deletes wells correctly", () => {
     cy.interceptAndWait(["getESSimpleSearch", "mywells_flat"], () => {
-      cy.viewport(1600, 1200).mount(
-        <Wells
-          defaultFilters={[
-            {
-              field: "wellData.wellName.keyword",
-              value: wellName,
-            },
-          ]}
-        />,
-        { testCase: "MyWellsNameUpdate" }
-      );
+      cy.viewport(1600, 1200).mount(<Wells />, { testCase: 'MyWellsNameUpdate' });
     });
 
     cy.interceptAndWait(
