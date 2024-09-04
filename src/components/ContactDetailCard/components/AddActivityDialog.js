@@ -601,7 +601,7 @@ function AddActivityDialog(props) {
       >
         <AutoCompleteAddNewField
           queryParams={{
-            esIndex: "contacts_flat",
+            esIndex: "activities_flat",
             filterKey: "outcome.keyword",
             size: 50,
           }}
