@@ -233,18 +233,23 @@ export default function TrackTaskCard() {
             labelBullet.label.text = "{valueX}"; // Display the value on each bar
             labelBullet.label.fill = am4core.color("#fff");
             labelBullet.locationX = 0.5; // Center the label
-            labelBullet.label.fontSize = 8;
+            labelBullet.label.fontSize = 12;
             labelBullet.label.fontWeight = "bold";
         }
 
         // Create series with different colors
-        createSeries("open", "Open", "#c55a11"); // Orange color for "Open"
         createSeries("completed", "Completed", "#4472c4"); // Blue color for "Completed"
+        createSeries("open", "Open", "#c55a11"); // Orange color for "Open"
 
         // Add legend
         chart.legend = new am4charts.Legend();
         chart.legend.position = "right"; // Position the legend to the right
         chart.legend.marginLeft = 20; // Optional: add some margin
+
+        // Adapter to update legend position
+        chart.legend.adapter.add("y", function(position, target) {
+            return 30;
+        });// Optional: add some margin
 
         // Add label above the legend
         let titleLabel = chart.plotContainer.createChild(am4core.Label);
@@ -257,8 +262,7 @@ export default function TrackTaskCard() {
         titleLabel.horizontalCenter = "middle";
         titleLabel.verticalCenter = "bottom";
         titleLabel.adapter.add("y", (y, target) => {
-            let chartWidth = target.parent.pixelHeight;
-            return ((chartWidth / 2) - 38); // Adjust the title's vertical position
+            return (30); // Adjust the title's vertical position
         });
         // Adjust position relative to the x-axis and legend
         titleLabel.adapter.add("x", (x, target) => {
