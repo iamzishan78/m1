@@ -4,7 +4,7 @@ const { UpsertCypressLog } = require('./upsertCypressLog.js');
 const { GetCypressLog } = require('./getCypressLog.js');
 const { triggerAzurePipeline } = require('./triggerAzurePipeline.js');
 const { monitorPipeline } = require('./monitorPipeline.js');
-const { fetchGitCommits } = require('./utils/fetchGitCommits.js')
+const { fetchPullRequests } = require('./utils/fetchPullRequest.js');
 
 const path = require('path');
 const crossEnvCommand = path.resolve(__dirname, '../../../node_modules/.bin/cross-env');
@@ -14,10 +14,16 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
 (async function () {
   try {
     let cypressProcess;
+
+    // Get PR data and serialize the object to as an env JSON string
+    const pullRequests = await fetchPullRequests();
+    if(pullRequests &&  pullRequests.length > 0) {
+        process.env.pullRequestData = JSON.stringify(pullRequests[0]);
+    }
+
     const { getPipelineData } = require('./utils/helpers.js');
     const { prData } = getPipelineData();
 
-    const commits = await fetchGitCommits();
     // Fetch all system specs
     const systemSpecs = await fetchCypressSpecs();
 

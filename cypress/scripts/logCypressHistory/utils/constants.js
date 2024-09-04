@@ -1,14 +1,5 @@
 const BUILD_ID = process.env.BUILD_ID;
 const SOURCE_BRANCH = process.env.SOURCE_BRANCH;
-const prData = {
-  pullRequestId: process.env.SYSTEM_PULLREQUEST_PULLREQUESTID,
-  sourceBranch: process.env.SYSTEM_PULLREQUEST_SOURCEBRANCH,
-  targetBranch: process.env.SYSTEM_PULLREQUEST_TARGETBRANCH,
-  targetBranchName: process.env.SYSTEM_PULLREQUEST_TARGETBRANCHNAME,
-  sourceCommitId: process.env.SYSTEM_PULLREQUEST_SOURCECOMMITID,
-  sourceRepositoryUri: process.env.SYSTEM_PULLREQUEST_SOURCEREPOSITORYURI,
-  pullRequestIteration: process.env.SYSTEM_PULLREQUEST_PULLREQUESTITERATION,
-};
 
 const MAX_PIPELINE_DURATION = 50 * 60 * 1000; // 50 minutes in milliseconds
 const PIPELINE_WARNING_THRESHOLD = 45 * 60 * 1000; // 45 minutes in milliseconds
@@ -23,20 +14,18 @@ const REPOSITORY_ID = '388272b2-6847-40a2-aa97-30d73a0d7e74';
 const CYPRESS_FILE_PATTERN = 'cypress/component/**/*.cy*';
 
 const dummyPR = {
-  pullRequestId: '6383',
-  sourceBranch: 'refs/heads/danyal/cypress/pipeline-testcases',
-  targetBranch: 'refs/heads/master',
-  targetBranchName: 'master',
-  sourceCommitId: 'f2a35f91a3b1afa4cb5771ba7e3288bc5d26588e',
-  sourceRepositoryUri:
-    'https://m1neral@dev.azure.com/m1neral/Platform%20MVP/_git/m1',
-  pullRequestIteration: '5',
+  pullRequestId: 1234,
+  title: 'Executing pipeline locally',
+  status: 'active',
+  sourceBranch: 'refs/heads/abc',
+  targetBranch: 'refs/heads/xyz',
+  createdBy: 'Local tester',
+  creationDate: '2024-09-03T11:31:57.1883747Z'
 };
 
-const dummyBuildId = '1234';
+const dummyBuildId = '8321';
 
 module.exports = {
-  prData,
   dummyPR,
   dummyBuildId,
   BUILD_ID,
