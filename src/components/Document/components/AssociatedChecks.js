@@ -109,7 +109,7 @@ export default function AssociatedChecks() {
   };
   return (
     <DocumentAssociation
-      title={"Checks"}
+      title={"Revenue Statements"}
       items={checks}
       navigateTo={goToCheck}
       esFilter={[]}
@@ -126,7 +126,7 @@ export default function AssociatedChecks() {
       isSearchActive={isSearchActive}
       search={search}
       setSearch={setSearch}
-      relatedObjectType="Check"
+      relatedObjectType="Revenue Statement"
       deleteDescriptorFile={deleteCheck}
       getSelectedItem={addSelectedCheckToDocument}
       addFileLoading={addChecksLoading}

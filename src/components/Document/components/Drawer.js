@@ -452,8 +452,8 @@ export default function DocumentDrawer(props) {
             {activePanel === "Info" && <Information fileData={fileData} />}
             {activePanel === "Agreements" && <AssociatedAgreements />}
             {activePanel === "Contacts" && <AssociatedContacts />}
-            {/* checks tab in document detail panel */}
-            {activePanel === "Checks" && <AssociatedChecks />}
+            {/* revenue statements tab in document detail panel */}
+            {activePanel === "Revenue Statements" && <AssociatedChecks />}
           </div>
         </div>
       </div>

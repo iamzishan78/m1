@@ -111,7 +111,9 @@ function ESSearchField({
         renderOption={(option) => {
           return (
             <div>
-              <Typography variant="subtitle1">{option?.name || option?.checkNumber}</Typography>
+              <Typography variant="subtitle1">
+                {option?.name || option?.checkNumber}
+              </Typography>
               <p className={classes.secondaryText}>{option?.ApiNumber}</p>
             </div>
           );
@@ -123,7 +125,9 @@ function ESSearchField({
             {...params}
             required
             variant="outlined"
-            label={`${fieldName.replace(/s$/, "")} Name`}
+            label={`${fieldName.replace(/s$/, "")} ${
+              fieldName.toLowerCase().includes("revenue") ? "Number" : "Name"
+            }`}
             InputLabelProps={{ shrink: true }}
             onChange={(event) => {
               callItemESSearch(

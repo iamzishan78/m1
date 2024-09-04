@@ -80,8 +80,8 @@ export default function Drawer(props) {
         <AgreementIcon {...props} />
       </Badge>
     ),
-    // icon for check tab
-    Checks: (props) => (
+    // icon for revenue statement tab
+    "Revenue Statements": (props) => (
       <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary" badgeContent={checksCount} >
         <CheckIcon {...props} />
       </Badge>
