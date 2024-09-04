@@ -2,6 +2,8 @@
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { GET_PROPERTY } from 'graphQL/useQueryGetProperty';
 import ldata from '../../fixtures/ldata.json';
+import _ from 'lodash';
+
 const headers = {
   'Content-Type': 'application/json',
   'X-ZUMO-AUTH': ldata.x_zumo_auth,
@@ -43,8 +45,10 @@ describe('CheckDetails ESHOC Table', () => {
         (checkDetail) => checkDetail.property._id
       );
 
+      // Unique property ids
+      const uniquePropertyIds = _.uniq(propertyIds);
       // fetching and verfying property based on property id provided by check details
-      propertyIds.map((propertyId) => {
+      uniquePropertyIds.map((propertyId) => {
         cy.request({
           method: 'POST',
           url: ldata.url,
