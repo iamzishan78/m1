@@ -125,7 +125,7 @@ function ESSearchField({
             {...params}
             required
             variant="outlined"
-            label={`${fieldName.replace(/s$/, "")} ${
+            label={`${fieldName.replace(/ies$/, "y").replace(/s$/, "")} ${
               fieldName.toLowerCase().includes("revenue") ? "Number" : "Name"
             }`}
             InputLabelProps={{ shrink: true }}
