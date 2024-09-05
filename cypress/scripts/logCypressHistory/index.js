@@ -22,7 +22,11 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
     }
 
     const { getPipelineData } = require('./utils/helpers.js');
+    const { AZURE_TOKEN } = require('./utils/constants.js');
     const { prData } = getPipelineData();
+
+    console.log("pullRequests: ", pullRequests);
+    console.log("AZURE_TOKEN: ", AZURE_TOKEN);
 
     // Fetch all system specs
     const systemSpecs = await fetchCypressSpecs();

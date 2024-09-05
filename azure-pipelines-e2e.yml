@@ -13,65 +13,65 @@ variables:
   NODE_OPTIONS: --max_old_space_size=32768
   SOURCE_BRANCH: $(Build.SourceBranch)
   BUILD_ID: $(Build.BuildId)
-
+  AZURE_ACCESS_TOKEN: $(System.AccessToken)
 steps:
   - task: NodeTool@0
     inputs:
       versionSpec: '21.7.3'
     displayName: 'Install Node.js'
 
-  - script: |
-      yarn install
-    displayName: 'Yarn Install'
+  # - script: |
+  #     yarn install
+  #   displayName: 'Yarn Install'
 
-  - script: |
-      sed -i "s/cypress open/cypress open --env TENENT='$(TENENT)'/" ./package.json
-      sed -i "s/login.cy.js'/login.cy.js' --env TENENT='$(TENENT)'/" ./package.json
-      sed -i "s/SPEC=\$SPEC/SPEC='\$(SPEC_TYPE)'/" ./package.json
-    displayName: 'Replace Tenant & SPEC_TYPE Value'
+  # - script: |
+  #     sed -i "s/cypress open/cypress open --env TENENT='$(TENENT)'/" ./package.json
+  #     sed -i "s/login.cy.js'/login.cy.js' --env TENENT='$(TENENT)'/" ./package.json
+  #     sed -i "s/SPEC=\$SPEC/SPEC='\$(SPEC_TYPE)'/" ./package.json
+  #   displayName: 'Replace Tenant & SPEC_TYPE Value'
 
   - script: |
       # Running script for cypress logging history
       node cypress/scripts/logCypressHistory/index.js
     displayName: 'Run Cypress Logging Script'
 
-  - script: |
-      if [ "$(ls -A cypress/screenshots)" ]; then
-        echo "Screenshots folder is not empty. Proceeding with the last three steps."
-        echo "$(ls -A cypress/screenshots)"
-        echo "##vso[task.setvariable variable=SCREENSHOTS_NOT_EMPTY]true"
-      else
-        echo "Screenshots folder is empty. Skipping the last three steps."
-        echo "##vso[task.setvariable variable=SCREENSHOTS_NOT_EMPTY]false"
-      fi
-    displayName: 'Check Screenshots Folder'
-    condition: always() # Always run this script
+  # - script: |
+  #     if [ "$(ls -A cypress/screenshots)" ]; then
+  #       echo "Screenshots folder is not empty. Proceeding with the last three steps."
+  #       echo "$(ls -A cypress/screenshots)"
+  #       echo "##vso[task.setvariable variable=SCREENSHOTS_NOT_EMPTY]true"
+  #     else
+  #       echo "Screenshots folder is empty. Skipping the last three steps."
+  #       echo "##vso[task.setvariable variable=SCREENSHOTS_NOT_EMPTY]false"
+  #     fi
+  #   displayName: 'Check Screenshots Folder'
+  #   condition: always() # Always run this script
 
-  ## Copy the client to the staging directory
-  - task: CopyFiles@2
-    inputs:
-      sourceFolder: "cypress"
-      contents: |
-        screenshots/**/*
-        videos/**/*
-      targetFolder: "$(Build.ArtifactStagingDirectory)"
-      cleanTargetFolder: true
-    displayName: 'Copy Screenshots and Videos'
-    condition: eq(variables.SCREENSHOTS_NOT_EMPTY, 'true')  # Only run if the Screenshots folder is not empty
+  # ## Copy the client to the staging directory
+  # - task: CopyFiles@2
+  #   inputs:
+  #     sourceFolder: "cypress"
+  #     contents: |
+  #       screenshots/**/*
+  #       videos/**/*
+  #     targetFolder: "$(Build.ArtifactStagingDirectory)"
+  #     cleanTargetFolder: true
+  #   displayName: 'Copy Screenshots and Videos'
+  #   condition: eq(variables.SCREENSHOTS_NOT_EMPTY, 'true')  # Only run if the Screenshots folder is not empty
 
-  ## Archive the files into a zip file for publishing
-  - task: ArchiveFiles@2
-    inputs:
-      rootFolderOrFile: $(Build.ArtifactStagingDirectory)
-      archiveType: "zip"
-      archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"
-      includeRootFolder: false
-    displayName: 'Archive Files'
-    condition: eq(variables.SCREENSHOTS_NOT_EMPTY, 'true')  # Only run if the Screenshots folder is not empty
+  # ## Archive the files into a zip file for publishing
+  # - task: ArchiveFiles@2
+  #   inputs:
+  #     rootFolderOrFile: $(Build.ArtifactStagingDirectory)
+  #     archiveType: "zip"
+  #     archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"
+  #     includeRootFolder: false
+  #   displayName: 'Archive Files'
+  #   condition: eq(variables.SCREENSHOTS_NOT_EMPTY, 'true')  # Only run if the Screenshots folder is not empty
 
-  ## Publish the zip file
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"
-    displayName: 'Publish Artifacts'
-    condition: eq(variables.SCREENSHOTS_NOT_EMPTY, 'true')  # Only run if the Screenshots folder is not empty
+  # ## Publish the zip file
+  # - task: PublishBuildArtifacts@1
+  #   inputs:
+  #     pathtoPublish: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"
+  #   displayName: 'Publish Artifacts'
+  #   condition: eq(variables.SCREENSHOTS_NOT_EMPTY, 'true')  # Only run if the Screenshots folder is not empty
