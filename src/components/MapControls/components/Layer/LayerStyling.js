@@ -63,6 +63,7 @@ function LayerStyling() {
 
   const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
 
+  // Getting meta data for selected layer
   useEffect(() => {
     if (colorBasedAttributes[selectedLayer?.identifier]?.layerKey)
       getMetaData({
@@ -135,6 +136,7 @@ function LayerStyling() {
     handleClose();
   };
 
+  // Merging summaryfield keys and custom data keys of selected  layer
   const options = useMemo(() => {
     const colorAttributes = colorBasedAttributes[selectedLayer?.identifier]?.keys || [];
     const metaDataOptions = metaDataRes?.getMetaData?.metaData?.map((md) => ({

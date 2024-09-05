@@ -8,6 +8,7 @@ import { generateRandomColor } from 'components/MapControls/commonHelper';
 import { ColorPickerStyledBox } from '../Common';
 import { Paper } from '@material-ui/core';
 
+// Styles for AttrsValuesDropdown
 const useStyles = makeStyles(() => ({
     dropdownContainer: {
         width: '485px',
@@ -80,7 +81,11 @@ const AttrsValuesDropdown = ({
     const classes = useStyles();
     const [isOpen, setIsOpen] = useState(false);
     const [displayColorPicker, setDisplayColorPicker] = useState(false);
+
+    // State for managing the clicked value and its color
     const [selectedOption, setSelectedOption] = useState('');
+
+    // Getting values against the summary field keys
     const [getFiltersList, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
 
     useEffect(() => {
@@ -99,6 +104,7 @@ const AttrsValuesDropdown = ({
     }, [selectedValue])
 
 
+    // Making dropdown options with colors
     const attroptions = useMemo(() => {
         if (!filtersData?.getESFilterList?.hits || !selectedValue?.label) return [];
 

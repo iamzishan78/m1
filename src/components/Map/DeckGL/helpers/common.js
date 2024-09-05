@@ -500,6 +500,7 @@ export const generateFileFilters = ({ fileLayer, pagination = { first: 10000, af
 	};
 };
 
+// Utility for getting layer stroke color
 export const getLayerStrokeColor = (dbLayer, strokeColor) => {
 	const layerInteraction = dbLayer.layerSettings?.interaction;
 	const selectAttr = dbLayer.layerSettings?.selectedStrokeAttribute?.label;
@@ -524,6 +525,7 @@ export const getLayerStrokeColor = (dbLayer, strokeColor) => {
 	}
 }
 
+// Utility for getting layer fill color
 export const getLayerFillColor = (dbLayer, fillColor, fillOpacity) => {
 	const layerInteraction = dbLayer.layerSettings?.interaction;
 	const selectAttr = dbLayer.layerSettings?.selectedAttribute?.label;
@@ -561,7 +563,7 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 				const fillStroke =
 					prop.paintProps?.['fill-outline-color'] || prop.paintProps?.['line-color'];
 
-				// If fill color not enabled setting fill color to transparent
+				// Setting fill and line color using utility functions
 				props.getFillColor = getLayerFillColor(dbLayer, fillColor, fillOpacity);
 				props.defaultColor = getRGBA(fillColor, fillOpacity);
 				props.getLineColor = getLayerStrokeColor(dbLayer, fillStroke);
@@ -577,7 +579,7 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 				const pointRadius = prop.paintProps?.['circle-radius'] || 1;
 				const pointWidth = prop.paintProps?.['circle-stroke-width'] || 1;
 
-				// If fill color not enabled setting fill color to transparent
+				// Setting fill and line color using utility functions
 				props.getFillColor = getLayerFillColor(dbLayer, pointColor, pointOpacity);
 				props.defaultColor = getRGBA(pointColor, pointOpacity);
 				props.getLineColor = getLayerStrokeColor(dbLayer, pointStroke);
