@@ -9,7 +9,8 @@ Cypress.Commands.add('openShape', ({ x, y, callback }) => {
     ['getCustomLayer'], // Intercepting API call for custom layer
     alias => {
       // Clicking on the map canvas at the specified coordinates
-      cy.get('.mapboxgl-canvas').first().click(x, y);
+      cy.wait(10000);
+      cy.get('.mapboxgl-canvas').click(x, y, { force: true });
 
       // Waiting for the intercepted API call to respond after creating the shape
       cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
@@ -73,8 +74,8 @@ Cypress.Commands.add('drawShape', ({ drawType, points }) => {
       cy.get('#mapRectangle', { scrollBehavior: false }).click({ scrollBehavior: false });
 
       // Clicking on the canvas to start drawing the rectangle
+      cy.wait(10000);
       cy.get('.mapboxgl-canvas')
-        .first()
         .click(points[0].x, points[0].y) // First click to start drawing
         .trigger('mousedown', { button: 0, which: 1 }) // Triggering mouse down event
         .trigger('mousemove', points[1].x, points[1].y) // Moving mouse to draw rectangle
@@ -86,7 +87,7 @@ Cypress.Commands.add('drawShape', ({ drawType, points }) => {
       // Clicking on the polygon draw tool
       cy.get('#mapPolygon', { scrollBehavior: false }).click({ scrollBehavior: false });
 
-      const canvas = cy.get('.mapboxgl-canvas').first();
+      const canvas = cy.get('.mapboxgl-canvas');
 
       // Iterating over each point to draw the polygon
       points.forEach((point, index) => {
@@ -105,7 +106,6 @@ Cypress.Commands.add('drawShape', ({ drawType, points }) => {
 
       // Starting to draw the circle by triggering mouse down, moving, and then mouse up
       cy.get('.mapboxgl-canvas')
-        .first()
         .trigger('mousedown', points[0].x, points[0].y, { which: 1 }) // Mouse down event to start drawing
         .trigger('mousemove', points[1].x, points[1].y, { which: 1 }) // Moving mouse to draw circle
         .trigger('mouseup', { force: true }); // Releasing mouse to complete drawing
@@ -120,11 +120,11 @@ Cypress.Commands.add('drawShape', ({ drawType, points }) => {
 
       // Clicking on the canvas to select the landgrid points
       cy.get('.mapboxgl-canvas')
-        .first()
         .click(points[0].x, points[0].y) // Clicking to select the first point
         .click(points[1].x, points[1].y); // Clicking to select the second point
 
       // Clicking to set the boundary of the landgrid
+      cy.wait(10000);
       cy.get('.MuiButtonBase-root[aria-label="Set Boundary"]', {
         scrollBehavior: false,
       }).click({ scrollBehavior: false });
@@ -302,7 +302,8 @@ Cypress.Commands.add(
     // Callback function to be executed after opening the shape
     const callback = customLayer => {
       // Clicking on the button to edit the shape boundary
-      cy.get('[data-testid="edit-shape-boundary"]').click();
+      cy.wait(10000);
+      cy.get('[data-testid="edit-shape-boundary"]').should('be.visible').click();
 
       // Waiting for 1 second before performing map actions
       cy.wait(1000).then(() => {
@@ -324,7 +325,6 @@ Cypress.Commands.add(
         case 'edit':
           // Editing the shape by triggering mouse events to move points
           cy.get('.mapboxgl-canvas')
-            .first()
             .trigger('mousedown', points[0].x, points[0].y, { which: 1 }) // Mouse down event to start editing
             .trigger('mousemove', points[1].x, points[1].y, { which: 1 }) // Moving mouse to edit the shape
             .trigger('mouseup'); // Releasing mouse to complete editing
@@ -335,7 +335,6 @@ Cypress.Commands.add(
           // Resizing the shape by clicking on the resize button and then dragging points
           cy.get('[data-testid="resize-shape"]').click(); // Clicking to enable shape resizing
           cy.get('.mapboxgl-canvas')
-            .first()
             .trigger('mousedown', points[0].x, points[0].y, { which: 1 }) // Mouse down event to start resizing
             .trigger('mousemove', points[1].x, points[1].y, { which: 1 }) // Moving mouse to resize the shape
             .trigger('mouseup'); // Releasing mouse to complete resizing
@@ -345,7 +344,6 @@ Cypress.Commands.add(
         case 'relocate':
           // Relocating the shape by dragging it to a new position
           cy.get('.mapboxgl-canvas')
-            .first()
             .trigger('mousedown', points[0].x, points[0].y, { which: 1 }) // Mouse down event to start relocation
             .trigger('mousemove', points[1].x, points[1].y, { which: 1 }) // Moving mouse to relocate the shape
             .trigger('mouseup'); // Releasing mouse to complete relocation
@@ -377,9 +375,10 @@ Cypress.Commands.add(
         ['getESSimpleSearch'], // Intercepting API call to search for shapes
         alias => {
           // Clicking on the button to set the boundary of the shape
+          cy.wait(10000);
           cy.get('.MuiButtonBase-root[aria-label="Set Boundary"]', {
             scrollBehavior: false,
-          }).click({ scrollBehavior: false });
+          }).should('be.visible').click({ scrollBehavior: false });
 
           // Waiting for the intercepted API call to respond
           cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
@@ -388,7 +387,8 @@ Cypress.Commands.add(
               ['getCustomLayer'], // Intercepting API call for custom layer
               alias => {
                 // Clicking on the map to open the shape details at a specific point
-                cy.get('.mapboxgl-canvas').first().click(openPoint.x, openPoint.y);
+                cy.wait(10000);
+                cy.get('.mapboxgl-canvas').click(openPoint.x, openPoint.y, { force: true });
 
                 // Waiting for the intercepted API call to respond
                 cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
@@ -428,7 +428,8 @@ Cypress.Commands.add(
 // Custom Cypress command to simulate a right-click on the map
 Cypress.Commands.add('mapRightClick', ({ x, y, groupName, shapeName, callback }) => {
   // Simulating a right-click on the map at the specified coordinates
-  cy.get('.mapboxgl-canvas').first().click(x, y, { force: true, shiftKey: true });
+  cy.wait(10000);
+  cy.get('.mapboxgl-canvas').click(x, y, { force: true, shiftKey: true });
   // cy.get('.mapboxgl-canvas').first()
   //   .rightClick(x, y, { force: true })
   //   .click(x, y, { button: 2, force: true })
@@ -442,6 +443,7 @@ Cypress.Commands.add('mapRightClick', ({ x, y, groupName, shapeName, callback })
     ['getCustomLayer'], // Intercepting API call for custom layer data
     alias => {
       // Clicking on the specified shape name in the layer selection popup
+      cy.wait(10000);
       cy.get(
         `div[data-testid="layer-selection-popup"] div[data-testid="${groupName}-group"] span.MuiTypography-root`,
         {

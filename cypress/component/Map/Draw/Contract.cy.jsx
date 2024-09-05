@@ -25,7 +25,9 @@ describe('Map Component Draw Contract', () => {
   });
 
   it('User Layer Settings are updated', () => {
-    cy.updateAllUserLayersVisibility({ layersToShow: ['Contracts', 'Land Grid'] });
+    cy.updateAllUserLayersVisibility({
+      layersToShow: ['Contracts', 'Land Grid'],
+    });
     cy.deleteCypressCustomLayers({
       shapeTypes: ['contract'],
       geometry: drawAreaGeometry,
@@ -51,7 +53,7 @@ describe('Map Component Draw Contract', () => {
   it('Shape redraw works', () => {
     cy.openAndEditShape({
       x: 1000,
-      y: 550,
+      y: 600,
       points: [
         { x: 850, y: 750 },
         { x: 1250, y: 750 },
@@ -63,14 +65,14 @@ describe('Map Component Draw Contract', () => {
       drawType: 'polygon',
       shapeType: 'contract',
       expectedShape: redrawnPolygon,
-      openPoint: { x: 1000, y: 550 },
+      openPoint: { x: 1000, y: 600 },
     });
   });
 
   it('Add to Shape works', () => {
     cy.openAndEditShape({
       x: 1000,
-      y: 550,
+      y: 600,
       points: [
         { x: 1000, y: 450 },
         { x: 1200, y: 450 },
@@ -79,11 +81,11 @@ describe('Map Component Draw Contract', () => {
       drawType: 'landgrid',
       shapeType: 'contract',
       expectedShape: addShapePolygon,
-      openPoint: { x: 1000, y: 550 },
+      openPoint: { x: 1000, y: 600 },
     });
   });
 
   it('Contract created by polygon draw opens correct popup on click & delete works', () => {
-    cy.openAndDeleteShape({ x: 1000, y: 550, shapeType: 'contract' });
+    cy.openAndDeleteShape({ x: 1000, y: 600, shapeType: 'contract' });
   });
 });
