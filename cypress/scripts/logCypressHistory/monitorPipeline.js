@@ -34,16 +34,15 @@ const monitorPipeline = ({ getCypressProcess, specs }) => {
       let pipelineState;
       // Kill the Cypress process
       if (cypressProcess) {
-        console.log('Before triggering pipeline');
         cypressProcess.kill();
 
         // Get current pipeline history
-        const { pipelineHistory, isExecutionCompleted } = await GetCypressLog();
+        const { pipelineHistory, isExecutionComplete } = await GetCypressLog();
         pipelineState = pipelineHistory.find(
           (history) => history.buildId === BUILD_ID
         )?.state;
         // If there are specs remaining to execute
-        if (!isExecutionCompleted) {
+        if (!isExecutionComplete) {
           console.log('Non-executed specs found. Triggering pipeline...');
           clearInterval(intervalId);
           const buildId = await triggerAzurePipeline();
