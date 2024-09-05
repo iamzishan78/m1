@@ -46,7 +46,8 @@ const ActivitiesCalendar = (props) => {
         showMultiDayTimes
         components={{
           toolbar: (params) => <ActivitiesToolbar selectedDate={selectedDate} setSelectedDate={setSelectedDate} {...params} {...props} />,
-          event: (props) => <ActivitiesEvent {...props} />,
+          //  Sending type to identigy obligations type
+          event: (props) => <ActivitiesEvent isObligation={true} {...props} />,
         }}
       />
     </div>

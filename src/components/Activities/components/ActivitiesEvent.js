@@ -55,16 +55,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ActivitiesEvent = ({ event }) => {
+const ActivitiesEvent = ({ event, ...rest }) => {
   const classes = useStyles();
 
   const startTime = `${event.start.getHours()}:${event.start.getMinutes() < 10
-      ? `0${event.start.getMinutes()}`
-      : event.start.getMinutes()
+    ? `0${event.start.getMinutes()}`
+    : event.start.getMinutes()
     }`;
   const endTime = `${event.end.getHours()}:${event.end.getMinutes() < 10
-      ? `0${event.end.getMinutes()}`
-      : event.end.getMinutes()
+    ? `0${event.end.getMinutes()}`
+    : event.end.getMinutes()
     }`;
 
   let icon = <DefaultIcon />;
@@ -91,12 +91,13 @@ const ActivitiesEvent = ({ event }) => {
     default:
   }
 
+  // If obligation we will show its type
   return (
     <div className={clsx(classes.root, event.isClosed && classes.isClosed)}>
       <div className={classes.icon}>{icon}</div>
       <div>
         <h6 className={classes.type}>{event.name}</h6>
-        <span className={classes.time}>{startTime + " - " + endTime}</span>
+        {rest?.isObligation ? (<span className={classes.time}>{event.type}</span>) : (<span className={classes.time}>{startTime + " - " + endTime}</span>)}
       </div>
     </div>
   );
