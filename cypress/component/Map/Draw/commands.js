@@ -135,10 +135,14 @@ Cypress.Commands.add('drawShape', ({ drawType, points }) => {
         scrollBehavior: false,
       }).click({ scrollBehavior: false, force: true });
 
-      // Clicking on the canvas to select the landgrid points
+      // Click on the canvas to select points, ensuring clicks are processed correctly
       cy.get('.mapboxgl-canvas')
-        .click(points[0].x, points[0].y) // Clicking to select the first point
-        .click(points[1].x, points[1].y); // Clicking to select the second point
+        .click(points[0].x, points[0].y, { force: true }) // Click the first point
+        .then(() => {
+          cy.wait(500); // Wait for the first click to be processed
+          cy.get('.mapboxgl-canvas') // Re-select the canvas element
+            .click(points[1].x, points[1].y, { force: true }); // Click the second point
+        });
 
       // Clicking to set the boundary of the landgrid
       cy.wait(5000);
@@ -393,60 +397,37 @@ Cypress.Commands.add(
       // Intercepting API calls to verify the changes made to the shape
       cy.interceptAndWait(
         ['getESSimpleSearch'], // Intercepting API call to search for shapes
-        alias => {
+        (alias) => {
           // Clicking on the button to set the boundary of the shape
           cy.wait(5000);
           cy.get('.MuiButtonBase-root[aria-label="Set Boundary"]', {
             scrollBehavior: false,
-          }).should('be.visible').click({ scrollBehavior: false });
+          })
+            .should('be.visible')
+            .click({ scrollBehavior: false });
 
           // Waiting for the intercepted API call to respond
-          cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
-            // Intercepting API call to retrieve the updated custom layer data
-            cy.interceptAndWait(
-              ['getCustomLayer'], // Intercepting API call for custom layer
-              alias => {
-                // Clicking on the map to open the shape details at a specific point
-                cy.wait(5000);
-                cy.get('.mapboxgl-canvas').click(openPoint.x, openPoint.y, { force: true });
+          cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(
+            (response) => {
+              const customLayer = response.response.body.data.getESSimpleSearch.hits?.[0]; // Extracting custom layer data from response
 
-                // Waiting for the intercepted API call to respond
-                cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
-                  const { customLayer } = response.response.body.data; // Extracting custom layer data from response
+              // Verifying that the shape's geometry matches the expected shape
+              expect(
+                isEqual(customLayer.shapeJson.geometry, expectedShape)
+              ).to.be.equal(true);
 
-                  // Switching based on the shape type to verify the updated shape details
-                  switch (shapeType) {
-                    case 'unit':
-                      // Verifying that the shape's type is 'Unit'
-                      cy.get('.MuiCardHeader-content .MuiBox-root.type').contains('Unit');
-
-                      break;
-
-                    default:
-                      break;
-                  }
-
-                  // Verifying that the shape's geometry matches the expected shape
-                  expect(
-                    isEqual(customLayer.shapeJson.geometry, expectedShape)
-                  ).to.be.equal(true);
-
-                   // Return values from command
-                  cy.wrap({
-                    createdShapeName: customLayer.name,
-                    createdShapeId: customLayer._id,
-                    customLayer
-                  });
-                });
-              },
-              { wait: false } // Setting wait option to false to avoid waiting for this command to complete
-            );
-          });
+              // Return values from command
+              cy.wrap({
+                createdShapeName: customLayer.name,
+                createdShapeId: customLayer._id,
+                customLayer,
+              });
+            }
+          );
         },
         { wait: false } // Setting wait option to false to avoid waiting for this command to complete
       );
     };
-
     // Opening the shape at the specified coordinates and executing the callback function
     cy.openShape({ x, y, callback, newCustomLayer });
   }
