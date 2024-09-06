@@ -222,7 +222,7 @@ export default function RelatedFile(props) {
     fetchPolicy: "no-cache",
   });
   const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(CREATEDESCRIPTORFILE, {
-    refetchQueries: ["getRecentContactFiles", "shapeSummaryDetails", "getESSimpleSearch"],
+    refetchQueries: ["getRecentContactFiles", "getParcelFiles", "shapeSummaryDetails", "getESSimpleSearch"], // refetch table data on adding new documents
     awaitRefetchQueries: true,
   });
 
@@ -353,6 +353,7 @@ export default function RelatedFile(props) {
   };
 
   const addExistingDocument = () => {
+    setLoader(true);
     const fileId = fileData?.addFileDescriptor?.file?.id;
     addFile({
       variables: {
