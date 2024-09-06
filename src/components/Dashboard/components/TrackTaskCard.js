@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect, } from 'react'
 import CardHeader from "@material-ui/core/CardHeader";
-import { Grid, Typography, TextField, CircularProgress } from "@material-ui/core";
+import { Grid, TextField, CircularProgress, Box } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { CUSTOM_DATES } from 'utils/data'
 import { makeStyles } from "@material-ui/styles";
@@ -54,6 +54,22 @@ const useStyles = makeStyles((theme) => ({
         fontSize: 16,
         fontWeight: "bold",
     },
+    headerTitle: {
+        width: "100%",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+    },
+    grow: {
+        flexGrow: 1, // Allows the Grid item to take up the remaining space
+        display: 'flex',
+        flexDirection: 'column', // Ensures content is aligned correctly
+    },
+    gridContainer: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'flex-start', // Ensures items align to the start
+    },
 }));
 
 const Title = ({
@@ -66,11 +82,11 @@ const Title = ({
     const classes = useStyles();
 
     return (
-        <Grid container>
-            <Grid item xs={5} sm={5} md={4} container alignItems="center" >
-                <div>Tasks by Assignee and Status</div>
+        <Grid container className={classes.gridContainer} spacing={1}>
+            <Grid item xs={12} sm={12} md={8} xl={4} lg={12} container alignItems="center">
+                <Box className={classes.headerTitle}>Tasks by Assignee and Status</Box>
             </Grid>
-            <Grid item xs={7} sm={7} md={8}>
+            <Grid item xs className={classes.grow}>
                 <div>
                     <TaskFilters
                         fromDate={fromDate}
@@ -247,7 +263,7 @@ export default function TrackTaskCard() {
         chart.legend.marginLeft = 20; // Optional: add some margin
 
         // Adapter to update legend position
-        chart.legend.adapter.add("y", function(position, target) {
+        chart.legend.adapter.add("y", function (position, target) {
             return 30;
         });// Optional: add some margin
 
@@ -337,119 +353,111 @@ function TaskFilters({
     }
 
     return (
-        <div style={{ display: "flex" }}>
+        <Grid
+            container
+            direction="row"
+            display="flex"
+            alignItems="center"
+            spacing={1}
+            flexWrap={'noWrap'}
+        >
             <Grid
-                container
-                direction="row"
-                display="flex"
-                alignItems="center"
-                spacing={2}
-                xs={12}
-                sm={12}
-                style={{ justifyContent: "flex-end" }}
+                item
+                style={{ marginTop: "2px", maxWidth: "35%", }}
+                xs={5}
             >
-                <Grid
-                    item
-                    xs={4}
-                    sm={4}
-                    md={3}
-                    lg={3}
-                    xl={3}
-                    style={{ marginTop: "2px" }}
-                >
-                    <Autocomplete
-                        size="small"
-                        onChange={(event, newValue) => {
-                            if (newValue === null) {
-                                handleDateTypeChange("This Month");
-                            } else {
-                                handleDateTypeChange(newValue);
-                            }
-                        }}
-                        options={Object.values(CUSTOM_DATES)}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                variant="outlined"
-                                label="Date Range"
-                                placeholder=""
-                                style={{ backgroundColor: "white" }}
+                <Autocomplete
+                    size="small"
+                    onChange={(event, newValue) => {
+                        if (newValue === null) {
+                            handleDateTypeChange("This Month");
+                        } else {
+                            handleDateTypeChange(newValue);
+                        }
+                    }}
+                    options={Object.values(CUSTOM_DATES)}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            variant="outlined"
+                            label="Date Range"
+                            placeholder=""
+                            style={{ backgroundColor: "white" }}
 
-                            />
-                        )}
-                        defaultValue={CUSTOM_DATES.ALL_DATES}
-                        disableListWrap
-                        id="custom-date-dropdown"
-                    />
-                </Grid>
-                <Grid item xs={2.4} sm={2.4} md={2.4} lg={2.4} xl={2.4}>
-                    <TextField
-                        size="small"
-                        margin="dense"
-                        type="date"
-                        variant="outlined"
-                        placeholder=""
-                        fullWidth
-                        value={moment(fromDate).format("yyyy-MM-DD")}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        InputProps={{
-                            classes: {
-                                root: classes.dateRoot,
-                                focused: classes.focused,
-                                notchedOutline: classes.notchedOutline,
-                            },
-                        }}
-                        onChange={(event) => {
-                            if (event.target.value == "") {
-                                setFromDate(
-                                    `${Math.round(new Date().getFullYear())}-${getFlaggedMoment(
-                                        Math.ceil(new Date().getMonth()) + 1
-                                    )}`
-                                );
-                            } else {
-                                setFromDate(event.target.value);
-                            }
-                        }}
-                    />
-                </Grid>
-                <Grid>
-                    <label>to</label>
-                </Grid>
-                <Grid item xs={2.4} sm={2.4} md={2.4} lg={2.4} xl={2.4}>
-                    <TextField
-                        size="small"
-                        margin="dense"
-                        type="date"
-                        variant="outlined"
-                        placeholder="to"
-                        fullWidth
-                        value={moment(toDate).format("yyyy-MM-DD")}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        InputProps={{
-                            classes: {
-                                root: classes.dateRoot,
-                                focused: classes.focused,
-                                notchedOutline: classes.notchedOutline,
-                            },
-                        }}
-                        onChange={(event) => {
-                            if (event.target.value == "") {
-                                setToDate(
-                                    `${Math.round(new Date().getFullYear())}-${getFlaggedMoment(
-                                        Math.ceil(new Date().getMonth()) + 1
-                                    )}`
-                                );
-                            } else {
-                                setToDate(event.target.value);
-                            }
-                        }}
-                    />
-                </Grid>
+                        />
+                    )}
+                    defaultValue={CUSTOM_DATES.ALL_DATES}
+                    disableListWrap
+                    id="custom-date-dropdown"
+                />
             </Grid>
-        </div>
+            <Grid item xs={3} style={{ minWidth: "160px" }}>
+                <TextField
+                    size="small"
+                    margin="dense"
+                    type="date"
+                    variant="outlined"
+                    placeholder=""
+                    fullWidth
+                    value={moment(fromDate).format("yyyy-MM-DD")}
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    InputProps={{
+                        classes: {
+                            root: classes.dateRoot,
+                            focused: classes.focused,
+                            notchedOutline: classes.notchedOutline,
+                        },
+                    }}
+                    onChange={(event) => {
+                        if (event.target.value == "") {
+                            setFromDate(
+                                `${Math.round(new Date().getFullYear())}-${getFlaggedMoment(
+                                    Math.ceil(new Date().getMonth()) + 1
+                                )}`
+                            );
+                        } else {
+                            setFromDate(event.target.value);
+                        }
+                    }}
+                />
+            </Grid>
+            <Grid item>
+                <label>to</label>
+            </Grid>
+            <Grid item xs={3} style={{ minWidth: "160px" }}>
+                <TextField
+                    size="small"
+                    margin="dense"
+                    type="date"
+                    variant="outlined"
+                    placeholder="to"
+                    fullWidth
+                    value={moment(toDate).format("yyyy-MM-DD")}
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    InputProps={{
+                        classes: {
+                            root: classes.dateRoot,
+                            focused: classes.focused,
+                            notchedOutline: classes.notchedOutline,
+                        },
+                    }}
+                    onChange={(event) => {
+                        if (event.target.value == "") {
+                            setToDate(
+                                `${Math.round(new Date().getFullYear())}-${getFlaggedMoment(
+                                    Math.ceil(new Date().getMonth()) + 1
+                                )}`
+                            );
+                        } else {
+                            setToDate(event.target.value);
+                        }
+                    }}
+                />
+            </Grid>
+        </Grid>
     );
 }
