@@ -699,7 +699,10 @@ const drawStateControllerHandler = state => {
 				uStatus: '',
 			};
 		if (layerType === 'agreement')
-			properties = { agreementName: shapeName, agreementType: layerSubType, agreementNumber: '1234' };
+			properties = { agreementName: shapeName, agreementType: layerSubType };
+		if (globalStateController.getValue('testCase') === 'AgreementDraw')
+			properties.agreementNumber = '1234';
+		
 		const featureId = hat();
 		const newShapeFeature = {
 			id: featureId,

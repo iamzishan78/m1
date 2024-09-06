@@ -35,6 +35,9 @@ Cypress.Commands.add('openShape', ({ x, y, callback, newCustomLayer }) => {
   // Opening the side dialog
   popupController.setState(popupStateVal);
 
+  // Wait for popup to load data
+  cy.wait(5000);
+
   // Executing the provided callback function with the extracted custom layer data
   callback(newCustomLayer);
 });
@@ -276,14 +279,14 @@ Cypress.Commands.add('drawAndCreateShape', ({ drawType, shapeType, points }) => 
         case 'lease':
         case 'surface':
           // Clicking to select the agreement item
-          cy.get('#agreementItem').click();
+          cy.get('#agreementItem').should('be.visible').click();
 
           // Clicking on sub type agreement dropdown
-          cy.get('#agreement-outlined').click();
+          cy.get('#agreement-outlined').should('be.visible').click();
 
-          cy.get(`li[data-value="${shapeType}"]`).click();
+          cy.get(`li[data-value="${shapeType}"]`).should('be.visible').click();
 
-          cy.get('#addShapeButton').click();
+          cy.get('#addShapeButton').should('be.visible').click();
 
           break;
 
