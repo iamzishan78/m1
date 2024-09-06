@@ -160,6 +160,7 @@ Cypress.Commands.add('drawShape', ({ drawType, points }) => {
 // Custom Cypress command to veriify a shape by its shapeType
 Cypress.Commands.add('verifyShape', ({ customLayer, shapeType, close = true }) => {
 
+  cy.wait(5000);
   // Switching based on the shape type to verify the created shape details
   switch (shapeType) {
     case 'unit':
@@ -303,7 +304,6 @@ Cypress.Commands.add('drawAndCreateShape', ({ drawType, shapeType, points }) => 
         const { customLayer } = response.response.body.data; // Extracting custom layer data from response
 
         // Calling the 'verifyShape' command with the custom layer data and shapeType
-        cy.wait(5000);
         cy.verifyShape({ customLayer, shapeType });
 
         // Return values from command
