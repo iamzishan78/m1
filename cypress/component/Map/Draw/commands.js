@@ -1,27 +1,42 @@
 /* eslint-disable no-undef */
 import { capitalize, isEqual } from 'lodash';
 import { basic_timeouts } from '../../../cypressUtils/data';
+import { copy } from 'components/Shared/functions';
+import { popupController } from 'hookstate/popupStateController';
 
 // Custom Cypress command to open a shape on the map
-Cypress.Commands.add('openShape', ({ x, y, callback }) => {
-  // Intercepting the 'getCustomLayer' API call and waiting for its response
-  cy.interceptAndWait(
-    ['getCustomLayer'], // Intercepting API call for custom layer
-    alias => {
-      // Clicking on the map canvas at the specified coordinates
-      cy.wait(10000);
-      cy.get('.mapboxgl-canvas').click(x, y, { force: true });
+Cypress.Commands.add('openShape', ({ x, y, callback, newCustomLayer }) => {
+  let jsonLayer;
+  let popupStateVal;
 
-      // Waiting for the intercepted API call to respond after creating the shape
-      cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
-        const { customLayer } = response?.response?.body?.data; // Extracting custom layer data from response
+  if (newCustomLayer.shapeJson) jsonLayer = copy(newCustomLayer.shapeJson);
 
-        // Executing the provided callback function with the extracted custom layer data
-        callback(customLayer);
-      });
-    },
-    { wait: false } // Setting wait option to false to avoid waiting for this command to complete
-  );
+  jsonLayer.layer = { id: newCustomLayer.layer };
+  jsonLayer.id = newCustomLayer._id;
+
+  const selectedShape = {
+    ...jsonLayer.properties,
+    feature: jsonLayer,
+    id: newCustomLayer._id,
+  };
+
+  if (jsonLayer.properties.type === 'parcel') {
+    popupStateVal = {
+      expandedCard: true,
+      selectedParcel: selectedShape,
+    };
+  } else {
+    popupStateVal = {
+      expandedCard: true,
+      selectedShape,
+    };
+  }
+
+  // Opening the side dialog
+  popupController.setState(popupStateVal);
+
+  // Executing the provided callback function with the extracted custom layer data
+  callback(newCustomLayer);
 });
 
 // Custom Cypress command to delete a shape
@@ -51,7 +66,7 @@ Cypress.Commands.add('deleteShape', ({ customLayer }) => {
 });
 
 // Custom Cypress command to open and delete a shape
-Cypress.Commands.add('openAndDeleteShape', ({ x, y, shapeType }) => {
+Cypress.Commands.add('openAndDeleteShape', ({ x, y, shapeType, newCustomLayer }) => {
   // Callback function to delete the shape once it's opened
   const callback = customLayer => {
     // Calling the 'verifyShape' command with the custom layer data and shapeType
@@ -62,7 +77,7 @@ Cypress.Commands.add('openAndDeleteShape', ({ x, y, shapeType }) => {
   };
 
   // Opening the shape at the specified coordinates and invoking the callback to delete it
-  cy.openShape({ x, y, callback });
+  cy.openShape({ x, y, callback, newCustomLayer });
 });
 
 // Custom Cypress command to draw a shape on the map based on the provided draw type and points
@@ -283,9 +298,12 @@ Cypress.Commands.add('drawAndCreateShape', ({ drawType, shapeType, points }) => 
 
         // Calling the 'verifyShape' command with the custom layer data and shapeType
         cy.verifyShape({ customLayer, shapeType });
+
+        // Return values from command
         cy.wrap({
           createdShapeName: customLayer.name,
-          createdShapeId: customLayer._id
+          createdShapeId: customLayer._id,
+          customLayer
         });
       });
     },
@@ -298,7 +316,7 @@ Cypress.Commands.add('drawAndCreateShape', ({ drawType, shapeType, points }) => 
 // Custom Cypress command to open and edit a shape on the map
 Cypress.Commands.add(
   'openAndEditShape',
-  ({ x, y, points, type, shapeType, expectedShape, openPoint, drawType }) => {
+  ({ x, y, points, type, shapeType, expectedShape, openPoint, drawType, newCustomLayer }) => {
     // Callback function to be executed after opening the shape
     const callback = customLayer => {
       // Clicking on the button to edit the shape boundary
@@ -410,6 +428,13 @@ Cypress.Commands.add(
                   expect(
                     isEqual(customLayer.shapeJson.geometry, expectedShape)
                   ).to.be.equal(true);
+
+                   // Return values from command
+                  cy.wrap({
+                    createdShapeName: customLayer.name,
+                    createdShapeId: customLayer._id,
+                    customLayer
+                  });
                 });
               },
               { wait: false } // Setting wait option to false to avoid waiting for this command to complete
@@ -421,7 +446,7 @@ Cypress.Commands.add(
     };
 
     // Opening the shape at the specified coordinates and executing the callback function
-    cy.openShape({ x, y, callback });
+    cy.openShape({ x, y, callback, newCustomLayer });
   }
 );
 

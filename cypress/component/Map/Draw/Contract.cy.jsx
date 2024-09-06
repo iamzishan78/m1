@@ -3,6 +3,8 @@ import MapProvider from 'components/Map/MapProvider';
 import { basic_timeouts } from '../../../cypressUtils/data';
 import { addShapePolygon, drawAreaGeometry, redrawnPolygon } from './data';
 
+let newCustomLayer = {};
+
 describe('Map Component Draw Contract', () => {
   beforeEach(() => {
     cy.interceptAndWait(['getAllLayerSettingsByUser'], () => {
@@ -47,7 +49,9 @@ describe('Map Component Draw Contract', () => {
         { x: 1246, y: 612 },
         { x: 946, y: 512 },
       ],
-    });
+    }).then(({ customLayer }) => {
+      newCustomLayer = customLayer;
+    });;
   });
 
   it('Shape redraw works', () => {
@@ -66,6 +70,9 @@ describe('Map Component Draw Contract', () => {
       shapeType: 'contract',
       expectedShape: redrawnPolygon,
       openPoint: { x: 1000, y: 600 },
+      newCustomLayer
+    }).then(({ customLayer }) => {
+      newCustomLayer = customLayer;
     });
   });
 
@@ -82,10 +89,13 @@ describe('Map Component Draw Contract', () => {
       shapeType: 'contract',
       expectedShape: addShapePolygon,
       openPoint: { x: 1000, y: 600 },
+      newCustomLayer
+    }).then(({ customLayer }) => {
+      newCustomLayer = customLayer;
     });
   });
 
   it('Contract created by polygon draw opens correct popup on click & delete works', () => {
-    cy.openAndDeleteShape({ x: 1000, y: 600, shapeType: 'contract' });
+    cy.openAndDeleteShape({ x: 1000, y: 600, shapeType: 'contract', newCustomLayer });
   });
 });
