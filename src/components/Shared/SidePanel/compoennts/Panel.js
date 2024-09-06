@@ -490,7 +490,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           </div>
         </StyledMenu>
         <StyledSecondaryMenu />
-        <div className={classes.pulloutBox} onClick={() => togglePullout()}>
+        <div className={classes.pulloutBox}  id="side-panel-pullout-btn" onClick={() => togglePullout()}>
           {mapControlsStateValues.expandedPanel ? <ArrowBackIosIcon id="arrowBackIcon" /> : <ArrowForwardIosIcon className="svgouter" />}
         </div>
       </div>

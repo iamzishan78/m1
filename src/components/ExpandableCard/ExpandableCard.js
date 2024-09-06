@@ -144,7 +144,6 @@ function ExpandableCard(props) {
       webkitTransform: "translateZ(0)",
       transition: "width 0.1s, height 0.1s, left 0.1s, top 0.1s",
       width: width,
-      height: props.expanded ? height : "inherit",
       background: backgroundColor,
       borderStyle: "solid",
       borderWidth: "thin",
@@ -332,7 +331,9 @@ function ExpandableCard(props) {
     };
 
     disableBodyScrollBarIfExpanded();
+     document.getElementById('side-panel-pullout-btn').style.display = 'none' // hide pullout button from the sidebar when details card is opened
     return () => {
+      document.getElementById('side-panel-pullout-btn').style.display = 'flex' // Show pullout button from the sidebar when details card get closed
       document.body.style.overflow = "auto";
     };
   }, [openDialog, props.targetLabel, isExpanded, width]);

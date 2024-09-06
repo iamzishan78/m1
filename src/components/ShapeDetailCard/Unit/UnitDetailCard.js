@@ -265,6 +265,7 @@ export default function UnitDetailCard(props) {
                   style={{
                     height: 'calc(100vh - 285px)',
                     overflow: 'overlay',
+                    overflowX: 'hidden'
                   }}
                 >
                   <UnitSummary

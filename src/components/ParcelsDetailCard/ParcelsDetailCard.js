@@ -458,7 +458,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
           tabLabels={['Summary', 'Interest Owners', 'Runsheet', 'Wells', 'Units', 'Documents']}
           openTabIdex={selectTabIndex}
           tabPanels={[
-            <div style={{ overflow: 'overlay', maxHeight: 'calc(100vh - 285px)' }}>
+            <div style={{ overflow: 'overlay', maxHeight: 'calc(100vh - 285px)', overflowX: 'hidden' }}>
               <ParcelSummary
                 id={id}
                 customLayer={copy(parcelObj)}
