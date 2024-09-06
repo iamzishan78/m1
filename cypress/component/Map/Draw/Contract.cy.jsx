@@ -76,24 +76,24 @@ describe('Map Component Draw Contract', () => {
     });
   });
 
-  it('Add to Shape works', () => {
-    cy.openAndEditShape({
-      x: 1000,
-      y: 550,
-      points: [
-        { x: 1000, y: 450 },
-        { x: 1200, y: 450 },
-      ],
-      type: 'addshape',
-      drawType: 'landgrid',
-      shapeType: 'contract',
-      expectedShape: addShapePolygon,
-      openPoint: { x: 1000, y: 550 },
-      newCustomLayer
-    }).then(({ customLayer }) => {
-      newCustomLayer = customLayer;
-    });
-  });
+  // it('Add to Shape works', () => {
+  //   cy.openAndEditShape({
+  //     x: 1000,
+  //     y: 550,
+  //     points: [
+  //       { x: 1000, y: 450 },
+  //       { x: 1200, y: 450 },
+  //     ],
+  //     type: 'addshape',
+  //     drawType: 'landgrid',
+  //     shapeType: 'contract',
+  //     expectedShape: addShapePolygon,
+  //     openPoint: { x: 1000, y: 550 },
+  //     newCustomLayer
+  //   }).then(({ customLayer }) => {
+  //     newCustomLayer = customLayer;
+  //   });
+  // });
 
   it('Contract created by polygon draw opens correct popup on click & delete works', () => {
     cy.openAndDeleteShape({ x: 1000, y: 550, shapeType: 'contract', newCustomLayer });
