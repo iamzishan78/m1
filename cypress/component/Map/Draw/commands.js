@@ -49,19 +49,19 @@ Cypress.Commands.add('deleteShape', ({ customLayer }) => {
   // Clicking on the delete button to delete the shape
   cy.get('[data-testid="delete-icon"]').click();
 
-  // Intercepting the 'getESSimpleSearch' API call after deleting the shape
+  // Intercepting the 'updateCustomLayer' API call after deleting the shape
   cy.interceptAndWait(
-    ['getESSimpleSearch'], // Intercepting API call for simple search
+    ['updateCustomLayer'], // Intercepting API call for updateCustomLayer
     alias => {
       // Clicking on the delete button to confirm deletion
       cy.get('#deleteButton').click();
 
       // Waiting for the intercepted API call to respond after deletion
       cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
-        const responseData = response.response.body.data.getESSimpleSearch.hits; // Extracting response data
+        const { success } = response.response.body.data.updateCustomLayer; // Extracting response data
 
         // Verifying that the deleted shape does not exist in the search results
-        expect(responseData.some(hit => hit._id === customLayer._id)).to.be.equal(false);
+        expect(success).to.be.equal(true);
       });
     },
     { wait: false } // Setting wait option to false to avoid waiting for this command to complete
@@ -396,7 +396,7 @@ Cypress.Commands.add(
 
       // Intercepting API calls to verify the changes made to the shape
       cy.interceptAndWait(
-        ['getESSimpleSearch'], // Intercepting API call to search for shapes
+        ['updateCustomLayer'], // Intercepting API call to search for shapes
         (alias) => {
           // Clicking on the button to set the boundary of the shape
           cy.wait(5000);
@@ -409,7 +409,7 @@ Cypress.Commands.add(
           // Waiting for the intercepted API call to respond
           cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(
             (response) => {
-              const customLayer = response.response.body.data.getESSimpleSearch.hits?.[0]; // Extracting custom layer data from response
+              const { customLayer } = response.response.body.data.updateCustomLayer; // Extracting custom layer data from response
 
               // Verifying that the shape's geometry matches the expected shape
               expect(
