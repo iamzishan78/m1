@@ -64,7 +64,7 @@ describe('Map Component Draw Unit', () => {
       type: 'edit',
       shapeType: 'unit',
       expectedShape: editedPolygon,
-      openPoint: { x: 701, y: 811 },
+      openPoint: { x: 846, y: 712 },
       newCustomLayer: customLayerByRectangle,
     }).then(({ customLayer }) => {
       customLayerByRectangle = customLayer;

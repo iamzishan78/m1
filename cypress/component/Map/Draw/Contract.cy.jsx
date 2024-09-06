@@ -51,7 +51,7 @@ describe('Map Component Draw Contract', () => {
       ],
     }).then(({ customLayer }) => {
       newCustomLayer = customLayer;
-    });;
+    });
   });
 
   it('Shape redraw works', () => {

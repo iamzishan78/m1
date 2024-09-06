@@ -496,7 +496,7 @@ Cypress.Commands.add('mapRightClick', ({ x, y, groupName, shapeName, callback })
 // Custom Cypress command to perform a right-click on the map at specified coordinates, select a shape from the context menu, and delete it
 Cypress.Commands.add(
   'rightClickAndDeleteShape',
-  ({ x, y, groupName, shapeName, shapeType }) => {
+  ({ x, y, groupName, shapeName, shapeType, newCustomLayer }) => {
     // Callback function to be executed after selecting the shape
     const callback = customLayer => {
       // Calling the 'verifyShape' command with the custom layer data and shapeType
@@ -507,7 +507,7 @@ Cypress.Commands.add(
     };
 
     // Calling the mapRightClick command to perform a right-click and select the shape
-    cy.mapRightClick({ x, y, groupName, shapeName, callback });
+    cy.openShape({ x, y, callback, newCustomLayer });
   }
 );
 
