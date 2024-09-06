@@ -488,6 +488,25 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                       )}
                     />
                   </Grid>
+                  <Grid item md={2} id={`responsibleParty-${index}`}>
+                    <Controller
+                      control={control}
+                      name={`provisions[${index}].responsibleParty`}
+                      defaultValue={item?.responsibleParty?.name}
+                      render={(props) => (
+                        <ResponsibleParty
+                          value={props.value}
+                          handleChange={(value) => {
+                            handleChange(item, index);
+                            props.onChange(value?.name || null);
+                          }}
+                        />
+
+
+                      )}
+                    />
+
+                  </Grid>
                   <Grid item md={2} id={`provisions-${index}`}>
                     <Controller
                       control={control}
