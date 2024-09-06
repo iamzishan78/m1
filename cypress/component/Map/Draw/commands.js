@@ -127,7 +127,7 @@ Cypress.Commands.add('drawShape', ({ drawType, points }) => {
       cy.wait(10000);
       cy.get('.MuiButtonBase-root[aria-label="Set Boundary"]', {
         scrollBehavior: false,
-      }).click({ scrollBehavior: false });
+      }).should('be.visible').click({ scrollBehavior: false });
 
       break;
 
@@ -427,9 +427,7 @@ Cypress.Commands.add(
 
 // Custom Cypress command to simulate a right-click on the map
 Cypress.Commands.add('mapRightClick', ({ x, y, groupName, shapeName, callback }) => {
-  // Simulating a right-click on the map at the specified coordinates
-  cy.wait(10000);
-  cy.get('.mapboxgl-canvas').click(x, y, { force: true, shiftKey: true });
+
   // cy.get('.mapboxgl-canvas').first()
   //   .rightClick(x, y, { force: true })
   //   .click(x, y, { button: 2, force: true })
@@ -442,14 +440,18 @@ Cypress.Commands.add('mapRightClick', ({ x, y, groupName, shapeName, callback })
   cy.interceptAndWait(
     ['getCustomLayer'], // Intercepting API call for custom layer data
     alias => {
-      // Clicking on the specified shape name in the layer selection popup
-      cy.wait(10000);
-      cy.get(
+        // Simulating a right-click on the map at the specified coordinates
+        cy.wait(10000);
+        cy.get('.mapboxgl-canvas').click(x, y, { force: true, shiftKey: true });
+        
+        // Clicking on the specified shape name in the layer selection popup
+        cy.wait(5000);
+        cy.get(
         `div[data-testid="layer-selection-popup"] div[data-testid="${groupName}-group"] span.MuiTypography-root`,
         {
           timeout: basic_timeouts.longTimeout,
-        }
-      )
+        })
+        .should('be.visible')
         .contains(shapeName) // Finding the specified shape name in the popup
         .click({ force: true }); // Clicking on the shape name
 
