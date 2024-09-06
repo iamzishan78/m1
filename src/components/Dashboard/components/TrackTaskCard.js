@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect, } from 'react'
 import CardHeader from "@material-ui/core/CardHeader";
-import { Grid, TextField, CircularProgress, Box } from "@material-ui/core";
+import { Grid, Typography, TextField, CircularProgress, Box } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { CUSTOM_DATES } from 'utils/data'
 import { makeStyles } from "@material-ui/styles";
@@ -83,7 +83,7 @@ const Title = ({
 
     return (
         <Grid container className={classes.gridContainer} spacing={1}>
-            <Grid item xs={12} sm={12} md={8} xl={4} lg={12} container alignItems="center">
+            <Grid item xs={12} sm={12} md={12} xl={4} lg={12} container alignItems="center">
                 <Box className={classes.headerTitle}>Tasks by Assignee and Status</Box>
             </Grid>
             <Grid item xs className={classes.grow}>
@@ -364,7 +364,7 @@ function TaskFilters({
             <Grid
                 item
                 style={{ marginTop: "2px", maxWidth: "35%", }}
-                xs={5}
+                xs={4}
             >
                 <Autocomplete
                     size="small"
