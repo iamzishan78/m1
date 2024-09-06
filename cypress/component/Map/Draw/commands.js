@@ -299,6 +299,7 @@ Cypress.Commands.add('drawAndCreateShape', ({ drawType, shapeType, points }) => 
         const { customLayer } = response.response.body.data; // Extracting custom layer data from response
 
         // Calling the 'verifyShape' command with the custom layer data and shapeType
+        cy.wait(5000);
         cy.verifyShape({ customLayer, shapeType });
 
         // Return values from command
