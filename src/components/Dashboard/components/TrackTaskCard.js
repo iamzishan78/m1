@@ -251,8 +251,16 @@ export default function TrackTaskCard() {
             labelBullet.locationX = 0.5; // Center the label
             labelBullet.label.fontSize = 12;
             labelBullet.label.fontWeight = "bold";
-        }
 
+             // Add an adapter to hide the label when valueX is zero
+            labelBullet.label.adapter.add("text", function(text, target) {
+                if (target.dataItem && target.dataItem.valueX === 0) {
+                return ""; // Return empty string to hide the label
+                }
+                return text; // Return original text otherwise
+            });
+
+        }
         // Create series with different colors
         createSeries("completed", "Completed", "#4472c4"); // Blue color for "Completed"
         createSeries("open", "Open", "#c55a11"); // Orange color for "Open"
