@@ -307,7 +307,7 @@ function LayerStyling() {
                       />
                     </>
                   )}
-                  <Typography variant="h6" style={{ margin: "14px 0px 10px 0px" }}>Stroke Color</Typography>
+                  <Typography variant="h6" style={{ margin: "14px 0px 10px 0px" }}>Stroke Width</Typography>
                   <Box display="flex" alignItems="center" justifyContent="space-between">
                     <Slider
                       value={strokeWidth}
