@@ -3,6 +3,8 @@ import MapProvider from 'components/Map/MapProvider';
 import { basic_timeouts } from '../../../cypressUtils/data';
 import { drawAreaGeometry, qtrCircle } from './data';
 
+let newCustomLayer = {};
+
 describe('Map Component Draw Tract', () => {
   beforeEach(() => {
     cy.interceptAndWait(['getAllLayerSettingsByUser'], () => {
@@ -39,14 +41,23 @@ describe('Map Component Draw Tract', () => {
         { x: 1046, y: 612 },
         { x: 846, y: 712 },
       ],
+    }).then(({ customLayer }) => {
+      newCustomLayer = customLayer;
     });
   });
 
   it('Quater Quater Shape Edit works', () => {
-    cy.openAndEditShapeQuater({ x: 1000, y: 450, expectedShape: qtrCircle });
+    cy.openAndEditShapeQuater({
+      x: 1000,
+      y: 450,
+      expectedShape: qtrCircle,
+      newCustomLayer 
+    }).then(({ customLayer }) => {
+      newCustomLayer = customLayer;
+    });
   });
 
   it('Tract created by circle draw opens correct popup on click & delete works', () => {
-    cy.openAndDeleteShape({ x: 1000, y: 450, shapeType: 'parcel' });
+    cy.openAndDeleteShape({ x: 1000, y: 450, shapeType: 'parcel', newCustomLayer });
   });
 });

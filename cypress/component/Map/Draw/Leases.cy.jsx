@@ -3,6 +3,8 @@ import MapProvider from 'components/Map/MapProvider';
 import { basic_timeouts } from '../../../cypressUtils/data';
 import { drawAreaGeometry } from './data';
 
+let newCustomLayer = {};
+
 describe('Map Component Draw Lease', () => {
   beforeEach(() => {
     cy.interceptAndWait(['getAllLayerSettingsByUser'], () => {
@@ -44,10 +46,12 @@ describe('Map Component Draw Lease', () => {
         { x: 846, y: 712 },
         { x: 1246, y: 612 },
       ],
+    }).then(({ customLayer }) => {
+      newCustomLayer = customLayer;
     });
   });
 
   it('Lease created by rectangle draw opens correct popup on click & delete works', () => {
-    cy.openAndDeleteShape({ x: 1200, y: 650, shapeType: 'lease' });
+    cy.openAndDeleteShape({ x: 1200, y: 650, shapeType: 'lease', newCustomLayer });
   });
 });

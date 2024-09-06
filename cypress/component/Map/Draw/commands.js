@@ -20,7 +20,7 @@ Cypress.Commands.add('openShape', ({ x, y, callback, newCustomLayer }) => {
     id: newCustomLayer._id,
   };
 
-  if (jsonLayer.properties.type === 'parcel') {
+  if (jsonLayer.properties.sdType === 'parcel') {
     popupStateVal = {
       expandedCard: true,
       selectedParcel: selectedShape,
@@ -89,7 +89,6 @@ Cypress.Commands.add('drawShape', ({ drawType, points }) => {
       cy.get('#mapRectangle', { scrollBehavior: false }).click({ scrollBehavior: false });
 
       // Clicking on the canvas to start drawing the rectangle
-      cy.wait(10000);
       cy.get('.mapboxgl-canvas')
         .click(points[0].x, points[0].y) // First click to start drawing
         .trigger('mousedown', { button: 0, which: 1 }) // Triggering mouse down event
@@ -131,7 +130,7 @@ Cypress.Commands.add('drawShape', ({ drawType, points }) => {
       // Clicking on the landgrid draw tool
       cy.get('.MuiButtonBase-root[aria-label="Multiple Select"]', {
         scrollBehavior: false,
-      }).click({ scrollBehavior: false });
+      }).click({ scrollBehavior: false, force: true });
 
       // Clicking on the canvas to select the landgrid points
       cy.get('.mapboxgl-canvas')
@@ -139,7 +138,7 @@ Cypress.Commands.add('drawShape', ({ drawType, points }) => {
         .click(points[1].x, points[1].y); // Clicking to select the second point
 
       // Clicking to set the boundary of the landgrid
-      cy.wait(10000);
+      cy.wait(5000);
       cy.get('.MuiButtonBase-root[aria-label="Set Boundary"]', {
         scrollBehavior: false,
       }).should('be.visible').click({ scrollBehavior: false });
@@ -320,7 +319,6 @@ Cypress.Commands.add(
     // Callback function to be executed after opening the shape
     const callback = customLayer => {
       // Clicking on the button to edit the shape boundary
-      cy.wait(10000);
       cy.get('[data-testid="edit-shape-boundary"]').should('be.visible').click();
 
       // Waiting for 1 second before performing map actions
@@ -393,7 +391,7 @@ Cypress.Commands.add(
         ['getESSimpleSearch'], // Intercepting API call to search for shapes
         alias => {
           // Clicking on the button to set the boundary of the shape
-          cy.wait(10000);
+          cy.wait(5000);
           cy.get('.MuiButtonBase-root[aria-label="Set Boundary"]', {
             scrollBehavior: false,
           }).should('be.visible').click({ scrollBehavior: false });
@@ -405,7 +403,7 @@ Cypress.Commands.add(
               ['getCustomLayer'], // Intercepting API call for custom layer
               alias => {
                 // Clicking on the map to open the shape details at a specific point
-                cy.wait(10000);
+                cy.wait(5000);
                 cy.get('.mapboxgl-canvas').click(openPoint.x, openPoint.y, { force: true });
 
                 // Waiting for the intercepted API call to respond
@@ -466,11 +464,10 @@ Cypress.Commands.add('mapRightClick', ({ x, y, groupName, shapeName, callback })
     ['getCustomLayer'], // Intercepting API call for custom layer data
     alias => {
         // Simulating a right-click on the map at the specified coordinates
-        cy.wait(10000);
+        cy.wait(5000);
         cy.get('.mapboxgl-canvas').click(x, y, { force: true, shiftKey: true });
         
         // Clicking on the specified shape name in the layer selection popup
-        cy.wait(5000);
         cy.get(
         `div[data-testid="layer-selection-popup"] div[data-testid="${groupName}-group"] span.MuiTypography-root`,
         {
@@ -511,7 +508,7 @@ Cypress.Commands.add(
 );
 
 // Custom Cypress command to open and edit a shape's quarter (quarter-quarter)
-Cypress.Commands.add('openAndEditShapeQuater', ({ x, y, expectedShape }) => {
+Cypress.Commands.add('openAndEditShapeQuater', ({ x, y, expectedShape, newCustomLayer }) => {
   // Callback function to be executed after opening the shape's quarter for editing
   const callback = customLayer => {
     // Clicking on the quarter-southwest button to open the shape's quarter for editing
@@ -533,6 +530,13 @@ Cypress.Commands.add('openAndEditShapeQuater', ({ x, y, expectedShape }) => {
           expect(isEqual(customLayer.shapeJson.geometry, expectedShape)).to.be.equal(
             true
           );
+
+          // Return values from command
+          cy.wrap({
+            createdShapeName: customLayer.name,
+            createdShapeId: customLayer._id,
+            customLayer
+          });
         });
       },
       { wait: false }
@@ -540,7 +544,7 @@ Cypress.Commands.add('openAndEditShapeQuater', ({ x, y, expectedShape }) => {
   };
 
   // Calling the openShape command to open the shape for editing and execute the callback function
-  cy.openShape({ x, y, callback });
+  cy.openShape({ x, y, callback, newCustomLayer });
 });
 
 // Custom Cypress command to open and verify a shape

@@ -9,6 +9,8 @@ import {
 } from './data';
 
 let createdLandGridName = 'T007N R023E — Section 06';
+let customLayerByRectangle = {};
+let customLayerByLandGrid = {};
 
 describe('Map Component Draw Unit', () => {
   beforeEach(() => {
@@ -46,6 +48,8 @@ describe('Map Component Draw Unit', () => {
         { x: 846, y: 712 },
         { x: 1246, y: 612 },
       ],
+    }).then(({ customLayer }) => {
+      customLayerByRectangle = customLayer;
     });
   });
 
@@ -61,6 +65,9 @@ describe('Map Component Draw Unit', () => {
       shapeType: 'unit',
       expectedShape: editedPolygon,
       openPoint: { x: 701, y: 811 },
+      newCustomLayer: customLayerByRectangle,
+    }).then(({ customLayer }) => {
+      customLayerByRectangle = customLayer;
     });
   });
 
@@ -76,6 +83,9 @@ describe('Map Component Draw Unit', () => {
       shapeType: 'unit',
       expectedShape: resizedPolygon,
       openPoint: { x: 701, y: 811 },
+      newCustomLayer: customLayerByRectangle,
+    }).then(({ customLayer }) => {
+      customLayerByRectangle = customLayer;
     });
   });
 
@@ -91,6 +101,9 @@ describe('Map Component Draw Unit', () => {
       shapeType: 'unit',
       expectedShape: relocatedPolygon,
       openPoint: { x: 1200, y: 400 },
+      newCustomLayer: customLayerByRectangle,
+    }).then(({ customLayer }) => {
+      customLayerByRectangle = customLayer;
     });
   });
 
@@ -106,8 +119,9 @@ describe('Map Component Draw Unit', () => {
         { x: 1000, y: 450 },
         { x: 1200, y: 450 },
       ],
-    }).then(res => {
-      createdLandGridName = res;
+    }).then(({ createdShapeName, customLayer }) => {
+      createdLandGridName = createdShapeName;
+      customLayerByLandGrid = customLayer;
     });
   });
 
@@ -118,10 +132,11 @@ describe('Map Component Draw Unit', () => {
       groupName: 'Units',
       shapeName: createdLandGridName?.createdShapeName || createdLandGridName,
       shapeType: 'unit',
+      newCustomLayer: customLayerByLandGrid,
     });
   });
 
   it('Unit created by rectangle draw opens correct popup on click & delete works', () => {
-    cy.openAndDeleteShape({ x: 1200, y: 400, shapeType: 'unit' });
+    cy.openAndDeleteShape({ x: 1200, y: 400, shapeType: 'unit', newCustomLayer: customLayerByRectangle });
   });
 });
