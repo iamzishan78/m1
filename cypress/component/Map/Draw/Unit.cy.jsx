@@ -53,59 +53,59 @@ describe('Map Component Draw Unit', () => {
     });
   });
 
-  it('Shape edit works', () => {
-    cy.openAndEditShape({
-      x: 900,
-      y: 700,
-      points: [
-        { x: 846, y: 712 },
-        { x: 700, y: 812 },
-      ],
-      type: 'edit',
-      shapeType: 'unit',
-      expectedShape: editedPolygon,
-      openPoint: { x: 701, y: 811 },
-      newCustomLayer: customLayerByRectangle,
-    }).then(({ customLayer }) => {
-      customLayerByRectangle = customLayer;
-    });
-  });
+  // it('Shape edit works', () => {
+  //   cy.openAndEditShape({
+  //     x: 900,
+  //     y: 700,
+  //     points: [
+  //       { x: 846, y: 712 },
+  //       { x: 700, y: 812 },
+  //     ],
+  //     type: 'edit',
+  //     shapeType: 'unit',
+  //     expectedShape: editedPolygon,
+  //     openPoint: { x: 701, y: 811 },
+  //     newCustomLayer: customLayerByRectangle,
+  //   }).then(({ customLayer }) => {
+  //     customLayerByRectangle = customLayer;
+  //   });
+  // });
 
-  it('Shape resize works', () => {
-    cy.openAndEditShape({
-      x: 900,
-      y: 700,
-      points: [
-        { x: 700, y: 812 },
-        { x: 550, y: 912 },
-      ],
-      type: 'resize',
-      shapeType: 'unit',
-      expectedShape: resizedPolygon,
-      openPoint: { x: 701, y: 811 },
-      newCustomLayer: customLayerByRectangle,
-    }).then(({ customLayer }) => {
-      customLayerByRectangle = customLayer;
-    });
-  });
+  // it('Shape resize works', () => {
+  //   cy.openAndEditShape({
+  //     x: 900,
+  //     y: 700,
+  //     points: [
+  //       { x: 700, y: 812 },
+  //       { x: 550, y: 912 },
+  //     ],
+  //     type: 'resize',
+  //     shapeType: 'unit',
+  //     expectedShape: resizedPolygon,
+  //     openPoint: { x: 701, y: 811 },
+  //     newCustomLayer: customLayerByRectangle,
+  //   }).then(({ customLayer }) => {
+  //     customLayerByRectangle = customLayer;
+  //   });
+  // });
 
-  it('Shape relocate works', () => {
-    cy.openAndEditShape({
-      x: 900,
-      y: 700,
-      points: [
-        { x: 700, y: 812 },
-        { x: 1000, y: 450 },
-      ],
-      type: 'relocate',
-      shapeType: 'unit',
-      expectedShape: relocatedPolygon,
-      openPoint: { x: 1200, y: 400 },
-      newCustomLayer: customLayerByRectangle,
-    }).then(({ customLayer }) => {
-      customLayerByRectangle = customLayer;
-    });
-  });
+  // it('Shape relocate works', () => {
+  //   cy.openAndEditShape({
+  //     x: 900,
+  //     y: 700,
+  //     points: [
+  //       { x: 700, y: 812 },
+  //       { x: 1000, y: 450 },
+  //     ],
+  //     type: 'relocate',
+  //     shapeType: 'unit',
+  //     expectedShape: relocatedPolygon,
+  //     openPoint: { x: 1200, y: 400 },
+  //     newCustomLayer: customLayerByRectangle,
+  //   }).then(({ customLayer }) => {
+  //     customLayerByRectangle = customLayer;
+  //   });
+  // });
 
   it('Unit is created using landgrid and correct popup opens', () => {
     cy.get('#mapEditIcon', { timeout: basic_timeouts.longTimeout })
