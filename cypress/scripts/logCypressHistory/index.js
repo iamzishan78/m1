@@ -69,8 +69,8 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
         // Close the monitoring if the command was successfully closed before max duration
         cypressProcess.on('close', async (code) => {
           clearInterval(intervalId);
-          const { isExecutionComplete, retries } = await GetCypressLog();
-          if (isExecutionComplete && retries === 1) {
+          const { isExecutionComplete, retries, failedSpecs } = await GetCypressLog();
+          if (isExecutionComplete && retries === 1 && failedSpecs?.length > 0) {
             console.log('Failed specs found. Triggering pipeline one more time...');
             const buildId = await triggerAzurePipeline();
             await UpsertCypressLog({ pr: prData, specs: systemSpecs, buildId: buildId, isFailedRetry: true});
