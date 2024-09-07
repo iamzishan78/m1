@@ -15,6 +15,8 @@ const headers = {
 let layerSettings;
 let isUnitOnTop;
 let createdShapes = [];
+let newUnitLayer ={};
+let newTractLayer ={};
 
 // Moves layerToMove above beforeLayer
 const getSettiingsToUpdate = (layerToMove, beforeLayer) => {
@@ -125,8 +127,9 @@ describe('Map Component Layer Order', () => {
         { x: 846, y: 712 },
         { x: 1246, y: 612 },
       ],
-    }).then(({ createdShapeId }) => {
+    }).then(({ createdShapeId, customLayer }) => {
       createdShapeId && createdShapes.push(createdShapeId);
+      newUnitLayer = customLayer;
     });
   });
 
@@ -142,14 +145,20 @@ describe('Map Component Layer Order', () => {
         { x: 846, y: 712 },
         { x: 1246, y: 612 },
       ],
-    }).then(({ createdShapeId }) => {
+    }).then(({ createdShapeId, customLayer }) => {
       createdShapeId && createdShapes.push(createdShapeId);
+      newTractLayer = customLayer;
     });
   });
 
   it('On Click Unit/Tract opens as its above', () => {
     cy.log(`On Click ${isUnitOnTop ? 'Unit' : 'Tract'} opens as its above`);
-    cy.openAndVerifyShape({ x: 900, y: 650, shapeType: isUnitOnTop ? 'unit' : 'parcel' });
+    cy.openAndVerifyShape({ 
+      x: 900,
+      y: 650, 
+      shapeType: isUnitOnTop ? 'unit' : 'parcel',
+      newCustomLayer: isUnitOnTop ? newUnitLayer : newTractLayer,
+    });
   });
 
   it('Should move Tract/Unit above Unit/Tract', () => {
@@ -193,7 +202,12 @@ describe('Map Component Layer Order', () => {
     cy.log(
       `On Click ${isUnitOnTop ? 'Tract' : 'Unit'} opens as its above and it is deleted`
     );
-    cy.openAndDeleteShape({ x: 900, y: 650, shapeType: isUnitOnTop ? 'parcel' : 'unit' });
+    cy.openAndDeleteShape({ 
+      x: 900, 
+      y: 650, 
+      shapeType: isUnitOnTop ? 'parcel' : 'unit',
+      newCustomLayer: isUnitOnTop ? newTractLayer : newUnitLayer,
+    });
   });
 
   it('Delete remaining created shapes', () => {

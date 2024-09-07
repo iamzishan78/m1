@@ -533,7 +533,7 @@ Cypress.Commands.add('openAndEditShapeQuater', ({ x, y, expectedShape, newCustom
 });
 
 // Custom Cypress command to open and verify a shape
-Cypress.Commands.add('openAndVerifyShape', ({ x, y, shapeType }) => {
+Cypress.Commands.add('openAndVerifyShape', ({ x, y, shapeType, newCustomLayer }) => {
   // Callback function to delete the shape once it's opened
   const callback = customLayer => {
     // Calling the 'verifyShape' command with the custom layer data and shapeType
@@ -541,7 +541,7 @@ Cypress.Commands.add('openAndVerifyShape', ({ x, y, shapeType }) => {
   };
 
   // Opening the shape at the specified coordinates and invoking the callback to delete it
-  cy.openShape({ x, y, callback });
+  cy.openShape({ x, y, callback, newCustomLayer });
 });
 
 // Define a custom Cypress command named 'waitUntilMapRefDefined'
