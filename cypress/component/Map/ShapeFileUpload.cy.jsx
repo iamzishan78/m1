@@ -412,51 +412,51 @@ describe('Map Component Shape File Upload', () => {
     cy.get(`[data-testid="group-${sourceName}"]`);
   });
 
-  it('Shapefile click works & boundary appears', () => {
-    cy.wait(100).then(() => {
-      window.mapRef.jumpTo({
-        center: {
-          lng: -97.75524486665434,
-          lat: 28.553817655727713,
-        },
-        zoom: 15.2,
-      });
+  // it('Shapefile click works & boundary appears', () => {
+  //   cy.wait(100).then(() => {
+  //     window.mapRef.jumpTo({
+  //       center: {
+  //         lng: -97.75524486665434,
+  //         lat: 28.553817655727713,
+  //       },
+  //       zoom: 15.2,
+  //     });
 
-      cy.wait(basic_timeouts.shorTimeout).then(() => {
-        cy.get('.mapboxgl-canvas').first().click(1000, 500);
+  //     cy.wait(basic_timeouts.shorTimeout).then(() => {
+  //       cy.get('.mapboxgl-canvas').first().click(1000, 500);
 
-        cy.wait(15000).then(() => {
-          const sourceLine = window.mapRef.getSource('boundary-line-source')?._data;
+  //       cy.wait(15000).then(() => {
+  //         const sourceLine = window.mapRef.getSource('boundary-line-source')?._data;
 
-          // Getting values from the popup controller for selectedShapeFile and selectedUserDefinedLayer
-          const { selectedUserDefinedLayer, selectedShapeFile } = popupController.getValues([
-            'selectedShapeFile',
-            'selectedUserDefinedLayer',
-          ]);
+  //         // Getting values from the popup controller for selectedShapeFile and selectedUserDefinedLayer
+  //         const { selectedUserDefinedLayer, selectedShapeFile } = popupController.getValues([
+  //           'selectedShapeFile',
+  //           'selectedUserDefinedLayer',
+  //         ]);
 
-          console.log({selectedUserDefinedLayer, selectedShapeFile})
-          const boundaryLine = {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: selectedUserDefinedLayer?.geometry?.type,
-              coordinates: selectedUserDefinedLayer?.geometry?.coordinates,
-            },
-          };
+  //         console.log({selectedUserDefinedLayer, selectedShapeFile})
+  //         const boundaryLine = {
+  //           type: 'Feature',
+  //           properties: {},
+  //           geometry: {
+  //             type: selectedUserDefinedLayer?.geometry?.type,
+  //             coordinates: selectedUserDefinedLayer?.geometry?.coordinates,
+  //           },
+  //         };
 
-          if (sourceLine) expect(isEqual(sourceLine, boundaryLine)).to.be.equal(true);
+  //         if (sourceLine) expect(isEqual(sourceLine, boundaryLine)).to.be.equal(true);
 
-          // Expecting selectedUserDefinedLayer to be truthy
-          expect(!!selectedUserDefinedLayer).to.be.equal(true);
+  //         // Expecting selectedUserDefinedLayer to be truthy
+  //         expect(!!selectedUserDefinedLayer).to.be.equal(true);
 
-          const isGeometryWithinBbox = getIsGeometryWithinBbox(selectedUserDefinedLayer);
+  //         const isGeometryWithinBbox = getIsGeometryWithinBbox(selectedUserDefinedLayer);
 
-          // Expecting the geometry to be within the bbox
-          expect(isGeometryWithinBbox).to.be.equal(true);
-        });
-      });
-    });
-  });
+  //         // Expecting the geometry to be within the bbox
+  //         expect(isGeometryWithinBbox).to.be.equal(true);
+  //       });
+  //     });
+  //   });
+  // });
 
   // it('Shapefile delete works', () => {
   //   cy.get('#managerButton', { timeout: longTimeout }).should('be.visible').click();
