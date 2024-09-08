@@ -21,10 +21,15 @@ const dummyPR = {
   sourceBranch: 'refs/heads/abc',
   targetBranch: 'refs/heads/xyz',
   createdBy: 'Local tester',
-  creationDate: '2024-09-03T11:31:57.1883747Z'
+  creationDate: '2024-09-03T11:31:57.1883747Z',
 };
 
 const dummyBuildId = '8321';
+
+const PIPELINE_STATUSES = Object.freeze({
+  SUCCEEDED: 'succeeded',
+  FAILED: 'failed',
+});
 
 module.exports = {
   dummyPR,
@@ -40,4 +45,5 @@ module.exports = {
   ORGANIZATION,
   PROJECT_ID,
   REPOSITORY_ID,
+  PIPELINE_STATUSES,
 };

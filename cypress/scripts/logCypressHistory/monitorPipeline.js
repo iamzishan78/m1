@@ -8,6 +8,7 @@ const monitorPipeline = ({ getCypressProcess, specs }) => {
     MAX_PIPELINE_DURATION,
     PIPELINE_WARNING_THRESHOLD,
     PIPELLINE_CHECK_TIME,
+    PIPELINE_STATUSES,
   } = require('./utils/constants.js');
 
   const { getPipelineData } = require('./utils/helpers.js'); 
@@ -54,8 +55,8 @@ const monitorPipeline = ({ getCypressProcess, specs }) => {
         }
       }
       clearInterval(intervalId);
-      console.log('Current Pipeline State: ', pipelineState);
-      if (pipelineState === 'succeeded') {
+      console.log('Current pipeline state: ', pipelineState?.toUpperCase());
+      if (pipelineState === PIPELINE_STATUSES.SUCCEEDED) {
         console.log('Exiting command with code: 0');
         process.exit(0); // Exit script as success
       } else {

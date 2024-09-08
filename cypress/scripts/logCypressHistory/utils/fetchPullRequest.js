@@ -33,7 +33,6 @@ const fetchPullRequests = async () => {
         creationDate: pr.creationDate,
       }));
 
-      console.log(prData[0].repository.project)
       // Sort pull requests by creationDate in descending order
       const sortedPullRequests = pullRequests.sort(
         (a, b) => new Date(b.creationDate) - new Date(a.creationDate)

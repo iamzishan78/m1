@@ -21,6 +21,7 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
         process.env.pullRequestData = JSON.stringify(pullRequests[0]);
     }
 
+    const { PIPELINE_STATUSES } = require('./utils/constants.js');
     const { getPipelineData } = require('./utils/helpers.js');
     const { prData } = getPipelineData();
 
@@ -44,13 +45,13 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
     }
 
     // Upsert the cypress logs
-    const { specsString } = await UpsertCypressLog({
+    const { specsString, currentState } = await UpsertCypressLog({
       pr: prData,
       specs: systemSpecs,
     });
 
     // Run all the specs returned by API
-    if (specsString) {
+    if (specsString && currentState === PIPELINE_STATUSES.FAILED) {
       try {
         cypressProcess = exec(
           `${crossEnvCommand} NODE_OPTIONS=\"--max_old_space_size=32768 --openssl-legacy-provider\" ${cypressCommand} run --component --spec '${specsString}' --browser chrome`
@@ -69,13 +70,14 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
         // Close the monitoring if the command was successfully closed before max duration
         cypressProcess.on('close', async (code) => {
           clearInterval(intervalId);
-          const { isExecutionComplete, retries, failedSpecs } = await GetCypressLog();
+          const { isExecutionComplete, retries, failedSpecs, currentState } = await GetCypressLog();
           if (isExecutionComplete && retries === 1 && failedSpecs?.length > 0) {
             console.log('Failed specs found. Triggering pipeline one more time...');
             const buildId = await triggerAzurePipeline();
             await UpsertCypressLog({ pr: prData, specs: systemSpecs, buildId: buildId, isFailedRetry: true});
           }
-          console.log('Exiting command with code: ', code)
+          console.log('Exiting command with code: ', code);
+          console.log('Current pipeline state: ', currentState?.toUpperCase());
           process.exit(code);
         });
       } catch (error) {
@@ -84,6 +86,8 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
       }
     } else {
       clearInterval(intervalId);
+      console.log("No specs found for execution...");
+      console.log('Current pipeline state: ', currentState?.toUpperCase());
     }
   } catch (error) {
     console.error(`Error: ${error.message}`);
