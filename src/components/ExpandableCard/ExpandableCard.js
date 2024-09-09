@@ -143,6 +143,7 @@ function ExpandableCard(props) {
       top: cardTop,
       webkitTransform: "translateZ(0)",
       transition: "width 0.1s, height 0.1s, left 0.1s, top 0.1s",
+      height: (props) => (props.expanded ? props.height : "inherit"),
       width: width,
       background: backgroundColor,
       borderStyle: "solid",
@@ -282,7 +283,7 @@ function ExpandableCard(props) {
     },
   }));
 
-  const classes = useStyles();
+  const classes = useStyles(props);
 
   //  UseEffects
   useEffect(() => {
