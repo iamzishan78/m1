@@ -10,11 +10,14 @@ describe('Map Unit Detail Component', () => {
       cy.viewport(1800, 1200).mount(
         <MapProvider
           match={{
-            params: { paramId: '65eeef41f1e14c0724bee441', type: 'units' },
+            params: { paramId: '667d6d179661ee87114c841c', type: 'units' },
           }}
         />
       );
     });
+    cy.waitUntilMapRefDefined().then(() => {
+      cy.wait(basic_timeouts.shorTimeout);
+      });
   });
 
   it('Add well to unit works', () => {
@@ -37,9 +40,9 @@ describe('Map Unit Detail Component', () => {
       (alias) => {
         cy.get('#saveWellButton').click();
         cy.wait(alias, { timeout: 400000 }).then((res) => {
-          expect(res.response.body.data.addShapeWellInterest.success).to.be.equal(true);
+          expect(res?.response?.body?.data?.addShapeWellInterest?.success).to.be.equal(true);
 
-          const lease = res.request.body.variables.wellInterest.lease;
+          const lease = res?.request?.body?.variables?.wellInterest?.lease;
           // If lease is passed from frontend then we will check that in grid
           if (lease) {
             cy.get('tr').contains(lease);
@@ -53,9 +56,11 @@ describe('Map Unit Detail Component', () => {
   it('Well card opens from unit well table link', () => {
     cy.wait(15000);
     // Clicking on the Wells tab to view well details
-    cy.get(`[data-testid="shape-detail-tab-Wells"]`, {
-      timeout: basic_timeouts.midTimeout,
-    }).click({ force: true });
+    cy.interceptAndWait(['getESPaginatedList'], () => {
+      cy.get(`[data-testid="shape-detail-tab-Wells"]`, {
+        timeout: basic_timeouts.midTimeout,
+      }).click({ force: true });
+    });
 
     // Intercepting and waiting for the getTenantWell request, then clicking on the first well link in the table
     cy.interceptAndWait(['getTenantWell'], () => {
@@ -73,7 +78,6 @@ describe('Map Unit Detail Component', () => {
   });
 
   it('should update field and check cutom field did not remove', () => {
-    cy.wait(25000);
     cy.get('[data-testid="data-cell-cypress test field (do not delete)"]', {
       timeout: basic_timeouts.longTimeout,
     }).click();
