@@ -181,7 +181,7 @@ function GridViewOptions({ handleDefaultView, module, buttonRef, tableKey, allGr
 			open
 			width="325px"
 			useLeftKey={true}
-			maxHeight={tableStateValues?.gridViewSettings?.cssOverride?.maxHeight || '40%'}
+			maxHeight={tableStateValues?.gridViewSettings?.cssOverride?.maxHeight || '40%'} // Set max height of dialog as 40%
 			top={gridViewCss.top}
 			left={gridViewCss.left}
 			handleClickDialogClose={() =>
