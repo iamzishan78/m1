@@ -190,9 +190,9 @@ export default function M1neralHeaders() {
         //   continue;
         // }
         
-        // remove the row if the value of approvalStatus is not correct
-        if (return_obj["property.approvalStatus"]) {
-            const formattedValue = return_obj["property.approvalStatus"].replace(/\s+/g, "").toLowerCase();
+        // remove the row if the value of payStatus is not correct
+        if (return_obj["property.status"]) {
+            const formattedValue = return_obj["property.status"].replace(/\s+/g, "").toLowerCase();
   
             if (!["inpay","notinpay"].some(value => value=== formattedValue)) {
               filtered_data_to_send.push(null)
