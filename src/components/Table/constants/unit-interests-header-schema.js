@@ -443,7 +443,7 @@ const UnitInterestsHeadCells = [
         label: 'Unit description',
         esKey: 'shape.shapeJson.properties.description.keyword',
         options: {
-            display: false,
+            display: true,
             download: true,
             viewColumns: false,
         },
