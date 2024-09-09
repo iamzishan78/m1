@@ -452,6 +452,41 @@ function AddUnitInterestDialog(props) {
             options={getOptions("WellStatus") || []}
             as={<AutoCompleteFieldComponent />}
           />
+
+          <Controller
+            control={control}
+            name="lastTwelveMonthBOE"
+            label="Last 12 (BOE)"
+            as={TextField}
+            variant="outlined"
+            margin="dense"
+            disabled
+            fullWidth
+            defaultValue=""
+          />
+          <Controller
+            control={control}
+            name="measuredDepth"
+            label="MD (ft)"
+            as={TextField}
+            variant="outlined"
+            margin="dense"
+            disabled
+            fullWidth
+            defaultValue=""
+          />
+          <Controller
+            control={control}
+            name="lateralLength"
+            label="Lateral Length (ft)"
+            defaultValue={""}
+            as={TextField}
+            variant="outlined"
+            margin="dense"
+            disabled
+            fullWidth
+          />
+        
         </FormControl>
       </div>
 
