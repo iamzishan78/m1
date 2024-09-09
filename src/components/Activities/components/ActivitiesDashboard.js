@@ -13,19 +13,19 @@ const useStyles = makeStyles((theme) => ({
     "& div": {
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": {
-          maxHeight: "53vh",
-          minHeight: "53vh",
+          maxHeight: "49vh",
+          minHeight: "49vh",
           "@media (max-height:900px)": {
-            maxHeight: "47vh",
-            minHeight: "47vh",
+            maxHeight: "33vh",
+            minHeight: "33vh",
           },
           "@media (max-height:800px)": {
-            maxHeight: "45vh",
-            minHeight: "45vh",
+            maxHeight: "25vh",
+            minHeight: "25vh",
           },
           "@media (max-height:768px)": {
-            maxHeight: "45vh",
-            minHeight: "45vh",
+            maxHeight: "25vh",
+            minHeight: "25vh",
           },
         },
       },
