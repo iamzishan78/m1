@@ -11,6 +11,8 @@ import { useLocation } from "react-router-dom";
 import { CircularProgress } from "@material-ui/core";
 import { globalStateController } from "hookstate/globalStateController";
 import { mapControlsController } from "hookstate/mapControlsController";
+import { popupController } from 'hookstate/popupStateController';
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -61,6 +63,8 @@ const useStyles = makeStyles((theme) => ({
 
 function GridIcon() {
   const classes = useStyles();
+  const history = useHistory();
+
 
   const { mapControlsStateValues } = mapControlsController.useState(['mapGridCardActivated'], 'mapControlsStateValues');
 
@@ -70,6 +74,8 @@ function GridIcon() {
         id="snapGridButton"
         className={mapControlsStateValues.mapGridCardActivated ? classes.selected : classes.gridOnIcon}
         onClick={() => {
+          history.replace({ pathname: "/" });
+          popupController.reset();
           mapControlsController.toggleMapGridCardAtived();
           mapControlsController.updateState({ selectedDataset: { name: 'M1 Platform' }, expandedPanel: false, layerGridCard: false })
         }}
