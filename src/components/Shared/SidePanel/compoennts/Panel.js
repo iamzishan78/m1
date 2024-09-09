@@ -86,12 +86,13 @@ const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle
             }}
           >
             <Grid container alignContent="center" alignItems="center">
+              {/* icons for map panel  */}
               <Grid item>
-                {style.name === "Outdoors" && <Box component="img" src={'./icons/MapOutdoorIcon.jpeg'} />}
-                {style.name === "Satellite" && <Box component="img" src={'./icons/MapSatelliteIcon.jpeg'} />}
-                {style.name === "Light" && <Box component="img" src={'./icons/MapLightIcon.jpeg'} />}
-                {style.name === "Dark" && <Box component="img" src={'./icons/MapDarkIcon.jpeg'} />}
-                {style.name === "Basic" && <Box component="img" src={'./icons/MapBasicIcon.jpeg'} />}
+                {style.name === "Outdoors" && <Box component="img" src={'/icons/MapOutdoorIcon.jpeg'} />}
+                {style.name === "Satellite" && <Box component="img" src={'/icons/MapSatelliteIcon.jpeg'} />}
+                {style.name === "Light" && <Box component="img" src={'/icons/MapLightIcon.jpeg'} />}
+                {style.name === "Dark" && <Box component="img" src={'/icons/MapDarkIcon.jpeg'} />}
+                {style.name === "Basic" && <Box component="img" src={'/icons/MapBasicIcon.jpeg'} />}
               </Grid>
 
               <Grid item>

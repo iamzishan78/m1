@@ -60,7 +60,7 @@ import { globalStateController } from "hookstate/globalStateController";
 import { findBoundsMap } from "components/MapControls/commonHelper";
 import { mapControlsController } from "hookstate/mapControlsController";
 import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { drawBoundary } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
+import { drawBoundaries } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -104,10 +104,9 @@ const formatIt = (mdata) => {
 
 export const useDealMapFlyto = () => {
   const [getDealShapes, { data: dataDealShapes }] = useLazyQuery(GET_DEAL_SHAPES, { fetchPolicy: "cache-and-network", skip: true });
+  const [stateApp] = useContext(AppContext);
 
-    const handleFlyto = async (contactIds, dealId ) => {
-        globalStateController.updateState({ universalLoader: true })
-  
+    const handleFlyto = async (contactIds, dealId ) => {  
         await getDealShapes({
           variables: {
             contactIds,
@@ -117,9 +116,21 @@ export const useDealMapFlyto = () => {
       }
 
       useEffect(() => {
-        if (dataDealShapes && dataDealShapes.dealShapes?.length) {
+        if (dataDealShapes && dataDealShapes.dealShapes?.length && stateApp.transactBarView === 'Map') {
+          globalStateController.updateState({ universalLoader: true })
+          
           const formattedFeatures = formatIt(dataDealShapes.dealShapes).features;
-          const customLayerIds = dataDealShapes.dealShapes.map(shape => shape._id);
+          const unitLayerIds = [];
+          const tractLayerIds = [];
+
+          // Loop through each deal shape to categorize the IDs based on their layerType
+          dataDealShapes?.dealShapes?.forEach((shape) => {
+            if (shape.layerType === 'unit') {
+              unitLayerIds.push(shape._id); // Store 'unit' layerType IDs
+            } else if (shape.layerType === 'parcel') {
+              tractLayerIds.push(shape._id); // Store 'tract' layerType IDs
+            }
+          });
       
           if (formattedFeatures.length > 0 && window.mapRef) {  // Ensure we have valid formatted features
             findBoundsMap(formattedFeatures, window.mapRef, {
@@ -127,29 +138,26 @@ export const useDealMapFlyto = () => {
             });
             mapControlsController.updateState({ mapGridCardActivated: false });
 
-            
-            formattedFeatures.map(feature => {
-              drawBoundary(feature)
-            })
+            // Draw boundries on multiple shapes
+            drawBoundaries(formattedFeatures);
 
             // Filter Units
             layerFiltersController.setVariables("Units", {
               filters: [
-                { field: "_id", value: customLayerIds }
+                { field: "_id", value: unitLayerIds }
               ]
             });
 
             // Filter Units
             layerFiltersController.setVariables("Parcels", {
               filters: [
-                { field: "_id", value: customLayerIds }
+                { field: "_id", value: tractLayerIds }
               ]
             });
           }
-      
-          globalStateController.updateState({ universalLoader: false });
         }
-      }, [dataDealShapes]);
+        globalStateController.updateState({ universalLoader: false });
+      }, [dataDealShapes, stateApp.transactBarView, window.mapRef]);
 
     return { handleFlyto }
   }
