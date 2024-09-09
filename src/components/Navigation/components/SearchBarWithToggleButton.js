@@ -74,8 +74,8 @@ function GridIcon() {
         id="snapGridButton"
         className={mapControlsStateValues.mapGridCardActivated ? classes.selected : classes.gridOnIcon}
         onClick={() => {
-          history.replace({ pathname: "/" });
-          popupController.reset();
+          history.replace({ pathname: "/" }); // reset path to default 
+          popupController.reset(); // close expanded card 
           mapControlsController.toggleMapGridCardAtived();
           mapControlsController.updateState({ selectedDataset: { name: 'M1 Platform' }, expandedPanel: false, layerGridCard: false })
         }}
