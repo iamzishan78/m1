@@ -13,9 +13,6 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { AppContext } from "AppContext";
 import moment from "moment";
 
-import { useLazyQuery } from "@apollo/client";
-import { GET_ACTIVITY_TYPES } from "graphQL/useQueryActivityTypes";
-
 const useToolbarStyles = makeStyles((theme) => ({
   root: {
     padding: "16px",
@@ -117,11 +114,16 @@ const ActivitiesToolbar = ({
   setActivityFilterByTime,
   activityFilterByOwner,
   setActivityFilterByOwner,
+  activityFilterByResponsibleParty,
+  setActivityFilterByResponsibleParty,
   setSelectedDate,
   selectedDate,
   view,
+  obligationOptions,
   setView,
   mongoUsers,
+  activities,
+  operatorList,
   type,
   ...toolbar
 }) => {
@@ -129,15 +131,7 @@ const ActivitiesToolbar = ({
   const [stateApp] = useContext(AppContext);
   const [selectedObligationType, setObligationType] = useState({ label: "All", value: "all" });
 
-  const [getActivityTypes, { data: obligationTypes }] = useLazyQuery(GET_ACTIVITY_TYPES);
 
-  React.useEffect(() => {
-    if (type === "Obligation") {
-      getActivityTypes({
-        variables: { category: "Obligaiton" },
-      });
-    }
-  }, [type, getActivityTypes]);
 
   const goToBack = () => {
     setSelectedDate(state => {
@@ -158,26 +152,32 @@ const ActivitiesToolbar = ({
 
   const acitvityOwnerOptions = React.useMemo(() => {
     let ownerOptions = [{ label: "All", value: "all" }];
-    if (mongoUsers) {
-      mongoUsers
-        .filter((u) => u.name)
-        .forEach((u) => {
-          ownerOptions.push({ ...u, label: u.displayName, value: u._id });
-        });
+    if (activities) {
+      const uniqueOwners = new Map();
+      activities.forEach((activity) => {
+        if (activity.ownerId && activity.ownerName && !uniqueOwners.has(activity.ownerId)) {
+          uniqueOwners.set(activity.ownerId, activity.ownerName);
+          ownerOptions.push({ value: activity.ownerId, label: activity.ownerName });
+        }
+      });
     }
     return ownerOptions;
-  }, [mongoUsers]);
+  }, [activities]);
 
-  const obligationOptions = React.useMemo(() => {
-    if (obligationTypes?.activityTypes) {
-      let obligations = obligationTypes?.activityTypes?.map((type) => ({
-        label: type,
-        value: type,
-      }));
-      obligations.unshift({ label: "All", value: "all" });
-      return obligations;
-    } else return [];
-  }, [obligationTypes]);
+  const responsiblePartyOptions = React.useMemo(() => {
+    let ownerOptions = [{ label: "All", value: "all" }];
+    if (activities) {
+      const uniqueOwners = new Map();
+
+      activities.forEach((activity) => {
+        if (activity.responsibleParty && !uniqueOwners.has(activity.responsibleParty)) {
+          uniqueOwners.set(activity.responsibleParty, activity.responsibleParty);
+          ownerOptions.push({ value: activity.responsibleParty, label: activity.responsibleParty });
+        }
+      });
+    }
+    return ownerOptions;
+  }, [activities]);
 
   return (
     <div className={classes.root}>
@@ -205,10 +205,10 @@ const ActivitiesToolbar = ({
               getOptionLabel={(option) => option.label}
               style={{ width: 220 }}
               size="small"
-              defaultValue={selectedObligationType}
-              value={selectedObligationType}
+              defaultValue={obligationOptions.find((o) => o.value === activityFilterByType)}
+              value={obligationOptions.find((o) => o.value === activityFilterByType)}
               onChange={(_, value) => {
-                setObligationType(value?.value ?? "");
+                setActivityFilterByType(value?.value ?? "all");
               }}
               renderInput={(params) => <TextField {...params} label="Obligation Type" variant="outlined" />}
             />
@@ -226,9 +226,28 @@ const ActivitiesToolbar = ({
             onChange={(_, value) => {
               setActivityFilterByOwner(value?.value ?? "all");
             }}
-            renderInput={(params) => <TextField {...params} label="Owner" variant="outlined" value={activityFilterByOwner} />}
+            renderInput={(params) => <TextField {...params} label="Assigned To" variant="outlined" value={activityFilterByOwner} />}
           />
         </div>
+
+        {type === "Obligation" && (
+          <div className={classes.filterByTypeDisplay}>
+            <Autocomplete
+              id="activityFilterByResponsibleParty"
+              options={responsiblePartyOptions}
+              getOptionLabel={(option) => option.label}
+              style={{ width: 220 }}
+              size="small"
+              defaultValue={responsiblePartyOptions.find((u) => u.value === activityFilterByResponsibleParty)}
+              value={responsiblePartyOptions.find((u) => u.value === activityFilterByResponsibleParty)}
+              onChange={(_, value) => {
+                setActivityFilterByResponsibleParty(value?.value ?? "all");
+              }}
+              renderInput={(params) => <TextField {...params} label="Responsible Party" variant="outlined" value={activityFilterByResponsibleParty} />}
+            />
+
+          </div>
+        )}
       </div>
       {stateApp.activityDisplayType === "calendar" && (
         <div className={classes.centerNav}>

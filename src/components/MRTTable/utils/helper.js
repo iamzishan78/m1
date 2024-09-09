@@ -1,3 +1,6 @@
+import { Tooltip, Typography } from '@material-ui/core';
+
+
 export const formatGridViewToMRT = (selectedGridView) => {
   const tableProperties = {}
   if (selectedGridView?.columns) {
@@ -37,3 +40,15 @@ export const extractValueRecursively = (obj) => {
 
   return obj;
 };
+
+
+export const getTruncateText = (value) => {
+  return <Tooltip title={value} arrow>
+    <Typography style={{
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+    }}>{value}
+    </Typography>
+  </Tooltip>
+}

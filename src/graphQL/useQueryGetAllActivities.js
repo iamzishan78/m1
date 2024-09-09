@@ -7,6 +7,7 @@ export const GETALLACTIVITIES = gql`
       dateTime
       endDateTime
       notes
+      status
       ownerId
       contactId
       dealId
@@ -14,6 +15,10 @@ export const GETALLACTIVITIES = gql`
       type
       ownerName
       contactName
+      frequency
+      applicable
+      value
+      responsibleParty
       name
       isClosed
       createBy
