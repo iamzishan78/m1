@@ -354,7 +354,7 @@ export default function TrackTaskCard() {
             {(loading) ? (
                 <CircularProgress className={classes.progress} size={80} disableShrink color="secondary"></CircularProgress>
             ) : (
-                <div id={'bar-chart'} style={{ paddingTop: "10px", paddingBottom: "40px",  height: barChartHeight,  width: "90%" }} />
+                <div id={'bar-chart'} style={{ paddingTop: "10px", paddingBottom: "20px",  height: barChartHeight,  width: "100%" }} />
             )}
         </Fragment>
     )
