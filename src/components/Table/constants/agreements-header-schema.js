@@ -489,17 +489,17 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
   {
     name: "name-elasticsearch",
     esKey: 'name.keyword',
-    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
+    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true, download: false },
   },
   {
     name: "shapeLabel-elasticsearch",
     esKey: 'shapeJson.properties.shapeLabel.keyword',
-    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
+    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true, download: false },
   },
   {
     name: "state-elasticsearch",
     esKey: 'state.keyword',
-    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
+    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true, download: false },
   },
   // {
   //   name: "mapFlyTo",
