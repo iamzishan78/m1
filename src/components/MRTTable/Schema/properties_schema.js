@@ -192,13 +192,22 @@ const PropertiesMeta = {
       header: 'Pay Status',
       type: "defaultFiltersOptions",
       defaultFilterOptions: [
-        { label: 'In Pay', value: "InPay" },
-        { label: 'Not in Pay', value: "NotInPay" }
+        { label: 'In Pay', value: "inpay" },
+        { label: 'Not in Pay', value: "notinpay" }
       ],
       // Cell rendering for Pay Status column
       Cell: ({ row }) => {
         const { status } = row?.original
-        const formattedStatus = status ? (status === "InPay" ? "In Pay" : "Not in Pay") : "";
+        const formattedValue = status
+          ? status.replace(/\s+/g, "").toLowerCase()
+          : "";
+
+        const formattedStatus =
+          formattedValue === "inpay"
+            ? "In Pay"
+            : formattedValue === "notinpay"
+            ? "Not in Pay"
+            : "";
         return <div>{formattedStatus}</div>
       }
     },
