@@ -26,6 +26,8 @@ import ErrorIcon from "@material-ui/icons/Error";
 import { Tooltip } from "@material-ui/core";
 import { tableGlobalController } from "hookstate/tableController";
 import { jobController } from "hookstate/jobStateController";
+import TextField from "@material-ui/core/TextField";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const styles = (theme) => ({
   dialogTitle: {
@@ -55,7 +57,11 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 4,
     boxShadow: "0 0 3px rgb(0 0 0 / 10%)",
     fontWeight: 700
-  }
+  },
+  addressAutocomplete: {
+    borderRadius: 7,
+    marginTop: '15px'
+  },
 }));
 
 const DialogTitle = withStyles(styles)((props) => {
@@ -78,6 +84,12 @@ const DialogTitle = withStyles(styles)((props) => {
   );
 });
 
+// Address field options
+const addressOptions = [
+  { label: "Primary Address", value: "primaryAddress" },
+  { label: "Secondary Address", value: "secondaryAddress" },
+];
+
 export default function BuyContactsInfoDialogContent(props) {
   const dispatch = useDispatch();
   const classes = useStyles();
@@ -91,6 +103,7 @@ export default function BuyContactsInfoDialogContent(props) {
   const [rowsLoading, setRowsLoading] = useState(false);
   const [mondoRes, setMondoRes] = useState([]);
 
+  const [address, setAddress] = useState('primaryAddress'); // Address state
   const modalClass = Modals();
 
   const jobState = jobController.useState(
@@ -221,19 +234,22 @@ export default function BuyContactsInfoDialogContent(props) {
       setRowsLoading(false);
       const missingContacts = [];
       let validContacts = [];
+
+      // Check if the address is primary
+      const isPrimaryAddress = address === 'primaryAddress';
       for (const row of props.rows) {
         if (!row.firstName || !row.lastName || !row.address1) {
           missingContacts.push(row);
-        } else if (row.firstName && row.lastName && row.address1) {
+        } else if (row.firstName && row.lastName && (row.address1 || row.address1Alt)) {
           let person = {
             id: row.contactId || row.contact?._id || row._id,
             firstName: row.firstName,
             lastName: row.lastName,
-            address: row.address1,
-            city: row.city,
-            state: row.state,
-            country: row.country,
-            postal: row.zip,
+            address: (isPrimaryAddress ? row.address1 : row.address1Alt) ?? '', // User either primary/secondary or empty string
+            city: (isPrimaryAddress ? row.city : row.cityAlt) ?? '',
+            state: (isPrimaryAddress ? row.state : row.stateAlt) ?? '',
+            country: (isPrimaryAddress ? row.country : row.countryAlt) ?? '',
+            postal: (isPrimaryAddress ? row.zip : row.zipAlt) ?? '',
           };
           validContacts.push(person);
         }
@@ -243,7 +259,7 @@ export default function BuyContactsInfoDialogContent(props) {
       setValidContactData(validContacts);
 
     }
-  }, [props.rows]);
+  }, [props.rows, address]);
 
   return (
     <React.Fragment>
@@ -281,6 +297,34 @@ export default function BuyContactsInfoDialogContent(props) {
                   </Grid>
                 </>
               )}
+              
+              {/* Address field for contact data enrichment */}
+              <Grid item xs={12} style={{ marginTop: '50px' }}>
+                <h3 style={{ margin: '0' }}>
+                  Contact address to use for search
+                </h3>
+                <div className={classes.addressAutocomplete}>
+                  <Autocomplete
+                    id="address"
+                    options={addressOptions}
+                    getOptionLabel={(option) => option.label}
+                    size="small"
+                    defaultValue={address}
+                    value={addressOptions.find((opt) => opt.value === address)}
+                    onChange={(_, value) => {
+                      setAddress(value?.value);
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Address"
+                        variant="outlined"
+                        value={address}
+                      />
+                    )}
+                  />
+                </div>
+              </Grid>
 
               <Grid item xs={12} style={{ marginTop: "50px" }}>
                 <h3 style={{ margin: "0" }}>Contacts missing required information (will be excluded)</h3>

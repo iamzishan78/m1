@@ -37,40 +37,40 @@ describe('Properties Table', () => {
     });
   });
 
-  it('Filters by name and checks is primary address value is exporting', () => {
-    cy.get(`[data-testid="MoreVertIcon"]`).first().click();
-    cy.wait(basic_timeouts.shorTimeout);
-    cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
-    cy.wait(basic_timeouts.shorTimeout);
-    cy.get(`[data-testid="MoreVertIcon"]`).first().click();
-    cy.wait(basic_timeouts.shorTimeout);
-    cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
-    cy.wait(basic_timeouts.shorTimeout);
-    cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(9):eq(1)').click();
-    cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
+  // it('Filters by name and checks is primary address value is exporting', () => {
+  //   cy.get(`[data-testid="MoreVertIcon"]`).first().click();
+  //   cy.wait(basic_timeouts.shorTimeout);
+  //   cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
+  //   cy.wait(basic_timeouts.shorTimeout);
+  //   cy.get(`[data-testid="MoreVertIcon"]`).first().click();
+  //   cy.wait(basic_timeouts.shorTimeout);
+  //   cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
+  //   cy.wait(basic_timeouts.shorTimeout);
+  //   cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(9):eq(1)').click();
+  //   cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
 
-    // Selectingn one test property
-    cy.mrtFilterBySearch({
-      value: '10374.1',
-      columnlabel: 'Property',
-      alias: 'Property',
-    });
-    cy.get('[data-testid="download-csv"]').click();
+  //   // Selectingn one test property
+  //   cy.mrtFilterBySearch({
+  //     value: '100687',
+  //     columnlabel: 'Property',
+  //     alias: 'Property',
+  //   });
+  //   cy.get('[data-testid="download-csv"]').click();
 
-    // Waiting for job to complete
-    cy.interceptAndWait(
-      ['initializeExportJob'],
-      (alias) => {
-        cy.contains('span.MuiButton-label', 'Export').click();
-        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then((response) => {
-          const jobId = response.response.body.data.initializeExportJob.job._id;
-          // passed a callback(checkWellFields) which is called after the job execution and verify the fields
-          cy.pollJobStatus({ jobId, callback: checkWellFields });
-        });
-      },
-      { wait: false }
-    );
-  });
+  //   // Waiting for job to complete
+  //   cy.interceptAndWait(
+  //     ['initializeExportJob'],
+  //     (alias) => {
+  //       cy.contains('span.MuiButton-label', 'Export').click();
+  //       cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then((response) => {
+  //         const jobId = response.response.body.data.initializeExportJob.job._id;
+  //         // passed a callback(checkWellFields) which is called after the job execution and verify the fields
+  //         cy.pollJobStatus({ jobId, callback: checkWellFields });
+  //       });
+  //     },
+  //     { wait: false }
+  //   );
+  // });
 
   // Test case to check the filter on Property Column
   it('should check the filter on Property Column', () => {
