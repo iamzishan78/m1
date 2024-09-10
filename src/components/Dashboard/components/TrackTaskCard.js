@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect, } from 'react'
+import React, { Fragment, useState, useEffect, useRef } from 'react'
 import CardHeader from "@material-ui/core/CardHeader";
 import { Grid, Typography, TextField, CircularProgress, Box } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -103,11 +103,13 @@ const Title = ({
 
 export default function TrackTaskCard() {
     const classes = useStyles();
+    const headerRef = useRef(null); // Reference for CardHeader
     const [analyticsData, setAnalyticsData] = useState([]);
     const [taskperUser, setTaskperUser] = useState([]);
     const [fromDate, setFromDate] = useState(null);
     const [toDate, setToDate] = useState(moment(new Date()).format("yyyy-MM-DD"));
     const [minDate, setMinDate] = useState();
+    const [barChartHeight, setBarChartHeight] = useState('100%');
 
     const [getActivityAnalytics, { loading }] = useLazyQuery(GET_ACTIVITY_TASK_PER_USER, {
         fetchPolicy: "no-cache",
@@ -303,6 +305,20 @@ export default function TrackTaskCard() {
         };
     }, [taskperUser]);
 
+    useEffect(() => {
+        const handleResize = () => {
+          if (headerRef.current) {
+            const headerHeight = headerRef.current.offsetHeight; // Get the height of the CardHeader
+            setBarChartHeight(`calc(100% - ${headerHeight}px)`); // Calculate and set the height of the bar chart
+          }
+        };
+    
+        handleResize(); // Initial calculation
+        window.addEventListener('resize', handleResize); // Recalculate on window resize
+    
+        return () => window.removeEventListener('resize', handleResize); // Cleanup event listener
+      }, []);
+
 
     useEffect(() => {
         if (analyticsData?.activitiesCountByTaskStatusPerOwner) {
@@ -333,11 +349,12 @@ export default function TrackTaskCard() {
                     setToDate={setToDate}
                     minDate={minDate}
                 />}
+                ref={headerRef}
             />
             {(loading) ? (
                 <CircularProgress className={classes.progress} size={80} disableShrink color="secondary"></CircularProgress>
             ) : (
-                <div id={'bar-chart'} style={{ paddingTop: "20px", paddingBottom: "40px", height: "90%", width: "90%" }} />
+                <div id={'bar-chart'} style={{ paddingTop: "10px", paddingBottom: "40px",  height: barChartHeight,  width: "90%" }} />
             )}
         </Fragment>
     )
