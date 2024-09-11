@@ -47,6 +47,15 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiChip-root": {
       backgroundColor: "#ECEDED",
       color: "#606060",
+      whiteSpace: "normal", // Allow text to wrap
+      height: "auto", // Auto height to accommodate multiple lines
+      maxWidth: "100%", // Ensure the chip doesn't exceed its container width
+    },
+    "& .MuiChip-label": {
+      whiteSpace: "normal", // Enable text wrapping within the label
+      textAlign: "left", // Align text to the left
+      padding: "8px 12px", // Add some padding to the label
+      overflowWrap: "break-word", // Break long words
       // "&;disabled": {
       //   backgroundColor: "#f0f0f0 !important"
       // }
