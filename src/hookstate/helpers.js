@@ -241,6 +241,10 @@ export const handleMRTSchema = ({
         backgroundColor: '#e6ecf5 !important',
       },
     },
+     // Add hover effect for cells
+    '& td:hover': {
+      border: '3px solid rgb(23, 170, 221)' // Add blue border on hover
+    },
   };
   handleVisiblityMenuClick();
   handleColumnMenuClick();
