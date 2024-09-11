@@ -476,8 +476,8 @@ export const generateFileFilters = ({ fileLayer, pagination = { first: 10000, af
 	let mustQuery = [];
 
 	// Making geojson file name
-	let geoJsonName = fileLayer.layerShapeName;
-	geoJsonName = fileLayer.layerShapeName.replace(` - ${fileLayer.layerGeometry}`, "");
+	let geoJsonName = fileLayer.layerName;
+	geoJsonName = fileLayer.layerName.replace(` - ${fileLayer.layerGeometry}`, "");
 	geoJsonName = `${geoJsonName}.geojson`;
 	geoJsonName = geoJsonName.replace(" ", "_");
 	geoJsonName = `${geoJsonName} - ${fileLayer.layerGeometry}`;
