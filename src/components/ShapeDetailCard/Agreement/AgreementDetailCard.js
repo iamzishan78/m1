@@ -39,7 +39,6 @@ export default function AgreementDetailCard(props) {
   const [selectedTractTab, setTractSelectedTab] = useState(0);
   const [uniObj, setUniObj] = useState();
   const [tractOwners, setTractOwners] = useState();
-  const [infoMessage, setInfoMessage] = useState(false);
   const [properties, setProperties] = useState();
   const [updateCustomLayer, { data: updatedUnit }] = useMutation(UPDATECUSTOMLAYER);
 
@@ -86,9 +85,9 @@ export default function AgreementDetailCard(props) {
         selectedShape: { ...shape.properties },
       });
 
-      if (!shape.properties.agreementNumber && !infoMessage) {
+      // Dispatch action for validation error if there is no agreement number
+      if (!shape.properties.agreementNumber) {
         dispatch(showInfoMessage("Agreement Number is required"));
-        setInfoMessage(true);
       }
       setProperties(shape.properties);
     }
