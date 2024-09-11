@@ -445,7 +445,7 @@ const UnitInterestsHeadCells = [
         options: {
             display: true, // Visible description in table
             download: true,
-            viewColumns: false,
+            viewColumns: true, // Visible description in show/hide columns
         },
     },
     {
