@@ -237,8 +237,20 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
     }
   }, [stateApp.selectedMeta]);
 
-  const [addMetaData, { }] = useMutation(ADD_META_DATA);
+  const [addMetaData, { }] = useMutation(ADD_META_DATA, {
+    onCompleted: () => {
+      if ((!!tableKey))
+          tableGlobalController.reset(); // Reset table on mutation completion
+    },
+    refetchQueries: ["getMetaData"],
+    awaitRefetchQueries: true,
+  });
+
   const [updateMetaData, { }] = useMutation(UPDATE_META_DATA, {
+    onCompleted: () => {
+      if ((!!tableKey))
+          tableGlobalController.reset(); // Reset table on mutation completion
+    },
     refetchQueries: ["getMetaData"],
     awaitRefetchQueries: true,
   });
@@ -322,20 +334,18 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
             isCustom: true,
           },
         },
-        refetchQueries: ["getMetaData"],
-        awaitRefetchQueries: true,
       });
       rippleEffectCall({ name });
     }
     handleClose();
   };
 
-  useEffect(() => {
-    return () => {
-      if ((!!tableKey))
-        tableGlobalController.reInitialized();
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     if ((!!tableKey))
+  //       tableGlobalController.reInitialized();
+  //   };
+  // }, []);
 
 
   const handleClose = () => {
@@ -402,8 +412,6 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
             isCustom: true,
           },
         },
-        refetchQueries: ["getMetaData"],
-        awaitRefetchQueries: true,
       });
     }
     rippleEffectCall(data);
