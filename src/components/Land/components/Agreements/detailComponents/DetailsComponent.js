@@ -43,6 +43,8 @@ import { DrawerContext } from "./DrawerContext";
 import RelatedDocumets from "./relatedDocuments";
 import RelatedFile from "components/Document/components/RelatedFile";
 import { jobController } from "hookstate/jobStateController";
+import RelatedPayments from "./relatedPayments";
+import { detailCardController } from "hookstate/detailCardController";
 
 const useStyles = makeStyles((theme) => ({
   mapProvider: {
@@ -293,6 +295,7 @@ export function DetailComponents(props) {
 
   useEffect(() => {
     if (dataCustomLayer && dataCustomLayer.customLayer) {
+      detailCardController.updateState({ customLayer: dataCustomLayer.customLayer });
       let shape = JSON.parse(dataCustomLayer.customLayer.shape);
       if (dataCustomLayer.customLayer.shapeJson) shape = copy(dataCustomLayer.customLayer.shapeJson);
 
@@ -521,6 +524,7 @@ export function DetailComponents(props) {
                 <StyledTab id="summaryTab" label="Summary" />
                 <StyledTab label="Parties" />
                 <StyledTab id="provisionsTab" label="Provisions" />
+                <StyledTab id="paymentsTab" label="Payments" />
                 <StyledTab id="legalDescriptionTab" label="Legal Description" />
                 <StyledTab id="wellsTab" label="Wells" />
                 <StyledTab id="documentsTab" label="Documents" />
@@ -613,7 +617,11 @@ export function DetailComponents(props) {
                 />
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
-              <div id="legal-description-div" className={classes.tabDetailSection} ref={tab === 3 ? selectedTabRef : null}>
+              <div id="payments-div" className={classes.tabDetailSection} ref={tab === 3 ? selectedTabRef : null}>
+                <RelatedPayments />
+              </div>
+              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
+              <div id="legal-description-div" className={classes.tabDetailSection} ref={tab === 4 ? selectedTabRef : null}>
                 <LegalDescription
                   agreementDetails={agreementDetails}
                   uniObj={uniObj}
@@ -622,15 +630,15 @@ export function DetailComponents(props) {
                 />
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
-              <div id="related-wells-div" className={classes.tabDetailSection} ref={tab === 4 ? selectedTabRef : null}>
+              <div id="related-wells-div" className={classes.tabDetailSection} ref={tab === 5 ? selectedTabRef : null}>
                 <RelatedWells uniObj={uniObj} shapeSummaryDetails={dataShapeSummaryDetails?.shapeSummaryDetails} />
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
-              <div id="related-docs-div" className={classes.tabDetailSection} ref={tab === 5 ? selectedTabRef : null}>
+              <div id="related-docs-div" className={classes.tabDetailSection} ref={tab === 6 ? selectedTabRef : null}>
                 <RelatedDocumets uniObj={uniObj} setDrawer={setDrawer} />
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
-              <div id="related-agrmt-div" className={classes.tabDetailSection} ref={tab === 6 ? selectedTabRef : null}>
+              <div id="related-agrmt-div" className={classes.tabDetailSection} ref={tab === 7 ? selectedTabRef : null}>
                 <RelatedAgreementsTable uniObj={uniObj} setDrawer={setDrawer} drawer={drawer} />
               </div>
             </div>

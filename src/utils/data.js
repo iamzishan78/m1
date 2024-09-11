@@ -637,6 +637,12 @@ export const AdminManagementRoutes = {
   // },
 };
 
+export const paymentGridsInitialData = [
+  { index: 0, value: "payees", label: "Payees", showCounts: true },
+  { index: 0, value: "billingParties", label: "Billing Parties", showCounts: true },
+  { index: 0, value: "costAllocations", label: "Cost Allocation", showCounts: true },
+];
+
 export const bypassTenants = [
   // "localhost",
   // "m1Preview",
@@ -658,5 +664,5 @@ export const bypassTenants = [
 ];
 
 export const OWNERTYPE = {
-  CORPORATION: "CORPORATION" 
+  CORPORATION: "CORPORATION"
 }

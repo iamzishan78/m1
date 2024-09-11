@@ -8,6 +8,42 @@ export const agreementTypes = [
   { label: "Surface/ROW", value: "surface" },
 ];
 
+export const paymentFieldsData = [
+  { name: "Payment Type", type: "text", key: "paymentType" },
+  { name: "Payee Address", type: "startEndDateInput", key: "dates" },
+  { name: "Frequency", type: "text", key: "frequency" },
+  { name: "Next Payment", type: "text", key: "nextPayment" },
+  { name: "Amount", type: "text", key: "amount" },
+  { name: "Company Share", type: "text", key: "companyShare" },
+  { name: "Responsible Party", type: "text", key: "responsibleParty" },
+  { name: "Assigned To", type: "text", key: "assignedTo" },
+  { name: "Payment Status", type: "text", key: "paymentStatus" },
+  { name: "Calendar Link", type: "text", key: "calendarLinks" },
+];
+
+
+export const payeeFieldsData = [
+  { name: "Payee Name", type: "searchableContacts", key: "payeeName" },
+  { name: "Payee Address", type: "text", key: "payeeAddress" },
+  { name: "Payment Allocation", type: "text", key: "paymentAllocation" },
+  { name: "Payment Amount", type: "text", key: "paymentAmount" },
+  { name: "Status", type: "text", key: "status" }
+];
+
+export const billingPartyFieldsData = [
+  { name: "Billing Party Name", type: "searchableContacts", key: "name" },
+  { name: "Billing Party Address", type: "text", key: "address" },
+  { name: "Billing Party Allocation", type: "text", key: "allocation" },
+  { name: "Billing Party Amount", type: "text", key: "amount" },
+  { name: "Status", type: "text", key: "status" }
+];
+
+export const costAllocationFieldsData = [
+  { name: "Cost Center", type: "searchableProperties", key: "costCenter" },
+  { name: "Cost Allocation", type: "text", key: "allocation" },
+  { name: "Cost Allocation Amount", type: "text", key: "amount" }
+];
+
 export const agreementStatusOptions = [
   { label: "Active", value: "ACTIVE" },
   { label: "Inactive", value: "INACTIVE" }
@@ -146,12 +182,12 @@ const fieldsList = (activeUser) => {
     {
       label: "State",
       type: "state",
-      key: "state"
+      key: "state",
     },
     {
       label: "County",
       type: "county",
-      key: "county"
+      key: "county",
     },
   ];
 }
