@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import { useLazyQuery } from '@apollo/client';
@@ -23,6 +23,12 @@ import { tableController } from 'hookstate/tableController';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 import PurchasersDropdown from './PurchasersDropdown';
 import AcquisitionIdDropdown from './AcquisitionIdDropdown';
+import MRSimpleTable from 'components/MRSimpleTable';
+import { propertiesRevenueTableKey } from 'components/MRSimpleTable/Schema/properties_revenue_schema';
+import { GET_PROPERTIES_REVENUE } from 'graphQL/useQueryGetPropertiesRevenue';
+import { simpleTableController, simpleTableGlobalController } from 'hookstate/simpleTableController';
+import { debounce } from 'lodash';
+import { generateMonthYearArray, getPropertiesRevenueTableSchema } from './helper';
 
 const useStyles = makeStyles(theme => ({
   mainTabContainer: {
@@ -114,7 +120,7 @@ const StyledTab = withStyles(theme => ({
   selected: {},
 }))(props => <Tab disableRipple {...props} />);
 
-const tabs = ['Income Statement', 'Check Details', 'Comparisons', 'Property Interests'];
+const tabs = ['Income Statement', 'Revenue by Month', 'Check Details', 'Comparisons', 'Property Interests'];
 
 export default function RevenueAnalytics(props) {
   const classes = useStyles();
@@ -132,6 +138,7 @@ export default function RevenueAnalytics(props) {
   const [checkNumbers, setCheckNumbers] = useState([]);
   const [comparisonReport, setComparisonReport] = useState('Check Detail Comparison');
   const [filters, setFilters] = useState([...(propertiesReportGroup || [])])
+  const Controller = simpleTableController(propertiesRevenueTableKey);
 
   const comparisonTableState = tableController('ComparisonTable').useState(['filters', 'data']).stateValues; // get StateValues for ComparisonTable
   const salesVolumeComparisonTableState = tableController('SalesVolumeComparisonTable').useState(['filters', 'data']).stateValues; // get StateValues for SalesVolumeComparisonTable
@@ -275,6 +282,18 @@ export default function RevenueAnalytics(props) {
   useEffect(() => {
     if (!fromDate) return
 
+    if(tabs[tab] === 'Revenue by Month'){
+      const months = generateMonthYearArray(new Date(fromDate), new Date(toDate || Date.now()))
+      const updatedMeta = getPropertiesRevenueTableSchema(months)
+      Controller.updateState({
+        TableSchema: [...updatedMeta],
+        customProps: {
+          filters,
+          filterDate: { toDate: new Date(toDate || Date.now()), fromDate: new Date(fromDate) }
+        }
+      })
+      return
+  }
     getPortfolioSummary({
       variables: {
         filters,
@@ -331,6 +350,18 @@ export default function RevenueAnalytics(props) {
     }
     setEsFilters(newFilters);
   }, [comparisonReport])
+
+  const overrideMeta = React.useMemo(() => {
+    const months = generateMonthYearArray(new Date(fromDate), new Date(toDate || Date.now()))
+    const updatedMeta = getPropertiesRevenueTableSchema(months)
+
+    return {
+      TableSchema: [...updatedMeta],
+      customProps: {
+      filters,
+      filterDate: { toDate: new Date(toDate || Date.now()), fromDate: new Date(fromDate) }
+    }}
+  }, []);
 
   return (
     <>
@@ -478,6 +509,61 @@ export default function RevenueAnalytics(props) {
         <Box sx={{ padding: '1em', marginLeft: '1em' }}>
           <MRTTable name="PropertyIntrestTable" />
         </Box>
+      )}
+
+      {tabs[tab] === 'Revenue by Month' && (
+        <div className={classes.actionBar}>
+        <Grid container direction="row" display="flex" spacing={4} style={{ padding: '0px 36px' }}>
+          <Grid item xs={8} md={6} style={{ marginTop: '4px' }}>
+            <Grid container display="flex" alignItems="center" spacing={3} justifyContent="space-between">
+              <CustomDates
+                onChangeDates={onChangeDates}
+                fromDate={fromDate}
+                setFromDate={setFromDate}
+                toDate={toDate}
+                setToDate={setToDate}
+                isProperties={true}
+                lastCheckMinDate={lastCheckMinDate}
+                datesInputWidth={4}
+                setAllDateToNull={false}
+              />
+            </Grid>
+          </Grid>
+          <Grid item xs={4} md={2}>
+            <Grid container display="flex" className={classes.actionsGrid}>
+              <ReportGroupHeader
+                type="Properties"
+                esFilters={filters}
+                setESFilters={setFilters}
+                setFilterToggle={() => { }}
+                isBackground={false}
+                noUpdate={true}
+                strechedWidth
+                isShrink
+                noPadding
+              />
+            </Grid>
+          </Grid>
+          <Grid item xs={4} md={2}>
+            <PurchasersDropdown
+              esFilters={filters}
+              setESFilters={setFilters}
+            />
+          </Grid>
+          <Grid item xs={4} md={2}>
+            <AcquisitionIdDropdown
+              esFilters={filters}
+              setESFilters={setFilters}
+            />
+          </Grid>
+        </Grid>
+        <div style={{margin: "2%"}}>
+          <MRSimpleTable  
+            name={propertiesRevenueTableKey} 
+            overrideMeta={overrideMeta}/>
+        </div>
+       
+      </div>
       )}
     </>
   );
