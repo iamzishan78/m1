@@ -11,7 +11,7 @@ const filter = createFilterOptions();
 function renderRow(props) {
   const { data, index, style } = props;
   return (
-    <Typography style={{ ...style, color: "midnightblue" }} noWrap>
+    <Typography noWrap>
       {data[index]}
     </Typography>
   );
@@ -69,7 +69,7 @@ function AutoCompleteFieldComponent(props) {
         return (
           <div ref={ref} {...other}>
             <VariableSizeList
-              height={400} // Maintain a standard height
+              height={300} // Maintain a standard height
               width="100%"
               itemSize={() => 48} // Adjust the item size if needed
               itemCount={itemData.length}
