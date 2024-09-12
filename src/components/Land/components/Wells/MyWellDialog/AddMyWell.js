@@ -83,7 +83,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
     }
   });
 
-  const { control, reset, getValues, clearErrors } = useForm();
+  const { control, reset, getValues } = useForm();
 
 
   useEffect(() => {
