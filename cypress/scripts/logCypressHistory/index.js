@@ -54,6 +54,7 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
 
     // Reset pipeline if necessary
     const { resetSpecsString } = await ResetPipeline({ isUpdateReset: false });
+    console.log("resetSpecsString: ", resetSpecsString)
 
     // Upsert the cypress logs
     const { specsString, currentState } = await UpsertCypressLog({
@@ -67,6 +68,8 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
     else
       finalSpecsString = specsString;
 
+    console.log("finalSpecsString: ", finalSpecsString)
+      
     // Run all the specs returned by API
     if (finalSpecsString) {
       try {
@@ -93,6 +96,7 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
             const buildId = await triggerAzurePipeline();
             await UpsertCypressLog({ pr: prData, specs: systemSpecs, buildId: buildId, isFailedRetry: true});
           } else if(isResetDone) { // Update the reset status for future pipeline
+            console.log("In resetting reset status1: ", isResetDone);
             await ResetPipeline({ isUpdateReset: true });
           }
           console.log('Exiting command with code: ', code);
@@ -105,6 +109,7 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
       }
     } else {
       clearInterval(intervalId);
+      console.log("In resetting reset status2: ", isResetDone);
       await ResetPipeline({ isUpdateReset: true });
       console.log("No specs found for execution...");
       console.log('Current pipeline state: ', currentState?.toUpperCase());
