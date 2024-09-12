@@ -1,6 +1,7 @@
 const { exec, execSync } = require('child_process');
 const { fetchCypressSpecs } = require('./utils/fetchCypresssSpecs.js');
 const { UpsertCypressLog } = require('./upsertCypressLog.js');
+const { ResetPipeline } = require('./resetPipeline.js')
 const { GetCypressLog } = require('./getCypressLog.js');
 const { triggerAzurePipeline } = require('./triggerAzurePipeline.js');
 const { monitorPipeline } = require('./monitorPipeline.js');
@@ -14,6 +15,7 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
 (async function () {
   try {
     let cypressProcess;
+    let finalSpecsString;
 
     // Get PR data and serialize the object to as an env JSON string
     const pullRequests = await fetchPullRequests();
@@ -21,11 +23,18 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
         process.env.pullRequestData = JSON.stringify(pullRequests[0]);
     }
 
-    const { PIPELINE_STATUSES } = require('./utils/constants.js');
-    const { getPipelineData } = require('./utils/helpers.js');
-    const { prData, PIPELINE_RUN_MODE } = getPipelineData();
+    // Reset pipeline if necessary
+    const { resetSpecsString } = await ResetPipeline({isUpdateReset: false});
 
-    console.log("PIPELINE_RUN_MODE: ", PIPELINE_RUN_MODE)
+    const { PIPELINE_STATUSES, PIPELINE_RUN_MODES } = require('./utils/constants.js');
+    const { getPipelineData } = require('./utils/helpers.js');
+    const { prData, PIPELINE_RUN_MODE, PIPELINE_TRIGGER_MODE } = getPipelineData();
+
+    // Console the pipeline modes
+    if(PIPELINE_RUN_MODE && PIPELINE_TRIGGER_MODE) {
+      console.log("Pipeline Trigger Mode: ", PIPELINE_TRIGGER_MODE.toUpperCase());
+      console.log("Pipeline Run Mode: ", PIPELINE_RUN_MODE.toUpperCase());
+    }
 
     // Fetch all system specs
     const systemSpecs = await fetchCypressSpecs();
@@ -52,11 +61,17 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
       specs: systemSpecs,
     });
 
+    // Use either specs tring from reset process or upsert process
+    if(PIPELINE_RUN_MODE === PIPELINE_RUN_MODES.FAILED_ONLY || PIPELINE_RUN_MODE === PIPELINE_RUN_MODES.PASSED_ONLY)
+      finalSpecsString = resetSpecsString;
+    else
+      finalSpecsString = specsString;
+
     // Run all the specs returned by API
-    if (specsString && currentState === PIPELINE_STATUSES.FAILED) {
+    if (finalSpecsString) {
       try {
         cypressProcess = exec(
-          `${crossEnvCommand} NODE_OPTIONS=\"--max_old_space_size=32768 --openssl-legacy-provider\" ${cypressCommand} run --component --spec '${specsString}' --browser chrome`
+          `${crossEnvCommand} NODE_OPTIONS=\"--max_old_space_size=32768 --openssl-legacy-provider\" ${cypressCommand} run --component --spec '${finalSpecsString}' --browser chrome`
         );
 
         // Log the command output
@@ -72,11 +87,13 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
         // Close the monitoring if the command was successfully closed before max duration
         cypressProcess.on('close', async (code) => {
           clearInterval(intervalId);
-          const { isExecutionComplete, retries, failedSpecs, currentState } = await GetCypressLog();
+          const { isExecutionComplete, retries, failedSpecs, currentState, isResetDone } = await GetCypressLog();
           if (isExecutionComplete && retries === 1 && failedSpecs?.length > 0) {
             console.log('Failed specs found. Triggering pipeline one more time...');
             const buildId = await triggerAzurePipeline();
             await UpsertCypressLog({ pr: prData, specs: systemSpecs, buildId: buildId, isFailedRetry: true});
+          } else if(isResetDone) { // Update the reset status for future pipeline
+            await ResetPipeline({ isUpdateReset: true });
           }
           console.log('Exiting command with code: ', code);
           console.log('Current pipeline state: ', currentState?.toUpperCase());
@@ -88,6 +105,7 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
       }
     } else {
       clearInterval(intervalId);
+      await ResetPipeline({ isUpdateReset: true });
       console.log("No specs found for execution...");
       console.log('Current pipeline state: ', currentState?.toUpperCase());
     }
