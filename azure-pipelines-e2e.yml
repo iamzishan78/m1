@@ -9,6 +9,17 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+parameters:
+- name: run_mode
+  displayName: Pipeline Run Mode
+  type: string
+  default: normal
+  values:
+  - normal
+  - run_failed
+  - run_passed
+  - reset
+
 variables:
   NODE_OPTIONS: --max_old_space_size=32768
   SOURCE_BRANCH: $(Build.SourceBranch)
