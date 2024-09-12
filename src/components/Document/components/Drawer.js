@@ -166,18 +166,19 @@ export default function DocumentDrawer(props) {
 
   // Fetching wells from descriptor
   useEffect(() => {
-    if (!props.isRelatedDocuments) {
+    // if there is no related document present do not call these queries
+    if (!props.isRelatedDocuments){
       getWellsFromDocument({
         variables: {
           descriptorObject: stateApp.selectedDocument?._id,
         },
       });
-      getContactsFromDocument({
+        getContactsFromDocument({
         variables: {
           descriptorObject: stateApp.selectedDocument?._id,
         },
       });
-      getAgreementsFromDocument({
+       getAgreementsFromDocument({
         variables: {
           descriptorObject: stateApp.selectedDocument?._id,
         },

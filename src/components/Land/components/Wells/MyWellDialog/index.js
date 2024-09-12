@@ -177,6 +177,9 @@ export default function MyWellDialog() {
   const [deleteMyWell, { loading }] = useMutation(DELETE_MY_WELL, 
     {
       awaitRefetchQueries: true,
+      onCompleted: () => {
+        tableGlobalController.refetch();
+      }
     }
   );
 
