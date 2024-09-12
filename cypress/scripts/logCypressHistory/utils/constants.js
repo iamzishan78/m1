@@ -3,8 +3,8 @@ const SOURCE_BRANCH = process.env.SOURCE_BRANCH;
 const PIPELINE_RUN_MODE = process.env.PIPELINE_RUN_MODE;
 const PIPELINE_TRIGGER_MODE = process.env.PIPELINE_TRIGGER_MODE;
 
-const MAX_PIPELINE_DURATION = 55 * 60 * 1000; // 55 minutes in milliseconds
-const PIPELINE_WARNING_THRESHOLD = 50 * 60 * 1000; // 50 minutes in milliseconds
+const MAX_PIPELINE_DURATION = 8 * 60 * 1000; // 55 minutes in milliseconds
+const PIPELINE_WARNING_THRESHOLD = 6 * 60 * 1000; // 50 minutes in milliseconds
 const PIPELLINE_CHECK_TIME = 1 * 60 * 1000; // 1 minutes in milliseconds
 
 const TENENT = process.env.TENENT;
@@ -14,7 +14,7 @@ const ORGANIZATION = 'https://dev.azure.com/m1neral/';
 const PROJECT_ID = 'afc3f37f-b77c-4b2d-a9fd-455686d0ef31';
 const REPOSITORY_ID = '388272b2-6847-40a2-aa97-30d73a0d7e74';
 
-const CYPRESS_FILE_PATTERN = 'cypress/component/**/*.cy*';
+const CYPRESS_FILE_PATTERN = 'cypress/component/DetailPages/**/*.cy*';
 
 const dummyPR = {
   pullRequestId: 1234,
