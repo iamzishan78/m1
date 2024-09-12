@@ -23,10 +23,7 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
         process.env.pullRequestData = JSON.stringify(pullRequests[0]);
     }
 
-    // Reset pipeline if necessary
-    const { resetSpecsString } = await ResetPipeline({isUpdateReset: false});
-
-    const { PIPELINE_STATUSES, PIPELINE_RUN_MODES } = require('./utils/constants.js');
+    const { PIPELINE_RUN_MODES } = require('./utils/constants.js');
     const { getPipelineData } = require('./utils/helpers.js');
     const { prData, PIPELINE_RUN_MODE, PIPELINE_TRIGGER_MODE } = getPipelineData();
 
@@ -54,6 +51,9 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
       console.log('Login Command Error', error.message);
       process.exit(1); // Exit the process
     }
+
+    // Reset pipeline if necessary
+    const { resetSpecsString } = await ResetPipeline({ isUpdateReset: false });
 
     // Upsert the cypress logs
     const { specsString, currentState } = await UpsertCypressLog({
