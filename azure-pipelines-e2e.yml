@@ -10,7 +10,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 parameters:
-- name: run_mode
+- name: pipeline_run_mode
   displayName: Pipeline Run Mode
   type: string
   default: normal
@@ -25,6 +25,7 @@ variables:
   SOURCE_BRANCH: $(Build.SourceBranch)
   BUILD_ID: $(Build.BuildId)
   AZURE_ACCESS_TOKEN: $(System.AccessToken)
+  PIPELINE_RUN_MODE: ${{ parameters.pipeline_run_mode }}
 steps:
   - task: NodeTool@0
     inputs:

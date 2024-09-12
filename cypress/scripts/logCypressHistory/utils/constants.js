@@ -1,5 +1,6 @@
 const BUILD_ID = process.env.BUILD_ID;
 const SOURCE_BRANCH = process.env.SOURCE_BRANCH;
+const PIPELINE_RUN_MODE = process.env.PIPELINE_RUN_MODE;
 
 const MAX_PIPELINE_DURATION = 55 * 60 * 1000; // 55 minutes in milliseconds
 const PIPELINE_WARNING_THRESHOLD = 50 * 60 * 1000; // 50 minutes in milliseconds
@@ -35,6 +36,7 @@ module.exports = {
   dummyPR,
   dummyBuildId,
   BUILD_ID,
+  PIPELINE_RUN_MODE,
   SOURCE_BRANCH,
   MAX_PIPELINE_DURATION,
   PIPELINE_WARNING_THRESHOLD,

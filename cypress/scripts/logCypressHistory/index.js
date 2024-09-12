@@ -23,7 +23,9 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
 
     const { PIPELINE_STATUSES } = require('./utils/constants.js');
     const { getPipelineData } = require('./utils/helpers.js');
-    const { prData } = getPipelineData();
+    const { prData, pipelineRunMode } = getPipelineData();
+
+    console.log("pipelineRunMode: ", pipelineRunMode)
 
     // Fetch all system specs
     const systemSpecs = await fetchCypressSpecs();
