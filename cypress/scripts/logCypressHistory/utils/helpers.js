@@ -7,6 +7,7 @@ const getPipelineData = () => {
     dummyBuildId,
     SOURCE_BRANCH,
     PIPELINE_RUN_MODE,
+    PIPELINE_TRIGGER_MODE,
   } = require('./constants');
 
   // Parse the JSON string of env back into an object
@@ -19,7 +20,7 @@ const getPipelineData = () => {
   const PR_Data = allUndefined ? dummyPR : pullRequestData;
   const BuildId = BUILD_ID || dummyBuildId;
 
-  return { prData: PR_Data, BUILD_ID: BuildId, SOURCE_BRANCH, PIPELINE_RUN_MODE };
+  return { prData: PR_Data, BUILD_ID: BuildId, PIPELINE_TRIGGER_MODE, PIPELINE_RUN_MODE, SOURCE_BRANCH, };
 };
 
 module.exports = {

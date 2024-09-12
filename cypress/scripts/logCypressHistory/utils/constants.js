@@ -1,6 +1,7 @@
 const BUILD_ID = process.env.BUILD_ID;
 const SOURCE_BRANCH = process.env.SOURCE_BRANCH;
 const PIPELINE_RUN_MODE = process.env.PIPELINE_RUN_MODE;
+const PIPELINE_TRIGGER_MODE = process.env.PIPELINE_TRIGGER_MODE;
 
 const MAX_PIPELINE_DURATION = 55 * 60 * 1000; // 55 minutes in milliseconds
 const PIPELINE_WARNING_THRESHOLD = 50 * 60 * 1000; // 50 minutes in milliseconds
@@ -32,11 +33,24 @@ const PIPELINE_STATUSES = Object.freeze({
   FAILED: 'failed',
 });
 
+const PIPELINE_TRIGGER_MODES = Object.freeze({
+  MANUAL: 'Manual',
+  SCHEDULE: 'Schedule',
+});
+
+const PIPELINE_RUN_MODES = Object.freeze({
+  NORMAL: 'normal',
+  FAILED_ONLY: 'failed_only',
+  PASSED_ONLY: 'passed_only',
+  RESET: 'reset',
+});
+
 module.exports = {
   dummyPR,
   dummyBuildId,
   BUILD_ID,
   PIPELINE_RUN_MODE,
+  PIPELINE_TRIGGER_MODE,
   SOURCE_BRANCH,
   MAX_PIPELINE_DURATION,
   PIPELINE_WARNING_THRESHOLD,
@@ -48,4 +62,6 @@ module.exports = {
   PROJECT_ID,
   REPOSITORY_ID,
   PIPELINE_STATUSES,
+  PIPELINE_RUN_MODES,
+  PIPELINE_TRIGGER_MODES
 };
