@@ -354,7 +354,7 @@ export default function MyWellDialog() {
                 propertiesCount={get(platformWell, "properties", []).length}
                 agreementsCount={get(platformWell, "shapes", []).length}
               />
-              <div style={{ paddingRight: "60px", height: "90vh", overflow: "auto" }}>
+              <div style={{ paddingRight: "60px", height: "89vh", overflow: "auto" }}>
                 {activePanel === "Add New Well" && (
                   // Add My Well fields component here
                   <AddMyWell

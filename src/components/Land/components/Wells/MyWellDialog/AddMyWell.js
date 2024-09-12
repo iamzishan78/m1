@@ -83,13 +83,8 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
     }
   });
 
-  const { control, watch, reset, getValues, } = useForm();
+  const { control, reset, getValues, clearErrors } = useForm();
 
-  // Watch all form values
-  const watchedValues = watch();
-
-  // Check if all fields are filled
-  const isSaveDisabled = Object.values(watchedValues).some(value => value === '' || value === undefined);
 
   useEffect(() => {
     if (platformWell) reset(platformWell);
@@ -135,8 +130,15 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
     []
   );
 
+    // Function to check if saving is allowed based on the 'wellName' value
+    const isSaveAllowed = (formData) => {
+      const wellName = formData.wellName;
+      // Check if 'wellName' is defined and not just whitespace after trimming
+    return (wellName && wellName?.trim() !== '');
+    };
 
   const handleSave = (formData) => {
+    if (!isSaveAllowed(formData)) return   // Check if saving is allowed using the isSaveAllowed function.
     const processedValues = {};
 
     Object.entries(formData).forEach(([key, value]) => {
@@ -215,6 +217,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
               }}
               renderInput={(params) => (
                 <TextField
+                className={classes.textField}
                   margin="dense"
                   {...params}
                   required
@@ -263,6 +266,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
               name={param.esKey ?? param.key}
               render={(params) => (
                 <TextField
+                  className={classes.textField}
                   {...params}
                   label={param.label}
                   variant="outlined"
@@ -270,7 +274,10 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
                   InputLabelProps={{ shrink: true }}
                   InputProps={{ "data-testid": param.label }}
                   fullWidth
+                  placeholder={param.key === 'wellName' ? "Click to enter Well Name" : ""} 
                   defaultValue=""
+                  error={param.key === 'wellName' ? !params.value : false} // Mark field as error if validation fails
+                  helperText={ !params.value ? (param.key === 'wellName' ? "Enter a Well name to get started" : "") : ""}
                   value={
                     param.type === "text"
                       ? params.value
@@ -284,28 +291,16 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
                     const value = event.target.value.trim(); // Remove leading/trailing whitespace;
                     params.onChange(value);
                   }}
+                  onBlur={() => {
+                    const values = getValues();
+                    handleSave(values);
+                  }}
                   disabled={upsertWellLoading}
                 />
-              )}
+        )}
             ></Controller>
           </Fragment>
         ))}
-        {/* Add save button to save well data  */}
-        <div className={classes.dialogFooter}>
-          <Button
-            variant="contained"
-            color="secondary"
-            size="medium"
-            className={classes.footerButton}
-            onClick={() => {
-              const values = getValues();
-              handleSave(values);
-            }}
-            disabled={upsertWellLoading || (!isSaveDisabled && !platformWell.id)}
-          >
-            Save
-          </Button>
-        </div>
       </div>
     </div>
   );
