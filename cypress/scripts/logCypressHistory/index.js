@@ -109,7 +109,7 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
       }
     } else {
       clearInterval(intervalId);
-      console.log("In resetting reset status2: ", isResetDone);
+      console.log("In resetting reset status2: ");
       await ResetPipeline({ isUpdateReset: true });
       console.log("No specs found for execution...");
       console.log('Current pipeline state: ', currentState?.toUpperCase());
