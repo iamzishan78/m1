@@ -18,6 +18,7 @@ const UPSERT_CYPRESS_LOG = gql`
       specsString
       isExecutionComplete
       retries
+      isResetDone
       currentState
     }
   }
@@ -32,4 +33,10 @@ const RESTORE_SPEC_DATA = gql`
   }
 `;
 
-module.exports = { UPSERT_CYPRESS_LOG, RESTORE_SPEC_DATA };
+const RESET_PIPELINE = gql`
+mutation resetPipeline($log: JSON) {
+  resetPipeline(log: $log)
+  }
+`;
+
+module.exports = { UPSERT_CYPRESS_LOG, RESTORE_SPEC_DATA, RESET_PIPELINE };
