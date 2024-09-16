@@ -90,7 +90,7 @@ module.exports = defineConfig({
       framework: "create-react-app",
       bundler: "webpack",
     },
-    specPattern: 'cypress/component/DetailPages/**/*.cy*',
+    specPattern: 'cypress/component/**/*.cy*',
     responseTimeout: 60000 // Set the response timeout here
   },
 });

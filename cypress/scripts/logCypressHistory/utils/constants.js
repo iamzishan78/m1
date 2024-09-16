@@ -14,7 +14,7 @@ const ORGANIZATION = 'https://dev.azure.com/m1neral/';
 const PROJECT_ID = 'afc3f37f-b77c-4b2d-a9fd-455686d0ef31';
 const REPOSITORY_ID = '388272b2-6847-40a2-aa97-30d73a0d7e74';
 
-const CYPRESS_FILE_PATTERN = 'cypress/component/DetailPages/**/*.cy*';
+const CYPRESS_FILE_PATTERN = 'cypress/component/**/*.cy*';
 
 const dummyPR = {
   pullRequestId: 1234,

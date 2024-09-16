@@ -38,7 +38,6 @@ const ResetPipeline = async ({ isUpdateReset }) => {
       response.data.data.resetPipeline
     ) {
       response = response.data.data.resetPipeline;
-      console.log("resetPipeline responnse: ", response)
       return response;
     } else {
       console.error('Invalid response structure:', response);
