@@ -1,6 +1,7 @@
 import React from "react";
 
 const PropertiesRevenueToolbar = () => {
+  // Header name for revenue by month grid
   return (
     <div
       style={{

@@ -352,6 +352,7 @@ export default function RevenueAnalytics(props) {
     setEsFilters(newFilters);
   }, [comparisonReport])
 
+  // override meta for MRSimpleTable
   const overrideMeta = React.useMemo(() => {
     const startDate = moment().startOf('year').format('yyyy-MM-DD')
     const endDate = moment().endOf('month').format('yyyy-MM-DD')
@@ -512,7 +513,7 @@ export default function RevenueAnalytics(props) {
           <MRTTable name="PropertyIntrestTable" />
         </Box>
       )}
-
+{/* implementation for revenue by month tab */}
       {tabs[tab] === 'Revenue by Month' && (
         <div className={classes.actionBar}>
         <Grid container direction="row" display="flex" spacing={4} style={{ padding: '0px 36px' }}>

@@ -38,7 +38,7 @@ const PropertiesRevenueMeta = {
       header: "Property",
       name: "propertyName",
       accessorKey: "propertyName",
-      size: 550,
+      size: 550,// width of the column
       Cell: ({ row }) => {
         let link = `/revenue/property/details/${row?.original?.propertyId}`;
         const data = { ...row.original };
@@ -92,6 +92,7 @@ const PropertiesRevenueMeta = {
                 />
               </Grid>
             </Grid>
+            {/* sparklines for the data */}
             <div
               style={{
                 width: "20%",

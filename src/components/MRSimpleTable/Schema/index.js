@@ -3,5 +3,5 @@ import PropertiesRevenueMeta, { propertiesRevenueTableKey } from './properties_r
 
 export const SCHEMA = {
 	[potentialOwnerTableKey]: PotentialOwnersMeta,
-	[propertiesRevenueTableKey]: PropertiesRevenueMeta,
+	[propertiesRevenueTableKey]: PropertiesRevenueMeta, // analytics > revenue > revenue  by month
 };
