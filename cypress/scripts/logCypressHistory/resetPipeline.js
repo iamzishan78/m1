@@ -10,11 +10,6 @@ const ResetPipeline = async ({ isUpdateReset }) => {
   try {
     const ldata = require('../../fixtures/ldata.json');
     const { headers } = require('../../cypressUtils/cypressHeaders.js');
-    console.log("Pipeline trigger mode: ", PIPELINE_TRIGGER_MODE)
-    console.log("Pipeline run mode: ", PIPELINE_RUN_MODE);
-    console.log("Ppr data: ", prData);
-
-
 
     const resetPipelinePayload = {
       operationName: 'resetPipeline',
@@ -22,15 +17,16 @@ const ResetPipeline = async ({ isUpdateReset }) => {
         log: {
           pr: prData,
           isUpdateReset: isUpdateReset,
-          sourceBranch: SOURCE_BRANCH,
-          pipelineRunMode: PIPELINE_RUN_MODE,
-          pipelineTriggerMode: PIPELINE_TRIGGER_MODE,
+          sourceBranch: SOURCE_BRANCH?.trim(),
+          pipelineRunMode: PIPELINE_RUN_MODE?.trim(),
+          pipelineTriggerMode: PIPELINE_TRIGGER_MODE?.trim(),
         },
       },
       query: RESET_PIPELINE.loc.source.body,
     };
 
     console.log(JSON.stringify(resetPipelinePayload))
+    
     let response = await axios({
       method: 'post',
       url: ldata.url,
