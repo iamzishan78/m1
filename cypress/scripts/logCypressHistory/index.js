@@ -29,8 +29,6 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
 
     console.log("PIPELINE_RUN_MODES.PASSED_ONLY: ", PIPELINE_RUN_MODES.PASSED_ONLY);
     console.log("PIPELINE_TRIGGER_MODES.MANUAL:  ", PIPELINE_TRIGGER_MODES.MANUAL);
-    const { isResetDone } = await GetCypressLog();
-    console.log("isResetDone:  ", isResetDone);
 
 
     // Console the pipeline modes
@@ -60,6 +58,9 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
       process.exit(1); // Exit the process
     }
 
+    const { isResetDone } = await GetCypressLog();
+    console.log("isResetDone:  ", isResetDone);
+    
     // Reset pipeline if necessary
     const { resetSpecsString } = await ResetPipeline({ isUpdateReset: false });
     console.log("resetSpecsString: ", resetSpecsString)
