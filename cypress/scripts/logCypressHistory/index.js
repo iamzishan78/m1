@@ -31,6 +31,8 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
     if(PIPELINE_RUN_MODE && PIPELINE_TRIGGER_MODE) {
       console.log("Pipeline Trigger Mode: ", PIPELINE_TRIGGER_MODE.toUpperCase());
       console.log("Pipeline Run Mode: ", PIPELINE_RUN_MODE.toUpperCase());
+      console.log("Pipeline Trigger Mode Length: ", PIPELINE_TRIGGER_MODE.length);
+      console.log("Pipeline Run Mode Length: ", PIPELINE_RUN_MODE.length);
     }
 
     // Fetch all system specs
