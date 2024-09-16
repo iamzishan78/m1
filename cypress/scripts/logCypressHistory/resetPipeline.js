@@ -13,7 +13,7 @@ const ResetPipeline = async ({ isUpdateReset }) => {
     console.log("Pipeline trigger mode: ", PIPELINE_TRIGGER_MODE)
     console.log("Pipeline run mode: ", PIPELINE_RUN_MODE);
     console.log("Ppr data: ", prData);
-    
+
 
 
     const resetPipelinePayload = {
@@ -30,6 +30,7 @@ const ResetPipeline = async ({ isUpdateReset }) => {
       query: RESET_PIPELINE.loc.source.body,
     };
 
+    console.log(JSON.stringify(resetPipelinePayload))
     let response = await axios({
       method: 'post',
       url: ldata.url,
