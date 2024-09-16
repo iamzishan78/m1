@@ -29,6 +29,7 @@ import { GET_PROPERTIES_REVENUE } from 'graphQL/useQueryGetPropertiesRevenue';
 import { simpleTableController, simpleTableGlobalController } from 'hookstate/simpleTableController';
 import { debounce } from 'lodash';
 import { generateMonthYearArray, getPropertiesRevenueTableSchema } from './helper';
+import { CUSTOM_DATES } from 'utils/data';
 
 const useStyles = makeStyles(theme => ({
   mainTabContainer: {
@@ -352,14 +353,15 @@ export default function RevenueAnalytics(props) {
   }, [comparisonReport])
 
   const overrideMeta = React.useMemo(() => {
-    const months = generateMonthYearArray(new Date(fromDate), new Date(toDate || Date.now()))
+    const startDate = moment().startOf('year').format('yyyy-MM-DD')
+    const endDate = moment().endOf('month').format('yyyy-MM-DD')
+    const months = generateMonthYearArray(startDate,endDate)
     const updatedMeta = getPropertiesRevenueTableSchema(months)
-
     return {
       TableSchema: [...updatedMeta],
       customProps: {
       filters,
-      filterDate: { toDate: new Date(toDate || Date.now()), fromDate: new Date(fromDate) }
+      filterDate: { toDate: endDate, fromDate: startDate }
     }}
   }, []);
 
@@ -523,9 +525,9 @@ export default function RevenueAnalytics(props) {
                 toDate={toDate}
                 setToDate={setToDate}
                 isProperties={true}
-                lastCheckMinDate={lastCheckMinDate}
                 datesInputWidth={4}
                 setAllDateToNull={false}
+                defaultRange={CUSTOM_DATES.THIS_YEAR_TO_DATE}
               />
             </Grid>
           </Grid>

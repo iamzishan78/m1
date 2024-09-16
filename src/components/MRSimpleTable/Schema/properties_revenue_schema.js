@@ -3,6 +3,7 @@ import { Grid } from "@material-ui/core";
 import ColumnWithLink from "components/Common/MRTable/ColumnWithLink";
 import { GET_PROPERTIES_REVENUE } from "graphQL/useQueryGetPropertiesRevenue";
 import PropertiesRevenueToolbar from "../TablesOverride/PropertiesRevenue/PropertiesRevenueToolbar";
+import { Sparklines, SparklinesLine } from "react-sparklines";
 
 export const propertiesRevenueTableKey = "PropertiesRevenue";
 
@@ -37,15 +38,21 @@ const PropertiesRevenueMeta = {
       header: "Property",
       name: "propertyName",
       accessorKey: "propertyName",
+      size: 550,
       Cell: ({ row }) => {
         let link = `/revenue/property/details/${row?.original?.propertyId}`;
+        const data = { ...row.original };
+        delete data.purchaserNumber;
+        delete data.propertyName;
+        delete data.propertyId;
+
         return (
           <div
             style={{
               display: "flex",
               alignItems: "center",
+              justifyContent: "space-between",
               minWidth: "500px",
-              maxWidth: "500px",
             }}
           >
             <Grid
@@ -53,6 +60,7 @@ const PropertiesRevenueMeta = {
               spacing={0}
               direction="row"
               style={{
+                flex: 1,
                 position: "absolute",
                 overflow: "hidden",
                 whiteSpace: "nowrap",
@@ -74,7 +82,9 @@ const PropertiesRevenueMeta = {
                 }}
               >
                 <ColumnWithLink
-                  value={`${row?.original?.purchaserNumber || ""} - ${row?.original?.propertyName || ""}`}
+                  value={`${row?.original?.purchaserNumber || ""} - ${
+                    row?.original?.propertyName || ""
+                  }`}
                   link={link}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -82,6 +92,18 @@ const PropertiesRevenueMeta = {
                 />
               </Grid>
             </Grid>
+            <div
+              style={{
+                width: "20%",
+                height: "auto",
+                marginLeft: "auto",
+                zIndex: "9999",
+              }}
+            >
+              <Sparklines data={Object.values(data)}>
+                <SparklinesLine color="green" />
+              </Sparklines>
+            </div>
           </div>
         );
       },
