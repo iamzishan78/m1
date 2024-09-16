@@ -17,13 +17,13 @@ const REPOSITORY_ID = '388272b2-6847-40a2-aa97-30d73a0d7e74';
 const CYPRESS_FILE_PATTERN = 'cypress/component/DetailPages/**/*.cy*';
 
 const dummyPR = {
-  pullRequestId: 4893,
-  sourceBranch: 'refs/heads/danyal/cypress/pipeline-testcases',
-  targetBranch: 'refs/heads/master-2',
-  title: 'Cypress Pipeline Reset Update',
+  pullRequestId: 1234,
+  title: 'Executing pipeline locally',
   status: 'active',
-  createdBy: 'Danyal Nazir',
-  creationDate: '2024-09-16T09:44:35.19163Z',
+  sourceBranch: 'refs/heads/abc',
+  targetBranch: 'refs/heads/xyz',
+  createdBy: 'Local tester',
+  creationDate: '2024-09-03T11:31:57.1883747Z',
 };
 
 const dummyBuildId = '8321';
