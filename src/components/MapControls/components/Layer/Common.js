@@ -166,6 +166,11 @@ export const useLayerStyle = (layer) => {
     const [strokeColor, setStrokeColor] = useState(initialStrokeColor);
     const [strokeWidth, setStrokeWidth] = useState(initialWidth || initialStrokeWidth);
 
+    // Resetting the fill and stroke color when selected value changes
+    useEffect(() => {
+        setFillColor(initialFillColor);
+        setStrokeColor(initialStrokeColor);
+    }, [selectedValue, selectedStrokeValue]);
 
     useEffect(() => {
         setWidth(initialWidth);
@@ -374,7 +379,7 @@ export const useLayerStyle = (layer) => {
                             }
                         }
                     } else if (layerType === "fill" && layerPaintProps[i].paintProps) {
-                        if (fColor) {
+                        if (fColor && !selectedValue) {
                             layerPaintProps[i] = {
                                 ...layerPaintProps[i],
                                 paintProps: {
