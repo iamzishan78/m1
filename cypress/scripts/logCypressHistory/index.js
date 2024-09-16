@@ -23,14 +23,20 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
         process.env.pullRequestData = JSON.stringify(pullRequests[0]);
     }
 
-    const { PIPELINE_RUN_MODES } = require('./utils/constants.js');
+    const { PIPELINE_RUN_MODES, PIPELINE_TRIGGER_MODES } = require('./utils/constants.js');
     const { getPipelineData } = require('./utils/helpers.js');
     const { prData, PIPELINE_RUN_MODE, PIPELINE_TRIGGER_MODE } = getPipelineData();
 
+    console.log("PIPELINE_RUN_MODES.PASSED_ONLY: ", PIPELINE_RUN_MODES.PASSED_ONLY);
+    console.log("PIPELINE_TRIGGER_MODES.MANUAL:  ", PIPELINE_TRIGGER_MODES.MANUAL);
+    const { isResetDone } = await GetCypressLog();
+    console.log("isResetDone:  ", isResetDone);
+
+
     // Console the pipeline modes
     if(PIPELINE_RUN_MODE && PIPELINE_TRIGGER_MODE) {
-      console.log("Pipeline Trigger Mode: ", PIPELINE_TRIGGER_MODE.toUpperCase());
-      console.log("Pipeline Run Mode: ", PIPELINE_RUN_MODE.toUpperCase());
+      console.log("Pipeline Trigger Mode: ", PIPELINE_TRIGGER_MODE);
+      console.log("Pipeline Run Mode: ", PIPELINE_RUN_MODE);
       console.log("Pipeline Trigger Mode Length: ", PIPELINE_TRIGGER_MODE.length);
       console.log("Pipeline Run Mode Length: ", PIPELINE_RUN_MODE.length);
     }

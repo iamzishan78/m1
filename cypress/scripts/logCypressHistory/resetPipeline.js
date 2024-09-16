@@ -10,6 +10,11 @@ const ResetPipeline = async ({ isUpdateReset }) => {
   try {
     const ldata = require('../../fixtures/ldata.json');
     const { headers } = require('../../cypressUtils/cypressHeaders.js');
+    console.log("Pipeline trigger mode: ", PIPELINE_TRIGGER_MODE)
+    console.log("Pipeline run mode: ", PIPELINE_RUN_MODE);
+    console.log("Ppr data: ", prData);
+    
+
 
     const resetPipelinePayload = {
       operationName: 'resetPipeline',
