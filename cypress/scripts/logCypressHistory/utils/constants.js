@@ -3,8 +3,8 @@ const SOURCE_BRANCH = process.env.SOURCE_BRANCH;
 const PIPELINE_RUN_MODE = process.env.PIPELINE_RUN_MODE;
 const PIPELINE_TRIGGER_MODE = process.env.PIPELINE_TRIGGER_MODE;
 
-const MAX_PIPELINE_DURATION = 10 * 60 * 1000; // 55 minutes in milliseconds
-const PIPELINE_WARNING_THRESHOLD = 8 * 60 * 1000; // 50 minutes in milliseconds
+const MAX_PIPELINE_DURATION = 55 * 60 * 1000; // 55 minutes in milliseconds
+const PIPELINE_WARNING_THRESHOLD = 50 * 60 * 1000; // 50 minutes in milliseconds
 const PIPELLINE_CHECK_TIME = 1 * 60 * 1000; // 1 minutes in milliseconds
 
 const TENENT = process.env.TENENT;

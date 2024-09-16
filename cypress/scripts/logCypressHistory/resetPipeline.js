@@ -2,12 +2,12 @@ const axios = require('axios');
 const {
   RESET_PIPELINE,
 } = require('../../../src/graphQL/useMutationCypress.js');
-const { getPipelineData } = require('./utils/helpers.js');
 
 const ResetPipeline = async ({ isUpdateReset }) => {
   try {
     const ldata = require('../../fixtures/ldata.json');
     const { headers } = require('../../cypressUtils/cypressHeaders.js');
+    const { getPipelineData } = require('./utils/helpers.js');
     const { SOURCE_BRANCH, PIPELINE_TRIGGER_MODE, PIPELINE_RUN_MODE, prData } = getPipelineData();
 
     const resetPipelinePayload = {
@@ -23,8 +23,6 @@ const ResetPipeline = async ({ isUpdateReset }) => {
       },
       query: RESET_PIPELINE.loc.source.body,
     };
-
-    console.log(JSON.stringify(resetPipelinePayload))
 
     let response = await axios({
       method: 'post',
