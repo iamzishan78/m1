@@ -12,20 +12,29 @@ import QuickActionPanel from "components/Land/components/QuickActionPanel";
 import { AdminManagementRoutes } from "utils/data";
 import Map from "./components/Map";
 import AdminSettings from "components/Shared/AdminSettings";
-import Flatten from "components/Admin/Flatten"
-import Reindex from "components/Admin/Reindex"
+import Flatten from "components/Admin/Flatten";
+import Reindex from "components/Admin/Reindex";
+import AssetManagement from "components/Admin/components/AssetManagement";
 
 const Components = {
   Map,
   AdminSettings,
   Flatten,
-  Reindex
+  Reindex,
+  AssetManagement,
 };
 
 function isM1neralAddress(email) {
   return email.endsWith('@m1neral.com');
 }
 
+function isTestEnv() {
+  let tenantName = window.sessionStorage.getItem('tenantName');
+
+  let validTenants = ["frontier", "m1development", "localhost"];
+  let isValidTenant = validTenants.map(tenant => tenant.toLowerCase()).includes(tenantName.toLowerCase());
+  return isValidTenant;
+}
 
 export default function Admin() {
   const location = useLocation();
@@ -62,6 +71,9 @@ export default function Admin() {
     if (!isM1neralAddress(stateApp.user.email)) {
       delete allPaths["FLATTENING"]
       delete allPaths["REINDEX"]
+    }
+    if (!isTestEnv()) {
+      delete allPaths["ASSET_MANAGEMENT"]
     }
     const feature = stateApp.user?.features?.find((feature) => feature.name === FEATURES.CONTACTSUBMENU);
     // const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.ANALYTICSSUBMENU);
