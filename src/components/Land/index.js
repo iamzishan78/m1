@@ -1,10 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Switch, Route, useLocation, Redirect } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 import QuickActionPanel from "components/Land/components/QuickActionPanel";
 import * as Components from "components/Land/components";
 import { replaceLinkId } from "components/Shared/functions";
+import { ALL_CUSTOM_ASSET_INFO } from "graphQL/useQueryAllCustomAssetInfo"
+import { useLazyQuery } from "@apollo/client";
 
 //Actions
 import { toggleQuickActionsPanel, setActiveModule } from "store/actions/commonActions";
@@ -75,9 +77,15 @@ export default function Land() {
   const location = useLocation();
   const dispatch = useDispatch();
   const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
+  const [sidePanelMenuList, setSidePanelMenuList] = useState(SIDE_PANEL_MENU_ITEMS_LIST);
+
+  // Query for getting all custom assets
+  const [getAllCustomAsset, { data: allCustomAsset }] = useLazyQuery(ALL_CUSTOM_ASSET_INFO, {
+    fetchPolicy: "no-cache",
+  });
 
   useEffect(() => {
-    const option = Object.values(SIDE_PANEL_MENU_ITEMS_LIST).find((item) => {
+    const option = Object.values(sidePanelMenuList).find((item) => {
       const path = location.pathname;
       if (item.link.includes(":id")) {
         return replaceLinkId(item.link, path);
@@ -85,11 +93,37 @@ export default function Land() {
       return path.startsWith(item.link);
     });
     if (option?.parent) {
-      dispatch(setActiveModule(SIDE_PANEL_MENU_ITEMS_LIST[option.parent]));
+      dispatch(setActiveModule(sidePanelMenuList[option.parent]));
     } else if (option) {
       dispatch(setActiveModule(option));
     }
   }, [location.pathname, dispatch]);
+
+  useEffect(() => {
+    // Get all custom assets
+    getAllCustomAsset()
+  }, [])
+
+  useEffect(() => {
+    if (allCustomAsset) {
+      const dynamicAsset = allCustomAsset?.getAllCustomAssetInfo?.res;
+
+      // Set dynamic assets in side panel
+      setSidePanelMenuList(prevList => {
+        const newList = { ...prevList };
+        dynamicAsset.forEach(item => {
+          const key = item.tableName.replace(/\s+/g, '_').toUpperCase();
+          newList[key] = {
+            featureFlag: "LANDMODULE",
+            title: item.tableName,
+            link: `/land/${item.tableName.replace(/\s+/g, '').toLowerCase()}`,
+            component: "DynamicAssetGrid"
+          };
+        });
+        return newList;
+      });
+    }
+  }, [allCustomAsset]);
 
   const handlePanelStateChange = (state) => {
     dispatch(toggleQuickActionsPanel(state));
@@ -99,16 +133,16 @@ export default function Land() {
     <QuickActionPanel
       title="Asset Management"
       handlePanelStateChange={handlePanelStateChange}
-      quickActionsPanelState={ quickActionsPanelState }
+      quickActionsPanelState={quickActionsPanelState}
       activeModule={activeModule}
-      actions={SIDE_PANEL_MENU_ITEMS_LIST}
+      actions={sidePanelMenuList}
     >
       <Switch>
-        {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((option) => (
+        {Object.keys(sidePanelMenuList).map((option) => (
           <Route
             exact
-            path={SIDE_PANEL_MENU_ITEMS_LIST[option].link}
-            component={Components[SIDE_PANEL_MENU_ITEMS_LIST[option].component]}
+            path={sidePanelMenuList[option].link}
+            component={Components[sidePanelMenuList[option].component]}
           />
         ))}
         <Redirect to={`/land/agreements`} />
