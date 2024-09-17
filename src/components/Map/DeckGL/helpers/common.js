@@ -542,7 +542,13 @@ export const getLayerFillColor = (dbLayer, fillColor, fillOpacity) => {
 			let value = _.get(d, keys) || (path.orKey ? _.get(d, orKeys) : null);
 			if (value) {
 				const attrFillColor = dbLayer.layerSettings.attributeBasedColors[selectAttr][value]
-				if (attrFillColor) return layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : getRGBA(attrFillColor, fillOpacity)
+				// If fill color is an object
+				if (attrFillColor?.rgb) {
+					let fColor = attrFillColor.rgb.length === 3 ? "rgb(" + attrFillColor.rgb.join() + ")" : "rgba(" + attrFillColor.rgb.join() + ")";
+					let fColorOp = attrFillColor.alpha;
+					return layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : getRGBA(fColor, fColorOp)
+				}
+				if (attrFillColor) return layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : getRGBA(attrFillColor, 1)
 			}
 		}
 		return layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : getRGBA(fillColor, fillOpacity)

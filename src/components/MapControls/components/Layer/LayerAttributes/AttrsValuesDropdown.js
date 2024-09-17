@@ -118,7 +118,7 @@ const AttrsValuesDropdown = ({
 
             return {
                 label: key,
-                color: isColorOverridden ? (fillColor.hex ? `#${fillColor.hex}` : fillColor) : randomColor
+                color: isColorOverridden ? fillColor : randomColor
             };
         });
 
@@ -166,7 +166,7 @@ const AttrsValuesDropdown = ({
                                     <span>{option['label']}</span>
                                     <span
                                         className={classes.colorBox}
-                                        style={{ backgroundColor: option['color'] }}
+                                        style={{ backgroundColor: option?.color?.hex ? `#${option.color.hex}` : option.color }}
                                     ></span>
                                 </li>
                             ))}

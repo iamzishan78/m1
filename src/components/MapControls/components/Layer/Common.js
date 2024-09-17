@@ -265,7 +265,7 @@ export const useLayerStyle = (layer) => {
                                 },
                             };
                         }
-                        if (fColorOp) {
+                        if (fColorOp && !selectedValue) {
                             layerPaintProps[i] = {
                                 ...layerPaintProps[i],
                                 paintProps: {
@@ -397,7 +397,7 @@ export const useLayerStyle = (layer) => {
                                 },
                             };
                         }
-                        if (fColorOp) {
+                        if (fColorOp && !selectedValue) {
                             layerPaintProps[i] = {
                                 ...layerPaintProps[i],
                                 paintProps: {
