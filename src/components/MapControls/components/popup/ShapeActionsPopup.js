@@ -41,6 +41,7 @@ import { Dialog } from '@mui/material';
 import DeleteConfirmationDialogContent from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import { isEmpty } from 'lodash';
 import { layerController } from 'hookstate/layerStateController';
+import { ALL_CUSTOM_ASSET_INFO } from "graphQL/useQueryAllCustomAssetInfo"
 
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
@@ -83,6 +84,12 @@ const ShapeActionsPopup = (props) => {
   const [agreementAnchorEl, setAgreementAnchorEl] = useState(null);
   const [tractAnchorEl, setTractAnchorEl] = useState(null);
   const [unitAnchorEl, setUnitAnchorEl] = useState(null);
+  const [mapCreationAsset, setMapCreationAsset] = useState([]);
+
+  // Query for fetching all custom assets
+  const [getAllCustomAsset, { data: allCustomAsset }] = useLazyQuery(ALL_CUSTOM_ASSET_INFO, {
+    fetchPolicy: "no-cache",
+  });
 
   const [getAbstractGeo, { data: abstractData }] = useLazyQuery(ABSTRACTGEOQUERY);
   const [upsertCustomLayer, { data: customLayerInsertedData }] = useMutation(UPSERTCUSTOMLAYER, {
@@ -208,6 +215,19 @@ const ShapeActionsPopup = (props) => {
     }
   }, [drawState.currentFeature]);
 
+  useEffect(() => {
+    // Get all custom assets
+    getAllCustomAsset();
+  }, [])
+
+  useEffect(() => {
+    if (allCustomAsset) {
+      // Set map assets
+      const asset = allCustomAsset?.getAllCustomAssetInfo?.res?.filter(item => item.creationPlace === "onMap");
+      setMapCreationAsset(asset);
+    }
+  }, [allCustomAsset])
+
   const saveAndOpenShapeDetail = useCallback(
     (...props) => drawController.saveAndOpenShapeDetail(upsertCustomLayer, dispatch, history, abstractData, ...props),
     [upsertCustomLayer, dispatch, history, abstractData]
@@ -311,6 +331,16 @@ const ShapeActionsPopup = (props) => {
         >
           Unit Boundary
         </MenuItem>
+
+        {/* Dynamic related map assets */}
+        {mapCreationAsset.map((option) => (
+          <MenuItem key={option._id} value={option.tableName} onClick={() => {
+            console.log('option', option.tableName)
+          }}>
+            {option.tableName}
+          </MenuItem>
+        ))}
+
       </Menu>
 
       <Menu
