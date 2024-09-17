@@ -562,6 +562,14 @@ export const AdminManagementRoutes = {
     noCheck: true,
     showSettingString: false,
   },
+  ASSET_MANAGEMENT: {
+    featureFlag: "AlWAYSSHOW",
+    title: "Asset Management",
+    link: "/admin/assetmanagement",
+    component: "AssetManagement",
+    noCheck: true,
+    showSettingString: false,
+  },
   // CUSTOMIZATIONS: {
   //   featureFlag: "CONTACTSUBMENU",
   //   title: "Customization",
