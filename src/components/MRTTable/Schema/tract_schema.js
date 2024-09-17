@@ -74,11 +74,12 @@ const TractMeta = {
 		},
 
 		{
-			...CommonSchema.HIDDEN,
+			...CommonSchema.MONGO_ID,
 			name: '_id',
 			accessorKey: '_id',
+			header: "M1neral System ID",
+			isHiddenFieldExport: true,
 		},
-
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'name.keyword',
