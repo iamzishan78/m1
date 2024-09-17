@@ -119,6 +119,43 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 	return newTableSchema
 }
 
+// Funtion for fetching dynamic grids schema
+async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, tableKey) {
+
+	// Fetch dynamic grid schema
+	const result = await client.query({
+		variables: {},
+		query: fetchDynamicSchema.query,
+	});
+
+	// Fetch dynamic grid columns
+	const columns = result?.data?.getAllCustomAssetInfo?.res?.find(model => model.tableName === fetchDynamicSchema.tableName)?.modelKeys || [];
+
+	// Create dynamic grid schema
+	const dynamicTableSchema = columns.map((item, index) => {
+		return ({
+			...CommonSchema.COMMON_COLUMN,
+			name: `${item.keyName.replace(/\s+/g, '_')}.keyword`,
+			id: item.keyName.replace(/\s+/g, '_'),
+			accessorFn: (row) => get(row, item.keyName),
+			header: item?.keyName,
+			type: item?.keyType,
+			size: 350,
+		})
+	});
+
+	const _Schema = [
+		...TableSchema,
+		...dynamicTableSchema,
+		CommonSchema.CREATED_BY,
+		CommonSchema.CREATED_DATE,
+		CommonSchema.LAST_UPDATED_BY,
+		CommonSchema.LAST_UPDATED_DATE,
+	]
+
+	return _Schema
+}
+
 async function fetchGridViews(client, module, tableKey, gridViewOverride) {
 	// Retrieve the current user's information from a global state controller.
 	const user = globalStateController.getValue('user');
@@ -173,6 +210,7 @@ const tableESStateControllerHandler = state => ({
 			advanceSearch = [],
 			isDefaultGridView,
 			enableHiding = true,
+			fetchDynamicSchema,
 			...rest
 		},
 		client,
@@ -192,6 +230,10 @@ const tableESStateControllerHandler = state => ({
 				},
 			});
 
+		if (fetchDynamicSchema) {
+			_Schema = await fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, tableKey)
+		}
+		
 		if (fetchMetaData) {
 			_Schema = await fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyChange, tableKey)
 		}
@@ -238,6 +280,7 @@ const tableESStateControllerHandler = state => ({
 
 		state.merge({
 			...rest,
+			fetchDynamicSchema,
 			defaultFlterMode,
 			search,
 			initialized: true,
