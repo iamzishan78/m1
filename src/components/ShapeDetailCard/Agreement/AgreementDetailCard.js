@@ -198,7 +198,7 @@ export default function AgreementDetailCard(props) {
         customLayerId: uniObj._id,
         customLayer,
       },
-      refetchQueries: ["getMetaData"],
+      refetchQueries: ["getMetaData", "getAllLayerSettingsByUser"],
       awaitRefetchQueries: true,
     }).then((res) => {
       jobController.toggleBulkUpload()
@@ -233,6 +233,8 @@ export default function AgreementDetailCard(props) {
         customLayerId: uniObj._id,
         customLayer,
       },
+      refetchQueries: ["allLayerSettingsByUser"],
+      awaitRefetchQueries: true,
     }).then((res) => {
       jobController.toggleBulkUpload()
       layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)
