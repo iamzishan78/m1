@@ -5,9 +5,11 @@ import importPlugin from 'eslint-plugin-import';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+// Determine the current file and directory paths
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Create a compatibility layer for extending ESLint configurations
 const compat = new FlatCompat({
 	baseDirectory: __dirname,
 	recommendedConfig: js.configs.recommended,
@@ -15,6 +17,7 @@ const compat = new FlatCompat({
 });
 
 export default [
+	// Configuration to ignore specific file patterns and directories
 	{
 		ignores: [
 			'**/node_modules/*',
@@ -30,12 +33,17 @@ export default [
 			'**/svgIcons/',
 		],
 	},
+	
+	// Extend configurations from recommended ESLint setups
 	...compat.extends('plugin:react/recommended', 'airbnb', 'prettier'),
 	{
+		// Define plugins used in the configuration
 		plugins: {
 			react,
 			import: importPlugin,
 		},
+		
+		// Define language options
 		languageOptions: {
 			ecmaVersion: 'latest',
 			sourceType: 'module',
@@ -45,13 +53,15 @@ export default [
 				},
 			},
 		},
+		
+		// Custom rules for the project
 		rules: {
-			'no-underscore-dangle': 'off',
-			'no-plusplus': 'off',
-			camelcase: 'off',
-			'react-hooks/exhaustive-deps': 'off',
-			'import/no-named-as-default-member': 'off',
-			'import/no-mutable-exports': 'off',
+			'no-underscore-dangle': 'off',        // Allow underscores in variable names
+			'no-plusplus': 'off',                // Allow ++ and -- operators
+			camelcase: 'off',                   // Allow non-camelcase variable names
+			'react-hooks/exhaustive-deps': 'off', // Disable exhaustive-deps rule for React hooks
+			'import/no-named-as-default-member': 'off', // Allow named exports as default
+			'import/no-mutable-exports': 'off',  // Allow mutable exports
 		},
 	},
 ];
