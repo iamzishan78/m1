@@ -12,7 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 const options = [
   { label: 'String', value: 'String' },
-  { label: 'Drop down', value: 'JSON' },
+  { label: 'JSON', value: 'JSON' },
   { label: 'Number', value: 'Number' },
   { label: 'Date', value: 'Date' },
   { label: 'User', value: 'User' },

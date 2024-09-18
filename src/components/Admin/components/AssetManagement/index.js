@@ -10,6 +10,7 @@ import {
 } from '@material-ui/core';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import CloseIcon from '@material-ui/icons/Close';
+import EditIcon from '@material-ui/icons/Edit';
 import DynamicForm from './DynamicForm';
 import { UPSERT_CUSTOM_ASSET_INFO } from 'graphQL/useMutationUpsertCustomAssetInfo';
 import { useMutation, useLazyQuery } from '@apollo/client';
@@ -63,6 +64,17 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     marginLeft: '80px',
   },
+
+  entityRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    width: '100%',
+  },
+
+  actionButton: {
+    marginLeft: theme.spacing(1),
+  },
 }));
 
 const options = [
@@ -72,7 +84,7 @@ const options = [
 
 export default function AssetManagement() {
   const classes = useStyles();
-  const { control, handleSubmit, setValue, getValues, watch } = useForm({
+  const { control, handleSubmit, watch, reset } = useForm({
     defaultValues: {
       table_name: '',
       fields: [{ keyName: '', keyType: '' }],
@@ -91,6 +103,8 @@ export default function AssetManagement() {
 
   const [openDialog, setOpenDialog] = useState(false);
   const [allNewAssets, setAllNewAssets] = useState([]);
+  const [editMode, setEditMode] = useState(false);
+  const [currentAssetId, setCurrentAssetId] = useState(null); // Track the asset ID for editing
   const tableName = watch('table_name', ''); // Watch the "table_name" field
 
   const [storeCustomAsset, { data }] = useMutation(UPSERT_CUSTOM_ASSET_INFO);
@@ -98,6 +112,7 @@ export default function AssetManagement() {
   const onSubmit = (data) => {
     Loader.createToast('create', 'create new Entity in Progress');
     setOpenDialog(false);
+    setEditMode(false);
 
     storeCustomAsset({
       variables: {
@@ -130,6 +145,20 @@ export default function AssetManagement() {
     }
   }, [allCustomAsset]);
 
+
+  // Edit asset handler
+  const handleEdit = (asset) => {
+    setEditMode(true);
+    setCurrentAssetId(asset.id);
+    reset({
+      table_name: asset.tableName,
+      fields: asset.modelKeys,
+      creation_place: asset.creationPlace,
+    });
+    setOpenDialog(true);
+  };
+  
+
   return (
     <>
       <div style={{ marginTop: '65px', marginLeft: '30px' }}>
@@ -138,6 +167,13 @@ export default function AssetManagement() {
           style={{ margin: '25px 25px 25px 5px' }}
           variant="outlined"
           onClick={() => {
+            // Reset the form to default values for creating a new asset
+            reset({
+              table_name: '',
+              fields: [{ keyName: '', keyType: '' }],
+              creation_place: '',
+            });
+            setEditMode(false); // Ensure it's not in edit mode
             setOpenDialog(true);
           }}
           disabled={false}
@@ -152,6 +188,7 @@ export default function AssetManagement() {
         open={openDialog}
         onClose={() => {
           setOpenDialog(false);
+          setEditMode(false); // Reset edit mode when dialog closes
         }}
       >
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -266,7 +303,7 @@ export default function AssetManagement() {
                       variant="outlined"
                       disabled={hasAddAtLeast1Key && tableName ? false : true}
                     >
-                      {'Create Field'}
+                      {editMode ? 'Update Field' : 'Create Field'}
                     </Button>
                   </div>
                 </div>
@@ -280,7 +317,15 @@ export default function AssetManagement() {
         {allNewAssets &&
           allNewAssets.map((model, index) => (
             <div key={index} className={classes.columnContainer}>
-              <h2>Entity: {model.tableName}</h2>
+              <div className={classes.entityRow}>
+                <h2>Entity: {model.tableName}</h2>
+                <IconButton
+                onClick={() => handleEdit(model)}
+                className={classes.actionButton}
+                >
+                  <EditIcon />
+                </IconButton>
+              </div>
               <table className={classes.assetTable}>
                 <thead>
                   <tr>
