@@ -22,6 +22,12 @@ describe('Save Login for Component Testing', () => {
                     url: interception.request.url, x_zumo_auth: interception.request.headers['x-zumo-auth'],
                     access_token: meResp.response?.body[0]?.access_token
                 });
+
+                cy.readFile('cypress/fixtures/ldata.json').then((ldata) => {
+                    expect(ldata.url).to.equal(interception.request.url) // true
+                    expect(ldata.x_zumo_auth).to.equal(interception.request.headers['x-zumo-auth']) // true
+                    expect(ldata.access_token).to.equal(meResp.response?.body[0]?.access_token) // true
+                  })
             })
         })
     });

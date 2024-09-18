@@ -184,7 +184,7 @@ function CheckDetailsEditableTable(props) {
         query: GET_ES_PAGINATED_LIST,
         variables: {
           esIndex: "properties_flat",
-          search: `purchaserNumber:"${value}"`,
+          search: `number:"${value}"`,
           pagination: {
             first: 1,
             keep_alive: "1micros",
