@@ -47,9 +47,15 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     flexDirection: 'column',
   },
-  assetTable: {
+
+  tableWrapper: {
+    maxHeight: '500px', // Set the maximum height
+    overflowY: 'auto', // Enable vertical scrolling
     width: '80%',
-    margin: '20px 0',
+  },
+
+  assetTable: {
+    width: '100%',
     borderCollapse: 'collapse',
     '& th, & td': {
       border: '1px solid #ddd',
@@ -57,6 +63,8 @@ const useStyles = makeStyles((theme) => ({
     },
     '& th': {
       backgroundColor: '#f2f2f2',
+      position: 'sticky',
+      top: '0', // Stick to the top of the container
     },
   },
 
@@ -145,7 +153,6 @@ export default function AssetManagement() {
     }
   }, [allCustomAsset]);
 
-
   // Edit asset handler
   const handleEdit = (asset) => {
     setEditMode(true);
@@ -157,7 +164,6 @@ export default function AssetManagement() {
     });
     setOpenDialog(true);
   };
-  
 
   return (
     <>
@@ -320,28 +326,30 @@ export default function AssetManagement() {
               <div className={classes.entityRow}>
                 <h2>Entity: {model.tableName}</h2>
                 <IconButton
-                onClick={() => handleEdit(model)}
-                className={classes.actionButton}
+                  onClick={() => handleEdit(model)}
+                  className={classes.actionButton}
                 >
                   <EditIcon />
                 </IconButton>
               </div>
-              <table className={classes.assetTable}>
-                <thead>
-                  <tr>
-                    <th>Column Names</th>
-                    <th>Column Types</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {model.modelKeys.map((key, idx) => (
-                    <tr key={idx}>
-                      <td>{key.keyName}</td>
-                      <td>{key.keyType}</td>
+              <div className={classes.tableWrapper}>
+                <table className={classes.assetTable}>
+                  <thead>
+                    <tr>
+                      <th>Column Names</th>
+                      <th>Column Types</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {model.modelKeys.map((key, idx) => (
+                      <tr key={idx}>
+                        <td>{key.keyName}</td>
+                        <td>{key.keyType}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           ))}
       </div>
