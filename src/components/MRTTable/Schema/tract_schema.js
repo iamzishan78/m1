@@ -252,7 +252,7 @@ const TractMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'createAt.keyword',
 			id: 'createAt',
-			header: 'Created At',
+			header: 'Created Date',
 			Cell: ({ row }) => <>{formatDate(row?.original?.createAt)}</>, // format date before showing
 		},
 		{
