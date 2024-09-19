@@ -5,6 +5,7 @@ import CampaignNameField from 'components/ContactDetailCard/components/FieldCont
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
 import ListChips from 'components/Common/ListChips';
 import ContactNameLink from '../Common/TableCells/ContactNameLink';
+import TractIcon from "components/Shared/svgIcons/tract";
 
 const esIndex = 'shapeowners_flat';
 
@@ -27,6 +28,25 @@ const TractInterestsMeta = {
   deletedKeys: { // Deletion keys mapping
 		mainRecord: { key: '_id' },
 		parentRecord: { key: 'shape._id' }
+	},
+  gridViewSettings: {
+		label: 'Tract Interests',
+		module: 'TractInterest',
+		Icon: TractIcon,
+		defaultView: {
+			name: 'All Tract Interests',
+			type: 'Default',
+		},
+		handleDefaultView: (view, user) => {
+			if (view?.name === 'My Tract Interest') {
+				view.filters[0].value = user._id;
+			}
+			return view;
+		},
+		cssOverride: {
+			top: '161px',
+			left: '190px',
+		},
 	},
   TableSchema: [
     {
