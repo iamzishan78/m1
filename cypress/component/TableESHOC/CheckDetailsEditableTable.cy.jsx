@@ -6,6 +6,7 @@ describe('CheckDetailsEditableTable  ESHOC Table', () => {
     cy.viewport(1600, 1200).mount(
       <CheckDetailsEditableTable parent="CheckDetailsTable" header="Check Details" showPdfSection={false} checkId={"65cdeea0cb417fd5f2285c7e"} />
     );
+    cy.wait(5000);
   });
 
   it('checks state and county are populating on selecting property', () => {
