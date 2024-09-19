@@ -86,6 +86,11 @@ const DocumentSearch = () => {
   }, [search])
 
   return (
+    <>
+    <Typography variant="h5" style={{ color: "black", fontWeight: "bold", marginRight: "20px" }}>
+      Documents
+    </Typography>
+
     <div className={classes.search}>
       <TextField
         value={search}
@@ -105,7 +110,7 @@ const DocumentSearch = () => {
         className={classes.contactSearchField}
         margin="dense"
         variant="outlined"
-        placeholder="Search for documents"
+        placeholder="Search for documents1234"
         id="searchDocument"
         InputProps={{
           startAdornment: (
@@ -219,6 +224,7 @@ const DocumentSearch = () => {
         }}
       />
     </div>
+  </>
   );
 };
 
