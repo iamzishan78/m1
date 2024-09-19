@@ -29,7 +29,7 @@ const TractInterestsMeta = {
 		mainRecord: { key: '_id' },
 		parentRecord: { key: 'shape._id' }
 	},
-  gridViewSettings: {
+  gridViewSettings: { // Grid view 
 		label: 'Tract Interests',
 		module: 'TractInterest',
 		Icon: TractIcon,

@@ -51,10 +51,8 @@ const Tracts = () => {
 
   // Apply global filter from the land search query in the stateApp context
   useEffect(() => {
-    if (stateApp?.landSearchQuery) {
-      tableController(currentTableKey)?.setGlobalFilter(stateApp.landSearchQuery);
-    }
-  }, [stateApp?.landSearchQuery, selectedTab, currentTableKey]);
+      tableController(currentTableKey).setGlobalFilter(stateApp.landSearchQuery);
+  }, [stateApp.landSearchQuery, selectedTab, currentTableKey]);
 
   return (
     <>
