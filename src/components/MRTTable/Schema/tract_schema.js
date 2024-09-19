@@ -170,6 +170,7 @@ const TractMeta = {
 			accessorFn: row => row?.shapeJson?.properties?.sdGrossAcres,
 			id: 'shapeJson.properties.sdGrossAcres',
 			header: 'Gross Acres',
+			isSearchField: false, // Don't pass in search fields
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -185,6 +186,7 @@ const TractMeta = {
 			accessorFn: row => row?.shapeJson?.properties?.netRoyalityAcres?.calculatedNra,
 			id: 'shapeJson.properties.netRoyalityAcres.calculatedNra',
 			header: 'Tract NRA',
+			isSearchField: false, // Don't pass in search fields
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -192,13 +194,15 @@ const TractMeta = {
 			accessorFn: row => row?.shapeJson?.properties?.execNetAcres,
 			id: 'shapeJson.properties.execNetAcres',
 			header: 'Exec Net Acres',
+			isSearchField: false, // Don't pass in search fields
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'shapeJson.properties.nonExecNetAcres.keyword',
+			name: 'shapeJson.properties.nonExecNetAcres',
 			accessorFn: row => row?.shapeJson?.properties?.nonExecNetAcres,
 			id: 'shapeJson.properties.nonExecNetAcres',
 			header: 'Non-Exec Net Acres',
+			isSearchField: false, // Don't pass in search fields
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,

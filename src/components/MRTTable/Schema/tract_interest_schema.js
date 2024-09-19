@@ -162,11 +162,12 @@ const TractInterestsMeta = {
     },
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'shape.shapeJson.properties.sdGrossAcres.keyword',
+      name: 'shape.shapeJson.properties.sdGrossAcres',
       accessorFn: row => row?.shape?.shapeJson?.properties?.sdGrossAcres,
       id: 'shape.shapeJson.properties.sdGrossAcres',
       header: 'Gross Acres',
       type: 'number',
+      isSearchField: false, // Don't pass in search fields
     },
     {
       ...CommonSchema.COMMON_COLUMN,

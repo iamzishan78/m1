@@ -8,6 +8,16 @@ import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
 import vf_currency from "components/Shared/valueformatters/vf_currency.js";
 
+// Curreny keys
+const currencyKeys = [
+	'shapeJson.properties.uMaxUnitPricing.keyword', 
+	'shapeJson.properties.uUnitPricing.keyword',
+	'offer_price_nma',
+	'max_offer_price_nma',
+	'offer_price',
+	'max_offer_price',
+]
+
 function ESAutoCompleteFilter({
 	tableKey,
 	esIndex,
@@ -160,7 +170,7 @@ function ESAutoCompleteFilter({
 
 	// format value to show filter value & option with $ sign as prefix
 	const formatValue = (value) => {
-		if (field === 'shapeJson.properties.uMaxUnitPricing.keyword' || field === 'shapeJson.properties.uUnitPricing.keyword') {
+		if (currencyKeys.includes(field)) {
 			value = vf_currency(value);
 		}
 		return value;
