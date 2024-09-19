@@ -200,6 +200,13 @@ export default [
         required: false,
         actual_key: "property.purchaser.name",
     },
+    //added pay status field
+    {
+        label: "Pay Status",
+        mapped_key: "",
+        required: false,
+        actual_key: "property.status",
+    },
     {
         label: "M1 System ID",
         mapped_key: "",

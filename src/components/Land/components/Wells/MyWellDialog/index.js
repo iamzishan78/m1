@@ -174,7 +174,11 @@ export default function MyWellDialog() {
   const history = useHistory();
   const client = useApolloClient();
 
-  const [deleteMyWell, { loading }] = useMutation(DELETE_MY_WELL);
+  const [deleteMyWell, { loading }] = useMutation(DELETE_MY_WELL, {
+    onCompleted: () => {
+      tableGlobalController.refetch();
+    }
+  });
 
   const toggleDrawer = (anchor, open) => (event) => {
     if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {

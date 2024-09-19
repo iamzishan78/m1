@@ -26,7 +26,9 @@ Cypress.Commands.add(
       body: getJobPayload,
     }).then(response => {
       // Find the job with the specified jobId in the response
+      console.log("response.body.data: ", response.body.data)
       const job = response.body.data.getJobsStatus.jobs.find(job => job._id === jobId);
+      console.log("job: ", job)
 
       // Check if the job status is 'Failed'
       if (job.status === 'Failed') {

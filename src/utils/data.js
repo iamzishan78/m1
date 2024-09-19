@@ -546,11 +546,19 @@ export const AdminManagementRoutes = {
     isDefault: true,
     showSettingString: true,
   },
-  FLATTENING: {
+  FLATTEN: {
     featureFlag: "AlWAYSSHOW",
-    title: "Flattening",
-    link: "/admin/runflattening",
-    component: "Flattening",
+    title: "Flatten",
+    link: "/admin/runFlattening",
+    component: "Flatten",
+    noCheck: true,
+    showSettingString: false,
+  },
+  REINDEX: {
+    featureFlag: "AlWAYSSHOW",
+    title: "Reindex",
+    link: "/admin/runReindexing",
+    component: "Reindex",
     noCheck: true,
     showSettingString: false,
   },
