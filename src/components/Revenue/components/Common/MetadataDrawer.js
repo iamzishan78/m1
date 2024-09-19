@@ -226,7 +226,7 @@ export default function MetadataDrawer(props) {
   }, [files, uploadedFiles, viewFiles]);
 
   useEffect(() => {
-    const owner = props.data?.metaOwner?._id ?? props.data?.owner;
+    const owner = props.data?.metaOwner?._id ?? props.data?.owner; // null checks to avoid crashing
     if (owner) {
       setOwnerId(owner);
     }
@@ -330,7 +330,7 @@ export default function MetadataDrawer(props) {
                             {...params}
                             id="source-simple-select-outlined-label"
                             variant="outlined"
-                            value={data?.source || ""}
+                            value={data?.source || ""} // null checks tu avoid crashing
                             fullWidth
                             onChange={(e) => {
                               props.onUpdate({ source: e.target.value });
