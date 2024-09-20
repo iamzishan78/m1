@@ -169,7 +169,7 @@ export default function CSVFileReader(props) {
     data.forEach((row) => {
       const newRow = {};
       Object.keys(row.data).forEach(key => {
-        if (row.data[key]?.includes?.(',') && (key === "Tags" || key === 'Owner Tags' )) { // Convert comma separated values into array for shapes owners 
+        if (row.data[key]?.includes?.(',') && (key === "Tags" || key === 'Owner Tags'  || key === 'Unit Tags' )) { // Convert comma separated values into array for shapes owners 
           newRow[key] = row.data[key].split(',');
         } else {
           newRow[key] = row.data[key]
