@@ -10,10 +10,12 @@ function FileDownload({ id }) {
     fetchPolicy: "no-cache",
   });
 
+  // file view handler
   const handleViewFile = async (id) => {
     viewFile({ variables: { fileId: id } });
   };
 
+  // Download file
   useEffect(() => {
     if (viewFileResult?.viewFile?.uri) {
       let a = document.createElement("a");

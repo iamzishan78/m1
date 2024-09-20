@@ -47,6 +47,7 @@ export default function DocumentComponent() {
 
   return (
     <div className={classes.root}>
+      {/* Documents Table*/}
       <MRTTable name="DocumentTable" />
     </div>
   );

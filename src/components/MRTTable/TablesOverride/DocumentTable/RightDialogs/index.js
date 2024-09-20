@@ -14,6 +14,7 @@ function DocumentTableDialogs() {
 
   return (
     <>
+      {/* Open dialog in create mode */}
       {type === 'createAndAddDocument' && <CreateAndViewComponent tableKey={rest?.tableKey} selectedDocument={rest?.selectedRow} />}
     </>
   );

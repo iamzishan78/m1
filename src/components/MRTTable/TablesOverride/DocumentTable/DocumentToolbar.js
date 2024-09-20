@@ -61,6 +61,7 @@ function DocumentToolBar({ table, tableKey }) {
           </Button>
         </ButtonGroup>
 
+        {/* Custom metat data dialog */}
         {!!(tableStateValues?.metaFieldList) && <MetaFieldList tableKey={tableKey} />}
         {!!globalStateValues.showFieldModal && (
           <MetaField

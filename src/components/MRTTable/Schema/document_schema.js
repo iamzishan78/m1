@@ -61,7 +61,7 @@ const DocumentMeta = {
   onClickedRow,
   onCustomKeyChange,
   CustomToolBar: DocumentToolBar,
-  gridViewSettings: {
+  gridViewSettings: { // Document grid view
     label: 'Documents',
     module: 'Documents',
     Icon: DescriptionOutlinedIcon,
@@ -89,7 +89,7 @@ const DocumentMeta = {
     },
   },
   defaultSort: { field: 'ts', order: 'desc', unmapped_type: 'date' },
-  defaultFilters: [
+  defaultFilters: [ // Default search filters
     {
       field: 'fileUrl',
       value: 'jobs',
