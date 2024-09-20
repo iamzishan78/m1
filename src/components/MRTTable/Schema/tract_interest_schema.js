@@ -155,9 +155,9 @@ const TractInterestsMeta = {
 
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'qtr.keyword',
-      accessorFn: row => row?.qtr,
-      id: 'qtr',
+      name: 'shape.qtrQtrSelection.selectedQtr.keyword',
+      accessorFn: row => row?.shape?.qtrQtrSelection?.selectedQtr, // fetched selected qtrs from shape
+      id: 'shape.qtrQtrSelection.selectedQtr',
       header: 'QTR Calls',
     },
     {
