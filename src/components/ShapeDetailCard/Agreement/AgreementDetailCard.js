@@ -82,6 +82,9 @@ export default function AgreementDetailCard(props) {
         ...dataCustomLayer.customLayer,
         shape,
       });
+      popupController.updateState({
+        selectedShape: { ...shape.properties },
+      });
 
       if (!shape.properties.agreementNumber && !infoMessage) {
         dispatch(showInfoMessage("Agreement Number is required"));
@@ -153,8 +156,10 @@ export default function AgreementDetailCard(props) {
         shape.properties.originalProperties.County = undefined;
         shape.properties.originalProperties.State = value;
         shape.properties.originalProperties.StateAbbreviation = value;
+        shape.properties.county = undefined;
       } else {
         shape.properties.originalProperties = { State: value, StateAbbreviation: value }
+        shape.properties.county = undefined;
       }
     }
     if (field === "county") {

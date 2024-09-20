@@ -19,7 +19,7 @@ describe('Tract Interest Owners Table', () => {
             defaultFilters: [
               {
                 field: 'shape._id',
-                value: '65ad8feaece38d4e03777ba2',
+                value: '65a9129609723f222ab5a4e8',
               },
               {
                 field: 'contact.IsDeleted',
@@ -64,7 +64,7 @@ describe('Tract Interest Owners Table', () => {
             // Building payload for reverting the deletion
             const getLayerPayload = {
               operationName: 'revertCypressDelete',
-              variables: { data },
+              variables: { data: {...data, modelKey: 'ParcelDescriptor', keyToBeUpdate: 'isDeleted'}},
               query: REVERTCYPRESSDELETE.loc.source.body,
             };
             // Making a request to revert the deletion
