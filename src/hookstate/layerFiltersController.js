@@ -6,8 +6,6 @@ import { debounce } from 'lodash';
 import { layerFilterInitialState, layerFilters } from './initialStates';
 import { navController } from './navStateController';
 
-
-
 const layerFiltersControllerHandler = state => ({
 	setVariables: debounce((layerType, variables) => {
 		if (!layerType) return;

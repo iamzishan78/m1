@@ -19,6 +19,7 @@ import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 import { AppContext } from "AppContext";
 import AttrsAutocomplete from "./LayerAttributes/AttrsAutocomplete";
 import AttrsValuesDropdown from "./LayerAttributes/AttrsValuesDropdown";
+import { getLayerKey } from 'hookstate/helpers';
 
 function LayerStyling() {
   const classes = useStyles();
@@ -65,11 +66,11 @@ function LayerStyling() {
 
   // Getting meta data for selected layer
   useEffect(() => {
-    if (colorBasedAttributes[selectedLayer?.identifier]?.layerKey)
+    if (colorBasedAttributes[getLayerKey(selectedLayer?.identifier, colorBasedAttributes)]?.layerKey)
       getMetaData({
         variables: {
           user: stateApp.user?.mongoId,
-          category: colorBasedAttributes[selectedLayer?.identifier]?.layerKey,
+          category: colorBasedAttributes[getLayerKey(selectedLayer?.identifier, colorBasedAttributes)]?.layerKey,
         },
       });
   }, []);
@@ -138,7 +139,7 @@ function LayerStyling() {
 
   // Merging summaryfield keys and custom data keys of selected  layer
   const options = useMemo(() => {
-    const colorAttributes = colorBasedAttributes[selectedLayer?.identifier]?.keys || [];
+    const colorAttributes = colorBasedAttributes[getLayerKey(selectedLayer?.identifier, colorBasedAttributes)]?.keys || [];
     const metaDataOptions = metaDataRes?.getMetaData?.metaData?.map((md) => ({
       label: md.name,
       value: md.esKey,

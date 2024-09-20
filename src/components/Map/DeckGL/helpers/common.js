@@ -11,6 +11,7 @@ import {
 import { popupController } from 'hookstate/popupStateController';
 import { globalStateController } from 'hookstate/globalStateController';
 import { colorBasedAttributes } from 'components/MapControls/components/Layer/LayerAttributes/ColorBasedAttributes';
+import { getLayerKey } from 'hookstate/helpers';
 
 export const random_hex_color_code = () => {
 	const n = (Math.random() * 0xfffff * 1000000).toString(16);
@@ -507,7 +508,7 @@ export const getLayerStrokeColor = (dbLayer, strokeColor) => {
 
 	return (d) => {
 		if (selectAttr) {
-			let path = colorBasedAttributes[dbLayer?.identifier]?.keys.find((key) => key.label === selectAttr);
+			let path = colorBasedAttributes[getLayerKey(dbLayer?.identifier, colorBasedAttributes)]?.keys.find((key) => key.label === selectAttr);
 			if (!path) path = dbLayer.layerSettings?.selectedStrokeAttribute;
 
 			let keys = path?.value.split('.').slice(1, -1);
@@ -518,7 +519,13 @@ export const getLayerStrokeColor = (dbLayer, strokeColor) => {
 			let value = _.get(d, keys) || (path.orKey ? _.get(d, orKeys) : null);
 			if (value) {
 				const attrFillColor = dbLayer.layerSettings.attributeBasedStrokeColors[selectAttr][value]
-				if (attrFillColor) return layerInteraction.interactionDetail?.enableStrokeColor === false ? [0, 0, 0, 0] : getRGBA(attrFillColor)
+				// If fill color is an object
+				if (attrFillColor?.rgb) {
+					let fColor = attrFillColor.rgb.length === 3 ? "rgb(" + attrFillColor.rgb.join() + ")" : "rgba(" + attrFillColor.rgb.join() + ")";
+					let fColorOp = attrFillColor.alpha;
+					return layerInteraction.interactionDetail?.enableStrokeColor === false ? [0, 0, 0, 0] : getRGBA(fColor, fColorOp)
+				}
+				if (attrFillColor) return layerInteraction.interactionDetail?.enableStrokeColor === false ? [0, 0, 0, 0] : getRGBA(attrFillColor, 1)
 			}
 		}
 		return layerInteraction.interactionDetail?.enableStrokeColor === false ? [0, 0, 0, 0] : getRGBA(strokeColor)
@@ -531,7 +538,7 @@ export const getLayerFillColor = (dbLayer, fillColor, fillOpacity) => {
 	const selectAttr = dbLayer.layerSettings?.selectedAttribute?.label;
 	return (d) => {
 		if (selectAttr) {
-			let path = colorBasedAttributes[dbLayer?.identifier]?.keys.find((key) => key.label === selectAttr);
+			let path = colorBasedAttributes[getLayerKey(dbLayer?.identifier, colorBasedAttributes)]?.keys.find((key) => key.label === selectAttr);
 			if (!path) path = dbLayer.layerSettings?.selectedAttribute;
 
 			let keys = path?.value.split('.').slice(1, -1);

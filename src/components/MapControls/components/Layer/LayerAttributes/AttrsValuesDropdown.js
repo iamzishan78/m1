@@ -7,6 +7,7 @@ import { colorBasedAttributes } from './ColorBasedAttributes';
 import { generateRandomColor } from 'components/MapControls/commonHelper';
 import { ColorPickerStyledBox } from '../Common';
 import { Paper } from '@material-ui/core';
+import { getLayerKey } from 'hookstate/helpers';
 
 // Styles for AttrsValuesDropdown
 const useStyles = makeStyles(() => ({
@@ -90,7 +91,7 @@ const AttrsValuesDropdown = ({
 
     useEffect(() => {
         const esIndex = "shapes_flat";
-        const layerType = colorBasedAttributes[selectedLayer?.identifier]?.layerKey.toLowerCase();
+        const layerType = colorBasedAttributes[getLayerKey(selectedLayer?.identifier, colorBasedAttributes)]?.layerKey.toLowerCase();
         getFiltersList({
             variables: {
                 search: "*",

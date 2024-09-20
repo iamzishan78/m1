@@ -22,16 +22,18 @@ import {
 	ifStaticMapBoxGlLayerIdentifiers,
 	mapBoxLayerIdentifiers,
 	staticMapBoxLayerIdentifiers,
+	isCustomLayerCopy,
 } from 'components/Shared/functions/shapeLayer';
 import { globalStateController } from './globalStateController';
 import { layerFiltersController } from './layerFiltersController';
+import { getLayerKey } from 'hookstate/helpers';
 import { popupController } from './popupStateController';
 import { drawController } from './drawStateController';
 import { navController } from './navStateController';
 import { mapControlsController } from './mapControlsController';
 import { NotificationManager } from 'react-notifications';
 import { debounce } from 'lodash';
-import { layerState, layerStateInitialState } from './initialStates';
+import { layerFilters, layerState, layerStateInitialState } from './initialStates';
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
 const getWellColor = w => {
@@ -408,6 +410,7 @@ const layerStateControllerHandler = state => {
 			if (
 				!isFileLayer &&
 				!deckGlLayerIdentifiers.includes(dbLayer?.identifier) &&
+				!isCustomLayerCopy(dbLayer?.identifier) &&
 				!deckGlLandGridIdentifiers.includes(dbLayer?.identifier) &&
 				!mapBoxLayerIdentifiers.includes(dbLayer?.identifier) &&
 				!staticMapBoxLayerIdentifiers.includes(dbLayer?.identifier)
@@ -578,8 +581,9 @@ const layerStateControllerHandler = state => {
 		const isAgreementLayer = agreementLayerIdentifiers.includes(dbLayer.identifier);
 		const filterIdentifier = isAgreementLayer ? 'Agreements' : isFileLayer ? dbLayer.layerShapeName : dbLayer.identifier;
 
-		let { [filterIdentifier]: filters, polygonFilter, polygonsFilter } = layerFiltersController.getValues(
-			[filterIdentifier, 'polygonFilter', 'polygonsFilter']
+		const filterKey = getLayerKey(filterIdentifier, layerFilters);
+		let { [filterKey]: filters, polygonFilter, polygonsFilter } = layerFiltersController.getValues(
+			[filterKey, 'polygonFilter', 'polygonsFilter']
 		);
 
 		const boundingState = handleBounds(
