@@ -141,6 +141,13 @@ export const useStyles = makeStyles(() => ({
 }));
 
 export const headerStyles = makeStyles((theme) => ({
+  cardHeaderTypography: {
+    whiteSpace: 'nowrap', // Prevents text from wrapping
+    overflow: 'hidden', // Hides any overflow
+    textOverflow: 'ellipsis', // Show ellipsis (...) when text overflows
+    maxWidth: '100%', // Ensure the text does not overflow its container
+    display: 'inline-block', // Ensures that the Typography component is displayed as an inline-block element
+  },
   dateRoot: {
     border: "1px solid #EBEBEB",
     backgroundColor: "#fff",

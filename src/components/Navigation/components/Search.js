@@ -552,6 +552,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
               dataOwnerWells.ownerLatsLonsArray[0].longitude,
               dataOwnerWells.ownerLatsLonsArray[0].latitude,
             ],
+            selectedPlaces: null
           });
         setStateApp(stateApp => ({
           ...stateApp,
@@ -583,6 +584,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
               dataOperatorWells.operatorLatsLonsArray[0].longitude,
               dataOperatorWells.operatorLatsLonsArray[0].latitude,
             ],
+            selectedPlaces: null
           });
         setStateApp(stateApp => ({
           ...stateApp,
@@ -614,6 +616,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
               dataLeaseWells.leaseLatsLonsArray[0].longitude,
               dataLeaseWells.leaseLatsLonsArray[0].latitude,
             ],
+            selectedPlaces: null
           });
         setStateApp(stateApp => ({
           ...stateApp,
@@ -757,6 +760,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
         popupController.setState({
           selectedWellId: newValue.Id ? newValue.Id.toLowerCase() : null,
           wellSelectedCoordinates: [newValue.Longitude, newValue.Latitude],
+          selectedPlaces: null
         });
         setStateApp((stateApp) => ({
           ...stateApp,
@@ -840,7 +844,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
       }
 
       //// if mapboxSearch
-      if (newValue && newValue.center && (newValue.Source === "mapboxSearch" || newValue.Source === "places")) {
+      if (newValue && newValue.center && (newValue.Source === "mapboxSearch")) {
         let minLong, maxLong, minLat, maxLat;
         if (newValue.bbox) [minLong, minLat, maxLong, maxLat] = newValue.bbox;
 
@@ -865,13 +869,35 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
         })
         layerController.toggleLayersActivity("Search", true);
       }
+
+      if (newValue && newValue.center && (newValue.Source === "places")) {
+        let minLong, maxLong, minLat, maxLat;
+        if (newValue.bbox) [minLong, minLat, maxLong, maxLat] = newValue.bbox;
+
+        popupController.updateState({
+          selectedWell: null,
+          selectedWellId: null,
+          wellSelectedCoordinates: null,
+          selectedPlaces: newValue, // Set search places in the mapbox
+        })
+
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          fitBounds: newValue.bbox ? { maxLat, minLat, maxLong, minLong } : null,
+        }));
+        layerController.toggleLayersActivity("Search", true);
+      }
     }
   };
 
   const handleSearchPanelChange = (value) => {
     setSearchDropDown({ ...value })
     // Set either the gridlable or the simple lable
-    setSearchOption(value?.gridLabel?.toLocaleLowerCase() || value.label.toLocaleLowerCase());
+    const selectedSearchOptions = value?.gridLabel?.toLocaleLowerCase() || value.label.toLocaleLowerCase()
+    setSearchOption(selectedSearchOptions);
+    if (searchOption === 'places' && selectedSearchOptions !== 'places') {
+      popupController.reset(); // Reset the state when moving to other Search Item
+    }
   }
 
   //// setting the buttons header /////

@@ -40,7 +40,7 @@ import { copy } from '../Shared/functions';
 import DefaultFiltersTest from './filtersDefaultTest';
 import MarkerIcon from './sprites/marker-icon.png';
 import MapGridCardProvider from '../MapGridCard/MapGridProvider';
-import { drawBoundary, drawWellBoundary } from '../MapControls/components/DrawShapes/drawShapesHelpers';
+import { drawBoundary, drawWellBoundary, drawPlaceBoundary } from '../MapControls/components/DrawShapes/drawShapesHelpers';
 import HugeRequest from './components/HugeRequest';
 import ZoomFault from './components/ZoomFault';
 import { SRMode } from './MapBoxDrawRotate/index';
@@ -130,7 +130,7 @@ function Map({
 	// context states
 	const globalState = globalStateController.useState(['layers']);
 	const { filterDrawing, navStateValues } = navController.useState(['filterDrawing'], 'navStateValues')
-	const { selectedShapeFile, popupStateValues } = popupController.useState(['selectedShapeFile'], 'popupStateValues');
+	const { selectedShapeFile, selectedPlaces, popupStateValues } = popupController.useState(['selectedShapeFile', "selectedPlaces"], 'popupStateValues');
 	const { mapStateValues } = mapStateController.useState(['mapVars', 'defaultMapVars', 'toggle3d', 'toggleZoomOut'], 'mapStateValues');
 	const { wellListFromSearch, layerStateValues } = layerController.useState(['wellListFromSearch'], 'layerStateValues')
 	const [stateApp, setStateApp] = useContext(AppContext);
@@ -549,9 +549,9 @@ function Map({
 					}
 				}
 
-				l.id.forEach(k => {
-					if (map.getLayer(k)) {
-						map.setLayoutProperty(k, 'visibility', 'none');
+				l?.id?.forEach(k => {
+					if (map?.getLayer(k)) {
+						map?.setLayoutProperty(k, 'visibility', 'none');
 					}
 				});
 			});
@@ -875,7 +875,10 @@ function Map({
 							const previousClickedFeature = layerController.getValue('clickedFeature')
 							const clickOnSameFeature = previousClickedFeature && previousClickedFeature?.object?.id === clickedFeature?.object?.id
 							if (!clickedFeature || clickOnSameFeature) {
-								popupController.reset();
+								const selectedPlace = selectedPlaces.get({noproxy: true})
+								if (!selectedPlace) { // Reset the state when slected search is not places
+									popupController.reset();
+								}
 								if (!['', '/'].includes(window.location.pathname))
 									history.replace({ pathname: "/" });
 								return;
@@ -1130,7 +1133,31 @@ function Map({
 				}));
 			}
 		}
-	}, [map, wellListFromSearch]);
+	}, [map, wellListFromSearch, ]);
+
+	useEffect(() => {
+		if (map && selectedPlaces) {
+			const places = selectedPlaces.get({
+				noproxy: true,
+			});
+			if (!places) return;
+			const longitude  = places?.geometry?.coordinates[0]
+			const latitude  = places?.geometry?.coordinates[1]
+			drawPlaceBoundary([longitude, latitude]) // show dot on searched places coordinates
+			map.jumpTo({
+				center: {
+					lng: longitude,
+					lat: latitude,
+				},
+				zoom: 16,
+			}); // Jump to the selected place longitude & latitude
+			setStateApp(state => ({
+				...state,
+				searchLoader: false,
+			}));
+		}
+
+	}, [map, selectedPlaces]) // create separate effect for the selectedPlaces
 
 	useEffect(() => {
 		if (map && stateApp?.findLocation?.location?.length > 0) {

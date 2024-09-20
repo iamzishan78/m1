@@ -38,7 +38,7 @@ const RevenueStatementsMeta = {
   isInFiniteScroll: true,
   columnVirtualization: true,
   gridViewSettings: {
-    label: 'Revenue Statements Management',
+    label: 'Revenue Statements',
     module: 'RevenueStatements',
     Icon: CurrencyIcon,
     defaultView: {
