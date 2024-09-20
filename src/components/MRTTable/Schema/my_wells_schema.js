@@ -45,8 +45,8 @@ const MyWellsMeta = {
     },
     {
       ...CommonSchema.INITAIL_PINNED,
-      name: 'wellData.WellName.keyword',
-      accessorKey: 'wellData.WellName',
+      name: 'wellData.wellName.keyword',
+      accessorKey: 'wellData.wellName',
       header: 'Well Name',
       Cell: ({ row }) => (
         <div
