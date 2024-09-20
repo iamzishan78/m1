@@ -87,6 +87,7 @@ function WellDetailsDocumentTable(props) {
       mainRecord: { key: '_id' },
       parentRecord: { value: props?.selectedWell?.tenantWellId},
     },
+    customValue: { parentRecord: props?.selectedWell?.tenantWellId }, // Add aprent record in case of select all
     CustomToolBar: () => { // Customer Toolbar
       return (
         <ButtonGroup variant="contained" style={{ height: "40px" }} color="primary" aria-label="split button">
@@ -127,7 +128,7 @@ function WellDetailsDocumentTable(props) {
           setShowDocumentSlider={setShowDocumentSlider}
         />
       )}
-      
+      {/* Related well documets table */}
       <MRTTable name="RelatedDocumentTable" overrideMeta={relatedDocumentOverrideMeta}/>
     </Container>
   );
