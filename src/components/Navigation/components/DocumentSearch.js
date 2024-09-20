@@ -110,7 +110,7 @@ const DocumentSearch = () => {
         className={classes.contactSearchField}
         margin="dense"
         variant="outlined"
-        placeholder="Search for documents1234"
+        placeholder="Search for documents"
         id="searchDocument"
         InputProps={{
           startAdornment: (

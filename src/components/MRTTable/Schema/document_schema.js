@@ -165,6 +165,7 @@ const DocumentMeta = {
       accessorKey: 'documentDate',
       header: 'File Date',
       type: 'date',
+			isSearchField: false, // donn't include in search fields
       Cell: ({ row }) => {
         return <>{formatDate(row?.original?.dateTime)}</>;
       },
