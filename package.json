@@ -52,11 +52,13 @@
     "array-chunk-by-size": "^2.1.1",
     "array-move": "^4.0.0",
     "autosuggest-highlight": "^3.2.0",
+    "btoa": "^1.2.1",
     "chroma-js": "^2.1.2",
     "comma-number": "^2.1.0",
     "connected-react-router": "^6.9.1",
     "craco-esbuild": "^0.5.0",
     "custom-react-accordion": "^1.0.4",
+    "cypress-wait-until": "^3.0.2",
     "date-fns": "^2.19.0",
     "deck.gl": "^8.4.10",
     "dompurify": "^2.3.10",
@@ -67,8 +69,8 @@
     "geojson-validation": "^1.0.2",
     "graphql": "^15.5.0",
     "graphql-tag": "^2.11.0",
-    "hex-rgb": "^5.0.0",
     "hat": "^0.0.3",
+    "hex-rgb": "^5.0.0",
     "http-server": "^14.1.1",
     "immutability-helper": "^3.1.1",
     "immutable": "^4.0.0-rc.12",
@@ -90,6 +92,7 @@
     "material-ui-icons": "^1.0.0-beta.36",
     "material-ui-popup-state": "^1.8.4",
     "moment": "^2.29.1",
+    "msal": "^1.4.18",
     "mui-datatables": "^3.7.7",
     "my-server": "^2.0.7",
     "npm": "^7.20.1",
@@ -110,7 +113,7 @@
     "react-dnd": "11.1.1",
     "react-dnd-html5-backend": "^14.0.0",
     "react-dnd-touch-backend": "^14.0.0",
-    "react-dom": "^17.0.1",
+    "react-dom": "^17.0.2",
     "react-draggable": "^4.4.3",
     "react-dropzone": "^11.3.1",
     "react-error-boundary": "^3.1.3",
@@ -207,6 +210,6 @@
     "@fortawesome/fontawesome-free": "^5.15.3",
     "cross-env": "^7.0.3",
     "cypress": "^13.6.3",
-    "start-server-and-test": "^1.14.0"
+    "start-server-and-test": "^1.15.4"
   }
 }

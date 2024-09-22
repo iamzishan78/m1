@@ -44,7 +44,7 @@ describe('Unit Interest Owners Table', () => {
     cy.wait(10000);
 
     // Will check if the field exists
-    cy.get('[data-testid="max-offer-price-field"]').should('exist');
+    cy.get('[data-testid="max_offer_price-field"]').should('exist');
     cy.get('[data-testid="uUnitPricingInterest-field"]').should('exist');
     cy.get('[data-testid="uMaxUnitPricingInterest-field"]').should('exist');
 
@@ -52,10 +52,10 @@ describe('Unit Interest Owners Table', () => {
     cy.get('[data-testid="nra-field"] div input')
       .invoke('val')
       .then((nra) => {
-        cy.get('[data-testid="target-offer-price-field"] div input')
+        cy.get('[data-testid="offer_price-field"] div input')
           .invoke('val')
           .then((targetOfferPrice) => {
-            cy.get('[data-testid="max-offer-price-field"] div input')
+            cy.get('[data-testid="max_offer_price-field"] div input')
               .invoke('val')
               .then((maxOfferPrice) => {
                 cy.get('[data-testid="uUnitPricingInterest-field"] div input')
