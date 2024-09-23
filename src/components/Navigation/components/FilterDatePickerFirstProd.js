@@ -1,101 +1,72 @@
-import React, { useContext, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import moment from "moment";
-import { NavigationContext } from "../NavigationContext";
-import { Clear } from "@material-ui/icons";
-import { IconButton, TextField } from "@material-ui/core";
-import { useForm, Controller } from "react-hook-form";
+import React, { useContext, useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { Clear } from '@material-ui/icons';
+import { IconButton, TextField } from '@material-ui/core';
+import { useForm, Controller } from 'react-hook-form';
 
-const useStyles = makeStyles((theme) => ({
+import { navController } from 'hookstate/navStateController';
+import { NavigationContext } from '../NavigationContext';
+
+const useStyles = makeStyles(() => ({
   root: {},
   datesRow: {
-    display: "flex",
-    flexDirection: "row",
-    margin: "12px 0"
+    display: 'flex',
+    flexDirection: 'row',
+    margin: '12px 0',
   },
   datePicker: {
-    margin: "5px",
-    "&& span": {
-      pointerEvents: "none",
+    margin: '5px',
+    '&& span': {
+      pointerEvents: 'none',
     },
-    "& .MuiIconButton-root": {
-      padding: "10px 0px",
+    '& .MuiIconButton-root': {
+      padding: '10px 0px',
     },
     '& input::-webkit-calendar-picker-indicator': {
-      filter:
-        'invert(1)',
+      filter: 'invert(1)',
     },
   },
   blue: {
-    "& .MuiInputBase-input": { color: "#17AADD" },
+    '& .MuiInputBase-input': { color: '#17AADD' },
   },
   dateRoot: {
-    color: "#ffffff",
-    "& input": {
+    color: '#ffffff',
+    '& input': {
       marginLeft: 12,
     },
   },
 }));
 
-
-export default function FilterDatePickerFirstProd(props) {
+export default function FilterDatePickerFirstProd({ labelDates }) {
   const classes = useStyles();
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const { labelDates } = props;
-  const { control, reset } = useForm();
+  const { control } = useForm();
 
   useEffect(() => {
-    let filter = null;
+    const { firstProdDateFrom, firstProdDateTo } = stateNav;
 
-    if (stateNav.firstProdDateFrom || stateNav.firstProdDateTo) {
-      filter = ["all"];
+    const value = {
+      min: firstProdDateFrom && new Date(firstProdDateFrom).toISOString(),
+      max: firstProdDateTo && new Date(firstProdDateTo).toISOString(),
+    };
 
-      //// firstProdDateFrom
-      filter.push([
-        ">=",
-        ["get", "firstProductionDate"],
-        stateNav.firstProdDateFrom
-          ? moment.parseZone(stateNav.firstProdDateFrom).utc(true).valueOf()
-          : moment.parseZone(new Date("1900-01-01T00:00:00")).utc(true).valueOf(),
-      ]);
+    if (!firstProdDateFrom) delete value.min;
+    if (!firstProdDateTo) delete value.max;
 
-      //// firstProdDateTo
-      filter.push([
-        "<=",
-        ["get", "firstProductionDate"],
-        stateNav.firstProdDateTo
-          ? moment.parseZone(stateNav.firstProdDateTo).utc(true).valueOf()
-          : moment.parseZone(moment()).utc(true).valueOf(),
-      ]);
-    }
+    const type = 'date';
 
-    if (JSON.stringify(stateNav.filterFirstProdDateRange) !== JSON.stringify(filter))
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        filterFirstProdDateRange: filter,
-      }));
+    navController.handleWellsFilters({ field: `firstProductionDate`, value, type });
   }, [stateNav.firstProdDateFrom, stateNav.firstProdDateTo, setStateNav]);
 
-  useEffect(() => {
-    if (!stateNav.filterPermitDateRange?.length && (stateNav.permitDateFrom || stateNav.permitDateTo)) {
-      const resetParams = { prodDateFrom: null, prodDateTo: null };
-      setStateNav((stateNav) => ({
-        ...stateNav,
-        ...resetParams,
-      }));
-      reset(resetParams);
-    }
-  }, [stateNav.filterFirstProdDateRange]);
-
-  const handleStartDate = (date) => {
-    setStateNav((stateNav) => ({
+  const handleStartDate = date => {
+    setStateNav(stateNav => ({
       ...stateNav,
       firstProdDateFrom: date,
     }));
   };
 
-  const handleEndDate = (date) => {
-    setStateNav((stateNav) => ({
+  const handleEndDate = date => {
+    setStateNav(stateNav => ({
       ...stateNav,
       firstProdDateTo: date,
     }));
@@ -107,18 +78,18 @@ export default function FilterDatePickerFirstProd(props) {
         <Controller
           control={control}
           name="prodDateFrom"
-          defaultValue={""}
-          render={(props) => (
+          defaultValue=""
+          render={({ value, onChange }) => (
             <TextField
               type="date"
-              label={labelDates + " " + "From"}
-              className={`${classes.datePicker} ${stateNav.prodDateFrom ? classes.blue : ""}`}
+              label={`${labelDates} From`}
+              className={`${classes.datePicker} ${stateNav.prodDateFrom ? classes.blue : ''}`}
               margin="dense"
               fullWidth
-              value={props.value}
-              onChange={(date) => {
+              value={value}
+              onChange={date => {
                 handleStartDate(date.target.value);
-                props.onChange(date.target.value);
+                onChange(date.target.value);
                 return { value: date };
               }}
               InputLabelProps={{
@@ -127,9 +98,9 @@ export default function FilterDatePickerFirstProd(props) {
               InputProps={{
                 endAdornment: (
                   <IconButton
-                    onClick={(event) => {
+                    onClick={event => {
                       handleStartDate(null);
-                      props.onChange(event);
+                      onChange(event);
                     }}
                   >
                     <Clear style={{ height: 22, width: 22 }} />
@@ -146,18 +117,18 @@ export default function FilterDatePickerFirstProd(props) {
         <Controller
           control={control}
           name="prodDateTo"
-          defaultValue={""}
-          render={(props) => (
+          defaultValue=""
+          render={({ value, onChange }) => (
             <TextField
               type="date"
-              label={labelDates + " " + "To"}
-              className={`${classes.datePicker} ${stateNav.prodDateTo ? classes.blue : ""}`}
+              label={`${labelDates} To`}
+              className={`${classes.datePicker} ${stateNav.prodDateTo ? classes.blue : ''}`}
               margin="dense"
               fullWidth
-              value={props.value}
-              onChange={(date) => {
+              value={value}
+              onChange={date => {
                 handleEndDate(date.target.value);
-                props.onChange(date.target.value);
+                onChange(date.target.value);
                 return { value: date };
               }}
               InputLabelProps={{
@@ -166,9 +137,9 @@ export default function FilterDatePickerFirstProd(props) {
               InputProps={{
                 endAdornment: (
                   <IconButton
-                    onClick={(event) => {
+                    onClick={event => {
                       handleEndDate(null);
-                      props.onChange(event);
+                      onChange(event);
                     }}
                   >
                     <Clear style={{ height: 22, width: 22 }} />

@@ -7,7 +7,7 @@ import { FormLabel } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import CancelIcon from '@material-ui/icons/Cancel';
 
-import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { navController } from 'hookstate/navStateController';
 import { NavigationContext } from '../NavigationContext';
 
 const useStyles = makeStyles({
@@ -70,8 +70,7 @@ export default function FilterTVD() {
     if (!max && max !== 0) delete value.max;
 
     const type = 'range';
-
-    layerFiltersController.setWellsVariables('trueVerticalDepth', value, type);
+    navController.handleWellsFilters({ field: 'trueVerticalDepth', value, type });
   }, [setStateNav, valueMaxDisplay, valueMinDisplay]);
 
   const handleChangeMin = event => {

@@ -100,7 +100,7 @@ const useStyles = makeStyles(styles);
  * @param {string} props.fieldKey - Current field value.
  * @param {Array} props.campaigns - Current campaigns array.
  */
-function SelectedField({ field, setFieldKey, setCampaigns, setContactOwner, contactOwner, fieldKey, campaigns }) {
+function SelectedField({ field, setFieldKey, setCampaigns, setContactOwner, contactOwner, fieldKey, campaigns, classes, publicTags }) {
   let filterKey = ''; // Initialize filterKey variable to determine specific filter criteria
 
   // Switch statement to render different input fields based on the field type
@@ -123,7 +123,6 @@ function SelectedField({ field, setFieldKey, setCampaigns, setContactOwner, cont
       return (
         <CampaignNameField
           value={fieldKey}
-          className={classes.maxWidth} // Uses CSS class 'maxWidth'
           onChange={(values, id) => {
             setFieldKey(values); // Sets the field key value
             setCampaigns([...campaigns, { _id: id, campaignName: values[values.length - 1] }]); // Updates campaigns array
@@ -150,7 +149,7 @@ function SelectedField({ field, setFieldKey, setCampaigns, setContactOwner, cont
           onChange={({ target }) => {
             setFieldKey(target.value); // Sets the field key value based on input
           }}
-          autoFocus={inputFocused} // Automatically focuses on input if inputFocused is true
+          autoFocus={true} // Automatically focuses on input
           className={classes.fullWidth} // Uses CSS class 'fullWidth'
         />
       );
@@ -666,6 +665,8 @@ export default function AssignOwnerToContactDrawer({
                     contactOwner={contactOwner}
                     fieldKey={fieldKey}
                     campaigns={campaigns}
+                    classes={classes}
+                    publicTags={publicTags}
                   />
                 </Grid>
               </Grid>
