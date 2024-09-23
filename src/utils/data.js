@@ -638,8 +638,9 @@ export const AdminManagementRoutes = {
 };
 
 export const bypassTenants = [
-  // "localhost",
+  "localhost",
   // "m1Preview",
+  // "m1dev",
   // "m1Staging",
   // "m1Production",
   // "m1Development",
@@ -657,6 +658,8 @@ export const bypassTenants = [
   // "Pheasant"
 ];
 
+export const simpleAuthBypass = false
+
 export const OWNERTYPE = {
-  CORPORATION: "CORPORATION" 
+  CORPORATION: "CORPORATION"
 }
