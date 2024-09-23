@@ -180,10 +180,10 @@ export const drawBoundary = selectedUserDefinedLayer => {
         getLineColor: [255, 255, 0],
         getLineWidth: 6,
         ...(type === 'Point' && {
-          lineWidthUnits: "meters",
-          getLineWidth: 100,
+          lineWidthUnits: "pixels",
+          getLineWidth: 25,
           getFillColor: [255, 255, 0],
-          getPointRadius: 50,
+          getLineColor: [255, 255, 0],
         }),
       },
     });
