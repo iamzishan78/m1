@@ -644,8 +644,9 @@ export const paymentGridsInitialData = [
 ];
 
 export const bypassTenants = [
-  // "localhost",
+  "localhost",
   // "m1Preview",
+  // "m1dev",
   // "m1Staging",
   // "m1Production",
   // "m1Development",
@@ -662,6 +663,8 @@ export const bypassTenants = [
   // "Providence",
   // "Pheasant"
 ];
+
+export const simpleAuthBypass = false
 
 export const OWNERTYPE = {
   CORPORATION: "CORPORATION"

@@ -4,9 +4,10 @@ import { Switch, Route } from "react-router-dom";
 //components
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import Login from "./components/Login/Login";
-import SignUpCard from "./components/Login/SignUpCard";
-import ForgotPassword from "./components/Login/ForgotPassword";
+import Auth0Login from "./components/Auth0Login";
+import AzureLogin from "./components/AzureLogin";
+import SignUpCard from "./components/AzureLogin/SignUpCard";
+import ForgotPassword from "./components/AzureLogin/ForgotPassword";
 import NavigationProvider from "./components/Navigation/NavigationProvider";
 import MapProvider from "./components/Map/MapProvider";
 import TrackProvider from "./components/Track/TrackProvider";
@@ -41,9 +42,12 @@ import AnalyticsProvider from "components/Analytics/AnalyticsProvider";
 import AdminProvider from "components/Admin/AdminProvider";
 import { globalStateController } from "hookstate/globalStateController";
 import Providers from "Providers";
+import { useAuth0 } from '@auth0/auth0-react';
 
 const PrivateRoute = ({ component, ...options }) => {
-  const user = globalStateController.getValue('user')
+  const user = globalStateController.getValue('user');
+  globalStateController.useState(['bypassLogin', 'bypassType']);
+  const { isAuthenticated } = useAuth0();
 
   const userSessionIsLoaded = useSelector(({ session }) => session.isLoaded);
   const apolloClient = useApolloClient();
@@ -56,11 +60,9 @@ const PrivateRoute = ({ component, ...options }) => {
   }
 
   const finalComponent =
-    user && Date.parse(user.authTokenExpires) > Date.now() && apolloClient && userSessionIsLoaded
+    user && (Date.parse(user.authTokenExpires) > Date.now() || (globalStateController.isAuth0Bypass() && isAuthenticated)) && apolloClient && userSessionIsLoaded
       ? component
-      : (() => {
-        return Login;
-      })();
+      : globalStateController.isAuth0Bypass() ? Auth0Login : AzureLogin;
 
   return (
     <div>

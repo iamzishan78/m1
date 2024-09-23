@@ -11,7 +11,7 @@ const columns = [
     selector: "div > div > a",
   },
   {
-    name: "Check ID",
+    name: "Payor Name",
     type: "string",
   },
 ];
