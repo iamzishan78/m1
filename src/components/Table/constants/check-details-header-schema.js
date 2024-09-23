@@ -125,7 +125,7 @@ const RevenueStatementHeadCells = [
 		name: "grossOwnerValue", label: "Owner Gross Revenue", esKey: 'grossOwnerValue', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value, { currency: true }) }
 	},
 	{
-		name: "ownerTax", label: "Owner Tax Amt", esKey: 'ownerTax', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
+		name: "ownerTax", label: "Owner Tax Amt", esKey: 'ownerTax', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value,  { currency: true }) }
 	},
 	{
 		name: "taxType", label: "Tax Type", esKey: 'taxType', options: { sort: true, filter: true }
