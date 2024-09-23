@@ -47,7 +47,6 @@ export const SCHEMA = {
 	RevenueStatementsTable: RevenueStatementsMeta, // Revenue Statement grid => revenue/statements
 	MyWellsTable: MyWellsMeta,
 	WellsTable: WellsMeta,
-	WellMasterTable: MyWellsMeta, // Well Master => analytics/land
 	TaxOwnerTable: TaxOwnerMeta,
 	SalesVolumeComparisonTable: SalesVolumeComparisonMeta, // Sales Volume comparison grid => analytrics/revenue
 };

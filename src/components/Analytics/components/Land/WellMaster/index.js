@@ -85,7 +85,7 @@ export default function ExhibitATabPanel() {
   };
 
   useEffect(() => {
-    tableController("WellMasterTable")?.setGlobalFilter(stateApp.landAnalyticsSearchQuery === "*" ? "" : stateApp.landAnalyticsSearchQuery);
+    tableController("MyWellsTable")?.setGlobalFilter(stateApp.landAnalyticsSearchQuery === "*" ? "" : stateApp.landAnalyticsSearchQuery);
   }, [stateApp.landAnalyticsSearchQuery]);
 
   return (
@@ -173,7 +173,7 @@ export default function ExhibitATabPanel() {
         </Grid>
       </div> */}
       {/* Display well master table using MRT Grid */}
-      <MRTTable name="WellMasterTable" overrideMeta={{
+      <MRTTable name="MyWellsTable" overrideMeta={{
         isDeleteDisabled: true, // Disable delete functionality
         gridViewSettings: {
           label: 'Well Master', // Label for grid view
