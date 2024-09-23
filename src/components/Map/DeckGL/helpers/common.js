@@ -475,13 +475,8 @@ export const getAdvancedSearch = (layerGeometry, mustQuery) =>
 export const generateFileFilters = ({ fileLayer, pagination = { first: 10000, after: null }, extendFilters = { variables: {} } }) => {
 	let mustQuery = [];
 
-	// Making geojson file name
-	let geoJsonName = fileLayer.layerName;
-	geoJsonName = fileLayer.layerName.replace(` - ${fileLayer.layerGeometry}`, "");
-	geoJsonName = `${geoJsonName}.geojson`;
-	geoJsonName = geoJsonName.replace(" ", "_");
-	geoJsonName = `${geoJsonName} - ${fileLayer.layerGeometry}`;
-
+	// Added fileAlternateName to support the case where the file name is different from the layer name
+	const fileAlternateName = `${fileLayer?.fileName} - ${fileLayer.layerGeometry}`;
 	// Altered query accordingly
 	if (fileLayer.layerShapeName) {
 		mustQuery = [
@@ -489,7 +484,7 @@ export const generateFileFilters = ({ fileLayer, pagination = { first: 10000, af
 				bool: {
 					should: [{
 						term: {
-							'properties.layerShapeName.keyword': geoJsonName
+							'properties.layerShapeName.keyword': fileAlternateName
 						}
 					},
 					{
