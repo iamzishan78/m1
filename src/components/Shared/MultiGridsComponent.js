@@ -26,6 +26,8 @@ import RelatedBillingPartiesTable from "components/Land/components/Agreements/de
 import RelatedCostAllocationTable from "components/Land/components/Agreements/detailComponents/relatedPayments/relatedCostAllocationTable";
 import { AGREEMENT_PAYMENT_SUMMARY } from "graphQL/useQueryAgreementPaymentSummary";
 import { mapControlsController } from "hookstate/mapControlsController";
+import MRTTable from "components/MRTTable";
+import { useMemo } from "react";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -180,6 +182,42 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
         });
     }, [getAgreementPaymentData, rest.paymentId]);
 
+    // override meta for related payees
+    const overrideMetaRelatedPayees = useMemo(() => ({
+        defaultFilters: [
+            { field: "payments.paymentId", value: rest.paymentId },
+        ],
+        deletedKeys: {
+            mainRecord: { key: '_id' },
+            parentRecord: { key: 'paymentId', value: rest.paymentId },
+            bypassSelectAll: true,
+        }
+    }), [rest.paymentId]);
+
+    // override meta for related billing parties
+    const overrideMetaRelatedBillingParties = useMemo(() => ({
+        defaultFilters: [
+            { field: "billingParties.paymentId", value: rest.paymentId },
+        ],
+        deletedKeys: {
+            mainRecord: { key: '_id' },
+            parentRecord: { key: 'paymentId', value: rest.paymentId },
+            bypassSelectAll: true,
+        }
+    }), [rest.paymentId]);
+
+    // override meta for related cost allocations
+    const overrideMetaRelatedCostAllocations = useMemo(() => ({
+        defaultFilters: [
+            { field: "costAllocations.paymentId", value: rest.paymentId },
+        ],
+        deletedKeys: {
+            mainRecord: { key: '_id' },
+            parentRecord: { key: 'paymentId', value: rest.paymentId },
+            bypassSelectAll: true,
+        }
+    }), [rest.paymentId]);
+
     const getAgreementPaymentRelatedCount = (value) => {
         return agreementPaymentData ? agreementPaymentData.agreementPaymentSummary[value] : 0;
     }
@@ -322,31 +360,13 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
                                             />}
 
                                         {searchTapValue.value === "payees" &&
-                                            <RelatedPayeesTable
-                                                id="relatedPayeesTable"
-                                                setDrawer={setDrawer}
-                                                dense
-                                                moduleId={moduleId}
-                                                targetLabel="Shape"
-                                                portal={'#agreementPayeesDrawer'} />
+                                            <MRTTable name={"RelatedPayeesTable"} overrideMeta={overrideMetaRelatedPayees} />
                                         }
                                         {searchTapValue.value === "billingParties" &&
-                                            <RelatedBillingPartiesTable
-                                                id="relatedPayeesTable"
-                                                setDrawer={setDrawer}
-                                                dense
-                                                moduleId={moduleId}
-                                                targetLabel="Shape"
-                                                portal={'#agreementBillingPartiesDrawer'} />
+                                            <MRTTable name={"RelatedBillingPartiesTable"} overrideMeta={overrideMetaRelatedBillingParties} />
                                         }
                                         {searchTapValue.value === "costAllocations" &&
-                                            <RelatedCostAllocationTable
-                                                id="relatedCostAllocationTable"
-                                                setDrawer={setDrawer}
-                                                dense
-                                                moduleId={moduleId}
-                                                targetLabel="Shape"
-                                                portal={'#agreementCostAllocationDrawer'} />
+                                            <MRTTable name={"RelatedCostAllocationsTable"} overrideMeta={overrideMetaRelatedCostAllocations} />
                                         }
 
                                     </div>

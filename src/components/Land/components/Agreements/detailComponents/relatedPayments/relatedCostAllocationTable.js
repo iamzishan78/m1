@@ -22,17 +22,21 @@ import { DrawerContext } from "../DrawerContext";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { REMOVEPAYMENTPROPERTY } from "graphQL/useMutationRemovePaymentProperty";
 import { detailCardController } from "hookstate/detailCardController";
+import { tableGlobalController } from "hookstate/tableController";
 
 function AgreementCostAllocationsTable(props) {
     const classes = usetableStyles();
     const [isDeletePopup, setDeletePopup] = useState(false);
     const [resetSelectedRow, setResetSelectedRow] = useState(false);
+    const tableGlobalState = tableGlobalController.useState(['paymentMultiGrid']);
+    const tableGlobalValues = tableGlobalState.stateValues;
+    const paymentMultiGrid = tableGlobalValues.paymentMultiGrid;
     const { moduleId } = props;
 
     const [stateApp, setStateApp] = useContext(AppContext);
     const [, setDrawer] = useContext(DrawerContext);
 
-    const { paymentId } = stateApp?.paymentMultiGrid;
+    const { paymentId } = paymentMultiGrid;
 
     const [removePaymentProperty] = useMutation(REMOVEPAYMENTPROPERTY, {
         onCompleted: () => {

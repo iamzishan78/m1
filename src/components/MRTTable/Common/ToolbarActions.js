@@ -51,7 +51,10 @@ function ToolbarActions({ table, tableKey, children }) {
 			mainRecord: { key: '_id' },
 		};
 
-		if (!!tableStateValues?.isAllRowsSelected || tableStateValues?.isSubSetSelect) {
+		// If all rows are selected, we need to get all the data from the ES
+		// If bypassSelectAll is true, we need to bypass the select all
+		const { bypassSelectAll } = deletedKeys;
+		if ((!!tableStateValues?.isAllRowsSelected || tableStateValues?.isSubSetSelect) && !bypassSelectAll) {
 			let sortOrder = {};
 			if (tableStateValues.sorting.length > 0) {
 				sortOrder = { field: tableStateValues.sorting[0]?.id, order: tableStateValues.sorting[0]?.desc ? 'desc' : 'asc' };
@@ -83,6 +86,7 @@ function ToolbarActions({ table, tableKey, children }) {
 						: null;
 				return acc;
 			}, {});
+			deletedData.bypassSelectAll = deletedKeys?.bypassSelectAll;
 		}
 
 		tableGlobalController.updateState({

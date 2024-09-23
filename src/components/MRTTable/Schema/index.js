@@ -23,6 +23,10 @@ import SalesVolumeComparisonMeta from './sales-volume-comparison-schema';
 import ActivitiesMeta from './activities_schema';
 import ObligationsMeta from './obligations_schema';
 import ExpirationsMeta from './expirations_schema';
+import RelatedPaymentsMeta from './related_payments_schema';
+import RelatedPayeesMeta from './related_payees_schema';
+import RelatedCostAllocationsMeta from './related_cost_allocation_schema';
+import RelatedBillingPartiesMeta from './related_billing_parties_schema';
 
 export const SCHEMA = {
 	ContactTable: ContactMeta,
@@ -54,4 +58,9 @@ export const SCHEMA = {
 	ActivitiesTable: ActivitiesMeta,
 	ExpirationsTable: ExpirationsMeta,
 	ObligationsTable: ObligationsMeta,
+	// Payments grids
+	RelatedPaymentsTable: RelatedPaymentsMeta,
+	RelatedPayeesTable: RelatedPayeesMeta,
+	RelatedCostAllocationsTable: RelatedCostAllocationsMeta,
+	RelatedBillingPartiesTable: RelatedBillingPartiesMeta,
 };

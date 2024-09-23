@@ -1,11 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/styles";
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 import { useStyles as customStyles } from "../style";
 
-import RelatedPaymentsTable from "components/Land/components/Agreements/detailComponents/relatedPayments/RelatedPaymentsTable";
 import MultiGridsComponent from "components/Shared/MultiGridsComponent";
 import { paymentGridsInitialData } from "utils/data";
 import { AppContext } from "AppContext";
@@ -16,6 +15,8 @@ import { ADD_BILLING_PARTY_CONTACT_DESCRIPTOR, ADD_PAYMENT_CONTACT_DESCRIPTOR, A
 import { billingPartyFieldsData, costAllocationFieldsData, payeeFieldsData, paymentFieldsData } from "components/Land/components/Agreements/detailComponents/summary/data";
 import { ADD_PAYMENT } from "graphQL/useMutationAddPayment";
 import { detailCardController } from "hookstate/detailCardController";
+import MRTTable from "components/MRTTable";
+import { tableGlobalController } from "hookstate/tableController";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -80,10 +81,12 @@ const RelatedPayments = () => {
 
     const [counter, setCounter] = useState(0);
     const agreementDetailState = detailCardController.useState(['customLayer', 'drawer']);
+    const tableGlobalState = tableGlobalController.useState(['paymentMultiGrid']);
     const agreementDetailsValues = agreementDetailState.stateValues;
+    const tableGlobalValues = tableGlobalState.stateValues;
     const drawer = agreementDetailsValues.drawer;
-
-    const { paymentId } = stateApp?.paymentMultiGrid || {};
+    const paymentMultiGrid = tableGlobalValues.paymentMultiGrid;
+    const { paymentId } = paymentMultiGrid || {};
     const relatedObjectId = get(agreementDetailsValues, "customLayer._id");
 
     const [addPayment, { data: addPaymentData }] = useMutation(ADD_PAYMENT, {
@@ -106,6 +109,14 @@ const RelatedPayments = () => {
         awaitRefetchQueries: true,
     });
 
+    // override meta for related payments
+    const overrideMetaRelatedPayments = useMemo(() => ({
+        defaultFilters: [
+            { field: "shapeObj._id", value: agreementDetailsValues?.customLayer?._id },
+        ],
+        // customProps: { customLayer: parcelObj }
+    }), [agreementDetailsValues]);
+
     const addNewPayment = (newData, setLoader) => {
         setLoader(true)
         addPayment({
@@ -119,6 +130,7 @@ const RelatedPayments = () => {
             },
         }).then(() => {
             detailCardController.updateState({ drawer: "" });
+            tableGlobalController.refetch();
             setLoader(false);
         });
     }
@@ -134,7 +146,7 @@ const RelatedPayments = () => {
                 }
             },
         }).then(() => {
-
+            tableGlobalController.refetch();
             detailCardController.updateState({ drawer: "" })
             setLoader(false);
         });
@@ -151,7 +163,7 @@ const RelatedPayments = () => {
                 }
             },
         }).then(() => {
-
+            tableGlobalController.refetch();
             detailCardController.updateState({ drawer: "" })
             setLoader(false);
         });
@@ -168,7 +180,7 @@ const RelatedPayments = () => {
                 }
             },
         }).then(() => {
-
+            tableGlobalController.refetch();
             detailCardController.updateState({ drawer: "" })
             setLoader(false);
         });
@@ -198,18 +210,9 @@ const RelatedPayments = () => {
                     <AccordionDetails className={classes.accordionDetails}>
                         <Grid container direction="column" alignItems="center" spacing={4} style={{ display: "block" }}>
                             {agreementDetailsValues?.customLayer?._id && (<>
-                                <Grid item xs={12} style={{ padding: "35px 20px 0px 0px" }}>
-                                    <RelatedPaymentsTable
-                                        id="relatedPaymentsTable"
-                                        dense
-                                        moduleId={agreementDetailsValues?.customLayer?._id}
-                                        setCounter={setCounter}
-                                        targetLabel="Shape"
-                                        portal={'#agreementPaymentsDrawer'}
-                                    />
-                                </Grid>
+                                <MRTTable name="RelatedPaymentsTable" overrideMeta={overrideMetaRelatedPayments} />
                                 {
-                                    stateApp.paymentMultiGrid?.showMultiGrid && (
+                                    paymentMultiGrid?.showMultiGrid && (
                                         <Grid item xs={12} style={{ padding: "35px 20px 0px 0px" }}>
                                             <MultiGridsComponent
                                                 moduleId={agreementDetailsValues?.customLayer?._id}

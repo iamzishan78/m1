@@ -52,3 +52,13 @@ export const getTruncateText = (value) => {
     </Typography>
   </Tooltip>
 }
+
+// Helper for extracting values
+export const getArrayValue = (array, valueKey, id, idKey) => {
+  if (id) {
+    const val = array.find(e => e?.[idKey] === id);
+    if (val) {
+      return val[valueKey];
+    }
+  }
+}
