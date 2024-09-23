@@ -179,6 +179,7 @@ export const drawBoundary = selectedUserDefinedLayer => {
         getFillColor: [0, 0, 0, 0],
         getLineColor: [255, 255, 0],
         getLineWidth: 6,
+        // if shape is point then apply these features
         ...(type === 'Point' && {
           lineWidthUnits: "pixels",
           getLineWidth: 25,
