@@ -6,10 +6,10 @@ import { GlobalStickyStyles } from "GlobalSettings";
 import DeleteIcon from '@material-ui/icons/Delete';
 import { makeStyles } from "@material-ui/core/styles";
 import { Tooltip } from '@mui/material';
-import vf_currency from "components/Shared/valueformatters/vf_currency";
+import { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
 
 const getFormattedValue = (value,  { currency = false, toFixed } = {}) => {
-    return <Typography>{value ? currency ? vf_currency(value) : vf_number(value, toFixed) : <span style={{ color: 'rgb(149,149,149)' }}>--</span>}</Typography>;
+    return <Typography>{value ? currency ? vf_currency_to_fixed(value, 2) : vf_number(value, toFixed) : <span style={{ color: 'rgb(149,149,149)' }}>--</span>}</Typography>;
 }
 
 const useStyles = makeStyles({
