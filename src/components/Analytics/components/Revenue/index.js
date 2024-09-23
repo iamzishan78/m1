@@ -121,7 +121,7 @@ const StyledTab = withStyles(theme => ({
   selected: {},
 }))(props => <Tab disableRipple {...props} />);
 
-const tabs = ['Income Statement', 'Revenue by Month', 'Check Details', 'Comparisons', 'Property Interests'];
+const tabs = ['Income Statement', 'Check Details', 'Revenue by Month', 'Comparisons', 'Property Interests'];
 
 export default function RevenueAnalytics(props) {
   const classes = useStyles();

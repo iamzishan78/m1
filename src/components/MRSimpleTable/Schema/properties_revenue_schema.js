@@ -25,6 +25,7 @@ const PropertiesRevenueMeta = {
   isSelectAllAllowed: false,
   isDeleteAllowed: false,
   isExportAllowed: false,
+  isInFiniteScroll: true,
   columnVirtualization: true,
   TableSchema: [
     {
