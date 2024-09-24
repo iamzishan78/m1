@@ -62,6 +62,7 @@ export default [
 			'react-hooks/exhaustive-deps': 'off', // Disable exhaustive-deps rule for React hooks
 			'import/no-named-as-default-member': 'off', // Allow named exports as default
 			'import/no-mutable-exports': 'off',  // Allow mutable exports
+			'no-unsafe-optional-chaining': 'error', // unsafe optional chaining
 		},
 	},
 ];
