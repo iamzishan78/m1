@@ -12,10 +12,12 @@ import vf_currency from "components/Shared/valueformatters/vf_currency.js";
 const currencyKeys = [
 	'shapeJson.properties.uMaxUnitPricing.keyword', 
 	'shapeJson.properties.uUnitPricing.keyword',
-	'offer_price_nma',
-	'max_offer_price_nma',
-	'offer_price',
-	'max_offer_price',
+	'shapeJson.properties.uUnitPricingNMA.keyword',
+	'shapeJson.properties.uMaxUnitPricingNMA.keyword',
+	'shape.shapeJson.properties.uMaxUnitPricing.keyword', 
+	'shape.shapeJson.properties.uUnitPricing.keyword',
+	'shape.shapeJson.properties.uUnitPricingNMA.keyword',
+	'shape.shapeJson.properties.uMaxUnitPricingNMA.keyword',
 ]
 
 function ESAutoCompleteFilter({
@@ -191,7 +193,7 @@ function ESAutoCompleteFilter({
 			options={requiredOptions}
 			loading={loading}
 			filterOptions={searchMapping[searchMode].filterOptions}
-			value={formatValue(filterValue)}
+			value={filterValue}
 			renderInput={params => (
 				<TextField
 					{...params}

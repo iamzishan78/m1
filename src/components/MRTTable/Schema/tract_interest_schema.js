@@ -238,45 +238,37 @@ const TractInterestsMeta = {
     },
 
     {
-      ...CommonSchema.COMMON_COLUMN,
-      name: 'offer_price_nma',
-      accessorKey: 'offer_price_nma',
-      header: 'Target Offer (NMA)',
-      isSearchField: false,
-      type: 'number',
-      Cell: ({ row }) => <>{vf_currency(row?.original?.offer_price_nma)}</>,
-    },
-
-    {
-      ...CommonSchema.COMMON_COLUMN,
-      name: 'max_offer_price_nma',
-      accessorKey: 'max_offer_price_nma',
-      header: 'Max Offer (NMA)',
-      isSearchField: false,
-      type: 'number',
-      Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price_nma)}</>,
-    },
-
-
-    {
-      ...CommonSchema.COMMON_COLUMN,
-      name: 'offer_price',
-      accessorKey: 'offer_price',
-      header: 'Target Offer (NRA)',
-      isSearchField: false,
-      type: 'number',
-      Cell: ({ row }) => <>{vf_currency(row?.original?.offer_price)}</>,
-    },
-
-    {
-      ...CommonSchema.COMMON_COLUMN,
-      name: 'max_offer_price',
-      accessorKey: 'max_offer_price',
-      header: 'Max Offer (NRA)',
-      isSearchField: false,
-      type: 'number',
-      Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price)}</>,
-    },
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shape.shapeJson.properties.uUnitPricingNMA.keyword',
+			accessorFn: row => row?.original?.shape?.shapeJson?.properties?.uUnitPricingNMA,
+			id: 'shape.shapeJson.properties.uUnitPricingNMA',
+			header: 'Target Pricing (per NMA)',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.shape?.shapeJson?.properties?.uUnitPricingNMA)}</>,
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shape.shapeJson.properties.uMaxUnitPricingNMA.keyword',
+			accessorFn: row => row?.original?.shape?.shapeJson?.properties?.uMaxUnitPricingNMA,
+			id: 'shape.shapeJson.properties.uMaxUnitPricingNMA',
+			header: 'Max Pricing (per NMA)',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.shape?.shapeJson?.properties?.uMaxUnitPricingNMA)}</>,
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shape.shapeJson.properties.uUnitPricing.keyword',
+			accessorFn: row => row?.original?.shape?.shapeJson?.properties?.uUnitPricing,
+			id: 'shape.shapeJson.properties.uUnitPricing',
+			header: 'Target Pricing (per NRA)',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.shape?.shapeJson?.properties?.uUnitPricing)}</>,
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shape.shapeJson.properties.uMaxUnitPricing.keyword',
+			accessorFn: row => row?.original?.shape?.shapeJson?.properties?.uMaxUnitPricing,
+			id: 'shape.shapeJson.properties.uMaxUnitPricing',
+			header: 'Max Pricing (per NRA)',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.shape?.shapeJson?.properties?.uMaxUnitPricing)}</>,
+		},
 
     {
       ...CommonSchema.COMMON_COLUMN,
