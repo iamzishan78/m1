@@ -37,12 +37,18 @@ export const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
     "& svg": {
-      transform: "scaleX(0.5)",
       height:"13px",
       stroke:"black",
-      strokeWidth:"8",
-      marginLeft:"5%"  
+      strokeWidth:"3",
+      width:"100px",
+      display:"flex",
+      alignItems:"center",
+      justifyContent:"center",
+      marginLeft:"5px",
     },
+    "& .svgouter":{
+      marginLeft:"0 !important",
+    }
   },
   subHeaderItem: {
     backgroundColor: "#0e111a !important",

@@ -9,7 +9,6 @@ import { UPDATELAYERSETTINGS } from "graphQL/useMutationUpdateLayerSettings";
 import { UPDATEMANYLAYERSETTINGS } from "graphQL/useMutationUpdateManyLayerSettings";
 import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
 import { useMutation } from "@apollo/client";
-import { deepEqual } from "components/Shared/functions";
 import { useStyles } from '../style';
 import { globalStateController } from "hookstate/globalStateController";
 import { layerController } from "hookstate/layerStateController";
@@ -40,41 +39,41 @@ const FileTree = ({ layerMap, panelItems }) => {
   }
 
   const updateItems = (previousLayers, currentLayers) => {
-    if (!deepEqual(previousLayers, currentLayers)) {
-      if (previousLayers.length === currentLayers.length) {
-        const updateFn = {};
-        previousLayers.forEach((item, index) => {
-          const current = currentLayers[index]
-          if (current.id !== item.id) {
-            updateFn[index] = { $set: current }
-          }
-          else {
-            if (current.type === 'group') {
-              updateFn[index] = {
-                showable: { $set: current.showable },
-                visiable: { $set: current.visiable },
-              }
-            }
-            checkforUpdate(updateFn[index], item, current, 'name')
-            checkforUpdate(updateFn[index], item, current, 'fileName')
-            checkforUpdate(updateFn[index], item, current, 'fileUrl')
-            if (item.layerSettings) {
-              updateFn[index] = {
-                ...updateFn[index],
-                layerSettings: { $set: current.layerSettings },
-                showable: { $set: current.layerSettings.showable },
-                visiable: { $set: current.layerSettings.visiable },
-                layerPaintProps: { $set: current.layerPaintProps },
-                groupName: { $set: current.groupName },
-                layerName: { $set: current.layerName }
-              }
+    if (previousLayers.length === currentLayers.length) {
+      const updateFn = {};
+      previousLayers.forEach((item, index) => {
+        const current = currentLayers[index]
+        if (current.id !== item.id) {
+          updateFn[index] = { $set: current }
+        }
+        else {
+          if (current.type === 'group') {
+            updateFn[index] = {
+              showable: { $set: current.showable },
+              visiable: { $set: current.visiable },
             }
           }
-        })
-        setItems(update(previousLayers, updateFn))
-      } else
-        setItems(currentLayers);
-    }
+          checkforUpdate(updateFn[index], item, current, 'name')
+          checkforUpdate(updateFn[index], item, current, 'layerName')
+          checkforUpdate(updateFn[index], item, current, 'fileName')
+          checkforUpdate(updateFn[index], item, current, 'fileUrl')
+          if (item.layerSettings) {
+            updateFn[index] = {
+              ...updateFn[index],
+              layerSettings: { $set: current.layerSettings },
+              showable: { $set: current.layerSettings.showable },
+              visiable: { $set: current.layerSettings.visiable },
+              layerPaintProps: { $set: current.layerPaintProps },
+              groupName: { $set: current.groupName },
+              layerName: { $set: current.layerName },
+              name: { $set: current.name }
+            }
+          }
+        }
+      })
+      setItems(update(previousLayers, updateFn))
+    } else
+      setItems(currentLayers);
   }
 
   useEffect(() => {

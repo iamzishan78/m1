@@ -39,6 +39,7 @@ import { showInfoMessage } from "actions";
 import { useDispatch } from "react-redux";
 import Button from "@material-ui/core/Button";
 import { globalStateController } from "hookstate/globalStateController";
+import { layerController } from "hookstate/layerStateController";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -176,14 +177,13 @@ export default function AddLayer(props) {
   const layer_limit = 50;
 
   const [stateApp] = useContext(AppContext);
-  const { layers, stateValues } = globalStateController.useState(['layers'])
+  const { layers, globalStateValues } = globalStateController.useState(['layers'], 'globalStateValues')
   const [openM1, setOpenM1] = React.useState(true);
   const [isOpenUserDefinedLayers, setIsOpenUserDefinedLayers] = React.useState(true);
   const [currentLayers, setCurrentLayers] = React.useState([]);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openUDLayers, setUDLayersStates] = useState([]);
   const [selectAllMinerallayers, setSelectAllMinerallayers] = React.useState(false);
-  const [selectAllClientlayers, setSelectAllClientlayers] = React.useState(false);
   const [updateManyLayer] = useMutation(UPDATE_MANY_LAYER);
   const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
 
@@ -201,8 +201,8 @@ export default function AddLayer(props) {
   }, [currentLayers]);
 
   useEffect(() => {
-    if (!deepEqual(currentLayers, stateValues.layers)) {
-      setCurrentLayers(copy(stateValues.layers));
+    if (!deepEqual(currentLayers, globalStateValues.layers)) {
+      setCurrentLayers(copy(globalStateValues.layers));
     }
   }, [currentLayers, layers]);
 
@@ -241,28 +241,37 @@ export default function AddLayer(props) {
     setCurrentLayers((currentLayers) => { handleApplyChange(currentLayers); return currentLayers; })
   };
 
-  const changeShowAble = (layer) => {
-    const visible = layer.type === "group" ? !!layer.layers.find((l) => l.layerSettings?.showable) : layer?.layerSettings?.showable;
-
-    if (currentLayers?.filter((row) => row?.layerSettings?.showable === true).length < layer_limit || visible) {
-      const updatefn = {};
-      if (layer.type === "group") {
-        layer.layers.forEach((l) => {
-          const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === l.identifier);
-          updatefn[layerIndex] = { layerSettings: { showable: { $set: !visible } } };
-        });
-      } else {
-        const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === layer.identifier);
-        updatefn[layerIndex] = { layerSettings: { showable: { $set: !visible } } };
-      }
+  const handleLayerSettingChange = (layers, changeValue) => {
+    const updatefn = {};
+    const isReplace = typeof changeValue !== 'undefined'
+    if (layers?.filter((row) => row?.layerSettings?.showable === true).length < layer_limit) {
+      layers.forEach((layer) => {
+        if (layer.type === "group") {
+          const value = isReplace ? changeValue : !layer.layers.find((l) => l.layerSettings.showable);
+          layer.layers.forEach((l) => {
+            const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === l.identifier);
+            updatefn[layerIndex] = { layerSettings: { showable: { $set: value } } };
+            layerController.handleDeckLayer({ ...l, layerSettings: { ...l.layerSettings, showable: value } })
+          });
+        } else {
+          const value = isReplace ? changeValue : !layer.layerSettings.showable;
+          const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === layer.identifier);
+          updatefn[layerIndex] = { layerSettings: { showable: { $set: value } } };
+          layerController.handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, showable: value } })
+        }
+      })
 
       setCurrentLayers(update(currentLayers, updatefn));
-      handleCurrentLayersChange();
+      handleCurrentLayersChange()
     } else {
       dispatch(
         showInfoMessage("Cannot add additional layer. Number of active layers cannot exceed " + layer_limit)
       );
     }
+  }
+
+  const changeShowAble = (layer) => {
+    handleLayerSettingChange([layer])
   };
 
   const checkAllLayers = (layers, layerType) => {
@@ -278,8 +287,6 @@ export default function AddLayer(props) {
     }
     if (layerType === "M1") {
       setSelectAllMinerallayers(check);
-    } else if (layerType === "UD") {
-      setSelectAllClientlayers(check);
     }
   }
 
@@ -307,8 +314,6 @@ export default function AddLayer(props) {
     setCurrentLayers(result);
     if (layerType === "M1") {
       setSelectAllMinerallayers(value)
-    } else if (layerType === "UD") {
-      setSelectAllClientlayers(value)
     }
 
     handleCurrentLayersChange();
@@ -331,11 +336,11 @@ export default function AddLayer(props) {
   };
 
   const handleApplyChange = (currentLayers) => {
-    if (!deepEqual(currentLayers, stateValues.layers)) {
+    if (!deepEqual(currentLayers, globalStateValues.layers)) {
       const layersToUpdate = [];
       const layersSettingsToUpdate = [];
       for (let i = 0; i < currentLayers.length; i++) {
-        if (!deepEqualObjects(currentLayers[i], stateValues.layers[i])) {
+        if (!deepEqualObjects(currentLayers[i], globalStateValues.layers[i])) {
           layersSettingsToUpdate.push({
             _id: currentLayers[i]._id,
             layerSettings: currentLayers[i].layerSettings,
@@ -348,7 +353,7 @@ export default function AddLayer(props) {
         }
       }
 
-      //// saving to stateApp
+      // //// saving to stateApp
       updateStateLayers([...currentLayers])
 
       //// saving to mongo
@@ -422,7 +427,8 @@ export default function AddLayer(props) {
                 <Collapse in={openM1} timeout="auto" unmountOnExit>
                   <List className={classes.list}>
                     {M1Layers?.filter(
-                      (layer) => (!props.search || layer.layerName?.toLowerCase().includes(props.search)) && layer.layerName !== 'Land Grid'
+                      (layer) => (!props.search || layer.layerName?.toLowerCase().includes(props.search)) && 
+                      !['Land Grid', 'TX GLO Units', 'TX GLO Active Leases', 'Rig Activity'].includes(layer.layerName)
                     )?.map((layer, index) => {
                       const labelId = `m1layer-list-label-${index}`;
                       if (layer.layerName === "Recent Submitted Permits") {
@@ -448,7 +454,8 @@ export default function AddLayer(props) {
                               onChange={() => changeShowAble(layer)}
                               inputProps={{ "aria-label": "primary checkbox" }}
                             />
-                            <ListItemText id={labelId} primary={truncate(layer.layerName, 30)} />
+                            {/* Override layer manager name of Wells */}
+                            <ListItemText id={labelId} primary={layer.layerName === 'Wells' ? 'Platform Wells' : truncate(layer.layerName, 30)} />
                           </StyledListItem>
                         );
                       }

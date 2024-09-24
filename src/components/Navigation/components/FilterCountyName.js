@@ -8,6 +8,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { NavigationContext } from "../NavigationContext";
 import { useLazyQuery } from "@apollo/client";
 import { COUNTIES } from "../../../graphQL/useQueryCountiesBySta";
+import { navController } from "hookstate/navStateController";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -39,14 +40,20 @@ export default function FilterCountyName() {
     }
   }, [stateNav.stateName]);
 
-  const nullDesc = {
-    GrId1: null,
-    GrId2: null,
-    GrId3: null,
-    GrId4: null,
-    GrId5: null,
-    filterGeography: null,
-  };
+  const nullDesc = [
+    { field: 'GrId1', value: null },
+    { field: 'GrId2', value: null },
+    { field: 'GrId3', value: null },
+    { field: 'GrId4', value: null },
+    { field: 'GrId5', value: null },
+    { field: 'countyName', value: null },
+    { field: 'county', value: null },
+    { field: 'filterGeography', value: null },
+  ]
+  const nullDesc_Obj = {}
+  nullDesc.forEach((filter) => {
+    nullDesc_Obj[filter.field] = filter.value
+  })
 
   useEffect(() => {
     if (data) {
@@ -67,16 +74,17 @@ export default function FilterCountyName() {
     if (newValue == null) {
       setStateNav((stateNav) => ({
         ...stateNav,
-        countyName: null,
-        ...nullDesc,
+        ...nullDesc_Obj,
       }));
+      navController.handleGeographyFilters(nullDesc)
     } else {
       if (newValue && newValue.county) {
         setStateNav((stateNav) => ({
           ...stateNav,
+          ...nullDesc_Obj,
           countyName: newValue.county,
-          ...nullDesc,
         }));
+        navController.handleGeographyFilters([...nullDesc, { field: 'county', value: newValue.county }])
       }
     }
   };

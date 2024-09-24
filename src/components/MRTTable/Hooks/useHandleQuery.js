@@ -70,7 +70,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		let globalFilter = tableStateValues.globalFilter;
 
-		if (tableStateValues.isGeneric)
+		if (tableStateValues.isGeneric && !tableStateValues.globalSearch)
 			globalFilter = null;
 
 		const variables = {

@@ -287,7 +287,8 @@ export default function CustomizedSteppers(props) {
   };
 
   const handleNext = async () => {
-    if (jobStateValues.activeStepNumber === steps.length - 2) {
+    const activeStep = jobStateValues.activeStepNumber;
+    if (activeStep === steps.length - 2) {
       if (jobStateValues.jobType === "SHAPE_TO_M1_LAYER") {
         const jobInitialization = await client.mutate({
           mutation: INITIALIZE_EXPORT_JOB,
@@ -375,7 +376,7 @@ export default function CustomizedSteppers(props) {
     } else {
       jobController.nextStep()
     }
-    if (jobStateValues.activeStepNumber === steps.length - 1) {
+    if (activeStep === steps.length - 1) {
       handleReset();
       routeChange(props.selectedJob.redirectTo || previousRoute[0]?.match?.url);
     }

@@ -49,7 +49,7 @@ const SortableLayer = ({ mongoId, search }) => {
   }, [getLayerGroups])
 
   useEffect(() => {
-    if (layerGroupData?.getLayerGroups && !deepEqual(stateValues.layers, stateValues.previousLayers)) {
+    if (layerGroupData?.getLayerGroups) {
       const hookStateAppLayers = stateValues.layers
       const layerGroups = layerGroupData?.getLayerGroups
       const groupHandled = [];

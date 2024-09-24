@@ -6,15 +6,16 @@ import { Close as CloseIcon } from "@material-ui/icons";
 import { getDefaultSettings } from "../addUserHelper";
 import { ADDLAYER } from "graphQL/useMutationAddLayer";
 import { AppContext } from "AppContext";
-import { ColorPickerStyledBox, useLayerStyle, useStyles, WidthPicker } from "./Common";
+import { ColorPickerStyledBox, useLayerStyle, WidthPicker } from "./Common";
 import { Autocomplete } from "@material-ui/lab";
 import { mapControlsController } from "hookstate/mapControlsController";
+import { globalStateController } from "hookstate/globalStateController";
 
 function NewLayerManager(props) {
   const [stateApp] = useContext(AppContext);
   const sourceProps = "" + uuid() + "_source"
 
-  const [layer, setLayer] = useState({
+  const [layer] = useState({
     createBy: stateApp.user.mongoId,
     ...getDefaultSettings("Polygon", '', sourceProps)
   });
@@ -29,14 +30,7 @@ function NewLayerManager(props) {
   const [source, setSource] = useState()
   const [selectCategory, setCategory] = useState()
 
-  // const setLayerHandler = (layerName, layerGeoType) => {
-  //   setLayer({
-  //     ...layer,
-  //     layerName: layerName,
-  //     identifier: layerName + uuid(),
-  //     layerGeometry: layerGeoType || 'Polygon',
-  //   })
-  // }
+  const { datasets, globalStateValues } = globalStateController.useState(['datasets'], 'globalStateValues')
 
   const createLayer = () => {
     addLayer({
@@ -74,13 +68,13 @@ function NewLayerManager(props) {
   //   setLayerHandler(layerName, selectCategory)
   // }, [layerName, selectCategory])
 
-  const datasets = useMemo(() => {
-    const datasets = stateApp.datasets?.filter((dataset) => dataset.name !== 'M1 Platform')
+  const _datasets = useMemo(() => {
+    const datasets = globalStateValues.datasets?.filter((dataset) => dataset.name !== 'M1 Platform')
     return datasets || [];
-  }, [stateApp.datasets])
+  }, [datasets])
 
   const layerCategories = useMemo(() => {
-    const dataset = stateApp.datasets.find((dataset) => dataset.name === source?.name)
+    const dataset = globalStateValues.datasets.find((dataset) => dataset.name === source?.name)
     return dataset?.categories || []
   }, [source])
 
@@ -103,7 +97,7 @@ function NewLayerManager(props) {
             <Grid item xs={12}>
               <Autocomplete
                 id="data-source"
-                options={datasets}
+                options={_datasets}
                 getOptionLabel={(option) => option.name}
                 value={source}
                 onChange={(_, dataset) => setSource(dataset)}

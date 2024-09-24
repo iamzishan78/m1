@@ -1117,7 +1117,7 @@ function SubTable(props) {
         if (ret_val[key]) {
           ret_val[key] = ret_val[key] + parseFloat(row[key]);
         } else {
-          ret_val[key] = parseFloat(row[key]);
+          ret_val[key] = row[key] ? parseFloat(row[key]) : 0; // Parse as float if value, otherwise 0
         }
       });
     });
@@ -3900,9 +3900,6 @@ function SubTable(props) {
           },
         };
       }
-      if (props.addAble && props.parent === "UserManagement") {
-        buttonLabel = "+ ADD USER";
-      }
       if (props.addAble?.type === "ownerToParcel" || props.addAble?.type === "ownerToUnit") {
         buttonLabel = "+ ADD INTEREST OWNER";
         menuOptions = {
@@ -3967,8 +3964,6 @@ function SubTable(props) {
         if (props.addAble?.type && props.addAble?.type === "parcelInterestsToEntity")
           // handleExpandClick(null, null, null, "addOwnerToParcel");
           handleExpandClick(null, null, null, "addParcelInterestsToEntity");
-        if (props.addAble?.type && props.addAble?.type === "inviteUser")
-          handleExpandClick(null, null, null, "inviteUser");
         if (props.addAble?.type === "revenueStatementDetails") {
           const checkId = window.location.pathname.split("/")[window.location.pathname.split("/").length - 1];
           routeChange(`/revenue/statement/${checkId}/line-item`);
@@ -4027,7 +4022,6 @@ function SubTable(props) {
             )}
             {(props.addAble?.type === "wellInterest" ||
               props.addAble?.type === "suggestedOwnerToParcel" ||
-              (props.addAble && props.parent === "UserManagement") ||
               props.addAble?.type === "revenueStatementDetails") && (
                 <Button
                   color="secondary"
@@ -4186,19 +4180,6 @@ function SubTable(props) {
           selectedAgreement: rows[dataIndex],
         }));
         props.onClickAdd();
-      }
-
-      if (props.targetLabel === "usermanagement") {
-        if (rows[dataIndex]?.id) {
-          let card = { ...rows[dataIndex] };
-          setStateApp((stateApp) => ({
-            ...stateApp,
-            userDialog: true,
-            activeUser: card,
-          }));
-
-          handleExpandClick(null, null, null, "inviteUser");
-        }
       }
 
       // if (props.targetLabel === "Revenue Properties") {
@@ -5177,9 +5158,6 @@ function SubTable(props) {
                   setRows={setExpandedObject}
                   setSelectedRow={setSelectedRow}
                 />
-              )}
-              {openDialog === "inviteUser" && (
-                <InviteUserDialog rows={rows} setRows={setExpandedObject} onClose={handleCloseDialog} setSelectedRow={setSelectedRow} />
               )}
               {openDialog === "reinviteUser" && (
                 <ReinviteUserDialog

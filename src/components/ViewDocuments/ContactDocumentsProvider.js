@@ -7,7 +7,7 @@ import ContactDocumentsCard from './ContactDocumentsCard'
 export default function ContactDocumentsProvider(props) {
   return (
     <ContactDetailsContextProvider>
-      <ContactDocumentsCard contactId={props.contactId}>
+      <ContactDocumentsCard {...props}>
         {props.children}
       </ContactDocumentsCard>
     </ContactDetailsContextProvider>

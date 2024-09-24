@@ -6,9 +6,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useLazyQuery } from '@apollo/client';
 
 import { OWNERSLATSLONS } from "graphQL/useQueryOwnerLatsLonsArray";
-import { popupController } from 'hookstate/popupStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 import { layerController } from 'hookstate/layerStateController';
+import { findBoundsMap } from 'components/MapControls/commonHelper';
+import { globalStateController } from 'hookstate/globalStateController';
 
 const useStyles = makeStyles(() => ({
     icons: {
@@ -20,39 +21,71 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const WellFlyToMap = ({ id, disabled = false }) => {
-    const classes = useStyles();
+const formatIt = (mdata) => {
+    return {
+        type: "FeatureCollection",
+        features: mdata
+            .filter((feature) => (feature.latitude && feature.longitude) || (feature.Latitude && feature.Longitude))
+            .map((feature) => {
+                if (feature.latitude && feature.longitude) {
+                    return {
+                        type: "Feature",
+                        properties: feature,
+                        geometry: {
+                            type: "Point",
+                            coordinates: [feature.longitude, feature.latitude],
+                        },
+                    };
+                } else {
+                    return {
+                        type: "Feature",
+                        properties: feature,
+                        geometry: {
+                            type: "Point",
+                            coordinates: [feature.Longitude, feature.Latitude],
+                        },
+                    };
+                }
+            }),
+    };
+};
+
+export const useTaxOwnerWellFlyto = () => {
     const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(OWNERSLATSLONS);
 
 
-    const handleClick = async () => {
+    const handleFlyto = async (ownerId) => {
+        globalStateController.updateState({ universalLoader: true })
         await getOwnerWells({
             variables: {
-                ownerId: id,
+                ownerId,
             },
         });
     }
 
     useEffect(() => {
         if (dataOwnerWells && dataOwnerWells.ownerLatsLonsArray?.length) {
-
-            if (dataOwnerWells.ownerLatsLonsArray.length === 1)
-                popupController.setState({
-                    selectedWellId: dataOwnerWells.ownerLatsLonsArray[0].id.toLowerCase(),
-                    wellSelectedCoordinates: [
-                        dataOwnerWells.ownerLatsLonsArray[0].longitude,
-                        dataOwnerWells.ownerLatsLonsArray[0].latitude,
-                    ],
+            if (dataOwnerWells.ownerLatsLonsArray.length > 0) {
+                findBoundsMap(formatIt(dataOwnerWells.ownerLatsLonsArray)?.features, window.mapRef, {
+                    top: 50, bottom: 50, left: 50, right: 50
                 });
-            window.setStateApp(stateApp => ({
-                ...stateApp,
-                fitBounds: null
-            }));
-            layerController.updateState({ wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray] })
-            mapControlsController.updateState({ mapGridCardActivated: false });
+                mapControlsController.updateState({ mapGridCardActivated: false });
+                setTimeout(() => {
+                    layerController.updateState({ wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray] })
+                    layerController.toggleLayersActivity("Search", true)
+                }, 0);
+            }
         }
+        globalStateController.updateState({ universalLoader: false })
 
     }, [dataOwnerWells]);
+
+    return { handleFlyto }
+}
+
+const WellFlyToMap = ({ id, disabled = false }) => {
+    const classes = useStyles();
+    const { handleFlyto } = useTaxOwnerWellFlyto()
 
     return (
         <Tooltip title="Fly To Map" placement="top" style={{ marginRight: '10px' }}>
@@ -64,7 +97,7 @@ const WellFlyToMap = ({ id, disabled = false }) => {
                 disabled={disabled}
                 onClick={e => {
                     e.stopPropagation();
-                    handleClick();
+                    handleFlyto(id);
                 }}
                 aria-label="fly"
             >

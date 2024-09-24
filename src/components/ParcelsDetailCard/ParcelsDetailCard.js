@@ -341,6 +341,11 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
         popupController.updateState({
           selectedParcel: { ...feature.properties, feature },
         });
+
+        setStateApp((state) => ({
+          ...state,
+          selectedParcel: { ...feature.properties, feature },
+        }));
       } else {
         dispatch(showErrorMessage('Failed to update parcel'));
       }

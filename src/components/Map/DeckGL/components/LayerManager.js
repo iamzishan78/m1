@@ -40,7 +40,7 @@ function LayerManager() {
 
   const { bbox, recalculate } = layerController.useState(['bbox', 'recalculate']);
   const { layers, deckLayer, globalStateValues } = globalStateController.useState(['layers', 'deckLayer'], 'globalStateValues');
-  const { polygonFilter } = layerFiltersController.useState(['polygonFilter']);
+  const { polygonFilter, polygonsFilter } = layerFiltersController.useState(['polygonFilter', 'polygonsFilter']);
 
   useEffect(() => {
     if (!window.mapRef) return;
@@ -70,7 +70,7 @@ function LayerManager() {
     if (isReady)
       layerController.handleChange();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bbox, recalculate, isReady, polygonFilter]);
+  }, [bbox, recalculate, isReady, polygonFilter, polygonsFilter]);
 
   return null;
 }

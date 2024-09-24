@@ -546,11 +546,19 @@ export const AdminManagementRoutes = {
     isDefault: true,
     showSettingString: true,
   },
-  FLATTENING: {
+  FLATTEN: {
     featureFlag: "AlWAYSSHOW",
-    title: "Flattening",
-    link: "/admin/runflattening",
-    component: "Flattening",
+    title: "Flatten",
+    link: "/admin/runFlattening",
+    component: "Flatten",
+    noCheck: true,
+    showSettingString: false,
+  },
+  REINDEX: {
+    featureFlag: "AlWAYSSHOW",
+    title: "Reindex",
+    link: "/admin/runReindexing",
+    component: "Reindex",
     noCheck: true,
     showSettingString: false,
   },
@@ -630,8 +638,9 @@ export const AdminManagementRoutes = {
 };
 
 export const bypassTenants = [
-  // "localhost",
+  "localhost",
   // "m1Preview",
+  // "m1dev",
   // "m1Staging",
   // "m1Production",
   // "m1Development",
@@ -649,6 +658,8 @@ export const bypassTenants = [
   // "Pheasant"
 ];
 
+export const simpleAuthBypass = false
+
 export const OWNERTYPE = {
-  CORPORATION: "CORPORATION" 
+  CORPORATION: "CORPORATION"
 }

@@ -347,21 +347,17 @@ const drawStateControllerHandler = state => {
 			if (upsertCustomLayer)
 				upsertCustomLayer({
 					variables: { customLayer: customLayerData },
-					refetchQueries: ['getCustomLayers'],
-					// awaitRefetchQueries: true,
-				}).then((result) => {
-					layerController.resetBounds(result?.data?.upsertCustomLayer?.customLayer?.shapeJson?.identifier)
+				}).then(() => {
+					layerController.resetBounds('Area of Interest') // reset bounds as AOI
 				});
 			else if (updateCustomLayer) {
 				updateCustomLayer({
 					variables: {
-						customLayerId: selectedAoi?.id,
+						customLayerId: selectedAoi?.id || selectedAoi?._id,
 						customLayer: customLayerData,
 					},
-					refetchQueries: ['getCustomLayers'],
-					awaitRefetchQueries: true,
-				}).then((res) => {
-					layerController.resetBounds(selectedAoi.identifier)
+				}).then(() => {
+					layerController.resetBounds('Area of Interest') // reset bounds as AOI
 				});;
 			}
 		}
@@ -458,17 +454,18 @@ const drawStateControllerHandler = state => {
 		const selectedFeature = drawController.getValue('currentFeature');
 
 		try {
-			if (selectedFeature.id)
+			// crashing issues fixed moved code in try catch block
+			if (selectedFeature?.id) {
 				window.drawRef?.changeMode('direct_select', { featureId: selectedFeature.id });
+				setFeatureProperty(window.drawRef, selectedFeature.id, 'shapeEdit', false);
+				drawShapeLayerToggle('none');
+				drawController.updateState({
+					currentFeature: selectedFeature,
+					shapeEdit: false,
+				});
+			}
 		} catch (err) {
-			//
 		}
-		setFeatureProperty(window.drawRef, selectedFeature.id, 'shapeEdit', false);
-		drawShapeLayerToggle('none');
-		drawController.updateState({
-			currentFeature: selectedFeature,
-			shapeEdit: false,
-		});
 	};
 
 	const actionShowWellsAndOwners = dispatch => {
@@ -489,7 +486,7 @@ const drawStateControllerHandler = state => {
 	const applyFilter = () => {
 		const selectedFeature = drawController.getValue('currentFeature');
 
-		layerFiltersController.setPolygonFilter(selectedFeature.geometry)
+		layerFiltersController.setPolygonFilter(selectedFeature?.geometry)
 
 		// Changing shape to Blue
 		window.drawRef?.changeMode('simple_select');
@@ -703,6 +700,9 @@ const drawStateControllerHandler = state => {
 			};
 		if (layerType === 'agreement')
 			properties = { agreementName: shapeName, agreementType: layerSubType };
+		if (globalStateController.getValue('testCase') === 'AgreementDraw')
+			properties.agreementNumber = '1234';
+		
 		const featureId = hat();
 		const newShapeFeature = {
 			id: featureId,

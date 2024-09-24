@@ -10,9 +10,9 @@ import OperatorIcon from "components/Shared/svgIcons/operator";
 
 
 export const platformDataWellsInitialData = [
-  { index: 0, value: 'well', Icon: WellIcon, label: 'Wells', shapeGrid: true },
-  { index: 1, value: 'owner', Icon: TaxOwnerIcon, label: 'Tax Owners', shapeGrid: true },
-  { index: 2, value: "mywell", Icon: WellIcon, label: "My Wells", mapGrid: true },
+  { index: 0, value: 'well', Icon: WellIcon, gridLabel: "Platform Wells", label: 'Wells', shapeGrid: true },
+  { index: 1, value: "mywell", Icon: WellIcon, label: "My Wells", mapGrid: true },
+  { index: 2, value: 'owner', Icon: TaxOwnerIcon, label: 'Tax Owners', shapeGrid: true },
   // {
   //   index: 3,
   //   value: 'operator',
@@ -24,7 +24,7 @@ export const platformDataWellsInitialData = [
 
 export const platformDataInitialData = [
   platformDataWellsInitialData[0],
-  platformDataWellsInitialData[1],
+  platformDataWellsInitialData[2],
   {
     index: 2,
     value: 'places',

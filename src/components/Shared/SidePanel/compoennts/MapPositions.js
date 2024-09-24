@@ -45,13 +45,12 @@ const StyledTextField = (props) => (
 
 export default function MapPositions(props) {
   const classes = useStyles();
-  const { control, handleSubmit, reset, watch } = useForm();
+  const { control, handleSubmit, reset, watch, setValue } = useForm();
   const { stateValues } = mapStateController.useState(['defaultMapVars', 'mapVars'])
   const { setMapDefaultPosition } = props;
   const { defaultMapVars, mapVars } = stateValues;
   const [centerError, setCenterError] = useState(false);
   const center = watch("center", "");
-  console.log(defaultMapVars, mapVars)
   useEffect(() => {
     if (defaultMapVars) {
       const vars = getVars(defaultMapVars);
@@ -79,6 +78,36 @@ export default function MapPositions(props) {
     };
     return vars;
   };
+
+
+  useEffect(() => {
+    const mapRef = window.mapRef;
+
+    if (mapRef) {
+      // Update for values
+      const updateFormFields = () => {
+        setValue("zoom", mapRef.getZoom());
+        setValue("bearing", mapRef.getBearing());
+        setValue("pitch", mapRef.getPitch());
+        setValue("center", `${mapRef.getCenter().lat}, ${mapRef.getCenter().lng}`);
+      };
+
+      // Listen to the map events
+      mapRef.on('move', updateFormFields);
+      mapRef.on('zoom', updateFormFields);
+      mapRef.on('rotate', updateFormFields);
+
+      // Initial values update
+      updateFormFields();
+
+      // Cleanup on unmount
+      return () => {
+        mapRef.off('move', updateFormFields);
+        mapRef.off('zoom', updateFormFields);
+        mapRef.off('rotate', updateFormFields);
+      };
+    }
+  }, [setValue]);
 
   const submitFunc = (values) => {
     if (values.center) {
@@ -121,7 +150,7 @@ export default function MapPositions(props) {
             as={StyledTextField}
             type="text"
             error={centerError}
-            helperText="Invalid Value"
+            helperText={centerError ? "Invalid Value" : ""} // helper text for errors
           />
         </Grid>
         <Grid item>

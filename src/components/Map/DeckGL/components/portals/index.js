@@ -10,10 +10,8 @@ import PermitCardProvider from 'components/PermitCard/PermitCardProvider';
 import ShapeDetailCard from 'components/ShapeDetailCard';
 import UdLayerCardProvider from 'components/UdLayerCard/UdLayerCardProvider';
 import LayerSelectionPopup from 'components/Map/components/popup/LayerSelectionPopup';
-import { showIfUserDefinedLayer } from 'components/Shared/functions/shapeLayer';
 import { popupController } from 'hookstate/popupStateController';
 import { globalStateController } from 'hookstate/globalStateController';
-import { drawBoundary, drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 import { drawController } from 'hookstate/drawStateController';
 import WellClick from './WellClick';
 import PermitClick from './PermitClick';
@@ -209,7 +207,7 @@ function Portals({ hideShape }) {
 								)}
 							</PortalD>
 						)}
-						{(showIfUserDefinedLayer() || popupVals.selectedUserDefinedLayer) && (
+						{(popupVals?.selectedUserDefinedLayer?.file) && (
 							<PortalD id="popupContainer">
 								<UdLayerCardProvider
 									parent="map"

@@ -171,7 +171,7 @@ export default function AnalyticsCards({
 
   const getInPayCount = buckets => {
     const activeBucket = buckets.filter(
-      (item) => ["in pay", "inpay"].includes(item.key.toLowerCase()) && item
+      (item) => item.key.toLowerCase() === "inpay" && item
     );
     return activeBucket && activeBucket?.length > 0
       ? _.sumBy(activeBucket, "doc_count")
@@ -254,7 +254,7 @@ export default function AnalyticsCards({
       setCards(cardsDefault);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [totalCount, unmappedPropertyCount]);
+  }, [totalCount]);
 
   const handleFilterClick = (key) => {
     if (key === "inpay" || key === "notinpay") {

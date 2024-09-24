@@ -2,8 +2,8 @@ import React, { useContext } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { NavigationContext } from '../NavigationContext';
+import { navController } from 'hookstate/navStateController';
 
 const playList = [
   'ABO-PECOS SLOPE',
@@ -83,7 +83,7 @@ export default function FilterPlay() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
 
   const handlePlayChange = value => {
-    layerFiltersController.setWellsVariables('play', value);
+    navController.handleWellsFilters({ field: 'play', value });
 
     setStateNav(stateNav => ({ ...stateNav, playName: value || [] }));
   };

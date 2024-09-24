@@ -2,7 +2,7 @@ import moment from "moment";
 
 import { getSession } from "utils/user";
 import { wellsKeys } from "utils/data";
-import { tenantsCredentials } from "components/Login/AADAuthConfig";
+import { tenantsCredentials } from "components/AzureLogin/AADAuthConfig";
 import { globalStateController } from "hookstate/globalStateController";
 
 export const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
@@ -274,7 +274,7 @@ export const getAddressUrl = (owner) => {
 
 export const getZillowAddressUrl = (owner) => {  // create and return zillow link from the address
   let address = "https://www.zillow.com/homes/";
-  const { address1, city, state, zip } = owner;  
+  const { address1, city, state, zip } = owner;
 
   if (address1) address += `${encodeURIComponent(address1)},`;
   if (city) address += `${encodeURIComponent(city)},`;
@@ -293,7 +293,7 @@ export const getOpenCorporatesUrl = (companyName) => {
   const encodedCompanyName = encodeURIComponent(companyName);
   return `${baseUrl}${encodedCompanyName}`;
 }
- 
+
 export const getMapFilters = (stateNav, searchInput, gridPolygonString, format) => {
   const extendSearchQuery = searchInput
 

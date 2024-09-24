@@ -7,7 +7,7 @@ import { FormLabel } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import CancelIcon from '@material-ui/icons/Cancel';
 
-import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { navController } from 'hookstate/navStateController';
 import { NavigationContext } from '../NavigationContext';
 
 const useStyles = makeStyles({
@@ -69,8 +69,7 @@ export default function FilterLateralLength() {
     if (!max && max !== 0) delete value.max;
 
     const type = 'range';
-
-    layerFiltersController.setWellsVariables('lateralLength', value, type);
+    navController.handleWellsFilters({ field: 'lateralLength', value, type });
   }, [setStateNav, valueMaxDisplay, valueMinDisplay]);
 
   const clearFilters = () => {

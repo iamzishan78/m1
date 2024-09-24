@@ -136,6 +136,7 @@ export const jobState = hookstate(copy(jobInitialState));
 
 export const layerFilterInitialState = {
     polygonFilter: null,
+    polygonsFilter: [],
     Units: {
         layerName: 'Units',
         allowedTypes: ['Polygon', 'MultiPolygon'],
@@ -419,6 +420,7 @@ export const popupInitialState = {
     selectedWell: null,
     selectedWellId: null,
     wellSelectedCoordinates: null,
+    selectedPlaces: null,
     wellDetailCardTabIndex: 0,
     selectedPermit: null,
     selectedPermitId: null,

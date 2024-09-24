@@ -117,6 +117,44 @@ export const drawWellBoundary = coordinates => {
   }
 };
 
+export const drawPlaceBoundary = coordinates => { // Add separate fn for draw place highlight with larger dot
+  if (!window.mapRef) return;
+
+  const layerId = 'boundary-layer';
+
+  if (window.mapRef.getLayer(layerId)) window.mapRef.removeLayer(layerId);
+
+  if (coordinates && coordinates.length > 0 && coordinates[0]) {
+    new DeckGlLayer({
+      layerId,
+      type: 'GeoJsonLayer',
+      beforeLayer: 'top_deck_layer',
+      props: {
+        data: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: coordinates,
+            },
+          },
+        ],
+        getFillColor: [255, 255, 0],
+        getLineColor: [255, 255, 0],
+        pointRadiusMinPixels: 8, // Minimum pixel size for points
+        pointRadiusMaxPixels: 8, // Maximum pixel size for points
+        lineWidthMinPixels: 5,
+        lineWidthMaxPixels: 5,
+        getPointRadius: 8,
+        getLineWidth: 5,
+        parameters: {
+          depthTest: false, // Disable depth testing to draw points on top
+        },
+      },
+    });
+  }
+};
+
 export const drawBoundary = selectedUserDefinedLayer => {
   if (!window.mapRef) return;
 
@@ -145,7 +183,7 @@ export const drawBoundary = selectedUserDefinedLayer => {
           lineWidthUnits: "meters",
           getLineWidth: 100,
           getFillColor: [255, 255, 0],
-          getPointRadius: 200,
+          getPointRadius: 50,
         }),
       },
     });
