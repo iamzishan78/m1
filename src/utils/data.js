@@ -635,11 +635,22 @@ export const AdminManagementRoutes = {
   //   search: false,
   //   isDefault: true,
   // },
+  DATA_EDITING: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Bulk Data Editing",
+    headerText: "Bulk Data Editing",
+    link: "/admin/bulk-editing",
+    component: "BulkDataEditing",
+    value: "Activities",
+    search: true,
+    isDefault: true,
+  },
 };
 
 export const bypassTenants = [
-  // "localhost",
+  "localhost",
   // "m1Preview",
+  // "m1dev",
   // "m1Staging",
   // "m1Production",
   // "m1Development",
@@ -657,6 +668,8 @@ export const bypassTenants = [
   // "Pheasant"
 ];
 
+export const simpleAuthBypass = false
+
 export const OWNERTYPE = {
-  CORPORATION: "CORPORATION" 
+  CORPORATION: "CORPORATION"
 }
