@@ -94,7 +94,7 @@ const TractMeta = {
 		},
 
 		{
-			...CommonSchema.HIDDEN,
+			...CommonSchema.MONGO_ID, // Mongo Id Column
 			name: '_id',
 			accessorKey: '_id',
 		},
