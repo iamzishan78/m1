@@ -21,6 +21,7 @@ const TractInterestsMeta = {
     { field: 'shape.layer.keyword', value: 'parcel' },
     { field: 'contact.IsDeleted', value: 'false' },
     { field: 'shape.IsDeleted', value: 'false' },
+    { field: "descriptor", value: "ParcelDescriptor" }
   ],
   maxTableHeight: 'calc(100vh - 450px)',
   isInFiniteScroll: true,
