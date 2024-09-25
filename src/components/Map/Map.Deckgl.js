@@ -242,7 +242,12 @@ function Map({
 		const { signal } = abortController;
 
 		let styleTypes = ['Satellite', 'Basic', 'Dark', 'Light', 'Outdoors'];
-		const isDarkMapAllowed = false; // Set this to the appropriate value
+		let isDarkMapAllowed = false;
+		const bypassTenants = ['m1dev', 'frontier', 'localhost']; // Bypass tenants for dark Map
+		
+        if (bypassTenants.includes(window.sessionStorage.getItem("tenantName"))) {
+		    isDarkMapAllowed = stateApp?.user?.features?.find(f => f.name === 'DarkBaseMap')
+		}
 		if (!isDarkMapAllowed) styleTypes = styleTypes.filter(style => style !== 'Dark');
 		let recurseLimit = 5;
 
