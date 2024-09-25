@@ -158,27 +158,12 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     });
   };
 
-  const filters = esFilters.map(filter => {
-    const updatedField = filter.field === 'layer.keyword' && filter.value === 'parcel' 
-      ? 'shape.layer.keyword' 
-      : filter.field;
-
-    // Return a new object with the updated field, ensuring immutability
-    return {
-      ...filter,
-      field: updatedField,
-    };
-  });
-
   const analyticsPayload = useMemo(() => {
-    let aggsFilters = filters || [];
+    let aggsFilters = esFilters || [];
     let grossAcersObject, netAcersField, nraField;
 
     // Case when the Elasticsearch index is 'shapeowners_flat'
     if (esIndex === 'shapeowners_flat') {
-      // Add an additional filter for 'shape.layer' to ensure we're only working with 'parcel' layer
-      aggsFilters.unshift({ field: 'shape.layer', value: 'parcel' });
-
       // Create a scripted metric aggregation for 'grossAcres' in 'shapeowners_flat'
       grossAcersObject = {
         scripted_metric: {
@@ -208,14 +193,13 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
       
 
       // Set the field names for 'net_acres' and 'nra' specific to 'shapeowners_flat'
-      netAcersField = 'net_acres';
+      netAcersField = {
+        sum: {
+          field: 'net_acres',
+        },
+      };
       nraField = 'nra';
     } else if (esIndex === 'shapes_flat') {
-      // Case when the Elasticsearch index is 'shapes_flat'
-
-      // Add an additional filter for 'layer' to ensure we're only working with 'parcel' layer
-      aggsFilters.unshift({ field: 'layer', value: 'parcel' });
-
       // Create a simple sum aggregation for 'sdGrossAcres' in 'shapes_flat'
       grossAcersObject = {
         sum: {
@@ -223,13 +207,38 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
         },
       };
 
-      // Set the field names for 'net_acres' and 'nra' specific to 'shapes_flat'
-      netAcersField = 'shapeJson.properties.shapeArea';
+      // Create a scripted metric aggregation for 'netAcers' in 'shapes_flat'
+      netAcersField = {
+          "scripted_metric": {
+            "init_script": "state.sum = 0.0;",
+            "map_script": `
+              if (doc['shapeJson.properties.shapeArea.keyword'].size() > 0) {
+                try {
+                  state.sum += Double.parseDouble(doc['shapeJson.properties.shapeArea.keyword'].value);
+                } catch (Exception e) {
+                  // Skip records that throw an exception
+                }
+              }
+            `,
+            "combine_script": "return state.sum;",
+            "reduce_script":`
+              double totalSum = 0.0;
+              for (s in states) {
+                if (s != null) { 
+                  totalSum += s; 
+                }
+              }
+              return totalSum;
+            `,
+        }
+      };
+
+      // Set the field names for 'nra' specific to 'shapes_flat'
       nraField = 'shapeJson.properties.netRoyalityAcres.calculatedNra';
     }
 
     return { aggsFilters, grossAcersObject, netAcersField, nraField };
-  }, [esIndex, filters, landSearchQuery]);
+  }, [esIndex, esFilters, landSearchQuery]);
   
   const tractsAnalytics = () => {
     getESAggsGrossAcresSum({
@@ -248,11 +257,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
         search: landSearchQuery ? `*${landSearchQuery}*` : "",
         filters: analyticsPayload.aggsFilters,
         aggs: {
-          netAcresSum: {
-            sum: {
-              field: analyticsPayload.netAcersField,
-            },
-          },
+          netAcresSum: analyticsPayload.netAcersField,
         },
       },
     });
