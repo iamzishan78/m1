@@ -14,12 +14,14 @@ import Map from "./components/Map";
 import AdminSettings from "components/Shared/AdminSettings";
 import Flatten from "components/Admin/Flatten"
 import Reindex from "components/Admin/Reindex"
+import BulkDataEditing from "components/Admin/components/BulkDataEditing";
 
 const Components = {
   Map,
   AdminSettings,
   Flatten,
-  Reindex
+  Reindex,
+  BulkDataEditing,
 };
 
 function isM1neralAddress(email) {
