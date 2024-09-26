@@ -44,6 +44,11 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     setCards(newCards);
   };
 
+  // Function to format card points in K(thousand)
+  const formCardPointValue = (value) => {
+    return (Math.round((value + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + "K";
+  }
+
   const [getESAggsActiveCount] = useLazyQuery(GET_ES_AGGS_LIST, {
     context: { batch: true },
     fetchPolicy: "no-cache",
@@ -73,14 +78,8 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
       if (aggsData?.getESAggsList?.aggregations?.grossAcresSum) {
-        const grossAcresSum = aggsData.getESAggsList.aggregations.grossAcresSum.value;
-        setCardPoint(
-          (Math.round((grossAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + "K",
-          1
-        );
-        // props.onGrossAcresSum(
-        //   aggsData?.getESAggsList?.aggregations?.grossAcresSum?.value
-        // );
+        const grossAcresSum = formCardPointValue(aggsData.getESAggsList.aggregations.grossAcresSum.value);
+        setCardPoint(grossAcresSum, 1);
       }
     },
   });
@@ -90,14 +89,8 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
       if (aggsData?.getESAggsList?.aggregations?.netAcresSum) {
-        const netAcresSum = aggsData.getESAggsList.aggregations.netAcresSum.value;
-        setCardPoint(
-          (Math.round((netAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + "K",
-          2
-        );
-        // props.onNetAcresSum(
-        //   aggsData?.getESAggsList?.aggregations?.netAcresSum?.value
-        // );
+        const netAcresSum = formCardPointValue(aggsData.getESAggsList.aggregations.netAcresSum.value);
+        setCardPoint(netAcresSum, 2);
       }
     },
   });
@@ -107,14 +100,8 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
       if (aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum) {
-        const netRoyaltyAcresSum = aggsData.getESAggsList.aggregations.netRoyaltyAcresSum.value;
-        setCardPoint(
-          (Math.round((netRoyaltyAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + "K",
-          3
-        );
-        // props.onNetRoyaltyAcresSum(
-        //   aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum?.value
-        // );
+        const netRoyaltyAcresSum = formCardPointValue(aggsData.getESAggsList.aggregations.netRoyaltyAcresSum.value);
+        setCardPoint(netRoyaltyAcresSum, 3);
       }
     },
   });

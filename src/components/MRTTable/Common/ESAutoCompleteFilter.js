@@ -7,18 +7,7 @@ import { tableController } from 'hookstate/tableController';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
 import vf_currency from "components/Shared/valueformatters/vf_currency.js";
-
-// Curreny keys
-const currencyKeys = [
-	'shapeJson.properties.uMaxUnitPricing.keyword', 
-	'shapeJson.properties.uUnitPricing.keyword',
-	'shapeJson.properties.uUnitPricingNMA.keyword',
-	'shapeJson.properties.uMaxUnitPricingNMA.keyword',
-	'shape.shapeJson.properties.uMaxUnitPricing.keyword', 
-	'shape.shapeJson.properties.uUnitPricing.keyword',
-	'shape.shapeJson.properties.uUnitPricingNMA.keyword',
-	'shape.shapeJson.properties.uMaxUnitPricingNMA.keyword',
-]
+import { currencyKeys } from '../utils/data';
 
 function ESAutoCompleteFilter({
 	tableKey,
