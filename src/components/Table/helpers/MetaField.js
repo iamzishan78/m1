@@ -342,6 +342,7 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
     setItems([]);
     setStateApp((stateApp) => ({
       ...stateApp,
+      showFieldModal: false,
       selectedMeta: null,
     }));
     globalStateController.updateState({
@@ -419,6 +420,11 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
         globalStateController.updateState({
           showFieldModal: false,
         });
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          selectedMeta: null,
+          showFieldModal: false,
+        }))
       }
       }
     >
