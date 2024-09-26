@@ -45,6 +45,9 @@ const PIPELINE_RUN_MODES = Object.freeze({
   RESET: 'reset',
 });
 
+const defaultPipelineRunMode = PIPELINE_RUN_MODES.NORMAL;
+const defaultPipelineTriggerMode = PIPELINE_TRIGGER_MODES.MANUAL;
+
 module.exports = {
   dummyPR,
   dummyBuildId,
@@ -64,4 +67,6 @@ module.exports = {
   PIPELINE_STATUSES,
   PIPELINE_RUN_MODES,
   PIPELINE_TRIGGER_MODES,
+  defaultPipelineRunMode,
+  defaultPipelineTriggerMode,
 };
