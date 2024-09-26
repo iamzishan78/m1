@@ -67,9 +67,8 @@ const TractInterestsMeta = {
     },
     {
       ...CommonSchema.HIDDEN,
-      name: "shape._id.keyword",
-      accessorFn: (row) => row?.shape?._id,
-      id: "shape._id",
+      name: "shape._id",
+      accessorKey: 'shape._id',
     },
 
     {
