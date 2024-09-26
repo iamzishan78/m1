@@ -12,6 +12,7 @@ import { AppContext } from "AppContext";
 import { CUSTOM_DATES } from 'utils/data'
 import { useSelector } from "react-redux";
 import { handleCustomDateTypeChange } from 'utils/helper';
+import { esIndexFilterKeyMap } from 'utils/data';
 
 const useStyles = makeStyles((theme) => ({
   actionBar: {
@@ -243,14 +244,14 @@ export default function CustomDatesActivities({
           <QualifierFilter
             value={qualifier}
             setValue={setQualifier}
-            // esIndex={esIndex}
-            esIndex={activeModule.title === 'Audit Reporting' ? 'contacts_flat' : 'activities_flat'}
+            esIndex={esIndex}
             searchFields={searchFields}
             tableFilters={tableFilters}
             appliedFilters={appliedFilters}
             selectedFilters={selectedFilters}
             label={label}
             onQualifierChange={handleFilterChange}
+            esFilterKey={esIndexFilterKeyMap[esIndex]}
           />
         </Grid>
       </Grid>
@@ -357,7 +358,8 @@ const QualifierFilter = ({
   searchFields,
   onQualifierChange,
   selectedFilters,
-  label
+  label,
+  esFilterKey
 }) => {
   const [stateApp] = useContext(AppContext);
   const [search, setSearch] = useState("");
@@ -376,9 +378,8 @@ const QualifierFilter = ({
       rangeFilters = getFilters(appliedFilters);
     }
     const filters = [...rangeFilters, ...tableFilters]
-    const searchKeyword = esIndex === 'contacts_flat' ? 'lastUpdateBy.name.keyword' : 'ownerName.keyword';
     
-    const index = filters.findIndex(f => f.field === searchKeyword)
+    const index = filters.findIndex(f => f.field === esFilterKey)
     if (index > -1) {
       filters.splice(index, 1);
     }
@@ -386,25 +387,24 @@ const QualifierFilter = ({
   };
 
   useEffect(() => {
-    const filterKey = esIndex === 'contacts_flat' ? 'lastUpdateBy.name.keyword' : 'ownerName.keyword';
     getQualifiers({
       variables: {
         esIndex,
         index: esIndex,
         filters: getAllFilters(),
-        filterKey,
+        filterKey: esFilterKey,
         search: { query: stateApp.activitySearchQuery, fields: searchFields },
         size: 50,
         filterAggs: {
           query: search,
-          field: filterKey,
+          field: esFilterKey,
           size: 50,
         },
       },
     });
     
     onQualifierChange(esIndex === 'contacts_flat' ? 'audit' : 'qualifier', search)
-  }, [search, esIndex === 'contacts_flat' ? selectedFilters.ownerType : selectedFilters.campaign]);
+  }, [search, esIndex === 'contacts_flat' ? selectedFilters.audit : selectedFilters.campaign]);
 
   return (
     <Autocomplete

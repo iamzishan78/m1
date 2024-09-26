@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 
 const ActivitiesDashboard = () => {
   const classes = useStyles();
-  const esIndex = "activities_flat";
+  const esIndex = "contacts_flat";
   const searchFields = ["name", "_all"];
   const [filterToggle, setFilterToggle] = useState(false);
   const [appliedFilters, setAppliedFilters] = useState({
@@ -59,7 +59,7 @@ const ActivitiesDashboard = () => {
     getESMinValue({
       variables: {
         esIndex,
-        field: "dateTime",
+        field: "lastUpdateAt",
         value_as_string: true,
       },
     });

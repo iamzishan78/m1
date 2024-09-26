@@ -670,3 +670,10 @@ export const bypassTenants = [
 export const OWNERTYPE = {
   CORPORATION: "CORPORATION" 
 }
+
+export const esIndexFilterKeyMap = {
+  contacts_flat: 'lastUpdateBy.name.keyword',
+  activities_flat: 'ownerName.keyword',  
+  // Add other mappings as needed
+};
+
