@@ -283,7 +283,6 @@ const AgreementMeta = {
       accessorKey: 'shapeJson.properties.extensionDate',
       header: 'Extension Exp Date',
       isSearchField: false,
-      type: 'date',
       Cell: ({ row }) => {
         return <>{formatDate(row?.original?.shapeJson?.properties?.extensionDate)}</>
       },
