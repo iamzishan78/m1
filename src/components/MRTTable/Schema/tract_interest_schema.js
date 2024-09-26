@@ -51,11 +51,6 @@ const TractInterestsMeta = {
 	},
   TableSchema: [
     {
-      ...CommonSchema.HIDDEN,
-      name: 'id',
-      accessorKey: 'id',
-    },
-    {
       ...CommonSchema.MONGO_ID,
       name: '_id',
       accessorKey: '_id',
