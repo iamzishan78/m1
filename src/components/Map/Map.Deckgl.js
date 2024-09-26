@@ -66,6 +66,7 @@ import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
 import { RIGSQUERY } from "graphQL/useQueryRigs";
 import { drawController } from 'hookstate/drawStateController';
 import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
+import { MapFeatureTenants } from 'utils/data';
 
 
 const useStyles = makeStyles(() => ({
@@ -243,9 +244,9 @@ function Map({
 
 		let styleTypes = ['Satellite', 'Basic', 'Dark', 'Light', 'Outdoors'];
 		let isDarkMapAllowed = false;
-		const bypassTenants = ['m1dev', 'frontier', 'localhost']; // Bypass tenants for dark Map
-		
-        if (bypassTenants.includes(window.sessionStorage.getItem("tenantName"))) {
+
+		// check MapFeatureTenants for dark Map	
+        if (MapFeatureTenants.includes(window.sessionStorage.getItem("tenantName"))) {
 		    isDarkMapAllowed = stateApp?.user?.features?.find(f => f.name === 'DarkBaseMap')
 		}
 		if (!isDarkMapAllowed) styleTypes = styleTypes.filter(style => style !== 'Dark');
