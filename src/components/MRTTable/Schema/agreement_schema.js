@@ -402,6 +402,43 @@ const AgreementMeta = {
       accessorKey: 'shapeJson.properties.recordedInstrumentNumber',
       header: 'Instrument #',
     },
+  
+    {
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'createBy.name.keyword',
+      accessorKey: 'createBy.name',
+      header: 'Created By',
+    },
+
+    {
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'createAt.keyword',
+      accessorKey: 'createAt',
+      header: 'Created Date',
+      type: 'date',
+      isSearchField: false,
+      Cell: ({ row }) => {
+        return <>{formatDate(row?.original?.createAt)}</>
+      },
+    },
+    {
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'lastUpdateBy.name.keyword',
+      accessorKey: 'lastUpdateBy.name',
+      header: 'Last Updated By',
+    },
+
+    {
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'lastUpdateAt.keyword',
+      accessorKey: 'lastUpdateAt',
+      header: 'Last Updated Date',
+      type: 'date',
+      isSearchField: false,
+      Cell: ({ row }) => {
+        return <>{formatDate(row?.original?.lastUpdateAt)}</>
+      },
+    },
 
     {
       ...CommonSchema.COMMON_COLUMN,
