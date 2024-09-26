@@ -8,7 +8,7 @@ import { Warning as WarningIcon, CheckCircle } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import { formatDate } from 'components/Shared/functions';
 import { LocalAtm as CurrencyIcon } from "@material-ui/icons";
-import vf_currency from 'components/Shared/valueformatters/vf_currency';
+import { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
 // Define styles for tooltip
 const useStyles = makeStyles((theme) => ({
   tooltip: {
@@ -89,11 +89,11 @@ const RevenueStatementsMeta = {
     {
       ...CommonSchema.COMMON_COLUMN,
       name: 'checkAmount',
-      accessorFn: row => vf_currency(row?.checkAmount), //Commma sperated checkamount after each thousand
+      accessorFn: row => vf_currency_to_fixed(row?.checkAmount, 2), //Commma sperated checkamount after each thousand
       id: 'checkAmount',
       header: 'Check Amount',
       isSearchField: false,
-      Cell: ({ row }) => <>{vf_currency(row?.original?.checkAmount)}</>,
+      Cell: ({ row }) => <>{vf_currency_to_fixed(row?.original?.checkAmount, 2)}</>,
     },
     // Column for Check Date
     {

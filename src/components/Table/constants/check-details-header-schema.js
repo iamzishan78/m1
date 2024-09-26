@@ -113,13 +113,13 @@ const RevenueStatementHeadCells = [
 		}
 	},
 	{
-		name: "grossPropertyVolume", label: "Prop Gross Volume", esKey: 'grossPropertyVolume', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value,  { toFixed: 0 }) }
+		name: "grossPropertyVolume", label: "Prop Gross Volume", esKey: 'grossPropertyVolume', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value,  { toFixed: 2 }) }
 	},
 	{
 		name: "grossPropertyValue", label: "Prop Gross Revenue", esKey: 'grossPropertyValue', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value, { currency: true }) }
 	},
 	{
-		name: "grossOwnerVolume", label: "Owner Volume", esKey: 'grossOwnerVolume', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
+		name: "grossOwnerVolume", label: "Owner Volume", esKey: 'grossOwnerVolume', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value,  { toFixed: 2 }) }
 	},
 	{
 		name: "grossOwnerValue", label: "Owner Gross Revenue", esKey: 'grossOwnerValue', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value, { currency: true }) }
