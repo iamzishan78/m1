@@ -192,11 +192,11 @@ const AgreementMeta = {
       accessorKey: 'shapeJson.properties.agreementSubtype',
       header: 'Agreement Subtype',
     },
-
+    // state column
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'shapeJson.properties.originalProperties.stateDetails.keyword',
-      accessorKey: 'shapeJson.properties.originalProperties.stateDetails',
+      name: 'shapeJson.properties.originalProperties.State.keyword',
+      accessorKey: 'shapeJson.properties.originalProperties.State',
       header: 'State',
     },
 
