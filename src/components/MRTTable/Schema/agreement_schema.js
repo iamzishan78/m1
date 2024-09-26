@@ -247,7 +247,6 @@ const AgreementMeta = {
       accessorKey: 'shapeJson.properties.effectiveDate',
       header: 'Efftv Date',
       isSearchField: false,
-      type: 'date',
       Cell: ({ row }) => {
         return <>{formatDate(row?.original?.shapeJson?.properties?.effectiveDate)}</>
       },
@@ -266,7 +265,6 @@ const AgreementMeta = {
       accessorKey: 'shapeJson.properties.expirationDate',
       header: 'Exp Date',
       isSearchField: false,
-      type: 'date',
       Cell: ({ row }) => {
         return <>{formatDate(row?.original?.shapeJson?.properties?.expirationDate)}</>
       },
