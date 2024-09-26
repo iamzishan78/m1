@@ -26,7 +26,10 @@ const DeletedPropertyName = ({ value }) => {
 
 	return (
 		<Tooltip title="This Property is Deleted">
-			{value} <DeleteIcon className={classes.deleteIcon} />
+			{/*  Wraps the text and DeleteIcon inside a <span> to ensure Tooltip receives a single React element as its child */}
+			<span>
+			{value} <DeleteIcon className={classes?.deleteIcon} />
+			</span>
 		</Tooltip>
 	);
 };
