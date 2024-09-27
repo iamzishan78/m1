@@ -105,7 +105,7 @@ const RevenueStatementHeadCells = [
 		name: "product", label: "Product", esKey: 'product.keyword', options: { sort: true, filter: true }
 	},
 	{
-		name: "disbursement", label: "Decimal Interest", esKey: 'disbursement', options: { sort: true, filter: true }
+		name: "disbursement", label: "Decimal Interest", esKey: 'disbursement', options: { sort: true, filter: true,  customRender: (value) => getFormattedValue(value,  { toFixed: 2 })  } 
 	},
 	{
 		name: "interestType", label: "Type", esKey: 'interestType.keyword', options: { sort: true, filter: true }
@@ -134,13 +134,13 @@ const RevenueStatementHeadCells = [
 		name: "taxType", label: "Tax Type", esKey: 'taxType', options: { sort: true, filter: true }
 	},
 	{
-		name: "ownerDeducts", label: "Deduct Amt", esKey: 'ownerDeducts', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
+		name: "ownerDeducts", label: "Deduct Amt", esKey: 'ownerDeducts', options: { sort: true, filter: true,  customRender: (value) => getFormattedValue(value,   { currency: true })  }
 	},
 	{
 		name: "deductType", label: "Deduct Cd", esKey: 'deductType.keyword', options: { sort: true, filter: true }
 	},
 	{
-		name: "netOwnerValue", label: "Owner Net Rev", esKey: 'netOwnerValue', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
+		name: "netOwnerValue", label: "Owner Net Rev", esKey: 'netOwnerValue', options: { sort: true, filter: true,  customRender: (value) => getFormattedValue(value,  { currency: true })  }
 	},
 	{
 		name: "propertyId", options: { filter: false, display: false, sort: false, viewColumns: false, }
