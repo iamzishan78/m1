@@ -472,7 +472,7 @@ export const getAdvancedSearch = (layerGeometry, mustQuery) =>
 			},
 		];
 // Query made generic to support in both TransferData Manager and layerStateController
-export const generateFileFilters = ({ fileLayer, pagination = { first: 10000, after: null }, extendFilters = { variables: {} } }) => {
+export const generateFileFilters = ({ fileLayer, pagination = { first: 10000, after: null, getAllData: true }, extendFilters = { variables: {} } }) => {
 	let mustQuery = [];
 
 	// Added fileAlternateName to support the case where the file name is different from the layer name
