@@ -153,7 +153,8 @@ function LayerStyling() {
       <div style={{ width: '100%', height: '100vh', overflowY: 'auto', overflowX: 'hidden' }}>
         <Grid container direction="row" justify="space-between" alignItems="center" style={{ padding: "15px" }}>
           <Grid item md={11}>
-            <Typography variant="h5" noWrap>{selectedLayer.layerName === "Parcels" ? "Tracts" : selectedLayer.layerName}</Typography>
+            {/* Override layer styling names of Parcel and Wells */}
+            <Typography variant="h5" noWrap>{selectedLayer.layerName === "Parcels" ? "Tracts" : selectedLayer.layerName === 'Wells' ? 'Platform Wells' : selectedLayer.layerName}</Typography>
           </Grid>
           <Grid item>
             <IconButton size="small" onClick={handleApplyChanges} data-testid="close">

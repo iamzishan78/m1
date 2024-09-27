@@ -5,7 +5,7 @@ import { useLazyQuery } from '@apollo/client';
 import { debounce } from 'lodash';
 
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
-import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { navController } from 'hookstate/navStateController';
 import { NavigationContext } from '../NavigationContext';
 
 export default function OperatorFilterJ() {
@@ -32,7 +32,7 @@ export default function OperatorFilterJ() {
   }, [esOperatorsData]);
 
   const handleOperatorChange = value => {
-    layerFiltersController.setWellsVariables('operator', value);
+    navController.handleWellsFilters({ field: 'operator', value });
 
     setStateNav(stateNav => ({ ...stateNav, operatorName: value || [] }));
   };

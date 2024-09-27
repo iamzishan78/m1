@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { navController } from 'hookstate/navStateController';
 import { NavigationContext } from '../NavigationContext';
 
 const wellTypesList = [
@@ -21,7 +21,7 @@ export default function FilterWellTypeJ() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
 
   const handleTypeChange = value => {
-    layerFiltersController.setWellsVariables('wellType', value);
+    navController.handleWellsFilters({ field: 'wellType', value });
 
     setStateNav(stateNav => ({ ...stateNav, typeName: value || [] }));
   };

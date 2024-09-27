@@ -73,7 +73,7 @@ const getWellColor = w => {
 
 		// rgb(192, 0, 0)
 		default:
-			return [0, 0, 0];  // default semi-transparent dark for permitted
+			return [58, 58, 58];  // default dark for permitted
 	}
 };
 
@@ -560,6 +560,30 @@ const layerStateControllerHandler = state => {
 		layerController.handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, visiable: value } })
 	}
 
+	const reinitializeLayer = ({ meta, layerId, beforeLayerId, labelProps, pickable, visible }) => {
+		if (!deckLayers[layerId]) {
+			deckLayers[layerId] = {
+				getData: generateDataFunc(),
+				beforeLayerId,
+			};
+			const metaLayer = meta.layer;
+			new DeckGlLayer({
+				layerId: layerId,
+				type: metaLayer.type,
+				beforeLayer: beforeLayerId,
+				props: {
+					...metaLayer.getProps(layerId),
+					...meta.props?.[layerId],
+					...(labelProps && { getText: d => d.properties?.label }),
+					pickable,
+					visible,
+				},
+			});
+		}
+		DeckGlLayer.moveLayer(layerId, beforeLayerId);
+		deckLayers[layerId].beforeLayerId = beforeLayerId;
+	}
+
 	const handleDeckLayer = dbLayer => {
 		const client = layerController.getValue('client');
 		if (!client) return;
@@ -620,28 +644,7 @@ const layerStateControllerHandler = state => {
 			};
 		}
 
-		if (!deckLayers[layerId]) {
-			deckLayers[layerId] = {
-				getData: generateDataFunc(),
-				beforeLayerId,
-			};
-			deckLayers[layerId].getData = generateDataFunc();
-			const metaLayer = meta.layer;
-			new DeckGlLayer({
-				layerId: layerId,
-				type: metaLayer.type,
-				beforeLayer: beforeLayerId,
-				props: {
-					...metaLayer.getProps(layerId),
-					...meta.props?.[layerId],
-					...(labelProps && { getText: d => d.properties?.label }),
-					pickable,
-					visible,
-				},
-			});
-		}
-		DeckGlLayer.moveLayer(layerId, beforeLayerId);
-		deckLayers[layerId].beforeLayerId = beforeLayerId;
+		reinitializeLayer({ meta, layerId, beforeLayerId, labelProps, pickable, visible })
 
 		if (!boundingState.show?.current)
 			return updateLayer(dbLayer, {
@@ -668,18 +671,18 @@ const layerStateControllerHandler = state => {
 			polygonsFilter,
 			filters: isFileLayer ? generateFileFilters({ fileLayer: dbLayer, extendFilters: filters }) : filters,
 			onData: data => {
-				if (!Array.isArray(data) || data.length === 0) return;
-				if (filters?.allowedTypes?.length > 0) {
-					data = data.filter(f =>
-						filters.allowedTypes.includes(f?.shapeJson?.geometry?.type)
-					);
+				if (!Array.isArray(data)) return;
+				let geoJson = { features: [] };
+				if (data?.length > 0) {
+					if (filters?.allowedTypes?.length > 0) {
+						data = data.filter(f =>
+							filters.allowedTypes.includes(f?.shapeJson?.geometry?.type)
+						);
+					}
+					const layerData = data;
+					if (!Array.isArray(layerData)) return;
+					geoJson = makeGeoJSON(layerData, labelProps);
 				}
-
-				const layerData = data;
-
-				let geoJson = null;
-				if (!Array.isArray(layerData)) return;
-				geoJson = makeGeoJSON(layerData, labelProps);
 				if (deckLayers[layerId]?.getData?.feedData)
 					deckLayers[layerId].getData.feedData(geoJson.features);
 			},
