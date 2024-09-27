@@ -363,7 +363,7 @@ const AgreementMeta = {
     {
       ...CommonSchema.COMMON_COLUMN,
       name: 'shapeJson.properties.metaDescription.keyword',
-      accessorKey: 'shapeJson.properties.metaDescription.keyword',
+      accessorKey: 'shapeJson.properties.metaDescription', // accessorKey to display Description
       header: 'Description',
     },
 
