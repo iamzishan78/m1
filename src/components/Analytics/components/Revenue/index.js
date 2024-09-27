@@ -527,7 +527,7 @@ export default function RevenueAnalytics(props) {
                 setToDate={setToDate}
                 isProperties={true}
                 datesInputWidth={4}
-                setAllDateToNull={false}
+                setAllDateToNull={true}
                 defaultRange={CUSTOM_DATES.THIS_YEAR_TO_DATE}
               />
             </Grid>
