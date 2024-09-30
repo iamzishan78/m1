@@ -43,7 +43,7 @@ export const CommonSchema = {
 	},
 	HIDDEN: {
 		header: ' ',
-		id: 'hidden-column',
+		isAlwaysHidden: true,
 		isSearchField: false,
 		hidden: true,
 		enablePinning: false,
