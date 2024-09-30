@@ -190,7 +190,7 @@ const TractInterestsMeta = {
     },
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'nonExecRightsOnly',
+      name: 'nonExecRightsOnly.keyword',
       accessorFn: row => row?.nonExecRightsOnly,
       id: 'nonExecRightsOnly',
       header: 'Non-Exec Rights Only',
