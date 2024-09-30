@@ -353,7 +353,7 @@ const TractInterestsMeta = {
       ...CommonSchema.COMMON_COLUMN,
       name: 'deals.name.keyword',
       accessorKey: 'deals.name',
-      isExport: 'dealsName',
+      isExport: 'deals', // esKey for export
       header: 'Associated Deals',
       handleArrayExport: {
         esType: "collection",
