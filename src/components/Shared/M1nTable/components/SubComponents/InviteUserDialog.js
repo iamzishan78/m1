@@ -5,54 +5,48 @@ import DialogContent from "@material-ui/core/DialogContent";
 import Button from "@material-ui/core/Button";
 import { useMutation } from "@apollo/client";
 import { Modals } from "styles/Modal";
-import { AppContext } from "AppContext";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
-import { ADDUSER } from "graphQL/useMutationAddUser";
-import { UPDATEUSER } from "graphQL/useMutationUpdateUser";
+import { ADD_USER, UPDATE_USER } from "graphQL/userManagement";
 import { Select, FormControl, MenuItem, TextField, Grid } from "@material-ui/core";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
+import { simpleTableGlobalController } from 'hookstate/simpleTableController';
 
 export default function InviteUserDialog(props) {
 
   const modalClass = Modals();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const { stateValues } = simpleTableGlobalController.useState(['dialog']);
+  const { activeUser } = stateValues?.dialog || {};
   const [loading, setLoading] = useState(false);
   const [displayName, setName] = useState("");
   const [emails, setEmailAddress] = useState("");
   const [role, setUserRole] = useState("USER");
   const [rolePrivileges, setRolePrivileges] = useState("ADD_OR_EDIT");
   const [lastLogin, setLastLogin] = useState();
-  const [addUser] = useMutation(ADDUSER, {
+  const [addUser] = useMutation(ADD_USER, {
     onCompleted: () => {
       setLoading(false);
       handleClose();
+      simpleTableGlobalController.refetch();
     },
-    refetchQueries: [
-      "getAllUsers",
-    ],
-    awaitRefetchQueries: true,
   });
-  const [updateUser] = useMutation(UPDATEUSER, {
+  const [updateUser] = useMutation(UPDATE_USER, {
     onCompleted: () => {
       setLoading(false);
       handleClose();
+      simpleTableGlobalController.refetch();
     },
-    refetchQueries: [
-      "getAllUsers",
-    ],
-    awaitRefetchQueries: true,
   });
 
   useEffect(() => {
-    if (stateApp.activeUser) {
-      setName(stateApp.activeUser.displayName);
-      setEmailAddress(stateApp.activeUser.emails);
-      setUserRole(stateApp.activeUser.role?.toUpperCase());
-      setLastLogin(stateApp.activeUser.lastLogin);
-      setRolePrivileges(stateApp.activeUser.rolePrivileges);
+    if (activeUser) {
+      setName(activeUser.displayName);
+      setEmailAddress(activeUser.email);
+      setUserRole(activeUser.role?.toUpperCase());
+      setLastLogin(activeUser.lastLogin);
+      setRolePrivileges(activeUser.rolePrivileges);
     }
-  }, [stateApp.activeUser]);
+  }, [activeUser]);
 
   const submitAddUser = () => {
     setLoading(true);
@@ -64,7 +58,7 @@ export default function InviteUserDialog(props) {
       variables: {
         user: {
           displayName,
-          emailAddress: emails,
+          email: emails,
           role,
           rolePrivileges
           // identities: [{
@@ -94,9 +88,9 @@ export default function InviteUserDialog(props) {
     updateUser({
       variables: {
         user: {
-          id: stateApp.activeUser.id,
+          id: activeUser.id,
           displayName,
-          emailAddress: emails,
+          email: emails,
           role,
           rolePrivileges
           // identities: [{
@@ -123,20 +117,17 @@ export default function InviteUserDialog(props) {
     setUserRole("USER");
     setLastLogin(null);
 
-    setStateApp((state) => {
-      return {
-        ...stateApp,
-        activeUser: null,
-      };
-    });
-
+		simpleTableGlobalController.updateState({
+			dialog: {},
+		});
+  
     props.onClose();
   }
 
   return (
     <React.Fragment>
       <DialogTitle className={modalClass.title} id="customized-dialog-title">
-        {stateApp.activeUser ? "Update User" : "Invite a New User"}
+        {activeUser ? "Update User" : "Invite a New User"}
         <HighlightOffIcon
           fontSize="large"
           className={modalClass.titleClose}
@@ -161,7 +152,7 @@ export default function InviteUserDialog(props) {
               <TextField
                 size="small"
                 fullWidth
-                disabled={stateApp.activeUser}
+                disabled={activeUser}
                 value={emails}
                 onChange={e => setEmailAddress(e.target.value)}
               />
@@ -216,10 +207,10 @@ export default function InviteUserDialog(props) {
           Cancel
         </Button>
         <Button
-          onClick={stateApp.activeUser ? submitUpdateUser : submitAddUser}
+          onClick={activeUser ? submitUpdateUser : submitAddUser}
           color="secondary"
         >
-          {stateApp.activeUser ? "Update" : "Send Invite"}
+          {activeUser ? "Update" : "Send Invite"}
         </Button>
       </DialogActions>
     </React.Fragment>
