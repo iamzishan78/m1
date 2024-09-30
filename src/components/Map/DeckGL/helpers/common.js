@@ -501,6 +501,17 @@ export const generateFileFilters = ({ fileLayer, pagination = { first: 10000, af
 	};
 };
 
+// Utility for getting attribute based color
+const getAttributeBasedColor = (attrFillColor, isColorEnabled) => {
+	// If fill color is an object
+	if (attrFillColor?.rgb) {
+		let fColor = attrFillColor.rgb.length === 3 ? "rgb(" + attrFillColor.rgb.join() + ")" : "rgba(" + attrFillColor.rgb.join() + ")";
+		let fColorOp = attrFillColor.alpha;
+		return isColorEnabled === false ? [0, 0, 0, 0] : getRGBA(fColor, fColorOp)
+	}
+	if (attrFillColor) return isColorEnabled === false ? [0, 0, 0, 0] : getRGBA(attrFillColor, 1)
+}
+
 // Utility for getting layer stroke color
 export const getLayerStrokeColor = (dbLayer, strokeColor) => {
 	const layerInteraction = dbLayer.layerSettings?.interaction;
@@ -519,13 +530,7 @@ export const getLayerStrokeColor = (dbLayer, strokeColor) => {
 			let value = _.get(d, keys) || (path.orKey ? _.get(d, orKeys) : null);
 			if (value) {
 				const attrFillColor = dbLayer.layerSettings.attributeBasedStrokeColors[selectAttr][value]
-				// If fill color is an object
-				if (attrFillColor?.rgb) {
-					let fColor = attrFillColor.rgb.length === 3 ? "rgb(" + attrFillColor.rgb.join() + ")" : "rgba(" + attrFillColor.rgb.join() + ")";
-					let fColorOp = attrFillColor.alpha;
-					return layerInteraction.interactionDetail?.enableStrokeColor === false ? [0, 0, 0, 0] : getRGBA(fColor, fColorOp)
-				}
-				if (attrFillColor) return layerInteraction.interactionDetail?.enableStrokeColor === false ? [0, 0, 0, 0] : getRGBA(attrFillColor, 1)
+				return getAttributeBasedColor(attrFillColor, layerInteraction.interactionDetail?.enableStrokeColor)
 			}
 		}
 		return layerInteraction.interactionDetail?.enableStrokeColor === false ? [0, 0, 0, 0] : getRGBA(strokeColor)
@@ -549,13 +554,11 @@ export const getLayerFillColor = (dbLayer, fillColor, fillOpacity) => {
 			let value = _.get(d, keys) || (path.orKey ? _.get(d, orKeys) : null);
 			if (value) {
 				const attrFillColor = dbLayer.layerSettings.attributeBasedColors[selectAttr][value]
-				// If fill color is an object
-				if (attrFillColor?.rgb) {
-					let fColor = attrFillColor.rgb.length === 3 ? "rgb(" + attrFillColor.rgb.join() + ")" : "rgba(" + attrFillColor.rgb.join() + ")";
-					let fColorOp = attrFillColor.alpha;
-					return layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : getRGBA(fColor, fColorOp)
-				}
-				if (attrFillColor) return layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : getRGBA(attrFillColor, 1)
+				return getAttributeBasedColor(attrFillColor, layerInteraction.interactionDetail?.enablefillColor)
+			}
+			if (dbLayer.layerSettings.attributeBasedColors[selectAttr]['']) {
+				const attrFillColor = dbLayer.layerSettings.attributeBasedColors[selectAttr]['']
+				return getAttributeBasedColor(attrFillColor, layerInteraction.interactionDetail?.enablefillColor)
 			}
 		}
 		return layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : getRGBA(fillColor, fillOpacity)

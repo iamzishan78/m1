@@ -113,8 +113,10 @@ const AttrsValuesDropdown = ({
             .map(hit => hit.key)
             .filter(key => key.trim());
 
+        filterKeys.unshift('');
+
         const options = filterKeys.map(key => {
-            const isColorOverridden = selectedOption?.label && selectedOption.label === key;
+            const isColorOverridden = (selectedOption?.label || selectedOption?.label === '') && selectedOption.label === key;
             const randomColor = attributeBasedColors?.[selectedValue.label]?.[key] || generateRandomColor();
 
             return {
