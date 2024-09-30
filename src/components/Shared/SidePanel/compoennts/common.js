@@ -1,6 +1,8 @@
 import { layerController } from "hookstate/layerStateController";
 
 export const getLayerColor = (layer, type, colors) => {
+    // seting layer color to disabled if selectedAttribute is selected
+    if (layer?.layerSettings?.selectedAttribute?.label) return [0, 0, 0, 0];
     const { basinLayerColor, GLOUnitsColor, GLOLeasesColor } = colors
     // layerName: "Rig Activity"
     if (type !== "layer" && type !== "marketplace") return {};
