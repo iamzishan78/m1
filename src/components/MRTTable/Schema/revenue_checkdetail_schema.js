@@ -17,16 +17,18 @@ const RevenueCheckDetailMeta = {
     search: {
         fields: ["name^4", "_all"]
     },
-    maxTableHeight: 'calc(100vh - 215px)',
+    maxTableHeight: 'calc(100vh - 330px)',
     gridViewSettings: {
         label: 'Check Details',
-        Icon: Analytics,
+        Icon: 'none',
         cssOverride: {
             top: '138px',
             left: '40px',
-            marginLeft: '-9px',
+            marginLeft: '-25px',
         },
     },
+    isNotBreadcrumbView: true, // Flag to determine whether to display a simple Typography or a Breadcrumbs component. If true, Typography is rendered; if false, Breadcrumbs is rendered.
+    isDeleteDisabled: true,
     isInFiniteScroll: true,
     // columnVirtualization: true,
     defaultSort: { field: "flatSyncAt", order: "desc" },
