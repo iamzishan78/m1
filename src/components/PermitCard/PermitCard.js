@@ -1,5 +1,4 @@
-import React, { useEffect, useContext, useState } from "react";
-import { AppContext } from "../../AppContext";
+import React, { useEffect, useState } from "react";
 
 //material-ui components
 import { makeStyles, useTheme } from "@material-ui/core/styles";
@@ -32,6 +31,8 @@ import { useLazyQuery } from "@apollo/client";
 // value formatters 
 import formatBOE from "../Shared/valueformatters/format_boe.js"
 import convert_date from "../Shared/valueformatters/convert_date.js";
+import { popupController } from "hookstate/popupStateController";
+import { globalStateController } from "hookstate/globalStateController";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -150,10 +151,6 @@ const useStyles = makeStyles((theme) => ({
 
 
 export default function PermitCard() {
-
-  // context
-  const [stateApp, setStateApp] = useContext(AppContext);
-
   // function state
   const [source, setSource] = useState(null);
 
@@ -161,21 +158,25 @@ export default function PermitCard() {
   const theme = useTheme();
   const classes = useStyles();
 
+  const { user, stateValues } = globalStateController.useState(['user']);
+  const { popupStateValues } = popupController.useState(['expandedCard', 'selectedPermit'], 'popupStateValues');
 
   useEffect(() => {
     if (!source) {
       setSource({
-        sourceId: stateApp.user.id,
+        sourceId: stateValues.user.id,
         label: "user",
-        name: stateApp.user.name,
+        name: stateValues.user.name,
         type: "vertex",
         properties: [],
       });
     }
-  }, [stateApp.user, source]);
+  }, [user, source]);
 
-  return stateApp.selectedPermit ? (
-    !stateApp.expandedCard ? (
+  const selectedPermit = popupStateValues?.selectedPermit;
+
+  return selectedPermit ? (
+    !popupStateValues.expandedCard ? (
       <div>
         <Card className={classes.card}>
           <CardActions
@@ -198,8 +199,8 @@ export default function PermitCard() {
                 className={classes.text2}
                 variant="caption"
               >
-                {stateApp.selectedPermit.PermitPurpose
-                  ? stateApp.selectedPermit.PermitPurpose
+                {selectedPermit.PermitPurpose
+                  ? selectedPermit.PermitPurpose
                   : '--'}
               </Typography>
             </div>
@@ -207,8 +208,8 @@ export default function PermitCard() {
 
             <div className={classes.iconContainer}>
               <Avatar variant="circle" className={classes.avatar}>
-                {stateApp.selectedPermit.WellBoreProfile
-                  ? stateApp.selectedPermit.WellBoreProfile.substring(0, 1)
+                {selectedPermit.WellBoreProfile
+                  ? selectedPermit.WellBoreProfile.substring(0, 1)
                   : 'H'}{' '}
               </Avatar>
               <Typography
@@ -223,8 +224,8 @@ export default function PermitCard() {
                 className={classes.text2}
                 variant="caption"
               >
-                {stateApp.selectedPermit.WellBoreProfile
-                  ? stateApp.selectedPermit.WellBoreProfile
+                {selectedPermit.WellBoreProfile
+                  ? selectedPermit.WellBoreProfile
                   : '--'}
               </Typography>
             </div>
@@ -244,8 +245,8 @@ export default function PermitCard() {
                 className={classes.text2}
                 variant="caption"
               >
-                {stateApp.selectedPermit.WellType
-                  ? stateApp.selectedPermit.WellType.toUpperCase()
+                {selectedPermit.WellType
+                  ? selectedPermit.WellType.toUpperCase()
                   : "UNKNOWN"}
               </Typography>
             </div>
@@ -262,8 +263,8 @@ export default function PermitCard() {
                     Permit #
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {stateApp.selectedPermit.PermitId
-                      ? stateApp.selectedPermit.PermitId
+                    {selectedPermit.PermitId
+                      ? selectedPermit.PermitId
                       : '--'}
                   </TableCell>
                 </TableRow>
@@ -273,8 +274,8 @@ export default function PermitCard() {
                     Lease Name
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {stateApp.selectedPermit.Lease
-                      ? stateApp.selectedPermit.Lease
+                    {selectedPermit.Lease
+                      ? selectedPermit.Lease
                       : '--'}
                   </TableCell>
                 </TableRow>
@@ -284,8 +285,8 @@ export default function PermitCard() {
                     Well Number
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {stateApp.selectedPermit.WellNumber
-                      ? stateApp.selectedPermit.WellNumber.padStart(3, '0')
+                    {selectedPermit.WellNumber
+                      ? selectedPermit.WellNumber.padStart(3, '0')
                       : '--'}
                   </TableCell>
                 </TableRow>
@@ -295,8 +296,8 @@ export default function PermitCard() {
                     API #
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {stateApp.selectedPermit.ApiNumber
-                      ? stateApp.selectedPermit.ApiNumber
+                    {selectedPermit.ApiNumber
+                      ? selectedPermit.ApiNumber
                       : '--'}
                   </TableCell>
                 </TableRow>
@@ -306,8 +307,8 @@ export default function PermitCard() {
                     County/Parish
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {stateApp.selectedPermit.County
-                      ? stateApp.selectedPermit.County + " (" + stateApp.selectedPermit.State + ")"
+                    {selectedPermit.County
+                      ? selectedPermit.County + " (" + selectedPermit.State + ")"
                       : '--'}
                   </TableCell>
                 </TableRow>
@@ -317,8 +318,8 @@ export default function PermitCard() {
                     Operator
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {stateApp.selectedPermit.OperatorName
-                      ? stateApp.selectedPermit.OperatorName
+                    {selectedPermit.OperatorName
+                      ? selectedPermit.OperatorName
                       : '--'}
                   </TableCell>
                 </TableRow>
@@ -328,8 +329,8 @@ export default function PermitCard() {
                     Well Type
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {stateApp.selectedPermit.WellType
-                      ? stateApp.selectedPermit.WellType
+                    {selectedPermit.WellType
+                      ? selectedPermit.WellType
                       : 'UNKNOWN'}
                   </TableCell>
                 </TableRow> */}
@@ -339,7 +340,7 @@ export default function PermitCard() {
                     Submitted Date
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {convert_date(stateApp.selectedPermit.SubmittedDate)}
+                    {convert_date(selectedPermit.SubmittedDate)}
                   </TableCell>
                 </TableRow>
 
@@ -348,8 +349,8 @@ export default function PermitCard() {
                     Permit Depth
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {stateApp.selectedPermit.TotalDepth
-                      ? formatBOE(stateApp.selectedPermit.TotalDepth)
+                    {selectedPermit.TotalDepth
+                      ? formatBOE(selectedPermit.TotalDepth)
                       : '--'}
                   </TableCell>
                 </TableRow>
@@ -359,8 +360,8 @@ export default function PermitCard() {
                     Completed Depth [ft]
                   </TableCell>
                   <TableCell className={classes.cell2} align="right">
-                    {stateApp.selectedPermit.CompletionDepth
-                      ? formatBOE(stateApp.selectedPermit.CompletionDepth)
+                    {selectedPermit.CompletionDepth
+                      ? formatBOE(selectedPermit.CompletionDepth)
                       : '--'}
                   </TableCell>
                 </TableRow> */}
@@ -370,12 +371,12 @@ export default function PermitCard() {
               </TableBody>
             </Table >
             <div>
-              {stateApp.selectedPermit?.State === 'TX'
+              {selectedPermit?.State === 'TX'
                 ?
 
                 <Link href=
 
-                  {"http://webapps2.rrc.texas.gov/EWA/drillingPermitDetailAction.do?methodToCall=searchByUniversalDocNo&universalDocNo=" + stateApp.selectedPermit.UniversalDocNumber + "&rrcActionMan=H4sIAAAAAAAAAL1Qu27DMAz8mnQUJPkBLxyMop37CJrByKDYhCNAtgxK7gPQx5d2USB1OmfS8Y4ij5eUlKCTkgrUHVFbt9H68aWlrpFHWPkPPJlpClqwLCJ-miB6_77L6kqyrmGnHx8ONcNsgR1Z5-zYPyENNobnGenrZ6joPDflMGA8-27v741zTBRAGGca9_4VDbVnpiqQV16asKo19UFMhszwZtyMq0X2WJVZLqsFF3DC3o7hYOMyimf9qZXe1Jf9m6XqVgGE38NLmEyPdHHgv2moY7PtW6yCShqUTBmDHGQq-C2ZuP59gyy_AXdh05tZAgAA"}
+                  {"http://webapps2.rrc.texas.gov/EWA/drillingPermitDetailAction.do?methodToCall=searchByUniversalDocNo&universalDocNo=" + selectedPermit.UniversalDocNumber + "&rrcActionMan=H4sIAAAAAAAAAL1Qu27DMAz8mnQUJPkBLxyMop37CJrByKDYhCNAtgxK7gPQx5d2USB1OmfS8Y4ij5eUlKCTkgrUHVFbt9H68aWlrpFHWPkPPJlpClqwLCJ-miB6_77L6kqyrmGnHx8ONcNsgR1Z5-zYPyENNobnGenrZ6joPDflMGA8-27v741zTBRAGGca9_4VDbVnpiqQV16asKo19UFMhszwZtyMq0X2WJVZLqsFF3DC3o7hYOMyimf9qZXe1Jf9m6XqVgGE38NLmEyPdHHgv2moY7PtW6yCShqUTBmDHGQq-C2ZuP59gyy_AXdh05tZAgAA"}
                   variant="body2"
                   target="_blank"
 
@@ -391,11 +392,11 @@ export default function PermitCard() {
                 </Link>
                 : ''}
 
-              {stateApp.selectedPermit?.State === 'LA'
+              {selectedPermit?.State === 'LA'
                 ?
 
                 <Link
-                  href={"https://sonlite.dnr.state.la.us/sundown/cart_prod/cart_con_wellinfo2?p_wsn=" + stateApp.selectedPermit?.PermitId}
+                  href={"https://sonlite.dnr.state.la.us/sundown/cart_prod/cart_con_wellinfo2?p_wsn=" + selectedPermit?.PermitId}
                   onClick={() => {
                   }}
                   variant="body2"

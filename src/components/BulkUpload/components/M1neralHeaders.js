@@ -185,10 +185,10 @@ export default function M1neralHeaders() {
         }
       }
       if (['PROPERTIES'].includes(jobStateValues.jobType)) {
-        if (!return_obj["property.purchaser.name"] || !return_obj["property.purchaserNumber"]) {
-          filtered_data_to_send.push(null)
-          continue;
-        }
+        // if (!return_obj["property.purchaser.name"] || !return_obj["property.purchaserNumber"]) {
+        //   filtered_data_to_send.push(null)
+        //   continue;
+        // }
 
         Object.keys(return_obj).forEach(key => {
           if (return_obj[key] instanceof Date) {
@@ -441,10 +441,11 @@ export default function M1neralHeaders() {
               );
             case 'PROPERTIES':
               return (
-                <div style={{ ...text_grey }}>
-                  * Payor and Payor Prop # are required to be <br /> populated before
-                  uploading properties.
-                </div>
+                // <div style={{ ...text_grey }}>
+                //   * Payor and Payor Prop # are required to be <br /> populated before
+                //   uploading properties.
+                // </div>
+                <></>
               );
             case 'CHECKDETAILS':
               return (

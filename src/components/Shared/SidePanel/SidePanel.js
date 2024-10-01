@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useMutation } from "@apollo/client";
 import AddLayerIcon from "@material-ui/icons/Queue";
-import { MapControlsContext } from "../../MapControls/MapControlsContext";
 import { AppContext } from "AppContext";
 import Panel from "./compoennts/Panel";
 import { UPDATELAYERSETTINGS } from "graphQL/useMutationUpdateLayerSettings";
-import { useDispatch } from "react-redux";
-import { setMapGridCardState } from "actions";
-import { hookStateApp } from "hookstate";
+import { globalStateController } from "hookstate/globalStateController";
 import { copy } from "utils/helper";
+import { mapControlsController } from "hookstate/mapControlsController";
+import { layerController } from "hookstate/layerStateController";
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -18,84 +17,32 @@ const reorder = (list, startIndex, endIndex) => {
   return result;
 };
 
-const reorderLayers = (list, startPosition, endPosition) => {
-  const reorderedLayers = Array.from(list);
-  let startIndex = reorderedLayers.findIndex((layer) => layer.position == startPosition);
-  let endIndex = reorderedLayers.findIndex((layer) => layer.position == endPosition);
-
-  //// switch positions between layers
-  let endI = endIndex;
-  while (endI > startIndex) {
-    let temp = reorderedLayers[endI].position;
-    reorderedLayers[endI] = {
-      ...reorderedLayers[endI],
-      position: reorderedLayers[endI - 1].position,
-    };
-    reorderedLayers[endI - 1] = {
-      ...reorderedLayers[endI - 1],
-      position: temp,
-    };
-    endI--;
-  }
-  while (endI < startIndex) {
-    let temp = reorderedLayers[endI].position;
-    reorderedLayers[endI] = {
-      ...reorderedLayers[endI],
-      position: reorderedLayers[endI + 1].position,
-    };
-    reorderedLayers[endI + 1] = {
-      ...reorderedLayers[endI + 1],
-      position: temp,
-    };
-    endI++;
-  }
-
-  //// reorder the stateApp.layers
-  const [removed] = reorderedLayers.splice(startIndex, 1);
-  reorderedLayers.splice(endIndex, 0, removed);
-
-  //// separate the layers to update
-  let layersToUpdate = reorderedLayers
-    .filter(
-      (currentValue, index) =>
-        (startIndex < endIndex && startIndex <= index && index <= endIndex) ||
-        (startIndex > endIndex && startIndex >= index && index >= endIndex)
-    )
-    .map((layer) => ({ _id: layer._id, position: layer.position }));
-
-  return { reorderedLayers, layersToUpdate };
-};
-
-export default function SidePanel({ showSidePanel }) {
+export default function SidePanel() {
   const [dragFunction, setDragFunction] = useState();
   const [toggleFunction, setToggleFunction] = useState();
   const [panelItems, setPanelItems] = useState();
   const [panelButton, setPanelButton] = useState();
   const [panelTitle, setPanelTitle] = useState();
   const [headerFilters, setHeaderFilters] = useState();
-  const dispatch = useDispatch();
 
-  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
-
-  const { selectedControl: panelType } = stateMapControls;
+  const { mapControlsStateValues } = mapControlsController.useState(['selectedControl'], 'mapControlsStateValues');
+  const panelType = mapControlsStateValues.selectedControl;
 
   const [stateApp, setStateApp] = useContext(AppContext);
   const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
 
   const openManager = (type) => {
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
+    mapControlsController.updateState({
       manageTransferData: false,
       [`${type === 'manageLayer' ? 'manageLayer' : 'manageSourceLayer'}`]: true,
       [`${type === 'manageLayer' ? 'manageSourceLayer' : 'manageLayer'}`]: null,
+      selectedLayerControl: null,
       selectedLayer: null,
-    }));
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      layerGridCard: null,
-      selectedLayer: null,
-    }))
-    dispatch(setMapGridCardState({ mapGridCardActivated: false }));
+      layerGridCard: false,
+    })
+    mapControlsController.updateState({
+      mapGridCardActivated: false,
+    });
   };
 
   const panelButtons = {
@@ -157,35 +104,97 @@ export default function SidePanel({ showSidePanel }) {
 
       setToggleFunction(() => ({ index }) => {
         if (stateApp.baseMapLayers[index]?.name === 'Land Grid') {
-          const currentLayers = [...stateApp.layers];
+
+          const currentLayers = globalStateController.getValue("layers");
           const layer = copy(currentLayers.find((layer) => layer.identifier === 'Land Grid'));
           if (layer) {
-            layer.layerSettings.visiable = !layer.layerSettings.visiable
-            hookStateApp.layers.set([...currentLayers])
-            stateApp.layers = [...currentLayers]
+            const visible = layer.layerSettings.visiable || layer.layerSettings.showable;
+            const mappedLayers = currentLayers.map((layer) => {
+              return layer.identifier === 'Land Grid'
+                ? {
+                  ...layer,
+                  layerSettings: {
+                    ...layer.layerSettings,
+                    visiable: !visible,
+                    showable: !visible,
+                  },
+                }
+                : layer;
+            });
+
+            globalStateController.updateState({ layers: mappedLayers });
+            stateApp.layers = [...mappedLayers]
+
+             // Update checked base layers for indices 0(Map Labels) and 2(Roads)
+            let newChecked = [...stateApp.checkedBaseLayers];
+            [0, 2].map((baseIndex) => {
+              const baseLayer = stateApp.baseMapLayers[baseIndex];
+              
+              // Check if the base layer exists
+              if (baseLayer) {
+                const currentIndex = newChecked.indexOf(baseIndex);
+            
+                // If Land Grid is being turned on and the base layer is not in newChecked, add it
+                if (!visible && currentIndex === -1) {
+                  newChecked.push(baseIndex);
+                }
+                // If Land Grid is being turned off and the base layer is in newChecked, remove it
+                else if (visible && currentIndex !== -1) {
+                  newChecked.splice(currentIndex, 1);
+                }
+              }
+            });
+
+            setStateApp((stateApp) => ({
+              ...stateApp,
+              checkedBaseLayers: newChecked, // set new checked base layers
+            }));
+            layerController.handleDeckLayer(
+              {
+                ...layer, layerSettings:
+                {
+                  ...layer.layerSettings,
+                  visiable: !visible,
+                  showable: !visible,
+                },
+                identifier: "AbstractGeo"
+              })
+            layerController.handleDeckLayer({
+              ...layer, layerSettings:
+              {
+                ...layer.layerSettings,
+                visiable: !visible,
+                showable: !visible,
+              }, identifier: "Pls"
+            })
+
             // saving to mongo
             updateLayerSettings({
               variables: {
                 settings: {
                   _id: layer._id,
-                  layerSettings: layer.layerSettings,
+                  layerSettings: {
+                    ...layer.layerSettings,
+                    visiable: !visible,
+                    showable: !visible,
+                  },
                 },
               },
             });
           }
-        }
-
-        const currentIndex = stateApp.checkedBaseLayers.indexOf(index);
-        let newChecked = [...stateApp.checkedBaseLayers];
-        if (currentIndex === -1) {
-          newChecked.push(index);
         } else {
-          newChecked.splice(currentIndex, 1);
+          const currentIndex = stateApp.checkedBaseLayers.indexOf(index);
+          let newChecked = [...stateApp.checkedBaseLayers];
+          if (currentIndex === -1) {
+            newChecked.push(index);
+          } else {
+            newChecked.splice(currentIndex, 1);
+          }
+          setStateApp((stateApp) => ({
+            ...stateApp,
+            checkedBaseLayers: newChecked,
+          }));
         }
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          checkedBaseLayers: newChecked,
-        }));
       });
     }
   }, [panelType, stateApp.baseMapLayers, stateApp.checkedBaseLayers]);
@@ -292,7 +301,6 @@ export default function SidePanel({ showSidePanel }) {
       panelItems={panelItems}
       onDragEnd={dragFunction}
       handleToggle={toggleFunction}
-      showSidePanel={showSidePanel}
     />
   ) : null;
 }

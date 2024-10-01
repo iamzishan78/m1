@@ -15,6 +15,7 @@ export const CommonSchema = {
 		enableColumnActions: false,
 		enableHiding: false,
 		enableColumnFilter: false,
+		isExport: false,
 		enableColumnOrdering: false,
 		enableResizing: false,
 		showInLast: true,
@@ -34,6 +35,11 @@ export const CommonSchema = {
 		enableColumnOrdering: false,
 		enableResizing: false,
 		showInLast: true,
+		isExport: "tags",
+		handleArrayExport: {
+			esType: "collection",
+			actualKey: "tag"
+		},
 	},
 	HIDDEN: {
 		header: ' ',
@@ -87,6 +93,7 @@ export const CommonSchema = {
 		enableHiding: false,
 		type: 'string',
 		enableColumnFilter: false,
+		isExport: false,
 		enableColumnOrdering: false,
 		enableResizing: false,
 		showInLast: true,
@@ -104,6 +111,7 @@ export const CommonSchema = {
 		enableColumnActions: false,
 		enableColumnOrdering: false,
 		enableColumnFilter: false,
+		isExport: false,
 		enableResizing: false,
 		size: 80,
 	},

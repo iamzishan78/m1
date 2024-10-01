@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
-import * as turf from "@turf/turf";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
@@ -9,14 +8,15 @@ import { Box, FormControlLabel, Switch, Typography } from "@material-ui/core";
 import { getQtrFilterData, getQtrQtrFromQtr, handleLayerChangeOnQtr } from "../../ParcelsDetailCard/ParcelSummary/helper";
 import { copy } from 'utils/helper';
 import SmallTXQtr from "components/Shared/M1nTable/components/SubComponents/AddParcelToEntityDialogContent/ParcelStep/components/SmallTXQtr";
-import { changeModeToScaleRotate, drawBoundary, getDrawAdustedShape, getNewShapeFromSelectedQuarters, getRotateAbleShapeFromSelectedQuarters } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
+import { changeModeToScaleRotate, drawBoundary, getRotateAbleShapeFromSelectedQuarters } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
 import { AppContext } from "AppContext";
 import { drawShapeLayerToggle, findBoundsMap } from "components/MapControls/commonHelper";
 import { useMutation } from "@apollo/client";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
-import { MapControlsContext } from "components/MapControls/MapControlsContext";
-import { calculateLandArea } from "components/Shared/functions/shapeLayer";
+import { drawController } from "hookstate/drawStateController";
 import { jobController } from "hookstate/jobStateController";
+import { mapControlsController } from "hookstate/mapControlsController";
+import { layerController } from "hookstate/layerStateController";
 
 const useStyles = makeStyles((theme) => ({
   mainDiv: {
@@ -119,7 +119,8 @@ export default function QtrQtrSelectorNew({ layerData }) {
   );
 
   const [stateApp] = useContext(AppContext);
-  const [, setStateMapControls] = useContext(MapControlsContext);
+
+  const drawState = drawController.useState(['currentFeature'])
 
   const eventsConfiguredRef = useRef(false);
 
@@ -148,16 +149,16 @@ export default function QtrQtrSelectorNew({ layerData }) {
       const { map } = stateApp;
 
       map.on("draw.modechange", () => {
-        changeModeToScaleRotate(stateApp.draw);
+        changeModeToScaleRotate(window.drawRef);
       });
       eventsConfiguredRef.current = true;
     }
 
     return () => {
-      stateApp?.draw?.deleteAll();
+      window.drawRef?.deleteAll();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stateApp.map, stateApp.currentFeature]);
+  }, [stateApp.map, drawState.currentFeature]);
 
 
   useEffect(() => {
@@ -167,12 +168,12 @@ export default function QtrQtrSelectorNew({ layerData }) {
       if (layerDataCopy?.qtrQtrSelection?.originalGeometry) {
         feature.geometry = layerDataCopy.qtrQtrSelection.originalGeometry
       }
-      setStateMapControls((state) => ({ ...state, selectedMapControl: "" }))
-      drawShapeLayerToggle(stateApp, "visible")
-      stateApp.draw.deleteAll();
-      getRotateAbleShapeFromSelectedQuarters(feature, stateApp.draw)
+      mapControlsController.updateState({ selectedMapControl: "" })
+      drawShapeLayerToggle("visible")
+      window.drawRef?.deleteAll();
+      getRotateAbleShapeFromSelectedQuarters(feature, window.drawRef)
     } else {
-      stateApp?.draw?.deleteAll();
+      window.drawRef?.deleteAll();
     }
   }, [showAdjustGrid]);
 
@@ -188,10 +189,11 @@ export default function QtrQtrSelectorNew({ layerData }) {
         customLayerId: layerDataCopy._id,
         customLayer,
       },
-    }).then(() => {
-        jobController.toggleBulkUpload()
+    }).then((res) => {
+      jobController.toggleBulkUpload()
       findBoundsMap([customLayer.shapeJson], stateApp.map);
-      drawBoundary(stateApp.map, customLayer.shapeJson);
+      drawBoundary(customLayer.shapeJson);
+      layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)
     });
   };
 
@@ -285,7 +287,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
           </Grid>
         </Grid>
         <Grid item md={3} style={{ paddingTop: '1.8em', }}>
-          <Button variant="contained" color="primary" size="large" disabled={disableUpdate} onClick={() => {
+          <Button variant="contained" color="primary" size="large" disabled={disableUpdate} data-testid="update-qtr" onClick={() => {
             updateLayerQtr()
             setShowAdjustGrid(false)
           }}>Update</Button>
@@ -362,6 +364,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
                 });
               }
           }}
+          data-testid="qtr-all"
         >
           {layerData.state !== "TX" && <p> ALL</p>}
         </div>
@@ -414,6 +417,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
                 });
               }
           }}
+          data-testid="qtr-nw"
         >
           {layerData.state !== "TX" && <p> NW</p>}
         </div>
@@ -464,6 +468,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
                 });
               }
           }}
+          data-testid="qtr-ne"
         >
           {layerData.state !== "TX" && <p> NE</p>}
         </div>
@@ -516,6 +521,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
                 });
               }
           }}
+          data-testid="qtr-sw"
         >
           {layerData.state !== "TX" && <p> SW</p>}
         </div>
@@ -566,6 +572,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
                 });
               }
           }}
+          data-testid="qtr-se"
         >
           {layerData.state !== "TX" && <p> SE</p>}
         </div>
@@ -597,6 +604,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
                     nwnw: qtrQtr.nwnw ? false : true,
                   });
               }}
+              data-testid="qtr-nwnw"
             >
               {layerData.state !== "TX" ? <p> NWNW</p> : <SmallTXQtr />}
             </Grid>
@@ -619,6 +627,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
                     nenw: qtrQtr.nenw ? false : true,
                   });
               }}
+              data-testid="qtr-nenw"
             >
               {layerData.state !== "TX" ? <p> NENW</p> : <SmallTXQtr />}
             </Grid>
@@ -641,6 +650,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
                     swnw: qtrQtr.swnw ? false : true,
                   });
               }}
+              data-testid="qtr-swnw"
             >
               {layerData.state !== "TX" ? <p> SWNW</p> : <SmallTXQtr />}
             </Grid>
@@ -663,6 +673,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
                     senw: qtrQtr.senw ? false : true,
                   });
               }}
+              data-testid="qtr-senw"
             >
               {layerData.state !== "TX" ? <p> SENW</p> : <SmallTXQtr />}
             </Grid>
@@ -694,6 +705,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
                     nwne: qtrQtr.nwne ? false : true,
                   });
               }}
+              data-testid="qtr-nwne"
             >
               {layerData.state !== "TX" ? <p> NWNE</p> : <SmallTXQtr />}
             </Grid>
@@ -716,6 +728,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
                     nene: qtrQtr.nene ? false : true,
                   });
               }}
+              data-testid="qtr-nene"
             >
               {layerData.state !== "TX" ? <p> NENE</p> : <SmallTXQtr />}
             </Grid>
@@ -738,6 +751,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
                     swne: qtrQtr.swne ? false : true,
                   });
               }}
+              data-testid="qtr-swne"
             >
               {layerData.state !== "TX" ? <p> SWNE</p> : <SmallTXQtr />}
             </Grid>
@@ -760,6 +774,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
                     sene: qtrQtr.sene ? false : true,
                   });
               }}
+              data-testid="qtr-sene"
             >
               {layerData.state !== "TX" ? <p> SENE</p> : <SmallTXQtr />}
             </Grid>
@@ -791,6 +806,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
                     nwsw: qtrQtr.nwsw ? false : true,
                   });
               }}
+              data-testid="qtr-nwsw"
             >
               {layerData.state !== "TX" ? <p> NWSW</p> : <SmallTXQtr />}
             </Grid>
@@ -813,6 +829,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
                     nesw: qtrQtr.nesw ? false : true,
                   });
               }}
+              data-testid="qtr-nesw"
             >
               {layerData.state !== "TX" ? <p> NESW</p> : <SmallTXQtr />}
             </Grid>
@@ -835,6 +852,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
                     swsw: qtrQtr.swsw ? false : true,
                   });
               }}
+              data-testid="qtr-swsw"
             >
               {layerData.state !== "TX" ? <p> SWSW</p> : <SmallTXQtr />}
             </Grid>
@@ -857,6 +875,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
                     sesw: qtrQtr.sesw ? false : true,
                   });
               }}
+              data-testid="qtr-sesw"
             >
               {layerData.state !== "TX" ? <p> SESW</p> : <SmallTXQtr />}
             </Grid>
@@ -883,6 +902,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
                     nwse: qtrQtr.nwse ? false : true,
                   });
               }}
+              data-testid="qtr-nwse"
             >
               {layerData.state !== "TX" ? <p> NWSE</p> : <SmallTXQtr />}
             </Grid>
@@ -905,6 +925,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
                     nese: qtrQtr.nese ? false : true,
                   });
               }}
+              data-testid="qtr-nese"
             >
               {layerData.state !== "TX" ? <p> NESE</p> : <SmallTXQtr />}
             </Grid>
@@ -927,6 +948,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
                     swse: qtrQtr.swse ? false : true,
                   });
               }}
+              data-testid="qtr-swse"
             >
               {layerData.state !== "TX" ? <p> SWSE</p> : <SmallTXQtr />}
             </Grid>
@@ -949,6 +971,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
                     sese: qtrQtr.sese ? false : true,
                   });
               }}
+              data-testid="qtr-sese"
             >
               {layerData.state !== "TX" ? <p> SESE</p> : <SmallTXQtr />}
             </Grid>

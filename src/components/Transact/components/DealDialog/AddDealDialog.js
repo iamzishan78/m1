@@ -54,6 +54,7 @@ import AssociatedFlowDealDetails from "../AssociatedFlowDealDetails";
 import { createPortal } from "react-dom/cjs/react-dom.production.min";
 import ExistingDeal from "./ExistingDeal";
 import { GET_FLOW_ASSOCIATED_SUMMARY } from "graphQL/useQueryFlowAssociatedData";
+import { mapStateController } from "hookstate/mapStateController";
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -429,6 +430,8 @@ function AddDealDialog(props) {
 
   const [contact, setContact] = useState({});
 
+  const { mapStateValues } = mapStateController.useState(['mapVars'], 'mapStateValues');
+
   useEffect(() => {
     return () =>
       setStateTransact((stateTransact) => ({
@@ -765,11 +768,9 @@ function AddDealDialog(props) {
   useEffect(() => {
     if (
       stateApp?.activeDeal?.mapSettings?.mapDefaultPosition != null &&
-      stateApp?.mapVars !== stateApp?.activeDeal?.mapSettings?.mapDefaultPosition
+      mapStateValues?.mapVars !== stateApp?.activeDeal?.mapSettings?.mapDefaultPosition
     ) {
-      setStateApp((state) => {
-        return { ...state, mapVars: stateApp?.activeDeal?.mapSettings?.mapDefaultPosition };
-      });
+      mapStateController.updateState({ mapVars: stateApp?.activeDeal?.mapSettings?.mapDefaultPosition })
     }
   }, [mapSettings]);
 
@@ -1259,15 +1260,15 @@ function AddDealDialog(props) {
 
   const saveViewport = useCallback(() => {
     setMapSettings({
-      activeBaseMap: stateApp?.mapVars?.styleId,
+      activeBaseMap: mapStateValues?.mapVars?.styleId,
       mapDefaultPosition: {
-        zoom: stateApp?.mapVars?.zoom,
-        bearing: stateApp?.mapVars?.bearing,
-        pitch: stateApp?.mapVars?.pitch,
-        center: stateApp?.mapVars?.center,
+        zoom: mapStateValues?.mapVars?.zoom,
+        bearing: mapStateValues?.mapVars?.bearing,
+        pitch: mapStateValues?.mapVars?.pitch,
+        center: mapStateValues?.mapVars?.center,
       },
     });
-  }, [stateApp.mapVars]);
+  }, [mapStateValues.mapVars]);
 
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(null);

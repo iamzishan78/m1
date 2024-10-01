@@ -81,7 +81,6 @@ import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 
 // contexts
 import { AppContext } from "AppContext";
-import { NavigationContext } from "components/Navigation/NavigationContext";
 
 // mui components
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
@@ -135,7 +134,10 @@ import { Link } from 'react-router-dom';
 import Checkbox from '@material-ui/core/Checkbox';
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 import { GET_VIEW_TOKEN_URI } from "graphQL/useQueryGetViewTokenUri";
+import { popupController } from "hookstate/popupStateController";
 import { navController } from "hookstate/navStateController";
+import { mapControlsController } from "hookstate/mapControlsController";
+import { layerController } from "hookstate/layerStateController";
 
 
 // suppress debug console logs
@@ -529,7 +531,6 @@ function SubTable(props) {
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateNav, setStateNav] = useContext(NavigationContext);
 
   // function state
   const [trueTargetLabel, TrueTargetLabel] = useState(null);
@@ -695,24 +696,25 @@ function SubTable(props) {
   // handlers
   const handleWellFlyTo = (value) => {
     const shapeId = history.location.pathname.split("/");
-    const shapeType = stateApp?.selectedShape?.type;
+    const selectedShape = popupController.getValue('selectedShape');
+    const shapeType = selectedShape?.type;
     history.push(
       `/map/wells/${value?.wellId}`,
       shapeType ? {
         fromShapeDetail: true,
-        shapeName: stateApp.selectedShape.shapeLabel,
+        shapeName: selectedShape?.shapeLabel,
         shapeId: shapeId[shapeId.length - 1],
         shapeType: shapeType === "agreement" ? "Agreements" : "Units",
-        link: shapeType === "agreement" ? `/land/agreement/details/${stateApp.selectedShape.id}` : `/map/units/${shapeId[shapeId.length - 1]}`
+        link: shapeType === "agreement" ? `/land/agreement/details/${selectedShape?.id}` : `/map/units/${shapeId[shapeId.length - 1]}`
       } : null
     );
-    dispatch(setMapGridCardState({ mapGridCardActivated: false }));
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      selectedShape: null,
+    mapControlsController.updateState({
+      mapGridCardActivated: false,
+    });
+    popupController.setState({
       selectedWellId: value.wellId ? value.wellId.toLowerCase() : null,
-      wellSelectedCoordinates: [value.center[0], value.center[1]]
-    }));
+      wellSelectedCoordinates: [value.center[0], value.center[1]],
+    });
   };
 
   const handleLocationFlyTo = (newValue) => {
@@ -722,6 +724,25 @@ function SubTable(props) {
 
       setStateApp((stateApp) => ({
         ...stateApp,
+        wellListFromSearch: [
+          {
+            id: newValue.Id,
+            longitude: newValue.center[0],
+            latitude: newValue.center[1],
+          },
+        ],
+        fitBounds: newValue.bbox ? { maxLat, minLat, maxLong, minLong } : null,
+      }));
+      layerController.updateState({
+        wellListFromSearch: [
+          {
+            id: newValue.Id,
+            longitude: newValue.center[0],
+            latitude: newValue.center[1],
+          },
+        ]
+      })
+      popupController.updateState({
         selectedWell: null,
         selectedWellId: null,
         wellSelectedCoordinates: null,
@@ -732,8 +753,8 @@ function SubTable(props) {
             latitude: newValue.center[1],
           },
         ],
-        fitBounds: newValue.bbox ? { maxLat, minLat, maxLong, minLong } : null,
-      }));
+      })
+      popupController.reset();
       stateApp.toggleLayersActivity("Search", true);
     }
   };
@@ -810,7 +831,9 @@ function SubTable(props) {
     }
 
     if (unmount)
-      dispatch(setMapGridCardState({ mapGridCardActivated: false }));
+      mapControlsController.updateState({
+        mapGridCardActivated: false,
+      });
   };
 
   const registerSearchHandler = (handleSearch) => {
@@ -910,11 +933,10 @@ function SubTable(props) {
       //// temporary end
       if (selectedWell) {
         setSelectedRow(selectedWell);
-        setStateApp((state) => ({
-          ...state,
+        popupController.setState({
           selectedWellId: dataWell.well.id,
           selectedWell,
-        }));
+        });
         setSubComponent(<WellCardProvider />);
         setTitle(selectedWell.wellName ? selectedWell.wellName : selectedWell.WellName);
         setSubTitle(selectedWell.api ? selectedWell.api : selectedWell.api);
@@ -926,22 +948,19 @@ function SubTable(props) {
   useEffect(() => {
     if (dataOwnerWells && dataOwnerWells.ownerLatsLonsArray) {
       if (dataOwnerWells.ownerLatsLonsArray.length !== 0) {
-        setStateApp((stateApp) =>
-          dataOwnerWells.ownerLatsLonsArray.length === 1
-            ? {
-              ...stateApp,
-              selectedWell: null,
-              fitBounds: null,
-              selectedWellId: dataOwnerWells.ownerLatsLonsArray[0].id.toLowerCase(),
-              wellSelectedCoordinates: [dataOwnerWells.ownerLatsLonsArray[0].longitude, dataOwnerWells.ownerLatsLonsArray[0].latitude],
-              wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
-            }
-            : {
-              ...stateApp,
-              fitBounds: null,
-              wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
-            }
-        );
+        if (dataOwnerWells.ownerLatsLonsArray.length === 1)
+          popupController.setState({
+            selectedWellId: dataOwnerWells.ownerLatsLonsArray[0].id.toLowerCase(),
+            wellSelectedCoordinates: [
+              dataOwnerWells.ownerLatsLonsArray[0].longitude,
+              dataOwnerWells.ownerLatsLonsArray[0].latitude,
+            ],
+          });
+        setStateApp(stateApp => ({
+          ...stateApp,
+          fitBounds: null,
+          wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
+        }));
         stateApp.toggleLayersActivity("Search", true);
       } else {
         stateApp.toggleLayersActivity("Search", false);
@@ -951,7 +970,9 @@ function SubTable(props) {
         }));
       }
       // unmount
-      dispatch(setMapGridCardState({ mapGridCardActivated: false }));
+      mapControlsController.updateState({
+        mapGridCardActivated: false,
+      });
     }
   }, [dataOwnerWells]);
 
@@ -962,25 +983,21 @@ function SubTable(props) {
 
     if (dataOperatorWells && dataOperatorWells.operatorLatsLonsArray) {
       if (dataOperatorWells.operatorLatsLonsArray.length !== 0) {
-        setStateApp((stateApp) =>
-          dataOperatorWells.operatorLatsLonsArray.length === 1
-            ? {
-              ...stateApp,
-              selectedWell: null,
-              fitBounds: null,
-              selectedWellId: dataOperatorWells.operatorLatsLonsArray[0].id.toLowerCase(),
-              wellSelectedCoordinates: [
-                dataOperatorWells.operatorLatsLonsArray[0].longitude,
-                dataOperatorWells.operatorLatsLonsArray[0].latitude,
-              ],
-              wellListFromSearch: [...dataOperatorWells.operatorLatsLonsArray],
-            }
-            : {
-              ...stateApp,
-              fitBounds: null,
-              wellListFromSearch: [...dataOperatorWells.operatorLatsLonsArray],
-            }
-        );
+        if (dataOperatorWells.operatorLatsLonsArray.length === 1)
+          popupController.setState({
+            selectedWellId: dataOperatorWells.operatorLatsLonsArray[0].id.toLowerCase(),
+            wellSelectedCoordinates: [
+              dataOperatorWells.operatorLatsLonsArray[0].longitude,
+              dataOperatorWells.operatorLatsLonsArray[0].latitude,
+            ],
+          });
+        setStateApp(stateApp => ({
+          ...stateApp,
+          fitBounds: null,
+          wellListFromSearch: [...dataOperatorWells.operatorLatsLonsArray],
+        }));
+        layerController.updateState({ wellListFromSearch: [...dataOperatorWells.operatorLatsLonsArray] })
+
         stateApp.toggleLayersActivity("Search", true);
       } else {
         stateApp.toggleLayersActivity("Search", false);
@@ -988,9 +1005,13 @@ function SubTable(props) {
           ...stateApp,
           wellListFromSearch: [],
         }));
+        layerController.updateState({ wellListFromSearch: [] })
+
       }
       // unmount
-      dispatch(setMapGridCardState({ mapGridCardActivated: false }));
+      mapControlsController.updateState({
+        mapGridCardActivated: false,
+      });
     }
   }, [dataOperatorWells]);
 
@@ -1001,29 +1022,23 @@ function SubTable(props) {
 
     if (dataLeaseWells && dataLeaseWells.leaseLatsLonsArray) {
       if (dataLeaseWells.leaseLatsLonsArray.length !== 0) {
-        setStateApp((stateApp) =>
-          dataLeaseWells.leaseLatsLonsArray.length === 1
-            ? {
-              ...stateApp,
-              selectedWell: null,
-              fitBounds: null,
-              selectedWellId: dataLeaseWells.leaseLatsLonsArray[0].id.toLowerCase(),
-              wellSelectedCoordinates: [dataLeaseWells.leaseLatsLonsArray[0].longitude, dataLeaseWells.leaseLatsLonsArray[0].latitude],
-              wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
-            }
-            : {
-              ...stateApp,
-              fitBounds: null,
-              wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
-            }
-        );
+        if (dataLeaseWells.leaseLatsLonsArray.length === 1)
+          popupController.setState({
+            selectedWellId: dataLeaseWells.leaseLatsLonsArray[0].id.toLowerCase(),
+            wellSelectedCoordinates: [
+              dataLeaseWells.leaseLatsLonsArray[0].longitude,
+              dataLeaseWells.leaseLatsLonsArray[0].latitude,
+            ],
+          });
+        setStateApp(stateApp => ({
+          ...stateApp,
+          fitBounds: null,
+        }));
+        layerController.updateState({ wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray] })
         stateApp.toggleLayersActivity("Search", true);
       } else {
         stateApp.toggleLayersActivity("Search", false);
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          wellListFromSearch: [],
-        }));
+        layerController.updateState({ wellListFromSearch: [] })
       }
     }
   }, [dataLeaseWells]);
@@ -1102,7 +1117,7 @@ function SubTable(props) {
         if (ret_val[key]) {
           ret_val[key] = ret_val[key] + parseFloat(row[key]);
         } else {
-          ret_val[key] = parseFloat(row[key]);
+          ret_val[key] = row[key] ? parseFloat(row[key]) : 0; // Parse as float if value, otherwise 0
         }
       });
     });
@@ -1574,12 +1589,7 @@ function SubTable(props) {
                         onClick={(e) => {
                           e.stopPropagation();
                           if (value) {
-                            setStateApp((state) => ({
-                              ...state,
-                              popupOpen: false,
-                              selectedWell: null,
-                              selectedParcel: null,
-                            }));
+                            popupController.reset();
                             getWell({
                               variables: { wellId: value },
                             });
@@ -1606,11 +1616,13 @@ function SubTable(props) {
                                   delete selectedWell.wellId;
                                 }
                                 setSelectedRow(selectedWell);
-                                setStateApp((state) => ({
-                                  ...state,
-                                  selectedWellId: props.parent === "owner_WellInterests" ? tableMeta.rowData[1] : tableMeta.rowData[0],
-                                  selectedWell: selectedWell,
-                                }));
+                                popupController.setState({
+                                  selectedWellId:
+                                    props.parent === 'owner_WellInterests'
+                                      ? tableMeta.rowData[1]
+                                      : tableMeta.rowData[0],
+                                  selectedWell,
+                                });
                                 setSubComponent(<WellCardProvider />);
                                 setTitle(selectedWell.wellName ? selectedWell.wellName : selectedWell.WellName);
                                 setSubTitle(selectedWell.api ? selectedWell.api : selectedWell.api);
@@ -2220,9 +2232,8 @@ function SubTable(props) {
                             setStateApp((stateApp) => ({
                               ...stateApp,
                               selectedContact: value,
-                              parcelDetailCardOpen: null,
                             }));
-                            setStateNav((stateNav) => ({
+                            window.setStateNav((stateNav) => ({
                               ...stateNav,
                               defaultOn: false,
                               contactFromMap: true,
@@ -3157,11 +3168,9 @@ function SubTable(props) {
   }, [props.columns, props.rows, rows, colInd, rowInd, m1nSelectedRowsTracks, m1nSelectedRowsIndexes, m1nSelectedRowsIds]);
 
   const openUnitDetailCard = (unitId) => {
-    dispatch(
-      setMapGridCardState({
-        mapGridCardActivated: false,
-      })
-    );
+    mapControlsController.updateState({
+      mapGridCardActivated: false,
+    });
     history.push(`/map/units/${unitId}`);
   }
 
@@ -3189,11 +3198,7 @@ function SubTable(props) {
     } else {
       setShowExpandableCard(false);
       setTargetLabelToExpand(null);
-      setStateApp((state) => ({
-        ...state,
-        popupOpen: false,
-        expandedCard: false,
-      }));
+      popupController.reset();
     }
   };
 
@@ -3895,20 +3900,21 @@ function SubTable(props) {
           },
         };
       }
-      if (props.addAble && props.parent === "UserManagement") {
-        buttonLabel = "+ ADD USER";
-      }
       if (props.addAble?.type === "ownerToParcel" || props.addAble?.type === "ownerToUnit") {
         buttonLabel = "+ ADD INTEREST OWNER";
         menuOptions = {
           text: "Import Interest Owners",
           isShow: true,
           action: () => {
-            setStateNav((stateNav) => ({
+            window.setStateNav((stateNav) => ({
               ...stateNav,
               bulkUploadFromMap: true,
-              bulkUploadParcel: stateApp.selectedParcel
+              bulkUploadParcel: popupController.getValue('selectedParcel')
             }));
+            navController.updateState({
+              bulkUploadFromMap: true,
+              bulkUploadParcel: popupController.getValue('selectedParcel'),
+            })
             routeChange("/bulkupload");
           },
         };
@@ -3958,8 +3964,6 @@ function SubTable(props) {
         if (props.addAble?.type && props.addAble?.type === "parcelInterestsToEntity")
           // handleExpandClick(null, null, null, "addOwnerToParcel");
           handleExpandClick(null, null, null, "addParcelInterestsToEntity");
-        if (props.addAble?.type && props.addAble?.type === "inviteUser")
-          handleExpandClick(null, null, null, "inviteUser");
         if (props.addAble?.type === "revenueStatementDetails") {
           const checkId = window.location.pathname.split("/")[window.location.pathname.split("/").length - 1];
           routeChange(`/revenue/statement/${checkId}/line-item`);
@@ -4018,7 +4022,6 @@ function SubTable(props) {
             )}
             {(props.addAble?.type === "wellInterest" ||
               props.addAble?.type === "suggestedOwnerToParcel" ||
-              (props.addAble && props.parent === "UserManagement") ||
               props.addAble?.type === "revenueStatementDetails") && (
                 <Button
                   color="secondary"
@@ -4177,19 +4180,6 @@ function SubTable(props) {
           selectedAgreement: rows[dataIndex],
         }));
         props.onClickAdd();
-      }
-
-      if (props.targetLabel === "usermanagement") {
-        if (rows[dataIndex]?.id) {
-          let card = { ...rows[dataIndex] };
-          setStateApp((stateApp) => ({
-            ...stateApp,
-            userDialog: true,
-            activeUser: card,
-          }));
-
-          handleExpandClick(null, null, null, "inviteUser");
-        }
       }
 
       // if (props.targetLabel === "Revenue Properties") {
@@ -5168,9 +5158,6 @@ function SubTable(props) {
                   setRows={setExpandedObject}
                   setSelectedRow={setSelectedRow}
                 />
-              )}
-              {openDialog === "inviteUser" && (
-                <InviteUserDialog rows={rows} setRows={setExpandedObject} onClose={handleCloseDialog} setSelectedRow={setSelectedRow} />
               )}
               {openDialog === "reinviteUser" && (
                 <ReinviteUserDialog

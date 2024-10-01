@@ -3,7 +3,7 @@ import Dialog from '@material-ui/core/Dialog';
 import { useMutation } from '@apollo/client';
 import ExportContactsPurchaseAndOwners from 'components/MRTTable/Common/Dialog/ExportContactsPurchaseAndOwners';
 import { tableGlobalController } from 'hookstate/tableController';
-import { AssignOwnerToContactDrawerContainer } from 'store/containers';
+import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import BuyContactsInfoDialogContent from 'components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
 import DeleteConfirmationDialogContent from './ConfirmationDialog/DeleteConfirmationDialog';
@@ -72,6 +72,15 @@ function AllDialogs(props) {
 					<CommentDialog {...rest} hideSharedCommentCheck={props.hideSharedCommentCheck} />
 				</Dialog>
 			)}
+
+			{type === 'convertContactSlideout' && (<MultipleOwnerToContactDrawerContainer
+				onClose={() => {
+					rest.onRemoveRows(null, true);
+					handleCloseDialog();
+				}}
+				rows={rest.selectedRows}
+				setRows={rest.onRemoveRows}
+			/>)}
 
 			{/* Note: Columns are passed to access in other components */}
 			{type === 'exportContacts' && <ExportContactsPurchaseAndOwners {...rest} columns={props.columns} onClose={handleCloseDialog} />}

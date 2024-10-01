@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { v4 as uuid } from "uuid";
 import { copy } from "utils/helper";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
@@ -22,8 +21,7 @@ import { summaryStyles } from "components/ShapeDetailCard/style";
 import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 import Acreage from "components/Land/components/Agreements/detailComponents/summary/Acreage";
 import MetaField from "components/Table/helpers/MetaField";
-
-import { AppContext } from "AppContext";
+import { globalStateController } from "hookstate/globalStateController";
 
 export default function AgreementSummary(props) {
   const user = useSelector(({ app }) => app.user);
@@ -31,7 +29,7 @@ export default function AgreementSummary(props) {
   const [unitProperties, setProperties] = useState(props.properties);
   const [tableDataState, setTableDataState] = useState({});
 
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const { globalStateValues } = globalStateController.useState(['showFieldModal'], 'globalStateValues');
 
   const classes = summaryStyles({ search });
 
@@ -49,10 +47,9 @@ export default function AgreementSummary(props) {
   }, [props.id]);
 
   const addCustomData = () => {
-    setStateApp(stateApp => ({
-      ...stateApp,
-      showFieldModal: true
-    }));
+    globalStateController.updateState({
+      showFieldModal: true,
+    });
   };
 
   const hasCustomProvision = props.provisions.find((provision) => !provision.templateRef);
@@ -170,7 +167,7 @@ export default function AgreementSummary(props) {
           </Grid>
         </Grid>
       </Grid>
-      {stateApp.showFieldModal && <MetaField customDataPrefix='shapeJson.properties.custom_data' customDataPostfix='.keyword' columns={[]} category="Agreement" updateColumnSorting={addAgreementCustomData} />}
+      {globalStateValues.showFieldModal && <MetaField customDataPrefix='shapeJson.properties.custom_data' customDataPostfix='.keyword' columns={[]} category="Agreement" updateColumnSorting={addAgreementCustomData} />}
     </>
   );
 }

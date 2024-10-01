@@ -317,18 +317,14 @@ const ContactMeta = {
 			hidden: true,
 		},
 
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'account.keyword',
-			accessorKey: 'account',
-			header: 'Account',
-		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'department.keyword',
 			accessorKey: 'department',
 			header: 'Department',
+			isHiddenFieldExport: true,
+			hidden: true,
 		},
 
 		{
@@ -336,6 +332,8 @@ const ContactMeta = {
 			name: 'title.keyword',
 			accessorKey: 'title',
 			header: 'Title',
+			isHiddenFieldExport: true,
+			hidden: true,
 		},
 
 		{
@@ -397,19 +395,14 @@ const ContactMeta = {
 			accessorKey: 'primaryEmail',
 			header: 'Primary Email',
 		},
-
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'contactOwners.name.keyword',
-			accessorFn: row => row?.contactOwners?.name,
-			id: 'contactOwners.name',
-			header: 'Contact Owner',
-			isExport: 'contactOwners[0].name',
-			Cell: ({ row }) => {
-				const name = row?.original?.contactOwners?.map(obj => obj.name)
-				return <p>{name?.[0]}</p>
-			},
+			name: 'account.keyword',
+			accessorKey: 'account',
+			header: 'Account',
 		},
+
+
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -641,6 +634,18 @@ const ContactMeta = {
 				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
 
 				return <>{isPurchased ? 'Yes' : 'No'}</>;
+			},
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contactOwners.name.keyword',
+			accessorFn: row => row?.contactOwners?.name,
+			id: 'contactOwners.name',
+			header: 'Contact Owner',
+			isExport: 'contactOwners[0].name',
+			Cell: ({ row }) => {
+				const name = row?.original?.contactOwners?.map(obj => obj.name)
+				return <p>{name?.[0]}</p>
 			},
 		},
 

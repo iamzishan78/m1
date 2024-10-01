@@ -120,8 +120,10 @@ const AutoCompleteField = ({ placeholder, value, onChange, column, query, extend
           onChange(value.key);
           return
         }
-
-        const val = value.key.find(val => val !== '') || ''
+        const valuesLength = value.key.length;
+        // Starting selecting from last value which in agreement case it  would be shapelabel
+        const lastValue = value.key?.[valuesLength - 1];
+        const val = (lastValue && lastValue !== '') ? lastValue : (value.key.find(val => val !== '') || '');
         const index = value.key.indexOf(val)
         setSearch(val);
         onChange(val, index >= 0 ? index : 0);

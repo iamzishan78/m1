@@ -1,35 +1,30 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { MapControlsContext } from "../../MapControlsContext";
-import { AppContext } from "AppContext";
 import { Typography, Paper, Grid, IconButton, Divider, FormControlLabel, Switch, Box, Tooltip, ClickAwayListener } from "@material-ui/core";
 import { Close as CloseIcon } from "@material-ui/icons";
 import { UPDATELAYERSETTINGS } from "../../../../graphQL/useMutationUpdateLayerSettings";
 import GridOnIcon from "@material-ui/icons/GridOn";
 import { getLayerColor } from "components/Shared/SidePanel/compoennts/common";
-import { useDispatch } from "react-redux";
-import { setMapGridCardState } from "actions";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent.js";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import { LAYERS_FEATURES_COUNT } from "graphQL/useQueryLayerFeaturesCount";
 import { ColorPickerStyledBox, useLayerStyle, useStyles, WidthPicker } from "./Common";
-import { useHookstate } from "@hookstate/core";
-import { hookStateApp } from "hookstate";
+import { globalStateController } from "hookstate/globalStateController";
+import { mapControlsController } from "hookstate/mapControlsController";
+import { layerController } from "hookstate/layerStateController";
 
-function LayerStyling(props) {
-  const { layer, fileName } = props;
+function LayerStyling() {
   const classes = useStyles();
-  const dispatch = useDispatch();
 
-  const layerType = layer.layerPaintProps[0]?.paintType;
+  const { mapControlsStateValues, ...mapControlStates } = mapControlsController.useState(['selectedLayer'], 'mapControlsStateValues');
+  const selectedLayer = mapControlsStateValues.selectedLayer
+
+  const layerType = selectedLayer.layerPaintProps[0]?.paintType;
   const { width, setWidth, fillColor, setFillColor, layerLabelVisibility, setLayerLabelVisibility, layerClickability, setLayerClickability, strokeColor, setStrokeColor, handleLayerChange
-  } = useLayerStyle(layer)
+  } = useLayerStyle(selectedLayer)
 
   const [rows, setRows] = useState(0);
-  const [, setStateMapControls] = useContext(MapControlsContext);
-  const hookState = useHookstate(hookStateApp);
 
-  const [, setStateApp] = useContext(AppContext);
   const [layerFeaturesCount, { data: layerDataCount }] = useLazyQuery(LAYERS_FEATURES_COUNT);
 
   const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
@@ -41,39 +36,36 @@ function LayerStyling(props) {
 
   useEffect(() => {
     setRows(0)
-    if (layer.file) {
-      layerFeaturesCount({ variables: { fileId: layer.file } })
+    if (selectedLayer.file) {
+      layerFeaturesCount({ variables: { fileId: selectedLayer.file } })
     }
-  }, [layer.file, layerFeaturesCount])
+  }, [mapControlStates.selectedLayer.file, layerFeaturesCount])
 
   const handleClose = () => {
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      selectedLayer: null,
-    }));
+    mapControlsController.updateState({ selectedLayerControl: null })
   };
 
   const handleApplyChanges = () => {
-    const hookStateAppLayers = hookState.layers.get({ noproxy: true })
+    const hookStateAppLayers = globalStateController.getValue('layers')
 
     if (
       (hookStateAppLayers &&
-        layer &&
+        selectedLayer &&
         ((fillColor && fillColor.rgb && (fillColor.alpha || fillColor.alpha === 0)) ||
           (strokeColor &&
             strokeColor.rgb &&
             (strokeColor.alpha || strokeColor.alpha === 0)))) ||
       width ||
-      layer.layerPaintProps[0]?.labelProps?.visibility !== layerLabelVisibility ||
-      layer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability
+      selectedLayer.layerPaintProps[0]?.labelProps?.visibility !== layerLabelVisibility ||
+      selectedLayer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability
     ) {
       let { currentLayer } = handleLayerChange()
       //// saving to stateApp
       const currentLayers = [...hookStateAppLayers];
       const index = currentLayers.findIndex((l) => l._id === currentLayer._id);
       currentLayers[index] = currentLayer;
-      hookState.layers.set(currentLayers)
-      setStateApp((stateApp) => ({ ...stateApp, layers: [...currentLayers] }));
+      globalStateController.updateState({ layers: currentLayers })
+      layerController.handleDeckLayer(currentLayer)
 
       //// saving to mongo
       updateLayerSettings({
@@ -96,41 +88,38 @@ function LayerStyling(props) {
       <div style={{ width: '100%' }}>
         <Grid container direction="row" justify="space-between" alignItems="center" style={{ padding: "15px" }}>
           <Grid item md={11}>
-            <Typography variant="h5" noWrap>{layer.layerName === "Parcels" ? "Tracts" : layer.layerName}</Typography>
+            {/* Override layer styling names of Parcel and Wells */}
+            <Typography variant="h5" noWrap>{selectedLayer.layerName === "Parcels" ? "Tracts" : selectedLayer.layerName === 'Wells' ? 'Platform Wells' : selectedLayer.layerName}</Typography>
           </Grid>
           <Grid item>
-            <IconButton size="small" onClick={handleApplyChanges}>
+            <IconButton size="small" onClick={handleApplyChanges} data-testid="close">
               <CloseIcon />
             </IconButton>
           </Grid>
         </Grid>
         <Divider />
         <FeatureFlag feature={FEATURES.SHAPEELASTIC}>
-          {layer.file &&
+          {selectedLayer.file &&
             <>
               <Grid container spacing={3} style={{ padding: "10px 20px 10px 17px", justifyContent: "space-between" }}>
                 <Grid item style={{ display: "flex" }}>
-                  <Box borderColor={getLayerColor(layer, "layer", {})} borderLeft={4} style={{ padding: "0 0 0 16px" }}>
+                  <Box borderColor={getLayerColor(selectedLayer, "layer", {})} borderLeft={4} style={{ padding: "0 0 0 16px" }}>
                   </Box>
                   <Box display='inline'>
                     <Typography className={classes.fileName} variant="h6" noWrap>
-                      {fileName}
+                      {selectedLayer.fileName}
                     </Typography>
-                    <Typography id={layer.fileName} noWrap>
+                    <Typography id={selectedLayer.fileName} noWrap>
                       {rows} rows
                     </Typography>
                   </Box>
 
                 </Grid>
-                <Grid style={{ padding: '25px 25px 0 0' }}>
+                <Grid style={{ padding: '5px 27px 4px 0px' }}>
                   <Tooltip title="Grid">
                     <IconButton size="small" aria-label="Grid" className={classes.gridOnIcon} onClick={() => {
-                      setStateApp((state) => ({
-                        ...state,
-                        layerGridCard: true,
-                      }));
+                      mapControlsController.updateState({ layerGridCard: true, mapGridCardActivated: true, selectedLayer })
                       handleClose()
-                      dispatch(setMapGridCardState({ mapGridCardActivated: true }));
                     }}>
                       <GridOnIcon fontSize="large" />
                     </IconButton>
@@ -142,7 +131,7 @@ function LayerStyling(props) {
           }
         </FeatureFlag>
         <Grid container spacing={3} style={{ padding: "20px" }}>
-          {layer.layerSettings?.colorable &&
+          {selectedLayer.layerSettings?.colorable &&
             <Grid item xs={12}>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <Typography variant="h6">Layer label visibility</Typography>
@@ -152,6 +141,7 @@ function LayerStyling(props) {
                       checked={layerLabelVisibility === 'visible'}
                       onChange={() => setLayerLabelVisibility(layerLabelVisibility === 'visible' ? 'none' : 'visible')}
                       size="small"
+                      data-testid="layer-label-visibility-toggle"
                     />
                   }
                 />
@@ -159,7 +149,7 @@ function LayerStyling(props) {
             </Grid>
           }
 
-          {(layer.layerSettings?.interaction?.interactionAble || layer.layerType === 'file layer') &&
+          {(selectedLayer.layerSettings?.interaction?.interactionAble || selectedLayer.layerType === 'file layer') &&
             <Grid item xs={12}>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <Typography variant="h6">Layer clickable</Typography>
@@ -169,6 +159,7 @@ function LayerStyling(props) {
                       checked={layerClickability}
                       onChange={(e) => setLayerClickability(!layerClickability)}
                       size="small"
+                      data-testid="layer-pickability-toggle"
                     />
                   }
                 />
@@ -176,7 +167,7 @@ function LayerStyling(props) {
             </Grid>
           }
 
-          {layer.layerSettings?.colorable &&
+          {selectedLayer.layerSettings?.colorable &&
             <>
               <Grid item xs={12}>
                 <div
@@ -188,7 +179,7 @@ function LayerStyling(props) {
                   <Typography variant="h6">Fill Color</Typography>
                   {layerType === "line" && <WidthPicker width={width} setWidth={setWidth} layerType={layerType} />}
                 </div>
-                <Paper>
+                <Paper id='fill-picker-box'>
                   <ColorPickerStyledBox value={fillColor} onChange={(color) => setFillColor(color)} />
                 </Paper>
               </Grid>
@@ -203,7 +194,7 @@ function LayerStyling(props) {
                     <Typography variant="h6">Stroke Color</Typography>
                     {layerType === "circle" && <WidthPicker width={width} setWidth={setWidth} layerType={layerType} />}
                   </div>
-                  <Paper>
+                  <Paper id='stroke-picker-box'>
                     <ColorPickerStyledBox value={strokeColor} onChange={(color) => setStrokeColor(color)} />
                   </Paper>
                 </Grid>

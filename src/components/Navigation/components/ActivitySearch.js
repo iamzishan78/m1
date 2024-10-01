@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 import { Grid, InputAdornment, TextField, Tooltip, IconButton } from "@material-ui/core";
@@ -80,11 +80,16 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  // New class to apply to the parent
+  backgroundHighlight: {
+    backgroundColor: '#ffffff !important' ,
+  },
 }));
 
 const ActivitySearch = () => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
+  const childRef = useRef(null);
 
   const [activities, setActivities] = useState([]);
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
@@ -142,6 +147,17 @@ const ActivitySearch = () => {
     []
   );
 
+  useEffect(() => {
+    if (childRef.current) {
+      // Access the parent element of the component referenced by childRef
+      const parent = childRef.current.parentElement;
+      if (parent) {
+        // Add the backgroundHighlight class to the parent element
+        parent.classList.add(classes.backgroundHighlight);
+      }
+    }
+  }, [classes]); // Run this effect whenever the classes object changes
+
   return (
     <Grid
       container
@@ -149,6 +165,7 @@ const ActivitySearch = () => {
       direction="row"
       alignItems="center"
       style={{ marginLeft: quickActionsPanelState ? "425px" : "0px", width: "55%" }}
+      ref={childRef}
     >
       <Grid item className={classes.barTitle}>
         <EventIcon />

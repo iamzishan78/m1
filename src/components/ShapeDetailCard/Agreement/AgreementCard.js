@@ -7,9 +7,9 @@ import CardContent from "@material-ui/core/CardContent";
 import AgreementDetailCard from "./AgreementDetailCard";
 
 // contexts 
-import { AppContext } from "AppContext";
 import { ExpandableCardContext } from "components/ExpandableCard/ExpandableCardContext";
-import { setMapGridCardState } from "actions";
+import { popupController } from "hookstate/popupStateController";
+import { mapControlsController } from "hookstate/mapControlsController";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -24,16 +24,18 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function AgreementCard(props) {
-
   // contexts 
-  const [stateApp] = useContext(AppContext);
   const [stateExpandableCard] = useContext(ExpandableCardContext);
+
+  const { stateValues } = popupController.useState(['selectedShape'])
 
   const classes = useStyles();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(setMapGridCardState({ mapGridCardActivated: false }));
+    mapControlsController.updateState({
+      mapGridCardActivated: false,
+    });
   }, [dispatch]);
 
   return (
@@ -43,7 +45,7 @@ export default function AgreementCard(props) {
           <div style={{ height: "100%" }}>
             <Card className={classes.card}>
               <CardContent className={classes.content}>
-                <AgreementDetailCard id={stateApp.selectedShape.id} />
+                <AgreementDetailCard id={stateValues.selectedShape.id} />
               </CardContent>
             </Card>
           </div>

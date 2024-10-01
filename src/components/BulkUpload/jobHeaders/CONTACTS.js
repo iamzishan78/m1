@@ -29,6 +29,13 @@ export default [
         required: false,
         actual_key: "entityDetail.middleName",
     },
+    // Added county field in file format
+    {
+        label: "County",
+        mapped_key: "",
+        required: false,
+        actual_key: "county",
+    },
     {
         label: "Suffix",
         mapped_key: "",
@@ -48,40 +55,76 @@ export default [
         actual_key: "relatives",
     },
     {
-        label: "Primary Address 1",
+        label: "Primary Address 1", // Primary address1
         mapped_key: "",
         required: false,
         actual_key: "entityDetail.address1",
     },
     {
-        label: "Primary Address 2",
+        label: "Primary Address 2", // Primary address2
         mapped_key: "",
         required: false,
         actual_key: "entityDetail.address2",
     },
     {
-        label: "City",
+        label: "Primary Address City", // Primary city
         mapped_key: "",
         required: false,
         actual_key: "entityDetail.city",
     },
     {
-        label: "AddressState",
+        label: "Primary Address State", // Primary state
         mapped_key: "",
         required: false,
         actual_key: "entityDetail.state",
     },
     {
-        label: "Zip",
+        label: "Primary Address Zip", // Primary zip
         mapped_key: "",
         required: false,
         actual_key: "entityDetail.zip",
     },
     {
-        label: "Country",
+        label: "Primary Address Country", // Primary country
         mapped_key: "",
         required: false,
         actual_key: "entityDetail.country",
+    },
+    {
+        label: "Secondary Address 1", // Secondary address1
+        mapped_key: "",
+        required: false,
+        actual_key: "entityDetail.address1Alt",
+    },
+    {
+        label: "Secondary Address 2", // Secondary address2
+        mapped_key: "",
+        required: false,
+        actual_key: "entityDetail.address2Alt",
+    },
+    {
+        label: "Secondary Address City", // Secondary city
+        mapped_key: "",
+        required: false,
+        actual_key: "entityDetail.cityAlt",
+    },
+    {
+        label: "Secondary Address State", // Secondary state
+        mapped_key: "",
+        required: false,
+        actual_key: "entityDetail.stateAlt",
+    },
+    {
+        label: "Secondary Address Zip", // Secondary zip
+        mapped_key: "",
+        required: false,
+        actual_key: "entityDetail.zipAlt",
+    },
+    {
+        label: "Secondary Address Country", // Secondary country
+        mapped_key: "",
+        required: false,
+        actual_key: "entityDetail.countryAlt",
     },
     {
         label: "Owner Type",

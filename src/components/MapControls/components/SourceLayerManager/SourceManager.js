@@ -1,7 +1,6 @@
 import React, { useContext, useState, useEffect, Fragment, useCallback, useMemo, memo } from "react";
 import update from "immutability-helper";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
-import { MapControlsContext } from "../../MapControlsContext";
 import { AppContext } from "AppContext";
 import { Typography, Divider, MenuItem, Popper, ClickAwayListener, MenuList, Paper, Grow } from "@material-ui/core";
 import Dialog from "@material-ui/core/Dialog";
@@ -31,6 +30,7 @@ import UploadIcon from "components/Shared/svgIcons/uploadIcon";
 import EditableTextField from "components/Shared/components/Fields/EditableTextField";
 import { truncate } from "components/Shared/functions";
 import Button from "@material-ui/core/Button";
+import * as turf from '@turf/turf';
 
 
 // cra webpack hack to call this a png to get included in bundle
@@ -40,13 +40,14 @@ import { FEATURES } from "components/Shared/FeatureFlag/common";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
 import { UPDATE_DATASET } from "graphQL/useMutationDataset";
-import { hookStateApp } from "hookstate";
-import { useHookstate } from '@hookstate/core';
 
 import { showErrorMessage, showInfoMessage } from "actions";
 import { useDispatch } from "react-redux";
 import { Close as ClearButton } from "@material-ui/icons";
 import JSZip from 'jszip';
+import { globalStateController } from "hookstate/globalStateController";
+import { mapControlsController } from "hookstate/mapControlsController";
+import { layerController } from "hookstate/layerStateController";
 
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
@@ -220,10 +221,8 @@ const SourceManagerMemo = memo(SourceManager);
 export default function SourceManagerContainer(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
 
-
-
   const setStateAppCallback = useCallback(setStateApp, [])
-  const stateAppMemo = useMemo(() => ({ layers: stateApp.layers, user: stateApp.user, datasets: stateApp.datasets }), [stateApp.user, stateApp.datasets, stateApp.layers])
+  const stateAppMemo = useMemo(() => ({ layers: stateApp.layers, user: stateApp.user }), [stateApp.user, stateApp.layers])
 
   return <SourceManagerMemo {...props} stateApp={stateAppMemo} setStateApp={setStateAppCallback} />
 }
@@ -233,11 +232,9 @@ function SourceManager(props) {
   let history = useHistory();
 
   const dispatch = useDispatch();
-  const source_limit = 50;
 
-  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const { stateApp, setStateApp } = props;
-  const hookState = useHookstate(hookStateApp);
+  const { layers, globalStateValues } = globalStateController.useState(['layers', 'datasets'], 'globalStateValues')
   const [openM1, setOpenM1] = React.useState(true);
   const [isOpenUserSources, setIsOpenUserSources] = React.useState(true);
   const [openDataSets, setOpenDataSets] = React.useState({});
@@ -250,18 +247,18 @@ function SourceManager(props) {
   const [updateManyLayer] = useMutation(UPDATE_MANY_LAYER);
   const [updateDataset] = useMutation(UPDATE_DATASET, { refetchQueries: ["getDatasets"], awaitRefetchQueries: true });
   const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
-  const [updateUserMapSettings] = useMutation(UPDATE_USER_MAP_SETTINGS, { refetchQueries: ["getUserMapSettings"], awaitRefetchQueries: true });
+  const [updateUserMapSettings] = useMutation(UPDATE_USER_MAP_SETTINGS, { refetchQueries: ["getUserMapSettings", 'getDatasets'], awaitRefetchQueries: true });
 
   const updateStateLayers = (currentLayers) => {
     stateApp.layers = currentLayers;
-    hookStateApp.layers.set(currentLayers)
+    globalStateController.updateState({ layers: currentLayers });
   }
 
   useEffect(() => {
-    if (!deepEqual(currentLayers, hookState.layers.get({ noproxy: true }))) {
-      setCurrentLayers(copy(hookState.layers.get({ noproxy: true })));
+    if (!deepEqual(currentLayers, globalStateValues.layers)) {
+      setCurrentLayers(copy(globalStateValues.layers));
     }
-  }, [currentLayers, hookState.layers]);
+  }, [currentLayers, layers]);
 
   const M1Layers = React.useMemo(() => {
     const layers = currentLayers?.filter((layer) => layer.layerCategory === "M1 Layer" || ['Parcels', 'Agreements', 'Units', 'Area of Interest'].includes(layer.groupName || layer.layerName));
@@ -293,26 +290,16 @@ function SourceManager(props) {
     return check;
   }, [currentLayers]);
 
-  const selectAllUserSources = React.useMemo(() => {
-    let check = true, sources = stateApp.datasets;
-    if (sources) {
-      for (let index = 0; index < sources.length; index++) {
-        if (sources[index].visibility === false) check = false
-      }
-    }
-    return check;
-  }, [stateApp.datasets]);
-
   const handleCurrentLayersChange = () => {
     setCurrentLayers((currentLayers) => { handleApplyChange(currentLayers); return currentLayers; })
   };
 
   const handleApplyChange = (currentLayers) => {
-    if (!deepEqual(currentLayers, hookState.layers.get({ noproxy: true }))) {
+    if (!deepEqual(currentLayers, globalStateValues.layers)) {
       const layersToUpdate = [];
       const layersSettingsToUpdate = [];
       for (let i = 0; i < currentLayers.length; i++) {
-        if (!deepEqualObjects(currentLayers[i], hookState.layers.get({ noproxy: true })[i])) {
+        if (!deepEqualObjects(currentLayers[i], globalStateValues.layers[i])) {
           layersSettingsToUpdate.push({
             _id: currentLayers[i]._id,
             layerSettings: currentLayers[i].layerSettings,
@@ -345,76 +332,44 @@ function SourceManager(props) {
     }
   };
 
-  // For mineral sources
-  const changeShowAble = (layer) => {
+  // Common function added to change Layer showable key
+  const handleLayerSettingChange = (layers, changeValue) => {
     const updatefn = {};
-    if (layer.type === "group") {
-      const value = !!layer.layers.find((l) => l.layerSettings.showable);
-      layer.layers.forEach((l) => {
-        const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === l.identifier);
-        updatefn[layerIndex] = { layerSettings: { showable: { $set: !value } } };
-      });
-    } else {
-      const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === layer.identifier);
-      updatefn[layerIndex] = { layerSettings: { showable: { $set: !layer.layerSettings.showable } } };
-    }
+    const isReplace = typeof changeValue !== 'undefined'
 
-    setCurrentLayers(update(currentLayers, updatefn));
-    handleCurrentLayersChange()
-  };
-
-  const changeAllMineralSources = (sources, value) => {
-
-    const updatedLayers = sources?.map(layer => {
-      const updatefn = {};
+    layers.forEach((layer) => {
       if (layer.type === "group") {
+        const value = isReplace ? changeValue : !layer.layers.find((l) => l.layerSettings.showable);
         layer.layers.forEach((l) => {
           const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === l.identifier);
           updatefn[layerIndex] = { layerSettings: { showable: { $set: value } } };
+          layerController.handleDeckLayer({ ...l, layerSettings: { ...l.layerSettings, showable: value } })
         });
       } else {
+        const value = isReplace ? changeValue : !layer.layerSettings.showable;
         const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === layer.identifier);
         updatefn[layerIndex] = { layerSettings: { showable: { $set: value } } };
+        layerController.handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, showable: value } })
       }
-      return updatefn
-    });
+    })
 
-    let result = currentLayers
-    for (let index = 0; index < updatedLayers.length; index++) {
-      result = update(result, updatedLayers[index])
-    }
-
-    setCurrentLayers(result);
+    setCurrentLayers(update(currentLayers, updatefn));
     handleCurrentLayersChange()
   }
 
-  const changeAllUserSources = (sources, value) => {
+  // Common function added for User layer which uses handleLayerSettingChange internally
+  const changeUserSources = (sources, value) => {
     const settings = {}
-    const layersSettingsToUpdate = [];
-
-
-
-    for (let index = 0; index < sources.length; index++) {
-      const updatefn = {};
-      currentLayers.forEach((clayer, layerIndex) => {
-        if (clayer.file === sources[index].file) {
-          updatefn[layerIndex] = { layerSettings: { showable: { $set: value } } };
-          layersSettingsToUpdate.push({
-            _id: clayer._id,
-            layerSettings: { ...clayer.layerSettings, showable: value, visiable: value }
-          });
-        }
-      });
+    const fileIds = sources.map((source, index) => {
+      const datasetIndex = globalStateValues.datasets.findIndex(d => d._id === source._id);
+      source.visibility = value
+      globalStateValues.datasets[datasetIndex] = source
 
       settings[sources[index]._id] = value
-
-      const newLayers = update(currentLayers, updatefn)
-      setCurrentLayers(newLayers);
-      const datasetIndex = stateApp.datasets.findIndex(d => d._id === sources[index]._id);
-      sources[index].visibility = value
-      stateApp.datasets[datasetIndex] = sources[index];
-      updateStateLayers(newLayers)
-    }
+      return source.file
+    }).filter((fileId) => fileId)
+    const layers = currentLayers.filter((layer) => fileIds.includes(layer.file))
+    handleLayerSettingChange(layers, value)
 
     updateUserMapSettings({
       variables: {
@@ -425,61 +380,6 @@ function SourceManager(props) {
         },
       },
     });
-
-    if (layersSettingsToUpdate.length > 0)
-      updateManyUserLayerSettings({
-        variables: {
-          manySettings: layersSettingsToUpdate,
-        },
-      });
-
-
-  }
-
-  const handleDatasetChange = (dataset, value) => {
-    const updatefn = {};
-    const layersSettingsToUpdate = [];
-
-    if (stateApp.datasets?.filter((row) => row.visibility == true).length < source_limit || value == 0) {
-      currentLayers.forEach((clayer, layerIndex) => {
-        if (clayer.file === dataset.file) {
-          updatefn[layerIndex] = { layerSettings: { showable: { $set: value }, visiable: { $set: value } } };
-          layersSettingsToUpdate.push({
-            _id: clayer._id,
-            layerSettings: { ...clayer.layerSettings, showable: value, visiable: value }
-          });
-        }
-      });
-      updateUserMapSettings({
-        variables: {
-          settings: {
-            user: stateApp.user.mongoId,
-            type: 'DatasetVisibility',
-            settings: { [dataset._id]: value },
-          },
-        },
-      });
-      if (layersSettingsToUpdate.length > 0)
-        updateManyUserLayerSettings({
-          variables: {
-            manySettings: layersSettingsToUpdate,
-          },
-        });
-
-      const newLayers = update(currentLayers, updatefn)
-      setCurrentLayers(newLayers);
-      const datasetIndex = stateApp.datasets.findIndex(d => d._id === dataset._id);
-      dataset.visibility = value
-      stateApp.datasets[datasetIndex] = dataset
-      updateStateLayers(newLayers)
-
-    }
-
-    else {
-      dispatch(
-        showInfoMessage("Cannot add additional source. Number of active sources cannot exceed " + source_limit)
-      );
-    }
 
   }
 
@@ -516,17 +416,27 @@ function SourceManager(props) {
         layerTypes.push(layerType);
       }
     });
+
     layerTypes.forEach((layerType) => {
-      fileNames.push(`${geo.fileName || name} - ${layerType}`);
+      fileNames.push(`${geo.fileName || geo.name || name} - ${layerType}`);
     });
-    return { layerTypes, fileNames };
+
+    // Create a MultiPoint geometry from the FeatureCollection's coordinates
+    const allCoordinates = turf.explode(geo).features.map(feature => feature.geometry.coordinates);
+    const multiPoint = turf.multiPoint(allCoordinates);
+
+    // Calculate the bounding box
+    const bbox = turf.bbox(multiPoint);
+
+    return { layerTypes, fileNames, bbox };
   };
 
   const singleGeojson = (geojson, groupName) => {
-    const { layerTypes, fileNames } = parseGeoForTypesAndNames(geojson, groupName);
+    const { layerTypes, fileNames, bbox } = parseGeoForTypesAndNames(geojson, groupName);
     geojson.fileNames = fileNames;
     geojson.featureTypes = layerTypes;
     geojson.groupName = groupName;
+    geojson.bboxes = [bbox];
     return geojson;
   };
 
@@ -601,24 +511,22 @@ function SourceManager(props) {
                 fetch("https://ogre.adc4gis.com/convert", requestOptions)
                   .then(response => response.json())
                   .then(result => {
-                    if (result.error) return reject(result)
                     const name = fileName.replace(".zip", "");
                     geojsons.push(result)
                     resolve({ data: singleGeojson(result, name), originalData: { file: fileData, fileName, fileType } });
                   })
-                  .catch(error => {
-                    console.log('error', error)
-                    console.log("🚀 ~ res=awaitnewPromise ~ error:", error)
-                  });
+                  .catch(error => console.log('error', error));
               });
             }
 
             let allFileNames = [];
             let allLayerTypes = [];
+            const allLayerBboxs = [];
             geojsons.forEach((geo) => {
-              const { layerTypes, fileNames } = parseGeoForTypesAndNames(geo, geo.name);
+              const { layerTypes, fileNames, bbox } = parseGeoForTypesAndNames(geo, geo.name);
               allLayerTypes = allLayerTypes.concat(layerTypes);
               allFileNames = allFileNames.concat(fileNames);
+              allLayerBboxs.push(bbox);
             });
             const merged = geojsonMerge.merge(geojsons);
             merged.features.forEach((feature, index) => {
@@ -626,6 +534,7 @@ function SourceManager(props) {
             })
             merged.fileNames = allFileNames;
             merged.featureTypes = allLayerTypes;
+            merged.bboxes = allLayerBboxs;
             merged.groupName = fileName.replace(".zip", "");
             resolve({ data: merged, originalData: { file: fileData, fileName, fileType } });
           });
@@ -644,7 +553,10 @@ function SourceManager(props) {
   async function handleFileInput(fileObj) {
     setStateApp((stateApp) => ({
       ...stateApp,
-      universalCircularLoaderAct: true,
+      universalCircularLoaderAct: {
+        localLoader: true,
+        text: 'This may take some time depending on the file size'
+      },
     }));
     let originalData;
     let fileContent = await handleFileAsync(fileObj);
@@ -661,13 +573,11 @@ function SourceManager(props) {
     }));
 
     if (fileContent?.featureTypes)
-      setStateMapControls({
-        ...stateMapControls,
-        // layerAddControl: fileContent.featureTypes?.length > 1 ? "addGroup" : "add",
+      mapControlsController.updateState({
         layerAddControl: "addGroup",
         fileUploadedContent: fileContent,
         fileUploadedOriginalContent: originalData,
-      });
+      })
   }
 
   const checkIfDeleteAllow = (layer) => {
@@ -695,11 +605,9 @@ function SourceManager(props) {
       category.name = name
       category.layerName = name
     }
-    setStateApp((stateApp) => {
-      const index = stateApp.datasets.findIndex((dataset) => dataset._id === actionItem.dataset._id)
-      stateApp.datasets[index] = actionItem.dataset
-      return { ...stateApp }
-    })
+    const index = globalStateValues.datasets.findIndex((dataset) => dataset._id === actionItem.dataset._id)
+    globalStateValues.datasets[index] = actionItem.dataset
+
     updateDataset({ variables: { dataset: actionItem.dataset } })
   }
 
@@ -718,7 +626,7 @@ function SourceManager(props) {
         onDelete={(fileObj) => { }}
         onAlert={(message, variant) => { }}
         filesLimit={1}
-        maxFileSize={10000000}
+        maxFileSize={104857600}
         dropzoneClass={classes.dropzoneClass}
         // acceptedFiles={[".geojson", ".zip", ".shp",]}
         dropzoneText={
@@ -746,7 +654,7 @@ function SourceManager(props) {
                       checked={selectAllMineralSources}
                       color="darkgray"
                       onClick={(e) => e.stopPropagation()}
-                      onChange={(e) => { changeAllMineralSources(M1Layers, !selectAllMineralSources) }}
+                      onChange={(e) => { handleLayerSettingChange(M1Layers, !selectAllMineralSources) }}
                       inputProps={{ "aria-label": "primary checkbox" }}
                     />
                     <ListItemText primary="M1neral Platform Sources" />
@@ -755,7 +663,10 @@ function SourceManager(props) {
                   <Collapse in={openM1} timeout="auto" unmountOnExit>
                     <List className={classes.list}>
                       {M1Layers?.filter(
-                        (layer) => !props.search || layer.name?.toLowerCase().includes(props.search) || layer.layerName?.toLowerCase().includes(props.search)
+                        (layer) => {
+                          return (!props.search || layer.name?.toLowerCase().includes(props.search) || layer.layerName?.toLowerCase().includes(props.search)) &&
+                            !['Land Grid', 'TX GLO Units', 'TX GLO Active Leases', 'Rig Activity'].includes(layer.layerName);
+                        }
                       )?.map((layer, index) => {
                         const labelId = `m1layer-list-label-${index}`;
 
@@ -777,7 +688,7 @@ function SourceManager(props) {
                                   checked={!!layer.layers.find((l) => l.layerSettings?.showable)}
                                   color="dark gray"
                                   onClick={(event) => event.stopPropagation()}
-                                  onChange={(e) => changeShowAble(layer)}
+                                  onChange={(e) => handleLayerSettingChange([layer])}
                                   inputProps={{ "aria-label": "primary checkbox" }}
                                 />
                                 <EditableTextField
@@ -811,7 +722,7 @@ function SourceManager(props) {
                                       <Checkbox
                                         checked={groupLayer?.layerSettings?.showable}
                                         color="dark gray"
-                                        onChange={() => changeShowAble(groupLayer)}
+                                        onChange={() => handleLayerSettingChange([groupLayer])}
                                         inputProps={{ "aria-label": "primary checkbox" }}
                                       />
                                       <EditableTextField onChange={changeLayerName} item={groupLayer} name={groupLayer.layerName} isEditable={checkIfDeleteAllow(layer)} />
@@ -844,11 +755,12 @@ function SourceManager(props) {
                             <Checkbox
                               checked={layer.layerSettings.showable}
                               color="dark gray"
-                              onChange={() => changeShowAble(layer)}
+                              onChange={() => handleLayerSettingChange([layer])}
                               inputProps={{ "aria-label": "primary checkbox" }}
                             />
 
-                            <ListItemText id={labelId} primary={layer.layerName === "Parcels" ? "Tracts" : truncate(layer.layerName, 30)} />
+                            {/* Override layer source names of Parcel and Wells */}
+                            <ListItemText id={labelId} primary={layer.layerName === "Parcels" ? "Tracts" : layer.layerName === 'Wells' ? 'Platform Wells' : truncate(layer.layerName, 30)} />
 
                             {
                               (layer.layerName === 'Units') &&
@@ -887,7 +799,7 @@ function SourceManager(props) {
                       className={classes.multiSelectionTopBarButtons}
                       onClick={(event) => {
                         event.stopPropagation();
-                        changeAllUserSources(stateApp.datasets, false)
+                        changeUserSources(globalStateValues.datasets, false)
                       }}
                     >
                       CLEAR ALL
@@ -896,7 +808,7 @@ function SourceManager(props) {
                     {isOpenUserSources ? <ExpandLess /> : <ExpandMore />}
                   </StyledListItem2>
                   <Collapse in={isOpenUserSources} timeout="auto" unmountOnExit>
-                    {stateApp.datasets?.filter(
+                    {globalStateValues.datasets?.filter(
                       (layer) => {
                         return !props.search || layer.name?.toLowerCase().includes(props.search)
                       }
@@ -909,7 +821,7 @@ function SourceManager(props) {
                               checked={dataset.visibility}
                               color="darkgray"
                               onClick={(e) => e.stopPropagation()}
-                              onChange={() => { handleDatasetChange(dataset, !dataset.visibility); }}
+                              onChange={() => { changeUserSources([dataset], !dataset.visibility); }}
                               inputProps={{ "aria-label": "primary checkbox" }}
                             />
                             <EditableTextField onChange={datasetNameChange} item={dataset} name={dataset.sourceName} isEditable={true} openEditField={openEditField(dataset.sourceName)} />

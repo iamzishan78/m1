@@ -29,6 +29,7 @@ import { showInfoMessage } from "actions";
 import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
 import StateField from "components/Revenue/components/Properties/DetailComponents/State";
 import CountyField from "components/Revenue/components/Properties/DetailComponents/County";
+import { popupController } from "hookstate/popupStateController";
 
 const useStyles = makeStyles((theme) => ({
   valueOveridden: {
@@ -89,10 +90,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   useEffect(() => {
     return history.listen((location) => {
       if (!agreementDetails?.agreementNumber) {
-        setStateApp((state) => ({
-          ...state,
-          selectedShape: null,
-        }));
+        popupController.updateState({
+          selectedShape: null
+        })
         history.goBack();
       }
     });

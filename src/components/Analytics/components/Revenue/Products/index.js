@@ -12,6 +12,10 @@ const useStyles = makeStyles((theme) => ({
     padding: "25px 0px 25px 0px",
     width: "inherit",
   },
+  sectionTitle: {
+    textTransform: "uppercase",
+    fontWeight: theme.typography.fontWeightBold, // make section title same as other section title
+  },
 }));
 
 export default function Products({ portfolioSummary, loading }) {

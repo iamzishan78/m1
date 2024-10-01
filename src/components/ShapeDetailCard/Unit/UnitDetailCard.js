@@ -18,10 +18,10 @@ import AssociatedWellsShapeTable from "components/Table/Wells/AssociatedWellsSha
 import UnitTractsTable from "components/Table/Shape/UnitTractsTable";
 import AssociatedTractsShapeTable from "components/Table/Wells/AssociatedTractsShapeTable";
 import Tags from "components/Shared/Tagger";
-import { showSuccessMessage, showErrorMessage, setMapGridCardState } from "actions";
+import { showSuccessMessage, showErrorMessage } from "actions";
 import { AppContext } from "AppContext";
 import { copy } from 'components/Shared/functions';
-import { popupController, popupState } from 'hookstate/popupStateController';
+import { popupController } from 'hookstate/popupStateController';
 import MRTTable from 'components/MRTTable';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import { detailCardStyles } from '../style';
@@ -30,7 +30,10 @@ import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
 import { simpleTableGlobalController } from "hookstate/simpleTableController";
 import { jobController } from "hookstate/jobStateController";
 import MRSimpleTable from "components/MRSimpleTable";
+import { layerController } from 'hookstate/layerStateController';
+import { potentialOwnerTableKey } from 'components/MRSimpleTable/Schema/potential_owners_schema';
 import { getShapeSubtitle } from '../helper';
+import { mapControlsController } from 'hookstate/mapControlsController';
 
 const setSelectedTab = simpleTableGlobalController.setSelectedTab
 
@@ -57,15 +60,14 @@ export default function UnitDetailCard(props) {
   const contactsAdded = useSelector(state => state?.common?.contactsAdded);
 
   useEffect(() => {
-    refetchCustomLayer()
+    if (dataCustomLayer)
+      refetchCustomLayer()
   }, [globalStateValues?.refetch]);
 
   useEffect(() => {
-    dispatch(
-      setMapGridCardState({
-        mapGridCardActivated: false,
-      })
-    );
+    mapControlsController.updateState({
+      mapGridCardActivated: false,
+    });
   }, []);
 
   useEffect(() => {
@@ -149,7 +151,7 @@ export default function UnitDetailCard(props) {
 
     if (field === 'uName') {
       popupController.updateState({
-        selectedShape: { ...popupState.selectedShape.get({ noproxy: true }), shapeLabel: value },
+        selectedShape: { ...popupController.getValue('selectedShape'), shapeLabel: value },
       });
       shape.properties.shapeLabel = value;
       customLayer.name = value;
@@ -161,7 +163,7 @@ export default function UnitDetailCard(props) {
       shape.properties.shapeSubtitle = shapeSubtitle
       shape.shapeSubtitle = shapeSubtitle
       popupController.updateState({
-        selectedShape: { ...popupState.selectedShape.get({ noproxy: true }), shapeSubtitle },
+        selectedShape: { ...popupController.getValue('selectedShape'), shapeSubtitle },
       });
     }
     customLayer.shape = JSON.stringify(shape);
@@ -173,8 +175,9 @@ export default function UnitDetailCard(props) {
         customLayer,
         userId: stateApp.user.mongoId,
       },
-    }).then(() => {
+    }).then((res) => {
       jobController.toggleBulkUpload()
+      layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)
     });
   };
 
@@ -194,8 +197,9 @@ export default function UnitDetailCard(props) {
         customLayer,
         userId: stateApp.user.mongoId,
       },
-    }).then(() => {
+    }).then((res) => {
       jobController.toggleBulkUpload()
+      layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)
     });
   };
 
@@ -281,7 +285,7 @@ export default function UnitDetailCard(props) {
                     </div>,
                     <div>
                       <MRSimpleTable
-                        name="PotentialOwners"
+                        name={potentialOwnerTableKey}
                         overrideMeta={{
                           tabLabels: ['Unit Ownership', 'Potential Ownership'],
                           customProps: {

@@ -4,7 +4,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import M1nTable from "../Shared/M1nTable/M1nTable";
+import MRSimpleTable from 'components/MRSimpleTable';
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { useHistory } from "react-router-dom";
 import { Modals } from "../../styles/Modal";
@@ -33,6 +33,12 @@ const useStyles = makeStyles((theme) => ({
   },
   header :{
       backgroundColor: theme.palette.primary.main,
+  },
+  dialog: {
+    '& .MuiDialogContent-root': {
+      height: 'auto !important',
+      padding: '30px 24px !important',
+    }
   }
 }));
 
@@ -54,6 +60,7 @@ export default function UserManagementContainer() {
       <Dialog
         fullWidth
         maxWidth="xl"
+        className={classes.dialog}
         open={isUserManagementOpen}
         onClose={handleClose}
       >
@@ -66,10 +73,7 @@ export default function UserManagementContainer() {
         />
         </DialogTitle>
         <DialogContent style={{height: windowsHeight}}>
-            <M1nTable 
-                dense
-                parent="UserManagement"
-            />
+          <MRSimpleTable name="UserManagement" />
         </DialogContent>
       </Dialog>
     </Fragment>

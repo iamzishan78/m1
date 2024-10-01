@@ -85,7 +85,8 @@ const TractPerUnitMeta = {
 			id: 'contact.entityDetail.name',
 			header: 'Owner Name',
 			Cell: ({ renderedCellValue, row }) => {
-				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
+				// Check if the contact is purchased
+				const isPurchased = [true, 'true', 'True'].includes(row.getValue('contact.isPurchased'));
 				return (
 					<div
 						style={{
@@ -427,7 +428,16 @@ const TractPerUnitMeta = {
 			type: 'number',
 			Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price)}</>,
 		},
-
+    	// Bonus payment column
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'bonus_payment',
+			accessorKey: 'bonus_payment',
+			header: 'Bonus Payment',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.bonus_payment)}</>,
+		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -523,6 +533,10 @@ const TractPerUnitMeta = {
 			accessorKey: 'deals.name',
 			isExport: 'dealsName',
 			header: 'Associated Deals',
+			handleArrayExport: {
+				esType: "collection",
+				actualKey: "name"
+			},
 			isSearchField: true,
 			Cell: ({ row }) => {
 				return (

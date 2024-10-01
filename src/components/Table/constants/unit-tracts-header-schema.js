@@ -2,6 +2,7 @@ import { history } from "store";
 import { GlobalStickyStyles } from "GlobalSettings";
 
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
+import { popupController } from "hookstate/popupStateController";
 const UnitTractHeadCells = [
   {
     name: "_id", options: { filter: false, display: false, sort: false, viewColumns: false, }
@@ -23,6 +24,10 @@ const UnitTractHeadCells = [
         const splitNumber = typeof value === "string" ? value?.split("_") : value;
         return <ColumnWithLink
           onClick={(e) => {
+            //Clearing unit state when clincked on parcel link
+            popupController.updateState({
+              selectedShape: {}
+            })
             e.stopPropagation();
             history.push(`/map/parcels/${tableMeta.rowData[2]}`, { showTractsBreadcrumb: !true });
           }}

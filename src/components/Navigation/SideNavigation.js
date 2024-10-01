@@ -2,10 +2,9 @@ import React, { useContext, useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import clsx from "clsx";
-import { useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 
-import { IconButton, List, ListItem, ListItemIcon, ListItemText, Button, Tooltip, Badge } from "@material-ui/core";
+import { IconButton, List, ListItem, ListItemIcon, ListItemText, Tooltip, Badge } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
@@ -36,6 +35,7 @@ import Analytics from "components/Shared/svgIcons/analytics";
 import AdminIcon from ".././Shared/svgIcons/admin-setting";
 import { workspaceTenantName } from "components/Shared/functions";
 import { navController } from "hookstate/navStateController";
+import { mapControlsController } from "hookstate/mapControlsController";
 
 const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
   width: 260px;
@@ -45,12 +45,10 @@ const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
 
 const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handleListItemClick, handleDrawerClose, handleDrawerOpen }) => {
   const [stateApp] = useContext(AppContext);
-  const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
   const [notificationsLength, setNotificationsLength] = useState([]);
   const [showWorkspaceModal, setWorkspaceModal] = useState(false);
   const [logoSrc, setLogoSrc] = useState(`${process.env.PUBLIC_URL}/icons/logo-192x192.png`);
   const [logoTitle, setLogoTitle] = useState();
-  const classes = useStyles({ mapGridCardActivated });
   const theme = useTheme();
   const dispatch = useDispatch();
 
@@ -63,6 +61,10 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
   });
 
   const { stateValues: { selectedModule } } = navController.useState(['selectedModule'])
+
+  const { mapControlsStateValues } = mapControlsController.useState(['mapGridCardActivated'], 'mapControlsStateValues');
+
+  const classes = useStyles({ mapGridCardActivated: mapControlsStateValues.mapGridCardActivated });
 
   useEffect(() => {
     getWorkspaceSettings({
@@ -446,7 +448,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
           {(stateApp.user.roles.includes("Admin") || stateApp.user.roles.includes("Owner")) && (
             <ListItem
               classes={{
-                root: classes.menuListItem +' '+ classes.alignBottom ,
+                root: classes.menuListItem + ' ' + classes.alignBottom,
                 selected: classes.menuListItemSelected,
               }}
               button
