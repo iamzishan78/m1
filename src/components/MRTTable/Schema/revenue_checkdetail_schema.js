@@ -1,6 +1,6 @@
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import { formatDate } from 'components/Shared/functions';
+import {  formatDate } from 'components/Shared/functions';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
@@ -191,7 +191,11 @@ const RevenueCheckDetailMeta = {
             name: "grossPropertyVolume",
             accessorKey: 'grossPropertyVolume',
 			header: 'Prop Gross Volume',
-            Cell: ({ renderedCellValue }) => <>{vf_number(renderedCellValue, 2)}</>,
+            Cell: ({ row }) => {
+                const value = row?.original?.grossPropertyVolume
+                return <p>{value ? `${vf_number(value, 2)}` : ""}</p>;
+            },
+            type: "decimal"
 		},
         {
 			...CommonSchema.COMMON_COLUMN,
@@ -202,28 +206,37 @@ const RevenueCheckDetailMeta = {
                 const value = row?.original?.grossPropertyValue
                 return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
             },
+            type: "price"
 		},
         {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'grossOwnerVolume',
             accessorKey: 'grossOwnerVolume',
 			header: 'Gross Owner Volume',
+            Cell: ({ renderedCellValue }) => <>{vf_number(renderedCellValue, 2)}</>,
+            type: "decimal"
 		},
         {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'grossOwnerValue',
             accessorKey: 'grossOwnerValue',
 			header: 'Owner Gross Revenue',
+            Cell: ({ renderedCellValue }) => {
+                const value = renderedCellValue
+                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+            },
+            type: "price"
 		},
         {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'ownerTax',
             accessorKey: 'ownerTax',
 			header: 'Owner Tax Amt',
-            Cell: ({ row }) => {
-                const value = row?.original?.ownerTax
+            Cell: ({ renderedCellValue }) => {
+                const value = renderedCellValue
                 return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
             },
+            type: "price"
 		},
         {
 			...CommonSchema.COMMON_COLUMN,
@@ -236,10 +249,11 @@ const RevenueCheckDetailMeta = {
 			name: 'ownerDeducts',
             accessorKey: 'ownerDeducts',
 			header: 'Deduct Amt',
-            Cell: ({ row }) => {
-                const value = row?.original?.ownerDeducts
+            Cell: ({ renderedCellValue }) => {
+                const value = renderedCellValue
                 return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
             },
+            type: "price"
 		},
         {
 			...CommonSchema.COMMON_COLUMN,
@@ -250,6 +264,7 @@ const RevenueCheckDetailMeta = {
                 const value = row?.original?.netOwnerValue
                 return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
             },
+            type: "price"
 		},
         {
 			...CommonSchema.HIDDEN,

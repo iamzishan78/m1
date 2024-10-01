@@ -7,6 +7,8 @@ import { tableController } from 'hookstate/tableController';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
 import vf_currency from "components/Shared/valueformatters/vf_currency.js";
+import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+import vf_number from 'components/Shared/valueformatters/vf_number';
 
 function ESAutoCompleteFilter({
 	tableKey,
@@ -104,6 +106,22 @@ function ESAutoCompleteFilter({
 			options = _.uniqWith(options, (a, b) => a.label === b.label);
 		}
 
+		if (type === 'price') {
+			options = hits.map(({ key }) => ({
+				label: vf_currency_to_fixed(key, 2),
+				value: key,
+			}));
+			options = _.uniqWith(options, (a, b) => a.label === b.label);
+		}
+
+		if (type === 'decimal') {
+			options = hits.map(({ key }) => ({
+				label: vf_number(key, 2),
+				value: key,
+			}));
+			options = _.uniqWith(options, (a, b) => a.label === b.label);
+		}
+
 		options = options.filter((op) => {
 			op.label = formatValue(op.label) // format value to show $ sign as prefix
 			return op.value;
@@ -153,6 +171,10 @@ function ESAutoCompleteFilter({
 			const requiredFilterValue = defaultFilterOptions?.find((option) => option?.value === filterValue)?.label;
 			filterValue = requiredFilterValue;
 		}
+	} else if (type === 'price') {
+		filterValue = vf_currency_to_fixed(filterValue, 2);
+	} else if (type === 'decimal' && filterValue !== '') {
+		filterValue = vf_number(filterValue, 2);
 	}
 	const id = Array.isArray(field) ? field.join(' ') : field;
 	// Filter out the options
