@@ -222,6 +222,7 @@ export default function Comments(props) {
   const [emptyInput, setEmptyInput] = useState(false);
   const [publicComment, setPublicComment] = useState(true);
   const [selectedCommentType, setSelectedCommentType] = useState("General");
+  const [loading, setLoading] = useState(false); 
   const classes = useStyles({
     ...props,
     commentsArrayLength: commentsArray.length,
@@ -281,6 +282,7 @@ export default function Comments(props) {
       setCommentsArray(sortArrayBasedOnTs([...dataComments.commentsByObjectId]));
     }
     setLoadingComments(false);
+    setLoading(false)
   }, [dataComments]);
 
   useEffect(() => {
@@ -379,6 +381,7 @@ export default function Comments(props) {
   ///////////////////// DELETING A COMMENT ///////////////////////////////////////////////
 
   const handleDeleteClick = (comment) => {
+    setLoading(true);
     if (!props.multipleIds)
       removeComment({
         variables: {
@@ -601,6 +604,8 @@ export default function Comments(props) {
           height: props.handleRightDialogClose ? "calc(100vh - 218px)" : null,
         }}
       >
+        {/* Show circular loader while deleting comments */}
+        {loading && <CircularProgress />} 
         {!loadingComments ? (
           <List className={classes.list}>
             {commentsArray.map((comment, index) =>
