@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useMemo } from "react";
 import { Grid, makeStyles } from "@material-ui/core";
 
 import { AppContext } from "AppContext";
@@ -8,6 +8,7 @@ import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
 import { copy, getSearchFields } from "components/Shared/functions";
 import TableHeader from "components/Table/constants/analytics-land-exhibita-schema";
+import MRTTable from 'components/MRTTable';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -170,6 +171,15 @@ export default function ExhibitATabPanel() {
     // console.log("filter", filter);
   };
 
+  const exhibitaOverrideMeta = useMemo(() => ({
+    filters: [
+      { field: 'shape.shapeJson.properties.type', value: 'agreement' },
+    ],
+    customProps: {
+      isIncludeInactiveAgreement: false
+    }
+  }), []);
+
   return (
     <>
       <div className={classes.actionBar}>
@@ -220,18 +230,8 @@ export default function ExhibitATabPanel() {
         </Grid>
       </div>
       <div >
-        <ExhibitA
-          filterChange={filterChange}
-          header="Exhibit A"
-          esFilters={tableFilters}
-          targetLabel="acerage"
-          parent="ExhibitA"
-          esIndex="shapetracts_flat"
-          setESFilters={setESFilters}
-          loadMore={loadMore}
-          landSearchQuery={stateApp.landAnalyticsSearchQuery}
-        />
       </div>
+      <MRTTable name="ExhibitATable" overrideMeta={exhibitaOverrideMeta} />
     </>
   );
 }
