@@ -42,7 +42,7 @@ const RevenueCheckDetailMeta = {
             name: 'check.checkNumber.keyword',
             accessorKey: "check.checkNumber",
             header: 'Check Number',
-            Cell: ({ renderedCellValue, row }) => (
+            Cell: ({ row }) => (
                 <div
                     style={{
                         display: 'flex',
@@ -51,8 +51,8 @@ const RevenueCheckDetailMeta = {
                 >
 
                     <ColumnWithLink
-                        value={renderedCellValue?.split("_")?.[0]
-                            ? row?.original?.check?.payor?.name ? `${renderedCellValue?.split("_")?.[0]} - ${row?.original?.check?.payor?.name}` : renderedCellValue
+                        value={row?.original?.check?.checkNumber?.split("_")?.[0]
+                            ? row?.original?.check?.payor?.name ? `${row?.original?.check?.checkNumber?.split("_")?.[0]} - ${row?.original?.check?.payor?.name}` : row?.original?.check?.checkNumber
                             : row?.original?.check?.payor?.name}
                         link={`/revenue/statement/details/${row?.original?.check?._id}`}
 
