@@ -19,7 +19,6 @@ const ExhibitAMeta = {
     defaultSort: { field: "_ts", order: "asc" },
     maxTableHeight: 'calc(100vh - 360px)',
     isNotBreadcrumbView: true, // Flag to determine whether to display a simple Typography or a Breadcrumbs component. If true, Typography is rendered; if false, Breadcrumbs is rendered.
-    // CustomToolBar: AcreageToolbar,
     isDeleteDisabled: true,
     isInFiniteScroll: true,
     columnVirtualization: true,

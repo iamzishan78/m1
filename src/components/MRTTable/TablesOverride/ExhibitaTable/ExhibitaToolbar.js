@@ -41,9 +41,9 @@ const useStyles = makeStyles(() => ({
 );
 
 
-function ExhibitaToolBar({ tableKey }) {
+function ExhibitaToolBar() {
     const styles = useStyles();
-    const tableState = tableController(tableKey).useState(['filters', 'data']);
+    const tableState = tableController("ExhibitATable").useState(['filters', 'data']);
     const tableStateValues = tableState.stateValues;
     const [toggle, setToggle] = useState(false)
 
@@ -60,7 +60,7 @@ function ExhibitaToolBar({ tableKey }) {
         }
         fixedFilters.push({ field: "shape.shapeJson.properties.type", value: 'agreement' });
       
-        tableController(tableKey).setFilters(fixedFilters);
+        tableController("ExhibitATable").setFilters(fixedFilters);
         // eslint-disable-next-line
       }, [toggle]);
 
