@@ -26,6 +26,7 @@ import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
 import CloseIcon from "@material-ui/icons/Close";
 import CommentType from "components/Shared/components/Comment/CommentType";
+import { tableGlobalController } from 'hookstate/tableController';
 
 // import value formatters
 import capitalizeFirstLetter from "../Shared/valueformatters/capitalize-first-letter.js";
@@ -283,6 +284,7 @@ export default function Comments(props) {
     }
     setLoadingComments(false);
     setLoading(false)
+    tableGlobalController.refetch(); // Fix the issue of not getting corrrect counts on adding new comments
   }, [dataComments]);
 
   useEffect(() => {
