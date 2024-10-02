@@ -57,6 +57,8 @@ function AllDialogs() {
 					rows={rest?.selectedRows}
 					setSelectedRow={updateRows}
 					setRows={updateRows}
+					objectType={rest?.objectType || 'contact'}
+			        refetchQueries={[rest?.refetchQueries || "getESContacts"] }
 				/>
 			)}
 

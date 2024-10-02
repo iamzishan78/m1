@@ -463,9 +463,9 @@ export default function AssignOwnerToContactDrawer({
           tags: fieldKey,
           user: getUser?._id,
           contactIds,
-          objectType: rest.header === "UnitTable" ? 'unit' : 'contact',
+          objectType: rest?.objectType || ["contact"],
         },
-        refetchQueries: rest.header === "UnitTable" ? ["getESSimpleSearch"] : ["getESContacts"],
+        refetchQueries: rest?.refetchQueries || ["getESContacts"],
         awaitRefetchQueries: true,
       }).then(
         (res) => {
