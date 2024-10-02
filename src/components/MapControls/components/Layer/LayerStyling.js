@@ -316,14 +316,14 @@ function LayerStyling() {
                       onChange={(e, val) => setStrokeWidth(val)}
                       aria-labelledby="continuous-slider"
                       className={classes.slider}
-                      valueLabelDisplay="on" // Shows the value above the thumb
+                      valueLabelDisplay="auto" // Shows the value above the thumb
                     />
                     <TextField
-                      value={strokeWidth}
+                      value={strokeWidth !== "" ? Number(strokeWidth).toString() : ""}
                       variant="outlined"
                       type="number"
                       onChange={(e) => {
-                        let width = e.target.value ? parseInt(e.target.value) : 0;
+                        let width = e.target.value ? Number(parseInt(e.target.value)) : 0;
                         if (width > 100) width = 100;
                         if (width < 0) width = 0;
                         setStrokeWidth(width)
@@ -332,8 +332,8 @@ function LayerStyling() {
                       size="small"
                       className={classes.valueBox}
                       inputProps={{
-                        min: 0,
-                        max: 100,
+                        inputMode: 'numeric',
+                        pattern: '[0-9]*'
                       }}
                     />
                   </Box>
