@@ -380,10 +380,10 @@ export default function AddLayer(props) {
   }
 
   const checkIfcustomLayerCopy = (layer) => {
-    const customLayers = ['Units', 'Parcels', 'Deeds', 'Leases', 'Contracts', 'Surfaces'];
-    if (customLayers.includes(layer.layerName)) return false;
+    const customLayers = ['Units', 'Parcels', 'Tracts', 'Agreements', 'Deeds', 'Leases', 'Contracts', 'Surfaces'];
+    if (customLayers.includes(layer.identifier)) return false;
     // Checking if layer.layerName starts with any customLayers
-    return customLayers.some((customLayer) => layer.layerName.startsWith(customLayer));
+    return customLayers.some((customLayer) => layer.identifier.startsWith(customLayer));
   }
 
   const M1Layers = React.useMemo(() => {
