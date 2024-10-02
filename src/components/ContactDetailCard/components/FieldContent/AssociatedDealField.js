@@ -9,6 +9,7 @@ import { useLazyQuery } from "@apollo/client";
 
 import "components/Shared/Tagger.css";
 import { OPENDEALS } from "graphQL/useQueryOpenDeals";
+import { uniqBy } from "lodash";
 
 const useStyles = makeStyles((theme) => ({
     rootDiv: {
@@ -97,7 +98,9 @@ export default function AssociatedDealField(props) {
     useEffect(() => {
         if (dealsData?.openDeals?.deals) {
             const allFiltersData = dealsData?.openDeals?.deals.map((deal) => ({ name: deal.name, _id: deal._id }));
-            setOptions(allFiltersData.filter((d) => d));
+            // making records uniq
+            const uniqData = uniqBy(allFiltersData,'_id')
+            setOptions(uniqData.filter((d) => d));
         }
     }, [dealsData]);
 

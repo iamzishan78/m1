@@ -28,7 +28,7 @@ export default function DeleteSourceAndCategoryConfirmationDialog(props) {
 
   const isSource = !props.actionItem?.category
   const title = isSource ? 'Datasource' : 'Category';
-  const layers = stateApp.layers.filter(layer =>
+  const layers = stateApp?.layers?.filter(layer =>
     isSource
       ? layer.file === props.actionItem.dataset?.file
       : layer.file === props.actionItem.dataset?.file && layer.layerShapeName === props.actionItem.category.layerShapeName
