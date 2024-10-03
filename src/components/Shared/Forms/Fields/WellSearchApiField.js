@@ -7,10 +7,10 @@ import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { Typography } from '@material-ui/core';
-import debounce from 'lodash/debounce';
 import parse from 'autosuggest-highlight/parse';
 
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 
 const useStyles = makeStyles(theme => ({}));
 
@@ -25,63 +25,12 @@ function WellSearchApiField(props) {
 		// must be network-only to trigger state change for field updates
 		fetchPolicy: 'network-only',
 	});
-
-	const callWellSearch2 = React.useMemo(
-		() =>
-			debounce((request, callback) => {
-				const endpoint =
-					'https://m1search.search.windows.net/indexes/wellheader-index-m1corev3/docs?api-version=2020-06-30&queryType=full&count=true&%24filter=Latitude%20ne%20null%20and%20Longitude%20ne%20null&searchFields=WellName%2CApiNumber&$top=' +
-					50 +
-					'&search=' +
-					encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, '~'));
-
-				const headers = new Headers();
-				headers.append('Content-Type', 'application/json');
-				headers.append('api-key', '1AE3C6346B38CEB007191D51CFDDFF65');
-
-				const options = {
-					method: 'GET',
-					headers: headers,
-				};
-
-				fetch(endpoint, options)
-					.then(response => response.json())
-					.then(response => {
-						callback(response);
-					})
-					.catch(error => {
-						console.log(error);
-					});
-			}, 500),
-		[]
-	);
-
-	useEffect(() => {
-		callWellSearch2({ input: '' }, results => {
-			if (results) {
-				const indexSource = results['@odata.context'].substring(
-					results['@odata.context'].indexOf("('") + 2,
-					results['@odata.context'].indexOf("')")
-				);
-
-				let newOptions = [
-					...results.value.map(result => {
-						result.Score = result['@search.score'];
-						delete result['@search.score'];
-						return {
-							...result,
-							Source: indexSource,
-							Primary: result.WellName,
-							Secondary: result.ApiNumber,
-						};
-					}),
-				];
-
-				setFoundWells(newOptions);
-			}
-		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	const [getESSimpleSearch] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+		fetchPolicy: 'no-cache',
+		onCompleted: wellsData => {
+			if (wellsData?.getESSimpleSearch?.hits) setFoundWells(wellsData.getESSimpleSearch.hits);
+		},
+	});
 
 	useEffect(() => {
 		if (!dataTenantWell?.tenantWell) return;
@@ -123,10 +72,10 @@ function WellSearchApiField(props) {
 						});
 				}}
 				value={selectedWell}
-				getOptionLabel={(option, value) => option.Primary}
+				getOptionLabel={(option, value) => option.WellName}
 				filterOptions={x => x}
 				renderOption={option => {
-					const parts = parse(option.Primary, []);
+					const parts = parse(option.WellName, []);
 
 					return (
 						<Grid container spacing={0}>
@@ -138,9 +87,9 @@ function WellSearchApiField(props) {
 										</span>
 									))}
 
-									{option && option.Secondary && (
+									{option && option.ApiNumber && (
 										<Typography variant="body2" color="textSecondary">
-											{option.Secondary}
+											{option.ApiNumber}
 										</Typography>
 									)}
 								</Grid>
@@ -177,28 +126,29 @@ function WellSearchApiField(props) {
 						label={props.label}
 						InputLabelProps={{ shrink: true }}
 						onChange={event => {
-							callWellSearch2({ input: event.target.value }, results => {
-								if (results) {
-									const indexSource = results['@odata.context'].substring(
-										results['@odata.context'].indexOf("('") + 2,
-										results['@odata.context'].indexOf("')")
-									);
-
-									let newOptions = [
-										...results.value.map(result => {
-											result.Score = result['@search.score'];
-											delete result['@search.score'];
-											return {
-												...result,
-												Source: indexSource,
-												Primary: result.WellName,
-												Secondary: result.ApiNumber,
-											};
-										}),
-									];
-
-									setFoundWells(newOptions);
-								}
+							getESSimpleSearch({
+								variables: {
+									index: 'platformData:wells',
+									pagination: {
+										first: 50,
+										after: null,
+									},
+									search: {
+										query: `*${event.target.value}*`,
+										fields: [
+											'api.keyword',
+											'wellName.keyword',
+											'state.keyword',
+											'county.keyword',
+											'wellType.keyword',
+											'wellStatus.keyword',
+											'operator.keyword',
+											'wellBoreProfile.keyword',
+										],
+										advanceSearch: [],
+									},
+									filters: [],
+								},
 							});
 						}}
 					/>

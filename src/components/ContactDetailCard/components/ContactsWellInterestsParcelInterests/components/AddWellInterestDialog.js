@@ -24,7 +24,6 @@ import {
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import RightDialog from '../../RightDialog';
-import debounce from 'lodash/debounce';
 import parse from 'autosuggest-highlight/parse';
 import PropTypes from 'prop-types';
 import NumberFormat from 'react-number-format';
@@ -38,6 +37,7 @@ import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/componen
 // contexts
 import { AppContext } from 'AppContext';
 import { tableGlobalController } from 'hookstate/tableController';
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 
 function NumberFormatCustom(props) {
 	const { inputRef, onChange, name, ...other } = props;
@@ -182,35 +182,12 @@ function AddWellInterestDialog(props) {
 		awaitRefetchQueries: true,
 	});
 
-	const callWellSearch2 = React.useMemo(
-		() =>
-			debounce((request, callback) => {
-				const endpoint =
-					'https://m1search.search.windows.net/indexes/wellheader-index-m1corev3/docs?api-version=2020-06-30&queryType=full&count=true&%24filter=Latitude%20ne%20null%20and%20Longitude%20ne%20null&searchFields=WellName%2CApiNumber&$top=' +
-					50 +
-					'&search=' +
-					encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, '~'));
-
-				const headers = new Headers();
-				headers.append('Content-Type', 'application/json');
-				headers.append('api-key', '1AE3C6346B38CEB007191D51CFDDFF65');
-
-				const options = {
-					method: 'GET',
-					headers: headers,
-				};
-
-				fetch(endpoint, options)
-					.then(response => response.json())
-					.then(response => {
-						callback(response);
-					})
-					.catch(error => {
-						console.log(error);
-					});
-			}, 500),
-		[]
-	);
+	const [getESSimpleSearch] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+		fetchPolicy: 'no-cache',
+		onCompleted: wellsData => {
+			if (wellsData?.getESSimpleSearch?.hits) setFoundWells(wellsData.getESSimpleSearch.hits);
+		},
+	});
 
 	const refetchTable = () => {
 		tableGlobalController.refetch();
@@ -487,10 +464,10 @@ function AddWellInterestDialog(props) {
 										});
 								}}
 								value={selectedWell}
-								getOptionLabel={(option, value) => option.Primary}
+								getOptionLabel={(option, value) => option.WellName}
 								filterOptions={x => x}
 								renderOption={option => {
-									const parts = parse(option.Primary, []);
+									const parts = parse(option.WellName, []);
 
 									return (
 										<Grid container spacing={0}>
@@ -502,9 +479,9 @@ function AddWellInterestDialog(props) {
 														</span>
 													))}
 
-													{option && option.Secondary && (
+													{option && option.ApiNumber && (
 														<Typography variant="body2" color="textSecondary">
-															{option.Secondary}
+															{option.ApiNumber}
 														</Typography>
 													)}
 												</Grid>
@@ -542,28 +519,29 @@ function AddWellInterestDialog(props) {
 										label="Search for a well by name or API"
 										InputLabelProps={{ shrink: true }}
 										onChange={event => {
-											callWellSearch2({ input: event.target.value }, results => {
-												if (results) {
-													const indexSource = results['@odata.context'].substring(
-														results['@odata.context'].indexOf("('") + 2,
-														results['@odata.context'].indexOf("')")
-													);
-
-													let newOptions = [
-														...results.value.map(result => {
-															result.Score = result['@search.score'];
-															delete result['@search.score'];
-															return {
-																...result,
-																Source: indexSource,
-																Primary: result.WellName,
-																Secondary: result.ApiNumber,
-															};
-														}),
-													];
-
-													setFoundWells(newOptions);
-												}
+											getESSimpleSearch({
+												variables: {
+													index: 'platformData:wells',
+													pagination: {
+														first: 50,
+														after: null,
+													},
+													search: {
+														query: `*${event.target.value}*`,
+														fields: [
+															'api.keyword',
+															'wellName.keyword',
+															'state.keyword',
+															'county.keyword',
+															'wellType.keyword',
+															'wellStatus.keyword',
+															'operator.keyword',
+															'wellBoreProfile.keyword',
+														],
+														advanceSearch: [],
+													},
+													filters: [],
+												},
 											});
 										}}
 									/>
