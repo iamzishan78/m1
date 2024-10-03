@@ -33,7 +33,7 @@ export const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount, cardsDefault, landSearchQuery }) {
+export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount, cardsDefault, landSearchQuery, searchFields }) {
   const classes = useStyles();
   const [cards, setCards] = useState(cardsDefault);
 
@@ -232,6 +232,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
       variables: {
         esIndex: esIndex || "shapeowners_flat",
         search: landSearchQuery ? `*${landSearchQuery}*` : "",
+        fields: searchFields,
         filters: analyticsPayload.aggsFilters,
         aggs: {
           grossAcresSum: analyticsPayload.grossAcersObject,
@@ -242,6 +243,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
       variables: {
         esIndex: esIndex || "shapeowners_flat",
         search: landSearchQuery ? `*${landSearchQuery}*` : "",
+        fields: searchFields,
         filters: analyticsPayload.aggsFilters,
         aggs: {
           netAcresSum: analyticsPayload.netAcersField,
@@ -252,6 +254,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
       variables: {
         esIndex: esIndex || "shapeowners_flat",
         search: landSearchQuery ? `*${landSearchQuery}*` : "",
+        fields: searchFields,
         filters: analyticsPayload.aggsFilters,
         aggs: {
           netRoyaltyAcresSum: {

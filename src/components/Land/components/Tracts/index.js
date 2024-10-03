@@ -25,8 +25,8 @@ const Tracts = () => {
   const TableGridViewModule = userGridViewSettings?.[gridModules[selectedTab]];
 
   // Retrieve the current state of the table data and filters for each table
-  const tractTableState = tableController('TractsTable')?.useState(['filters', 'data', 'defaultFilters'])?.stateValues || {};
-  const tractInterestsTableState = tableController('TractInterestsTable')?.useState(['filters', 'data', 'defaultFilters'])?.stateValues || {};
+  const tractTableState = tableController('TractsTable')?.useState(['filters', 'data', 'defaultFilters', 'searchFields'])?.stateValues || {};
+  const tractInterestsTableState = tableController('TractInterestsTable')?.useState(['filters', 'data', 'defaultFilters', 'searchFields'])?.stateValues || {};
   const tableState = selectedTab ? tractInterestsTableState : tractTableState; // Use the correct table state based on the selected tab
 
   // Default card data to display in the AnalyticsCards component
@@ -65,6 +65,7 @@ const Tracts = () => {
           totalCount={tableState?.data?.total || 0}
           cardsDefault={cardsDefault}
           landSearchQuery={stateApp.landSearchQuery}
+          searchFields={tableState.searchFields}
         />
       </div>
 
