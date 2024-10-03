@@ -135,6 +135,12 @@ export default [
 			// Prevent using array indices as keys in React lists.
 			// Risk: Using array indices can lead to issues with component state.
 			"react/no-array-index-key": "error",
+
+            // Add no-magic-numbers rule
+            'no-magic-numbers/no-magic-numbers': ['error', {
+                ignore: [0, 1], // Allow these numbers if needed
+            }],
+
 		},
 	},
 ];
