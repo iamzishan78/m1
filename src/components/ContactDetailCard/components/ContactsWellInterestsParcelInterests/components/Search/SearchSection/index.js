@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -18,17 +18,18 @@ import useStyles from '../style';
 
 // import value formatters
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
-import { callOwnerSearch, callWellSearch } from './searchApi';
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { useLazyQuery } from '@apollo/client';
+import { debounce } from 'lodash';
 
-const ownerCogIndexName = 'globalowner-index-m1corev3';
 const defaultSize = 7;
 
-const maxMinScore = options => {
+const calcMaxMinScore = options => {
 	let max = 0;
 	let min = 1000000;
 	for (let i = 0; i < options.length; i++) {
-		if (options[i].Score > max) max = options[i].Score;
-		if (options[i].Score < min) min = options[i].Score;
+		if (options[i]._score > max) max = options[i]._score;
+		if (options[i]._score < min) min = options[i]._score;
 	}
 
 	return [max, min];
@@ -47,15 +48,98 @@ function Search({ fetchSelectedWells }) {
 	const [searchResultData, setSearchResultData] = React.useState([]);
 	const [searchLoading, setSearchLoading] = React.useState(false);
 	const [selectedIds, setSelectedIds] = React.useState([]);
-	const [maxMinWellsScore, setMaxMinWellsScore] = React.useState([0, 0]);
-	const [maxMinOwnersScore, setMaxMinOwnersScore] = React.useState([0, 0]);
+	const [maxMinScore, setMaxMinScore] = React.useState([0, 0]);
 	const [searchTop, setSearchTop] = React.useState(defaultSize);
+
+	const [getESSimpleSearch] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+		fetchPolicy: 'no-cache',
+		onCompleted: data => {
+			if (data?.getESSimpleSearch?.hits) {
+				const newOptions = data.getESSimpleSearch.hits.map(result => {
+					return {
+						...result,
+						...(searchOption === 'wells'
+							? {
+									Primary: result.WellName,
+									Secondary: result.ApiNumber,
+								}
+							: {
+									Primary: result.OwnerName,
+									Secondary: joinAddress(result),
+								}),
+						selected: false,
+					};
+				});
+
+				setMaxMinScore(calcMaxMinScore(newOptions));
+				setSearchResultData([...newOptions]);
+			}
+			setSearchLoading(false);
+		},
+	});
 
 	const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 	const checkedIcon = <CheckBoxIcon fontSize="small" />;
 	const intermediateCheckedIcon = <IndeterminateCheckBoxIcon fontSize="small" />;
 
-	React.useEffect(() => {
+	const callSearchApi = useMemo(
+		() =>
+			debounce((searchFor, query) => {
+				if (searchFor === 'wells') {
+					getESSimpleSearch({
+						variables: {
+							index: 'platformData:wells',
+							pagination: {
+								first: 50,
+								after: null,
+							},
+							search: {
+								query: `*${query}*`,
+								fields: [
+									'api.keyword',
+									'wellName.keyword',
+									'state.keyword',
+									'county.keyword',
+									'wellType.keyword',
+									'wellStatus.keyword',
+									'operator.keyword',
+									'wellBoreProfile.keyword',
+								],
+								advanceSearch: [],
+							},
+							filters: [],
+						},
+					});
+				}
+				if (searchFor === 'owners') {
+					getESSimpleSearch({
+						variables: {
+							index: 'platformData:globalowner',
+							pagination: {
+								first: 50,
+								after: null,
+							},
+							search: {
+								query: `*${query}*`,
+								fields: [
+									'ownerName.keyword',
+									'ownerType.keyword',
+									'streetAddress.keyword',
+									'city.keyword',
+									'state.keyword',
+									'zip.keyword',
+								],
+								advanceSearch: [],
+							},
+							filters: [],
+						},
+					});
+				}
+			}, 1000),
+		[getESSimpleSearch]
+	);
+
+	useEffect(() => {
 		if (inputValue === '') {
 			if (searchResultData.length !== 0 && searchLoading !== false) {
 				setSearchResultData([]);
@@ -65,65 +149,10 @@ function Search({ fetchSelectedWells }) {
 		}
 		setSelectedIds([]);
 		setSearchLoading(true);
-		(async () => {
-			let newOptions = [];
-			if (searchOption === 'wells')
-				callWellSearch({ input: inputValue, top: searchTop }, results => {
-					if (results) {
-						const indexSource = results['@odata.context'].substring(
-							results['@odata.context'].indexOf("('") + 2,
-							results['@odata.context'].indexOf("')")
-						);
 
-						newOptions = [
-							...results.value.map(result => {
-								result.Score = result['@search.score'];
-								delete result['@search.score'];
-								return {
-									...result,
-									Source: indexSource,
-									Primary: result.WellName,
-									Secondary: result.ApiNumber,
-									selected: false,
-								};
-							}),
-							...newOptions,
-						];
-
-						setMaxMinWellsScore(maxMinScore(results.value));
-					}
-					setSearchResultData([...newOptions]);
-					setSearchLoading(false);
-				});
-			if (searchOption === 'owners')
-				callOwnerSearch({ input: inputValue, top: searchTop }, results => {
-					if (results) {
-						const indexSource = results['@odata.context'].substring(
-							results['@odata.context'].indexOf("('") + 2,
-							results['@odata.context'].indexOf("')")
-						);
-						newOptions = [
-							...results.value.map(result => {
-								result.Score = result['@search.score'];
-								delete result['@search.score'];
-								return {
-									...result,
-									Source: indexSource,
-									Primary: result.OwnerName,
-									Secondary: joinAddress(result),
-									selected: false,
-								};
-							}),
-						];
-
-						setMaxMinOwnersScore(maxMinScore(results.value));
-					}
-					setSearchResultData([...newOptions]);
-					setSearchLoading(false);
-				});
-		})();
+		callSearchApi(searchOption, inputValue);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [inputValue, searchTop, callWellSearch, callOwnerSearch, searchOption]);
+	}, [inputValue, searchTop, searchOption, callSearchApi]);
 
 	const selectWellId = (id, selection, all = false) => {
 		const _searchResultData = searchResultData.map(data => {
@@ -327,10 +356,7 @@ function Search({ fetchSelectedWells }) {
 											style={{
 												zIndex: '1301',
 												backgroundImage: 'repeating-linear-gradient(135deg, #ffffff , #ffffffb7 4.5%, #ffffff 15%)',
-												opacity: calcScoreOpacity(
-													option.Source === ownerCogIndexName ? maxMinOwnersScore : maxMinWellsScore,
-													option.Score
-												).toString(),
+												opacity: calcScoreOpacity(maxMinScore, option._score).toString(),
 											}}
 										/>
 									</Grid>
