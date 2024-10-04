@@ -274,6 +274,13 @@ export default function RevenueAnalytics(props) {
   }, []);
 
   useEffect(() => {
+    if(tabs[tab] === 'Revenue by Month'){
+    setFromDate(moment().startOf('year').format('yyyy-MM-DD'));
+    setToDate(moment().endOf('month').format('yyyy-MM-DD'));
+    }
+  }, [tab]);
+
+  useEffect(() => {
     setFilters([
       ...(propertiesReportGroup || []),
       ...(filters || []),
