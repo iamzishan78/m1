@@ -166,7 +166,7 @@ const AttrsValuesDropdown = ({
                                         backgroundColor: '#fff',
                                     }}
                                 >
-                                    <span>{option['label']}</span>
+                                    <span>{option['label'] === '' ? "(Blank)" : option['label']}</span>
                                     <span
                                         className={classes.colorBox}
                                         style={{ backgroundColor: option?.color?.hex ? `#${option.color.hex}` : option.color }}
