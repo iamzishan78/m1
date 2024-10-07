@@ -93,6 +93,7 @@ function ToolbarActions({ table, tableKey, children }) {
 				userId: getUser?._id,
 				ESVariables,
 				isSelectAll: !!tableStateValues?.isAllRowsSelected || (tableStateValues?.isSubSetSelect ? true : false),
+				assetName: tableStateValues?.assetName,
 			},
 		});
 

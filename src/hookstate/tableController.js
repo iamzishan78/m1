@@ -211,6 +211,7 @@ const tableESStateControllerHandler = state => ({
 			isDefaultGridView,
 			enableHiding = true,
 			fetchDynamicSchema,
+			assetName,
 			...rest
 		},
 		client,
@@ -281,6 +282,7 @@ const tableESStateControllerHandler = state => ({
 		state.merge({
 			...rest,
 			fetchDynamicSchema,
+			assetName,
 			defaultFlterMode,
 			search,
 			initialized: true,

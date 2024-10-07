@@ -9,6 +9,7 @@ function DynamicAssetGrid() {
   // Override meta for dynamic grid
   const overrideMeta = useMemo(() => ({
       esIndex: activeModule.title.replace(/\s+/g, '').toLowerCase() + '_flats',
+      assetName: activeModule.title,
       fetchDynamicSchema: {
         query: ALL_CUSTOM_ASSET_INFO,
         tableName: activeModule.title,

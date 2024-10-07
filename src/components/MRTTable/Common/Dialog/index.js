@@ -16,7 +16,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 
 function AllDialogs(props) {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
-	const { type, ...rest } = stateValues.dialog || {};
+	const { type, assetName, ...rest } = stateValues.dialog || {};
 	const tableKey = rest?.tableKey
 
 	const [removeCommonDelete] = useMutation(REMOVECOMMONGRIDFUNCTIONALITY, {
@@ -43,7 +43,7 @@ function AllDialogs(props) {
 		const user = globalStateController.getValue('user')
 		const testCase = globalStateController.getValue('testCase')
 		removeCommonDelete({
-			variables: { tableKey, deletedData: dataToDelete, userId: user?.mongoId, ESVariables: rest?.ESVariables, isSelectAll: rest?.isSelectAll, cypressDelete: testCase?.cypressDelete }
+			variables: { tableKey, assetName, deletedData: dataToDelete, userId: user?.mongoId, ESVariables: rest?.ESVariables, isSelectAll: rest?.isSelectAll, cypressDelete: testCase?.cypressDelete }
 		}).then(
 			res => {
 				if (res?.data?.gridGenericRemove) {
