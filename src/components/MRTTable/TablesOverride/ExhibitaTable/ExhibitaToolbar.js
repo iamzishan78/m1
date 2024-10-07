@@ -62,6 +62,7 @@ function ExhibitaToolBar() {
       
         tableController("ExhibitATable").setFilters(fixedFilters);
         // eslint-disable-next-line
+        tableController("ExhibitATable").setIncludeInactive(toggle);
       }, [toggle]);
 
 

@@ -40,6 +40,7 @@ const initialState = {
 	columnPinning: {
 		left: [],
 	},
+	isIncludeInactive: false
 }
 
 export const tableESState = {};
@@ -157,6 +158,7 @@ const tableESStateControllerHandler = state => ({
 			esIndex,
 			pageSize,
 			defaultSort,
+			isIncludeInactive,
 			isInFiniteScroll,
 			columnVirtualization,
 			TableSchema,
@@ -270,6 +272,7 @@ const tableESStateControllerHandler = state => ({
 			ExternalFilter,
 			columnVisibility: formatedGridView?.columnVisibility ? formatedGridView.columnVisibility : columnVisibility,
 			defaultSort,
+			isIncludeInactive,
 			filterModes,
 			density,
 			advanceSearch,
@@ -472,6 +475,10 @@ const tableESStateControllerHandler = state => ({
 
 	setFilters: filters => {
 		state.filters.set(filters)
+	},
+
+	setIncludeInactive: isIncludeInactive => {
+		state.isIncludeInactive?.set(isIncludeInactive)
 	},
 
 	setMrtTableRef: mrtTableRef => {
