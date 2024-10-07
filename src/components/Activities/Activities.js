@@ -13,7 +13,6 @@ import ActivitiesToolbar from "./components/ActivitiesToolbar";
 import ActivitiesEvent from "./components/ActivitiesEvent";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./index.css";
-import ActivitiesAppBar from "./components/ActivitiesAppbar";
 import ActivitiesModal from "./components/ActivitiesModal";
 import { AppContext } from "../../AppContext";
 import ActivitiesTable from "../../components/Table/Activities/ActivitiesTable";
@@ -226,7 +225,8 @@ const Activities = () => {
         <CircularProgress className={classes.progress} size={80} disableShrink color="secondary" />
       ) : (
         <>
-          <ActivitiesAppBar onAddActivityClick={onModalOpen} />
+        	{/* create a line break to avoid overlapping */}
+          <hr style={{backgroundColor: "transparent", border: 0, marginTop: "7vh"}} size={"4"}/>
           {stateApp.activityDisplayType === "calendar" ? (
             <ActivitiesCalendar
               activityFilterByType={activityFilterByType}
