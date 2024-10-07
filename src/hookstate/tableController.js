@@ -135,10 +135,10 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, 
 	const dynamicTableSchema = columns.map((item, index) => {
 		return ({
 			...CommonSchema.COMMON_COLUMN,
-			name: `${item.keyName.replace(/\s+/g, '_')}.keyword`,
-			id: item.keyName.replace(/\s+/g, '_'),
-			accessorFn: (row) => get(row, item.keyName),
-			header: item?.keyName,
+			name: item.keyType === 'String' ? `${item.mappingKey}.keyword` : item.mappingKey,
+			id: item.mappingKey,
+			accessorFn: (row) => get(row, item.mappingKey),
+			header: item?.label,
 			type: item?.keyType,
 			size: 350,
 		})

@@ -22,21 +22,24 @@ const options = [
 ];
 
 
-const DynamicForm = ({ control, watch }) => {
+const DynamicForm = ({ control, watch, setValue }) => {
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'fields',
   });
+
+  const removeSpacesAndLowercase = (key) => key?.replace(/\s+/g, '_')?.toLowerCase();
+
   return (
     <>
       {fields.map((field, index) => {
         return (
           <div key={field.id} style={{ marginBottom: '10px' }}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={6}>
+            <Grid item xs={4}>
                 <Controller
                   control={control}
-                  name={`fields[${index}].keyName`}
+                  name={`fields[${index}].label`}
                   render={(props) => (
                     <TextField
                       size="small"
@@ -47,6 +50,33 @@ const DynamicForm = ({ control, watch }) => {
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         props.onChange(e.target.value);
+                        const mappedKey = removeSpacesAndLowercase(e.target.value);
+                        setValue(`fields[${index}].mappingKey`, mappedKey);
+                      }}
+                      label="Label"
+                      placeholder="Label"
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <Controller
+                  control={control}
+                  name={`fields[${index}].mappingKey`}
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="text"
+                      variant="outlined"
+                      value={props.value}
+                      inputRef={props.ref}
+                      onWheel={(e) => e.target.blur()}
+                      InputLabelProps={{ shrink: !!props.value }} // Ensure the label shrinks when there's a value
+                      onChange={(e) => {
+                        const mappedKey = removeSpacesAndLowercase(e.target.value);
+                        props.onChange(mappedKey);
                       }}
                       label="Key"
                       placeholder="Key"
@@ -56,7 +86,7 @@ const DynamicForm = ({ control, watch }) => {
                   )}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={3}>
                 <Controller
                   control={control}
                   name={`fields[${index}].keyType`}
@@ -87,7 +117,7 @@ const DynamicForm = ({ control, watch }) => {
                 />
               </Grid>
               {fields.length > 1 && (
-                <Grid item xs={2}>
+                <Grid item xs={1}>
                   <IconButton size="small" onClick={() => remove(index)}>
                     <DeleteIcon />
                   </IconButton>
@@ -100,7 +130,7 @@ const DynamicForm = ({ control, watch }) => {
       <Button
         variant="contained"
         color="secondary"
-        onClick={() => append({ keyName: '', keyType: '' })}
+        onClick={() => append({ label: '', mappingKey: '', keyType: '' })}
       >
         Add Field
       </Button>

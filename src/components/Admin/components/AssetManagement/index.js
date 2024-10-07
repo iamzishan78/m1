@@ -92,10 +92,10 @@ const options = [
 
 export default function AssetManagement() {
   const classes = useStyles();
-  const { control, handleSubmit, watch, reset } = useForm({
+  const { control, handleSubmit, watch, reset, setValue } = useForm({
     defaultValues: {
       table_name: '',
-      fields: [{ keyName: '', keyType: '' }],
+      fields: [{ mappingKey: '', keyType: '', label: ''  }],
       creation_place: '',
     },
   });
@@ -140,7 +140,7 @@ export default function AssetManagement() {
   };
 
   const hasAddAtLeast1Key = fields.some(
-    (field) => field.keyName && field.keyType
+    (field) => field.mappingKey && field.keyType && field.label
   );
 
   useEffect(() => {
@@ -176,7 +176,7 @@ export default function AssetManagement() {
             // Reset the form to default values for creating a new asset
             reset({
               table_name: '',
-              fields: [{ keyName: '', keyType: '' }],
+              fields: [{ mappingKey: '', keyType: '', label: '' }],
               creation_place: '',
             });
             setEditMode(false); // Ensure it's not in edit mode
@@ -282,7 +282,7 @@ export default function AssetManagement() {
                   <Grid item>
                     <h3>Add Model Keys for this Entity in this table </h3>
                   </Grid>
-                  <DynamicForm control={control} watch={watch} />
+                  <DynamicForm control={control} watch={watch} setValue={setValue}/>
                 </div>
 
                 <div
@@ -336,14 +336,16 @@ export default function AssetManagement() {
                 <table className={classes.assetTable}>
                   <thead>
                     <tr>
-                      <th>Column Names</th>
+                      <th>Column Labels</th>
+                      <th>Column Keys</th>
                       <th>Column Types</th>
                     </tr>
                   </thead>
                   <tbody>
                     {model.modelKeys.map((key, idx) => (
                       <tr key={idx}>
-                        <td>{key.keyName}</td>
+                        <td>{key.label}</td>
+                        <td>{key.mappingKey}</td>
                         <td>{key.keyType}</td>
                       </tr>
                     ))}
