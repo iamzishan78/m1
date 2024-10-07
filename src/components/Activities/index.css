@@ -1,4 +1,5 @@
 .rbc-overlay {
+	/* z-index to bring modal to front */
 	z-index: 1300;
 }
 
