@@ -54,6 +54,14 @@ const ReportingGroupsMeta = {
       name: '_id',
       accessorKey: '_id',
     },
+    {
+        ...CommonSchema.HIDDEN,
+        name: 'name.keyword',
+        accessorFn: row => row?.name,
+        header: 'name',
+        id: 'name',
+        isSearchField: true
+      },
     // Column for Property with link
     {
       ...CommonSchema.INITAIL_PINNED,
@@ -129,12 +137,6 @@ const ReportingGroupsMeta = {
       }
     },
     // Columns for Property details
-    {
-      ...CommonSchema.HIDDEN,
-      name: 'name.keyword',
-      accessorFn: row => row?.name,
-      id: 'name',
-    },
     {
       ...CommonSchema.COMMON_COLUMN,
       name: 'purchaserNumber.keyword',
