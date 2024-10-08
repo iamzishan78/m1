@@ -14,6 +14,7 @@ import TractInterestsMeta from './tract_interest_schema';
 import GenericMeta from './generic-schema';
 import ShapesFilesGenericMeta from './shapefiles_generic_schema';
 import PropertiesMeta from './properties_schema';
+import ReportingGroupsMeta from './property_group_schema';
 import RevenueStatementsMeta from './revenue_statements_schema';
 import ContactWellInterestMeta from "./contact_well_Interest_schema"
 import MyWellsMeta from './my_wells_schema';
@@ -45,6 +46,7 @@ export const SCHEMA = {
 	PropertiesTable: PropertiesMeta,  //main property Grid => /revenue/properties
 	RevenueStatementsTable: RevenueStatementsMeta, // Revenue Statement grid => revenue/statements
 	MyWellsTable: MyWellsMeta,
+	RevenuePropertiesTable: ReportingGroupsMeta,
 	WellsTable: WellsMeta,
 	TaxOwnerTable: TaxOwnerMeta,
 	SalesVolumeComparisonTable: SalesVolumeComparisonMeta, // Sales Volume comparison grid => analytrics/revenue
