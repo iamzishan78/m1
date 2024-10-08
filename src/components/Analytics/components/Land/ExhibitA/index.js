@@ -183,6 +183,11 @@ export default function ExhibitATabPanel() {
     }
   }), []);
 
+  useEffect(() => {
+    tableController("ExhibitATable").setGlobalFilter(stateApp.landAnalyticsSearchQuery) // Filter table rercords based on header seachbar value
+  }, [stateApp.landAnalyticsSearchQuery])
+
+
   return (
     <>
       <div className={classes.actionBar}>
