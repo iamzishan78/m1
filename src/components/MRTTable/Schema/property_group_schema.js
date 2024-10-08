@@ -139,7 +139,6 @@ const ReportingGroupsMeta = {
       ...CommonSchema.COMMON_COLUMN,
       name: 'purchaserNumber.keyword',
       accessorFn: row => row?.purchaserNumber,
-      id: 'purchaserNumber',
       header: 'Payor Prop #',
     },
     {
@@ -147,7 +146,7 @@ const ReportingGroupsMeta = {
       name: 'purchaser.name.keyword',
       accessorFn: row => row?.purchaser?.name,
       id: 'purchaser.name',
-      header: 'Payor',
+      header: 'Purchaser',
     },
     {
       ...CommonSchema.COMMON_COLUMN,
@@ -281,6 +280,10 @@ const ReportingGroupsMeta = {
       id: 'approvalStatus',
       header: 'Status',
     },
+    CommonSchema.CREATED_BY,
+    CommonSchema.CREATED_DATE,
+    CommonSchema.LAST_UPDATED_BY,
+    CommonSchema.LAST_UPDATED_DATE,
     // Columns for tags and comments
     {
       ...CommonSchema.TAGS,
