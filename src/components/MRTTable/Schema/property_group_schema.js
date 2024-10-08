@@ -24,20 +24,15 @@ const ReportingGroupsMeta = {
   maxTableHeight: 'calc(100vh - 300px)',
   isInFiniteScroll: true,
   columnVirtualization: true,
+  isNotBreadcrumbView: true, // Flag to determine whether to display a simple Typography or a Breadcrumbs component. If true, Typography is rendered; if false, Breadcrumbs is rendered.
   gridViewSettings: {
     label: 'Properties',
-    module: 'Properties',
-    Icon: CurrencyIcon,
-    defaultView: {
-      name: 'All Properties',
-      type: 'Default',
-    },
-    handleDefaultView: (view, user) => {
-      return view;
-    },
+    Icon: "none",
     cssOverride: {
-      top: '440px',
-      left: '5px',
+      top: '461px',
+      left: '40px',
+      marginLeft: '-25px',
+      maxHeight: '445px'
     },
   },
   // Definition of table schema
@@ -54,14 +49,6 @@ const ReportingGroupsMeta = {
       name: '_id',
       accessorKey: '_id',
     },
-    {
-        ...CommonSchema.HIDDEN,
-        name: 'name.keyword',
-        accessorFn: row => row?.name,
-        header: 'name',
-        id: 'name',
-        isSearchField: true
-      },
     // Column for Property with link
     {
       ...CommonSchema.INITAIL_PINNED,
@@ -111,6 +98,16 @@ const ReportingGroupsMeta = {
         );
       },
     },
+    {
+        ...CommonSchema.HIDDEN,
+        name: 'name.keyword',
+        accessorFn: row => row?.name,
+        header: 'Property Name',
+        id: 'name',
+        isSearchField: true,
+        isHiddenFieldExport: true,
+        hidden: true,
+      },
     // Columns for Well API Number and Well Name
     {
       ...CommonSchema.COMMON_COLUMN,
