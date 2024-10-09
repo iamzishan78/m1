@@ -2,7 +2,7 @@ import React, { useEffect, useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { FormLabel } from '@material-ui/core';
+import { Backdrop, FormLabel } from '@material-ui/core';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { Grid } from '@material-ui/core';
 import { Modals } from '../../../../../styles/Modal';
@@ -407,15 +407,9 @@ export default function BuyContactsInfoDialogContent(props) {
 							Buy Now
 						</Button>
 						{idiLoading && (
-							<CircularProgress
-								size={24}
-								style={{
-									position: 'absolute',
-									marginTop: '2px',
-									marginRight: '35px',
-									color: 'green',
-								}}
-							/>
+							<Backdrop style={{ zIndex: 999999 }} open={true} invisible={false}>
+								<CircularProgress size={80} disableShrink color="secondary" />{' '}
+							</Backdrop>
 						)}
 					</DialogActions>
 				</>
