@@ -92,7 +92,6 @@ const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle
 								{style.name === 'Dark' && <Box component="img" src={'./icons/MapDarkIcon.jpeg'} />}
 								{style.name === 'Basic' && <Box component="img" src={'./icons/MapBasicIcon.jpeg'} />}
 							</Grid>
-
 							<Grid item>
 								<ListItemText primary={style.name} style={{ paddingLeft: '25px' }} />
 							</Grid>
@@ -100,7 +99,6 @@ const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle
 					</StyledMenuItem>
 				))}
 			</div>
-
 			<div
 				style={{
 					paddingLeft: '20px',
@@ -375,7 +373,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 					maxWidth: '425px',
 					left: mapControlsStateValues.expandedPanel ? '0px' : type === 'marketplace' ? '-567px' : '0px',
 					listStyleType: 'none',
-					zIndex: '9999', // Z-index to show side pannel on top
+					zIndex: '1300', // Z-index to show side pannel on top
 				}}
 			>
 				<StyledMenu
