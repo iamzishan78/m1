@@ -1,70 +1,65 @@
-import React, { useEffect } from "react";
-import { Container } from "@material-ui/core";
-import Table from "components/Shared/M1nTable/components/Table";
-import TableESHOC from "../TableESHOC";
-import TableHeader from "components/Table/constants/bulk-data-header-schema";
-import { CREATE_JOB } from "graphQL/useMutationCreateJob";
-import { useMutation } from "@apollo/client";
+import React, { useEffect } from 'react';
+import { Container } from '@material-ui/core';
+import Table from 'components/Shared/M1nTable/components/Table';
+import TableESHOC from '../TableESHOC';
+import TableHeader from 'components/Table/constants/bulk-data-header-schema';
+import { CREATE_JOB } from 'graphQL/useMutationCreateJob';
+import { useMutation } from '@apollo/client';
 import moment from 'moment';
 
-import { copy, deepEqualObjects } from "components/Shared/functions";
-import { usetableStyles } from "../Styles";
+import { copy, deepEqualObjects } from 'components/Shared/functions';
+import { usetableStyles } from '../Styles';
 
 function BulkDataTable(props) {
-  // const classes = useStyles();
-  const classes = usetableStyles({ isFullHeight: true, isAgreementsTable: true });
-  const [createJob, { data: createJobData }] = useMutation(CREATE_JOB);
+	// const classes = useStyles();
+	const classes = usetableStyles({ isFullHeight: true, isAgreementsTable: true });
+	const [createJob, { data: createJobData }] = useMutation(CREATE_JOB);
 
-  // queries
-  const esIndex = 'jobs_flat'
+	// queries
+	const esIndex = 'jobs_flat';
 
-  const formatHits = (hits) => {
-    hits = hits.map((hit) => {
-      hit.by = hit?.user?.name;
-      hit.progress = `${(hit.progress / hit.totalProgress) * 100} %`;
-      hit.on = moment(hit.createAt).format('MM/DD/YYYY');
+	const formatHits = hits => {
+		hits = hits.map(hit => {
+			hit.by = hit?.user?.name;
+			hit.progress = `${(hit.progress / hit.totalProgress) * 100} %`;
+			hit.on = moment(hit.createAt).format('MM/DD/YYYY');
 
-      return hit;
-    });
-    return hits;
-  };
+			return hit;
+		});
+		return hits;
+	};
 
-  useEffect(() => {
-    props.setTableMeta({
-      TableHeader: copy(TableHeader),
-      esIndex,
-      startPaginationAt: 25,
-      defaultSort: { field: "ts", order: "desc" },
-      formatHits,
-    });
-    // eslint-disable-next-line
-  }, []);
+	useEffect(() => {
+		props.setTableMeta({
+			TableHeader: copy(TableHeader),
+			esIndex,
+			startPaginationAt: 25,
+			defaultSort: { field: 'ts', order: 'desc' },
+			formatHits,
+		});
+		// eslint-disable-next-line
+	}, []);
 
-  useEffect(() => {
-    if (props.clickedRow) {
-      props.setFailedJob(props.clickedRow)
-    }
-  }, [props.clickedRow])
+	useEffect(() => {
+		if (props.clickedRow) {
+			props.setFailedJob(props.clickedRow);
+		}
+	}, [props.clickedRow]);
 
+	const createJobTest = () => {
+		createJob({
+			variables: {
+				jobId: props.rows[0]._id,
+				sendEmail: true,
+			},
+		});
+	};
 
-  const createJobTest = () => {
-    createJob({
-      variables: {
-        jobId: props.rows[0]._id,
-        sendEmail: true,
-      },
-    });
-  }
-
-  delete props.options.customRender
-  return (
-    <>
-      <Container
-        maxWidth={false}
-        className={classes.container}
-        id={props.id ? props.id : props.parent}
-      >
-        {/* <Button
+	delete props.options.customRender;
+	return (
+		<>
+			<Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
+				{/* <Button
         id="addSaveButton"
         color="secondary"
         variant="contained"
@@ -74,29 +69,29 @@ function BulkDataTable(props) {
       >
         Edit Data
       </Button> */}
-        <Table
-          style={{ backgroundColor: "#fff" }}
-          header={props.header}
-          columns={props.columns}
-          rows={props.rows}
-          total={false}
-          loading={props.loading}
-          targetLabel={props.targetLabel}
-          uploadIcon={null}
-          dense={props.dense ? props.dense : undefined}
-          orderByTracks={false}
-          startPaginationAt={null}
-          onTableChange={props.onTableChange}
-          options={{
-            ...props.options,
-          }}
-          parent={props.parent}
-          setColumnsBase={[]}
-          {...props.esHocProps}
-        />
-      </Container>
-    </>
-  );
+				<Table
+					style={{ backgroundColor: '#fff' }}
+					header={props.header}
+					columns={props.columns}
+					rows={props.rows}
+					total={false}
+					loading={props.loading}
+					targetLabel={props.targetLabel}
+					uploadIcon={null}
+					dense={props.dense ? props.dense : undefined}
+					orderByTracks={false}
+					startPaginationAt={null}
+					onTableChange={props.onTableChange}
+					options={{
+						...props.options,
+					}}
+					parent={props.parent}
+					setColumnsBase={[]}
+					{...props.esHocProps}
+				/>
+			</Container>
+		</>
+	);
 }
 
 export default React.memo(TableESHOC(BulkDataTable), deepEqualObjects);
