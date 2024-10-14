@@ -129,7 +129,7 @@ const AssociatedWellsList = ({ title }) => {
     onCompleted: () =>
       getWellsFromDocument({
         variables: {
-          descriptorObject: stateApp.selectedDocument._id,
+          descriptorObject: stateApp.selectedDocument?._id,
         },
       }),
   });
@@ -140,7 +140,7 @@ const AssociatedWellsList = ({ title }) => {
   useEffect(() => {
     getWellsFromDocument({
       variables: {
-        descriptorObject: stateApp.selectedDocument._id,
+        descriptorObject: stateApp.selectedDocument?._id,
       },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

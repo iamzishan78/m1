@@ -45,7 +45,7 @@ const getWellColor = w => {
 	// Switch on whether wellStatus or wellType 
 	const switchType = isWellPermitStatus ? w.properties.wellStatus : w.properties.wellType;
 	switch (switchType) {
-		
+
 		// rgb(2, 207, 53)
 		case 'OIL':
 		case 'OIL AND GAS':
@@ -702,11 +702,26 @@ const layerStateControllerHandler = state => {
 				noproxy: true,
 			});
 
-			const layerId = Object.keys(boundingStates || {}).find(
+			let layerId = Object.keys(boundingStates || {}).find(
 				key => key && key.toLowerCase().startsWith(identifier.toLowerCase())
 			);
 
-			if (!layerId) return;
+			// If layerId is not found, then find layerId by layerShapeName
+			if (!layerId) {
+
+				// Find layer by layerShapeName
+				const requiredLayer = globalStateController.getValue('layers').find(layer => layer.layerShapeName === identifier);
+
+				// If layer is not found, then return
+				if (!(requiredLayer && requiredLayer?.layerType === 'file layer')) return;
+
+				// Updating identifier with requiredLayer identifier
+				identifier = requiredLayer.identifier
+				layerId = Object.keys(boundingStates || {}).find(
+					key => key && key.toLowerCase().startsWith(identifier.toLowerCase())
+				);
+				if (!layerId) return
+			}
 
 			const showableLayers = getShowableLayers();
 			showableLayers.forEach(dbLayer => {

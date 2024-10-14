@@ -420,6 +420,7 @@ export const popupInitialState = {
     selectedWell: null,
     selectedWellId: null,
     wellSelectedCoordinates: null,
+    selectedPlaces: null,
     wellDetailCardTabIndex: 0,
     selectedPermit: null,
     selectedPermitId: null,

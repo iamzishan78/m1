@@ -152,7 +152,7 @@ function SelectedField({ field, setFieldKey, setCampaigns, setContactOwner, cont
           onChange={({ target }) => {
             setFieldKey(target.value); // Sets the field key value based on input
           }}
-          autoFocus={inputFocused} // Automatically focuses on input if inputFocused is true
+          autoFocus={true} // Automatically focuses on input
           className={classes.fullWidth} // Uses CSS class 'fullWidth'
         />
       );
