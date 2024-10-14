@@ -419,7 +419,8 @@ export function DetailComponents(props) {
         customLayer,
         userId: stateApp.user.mongoId,
       },
-      refetchQueries: ["customLayer"],
+      refetchQueries: ["customLayer", "getAllLayerSettingsByUser"],
+      awaitRefetchQueries: true,
     });
   };
 
@@ -463,6 +464,8 @@ export function DetailComponents(props) {
           IsDeleted: true,
         },
       },
+      refetchQueries: ['getAllLayerSettingsByUser'],
+      awaitRefetchQueries: true,
     }).then(({ data }) => {
       jobController.toggleBulkUpload()
       if (data.updateCustomLayer?.success) history.push("/land/agreements");

@@ -278,3 +278,11 @@ export const handleMRTSchema = ({
     pinnedFields,
   };
 };
+
+export const getLayerKey = (identifier, array) => {
+  // Find the key in LayerMeta that matches the prefix of the identifier
+  const key = Object.keys(array).find(metaKey => identifier?.startsWith(metaKey));
+
+  // Return the corresponding value or undefined if no match is found
+  return key ? key : undefined;
+}

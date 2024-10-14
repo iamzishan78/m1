@@ -10,6 +10,8 @@ import {
 } from 'components/Shared/functions/shapeLayer';
 import { popupController } from 'hookstate/popupStateController';
 import { globalStateController } from 'hookstate/globalStateController';
+import { colorBasedAttributes } from 'components/MapControls/components/Layer/LayerAttributes/ColorBasedAttributes';
+import { getLayerKey } from 'hookstate/helpers';
 
 export const random_hex_color_code = () => {
 	const n = (Math.random() * 0xfffff * 1000000).toString(16);
@@ -499,20 +501,89 @@ export const generateFileFilters = ({ fileLayer, pagination = { first: 10000, af
 	};
 };
 
+// Utility for getting attribute based color
+const getAttributeBasedColor = (attrFillColor, isColorEnabled) => {
+	// If fill color is an object
+	if (attrFillColor?.rgb) {
+		let fColor = attrFillColor.rgb.length === 3 ? "rgb(" + attrFillColor.rgb.join() + ")" : "rgba(" + attrFillColor.rgb.join() + ")";
+		let fColorOp = attrFillColor.alpha;
+		return isColorEnabled === false ? [0, 0, 0, 0] : getRGBA(fColor, fColorOp)
+	}
+	if (attrFillColor) return isColorEnabled === false ? [0, 0, 0, 0] : getRGBA(attrFillColor, 1)
+}
+
+// Utility for getting layer stroke color
+export const getLayerStrokeColor = (dbLayer, strokeColor) => {
+	const layerInteraction = dbLayer.layerSettings?.interaction;
+	const selectAttr = dbLayer.layerSettings?.selectedStrokeAttribute?.label;
+
+	return (d) => {
+		if (selectAttr) {
+			let path = colorBasedAttributes[getLayerKey(dbLayer?.identifier, colorBasedAttributes)]?.keys.find((key) => key.label === selectAttr);
+			if (!path) path = dbLayer.layerSettings?.selectedStrokeAttribute;
+
+			let keys = path?.value.split('.').slice(1, -1);
+			let orKeys = keys.slice(0, -1);
+			if (path.orKey) {
+				orKeys.push(path.orKey)
+			}
+			let value = _.get(d, keys) || (path.orKey ? _.get(d, orKeys) : null);
+			if (value) {
+				const attrFillColor = dbLayer.layerSettings.attributeBasedStrokeColors[selectAttr][value]
+				return getAttributeBasedColor(attrFillColor, layerInteraction.interactionDetail?.enableStrokeColor)
+			}
+		}
+		return layerInteraction.interactionDetail?.enableStrokeColor === false ? [0, 0, 0, 0] : getRGBA(strokeColor)
+	}
+}
+
+// Utility for getting layer fill color
+export const getLayerFillColor = (dbLayer, fillColor, fillOpacity) => {
+	const layerInteraction = dbLayer.layerSettings?.interaction;
+	const selectAttr = dbLayer.layerSettings?.selectedAttribute?.label;
+	return (d) => {
+		if (selectAttr) {
+			let path = colorBasedAttributes[getLayerKey(dbLayer?.identifier, colorBasedAttributes)]?.keys.find((key) => key.label === selectAttr);
+			if (!path) path = dbLayer.layerSettings?.selectedAttribute;
+
+			let keys = path?.value.split('.').slice(1, -1);
+			let orKeys = keys.slice(0, -1);
+			if (path.orKey) {
+				orKeys.push(path.orKey)
+			}
+			let value = _.get(d, keys) || (path.orKey ? _.get(d, orKeys) : null);
+			if (value) {
+				const attrFillColor = dbLayer.layerSettings.attributeBasedColors[selectAttr][value]
+				return getAttributeBasedColor(attrFillColor, layerInteraction.interactionDetail?.enablefillColor)
+			}
+			if (dbLayer.layerSettings.attributeBasedColors[selectAttr]['']) {
+				const attrFillColor = dbLayer.layerSettings.attributeBasedColors[selectAttr]['']
+				return getAttributeBasedColor(attrFillColor, layerInteraction.interactionDetail?.enablefillColor)
+			}
+		}
+		return layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : getRGBA(fillColor, fillOpacity)
+	}
+}
+
 export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 	const props = {};
 
 	dbLayer.layerPaintProps?.forEach(prop => {
+		// Getting layer interation settings
+		const layerInteraction = dbLayer.layerSettings?.interaction;
 		switch (prop.paintType) {
 			case 'fill':
 				const fillColor = prop.paintProps?.['fill-color'];
 				const fillOpacity = prop.paintProps?.['fill-opacity'];
+				const strokeWidth = prop.paintProps?.['strokeWidth'];
 				const fillStroke =
 					prop.paintProps?.['fill-outline-color'] || prop.paintProps?.['line-color'];
 
-				props.getFillColor = getRGBA(fillColor, fillOpacity);
+				// Setting fill and line color using utility functions
+				props.getFillColor = getLayerFillColor(dbLayer, fillColor, fillOpacity);
 				props.defaultColor = getRGBA(fillColor, fillOpacity);
-				props.getLineColor = getRGBA(fillStroke);
+				props.getLineColor = getLayerStrokeColor(dbLayer, fillStroke);
+				props.getLineWidth = strokeWidth || 20;
 
 				break;
 
@@ -524,9 +595,10 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 				const pointRadius = prop.paintProps?.['circle-radius'] || 1;
 				const pointWidth = prop.paintProps?.['circle-stroke-width'] || 1;
 
-				props.getFillColor = getRGBA(pointColor, pointOpacity);
+				// Setting fill and line color using utility functions
+				props.getFillColor = getLayerFillColor(dbLayer, pointColor, pointOpacity);
 				props.defaultColor = getRGBA(pointColor, pointOpacity);
-				props.getLineColor = getRGBA(pointStroke);
+				props.getLineColor = getLayerStrokeColor(dbLayer, pointStroke);
 
 				props.getPointRadius = pointRadius * 40;
 				props.getLineWidth = pointWidth * 40;
@@ -540,9 +612,11 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 
 				props.getLineWidth = lineWidth * 40;
 
+				// If fill color not enabled setting fill color to transparent
+				props.getFillColor = layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : props.getFillColor;
 				const getLineColor = getRGBA(lineColor, lineOpaciity);
 				if (!props.getLineColor || !isEqual(getLineColor, props.getFillColor))
-					props.getLineColor = getRGBA(lineColor, lineOpaciity);
+					props.getLineColor = layerInteraction.interactionDetail?.enableStrokeColor === false ? [0, 0, 0, 0] : getRGBA(lineColor, lineOpaciity);
 
 				break;
 

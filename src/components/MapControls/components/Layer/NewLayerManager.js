@@ -33,18 +33,22 @@ function NewLayerManager(props) {
   const { datasets, globalStateValues } = globalStateController.useState(['datasets'], 'globalStateValues')
 
   const createLayer = () => {
+    const layerType = source.name === 'M1 Platform' ? 'data layer' : 'file layer';
+    const layerCategory = source.name === 'M1 Platform' ? 'UD layer' : selectCategory.name;
+    const identifier = source.name === 'M1 Platform' ? selectCategory.label + uuid() : layerName + uuid();
+
     addLayer({
       variables: {
         layer: {
           ...layer,
+          layerCategory,
+          layerType,
+          identifier,
           groupId: null,
           groupName: null,
           file: source.file,
           layerName: layerName,
-          identifier: layerName + uuid(),
-          layerType: "file layer",
           layerGeometry: selectCategory.layerGeometry,
-          layerCategory: selectCategory.name,
           originalFile: source.originalFile,
           defaultSettings: handleLayerChange(),
           layerPaintProps: undefined,
@@ -69,10 +73,9 @@ function NewLayerManager(props) {
   // }, [layerName, selectCategory])
 
   const _datasets = useMemo(() => {
-    const datasets = globalStateValues.datasets?.filter((dataset) => dataset.name !== 'M1 Platform')
+    const datasets = globalStateValues.datasets
     return datasets || [];
   }, [datasets])
-
   const layerCategories = useMemo(() => {
     const dataset = globalStateValues.datasets.find((dataset) => dataset.name === source?.name)
     return dataset?.categories || []
@@ -109,7 +112,7 @@ function NewLayerManager(props) {
                 id="layer-category"
                 options={layerCategories}
                 value={selectCategory}
-                getOptionLabel={(option) => `${option.name}(${option.layerGeometry})`}
+                getOptionLabel={(option) => `${option.name || option.label}(${option.layerGeometry || option.value})`}
                 onChange={(_, layerCategory) => setCategory(layerCategory)}
                 renderInput={(params) => <TextField {...params} label="Select Category" />}
               />
