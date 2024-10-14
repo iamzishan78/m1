@@ -15,6 +15,7 @@ import AdminSettings from 'components/Shared/AdminSettings';
 import Flatten from 'components/Admin/Flatten';
 import Reindex from 'components/Admin/Reindex';
 import BulkDataEditing from 'components/Admin/components/BulkDataEditing';
+import BulkDataEditingDetail from './components/BulkDataEditingDetail';
 
 const Components = {
 	Map,
@@ -22,6 +23,7 @@ const Components = {
 	Flatten,
 	Reindex,
 	BulkDataEditing,
+	BulkDataEditingDetail,
 };
 
 function isM1neralAddress(email) {
@@ -37,11 +39,16 @@ export default function Admin() {
 
 	useEffect(() => {
 		const option = Object.values(AdminManagementRoutes).find(item => {
+			if (location.pathname.startsWith('/admin/bulk-editing/')) {
+				return item.link.startsWith('/admin/bulk-editing/');
+			}
+
 			return item.link === location.pathname;
 		});
 		if (option) {
 			dispatch(setActiveModule(option));
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [location.pathname]);
 
 	const handlePanelStateChange = state => {
