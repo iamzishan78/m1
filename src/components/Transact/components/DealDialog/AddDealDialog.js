@@ -1880,11 +1880,14 @@ function AddDealDialog(props) {
         </RightDialog>
         {stateApp.transactBarView === "Map" && (
           <div
-            maxWidth="calc(100vw - 28vw)"
+          // map position styling
             style={{
-              position: "relative",
+              position: "absolute",
+              left: 0,
+              top:-60,
               "z-index": "9999",
-              width: "calc(100vw - 30vw)",
+              width: "71%",
+              height: "50%"
             }}
           >
             <MapProvider

@@ -151,6 +151,13 @@ const getCurrentDate = () => {
   return d.slice(0, d.indexOf("T"));
 };
 
+const getCurrentTime = () => {
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
+};
+
 const mergeDateAndTime = (d, t) => {
   return `${d}T${t}`;
 };
@@ -177,8 +184,8 @@ function AddActivityDialog(props) {
   const [closed, setClosed] = useState(activityStatus[0]);
   const [startDate, setStartDate] = useState(getCurrentDate());
   const [endDate, setEndDate] = useState(getCurrentDate());
-  const [startTime, setStartTime] = useState("08:00");
-  const [endTime, setEndTime] = useState("08:00");
+  const [startTime, setStartTime] = useState(getCurrentTime());
+  const [endTime, setEndTime] = useState(getCurrentTime());
   const [notes, setNotes] = useState("");
   const [owner, setOwner] = useState({ name: "", id: null });
   const [dealId, setDealId] = useState(null);
@@ -317,8 +324,8 @@ function AddActivityDialog(props) {
       setActivityName("");
       setStartDate(getCurrentDate());
       setEndDate(getCurrentDate());
-      setStartTime("08:00");
-      setEndTime("08:00");
+      setStartTime(getCurrentTime());
+      setEndTime(getCurrentTime());
     }
   }, [selectedActivity]);
 
