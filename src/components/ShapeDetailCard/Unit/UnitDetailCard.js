@@ -175,6 +175,8 @@ export default function UnitDetailCard(props) {
         customLayer,
         userId: stateApp.user.mongoId,
       },
+      refetchQueries: ["getAllLayerSettingsByUser"],
+      awaitRefetchQueries: true,
     }).then((res) => {
       jobController.toggleBulkUpload()
       layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)
@@ -197,6 +199,8 @@ export default function UnitDetailCard(props) {
         customLayer,
         userId: stateApp.user.mongoId,
       },
+      refetchQueries: ["allLayerSettingsByUser"],
+      awaitRefetchQueries: true,
     }).then((res) => {
       jobController.toggleBulkUpload()
       layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)

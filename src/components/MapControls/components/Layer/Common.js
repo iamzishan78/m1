@@ -66,7 +66,24 @@ export const useStyles = makeStyles((theme) => ({
     },
     fileName: {
         maxWidth: "464px"
-    }
+    },
+    slider: {
+        width: "350px !important",
+        color: 'purple', // Color of the slider
+        '& .MuiSlider-thumb': {
+            backgroundColor: 'purple', // Color of the thumb
+        },
+        '& .MuiSlider-track': {
+            backgroundColor: 'purple', // Color of the track
+        },
+        '& .MuiSlider-rail': {
+            backgroundColor: '#D1C4E9', // Color of the rail
+        },
+    },
+    valueBox: {
+        width: 90,
+        marginLeft: 10,
+    },
 }));
 
 export const WidthPicker = ({ width, setWidth, layerType }) => {
@@ -103,6 +120,14 @@ export const useLayerStyle = (layer) => {
     const initialLayerLabelVisibility = layer.layerPaintProps[0]?.labelProps?.visibility === 'none' ? 'none' : 'visible';
     const initialLayerClickable = layer.layerSettings?.interaction?.interactionDetail?.click
 
+    // Getting initiallayer fill and if it is not set setting it to true
+    const initialLayerEnableFill = !(layer.layerSettings?.interaction?.interactionDetail?.enablefillColor === false)
+    const initialLayerEnableStroke = !(layer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor === false)
+    const initialLayerAttributeBasedColors = layer.layerSettings?.attributeBasedColors || {};
+    const initialLayerAttributeBasedStrokeColors = layer.layerSettings?.attributeBasedStrokeColors || {};
+    const initialLayerSelectedAttribute = layer.layerSettings?.selectedAttribute || null;
+    const initialLayerSelectedStrokeAttribute = layer.layerSettings?.selectedStrokeAttribute || null;
+    const initialStrokeWidth = layer.layerPaintProps[0]?.paintProps?.strokeWidth || 20;
     const initialFillColor =
         layerType === "fill"
             ? ifRgbaConvt(layer.layerPaintProps[0]?.paintProps["fill-color"])
@@ -127,10 +152,25 @@ export const useLayerStyle = (layer) => {
     const [width, setWidth] = useState(initialWidth);
     const [layerName, setLayerName] = useState()
     const [fillColor, setFillColor] = useState(initialFillColor);
+
+    // Added state for enable layer fill
+    const [enablefillColor, setEnableFillColor] = useState(initialLayerEnableFill);
+    const [enableStrokeColor, setEnableStrokeColor] = useState(initialLayerEnableStroke);
+    const [selectedValue, setSelectedValue] = useState(initialLayerSelectedAttribute);
+    const [selectedStrokeValue, setSelectedStrokeValue] = useState(initialLayerSelectedStrokeAttribute);
+    const [attributeBasedColors, setAttributeBasedColors] = useState(initialLayerAttributeBasedColors);
+    const [attributeBasedStrokeColors, setAttributeBasedStrokeColors] = useState(initialLayerAttributeBasedStrokeColors);
+
     const [layerLabelVisibility, setLayerLabelVisibility] = useState(initialLayerLabelVisibility);
     const [layerClickability, setLayerClickability] = useState(initialLayerClickable);
     const [strokeColor, setStrokeColor] = useState(initialStrokeColor);
+    const [strokeWidth, setStrokeWidth] = useState(initialWidth || initialStrokeWidth);
 
+    // Resetting the fill and stroke color when selected value changes
+    useEffect(() => {
+        setFillColor(initialFillColor);
+        setStrokeColor(initialStrokeColor);
+    }, [selectedValue, selectedStrokeValue]);
 
     useEffect(() => {
         setWidth(initialWidth);
@@ -148,7 +188,14 @@ export const useLayerStyle = (layer) => {
                         (strokeColor.alpha || strokeColor.alpha === 0)))) ||
             width ||
             layer.layerPaintProps[0]?.labelProps?.visibility !== layerLabelVisibility ||
-            layer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability
+            parseInt(layer.layerPaintProps[0]?.paintProps?.strokeWidth) !== parseInt(strokeWidth) ||
+            layer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability ||
+            layer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor ||
+            layer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor !== enableStrokeColor ||
+            !_.isEqual(layer.layerSettings?.attributeBasedColors, attributeBasedColors) ||
+            !_.isEqual(layer.layerSettings?.attributeBasedStrokeColors, attributeBasedStrokeColors) ||
+            layer.layerSettings?.selectedAttribute?.label !== selectedValue?.label ||
+            layer.layerSettings?.selectedStrokeAttribute?.label !== selectedStrokeValue?.label
         ) {
             let currentLayer = { ...layer };
             let fColor;
@@ -166,6 +213,20 @@ export const useLayerStyle = (layer) => {
                 sColor = strokeColor.rgb.length === 3 ? "rgb(" + strokeColor.rgb.join() + ")" : "rgba(" + strokeColor.rgb.join() + ")";
             const layerSettings = copy(currentLayer.layerSettings);
             layerSettings.interaction.interactionDetail.click = layerClickability;
+
+            // Setting enable enablefillcolor
+            layerSettings.interaction.interactionDetail.enablefillColor = enablefillColor;
+
+            // Setting enable Stroke Color
+            layerSettings.interaction.interactionDetail.enableStrokeColor = enableStrokeColor;
+
+            //Setting Fill color attributes
+            layerSettings.attributeBasedColors = attributeBasedColors
+            layerSettings.selectedAttribute = selectedValue
+
+            //Setting Stroke color attributes
+            layerSettings.attributeBasedStrokeColors = attributeBasedStrokeColors
+            layerSettings.selectedStrokeAttribute = selectedStrokeValue
 
             if (currentLayer && currentLayer.layerPaintProps && currentLayer.layerPaintProps[0] && currentLayer.layerPaintProps[0].paintType) {
                 const layerPaintProps = copy(currentLayer.layerPaintProps);
@@ -204,7 +265,7 @@ export const useLayerStyle = (layer) => {
                                 },
                             };
                         }
-                        if (fColorOp) {
+                        if (fColorOp && !selectedValue) {
                             layerPaintProps[i] = {
                                 ...layerPaintProps[i],
                                 paintProps: {
@@ -318,7 +379,7 @@ export const useLayerStyle = (layer) => {
                             }
                         }
                     } else if (layerType === "fill" && layerPaintProps[i].paintProps) {
-                        if (fColor) {
+                        if (fColor && !selectedValue) {
                             layerPaintProps[i] = {
                                 ...layerPaintProps[i],
                                 paintProps: {
@@ -336,12 +397,21 @@ export const useLayerStyle = (layer) => {
                                 },
                             };
                         }
-                        if (fColorOp) {
+                        if (fColorOp && !selectedValue) {
                             layerPaintProps[i] = {
                                 ...layerPaintProps[i],
                                 paintProps: {
                                     ...layerPaintProps[i].paintProps,
                                     "fill-opacity": fColorOp,
+                                },
+                            };
+                        }
+                        if (strokeWidth) {
+                            layerPaintProps[i] = {
+                                ...layerPaintProps[i],
+                                paintProps: {
+                                    ...layerPaintProps[i].paintProps,
+                                    "strokeWidth": strokeWidth,
                                 },
                             };
                         }
@@ -399,5 +469,32 @@ export const useLayerStyle = (layer) => {
     };
 
 
-    return { layerName, setLayerName, width, setWidth, fillColor, setFillColor, layerLabelVisibility, setLayerLabelVisibility, layerClickability, setLayerClickability, strokeColor, setStrokeColor, handleLayerChange }
+    return {
+        layerName,
+        setLayerName,
+        width,
+        setWidth,
+        fillColor,
+        setFillColor,
+        enablefillColor,
+        enableStrokeColor,
+        setEnableStrokeColor,
+        setEnableFillColor,
+        selectedValue,
+        setSelectedValue,
+        selectedStrokeValue,
+        setSelectedStrokeValue,
+        attributeBasedColors,
+        setAttributeBasedColors,
+        attributeBasedStrokeColors,
+        setAttributeBasedStrokeColors,
+        layerLabelVisibility,
+        setLayerLabelVisibility,
+        layerClickability, setLayerClickability,
+        strokeColor,
+        setStrokeColor,
+        handleLayerChange,
+        strokeWidth,
+        setStrokeWidth
+    }
 }
