@@ -21,6 +21,7 @@ import WellsMeta from './wells_schema';
 import TaxOwnerMeta from './map-grid-tax-owner-schema';
 import SalesVolumeComparisonMeta from './sales-volume-comparison-schema';
 import DynamicAssetMeta from "./dynamic_asset_schema";
+import AssetCustomEntitiesMeta from "./assetCustomEntities";
 
 export const SCHEMA = {
 	ContactTable: ContactMeta,
@@ -50,4 +51,5 @@ export const SCHEMA = {
 	TaxOwnerTable: TaxOwnerMeta,
 	SalesVolumeComparisonTable: SalesVolumeComparisonMeta, // Sales Volume comparison grid => analytrics/revenue
 	DynamicAssetTable: DynamicAssetMeta, // Dynamic assets meta
+	CustomAssetEntitiesTable: AssetCustomEntitiesMeta,  // Custom assets entities schema
 };
