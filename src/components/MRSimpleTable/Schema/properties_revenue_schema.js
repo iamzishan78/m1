@@ -9,14 +9,16 @@ export const propertiesRevenueTableKey = "PropertiesRevenue";
 
 const PropertiesRevenueMeta = {
   query: GET_PROPERTIES_REVENUE,
+  maxTableHeight: 'calc(100vh - 340px)',
   getVariables: (tableMeta) => {
-    const { filters, filterDate } = tableMeta?.customProps || {};
+    const { filters, filterDate, allDates = false } = tableMeta?.customProps || {};
 
     if (!filters && !filterDate) return;
 
     return {
       filters,
       filterDate,
+      allDates
     };
   },
   getDataFromRes: (res) => res?.data?.getPropertiesRevenue || [],

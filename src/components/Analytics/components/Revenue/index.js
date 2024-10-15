@@ -25,11 +25,10 @@ import PurchasersDropdown from './PurchasersDropdown';
 import AcquisitionIdDropdown from './AcquisitionIdDropdown';
 import MRSimpleTable from 'components/MRSimpleTable';
 import { propertiesRevenueTableKey } from 'components/MRSimpleTable/Schema/properties_revenue_schema';
-import { GET_PROPERTIES_REVENUE } from 'graphQL/useQueryGetPropertiesRevenue';
-import { simpleTableController, simpleTableGlobalController } from 'hookstate/simpleTableController';
-import { debounce } from 'lodash';
+import { simpleTableController } from 'hookstate/simpleTableController';
 import { generateMonthYearArray, getPropertiesRevenueTableSchema } from './helper';
 import { CUSTOM_DATES } from 'utils/data';
+import { GET_CHECK_MIN_DATE } from 'graphQL/useQueryGetCheckMinDate';
 
 const useStyles = makeStyles(theme => ({
   mainTabContainer: {
@@ -133,13 +132,13 @@ export default function RevenueAnalytics(props) {
   const [toDate, setToDate] = React.useState(null);
   const [monthsInterval, setMonths] = useState([]);
   const [checkDetailsData, setCheckDetailsData] = useState([]);
-  const [propertyFilter, setPropertyFilter] = useState([]);
   const [lastCheckMinDate, setLastCheckMinDate] = useState('');
   const [propertyNumbers, setPropertyNumbers] = useState([]);
   const [checkNumbers, setCheckNumbers] = useState([]);
   const [comparisonReport, setComparisonReport] = useState('Check Detail Comparison');
   const [filters, setFilters] = useState([...(propertiesReportGroup || [])])
   const Controller = simpleTableController(propertiesRevenueTableKey);
+  const [selectedFilter, setSelectedFilter] = useState('');
 
   const comparisonTableState = tableController('ComparisonTable').useState(['filters', 'data']).stateValues; // get StateValues for ComparisonTable
   const salesVolumeComparisonTableState = tableController('SalesVolumeComparisonTable').useState(['filters', 'data']).stateValues; // get StateValues for SalesVolumeComparisonTable
@@ -151,6 +150,14 @@ export default function RevenueAnalytics(props) {
     onCompleted: data => {
       if (data?.getESMinValue) {
         setLastCheckMinDate(data?.getESMinValue);
+      }
+    },
+  });
+  const [getCheckMinDate] = useLazyQuery(GET_CHECK_MIN_DATE, {
+    fetchPolicy: 'no-cache',
+    onCompleted: data => {
+      if (data?.getCheckMinDate) {
+        setLastCheckMinDate(data?.getCheckMinDate);
       }
     },
   });
@@ -275,10 +282,19 @@ export default function RevenueAnalytics(props) {
 
   useEffect(() => {
     if(tabs[tab] === 'Revenue by Month'){
+    getCheckMinDate()
     setFromDate(moment().startOf('year').format('yyyy-MM-DD'));
     setToDate(moment().endOf('month').format('yyyy-MM-DD'));
+    }else{
+      getESMinValue({
+        variables: {
+          esIndex: 'checks_flat',
+          field: 'checkDate',
+          value_as_string: true,
+        },
+      });
     }
-  }, [tab]);
+  }, [tab, getCheckMinDate]);
 
   useEffect(() => {
     setFilters([
@@ -290,18 +306,6 @@ export default function RevenueAnalytics(props) {
   useEffect(() => {
     if (!fromDate) return
 
-    if(tabs[tab] === 'Revenue by Month'){
-      const months = generateMonthYearArray(new Date(fromDate), new Date(toDate || Date.now()))
-      const updatedMeta = getPropertiesRevenueTableSchema(months)
-      Controller.updateState({
-        TableSchema: [...updatedMeta],
-        customProps: {
-          filters,
-          filterDate: { toDate: new Date(toDate || Date.now()), fromDate: new Date(fromDate) }
-        }
-      })
-      return
-  }
     getPortfolioSummary({
       variables: {
         filters,
@@ -309,6 +313,24 @@ export default function RevenueAnalytics(props) {
       },
     });
   }, [filters, toDate, fromDate]);
+
+  useEffect(() => {
+    if (!fromDate) return
+
+    if(tabs[tab] === 'Revenue by Month'){
+      const months = generateMonthYearArray(new Date(fromDate), new Date(toDate || Date.now()))
+      const updatedMeta = getPropertiesRevenueTableSchema(months)
+      Controller.updateState({
+        TableSchema: [...updatedMeta],
+        customProps: {
+          filters,
+          filterDate: { toDate: new Date(toDate || Date.now()), fromDate: new Date(fromDate) },
+          ...(selectedFilter === CUSTOM_DATES.ALL_DATES ? {allDates: true}: {})
+        }
+      })
+      return
+  }
+  }, [filters, toDate, fromDate, selectedFilter]);
 
   const onChangeDates = (fromDate, toDate) => {
     const months = [];
@@ -526,17 +548,19 @@ export default function RevenueAnalytics(props) {
         <Grid container direction="row" display="flex" spacing={4} style={{ padding: '0px 36px' }}>
           <Grid item xs={8} md={6} style={{ marginTop: '4px' }}>
             <Grid container display="flex" alignItems="center" spacing={3} justifyContent="space-between">
-              <CustomDates
-                onChangeDates={onChangeDates}
-                fromDate={fromDate}
-                setFromDate={setFromDate}
-                toDate={toDate}
-                setToDate={setToDate}
-                isProperties={true}
-                datesInputWidth={4}
-                setAllDateToNull={true}
-                defaultRange={CUSTOM_DATES.THIS_YEAR_TO_DATE}
-              />
+            <CustomDates
+                    onChangeDates={onChangeDates}
+                    fromDate={fromDate}
+                    setFromDate={setFromDate}
+                    toDate={toDate}
+                    setToDate={setToDate}
+                    isProperties={true}
+                    lastCheckMinDate={lastCheckMinDate}
+                    datesInputWidth={4}
+                    setAllDateToNull={false}
+                    defaultRange={CUSTOM_DATES.THIS_YEAR_TO_DATE}
+                    setSelectedFilter={setSelectedFilter}
+                  />
             </Grid>
           </Grid>
           <Grid item xs={4} md={2}>
