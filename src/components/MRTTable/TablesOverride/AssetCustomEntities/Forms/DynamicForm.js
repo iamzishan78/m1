@@ -9,7 +9,6 @@ import {
 } from '@material-ui/core';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-
 const options = [
   { label: 'String', value: 'String' },
   { label: 'JSON', value: 'JSON' },
@@ -21,14 +20,14 @@ const options = [
   // Add more options as needed
 ];
 
-
 const DynamicForm = ({ control, watch, setValue }) => {
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'fields',
   });
 
-  const removeSpacesAndLowercase = (key) => key?.replace(/\s+/g, '_')?.toLowerCase();
+  const removeSpacesAndLowercase = (key) =>
+    key?.replace(/\s+/g, '_')?.toLowerCase();
 
   return (
     <>
@@ -36,7 +35,7 @@ const DynamicForm = ({ control, watch, setValue }) => {
         return (
           <div key={field.id} style={{ marginBottom: '10px' }}>
             <Grid container spacing={2} alignItems="center">
-            <Grid item xs={4}>
+              <Grid item xs={4}>
                 <Controller
                   control={control}
                   name={`fields[${index}].label`}
@@ -50,7 +49,9 @@ const DynamicForm = ({ control, watch, setValue }) => {
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         props.onChange(e.target.value);
-                        const mappedKey = removeSpacesAndLowercase(e.target.value);
+                        const mappedKey = removeSpacesAndLowercase(
+                          e.target.value
+                        );
                         setValue(`fields[${index}].mappingKey`, mappedKey);
                       }}
                       label="Label"
@@ -75,7 +76,9 @@ const DynamicForm = ({ control, watch, setValue }) => {
                       onWheel={(e) => e.target.blur()}
                       InputLabelProps={{ shrink: !!props.value }} // Ensure the label shrinks when there's a value
                       onChange={(e) => {
-                        const mappedKey = removeSpacesAndLowercase(e.target.value);
+                        const mappedKey = removeSpacesAndLowercase(
+                          e.target.value
+                        );
                         props.onChange(mappedKey);
                       }}
                       label="Key"
