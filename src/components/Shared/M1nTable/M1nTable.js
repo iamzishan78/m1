@@ -21,13 +21,11 @@ import { TRACKSBYOBJECTTYPE } from "../../../graphQL/useQueryTracksByObjectType"
 import { TRACKSWELL } from "../../../graphQL/useQueryTracksWell";
 import { TAGSAMPLES } from "../../../graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
-import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 import { ABSTRACTWELLGEOQUERY } from "../../../graphQL/useQueryAbstractWellGeo";
-import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
+import { GET_ALL_USERS, REMOVE_USERS } from "../../../graphQL/userManagement";
 import { GET_ES_DOCUMENTS } from "graphQL/useQueryESDocuments";
 import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
 import { REMOVE_CONTACTS } from "../../../graphQL/useMutationRemoveContact";
-import { REMOVE_USERS } from "../../../graphQL/useMutationRemoveUsers";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction";
 import { PARCELOWNERSQUERY } from "../../../graphQL/useQueryParcelOwners";
@@ -36,7 +34,6 @@ import { MELISSARECORDSCOUNTBYIDS } from "../../../graphQL/useQueryGetMelissaRec
 import { CONTACTDEALS } from "../../../graphQL/useQueryContactDeals";
 import { CONTACTPARCELINTERESTS } from "../../../graphQL/useQueryContactParcelInterests";
 import { IFARECONTACTS } from "../../../graphQL/useQueryIfOwnersAreContacts";
-import { OWNER_WELLINTERESTS } from "../../../graphQL/useQueryOwner_WellInterests";
 import { PAGINATEDWELLINTERESTSQUERY } from "../../../graphQL/useQueryPaginatedWellInterests.js";
 import { WELLINTERESTSFILTEROPTIONS } from "../../../graphQL/useQueryWellInterestsFilterOptions";
 import { SHAPEWELLS } from "../../../graphQL/useQueryPaginatedShapeWells";
@@ -47,11 +44,9 @@ import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
 import vf_currency from "components/Shared/valueformatters/vf_currency";
 
 import { useDispatch, useSelector } from "react-redux";
-import { deepEqual, deepEqualObjects, setStateIfDeepEqual } from "../functions";
-import RightDialog from "../../ContactDetailCard/components/RightDialog";
-import AddDealDialog from "components/Transact/components/DealDialog/AddDealDialog";
+import { deepEqualObjects, setStateIfDeepEqual } from "../functions";
 import AddWellInterestDialog from "../../ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog";
-import { setMapGridCardState, showWarningMessage } from "../../../actions";
+import { setMapGridCardState } from "../../../actions";
 
 // Header Schemas
 import ContactsHeadCells from "../constants/contacts-header-schema.js";
@@ -62,7 +57,6 @@ import CustomWellsHeadCells from "../constants/custom-wells-header-schema.js";
 import OwnersPerWellHeadCells from "../constants/ownersperwell-header-schema.js";
 import SearchsHeadCells from "../constants/search-header-schema.js";
 import OwnersPerParcelHeadCells from "../constants/ownersperparcel-header-schema.js";
-import UserManagementHeadCells from "../constants/user-management-header-schema.js";
 import DealsHeadCells from "../constants/deals-header-schema.js";
 import TransactDealsHeadCells from "../constants/transact-header-schema.js";
 import ActivitiesHeadCells from "../constants/activities-header-schema.js";
@@ -72,7 +66,6 @@ import ProductionDetailsHeaders from "../constants/production-detail-header-sche
 import ContactWellHeadCells from "../constants/contactperwell-header-schema.js";
 
 // import value formatters
-import ticksToDateString from "../../Shared/valueformatters/ticks-to-string.js";
 import { addTrailingZeros } from "components/Shared/functions";
 import Loader from "components/Loaders";
 import { getContactsAddress, getAddressUrl } from "utils/helper";
@@ -90,7 +83,7 @@ function M1nTable(props) {
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateGrid, setStateGrid] = useContext(MapGridContext);
+  const [stateGrid] = useContext(MapGridContext);
 
   // function states
   const [rows, Rows] = useState([]);
@@ -182,7 +175,7 @@ function M1nTable(props) {
   const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, { fetchPolicy: "cache-and-network" });
   const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(WELLOWNERSQUERY);
   const [getContactWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
-  const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
+  const [getAllUsers, { data: userLists }] = useLazyQuery(GET_ALL_USERS, {
     onError: () => {
       setLoading(false);
     },
@@ -2207,44 +2200,6 @@ function M1nTable(props) {
 
   ////////////Parcel Interests Per Contact end/////////////////////////////////////////////////
 
-  ////////////User management//////////////////////////////////////////////////////////////////
-  useEffect(() => {
-    if (props.parent && props.parent === "UserManagement") {
-      setLoading(true);
-      getAllUsers();
-      if (userLists?.allUsers) {
-        setTargetLabel("usermanagement");
-        setHeader("Active Users");
-        setRows(userLists.allUsers);
-        setColumns(UserManagementHeadCells);
-        setLoading(false);
-        setAddAble({
-          type: "inviteUser",
-        });
-        setOrderByTracks(false);
-      } else {
-        setRows([]);
-      }
-    }
-  }, [props.parent, userLists]);
-
-  ///////// Remove User ////////////////////////////////////////////////////////////////////////
-  useEffect(() => {
-    if (props.parent && props.parent === "UserManagement") {
-      setDeleteFunc(() => (userIds) => {
-        if (userIds) {
-          removeUsers({
-            variables: {
-              userIds,
-            },
-            refetchQueries: ["getAllUsers"],
-            awaitRefetchQueries: true,
-          });
-        }
-      });
-    }
-  }, [props.parent]);
-  ////////////User management end //////////////////////////////////////////////////////////////
   ////////////Deals start////////////////////////////////////////////////
 
   useEffect(() => {
@@ -2271,7 +2226,8 @@ function M1nTable(props) {
       setColumns([...DealsHeadCells]);
       setLoading(false);
     }
-  }, [dataDeals]);
+    // add all the required dependencies
+  }, [dataDeals, props.parent, props.contact]);
 
   useEffect(() => {
     if (props.parent && props.parent === "Documents" && DocumentsData?.getFiles) {

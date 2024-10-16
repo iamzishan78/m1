@@ -15,6 +15,7 @@ import AdminSettings from "components/Shared/AdminSettings";
 import Flatten from "components/Admin/Flatten";
 import Reindex from "components/Admin/Reindex";
 import AssetManagement from "components/Admin/components/AssetManagement";
+import BulkDataEditing from "components/Admin/components/BulkDataEditing";
 
 const Components = {
   Map,
@@ -22,6 +23,7 @@ const Components = {
   Flatten,
   Reindex,
   AssetManagement,
+  BulkDataEditing,
 };
 
 function isM1neralAddress(email) {
