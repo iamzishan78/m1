@@ -96,7 +96,7 @@ const ContactBulkProgress = () => {
         (job) => job._id === jobStateValues?.storeJobOutput?.jobId
       );
       // Update job state with the found job output
-      jobController.updateState({ JobOutput: targetJobOutput?.jobOutput, isJobCompleted: targetJobOutput?.status === 'Completed' });
+      jobController.updateState({ JobOutput: targetJobOutput?.jobOutput, isJobCompleted: targetJobOutput?.status === 'Completed', isJobFailed: targetJobOutput?.status === 'Failed' });
     }
   }, [dataJobs?.getJobsStatus]); // Dependency array to rerun the effect when dataJobs?.getJobsStatus changes
 
@@ -135,7 +135,7 @@ const ContactBulkProgress = () => {
     for (let i = 0; i < dataJobs.getJobsStatus.jobs.length; i++) {
       let progress = 0; // Initialize progress
       // Extract job status, progress, totalProgress, requestPayload, and activitiesStatus
-      const { status, progress: jobProgress, totalProgress, requestPayload, activitiesStatus } = dataJobs.getJobsStatus.jobs[i];
+      const { status, progress: jobProgress, totalProgress, requestPayload, activitiesStatus, name } = dataJobs.getJobsStatus.jobs[i];
       // Extract lastMessage from activitiesStatus
       const lastMessage = activitiesStatus[activitiesStatus.length - 1];
 
@@ -159,7 +159,10 @@ const ContactBulkProgress = () => {
         const type = dataJobs.getJobsStatus.jobs[i].type; // Extract job type
 
         // Determine message for different job types
-        if (type === 'contacts') {
+        if (name === 'idiCore') {
+          message = lastMessage;
+        }
+        else if (type === 'contacts') {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Contacts creation completed" : "Contacts creation failed";
         } else if (type === 'PROPERTIES') {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Import successfully completed" : "Import Failed";

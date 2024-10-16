@@ -102,7 +102,7 @@ export default function BuyContactsInfoDialogContent(props) {
 	const [address, setAddress] = useState('primaryAddress'); // Address state
 	const modalClass = Modals();
 
-	const jobState = jobController.useState(['JobOutput', 'isJobCompleted'], 'jobStateValues');
+	const jobState = jobController.useState(['JobOutput', 'isJobCompleted', 'isJobFailed'], 'jobStateValues');
 	const { jobStateValues } = jobState;
 
 	const [getFeatureQuota, { data: quota }] = useLazyQuery(GET_FEATURE_QUOTA);
@@ -339,7 +339,7 @@ export default function BuyContactsInfoDialogContent(props) {
 									<Grid item xs={12} className={modalClass.inputContainer}>
 										<FormLabel className={modalClass.inputLabel}>{`${row.firstName} ${row.lastName}`}</FormLabel>
 										<FormLabel className={modalClass.inputContent}>
-											{jobStateValues?.isJobCompleted && jobStateValues?.JobOutput && (
+											{(jobStateValues?.isJobCompleted || jobStateValues?.isJobFailed) && jobStateValues?.JobOutput && (
 												<>
 													{mondoRes?.find(contact => contact.contactId === row.id) ? (
 														<span className={classes.iconsSuccess}>
