@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import {
   Grid,
@@ -15,6 +15,7 @@ import { Controller, useForm, useWatch } from 'react-hook-form';
 import { tableGlobalController } from 'hookstate/tableController';
 import { UPSERT_CUSTOM_ASSET_INFO } from 'graphQL/useMutationUpsertCustomAssetInfo';
 import DynamicForm from '../Forms/DynamicForm';
+import { entityCreationOptions } from 'components/MRTTable/utils/data';
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -83,11 +84,6 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
   },
 }));
-
-const options = [
-  { label: 'Draw on Map', value: 'onMap' },
-  { label: 'Add with RightDialog', value: 'RightDialog' },
-];
 
 function CustomAssetEntityDialog() {
   const classes = useStyles();
@@ -210,7 +206,7 @@ function CustomAssetEntityDialog() {
                           fullWidth
                           defaultValue=""
                         >
-                          {options.map((option) => (
+                          {entityCreationOptions.map((option) => (
                             <MenuItem key={option.value} value={option.value}>
                               {option.label}
                             </MenuItem>
@@ -225,7 +221,6 @@ function CustomAssetEntityDialog() {
                 </Grid>
                 <DynamicForm
                   control={control}
-                  watch={watch}
                   setValue={setValue}
                 />
               </div>

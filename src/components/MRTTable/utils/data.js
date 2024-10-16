@@ -151,3 +151,18 @@ export const dateFilterOptions = [
 	'greaterThanOrEqualTo', 'lessThanOrEqualTo',
 	'singleselect',
 ];
+
+export const entityCreationOptions = [
+	{ label: 'Draw on Map', value: 'onMap' },
+	{ label: 'Add with RightDialog', value: 'RightDialog' },
+];
+
+export const entityKeyTypes = [
+	{ label: 'String', value: 'String' },
+	{ label: 'JSON', value: 'JSON' },
+	{ label: 'Number', value: 'Number' },
+	{ label: 'Date', value: 'Date' },
+	{ label: 'User', value: 'User' },
+	// { label: 'Tags', value: 'Tags' },
+	// { label: 'Comments', value: 'Comments' }, // In future we need to add these association support
+];

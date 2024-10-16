@@ -8,26 +8,14 @@ import {
   IconButton,
 } from '@material-ui/core';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { entityKeyTypes } from 'components/MRTTable/utils/data';
+import { removeSpacesAndLowercase } from 'components/MRTTable/utils/helper';
 
-const options = [
-  { label: 'String', value: 'String' },
-  { label: 'JSON', value: 'JSON' },
-  { label: 'Number', value: 'Number' },
-  { label: 'Date', value: 'Date' },
-  { label: 'User', value: 'User' },
-  // { label: 'Tags', value: 'Tags' },
-  // { label: 'Comments', value: 'Comments' }, // In future we need to add these association support
-  // Add more options as needed
-];
-
-const DynamicForm = ({ control, watch, setValue }) => {
+const DynamicForm = ({ control, setValue }) => {
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'fields',
   });
-
-  const removeSpacesAndLowercase = (key) =>
-    key?.replace(/\s+/g, '_')?.toLowerCase();
 
   return (
     <>
@@ -110,7 +98,7 @@ const DynamicForm = ({ control, watch, setValue }) => {
                       fullWidth
                       defaultValue=""
                     >
-                      {options.map((option) => (
+                      {entityKeyTypes.map((option) => (
                         <MenuItem key={option.value} value={option.value}>
                           {option.label}
                         </MenuItem>
