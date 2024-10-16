@@ -373,7 +373,7 @@ export default function AddNewRelatedData({ title, addNewData, payeeFieldsData, 
                                         id="startdate"
                                         //variant="outlined"
                                         defaultValue={newData?.startDate ? moment(newData?.startDate).format("yyyy-MM-DD") : ""}
-                                        value={newData?.startDate ? moment(newData?.v).format("yyyy-MM-DD") : ""}
+                                        value={newData?.startDate ? moment(newData?.startDate).format("yyyy-MM-DD") : ""}
                                         margin="none"
                                         fullWidth
                                         onChange={(event) => {
@@ -419,7 +419,7 @@ export default function AddNewRelatedData({ title, addNewData, payeeFieldsData, 
                                         id="enddate"
                                         //variant="outlined"
                                         defaultValue={newData?.endDate ? moment(newData?.endDate).format("yyyy-MM-DD") : ""}
-                                        value={newData?.endDate ? moment(newData?.v).format("yyyy-MM-DD") : ""}
+                                        value={newData?.endDate ? moment(newData?.endDate).format("yyyy-MM-DD") : ""}
                                         margin="none"
                                         fullWidth
                                         onChange={(event) => {

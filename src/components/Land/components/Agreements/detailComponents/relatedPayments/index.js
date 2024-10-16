@@ -16,7 +16,7 @@ import { billingPartyFieldsData, costAllocationFieldsData, payeeFieldsData, paym
 import { ADD_PAYMENT } from "graphQL/useMutationAddPayment";
 import { detailCardController } from "hookstate/detailCardController";
 import MRTTable from "components/MRTTable";
-import { tableGlobalController } from "hookstate/tableController";
+import { tableController, tableGlobalController } from "hookstate/tableController";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -78,10 +78,9 @@ const RelatedPayments = () => {
     const [stateApp, setStateApp] = useContext(AppContext);
     const classes = useStyles();
     const customClasses = customStyles();
-
-    const [counter, setCounter] = useState(0);
     const agreementDetailState = detailCardController.useState(['customLayer', 'drawer']);
     const tableGlobalState = tableGlobalController.useState(['paymentMultiGrid']);
+    const paymentsCount = tableController('RelatedPaymentsTable')?.useState(['data']);
     const agreementDetailsValues = agreementDetailState.stateValues;
     const tableGlobalValues = tableGlobalState.stateValues;
     const drawer = agreementDetailsValues.drawer;
@@ -203,7 +202,7 @@ const RelatedPayments = () => {
                                 <Typography variant="h5" className={customClasses.titleText}>
                                     Payment Obligations
                                 </Typography>
-                                <Chip color="info" label={counter} />
+                                <Chip color="info" label={paymentsCount?.stateValues?.data?.total || 0} />
                             </Grid>
                         </Grid>
                     </AccordionSummary>

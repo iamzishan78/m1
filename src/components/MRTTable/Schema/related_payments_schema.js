@@ -51,6 +51,7 @@ const RelatedPaymentsMeta = {
             header: "Start Date",
             simple: true,
             type: 'date',
+            isSearchField: false,
             Cell: ({ renderedCellValue, row }) => {
                 return <>{formatDate(row?.original?.startDate)}</>
             },
@@ -63,6 +64,7 @@ const RelatedPaymentsMeta = {
             header: "End Date",
             simple: true,
             type: 'date',
+            isSearchField: false,
             Cell: ({ renderedCellValue, row }) => {
                 return <>{formatDate(row?.original?.endDate)}</>
             },
