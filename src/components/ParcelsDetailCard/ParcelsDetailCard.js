@@ -379,6 +379,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
         customLayer,
         userId: globalStateController.getValue('user')?._id
       },
+      refetchQueries: ['getAllLayerSettingsByUser'],
+      awaitRefetchQueries: true,
     }).then((res) => {
       jobController.toggleBulkUpload()
       layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)
@@ -401,6 +403,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
         customLayer,
         userId: globalStateController.getValue('user')?._id
       },
+      refetchQueries: ['allLayerSettingsByUser'],
+      awaitRefetchQueries: true,
     }).then((res) => {
       jobController.toggleBulkUpload()
       layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)
