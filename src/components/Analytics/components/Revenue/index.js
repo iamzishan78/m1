@@ -318,6 +318,10 @@ export default function RevenueAnalytics(props) {
     if (!fromDate) return
 
     if(tabs[tab] === 'Revenue by Month'){
+      if(selectedFilter === CUSTOM_DATES.ALL_DATES){
+        setFromDate(null)
+        setToDate(null)
+      }
       const months = generateMonthYearArray(new Date(fromDate), new Date(toDate || Date.now()))
       const updatedMeta = getPropertiesRevenueTableSchema(months)
       Controller.updateState({
