@@ -104,6 +104,7 @@ export const agreementLayerIdentifiers = ['Deeds', 'Leases', 'Contracts', 'Surfa
 export const deckGlDataLayerIdentifiers = [...agreementLayerIdentifiers, 'Units', 'Parcels', 'Area of Interest', 'My Wells'];
 export const deckGlLandGridIdentifiers = ["AbstractGeo", "Pls", "Land Grid"];
 export const deckGlLayerIdentifiers = [...deckGlDataLayerIdentifiers, 'Wells', 'Recent Submitted Permits'/* , 'Rig Activity' */];
+export const isCustomLayerCopy = identifier => deckGlLayerIdentifiers.some((layer) => identifier.toLowerCase().includes(layer.toLowerCase()));
 export const mapBoxLayerIdentifiers = ['Search', 'Rig Activity'];
 export const staticMapBoxLayerIdentifiers = ['Basins', 'Pipelines'];
 
