@@ -16,7 +16,7 @@ const DynamicForm = ({ control, setValue, isCreateMode }) => {
 			{fields.map((field, index) => {
 				return (
 					<div key={field.id} style={{ marginBottom: '10px' }}>
-						<Grid container spacing={2} alignItems="center" wrap="nowrap">
+						<Grid container spacing={2} alignItems="center" wrap="wrap">
 							{field?._id && (
 								<Controller
 									name={`fields[${index}]._id`} // Track _id in form
@@ -108,6 +108,15 @@ const DynamicForm = ({ control, setValue, isCreateMode }) => {
 									)}
 								/>
 							</Grid>
+							{fields.length > 1 && (
+								<Grid item xs={1}>
+									<IconButton size="small" onClick={() => remove(index)} disabled={!isCreateMode}>
+										<DeleteIcon />
+									</IconButton>
+								</Grid>
+							)}
+						</Grid>
+						<Grid container spacing={2} alignItems="center" wrap="wrap">
 							<Grid item xs={2}>
 								<Controller
 									control={control}
@@ -126,13 +135,24 @@ const DynamicForm = ({ control, setValue, isCreateMode }) => {
 									)}
 								/>
 							</Grid>
-							{fields.length > 1 && (
-								<Grid item xs={1}>
-									<IconButton size="small" onClick={() => remove(index)} disabled={!isCreateMode}>
-										<DeleteIcon />
-									</IconButton>
-								</Grid>
-							)}
+							<Grid item xs={2}>
+								<Controller
+									control={control}
+									name={`fields[${index}].isControlColumn`}
+									render={props => (
+										<FormControlLabel
+											control={
+												<Checkbox
+													checked={!!props.value}
+													onChange={e => props.onChange(e.target.checked)}
+													color="primary"
+												/>
+											}
+											label="Control Column"
+										/>
+									)}
+								/>
+							</Grid>
 						</Grid>
 					</div>
 				);

@@ -141,6 +141,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, 
 			header: item?.label,
 			type: item?.keyType,
 			size: 350,
+			isPinned: !!item?.isControlColumn,
 		})
 	});
 

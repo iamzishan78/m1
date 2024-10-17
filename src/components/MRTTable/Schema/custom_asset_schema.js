@@ -59,6 +59,23 @@ const customAssetMeta = {
 				return <>{isSummaryField ? 'Yes' : 'No'}</>;
 			},
 		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'isControlColumn',
+			accessorKey: 'isControlColumn',
+			header: 'Control Column',
+			isSearchField: false,
+			filterSelectOptions: [
+				{ label: 'Yes', value: 'true' },
+				{ label: 'No', value: 'false' },
+			],
+			type: 'boolean',
+			Cell: ({ row }) => {
+				const isControlColumn = [true, 'true', 'True'].includes(row.getValue('isControlColumn'));
+
+				return <>{isControlColumn ? 'Yes' : 'No'}</>;
+			},
+		},
 	],
 };
 

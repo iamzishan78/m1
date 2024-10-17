@@ -1,5 +1,6 @@
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import AssetCustomEntitiesToolbar from '../TablesOverride/AssetCustomEntities/AssetCustomEntitiesToolbar';
+import Chips from '../Common/TableCells/Chips';
 
 const esIndex = 'assetcustomentities_flat';
 
@@ -41,6 +42,15 @@ const AssetCustomEntitiesMeta = {
 			accessorFn: row => row?.numberOfKeys,
 			id: 'numberOfKeys',
 			header: 'Number of Keys',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'controlColumns.label.keyword',
+			accessorKey: 'controlColumns',
+			header: 'Control Columns',
+			Cell: ({ renderedCellValue }) => {
+				return <Chips list={renderedCellValue} />;
+			},
 		},
 	],
 };
