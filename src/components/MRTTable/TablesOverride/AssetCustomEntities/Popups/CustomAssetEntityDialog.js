@@ -1,12 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { Grid, Dialog, IconButton, Button, TextField, MenuItem } from '@material-ui/core';
-import Loader from 'components/Loaders';
-import { useMutation } from '@apollo/client';
 import CloseIcon from '@material-ui/icons/Close';
+import { Grid, Dialog, IconButton, Button, TextField, MenuItem, Chip } from '@material-ui/core';
+import Loader from 'components/Loaders';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { tableGlobalController } from 'hookstate/tableController';
 import { UPSERT_CUSTOM_ASSET_INFO } from 'graphQL/useMutationUpsertCustomAssetInfo';
+import { GET_ALL_MODELS } from 'graphQL/useQueryModels';
 import DynamicForm from '../Forms/DynamicForm';
 import { entityCreationOptions } from 'components/MRTTable/utils/data';
 
@@ -80,12 +81,16 @@ const useStyles = makeStyles(theme => ({
 
 function CustomAssetEntityDialog() {
 	const classes = useStyles();
-	const defaultFields = [{ _id: '', mappingKey: '', keyType: '', label: '', isSummaryField: false }];
+	const [modelsOptions, setModelsOptions] = useState([]);
+	const defaultFields = [
+		{ _id: '', mappingKey: '', keyType: '', label: '', isSummaryField: false, isControlColumn: false },
+	];
 	const { control, handleSubmit, watch, reset, setValue } = useForm({
 		defaultValues: {
 			table_name: '',
 			fields: defaultFields,
 			creation_place: '',
+      associatedModels: [],
 		},
 	});
 
@@ -98,29 +103,50 @@ function CustomAssetEntityDialog() {
 
 	const isCreateMode = type === 'addCustomAsset';
 
-	const [storeCustomAsset] = useMutation(UPSERT_CUSTOM_ASSET_INFO, {
+	const [getAllModels, { data: allModels }] = useLazyQuery(GET_ALL_MODELS, {
+		fetchPolicy: 'no-cache',
 		onCompleted: () => {
-			tableGlobalController.refetch();
+			const models = allModels?.getAllModels?.models || [];
+			setModelsOptions(models);
 		},
 	});
+
+	const [storeCustomAsset, { data }] = useMutation(UPSERT_CUSTOM_ASSET_INFO, {
+		onCompleted: () => {
+			tableGlobalController.refetch();
+
+			const updatedAsset = data?.upsertCustomAssetInfo?.newModel || {};
+			// tableGlobalController.updateState({
+			//   AssetCustomEntityDialog: {},
+			//   selectedAsset: updatedAsset,
+			// });
+		},
+	});
+
+	useEffect(() => {
+		if (isOpen) {
+			getAllModels();
+		}
+	}, [isOpen]);
 
 	useEffect(() => {
 		reset({
 			table_name: selectedAsset?.tableName || '',
 			fields: selectedAsset?.modelKeys || defaultFields,
 			creation_place: selectedAsset?.creationPlace || '',
+      associatedModels: selectedAsset?.associatedModels || [],
 		});
 	}, [selectedAsset, reset]);
 
 	const handleClose = async () => {
 		tableGlobalController.updateState({
 			AssetCustomEntityDialog: {},
-			selectedAsset: {},
 		});
 	};
 
 	const onSubmit = data => {
-		Loader.createToast('create', 'create new Entity in Progress');
+		const toastType = isCreateMode ? 'create' : 'update';
+		Loader.createToast(toastType, `${toastType} Entity in Progress`);
 		handleClose();
 
 		storeCustomAsset({
@@ -128,14 +154,15 @@ function CustomAssetEntityDialog() {
 				tableName: data.table_name,
 				modelKeys: data.fields,
 				creationPlace: data.creation_place,
+        associatedModels: data.associatedModels,
 			},
 		}).then(res => {
 			if (res?.data?.upsertCustomAssetInfo) {
 				const { success, message } = res.data.upsertCustomAssetInfo;
 				if (success) {
-					Loader.successToast('create', message);
-				} else Loader.errorToast('create', message);
-			} else Loader.errorToast('create', 'Failed to create new nntity');
+					Loader.successToast(toastType, message);
+				} else Loader.errorToast(toastType, message);
+			} else Loader.errorToast(toastType, `Failed to ${toastType} entity`);
 		});
 	};
 
@@ -209,6 +236,47 @@ function CustomAssetEntityDialog() {
 													disabled={!isCreateMode}
 												>
 													{entityCreationOptions.map(option => (
+														<MenuItem key={option.value} value={option.value}>
+															{option.label}
+														</MenuItem>
+													))}
+												</TextField>
+											)}
+										/>
+									</Grid>
+									<Grid item xs={6}>
+										<Controller
+											control={control}
+											name={`associatedModels`}
+											render={props => (
+												<TextField
+													select
+													size="small"
+													type="text"
+													variant="outlined"
+													value={props.value || []}
+													inputRef={props.ref}
+													onWheel={e => e.target.blur()}
+													onChange={e => {
+														props.onChange(e.target.value);
+													}}
+													label="Associations"
+													placeholder="Associations"
+													fullWidth
+													defaultValue=""
+													SelectProps={{
+														multiple: true,
+														renderValue: selected => (
+															<div style={{ display: 'flex', flexWrap: 'wrap' }}>
+																{selected.map(value => (
+																	<Chip key={value} label={value} style={{ margin: 2 }} />
+																))}
+															</div>
+														),
+													}}
+													disabled={!isCreateMode}
+												>
+													{modelsOptions?.map(option => (
 														<MenuItem key={option.value} value={option.value}>
 															{option.label}
 														</MenuItem>

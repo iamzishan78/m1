@@ -52,6 +52,15 @@ const AssetCustomEntitiesMeta = {
 				return <Chips list={renderedCellValue} />;
 			},
 		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'associatedModels.keyword',
+			accessorKey: 'associatedModels',
+			header: 'Associated Models',
+			Cell: ({ renderedCellValue }) => {
+				return <Chips list={renderedCellValue} />;
+			},
+		},
 	],
 };
 

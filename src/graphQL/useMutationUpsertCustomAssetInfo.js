@@ -5,11 +5,13 @@ export const UPSERT_CUSTOM_ASSET_INFO = gql`
     $tableName: String
     $modelKeys: [JSON]
     $creationPlace: String
+    $associatedModels: [String]
   ) {
     upsertCustomAssetInfo(
       tableName: $tableName
       modelKeys: $modelKeys
       creationPlace: $creationPlace
+      associatedModels: $associatedModels
     )
   }
 `;
