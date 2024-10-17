@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFieldArray, Controller } from 'react-hook-form';
+import { useFieldArray, Controller, useWatch } from 'react-hook-form';
 import { TextField, MenuItem, Button, Grid, IconButton, Checkbox, FormControlLabel } from '@material-ui/core';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { entityKeyTypes } from 'components/MRTTable/utils/data';
@@ -10,6 +10,15 @@ const DynamicForm = ({ control, setValue, isCreateMode }) => {
 		control,
 		name: 'fields',
 	});
+
+	// Use watch to observe the isControlColumn values for all fields
+	const isControlColumns = useWatch({
+		control,
+		name: 'fields', // Watch the entire fields array
+	});
+
+	// Check if any field has isControlColumn set to true
+	const hasControlColumnSelected = isControlColumns.some(field => field.isControlColumn === true);
 
 	return (
 		<>
@@ -146,6 +155,7 @@ const DynamicForm = ({ control, setValue, isCreateMode }) => {
 													checked={!!props.value}
 													onChange={e => props.onChange(e.target.checked)}
 													color="primary"
+													disabled={hasControlColumnSelected && !props.value} // Disable if another control column is selected
 												/>
 											}
 											label="Control Column"
