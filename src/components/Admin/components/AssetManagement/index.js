@@ -1,54 +1,52 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import MRTTable from 'components/MRTTable';
+import { isEmpty } from 'lodash';
+import { tableGlobalController } from 'hookstate/tableController';
 
 export default function AssetManagement() {
-  return (
-    <>
-      <div
-        style={{
-          marginTop: '65px',
-          padding: '20px',
-        }}
-      >
-        <MRTTable name="CustomAssetEntitiesTable" />
-      </div>
+	const { stateValues } = tableGlobalController.useState(['selectedAsset']);
+	const { selectedAsset } = stateValues || {};
 
-      {/* <div className={classes.assetsContainer}>
-        {allNewAssets &&
-          allNewAssets.map((model, index) => (
-            <div key={index} className={classes.columnContainer}>
-              <div className={classes.entityRow}>
-                <h2>Entity: {model.tableName}</h2>
-                <IconButton
-                  onClick={() => handleEdit(model)}
-                  className={classes.actionButton}
-                >
-                  <EditIcon />
-                </IconButton>
-              </div>
-              <div className={classes.tableWrapper}>
-                <table className={classes.assetTable}>
-                  <thead>
-                    <tr>
-                      <th>Column Labels</th>
-                      <th>Column Keys</th>
-                      <th>Column Types</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {model.modelKeys.map((key, idx) => (
-                      <tr key={idx}>
-                        <td>{key.label}</td>
-                        <td>{key.mappingKey}</td>
-                        <td>{key.keyType}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          ))}
-      </div>  */}
-    </>
-  );
+	const CustomEntitiesOverrideMeta = useMemo(
+		() => ({
+			tableHeading: `Entities`,
+			onClickedRow: selectedRow => {
+				tableGlobalController.updateState({
+					selectedAsset: selectedRow,
+				});
+			},
+		}),
+		[]
+	);
+
+	const CustomAssetOverrideMeta = useMemo(
+		() => ({
+			defaultFilters: [{ field: 'assetId', value: selectedAsset?._id }],
+			tableHeading: `${selectedAsset?.tableName}`,
+		}),
+		[selectedAsset]
+	);
+
+	return (
+		<>
+			<div
+				style={{
+					marginTop: '55px',
+					padding: '20px',
+				}}
+			>
+				<MRTTable name="CustomAssetEntitiesTable" overrideMeta={CustomEntitiesOverrideMeta} />
+			</div>
+
+			{!isEmpty(selectedAsset) && (
+				<div
+					style={{
+						padding: '20px',
+					}}
+				>
+					<MRTTable name="customAssetTable" overrideMeta={CustomAssetOverrideMeta} key={selectedAsset?._id} />
+				</div>
+			)}
+		</>
+	);
 }
