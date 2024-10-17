@@ -9,6 +9,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { tableGlobalController } from 'hookstate/tableController';
 import { copy } from "utils/helper";
+import { formatDate } from 'components/Shared/functions';
 
 const esIndex = 'shapes_flat';
 
@@ -71,13 +72,14 @@ const TractMeta = {
 			name: 'id',
 			accessorKey: 'id',
 		},
-
+ 		// M1neral System ID field added
 		{
-			...CommonSchema.HIDDEN,
+			...CommonSchema.MONGO_ID,
 			name: '_id',
 			accessorKey: '_id',
+			header: "M1neral System ID",
+			isHiddenFieldExport: true,
 		},
-
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'name.keyword',
@@ -157,6 +159,14 @@ const TractMeta = {
 			id: 'shapeJson.properties.shapeArea',
 			header: 'Calc Acres',
 		},
+		// Tract NRA column
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.netRoyalityAcres.calculatedNra.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.netRoyalityAcres?.calculatedNra,
+			id: 'shapeJson.properties.netRoyalityAcres.calculatedNra',
+			header: 'Tract NRA',
+		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.execNetAcres.keyword',
@@ -222,6 +232,42 @@ const TractMeta = {
 			header: 'Campaign Name',
 			size: 270,
 			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
+		},
+		// Department column
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.department.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.department,
+			id: 'shapeJson.properties.department',
+			header: 'Department',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'createBy.name.keyword',
+			accessorFn: row => row?.createBy?.name,
+			id: 'createBy.name',
+			header: 'Created By',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'createAt.keyword',
+			id: 'createAt',
+			header: 'Created Date',
+			Cell: ({ row }) => <>{formatDate(row?.original?.createAt)}</>, // format date before showing
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'lastUpdateBy.name.keyword',
+			accessorFn: row => row?.lastUpdateBy?.name,
+			id: 'lastUpdateBy.name',
+			header: 'Last Updated By',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'lastUpdateAt.keyword',
+			id: 'lastUpdateAt',
+			header: 'Last Updated Date',
+			Cell: ({ row }) => <>{formatDate(row?.original?.lastUpdateAt)}</>, // format date before showing
 		},
 		{
 			...CommonSchema.TAGS,

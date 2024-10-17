@@ -14,6 +14,8 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
+import 'cypress-wait-until';
+
 // Import commands.js using ES2015 syntax:
 import './cypress.css'
 import './commands'
@@ -21,11 +23,14 @@ import '../component/MRT/commands'
 import '../component/TableESHOC/commands'
 import '../component/M1nTable/commands'
 import '../component/Jobs/commands'
+import '../component/Map/Draw/commands'
 import '../component/Map/LayerManager/commands'
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
-import { mount } from 'cypress/react';
+import { mount } from 'cypress/react'
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 import Providers from 'Providers';
 import { globalStateController } from 'hookstate/globalStateController';
@@ -40,7 +45,7 @@ Cypress.Commands.add(
   (component, { disableContactBulkProgress, testCase, spec, mrtOverrideMeta } = {}) => {
     // Updates the global state with specific parameters before mounting the component.
     // This includes setting various authentication and user data, as well as specific flags and metadata for the test.
-    globalStateController.updateState({
+    globalStateController.setState({
       apolloClientEndpoint: ldata.url, // Sets the GraphQL endpoint URL.
       x_zumo_auth: ldata.x_zumo_auth, // Authentication token for Azure Mobile Services.
       access_token: ldata.access_token, // OAuth2 access token.
@@ -58,16 +63,19 @@ Cypress.Commands.add(
     });
 
     // Wraps the component with Providers and a ConnectedRouter, ensuring that the component has access to Redux state, routing, etc.
-    const wrapped = (
-      <Providers>
-        <ConnectedRouter history={history}>{component}</ConnectedRouter>
-      </Providers>
-    );
+
+    const wrapped = <Providers>
+      <ConnectedRouter history={history}>
+        <DndProvider backend={HTML5Backend}>
+          {component}
+        </DndProvider>
+      </ConnectedRouter>
+    </Providers>;
 
     // Mounts the wrapped component within the Cypress test, making it ready for testing.
+
     return mount(wrapped);
-  }
-);
+  });
 
 // Example use:
 // cy.mount(<MyComponent />)

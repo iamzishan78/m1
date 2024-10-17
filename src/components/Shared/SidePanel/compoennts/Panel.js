@@ -86,12 +86,13 @@ const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle
             }}
           >
             <Grid container alignContent="center" alignItems="center">
+              {/* icons for map panel  */}
               <Grid item>
-                {style.name === "Outdoors" && <Box component="img" src={'./icons/MapOutdoorIcon.jpeg'} />}
-                {style.name === "Satellite" && <Box component="img" src={'./icons/MapSatelliteIcon.jpeg'} />}
-                {style.name === "Light" && <Box component="img" src={'./icons/MapLightIcon.jpeg'} />}
-                {style.name === "Dark" && <Box component="img" src={'./icons/MapDarkIcon.jpeg'} />}
-                {style.name === "Basic" && <Box component="img" src={'./icons/MapBasicIcon.jpeg'} />}
+                {style.name === "Outdoors" && <Box component="img" src={'/icons/MapOutdoorIcon.jpeg'} />}
+                {style.name === "Satellite" && <Box component="img" src={'/icons/MapSatelliteIcon.jpeg'} />}
+                {style.name === "Light" && <Box component="img" src={'/icons/MapLightIcon.jpeg'} />}
+                {style.name === "Dark" && <Box component="img" src={'/icons/MapDarkIcon.jpeg'} />}
+                {style.name === "Basic" && <Box component="img" src={'/icons/MapBasicIcon.jpeg'} />}
               </Grid>
 
               <Grid item>
@@ -376,7 +377,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           maxWidth: "425px",
           left: mapControlsStateValues.expandedPanel ? "0px" : type === "marketplace" ? "-567px" : "0px",
           listStyleType: "none",
-          zIndex: "2",
+          zIndex: "1300", // Z-index to fix dialog overlapping with searchbar
         }}
       >
         <StyledMenu
