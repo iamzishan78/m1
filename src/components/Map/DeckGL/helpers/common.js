@@ -576,9 +576,11 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 				props.getLineWidth = (feature) => {
 					// Calculate area of the shape
 					const area = turf.area(feature);
+					// If area is less than 10 sq meters, return 0
+					if (area < 10) return 0;
 					// If area is less than 1000 sq meters, return 1
 					if (area < 1000) return 1;
-					return strokeWidth || 20;;
+					return strokeWidth || 20;
 				}
 
 				break;
@@ -599,6 +601,8 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 				props.getLineWidth = (feature) => {
 					// Calculate area of the shape
 					const area = turf.area(feature);
+					// If area is less than 10 sq meters, return 0
+					if (area < 10) return 0;
 					// If area is less than 1000 sq meters, return 1
 					if (area < 1000) return 1;
 					return pointWidth * 40;
