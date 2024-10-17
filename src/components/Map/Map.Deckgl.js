@@ -246,7 +246,7 @@ function Map({
 		let isDarkMapAllowed = false;
 
 		// check MapFeatureTenants for dark Map	
-        if (MapFeatureTenants.includes(window.sessionStorage.getItem("tenantName"))) {
+        if (MapFeatureTenants.includes(window.sessionStorage?.getItem("tenantName").toLowerCase())) {
 		    isDarkMapAllowed = stateApp?.user?.features?.find(f => f.name === 'DarkBaseMap')
 		}
 		if (!isDarkMapAllowed) styleTypes = styleTypes.filter(style => style !== 'Dark');
