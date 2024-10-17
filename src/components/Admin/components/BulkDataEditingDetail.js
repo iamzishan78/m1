@@ -66,6 +66,7 @@ const BulkDataEditingDetail = () => {
 			label: 'Error Description',
 		},
 	];
+
 	return (
 		<>
 			<Grid container direction="row" display="flex" style={{ padding: 25, marginTop: 50 }}>
@@ -140,14 +141,16 @@ const BulkDataEditingDetail = () => {
 			</Grid>
 			<Grid container direction="row" display="flex" style={{ padding: 25 }}>
 				<div className={classes.container}>
-					<Table
-						style={{ backgroundColor: '#fff' }}
-						header={null}
-						columns={columns}
-						rows={uploadedData}
-						total={uploadedData.length}
-						startPaginationAt={25}
-					/>
+					{jobResponseData?.getJobResponse?.status?.toLowerCase().includes('fail') && (
+						<Table
+							style={{ backgroundColor: '#fff' }}
+							header={null}
+							columns={columns}
+							rows={uploadedData}
+							total={uploadedData.length}
+							startPaginationAt={25}
+						/>
+					)}
 				</div>
 			</Grid>
 		</>
