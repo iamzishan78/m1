@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useState, useMemo } from "react";
-import { AppContext } from "AppContext";
+import React, { useEffect, useRef, useMemo } from "react";
 import { useQuery, useApolloClient } from "@apollo/client";
 import { useMutation } from "@apollo/client";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,25 +11,21 @@ import useRefetchHelper from "components/Shared/Hooks/useRefetchHelper";
 import { jobController } from "hookstate/jobStateController";
 import { debounce } from "lodash";
 import { tableGlobalController } from "hookstate/tableController";
+import { globalStateController } from "hookstate/globalStateController";
 
 const ContactBulkProgress = () => {
-  const [stateApp] = useContext(AppContext);
   const bulkUpload = useSelector((state) => state.common.bulkUpload);
   const refetchHelper = useRefetchHelper()
   const refetchHelperDebounced = useMemo(() => debounce((requestPayload) => refetchHelper(requestPayload), 1000), []);
-  const jobState = jobController.useState(
-    ['bulkUpload', 'storeJobOutput'],
-    'jobStateValues'
-  );
+  const { globalStateValues } = globalStateController.useState(['user'], 'globalStateValues');
+  const jobState = jobController.useState(['bulkUpload', 'storeJobOutput'], 'jobStateValues');
   const { jobStateValues } = jobState
 
   const dispatch = useDispatch();
 
-  const [pollingStarted, setPollingStarted] = useState(false);
+  const pollingStarted = useRef(false);
 
-  const [updateJob, { data: updatedJob }] = useMutation(UPDATE_JOB, {
-    refetchQueries: [GET_JOBS_STATUS]
-  });
+  const [updateJob] = useMutation(UPDATE_JOB, { refetchQueries: [GET_JOBS_STATUS] });
 
   const {
     data: dataJobs,
@@ -38,8 +33,8 @@ const ContactBulkProgress = () => {
     stopPolling,
     refetch,
   } = useQuery(GET_JOBS_STATUS, {
-    variables: { userId: stateApp.user?.mongoId, showProgress: true },
-    skip: stateApp.user?.mongoId ? false : true,
+    variables: { userId: globalStateValues.user?.mongoId, showProgress: true },
+    skip: globalStateValues.user?.mongoId ? false : true,
   });
 
   const client = useApolloClient();
@@ -59,8 +54,8 @@ const ContactBulkProgress = () => {
   }
 
   useEffect(() => {
-    if (stateApp.user) {
-      setPollingStarted(false);
+    if (globalStateValues.user) {
+      pollingStarted.current = false
       stopPolling();
       refetch();
     }
@@ -71,10 +66,9 @@ const ContactBulkProgress = () => {
       const pendingJobs = dataJobs.getJobsStatus.jobs.find(
         (job) => job.status === "Created" || job.status === "Pending" || job.status === "Started"
       );
-
-      if (pendingJobs && !pollingStarted) {
+      if (pendingJobs && !pollingStarted.current) {
         startPolling(3000);
-        setPollingStarted(true);
+        pollingStarted.current = true
         createOrUpdateToast("create");
       } else {
         if (!pendingJobs) {
