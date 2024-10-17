@@ -8,6 +8,7 @@ import TabHeader from 'components/MRSimpleTable/Common/TabHeader';
 import { globalStateController } from 'hookstate/globalStateController';
 import { excludeFilters } from './CommonToolBarActions';
 import _ from 'lodash';
+import { Typography } from '@material-ui/core';
 
 function ToolbarActions({ table, tableKey, children }) {
 	const tableState = tableController(tableKey).useCompleteState();
@@ -120,6 +121,7 @@ function ToolbarActions({ table, tableKey, children }) {
 					alignItems: 'center',
 				}}
 			>
+				<Typography variant="h5" style={{ fontWeight: 'bold', marginRight: '5px' }}>{tableStateValues.tableHeading}</Typography>
 				<TabHeader labels={tableStateValues.tabLabels} />
 				{tableStateValues.gridViewSettings && !isSomethingSelected && (
 					<GridView tableKey={tableKey} {...tableStateValues.gridViewSettings} />
