@@ -123,6 +123,8 @@ function ContactToolbar({ table, tableKey }) {
 			table,
 			tableKey,
 			selectedCampaign: tableStateValues.customProps?.campaign,
+			objectType: 'contact' ,
+			refetchQueries: ["getESContacts"]
 		};
 	};
 
