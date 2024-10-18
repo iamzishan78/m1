@@ -673,3 +673,5 @@ export const simpleAuthBypass = false;
 export const OWNERTYPE = {
 	CORPORATION: 'CORPORATION',
 };
+
+export const MapFeatureTenants = ['m1dev', 'frontier', 'localhost']

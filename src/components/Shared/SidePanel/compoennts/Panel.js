@@ -366,19 +366,19 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 		<div>
 			<div
 				style={{
-					position: 'absolute',
-					display: 'flex',
-					flexDirection: 'row',
-					width: '50px',
-					maxWidth: '425px',
-					left: mapControlsStateValues.expandedPanel ? '0px' : type === 'marketplace' ? '-567px' : '0px',
-					listStyleType: 'none',
-					zIndex: '1300', // Z-index to show side pannel on top
+					position: "absolute",
+					display: "flex",
+					flexDirection: "row",
+					width: "50px",
+					maxWidth: "425px",
+					left: mapControlsStateValues.expandedPanel ? "0px" : type === "marketplace" ? "-567px" : "0px",
+					listStyleType: "none",
+					zIndex: "1300", // Z-index to fix dialog overlapping with searchbar
 				}}
 			>
 				<StyledMenu
 					id="layer-side-panel"
-					style={!mapControlsStateValues.expandedPanel ? { display: 'none' } : { minWidth: '425px' }}
+					style={!mapControlsStateValues.expandedPanel ? { display: "none" } : { minWidth: "425px" }}
 					keepMounted
 					open={Boolean(mapControlsStateValues.selectedControl)}
 				>
