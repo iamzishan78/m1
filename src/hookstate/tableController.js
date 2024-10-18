@@ -11,10 +11,11 @@ import CustomFieldText from "components/MRTTable/Common/MetaData/CustomFieldText
 import { metaDataColumnStateController } from 'components/MRTTable/Common/MetaData/MetaDataColumnsController'
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController'
-import { formatGridViewToMRT } from "components/MRTTable/utils/helper"
+import { formatGridViewToMRT, removeSpaces } from "components/MRTTable/utils/helper"
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
 import MRT_SelectCheckbox_OverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 import { handleMRTSchema, handleVisiblityMenu } from './helpers';
+import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 
 function isDateFormat(inputString) {
 	// Regular expression for MM/DD/YYYY format
@@ -136,12 +137,26 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, 
 		return ({
 			...CommonSchema.COMMON_COLUMN,
 			name: item.keyType === 'String' ? `${item.mappingKey}.keyword` : item.mappingKey,
+			accessorKey: item.mappingKey,
 			id: item.mappingKey,
-			accessorFn: (row) => get(row, item.mappingKey),
 			header: item?.label,
 			type: item?.keyType,
 			size: 350,
 			isPinned: !!item?.isControlColumn,
+			Cell: ({ renderedCellValue, row }) => {
+				if(!!item?.isControlColumn) {
+					const model = removeSpaces(fetchDynamicSchema.tableName);
+					return <ColumnWithLink
+						value={renderedCellValue}
+						link={`/${model}/details/${row.getValue('_id')}`}
+						onClick={e => {
+							e.stopPropagation();
+						}}
+					/>
+				} else {
+					return <>{renderedCellValue}</>
+				}
+			}
 		})
 	});
 

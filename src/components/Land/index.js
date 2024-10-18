@@ -7,6 +7,7 @@ import * as Components from "components/Land/components";
 import { replaceLinkId } from "components/Shared/functions";
 import { ALL_CUSTOM_ASSET_INFO } from "graphQL/useQueryAllCustomAssetInfo"
 import { useLazyQuery } from "@apollo/client";
+import { removeSpaces } from "components/MRTTable/utils/helper"
 
 //Actions
 import { toggleQuickActionsPanel, setActiveModule } from "store/actions/commonActions";
@@ -116,7 +117,7 @@ export default function Land() {
           newList[key] = {
             featureFlag: "LANDMODULE",
             title: item.tableName,
-            link: `/land/${item.tableName.replace(/\s+/g, '').toLowerCase()}`,
+            link: `/land/${removeSpaces(item.tableName)}`,
             component: "DynamicAssetGrid"
           };
         });
