@@ -116,10 +116,10 @@ function CustomAssetEntityDialog() {
 			tableGlobalController.refetch();
 
 			const updatedAsset = data?.upsertCustomAssetInfo?.newModel || {};
-			// tableGlobalController.updateState({
-			//   AssetCustomEntityDialog: {},
-			//   selectedAsset: updatedAsset,
-			// });
+			tableGlobalController.updateState({
+				AssetCustomEntityDialog: {},
+				selectedAsset: updatedAsset,
+			});
 		},
 	});
 
@@ -134,7 +134,7 @@ function CustomAssetEntityDialog() {
 			table_name: selectedAsset?.tableName || '',
 			fields: selectedAsset?.modelKeys || defaultFields,
 			creation_place: selectedAsset?.creationPlace || '',
-      associatedModels: selectedAsset?.associatedModels || [],
+			associatedModels: selectedAsset?.associatedModels || [],
 		});
 	}, [selectedAsset, reset]);
 
