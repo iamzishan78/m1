@@ -39,7 +39,6 @@ export default function AgreementDetailCard(props) {
   const [selectedTractTab, setTractSelectedTab] = useState(0);
   const [uniObj, setUniObj] = useState();
   const [tractOwners, setTractOwners] = useState();
-  const [infoMessage, setInfoMessage] = useState(false);
   const [properties, setProperties] = useState();
   const [updateCustomLayer, { data: updatedUnit }] = useMutation(UPDATECUSTOMLAYER);
 
@@ -82,10 +81,13 @@ export default function AgreementDetailCard(props) {
         ...dataCustomLayer.customLayer,
         shape,
       });
+      popupController.updateState({
+        selectedShape: { ...shape.properties },
+      });
 
-      if (!shape.properties.agreementNumber && !infoMessage) {
+      // Dispatch action for validation error if there is no agreement number
+      if (!shape.properties.agreementNumber) {
         dispatch(showInfoMessage("Agreement Number is required"));
-        setInfoMessage(true);
       }
       setProperties(shape.properties);
     }
@@ -153,8 +155,10 @@ export default function AgreementDetailCard(props) {
         shape.properties.originalProperties.County = undefined;
         shape.properties.originalProperties.State = value;
         shape.properties.originalProperties.StateAbbreviation = value;
+        shape.properties.county = undefined;
       } else {
         shape.properties.originalProperties = { State: value, StateAbbreviation: value }
+        shape.properties.county = undefined;
       }
     }
     if (field === "county") {
@@ -198,7 +202,7 @@ export default function AgreementDetailCard(props) {
         customLayerId: uniObj._id,
         customLayer,
       },
-      refetchQueries: ["getMetaData"],
+      refetchQueries: ["getMetaData", "getAllLayerSettingsByUser"],
       awaitRefetchQueries: true,
     }).then((res) => {
       jobController.toggleBulkUpload()
@@ -233,6 +237,8 @@ export default function AgreementDetailCard(props) {
         customLayerId: uniObj._id,
         customLayer,
       },
+      refetchQueries: ["allLayerSettingsByUser"],
+      awaitRefetchQueries: true,
     }).then((res) => {
       jobController.toggleBulkUpload()
       layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)

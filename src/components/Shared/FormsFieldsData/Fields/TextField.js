@@ -53,6 +53,7 @@ function TextFieldComponent({ control, item, watch }) {
           <TextField
             type={type}
             size={size}
+            data-testid={`${name}-field`}
             value={props.value}
             inputRef={props.ref}
             onWheel={e => e.target.blur()}

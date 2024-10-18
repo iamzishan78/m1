@@ -23,7 +23,8 @@ const NewSubtask = memo(({ index, activeDeal = {}, relatedObject, pipeline, task
     if (addedSubtask && !activeDeal._id && !isTemplate) {
       setStateTransact((stateTransact) => ({
         ...stateTransact,
-        dealToCreate: { _id: addedSubtask.task.pipeline },
+         // Fetching task id
+         dealToCreate: { _id: addedSubtask?.task?._id },
       }));
     }
   }, [activeDeal._id, addedSubtask, setStateTransact, isTemplate]);
