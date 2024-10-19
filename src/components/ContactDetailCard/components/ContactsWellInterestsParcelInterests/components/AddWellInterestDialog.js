@@ -196,8 +196,7 @@ function AddWellInterestDialog(props) {
 	useEffect(() => {
 		getInterestOwnerTypes();
 		getInterestTypes();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [getInterestOwnerTypes, getInterestTypes]);
 
 	useEffect(() => {
 		setInterestOwnerTypes(dataInterestOwnerTypes?.interestOwnerTypes?.res?.map(e => e.Desc));
