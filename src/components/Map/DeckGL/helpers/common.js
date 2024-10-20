@@ -458,11 +458,27 @@ export const generateFileFilters = ({
 	extendFilters = { variables: {} },
 }) => {
 	let mustQuery = [];
+
+	// Added fileAlternateName to support the case where the file name is different from the layer name
+	const fileAlternateName = `${fileLayer?.fileName} - ${fileLayer.layerGeometry}`;
+	// Altered query accordingly
 	if (fileLayer.layerShapeName) {
 		mustQuery = [
 			{
-				term: { 'properties.layerShapeName.keyword': fileLayer.layerShapeName },
-			},
+				bool: {
+					should: [{
+						term: {
+							'properties.layerShapeName.keyword': fileAlternateName
+						}
+					},
+					{
+						term: {
+							'properties.layerShapeName.keyword': fileLayer.layerShapeName
+						}
+					}
+					]
+				}
+			}
 		];
 	}
 

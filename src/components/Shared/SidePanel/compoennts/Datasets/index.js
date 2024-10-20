@@ -132,7 +132,7 @@ function Datasets({ headerButton, search, stateApp }) {
                     dataset.categories.forEach((category) => {
                         category.file = dataset.file
                         category.originalFile = dataset.originalFile
-                        category.layerName = category.name
+                        category.fileName = dataset?.fileInfo?.name
                     })
                 }
             })
