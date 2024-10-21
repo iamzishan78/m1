@@ -154,7 +154,7 @@ function AddWellInterestDialog(props) {
 	const [getInterestTypes, { data: dataInterestTypes }] = useLazyQuery(INTERESTTYPESQUERY, {
 		fetchPolicy: 'cache-and-network',
 	});
-	const [getTenantWell, { data: dataTenantWell }] = useLazyQuery(TENANTWELL, {
+	const [getTenantWell, { data: dataTenantWell, loading: loadingTenantWell }] = useLazyQuery(TENANTWELL, {
 		// must be network-only to trigger state change for field updates
 		fetchPolicy: 'network-only',
 	});
@@ -549,16 +549,14 @@ function AddWellInterestDialog(props) {
 						</FormControl>
 
 						<h4
-							style={
-								{
-									//margin: "0 0 15px 0",
-									//float: "left",
-									//fontSize: "1.1rem",
-								}
-							}
+							style={{
+								display: 'inline-block',
+							}}
 						>
 							Selected well and lease information
 						</h4>
+
+						{loadingTenantWell && <CircularProgress size={14} style={{ marginLeft: '5px' }} />}
 
 						<TextField
 							variant="outlined"
@@ -774,7 +772,7 @@ function AddWellInterestDialog(props) {
 								handleValidate() && handleSave();
 							}}
 							className={classes.footerButton}
-							disabled={loading || !valid}
+							disabled={loadingTenantWell || loading || !valid}
 						>
 							{loading ? <CircularProgress size={14} /> : 'Save'}
 						</Button>
