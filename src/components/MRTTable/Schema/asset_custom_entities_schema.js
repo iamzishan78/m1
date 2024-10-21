@@ -57,6 +57,18 @@ const AssetCustomEntitiesMeta = {
 			header: 'Associated Models',
 			Cell: ({ row }) => <Chips list={row?.original?.associatedModels} />,
 		},
+		{
+			...CommonSchema.CREATED_BY,
+		},
+		{
+			...CommonSchema.LAST_UPDATED_BY,
+		},
+		{
+			...CommonSchema.CREATED_DATE,
+		},
+		{
+			...CommonSchema.LAST_UPDATED_DATE,
+		},
 	],
 };
 
