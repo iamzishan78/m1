@@ -3,7 +3,7 @@ import moment from 'moment';
 import { CommonSchema } from './common_schema';
 import { GET_ALL_USERS } from 'graphQL/userManagement';
 import { simpleTableGlobalController } from 'hookstate/simpleTableController';
-
+import { UserRole, RolePrivilege } from 'utils/data';
 export const userManagementTableKey = 'UserManagement';
 
 const onClickedRow = (selectedRow) => {
@@ -25,7 +25,7 @@ const UserManagementMeta = {
   },
   getDataFromRes: (res) => res?.data?.users || [],
   getIdsFromRows: (rows) => rows?.map((row) => row?._id) || [],
-
+  isInFiniteScroll: true, // added infinite scroll
   CustomToolBar: UserManagementToolbar,
   onClickedRow,
   isSelectAllAllowed: true,
@@ -59,6 +59,14 @@ const UserManagementMeta = {
       accessorKey: 'role',
       name: 'role',
       accessorFn: (row) => row?.role || '',
+      Cell: ({ renderedCellValue }) => {
+        if (renderedCellValue) {
+          // Use the enum to get the user-friendly name for the role
+          const displayValue = UserRole[renderedCellValue] || renderedCellValue;
+          return <>{displayValue}</>;
+        }
+        return null;
+      },
     },
     {
       ...CommonSchema.STRING_COLUMN,
@@ -66,13 +74,21 @@ const UserManagementMeta = {
       accessorKey: 'rolePrivileges',
       name: 'rolePrivileges',
       accessorFn: (row) => row?.rolePrivileges || '',
+      Cell: ({ renderedCellValue }) => {
+        if (renderedCellValue) {
+          // Use the enum to get the user-friendly name for the role privileges
+          const displayValue = RolePrivilege[renderedCellValue] || renderedCellValue;
+          return <>{displayValue}</>;
+        }
+        return null;
+      },
     },
     {
       ...CommonSchema.STRING_COLUMN,
       header: 'Last Login',
-      accessorKey: 'ts',
-      name: 'ts',
-      accessorFn: (row) => moment(row?.ts).format('MM/DD/YYYY') || '',
+      accessorKey: 'lastLogin',
+      name: 'lastLogin',
+      accessorFn: (row) => (row?.lastLogin ? moment(row?.lastLogin).format('MM/DD/YYYY') || '' : ''),
     },
   ],
 };
