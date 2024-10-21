@@ -172,6 +172,46 @@ const DynamicForm = ({ control, setValue }) => {
 									)}
 								/>
 							</Grid>
+							<Grid item xs={2}>
+								<Controller
+									control={control}
+									name={`fields[${index}].isGridDisplayed`}
+									defaultValue={field.isGridDisplayed ?? true}
+									render={props => (
+										<FormControlLabel
+											control={
+												<Checkbox
+													checked={!!props.value}
+													onChange={e => props.onChange(e.target.checked)}
+													color="primary"
+												/>
+											}
+											label="Grid Column"
+										/>
+									)}
+								/>
+							</Grid>
+							<Grid item xs={2}>
+								<Controller
+									control={control}
+									name={`fields[${index}].isDialogDisplayed`}
+									defaultValue={field.isDialogDisplayed ?? true}
+									render={props => {
+										return (
+											<FormControlLabel
+												control={
+													<Checkbox
+														checked={!!props.value}
+														onChange={e => props.onChange(e.target.checked)}
+														color="primary"
+													/>
+												}
+												label="Dialog Field"
+											/>
+										);
+									}}
+								/>
+							</Grid>
 						</Grid>
 					</div>
 				);
@@ -180,7 +220,18 @@ const DynamicForm = ({ control, setValue }) => {
 				<Button
 					variant="contained"
 					color="secondary"
-					onClick={() => append({ label: '', mappingKey: '', keyType: '' })}
+					onClick={() =>
+						append({
+							_id: '',
+							mappingKey: '',
+							keyType: '',
+							label: '',
+							isSummaryField: false,
+							isControlColumn: false,
+							isGridDisplayed: true,
+							isDialogDisplayed: true,
+						})
+					}
 					disabled={!isCreateAssetMode}
 				>
 					Add Field
