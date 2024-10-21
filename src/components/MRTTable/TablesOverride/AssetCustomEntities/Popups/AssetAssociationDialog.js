@@ -9,15 +9,25 @@ import { UPSERT_CUSTOM_ASSET_INFO } from 'graphQL/useMutationUpsertCustomAssetIn
 import { GET_ALL_MODELS } from 'graphQL/useQueryModels';
 import DynamicForm from '../Forms/DynamicForm';
 import { useStyles } from './styles';
-import Chips from 'components/MRTTable/Common/TableCells/Chips';
 
 function AssetAssociationDialog() {
 	const classes = useStyles();
 	const [modelsOptions, setModelsOptions] = useState([]);
-	const defaultFields = [{ _id: '', mappingKey: '', keyType: '', label: '', isControlColumn: false }];
+	const defaultFields = [
+		{
+			_id: '',
+			mappingKey: '',
+			keyType: '',
+			label: '',
+			isControlColumn: false,
+			isGridDisplayed: true,
+			isDialogDisplayed: true,
+		},
+	];
 
 	const { control, handleSubmit, watch, reset, setValue } = useForm({
 		defaultValues: {
+			associatedModels: '',
 			fields: [],
 		},
 	});
@@ -62,11 +72,12 @@ function AssetAssociationDialog() {
 		}
 	}, [isOpen, getAllModels]);
 
-	const handleClose = async () => {
+	const handleClose = () => {
 		tableGlobalController.updateState({
 			AssetAssociationDialog: {},
 		});
 		reset({
+			associatedModels: '',
 			fields: defaultFields,
 		});
 	};
@@ -76,12 +87,29 @@ function AssetAssociationDialog() {
 		Loader.createToast(toastType, `${toastType} Entity Association in Progress`);
 		handleClose();
 
+		const { associatedModels = [], fields } = data;
+		const modelId = associatedModels._id;
+
+		// Find if the model already exists in selectedAsset's associated models
+		const existingModelIndex = selectedAsset?.associatedModels?.findIndex(model => model._id === modelId);
+
+		let resultantModels;
+
+		if (existingModelIndex >= 0) {
+			// If the model exists, update its keys
+			resultantModels = [...selectedAsset.associatedModels];
+			resultantModels[existingModelIndex] = { ...associatedModels, modelKeys: fields };
+		} else {
+			// If the model is new, add it to the array
+			resultantModels = [...selectedAsset.associatedModels, { ...associatedModels, modelKeys: fields }];
+		}
+
 		storeCustomAsset({
 			variables: {
 				tableName: selectedAsset.tableName,
 				modelKeys: selectedAsset.modelKeys,
 				creationPlace: selectedAsset.creationPlace,
-				associatedModels: [...selectedAsset?.associatedModels, data.associatedModels],
+				associatedModels: resultantModels, // Use the updated array
 			},
 		}).then(res => {
 			if (res?.data?.upsertCustomAssetInfo) {
@@ -90,6 +118,20 @@ function AssetAssociationDialog() {
 					Loader.successToast(toastType, message);
 				} else Loader.errorToast(toastType, message);
 			} else Loader.errorToast(toastType, `Failed to ${toastType} entity association`);
+		});
+	};
+
+	const handleChipClick = model => {
+		// When a chip is clicked, reset the form with the selected model's data
+		tableGlobalController.updateState({
+			AssetAssociationDialog: {
+				type: 'editAssetAssociation',
+				isOpen: true,
+			},
+		});
+		reset({
+			associatedModels: model,
+			fields: model.modelKeys || defaultFields,
 		});
 	};
 
@@ -120,7 +162,14 @@ function AssetAssociationDialog() {
 										<h3>Current Associated Models</h3>
 									</Grid>
 									<Grid xs={6}>
-										<Chips list={selectedAsset?.associatedModels} />
+										{selectedAsset.associatedModels.map(model => (
+											<Chip
+												key={model._id}
+												label={model.modelName}
+												onClick={() => handleChipClick(model)} // Handle chip click
+												style={{ margin: 2, cursor: 'pointer' }}
+											/>
+										))}
 									</Grid>
 								</>
 							)}
@@ -165,7 +214,6 @@ function AssetAssociationDialog() {
 														);
 													},
 												}}
-												disabled={!isCreateMode}
 											>
 												{modelsOptions?.map(option => (
 													<MenuItem key={option._id} value={option}>
