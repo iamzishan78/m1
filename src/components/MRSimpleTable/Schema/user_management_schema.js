@@ -59,13 +59,11 @@ const UserManagementMeta = {
       accessorKey: 'role',
       name: 'role',
       accessorFn: (row) => row?.role || '',
-      Cell: ({ renderedCellValue }) => {
-        if (renderedCellValue) {
+      Cell: ({ row }) => {
+        const value =  row?.original?.role
           // Use the enum to get the user-friendly name for the role
-          const displayValue = UserRole[renderedCellValue] || renderedCellValue;
+          const displayValue = UserRole[value] || '';
           return <>{displayValue}</>;
-        }
-        return null;
       },
     },
     {
@@ -74,13 +72,11 @@ const UserManagementMeta = {
       accessorKey: 'rolePrivileges',
       name: 'rolePrivileges',
       accessorFn: (row) => row?.rolePrivileges || '',
-      Cell: ({ renderedCellValue }) => {
-        if (renderedCellValue) {
+      Cell: ({ row }) => {
+        const value =  row?.original?.rolePrivileges
           // Use the enum to get the user-friendly name for the role privileges
-          const displayValue = RolePrivilege[renderedCellValue] || renderedCellValue;
+          const displayValue = RolePrivilege[value] || '';
           return <>{displayValue}</>;
-        }
-        return null;
       },
     },
     {
