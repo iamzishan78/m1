@@ -1961,10 +1961,9 @@ function AddDealDialog(props) {
             style={{
               position: "absolute",
               left: 0,
-              top:-60,
               "z-index": "9999",
               width: "71%",
-              height: "50%"
+              height: "100%"
             }}
           >
             <MapProvider
