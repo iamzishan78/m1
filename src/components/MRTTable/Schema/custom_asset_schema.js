@@ -1,5 +1,5 @@
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import AssetEntityToolbar from '../TablesOverride/AssetCustomEntities/AssetEntityToolbar';
+import AssetEntityToolbar from '../TablesOverride/AssetCustomEntities/Toolbars/AssetEntity';
 
 const esIndex = 'customentitiesmodelkeys_flat';
 

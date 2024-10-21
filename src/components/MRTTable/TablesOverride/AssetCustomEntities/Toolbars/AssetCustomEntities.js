@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { tableGlobalController } from 'hookstate/tableController';
 import { ButtonGroup, Button } from '@material-ui/core';
-import CustomAssetEntityDialog from './Popups/CustomAssetEntityDialog';
+import CustomAssetEntityDialog from '../Popups/CustomAssetEntityDialog';
 
 function AssetCustomEntitiesToolbar({ tableKey }) {
 	const addCustomAssetHandler = () => {

@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
 import EditIcon from '@material-ui/icons/Edit';
 import { tableGlobalController } from 'hookstate/tableController';
-import CustomAssetEntityDialog from './Popups/CustomAssetEntityDialog';
 import { IconButton, Tooltip } from '@material-ui/core';
+import CustomAssetEntityDialog from '../Popups/CustomAssetEntityDialog';
 
 function AssetEntityToolbar({ tableKey }) {
 	const editCustomAssetHandler = () => {

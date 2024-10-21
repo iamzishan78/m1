@@ -1,6 +1,6 @@
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import AssetCustomEntitiesToolbar from '../TablesOverride/AssetCustomEntities/AssetCustomEntitiesToolbar';
 import Chips from '../Common/TableCells/Chips';
+import AssetCustomEntitiesToolbar from '../TablesOverride/AssetCustomEntities/Toolbars/AssetCustomEntities';
 
 const esIndex = 'assetcustomentities_flat';
 
