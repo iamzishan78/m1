@@ -13,7 +13,16 @@ import { useStyles } from './styles';
 function CustomAssetEntityDialog() {
 	const classes = useStyles();
 	const defaultFields = [
-		{ _id: '', mappingKey: '', keyType: '', label: '', isSummaryField: false, isControlColumn: false },
+		{
+			_id: '',
+			mappingKey: '',
+			keyType: '',
+			label: '',
+			isSummaryField: false,
+			isControlColumn: false,
+			isGridDisplayed: true,
+			isDialogDisplayed: true,
+		},
 	];
 	const { control, handleSubmit, watch, reset, setValue } = useForm({
 		defaultValues: {
