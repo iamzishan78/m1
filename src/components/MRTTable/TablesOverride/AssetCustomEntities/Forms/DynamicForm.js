@@ -4,8 +4,9 @@ import { TextField, MenuItem, Button, Grid, IconButton, Checkbox, FormControlLab
 import DeleteIcon from '@mui/icons-material/Delete';
 import { entityKeyTypes } from 'components/MRTTable/utils/data';
 import { removeSpacesAndLowercase } from 'components/MRTTable/utils/helper';
+import { tableGlobalController } from 'hookstate/tableController';
 
-const DynamicForm = ({ control, setValue, isCreateMode }) => {
+const DynamicForm = ({ control, setValue }) => {
 	const { fields, append, remove } = useFieldArray({
 		control,
 		name: 'fields',
@@ -16,6 +17,11 @@ const DynamicForm = ({ control, setValue, isCreateMode }) => {
 		control,
 		name: 'fields', // Watch the entire fields array
 	});
+
+	const { stateValues } = tableGlobalController.useState(['AssetCustomEntityDialog']);
+	const { type, isAddEditAsset } = stateValues.AssetCustomEntityDialog || {};
+
+	const isCreateAssetMode = type === 'addCustomAsset';
 
 	// Check if any field has isControlColumn set to true
 	const hasControlColumnSelected = isControlColumns.some(field => field.isControlColumn === true);
@@ -55,7 +61,7 @@ const DynamicForm = ({ control, setValue, isCreateMode }) => {
 											placeholder="Label"
 											fullWidth
 											defaultValue=""
-											disabled={!isCreateMode}
+											disabled={!isCreateAssetMode}
 										/>
 									)}
 								/>
@@ -81,7 +87,7 @@ const DynamicForm = ({ control, setValue, isCreateMode }) => {
 											placeholder="Key"
 											fullWidth
 											defaultValue=""
-											disabled={!isCreateMode}
+											disabled={!isCreateAssetMode}
 										/>
 									)}
 								/>
@@ -106,7 +112,7 @@ const DynamicForm = ({ control, setValue, isCreateMode }) => {
 											placeholder="Key type"
 											fullWidth
 											defaultValue=""
-											disabled={!isCreateMode}
+											disabled={!isCreateAssetMode}
 										>
 											{entityKeyTypes.map(option => (
 												<MenuItem key={option.value} value={option.value}>
@@ -117,33 +123,36 @@ const DynamicForm = ({ control, setValue, isCreateMode }) => {
 									)}
 								/>
 							</Grid>
-							{fields.length > 1 && (
+							{isCreateAssetMode && fields.length > 1 && (
 								<Grid item xs={1}>
-									<IconButton size="small" onClick={() => remove(index)} disabled={!isCreateMode}>
+									<IconButton size="small" onClick={() => remove(index)} disabled={!isCreateAssetMode}>
 										<DeleteIcon />
 									</IconButton>
 								</Grid>
 							)}
 						</Grid>
 						<Grid container spacing={2} alignItems="center" wrap="wrap">
-							<Grid item xs={2}>
-								<Controller
-									control={control}
-									name={`fields[${index}].isSummaryField`}
-									render={props => (
-										<FormControlLabel
-											control={
-												<Checkbox
-													checked={!!props.value}
-													onChange={e => props.onChange(e.target.checked)}
-													color="primary"
-												/>
-											}
-											label="Summary Field"
-										/>
-									)}
-								/>
-							</Grid>
+							{isAddEditAsset && (
+								<Grid item xs={2}>
+									<Controller
+										control={control}
+										name={`fields[${index}].isSummaryField`}
+										render={props => (
+											<FormControlLabel
+												control={
+													<Checkbox
+														checked={!!props.value}
+														onChange={e => props.onChange(e.target.checked)}
+														color="primary"
+													/>
+												}
+												label="Summary Field"
+											/>
+										)}
+									/>
+								</Grid>
+							)}
+
 							<Grid item xs={2}>
 								<Controller
 									control={control}
@@ -167,14 +176,16 @@ const DynamicForm = ({ control, setValue, isCreateMode }) => {
 					</div>
 				);
 			})}
-			<Button
-				variant="contained"
-				color="secondary"
-				onClick={() => append({ label: '', mappingKey: '', keyType: '' })}
-				disabled={!isCreateMode}
-			>
-				Add Field
-			</Button>
+			{!!isCreateAssetMode && (
+				<Button
+					variant="contained"
+					color="secondary"
+					onClick={() => append({ label: '', mappingKey: '', keyType: '' })}
+					disabled={!isCreateAssetMode}
+				>
+					Add Field
+				</Button>
+			)}
 		</>
 	);
 };

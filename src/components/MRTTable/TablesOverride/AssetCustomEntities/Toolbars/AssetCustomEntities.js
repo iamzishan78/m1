@@ -9,6 +9,7 @@ function AssetCustomEntitiesToolbar({ tableKey }) {
 			AssetCustomEntityDialog: {
 				type: 'addCustomAsset',
 				isOpen: true,
+				isAddEditAsset: true,
 				tableKey,
 			},
 			selectedAsset: {},
