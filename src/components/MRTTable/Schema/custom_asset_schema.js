@@ -76,6 +76,40 @@ const customAssetMeta = {
 				return <>{isControlColumn ? 'Yes' : 'No'}</>;
 			},
 		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'isGridDisplayed',
+			accessorKey: 'isGridDisplayed',
+			header: 'Grid Column',
+			isSearchField: false,
+			filterSelectOptions: [
+				{ label: 'Yes', value: 'true' },
+				{ label: 'No', value: 'false' },
+			],
+			type: 'boolean',
+			Cell: ({ row }) => {
+				const isGridDisplayed = [true, 'true', 'True'].includes(row.getValue('isGridDisplayed'));
+
+				return <>{isGridDisplayed ? 'Yes' : 'No'}</>;
+			},
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'isDialogDisplayed',
+			accessorKey: 'isDialogDisplayed',
+			header: 'Dialog Field',
+			isSearchField: false,
+			filterSelectOptions: [
+				{ label: 'Yes', value: 'true' },
+				{ label: 'No', value: 'false' },
+			],
+			type: 'boolean',
+			Cell: ({ row }) => {
+				const isDialogDisplayed = [true, 'true', 'True'].includes(row.getValue('isDialogDisplayed'));
+
+				return <>{isDialogDisplayed ? 'Yes' : 'No'}</>;
+			},
+		},
 	],
 };
 
