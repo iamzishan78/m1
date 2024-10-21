@@ -1,14 +1,27 @@
 import React, { memo } from 'react';
 import EditIcon from '@material-ui/icons/Edit';
 import { tableGlobalController } from 'hookstate/tableController';
-import { IconButton, Tooltip } from '@material-ui/core';
+import { Button, ButtonGroup, IconButton, Tooltip } from '@material-ui/core';
 import CustomAssetEntityDialog from '../Popups/CustomAssetEntityDialog';
+import AssetAssociationDialog from '../Popups/AssetAssociationDialog';
 
 function AssetEntityToolbar({ tableKey }) {
 	const editCustomAssetHandler = () => {
 		tableGlobalController.updateState({
 			AssetCustomEntityDialog: {
 				type: 'editCustomAsset',
+				isOpen: true,
+				isAddEditAsset: true,
+				tableKey,
+			},
+		});
+	};
+
+	const addAssetAssociationHandler = () => {
+		tableGlobalController.updateState({
+			AssetCustomEntityDialog: {},
+			AssetAssociationDialog: {
+				type: 'addAssetAssociation',
 				isOpen: true,
 				tableKey,
 			},
@@ -17,6 +30,18 @@ function AssetEntityToolbar({ tableKey }) {
 
 	return (
 		<>
+			<ButtonGroup variant="contained" style={{ height: '40px' }} color="primary" aria-label="split button">
+				<Button
+					id="addAssetAssociation"
+					color="primary"
+					size="small"
+					aria-label="add asset association"
+					onClick={addAssetAssociationHandler}
+				>
+					Add Association
+				</Button>
+			</ButtonGroup>
+
 			<Tooltip title="Edit Custom Asset">
 				<IconButton onClick={editCustomAssetHandler}>
 					<EditIcon />
@@ -24,6 +49,7 @@ function AssetEntityToolbar({ tableKey }) {
 			</Tooltip>
 
 			<CustomAssetEntityDialog />
+			<AssetAssociationDialog />
 		</>
 	);
 }
