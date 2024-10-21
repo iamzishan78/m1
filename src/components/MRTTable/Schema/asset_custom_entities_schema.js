@@ -46,20 +46,16 @@ const AssetCustomEntitiesMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'controlColumns.label.keyword',
-			accessorKey: 'controlColumns',
+			accessorKey: 'controlColumns.label',
 			header: 'Control Columns',
-			Cell: ({ renderedCellValue }) => {
-				return <Chips list={renderedCellValue} />;
-			},
+			Cell: ({ row }) => <Chips list={row?.original?.controlColumns} />,
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'associatedModels.keyword',
-			accessorKey: 'associatedModels',
+			name: 'associatedModels.label.keyword',
+			accessorKey: 'associatedModels.label',
 			header: 'Associated Models',
-			Cell: ({ renderedCellValue }) => {
-				return <Chips list={renderedCellValue} />;
-			},
+			Cell: ({ row }) => <Chips list={row?.original?.associatedModels} />,
 		},
 	],
 };
