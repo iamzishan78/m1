@@ -77,7 +77,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			index: tableStateValues.esIndex,
 			pagination: { ...pagination, pageIndex: undefined, pageSize: undefined },
 			search: {
-				query: globalFilter ? `*${globalFilter}*` : '*',
+				query: globalFilter ? `${globalFilter}` : '',
 				fields: tableMeta.searchFields,
 				advanceSearch: tableStateValues.advanceSearch,
 			},
