@@ -885,7 +885,8 @@ function Map({
 								if (!selectedPlace) { // Reset the state when slected search is not places
 									popupController.reset();
 								}
-								if (!['', '/'].includes(window.location.pathname))
+								// If the path is not '/' or ' ' and the map is not rendered through deal dialog
+								if (!['', '/'].includes(window.location.pathname) && stateApp.transactBarView !== 'Map')
 									history.replace({ pathname: "/" });
 								return;
 							}
