@@ -311,7 +311,12 @@ function AddWellInterestDialog(props) {
 						nra: formRoyaltyAcres,
 					},
 				},
-				refetchQueries: ['getContactWells', 'getPaginatedContactWellInterests', 'getContactWellInterestsFilterOptions'],
+				refetchQueries: [
+					'getContactWells',
+					'getPaginatedContactWellInterests',
+					'getContactWellInterestsFilterOptions',
+					'getContactSummary',
+				],
 				awaitRefetchQueries: true,
 			});
 		} else {
@@ -337,6 +342,7 @@ function AddWellInterestDialog(props) {
 					'getContactWellCardDetail',
 					'getPaginatedContactWellInterests',
 					'getContactWellInterestsFilterOptions',
+					'getContactSummary',
 				],
 				awaitRefetchQueries: true,
 			});
