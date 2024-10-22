@@ -5,6 +5,8 @@ import Add from "@material-ui/icons/Add";
 import { makeStyles } from "@material-ui/core/styles";
 import { setFlowState } from "actions";
 import PipelineCustomDialog from "./PipelineCustomizeDialog";
+import SettingsIcon from "@material-ui/icons/Settings";
+
 import { useSelector, useDispatch } from "react-redux";
 import vf_currency from "../../Shared/valueformatters/vf_currency.js";
 
@@ -214,9 +216,13 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
                 {selectedPipe.name}
               </Typography>
             )}
+          </div>
 
+          {openPipeDialog && <PipelineCustomDialog />}
+          <div className={classes.left}>
+            <div>
             <Tooltip title={"Flowline Actions"}>
-              <IconButton
+            <IconButton
                 disabled={!selectedPipe}
                 size="medium"
                 style={{ marginLeft: 10, marginRight: 10, padding: 8 }}
@@ -228,13 +234,10 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
                   );
                 }}
               >
-                <Launch />
+                <SettingsIcon />
               </IconButton>
             </Tooltip>
-          </div>
-
-          {openPipeDialog && <PipelineCustomDialog />}
-          <div className={classes.left}>
+            </div>
             <div>
               <Button disableRipple={!pipeToShow} onClick={pipeToShow? handleClickAddDeal : null} className={pipeToShow ? classes.newDealAction : classes.newDealActionDisabled} startIcon={<Add />}>
                 { selectedPipe?.flowLineType === "general" ? "New Task" : "Add Deal"}
