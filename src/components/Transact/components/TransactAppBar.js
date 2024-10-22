@@ -222,6 +222,7 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
           <div className={classes.left}>
             <div>
             <Tooltip title={"Flowline Actions"}>
+              {/* Settings Icon Button to open Flowline settings */}
             <IconButton
                 disabled={!selectedPipe}
                 size="medium"
