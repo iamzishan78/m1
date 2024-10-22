@@ -211,6 +211,7 @@ function MapGridCard(props) {
 			customProps: {
 				contactId: props.contactData._id,
 			},
+			refetchQueries: ['getContactSummary'],
 		}),
 		[props.contactData._id]
 	);

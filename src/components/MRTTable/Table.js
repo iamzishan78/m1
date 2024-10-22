@@ -32,7 +32,7 @@ function Table({ tableKey, hideSharedCommentCheck }) {
 						// Spreading the state properties specific to the table into the state prop.
 					}}
 				/>
-				<AllDialogs hideSharedCommentCheck={hideSharedCommentCheck} />
+				<AllDialogs hideSharedCommentCheck={hideSharedCommentCheck} tableKey={tableKey} />
 				{/* Rendering AllDialogs component, passing hideSharedCommentCheck prop to manage dialog visibility. */}
 			</div>
 		</ErrorBoundary>

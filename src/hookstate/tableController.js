@@ -174,6 +174,7 @@ const tableESStateControllerHandler = state => ({
 			advanceSearch = [],
 			isDefaultGridView,
 			enableHiding = true,
+			refetchQueries = [],
 			...rest
 		},
 		client
@@ -243,6 +244,7 @@ const tableESStateControllerHandler = state => ({
 
 		state.merge({
 			...rest,
+			refetchQueries,
 			defaultFlterMode,
 			search,
 			initialized: true,

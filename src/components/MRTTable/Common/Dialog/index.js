@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { useMutation } from '@apollo/client';
 import ExportContactsPurchaseAndOwners from 'components/MRTTable/Common/Dialog/ExportContactsPurchaseAndOwners';
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import BuyContactsInfoDialogContent from 'components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
@@ -19,8 +19,13 @@ function AllDialogs(props) {
 	const { type, ...rest } = stateValues.dialog || {};
 	const tableKey = rest?.tableKey;
 
+	const {
+		stateValues: { refetchQueries },
+	} = tableController(props.tableKey).useState(['refetchQueries']);
+
 	const [removeCommonDelete] = useMutation(REMOVECOMMONGRIDFUNCTIONALITY, {
 		awaitRefetchQueries: true,
+		refetchQueries,
 	});
 
 	const handleCloseDialog = () => {
