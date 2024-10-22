@@ -38,7 +38,7 @@ function AssetEntityToolbar({ tableKey }) {
 					aria-label="add asset association"
 					onClick={addAssetAssociationHandler}
 				>
-					Add Association
+					Add/Edit Association
 				</Button>
 			</ButtonGroup>
 
