@@ -9,10 +9,14 @@ import { UPSERT_CUSTOM_ASSET_INFO } from 'graphQL/useMutationUpsertCustomAssetIn
 import { GET_ALL_MODELS } from 'graphQL/useQueryModels';
 import DynamicForm from '../Forms/DynamicForm';
 import { useStyles } from './styles';
+import { useDispatch } from 'react-redux';
+import { showInfoMessage } from "actions";
 
 function AssetAssociationDialog() {
 	const classes = useStyles();
 	const [modelsOptions, setModelsOptions] = useState([]);
+	const dispatch = useDispatch();
+
 	const defaultFields = [
 		{
 			_id: '',
@@ -40,6 +44,9 @@ function AssetAssociationDialog() {
 	const { selectedAsset } = stateValues || {};
 
 	const isCreateMode = type === 'addAssetAssociation';
+
+	// Check if any field has isControlColumn set to true
+	const hasControlColumnSelected = fields.some(field => field.isControlColumn === true);
 
 	const [getAllModels, { data: allModels }] = useLazyQuery(GET_ALL_MODELS, {
 		fetchPolicy: 'no-cache',
@@ -83,6 +90,11 @@ function AssetAssociationDialog() {
 	};
 
 	const onSubmit = data => {
+		if (!hasControlColumnSelected) {
+			dispatch(showInfoMessage('Control column selection is required'));
+			return;
+		}
+
 		const toastType = isCreateMode ? 'create' : 'update';
 		Loader.createToast(toastType, `${toastType} Entity Association in Progress`);
 		handleClose();
