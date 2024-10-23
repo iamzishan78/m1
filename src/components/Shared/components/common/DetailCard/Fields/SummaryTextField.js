@@ -55,19 +55,16 @@ const SummaryTextField = ({ fieldData, field, summaryData, isMetaField }) => {
 		stateValues: { page },
 	} = detailCardController.useState(['page']);
 	const { useUpdate } = Pages[page];
-	const { callApi, isChanged, renewFunction } = useUpdate();
+	const { callApi, isChanged, renewFunction } = useUpdate() || {};
 	const { loadingField } = detailCardController.useState(['loadingField']);
 	const activeLoadingField = loadingField.get({ noproxy: true });
 
-	const [value, setValue] = useState(fieldData?.get({ noproxy: true }) || '');
+	const [value, setValue] = useState(fieldData || '');
 
 	const isChangedValue = isChanged ? isChanged(field.key, value) : null;
 
 	const upDateField = currValue => {
-		if (currValue === fieldData?.get({ noproxy: true })) return;
-		if (field.key.includes('offerPriceSum') || field.key.includes('totalAcquisitionCost')) {
-			currValue = parseFloat(currValue.replace(/[^\d.-]/g, ''));
-		}
+		if (currValue === fieldData) return;
 
 		if (!isMetaField) return callApi(field.key, currValue);
 
@@ -86,13 +83,6 @@ const SummaryTextField = ({ fieldData, field, summaryData, isMetaField }) => {
 
 	const handleChange = ({ target }) => {
 		let updatedvalue = target.value;
-		if (
-			field.key.includes('offerPriceSum') ||
-			field.key.includes('nraSum') ||
-			field.key.includes('totalAcquisitionCost')
-		) {
-			updatedvalue = parseFloat(updatedvalue).toFixed(2);
-		}
 		if (updatedvalue && field.type === 'number' && !isNaN(Number(updatedvalue))) {
 			setValue(updatedvalue);
 		} else {
@@ -108,7 +98,7 @@ const SummaryTextField = ({ fieldData, field, summaryData, isMetaField }) => {
 	};
 
 	useEffect(() => {
-		setValue(fieldData?.get({ noproxy: true }) || '');
+		setValue(fieldData || '');
 	}, [fieldData]);
 
 	return (
