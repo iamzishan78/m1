@@ -27,7 +27,7 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
 	const [dealDescriptor] = useMutation(DEAL_DESCRIPTOR);
 	const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS);
 	const [updateParcelOwner] = useMutation(UPDATEPARCELOWNER);
-	const [getOpenDeals, { loading: tloading, data: dealsData }] = useLazyQuery(OPENDEALS, {
+	const [getOpenDeals, { data: dealsData }] = useLazyQuery(OPENDEALS, {
 		fetchPolicy: 'network-only',
 	});
 	const [getShapeOwnerData, { data: owners }] = useLazyQuery(GET_SHAPE_OWNERS_DATA, { fetchPolicy: 'no-cache' });
@@ -39,7 +39,7 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
 		if (stateApp.user && stateApp.user.mongoId) {
 			getOpenDeals();
 		}
-	}, [stateApp.user]);
+	}, [getOpenDeals, stateApp.user]);
 
 	useEffect(() => {
 		if (dealsData) {
@@ -58,7 +58,7 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
 				ids: stateApp.interestsIds,
 			},
 		});
-	}, [stateApp.interestsIds]);
+	}, [getParcelOwnersData, getShapeOwnerData, stateApp.interestsIds]);
 
 	const handleAddDeal = async () => {
 		setIsLoading(true);
@@ -122,7 +122,7 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
 						userId: userId,
 					},
 				},
-				refetchQueries: ['getContactDeals'],
+				refetchQueries: ['getContactDeals', 'getContactSummary'],
 				awaitRefetchQueries: true,
 			});
 		}
