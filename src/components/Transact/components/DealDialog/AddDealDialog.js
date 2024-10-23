@@ -10,7 +10,7 @@ import { CONTACT } from 'graphQL/useQueryContact';
 import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { Dialog, Avatar, CircularProgress, Button } from '@material-ui/core';
+import { Dialog, Avatar, CircularProgress } from '@material-ui/core';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import DealDialogHeader from 'components/Transact/components/DealDialog/DealDialogHeader';
 import Drawer from 'components/Transact/components/Drawer';
@@ -50,6 +50,12 @@ import { createPortal } from 'react-dom/cjs/react-dom.production.min';
 import ExistingDeal from './ExistingDeal';
 import { GET_FLOW_ASSOCIATED_SUMMARY } from 'graphQL/useQueryFlowAssociatedData';
 import { mapStateController } from 'hookstate/mapStateController';
+import { GET_DEAL_SHAPES } from 'graphQL/useQueryDealShapes';
+import { globalStateController } from 'hookstate/globalStateController';
+import { findBoundsMap } from 'components/MapControls/commonHelper';
+import { mapControlsController } from 'hookstate/mapControlsController';
+import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { drawBoundaries } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
 function NumberFormatCustom(props) {
 	const { inputRef, onChange, ...other } = props;
@@ -72,6 +78,90 @@ function NumberFormatCustom(props) {
 		/>
 	);
 }
+
+const formatIt = mdata => {
+	return {
+		type: 'FeatureCollection',
+		features: mdata
+			.filter(feature => feature.geometry && feature.geometry.coordinates)
+			.map(feature => {
+				return {
+					type: 'Feature',
+					properties: feature,
+					geometry: {
+						type: feature.geometry.type,
+						coordinates: feature.geometry.coordinates,
+					},
+				};
+			}),
+	};
+};
+
+export const useDealMapFlyto = () => {
+	const [getDealShapes, { data: dataDealShapes }] = useLazyQuery(GET_DEAL_SHAPES, {
+		fetchPolicy: 'cache-and-network',
+		skip: true,
+	});
+	const [stateApp] = useContext(AppContext);
+
+	const handleFlyto = useCallback(
+		async (contactIds, dealId) => {
+			await getDealShapes({
+				variables: {
+					contactIds,
+					dealId,
+				},
+			});
+		},
+		[getDealShapes]
+	);
+
+	useEffect(() => {
+		if (dataDealShapes && dataDealShapes.dealShapes?.length && stateApp.transactBarView === 'Map') {
+			globalStateController.updateState({ universalLoader: true });
+
+			const formattedFeatures = formatIt(dataDealShapes.dealShapes).features;
+			const unitLayerIds = [];
+			const tractLayerIds = [];
+
+			// Loop through each deal shape to categorize the IDs based on their layerType
+			dataDealShapes?.dealShapes?.forEach(shape => {
+				if (shape.layerType === 'unit') {
+					unitLayerIds.push(shape._id); // Store 'unit' layerType IDs
+				} else if (shape.layerType === 'parcel') {
+					tractLayerIds.push(shape._id); // Store 'tract' layerType IDs
+				}
+			});
+
+			if (formattedFeatures.length > 0 && window.mapRef) {
+				// Ensure we have valid formatted features
+				findBoundsMap(formattedFeatures, window.mapRef, {
+					top: 50,
+					bottom: 50,
+					left: 50,
+					right: 50,
+				});
+				mapControlsController.updateState({ mapGridCardActivated: false });
+
+				// Draw boundries on multiple shapes
+				drawBoundaries(formattedFeatures);
+
+				// Filter Units
+				layerFiltersController.setVariables('Units', {
+					filters: [{ field: '_id', value: unitLayerIds }],
+				});
+
+				// Filter Units
+				layerFiltersController.setVariables('Parcels', {
+					filters: [{ field: '_id', value: tractLayerIds }],
+				});
+			}
+		}
+		globalStateController.updateState({ universalLoader: false });
+	}, [dataDealShapes, stateApp.transactBarView]);
+
+	return { handleFlyto };
+};
 
 NumberFormatCustom.propTypes = {
 	inputRef: PropTypes.func.isRequired,
@@ -911,13 +1001,20 @@ function AddDealDialog(props) {
 		]
 	);
 
+	const { handleFlyto } = useDealMapFlyto();
+
 	useEffect(() => {
 		if (stateApp.transactBarView !== 'Deal') {
 			if (!(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id)) {
 				addUpdateDeal(null, false);
 			}
 		}
-	}, [addUpdateDeal, stateApp.activeDeal, stateApp.transactBarView]);
+		if (stateApp.transactBarView === 'Map' && window.mapRef) {
+			const dealId = stateApp.activeDeal?.cardId || stateApp.activeDeal?._id;
+			const contactIds = stateApp?.activeDeal?.contacts?.map(contact => contact._id) || [];
+			handleFlyto(contactIds, dealId);
+		}
+	}, [addUpdateDeal, handleFlyto, stateApp.activeDeal, stateApp.transactBarView]);
 
 	useEffect(() => {
 		if (userLists && userLists.allMongoUsers) {
@@ -1240,18 +1337,6 @@ function AddDealDialog(props) {
 			variables: { fileIds: ID },
 		});
 	}, [files, uploadedFiles, viewFiles]);
-
-	const saveViewport = useCallback(() => {
-		setMapSettings({
-			activeBaseMap: mapStateValues?.mapVars?.styleId,
-			mapDefaultPosition: {
-				zoom: mapStateValues?.mapVars?.zoom,
-				bearing: mapStateValues?.mapVars?.bearing,
-				pitch: mapStateValues?.mapVars?.pitch,
-				center: mapStateValues?.mapVars?.center,
-			},
-		});
-	}, [mapStateValues.mapVars]);
 
 	const setUploadedFileData = uploadedfile => {
 		setUploadedFiles([...uploadedFiles, uploadedfile]);
@@ -1804,10 +1889,9 @@ function AddDealDialog(props) {
 						style={{
 							position: 'absolute',
 							left: 0,
-							top: -60,
 							'z-index': '9999',
 							width: '71%',
-							height: '50%',
+							height: '100%',
 						}}
 					>
 						<MapProvider
@@ -1821,21 +1905,6 @@ function AddDealDialog(props) {
 								},
 							}}
 						></MapProvider>
-						<div
-							style={{
-								position: 'relative',
-								float: 'right',
-								'margin-right': '40px',
-								width: 'fit-content',
-								'background-color': '#fff',
-								padding: '10px',
-							}}
-							className={classes.inputFieldDealName}
-						>
-							<Button color="secondary" variant="outlined" onClick={saveViewport}>
-								Save Viewport
-							</Button>
-						</div>
 					</div>
 				)}
 			</div>

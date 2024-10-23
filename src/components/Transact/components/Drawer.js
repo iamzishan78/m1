@@ -65,7 +65,7 @@ export default function Drawer(props) {
         ...stateApp,
         transactBarShowGrid: !stateApp.transactBarShowGrid,
       }));
-    else if (key === 'Map')
+    else if (key === 'Map') // Toggle map 
       setStateApp((stateApp) => ({ ...stateApp, transactBarView: stateApp?.transactBarView === 'Map' ? 'Deal' : 'Map' }));
     else setStateApp((stateApp) => ({ ...stateApp, transactBarView: key }));
   };
