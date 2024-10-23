@@ -94,7 +94,7 @@ function GenericDetailCard(props) {
 	return (
 		<>
 			<div style={{ paddingTop: '65px' }}>
-				<DetailLayout loading={!assetRecord} page="Contact" props={detailProps} />
+				<DetailLayout loading={!assetRecord} page="GenericDetailPage" props={detailProps} />
 			</div>
 
 			{openDialog === 'deleteConfirmation' && (
