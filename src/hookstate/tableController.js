@@ -148,7 +148,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, 
 					const model = removeSpaces(fetchDynamicSchema.tableName);
 					return <ColumnWithLink
 						value={renderedCellValue}
-						link={`/land/${model}/details/${row.getValue('_id')}`}
+						link={`/land/customAsset/${model}/details/${row.getValue('_id')}`}
 						onClick={e => {
 							e.stopPropagation();
 						}}

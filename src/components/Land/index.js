@@ -117,8 +117,21 @@ export default function Land() {
           newList[key] = {
             featureFlag: "LANDMODULE",
             title: item.tableName,
-            link: `/land/${removeSpaces(item.tableName)}`,
-            component: "DynamicAssetGrid"
+            link: `/land/customAsset/${removeSpaces(item.tableName)}`,
+            component: "DynamicAssetGrid",
+          };
+
+          newList[`${key}_DETAIL`] = {
+            featureFlag: 'LANDMODULE',
+            title: item.tableName,
+            link: `/land/customAsset/:tableName/details/:id`,
+            linkPrefix: `/land/customAsset/:tableName/details`,
+            component: 'GenericDetailCard',
+            value: 'GenericDetailCard',
+            hideSearch: true,
+            isDefault: true,
+            isExcluded: true,
+            parent: key,
           };
         });
         return newList;
