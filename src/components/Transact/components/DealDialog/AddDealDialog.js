@@ -97,7 +97,7 @@ const formatIt = mdata => {
 	};
 };
 
-export const useDealMapFlyto = () => {
+export const useDealMapFlyto = mapReady => {
 	const [getDealShapes, { data: dataDealShapes }] = useLazyQuery(GET_DEAL_SHAPES, {
 		fetchPolicy: 'cache-and-network',
 		skip: true,
@@ -158,7 +158,7 @@ export const useDealMapFlyto = () => {
 			}
 		}
 		globalStateController.updateState({ universalLoader: false });
-	}, [dataDealShapes, stateApp.transactBarView]);
+	}, [dataDealShapes, stateApp.transactBarView, mapReady]);
 
 	return { handleFlyto };
 };
@@ -448,6 +448,9 @@ function AddDealDialog(props) {
 	const [newCommentsIds, setNewCommentsIds] = useState([]);
 	const [stateApp, setStateApp] = useContext(AppContext);
 	const [stateTransact, setStateTransact] = useContext(TransactContext);
+
+	const { globalStateValues } = globalStateController.useState(['mapReady'], 'globalStateValues');
+
 	const [title, setTitle] = useState(''); // title change from contact.name to dealName
 	const [titleFocus, setTitleFocus] = useState(false);
 	const [label, setLabel] = useState('');
@@ -1001,7 +1004,7 @@ function AddDealDialog(props) {
 		]
 	);
 
-	const { handleFlyto } = useDealMapFlyto();
+	const { handleFlyto } = useDealMapFlyto(globalStateValues.mapReady);
 
 	useEffect(() => {
 		if (stateApp.transactBarView !== 'Deal') {
@@ -1014,7 +1017,7 @@ function AddDealDialog(props) {
 			const contactIds = stateApp?.activeDeal?.contacts?.map(contact => contact._id) || [];
 			handleFlyto(contactIds, dealId);
 		}
-	}, [addUpdateDeal, handleFlyto, stateApp.activeDeal, stateApp.transactBarView]);
+	}, [addUpdateDeal, handleFlyto, stateApp.activeDeal, stateApp.transactBarView, globalStateValues.mapReady]);
 
 	useEffect(() => {
 		if (userLists && userLists.allMongoUsers) {
