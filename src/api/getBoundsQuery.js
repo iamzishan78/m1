@@ -151,17 +151,10 @@ const getBoundsQuery = async ({
 			const polygonString = getPolygonString(geoPolygon);
 			if (polygonString) variables.polygon = polygonString;
 		} else {
-			if (polygonsFilter.length === 0)
-				variables.filters.push({
-					type: 'geo_intersects',
-					field: filters.geoBoundingField || geoField,
-					value: geoPolygon.geometry,
-				});
-
 			variables.filters.push({
 				type: 'geo_intersects',
 				field: filters.geoBoundingField || geoField,
-				value: polygonsFilter,
+				value: polygonsFilter.length === 0 ? geoPolygon.geometry : polygonsFilter,
 			});
 		}
 
