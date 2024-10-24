@@ -28,7 +28,7 @@ const StyleBadge = withStyles({
 
 const Header = () => {
 	const classes = useStyles({});
-	const [setStateApp] = useContext(AppContext);
+	const [, setStateApp] = useContext(AppContext);
 
 	const {
 		globalStateValues: { currentAsset },

@@ -4,6 +4,7 @@ import { useLazyQuery } from '@apollo/client';
 
 import { get } from 'lodash';
 import { copy } from 'utils/helper';
+import { getAssetFields } from './helpers';
 
 import AddIcon from '@material-ui/icons/Add';
 import { Button, Grid } from '@material-ui/core';
@@ -190,9 +191,9 @@ export default function CommonSummaryFieldsComponent({ metaDataCategory }) {
 	const [fields, setFields] = useState([]);
 
 	useEffect(() => {
-		const summaryFields = currentAsset.modelKeys?.filter(key => !!key.isSummaryField);
+		const summaryFields = getAssetFields(currentAsset, true);
 		setFields(summaryFields);
-	}, [currentAsset.modelKeys, setFields]);
+	}, [currentAsset, setFields]);
 
 	useEffect(() => {
 		if (!metaDataCategory) return;
