@@ -8,6 +8,7 @@ import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 
 import { AppContext } from 'AppContext';
 import { detailCardController } from 'hookstate/detailCardController';
+import { globalStateController } from 'hookstate/globalStateController';
 
 import useStyles from './useStyles';
 import Tags from 'components/Shared/Tagger';
@@ -27,8 +28,11 @@ const StyleBadge = withStyles({
 
 const Header = () => {
 	const classes = useStyles({});
-	const [stateApp, setStateApp] = useContext(AppContext);
+	const [setStateApp] = useContext(AppContext);
 
+	const {
+		globalStateValues: { currentAsset },
+	} = globalStateController.useState(['currentAsset'], 'globalStateValues');
 	const { stateValues } = detailCardController.useState(['currentAssetRecord']);
 	const currentAssetRecord = stateValues.currentAssetRecord;
 
@@ -43,7 +47,7 @@ const Header = () => {
 	};
 
 	const getControlColumnData = () => {
-		const controlColumnKey = stateApp?.currentAsset?.modelKeys?.find(key => !!key.isControlColumn)?.mappingKey;
+		const controlColumnKey = currentAsset?.modelKeys?.find(key => !!key.isControlColumn)?.mappingKey;
 		if (controlColumnKey && currentAssetRecord) return currentAssetRecord[controlColumnKey];
 	};
 

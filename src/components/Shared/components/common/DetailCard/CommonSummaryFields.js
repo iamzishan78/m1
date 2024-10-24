@@ -1,6 +1,5 @@
-import React, { Fragment, memo, useContext, useEffect, useState } from 'react';
+import React, { Fragment, memo, useEffect, useState } from 'react';
 
-import { AppContext } from 'AppContext';
 import { useLazyQuery } from '@apollo/client';
 
 import { get } from 'lodash';
@@ -178,19 +177,22 @@ const RenderFieldComponent = memo(({ field: fieldObj, summaryDataValues }) => {
 
 export default function CommonSummaryFieldsComponent({ metaDataCategory }) {
 	const classes = useStyles();
-	const [stateApp] = useContext(AppContext);
 
 	const { stateValues } = detailCardController.useState(['currentAssetRecord']);
-	const { user, globalStateValues } = globalStateController.useState(['user', 'showFieldModal'], 'globalStateValues');
+	const {
+		user,
+		globalStateValues,
+		globalStateValues: { currentAsset },
+	} = globalStateController.useState(['user', 'showFieldModal', 'currentAsset'], 'globalStateValues');
 
 	const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
 	const [fields, setFields] = useState([]);
 
 	useEffect(() => {
-		const summaryFields = stateApp.currentAsset.modelKeys?.filter(key => !!key.isSummaryField);
+		const summaryFields = currentAsset.modelKeys?.filter(key => !!key.isSummaryField);
 		setFields(summaryFields);
-	}, [stateApp.currentAsset.modelKeys, setFields]);
+	}, [currentAsset.modelKeys, setFields]);
 
 	useEffect(() => {
 		if (!metaDataCategory) return;
@@ -207,7 +209,7 @@ export default function CommonSummaryFieldsComponent({ metaDataCategory }) {
 		if (!metaDataRes?.getMetaData?.metaData) return;
 
 		setFields(fields => [...fields, ...metaDataRes?.getMetaData?.metaData]);
-	}, [metaDataRes, stateApp.currentAsset]);
+	}, [metaDataRes, currentAsset]);
 
 	return (
 		<Grid container spacing={2} alignItems="center" className={classes.container}>

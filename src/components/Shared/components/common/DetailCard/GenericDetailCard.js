@@ -12,6 +12,7 @@ import DetailLayout from 'components/Shared/components/common/DetailCard/DetailL
 import ConfirmationDialog from 'components/ContactDetailCard/components/ConfirmationDialog';
 
 import { detailCardController } from 'hookstate/detailCardController';
+import { globalStateController } from 'hookstate/globalStateController';
 
 import { GET_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
 import { GET_RECORD_FROM_RUN_TIME_MODEL } from 'graphQL/useQueryRunTimeModel';
@@ -30,10 +31,7 @@ function GenericDetailCard(props) {
 	const [getAsset] = useLazyQuery(GET_CUSTOM_ASSET_INFO, {
 		onCompleted: data => {
 			const assetInfo = data?.getCustomAssetInfo?.asset;
-			setStateApp(stateApp => ({
-				...stateApp,
-				currentAsset: assetInfo,
-			}));
+			globalStateController.updateState({ currentAsset: assetInfo });
 		},
 	});
 
