@@ -163,6 +163,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, 
 	const _Schema = [
 		...TableSchema,
 		...dynamicTableSchema,
+		CommonSchema.Owner,
 		CommonSchema.CREATED_BY,
 		CommonSchema.CREATED_DATE,
 		CommonSchema.LAST_UPDATED_BY,
