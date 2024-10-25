@@ -36,7 +36,7 @@ export default function FilterTags() {
         filterTagsLoading: setFilterLoading,
       }));
     } else {
-      if (!stateNav.filterTrackedWells && !stateNav.filterTrackedOwners) stateApp.toggleLayersActivity("Wells", true);
+      if (!stateNav.filterTrackedOwners) stateApp.toggleLayersActivity("Wells", true);
 
       stateApp.toggleLayersActivity("User Tags", false);
       setStateNav((stateNav) => ({
@@ -44,7 +44,7 @@ export default function FilterTags() {
         selectedTags: [],
         wellsIdsFromTags: [],
         filterTags: null,
-        filterTagsLoading: () => {},
+        filterTagsLoading: () => { },
       }));
       setStateApp((stateApp) => ({
         ...stateApp,

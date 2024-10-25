@@ -133,6 +133,7 @@ export default function BulkUpload(props) {
       csvDataList: [],
       mappedHeadersFromCSV: selectedJob.mappedHeadersFromCSV || [],
       m1neralHeaders: selectedJob.m1neralHeaders || M1neral_headers[selectedJob.type] || [],
+      options: M1neral_headers[`${selectedJob.type}_OPTIONS`],
       jobType: selectedJob.type,
       job: selectedJob,
     })

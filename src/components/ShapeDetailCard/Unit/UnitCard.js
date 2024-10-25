@@ -8,6 +8,7 @@ import UnitDetailCard from "./UnitDetailCard";
 // contexts 
 import { AppContext } from "AppContext";
 import { ExpandableCardContext } from "components/ExpandableCard/ExpandableCardContext";
+import { popupController } from "hookstate/popupStateController";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -23,10 +24,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function UnitCard(props) {
-
   // contexts 
-  const [stateApp] = useContext(AppContext);
   const [stateExpandableCard] = useContext(ExpandableCardContext);
+
+  const { stateValues } = popupController.useState(['selectedShape'])
 
   const classes = useStyles();
 
@@ -37,7 +38,7 @@ export default function UnitCard(props) {
           <div style={{ height: "100%" }}>
             <Card className={classes.card}>
               <CardContent className={classes.content}>
-                <UnitDetailCard id={stateApp.selectedShape.id} />
+                <UnitDetailCard id={stateValues.selectedShape.id} />
               </CardContent>
             </Card>
           </div>

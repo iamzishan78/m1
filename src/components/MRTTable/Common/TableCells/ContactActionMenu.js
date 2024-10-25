@@ -49,9 +49,13 @@ function ContactActionMenu({ id, name, esIndex, dialogType }) {
 	const handleDelete = id => {
 		tableGlobalController.updateState({
 			[dialogType]: {
-				type: 'deleteContact',
+				type: 'deleteGrid',
 				contactId: [id],
 				userId: stateApp.user.mongoId,
+				deletedData: {
+					mainRecord: [id]
+				},
+				tableKey: "ContactTable",
 				esIndex,
 			},
 		});
@@ -129,7 +133,8 @@ function ContactActionMenu({ id, name, esIndex, dialogType }) {
 							setActionState(false);
 						}}
 						id={id}
-						contactData={{ id, name }}
+						// Need to pass id as _id key
+						contactData={{ _id: id, name }}
 						defaultActivityType={defaultActivityType}
 					/>
 				</RightDialog>

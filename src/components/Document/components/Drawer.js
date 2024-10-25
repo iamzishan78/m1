@@ -18,6 +18,8 @@ import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 import DetailsPanel from "./Details";
 import Information from "./Information";
 import AssociatedWells from "./AssociatedWells";
+import AssociatedAgreements from "./AssociatedAgreements";
+import AssociatedContacts from "./AssociatedContacts";
 import { DocumentContext } from "../DocumentContext";
 
 const useStyles = makeStyles({
@@ -160,18 +162,30 @@ export default function DocumentDrawer(props) {
   const [anchorEl, setAnchorEl] = useState();
 
   const [stateApp, setStateApp] = React.useContext(AppContext);
-  const { getWellsFromDocument, wells } = React.useContext(DocumentContext);
+  const { getWellsFromDocument, wells, getContactsFromDocument, contacts, getAgreementsFromDocument, shapes } = React.useContext(DocumentContext);
 
   // Fetching wells from descriptor
   useEffect(() => {
-    if (!props.isRelatedDocuments)
+    // if there is no related document present do not call these queries
+    if (!props.isRelatedDocuments){
       getWellsFromDocument({
         variables: {
-          descriptorObject: stateApp.selectedDocument._id,
+          descriptorObject: stateApp.selectedDocument?._id,
         },
       });
+        getContactsFromDocument({
+        variables: {
+          descriptorObject: stateApp.selectedDocument?._id,
+        },
+      });
+       getAgreementsFromDocument({
+        variables: {
+          descriptorObject: stateApp.selectedDocument?._id,
+        },
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stateApp.selectedDocument._id]);
+  }, [stateApp.selectedDocument?._id]);
 
   const documentInitial = {
     documentName: "",
@@ -386,7 +400,7 @@ export default function DocumentDrawer(props) {
           </div>
         </div>
         <div className={classes.contentRoot}>
-          {!props.isRelatedDocuments && <RightActionsPanel activePanel={activePanel} setPanel={setPanel} wellsCount={wells?.length} />}
+          {!props.isRelatedDocuments && <RightActionsPanel activePanel={activePanel} setPanel={setPanel} wellsCount={wells?.length} contactsCount={contacts?.length} shapesCount={shapes?.length}/>}
           <div className={!props.isRelatedDocuments ? classes.detailsFileWrapper : ""}>
             {activePanel === "Home" && (
               <DetailsPanel
@@ -412,15 +426,17 @@ export default function DocumentDrawer(props) {
             )}
             {activePanel === "Wells" && <AssociatedWells />}
             {activePanel === "Info" && <Information fileData={fileData} />}
+            {activePanel === "Agreements" && <AssociatedAgreements />}
+            {activePanel === "Contacts" && <AssociatedContacts />}
           </div>
         </div>
       </div>
     </div>
   );
-
+  
   return (
     <div>
-      <Drawer className={classes.drawer} anchor={"right"} open={stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0}>
+      <Drawer className={classes.drawer} anchor={"right"} open={stateApp.DocumentDrawer === true || Object.entries(stateApp?.selectedDocument || {}).length > 0}>
         <Dialog open={openDeleteConfirmDialog} onClose={handleDeleteCancel} style={{ zIndex: 99999999999 }}>
           <DeleteConfirmationDialogContent
             header="Delete Document"

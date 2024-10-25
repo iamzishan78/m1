@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useHistory, useLocation } from "react-router-dom";
 import clsx from "clsx";
 import get from "lodash/get";
 import { makeStyles } from "@material-ui/core/styles";
@@ -17,6 +17,7 @@ import { useMutation } from "@apollo/client";
 import { GET_MY_WELL_BY_GLOBAL_ID } from "graphQL/useQueryMyWellByGlobalId";
 import { WELL_SUMMARY_WITH_HEADER } from "graphQL/useQueryWellWithHeader";
 import { DELETE_MY_WELL } from "graphQL/useMutationDeleteMyWell";
+import { tableGlobalController } from "hookstate/tableController";
 
 // Components
 import AddMyWell from "./AddMyWell";
@@ -153,20 +154,31 @@ const useStyles = makeStyles({
 
 const anchor = "right";
 
-export default function MyWellDialog(props) {
+export default function MyWellDialog() {
   const classes = useStyles();
   const [activePanel, setPanel] = useState("Add New Well");
   const [platformWell, setPlatformWell] = useState();
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
-  const { stateValues } = globalStateController.useState(['testCase']);
+  const { stateValues } = globalStateController.useState(['testCase', 'cypress']);
+
   let globalWellId = useParams().id;
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  let mongoWellId = params.get('mongoWellId');
   if (stateValues?.testCase?.globalWellId)
     globalWellId = stateValues?.testCase?.globalWellId;
+  if (stateValues?.testCase?.mongoWellId)
+    mongoWellId = stateValues?.testCase?.mongoWellId;
+
   const history = useHistory();
   const client = useApolloClient();
 
-  const [deleteMyWell, { loading }] = useMutation(DELETE_MY_WELL);
+  const [deleteMyWell, { loading }] = useMutation(DELETE_MY_WELL, {
+    onCompleted: () => {
+      tableGlobalController.refetch();
+    }
+  });
 
   const toggleDrawer = (anchor, open) => (event) => {
     if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
@@ -178,7 +190,6 @@ export default function MyWellDialog(props) {
   useEffect(() => {
     if (globalWellId) {
       handleWellDetail({ Id: globalWellId });
-      props.setDialog(true);
     }
   }, [globalWellId]);
 
@@ -196,6 +207,7 @@ export default function MyWellDialog(props) {
         query: WELL_SUMMARY_WITH_HEADER,
         variables: {
           globalWellId: well.Id,
+          _id: mongoWellId,
         },
       });
 
@@ -203,6 +215,7 @@ export default function MyWellDialog(props) {
         query: GET_MY_WELL_BY_GLOBAL_ID,
         variables: {
           wellId: well.Id,
+          _id: mongoWellId,
         },
       });
 
@@ -227,7 +240,9 @@ export default function MyWellDialog(props) {
   };
 
   const handleCloseDialog = () => {
-    props.setDialog(false);
+    tableGlobalController.updateState({
+      addWellDialog: {}
+    });
     history.push("/land/wells");
   };
 

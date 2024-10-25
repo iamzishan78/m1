@@ -1,11 +1,10 @@
 import React, { useState, createContext, useEffect } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { MSALObj, tenantsCredentials } from "./components/Login/AADAuthConfig";
-import { MSALB2CObj, B2CTenantCredentials } from "./components/Login/AADB2CAuthConfig";
+import { MSALObj, tenantsCredentials } from "./components/AzureLogin/AADAuthConfig";
+import { MSALB2CObj, B2CTenantCredentials } from "./components/AzureLogin/AADB2CAuthConfig";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "./actions";
 import { heatLayers, baseMapLayers } from "./LayerConfig";
-import { useHookStateApp } from "hookstate";
 import { globalStateController } from 'hookstate/globalStateController';
 import { popupController } from "hookstate/popupStateController";
 import queryString from 'query-string';
@@ -76,20 +75,6 @@ const AppProvider = (props) => {
 
     // MAP CONTEXT vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
     mapStyles: [],
-    mapVars: {
-      zoom: 4.88,
-      center: { lng: -98.8, lat: 38 },
-      pitch: 0,
-      bearing: 0,
-      styleId: "Outdoors",
-    }, // move to a map context. check if this is somehow duplicated.
-    defaultMapVars: {
-      zoom: 4.88,
-      center: { lng: -98.8, lat: 38 },
-      pitch: 0,
-      bearing: 0,
-      styleId: "Outdoors",
-    }, // move to a map context
     wellSelectedCoordinates: [],
     universalCircularLoaderAct: false, //// set it to true to show a loader in the center of the viewport
 
@@ -116,14 +101,11 @@ const AppProvider = (props) => {
     selectedLayerId: null,
     openWellDetails: false,
     sourceLoaded: false,
-    toggle3d: null, // move to a map context
-    toggleZoomOut: null, // move to a map context
     map: null, // move to a map context
     draw: null,
     zoomFault: null,
     hugeRequest: null,
     currentFeature: undefined,
-    wellListFromSearch: [],
     landGridListFromSearch: [],
     wellListFromTagsFilter: [],
     viewportWells: null,
@@ -202,8 +184,6 @@ const AppProvider = (props) => {
 
   window.setStateApp = setStateApp;
 
-  const { universalLoader } = useHookStateApp()
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -277,10 +257,12 @@ const AppProvider = (props) => {
     popupController.updateState({ selectedParcel: stateApp.selectedParcel });
   }, [stateApp.selectedParcel]);
 
+  const { globalState } = globalStateController.useState(['universalLoader'], 'globalState')
+
   return (
     <AppContext.Provider value={[stateApp, setStateApp]}>
       {props.children}
-      {(stateApp.universalCircularLoaderAct || universalLoader.get()) && (
+      {(stateApp.universalCircularLoaderAct || globalState.universalLoader) && (
         <div
           style={{
             position: "fixed",

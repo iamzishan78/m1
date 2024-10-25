@@ -24,7 +24,6 @@ import { Controller, useForm } from 'react-hook-form';
 import EntityType from 'components/ContactDetailCard/components/FieldContent/EntityType';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import AssociatedDealField from 'components/ContactDetailCard/components/FieldContent/AssociatedDealField';
-import { popupState } from 'hookstate/popupStateController';
 import RightDialog from '../../../../ContactDetailCard/components/RightDialog';
 import { setStateIfDeepEqual } from '../../../functions';
 import { PAGINATEDCONTACTSQUERY } from '../../../../../graphQL/useQueryPaginatedContacts';
@@ -37,6 +36,7 @@ import { Modals } from '../../../../../styles/Modal';
 import { AppContext } from '../../../../../AppContext';
 import { tableGlobalController } from 'hookstate/tableController';
 import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
+import { popupState } from 'hookstate/initialStates';
 
 const entities = [
   'Corporation',

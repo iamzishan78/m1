@@ -104,6 +104,7 @@ export const handleMRTSchema = ({
                 isComposite: column.columnDef.isComposite,
                 label: column.columnDef.header,
                 type: column.columnDef.type,
+                defaultFilterOptions: column.columnDef.defaultFilterOptions,
                 setFilterValue: column.setFilterValue,
                 filterSelectOptions: column.columnDef.filterSelectOptions,
                 filterValue: column?.getFilterValue() || '',
@@ -121,11 +122,11 @@ export const handleMRTSchema = ({
 
       schemaColumn.MultiSelect = function Comp({ column }) {
         const getValue = () => {
-            const selectedValues = column?.getFilterValue() || [];
-            const selectedLabels = column.columnDef.filterSelectOptions
-              .filter(option => selectedValues.includes(option.value))
-              .map(option => option.label);
-              return selectedLabels
+          const selectedValues = column?.getFilterValue() || [];
+          const selectedLabels = column.columnDef.filterSelectOptions
+            .filter(option => selectedValues.includes(option.value))
+            .map(option => option.label);
+          return selectedLabels
         }
         return (
           <div>
@@ -136,6 +137,7 @@ export const handleMRTSchema = ({
                 field: column.columnDef.name,
                 label: column.columnDef.header,
                 type: column.columnDef.type,
+                defaultFilterOptions: column.columnDef.defaultFilterOptions,
                 setFilterValue: column.setFilterValue,
                 filterSelectOptions: column.columnDef.filterSelectOptions,
                 filterValue: (column.columnDef.filterSelectOptions ? getValue() : column?.getFilterValue() || []),
@@ -195,7 +197,7 @@ export const handleMRTSchema = ({
     ? search?.fields
     : _TableSchema
       .filter(column => column.isSearchField !== false)
-      .map(column => column.id || column.accessorKey);
+      .map(column => column.name || column.id || column.accessorKey);
 
   const ExternalFilter = _TableSchema
     .filter(column => column.isExternalFilter === true)
@@ -239,6 +241,10 @@ export const handleMRTSchema = ({
         backgroundColor: '#e6ecf5 !important',
       },
     },
+     // Add hover effect for cells
+    '& td:hover': {
+      border: '3px solid rgb(23, 170, 221)' // Add blue border on hover
+    },
   };
   handleVisiblityMenuClick();
   handleColumnMenuClick();
@@ -276,3 +282,11 @@ export const handleMRTSchema = ({
     pinnedFields,
   };
 };
+
+export const getLayerKey = (identifier, array) => {
+  // Find the key in LayerMeta that matches the prefix of the identifier
+  const key = Object.keys(array).find(metaKey => identifier?.startsWith(metaKey));
+
+  // Return the corresponding value or undefined if no match is found
+  return key ? key : undefined;
+}

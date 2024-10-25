@@ -12,9 +12,13 @@ import { AppContext } from "../../../../AppContext";
 import { UPSERTCUSTOMLAYER } from "../../../../graphQL/useMutationUpsertCustomLayer";
 import { USERBYEMAIL } from "../../../../graphQL/useQueryUserByEmail";
 import Tooltip from "@material-ui/core/Tooltip";
-
 import { gql } from "@apollo/client";
+
 import { calculateShapeCenter } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
+import { popupController } from "hookstate/popupStateController";
+import { drawController } from "hookstate/drawStateController";
+import { layerRefs } from "hookstate";
+import { layerController } from "hookstate/layerStateController";
 
 const useStyles = makeStyles((theme) => ({
   mapOverlay: {
@@ -53,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default (props) => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -107,30 +112,20 @@ export default (props) => {
       return;
     }
     if (customLayerInsertedData.upsertCustomLayer && customLayerInsertedData.upsertCustomLayer.customLayer) {
-      setStateApp((state) => ({
-        ...state,
-        popupOpen: false,
-      }));
-
       const customLayer = customLayerInsertedData.upsertCustomLayer.customLayer;
       const feature = JSON.parse(customLayer.shape);
       feature.id = customLayer._id;
       feature.properties.id = customLayer._id;
-      setStateApp((state) => ({
-        ...state,
-        selectedParcel: feature.properties
-      }));
-      setStateApp((state) => ({
-        ...state,
+      popupController.setState({
+        selectedParcel: feature.properties,
         popupOpen: true,
-        expandedCard: true
-      }));
+        expandedCard: true,
+      });
       props.onClickExpand();
-      if (stateApp.selectedAbstracts.length > 0) {
-        setStateApp((state) => ({
-          ...state,
-          selectedAbstracts: []
-        }));
+      if (drawController.getValue('selectedAbstracts').length > 0) {
+        drawController.updateState({
+          selectedAbstracts: [],
+        });
       }
     }
     if (customLayerInsertedData.upsertCustomLayer && customLayerInsertedData.upsertCustomLayer.customLayer && !customLayerInsertedData.upsertCustomLayer.success) {
@@ -168,8 +163,7 @@ export default (props) => {
     if (!user._id) {
       return;
     }
-    const abstractShape = stateApp.selectedAbstracts[0];
-
+    const abstractShape = drawController.getValue('selectedAbstracts')[0];
 
     const properties = abstractShape?.properties;
     let township = properties?.Township;
@@ -215,28 +209,33 @@ export default (props) => {
 
     upsertCustomLayer({
       variables: { customLayer: customLayerData }
+    }).then((result) => {
+      layerController.resetBounds(result?.data?.upsertCustomLayer?.customLayer?.layer)
     });
 
     let layers = [...stateApp.customLayers];
     layers.push(customLayerData);
 
+    popupController.updateState({
+      selectedParcel: {
+        originalProperties: abstractShape.properties.State === 'TX' ? JSON.stringify(abstractShape.properties) : [],
+        sdType: 'parcel',
+        shapeLabel: parcelName,
+        projectName: '',
+        sdNotes: '',
+        sdGrossAcres: '',
+        shapeArea: calculateLandArea(abstractShape),
+        // needs to be a string to be consistent with queried data
+        shapeCenter: JSON.stringify(calculateShapeCenter(abstractShape.geometry)),
+        shapeLabelLayer: '',
+        id: featureId,
+      },
+      expandedCard: true,
+    });
+
     setStateApp((state) => ({
       ...state,
-      selectedParcel: {
-        "originalProperties": abstractShape.properties.State === "TX" ? JSON.stringify(abstractShape.properties) : [],
-        "sdType": "parcel",
-        "shapeLabel": parcelName,
-        "projectName": "",
-        "sdNotes": "",
-        "sdGrossAcres": "",
-        "shapeArea": calculateLandArea(abstractShape),
-        // needs to be a string to be consistent with queried data
-        "shapeCenter": JSON.stringify(calculateShapeCenter(abstractShape.geometry)),
-        "shapeLabelLayer": "",
-        "id": featureId
-      },
       customLayers: layers,
-      expandedCard: true
     }));
   }
 
@@ -244,18 +243,23 @@ export default (props) => {
     let popUps = document.getElementsByClassName("mapboxgl-popup");
     if (popUps[0]) popUps[0].remove();
 
-    for (let i = 0; i < stateApp.selectedAbstracts.length; i++) {
-      const id = stateApp.selectedAbstracts[i].properties.Id;
-      props.map.setFeatureState(
-        { source: 'abstract_geo_source', id: id },
+    const selectedAbstracts = drawController.getValue('selectedAbstracts');
+
+    drawController.updateState({
+      selectedAbstracts: []
+    })
+
+    const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
+
+    if (!sourceId) return;
+
+    for (let i = 0; i < selectedAbstracts.length; i++) {
+      const id = selectedAbstracts[i].properties.Id;
+      window.mapRef?.setFeatureState(
+        { source: sourceId, id: id },
         { click: false }
       );
     }
-
-    setStateApp((state) => ({
-      ...state,
-      selectedAbstracts: []
-    }));
   }
 
   return (

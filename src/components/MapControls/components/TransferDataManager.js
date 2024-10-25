@@ -1,6 +1,5 @@
 import React, { useState, useContext, useEffect, Fragment } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
-import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
 import { Grid, Typography, Divider, Button } from "@material-ui/core";
 import { Close as CloseButton } from "@material-ui/icons";
@@ -21,6 +20,8 @@ import { useApolloClient } from "@apollo/client";
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import M1neral_headers from "components/BulkUpload/jobHeaders";
 import { jobController } from "hookstate/jobStateController";
+import { mapControlsController } from "hookstate/mapControlsController";
+import { generateFileFilters } from "components/Map/DeckGL/helpers/common";
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -81,8 +82,7 @@ const StyledListItem = withStyles((theme) => ({
 export default function TransferDataManager(props) {
   const classes = useStyles();
 
-  const [, setStateMapControls] = useContext(MapControlsContext);
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
   const client = useApolloClient();
   const [openSourcePanel, setOpenSourcePanel] = useState(true);
   const [openPlatformPanel, setOpenPlatformPanel] = useState(true);
@@ -91,6 +91,8 @@ export default function TransferDataManager(props) {
   const [selectedPlatformCategory, setSelectedPlatformCategory] = useState(null);
   const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);
 
+  const { mapControlsStateValues } = mapControlsController.useState(['selectedDataset'], 'mapControlsStateValues');
+
   useEffect(() => {
     if (!deepEqual(currentLayers, stateApp.layers)) {
       setCurrentLayers(stateApp.layers);
@@ -98,50 +100,20 @@ export default function TransferDataManager(props) {
   }, [currentLayers, stateApp.layers]);
 
   const handleClose = () => {
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
+    mapControlsController.updateState({
       addLayer: false,
       manageTransferData: false,
       manageSourceLayer: false,
       manageLayer: false,
-    }));
+    })
   };
 
   const handleContinue = async () => {
+    // common generateFileFilters in all places to avoid query issues in future
+    const fileQuery = generateFileFilters({ fileLayer: selectedSourceCategory, pagination: { first: 5, after: null } })
     const sourceData = await client.query({
       query: GET_ES_SIMPLE_SEARCH,
-      variables: {
-        index: "shapefile_flat",
-        search: {
-          query: "",
-          fields: ['*'],
-          advanceSearch: selectedSourceCategory?.layerGeometry === 'Polygon' ? [{
-            "bool": {
-              "should": [
-                {
-                  "term": { "properties.layerGeometry": "Polygon" }
-                },
-                {
-                  "term": { "properties.layerGeometry": "MultiPolygon" }
-                }
-              ]
-            }
-          }] : [{
-            "bool": {
-              "should": [
-                {
-                  "term": { "properties.layerGeometry": selectedSourceCategory.layerGeometry }
-                }
-              ]
-            }
-          }],
-        },
-        filters: [{ field: "file._id", value: [selectedSourceCategory?.file, selectedSourceCategory?.originalFile].filter(Boolean) }],
-        pagination: {
-          first: 5,
-          after: null,
-        },
-      },
+      ...fileQuery
     });
     let columns = []
     sourceData.data.getESSimpleSearch.hits.forEach((hit) => {
@@ -177,7 +149,7 @@ export default function TransferDataManager(props) {
     history.push(`/bulkupload/shape_to_m1_layer`)
   }
 
-  const dataset = stateApp?.selectedDataset
+  const dataset = mapControlsStateValues.selectedDataset
   return (
     <div style={{ width: '100%' }}>
       <Grid
@@ -214,15 +186,15 @@ export default function TransferDataManager(props) {
         </Typography>
         <div onClick={(e) => e.stopPropagation()}>
 
-          <Fragment key={dataset.sourceName}>
+          <Fragment key={dataset?.sourceName}>
             {
-              dataset.sourceName !== 'M1 Platform' ? <> <StyledListItem2 button onClick={() => setOpenSourcePanel(!openSourcePanel)}>
-                <ListItemText primary={dataset.sourceName} />
+              dataset?.sourceName !== 'M1 Platform' ? <> <StyledListItem2 button onClick={() => setOpenSourcePanel(!openSourcePanel)}>
+                <ListItemText primary={dataset?.sourceName} />
                 {openSourcePanel ? <ExpandLess /> : <ExpandMore />}
               </StyledListItem2>
                 <Collapse in={openSourcePanel} timeout="auto" unmountOnExit>
                   <List className={classes.list}>
-                    {dataset.categories.map((layer, index) => {
+                    {dataset?.categories.map((layer, index) => {
                       const labelId = `m1layer-list-label-${index}`;
                       return (
                         <StyledListItem key={index} ContainerComponent="li">
@@ -250,7 +222,7 @@ export default function TransferDataManager(props) {
             <span style={{ textDecoration: "underline" }}>Please select only one category</span> The category type needs to align to create a match (ex. polygon to polygon)
           </Typography>
 
-          <Fragment key={dataset.sourceName}>
+          <Fragment key={dataset?.sourceName}>
             {
               <>
                 <StyledListItem2 button onClick={() => setOpenPlatformPanel(!openPlatformPanel)}>
@@ -275,7 +247,8 @@ export default function TransferDataManager(props) {
                       );
                     })}
                   </List>
-                </Collapse></>
+                </Collapse>
+              </>
             }
           </Fragment>
 
@@ -298,6 +271,7 @@ export default function TransferDataManager(props) {
               disableElevation
               onClick={handleContinue}
               className={classes.footerButton}
+              disabled={!selectedSourceCategory || !selectedPlatformCategory}
             >
               Continue
             </Button>

@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -11,7 +11,6 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Checkbox from "@material-ui/core/Checkbox";
 import DragIndicator from "@material-ui/icons/DragIndicator";
 import Button from "@material-ui/core/Button";
-import { MapControlsContext } from "./MapControlsContext";
 import { AppContext } from "../../AppContext";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -26,6 +25,9 @@ import { UPDATEMANYLAYERSETTINGS } from "../../graphQL/useMutationUpdateManyLaye
 import { useMutation } from "@apollo/client";
 import Box from "@material-ui/core/Box";
 import { useSelector } from "react-redux";
+import { mapControlsController } from "hookstate/mapControlsController";
+import { ifLayerHaveData } from "components/Shared/SidePanel/compoennts/common";
+import { layerController } from "hookstate/layerStateController";
 
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
@@ -100,14 +102,11 @@ export default function CheckboxList(props) {
   const { basinLayerColor, GLOUnitsColor, GLOLeasesColor } = useSelector(
     ({ MainMap }) => MainMap
   );
-  const [stateMapControls, setStateMapControls] = useContext(
-    MapControlsContext
-  );
+  const { mapControlsStateValues } = mapControlsController.useState(['anchorEl'], 'mapControlsStateValues');
+  layerController.useState(['wellListFromSearch']);
   const [stateApp, setStateApp] = useContext(AppContext);
 
   const classes = useStyles();
-
-  const [currentLayers, setCurrentLayers] = useState(stateApp.layers);
 
   const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
   const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
@@ -249,18 +248,11 @@ export default function CheckboxList(props) {
 
 
   const handleClose = () => {
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      anchorEl: null,
-    }));
+    mapControlsController.reset()
   };
 
   const openAddLayer = () => {
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      addLayer: true,
-      selectedControl: null,
-    }));
+    mapControlsController.updateState({ addLayer: true, selectedControl: null })
   };
 
   const onDragEnd = (result) => {
@@ -291,33 +283,8 @@ export default function CheckboxList(props) {
     }
   };
 
-  const ifLayerHaveData = (layer) => {
-    //// temporary disabling the Title Layer
-    if (layer.identifier === "Title") return false;
-    ////
-
-    if (
-      (layer.identifier === "User Tags" &&
-        !(
-          stateApp.wellListFromTagsFilter &&
-          stateApp.wellListFromTagsFilter.length > 0
-        )) ||
-      (layer.identifier === "Search" &&
-        !(
-          stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0
-        )) ||
-      (layer.identifier === "Tracked Owners" &&
-        !(stateApp.trackedOwnerWells && stateApp.trackedOwnerWells.length > 0))
-    )
-      return false;
-    return true;
-  };
-
   const handleColorPicker = (layer) => {
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      selectedLayer: layer,
-    }));
+    mapControlsController.updateState({ selectedLayerControl: layer })
   };
 
   const getLayerName = (layer) => {
@@ -371,9 +338,9 @@ export default function CheckboxList(props) {
     <ClickAwayListener onClickAway={handleClose}>
       <StyledMenu
         id="checklist-menu"
-        anchorEl={stateMapControls.anchorEl}
+        anchorEl={mapControlsStateValues.anchorEl}
         keepMounted
-        open={Boolean(stateMapControls.anchorEl)}
+        open={Boolean(mapControlsStateValues.anchorEl)}
         onClose={handleClose}
       >
         <StyledMenuItem

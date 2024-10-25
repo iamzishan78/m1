@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 import { Grid, InputAdornment, TextField, Tooltip, IconButton } from "@material-ui/core";
@@ -80,11 +80,16 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  // New class to apply to the parent
+  backgroundHighlight: {
+    backgroundColor: '#ffffff !important' ,
+  },
 }));
 
 const ActivitySearch = () => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
+  const childRef = useRef(null);
 
   const [activities, setActivities] = useState([]);
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
@@ -100,13 +105,15 @@ const ActivitySearch = () => {
     }));
   };
 
-  const [getAllActivitiesForSearch, { data: activitiesData }] = useLazyQuery(GETALLACTIVITIESFORSEARCH);
+  const [getAllActivitiesForSearch, { data: activitiesData, loading }] = useLazyQuery(GETALLACTIVITIESFORSEARCH);
 
   useEffect(() => {
+    setActivities([]) // reset data if activityModule is changed
+    setNameAutValue({ name: "", _id: null }) // reset search text if activityModule is changed
     let category = null;
     switch (activeModule.title) {
       case "Activities":
-        category = "Activity";
+        category = "CRM";
         break;
       case "Obligations":
         category = "Obligation";
@@ -142,6 +149,17 @@ const ActivitySearch = () => {
     []
   );
 
+  useEffect(() => {
+    if (childRef.current) {
+      // Access the parent element of the component referenced by childRef
+      const parent = childRef.current.parentElement;
+      if (parent) {
+        // Add the backgroundHighlight class to the parent element
+        parent.classList.add(classes.backgroundHighlight);
+      }
+    }
+  }, [classes]); // Run this effect whenever the classes object changes
+
   return (
     <Grid
       container
@@ -149,6 +167,7 @@ const ActivitySearch = () => {
       direction="row"
       alignItems="center"
       style={{ marginLeft: quickActionsPanelState ? "425px" : "0px", width: "55%" }}
+      ref={childRef}
     >
       <Grid item className={classes.barTitle}>
         <EventIcon />
@@ -164,7 +183,8 @@ const ActivitySearch = () => {
           value={nameAutValue}
           disableListWrap
           options={activities}
-          getOptionLabel={(option) => option.name}
+          noOptionsText={loading ? "Loading" : "No options"}
+          getOptionLabel={(option) => option?.name || ""}
           getOptionSelected={(option, value) => {
             return option === value;
           }}
@@ -173,10 +193,10 @@ const ActivitySearch = () => {
               <Grid container spacing={0}>
                 <Grid container item xs={12} alignItems="center">
                   <Grid item xs>
-                    <span style={{ fontWeight: 400 }}>{option.name}</span>
+                    <span style={{ fontWeight: 400 }}>{option?.name || ""}</span>
 
                     <Typography variant="body2" color="textSecondary">
-                      {option.type}
+                      {option?.type || ""}
                     </Typography>
                   </Grid>
                 </Grid>

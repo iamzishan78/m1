@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "AppContext";
 import { get } from "lodash";
@@ -12,9 +12,7 @@ import UnitInterestsTable from "components/Table/Unit/UnitInterestsTable";
 
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from "@material-ui/core";
 import { contactDetailInitialData } from "./data";
-import { useLazyQuery } from "@apollo/client";
-import { GET_FLOW_ASSOCIATED_SUMMARY } from "graphQL/useQueryFlowAssociatedData";
-
+import { mapControlsController } from "hookstate/mapControlsController";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -122,15 +120,16 @@ const useStyles = makeStyles((theme) => ({
 // contact: ObjectId[]
 function AssociatedFlowDetails(props) {
   const [stateApp] = useContext(AppContext);
+
   const [searchTapValue, SearchTapValue] = useState(contactDetailInitialData[0]);
 
-  const { mapGridCardActivated, mapGridCardActiveTap, selectedOwner } = useSelector(({ MapGridCard }) => MapGridCard, shallowEqual);
+  const { mapGridCardActiveTap, selectedOwner } = useSelector(({ MapGridCard }) => MapGridCard, shallowEqual);
   const mapLayersPanelExtended = useSelector(({ MainMap }) => MainMap.mapLayersPanelExtended);
   const userGridViewFilters = useSelector(({ session }) => session.userGridViewSettings?.filters);
 
   const dispatch = useDispatch();
 
-
+  const { mapControlsStateValues } = mapControlsController.useState(['mapGridCardActivated'], 'mapControlsStateValues');
 
   const setSearchTapValue = (state) => {
     if (searchTapValue !== state) {
@@ -141,7 +140,7 @@ function AssociatedFlowDetails(props) {
   // styles
   const classes = useStyles({
     mapLayersPanelExtended,
-    mapGridCardActivated,
+    mapGridCardActivated: mapControlsStateValues.mapGridCardActivated,
     mapGridCardActiveTap,
     viewportWells: stateApp.viewportWells,
     userGridViewFilters,

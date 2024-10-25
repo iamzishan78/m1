@@ -5,6 +5,8 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import { NavigationContext } from "components/Navigation/NavigationContext";
 
+import { useAuth0 } from '@auth0/auth0-react';
+
 // contexts
 import { AppContext } from "AppContext";
 //@material-ui components
@@ -90,19 +92,28 @@ export default function UserProfile() {
     setOpenUserManagementModal(true);
   };
 
+  const { isAuthenticated, logout } = useAuth0();
+
   const handleLogout = async () => {
     const currentAccounts = stateApp.myMSALObj.getAllAccounts();
     const currentAccount =
       currentAccounts && currentAccounts.length === 1
         ? currentAccounts[0]
         : (() => {
-            // Add choose account code here
-            return;
-          })();
+          // Add choose account code here
+          return;
+        })();
 
     const logoutRequest = {
       account: currentAccount,
     };
+
+    if (isAuthenticated)
+      logout({
+        logoutParams: {
+          returnTo: window.location.origin + '/'
+        }
+      });
 
     setAnchorEl(null);
     sessionStorage.clear();

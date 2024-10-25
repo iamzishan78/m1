@@ -65,14 +65,14 @@ function DialogContent({ rows, setRows, onClose }) {
     });
 
     // Set universal loader state to true
-    hookStateApp.universalLoader.set(true);
+    globalStateController.updateState({ universalLoader: true })
   };
 
   useEffect(() => {
     if (!mutationData) return
 
     tableGlobalController.refetch()
-    hookStateApp.universalLoader.set(false)
+    globalStateController.updateState({ universalLoader: false })
     onClose()
   }, [mutationData])
 

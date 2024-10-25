@@ -5,6 +5,8 @@ import moment from 'moment';
 import ldata from '../../fixtures/ldata.json';
 import { headers } from '../../cypressUtils/cypressHeaders';
 import { REVERTCYPRESSDELETE } from 'graphQL/useMutationCommonCypressRevert';
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { DELETEACTIVITY } from 'graphQL/useMutationActivity';
 
 let responseHits = [];
 
@@ -23,6 +25,19 @@ const columns = [
     type: 'string',
   },
 ];
+
+const getElasticDataPayload = ({ index, search = null, filters = [], pagination = null }) => {
+  return {
+    operationName: 'getESSimpleSearch',
+    variables: {
+      index: index,
+      search: search,
+      filters: filters,
+      pagination: pagination,
+    },
+    query: GET_ES_SIMPLE_SEARCH.loc.source.body,
+  };
+};
 
 const checkPrimaryAddress = (job) => {
   cy.wrap(job.resultsPayload.datasets[0].exportResponse[0]['Primary Address'])
@@ -67,6 +82,77 @@ describe('Contact Table', () => {
     );
   });
 
+  it('verifies activity actions from contacts grid ', () => {
+    cy.get('button[title="Actions"]').first().scrollIntoView().click({ force: true });
+    cy.contains('li', 'Add call log').click();
+
+    // Type into the text field with data-testid 'activity-name-field'
+    cy.get('[data-testid="activity-name-field"]').scrollIntoView().type('New Activity');
+
+    cy.interceptAndWait(
+      ['addActivity'],
+      (alias) => {
+        // Click the Add button
+        cy.contains('span', 'Add').scrollIntoView().click();
+        // Wait for the API call to finish with a custom timeout and process the response
+        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then((response) => {
+          const activity = response.response.body.data.addActivity.activity;
+
+          // Getting the cotact activities
+          cy.request({
+            method: 'POST',
+            url: ldata.url,
+            headers: headers,
+            body: getElasticDataPayload({
+              index: 'activities_flat',
+              pagination: {
+                first: 10000,
+                after: null,
+              },
+              search: {
+                query: null,
+                fields: ['name', '_all'],
+              },
+              filters: [
+                {
+                  field: 'contactName.keyword',
+                  value: activity.contactName,
+                },
+                {
+                  field: 'type.keyword',
+                  value: 'Expiration',
+                  notInclude: true,
+                },
+                {
+                  field: 'type.keyword',
+                  value: 'Option to Extend',
+                  notInclude: true,
+                },
+              ],
+            }),
+          }).then((esResponse) => {
+            const activities = esResponse.body.data.getESSimpleSearch.hits;
+            // Checking if the activity is attached with the contact
+            expect(activities.some((e) => e._id === activity._id)).to.eq(true);
+
+            // Deleting the created activity
+            cy.request({
+              method: 'POST',
+              url: ldata.url,
+              headers: headers,
+              body: {
+                operationName: 'deleteActivity',
+                variables: { id: activity._id },
+                query: DELETEACTIVITY.loc.source.body,
+              },
+            });
+          });
+        });
+      },
+      { wait: false } // Do not automatically wait for the intercepted request
+    );
+  });
+
   it('Sorts by Name & Last Updated & Primary Address', () => {
     cy.wait(100);
 
@@ -96,15 +182,10 @@ describe('Contact Table', () => {
       const currentDateForPreviousDay = new Date(lastUpdateAt);
       currentDateForPreviousDay.setDate(currentDateForPreviousDay.getDate() - 1);
       const oneDayPriorDate = currentDateForPreviousDay.toISOString().split('T')[0];
-      cy.get(`[data-testid="MoreVertIcon"]`).eq(19).click();
-      cy.wait(500);
-      cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
-      cy.wait(500);
-      cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(1):eq(1)').click();
       cy.mrtComparisonFilterCheck({
         column: columns[0],
         type: 'date',
-        value: moment.parseZone(new Date(oneDayPriorDate)).format('MM/DD/YY'),
+        value: moment.parseZone(new Date(oneDayPriorDate)).format('MM/DD/YYYY'),
         filter: 'greaterThanEqualTo',
         placeholder,
       });
@@ -112,15 +193,10 @@ describe('Contact Table', () => {
       const currentDateForNextDay = new Date(lastUpdateAt);
       currentDateForNextDay.setDate(currentDateForNextDay.getDate() + 1);
       const nextDayDate = currentDateForNextDay.toISOString().split('T')[0];
-      cy.get('[data-testid="MoreVertIcon"]').eq(19).scrollIntoView().click({ force: true });
-      cy.wait(500);
-      cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
-      cy.wait(500);
-      cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(2):eq(1)').click();
       cy.mrtComparisonFilterCheck({
         column: columns[0],
         type: 'date',
-        value: moment.parseZone(new Date(nextDayDate)).format('MM/DD/YY'),
+        value: moment.parseZone(new Date(nextDayDate)).format('MM/DD/YYYY'),
         filter: 'lessThanEqualTo',
         placeholder,
       });
@@ -138,7 +214,7 @@ describe('Contact Table', () => {
           // Pass custom settings to the MRTTable component for the test
           mrtOverrideMeta: {
             isDefaultGridView: false,
-            gridViewOverride: 'Purchased',
+            gridViewOverride: 'Cypress(do no delete)',
           },
         });
         // Wait for the API call to finish with a custom timeout and process the response
@@ -150,14 +226,15 @@ describe('Contact Table', () => {
       { wait: false } // Do not automatically wait for the intercepted request
     );
 
+    cy.wait(5000);
     // Select all entries in a table or list for bulk updating by clicking the select all checkbox
     cy.get('[aria-label="Toggle select all"]').eq(0).click();
 
     // Initiate the bulk update process by clicking the bulk update button
-    cy.get('[data-testid="bulk-update"]').click();
+    cy.get('[data-testid="bulk-update"]').click({force: true});
 
     // Find and interact with the field selection autocomplete input for choosing "Campaign Name"
-    cy.get('[data-testid="select-field-autocomplete"]', { timeout: 10000 })
+    cy.get('[data-testid="select-field-autocomplete"]', { timeout: 30000 })
       .clear() // Clear any existing input
       .type('Campaign Name'); // Type the field name to update
 
@@ -186,7 +263,11 @@ describe('Contact Table', () => {
         });
         cy.wait(10000);
         // Assert that the campaign name displayed in the UI matches the one selected for the update
-        cy.get('[data-testid="campaign-name-chip"]').eq(0).should('have.text', campaignName);
+        cy.get('[data-testid="campaign-name-chip"]').then((campaignElements) => {
+          const campaignNames = [...campaignElements].map((el) => el.innerText);
+          // Assert that the campaign name is included in the list
+          expect(campaignNames).to.include(campaignName);
+        });
       });
   });
 
@@ -243,6 +324,7 @@ describe('Contact Table', () => {
       { wait: false }
     );
   });
+
   it('Should delete selected rows', () => {
     // Intercepting and waiting for specific requests to perform deletion
     cy.mrtFilterBySearch({

@@ -1,32 +1,17 @@
 import React, { memo, useEffect } from 'react';
 import { MaterialReactTable } from 'material-react-table';
-import useTableESSimple from 'components/MRTTable/Hooks/useTableESSimple';
-import AllDialogs from 'components/MRTTable/Common/Dialog';
+
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import { SCHEMA } from './Schema';
 import { useApolloClient } from '@apollo/client';
 import { globalStateController } from 'hookstate/globalStateController';
-
-function Table({ tableKey, hideSharedCommentCheck }) {
-	const { tableProps, tablePropsState, classes } = useTableESSimple(tableKey);
-	return (
-		<div className={classes.table}>
-			<MaterialReactTable
-				{...tableProps}
-				state={{
-					...tablePropsState,
-				}}
-			/>
-			{/* Note: Columns are passed to access in other components */}
-			<AllDialogs hideSharedCommentCheck={hideSharedCommentCheck} columns={tableProps.columns} />
-		</div>
-	);
-}
+import { copy } from '../Shared/functions/index';
+import Table from './Table';
 
 function MRTTable({ tableKey, name, overrideMeta = {}, hideSharedCommentCheck = true }) {
 	const client = useApolloClient();
 	const meta = SCHEMA[name];
-	const extendedMeta = { ...meta, ...overrideMeta, ...globalStateController.getValue('cypress')?.mrtOverrideMeta };
+	const extendedMeta = { ...copy(meta), ...overrideMeta, ...globalStateController.getValue('cypress')?.mrtOverrideMeta };
 	tableKey = tableKey || name; // table key should be different if two tables with same name exist in same screen.
 	const Controller = tableController(tableKey);
 	const { reInitialized } = tableGlobalController.useState(['reInitialized']);
@@ -59,6 +44,8 @@ function MRTTable({ tableKey, name, overrideMeta = {}, hideSharedCommentCheck = 
 					isLoading: true,
 					showProgressBars: true,
 				}}
+				enableDensityToggle={false}
+				enableFullScreenToggle={false}
 			/>
 		);
 

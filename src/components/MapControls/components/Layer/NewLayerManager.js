@@ -1,20 +1,21 @@
 import React, { useContext, useState, useMemo } from "react";
 import { useMutation } from "@apollo/client";
 import { v4 as uuid } from "uuid";
-import { MapControlsContext } from "../../MapControlsContext";
 import { Typography, Paper, Grid, Button, IconButton, Divider, FormControlLabel, Switch, ClickAwayListener, TextField } from "@material-ui/core";
 import { Close as CloseIcon } from "@material-ui/icons";
 import { getDefaultSettings } from "../addUserHelper";
 import { ADDLAYER } from "graphQL/useMutationAddLayer";
 import { AppContext } from "AppContext";
-import { ColorPickerStyledBox, useLayerStyle, useStyles, WidthPicker } from "./Common";
+import { ColorPickerStyledBox, useLayerStyle, WidthPicker } from "./Common";
 import { Autocomplete } from "@material-ui/lab";
+import { mapControlsController } from "hookstate/mapControlsController";
+import { globalStateController } from "hookstate/globalStateController";
 
 function NewLayerManager(props) {
   const [stateApp] = useContext(AppContext);
   const sourceProps = "" + uuid() + "_source"
 
-  const [layer, setLayer] = useState({
+  const [layer] = useState({
     createBy: stateApp.user.mongoId,
     ...getDefaultSettings("Polygon", '', sourceProps)
   });
@@ -25,33 +26,29 @@ function NewLayerManager(props) {
 
   const { layerName, setLayerName, width, setWidth, fillColor, setFillColor, layerLabelVisibility, setLayerLabelVisibility, layerClickability, setLayerClickability, strokeColor, setStrokeColor, handleLayerChange
   } = useLayerStyle(layer)
-  const [, setStateMapControls] = useContext(MapControlsContext);
 
   const [source, setSource] = useState()
   const [selectCategory, setCategory] = useState()
 
-  // const setLayerHandler = (layerName, layerGeoType) => {
-  //   setLayer({
-  //     ...layer,
-  //     layerName: layerName,
-  //     identifier: layerName + uuid(),
-  //     layerGeometry: layerGeoType || 'Polygon',
-  //   })
-  // }
+  const { datasets, globalStateValues } = globalStateController.useState(['datasets'], 'globalStateValues')
 
   const createLayer = () => {
+    const layerType = source.name === 'M1 Platform' ? 'data layer' : 'file layer';
+    const layerCategory = source.name === 'M1 Platform' ? 'UD layer' : selectCategory.name;
+    const identifier = source.name === 'M1 Platform' ? selectCategory.label + uuid() : layerName + uuid();
+
     addLayer({
       variables: {
         layer: {
           ...layer,
+          layerCategory,
+          layerType,
+          identifier,
           groupId: null,
           groupName: null,
           file: source.file,
           layerName: layerName,
-          identifier: layerName + uuid(),
-          layerType: "file layer",
           layerGeometry: selectCategory.layerGeometry,
-          layerCategory: selectCategory.name,
           originalFile: source.originalFile,
           defaultSettings: handleLayerChange(),
           layerPaintProps: undefined,
@@ -68,20 +65,19 @@ function NewLayerManager(props) {
   }
 
   const handleClose = () => {
-    setStateMapControls((stateMapControls) => ({ ...stateMapControls, manageLayer: false }));
+    mapControlsController.updateState({ manageLayer: false })
   }
 
   // useEffect(() => {
   //   setLayerHandler(layerName, selectCategory)
   // }, [layerName, selectCategory])
 
-  const datasets = useMemo(() => {
-    const datasets = stateApp.datasets?.filter((dataset) => dataset.name !== 'M1 Platform')
+  const _datasets = useMemo(() => {
+    const datasets = globalStateValues.datasets
     return datasets || [];
-  }, [stateApp.datasets])
-
+  }, [datasets])
   const layerCategories = useMemo(() => {
-    const dataset = stateApp.datasets.find((dataset) => dataset.name === source?.name)
+    const dataset = globalStateValues.datasets.find((dataset) => dataset.name === source?.name)
     return dataset?.categories || []
   }, [source])
 
@@ -104,7 +100,7 @@ function NewLayerManager(props) {
             <Grid item xs={12}>
               <Autocomplete
                 id="data-source"
-                options={datasets}
+                options={_datasets}
                 getOptionLabel={(option) => option.name}
                 value={source}
                 onChange={(_, dataset) => setSource(dataset)}
@@ -116,7 +112,7 @@ function NewLayerManager(props) {
                 id="layer-category"
                 options={layerCategories}
                 value={selectCategory}
-                getOptionLabel={(option) => `${option.name}(${option.layerGeometry})`}
+                getOptionLabel={(option) => `${option.name || option.label}(${option.layerGeometry || option.value})`}
                 onChange={(_, layerCategory) => setCategory(layerCategory)}
                 renderInput={(params) => <TextField {...params} label="Select Category" />}
               />

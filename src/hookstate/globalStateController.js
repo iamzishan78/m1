@@ -1,10 +1,11 @@
 import { hookstate } from '@hookstate/core';
 import { copy } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
-import { bypassTenants } from 'utils/data';
+import { bypassTenants, simpleAuthBypass } from 'utils/data';
 
 const initialState = {
 	layers: [],
+	panelItems: [],
 	emptyGroups: [],
 	universalLoader: false,
 	layerLoading: {},
@@ -13,12 +14,14 @@ const initialState = {
 	x_zumo_auth: null,
 	cypress: null,
 	testCase: null,
-	bypassLogin: false,
+	bypassLogin: simpleAuthBypass || false,
+	bypassType: '',
+	tenant: null
 };
 
 export const globalState = hookstate(copy(initialState));
 
-const globalStateControllerHandler = () => ({
+const globalStateControllerHandler = (state) => ({
 	setLayerLoading: (type, value) => {
 		if (value !== globalState.layerLoading.get()[type])
 			globalState.layerLoading.set({
@@ -26,8 +29,24 @@ const globalStateControllerHandler = () => ({
 				[type]: value,
 			});
 	},
-	setBypassLogin: tenant => globalState.bypassLogin.set(bypassTenants.includes(tenant)),
+	setBypassLogin: tenant => {
+		const bypass = simpleAuthBypass ? { bypassLogin: true, bypassType: 'SimpleBypass' } : { bypassLogin: bypassTenants.includes(tenant.name), bypassType: 'Auth0Bypass' }
+		if (bypass.bypassLogin) {
+			globalStateController.updateState({ ...bypass, tenant })
+		}
+	},
+	isAuth0Bypass: () => state.bypassType.get({ noproxy: true }) === 'Auth0Bypass',
 	isBypassTenant: tenant => bypassTenants.map(t => t.toLowerCase()).includes(tenant.toLowerCase()),
+	handleMyWellTestCase: (globalWellId, mongoWellId) => {
+		if (globalStateController.getValue('cypress'))
+			globalStateController.updateState({
+				testCase: {
+					name: 'MyWellsNameUpdate',
+					globalWellId,
+					mongoWellId
+				},
+			});
+	}
 });
 
 export const globalStateController = {

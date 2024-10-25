@@ -408,7 +408,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
   {
     name: "createBy",
     label: "Created By",
-    esKey: "createBy",
+    esKey: "createBy.name.keyword", // Elasticsearch field key for querying.
     options: {
       display: true,
       customRender: (value) => {

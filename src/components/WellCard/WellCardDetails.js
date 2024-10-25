@@ -1,7 +1,6 @@
 import React, { useContext, useState, useRef, useEffect } from "react";
 
 // contexts 
-import { AppContext } from "../../AppContext";
 import { WellCardContext } from "./WellCardContext";
 
 // styling 
@@ -46,6 +45,7 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
 import CircularProgress from "@material-ui/core/CircularProgress";
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+import { popupController } from "hookstate/popupStateController";
 
 const useStyles = makeStyles((theme) => ({
   grid: {
@@ -245,7 +245,6 @@ const tableGridStyle = makeStyles({
 
 export default function WellCardDetails(props) {
   const classes = useStyles();
-  const [stateApp] = useContext(AppContext);
   const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
   const [, setTabValue] = React.useState(0);
   const [production, setProduction] = useState(null);
@@ -256,9 +255,11 @@ export default function WellCardDetails(props) {
     { data: externalProductionDetail },
   ] = useLazyQuery(PRODUCTIONDETAILQUERY);
 
+  const { stateValues } = popupController.useState(['selectedWell', 'wellDetailCardTabIndex'])
+
   useEffect(() => {
     getExternalProductionDetail({
-      variables: { id: stateApp.selectedWell.api, pageSize: "999" },
+      variables: { id: stateValues.selectedWell.api, pageSize: "999" },
     });
   }, []);
 
@@ -361,7 +362,7 @@ export default function WellCardDetails(props) {
     </div>
   );
 
-  return stateApp.selectedWell ? (
+  return stateValues.selectedWell ? (
     <React.Fragment >
       <Grid item sm={12} className={classes.gridItemGrey}>
 
@@ -478,7 +479,7 @@ export default function WellCardDetails(props) {
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
                   <M1nTable
                     parent="OwnersPerWell"
-                    selectedWell={stateApp.selectedWell}  // MIGRATE TO WELL CARD CONTEXT
+                    selectedWell={stateValues.selectedWell}  // MIGRATE TO WELL CARD CONTEXT
                   />
                 </div>
               </Paper>,
@@ -489,7 +490,7 @@ export default function WellCardDetails(props) {
               <PermitsContainer showSummary={showSummary} />,
               <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.wellDocument}`}>
                 <WellDetailsDocumentTable
-                  selectedWell={stateApp.selectedWell}
+                  selectedWell={stateValues.selectedWell}
                   parent="associatedDocumentsPerWell"
                   targetLabel="wellDocument"
                   header={<DocumentHeader />}
@@ -498,7 +499,7 @@ export default function WellCardDetails(props) {
               </div>
 
             ]}
-            openTabIdex={stateApp.wellDetailCardTabIndex}
+            openTabIdex={stateValues.wellDetailCardTabIndex}
           />
         </Grid>
       </Grid>

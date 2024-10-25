@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { NavigationContext } from "../NavigationContext";
 import { AppContext } from "../../../AppContext";
@@ -7,11 +7,12 @@ import FilterCountyName from "./FilterCountyName";
 import Grid from "@material-ui/core/Grid";
 import FilterGrid from "./FilterGrid12345";
 import FilterBasin from "./FilterBasin";
-import FilterAOI from "./FilterAOI";
-import FilterParcel from "./FilterParcel";
 
 import { useLazyQuery } from "@apollo/client";
 import { WELLSMINMAXLATLONG } from "../../../graphQL/useQueryWellsMinMaxLatLong";
+import ShapeFilter from "./ShapeFilter";
+import { navController } from "hookstate/navStateController";
+import { layerFiltersController } from "hookstate/layerFiltersController";
 
 const useStyles = makeStyles((theme) => ({
   gridItem: {
@@ -25,6 +26,8 @@ export default function FilterFromGeo() {
   const [, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const [getWellsMinMaxLatLong, { data }] = useLazyQuery(WELLSMINMAXLATLONG, { fetchPolicy: "no-cache" });
+
+  const { navStateValues } = navController.useState(['interestFilter', 'parcelFilter'], 'navStateValues')
 
   useEffect(() => {
     //// Geo Filter Builder ////
@@ -130,13 +133,57 @@ export default function FilterFromGeo() {
     }
   }, [data]);
 
+  // For Geography count
+  useEffect(() => {
+    let geographyFilterCount = 0
+    geographyFilterCount += navStateValues?.interestFilter?.shapes?.length || 0
+    geographyFilterCount += navStateValues?.parcelFilter?.shapes?.length || 0
+    geographyFilterCount += stateNav.filterBasin?.length || 0
+    geographyFilterCount += stateNav.stateName ? 1 : 0
+    geographyFilterCount += stateNav.countyName ? 1 : 0
+    geographyFilterCount += stateNav.GrId1 ? 1 : 0
+    geographyFilterCount += stateNav.GrId2 ? 1 : 0
+    geographyFilterCount += stateNav.GrId3 ? 1 : 0
+    geographyFilterCount += stateNav.GrId4 ? 1 : 0
+    geographyFilterCount += stateNav.GrId5 ? 1 : 0
+
+    let polygons = []
+
+    navStateValues?.interestFilter?.shapes?.forEach((shape) => {
+      polygons.push(shape.geometry)
+    })
+    navStateValues?.parcelFilter?.shapes?.forEach((shape) => {
+      polygons.push(shape.geometry)
+    })
+    stateNav?.filterBasin?.forEach((shape) => {
+      polygons.push(shape.geometry)
+    })
+    layerFiltersController.setPolygonsFilter([])
+    if (polygons.length > 0) {
+      layerFiltersController.setPolygonsFilter(polygons)
+    }
+
+    navController.updateState({ geographyFilterCount })
+  }, [
+    navStateValues.interestFilter,
+    navStateValues.parcelFilter,
+    stateNav.filterBasin,
+    stateNav.stateName,
+    stateNav.countyName,
+    stateNav.GrId1,
+    stateNav.GrId2,
+    stateNav.GrId3,
+    stateNav.GrId4,
+    stateNav.GrId5
+  ])
+
   return (
     <Grid container item spacing={2} style={{ padding: "8px", width: "100%", margin: "0" }}>
       <Grid item sm={12} className={classes.gridItem}>
-        <FilterAOI />
+        <ShapeFilter label='Area of Interest' filterType={'interest'} />
       </Grid>
       <Grid item sm={12} className={classes.gridItem}>
-        <FilterParcel />
+        <ShapeFilter label='Parcel' filterType={'parcel'} />
       </Grid>
       <Grid item sm={12} className={classes.gridItem}>
         <FilterBasin />

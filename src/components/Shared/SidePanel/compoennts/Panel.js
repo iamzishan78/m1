@@ -1,380 +1,426 @@
-import React, { useContext, useState, useEffect, useMemo } from "react";
-import { useDispatch } from "react-redux";
-import { get } from "lodash";
-import { TransitionGroup } from "react-transition-group";
-import RootRef from "@material-ui/core/RootRef";
-import { useMutation } from "@apollo/client";
-import { DragDropContext, Droppable } from "react-beautiful-dnd";
-import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
-import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
-import { Tooltip, Tab, Tabs, InputBase, IconButton, Chip } from "@material-ui/core";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import Button from "@material-ui/core/Button";
-import { MapControlsContext } from "../../../MapControls/MapControlsContext";
-import { AppContext } from "../../../../AppContext";
-import List from "@material-ui/core/List";
-import LayersIcon from "@material-ui/icons/Layers";
-import MapDarkIcon from "../../svgIcons/MapDarkIcon";
-import MapOutdoorIcon from "../../svgIcons/MapOutdoorIcon";
-import MapSatelliteIcon from "../../svgIcons/MapSatelliteIcon";
-import MapLightIcon from "../../svgIcons/MapLightIcon";
-import MapBasicIcon from "../../svgIcons/MapBasicIcon";
-import Collapse from "@material-ui/core/Collapse";
-import Box from "@material-ui/core/Box";
-import Grid from "@material-ui/core/Grid";
-import HeatmapIcon from "@material-ui/icons/Gradient";
-import BasemapIcon from "@material-ui/icons/Language";
-import SearchIcon from "@material-ui/icons/Search";
-import ClearIcon from "@material-ui/icons/Clear";
-import FilterAltIcon from "components/Shared/svgIcons/FilterAltIcon";
-import SecondaryPanel from "components/Shared/SecondaryPanel";
-import Datasets from 'components/Shared/SidePanel/compoennts/Datasets'
-import LayerFilters from "components/Shared/SidePanel/compoennts/Filters/LayerFilters";
-import MapPositions from "components/Shared/SidePanel/compoennts/MapPositions";
-import { showErrorMessage, showSuccessMessage } from "actions";
+import React, { useContext, useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { get } from 'lodash';
+import { TransitionGroup } from 'react-transition-group';
+import RootRef from '@material-ui/core/RootRef';
+import { useMutation } from '@apollo/client';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import { Tab, Tabs, Chip } from '@material-ui/core';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Button from '@material-ui/core/Button';
+import { AppContext } from '../../../../AppContext';
+import List from '@material-ui/core/List';
+import LayersIcon from '@material-ui/icons/Layers';
+import Collapse from '@material-ui/core/Collapse';
+import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
+import BasemapIcon from '@material-ui/icons/Language';
+import FilterAltIcon from 'components/Shared/svgIcons/FilterAltIcon';
+import SecondaryPanel from 'components/Shared/SecondaryPanel';
+import Datasets from 'components/Shared/SidePanel/compoennts/Datasets';
+import LayerFilters from 'components/Shared/SidePanel/compoennts/Filters/LayerFilters';
+import MapPositions from 'components/Shared/SidePanel/compoennts/MapPositions';
+import { showErrorMessage, showSuccessMessage } from 'actions';
 
-import { deepEqualObjects } from "../../functions";
-import Layer from "./Layer";
-import { toggleLayersFiltersPanel } from "actions/MainMap";
+import { deepEqualObjects } from '../../functions';
+import Layer from './Layer';
+import { toggleLayersFiltersPanel } from 'actions/MainMap';
 
 import {
-  useStyles,
-  StyledMenu,
-  StyledMenuItem,
-  StyledListItem2,
-  StyledListItemSecondaryAction,
-  StyledMenuHeaderItem,
-  StyledMenuHActionHeader,
-  StyledMenuSecondaryHeaderItem,
-} from "./style";
-import SortableLayer from "./SortableLayer";
-import { CircularProgress } from "@material-ui/core";
-import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
+	useStyles,
+	StyledMenu,
+	StyledMenuItem,
+	StyledListItem2,
+	StyledListItemSecondaryAction,
+	StyledMenuHeaderItem,
+	StyledMenuHActionHeader,
+	StyledMenuSecondaryHeaderItem,
+} from './style';
+import SortableLayer from './SortableLayer';
+import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
 // Contexts
-import { NavigationContext } from "components/Navigation/NavigationContext";
-import AddGroup from "./AddGroup";
+import AddGroup from './AddGroup';
+import { mapControlsController } from 'hookstate/mapControlsController';
+import { layerController } from 'hookstate/layerStateController';
+import { mapStateController } from 'hookstate/mapStateController';
+import { navController } from 'hookstate/navStateController';
 
-function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems, showSidePanel }) {
-  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [totalFilterCount, setTotalFilterCount] = useState(null);
-  const [totalHitMapCount, setTotalHitMapCount] = useState(null);
-  const [updateUserMapSettings, { data: updatedMapSettings }] = useMutation(UPDATE_USER_MAP_SETTINGS);
+const layerIcons = [
+	{
+		action: 'layer',
+		icon: <LayersIcon fontSize="medium" />,
+	},
+	// {
+	//   action: "heatMaps",
+	//   icon: <HeatmapIcon fontSize="medium" />,
+	// },
+	{
+		action: 'base',
+		icon: <BasemapIcon fontSize="medium" />,
+	},
+	{
+		action: 'filter',
+		icon: <FilterAltIcon fontSize="medium" />,
+	},
+];
 
-  const classes = useStyles();
-  const dispatch = useDispatch();
+const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle }) => {
+	return (
+		<>
+			<div>
+				{mapStyles.map(style => (
+					<StyledMenuItem
+						disableRipple
+						key={style.id}
+						role={undefined}
+						style={{
+							background: currentStyle === style.name ? '#4B618F' : '',
+						}}
+						onClick={() => {
+							if (currentStyle === style.name) return;
+							setBaseMap(style, 'baseMap');
+						}}
+					>
+						<Grid container alignContent="center" alignItems="center">
+							<Grid item>
+								{style.name === 'Outdoors' && <Box component="img" src={'./icons/MapOutdoorIcon.jpeg'} />}
+								{style.name === 'Satellite' && <Box component="img" src={'./icons/MapSatelliteIcon.jpeg'} />}
+								{style.name === 'Light' && <Box component="img" src={'./icons/MapLightIcon.jpeg'} />}
+								{style.name === 'Dark' && <Box component="img" src={'./icons/MapDarkIcon.jpeg'} />}
+								{style.name === 'Basic' && <Box component="img" src={'./icons/MapBasicIcon.jpeg'} />}
+							</Grid>
+							<Grid item>
+								<ListItemText primary={style.name} style={{ paddingLeft: '25px' }} />
+							</Grid>
+						</Grid>
+					</StyledMenuItem>
+				))}
+			</div>
+			<div
+				style={{
+					paddingLeft: '20px',
+					paddingRight: '20px',
+				}}
+			>
+				<hr
+					style={{
+						border: '1px solid #263451',
+						borderRadius: '5px',
+						marginTop: '30px',
+						marginBottom: '10px',
+					}}
+				/>
+			</div>
 
-  const [filteredItems, setFilteredItems] = useState([]);
-  const [layerMap, setLayerMap] = useState([]);
-  const [mapStyles, setMapStyles] = useState([]);
-  const [search, setSearch] = useState("");
-  const [searchState, setSearchState] = useState(false);
-  const [tab, setTab] = useState(0);
+			<StyledListItem2>
+				<ListItemIcon>
+					<LayersIcon />
+				</ListItemIcon>
+				<ListItemText primary={`${title} Layers`} />
+			</StyledListItem2>
+		</>
+	);
+});
 
-  useEffect(() => {
-    setTotalFilterCount(stateNav.totalFilterCount);
-  }, [stateNav]);
+const DisplayList = React.memo(({ onDragEnd, type, classes, layerMap, handleToggle }) => (
+	<DragDropContext onDragEnd={onDragEnd}>
+		<Droppable droppableId="droppableM1">
+			{provided => (
+				<RootRef rootRef={provided.innerRef}>
+					{type === 'base' && (
+						<List className={classes.list}>
+							<Layer layerMap={layerMap} type={type} handleToggle={handleToggle} />
+						</List>
+					)}
 
-  useEffect(() => {
-    setTotalHitMapCount(stateApp.checkedHeats.length);
-  }, [stateApp]);
+					{type === 'heatMaps' && (
+						<List className={classes.heatmapList}>
+							<Layer layerMap={layerMap} type={type} handleToggle={handleToggle} />
+						</List>
+					)}
+				</RootRef>
+			)}
+		</Droppable>
+	</DragDropContext>
+));
 
-  useEffect(() => {
-    if (stateApp.mapStyles && stateApp.mapStyles.length > 0) setMapStyles([...stateApp.mapStyles]);
-  }, [stateApp.mapStyles]);
+const StyledSecondaryMenu = () => {
+	const { addLayer, selectedLayerControl, manageSourceLayer, manageTransferData, manageLayer, mapControlsStateValues } =
+		mapControlsController.useState(
+			['addLayer', 'selectedLayerControl', 'manageSourceLayer', 'manageTransferData', 'manageLayer'],
+			'mapControlsStateValues'
+		);
 
-  useEffect(() => {
-    switch (stateMapControls.selectedControl) {
-      case "layer":
-        setTab(0);
-        break;
-      // case "heatMaps":
-      //   setTab(1);
-      //   break;
-      case "base":
-        setTab(1);
-        break;
-      case "filter":
-        setTab(2);
-        break;
-      default:
-    }
-  }, [stateMapControls.selectedControl]);
+	const secondaryPanelState = React.useMemo(() => {
+		if (
+			mapControlsStateValues.addLayer ||
+			mapControlsStateValues.selectedLayerControl ||
+			mapControlsStateValues.manageTransferData ||
+			mapControlsStateValues.manageSourceLayer ||
+			mapControlsStateValues.manageLayer
+		) {
+			return true;
+		} else return false;
+	}, [addLayer, manageSourceLayer, manageTransferData, selectedLayerControl, manageLayer]);
 
-  useEffect(() => {
-    filterLayers(search);
-  }, [panelItems]);
+	return (
+		<StyledMenu
+			id="layer-secondary-panel"
+			keepMounted
+			open={secondaryPanelState}
+			style={{ display: secondaryPanelState ? 'flex' : 'none', minWidth: '525px' }}
+		>
+			<TransitionGroup transitionName="carousel" transitionEnterTimeout={800} transitionLeaveTimeout={500}>
+				<SecondaryPanel />
+			</TransitionGroup>
+		</StyledMenu>
+	);
+};
 
-  useEffect(() => {
-    if ((type === "layer" || type === "heatMaps" || type === "marketplace") && filteredItems) {
-      setLayerMap(filteredItems);
-    } else if (type === "base" && filteredItems) {
-      setLayerMap(filteredItems.filter((item) => item.name !== "Water" && item.name !== "Land"));
-    }
-  }, [stateMapControls.selectedControl, filteredItems, stateApp.checkedBaseLayers, stateApp.checkedHeatLayers, type]);
+function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems }) {
+	const { selectedControl, expandedPanel, mapControlsStateValues } = mapControlsController.useState(
+		['selectedControl', 'expandedPanel'],
+		'mapControlsStateValues'
+	);
+	const { mapStateValues } = mapStateController.useState(['mapVars', 'defaultMapVars'], 'mapStateValues');
+	const { navStateValues } = navController.useState(['geographyFilterCount', 'wellFilterCount'], 'navStateValues');
 
-  useEffect(() => {
-    dispatch(toggleLayersFiltersPanel(!!stateMapControls.expandedPanel));
-  }, [dispatch, stateMapControls.expandedPanel]);
+	const [stateApp] = useContext(AppContext);
+	const [totalHitMapCount, setTotalHitMapCount] = useState(null);
+	const [updateUserMapSettings, { data: updatedMapSettings }] = useMutation(UPDATE_USER_MAP_SETTINGS);
 
-  useEffect(() => {
-    const mapDefaultPosition = get(updatedMapSettings, "updateUserMapSettings.settings.settings.mapDefaultPosition");
-    // Only when position is changed and not style
-    if (mapDefaultPosition && !deepEqualObjects(stateApp.defaultMapVars.center, mapDefaultPosition.center)) {
-      if (mapDefaultPosition) {
-        dispatch(showSuccessMessage("Map Default Position saved."));
-      } else if (updatedMapSettings) {
-        dispatch(showErrorMessage("Error in saving Map Default Position."));
-      }
-    }
-    setMapVars(mapDefaultPosition);
-  }, [updatedMapSettings]);
+	const classes = useStyles();
+	const dispatch = useDispatch();
 
-  const setMapVars = (settings) => {
-    if (settings) {
-      // setSettings(settings);
-      setStateApp((stateApp) => ({
-        ...stateApp,
-        defaultMapVars: {
-          ...stateApp.defaultMapVars,
-          ...settings,
-        },
-      }));
-    }
-  };
+	const [filteredItems, setFilteredItems] = useState([]);
+	const [layerMap, setLayerMap] = useState([]);
+	const [mapStyles, setMapStyles] = useState([]);
+	const [search, setSearch] = useState('');
+	const [searchState, setSearchState] = useState(false);
+	const [tab, setTab] = useState(0);
 
-  const togglePullout = (expandedPanel) => {
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      expandedPanel: expandedPanel ?? !stateMapControls.expandedPanel,
-      addLayer: false,
-      manageSourceLayer: false,
-      manageLayer: false,
-    }));
-  };
+	const totalFilterCount = navStateValues.geographyFilterCount + navStateValues.wellFilterCount;
 
-  const setBaseMap = (style, type) => {
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      mapVars: { ...stateApp.mapVars, styleId: style.name },
-      defaultMapVars: { ...stateApp.mapVars, styleId: style.name },
-    }));
-    updateUserMapSettings({
-      variables: {
-        settings: {
-          user: stateApp.user.mongoId,
-          type,
-          settings: {
-            activeBaseMap: style.name,
-          },
-        },
-      },
-    });
-  };
+	useEffect(() => {
+		setTotalHitMapCount(stateApp.checkedHeats.length);
+	}, [stateApp]);
 
-  const setMapDefaultPosition = (params) => {
-    updateUserMapSettings({
-      variables: {
-        settings: {
-          user: stateApp.user.mongoId,
-          type: "baseMap",
-          settings: {
-            mapDefaultPosition: {
-              ...params,
-            },
-          },
-        },
-      },
-    });
-  };
+	useEffect(() => {
+		if (stateApp.mapStyles && stateApp.mapStyles.length > 0) setMapStyles([...stateApp.mapStyles]);
+	}, [stateApp.mapStyles]);
 
-  const filterLayers = (search) => {
-    if (!search) setFilteredItems(panelItems);
-    else {
-      switch (type) {
-        case "layer":
-          setFilteredItems(panelItems?.filter((i) => (i.layerName ?? i.name).toLowerCase().includes(search.toLowerCase())));
-          break;
-        case "base":
-        case "heatMaps":
-          setFilteredItems(panelItems?.filter((i) => i.name.toLowerCase().includes(search.toLowerCase())));
-          break;
-        default:
-      }
-    }
-  };
+	useEffect(() => {
+		switch (mapControlsStateValues.selectedControl) {
+			case 'layer':
+				setTab(0);
+				break;
+			// case "heatMaps":
+			//   setTab(1);
+			//   break;
+			case 'base':
+				setTab(1);
+				break;
+			case 'filter':
+				setTab(2);
+				break;
+			default:
+		}
+	}, [selectedControl]);
 
-  const layerIcons = React.useMemo(() => {
-    return [
-      {
-        action: "layer",
-        icon: <LayersIcon fontSize="medium" />,
-      },
-      // {
-      //   action: "heatMaps",
-      //   icon: <HeatmapIcon fontSize="medium" />,
-      // },
-      {
-        action: "base",
-        icon: <BasemapIcon fontSize="medium" />,
-      },
-      {
-        action: "filter",
-        icon: <FilterAltIcon fontSize="medium" />,
-      },
-    ];
-  }, []);
+	useEffect(() => {
+		filterLayers(search);
+	}, [panelItems]);
 
-  const getBasemapImageBox = () => {
-    return (
-      <>
-        <div>
-          {mapStyles.map((style) => (
-            <StyledMenuItem
-              disableRipple
-              key={style.id}
-              role={undefined}
-              onClick={() => {
-                setBaseMap(style, "baseMap");
-              }}
-            >
-              <Grid container alignContent="center" alignItems="center">
-                <Grid item>
-                  {style.name === "Outdoors" && <MapOutdoorIcon />}
-                  {style.name === "Satellite" && <MapSatelliteIcon />}
-                  {style.name === "Light" && <MapLightIcon />}
-                  {style.name === "Dark" && <MapDarkIcon />}
-                  {style.name === "Basic" && <MapBasicIcon />}
-                </Grid>
+	useEffect(() => {
+		if ((type === 'layer' || type === 'heatMaps' || type === 'marketplace') && filteredItems) {
+			setLayerMap(filteredItems);
+		} else if (type === 'base' && filteredItems) {
+			setLayerMap(filteredItems.filter(item => item.name !== 'Water' && item.name !== 'Land'));
+		}
+	}, [selectedControl, filteredItems, stateApp.checkedBaseLayers, stateApp.checkedHeatLayers, type]);
 
-                <Grid item>
-                  <ListItemText primary={style.name} style={{ paddingLeft: "25px" }} />
-                </Grid>
-              </Grid>
-            </StyledMenuItem>
-          ))}
-        </div>
+	useEffect(() => {
+		dispatch(toggleLayersFiltersPanel(!!mapControlsStateValues.expandedPanel));
+	}, [dispatch, expandedPanel]);
 
-        <div
-          style={{
-            paddingLeft: "20px",
-            paddingRight: "20px",
-          }}
-        >
-          <hr
-            style={{
-              border: "1px solid #263451",
-              borderRadius: "5px",
-              marginTop: "30px",
-              marginBottom: "10px",
-            }}
-          />
-        </div>
+	useEffect(() => {
+		const mapDefaultPosition = get(updatedMapSettings, 'updateUserMapSettings.settings.settings.mapDefaultPosition');
+		// Only when position is changed and not style
+		if (mapDefaultPosition && !deepEqualObjects(mapStateValues.defaultMapVars.center, mapDefaultPosition.center)) {
+			if (mapDefaultPosition) {
+				dispatch(showSuccessMessage('Map Default Position saved.'));
+			} else if (updatedMapSettings) {
+				dispatch(showErrorMessage('Error in saving Map Default Position.'));
+			}
+		}
+		setMapVars(mapDefaultPosition);
+	}, [updatedMapSettings]);
 
-        <StyledListItem2>
-          <ListItemIcon>
-            <LayersIcon />
-          </ListItemIcon>
-          <ListItemText primary={`${title} Layers`} />
-        </StyledListItem2>
-      </>
-    );
-  };
+	const setMapVars = settings => {
+		if (settings) {
+			// setSettings(settings);
+			mapStateController.updateState({
+				defaultMapVars: {
+					...mapStateValues.defaultMapVars,
+					...settings,
+				},
+			});
+		}
+	};
 
-  const displayList = (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="droppableM1">
-        {(provided, snapshot) => (
-          <RootRef rootRef={provided.innerRef}>
-            {type === "base" && (
-              <List className={classes.list}>
-                <Layer layerMap={layerMap} type={type} handleToggle={handleToggle} />
-              </List>
-            )}
+	const togglePullout = () => {
+		mapControlsController.updateState({
+			expandedPanel: !mapControlsController.getValue('expandedPanel'),
+			addLayer: false,
+			manageSourceLayer: false,
+			manageLayer: false,
+		});
+	};
 
-            {type === "heatMaps" && (
-              <List className={classes.heatmapList}>
-                <Layer layerMap={layerMap} type={type} handleToggle={handleToggle} />
-              </List>
-            )}
-          </RootRef>
-        )}
-      </Droppable>
-    </DragDropContext>
-  );
+	const setBaseMap = (style, type) => {
+		const map = window.mapRef;
+		layerController.resetMapStates();
+		mapStateController.updateState({
+			mapVars: {
+				...mapStateValues.mapVars,
+				center: map.getCenter(),
+				zoom: map.getZoom(),
+				styleId: style.name,
+			},
+		});
 
-  const a11yProps = (index) => ({
-    id: `full-width-tab-${index}`,
-    "aria-controls": `full-width-tabpanel-${index}`,
-  });
+		updateUserMapSettings({
+			variables: {
+				settings: {
+					user: stateApp.user.mongoId,
+					type,
+					settings: {
+						activeBaseMap: style.name,
+					},
+				},
+			},
+		});
+	};
 
-  const clearSearch = () => {
-    setTimeout(() => {
-      setSearch("");
-      setSearchState(false);
-      filterLayers();
-    }, 200);
-  };
-  const setSearchValue = (value) => {
-    setSearch(value);
-    filterLayers(value);
-  };
+	const setMapDefaultPosition = params => {
+		updateUserMapSettings({
+			variables: {
+				settings: {
+					user: stateApp.user.mongoId,
+					type: 'baseMap',
+					settings: {
+						mapDefaultPosition: {
+							...params,
+						},
+					},
+				},
+			},
+		});
+	};
 
-  const secondaryPanelState = React.useMemo(() => {
-    if (stateMapControls.addLayer || stateMapControls.selectedLayer || stateMapControls.manageTransferData || stateMapControls.manageSourceLayer || stateMapControls.manageLayer) {
-      return true;
-    } else return false;
-  }, [stateMapControls.addLayer, stateMapControls.manageSourceLayer, stateMapControls.manageTransferData, stateMapControls.selectedLayer, stateMapControls.manageLayer]);
+	const filterLayers = search => {
+		if (!search) setFilteredItems(panelItems);
+		else {
+			switch (type) {
+				case 'layer':
+					setFilteredItems(
+						panelItems?.filter(i => (i.layerName ?? i.name).toLowerCase().includes(search.toLowerCase()))
+					);
+					break;
+				case 'base':
+				case 'heatMaps':
+					setFilteredItems(panelItems?.filter(i => i.name.toLowerCase().includes(search.toLowerCase())));
+					break;
+				default:
+			}
+		}
+	};
 
-  useEffect(() => {
-    togglePullout(showSidePanel)
-  }, [showSidePanel])
+	const a11yProps = index => ({
+		id: `full-width-tab-${index}`,
+		'aria-controls': `full-width-tabpanel-${index}`,
+	});
 
-  return (
-    <div>
-      <div
-        style={{
-          position: "absolute",
-          display: "flex",
-          flexDirection: "row",
-          width: "50px",
-          maxWidth: "425px",
-          left: stateMapControls.expandedPanel ? "0px" : type === "marketplace" ? "-567px" : "0px",
-          listStyleType: "none",
-          zIndex: "2",
-        }}
-      >
-        <StyledMenu
-          id="layer-side-panel"
-          style={!stateMapControls.expandedPanel ? { display: "none" } : { minWidth: "425px" }}
-          keepMounted
-          open={Boolean(stateMapControls.selectedControl)}
-        >
-          <StyledMenuHeaderItem disableRipple key="subheader" role={undefined} dense className={classes.subHeaderItem}>
-            <ListItemText primary="Map" />
-          </StyledMenuHeaderItem>
+	// eslint-disable-next-line no-unused-vars
+	const clearSearch = () => {
+		setTimeout(() => {
+			setSearch('');
+			setSearchState(false);
+			filterLayers();
+		}, 200);
+	};
+	// eslint-disable-next-line no-unused-vars
+	const setSearchValue = value => {
+		setSearch(value);
+		filterLayers(value);
+	};
 
-          {/* Layer Icons */}
-          <StyledMenuHActionHeader>
-            <Grid container direction="row" justify="space-between" alignItems="center" className={classes.toolbarActions}>
-              {!searchState && (
-                <Grid item>
-                  <Tabs value={tab} aria-label="find-map-tabs" indicatorColor="primary" textColor="primary" variant="fullWidth">
-                    {layerIcons.map((action, index) => (
-                      <Tab
-                        icon={action.icon}
-                        {...a11yProps(index)}
-                        onClick={() => setStateMapControls((stateMapControls) => ({ ...stateMapControls, selectedControl: action.action }))}
-                      />
-                    ))}
-                    {totalHitMapCount !== 0 && <Chip color="info" label={totalHitMapCount} className={classes.totalHitMap} />}
-                    {totalFilterCount !== 0 && <Chip color="info" label={totalFilterCount} className={classes.totalFilter} />}
-                  </Tabs>
-                </Grid>
-              )}
-              {/* <Grid item xs={searchState ? 12 : 1}>
+	useEffect(() => {
+		togglePullout();
+	}, []);
+
+	return (
+		<div>
+			<div
+				style={{
+					position: "absolute",
+					display: "flex",
+					flexDirection: "row",
+					width: "50px",
+					maxWidth: "425px",
+					left: mapControlsStateValues.expandedPanel ? "0px" : type === "marketplace" ? "-567px" : "0px",
+					listStyleType: "none",
+					zIndex: "1300", // Z-index to fix dialog overlapping with searchbar
+				}}
+			>
+				<StyledMenu
+					id="layer-side-panel"
+					style={!mapControlsStateValues.expandedPanel ? { display: "none" } : { minWidth: "425px" }}
+					keepMounted
+					open={Boolean(mapControlsStateValues.selectedControl)}
+				>
+					<StyledMenuHeaderItem disableRipple key="subheader" role={undefined} dense className={classes.subHeaderItem}>
+						<ListItemText primary="Map" />
+					</StyledMenuHeaderItem>
+
+					{/* Layer Icons */}
+					<StyledMenuHActionHeader>
+						<Grid
+							container
+							direction="row"
+							justify="space-between"
+							alignItems="center"
+							className={classes.toolbarActions}
+						>
+							{!searchState && (
+								<Grid item>
+									<Tabs
+										value={tab}
+										aria-label="find-map-tabs"
+										indicatorColor="primary"
+										textColor="primary"
+										variant="fullWidth"
+									>
+										{layerIcons.map((action, index) => (
+											<Tab
+												icon={action.icon}
+												{...a11yProps(index)}
+												onClick={() => mapControlsController.updateState({ selectedControl: action.action })}
+											/>
+										))}
+										{totalHitMapCount !== 0 && (
+											<Chip color="info" label={totalHitMapCount} className={classes.totalHitMap} />
+										)}
+										{totalFilterCount !== 0 && (
+											<Chip color="info" label={totalFilterCount} className={classes.totalFilter} />
+										)}
+									</Tabs>
+								</Grid>
+							)}
+							{/* <Grid item xs={searchState ? 12 : 1}>
                 <div className={classes.search}>
                   {
                     type === "layer" &&
@@ -407,72 +453,89 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems,
                   }
                 </div>
               </Grid> */}
-            </Grid>
-          </StyledMenuHActionHeader>
+						</Grid>
+					</StyledMenuHActionHeader>
 
-          {type === "layer" &&
-            <Datasets search={search} headerButton={headerButton} />
-          }
+					{type === 'layer' && <Datasets search={search} headerButton={headerButton} />}
 
-          <div className={classes.panelContent}>
+					<div className={classes.panelContent}>
+						<StyledMenuSecondaryHeaderItem>
+							<div>
+								<ListItemText primary={title} />
+								{type === 'layer' && (
+									<AddGroup userId={stateApp.user.mongoId} above={layerMap[layerMap.length - 1]?.id} />
+								)}
+							</div>
+							{headerButton && (
+								<StyledListItemSecondaryAction>
+									<div style={{ display: 'flex', alignItems: 'center' }}>
+										<Button
+											onClick={() => headerButton.fn()}
+											color="secondary"
+											variant="outlined"
+											startIcon={headerButton.icon}
+										>
+											{headerButton.text}
+										</Button>
+									</div>
+								</StyledListItemSecondaryAction>
+							)}
+						</StyledMenuSecondaryHeaderItem>
 
-            <StyledMenuSecondaryHeaderItem>
-              <div>
-                <ListItemText primary={title} />
-                {
-                  type === "layer" &&
-                  <AddGroup userId={stateApp.user.mongoId} above={layerMap[layerMap.length - 1]?.id} />
-                }
-              </div>
-              {headerButton && (
-                <StyledListItemSecondaryAction>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <Button onClick={() => headerButton.fn()} color="secondary" variant="outlined" startIcon={headerButton.icon}>
-                      {headerButton.text}
-                    </Button>
-                  </div>
-                </StyledListItemSecondaryAction>
-              )}
+						{/* base Stuff */}
+						{type === 'base' && (
+							<BasemapImageBox
+								mapStyles={mapStyles}
+								setBaseMap={setBaseMap}
+								currentStyle={mapStateValues.mapVars.styleId}
+								title={title}
+							/>
+						)}
 
-            </StyledMenuSecondaryHeaderItem>
-
-            {/* base Stuff */}
-            {type === "base" && getBasemapImageBox()}
-
-            {type === "layer" && showSidePanel &&
-              (<SortableLayer search={search} mongoId={stateApp.user.mongoId} />)}
-            {type === "base" && (
-              <Box height="calc((100vh - 50px) - 631px)" overflow='hidden scroll' >
-                <Collapse in={true} timeout="auto" unmountOnExit>
-                  {displayList}
-                </Collapse>
-                <MapPositions
-                  setMapDefaultPosition={setMapDefaultPosition}
-                  defaultMapVars={stateApp.defaultMapVars}
-                  mapVars={stateApp.mapVars}
-                />
-              </Box>
-            )}
-            {type === "heatMaps" && displayList}
-            {type === "filter" && <LayerFilters />}
-          </div>
-        </StyledMenu>
-        <StyledMenu
-          id="layer-secondary-panel"
-          keepMounted
-          open={secondaryPanelState}
-          style={{ display: secondaryPanelState ? "flex" : "none", minWidth: "525px" }}
-        >
-          <TransitionGroup transitionName="carousel" transitionEnterTimeout={800} transitionLeaveTimeout={500}>
-            <SecondaryPanel />
-          </TransitionGroup>
-        </StyledMenu>
-        <div className={classes.pulloutBox} onClick={() => togglePullout()}>
-          {stateMapControls.expandedPanel ? <ArrowBackIosIcon id="arrowBackIcon" /> : <ArrowForwardIosIcon />}
-        </div>
-      </div>
-    </div>
-  );
+						{type === 'layer' && mapControlsStateValues.expandedPanel && (
+							<SortableLayer search={search} mongoId={stateApp.user.mongoId} />
+						)}
+						{type === 'base' && (
+							<Box height="calc((100vh - 50px) - 631px)" overflow="hidden scroll">
+								<Collapse in={true} timeout="auto" unmountOnExit>
+									<DisplayList
+										onDragEnd={onDragEnd}
+										type={type}
+										classes={classes}
+										layerMap={layerMap}
+										handleToggle={handleToggle}
+									/>
+								</Collapse>
+								<MapPositions
+									setMapDefaultPosition={setMapDefaultPosition}
+									defaultMapVars={mapStateValues.defaultMapVars}
+									mapVars={mapStateValues.mapVars}
+								/>
+							</Box>
+						)}
+						{type === 'heatMaps' && (
+							<DisplayList
+								onDragEnd={onDragEnd}
+								type={type}
+								classes={classes}
+								layerMap={layerMap}
+								handleToggle={handleToggle}
+							/>
+						)}
+						{type === 'filter' && <LayerFilters />}
+					</div>
+				</StyledMenu>
+				<StyledSecondaryMenu />
+				<div className={classes.pulloutBox} onClick={() => togglePullout()}>
+					{mapControlsStateValues.expandedPanel ? (
+						<ArrowBackIosIcon id="arrowBackIcon" />
+					) : (
+						<ArrowForwardIosIcon className="svgouter" />
+					)}
+				</div>
+			</div>
+		</div>
+	);
 }
 
 export default React.memo(Panel, deepEqualObjects);

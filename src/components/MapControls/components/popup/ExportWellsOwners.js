@@ -17,6 +17,7 @@ import { getMapFilters, jsonToCSV, wellsToCSV } from "utils/helper";
 import { NavigationContext } from "components/Navigation/NavigationContext";
 
 import { useApolloClient } from "@apollo/client";
+import { drawController } from "hookstate/drawStateController";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -71,7 +72,9 @@ const ExportWellsOwners = ({
   const [stateNav] = useContext(NavigationContext);
   const client = useApolloClient();
 
-  const { currentFeature, user } = stateApp;
+  const { selectedPolygonString } = drawController.useState(['selectedPolygonString'], 'drawStateValues');
+
+  const { user } = stateApp;
   const { control } = useForm();
   const [includeFilter, setIncludeFilter] = useState(true);
 
@@ -85,7 +88,7 @@ const ExportWellsOwners = ({
     if (!includeFilter) {
       getShapeOwnersAndWellsAction({
         client,
-        currentFeature: currentFeature,
+        currentFeature: drawController.getValue('currentFeature'),
         userId: user.mongoId,
       });
     }
@@ -97,7 +100,7 @@ const ExportWellsOwners = ({
       const { filters, search } = getMapFilters(stateNav, "", "");
       getMapFilterShapeOwnersAndWellsAction({
         client,
-        currentFeature: currentFeature,
+        currentFeature: drawController.getValue('currentFeature'),
         userId: user.mongoId,
         filters,
         search,
@@ -115,11 +118,11 @@ const ExportWellsOwners = ({
     stateNav.spudDateTo,
     stateNav.permitDateFrom,
     stateNav.permitDateTo,
-    stateApp.gridPolygonString,
     stateNav.completetionDateFrom,
     stateNav.completetionDateTo,
     stateNav.firstProdDateFrom,
     stateNav.firstProdDateTo,
+    selectedPolygonString,
   ]);
 
   const onExport = () => {
@@ -129,7 +132,7 @@ const ExportWellsOwners = ({
     const { filters, search } = getMapFilters(stateNav, "", "");
     execAsyncExportJobAction({
       client,
-      currentFeature: currentFeature,
+      currentFeature: drawController.getValue('currentFeature'),
       filters,
       search,
       userId: user.mongoId,
@@ -260,9 +263,9 @@ const ExportWellsOwners = ({
               <Button
                 variant="contained"
                 component="span"
-                style={{ 
+                style={{
                   backgroundColor: exportDisabled ? "#D3D3D3" : "#00abed",
-                  color: exportDisabled ? "#999999": "white"
+                  color: exportDisabled ? "#999999" : "white"
                 }}
                 onClick={onExport}
                 disabled={exportDisabled}

@@ -208,13 +208,14 @@ const Title = ({ tab, setTab, setNotifications, copyData, archiveAllAndClose }) 
 
       <Grid item xs={6} container alignItems="center" className={classes.searchStyle}>
 
-        <Typography variant="h5" style={{ fontWeight: '700' }}>Notifications</Typography>
+        <Typography variant="h5" >Notifications</Typography>
 
         <TextField
           value={search}
           onChange={e => setSearch(e.target.value)}
           style={{
             margin: 0,
+            width: "70%"
           }}
           margin="dense"
           variant="outlined"

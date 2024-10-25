@@ -29,6 +29,7 @@ import { AutoCompleteLandgrid } from "components/Shared/Forms/Fields/AutoComplet
 import { US_STATES_CODES } from "utils/data";
 import filterConsts from "components/Table/TableAddDialog/Common/filterConsts";
 import { hookstate, useHookstate } from "@hookstate/core";
+import { globalStateController } from "hookstate/globalStateController";
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps, loading }) {
   const dispatch = useDispatch();
@@ -58,7 +59,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
         onKeyDown={(e) => {
           if (e.keyCode === 13) {
             e.stopPropagation();
-            if (['uName', 'shapeLabel'].includes(data.key) && !e.target.value)
+            if (['uName', 'shapeLabel'].includes(data.key) && !e.target.value?.trim()) // validate after trimming the value
               dispatch(showInfoMessage("Name field cannot be empty"));
             else
               onKeyDown(e, data, type);
@@ -369,6 +370,7 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
                           <Grid item md={10}>
                             {data.label || "-"}
                           </Grid>
+
                           <Grid item md={2}>
                             {
                               <EditIconComponent data={data} dataKey={`${data.key}key`} onClick={() => {
@@ -378,8 +380,10 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
                                   setStateApp((stateApp) => ({
                                     ...stateApp,
                                     selectedMeta: data,
-                                    showFieldModal: true,
                                   }));
+                                  globalStateController.updateState({
+                                    showFieldModal: true,
+                                  });
                                 }
                               }} classes={classes} />
                             }
