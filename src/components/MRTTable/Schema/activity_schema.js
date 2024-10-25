@@ -27,7 +27,8 @@ const ActivityMeta = {
     search: {
         fields: ["name^4", "_all"]
     },
-    maxTableHeight: 'calc(100vh - 215px)',
+    maxTableHeight: 'calc(100vh - 600px)',
+    isNotBreadcrumbView: true, // Flag to determine whether to display a simple Typography or a Breadcrumbs component. If true, Typography is rendered; if false, Breadcrumbs is rendered.
     gridViewSettings: {
         label: 'Activities',
         Icon: Analytics,
