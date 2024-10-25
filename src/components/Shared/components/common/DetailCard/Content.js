@@ -8,7 +8,6 @@ import { detailCardController } from 'hookstate/detailCardController';
 
 import * as Pages from './pages';
 import TabRender from './TabRender';
-// import CustomTabs from './CustomTabs';
 
 const useStyles = makeStyles(theme => ({
 	container: {
@@ -109,8 +108,6 @@ const Content = () => {
 			<Grid item xs={12} className={classes.header}>
 				<Header />
 			</Grid>
-
-			{/* <CustomTabs /> */}
 
 			<Grid item xs={12}>
 				<Grid container direction="row" className={classes.tabsContainer}>
