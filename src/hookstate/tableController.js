@@ -15,6 +15,7 @@ import { formatGridViewToMRT } from 'components/MRTTable/utils/helper';
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
 import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 import { handleMRTSchema, handleVisiblityMenu } from './helpers';
+import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 function isDateFormat(inputString) {
 	// Regular expression for MM/DD/YYYY format
@@ -156,6 +157,7 @@ const tableESStateControllerHandler = state => ({
 		tableKey,
 		{
 			esIndex,
+			customLayerIdentifier,
 			pageSize,
 			defaultSort,
 			isInFiniteScroll,
@@ -208,6 +210,15 @@ const tableESStateControllerHandler = state => ({
 		let formatedGridView = null;
 		let gridView = {};
 
+		const mapView = globalStateController.getValue('mapView')?.selectedMapView;
+
+		const dataSourceViews = mapView?.filters?.filter(view => view.dataSourceName === customLayerIdentifier);
+		const mapViewFilters = dataSourceViews.map(view =>
+			getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)
+		);
+
+		const mrtDefaultFilters = defaultFilters || state?.defaultFilters?.get({ noproxy: true });
+		const mergedMapGridFilters = [...mrtDefaultFilters, ...mapViewFilters];
 		if (gridViewSettings) {
 			// Fetch user-specific or default grid views based on provided settings and overrides.
 			const userDefaultDisplay = await fetchGridViews(client, gridViewSettings.module, tableKey, rest.gridViewOverride);
@@ -261,7 +272,7 @@ const tableESStateControllerHandler = state => ({
 			isLoading: false,
 			isFetching: false,
 			isError: false,
-			defaultFilters: defaultFilters || state?.defaultFilters?.get({ noproxy: true }),
+			defaultFilters: mergedMapGridFilters || [],
 			customProps: isEmpty(state?.customProps?.get({ noproxy: true }))
 				? customProps
 				: state?.customProps?.get({ noproxy: true }),
