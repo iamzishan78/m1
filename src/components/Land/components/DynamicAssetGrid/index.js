@@ -1,7 +1,6 @@
 import React, { useMemo, useEffect } from 'react';
 import MRTTable from 'components/MRTTable';
 import { useSelector } from 'react-redux';
-import { ALL_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
 import { tableGlobalController } from 'hookstate/tableController';
 function DynamicAssetGrid() {
   const { activeModule } = useSelector(({ common }) => common);
@@ -11,7 +10,9 @@ function DynamicAssetGrid() {
       esIndex: activeModule.title.replace(/\s+/g, '').toLowerCase() + '_flats',
       assetName: activeModule.title,
       fetchDynamicSchema: {
-        query: ALL_CUSTOM_ASSET_INFO,
+        variables: {
+          tableName: activeModule.title,
+        },
         tableName: activeModule.title,
       },
     }),

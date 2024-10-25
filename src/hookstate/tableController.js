@@ -16,6 +16,7 @@ import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOp
 import MRT_SelectCheckbox_OverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 import { handleMRTSchema, handleVisiblityMenu } from './helpers';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import { GET_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
 
 function isDateFormat(inputString) {
 	// Regular expression for MM/DD/YYYY format
@@ -125,12 +126,18 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, 
 
 	// Fetch dynamic grid schema
 	const result = await client.query({
-		variables: {},
-		query: fetchDynamicSchema.query,
+		variables: fetchDynamicSchema.variables,
+		query: GET_CUSTOM_ASSET_INFO,
 	});
 
 	// Fetch dynamic grid columns
-	const columns = result?.data?.getAllCustomAssetInfo?.res?.find(model => model.tableName === fetchDynamicSchema.tableName)?.modelKeys || [];
+	const customAsset = result?.data?.getCustomAssetInfo?.asset;
+	let columns = customAsset?.modelKeys || [];
+
+	if(fetchDynamicSchema.isAssociatedModel) {
+		const associatedModel = customAsset.associatedModels.find(model => model.modelName === fetchDynamicSchema.associatedModel);
+		columns = associatedModel?.modelKeys || [];
+	}
 
 	// Create dynamic grid schema
 	const dynamicTableSchema = columns.map((item, index) => {

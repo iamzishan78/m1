@@ -52,6 +52,7 @@ export const SCHEMA = {
 	TaxOwnerTable: TaxOwnerMeta,
 	SalesVolumeComparisonTable: SalesVolumeComparisonMeta, // Sales Volume comparison grid => analytrics/revenue
 	DynamicAssetTable: DynamicAssetMeta, // Dynamic assets meta
+	DynamicAssoicationTable: DynamicAssetMeta, // Dynamic assets association meta
 	CustomAssetEntitiesTable: AssetCustomEntitiesMeta, // Custom assets entities schema
 	customAssetTable: customAssetMeta, // Custom asset info schema
 };
