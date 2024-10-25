@@ -66,6 +66,7 @@ const TractMeta = {
 	isInFiniteScroll: true,
 	columnVirtualization: true,
 	onCustomKeyChange,
+	// get metadata for the grid
 	fetchMetaData: {
 		category: 'Parcel',
 	},
