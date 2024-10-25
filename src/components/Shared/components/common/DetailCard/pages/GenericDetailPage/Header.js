@@ -1,12 +1,9 @@
-import React, { memo, useContext } from 'react';
+import React, { memo } from 'react';
 import Avatar from 'react-avatar';
 
-import { Badge, Button } from '@material-ui/core';
+import { Badge } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import AddIcCallIcon from '@material-ui/icons/AddIcCall';
-import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 
-import { AppContext } from 'AppContext';
 import { detailCardController } from 'hookstate/detailCardController';
 import { globalStateController } from 'hookstate/globalStateController';
 
@@ -28,23 +25,13 @@ const StyleBadge = withStyles({
 
 const Header = () => {
 	const classes = useStyles({});
-	const [, setStateApp] = useContext(AppContext);
 
 	const {
 		globalStateValues: { currentAsset },
 	} = globalStateController.useState(['currentAsset'], 'globalStateValues');
+
 	const { stateValues } = detailCardController.useState(['currentAssetRecord']);
 	const currentAssetRecord = stateValues.currentAssetRecord;
-
-	const handleExpandClick = type => {
-		setStateApp(stateApp => ({
-			...stateApp,
-			activitySideDialog: true,
-		}));
-		detailCardController.updateProps({
-			openDialog: type,
-		});
-	};
 
 	const getControlColumnData = () => {
 		const controlColumnKey = currentAsset?.modelKeys?.find(key => !!key.isControlColumn)?.mappingKey;
@@ -84,29 +71,6 @@ const Header = () => {
 							publicLeftBottom
 							onlyTags
 						/>
-					</div>
-
-					<div className={classes.metaActions}>
-						<Button
-							className={classes.contactDataButton}
-							startIcon={<MonetizationOnIcon color="grey" />}
-							onClick={e => {
-								e.stopPropagation();
-								setStateApp(stateApp => ({
-									...stateApp,
-									dealDialog: true,
-								}));
-							}}
-						>
-							Add New Deal
-						</Button>
-						<Button
-							className={classes.contactDataButton}
-							startIcon={<AddIcCallIcon color="grey" />}
-							onClick={() => handleExpandClick('activity')}
-						>
-							Add Activity
-						</Button>
 					</div>
 				</div>
 			</div>
