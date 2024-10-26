@@ -67,7 +67,7 @@ const Header = () => {
 						<Tags
 							width="100%"
 							targetSourceId={currentAssetRecord?._id}
-							targetLabel="contact"
+							targetLabel={currentAsset?.tableName}
 							publicLeftBottom
 							onlyTags
 						/>

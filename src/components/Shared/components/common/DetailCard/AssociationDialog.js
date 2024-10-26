@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 
 import {
 	Button,
@@ -22,6 +22,8 @@ import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+import { globalStateController } from 'hookstate/globalStateController';
+import { ADD_ASSOCIATED_MODEL_DATA } from 'graphQL/useMutationAssociatedModelData';
 
 const useStyles = makeStyles(theme => ({
 	maxWidth: {
@@ -68,8 +70,12 @@ function AssociationDialog() {
 	const { isOpen } = stateValues.AssociateDataDialog || {};
 
 	const {
-		stateValues: { selectedAssoicatedModel: currentAssociatedModel },
-	} = detailCardController.useState(['selectedAssoicatedModel']);
+		globalStateValues: { currentAsset },
+	} = globalStateController.useState(['currentAsset'], 'globalStateValues');
+
+	const {
+		stateValues: { selectedAssoicatedModel: currentAssociatedModel, currentAssetRecord },
+	} = detailCardController.useState(['selectedAssoicatedModel', 'currentAssetRecord']);
 
 	const controlColumn = currentAssociatedModel?.modelKeys?.find(key => !!key.isControlColumn);
 
@@ -80,6 +86,13 @@ function AssociationDialog() {
 			setAssociatedDataOptions(associatedModelData);
 		},
 		fetchPolicy: 'no-cache',
+	});
+
+	const [addAossciatedData] = useMutation(ADD_ASSOCIATED_MODEL_DATA, {
+		onCompleted: () => {
+			handleClickRightDialogClose();
+			tableGlobalController.refetch();
+		},
 	});
 
 	useEffect(() => {
@@ -107,6 +120,23 @@ function AssociationDialog() {
 			AssociateDataDialog: {},
 		});
 		setSelectedOption({});
+	};
+
+	const addAssociatedDataHandler = () => {
+		if (selectedOption && currentAssetRecord && currentAsset) {
+			const selectedId = selectedOption._id;
+
+			addAossciatedData({
+				variables: {
+					mainModelName: currentAsset?.tableName,
+					associatedModelName: currentAssociatedModel?.modelName,
+					descriptorObject: currentAssetRecord?._id,
+					descriptorType: currentAsset?.tableName,
+					relatedObject: selectedId,
+					relatedObjectType: currentAssociatedModel?.modelName,
+				},
+			});
+		}
 	};
 
 	return (
@@ -182,8 +212,8 @@ function AssociationDialog() {
 				</Button>
 				<Button
 					className={classes.secondary}
-					disabled={false}
-					onClick={() => {}}
+					disabled={!selectedOption}
+					onClick={addAssociatedDataHandler}
 					color="secondary"
 					style={{ marginBottom: '40px', marginRight: '20px', bottom: 0 }}
 					data-testid="action-button"
