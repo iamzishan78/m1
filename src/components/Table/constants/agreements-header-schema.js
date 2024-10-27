@@ -226,6 +226,15 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       dbName: "shapeJson.properties.grossAcres",
     },
   },
+  // Added Report Net column
+  {
+    name: "reportNet",
+    label: "Report Net",
+    esKey: "shapeJson.properties.reportNet.keyword",
+    options: {
+      dbName: "shapeJson.properties.reportNet",
+    },
+  },
   {
     name: "netAcres",
     label: "Net",
