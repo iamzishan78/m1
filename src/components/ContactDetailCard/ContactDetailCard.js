@@ -770,7 +770,7 @@ function ContactDetailCard(props) {
               <div className={classes.summarySection}>
                 <Grid item xs={12} container spacing={0} style={{
                   padding: "5px 20px",
-                  height: "450px",
+                  height: "465px",
                   // marginBottom: "-100px",
                   // marginTop: "20px",
                   textAlign: "center"

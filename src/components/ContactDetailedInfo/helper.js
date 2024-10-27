@@ -648,7 +648,8 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
 export const SUMMARY_FIELDS = (contactData) => {
   let nraSumKey = contactData?.contactInterests?.nraSum ? "contactInterests.nraSum" : "evaluatedContactInterests.nraSum",
     maxOfferPriceSum = contactData?.contactInterests?.maxOfferPriceSum ? "contactInterests.maxOfferPriceSum" : "evaluatedContactInterests.maxOfferPriceSum",
-    offerPriceSum = contactData?.contactInterests?.offerPriceSum ? "contactInterests.offerPriceSum" : "evaluatedContactInterests.offerPriceSum";
+    offerPriceSum = contactData?.contactInterests?.offerPriceSum ? "contactInterests.offerPriceSum" : "evaluatedContactInterests.offerPriceSum",
+    closedPriceSum = contactData?.contactInterests?.closedPriceSum ? "contactInterests.closedPriceSum" : "evaluatedContactInterests.closedPriceSum"; // get closedPriceSum from  evaluatedContactInterests 
   return [
     {
       label: "Full Name",
@@ -732,6 +733,12 @@ export const SUMMARY_FIELDS = (contactData) => {
     {
       label: "Max Offer Amount",
       key: maxOfferPriceSum,
+      type: "currency",
+      position: "right",
+    },
+    {
+      label: "Closed Price Amount", // Add closed price sum to contact details summary section
+      key: closedPriceSum,
       type: "currency",
       position: "right",
     },
