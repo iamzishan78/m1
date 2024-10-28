@@ -5,6 +5,7 @@ import { useLazyQuery } from "@apollo/client";
 import { GETWELLSFROMDOCUMENTS } from "graphQL/useQueryGetWellsFromDocument";
 import { GETCONTACTSFROMDOCUMENTS } from "graphQL/useQueryGetContactsFromDocument";
 import { GET_AGREEMENTS_FROM_DOCUMENTS } from "graphQL/useQueryGetAgreementsFromDocument";
+import { GET_CHECKS_FROM_DOCUMENT } from "graphQL/useQueryGetChecksFromDocument";
 
 const DocumentContext = createContext([{}, () => {}]);
 
@@ -12,6 +13,7 @@ const DocumentContextProvider = (props) => {
   const [wells, setWells] = useState([]);
   const [contacts, setContacts] = useState([]);
   const [shapes, setShapes] = useState([]);
+  const [checks, setChecks] = useState([]); // state to manage checks data
 
   //Queries
   const [
@@ -38,6 +40,14 @@ const DocumentContextProvider = (props) => {
     nextFetchPolicy: "cache-first",
   });
 
+  const [
+    getChecksFromDocument,
+    { data: checksFromDocument, loading: getChecksLoading },
+  ] = useLazyQuery(GET_CHECKS_FROM_DOCUMENT, {
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
+  });
+
   useEffect(() => {
     const wellDescriptor = wellsFromDocument?.getWellDescriptors[0];
     setWells(wellDescriptor?.wells);
@@ -53,6 +63,12 @@ const DocumentContextProvider = (props) => {
       agreementsFromDocument?.getAgreementDescriptors[0];
     setShapes(agreementDescriptor?.shapeObj);
   }, [agreementsFromDocument]);
+  // useEffect to handle check data changes
+  useEffect(() => {
+    const checkDescriptor =
+      checksFromDocument?.getCheckDescriptors;
+    setChecks(checkDescriptor?.checks);
+  }, [checksFromDocument]);
 
   const contextValue = {
     getWellsFromDocument,
@@ -70,6 +86,11 @@ const DocumentContextProvider = (props) => {
     agreementsFromDocument,
     shapes,
     setShapes,
+    getChecksFromDocument,
+    getChecksLoading,
+    checksFromDocument,
+    checks,
+    setChecks,
   };
 
   return (
