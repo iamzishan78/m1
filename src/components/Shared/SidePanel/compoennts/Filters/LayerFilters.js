@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useRef } from 'react';
+import React, { useCallback, useContext, useEffect } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -188,21 +188,16 @@ const LayerFilters = () => {
 		[formMethods]
 	);
 
-	// Keep track of previous selectedMapView to avoid unnecessary resets
-	const prevSelectedMapView = useRef(mapStateValues?.mapView?.selectedMapView);
-
 	useEffect(() => {
 		const selectedMapView = mapStateValues?.mapView?.selectedMapView;
 
-		// Only reset the form if selectedMapView has changed
-		if (selectedMapView && prevSelectedMapView.current !== selectedMapView) {
+		if (selectedMapView) {
 			resetForm({
-				mapViews: selectedMapView.filters || [],
+				mapViews: selectedMapView?.filters || [],
 			});
-
-			prevSelectedMapView.current = selectedMapView; // Update reference to current value
 		}
-	}, [mapStateValues?.mapView?.selectedMapView, resetForm]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [mapStateValues?.mapView?.selectedMapView]);
 
 	const resetFilters = (params, additionalParamsToReset = {}) => {
 		const geoFiltersToReset = {};
