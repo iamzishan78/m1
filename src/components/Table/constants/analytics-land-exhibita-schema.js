@@ -16,13 +16,9 @@ const AcerageSummaryHeadCells = [
       display: true,
       ...GlobalStickyStyles({
         setCellProps: {
-          left: "77px",
           maxWidth: "492px",
         },
-        setCellHeaderProps: {
-          left: "77px",
-          paddingLeft: "0px",
-        },
+        isSnapGrid : false // Fix issue table title slightly hide while scrolling horizontally
       }),
     },
   },

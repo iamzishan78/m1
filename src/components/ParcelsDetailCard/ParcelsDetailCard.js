@@ -327,6 +327,17 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
     customProps: { customLayer: parcelObj }
   }), [parcelObj]);
 
+  // Table overridden meta
+  const RelatedAgreementOverrideMeta = useMemo(() => ({
+    defaultFilters: [{ field: "tract.tractId", value: parcelObj?._id }],
+    onClickedRow: () => null,
+    onCustomKeyChange: null,
+    CustomToolBar: null,
+    gridViewSettings: null,
+    maxTableHeight: "calc(60vh - 200px)",
+    fetchMetaData: null,
+  }), [parcelObj]);
+
   useEffect(() => {
     if (updatedParcel) {
       if (updatedParcel.updateCustomLayer?.success) {
@@ -379,6 +390,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
         customLayer,
         userId: globalStateController.getValue('user')?._id
       },
+      refetchQueries: ['getAllLayerSettingsByUser'],
+      awaitRefetchQueries: true,
     }).then((res) => {
       jobController.toggleBulkUpload()
       layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)
@@ -401,6 +414,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
         customLayer,
         userId: globalStateController.getValue('user')?._id
       },
+      refetchQueries: ['allLayerSettingsByUser'],
+      awaitRefetchQueries: true,
     }).then((res) => {
       jobController.toggleBulkUpload()
       layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)
@@ -455,7 +470,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
       </Grid>
       <Grid item sm={12}>
         <Taps
-          tabLabels={['Summary', 'Interest Owners', 'Runsheet', 'Wells', 'Units', 'Documents']}
+          tabLabels={['Summary', 'Interest Owners', 'Runsheet', 'Wells', 'Units', 'Agreements', 'Documents']}
           openTabIdex={selectTabIndex}
           tabPanels={[
             <div style={{ overflow: 'overlay', maxHeight: 'calc(100vh - 285px)', overflowX: 'hidden' }}>
@@ -521,6 +536,9 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
                 </div>,
               ]}
             />,
+            <div>
+              <MRTTable name="ShapeDetailAgreementTable" overrideMeta={RelatedAgreementOverrideMeta} />
+            </div>,
             <div className={`${classes.subContent} ${classes.parcelDocument}`}>
               <RelatedDetailsDocumentTable
                 customLayer={copy(parcelObj)}

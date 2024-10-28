@@ -406,7 +406,7 @@ export default function MetadataDrawer(props) {
                 className={classes.viewAll}
                 onClick={() => {
                   history.push(`/contact/details/${targetSourceId}/documents`);
-                  setStateApp((stateApp) => ({ ...stateApp, viewDoc: null }));
+                  setStateApp((stateApp) => ({ ...stateApp, viewDoc: null, isExpanded: true }));
                 }}
               >
                 View All

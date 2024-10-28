@@ -1,9 +1,9 @@
 const axios = require('axios');
 const { UPSERT_CYPRESS_LOG } = require('../../../src/graphQL/useMutationCypress.js');
 const { getPipelineData } = require('./utils/helpers.js'); 
-const { BUILD_ID, SOURCE_BRANCH } = getPipelineData();
+const { BUILD_ID, SOURCE_BRANCH, PIPELINE_TRIGGER_MODE, PIPELINE_RUN_MODE } = getPipelineData();
 
-const UpsertCypressLog = async ({ pr, specs, buildId = BUILD_ID, isFailedRetry = false}) => {
+const UpsertCypressLog = async ({ pr, specs, buildId = BUILD_ID, isFailedRetry = false }) => {
   try {
     const ldata = require('../../fixtures/ldata.json');
     const { headers } = require('../../cypressUtils/cypressHeaders.js');
@@ -12,11 +12,13 @@ const UpsertCypressLog = async ({ pr, specs, buildId = BUILD_ID, isFailedRetry =
       operationName: 'upsertCypressLog',
       variables: {
         log: {
-          pr: pr,
-          specs: specs,
+          pr,
+          specs,
+          buildId,
+          isFailedRetry,
           sourceBranch: SOURCE_BRANCH,
-          buildId: buildId,
-          isFailedRetry: isFailedRetry,
+          pipelineRunMode: PIPELINE_RUN_MODE,
+          pipelineTriggerMode: PIPELINE_TRIGGER_MODE,
         },
       },
       query: UPSERT_CYPRESS_LOG.loc.source.body,

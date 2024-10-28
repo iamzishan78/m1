@@ -22,16 +22,18 @@ import {
 	ifStaticMapBoxGlLayerIdentifiers,
 	mapBoxLayerIdentifiers,
 	staticMapBoxLayerIdentifiers,
+	isCustomLayerCopy,
 } from 'components/Shared/functions/shapeLayer';
 import { globalStateController } from './globalStateController';
 import { layerFiltersController } from './layerFiltersController';
+import { getLayerKey } from 'hookstate/helpers';
 import { popupController } from './popupStateController';
 import { drawController } from './drawStateController';
 import { navController } from './navStateController';
 import { mapControlsController } from './mapControlsController';
 import { NotificationManager } from 'react-notifications';
 import { debounce } from 'lodash';
-import { layerState, layerStateInitialState } from './initialStates';
+import { layerFilters, layerState, layerStateInitialState } from './initialStates';
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
 const getWellColor = w => {
@@ -45,7 +47,7 @@ const getWellColor = w => {
 	// Switch on whether wellStatus or wellType 
 	const switchType = isWellPermitStatus ? w.properties.wellStatus : w.properties.wellType;
 	switch (switchType) {
-		
+
 		// rgb(2, 207, 53)
 		case 'OIL':
 		case 'OIL AND GAS':
@@ -149,9 +151,7 @@ const LayerMeta = {
 				return {
 					data: deckLayers[layerId].getData([]),
 					pointRadiusMinPixels: 5,
-					lineWidthMinPixels: 2,
 					pointRadiusMaxPixels: 15,
-					lineWidthMaxPixels: 10,
 				};
 			},
 		},
@@ -410,6 +410,7 @@ const layerStateControllerHandler = state => {
 			if (
 				!isFileLayer &&
 				!deckGlLayerIdentifiers.includes(dbLayer?.identifier) &&
+				!isCustomLayerCopy(dbLayer?.identifier) &&
 				!deckGlLandGridIdentifiers.includes(dbLayer?.identifier) &&
 				!mapBoxLayerIdentifiers.includes(dbLayer?.identifier) &&
 				!staticMapBoxLayerIdentifiers.includes(dbLayer?.identifier)
@@ -576,6 +577,9 @@ const layerStateControllerHandler = state => {
 					...(labelProps && { getText: d => d.properties?.label }),
 					pickable,
 					visible,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					  },
 				},
 			});
 		}
@@ -604,8 +608,9 @@ const layerStateControllerHandler = state => {
 		const isAgreementLayer = agreementLayerIdentifiers.includes(dbLayer.identifier);
 		const filterIdentifier = isAgreementLayer ? 'Agreements' : isFileLayer ? dbLayer.layerShapeName : dbLayer.identifier;
 
-		let { [filterIdentifier]: filters, polygonFilter, polygonsFilter } = layerFiltersController.getValues(
-			[filterIdentifier, 'polygonFilter', 'polygonsFilter']
+		const filterKey = getLayerKey(filterIdentifier, layerFilters);
+		let { [filterKey]: filters, polygonFilter, polygonsFilter } = layerFiltersController.getValues(
+			[filterKey, 'polygonFilter', 'polygonsFilter']
 		);
 
 		const boundingState = handleBounds(
@@ -702,11 +707,26 @@ const layerStateControllerHandler = state => {
 				noproxy: true,
 			});
 
-			const layerId = Object.keys(boundingStates || {}).find(
+			let layerId = Object.keys(boundingStates || {}).find(
 				key => key && key.toLowerCase().startsWith(identifier.toLowerCase())
 			);
 
-			if (!layerId) return;
+			// If layerId is not found, then find layerId by layerShapeName
+			if (!layerId) {
+
+				// Find layer by layerShapeName
+				const requiredLayer = globalStateController.getValue('layers').find(layer => layer.layerShapeName === identifier);
+
+				// If layer is not found, then return
+				if (!(requiredLayer && requiredLayer?.layerType === 'file layer')) return;
+
+				// Updating identifier with requiredLayer identifier
+				identifier = requiredLayer.identifier
+				layerId = Object.keys(boundingStates || {}).find(
+					key => key && key.toLowerCase().startsWith(identifier.toLowerCase())
+				);
+				if (!layerId) return
+			}
 
 			const showableLayers = getShowableLayers();
 			showableLayers.forEach(dbLayer => {

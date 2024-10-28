@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import { get, isEqual } from 'lodash';
+import { Tooltip } from "@material-ui/core";
 import moment from 'moment';
 import {
   Grid,
@@ -115,13 +116,15 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
           <div className={classes.cardsWrapper}>
             <Card variant="outlined" className={`${classes.card} ${classes.leftCard}`}>
               <CardContent className={classes.cardContent}>
-                <Typography
-                  variant="h6"
-                  component="div"
-                  className={classes.cardHeaderTypography}
-                >
-                  Status
-                </Typography>
+                <Tooltip title={"Status"} >
+                  <Typography
+                    variant="h6"
+                    component="div"
+                    className={classes.cardHeaderTypography}
+                  >
+                    Status
+                  </Typography>
+                </Tooltip>
                 <FormControlLabel
                   label={get(campaign, 'status', 'Open')}
                   labelPlacement="start"
@@ -143,13 +146,15 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
             </Card>
             <Card variant="outlined" className={classes.card}>
               <CardContent className={classes.cardContent}>
-                <Typography
-                  variant="h6"
-                  component="div"
-                  className={classes.cardHeaderTypography}
-                >
-                  Units
-                </Typography>
+                <Tooltip title={"Units"} >
+                  <Typography
+                    variant="h6"
+                    component="div"
+                    className={classes.cardHeaderTypography}
+                  >
+                    Units
+                  </Typography>
+                </Tooltip>
                 <Typography
                   id="unitCounts"
                   variant="h6"
@@ -162,13 +167,15 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
             </Card>
             <Card variant="outlined" className={classes.card}>
               <CardContent className={classes.cardContent}>
-                <Typography
-                  variant="h6"
-                  component="div"
-                  className={classes.cardHeaderTypography}
-                >
-                  Tracts
-                </Typography>
+                <Tooltip title={"Tracts"} >
+                  <Typography
+                    variant="h6"
+                    component="div"
+                    className={classes.cardHeaderTypography}
+                  >
+                    Tracts
+                  </Typography>
+                </Tooltip>
                 <Typography
                   id="unitCounts"
                   variant="h6"
@@ -181,13 +188,15 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
             </Card>
             <Card variant="outlined" className={classes.card}>
               <CardContent className={classes.cardContent}>
-                <Typography
-                  variant="h6"
-                  component="div"
-                  className={classes.cardHeaderTypography}
-                >
-                  Contacts
-                </Typography>
+                <Tooltip title={"Contacts"} >
+                  <Typography
+                    variant="h6"
+                    component="div"
+                    className={classes.cardHeaderTypography}
+                  >
+                    Contacts
+                  </Typography>
+                </Tooltip>
                 <Typography
                   variant="h6"
                   component="div"
@@ -199,13 +208,15 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
             </Card>
             <Card variant="outlined" className={classes.card}>
               <CardContent className={classes.cardContent}>
-                <Typography
-                  variant="h6"
-                  component="div"
-                  className={classes.cardHeaderTypography}
-                >
-                  Total Unit NRA
-                </Typography>
+                <Tooltip title={"Total Unit NRA"} >
+                  <Typography
+                    variant="h6"
+                    component="div"
+                    className={classes.cardHeaderTypography}
+                  >
+                    Total Unit NRA
+                  </Typography>
+                </Tooltip>
                 <Typography
                   variant="h6"
                   component="div"

@@ -98,6 +98,12 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  // input field styling
+  dialogInput:{
+    "& .MuiInputBase-root": {
+      padding: "5px"
+    }
+  }
 }));
 
 const DealDialogHeader = ({
@@ -252,6 +258,7 @@ const DealDialogHeader = ({
       <Grid item container xs={12} style={{ padding: "0px 0px 0px 10px" }} alignItems="center">
         <FormControl variant="outlined" className={classes.inputFieldDealName} style={{ marginLeft: "-15px" }} fullWidth size="small">
           <TextField
+            className={classes.dialogInput}
             margin="dense"
             value={title}
             variant="outlined"

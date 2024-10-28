@@ -17,10 +17,11 @@ import { saveUserSession } from "utils/user";
 import Api from "api";
 
 import BypassSignInCard from "./BypassSignInCard";
-import { BYPASS_LOGIN_MUTATION } from "graphQL/useMutationBypassLogin";
+import { SIMPLE_BYPASS_LOGIN_MUTATION } from "graphQL/useMutationBypassLogin";
 import { apolloClientEndpointDev, isDev } from "utils/helper";
 import { globalStateController } from "hookstate/globalStateController";
 import { mapStateController } from "hookstate/mapStateController";
+import { simpleAuthBypass } from "utils/data";
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
@@ -95,8 +96,7 @@ const Login = (props) => {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [, setStateNav] = useContext(NavigationContext);
 
-  const { globalStateValues } = globalStateController.useState(['bypassLogin'], 'globalStateValues');
-
+  const { globalStateValues } = globalStateController.useState(['bypassLogin', 'bypassType'], 'globalStateValues');
   const localClass = localStyles();
   const [signingIn, setSigningIn] = useState(false);
   const [loadingSigInButton, setLoadingSigInButton] = useState(false);
@@ -298,12 +298,13 @@ const Login = (props) => {
     }
   }, [stateApp.myMSALObj, signingIn]);
 
+
   const handleAADSignIn = async (tenantName, updateTenantFlags) => {
     let tenant = tenantsCredentials(tenantName);
 
     if (globalStateController.getValue('bypassLogin')) {
       window.sessionStorage.setItem("tenantName", tenant.name);
-
+      history.push(history.location.pathname)
       return;
     }
 
@@ -399,7 +400,7 @@ const Login = (props) => {
 
     setTimeout(async () => {
       try {
-        const { data: { bypassLogin: loginResp } } = await Api.mutate(BYPASS_LOGIN_MUTATION, {
+        const { data: { simpleBypassLogin: loginResp } } = await Api.mutate(SIMPLE_BYPASS_LOGIN_MUTATION, {
           email
         })
 
@@ -645,7 +646,7 @@ const Login = (props) => {
   const renderBody = (
     <>
       <div className={localClass.cardContainer}>
-        {globalStateValues.bypassLogin ?
+        {simpleAuthBypass ?
           <BypassSignInCard
             ready={loadingSigInButton}
             handleAADSignIn={handleBypassAADSignIn}
