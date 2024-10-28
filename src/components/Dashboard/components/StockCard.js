@@ -55,24 +55,25 @@ const StockCard = ({ title }) => {
         "belowLineFillColorGrowing": "rgba(33, 150, 243, 0.12)",
         "belowLineFillColorFalling": "rgba(33, 150, 243, 0.12)",
         "symbolActiveColor": "rgba(33, 150, 243, 0.12)",
+        "showFloatingTooltip":true,
         "tabs": [
           {
             "title": "Indices",
             "symbols": [
               {
-                "s": "CURRENCYCOM:US30",
-                "d": "DOW 30"
+                "s": "FOREXCOM:DJI",
+                "d": "DOW JONES INDUSTRIAL"
               },
               {
-                "s": "CURRENCYCOM:US100",
+                "s": "FOREXCOM:NSXUSD",
                 "d": "NASDAQ 100"
               },
               {
-                "s": "CURRENCYCOM:US500",
+                "s": "FOREXCOM:SPXUSD",
                 "d": "S&P 500"
               },
               {
-                "s": "CURRENCYCOM:UK100",
+                "s": "FOREXCOM:UK100",
                 "d": "FTSE 100"
               },
               {
@@ -96,7 +97,20 @@ const StockCard = ({ title }) => {
               {
                 "s": "NYMEX:NG1!",
                 "d": "NATURAL GAS"
+              },
+              {
+                "s": "TVC:GOLD",
+                "d": "GOLD"
+              },
+              {
+                "s": "BITSTAMP:BTCUSD",
+                "d": "BITCOIN"
+              },
+              {
+                "s": "BITSTAMP:ETHUSD",
+                "d": "ETHEREUM"
               }
+
             ],
             "originalTitle": "Commodities"
           },
@@ -123,10 +137,11 @@ const StockCard = ({ title }) => {
                 "s": "NYSE:OXY",
                 "d": "OCCIDENTAL PETROLEUM"
               },
-              {
-                "s": "NYSE:PXD",
-                "d": "PIONEER NATURAL RESOURCES"
-              },
+              //remove as PXD no longer exists
+              // {
+              //   "s": "NYSE:PXD",
+              //   "d": "PIONEER NATURAL RESOURCES"
+              // },
               {
                 "s": "NASDAQ:FANG",
                 "d": "DIAMONDBACK ENERGY"

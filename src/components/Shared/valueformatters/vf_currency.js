@@ -21,7 +21,8 @@ export function vf_currency_to_fixed(value, toFixed) {
   var formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-    maximumSignificantDigits: 21,
+    minimumFractionDigits: toFixed, // Ensures at least 'toFixed' decimal places are displayed
+    maximumFractionDigits: toFixed,  // Ensures at most 'toFixed' decimal places are displayed
   });
 
   const valueFormatter = (v) => {

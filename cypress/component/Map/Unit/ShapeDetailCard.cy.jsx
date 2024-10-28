@@ -11,7 +11,7 @@ import { copy } from 'components/Shared/functions';
 import { headers } from '../../../cypressUtils/cypressHeaders';
 /* ---------------------------------- Data ---------------------------------- */
 let selectedShape = {
-  id: '65eeef41f1e14c0724bee441',
+  id: '667d6d179661ee87114c841c',
 };
 
 const getLayerPayload = {
@@ -46,37 +46,6 @@ Cypress.Commands.add('setMapData', ({ testId, value }) => {
   cy.get('body').click();
 
   cy.get(`[data-testid="data-cell-${testId}"]`).contains(value);
-});
-
-describe('Restore Unit for ShapeDetailCard.cy.jsx if Deleted', () => {
-  it(`Restores Unit ${selectedShape.id}`, () => {
-    const updateLayerPayload = {
-      operationName: 'updateCustomLayer',
-      variables: {
-        customLayerId: selectedShape.id,
-        customLayer: { IsDeleted: false },
-      },
-      query: UPDATECUSTOMLAYER.loc.source.body,
-    };
-
-    cy.request({
-      method: 'POST',
-      url: ldata.url,
-      headers: headers,
-      body: getLayerPayload,
-    }).then((response) => {
-      if (!response?.body?.data?.customLayer)
-        cy.request({
-          method: 'POST',
-          url: ldata.url,
-          headers: headers,
-          body: updateLayerPayload,
-        }).then((response) => {
-          expect(response.status).to.eq(200);
-        });
-      else expect(response.status).to.eq(200);
-    });
-  });
 });
 
 describe('ShapeDetailCard Component', () => {
@@ -140,7 +109,7 @@ describe('ShapeDetailCard Component', () => {
     // Selecting a row in the table and updating NRA and target offer price
     cy.get('tbody > tr').contains('1', { timeout: 5000 }).click({ force: true });
     cy.get('[data-testid="nra-field"] input').clear().type(100);
-    cy.get('[data-testid="target-offer-price-field"] input').clear().type(100);
+    cy.get('[data-testid="offer_price-field"] input').clear().type(100);
 
     // Intercepting API call for updating shape owners and waiting for completion
     cy.interceptAndWait(['updateShapeOwners'], () => {
@@ -171,7 +140,7 @@ describe('ShapeDetailCard Component', () => {
     // Verifying that the overridden class is removed from target offer price and NRA fields
     cy.get('tbody > tr').contains('1').click({ force: true });
 
-    cy.get('[data-testid="target-offer-price-field"]').should('not.have.class', 'overridden');
+    cy.get('[data-testid="offer_price-field"]').should('not.have.class', 'overridden');
     cy.get('[data-testid="nra-field"]').should('not.have.class', 'overridden');
   });
 
