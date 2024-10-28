@@ -226,6 +226,15 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       dbName: "shapeJson.properties.grossAcres",
     },
   },
+  // Added Report Net column
+  {
+    name: "reportNet",
+    label: "Report Net",
+    esKey: "shapeJson.properties.reportNet.keyword",
+    options: {
+      dbName: "shapeJson.properties.reportNet",
+    },
+  },
   {
     name: "netAcres",
     label: "Net",
@@ -408,7 +417,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
   {
     name: "createBy",
     label: "Created By",
-    esKey: "createBy",
+    esKey: "createBy.name.keyword", // Elasticsearch field key for querying.
     options: {
       display: true,
       customRender: (value) => {
@@ -489,17 +498,17 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
   {
     name: "name-elasticsearch",
     esKey: 'name.keyword',
-    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
+    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true, download: false },
   },
   {
     name: "shapeLabel-elasticsearch",
     esKey: 'shapeJson.properties.shapeLabel.keyword',
-    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
+    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true, download: false },
   },
   {
     name: "state-elasticsearch",
     esKey: 'state.keyword',
-    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
+    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true, download: false },
   },
   // {
   //   name: "mapFlyTo",

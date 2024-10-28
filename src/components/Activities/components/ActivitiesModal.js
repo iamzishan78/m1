@@ -638,7 +638,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                 <AutoCompleteAddNewField
                   ref={outcomeFieldRef}
                   queryParams={{
-                    esIndex: "contacts_flat",
+                    esIndex: "activities_flat", // Set the correct index to get outcome options
                     filterKey: "outcome.keyword",
                     size: 50,
                   }}

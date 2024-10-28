@@ -2,6 +2,7 @@
 const { triggerAzurePipeline } = require('./triggerAzurePipeline.js');
 const { UpsertCypressLog } = require('./upsertCypressLog.js');
 const { GetCypressLog } = require('./getCypressLog.js');
+const { ResetPipeline } = require('./resetPipeline.js');
 
 const monitorPipeline = ({ getCypressProcess, specs }) => {
   const {
@@ -38,7 +39,7 @@ const monitorPipeline = ({ getCypressProcess, specs }) => {
         cypressProcess.kill();
 
         // Get current pipeline history
-        const { pipelineHistory, isExecutionComplete } = await GetCypressLog();
+        const { pipelineHistory, isExecutionComplete, isResetDone } = await GetCypressLog();
         pipelineState = pipelineHistory.find(
           (history) => history.buildId === BUILD_ID
         )?.state;
@@ -52,6 +53,8 @@ const monitorPipeline = ({ getCypressProcess, specs }) => {
             specs: specs,
             buildId: buildId,
           });
+        } else if (isResetDone) { // Update the reset status for future pipeline
+          await ResetPipeline({ isUpdateReset: true });
         }
       }
       clearInterval(intervalId);

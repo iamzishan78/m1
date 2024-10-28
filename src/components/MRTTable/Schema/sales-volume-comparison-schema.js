@@ -4,7 +4,7 @@ import { formatDate } from 'components/Shared/functions';
 const esIndex = 'checkdetailsinterestscomparison_flat';
 
 
-const OwnersPerUnitMeta = {
+const SalesVolumeComparisonMeta = {
 	esIndex,
 	pageSize: 25,
 	pagination: {
@@ -15,6 +15,7 @@ const OwnersPerUnitMeta = {
 	height: '767px',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
+	isDeleteDisabled: true, // Disable delete functionality
 	TableSchema: [
 		// MongoDB ID column
 		{
@@ -165,12 +166,13 @@ const OwnersPerUnitMeta = {
 			},
 		},
 		{
-			...CommonSchema.HIDDEN,
+			...CommonSchema.COMMON_COLUMN,
 			name: 'check.checkNumber.keyword',
 			accessorFn: row => row?.check?.checkNumber,
+			header: 'Check Number',
 			isExternalFilter: true,
 		}
 	],
 };
 
-export default OwnersPerUnitMeta;
+export default SalesVolumeComparisonMeta;

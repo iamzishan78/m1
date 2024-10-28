@@ -122,7 +122,9 @@ export function customStartCaseString(str, isDate) {
 
   return str
     .split(' ')
-    .map(s => s[0] + s.substring(1).replace(/[A-Z]/g, x => `${x}`))
+    .map(s => s 
+    ? s[0] + s.substring(1).replace(/[A-Z]/g, x => `${x}`)
+    : s)
     .join(' ');
 }
 

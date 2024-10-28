@@ -393,7 +393,6 @@ function AddUnitInterestDialog(props) {
           name="operator"
           label="Operator"
           defaultValue={""}
-          disabled
           options={getOptions("Operator") || []}
           as={<AutoCompleteFieldComponent />}
         />
@@ -428,7 +427,6 @@ function AddUnitInterestDialog(props) {
             name="wellType"
             label="Well Type"
             defaultValue={""}
-            disabled
             options={getOptions("WellType") || []}
             as={<AutoCompleteFieldComponent />}
           />
@@ -438,7 +436,6 @@ function AddUnitInterestDialog(props) {
             name="wellBoreProfile"
             label="Wellbore Profile"
             defaultValue={""}
-            disabled
             options={getOptions("WellBoreProfile") || []}
             as={<AutoCompleteFieldComponent />}
           />
@@ -448,7 +445,6 @@ function AddUnitInterestDialog(props) {
             name="wellStatus"
             label="Well Status"
             defaultValue={""}
-            disabled
             options={getOptions("WellStatus") || []}
             as={<AutoCompleteFieldComponent />}
           />
