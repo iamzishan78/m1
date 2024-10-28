@@ -186,6 +186,9 @@ export const drawBoundary = (selectedUserDefinedLayer, layer_Id) => {
           getFillColor: [255, 255, 0],
           getLineColor: [255, 255, 0],
         }),
+        parameters: {
+          depthTest: false, // Disable depth testing to draw points on top
+        },
       },
     });
   }
