@@ -29,7 +29,7 @@ const RevenueCheckDetailMeta = {
     isNotBreadcrumbView: true, // Flag to determine whether to display a simple Typography or a Breadcrumbs component. If true, Typography is rendered; if false, Breadcrumbs is rendered.
     isDeleteDisabled: true,
     isInFiniteScroll: true,
-    // columnVirtualization: true,
+    columnVirtualization: true,
     defaultSort: { field: "flatSyncAt", order: "desc" },
     TableSchema: [
         {
