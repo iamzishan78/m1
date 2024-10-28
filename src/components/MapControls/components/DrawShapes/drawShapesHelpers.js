@@ -117,10 +117,48 @@ export const drawWellBoundary = coordinates => {
   }
 };
 
-export const drawBoundary = selectedUserDefinedLayer => {
+export const drawPlaceBoundary = coordinates => { // Add separate fn for draw place highlight with larger dot
   if (!window.mapRef) return;
 
   const layerId = 'boundary-layer';
+
+  if (window.mapRef.getLayer(layerId)) window.mapRef.removeLayer(layerId);
+
+  if (coordinates && coordinates.length > 0 && coordinates[0]) {
+    new DeckGlLayer({
+      layerId,
+      type: 'GeoJsonLayer',
+      beforeLayer: 'top_deck_layer',
+      props: {
+        data: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: coordinates,
+            },
+          },
+        ],
+        getFillColor: [255, 255, 0],
+        getLineColor: [255, 255, 0],
+        pointRadiusMinPixels: 8, // Minimum pixel size for points
+        pointRadiusMaxPixels: 8, // Maximum pixel size for points
+        lineWidthMinPixels: 5,
+        lineWidthMaxPixels: 5,
+        getPointRadius: 8,
+        getLineWidth: 5,
+        parameters: {
+          depthTest: false, // Disable depth testing to draw points on top
+        },
+      },
+    });
+  }
+};
+
+export const drawBoundary = (selectedUserDefinedLayer, layer_Id) => {
+  if (!window.mapRef) return;
+
+  const layerId = layer_Id || 'boundary-layer';
 
   if (window.mapRef.getLayer(layerId)) window.mapRef.removeLayer(layerId);
 
@@ -141,15 +179,29 @@ export const drawBoundary = selectedUserDefinedLayer => {
         getFillColor: [0, 0, 0, 0],
         getLineColor: [255, 255, 0],
         getLineWidth: 6,
+        // if shape is point then apply these features
         ...(type === 'Point' && {
-          lineWidthUnits: "meters",
-          getLineWidth: 100,
+          lineWidthUnits: "pixels",
+          getLineWidth: 25,
           getFillColor: [255, 255, 0],
-          getPointRadius: 50,
+          getLineColor: [255, 255, 0],
         }),
+        parameters: {
+          depthTest: false, // Disable depth testing to draw points on top
+        },
       },
     });
   }
+};
+
+// Function to draw boundaries for multiple shapes
+export const drawBoundaries = (shapes) => {
+  if (!window.mapRef || !Array.isArray(shapes) || shapes.length === 0) return; // Ensure mapRef exists and shapes is a valid array
+
+  shapes.forEach((shape, index) => {
+    const uniqueLayerId = `boundary-layer-${index}`; // Generate a unique layer ID for each shape
+    drawBoundary(shape, uniqueLayerId); // Draw boundary for each shape with a unique layerId
+  });
 };
 
 export const clearSelectedAbstracts = () => {

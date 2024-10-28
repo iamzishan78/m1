@@ -39,7 +39,7 @@ export default class DrawPolygon extends Component {
 
   render() {
     return (
-      <Base {...this.props}>
+      <Base {...this.props} id='mapPolygon'>
         <path
           fillRule="evenodd"
           clipRule="evenodd"

@@ -67,7 +67,7 @@ export default function DocumentComponent() {
     <div className={classes.root}>
       <DocumentsTable parent="Documents" documentSearchQuery={stateApp.documentSearchQuery} refetch={refetch} refetchData={refetchData} />
       <Drawer refetchData={refetchData} />
-      {stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0 ? (
+      {stateApp.DocumentDrawer === true || Object.entries(stateApp?.selectedDocument || {}).length > 0 ? (
         <DocViewer width="calc(100vw - 515px)" onCloseHandler={onCloseHandler} />
       ) : (
         !isEmpty(stateApp.viewDoc) && <DocViewer width="calc(100vw)" onCloseHandler={onCloseHandler} />

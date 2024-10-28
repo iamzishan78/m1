@@ -9,9 +9,24 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+parameters:
+- name: pipeline_run_mode
+  displayName: Pipeline Run Mode
+  type: string
+  default: normal
+  values:
+  - normal
+  - failed_only
+  - passed_only
+  - reset
+
 variables:
   NODE_OPTIONS: --max_old_space_size=32768
-
+  SOURCE_BRANCH: $(Build.SourceBranch)
+  BUILD_ID: $(Build.BuildId)
+  AZURE_ACCESS_TOKEN: $(System.AccessToken)
+  PIPELINE_TRIGGER_MODE: $(Build.Reason)
+  PIPELINE_RUN_MODE: ${{ parameters.pipeline_run_mode }}
 steps:
   - task: NodeTool@0
     inputs:
@@ -25,13 +40,13 @@ steps:
   - script: |
       sed -i "s/cypress open/cypress open --env TENENT='$(TENENT)'/" ./package.json
       sed -i "s/login.cy.js'/login.cy.js' --env TENENT='$(TENENT)'/" ./package.json
-    displayName: 'Replace Tenant Value'
+      sed -i "s/SPEC=\$SPEC/SPEC='\$(SPEC_TYPE)'/" ./package.json
+    displayName: 'Replace Tenant & SPEC_TYPE Value'
 
-  - task: geeklearningio.gl-vsts-tasks-yarn.yarn-task.Yarn@3
-    displayName: 'Yarn Run CI'
-    inputs:
-      projectDirectory: src
-      arguments: 'ci:cy-login-component'
+  - script: |
+      # Running script for cypress logging history
+      node cypress/scripts/logCypressHistory/index.js
+    displayName: 'Run Cypress Logging Script'
 
   - script: |
       if [ "$(ls -A cypress/screenshots)" ]; then
@@ -43,7 +58,7 @@ steps:
         echo "##vso[task.setvariable variable=SCREENSHOTS_NOT_EMPTY]false"
       fi
     displayName: 'Check Screenshots Folder'
-    condition: succeededOrFailed()
+    condition: always() # Always run this script
 
   ## Copy the client to the staging directory
   - task: CopyFiles@2
