@@ -25,13 +25,13 @@ const ActivityMeta = {
         pageSize: 50,
     },
     search: {
-        fields: ["name^4", "_all"]
+        fields: ["name", "_all"]
     },
     maxTableHeight: 'calc(100vh - 600px)',
     isNotBreadcrumbView: true, // Flag to determine whether to display a simple Typography or a Breadcrumbs component. If true, Typography is rendered; if false, Breadcrumbs is rendered.
     gridViewSettings: {
         label: 'Activities',
-        Icon: Analytics,
+        Icon: "none",
         cssOverride: {
             top: '138px',
             left: '40px',
@@ -39,7 +39,7 @@ const ActivityMeta = {
         },
     },
     isInFiniteScroll: true,
-    // columnVirtualization: true,
+    columnVirtualization: true,
     CustomToolBar: ActivityAnalyticsToolBar,
     onClickedRow,
     defaultSort: { field: "lastUpdateAt", order: "desc" },
@@ -66,11 +66,13 @@ const ActivityMeta = {
         {
             ...CommonSchema.COMMON_COLUMN,
             name: 'dateTime',
+            id: 'dateTime',
             accessorFn: row => row?.dateTime,
-            accessorKey: 'dateTime',
             header: "Start Date",
             isHiddenFieldExport: true,
             type: 'date',
+            simple: true,
+            isSearchField: false,
             Cell: ({ row }) => {
                 return <>{formatDateTime(row?.original?.dateTime)}</>
             },
@@ -79,10 +81,12 @@ const ActivityMeta = {
             ...CommonSchema.COMMON_COLUMN,
             name: 'endDateTime',
             accessorFn: row => row?.endDateTime,
-            accessorKey: 'endDateTime',
+            id: 'endDateTime',
             header: "End Date",
             isHiddenFieldExport: true,
-            type: 'date',
+            type: 'dateTime',
+            simple: true,
+            isSearchField: false,
             Cell: ({ row }) => {
                 return <>{formatDateTime(row?.original?.endDateTime)}</>
             },
@@ -173,6 +177,12 @@ const ActivityMeta = {
 				return <>{isClosed ? 'Completed' : 'Not Completed'}</>;
 			},
 		},
+        {
+            ...CommonSchema.HIDDEN,
+            name: 'check.checkNumber.keyword',
+			accessorFn: row => row?.contact.campaignName,
+			isExternalFilter: true,
+        }
 
     ]
 }

@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect, } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import { useLazyQuery } from "@apollo/client";
 
 import ActivityAnalytics from "./ActivityAnalytics";
 import ActivitiesDashboardFilter from "./ActivitiesDashboardFilter";
-import ActivitiesTable from "components/Table/Activities/ActivitiesTable";
 import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
 import MRTTable from 'components/MRTTable';
+import { tableController } from 'hookstate/tableController';
+import { getFilters } from "components/Table/Activities/ActivitiesTable";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,9 +47,12 @@ const ActivitiesDashboard = () => {
     });
   }, [getESMinValue]);
 
-  const filtersChange = (filters) => {
-    setTableFilters(filters);
-  };
+  useEffect(() => {
+    const filters = [
+      ...getFilters(appliedFilters),
+    ]
+    tableController("ActivityTable").setFilters(filters);
+  }, [appliedFilters])
 
   return (
     <div className={classes.root}>
