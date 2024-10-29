@@ -14,7 +14,6 @@ import LayerSelectionIcon from "components/Shared/svgIcons/layerSelection";
 import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-first-letter";
 import onFeatureClick from "components/Map/DeckGL/helpers/onFeatureClick";
-import mglStreetViewControl from 'components/Map/DeckGL/helpers/mglStreetViewControl';
 
 const useStyles = makeStyles((theme) => ({
     root: {
