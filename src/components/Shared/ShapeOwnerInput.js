@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import UsersListWithIcon from './UsersListWithIcon';
 import { useDispatch } from 'react-redux';
 import { showErrorMessage, showInfoMessage, showSuccessMessage } from 'actions';
@@ -10,6 +10,8 @@ import { AppContext } from 'AppContext';
 function ShapeOwnerInput({ data, shapeType, shapeData }) {
 	const dispatch = useDispatch();
 	const [stateApp] = useContext(AppContext);
+
+	const [ownerId, setOwnerId] = useState(data.owner || '');
 
 	const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER, {
 		onCompleted: ({ updateCustomLayer }) => {
@@ -37,8 +39,11 @@ function ShapeOwnerInput({ data, shapeType, shapeData }) {
 			awaitRefetchQueries: true,
 		});
 	};
+	// change owner on card change
+	useEffect(() => {
+		setOwnerId(data.owner || '');
+	}, [shapeData, data]);
 
-	const [ownerId, setOwnerId] = useState(data.owner || '');
 	return (
 		<UsersListWithIcon
 			label={'Owner'}
