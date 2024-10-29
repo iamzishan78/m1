@@ -207,17 +207,17 @@ export default function RevenueAnalytics(props) {
     })();
   }, [comparisonTableState?.filters, comparisonTableState?.data?.total, salesVolumeComparisonTableState?.filters, salesVolumeComparisonTableState?.data?.total]);
 
-    // Function to get the appropriate table state values based on the comparison report type
-    const getTableStateValues = () => { 
-      // Check if the comparison report is 'Check Detail Comparison'
-      if (comparisonReport === 'Check Detail Comparison') {
-          // Return the comparison table state for 'Check Detail Comparison'
-          return comparisonTableState;
-      } else {
-          // Otherwise, return the sales volume comparison table state
-          return salesVolumeComparisonTableState;
-      }
-    };
+  // Function to get the appropriate table state values based on the comparison report type
+  const getTableStateValues = () => {
+    // Check if the comparison report is 'Check Detail Comparison'
+    if (comparisonReport === 'Check Detail Comparison') {
+      // Return the comparison table state for 'Check Detail Comparison'
+      return comparisonTableState;
+    } else {
+      // Otherwise, return the sales volume comparison table state
+      return salesVolumeComparisonTableState;
+    }
+  };
 
 
   useEffect(() => {
@@ -304,15 +304,14 @@ export default function RevenueAnalytics(props) {
   const setESFilters = useCallback(newFilter => {
     if (newFilter.length === 0) {
       tableController(TableKey).clearFilters(); // clear filter from the table state
-      tableController(TableKey).setFilters([{ field: 'isMisMatchedInterest', value: true, type: 'term' }]);
+      // tableController(TableKey).setFilters([{ field: 'isMisMatchedInterest', value: true, type: 'term' }]);
     } else {
-      tableController(TableKey).clearFilters(); // clear filter from the table state
       let filterToAdd = []
       newFilter.forEach(filter => {
-        const { field, value, type } = filter;
-
-
-        if (field === 'date' || field === 'isMisMatchedInterest') {
+        const { field, value, type, filterType } = filter;
+        if (filterType === 'date') {
+          filterToAdd.push({ field, value, type: "advanced", searchType: "betweenInclusive", columnType: "date" });
+        } else if (field === 'isMisMatchedInterest') {
           filterToAdd.push({ field, value, type });
         } else {
           filterToAdd.push({ field, value });
@@ -325,7 +324,7 @@ export default function RevenueAnalytics(props) {
   useEffect(() => {
     const newFilters = tableController(TableKey).getExternalFilter();
     if (comparisonReport === 'Check Detail Comparison') {
-      setTableKey('ComparisonTable');  
+      setTableKey('ComparisonTable');
     } else {
       setTableKey('SalesVolumeComparisonTable');
     }
@@ -439,7 +438,7 @@ export default function RevenueAnalytics(props) {
       {tabs[tab] === 'Comparisons' && (
         <>
           <LastCheckDateFilter
-            field="date"
+            field="check.checkDate"
             esIndex={'checkdetailsinterestscomparison_flat'}
             esFilters={esFilters}
             setESFilters={setESFilters}
