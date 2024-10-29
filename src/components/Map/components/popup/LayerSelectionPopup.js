@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
     Grid, Card, CardHeader, CardContent, Accordion, AccordionSummary, Typography,
-    List, ListItem, ListItemText, Tooltip
+    List, ListItem, ListItemText, Tooltip, IconButton 
 } from "@material-ui/core";
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import _ from "lodash";
@@ -13,6 +14,7 @@ import LayerSelectionIcon from "components/Shared/svgIcons/layerSelection";
 import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-first-letter";
 import onFeatureClick from "components/Map/DeckGL/helpers/onFeatureClick";
+import mglStreetViewControl from 'components/Map/DeckGL/helpers/mglStreetViewControl';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -102,6 +104,10 @@ const useStyles = makeStyles((theme) => ({
             paddingBottom: '0px',
             color: '#d3d3d3'
         }
+    },
+    locationIcon: {
+        paddingTop: "5px",
+        marginRight: "-25px"
     }
 }));
 
@@ -198,7 +204,19 @@ function LayerSelectionPopup(props) {
                 return includes(search, [properties.agreementNumber, properties.agreementName])
         })
     const groupFeatures = _.groupBy(selectionLayers, 'sourceKey');
-    function GetTitle() {
+
+    const handleLocationClick = () => {
+        const coordinate = selectionLayers[0].object.properties.shapeCenter
+        const latitude = coordinate[1]; 
+        const longitude = coordinate[0]; 
+        // Google Maps Street View URL
+        const streetViewUrl = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${latitude},${longitude}`;
+
+        window.open(streetViewUrl, '_blank');
+    };
+
+
+    function GetTitle({ handleLocationClick}) {
         const classes = useStyles();
 
         const [clicked, setClicked] = useState(false);
@@ -222,6 +240,13 @@ function LayerSelectionPopup(props) {
                     </Grid>
                 </Grid>
                 <Grid item >
+                    <IconButton
+                        className={classes.locationIcon}
+                        color="inherit"
+                        onClick={handleLocationClick}
+                    >
+                        <LocationOnIcon />
+                    </IconButton>
                     <ExpandableSearch setSearch={setSearch} search={search} setClicked={setClicked} focusColor='inherit' hoverColor={'inherit'} />
                 </Grid>
             </Grid>
@@ -233,7 +258,7 @@ function LayerSelectionPopup(props) {
             <Card className={classes.card} data-testid='layer-selection-popup' >
                 <CardHeader
                     classes={{ title: classes.title, subheader: classes.subheader }}
-                    title={GetTitle()}
+                    title={<GetTitle handleLocationClick={handleLocationClick} />}
                 >
                 </CardHeader >
                 <CardContent className={classes.content}>
