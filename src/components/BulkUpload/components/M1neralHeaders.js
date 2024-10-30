@@ -173,6 +173,10 @@ export default function M1neralHeaders() {
 			for (let header of headers) {
 				if (header.required && obj.data[header.mapped_key] !== undefined && header.mapped_key !== 'initial') {
 					return_obj[header.actual_key] = obj.data[header.mapped_key];
+
+					if (return_obj[header.actual_key] && header.type === 'multiselect') {
+						return_obj[header.actual_key] = return_obj[header.actual_key].split(',');
+					}
 				}
 			}
 			if (['PROPERTIES'].includes(jobStateValues.jobType)) {

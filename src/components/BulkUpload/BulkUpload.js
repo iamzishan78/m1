@@ -15,6 +15,8 @@ import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import isEmpty from 'lodash/isEmpty';
 import { jobController } from 'hookstate/jobStateController';
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+import { useLazyQuery } from '@apollo/client';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -56,6 +58,8 @@ export default function BulkUpload(props) {
 		props.routes,
 		typeof history.pathHistory[1] === 'string' ? history.pathHistory[1] : (history?.pathHistory[1]?.pathname ?? '')
 	);
+
+	const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
 	const { jobStateValues } = jobController.useState(['transferData'], 'jobStateValues');
 
@@ -110,6 +114,14 @@ export default function BulkUpload(props) {
 	};
 
 	useEffect(() => {
+		getMetaData({
+			variables: {
+				category: 'Parcel',
+			},
+		});
+	}, [getMetaData]);
+
+	useEffect(() => {
 		return function cleanup() {
 			setStateNav(state => ({
 				...state,
@@ -121,17 +133,34 @@ export default function BulkUpload(props) {
 	}, [setStateNav]);
 
 	const reset_state = useCallback(() => {
+		let m1neralHeaders = M1neral_headers[selectedJob.type] || [];
+
+		switch (selectedJob.type) {
+			case 'TRACTS':
+				m1neralHeaders = [
+					...m1neralHeaders,
+					...(metaDataRes?.getMetaData?.metaData || []).map(d => ({
+						...d,
+						actual_key: `parcel.custom_data.${d.name}`,
+					})),
+				];
+				break;
+
+			default:
+				break;
+		}
+
 		jobController.updateState({
 			csvDataToSend: [],
 			activeStepNumber: selectedJob.initialActiveStepNumber || 0,
 			csvDataList: [],
 			mappedHeadersFromCSV: selectedJob.mappedHeadersFromCSV || [],
-			m1neralHeaders: selectedJob.m1neralHeaders || M1neral_headers[selectedJob.type] || [],
+			m1neralHeaders: selectedJob.m1neralHeaders || m1neralHeaders,
 			options: M1neral_headers[`${selectedJob.type}_OPTIONS`],
 			jobType: selectedJob.type,
 			job: selectedJob,
 		});
-	}, [selectedJob]);
+	}, [metaDataRes?.getMetaData?.metaData, selectedJob]);
 
 	useEffect(() => {
 		reset_state();

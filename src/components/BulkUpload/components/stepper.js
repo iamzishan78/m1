@@ -26,7 +26,6 @@ import { CREATE_JOB } from 'graphQL/useMutationCreateJob';
 import { UPDATE_JOB } from 'graphQL/useMutationUpdateJob';
 import { GET_JOB_UPLOAD_URI } from 'graphQL/useQueryGetJobUploadUri';
 import { BlockBlobClient } from '@azure/storage-blob';
-import jobHeaders from '../jobHeaders';
 import { INITIALIZE_EXPORT_JOB } from 'graphQL/useMutationinitializeExportJob';
 import { getDateWithoutTime } from 'components/Shared/functions';
 import { jobController } from 'hookstate/jobStateController';
@@ -187,6 +186,7 @@ export default function CustomizedSteppers(props) {
 	const { activeStepNumber, csvDataToSend, transferData, selectedShapeLayerOption, jobType, jobStateValues } =
 		jobController.useState(
 			[
+				'm1neralHeaders',
 				'activeStepNumber',
 				'csvDataToSend',
 				'mappedHeadersFromCSV',
@@ -332,7 +332,7 @@ export default function CustomizedSteppers(props) {
 					return element;
 				});
 				const requestPayload = {
-					sampleCsv: jobHeaders[props.selectedJob.type],
+					sampleCsv: jobStateValues.m1neralHeaders,
 					uploadType: jobStateValues.selectedShapeLayerOption,
 				};
 

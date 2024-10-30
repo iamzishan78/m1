@@ -185,6 +185,7 @@ export default function CSVFileReader(props) {
 					required: !!matchedKey?.actual_key,
 					actual_key: matchedKey?.actual_key || '',
 					label: matchedKey?.label || '',
+					type: matchedKey?.type,
 				};
 
 				if (uniqueKeys[index]?.actual_key === matchedKey?.actual_key) {
