@@ -168,7 +168,7 @@ export const getSelectedRowsFromProps = (props = {}) => {
 
 export const formatDate = (date, simple = true) => {
   if (!date) return '--'
-  return moment.utc(date).format(simple ? 'MM/DD/YYYY' : 'MMMM D, YYYY');
+  return moment(date).format(simple ? 'MM/DD/YYYY' : 'MMMM D, YYYY');
 }
 
 export const processInBatches = async (promises, batchSize) => {
