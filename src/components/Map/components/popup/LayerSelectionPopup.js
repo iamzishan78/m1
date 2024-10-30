@@ -126,7 +126,7 @@ function LayerSelectionPopup(props) {
     const classes = useStyles(props);
     const [search, setSearch] = useState('');
     // contexts
-    let { selectionLayers } = props;
+    let { selectionLayers, coordinate } = props;
 
     const getSourceName = (name) => {
         return capitalizeFirstLetter(name)
@@ -205,7 +205,6 @@ function LayerSelectionPopup(props) {
     const groupFeatures = _.groupBy(selectionLayers, 'sourceKey');
 
     const handleLocationClick = () => {
-        const coordinate = selectionLayers[0].object.properties.shapeCenter
         const latitude = coordinate[1]; 
         const longitude = coordinate[0]; 
         // Google Maps Street View URL
