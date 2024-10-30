@@ -6,9 +6,10 @@ import { GlobalStickyStyles } from "GlobalSettings";
 import DeleteIcon from '@material-ui/icons/Delete';
 import { makeStyles } from "@material-ui/core/styles";
 import { Tooltip } from '@mui/material';
+import { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
 
-const getFormattedValue = (value) => {
-	return <Typography>{value ? vf_number(value) : <span style={{ color: 'rgb(149,149,149)' }}>--</span>}</Typography>;
+const getFormattedValue = (value,  { currency = false, toFixed } = {}) => {
+    return <Typography>{value ? currency ? vf_currency_to_fixed(value, 2) : vf_number(value, toFixed) : <span style={{ color: 'rgb(149,149,149)' }}>--</span>}</Typography>;
 }
 
 const useStyles = makeStyles({
@@ -25,7 +26,10 @@ const DeletedPropertyName = ({ value }) => {
 
 	return (
 		<Tooltip title="This Property is Deleted">
-			{value} <DeleteIcon className={classes.deleteIcon} />
+			{/*  Wraps the text and DeleteIcon inside a <span> to ensure Tooltip receives a single React element as its child */}
+			<span>
+			{value} <DeleteIcon className={classes?.deleteIcon} />
+			</span>
 		</Tooltip>
 	);
 };
@@ -101,42 +105,42 @@ const RevenueStatementHeadCells = [
 		name: "product", label: "Product", esKey: 'product.keyword', options: { sort: true, filter: true }
 	},
 	{
-		name: "disbursement", label: "Decimal Interest", esKey: 'disbursement', options: { sort: true, filter: true }
+		name: "disbursement", label: "Decimal Interest", esKey: 'disbursement', options: { sort: true, filter: true,  customRender: (value) => getFormattedValue(value,  { toFixed: 2 })  } 
 	},
 	{
 		name: "interestType", label: "Type", esKey: 'interestType.keyword', options: { sort: true, filter: true }
 	},
 	{
 		name: "price", label: "Avg Price", esKey: 'price', options: {
-			sort: true, filter: true, customRender: (value) => getFormattedValue(value)
+			sort: true, filter: true, customRender: (value) => getFormattedValue(value, { currency: true })
 		}
 	},
 	{
-		name: "grossPropertyVolume", label: "Prop Gross Volume", esKey: 'grossPropertyVolume', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
+		name: "grossPropertyVolume", label: "Prop Gross Volume", esKey: 'grossPropertyVolume', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value,  { toFixed: 2 }) }
 	},
 	{
-		name: "grossPropertyValue", label: "Prop Gross Revenue", esKey: 'grossPropertyValue', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
+		name: "grossPropertyValue", label: "Prop Gross Revenue", esKey: 'grossPropertyValue', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value, { currency: true }) }
 	},
 	{
-		name: "grossOwnerVolume", label: "Owner Volume", esKey: 'grossOwnerVolume', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
+		name: "grossOwnerVolume", label: "Owner Volume", esKey: 'grossOwnerVolume', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value,  { toFixed: 2 }) }
 	},
 	{
-		name: "grossOwnerValue", label: "Owner Gross Revenue", esKey: 'grossOwnerValue', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
+		name: "grossOwnerValue", label: "Owner Gross Revenue", esKey: 'grossOwnerValue', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value, { currency: true }) }
 	},
 	{
-		name: "ownerTax", label: "Owner Tax Amt", esKey: 'ownerTax', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
+		name: "ownerTax", label: "Owner Tax Amt", esKey: 'ownerTax', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value,  { currency: true }) }
 	},
 	{
 		name: "taxType", label: "Tax Type", esKey: 'taxType', options: { sort: true, filter: true }
 	},
 	{
-		name: "ownerDeducts", label: "Deduct Amt", esKey: 'ownerDeducts', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
+		name: "ownerDeducts", label: "Deduct Amt", esKey: 'ownerDeducts', options: { sort: true, filter: true,  customRender: (value) => getFormattedValue(value,   { currency: true })  }
 	},
 	{
 		name: "deductType", label: "Deduct Cd", esKey: 'deductType.keyword', options: { sort: true, filter: true }
 	},
 	{
-		name: "netOwnerValue", label: "Owner Net Rev", esKey: 'netOwnerValue', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
+		name: "netOwnerValue", label: "Owner Net Rev", esKey: 'netOwnerValue', options: { sort: true, filter: true,  customRender: (value) => getFormattedValue(value,  { currency: true })  }
 	},
 	{
 		name: "propertyId", options: { filter: false, display: false, sort: false, viewColumns: false, }
