@@ -17,6 +17,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { GET_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
 import { GET_RECORD_FROM_RUN_TIME_MODEL } from 'graphQL/useQueryRunTimeModel';
 
+import NavHeader from 'components/Land/components/Common/NavHeader';
 import { replaceUnderscoreAndCapitalize } from 'components/MRTTable/utils/helper';
 
 function GenericDetailCard(props) {
@@ -26,11 +27,14 @@ function GenericDetailCard(props) {
 
 	const [openDialog, setOpenDialog] = useState(false);
 	const [assetRecord, setAssetRecord] = useState(null);
+	const [controlColumn, setControlColumn] = useState({});
 	const [showActivityDialog, setActivityDialog] = useState(null);
 
 	const [getAsset] = useLazyQuery(GET_CUSTOM_ASSET_INFO, {
 		onCompleted: data => {
 			const assetInfo = data?.getCustomAssetInfo?.asset;
+			const controlledColumn = assetInfo?.modelKeys?.find(key => !!key.isControlColumn);
+			setControlColumn(controlledColumn);
 			globalStateController.updateState({ currentAsset: assetInfo });
 		},
 	});
@@ -91,15 +95,16 @@ function GenericDetailCard(props) {
 
 	return (
 		<>
-			<div style={{ paddingTop: '65px' }}>
-				<DetailLayout loading={!assetRecord} page="GenericDetailPage" props={detailProps} />
-			</div>
+			<NavHeader title={assetRecord?.[controlColumn?.mappingKey]}>
+				<div>
+					<DetailLayout loading={!assetRecord} page="GenericDetailPage" props={detailProps} />
+				</div>
 
-			{openDialog === 'deleteConfirmation' && (
-				<ConfirmationDialog openDialog={openDialog} handleDialogClose={setOpenDialog} id={assetRecord?._id} />
-			)}
+				{openDialog === 'deleteConfirmation' && (
+					<ConfirmationDialog openDialog={openDialog} handleDialogClose={setOpenDialog} id={assetRecord?._id} />
+				)}
 
-			{/* {showActivityDialog && (
+				{/* {showActivityDialog && (
 				<RightDialog open={true} handleClickDialogClose={() => setActivityDialog(false)} width="700px">
 					<AddActivityDialog
 						onClose={() => setActivityDialog(false)}
@@ -123,6 +128,7 @@ function GenericDetailCard(props) {
 					contactId={assetRecord?._id}
 				/>
 			)} */}
+			</NavHeader>
 		</>
 	);
 }

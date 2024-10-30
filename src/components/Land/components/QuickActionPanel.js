@@ -41,7 +41,7 @@ export default function QuickActionsPanel({
 			handlePanelStateChange(true);
 			setSideBarPanel(false);
 		}
-	}, [location.pathname, handlePanelStateChange]);
+	}, [location.pathname]);
 
 	return (
 		<>

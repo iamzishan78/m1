@@ -22,7 +22,6 @@ const useStyles = makeStyles(theme => ({
 	header: {
 		backgroundColor: '#fff',
 		padding: '12px 20px 12px 20px',
-		marginTop: '8px',
 		borderTop: '9px solid rgb(242, 242, 242)',
 		borderBottom: '10px solid rgb(242, 242, 242)',
 	},

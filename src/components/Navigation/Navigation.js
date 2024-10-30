@@ -102,6 +102,8 @@ export default function Navigation(props) {
     isMap: location.pathname === "/" || location.pathname.startsWith("/map/") || props.isMap,
   });
 
+  const isCustomAssetDetailPage = /^\/land\/customAsset\/[^/]+\/details/.test(location.pathname);
+
   useEffect(() => {
     Object.values(ROUTES).forEach(value => {
       if (
@@ -138,7 +140,7 @@ export default function Navigation(props) {
     } else {
       setMatchFind(false); // Set matchFind to false if component is not on the map page
     }
-  }, [location.pathname]);
+  }, [location.pathname, props.isMap]);
 
   const handleListItemClick = (path) => {
     history.push(path);
@@ -182,7 +184,7 @@ export default function Navigation(props) {
       location.pathname.startsWith("/revenue/property/details") ||
       location.pathname.startsWith("/analytics/property/details") ||
       location.pathname.startsWith("/land/agreement/details") ||
-      location.pathname.startsWith("/contacts/campaign/details")
+      location.pathname.startsWith("/contacts/campaign/details") || isCustomAssetDetailPage
     ) {
       return true;
     }
