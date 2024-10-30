@@ -20,7 +20,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	const callQuery = async _pagination => {
 		const tableMeta = tableState.get({ noproxy: true });
 		const pagination = _pagination || tableMeta.pagination;
-		const { TableSchema } = tableMeta;
+		const { TableSchema, fetchDynamicSchema } = tableMeta;
 		if (!TableSchema) return
 
 		Controller.updateState({
@@ -83,6 +83,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			},
 			sort,
 			filters,
+			isDynamicAsset: !!fetchDynamicSchema?.tableName
 		};
 
 
