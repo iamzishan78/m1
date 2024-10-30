@@ -171,10 +171,30 @@ function ESAutoCompleteFilter({
 			const requiredFilterValue = defaultFilterOptions?.find((option) => option?.value === filterValue)?.label;
 			filterValue = requiredFilterValue;
 		}
-	} else if (type === 'price') {
-		filterValue = vf_currency_to_fixed(filterValue, 2);
-	} else if (type === 'decimal' && filterValue !== '') {
-		filterValue = vf_number(filterValue, 2);
+	} else if (type === 'price'  && (typeof filterValue === 'string' ? filterValue : filterValue.length)) {
+		if (typeof filterValue === 'string') {
+			filterValue = vf_currency_to_fixed(filterValue, 2);
+		} else if (typeof filterValue === 'object' && !Array.isArray(filterValue)) {
+			filterValue = vf_currency_to_fixed(filterValue, 2);
+		} else if (Array.isArray(filterValue)) {
+			filterValue = filterValue.map(val => vf_currency_to_fixed(val, 2));
+		} else if (typeof filterValue === 'boolean' || type === "defaultFiltersOptions") {
+			// If there are default filters, use them 
+			const requiredFilterValue = defaultFilterOptions?.find((option) => option?.value === filterValue)?.label;
+			filterValue =   vf_currency_to_fixed(requiredFilterValue, 2); ;
+		}
+	} else if (type === 'decimal' && (typeof filterValue === 'string' ? filterValue : filterValue.length)) {
+		if (typeof filterValue === 'string') {
+			filterValue = vf_number(filterValue, 2);
+		} else if (typeof filterValue === 'object' && !Array.isArray(filterValue)) {
+			filterValue = vf_number(filterValue, 2);
+		} else if (Array.isArray(filterValue)) {
+			filterValue = filterValue.map(val => vf_number(val, 2));
+		} else if (typeof filterValue === 'boolean' || type === "defaultFiltersOptions") {
+			// If there are default filters, use them 
+			const requiredFilterValue = defaultFilterOptions?.find((option) => option?.value === filterValue)?.label;
+			filterValue =   vf_number(requiredFilterValue, 2); ;
+		}
 	}
 	const id = Array.isArray(field) ? field.join(' ') : field;
 	// Filter out the options
