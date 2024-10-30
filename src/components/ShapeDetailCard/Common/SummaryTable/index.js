@@ -122,6 +122,7 @@ export default function SummaryTableInfo({
 	updating,
 	isCustomLayerAutoComplete,
 	customLayer,
+	shapeType
 }) {
 	const classes = summaryTableStyles();
 	const dispatch = useDispatch();
@@ -633,7 +634,7 @@ export default function SummaryTableInfo({
 										{data.key === 'ownerName' && (
 											<ShapeOwnerInput
 												data={properties}
-												shapeType={'Agreement'}
+												shapeType={shapeType}
 												shapeData={customLayer}
 												onBlur={() => setTableDataState({})}
 											/>

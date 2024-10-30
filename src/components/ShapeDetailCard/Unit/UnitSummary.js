@@ -154,6 +154,7 @@ export default function UnitSummary(props) {
 								updating={props.updating}
 								isCustomLayerAutoComplete={['unit'].includes(props.properties.type)}
 								customLayer={props.customLayer}
+								shapeType={'Unit'}
 							/>
 						</Grid>
 						<Grid item>

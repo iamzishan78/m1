@@ -114,6 +114,7 @@ export default function AgreementSummary(props) {
 								search={search}
 								metaData={metaDataRes}
 								customLayer={props.customLayer}
+								shapeType={'Agreement'}
 							/>
 						</Grid>
 						<Grid item>
