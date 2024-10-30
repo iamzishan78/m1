@@ -214,7 +214,7 @@ function LayerSelectionPopup(props) {
     };
 
 
-    function GetTitle({ handleLocationClick}) {
+    function GetTitle(handleLocationClick) {
         const classes = useStyles();
 
         const [clicked, setClicked] = useState(false);
@@ -241,7 +241,9 @@ function LayerSelectionPopup(props) {
                     <IconButton
                         className={classes.locationIcon}
                         color="inherit"
-                        onClick={handleLocationClick}
+                        onClick={() => {
+                            handleLocationClick();
+                        }}
                         style={{ "display" : (clicked ? 'none' : ''), height: "40px" }}
                     >
                         <LocationOnIcon />
