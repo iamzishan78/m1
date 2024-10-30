@@ -55,10 +55,10 @@ export default [
         actual_key: "property.county",
     },
     {
-        label: "Property Status",
+        label: "Approval Status",
         mapped_key: "",
         required: false,
-        actual_key: "property.status",
+        actual_key: "property.approvalStatus",
     },
     {
         label: "Property Legal Description",
