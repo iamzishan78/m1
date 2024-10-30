@@ -17,6 +17,7 @@ import MRT_SelectCheckbox_OverRide from 'components/MRTTable/Common/MRT_SelectCh
 import { handleMRTSchema, handleVisiblityMenu } from './helpers';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import { GET_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
+import { detailCardController } from './detailCardController';
 
 function isDateFormat(inputString) {
 	// Regular expression for MM/DD/YYYY format
@@ -168,7 +169,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, 
 						link={`/land/customAsset/${model}/details/${id}`}
 						onClick={e => {
 							e.stopPropagation();
-							tableGlobalController.reInitialized();
+							detailCardController.setBottomSelectedTab(0);
 						}}
 					/>
 				} else {
