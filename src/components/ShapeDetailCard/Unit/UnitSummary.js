@@ -21,7 +21,6 @@ import ExpandableSearch from 'components/Shared/Forms/Fields/ExpandableSearch';
 import QtrQtrSelectorNew from 'components/ShapeDetailCard/Common/QtrQtrSelectorNew';
 import MetaField from 'components/Table/helpers/MetaField';
 import { globalStateController } from 'hookstate/globalStateController';
-import ShapeOwnerInput from 'components/Shared/ShapeOwnerInput';
 
 export default function UnitSummary(props) {
 	const {
@@ -154,6 +153,7 @@ export default function UnitSummary(props) {
 								id={props.id}
 								updating={props.updating}
 								isCustomLayerAutoComplete={['unit'].includes(props.properties.type)}
+								customLayer={props.customLayer}
 							/>
 						</Grid>
 						<Grid item>
@@ -172,9 +172,6 @@ export default function UnitSummary(props) {
 				</Grid>
 				<Grid item md={5} sm={12}>
 					<Grid container spacing={2} direction="row">
-						<Grid item md={12}>
-							<ShapeOwnerInput data={props.properties} shapeType={'Unit'} shapeData={props.customLayer} />
-						</Grid>
 						<Grid item>
 							<QtrQtrSelectorNew layerData={props.customLayer} />
 						</Grid>

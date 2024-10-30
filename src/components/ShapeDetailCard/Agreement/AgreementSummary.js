@@ -22,7 +22,6 @@ import ExpandableSearch from 'components/Shared/Forms/Fields/ExpandableSearch';
 import Acreage from 'components/Land/components/Agreements/detailComponents/summary/Acreage';
 import MetaField from 'components/Table/helpers/MetaField';
 import { globalStateController } from 'hookstate/globalStateController';
-import ShapeOwnerInput from 'components/Shared/ShapeOwnerInput';
 
 export default function AgreementSummary(props) {
 	const user = useSelector(({ app }) => app.user);
@@ -114,6 +113,7 @@ export default function AgreementSummary(props) {
 								updateCustomProperties={props.updateCustomProperties}
 								search={search}
 								metaData={metaDataRes}
+								customLayer={props.customLayer}
 							/>
 						</Grid>
 						<Grid item>
@@ -131,9 +131,6 @@ export default function AgreementSummary(props) {
 				</Grid>
 				<Grid item md={5} sm={12}>
 					<Grid container spacing={2} direction="row">
-						<Grid item md={12}>
-							<ShapeOwnerInput data={props.properties} shapeType={'Agreement'} shapeData={props.customLayer} />
-						</Grid>
 						<Grid item md={12} className={classes.provisionCard}>
 							<Typography className="heading">Provisions</Typography>
 							<Grid container direction="row">

@@ -25,7 +25,6 @@ import QtrQtrSelectorNew from '../../ShapeDetailCard/Common/QtrQtrSelectorNew';
 import MetaField from 'components/Table/helpers/MetaField';
 import parcelDefaultData from './parcelDefaultData';
 import { globalStateController } from 'hookstate/globalStateController';
-import ShapeOwnerInput from 'components/Shared/ShapeOwnerInput';
 
 const useStyles = makeStyles(theme => ({
 	summaryCard: {
@@ -407,6 +406,7 @@ export default function ParcelSummary(props) {
 								search={search}
 								metaData={metaDataRes}
 								updating={props.updating}
+								customLayer={props.customLayer}
 							/>
 						</Grid>
 						<Grid item>
@@ -425,9 +425,6 @@ export default function ParcelSummary(props) {
 				</Grid>
 				<Grid item md={6} sm={12}>
 					<Grid container spacing={2} direction="row">
-						<Grid item md={12}>
-							<ShapeOwnerInput data={props.properties} shapeType={'Tract'} shapeData={props.customLayer} />
-						</Grid>
 						<Grid item>
 							<QtrQtrSelectorNew layerData={props.customLayer} />
 						</Grid>
