@@ -7,3 +7,4 @@ export { default as AgreementDetails } from 'components/Land/components/Agreemen
 export { default as ReportingGroups } from 'components/Land/components/ReportingGroups';
 export { default as AdvancedSearch } from 'components/Land/components/AdvancedSearch';
 export { default as GenericDetailCard } from 'components/Shared/components/common/DetailCard/GenericDetailCard';
+export { default as DocumentsCard } from 'components/Shared/components/common/DetailCard/DocumentsCard';

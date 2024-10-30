@@ -143,6 +143,7 @@ export default function MetadataDrawer(props) {
 		targetSourceId,
 		targetLabel,
 		viewAllDocuments,
+		pageLink,
 		ownerTitle,
 		ownerPlaceHolder,
 		isApproval,
@@ -413,7 +414,8 @@ export default function MetadataDrawer(props) {
 								id="viewAllDocuments"
 								className={classes.viewAll}
 								onClick={() => {
-									history.push(`/contact/details/${targetSourceId}/documents`);
+									const link = pageLink ?? `/contact/details/${targetSourceId}/documents`;
+									history.push(link);
 									setStateApp(stateApp => ({ ...stateApp, viewDoc: null, isExpanded: true }));
 								}}
 							>

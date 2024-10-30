@@ -112,7 +112,7 @@ export default function Land() {
 			// Set dynamic assets in side panel
 			setSidePanelMenuList(prevList => {
 				const newList = { ...prevList };
-				dynamicAsset.forEach(item => {
+				dynamicAsset?.forEach(item => {
 					const key = item.tableName.replace(/\s+/g, '_').toUpperCase();
 					newList[key] = {
 						featureFlag: 'LANDMODULE',
@@ -130,6 +130,17 @@ export default function Land() {
 						isDefault: true,
 						isExcluded: true,
 						parent: key,
+					};
+
+					newList[`${key}_DETAIL_DOCUMENTS`] = {
+						featureFlag: 'LANDMODULE',
+						link: `/land/customAsset/:tableName/details/:id/documents`,
+						component: 'DocumentsCard',
+						value: 'DocumentsCard',
+						hideSearch: true,
+						isDefault: true,
+						isExcluded: true,
+						parent: `${key}_DETAIL`,
 					};
 				});
 				return newList;

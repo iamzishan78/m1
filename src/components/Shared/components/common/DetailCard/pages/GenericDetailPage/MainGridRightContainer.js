@@ -9,6 +9,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
 import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
+import { removeSpaces } from 'components/MRTTable/utils/helper';
 
 const MainGridRightContainer = () => {
 	const classes = useStyles({});
@@ -49,6 +50,7 @@ const MainGridRightContainer = () => {
 				targetLabel={currentAsset?.tableName}
 				ownerTitle={`${currentAsset?.tableName} Owner`}
 				commentsWidth="23vw"
+				pageLink={`/land/customAsset/${removeSpaces(currentAsset?.tableName)}/details/${currentAssetRecord?._id}/documents`}
 				viewAllDocuments
 				menuComponent={
 					<IconButton className={classes.menuIcon} onClick={handleClick}>
