@@ -115,9 +115,7 @@ export default function BulkUpload(props) {
 
 	useEffect(() => {
 		getMetaData({
-			variables: {
-				category: 'Parcel',
-			},
+			variables: {},
 		});
 	}, [getMetaData]);
 
@@ -135,20 +133,41 @@ export default function BulkUpload(props) {
 	const reset_state = useCallback(() => {
 		let m1neralHeaders = M1neral_headers[selectedJob.type] || [];
 
+		let customFieldHeaders = [];
+
 		switch (selectedJob.type) {
 			case 'TRACTS':
-				m1neralHeaders = [
-					...m1neralHeaders,
-					...(metaDataRes?.getMetaData?.metaData || []).map(d => ({
-						...d,
-						actual_key: `parcel.custom_data.${d.name}`,
-					})),
-				];
+				customFieldHeaders = (metaDataRes?.getMetaData?.metaData || [])
+					.filter(md => md.category === 'Parcel')
+					.map(md => ({
+						...md,
+						actual_key: `parcel.custom_data.${md.name}`,
+					}));
+				break;
+
+			case 'UNITS':
+				customFieldHeaders = (metaDataRes?.getMetaData?.metaData || [])
+					.filter(md => md.category === 'Unit')
+					.map(md => ({
+						...md,
+						actual_key: `shape.custom_data.${md.name}`,
+					}));
+				break;
+
+			case 'CONTACTS':
+				customFieldHeaders = (metaDataRes?.getMetaData?.metaData || [])
+					.filter(md => md.category === 'Contacts')
+					.map(md => ({
+						...md,
+						actual_key: `entityDetail.custom_data.${md.name}`,
+					}));
 				break;
 
 			default:
 				break;
 		}
+
+		m1neralHeaders = [...m1neralHeaders, ...customFieldHeaders];
 
 		jobController.updateState({
 			csvDataToSend: [],
