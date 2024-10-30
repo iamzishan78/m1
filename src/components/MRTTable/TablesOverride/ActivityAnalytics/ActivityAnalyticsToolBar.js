@@ -69,14 +69,19 @@ function ActivityAnalyticsToolBar({ table, tableKey }) {
       };
 
     const setSelectedActivityId = (id) => {
-
-
         setStateApp((stateApp) => ({
             ...stateApp,
             selectedActivityId: id,
-            
         }));
-    };
+        if (!id) { // reset selectedrow on closing activity modal
+            tableGlobalController.updateState({
+                dialog: {
+                    type: 'activitydetailmodal',
+                    selectedRow: null,
+                },
+            });
+        }
+     };
     return (
         <>
             <ActivitiesModal setSelectedActivityId={setSelectedActivityId} events={events} />
