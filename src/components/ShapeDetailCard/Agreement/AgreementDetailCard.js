@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { set } from "lodash";
 import { useHistory } from "react-router-dom";
@@ -31,6 +31,8 @@ import moment from "moment";
 import { popupController } from "hookstate/popupStateController";
 import { jobController } from "hookstate/jobStateController";
 import { layerController } from "hookstate/layerStateController";
+import MRTTable from "components/MRTTable";
+import AgreementRelatedUnitsToolbar from "components/MRTTable/TablesOverride/AgreementRelatedUnitsTable/AgreementRelatedUnitsToolbar";
 
 export default function AgreementDetailCard(props) {
   const dispatch = useDispatch();
@@ -245,6 +247,14 @@ export default function AgreementDetailCard(props) {
     });
   };
 
+  // Table overridden meta
+  const RelatedUnitsOverrideMeta = useMemo(() => ({
+    defaultFilters: [{ field: "shape._id", value: dataCustomLayer?.customLayer?._id }],
+    CustomToolBar: AgreementRelatedUnitsToolbar,
+    maxTableHeight: "calc(60vh - 200px)",
+    customProps: { customLayer: dataCustomLayer?.customLayer },
+  }), [dataCustomLayer]);
+
   const DocumentHeader = () => {
     const classes = detailCardStyles();
     return (
@@ -285,7 +295,7 @@ export default function AgreementDetailCard(props) {
         </Grid>
         <Grid item sm={12}>
           <Taps
-            tabLabels={["Summary", "Provisions", "Tracts", "Wells", "Documents"]}
+            tabLabels={["Summary", "Provisions", "Tracts", "Units", "Wells", "Documents"]}
             backgroundColor={"white"}
             openTabIdex={selectedTab}
             whichTapIsActive={(value) => setSelectedTab(value)}
@@ -347,6 +357,12 @@ export default function AgreementDetailCard(props) {
                     </Grid>
                   )}
                 </Grid>
+              </div>,
+              <div style={{ overflow: "overlay", maxHeight: "calc(100vh - 285px)" }}>
+                <MRTTable
+                  name="AgreementRelatedUnitsTable"
+                  overrideMeta={RelatedUnitsOverrideMeta}
+                />
               </div>,
               <div style={{ overflow: "overlay", maxHeight: "calc(100vh - 285px)" }}>
                 <TabPanels

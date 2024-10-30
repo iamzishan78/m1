@@ -240,7 +240,10 @@ export default function DocumentAssociation({
                     target="_blank"
                     rel="noreferrer"
                   >
-                    {shape?.name || shape?.entityDetail?.name || ''}
+                    {shape?.name ||
+                      shape?.entityDetail?.name ||
+                      shape?.checkNumber ||
+                      ""}
                   </a>
 
                   {deleteFileLoading && deletedRow === shape._id ? (

@@ -110,8 +110,9 @@ const LastCheckDateFilter = ({
           lte: toDate ? `${dateFilterToDate(toDate)}T00:00:00.000Z` : null,
         },
         type: "range",
+        filterType: "date"
       });
-  
+
     const _propertyFilter = copy(propertyFilter)
     filters = filters.filter((filter) => !reportGroupFilters.current.includes(filter.field))
     _propertyFilter.forEach((filter) => {
@@ -121,16 +122,16 @@ const LastCheckDateFilter = ({
       filters.push({ ...filter })
     })
     reportGroupFilters.current = _propertyFilter.map((filter) => filter.field)
-  
+
     if (status !== "ALL") {
       filters.push({
         field: "status.keyword",
         value: status,
       });
     }
-    if (!deepEqual(filters, esFilters)) { // prevent from unnecessary re rendering 
+    // Removed the conditional statement because clicking the cross icon in the comparison grid's global filter or selecting all dates was not updating the grid filters as expected.
+
     setESFilters(filters);
-    }
     setFilterToggle(!filterToggle);
   };
 
