@@ -242,6 +242,7 @@ function LayerSelectionPopup(props) {
                         className={classes.locationIcon}
                         color="inherit"
                         onClick={handleLocationClick}
+                        style={{ "display" : (clicked ? 'none' : ''), height: "40px" }}
                     >
                         <LocationOnIcon />
                     </IconButton>
@@ -256,7 +257,7 @@ function LayerSelectionPopup(props) {
             <Card className={classes.card} data-testid='layer-selection-popup' >
                 <CardHeader
                     classes={{ title: classes.title, subheader: classes.subheader }}
-                    title={<GetTitle handleLocationClick={handleLocationClick} />}
+                    title={GetTitle( handleLocationClick )}
                 >
                 </CardHeader >
                 <CardContent className={classes.content}>
