@@ -171,8 +171,8 @@ function ESAutoCompleteFilter({
 			const requiredFilterValue = defaultFilterOptions?.find((option) => option?.value === filterValue)?.label;
 			filterValue = requiredFilterValue;
 		}
-	} else if (type === 'price'  && (typeof filterValue === 'string' ? filterValue : filterValue.length)) {
-		if (typeof filterValue === 'string') {
+	} else if (type === 'price') {
+		if (typeof filterValue === 'number') {
 			filterValue = vf_currency_to_fixed(filterValue, 2);
 		} else if (typeof filterValue === 'object' && !Array.isArray(filterValue)) {
 			filterValue = vf_currency_to_fixed(filterValue, 2);
@@ -183,8 +183,8 @@ function ESAutoCompleteFilter({
 			const requiredFilterValue = defaultFilterOptions?.find((option) => option?.value === filterValue)?.label;
 			filterValue =   vf_currency_to_fixed(requiredFilterValue, 2); ;
 		}
-	} else if (type === 'decimal' && (typeof filterValue === 'string' ? filterValue : filterValue.length)) {
-		if (typeof filterValue === 'string') {
+	} else if (type === 'decimal' && filterValue !== '') {
+		if (typeof filterValue === 'number') {
 			filterValue = vf_number(filterValue, 2);
 		} else if (typeof filterValue === 'object' && !Array.isArray(filterValue)) {
 			filterValue = vf_number(filterValue, 2);
@@ -195,6 +195,7 @@ function ESAutoCompleteFilter({
 			const requiredFilterValue = defaultFilterOptions?.find((option) => option?.value === filterValue)?.label;
 			filterValue =   vf_number(requiredFilterValue, 2); ;
 		}
+		filterValue = vf_number(filterValue, 2);
 	}
 	const id = Array.isArray(field) ? field.join(' ') : field;
 	// Filter out the options
