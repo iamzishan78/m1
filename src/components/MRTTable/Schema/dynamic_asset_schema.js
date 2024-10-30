@@ -8,7 +8,6 @@ const DynamicAssetMeta = {
 		pageSize: 50,
 	},
 	maxTableHeight: 'calc(100vh - 215px)',
-	isInFiniteScroll: true,
 	columnVirtualization: false,
 
 	CustomToolBar: DynamicAssetGridToolBar,

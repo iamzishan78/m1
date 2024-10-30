@@ -140,24 +140,35 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, 
 	}
 
 	// Create dynamic grid schema
-	const dynamicTableSchema = columns.map((item, index) => {
+	const dynamicTableSchema = columns.filter(column => !!column?.isGridDisplayed).map((item, index) => {
+		let key, modelName;
+		if(fetchDynamicSchema.isAssociatedModel) {
+			key = `relatedObject.${item.mappingKey}`;
+			modelName = fetchDynamicSchema.associatedModel;
+		} else {
+			key = item.mappingKey;
+			modelName = fetchDynamicSchema.tableName;
+		}
+		const model = removeSpaces(modelName);
+
 		return ({
 			...CommonSchema.COMMON_COLUMN,
-			name: item.keyType === 'String' ? `${item.mappingKey}.keyword` : item.mappingKey,
-			accessorKey: item.mappingKey,
-			id: item.mappingKey,
+			name: item.keyType === 'String' ? `${key}.keyword` : key,
+			accessorKey: key,
+			id: key,
 			header: item?.label,
 			type: item?.keyType,
 			size: 350,
 			isPinned: !!item?.isControlColumn,
 			Cell: ({ renderedCellValue, row }) => {
 				if(!!item?.isControlColumn) {
-					const model = removeSpaces(fetchDynamicSchema.tableName);
+					const id = fetchDynamicSchema.isAssociatedModel ? row?.original?.relatedObject?._id: row.getValue('_id');
 					return <ColumnWithLink
 						value={renderedCellValue}
-						link={`/land/customAsset/${model}/details/${row.getValue('_id')}`}
+						link={`/land/customAsset/${model}/details/${id}`}
 						onClick={e => {
 							e.stopPropagation();
+							tableGlobalController.reInitialized();
 						}}
 					/>
 				} else {
@@ -167,15 +178,21 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, 
 		})
 	});
 
-	const _Schema = [
+	let _Schema = [
 		...TableSchema,
 		...dynamicTableSchema,
-		CommonSchema.Owner,
-		CommonSchema.CREATED_BY,
-		CommonSchema.CREATED_DATE,
-		CommonSchema.LAST_UPDATED_BY,
-		CommonSchema.LAST_UPDATED_DATE,
 	]
+
+	if(!fetchDynamicSchema.isAssociatedModel) {
+		_Schema = [
+			..._Schema,
+			CommonSchema.OWNER,
+			CommonSchema.CREATED_BY,
+			CommonSchema.CREATED_DATE,
+			CommonSchema.LAST_UPDATED_BY,
+			CommonSchema.LAST_UPDATED_DATE,
+		]
+	}
 
 	return _Schema
 }

@@ -127,7 +127,7 @@ export const CommonSchema = {
 			return <>{row.original?.createBy?.name}</>;
 		},
 	},
-	Owner: {
+	OWNER: {
 		name: 'owner.name.keyword',
 		accessorKey: 'owner.name',
 		header: 'Owner',
