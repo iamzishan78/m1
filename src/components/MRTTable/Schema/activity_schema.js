@@ -28,6 +28,7 @@ const ActivityMeta = {
         fields: ["name", "_all"]
     },
     maxTableHeight: 'calc(100vh - 600px)',
+    isDeleteDisabled: true, // Disable delete functionality
     isNotBreadcrumbView: true, // Flag to determine whether to display a simple Typography or a Breadcrumbs component. If true, Typography is rendered; if false, Breadcrumbs is rendered.
     gridViewSettings: {
         label: 'Activities',
