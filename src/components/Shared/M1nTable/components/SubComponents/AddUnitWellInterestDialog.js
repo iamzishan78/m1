@@ -152,6 +152,9 @@ function AddUnitInterestDialog(props) {
             shapeType: props.shapeType, // Type of shape
             globalWellId: selectedWell.Id, // Global ID of the selected well
             wellName: selectedWell.WellName, // Name of the selected well
+            measuredDepth: selectedWell?.measuredDepth,  // Measured depth of the selected well
+            lateralLength: selectedWell?.lateralLength,  // Lateral length of the selected well
+            lastTwelveMonthBOE: selectedWell?.lastTwelveMonthBOE,  // Last twelve months' Barrel of Oil Equivalent (BOE) for the selected well
             ...getValues(), // Spread the rest of the values obtained from the form
           }]
         },
@@ -171,6 +174,9 @@ function AddUnitInterestDialog(props) {
             shapeType: props.shapeType, // Type of shape
             shapeId: props.shapeId, // ID of the shape
             wellName: selectedWell.WellName, // Name of the selected well
+            measuredDepth: selectedWell?.measuredDepth,  // Measured depth of the selected well
+            lateralLength: selectedWell?.lateralLength,  // Lateral length of the selected well
+            lastTwelveMonthBOE: selectedWell?.lastTwelveMonthBOE,  // Last twelve months' Barrel of Oil Equivalent (BOE) for the selected well
             ...getValues(), // Spread the rest of the values obtained from the form
           }
         },
@@ -442,6 +448,41 @@ function AddUnitInterestDialog(props) {
             options={getOptions("WellStatus") || []}
             as={<AutoCompleteFieldComponent />}
           />
+
+          <Controller
+            control={control}
+            name="lastTwelveMonthBOE"
+            label="Last 12 (BOE)"
+            as={TextField}
+            variant="outlined"
+            margin="dense"
+            disabled
+            fullWidth
+            defaultValue=""
+          />
+          <Controller
+            control={control}
+            name="measuredDepth"
+            label="MD (ft)"
+            as={TextField}
+            variant="outlined"
+            margin="dense"
+            disabled
+            fullWidth
+            defaultValue=""
+          />
+          <Controller
+            control={control}
+            name="lateralLength"
+            label="Lateral Length (ft)"
+            defaultValue={""}
+            as={TextField}
+            variant="outlined"
+            margin="dense"
+            disabled
+            fullWidth
+          />
+        
         </FormControl>
       </div>
 
