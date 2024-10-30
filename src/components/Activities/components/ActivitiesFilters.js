@@ -289,7 +289,7 @@ const CampaignFilter = ({
       },
     });
     onCampaignChange('campaign', search);
-  }, [search, selectedFilters.qualifier]);
+  }, [search, selectedFilters.qualifier, appliedFilters]); // refresh campaign filter options list 
 
   return (
     <Autocomplete
@@ -378,7 +378,7 @@ const QualifierFilter = ({
       },
     });
     onQualifierChange('qualifier', search)
-  }, [search, selectedFilters.campaign]);
+  }, [search, selectedFilters.campaign, appliedFilters]); // refresh qualifier filter options list
 
   return (
     <Autocomplete

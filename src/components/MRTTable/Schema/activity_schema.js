@@ -50,7 +50,7 @@ const ActivityMeta = {
             accessorKey: '_id',
         },
         {
-            ...CommonSchema.COMMON_COLUMN,
+            ...CommonSchema.INITAIL_PINNED,
             name: 'name.keyword',
             accessorKey: 'name',
             header: "Activity Name",
@@ -177,12 +177,6 @@ const ActivityMeta = {
 				return <>{isClosed ? 'Completed' : 'Not Completed'}</>;
 			},
 		},
-        {
-            ...CommonSchema.HIDDEN,
-            name: 'check.checkNumber.keyword',
-			accessorFn: row => row?.contact.campaignName,
-			isExternalFilter: true,
-        }
 
     ]
 }
