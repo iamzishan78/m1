@@ -7,7 +7,7 @@ import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { set } from 'lodash';
 import { AppContext } from 'AppContext';
 
-function ShapeOwnerInput({ data, shapeType, shapeData }) {
+function ShapeOwnerInput({ data, shapeType, shapeData, onBlur, label = '' }) {
 	const dispatch = useDispatch();
 	const [stateApp] = useContext(AppContext);
 
@@ -46,7 +46,7 @@ function ShapeOwnerInput({ data, shapeType, shapeData }) {
 
 	return (
 		<UsersListWithIcon
-			label={'Owner'}
+			label={label}
 			placeholder={'Assign Approver'}
 			selectedUserId={ownerId}
 			onChangeUser={user => {
@@ -54,6 +54,7 @@ function ShapeOwnerInput({ data, shapeType, shapeData }) {
 				dispatch(showInfoMessage(`${shapeType} is being updated`));
 				updateMeta({ ownerName: user?.text, owner: user?.value });
 			}}
+			onBlur={onBlur}
 		/>
 	);
 }
