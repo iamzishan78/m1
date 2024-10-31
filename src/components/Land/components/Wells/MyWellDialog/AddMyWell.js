@@ -119,6 +119,13 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 			  : value;
 		  }
 		});
+		upsertMyWell({
+			variables: {
+			  myWell: { ...platformWell, _id: platformWell.id, ...processedValues },
+			},
+			refetchQueries: ["getESSimpleSearch"],
+			awaitRefetchQueries: true,
+		});
 	};
 
 	return (
