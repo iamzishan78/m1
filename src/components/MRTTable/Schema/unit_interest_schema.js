@@ -195,7 +195,20 @@ const UnitInterestMeta = {
 			accessorKey: 'shape.shapeJson.properties.uAcres',
 			header: 'Unit Acres',
 		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'unitTractId.keyword',
+			accessorKey: 'unitTractId',
+			header: 'Unit Tract ID',
+		},
 
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'tractAcres',
+			accessorKey: 'tractAcres',
+			header: 'Unit Tract Acres',
+			isSearchField: false
+		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -243,20 +256,7 @@ const UnitInterestMeta = {
 			header: 'NRA',
 			isSearchField: false,
 		},
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'unitTractId.keyword',
-			accessorKey: 'unitTractId',
-			header: 'Unit Tract ID',
-		},
-
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'tractAcres',
-			accessorKey: 'tractAcres',
-			header: 'Unit Tract Acres',
-			isSearchField: false
-		},
+		
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'offer_price',
@@ -361,23 +361,6 @@ const UnitInterestMeta = {
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'dataSource.keyword',
-			accessorKey: 'dataSource',
-			header: 'Data Source',
-		},
-
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'taxYear',
-			type: 'number',
-			accessorKey: 'taxYear',
-			header: 'Tax Year',
-			isSearchField: false
-		},
-
-
-		{
-			...CommonSchema.COMMON_COLUMN,
 			name: 'deals.name.keyword',
 			accessorKey: 'deals.name',
 			header: 'Associated Deals',
@@ -403,6 +386,20 @@ const UnitInterestMeta = {
 					</div>
 				);
 			},
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'dataSource.keyword',
+			accessorKey: 'dataSource',
+			header: 'Data Source',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'taxYear',
+			type: 'number',
+			accessorKey: 'taxYear',
+			header: 'Tax Year',
+			isSearchField: false
 		},
 
 		{

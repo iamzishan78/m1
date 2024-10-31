@@ -189,6 +189,16 @@ export default function M1neralHeaders() {
         //   filtered_data_to_send.push(null)
         //   continue;
         // }
+        
+        // remove the row if the value of payStatus is not correct
+        if (return_obj["property.status"]) {
+            const formattedValue = return_obj["property.status"].replace(/\s+/g, "").toLowerCase();
+  
+            if (!["inpay","notinpay"].some(value => value=== formattedValue)) {
+              filtered_data_to_send.push(null)
+              continue;
+            }
+        }
 
         Object.keys(return_obj).forEach(key => {
           if (return_obj[key] instanceof Date) {

@@ -1,5 +1,6 @@
 import GlobalSettings from "GlobalSettings";
 import { formatDate } from 'components/Shared/functions';
+import { GlobalStickyStyles } from "GlobalSettings";
 
 const ActivitiesHeadCells = [
   {
@@ -19,10 +20,18 @@ const ActivitiesHeadCells = [
     label: "Activity Name",
     esKey: "name.keyword",
     options: {
-      ...GlobalSettings.muiGridStandardOptions,
-      display: true,
-      sort: true,
-      filter: true,
+      ...GlobalStickyStyles({
+        setCellProps: {
+          maxWidth: "300px",
+          left: '76.5px',
+        },
+        setCellHeaderProps: {
+          left: '76.5px',
+        },
+        isSnapGrid: false // Fix issue table title slightly hide while scrolling horizontally
+      }),
+      dbName: "shapeJson.properties.agreementNumber",
+      isSnapGrid: false,
     },
   },
   {

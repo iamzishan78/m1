@@ -122,7 +122,9 @@ export function customStartCaseString(str, isDate) {
 
   return str
     .split(' ')
-    .map(s => s[0] + s.substring(1).replace(/[A-Z]/g, x => `${x}`))
+    .map(s => s 
+    ? s[0] + s.substring(1).replace(/[A-Z]/g, x => `${x}`)
+    : s)
     .join(' ');
 }
 
@@ -166,7 +168,7 @@ export const getSelectedRowsFromProps = (props = {}) => {
 
 export const formatDate = (date, simple = true) => {
   if (!date) return '--'
-  return moment.utc(date).format(simple ? 'MM/DD/YYYY' : 'MMMM D, YYYY');
+  return moment(date).format(simple ? 'MM/DD/YYYY' : 'MMMM D, YYYY');
 }
 
 export const processInBatches = async (promises, batchSize) => {

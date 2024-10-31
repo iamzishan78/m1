@@ -96,10 +96,18 @@ function ESAutoCompleteFilter({
 		}));
 
 		if (type === 'date') {
-			options = hits.map(({ key_as_string }) => ({
-				label: formatDate(key_as_string),
-				value: key_as_string,
-			}));
+			options = hits.map(({ key_as_string, key }) => {
+			  if (key_as_string) {
+				return {
+				  label: formatDate(key_as_string),
+				  value: key_as_string,
+				};
+			  }
+			  return {
+					label: key,
+					value: key
+				}		  
+			});
 
 			options = _.uniqWith(options, (a, b) => a.label === b.label);
 		}

@@ -25,7 +25,6 @@ const useToolbarStyles = makeStyles((theme) => ({
     marginRight: 8,
   },
   filterByTypeDisplay: {
-    border: "1px solid #d9d9d9",
     borderRadius: 3,
     display: "flex",
     alignItems: "center",

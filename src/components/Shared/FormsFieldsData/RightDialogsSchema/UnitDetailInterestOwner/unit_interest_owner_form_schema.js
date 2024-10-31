@@ -388,6 +388,19 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
         return formattedValue;
       }
     },
+    { // Add new field closed price 
+      label: "Closed Price",
+      name: "closed_price",
+      InputProps: {
+        inputComponent: CurrencyFormatCustom,
+      },
+      onBlur: (value) => {
+        const cleanedValue = value.replace(/[$,]/g, '');
+        const numericValue = parseFloat(cleanedValue);
+        const formattedValue = numericValue.toFixed(8);
+        return formattedValue;
+      }
+    },
     {
       label: "Contact Status",
       name: "contactStatus",
