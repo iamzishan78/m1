@@ -254,7 +254,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 												: ''
 									}
 									onChange={event => {
-										const value = event.target.value.trim(); // Remove leading/trailing whitespace;
+										const value = event.target.value.replace(/^\s+/, ''); // Remove only the leading whitespace
 										params.onChange(value);
 									}}
 									onBlur={event => {
