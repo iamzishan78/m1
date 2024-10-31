@@ -7,6 +7,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 
 import { AppContext } from "../../../AppContext";
 import { debounce } from "lodash";
+import { tableController } from "hookstate/tableController";
 
 const useStyles = makeStyles((theme) => ({
   search: {
@@ -67,6 +68,7 @@ const LandSearch = () => {
 
   useEffect(() => {
     return () => {
+      tableController("AgreementTable").setGlobalFilter('')
       setStateApp((stateApp) => ({
         ...stateApp,
         landSearchQuery: "",
@@ -82,6 +84,7 @@ const LandSearch = () => {
   const handleChange = React.useMemo(
     () =>
       debounce((value) => {
+        tableController("AgreementTable").setGlobalFilter(value)
         setStateApp((stateApp) => ({
           ...stateApp,
           landSearchQuery: value,
@@ -120,6 +123,7 @@ const LandSearch = () => {
                   htmlColor="#fff"
                   className={`${classes.toggleBtn} ${stateApp.activityDisplayType === "table" && classes.activeBtn}`}
                   onClick={() => {
+                    handleChange('')
                     setSearch("");
                     setStateApp((stateApp) => ({
                       ...stateApp,

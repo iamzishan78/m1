@@ -444,6 +444,10 @@ const AgreementMeta = {
 			id: 'shapeJson.properties.ownerName',
 			header: 'Owner',
 		},
+		CommonSchema.CREATED_BY,
+		CommonSchema.CREATED_DATE,
+		CommonSchema.LAST_UPDATED_BY,
+		CommonSchema.LAST_UPDATED_DATE,
 
 		{
 			...CommonSchema.TAGS,

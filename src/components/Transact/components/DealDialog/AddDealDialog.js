@@ -634,10 +634,11 @@ function AddDealDialog(props) {
 				}
 			}
 		},
+		// TODO: requires code refactoring which will take time disabling lint rule for hotfix
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[
 			pipeToShow?._id,
 			pipeToShow?.lanes,
-			pipelineId,
 			stateApp.activeDeal?.descriptorId,
 			stateApp.activeDeal?.laneId,
 			stateApp.activeDeal?.position,

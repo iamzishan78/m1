@@ -6,12 +6,11 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import moment from "moment";
 import get from "lodash/get";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { useHistory } from "react-router-dom";
 
 import { AppContext } from "../../../AppContext";
-import Dialog from "@material-ui/core/Dialog";
+import { CircularProgress, Dialog, DialogTitle } from "@material-ui/core";
 import ExpandableCardProvider from "../../ExpandableCard/ExpandableCardProvider";
 
 import CallIcon from "@material-ui/icons/Call";
@@ -926,6 +925,11 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
           </div>
         }
       />
+      <Dialog open={addLoading || updateLoading} style={{ zIndex: 99999999999 }}>
+        <DialogTitle id="alert-dialog-title">
+          <CircularProgress />
+        </DialogTitle>
+      </Dialog>
     </Dialog>
   );
 }
