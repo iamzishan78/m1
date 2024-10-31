@@ -95,12 +95,11 @@ const RenderFieldComponent = memo(({ field: fieldObj, summaryDataValues }) => {
 
 	switch (field.keyType) {
 		case 'text':
-		case 'String':
+		case 'string':
 		case 'textarea':
 		case 'email':
 		case 'currency':
 		case 'number':
-		case 'Number':
 			return (
 				<SummaryTextField
 					fieldData={get(summaryDataValues, field.key)}
@@ -122,7 +121,6 @@ const RenderFieldComponent = memo(({ field: fieldObj, summaryDataValues }) => {
 			);
 
 		case 'date':
-		case 'Date':
 			return (
 				<DateField
 					fieldData={get(summaryDataValues, field.key)}
@@ -143,8 +141,7 @@ const RenderFieldComponent = memo(({ field: fieldObj, summaryDataValues }) => {
 		case 'owner':
 			return <OwnerField fieldData={get(summaryDataValues, field.key)} field={field} />;
 
-		case 'users':
-		case 'User':
+		case 'user':
 			return <SummaryUsersList fieldData={get(summaryDataValues, field.key)} field={field} />;
 
 		case 'dropdown':

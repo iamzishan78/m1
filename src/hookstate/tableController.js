@@ -151,7 +151,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, 
 			modelName = fetchDynamicSchema.tableName;
 		}
 
-		if(item.keyType === 'User') {
+		if(item.keyType === 'user') {
 			key = `${key}.name`
 		}
 
@@ -159,7 +159,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, 
 
 		return ({
 			...CommonSchema.COMMON_COLUMN,
-			name: item.keyType === 'String' ? `${key}.keyword` : key,
+			name: item.keyType === 'string' ? `${key}.keyword` : key,
 			accessorKey: key,
 			id: key,
 			header: item?.label,
@@ -178,7 +178,8 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, 
 						}}
 					/>
 				} else {
-					return <>{renderedCellValue}</>
+					let value = item.keyType === 'date' ? formatDate(renderedCellValue) : renderedCellValue;
+					return <>{value}</>
 				}
 			}
 		})

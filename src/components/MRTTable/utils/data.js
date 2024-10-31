@@ -158,11 +158,11 @@ export const entityCreationOptions = [
 ];
 
 export const entityKeyTypes = [
-	{ label: 'String', value: 'String' },
-	{ label: 'JSON', value: 'JSON' },
-	{ label: 'Number', value: 'Number' },
-	{ label: 'Date', value: 'Date' },
-	{ label: 'User', value: 'User' },
+	{ label: 'String', value: 'string' },
+	{ label: 'JSON', value: 'json' },
+	{ label: 'Number', value: 'number' },
+	{ label: 'Date', value: 'date' },
+	{ label: 'User', value: 'user' },
 	// { label: 'Tags', value: 'Tags' },
 	// { label: 'Comments', value: 'Comments' }, // In future we need to add these association support
 ];
