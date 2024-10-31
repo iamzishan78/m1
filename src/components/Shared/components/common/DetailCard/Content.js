@@ -16,8 +16,8 @@ const useStyles = makeStyles(theme => ({
 	tabsContainer: {
 		background: '#fff',
 		// height: ({ isTabbed }) => (isTabbed ? 'calc(100vh - 264px)' : 'calc(100vh - 238px)'),
-		height: '100%',
-		overflow: 'scroll',
+		height: 'calc(100vh - 220px)',
+		overflow: 'auto',
 	},
 	header: {
 		backgroundColor: '#fff',
@@ -103,7 +103,7 @@ const Content = () => {
 	const { Header, MainGridRightContainer } = Pages[page];
 
 	return (
-		<Grid container direction="column" className={classes.container}>
+		<Grid sx={{ display: 'flex' }} direction="column" className={classes.container}>
 			<Grid item xs={12} className={classes.header}>
 				<Header />
 			</Grid>
