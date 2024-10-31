@@ -36,10 +36,10 @@ function DateField({ fieldData, field }) {
 	const { useUpdate } = Pages[page];
 	const { callApi } = useUpdate();
 
-	const [value, setValue] = useState(fieldData?.get({ noproxy: true }) || '');
+	const [value, setValue] = useState(fieldData || '');
 
 	useEffect(() => {
-		setValue(fieldData?.get({ noproxy: true }) || '');
+		setValue(fieldData || '');
 	}, [fieldData]);
 
 	const handleDateChange = value => {
@@ -50,7 +50,7 @@ function DateField({ fieldData, field }) {
 	const handleBlur = event => {
 		let currValue = event.target.value;
 
-		if (currValue !== fieldData?.get({ noproxy: true })) {
+		if (currValue !== fieldData) {
 			callApi(field.key, currValue);
 		}
 	};
