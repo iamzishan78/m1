@@ -31,6 +31,7 @@ function Portals({ hideShape }) {
 		'selectedUserDefinedLayer',
 		'layerSelectionPopup',
 		'selectionLayers',
+		'coordinate'
 	]);
 
 	const popupVals = popupState.stateValues;
@@ -237,6 +238,7 @@ function Portals({ hideShape }) {
 									parent="map"
 									handleCloseExpandableCard={popupController.reset}
 									selectionLayers={popupVals.selectionLayers}
+									coordinate={popupVals.coordinate}
 									zIndex={3000}
 									cardWidth="450px"
 									mouseX={0}
