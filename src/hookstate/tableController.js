@@ -150,6 +150,11 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, 
 			key = item.mappingKey;
 			modelName = fetchDynamicSchema.tableName;
 		}
+
+		if(item.keyType === 'User') {
+			key = `${key}.name`
+		}
+
 		const model = removeSpaces(modelName);
 
 		return ({

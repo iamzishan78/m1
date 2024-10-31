@@ -10,24 +10,24 @@ const SummaryUsersList = ({ fieldData, field }) => {
 	const { useUpdate } = Pages[page];
 	const { callApi } = useUpdate();
 
-	const [value, setValue] = useState(fieldData?.get({ noproxy: true }) || '');
+	const [value, setValue] = useState(fieldData || '');
 
 	const handleChange = user => {
 		let updatedvalue = user?.value || '';
-		callApi(user?.value);
 
-		if (user?.value !== fieldData?.get({ noproxy: true })) {
+		if (!user) {
+			callApi(field.key, null);
+		} else if (user?.value !== fieldData?._id) {
 			callApi(field.key, user?.value);
 		}
-
 		setValue(updatedvalue);
 	};
 
 	useEffect(() => {
-		setValue(fieldData?.get({ noproxy: true }) || '');
+		setValue(fieldData?._id || '');
 	}, [fieldData]);
 
-	return <UsersListWithIcon placeholder={field.placeholder} selectedUserId={value} onChangeUser={handleChange} />;
+	return <UsersListWithIcon placeholder={`Enter ${field?.label}`} selectedUserId={value} onChangeUser={handleChange} />
 };
 
 export default SummaryUsersList;

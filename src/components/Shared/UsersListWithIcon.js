@@ -13,39 +13,19 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignItems: "center",
   },
-  dealOwnerRoot: {
-    border: "1px solid #EBEBEB",
-    '&[class*="MuiOutlinedInput-root"] .MuiAutocomplete-input:first-child': {
-      paddingLeft: 26,
-    },
-
-    "& .MuiOutlinedInput-notchedOutline": {
-      border: 0,
-    },
-    "&:hover.MuiOutlinedInput-root": {
-      backgroundColor: "#EBEBEB",
-    },
-    "&:hover .MuiAutocomplete-popupIndicator": {
-      visibility: "visible",
-      padding: "2px",
-      marginRight: "-2px",
-    },
-  },
-  dealOwnerRootFocused: {
-    "& .MuiOutlinedInput-notchedOutline": {
-      border: "1px solid black",
-    },
-  },
-  popupIndicator: {
-    visibility: "hidden",
-    padding: "2px",
-    marginRight: "-2px",
-    "&:hover": {
-      visibility: "visible",
-    },
-  },
   inputFieldOwner: {
-    marginBottom: "7px",
+    '& .MuiAutocomplete-clearIndicator': {
+			marginRight: '10px',
+		},
+		'& .MuiFormControl-marginNormal': {
+			margin: '0px',
+		},
+		'& .MuiFormControl-marginDense': {
+			margin: '0px',
+		},
+		'& .MuiInputBase-root': {
+			borderRadius: '7px',
+		},
   },
   dealOwnerAvatar: {
     width: theme.spacing(3),
@@ -54,9 +34,14 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "0.6rem",
     backgroundColor: "#4880F6",
     padding: "0.5em",
+    "&:hover": {
+      cursor: "pointer",
+      opacity: 0.85,
+    },
   },
   dealOwnerLabel: {
-    marginLeft: 4,
+    fontWeight: "bold",
+    fontSize: "15px",
   },
 }));
 
@@ -86,10 +71,12 @@ const UsersListWithIcon = ({ label, placeholder, selectedUserId, onChangeUser, l
 
   return (
     <Grid container className={classes.gridStyle}>
-      <Grid item xs={labelSize}>
-        <div>{label}</div>
-      </Grid>
-      <Grid item xs={fieldSize}>
+      {label && (
+        <Grid item xs={labelSize}>
+          <div className={classes.dealOwnerLabel}>{label}</div>
+        </Grid>
+      )}
+      <Grid item xs={fieldSize} style={{maxWidth: '100%', flex: '1'}}>
         <Autocomplete
           id="userList"
           options={users.filter((u) => u.text)}
@@ -97,11 +84,6 @@ const UsersListWithIcon = ({ label, placeholder, selectedUserId, onChangeUser, l
           value={users.find((user) => user?.value === selectedUserId) || null}
           getOptionLabel={(option) => option.text}
           getOptionSelected={(option) => option.value === selectedUserId}
-          classes={{
-            inputRoot: classes.dealOwnerRoot,
-            focused: classes.dealOwnerRootFocused,
-            popupIndicator: classes.popupIndicator,
-          }}
           renderInput={(params) => (
             <TextField
               margin="dense"
