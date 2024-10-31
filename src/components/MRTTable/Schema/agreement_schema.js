@@ -46,6 +46,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 				},
 			},
 			mutation: UPDATECUSTOMLAYER,
+			refetchQueries: ['getESSimpleFilter'],
 		});
 		Loader.successToast(loaderId, 'Updation Complete');
 		tableGlobalController.refetch();
