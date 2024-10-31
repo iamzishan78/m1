@@ -299,8 +299,8 @@ export default function AddNewRelatedData({ title, addNewData, payeeFieldsData, 
                                     onChange={(_, selectedContact) => {
                                         setNewData({
                                             ...newData,
-                                            [field.key]: selectedContact.name,
-                                            contactId: selectedContact.value,
+                                            [field.key]: selectedContact?.name || "",
+                                            contactId: selectedContact?.value || "",
                                         });
                                         setContact(selectedContact);
                                     }}
