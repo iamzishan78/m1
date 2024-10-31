@@ -430,8 +430,10 @@ const tableESStateControllerHandler = state => ({
 
 	getExternalFilter: () => {
 		const filtersState = state.filters?.get({ noproxy: true });
-		const requiredFields = state.ExternalFilter?.get({ noproxy: true });
-		const esFilters = (filtersState || [])?.filter(filter => requiredFields.includes(filter.field));
+		const requiredFields = state.ExternalFilter?.get({ noproxy: true })?.map(f => f.replaceAll('.keyword', ''));
+		const esFilters = (filtersState || [])?.filter(filter =>
+			requiredFields.includes(filter.field.replaceAll('.keyword', ''))
+		);
 		return esFilters;
 	},
 

@@ -20,6 +20,8 @@ import { useMutation } from '@apollo/client';
 import { resetESTableToggle } from 'hookstate';
 
 export const getFilters = appliedFilters => {
+	if (Array.isArray(appliedFilters)) return appliedFilters;
+
 	let filters = [];
 	if (appliedFilters) {
 		let range = [];
