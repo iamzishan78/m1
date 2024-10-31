@@ -107,6 +107,24 @@ const UnitWellHeadCells = [
     }
   },
   {
+    name: "lastTwelveMonthBOE", esKey: 'lastTwelveMonthBOE.keyword', label: "Last 12 (BOE)", options: {  // Field for the last twelve months' Barrel of Oil Equivalent (BOE)
+      sort: true,
+      filter: true,
+    }
+  },
+  {
+    name: "measuredDepth", esKey: 'measuredDepth.keyword', label: "MD (ft)", options: {  // Field for the measured depth (MD) in feet
+      sort: true,
+      filter: true,
+    }
+  },
+  {
+    name: "lateralLength", esKey: 'lateralLength.keyword', label: "Lateral Length (ft)", options: {  // Field for the lateral length in feet
+      sort: true,
+      filter: true,
+    }
+  },
+  {
     name: "entity", label: "Entity", options: {
       display: false,
       filter: false,

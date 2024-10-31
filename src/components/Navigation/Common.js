@@ -10,8 +10,8 @@ export const useStyles = makeStyles((theme) => ({
     width: "100%",
     height: "100%",
   },
-  appBar: {
-    height: "64px",
+  appBar: (props) => ({
+    height: "auto",
     background: "transparent",
     zIndex: 99,
     transition: theme.transitions.create(["width", "margin"], {
@@ -22,8 +22,12 @@ export const useStyles = makeStyles((theme) => ({
     boxShadow: "none",
     "& .MuiToolbar-root": {
       marginLeft: "60px",
+      borderBottom: props.isCalendar ? "#80808042 solid 2px" : "",
+      "& .MuiGrid-container": props.isCalendar ?{
+        marginBottom: "1% !important"
+      } : {}
     },
-  },
+  }),
   appBarWhite: {
     height: "64px",
     background: "#ffff",

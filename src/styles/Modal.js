@@ -52,6 +52,13 @@ const Modals = makeStyles((theme) => ({
   actionButtons: {
     margin: "0px 25px 50px 0px",
   },
+
+  loaderWrapper: {
+    width: '100%',
+    justifyContent: 'center',
+    display: 'flex',
+    margin: 'auto'
+  }
 }));
 
 export { Modals };

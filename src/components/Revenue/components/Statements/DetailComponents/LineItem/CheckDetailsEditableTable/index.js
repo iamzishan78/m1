@@ -184,7 +184,7 @@ function CheckDetailsEditableTable(props) {
         query: GET_ES_PAGINATED_LIST,
         variables: {
           esIndex: "properties_flat",
-          search: `purchaserNumber:"${value}"`,
+          search: `number:"${value}"`,
           pagination: {
             first: 1,
             keep_alive: "1micros",
@@ -249,10 +249,6 @@ function CheckDetailsEditableTable(props) {
         // }
       }
     });
-
-    // moving on to new row
-    const nextCell = RevenueStatementHeadCells[RevenueStatementHeadCells.findIndex(cell => cell.id === field) + 1];
-    if (nextCell && nextCell.id === "action") addNewRow(null, gridRef);
   };
 
   useEffect(() => {
@@ -298,7 +294,15 @@ function CheckDetailsEditableTable(props) {
             ) : cell.type === "action" ? (
               <ActionCell id={cell.id + index} onChange={onFieldChange(row._id, "IsDeleted")} />
             ) : (
-              <Input value={value} focus={focus} onChange={onFieldChange(row._id, cell.id)} />
+              <Input
+                value={value}
+                focus={focus}
+                onChange={onFieldChange(row._id, cell.id)}
+                addNewRow={addNewRow}
+                RevenueStatementHeadCells={RevenueStatementHeadCells}
+                field={cell.id}
+                gridRef={gridRef}
+              />
             )}
           </>
         );

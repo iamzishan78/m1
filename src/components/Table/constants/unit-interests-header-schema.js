@@ -443,9 +443,9 @@ const UnitInterestsHeadCells = [
         label: 'Unit description',
         esKey: 'shape.shapeJson.properties.description.keyword',
         options: {
-            display: false,
+            display: true, // Visible description in table
             download: true,
-            viewColumns: false,
+            viewColumns: true, // Visible description in show/hide columns
         },
     },
     {
