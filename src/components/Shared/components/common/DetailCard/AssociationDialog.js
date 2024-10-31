@@ -24,6 +24,7 @@ import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 import { globalStateController } from 'hookstate/globalStateController';
 import { ADD_ASSOCIATED_MODEL_DATA } from 'graphQL/useMutationAssociatedModelData';
+import { isEmpty } from 'lodash';
 
 const useStyles = makeStyles(theme => ({
 	maxWidth: {
@@ -33,7 +34,6 @@ const useStyles = makeStyles(theme => ({
 		display: 'flex',
 		flexDirection: 'row',
 		alignItems: 'center',
-		padding: '10px',
 		'& .MuiAutocomplete-popper': {
 			width: '560px !important',
 		},
@@ -194,11 +194,35 @@ function AssociationDialog() {
 									{...params}
 									InputLabelProps={{ shrink: true }}
 									label={`${currentAssociatedModel?.modelName}'s`}
+									placeholder={`Select ${currentAssociatedModel?.modelName}`}
 									variant="outlined"
 								/>
 							)}
 						/>
 					</Grid>
+					{!isEmpty(selectedOption) && (
+						<>
+							<Typography variant="h6" style={{ marginTop: '20px' }}>
+								Record Details
+							</Typography>
+
+							<Grid container spacing={2}>
+								{currentAssociatedModel?.modelKeys?.map(key => (
+									<Grid item xs={12} key={key.mappingKey}>
+										<TextField
+											className={classes.maxWidth}
+											margin="dense"
+											label={key.label}
+											value={selectedOption[key.mappingKey] || 'N/A'}
+											variant="outlined"
+											disabled
+											fullWidth
+										/>
+									</Grid>
+								))}
+							</Grid>
+						</>
+					)}
 				</FormControl>
 			</DialogContent>
 			<DialogActions className={classes.dialogAction}>
