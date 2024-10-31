@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useSelector } from "react-redux";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { makeStyles } from "@material-ui/core/styles";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
@@ -13,7 +14,6 @@ import ActivitiesToolbar from "./components/ActivitiesToolbar";
 import ActivitiesEvent from "./components/ActivitiesEvent";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./index.css";
-import ActivitiesAppBar from "./components/ActivitiesAppbar";
 import ActivitiesModal from "./components/ActivitiesModal";
 import { AppContext } from "../../AppContext";
 import ActivitiesTable from "../../components/Table/Activities/ActivitiesTable";
@@ -27,6 +27,36 @@ Date.prototype.addHours = function (h) {
 };
 
 const ActivitiesCalendar = (props) => {
+  const { quickActionsPanelState } = useSelector(({ common }) => common);
+
+  useEffect(() => {
+    const handleShowMoreClick = (event) => {
+      setTimeout(() => {
+        const overlays = document.querySelectorAll('.rbc-overlay');
+        overlays.forEach((overlay) => {
+          const header = overlay.querySelector('.rbc-overlay-header');
+          if (header) {
+            const dateText = header.textContent.split(' ');
+            if (dateText[0] === 'Sunday') {
+              overlay.style.marginLeft = quickActionsPanelState ? '25%' : '3%';
+
+            }
+            else if (dateText[0] === 'Saturday') {
+              overlay.style.marginLeft = quickActionsPanelState ? '0%' : '0%';
+            }
+            else {
+              overlay.style.marginLeft = '3%';
+            }
+          }
+        });
+      }, 0);
+    };
+
+    document.addEventListener('click', handleShowMoreClick);
+    return () => {
+      document.removeEventListener('click', handleShowMoreClick);
+    };
+  }, [quickActionsPanelState]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   return (
     <div>
@@ -226,7 +256,8 @@ const Activities = () => {
         <CircularProgress className={classes.progress} size={80} disableShrink color="secondary" />
       ) : (
         <>
-          <ActivitiesAppBar onAddActivityClick={onModalOpen} />
+        	{/* create a line break to avoid overlapping */}
+          <hr style={{backgroundColor: "transparent", border: 0, marginTop: "7vh"}} size={"4"}/>
           {stateApp.activityDisplayType === "calendar" ? (
             <ActivitiesCalendar
               activityFilterByType={activityFilterByType}
@@ -241,6 +272,7 @@ const Activities = () => {
               onEventClick={onEventClick}
               mongoUsers={userLists?.allMongoUsers}
               type="Activity"
+
             />
           ) : (
             <div>

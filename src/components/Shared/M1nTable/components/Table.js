@@ -487,6 +487,16 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  textEllipsis: {
+    flexDirection: "row",
+    alignItems: "center",
+    minWidth: "300px",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    display: "block",
+    overflow: "hidden",
+    width: "100%"
+  },
   actionButtons: {
     display: "none",
     justifyContent: "flex-start",
@@ -1533,7 +1543,7 @@ function SubTable(props) {
                         style={{
                           display: 'flex',
                           alignItems: 'center',
-                          minWidth: "250px",
+                          minWidth: "300px",
                         }}
                       >
                         <Grid container spacing={0} direction="row"
@@ -1544,15 +1554,11 @@ function SubTable(props) {
                             style={{
                               display: "flex",
                               justifyContent: "flex-start",
+                              width: "100%"
                             }}
                           >
                             <p
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                                minWidth: "300px",
-                              }}
+                              className={classes.textEllipsis}
                             >
                               {value}
 
@@ -3900,9 +3906,6 @@ function SubTable(props) {
           },
         };
       }
-      if (props.addAble && props.parent === "UserManagement") {
-        buttonLabel = "+ ADD USER";
-      }
       if (props.addAble?.type === "ownerToParcel" || props.addAble?.type === "ownerToUnit") {
         buttonLabel = "+ ADD INTEREST OWNER";
         menuOptions = {
@@ -3967,8 +3970,6 @@ function SubTable(props) {
         if (props.addAble?.type && props.addAble?.type === "parcelInterestsToEntity")
           // handleExpandClick(null, null, null, "addOwnerToParcel");
           handleExpandClick(null, null, null, "addParcelInterestsToEntity");
-        if (props.addAble?.type && props.addAble?.type === "inviteUser")
-          handleExpandClick(null, null, null, "inviteUser");
         if (props.addAble?.type === "revenueStatementDetails") {
           const checkId = window.location.pathname.split("/")[window.location.pathname.split("/").length - 1];
           routeChange(`/revenue/statement/${checkId}/line-item`);
@@ -4027,7 +4028,6 @@ function SubTable(props) {
             )}
             {(props.addAble?.type === "wellInterest" ||
               props.addAble?.type === "suggestedOwnerToParcel" ||
-              (props.addAble && props.parent === "UserManagement") ||
               props.addAble?.type === "revenueStatementDetails") && (
                 <Button
                   color="secondary"
@@ -4186,19 +4186,6 @@ function SubTable(props) {
           selectedAgreement: rows[dataIndex],
         }));
         props.onClickAdd();
-      }
-
-      if (props.targetLabel === "usermanagement") {
-        if (rows[dataIndex]?.id) {
-          let card = { ...rows[dataIndex] };
-          setStateApp((stateApp) => ({
-            ...stateApp,
-            userDialog: true,
-            activeUser: card,
-          }));
-
-          handleExpandClick(null, null, null, "inviteUser");
-        }
       }
 
       // if (props.targetLabel === "Revenue Properties") {
@@ -5177,9 +5164,6 @@ function SubTable(props) {
                   setRows={setExpandedObject}
                   setSelectedRow={setSelectedRow}
                 />
-              )}
-              {openDialog === "inviteUser" && (
-                <InviteUserDialog rows={rows} setRows={setExpandedObject} onClose={handleCloseDialog} setSelectedRow={setSelectedRow} />
               )}
               {openDialog === "reinviteUser" && (
                 <ReinviteUserDialog

@@ -152,8 +152,10 @@ const getCurrentDate = () => {
 };
 
 const getCurrentTime = () => {
-  const d = new Date();
-  return d.toTimeString().slice(0, 5); // Extracts the time part "HH:MM"
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
 };
 
 const mergeDateAndTime = (d, t) => {
@@ -183,8 +185,8 @@ function AddActivityDialog(props) {
   const [closed, setClosed] = useState(activity_status || activityStatus[0]); // set default activity status
   const [startDate, setStartDate] = useState(getCurrentDate());
   const [endDate, setEndDate] = useState(getCurrentDate());
-  const [startTime, setStartTime] = useState("08:00");
-  const [endTime, setEndTime] = useState("08:00");
+  const [startTime, setStartTime] = useState(getCurrentTime() || "08:00");
+  const [endTime, setEndTime] = useState(getCurrentTime() || "08:00");
   const [notes, setNotes] = useState(activity_notes || ""); // set default activity notes
   const [owner, setOwner] = useState({ name: "", id: null });
   const [dealId, setDealId] = useState(null);
@@ -607,7 +609,7 @@ function AddActivityDialog(props) {
       >
         <AutoCompleteAddNewField
           queryParams={{
-            esIndex: "contacts_flat",
+            esIndex: "activities_flat",
             filterKey: "outcome.keyword",
             size: 50,
           }}

@@ -40,11 +40,11 @@ function ESSearchField({
   const [selectedItem, setSelectedItem] = useState(null);
   const [focused, setFocused] = useState(false);
 
-  const [getESSimpleSearch, { data: constDataItems }] = useLazyQuery(
+  const [getESSimpleSearch, { data: constDataItems, loading }] = useLazyQuery(
     GET_ES_SIMPLE_SEARCH,
     { fetchPolicy: "no-cache" }
   );
-  // searching 
+  // searching
   const callItemESSearch = React.useMemo(
     () =>
       debounce((request) => {
@@ -54,7 +54,7 @@ function ESSearchField({
             index,
             pagination,
             search: {
-              query: `*${request.input}*`,
+              query: `${request.input}`,
               fields,
             },
             sort,
@@ -70,6 +70,10 @@ function ESSearchField({
     const allESItem = constDataItems?.getESSimpleSearch?.hits;
     setFoundItems(allESItem);
   }, [constDataItems]);
+
+  useEffect(() => {
+    callItemESSearch({ input: "*" }, (results) => null);
+  }, []);
 
   // ON change of selected item
   const onChange = (item) => {
@@ -91,19 +95,25 @@ function ESSearchField({
           onChange(Item);
         }}
         value={selectedItem}
-        getOptionLabel={(option, value) => option.name}
+        getOptionLabel={(option, value) => option?.name || option?.checkNumber}
         filterOptions={(x) => x}
         loading
         id={`${fieldName}Search`}
         loadingText={
-          <div className={classes.alignCenter}>
-            <CircularProgress />
-          </div>
+          loading ? (
+            <div className={classes.alignCenter}>
+              <CircularProgress />
+            </div>
+          ) : (
+            "No record found"
+          )
         }
         renderOption={(option) => {
           return (
             <div>
-              <Typography variant="subtitle1">{option?.name}</Typography>
+              <Typography variant="subtitle1">
+                {option?.name || option?.checkNumber}
+              </Typography>
               <p className={classes.secondaryText}>{option?.ApiNumber}</p>
             </div>
           );
@@ -115,11 +125,13 @@ function ESSearchField({
             {...params}
             required
             variant="outlined"
-            label={`Search for a ${fieldName} by name or API`}
+            label={`${fieldName.replace(/s$/, "")} ${
+              fieldName.toLowerCase().includes("revenue") ? "Number" : "Name"
+            }`}
             InputLabelProps={{ shrink: true }}
             onChange={(event) => {
               callItemESSearch(
-                { input: event.target.value },
+                { input: `*${event.target.value}*` },
                 (results) => null
               );
             }}

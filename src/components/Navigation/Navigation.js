@@ -100,6 +100,7 @@ export default function Navigation(props) {
     user: stateApp.user,
     // Determine if the component is rendered on the map page based on location pathname and props
     isMap: location.pathname === "/" || location.pathname.startsWith("/map/") || props.isMap,
+    isCalendar: location.pathname.startsWith("/calendar")
   });
 
   useEffect(() => {

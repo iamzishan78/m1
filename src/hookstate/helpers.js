@@ -241,6 +241,10 @@ export const handleMRTSchema = ({
         backgroundColor: '#e6ecf5 !important',
       },
     },
+     // Add hover effect for cells
+    '& td:hover': {
+      border: '3px solid rgb(23, 170, 221)' // Add blue border on hover
+    },
   };
   handleVisiblityMenuClick();
   handleColumnMenuClick();
@@ -278,3 +282,11 @@ export const handleMRTSchema = ({
     pinnedFields,
   };
 };
+
+export const getLayerKey = (identifier, array) => {
+  // Find the key in LayerMeta that matches the prefix of the identifier
+  const key = Object.keys(array).find(metaKey => identifier?.startsWith(metaKey));
+
+  // Return the corresponding value or undefined if no match is found
+  return key ? key : undefined;
+}

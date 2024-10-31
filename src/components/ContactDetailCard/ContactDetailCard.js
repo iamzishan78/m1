@@ -41,6 +41,7 @@ import AddActivityDialog from "../ContactDetailCard/components/AddActivityDialog
 import SummaryFields from "../ContactDetailedInfo/components/SummaryFields";
 import ContactDetailedSelector from "./components/ContactDetailSelector";
 import PipelinesFetchHoc from "components/Transact/components/Common/PipelinesFetchHoc";
+import MetaField from "components/Table/helpers/MetaField";
 
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import Link from "@material-ui/core/Link";
@@ -57,6 +58,7 @@ import { FEATURES } from "components/Shared/FeatureFlag/common";
 import { OWNERTYPE } from 'utils/data';
 import { getOpenCorporatesUrl } from "utils/helper";
 import OpenCorporatesIcon from "components/Shared/svgIcons/OpenCorporatesIcon";
+import { globalStateController } from "hookstate/globalStateController";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -456,6 +458,8 @@ function ContactDetailCard(props) {
   const [showActivityDialog, setActivityDialog] = useState(null);
   const [purchaseData, setPurchaseData] = useState([]);
   const [actionActivityData, setActionActivityData] = useState(null); // State for actions activity data
+  // Fetching global stateValues
+  const { globalStateValues } = globalStateController.useState(['showFieldModal'], 'globalStateValues');
 
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(null);
 
@@ -698,29 +702,29 @@ function ContactDetailCard(props) {
                     )}
                     {/* Display the OpenCorporates icon and link for corporation contacts. */}
                     {(contactData.ownerType === OWNERTYPE.CORPORATION && (
-                        <Link onClick={() => window.open(getOpenCorporatesUrl(getName(contactData)), "_blank")}>
-                         <OpenCorporatesIcon />
-                       </Link>)   
+                      <Link onClick={() => window.open(getOpenCorporatesUrl(getName(contactData)), "_blank")}>
+                        <OpenCorporatesIcon />
+                      </Link>)
                     )}
                   </FieldContent>
                 </h2>
                 <FieldContent
-                    childrenLeft
-                    noMargin
-                    name="Address"
-                    id={contactData._id}
-                    entity={contactData.entity}
-                    content={{
-                      address1: contactData.address1,
-                      address2: contactData.address2,
-                      city: contactData.city,
-                      state: contactData.state,
-                      zip: contactData.zip,
-                      country: contactData.country,
-                    }}
-                    onlyChildren={false} // add props inorder to show copy and edit options
-                    disabled={false}
-                  />
+                  childrenLeft
+                  noMargin
+                  name="Address"
+                  id={contactData._id}
+                  entity={contactData.entity}
+                  content={{
+                    address1: contactData.address1,
+                    address2: contactData.address2,
+                    city: contactData.city,
+                    state: contactData.state,
+                    zip: contactData.zip,
+                    country: contactData.country,
+                  }}
+                  onlyChildren={false} // add props inorder to show copy and edit options
+                  disabled={false}
+                />
               </div>
               <div className={classes.tagsContainer}>
                 <div className={classes.highlighter}>
@@ -786,7 +790,7 @@ function ContactDetailCard(props) {
               <div className={classes.summarySection}>
                 <Grid item xs={12} container spacing={0} style={{
                   padding: "5px 20px",
-                  height: "450px",
+                  height: "465px",
                   // marginBottom: "-100px",
                   // marginTop: "20px",
                   textAlign: "center"
@@ -1037,6 +1041,7 @@ function ContactDetailCard(props) {
             />
           </RightDialog>
         )}
+        {globalStateValues.showFieldModal && <MetaField columns={[]} category="Contacts" />}
         {stateApp.dealDialog && (
           <AddDealDialog
             open={stateApp.dealDialog ? true : false}

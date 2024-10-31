@@ -2,6 +2,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import { LinkTypes } from "../ContactDetailCard/components/FieldContent/helper";
 import moment from "moment";
+import _ from 'lodash';
 
 export const entityTypeOptions = [
   { label: "CORPORATION", value: "CORPORATION" },
@@ -133,6 +134,11 @@ export const getBasicInfoContent = (contactData) => {
       data: { ownerType: ownerType },
       linkType: LinkTypes.None,
     },
+    // Added county for basic info
+    "County": {
+      data: { county: contactData?.county },
+      linkType: LinkTypes.None,
+    },
     "Account": {
       data: { account: contactData?.account },
       linkType: LinkTypes.None,
@@ -186,7 +192,7 @@ export const getBasicInfoContent = (contactData) => {
   };
 };
 
-export const getBasicInfoExpContent = (contactData) => {
+export const getBasicInfoExpContent = (contactData, metafields = []) => {
   let stage = null;
   if (contactData?.status) {
     const data = contactStatusOptions.find((status) => status.value === contactData.status);
@@ -214,7 +220,7 @@ export const getBasicInfoExpContent = (contactData) => {
     campaignName = contactData.campaignName;
   }
 
-  return {
+  const formFields = {
     "Mobile Phone 3": {
       data: { mobilephone3: contactData?.mobilephone3 },
       linkType: LinkTypes.None,
@@ -340,6 +346,27 @@ export const getBasicInfoExpContent = (contactData) => {
       hideFromPurchase: true,
     },
   };
+
+  // Making key value pairs of custom_data fields 
+  // Also setting  raw meta for editing  custom meta data
+  const customDataJson = metafields.reduce((acc, field) => {
+    return {
+      ...acc,
+      [field.label]: {
+        rawMeta: field,
+        label: field.label,
+        isMeta: true,
+        data: { [field.esKey]: _.get(contactData, field.esKey) },
+        renderField: field.type === "dropdown" ? "autoComplete" : field.type,
+        defaultOptions: field.type === "dropdown" ? field.dropdownOptions.map(op => ({
+          value: op.value,
+          label: op.value,
+        })) : [],
+      }
+    }
+  }, {});
+
+  return { ...formFields, ...customDataJson };
 };
 
 export const getBasicPurchaseInfoExpContent = (contactData) => {
@@ -650,7 +677,8 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
 export const SUMMARY_FIELDS = (contactData) => {
   let nraSumKey = contactData?.contactInterests?.nraSum ? "contactInterests.nraSum" : "evaluatedContactInterests.nraSum",
     maxOfferPriceSum = contactData?.contactInterests?.maxOfferPriceSum ? "contactInterests.maxOfferPriceSum" : "evaluatedContactInterests.maxOfferPriceSum",
-    offerPriceSum = contactData?.contactInterests?.offerPriceSum ? "contactInterests.offerPriceSum" : "evaluatedContactInterests.offerPriceSum";
+    offerPriceSum = contactData?.contactInterests?.offerPriceSum ? "contactInterests.offerPriceSum" : "evaluatedContactInterests.offerPriceSum",
+    closedPriceSum = contactData?.contactInterests?.closedPriceSum ? "contactInterests.closedPriceSum" : "evaluatedContactInterests.closedPriceSum"; // get closedPriceSum from  evaluatedContactInterests 
   return [
     {
       label: "Full Name",
@@ -737,6 +765,12 @@ export const SUMMARY_FIELDS = (contactData) => {
     {
       label: "Max Offer Amount",
       key: maxOfferPriceSum,
+      type: "currency",
+      position: "right",
+    },
+    {
+      label: "Closed Price Amount", // Add closed price sum to contact details summary section
+      key: closedPriceSum,
       type: "currency",
       position: "right",
     },

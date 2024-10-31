@@ -207,6 +207,7 @@ const ComparisonMeta = {
 			id: 'check.checkDate',
 			header: 'Check Date',
 			type: 'date',
+			isExternalFilter: true,
 			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.check?.checkDate)}</>
 			},
@@ -295,7 +296,6 @@ const ComparisonMeta = {
 			accessorKey: 'date',
 			header: 'Sales Date',
 			type: 'date',
-			isExternalFilter: true,
 			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.date)}</>
 			},

@@ -3,7 +3,6 @@ import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagCompon
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
-import NameCell from 'components/MRTTable/TablesOverride/OwnersPerUnit/TableCell/NameCell';
 import ListChips from 'components/Common/ListChips';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import IsContactCell from 'components/MRTTable/Common/TableCells/isContactIcone';
@@ -15,6 +14,8 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TractIcon from 'components/Shared/svgIcons/tract';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
+import AgreementIcon from 'components/Shared/svgIcons/agreements';
+import { useHistory } from 'react-router-dom';
 
 const esIndex = 'shapeowners_flat';
 
@@ -85,7 +86,9 @@ const TractPerUnitMeta = {
 			id: 'contact.entityDetail.name',
 			header: 'Owner Name',
 			Cell: ({ renderedCellValue, row }) => {
-				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
+				const history = useHistory();
+				// Check if the contact is purchased
+				const isPurchased = [true, 'true', 'True'].includes(row.getValue('contact.isPurchased'));
 				return (
 					<div
 						style={{
@@ -115,16 +118,27 @@ const TractPerUnitMeta = {
 									<MonetizationOnIcon
 										style={{
 											marginLeft: '10px',
-											color: "gray"
+											color: 'gray',
 										}}
-
 									/>
 								</FeatureFlag>
 							)}
+							{/* check if agreement record is present and not deleted */}
+							{!row?.original?.agreement?.IsDeleted && row?.original?.agreement?._id && (
+								<div
+									style={{ marginLeft: '15px', cursor: 'pointer', position: 'absolute', right: 0, marginRight: '15px' }}
+									onClick={e => {
+										e.stopPropagation();
+										history.push(`/land/agreement/details/${row?.original?.agreement?._id}`);
+									}}
+								>
+									<AgreementIcon color={'#17aadd'} />
+								</div>
+							)}
 						</p>
 					</div>
-				)
-			}
+				);
+			},
 		},
 
 		{
@@ -194,10 +208,10 @@ const TractPerUnitMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: "nonExecRightsOnly.keyword",
+			name: 'nonExecRightsOnly.keyword',
 			accessorKey: 'nonExecRightsOnly',
 			header: 'Non-Exec Rights Only',
-			id: "nonExecRightsOnly",
+			id: 'nonExecRightsOnly',
 			size: 200,
 		},
 
@@ -407,7 +421,6 @@ const TractPerUnitMeta = {
 			Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price_nma)}</>,
 		},
 
-
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'offer_price',
@@ -427,7 +440,7 @@ const TractPerUnitMeta = {
 			type: 'number',
 			Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price)}</>,
 		},
-    	// Bonus payment column
+		// Bonus payment column
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'bonus_payment',
@@ -458,7 +471,6 @@ const TractPerUnitMeta = {
 			size: 300,
 			Cell: ({ row }) => <>{vf_currency(row?.original?.competitor_offer_price)}</>,
 		},
-
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -491,8 +503,8 @@ const TractPerUnitMeta = {
 			accessorKey: 'contactOwners',
 			header: 'Contact Owner',
 			Cell: ({ row }) => {
-				return <div>{row?.original?.contactOwners[0]}</div>
-			}
+				return <div>{row?.original?.contactOwners[0]}</div>;
+			},
 		},
 
 		{
@@ -533,14 +545,14 @@ const TractPerUnitMeta = {
 			isExport: 'dealsName',
 			header: 'Associated Deals',
 			handleArrayExport: {
-				esType: "collection",
-				actualKey: "name"
+				esType: 'collection',
+				actualKey: 'name',
 			},
 			isSearchField: true,
 			Cell: ({ row }) => {
 				return (
 					<div>
-						{(row?.original?.deals && Array.isArray(row?.original?.deals)) ? (
+						{row?.original?.deals && Array.isArray(row?.original?.deals) ? (
 							<div
 								style={{
 									display: 'flex',
@@ -584,14 +596,21 @@ const TractPerUnitMeta = {
 				const isPurchased = [true, 'true', 'True'].includes(row.getValue('contact.isPurchased'));
 				return <>{isPurchased ? 'Yes' : 'No'}</>;
 			},
-			isSearchField: false
+			isSearchField: false,
 		},
 
 		{
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const targetSourceId = row.getValue('ownerEntity');
-				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'Parcel Ownership'} />;
+				return (
+					<TagCell
+						id={targetSourceId}
+						targetSourceId={targetSourceId}
+						tags={row?.original?.tags}
+						targetLabel={'Parcel Ownership'}
+					/>
+				);
 			},
 		},
 
