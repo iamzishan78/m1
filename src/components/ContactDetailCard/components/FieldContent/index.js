@@ -29,6 +29,7 @@ import Link from "@material-ui/core/Link";
 import { getAddressUrl, getZillowAddressUrl } from "utils/helper";
 import GoogleMapIcon from "components/Shared/svgIcons/GoogleMapIcon";
 import ZillowIcon from "components/Shared/svgIcons/ZillowIcon";
+import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
 
 const filter = createFilterOptions();
 export default function FieldContent({
@@ -49,6 +50,7 @@ export default function FieldContent({
   isEdited = false,
   isMerged = false,
   disabled,
+  metafields,
   ...props
 }) {
   //////////// id - brings the contact id /////////////////////////////////////////////////////////////////////////
@@ -215,6 +217,28 @@ export default function FieldContent({
 
 
   const handleUpdating = (val = null) => {
+    const customData = {};
+
+    // Iterate over the keys of the original object
+    for (const key in editContent) {
+      if (editContent.hasOwnProperty(key)) {
+        // Check if the key starts with 'custom_data.'
+        if (key.startsWith('custom_data.')) {
+          // Extract the custom field name
+          const customField = key.split('custom_data.')[1];
+          // Add the custom field to the nested object
+          customData[customField] = val || editContent[key];
+          // Delete the original flat custom_data field
+          delete editContent[key];
+        }
+      }
+    }
+
+    // If there are nested custom data fields, add them to the original object
+    if (Object.keys(customData).length > 0) {
+      editContent.custom_data = customData;
+    }
+
     if (fieldType == FieldTypes.Contact) {
       let trimmedEditContent = {
         _id: id,
@@ -228,6 +252,8 @@ export default function FieldContent({
         if (value !== null && value !== undefined) {
           if (field === "status") {
             trimmedEditContent[field] = value;
+          } else if (field === "custom_data") {
+            trimmedEditContent[field] = editContent?.custom_data;
           } else {
             trimmedEditContent[field] = typeof value === "string" ? value.trim() : value;
           }
@@ -327,6 +353,7 @@ export default function FieldContent({
             />
           );
       } else if (editContent.hasOwnProperty(fieldName)) {
+        const metaField = metafields ? metafields.find((meta) => meta?.esKey === fieldName) : null;
         inputsArray.push(
           fieldName === "contactStatus" ? (
             <ContactStatus
@@ -389,6 +416,47 @@ export default function FieldContent({
               renderInput={(params) => (
                 <TextField {...params} label={fieldsCount > 1 ? textFieldLabels(fieldName) : null} className={classes.editTextField} />
               )}
+            />
+          ) : (fieldName.startsWith("custom_data") && metaField?.type === "dropdown") ? (
+            <Autocomplete
+              id={"fieldContentInput" + fieldName}
+              key={"fieldContentInput" + fieldName}
+              options={metaField?.dropdownOptions.map((option) => option?.value)}
+              getOptionLabel={(option) => option || editContent[fieldName]}
+              onChange={(e, data) => {
+                e.persist();
+                setEditContent((editContent) => ({
+                  ...editContent,
+                  [fieldName]: data || "",
+                }));
+              }}
+              value={editContent[fieldName] === null ? "" : editContent[fieldName]}
+              autoComplete
+              onKeyDown={(event) => keyDownHandler(event, [fieldName])}
+              onBlur={() => onBlurHandler([fieldName])}
+              style={{ width: "100%" }}
+              renderInput={(params) => (
+                <TextField {...params} label={fieldsCount > 1 ? textFieldLabels(fieldName) : null} className={classes.editTextField} />
+              )}
+            />
+          ) : (fieldName.startsWith("custom_data") && metaField?.type === "multiselect") ? (
+            <ReactSelectField
+              fullWidth
+              showUnderline
+              showChevron={true}
+              index={"contacts"}
+              dropdownOptions={metaField?.dropdownOptions}
+              column={metaField}
+              value={editContent[fieldName] === null ? "" : editContent[fieldName]}
+              onCustomKeyChange={(value) => {
+                const fields = {}; // Initialize an empty object to store field values
+                fields[fieldName] = value;
+
+                // Reset edit state and update editContent with field values
+                setEdit(null); // It closes popup on blur
+                setEditContent({ ...fields });
+                handleUpdating(value);
+              }}
             />
           ) : fieldName === "ownerType" ? (
             <EntityType
@@ -518,14 +586,14 @@ export default function FieldContent({
       {fieldType === FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />}
       {isPurchased && <CopyPurchaseInfo updateContact={updateContact} userId={stateApp.user.mongoId} content={content} contactId={id} />}
       {textArray.length > 0 && name === 'Address' ? // show google map and zillow icon when address exists
-          <>
-            <Link onClick={() => window.open(getAddressUrl(content), "_blank")}>
-              <GoogleMapIcon />
-            </Link>
-            <Link onClick={() => window.open(getZillowAddressUrl(content), "_blank")}>
-              <ZillowIcon />
-            </Link>
-          </>
+        <>
+          <Link onClick={() => window.open(getAddressUrl(content), "_blank")}>
+            <GoogleMapIcon />
+          </Link>
+          <Link onClick={() => window.open(getZillowAddressUrl(content), "_blank")}>
+            <ZillowIcon />
+          </Link>
+        </>
 
         : ""
       }

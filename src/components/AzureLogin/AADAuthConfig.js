@@ -13,7 +13,7 @@ export const tenantsCredentials = (tenantName) => {
       found = tenants[i];
   }
 
-  if (found?.name) globalStateController.setBypassLogin(found?.name);
+  if (found?.name) globalStateController.setBypassLogin(found);
 
   return copy(found);
 };

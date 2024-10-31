@@ -192,11 +192,11 @@ const AgreementMeta = {
       accessorKey: 'shapeJson.properties.agreementSubtype',
       header: 'Agreement Subtype',
     },
-
+    // state column
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'shapeJson.properties.originalProperties.stateDetails.keyword',
-      accessorKey: 'shapeJson.properties.originalProperties.stateDetails',
+      name: 'shapeJson.properties.originalProperties.State.keyword',
+      accessorKey: 'shapeJson.properties.originalProperties.State',
       header: 'State',
     },
 
@@ -246,8 +246,8 @@ const AgreementMeta = {
       name: 'shapeJson.properties.effectiveDate.keyword',
       accessorKey: 'shapeJson.properties.effectiveDate',
       header: 'Efftv Date',
-      isSearchField: false,
       type: 'date',
+      isSearchField: false,
       Cell: ({ row }) => {
         return <>{formatDate(row?.original?.shapeJson?.properties?.effectiveDate)}</>
       },
@@ -265,8 +265,8 @@ const AgreementMeta = {
       name: 'shapeJson.properties.expirationDate.keyword',
       accessorKey: 'shapeJson.properties.expirationDate',
       header: 'Exp Date',
-      isSearchField: false,
       type: 'date',
+      isSearchField: false,
       Cell: ({ row }) => {
         return <>{formatDate(row?.original?.shapeJson?.properties?.expirationDate)}</>
       },
@@ -284,8 +284,8 @@ const AgreementMeta = {
       name: 'shapeJson.properties.extensionDate.keyword',
       accessorKey: 'shapeJson.properties.extensionDate',
       header: 'Extension Exp Date',
-      isSearchField: false,
       type: 'date',
+      isSearchField: false,
       Cell: ({ row }) => {
         return <>{formatDate(row?.original?.shapeJson?.properties?.extensionDate)}</>
       },
@@ -363,7 +363,7 @@ const AgreementMeta = {
     {
       ...CommonSchema.COMMON_COLUMN,
       name: 'shapeJson.properties.metaDescription.keyword',
-      accessorKey: 'shapeJson.properties.metaDescription.keyword',
+      accessorKey: 'shapeJson.properties.metaDescription', // accessorKey to display Description
       header: 'Description',
     },
 
@@ -403,6 +403,10 @@ const AgreementMeta = {
       header: 'Instrument #',
     },
 
+    CommonSchema.CREATED_BY,
+    CommonSchema.CREATED_DATE,
+    CommonSchema.LAST_UPDATED_BY,
+    CommonSchema.LAST_UPDATED_DATE,
     {
       ...CommonSchema.COMMON_COLUMN,
       name: 'shapeJson.properties.reportGrossAcres.keyword',
