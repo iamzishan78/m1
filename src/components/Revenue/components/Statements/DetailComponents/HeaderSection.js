@@ -274,20 +274,20 @@ function HeaderFunction(props) {
               <Controller
                 control={control}
                 name="checkDate"
-                defaultValue={moment(props?.value || "").format("MM/DD/YYYY")}
+                defaultValue={moment.utc(props?.value || "").format("MM/DD/YYYY")} // format date in utc format
                 render={(props) => (
                   <TextField
                     type="date"
                     variant="outlined"
                     margin="normal"
                     fullWidth
-                    value={moment(props?.value || "").format("yyyy-MM-DD")}
+                    value={moment.utc(props?.value || "").format("yyyy-MM-DD")}
                     onChange={(e) => {
                       props.onChange(e.target.value);
                     }}
                     onBlur={(e) => {
                       handleUpdateCheck({
-                        checkDate: moment(e.target.value).toDate().toISOString(),
+                        checkDate: moment.utc(e.target.value).toDate(), // format date in utc format
                       });
                     }}
                     InputLabelProps={{
