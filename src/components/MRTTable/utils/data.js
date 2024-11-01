@@ -121,7 +121,7 @@ const mrtFilterOptions = [
 export const tableESSimpleFilterModes = mrtFilterOptions.reduce((acc, cur) => ({ ...acc, [cur.option]: cur }), {});
 
 export const tableESSimpleFilterModeOtions = {
-	string: ['fuzzy', 'contains', 'startsWith', 'endsWith'],
+	string: ['contains', 'startsWith', 'endsWith'],
 	equation: ['equals', 'notEquals'],
 	inclusive: ['between', 'betweenInclusive'],
 	comparison: ['greaterThan', 'greaterThanOrEqualTo', 'lessThan', 'lessThanOrEqualTo'],
@@ -148,6 +148,7 @@ export const customFilterOptions = [...tableESSimpleFilterModeOtions.custom];
 
 export const dateFilterOptions = [
 	// 'betweenInclusive',
-	'greaterThanOrEqualTo', 'lessThanOrEqualTo',
+	'greaterThanOrEqualTo',
+	'lessThanOrEqualTo',
 	'singleselect',
 ];
