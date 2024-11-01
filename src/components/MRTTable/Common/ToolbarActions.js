@@ -31,7 +31,7 @@ function ToolbarActions({ table, tableKey, children }) {
 
 	useEffect(() => {
 		tableController(tableKey).setMrtTableRef(table);
-	}, [tableKey, table]);
+	}, [tableKey]);
 
 	const handleExport = () => {
 		tableGlobalController.updateState({
