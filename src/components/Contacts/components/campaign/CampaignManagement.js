@@ -16,6 +16,10 @@ const CampaignManagement = () => {
 	const TableKey = 'CampaignTable';
 	const searchFields = ['name', '_all'];
 	const [lastCampaignMinDate, setLastCampaignMinDate] = useState('');
+	const [appliedFilters, setAppliedFilters] = useState({
+		fromDate: null,
+		toDate: null,
+	});
 	const [fromDate, setFromDate] = useState(null);
 	const [toDate, setToDate] = useState(null);
 	const [stateApp] = useContext(AppContext);
@@ -41,6 +45,14 @@ const CampaignManagement = () => {
 			},
 		});
 	}, [getESMinValue]);
+
+	useEffect(() => {
+		setAppliedFilters(appliedFilters => ({
+			...appliedFilters,
+			fromDate,
+			toDate,
+		}));
+	}, [fromDate, toDate, setAppliedFilters]);
 
 	const setESFilters = useCallback(newFilter => {
 		if (newFilter.length === 0) {
@@ -88,6 +100,7 @@ const CampaignManagement = () => {
 				searchFields={searchFields}
 				tableFilters={stateValues.filters}
 				appliedFilters={tableController(TableKey)?.getExternalFilter()}
+				appliedDateFilters={appliedFilters}
 				setAppliedFilters={setESFilters}
 				minDate={lastCampaignMinDate}
 				contactSearchQuery={stateApp.contactSearchQuery}
