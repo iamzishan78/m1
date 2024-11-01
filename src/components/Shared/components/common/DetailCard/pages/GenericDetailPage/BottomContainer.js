@@ -36,6 +36,7 @@ const BottomContainer = () => {
 					overrideMeta: {
 						esIndex: model.associationflatModel,
 						assetName: currentAsset?.tableName,
+						associatedAssetName: model.modelName,
 						maxTableHeight: tableHeight,
 						CustomToolBar: AssetAssociationToolbar,
 						defaultFilters: [{ field: 'descriptorObject._id.keyword', value: currentAssetRecord?._id }],

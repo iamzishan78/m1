@@ -16,20 +16,22 @@ function ToolbarActions({ table, tableKey, children }) {
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user.get({ noproxy: true });
 
-	const globalState = tableGlobalController.useState(['cypress']);
-	const globalStateValues = globalState.stateValues;
-
 	const isAllRowsSelected = table.getIsAllRowsSelected();
-	const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
+	const isSomeRowsSelected =
+		table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 
-	if (tableStateValues?.isSelectAllAllowed && isAllRowsSelected && (Object.keys(tableStateValues?.rowSelection)?.length === tableStateValues.data?.total))
+	if (
+		tableStateValues?.isSelectAllAllowed &&
+		isAllRowsSelected &&
+		Object.keys(tableStateValues?.rowSelection)?.length === tableStateValues.data?.total
+	)
 		tableController(tableKey).setIsAllRowsSelected(isAllRowsSelected);
 
 	useEffect(() => {
 		tableController(tableKey).setMrtTableRef(table);
-	}, [])
+	}, [tableKey, table]);
 
 	const handleExport = () => {
 		tableGlobalController.updateState({
@@ -43,10 +45,9 @@ function ToolbarActions({ table, tableKey, children }) {
 		});
 	};
 
-
 	const handleDelete = () => {
-		let excludedIds = []
-		let deletedData = {}
+		let excludedIds = [];
+		let deletedData = {};
 		let ESVariables = {};
 		const deletedKeys = tableStateValues?.deletedKeys || {
 			mainRecord: { key: '_id' },
@@ -55,32 +56,37 @@ function ToolbarActions({ table, tableKey, children }) {
 		if (!!tableStateValues?.isAllRowsSelected || tableStateValues?.isSubSetSelect) {
 			let sortOrder = {};
 			if (tableStateValues.sorting.length > 0) {
-				sortOrder = { field: tableStateValues.sorting[0]?.id, order: tableStateValues.sorting[0]?.desc ? 'desc' : 'asc' };
+				sortOrder = {
+					field: tableStateValues.sorting[0]?.id,
+					order: tableStateValues.sorting[0]?.desc ? 'desc' : 'asc',
+				};
 			}
 			const query = tableStateValues?.globalFilter ? `*${tableStateValues?.globalFilter}*` : '*';
 			const search = { fields: tableStateValues?.searchFields, query };
 
-			excludedIds = excludeFilters(tableKey, tableStateValues?.isSubSetSelect?.total)
+			excludedIds = excludeFilters(tableKey, tableStateValues?.isSubSetSelect?.total);
 			ESVariables = {
 				index: tableStateValues.esIndex,
 				search,
 				sort: Object.keys(sortOrder).length ? sortOrder : tableStateValues.defaultSort,
 				filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters, ...excludedIds],
-				total: tableStateValues?.isSubSetSelect ? tableStateValues?.isSubSetSelect?.total : (tableStateValues?.data?.total - excludedIds?.length),
+				total: tableStateValues?.isSubSetSelect
+					? tableStateValues?.isSubSetSelect?.total
+					: tableStateValues?.data?.total - excludedIds?.length,
 				customValue: tableStateValues?.customValue,
-			}
+			};
 		} else {
 			deletedData = Object.keys(deletedKeys).reduce((acc, key) => {
 				const { key: originalKey, func, value } = deletedKeys[key];
 				acc[key] =
 					selectedRows?.length > 0
 						? selectedRows.map(item => {
-							let val;
-							if (originalKey) val = _.get(item, originalKey);
-							if (func) val = func(val);
-							if (value) val = value
-							return val;
-						})
+								let val;
+								if (originalKey) val = _.get(item, originalKey);
+								if (func) val = func(val);
+								if (value) val = value;
+								return val;
+							})
 						: null;
 				return acc;
 			}, {});
@@ -95,6 +101,7 @@ function ToolbarActions({ table, tableKey, children }) {
 				ESVariables,
 				isSelectAll: !!tableStateValues?.isAllRowsSelected || (tableStateValues?.isSubSetSelect ? true : false),
 				assetName: tableStateValues?.assetName,
+				associatedAssetName: tableStateValues?.associatedAssetName,
 			},
 		});
 
@@ -121,7 +128,9 @@ function ToolbarActions({ table, tableKey, children }) {
 					alignItems: 'center',
 				}}
 			>
-				<Typography variant="h5" style={{ fontWeight: 'bold', marginRight: '5px' }}>{tableStateValues.tableHeading}</Typography>
+				<Typography variant="h5" style={{ fontWeight: 'bold', marginRight: '5px' }}>
+					{tableStateValues.tableHeading}
+				</Typography>
 				<TabHeader labels={tableStateValues.tabLabels} />
 				{tableStateValues.gridViewSettings && !isSomethingSelected && (
 					<GridView tableKey={tableKey} {...tableStateValues.gridViewSettings} />
@@ -130,11 +139,13 @@ function ToolbarActions({ table, tableKey, children }) {
 			<div style={{ display: 'flex', gap: '0.5rem', marginLeft: '0.5rem' }}>
 				{children || <div />}
 
-				{!tableStateValues.isGeneric && <IconButton onClick={handleExport} data-testid="download-csv">
-					<Tooltip title="Download CSV" aria-label="add">
-						<CloudDownloadIcon />
-					</Tooltip>
-				</IconButton>}
+				{!tableStateValues.isGeneric && (
+					<IconButton onClick={handleExport} data-testid="download-csv">
+						<Tooltip title="Download CSV" aria-label="add">
+							<CloudDownloadIcon />
+						</Tooltip>
+					</IconButton>
+				)}
 
 				{isSomethingSelected && !!!tableStateValues.isDeleteDisabled && (
 					<IconButton aria-label="delete" data-testid="delete-icon-button" onClick={() => handleDelete()}>
