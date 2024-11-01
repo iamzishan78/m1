@@ -3,7 +3,7 @@ import { useFieldArray, Controller, useWatch } from 'react-hook-form';
 import { TextField, MenuItem, Button, Grid, IconButton, Checkbox, FormControlLabel } from '@material-ui/core';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { entityKeyTypes } from 'components/MRTTable/utils/data';
-import { removeSpacesAndLowercase } from 'components/MRTTable/utils/helper';
+import { removeSpaces } from 'components/MRTTable/utils/helper';
 import { tableGlobalController } from 'hookstate/tableController';
 
 const DynamicForm = ({ control, setValue }) => {
@@ -54,7 +54,7 @@ const DynamicForm = ({ control, setValue }) => {
 											onWheel={e => e.target.blur()}
 											onChange={e => {
 												props.onChange(e.target.value);
-												const mappedKey = removeSpacesAndLowercase(e.target.value);
+												const mappedKey = removeSpaces(e.target.value);
 												setValue(`fields[${index}].mappingKey`, mappedKey);
 											}}
 											label="Label"
@@ -80,7 +80,7 @@ const DynamicForm = ({ control, setValue }) => {
 											onWheel={e => e.target.blur()}
 											InputLabelProps={{ shrink: !!props.value }} // Ensure the label shrinks when there's a value
 											onChange={e => {
-												const mappedKey = removeSpacesAndLowercase(e.target.value);
+												const mappedKey = removeSpaces(e.target.value);
 												props.onChange(mappedKey);
 											}}
 											label="Key"

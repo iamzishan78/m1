@@ -38,11 +38,8 @@ export const extractValueRecursively = obj => {
 	return obj;
 };
 
-// Helper for replacing spaces with underscore
-export const removeSpacesAndLowercase = key => key?.replace(/\s+/g, '_')?.toLowerCase();
-
 // Helper for removing spaces
-export const removeSpaces = key => key?.replace(/\s+/g, '_').toLowerCase();
+export const removeSpaces = key => key?.replace(/\s+/g, '_')?.toLowerCase();
 
 export const replaceUnderscoreAndCapitalize = str => {
 	return str
