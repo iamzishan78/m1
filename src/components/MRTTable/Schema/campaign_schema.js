@@ -150,7 +150,10 @@ const CampaignMeta = {
 		},
 
 		CommonSchema.CREATED_BY,
-		CommonSchema.CREATED_DATE,
+		{
+			...CommonSchema.CREATED_DATE,
+			isExternalFilter: true,
+		},
 		CommonSchema.LAST_UPDATED_BY,
 		CommonSchema.LAST_UPDATED_DATE,
 
