@@ -164,7 +164,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, 
 
 			return {
 				...CommonSchema.COMMON_COLUMN,
-				name: item.keyType === 'string' ? `${key}.keyword` : key,
+				name: ['string', 'user'].includes(item.keyType) ? `${key}.keyword` : key,
 				accessorKey: key,
 				id: key,
 				header: item?.label,
