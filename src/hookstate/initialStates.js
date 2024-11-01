@@ -427,6 +427,7 @@ export const popupInitialState = {
     parcelDetailCardTabIndex: 0,
     permitSelectedCoordinates: null,
     selectionLayers: [],
+    coordinate: null
 };
 
 export const popupState = hookstate(copy(popupInitialState));
