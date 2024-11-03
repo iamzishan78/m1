@@ -149,7 +149,7 @@ function SelectedField({ field, setFieldKey, setCampaigns, setContactOwner, cont
           onChange={({ target }) => {
             setFieldKey(target.value); // Sets the field key value based on input
           }}
-          autoFocus={inputFocused} // Automatically focuses on input if inputFocused is true
+          autoFocus={true} // Automatically focuses on input
           className={classes.fullWidth} // Uses CSS class 'fullWidth'
         />
       );
@@ -277,7 +277,14 @@ export default function AssignOwnerToContactDrawer({
   })
 
 
-  const fieldsToUpdate = [
+  const unitTableFields = [
+    { title: 'Campaign Name', value: 'campaignName' },
+     { title: 'Max Pricing', value: 'timeZone' },
+    { title: 'Target Pricing', value: 'timeZone' },
+    { title: 'Tags', value: 'contactStatus' }
+  ];
+  
+  const otherTableFields = [
     { title: 'Campaign Name', value: 'campaignName' },
     { title: 'Contact Owner', value: 'contactOwner' },
     { title: 'Entity Type', value: 'ownerType' },
@@ -291,6 +298,11 @@ export default function AssignOwnerToContactDrawer({
     { title: 'Related Contact', value: 'relatedcontact' },
   ];
 
+  const fieldsToUpdate = rest.header === "UnitTable" 
+    ? [ ...unitTableFields]
+    : [...otherTableFields];
+
+    console.log("fieldsToUpdate",fieldsToUpdate)
   useEffect(() => {
     if (!['Industry Type', 'Lead Source', 'Territory', 'Time Zone', 'Tags'].includes(field))
       getContactCampaignAction({
@@ -367,9 +379,9 @@ export default function AssignOwnerToContactDrawer({
           tags: fieldKey,
           user: getUser?._id,
           contactIds,
-          objectType: 'contact',
+          objectType: rest.header === "UnitTable" ? 'unit' : 'contact',
         },
-        refetchQueries: ["getESContacts"],
+        refetchQueries: rest.header === "UnitTable" ? ["getESSimpleSearch"] : ["getESContacts"],
         awaitRefetchQueries: true,
       }).then(
         (res) => {

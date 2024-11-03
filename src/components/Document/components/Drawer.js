@@ -21,6 +21,8 @@ import AssociatedWells from "./AssociatedWells";
 import AssociatedAgreements from "./AssociatedAgreements";
 import AssociatedContacts from "./AssociatedContacts";
 import { DocumentContext } from "../DocumentContext";
+import AssociatedChecks from "./AssociatedChecks";
+import AssociatedProperties from "./AssociatedProperties";
 
 const useStyles = makeStyles({
   drawer: {
@@ -162,26 +164,50 @@ export default function DocumentDrawer(props) {
   const [anchorEl, setAnchorEl] = useState();
 
   const [stateApp, setStateApp] = React.useContext(AppContext);
-  const { getWellsFromDocument, wells, getContactsFromDocument, contacts, getAgreementsFromDocument, shapes } = React.useContext(DocumentContext);
-
+  const {
+    getWellsFromDocument,
+    wells,
+    getContactsFromDocument,
+    contacts,
+    getAgreementsFromDocument,
+    shapes,
+    getChecksFromDocument,
+    checks,
+    getPropertiesFromDocument,
+    properties,
+  } = React.useContext(DocumentContext);
   // Fetching wells from descriptor
   useEffect(() => {
-    if (!props.isRelatedDocuments)
+    // if there is no related document present do not call these queries
+    if (!props.isRelatedDocuments){
       getWellsFromDocument({
         variables: {
           descriptorObject: stateApp.selectedDocument?._id,
         },
       });
-      getContactsFromDocument({
+        getContactsFromDocument({
         variables: {
           descriptorObject: stateApp.selectedDocument?._id,
         },
       });
-      getAgreementsFromDocument({
+       getAgreementsFromDocument({
         variables: {
           descriptorObject: stateApp.selectedDocument?._id,
         },
       });
+      // get checks on drawer load
+      getChecksFromDocument({
+        variables: {
+          descriptorObject: stateApp.selectedDocument?._id,
+        },
+      });
+      // get properties on drawer load
+      getPropertiesFromDocument({
+        variables: {
+          descriptorObject: stateApp.selectedDocument?._id,
+        },
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.selectedDocument?._id]);
 
@@ -398,7 +424,17 @@ export default function DocumentDrawer(props) {
           </div>
         </div>
         <div className={classes.contentRoot}>
-          {!props.isRelatedDocuments && <RightActionsPanel activePanel={activePanel} setPanel={setPanel} wellsCount={wells?.length} contactsCount={contacts?.length} shapesCount={shapes?.length}/>}
+        {!props.isRelatedDocuments && (
+            <RightActionsPanel
+              activePanel={activePanel}
+              setPanel={setPanel}
+              wellsCount={wells?.length}
+              contactsCount={contacts?.length}
+              shapesCount={shapes?.length}
+              checksCount={checks?.length}
+              propertiesCount={properties?.length}
+            />
+          )}
           <div className={!props.isRelatedDocuments ? classes.detailsFileWrapper : ""}>
             {activePanel === "Home" && (
               <DetailsPanel
@@ -426,6 +462,10 @@ export default function DocumentDrawer(props) {
             {activePanel === "Info" && <Information fileData={fileData} />}
             {activePanel === "Agreements" && <AssociatedAgreements />}
             {activePanel === "Contacts" && <AssociatedContacts />}
+            {/* revenue statements tab in document detail panel */}
+            {activePanel === "Revenue Statements" && <AssociatedChecks />}
+            {/* revenue statements tab in document detail panel */}
+            {activePanel === "Related Properties" && <AssociatedProperties />}
           </div>
         </div>
       </div>

@@ -72,6 +72,7 @@ const onRightClick = ({ x, y, coordinate }) => {
       selectionLayers: features,
       layerSelectionPopup: true,
       popupOpen: true,
+      coordinate: coordinate
     });
   }, 0);
 };

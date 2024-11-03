@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
     height: "25px",
     fontSize: "0.7rem",
     textAlign: "center",
+    display: "block"
   },
   customAvatarImg: {
     borderRadius: "50%",

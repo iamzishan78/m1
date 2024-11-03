@@ -126,7 +126,7 @@ export default function DocumentAssociation({
   addFileLoading,
   deleteFileLoading,
   updateDocumentLoading,
-  href
+  sort = {},
 }) {
   // Initials
   const classes = useStyles();
@@ -200,6 +200,7 @@ export default function DocumentAssociation({
                 getSelectedItem(selection, relatedObjectType);
               }}
               fieldName={title}
+              sort={sort}
             />
           </Grid>
         )}
@@ -242,7 +243,10 @@ export default function DocumentAssociation({
                     target="_blank"
                     rel="noreferrer"
                   >
-                    {shape?.name || shape?.entityDetail?.name || ''}
+                    {shape?.name ||
+                      shape?.entityDetail?.name ||
+                      shape?.checkNumber ||
+                      ""}
                   </a>
 
                   {deleteFileLoading && deletedRow === shape._id ? (

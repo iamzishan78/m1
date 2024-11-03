@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { get } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import {
@@ -13,6 +13,7 @@ import {
 import { Clear, ErrorOutline } from "@material-ui/icons";
 import moment from "moment";
 import debounce from "lodash/debounce";
+import orderBy from "lodash/orderBy";
 
 import { Controller, useForm } from "react-hook-form";
 import { useMutation, useQuery, useLazyQuery } from "@apollo/client";
@@ -93,8 +94,9 @@ function HeaderFunction(props) {
   });
   const history = useHistory();
   const dispatch = useDispatch();
-  const [getPayorList, { data: payorList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
-
+  const [getPayorList, { data: payorListData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+  const [searchOperator, setSearchOperator] = useState("");
+  const [payorList, setPayyorList] = useState([]);
   const { control, reset, watch } = useForm();
 
 
@@ -123,13 +125,13 @@ function HeaderFunction(props) {
   useEffect(() => {
     getPayorList({
       variables: {
-        search: "*",
+        search: searchOperator ? `${searchOperator}*` : "*", // allow to search the user typed value from the list
         filterKey: "payor.name.keyword",
         esIndex: "checks_flat",
         size: 50,
       }
     })
-  }, [getPayorList])
+  }, [getPayorList, searchOperator])
 
   useEffect(() => {
     if (check) {
@@ -172,6 +174,15 @@ function HeaderFunction(props) {
 
     return totalSum === fCheckAmount
   }
+
+  useEffect(() => {
+    const sortList = orderBy(payorListData?.getESFilterList?.hits, "key", "asc"); // sort payorlist in alphabatically order
+    if (sortList?.length > 0) {
+      setPayyorList(sortList);
+    } else {
+      setPayyorList([]);
+    }
+  }, [payorListData])
 
 
   return (
@@ -239,11 +250,10 @@ function HeaderFunction(props) {
                         },
                       });
                     }}
-                    options={get(
-                      payorList,
-                      "getESFilterList.hits",
-                      []
-                    )?.map((payor) => ({
+                    onSearch={(value) => {
+                      setSearchOperator(value);
+                    }}
+                    options={payorList?.map((payor) => ({
                       _id: get(payor, `original.hits.hits.${0}._id`),
                       name: payor.key,
                     }))}
@@ -264,20 +274,20 @@ function HeaderFunction(props) {
               <Controller
                 control={control}
                 name="checkDate"
-                defaultValue={moment(props?.value || "").format("MM/DD/YYYY")}
+                defaultValue={moment.utc(props?.value || "").format("MM/DD/YYYY")} // format date in utc format
                 render={(props) => (
                   <TextField
                     type="date"
                     variant="outlined"
                     margin="normal"
                     fullWidth
-                    value={moment(props?.value || "").format("yyyy-MM-DD")}
+                    value={moment.utc(props?.value || "").format("yyyy-MM-DD")}
                     onChange={(e) => {
                       props.onChange(e.target.value);
                     }}
                     onBlur={(e) => {
                       handleUpdateCheck({
-                        checkDate: moment(e.target.value).toDate().toISOString(),
+                        checkDate: moment.utc(e.target.value).toDate(), // format date in utc format
                       });
                     }}
                     InputLabelProps={{

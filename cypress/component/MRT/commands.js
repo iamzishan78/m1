@@ -336,11 +336,11 @@ Cypress.Commands.add('mrtMultiSelect', ({ column }) => {
       });
   }
 
-  cy.get(`[data-testid="MoreVertIcon"]`).first().click();
+  cy.get(`[data-testid="MoreVertIcon"]`).first().click({force: true});
   cy.wait(basic_timeouts.shorTimeout);
-  cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
+  cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click({force: true});
   cy.wait(basic_timeouts.shorTimeout);
-  cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(10):eq(1)').click();
+  cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(10):eq(1)').click({force: true});
 
   // Select and verify the first option
   selectAndVerifyOption(0, true);

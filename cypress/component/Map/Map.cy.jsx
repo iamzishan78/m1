@@ -24,6 +24,13 @@ describe('Map Component', () => {
 
     // Intercepting API calls and waiting for their responses
     cy.interceptAndWait(['getESSimpleSearch'], () => {
+      cy.get('#dataNameSelect').click();
+      cy.wait(100);
+      cy.get('[data-test="sentinelStart"] + div ul li:nth-child(1)').click({ force: true });
+
+       // Close the dropdown by clicking outside of it
+       cy.get('body').click(0, 0);
+
       // Typing into the search input field
       cy.get('#cognitive-search-autocomplete').clear().type('MACALLAN #2-17');
     });
@@ -31,13 +38,8 @@ describe('Map Component', () => {
     // Clicking on the first option in the search autocomplete dropdown
     cy.get('#cognitive-search-autocomplete-option-1').click();
 
-    // Clicking on the close icon
-    cy.get('svg#closeIcon', { timeout: basic_timeouts.longTimeout }).click({
-      force: true,
-    });
-
     // Clicking on the toggle button for the search layer
-    cy.get('[data-testid="layer-Search-toggle"]').click({ force: true });
+    cy.get('[data-testid="layer-Search"]').click({ force: true });
 
     // Clicking on the map canvas at specified coordinates
     cy.get('.mapboxgl-canvas').first().click(880, 600);
