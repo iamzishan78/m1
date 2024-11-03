@@ -126,6 +126,7 @@ export default function DocumentAssociation({
   addFileLoading,
   deleteFileLoading,
   updateDocumentLoading,
+  sort = {},
 }) {
   // Initials
   const classes = useStyles();
@@ -198,6 +199,7 @@ export default function DocumentAssociation({
                 getSelectedItem(selection, relatedObjectType);
               }}
               fieldName={title}
+              sort={sort}
             />
           </Grid>
         )}
