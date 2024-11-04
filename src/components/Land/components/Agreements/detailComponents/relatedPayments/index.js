@@ -1,5 +1,4 @@
-import React, { useContext, useState, useMemo } from "react";
-import { useSelector } from "react-redux";
+import React, { useContext, useMemo } from "react";
 import { makeStyles } from "@material-ui/styles";
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
@@ -11,7 +10,7 @@ import { AppContext } from "AppContext";
 import get from "lodash/get";
 import AddNewRelatedData from "components/Land/components/Common/AddNewRelatedData";
 import { useMutation } from "@apollo/client";
-import { ADD_BILLING_PARTY_CONTACT_DESCRIPTOR, ADD_PAYMENT_CONTACT_DESCRIPTOR, ADD_PAYMENT_PROPERTY_DESCRIPTOR, ADD_PROPERTY_CONTACT_DESCRIPTOR } from "graphQL/useMutationAddPaymentContactDescriptor";
+import { ADD_BILLING_PARTY_CONTACT_DESCRIPTOR, ADD_PAYMENT_CONTACT_DESCRIPTOR, ADD_PAYMENT_PROPERTY_DESCRIPTOR } from "graphQL/useMutationAddPaymentContactDescriptor";
 import { billingPartyFieldsData, costAllocationFieldsData, payeeFieldsData, paymentFieldsData } from "components/Land/components/Agreements/detailComponents/summary/data";
 import { ADD_PAYMENT } from "graphQL/useMutationAddPayment";
 import { detailCardController } from "hookstate/detailCardController";
@@ -75,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const RelatedPayments = () => {
-    const [stateApp, setStateApp] = useContext(AppContext);
+    const [stateApp] = useContext(AppContext);
     const classes = useStyles();
     const customClasses = customStyles();
     const agreementDetailState = detailCardController.useState(['customLayer', 'drawer']);
@@ -88,22 +87,22 @@ const RelatedPayments = () => {
     const { paymentId } = paymentMultiGrid || {};
     const relatedObjectId = get(agreementDetailsValues, "customLayer._id");
 
-    const [addPayment, { data: addPaymentData }] = useMutation(ADD_PAYMENT, {
+    const [addPayment] = useMutation(ADD_PAYMENT, {
         refetchQueries: ["getESSimpleSearch"],
         awaitRefetchQueries: true,
     });
 
-    const [addPaymentContactDescriptor, { data: addPaymentDescriptorData, loading: addFileLoading }] = useMutation(ADD_PAYMENT_CONTACT_DESCRIPTOR, {
+    const [addPaymentContactDescriptor] = useMutation(ADD_PAYMENT_CONTACT_DESCRIPTOR, {
         refetchQueries: ["getESSimpleSearch", 'getAgreementPaymentSummary'],
         awaitRefetchQueries: true,
     });
 
-    const [addBillingPartyContactDescriptor, { data: addBillingPartyDescriptorData, loading: addBillingLoading }] = useMutation(ADD_BILLING_PARTY_CONTACT_DESCRIPTOR, {
+    const [addBillingPartyContactDescriptor] = useMutation(ADD_BILLING_PARTY_CONTACT_DESCRIPTOR, {
         refetchQueries: ["getESSimpleSearch", 'getAgreementPaymentSummary'],
         awaitRefetchQueries: true,
     });
 
-    const [addPaymentPropertyDescriptor, { data: addPropertyDescriptorData }] = useMutation(ADD_PAYMENT_PROPERTY_DESCRIPTOR, {
+    const [addPaymentPropertyDescriptor] = useMutation(ADD_PAYMENT_PROPERTY_DESCRIPTOR, {
         refetchQueries: ["getESSimpleSearch", 'getAgreementPaymentSummary'],
         awaitRefetchQueries: true,
     });

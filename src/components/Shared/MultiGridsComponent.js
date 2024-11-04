@@ -21,9 +21,6 @@ import ContactDocumentsProvider from "components/ViewDocuments/ContactDocumentsP
 import { CircularProgress, Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from "@material-ui/core";
 
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
-import RelatedPayeesTable from "components/Land/components/Agreements/detailComponents/relatedPayments/relatedPayeesTable";
-import RelatedBillingPartiesTable from "components/Land/components/Agreements/detailComponents/relatedPayments/relatedBillingPartiesTable";
-import RelatedCostAllocationTable from "components/Land/components/Agreements/detailComponents/relatedPayments/relatedCostAllocationTable";
 import { AGREEMENT_PAYMENT_SUMMARY } from "graphQL/useQueryAgreementPaymentSummary";
 import { mapControlsController } from "hookstate/mapControlsController";
 import MRTTable from "components/MRTTable";
