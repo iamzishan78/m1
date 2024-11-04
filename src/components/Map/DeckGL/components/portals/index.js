@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef } from 'react';
+import React, { memo, useEffect, useMemo, useRef } from 'react';
 import Portal from '@material-ui/core/Portal';
 import { useMutation } from '@apollo/client';
 
@@ -31,11 +31,23 @@ function Portals({ hideShape }) {
 		'selectedUserDefinedLayer',
 		'layerSelectionPopup',
 		'selectionLayers',
+		'coordinate'
 	]);
 
 	const popupVals = popupState.stateValues;
 
 	const drawState = drawController.useState(['shapeEdit']);
+
+	// Set the shape subtitle
+	const commonSahpeSubTitle = useMemo(() => {
+		let shapeSubtitle = '';
+		if (popupVals.selectedShape) { // For agreemennt and unit
+			shapeSubtitle = `${popupVals.selectedShape.originalProperties.County || ''}, ${popupVals.selectedShape.originalProperties.State || ''}`;
+		} else if (popupVals.selectedParcel) { // For parcel
+			shapeSubtitle = `${popupVals.selectedParcel.originalProperties.County || ''}, ${popupVals.selectedParcel.originalProperties.State || ''}`;
+		}
+		return shapeSubtitle;
+		},[popupVals.selectedShape, popupVals.selectedParcel]);
 
 	const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
 
@@ -136,9 +148,7 @@ function Portals({ hideShape }) {
 						handleCloseExpandableCard={popupController.reset}
 						component={<ShapeDetailCard type={popupVals?.selectedShape?.type || popupVals?.selectedParcel?.type} />}
 						title={popupVals?.selectedShape?.shapeLabel || popupVals.selectedParcel?.shapeLabel}
-						subTitle={
-							popupVals.selectedShape?.shapeSubtitle || popupVals.selectedShape?.unitInfo || popupVals.selectedParcel?.shapeSubtitle
-						}
+						subTitle={commonSahpeSubTitle}
 						parent="map"
 						position="relative"
 						cardTop={0}
@@ -228,6 +238,7 @@ function Portals({ hideShape }) {
 									parent="map"
 									handleCloseExpandableCard={popupController.reset}
 									selectionLayers={popupVals.selectionLayers}
+									coordinate={popupVals.coordinate}
 									zIndex={3000}
 									cardWidth="450px"
 									mouseX={0}

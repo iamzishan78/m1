@@ -4,9 +4,13 @@ import { tableGlobalController } from 'hookstate/tableController';
 import AddContactDialogContent from 'components/MRTTable/TablesOverride/ContactTable/RightDialogs/addContact';
 import MergeContactDrawer from 'components/Shared/M1nTable/components/SubComponents/MergeContactDrawer';
 import SendMailersDialogContent from 'components/Shared/M1nTable/components/SubComponents/SendMailersDialogContent';
+import { globalStateController } from 'hookstate/globalStateController';
+import MetaField from 'components/Table/helpers/MetaField';
 
-function ContactTableDialogs() {
+function ContactTableDialogs({ tableKey }) {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
+	const { globalStateValues } = globalStateController.useState(['showFieldModal'], 'globalStateValues');
+
 	const { type, ...rest } = stateValues.dialog || {};
 
 	const handleCloseDialog = () => {
@@ -42,6 +46,9 @@ function ContactTableDialogs() {
 					/>
 				</RightDialog>
 			)}
+
+			{/* Added Meta data field Component in Contact Grid */}
+			{globalStateValues.showFieldModal && <MetaField columns={[]} category="Contacts" tableKey={tableKey} />}
 		</>
 	);
 }

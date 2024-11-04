@@ -611,7 +611,7 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
                     )}
                   </>
                 ) : (
-                  <div style={{ minWidth: "30px", cursor: "pointer" }}>
+                  <div style={{ minWidth: "30px", cursor: "pointer", maxWidth: "14vw"}}>
                     <Grid
                       style={{ display: "flex" }}
                       container

@@ -13,6 +13,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { tableGlobalController } from 'hookstate/tableController';
 import { copy } from "utils/helper";
+import UnitToolbar from 'components/MRTTable/TablesOverride/UnitTable/UnitToolbar';
 
 const esIndex = 'shapes_flat';
 
@@ -58,6 +59,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 const UnitMeta = {
 	esIndex,
 	pageSize: 50,
+	CustomToolBar: UnitToolbar,
 	pagination: {
 		pageIndex: 0,
 		pageSize: 50,
@@ -131,7 +133,8 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.originalProperties.State.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.State,
+			accessorFn: row => (row?.shapeJson?.properties?.originalProperties?.State || // Use either state of stateAbbreviation
+				row?.shapeJson?.properties?.originalProperties?.StateAbbreviation),
 			id: 'shapeJson.properties.originalProperties.State',
 			header: 'State',
 		},

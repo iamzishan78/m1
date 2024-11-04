@@ -7,6 +7,8 @@ import AgreementIcon from "components/Shared/svgIcons/agreements";
 import ContactIcon from "@material-ui/icons/PermIdentity";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
+import CheckIcon from "@material-ui/icons/LocalAtm";
+import BarChartIcon from "@material-ui/icons/BarChart";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -54,8 +56,15 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Drawer(props) {
   const classes = useStyles(props);
-  const { activePanel, setPanel, wellsCount, contactsCount, shapesCount } = props;
-
+  const {
+    activePanel,
+    setPanel,
+    wellsCount,
+    contactsCount,
+    shapesCount,
+    checksCount,
+    propertiesCount,
+  } = props;
 
   const drawerIcons = {
     Home: (props) => (
@@ -71,6 +80,18 @@ export default function Drawer(props) {
     Agreements: (props) => (
       <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary" badgeContent={shapesCount}>
         <AgreementIcon {...props} />
+      </Badge>
+    ),
+    // icon for revenue statement tab
+    "Related Properties": (props) => (
+      <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary" badgeContent={propertiesCount} >
+        <BarChartIcon {...props} />
+      </Badge>
+    ),
+    // icon for revenue statement tab
+    "Revenue Statements": (props) => (
+      <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary" badgeContent={checksCount} >
+        <CheckIcon {...props} />
       </Badge>
     ),
     Wells: (props) => (

@@ -6,22 +6,23 @@ import CampaignNameField from 'components/ContactDetailCard/components/FieldCont
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
 import Loader from 'components/Loaders';
 import { globalStateController } from 'hookstate/globalStateController';
-import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { tableGlobalController } from 'hookstate/tableController';
-import { copy } from "utils/helper";
+import { copy } from 'utils/helper';
+import { formatDate } from 'components/Shared/functions';
+import _ from 'lodash';
 
 const esIndex = 'shapes_flat';
-
 
 const onCustomKeyChange = async (client, row, value, item) => {
 	const loaderId = `upadting-${row?._id}`;
 
 	try {
 		Loader.createToast(loaderId, 'Updation in Progress');
-		const user = globalStateController.getValue('user')
+		const user = globalStateController.getValue('user');
 
 		const customData = copy(row?.shapeJson?.properties?.custom_data) ?? {};
-		const filteredCustomData = _.pickBy(customData, (value) => value !== "" && !_.isEmpty(value));
+		const filteredCustomData = _.pickBy(customData, value => value !== '' && !_.isEmpty(value));
 
 		const shapeJson = {
 			...row?.shapeJson,
@@ -30,9 +31,9 @@ const onCustomKeyChange = async (client, row, value, item) => {
 				custom_data: {
 					...filteredCustomData,
 					[item.name]: value,
-				}
+				},
 			},
-		}
+		};
 
 		await client.mutate({
 			variables: {
@@ -65,19 +66,24 @@ const TractMeta = {
 	isInFiniteScroll: true,
 	columnVirtualization: true,
 	onCustomKeyChange,
+	// get metadata for the grid
+	fetchMetaData: {
+		category: 'Parcel',
+	},
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
 			accessorKey: 'id',
 		},
-
+		// M1neral System ID field added
 		{
-			...CommonSchema.HIDDEN,
+			...CommonSchema.MONGO_ID,
 			name: '_id',
 			accessorKey: '_id',
+			header: 'M1neral System ID',
+			isHiddenFieldExport: true,
 		},
-
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'name.keyword',
@@ -90,7 +96,10 @@ const TractMeta = {
 						alignItems: 'center',
 					}}
 				>
-					<ColumnWithLink value={renderedCellValue || row.getValue('shapeJson.properties.originalProperties.State')} link={`/map/parcels/${row.getValue('_id')}`} />
+					<ColumnWithLink
+						value={renderedCellValue || row.getValue('shapeJson.properties.originalProperties.State')}
+						link={`/map/parcels/${row.getValue('_id')}`}
+					/>
 				</div>
 			),
 		},
@@ -142,7 +151,6 @@ const TractMeta = {
 			header: 'Abstract/ Section',
 		},
 
-
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.sdGrossAcres.keyword',
@@ -156,6 +164,14 @@ const TractMeta = {
 			accessorFn: row => row?.shapeJson?.properties?.shapeArea,
 			id: 'shapeJson.properties.shapeArea',
 			header: 'Calc Acres',
+		},
+		// Tract NRA column
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.netRoyalityAcres.calculatedNra.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.netRoyalityAcres?.calculatedNra,
+			id: 'shapeJson.properties.netRoyalityAcres.calculatedNra',
+			header: 'Tract NRA',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -223,14 +239,56 @@ const TractMeta = {
 			size: 270,
 			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
 		},
+		// Department column
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.department.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.department,
+			id: 'shapeJson.properties.department',
+			header: 'Department',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'createBy.name.keyword',
+			accessorFn: row => row?.createBy?.name,
+			id: 'createBy.name',
+			header: 'Created By',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'createAt.keyword',
+			id: 'createAt',
+			header: 'Created Date',
+			Cell: ({ row }) => <>{formatDate(row?.original?.createAt)}</>, // format date before showing
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'lastUpdateBy.name.keyword',
+			accessorFn: row => row?.lastUpdateBy?.name,
+			id: 'lastUpdateBy.name',
+			header: 'Last Updated By',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'lastUpdateAt.keyword',
+			id: 'lastUpdateAt',
+			header: 'Last Updated Date',
+			Cell: ({ row }) => <>{formatDate(row?.original?.lastUpdateAt)}</>, // format date before showing
+		},
 		{
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const targetSourceId = row.getValue('_id');
 				const targetLabel = 'parcel';
-				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={targetLabel} />;
+				return (
+					<TagCell
+						id={targetSourceId}
+						targetSourceId={targetSourceId}
+						tags={row?.original?.tags}
+						targetLabel={targetLabel}
+					/>
+				);
 			},
-
 		},
 		{
 			...CommonSchema.COMMENTS,
@@ -239,8 +297,7 @@ const TractMeta = {
 				const targetLabel = 'parcel';
 				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={targetLabel} />;
 			},
-
-		}
+		},
 	],
 };
 
