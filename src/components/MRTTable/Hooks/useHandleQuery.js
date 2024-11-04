@@ -18,7 +18,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	const columnsType = useRef({}); // use to reset pagination in case of infinite scroll
 	const client = useApolloClient();
 
-	const handleTotalCount = async (variables) => {
+	const handleTotalCount = async variables => {
 		const dbDataTotal = await client.query({
 			variables,
 			query: GET_DB_DATA_TOTAL,
@@ -32,7 +32,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				},
 			});
 		}
-	}
+	};
 
 	const callQuery = async _pagination => {
 		const tableMeta = tableState.get({ noproxy: true });
@@ -52,18 +52,18 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		let sort = tableStateValues.sorting[0]
 			? {
-				field: (() => {
-					const sortingId = tableStateValues.sorting[0].id;
-					const matchingSchema = TableSchema.find(val => (val.accessorKey || val.id) === sortingId);
+					field: (() => {
+						const sortingId = tableStateValues.sorting[0].id;
+						const matchingSchema = TableSchema.find(val => (val.accessorKey || val.id) === sortingId);
 
-					if (matchingSchema?.isComposite) {
-						return matchingSchema.name.split(',')[0];
-					}
+						if (matchingSchema?.isComposite) {
+							return matchingSchema.name.split(',')[0];
+						}
 
-					return matchingSchema?.name;
-				})(),
-				order: tableStateValues.sorting[0].desc ? 'desc' : 'asc',
-			}
+						return matchingSchema?.name;
+					})(),
+					order: tableStateValues.sorting[0].desc ? 'desc' : 'asc',
+				}
 			: tableState?.defaultSort?.get({ noproxy: true });
 		if (metaField?.isCustom) {
 			sort.unmapped_type = 'keyword';
@@ -83,6 +83,8 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		if (tableStateValues.isGeneric && !tableStateValues.globalSearch) globalFilter = null;
 
+		const isMongo = tableStateValues.isElasticQuery === false;
+
 		const variables = {
 			index: tableStateValues.esIndex,
 			pagination: { ...pagination, pageIndex: undefined, pageSize: undefined },
@@ -93,6 +95,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			},
 			sort,
 			filters,
+			...(isMongo && { isElasticQuery: false }),
 		};
 
 		if (tableStateValues.filterLayerType)
@@ -100,7 +103,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		let total = tableStateValues?.data?.total;
 
-		if (pagination.pageIndex === 0) {
+		if (pagination.pageIndex === 0 && isMongo) {
 			handleTotalCount(variables);
 		}
 
