@@ -18,22 +18,6 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	const columnsType = useRef({}); // use to reset pagination in case of infinite scroll
 	const client = useApolloClient();
 
-	const handleTotalCount = async variables => {
-		const dbDataTotal = await client.query({
-			variables,
-			query: GET_DB_DATA_TOTAL,
-		});
-
-		if (isNumber(dbDataTotal?.data?.getDbDataTotal?.data)) {
-			Controller.updateState({
-				data: {
-					...Controller.getValue('data'),
-					total: dbDataTotal?.data?.getDbDataTotal?.data,
-				},
-			});
-		}
-	};
-
 	const callQuery = async _pagination => {
 		const tableMeta = tableState.get({ noproxy: true });
 		const pagination = _pagination || tableMeta.pagination;
@@ -101,10 +85,26 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		if (tableStateValues.filterLayerType)
 			layerFiltersController.setVariables(tableStateValues.filterLayerType, variables);
 
-		let total = tableStateValues?.data?.total;
+		let total = isMongo ? tableStateValues?.data?.total : null;
 
 		if (pagination.pageIndex === 0 && isMongo) {
-			handleTotalCount(variables);
+			(async () => {
+				const dbDataTotal = await client.query({
+					variables,
+					query: GET_DB_DATA_TOTAL,
+				});
+
+				if (isNumber(dbDataTotal?.data?.getDbDataTotal?.data)) {
+					total = dbDataTotal.data.getDbDataTotal.data;
+
+					Controller.updateState({
+						data: {
+							...Controller.getValue('data'),
+							total,
+						},
+					});
+				}
+			})();
 		}
 
 		const allSelectedRows = await client.query({
