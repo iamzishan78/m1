@@ -64,7 +64,7 @@ const StyledTab = withStyles(theme => ({
 }))(props => <Tab disableRipple {...props} />);
 
 const tabs = [
-	{ label: 'Platform Wells', table: 'WellsTable', overrideMeta: {} },
+	{ label: 'Platform Wells', table: 'WellsTable', overrideMeta: { isElasticQuery: true } },
 	{ label: 'Agreements', table: 'AgreementTable' },
 	{ label: 'Units', table: 'UnitTable' },
 	{ label: 'Tracts', table: 'TractsTable' },
@@ -92,7 +92,7 @@ export default function LandAnalytics() {
 				</StyledTabs>
 			</div>
 
-			{tabs.map(({ label, table }, index) => {
+			{tabs.map(({ label, table, overrideMeta }, index) => {
 				if (tab !== index) return null;
 
 				return (
@@ -102,6 +102,7 @@ export default function LandAnalytics() {
 						overrideMeta={{
 							maxTableHeight: 'calc(100vh - 290px)',
 							isElasticQuery: false,
+							...overrideMeta,
 						}}
 					/>
 				);

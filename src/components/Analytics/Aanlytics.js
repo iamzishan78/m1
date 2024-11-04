@@ -80,7 +80,6 @@ export default function Analytics() {
 				}
 			});
 		}
-		console.log('🚀 ~ useEffect ~ allAllowedPaths:', allAllowedPaths, allPaths);
 		setAllowablePaths(allAllowedPaths);
 	}, [stateApp?.user]);
 
