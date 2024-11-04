@@ -4,6 +4,7 @@ import useStyles from './useStyles';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
 
+import { popupController } from 'hookstate/popupStateController';
 import { detailCardController } from 'hookstate/detailCardController';
 import { globalStateController } from 'hookstate/globalStateController';
 
@@ -12,7 +13,11 @@ import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer'
 import { removeSpaces } from 'components/MRTTable/utils/helper';
 
 const MainGridRightContainer = () => {
-	const classes = useStyles({});
+	const classes = useStyles();
+
+	const {
+		stateValues: { expandedCard },
+	} = popupController.useState(['expandedCard']);
 
 	const {
 		globalStateValues: { currentAsset },
@@ -51,7 +56,7 @@ const MainGridRightContainer = () => {
 				ownerTitle={`${currentAsset?.tableName} Owner`}
 				commentsWidth="23vw"
 				pageLink={`/land/customAsset/${removeSpaces(currentAsset?.tableName)}/details/${currentAssetRecord?._id}/documents`}
-				viewAllDocuments
+				viewAllDocuments={!expandedCard}
 				menuComponent={
 					<IconButton className={classes.menuIcon} onClick={handleClick}>
 						<MoreHorizIcon id="MoreHorizIcon" fontSize="medium" aria-controls="simple-menu" aria-haspopup="true" />
