@@ -11,7 +11,7 @@ const AcerageSummaryMeta = {
 		pageSize: 25,
 	},
 	defaultSort: { field: '_ts', order: 'asc' },
-	height: '700px',
+	maxTableHeight: 'calc(100vh - 290px)',
 	isInFiniteScroll: true,
 	columnVirtualization: false,
 	TableSchema: [
