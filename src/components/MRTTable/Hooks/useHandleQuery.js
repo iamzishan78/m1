@@ -18,6 +18,22 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	const columnsType = useRef({}); // use to reset pagination in case of infinite scroll
 	const client = useApolloClient();
 
+	const handleTotalCount = async (variables) => {
+		const dbDataTotal = await client.query({
+			variables,
+			query: GET_DB_DATA_TOTAL,
+		});
+
+		if (isNumber(dbDataTotal?.data?.getDbDataTotal?.data)) {
+			Controller.updateState({
+				data: {
+					...Controller.getValue('data'),
+					total: dbDataTotal?.data?.getDbDataTotal?.data,
+				},
+			});
+		}
+	}
+
 	const callQuery = async _pagination => {
 		const tableMeta = tableState.get({ noproxy: true });
 		const pagination = _pagination || tableMeta.pagination;
@@ -36,18 +52,18 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		let sort = tableStateValues.sorting[0]
 			? {
-					field: (() => {
-						const sortingId = tableStateValues.sorting[0].id;
-						const matchingSchema = TableSchema.find(val => (val.accessorKey || val.id) === sortingId);
+				field: (() => {
+					const sortingId = tableStateValues.sorting[0].id;
+					const matchingSchema = TableSchema.find(val => (val.accessorKey || val.id) === sortingId);
 
-						if (matchingSchema?.isComposite) {
-							return matchingSchema.name.split(',')[0];
-						}
+					if (matchingSchema?.isComposite) {
+						return matchingSchema.name.split(',')[0];
+					}
 
-						return matchingSchema?.name;
-					})(),
-					order: tableStateValues.sorting[0].desc ? 'desc' : 'asc',
-				}
+					return matchingSchema?.name;
+				})(),
+				order: tableStateValues.sorting[0].desc ? 'desc' : 'asc',
+			}
 			: tableState?.defaultSort?.get({ noproxy: true });
 		if (metaField?.isCustom) {
 			sort.unmapped_type = 'keyword';
@@ -82,25 +98,11 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		if (tableStateValues.filterLayerType)
 			layerFiltersController.setVariables(tableStateValues.filterLayerType, variables);
 
-		let total = null;
+		let total = tableStateValues?.data?.total;
 
-		(async () => {
-			const dbDataTotal = await client.query({
-				variables,
-				query: GET_DB_DATA_TOTAL,
-			});
-
-			if (isNumber(dbDataTotal?.data?.getDbDataTotal?.data)) {
-				total = dbDataTotal.data.getDbDataTotal.data;
-
-				Controller.updateState({
-					data: {
-						...Controller.getValue('data'),
-						total,
-					},
-				});
-			}
-		})();
+		if (pagination.pageIndex === 0) {
+			handleTotalCount(variables);
+		}
 
 		const allSelectedRows = await client.query({
 			variables,
