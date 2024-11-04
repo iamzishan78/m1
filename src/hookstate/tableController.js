@@ -192,7 +192,10 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, 
 			};
 		});
 
-	let _Schema = [...TableSchema, ...dynamicTableSchema];
+	// Filter dummy columns
+	const originalTableSchema = TableSchema.filter(column => !column.isDummy);
+
+	let _Schema = [...originalTableSchema, ...dynamicTableSchema];
 
 	if (!fetchDynamicSchema.isAssociatedModel) {
 		_Schema = [

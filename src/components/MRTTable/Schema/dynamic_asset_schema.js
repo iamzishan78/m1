@@ -1,3 +1,4 @@
+import { dummySchema } from '../utils/data';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import DynamicAssetGridToolBar from 'components/MRTTable/TablesOverride/DynamicAssetGrid/DynamicAssetGridToolBar';
 
@@ -17,6 +18,7 @@ const DynamicAssetMeta = {
 			name: '_id',
 			accessorKey: '_id',
 		},
+		...dummySchema, // Dummy schema for loading
 	],
 };
 
