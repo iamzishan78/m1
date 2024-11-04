@@ -1,7 +1,7 @@
-import React, { useState, useContext, useMemo } from 'react';
+import React, { useState, useContext } from 'react';
 
 import { AppContext } from 'AppContext';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
 
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
@@ -12,12 +12,10 @@ import { globalStateController } from 'hookstate/globalStateController';
 
 import { Modals } from 'styles/Modal';
 import ViewDocuments from 'components/ViewDocuments/ViewDocuments';
-import NavHeader from 'components/Land/components/Common/NavHeader';
 import { DELETEDESCRIPTORFILE } from 'graphQL/useMutationDeleteDescriptorFile';
 
 export default function DocumentsCard() {
 	const { id, paramId } = useParams();
-	const history = useHistory();
 	const modalClass = Modals();
 	const [stateApp] = useContext(AppContext);
 	const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
@@ -30,8 +28,6 @@ export default function DocumentsCard() {
 	const {
 		stateValues: { currentAssetRecord },
 	} = detailCardController.useState(['currentAssetRecord']);
-
-	const controlColumn = useMemo(() => currentAsset?.modelKeys?.find(key => !!key.isControlColumn), [currentAsset]);
 
 	const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
 
@@ -56,7 +52,7 @@ export default function DocumentsCard() {
 	};
 
 	return (
-		<NavHeader title={currentAssetRecord?.[controlColumn?.mappingKey]} onClickFunc={() => history.goBack()}>
+		<>
 			{currentAssetRecord ? (
 				<div variant="outlined" style={{ height: '100%', marginTop: '10px' }}>
 					{/* Height as 100% and marginTop as 30px*/}
@@ -120,6 +116,6 @@ export default function DocumentsCard() {
 					<CircularProgress size={80} disableShrink color="secondary" />
 				</div>
 			)}
-		</NavHeader>
+		</>
 	);
 }

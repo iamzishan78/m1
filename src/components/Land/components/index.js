@@ -6,5 +6,5 @@ export { default as Wells } from 'components/Land/components/Wells';
 export { default as AgreementDetails } from 'components/Land/components/Agreements/detailComponents';
 export { default as ReportingGroups } from 'components/Land/components/ReportingGroups';
 export { default as AdvancedSearch } from 'components/Land/components/AdvancedSearch';
-export { default as GenericDetailCard } from 'components/Shared/components/common/DetailCard/GenericDetailCard';
-export { default as DocumentsCard } from 'components/Shared/components/common/DetailCard/DocumentsCard';
+export { default as GenericDetailCardContainer } from 'components/Shared/components/common/DetailCard/Containers/GenericDetailCard';
+export { default as DocumentsCardContainer } from 'components/Shared/components/common/DetailCard/Containers/DocumentCard';

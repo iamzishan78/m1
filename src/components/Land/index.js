@@ -124,8 +124,8 @@ export default function Land() {
 					newList[`${key}_DETAIL`] = {
 						featureFlag: 'LANDMODULE',
 						link: `/land/customAsset/:tableName/details/:id`,
-						component: 'GenericDetailCard',
-						value: 'GenericDetailCard',
+						component: 'GenericDetailCardContainer',
+						value: 'GenericDetailCardContainer',
 						hideSearch: true,
 						isDefault: true,
 						isExcluded: true,
@@ -135,8 +135,8 @@ export default function Land() {
 					newList[`${key}_DETAIL_DOCUMENTS`] = {
 						featureFlag: 'LANDMODULE',
 						link: `/land/customAsset/:tableName/details/:id/documents`,
-						component: 'DocumentsCard',
-						value: 'DocumentsCard',
+						component: 'DocumentsCardContainer',
+						value: 'DocumentsCardContainer',
 						hideSearch: true,
 						isDefault: true,
 						isExcluded: true,
