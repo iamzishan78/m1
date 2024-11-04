@@ -23,7 +23,7 @@ import { replaceUnderscoreAndCapitalize } from 'components/MRTTable/utils/helper
 function GenericDetailCard(props) {
 	const [stateApp, setStateApp] = useContext(AppContext);
 
-	const { id, tableName } = useParams();
+	const { id, tableName, paramId, type } = useParams();
 
 	const [openDialog, setOpenDialog] = useState(false);
 	const [assetRecord, setAssetRecord] = useState(null);
@@ -48,18 +48,21 @@ function GenericDetailCard(props) {
 	});
 
 	useEffect(() => {
-		const assetName = replaceUnderscoreAndCapitalize(tableName);
+		let assetName = tableName ?? type;
+		const assetId = id ?? paramId;
 
-		if (assetName && id) {
+		assetName = replaceUnderscoreAndCapitalize(assetName);
+
+		if (assetName && assetId) {
 			getAsset({
 				variables: { tableName: assetName },
 			});
 
 			getRecordFromAsset({
-				variables: { _id: id, tableName: assetName },
+				variables: { _id: assetId, tableName: assetName },
 			});
 		}
-	}, [id, tableName, getAsset, getRecordFromAsset]);
+	}, [id, tableName, paramId, type, getAsset, getRecordFromAsset]);
 
 	useEffect(() => {
 		detailCardController.updateState({ loading: true });

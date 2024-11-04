@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useMemo } from 'react';
 
 import { AppContext } from 'AppContext';
 import { useParams, useHistory } from 'react-router-dom';
@@ -16,7 +16,7 @@ import NavHeader from 'components/Land/components/Common/NavHeader';
 import { DELETEDESCRIPTORFILE } from 'graphQL/useMutationDeleteDescriptorFile';
 
 export default function DocumentsCard() {
-	const { id } = useParams();
+	const { id, paramId } = useParams();
 	const history = useHistory();
 	const modalClass = Modals();
 	const [stateApp] = useContext(AppContext);
@@ -31,7 +31,7 @@ export default function DocumentsCard() {
 		stateValues: { currentAssetRecord },
 	} = detailCardController.useState(['currentAssetRecord']);
 
-	const controlColumn = currentAsset?.modelKeys?.find(key => !!key.isControlColumn);
+	const controlColumn = useMemo(() => currentAsset?.modelKeys?.find(key => !!key.isControlColumn), [currentAsset]);
 
 	const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);
 
@@ -61,7 +61,7 @@ export default function DocumentsCard() {
 				<div variant="outlined" style={{ height: '100%', marginTop: '10px' }}>
 					{/* Height as 100% and marginTop as 30px*/}
 					<ViewDocuments
-						contactId={id}
+						contactId={id ?? paramId}
 						relatedObjectType={currentAsset?.tableName}
 						user_id={stateApp.user.email}
 						openDeleteConfirmDialog={openDeleteConfirmDialog}
