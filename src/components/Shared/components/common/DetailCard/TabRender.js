@@ -1,14 +1,17 @@
 import React from 'react';
 import { Grid, makeStyles } from '@material-ui/core';
+
+import { popupController } from 'hookstate/popupStateController';
 import { detailCardController } from 'hookstate/detailCardController';
+
 import * as Pages from './pages';
 
 const useStyles = makeStyles(theme => ({
-	leftContainer: {
+	leftContainer: ({ expandedCard }) => ({
 		padding: '0px 15px 0px 20px',
-		borderBottom: '10px solid rgb(242, 242, 242)',
+		borderBottom: expandedCard ? '0' : '10px solid rgb(242, 242, 242)',
 		maxHeight: 'fit-content',
-	},
+	}),
 	tabRender: {
 		height: '100%',
 		flexWrap: 'nowrap',
@@ -17,10 +20,14 @@ const useStyles = makeStyles(theme => ({
 
 const TabRender = () => {
 	const {
+		stateValues: { expandedCard },
+	} = popupController.useState(['expandedCard']);
+
+	const {
 		stateValues: { baseTabKey: tabKey, page, tabs },
 	} = detailCardController.useState(['baseTabKey', 'page', 'tabs']);
 
-	const classes = useStyles();
+	const classes = useStyles({ expandedCard });
 
 	const { MainGridLeftContainer, BottomContainer } = Pages[page];
 
@@ -31,9 +38,11 @@ const TabRender = () => {
 					<MainGridLeftContainer />
 				</Grid>
 
-				<Grid item xs={12} style={{ height: '100%' }}>
-					<BottomContainer />
-				</Grid>
+				{!expandedCard && (
+					<Grid item xs={12} style={{ height: '100%' }}>
+						<BottomContainer />
+					</Grid>
+				)}
 			</Grid>
 		);
 

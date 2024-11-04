@@ -24,6 +24,7 @@ import ShapeAutoComplete from './Fields/shapeAutoComplete';
 import SummaryAutoComplete from './Fields/SummaryAutoComplete';
 import MetaField from 'components/Table/helpers/MetaField';
 import SimpleSelectField from 'components/Shared/components/common/DetailCard/Fields/SimpleSelectFIeld';
+import { popupController } from 'hookstate/popupStateController';
 
 const useStyles = makeStyles(theme => ({
 	container: {
@@ -176,6 +177,10 @@ const RenderFieldComponent = memo(({ field: fieldObj, summaryDataValues }) => {
 export default function CommonSummaryFieldsComponent({ metaDataCategory }) {
 	const classes = useStyles();
 
+	const {
+		stateValues: { expandedCard },
+	} = popupController.useState(['expandedCard']);
+
 	const { stateValues } = detailCardController.useState(['currentAssetRecord']);
 	const {
 		user,
@@ -212,7 +217,7 @@ export default function CommonSummaryFieldsComponent({ metaDataCategory }) {
 	return (
 		<Grid container spacing={2} alignItems="center" className={classes.container}>
 			{fields.map((field, key) => (
-				<Grid xs={6} item key={key}>
+				<Grid xs={expandedCard ? 12 : 6} item key={key}>
 					<Grid container className={classes.gridStyle}>
 						<Grid item xs={4} style={{ display: 'flex' }}>
 							<div id={field.label} className={classes.fieldLabel}>

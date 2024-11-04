@@ -8,6 +8,7 @@ import { detailCardController } from 'hookstate/detailCardController';
 
 import * as Pages from './pages';
 import TabRender from './TabRender';
+import { popupController } from 'hookstate/popupStateController';
 
 const useStyles = makeStyles(theme => ({
 	container: {
@@ -90,6 +91,10 @@ const useStyles = makeStyles(theme => ({
 
 const Content = () => {
 	const {
+		stateValues: { expandedCard },
+	} = popupController.useState(['expandedCard']);
+
+	const {
 		stateValues: { shrinkRightColumn, tabs, page },
 	} = detailCardController.useState(['shrinkRightColumn', 'tabs', 'page']);
 
@@ -110,12 +115,12 @@ const Content = () => {
 
 			<Grid item xs={12}>
 				<Grid container direction="row" className={classes.tabsContainer}>
-					<Grid item xs={shrinkRightColumn ? 12 : 8} style={{}}>
+					<Grid item xs={shrinkRightColumn ? 12 : expandedCard ? 7 : 8}>
 						<TabRender />
 					</Grid>
 
 					{!shrinkRightColumn && (
-						<Grid item xs={4} className={classes.rightContainer}>
+						<Grid item xs={expandedCard ? 5 : 4} className={classes.rightContainer}>
 							<div className={classes.rightContent}>
 								<MainGridRightContainer />
 							</div>
