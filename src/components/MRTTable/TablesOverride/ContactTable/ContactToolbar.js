@@ -196,7 +196,7 @@ function ContactToolbar({ table, tableKey }) {
 
 				{isSomethingSelected && <ExportData classes={classes} {...exportPropsPass} />}
 			</>
-			<ContactTableDialogs />
+			<ContactTableDialogs tableKey={tableKey} />
 		</>
 	);
 }

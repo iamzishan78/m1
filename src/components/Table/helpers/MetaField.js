@@ -345,7 +345,12 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
       showFieldModal: false,
       selectedMeta: null,
     }));
-    globalStateController.updateState({
+
+    // Using for metaa fields other then grid
+    globalStateController?.updateState?.({
+      showFieldModal: false,
+    });
+    TableController?.updateState?.({
       showFieldModal: false,
     });
   };

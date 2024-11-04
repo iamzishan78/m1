@@ -645,6 +645,17 @@ export const AdminManagementRoutes = {
 		search: true,
 		isDefault: true,
 	},
+	DATA_EDITING_DETAIL: {
+		featureFlag: 'CONTACTSUBMENU',
+		title: 'Bulk Data Editing',
+		headerText: 'Bulk Data Editing',
+		link: '/admin/bulk-editing/:jobId',
+		component: 'BulkDataEditingDetail',
+		value: 'Activities',
+		search: true,
+		isDefault: true,
+		isExcluded: true,
+	},
 };
 
 export const bypassTenants = [

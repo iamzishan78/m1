@@ -231,7 +231,7 @@ describe('Contact Table', () => {
     cy.get('[aria-label="Toggle select all"]').eq(0).click();
 
     // Initiate the bulk update process by clicking the bulk update button
-    cy.get('[data-testid="bulk-update"]').click({force: true});
+    cy.get('[data-testid="bulk-update"]').click({ force: true });
 
     // Find and interact with the field selection autocomplete input for choosing "Campaign Name"
     cy.get('[data-testid="select-field-autocomplete"]', { timeout: 30000 })

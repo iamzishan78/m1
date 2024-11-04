@@ -577,6 +577,9 @@ const layerStateControllerHandler = state => {
 					...(labelProps && { getText: d => d.properties?.label }),
 					pickable,
 					visible,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					  },
 				},
 			});
 		}

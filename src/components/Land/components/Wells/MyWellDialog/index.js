@@ -174,11 +174,14 @@ export default function MyWellDialog() {
   const history = useHistory();
   const client = useApolloClient();
 
-  const [deleteMyWell, { loading }] = useMutation(DELETE_MY_WELL, {
-    onCompleted: () => {
-      tableGlobalController.refetch();
+  const [deleteMyWell, { loading }] = useMutation(DELETE_MY_WELL, 
+    {
+      awaitRefetchQueries: true,
+      onCompleted: () => {
+        tableGlobalController.refetch();
+      }
     }
-  });
+  );
 
   const toggleDrawer = (anchor, open) => (event) => {
     if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
@@ -253,9 +256,14 @@ export default function MyWellDialog() {
         // added proper well id
         myWellId: platformWell?._id || platformWell?.tenantWellId
       },
-      refetchQueries: ["getESSimpleSearch"],
-      awaitRefetchQueries: true,
-    });
+    }).then(
+			res => {
+				tableGlobalController.refetch(); // refetch the MRTtable data 
+			},
+			() => {
+				tableGlobalController.refetch(); // refetch the MRTtable data
+			}
+		);
     handleCloseDialog();
   };
 
@@ -349,7 +357,7 @@ export default function MyWellDialog() {
                 propertiesCount={get(platformWell, "properties", []).length}
                 agreementsCount={get(platformWell, "shapes", []).length}
               />
-              <div style={{ paddingRight: "60px", height: "93vh", overflow: "auto" }}>
+              <div style={{ paddingRight: "60px", height: "89vh", overflow: "auto" }}>
                 {activePanel === "Add New Well" && (
                   // Add My Well fields component here
                   <AddMyWell
