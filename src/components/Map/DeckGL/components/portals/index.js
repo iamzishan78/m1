@@ -34,19 +34,18 @@ function Portals({ hideShape }) {
 
 	const popupVals = popupState.stateValues;
 
-	// Set the shape subtitle
 	const commonSahpeSubTitle = useMemo(() => {
-		let shapeSubtitle = '';
-		if (popupVals.selectedShape) {
-			// For agreemennt and unit
-			const shapeOriginalProperties = popupVals?.selectedShape?.originalProperties;
-			shapeSubtitle = `${shapeOriginalProperties?.County || ''}, ${shapeOriginalProperties?.State || ''}`;
-		} else if (popupVals.selectedParcel) {
-			// For parcel
-			const parcelOriginalProperties = popupVals?.selectedParcel?.originalProperties;
-			shapeSubtitle = `${parcelOriginalProperties?.County || ''}, ${parcelOriginalProperties?.State || ''}`;
+		const getSubtitle = ({ County = '', State = '' } = {}) => `${County}, ${State}`.trim();
+
+		if (popupVals.selectedShape?.originalProperties) {
+			return getSubtitle(popupVals.selectedShape.originalProperties);
 		}
-		return shapeSubtitle;
+
+		if (popupVals.selectedParcel?.originalProperties) {
+			return getSubtitle(popupVals.selectedParcel.originalProperties);
+		}
+
+		return '';
 	}, [popupVals.selectedShape, popupVals.selectedParcel]);
 
 	const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
