@@ -1,15 +1,27 @@
-
-import { Typography } from "@material-ui/core";
-import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
-import vf_number from "components/Shared/valueformatters/vf_number";
-import { GlobalStickyStyles } from "GlobalSettings";
+import { Typography } from '@material-ui/core';
+import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
+import vf_number from 'components/Shared/valueformatters/vf_number';
+import { GlobalStickyStyles } from 'GlobalSettings';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 import { Tooltip } from '@mui/material';
+import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 
-const getFormattedValue = (value) => {
-	return <Typography>{value ? vf_number(value) : <span style={{ color: 'rgb(149,149,149)' }}>--</span>}</Typography>;
-}
+const getFormattedValue = (value, { currency = false, toFixed } = {}) => {
+	return (
+		<Typography>
+			{value ? (
+				currency ? (
+					vf_currency_to_fixed(value, 2)
+				) : (
+					vf_number(value, toFixed)
+				)
+			) : (
+				<span style={{ color: 'rgb(149,149,149)' }}>--</span>
+			)}
+		</Typography>
+	);
+};
 
 const useStyles = makeStyles({
 	deleteIcon: {
@@ -19,134 +31,203 @@ const useStyles = makeStyles({
 	},
 });
 
-
 const DeletedPropertyName = ({ value }) => {
 	const classes = useStyles();
 
 	return (
 		<Tooltip title="This Property is Deleted">
-			{value} <DeleteIcon className={classes.deleteIcon} />
+			{/*  Wraps the text and DeleteIcon inside a <span> to ensure Tooltip receives a single React element as its child */}
+			<span>
+				{value} <DeleteIcon className={classes?.deleteIcon} />
+			</span>
 		</Tooltip>
 	);
 };
 
-
 const RevenueStatementHeadCells = [
 	{
-		name: "_id", options: { filter: false, display: false, sort: false, viewColumns: false, }
+		name: '_id',
+		options: { filter: false, display: false, sort: false, viewColumns: false },
 	},
 	{
-		/// this is the control column for properties 
-		name: "purchaserNumber",
-		label: "Property",
+		/// this is the control column for properties
+		name: 'purchaserNumber',
+		label: 'Property',
 		// esKey: 'property.number.keyword',
 		options: {
 			...GlobalStickyStyles({
 				setCellProps: {
-					left: "77px",
-					maxWidth: "300px"
+					left: '77px',
+					maxWidth: '300px',
 				},
 				setCellHeaderProps: {
-					left: "77px",
-					maxWidth: "300px",
+					left: '77px',
+					maxWidth: '300px',
 					paddingLeft: '0px',
-				}
+				},
 			}),
-			sort: true, filter: false,
+			sort: true,
+			filter: false,
 
 			customRender: (value, tableMeta) => {
-				const clickable = tableMeta.rowData?.[23]
+				const clickable = tableMeta.rowData?.[23];
 				if (clickable) {
 					return (
 						<ColumnWithLink
-							value={value?.split("_")?.[0]
-								? tableMeta?.rowData[3] ? `${value?.split("_")?.[0]} - ${tableMeta?.rowData[3]}` : value
-								: tableMeta?.rowData[3]}
+							value={
+								value?.split('_')?.[0]
+									? tableMeta?.rowData[3]
+										? `${value?.split('_')?.[0]} - ${tableMeta?.rowData[3]}`
+										: value
+									: tableMeta?.rowData[3]
+							}
 							link={`/revenue/property/details/${tableMeta.rowData[21]}`}
-							onClick={(e) => {
+							onClick={e => {
 								e.stopPropagation();
 							}}
 						/>
-					)
+					);
 				} else {
-					value =
-						value?.split("_")?.[0]
-							? tableMeta?.rowData[3] ? `${value?.split("_")?.[0]} - ${tableMeta?.rowData[3]}` : value
-							: tableMeta?.rowData[3]
+					value = value?.split('_')?.[0]
+						? tableMeta?.rowData[3]
+							? `${value?.split('_')?.[0]} - ${tableMeta?.rowData[3]}`
+							: value
+						: tableMeta?.rowData[3];
 
-					return <DeletedPropertyName value={value} />
+					return <DeletedPropertyName value={value} />;
 				}
-			}
+			},
 		},
 	},
 	{
-		name: "purchaserNumber", label: "Payor Prop #", esKey: 'property.purchaserNumber.keyword', options: { filter: true, style: { minWidth: 250 }, }
+		name: 'purchaserNumber',
+		label: 'Payor Prop #',
+		esKey: 'property.purchaserNumber.keyword',
+		options: { filter: true, style: { minWidth: 250 } },
 	},
 	{
-		name: "name", label: "Property Name", esKey: 'property.name.keyword', options: { filter: true }
+		name: 'name',
+		label: 'Property Name',
+		esKey: 'property.name.keyword',
+		options: { filter: true },
 	},
 	{
-		name: "number", label: "Operator Prop #", esKey: 'property.number.keyword', options: { filter: true, style: { minWidth: 250 }, }
+		name: 'number',
+		label: 'Operator Prop #',
+		esKey: 'property.number.keyword',
+		options: { filter: true, style: { minWidth: 250 } },
 	},
 	{
-		name: "state", label: "State", esKey: 'property.state.keyword', options: { sort: true, filter: true }
+		name: 'state',
+		label: 'State',
+		esKey: 'property.state.keyword',
+		options: { sort: true, filter: true },
 	},
 	{
-		name: "county", label: "County", esKey: 'property.county.keyword', options: { sort: true, filter: true }
+		name: 'county',
+		label: 'County',
+		esKey: 'property.county.keyword',
+		options: { sort: true, filter: true },
 	},
 	{
-		name: "date", label: "Sales Date", esKey: 'date', custom: { key_as_string: true, isDate: true }, options: { sort: true, filter: true }
+		name: 'date',
+		label: 'Sales Date',
+		esKey: 'date',
+		custom: { key_as_string: true, isDate: true },
+		options: { sort: true, filter: true },
 	},
 	{
-		name: "product", label: "Product", esKey: 'product.keyword', options: { sort: true, filter: true }
+		name: 'product',
+		label: 'Product',
+		esKey: 'product.keyword',
+		options: { sort: true, filter: true },
 	},
 	{
-		name: "disbursement", label: "Decimal Interest", esKey: 'disbursement', options: { sort: true, filter: true }
+		name: 'disbursement',
+		label: 'Decimal Interest',
+		esKey: 'disbursement',
+		options: { sort: true, filter: true, customRender: value => getFormattedValue(value, { toFixed: 2 }) },
 	},
 	{
-		name: "interestType", label: "Type", esKey: 'interestType.keyword', options: { sort: true, filter: true }
+		name: 'interestType',
+		label: 'Type',
+		esKey: 'interestType.keyword',
+		options: { sort: true, filter: true },
 	},
 	{
-		name: "price", label: "Avg Price", esKey: 'price', options: {
-			sort: true, filter: true, customRender: (value) => getFormattedValue(value)
-		}
+		name: 'price',
+		label: 'Avg Price',
+		esKey: 'price',
+		options: {
+			sort: true,
+			filter: true,
+			customRender: value => getFormattedValue(value, { currency: true }),
+		},
 	},
 	{
-		name: "grossPropertyVolume", label: "Prop Gross Volume", esKey: 'grossPropertyVolume', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
+		name: 'grossPropertyVolume',
+		label: 'Prop Gross Volume',
+		esKey: 'grossPropertyVolume',
+		options: { sort: true, filter: true, customRender: value => getFormattedValue(value, { toFixed: 2 }) },
 	},
 	{
-		name: "grossPropertyValue", label: "Prop Gross Revenue", esKey: 'grossPropertyValue', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
+		name: 'grossPropertyValue',
+		label: 'Prop Gross Revenue',
+		esKey: 'grossPropertyValue',
+		options: { sort: true, filter: true, customRender: value => getFormattedValue(value, { currency: true }) },
 	},
 	{
-		name: "grossOwnerVolume", label: "Owner Volume", esKey: 'grossOwnerVolume', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
+		name: 'grossOwnerVolume',
+		label: 'Owner Volume',
+		esKey: 'grossOwnerVolume',
+		options: { sort: true, filter: true, customRender: value => getFormattedValue(value, { toFixed: 2 }) },
 	},
 	{
-		name: "grossOwnerValue", label: "Owner Gross Revenue", esKey: 'grossOwnerValue', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
+		name: 'grossOwnerValue',
+		label: 'Owner Gross Revenue',
+		esKey: 'grossOwnerValue',
+		options: { sort: true, filter: true, customRender: value => getFormattedValue(value, { currency: true }) },
 	},
 	{
-		name: "ownerTax", label: "Owner Tax Amt", esKey: 'ownerTax', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
+		name: 'ownerTax',
+		label: 'Owner Tax Amt',
+		esKey: 'ownerTax',
+		options: { sort: true, filter: true, customRender: value => getFormattedValue(value, { currency: true }) },
 	},
 	{
-		name: "taxType", label: "Tax Type", esKey: 'taxType', options: { sort: true, filter: true }
+		name: 'taxType',
+		label: 'Tax Type',
+		esKey: 'taxType',
+		options: { sort: true, filter: true },
 	},
 	{
-		name: "ownerDeducts", label: "Deduct Amt", esKey: 'ownerDeducts', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
+		name: 'ownerDeducts',
+		label: 'Deduct Amt',
+		esKey: 'ownerDeducts',
+		options: { sort: true, filter: true, customRender: value => getFormattedValue(value, { currency: true }) },
 	},
 	{
-		name: "deductType", label: "Deduct Cd", esKey: 'deductType.keyword', options: { sort: true, filter: true }
+		name: 'deductType',
+		label: 'Deduct Cd',
+		esKey: 'deductType.keyword',
+		options: { sort: true, filter: true },
 	},
 	{
-		name: "netOwnerValue", label: "Owner Net Rev", esKey: 'netOwnerValue', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
+		name: 'netOwnerValue',
+		label: 'Owner Net Rev',
+		esKey: 'netOwnerValue',
+		options: { sort: true, filter: true, customRender: value => getFormattedValue(value, { currency: true }) },
 	},
 	{
-		name: "propertyId", options: { filter: false, display: false, sort: false, viewColumns: false, }
+		name: 'propertyId',
+		options: { filter: false, display: false, sort: false, viewColumns: false },
 	},
 
 	{
-		name: "commentsCounter",
-		label: " ",
+		name: 'commentsCounter',
+		label: ' ',
 		options: {
-			dbName: "comments.comment",
+			dbName: 'comments.comment',
 			filter: false,
 			searchable: false,
 			sort: true,
@@ -156,7 +237,8 @@ const RevenueStatementHeadCells = [
 		},
 	},
 	{
-		name: "clickable", options: { filter: false, display: false, sort: false, viewColumns: false, }
+		name: 'clickable',
+		options: { filter: false, display: false, sort: false, viewColumns: false },
 	},
 ];
 

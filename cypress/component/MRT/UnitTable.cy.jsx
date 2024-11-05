@@ -210,7 +210,6 @@ describe("Unit Table", () => {
 
       cy.interceptAndWait(['bulkUpsertTagOnContacts'], (alias) => {
         cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then((res) => {
-          console.log("res",res);
           expect(res.response.statusCode).to.equal(200); // Check response status
           expect(res.response.body.data.bulkUpsertTagOnContacts.success).to.be.equal(true); // Check if the response indicates success
         });
