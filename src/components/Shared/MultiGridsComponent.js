@@ -25,6 +25,7 @@ import { AGREEMENT_PAYMENT_SUMMARY } from "graphQL/useQueryAgreementPaymentSumma
 import { mapControlsController } from "hookstate/mapControlsController";
 import MRTTable from "components/MRTTable";
 import { useMemo } from "react";
+import { tableController } from "hookstate/tableController";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -69,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
         "& .MuiBox-root": { padding: "0" },
     },
     tapsPanelsPadding: {
-        "& .MuiBox-root": { padding: "0", height: "100%" },
+        "& .MuiBox-root": { padding: "0" },
     },
     mainPanelsDiv: {
         height: "100%",
@@ -179,11 +180,16 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
         });
     }, [getAgreementPaymentData, rest.paymentId]);
 
+    useEffect(() => {
+        tableController('RelatedPayeesTable').setFilter({ field: 'payments.paymentId', value: rest.paymentId });
+        tableController('RelatedBillingPartiesTable').setFilter({ field: 'billingParties.paymentId', value: rest.paymentId });
+        tableController('RelatedCostAllocationsTable').setFilter({ field: 'costAllocations.paymentId', value: rest.paymentId });
+
+    }, [rest.paymentId,searchTapValue.value ]);
+
     // override meta for related payees
     const overrideMetaRelatedPayees = useMemo(() => ({
-        defaultFilters: [
-            { field: "payments.paymentId", value: rest.paymentId },
-        ],
+        customProps: { paymentId: rest.paymentId },
         deletedKeys: {
             mainRecord: { key: '_id' },
             parentRecord: { key: 'paymentId', value: rest.paymentId },
@@ -193,9 +199,7 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
 
     // override meta for related billing parties
     const overrideMetaRelatedBillingParties = useMemo(() => ({
-        defaultFilters: [
-            { field: "billingParties.paymentId", value: rest.paymentId },
-        ],
+        customProps: { paymentId: rest.paymentId },
         deletedKeys: {
             mainRecord: { key: '_id' },
             parentRecord: { key: 'paymentId', value: rest.paymentId },
@@ -205,9 +209,7 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
 
     // override meta for related cost allocations
     const overrideMetaRelatedCostAllocations = useMemo(() => ({
-        defaultFilters: [
-            { field: "costAllocations.paymentId", value: rest.paymentId },
-        ],
+        customProps: { paymentId: rest.paymentId },
         deletedKeys: {
             mainRecord: { key: '_id' },
             parentRecord: { key: 'paymentId', value: rest.paymentId },

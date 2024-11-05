@@ -239,11 +239,11 @@ const RelatedPayments = () => {
                 />
             )}
 
-            {drawer === "payee" && (
+            {drawer === "payeeDialog" && (
                 <AddNewRelatedData
                     title="Payee"
                     addNewData={addNewPayee}
-                    payeeFieldsData={payeeFieldsData}
+                    formName={drawer}
                     relatedObjectType="Shape"
                     relatedObjectId={get(agreementDetailsValues, "customLayer._id")}
                 />

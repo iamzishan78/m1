@@ -83,11 +83,22 @@ export const contactState = {
   contactOwner: null,
 }
 
+export const payeeState = {
+  contact:null,
+  payeeName: null,
+  payeeAddress: null,
+  paymentAllocation: null,
+  paymentAmount: null,
+  status: null,
+  contactId: null,
+}
+
 
 const initialStates = {
   tractInterestDialog: tractInterestOwnerState,
   unitInterestDialog: unitInterestOwnerState,
   contactDialog: contactState,
+  payeeDialog: payeeState,
 };
 
 export const sideDialogState = {};

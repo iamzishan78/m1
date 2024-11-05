@@ -10,7 +10,7 @@ function RelatedPayeesToolbar({ table, tableKey }) {
                 variant="contained"
                 color="primary"
                 onClick={() => {
-                    detailCardController.updateState({ drawer: "payee" })
+                    detailCardController.updateState({ drawer: "payeeDialog" })
                 }}
             >
                 + ADD Payee
