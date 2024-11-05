@@ -40,6 +40,7 @@ import {
 } from './style';
 import SortableLayer from './SortableLayer';
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
+
 // Contexts
 import { mapControlsController } from 'hookstate/mapControlsController';
 import { layerController } from 'hookstate/layerStateController';
@@ -49,6 +50,9 @@ import MapViewComponent from './Filters/MapViewComponent';
 import MapViewOptions from './Filters/MapViewOptions';
 import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
 import { globalStateController } from 'hookstate/globalStateController';
+
+// actions
+import { setActiveModule } from "store/actions/commonActions";
 
 const layerIcons = [
 	{
@@ -406,8 +410,9 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 	};
 
 	useEffect(() => {
-		togglePullout();
-	}, []);
+		togglePullout()
+		dispatch(setActiveModule({})); // reset to default value on selecting map tab
+	}, [])
 
 	return (
 		<div>
@@ -571,7 +576,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 					</div>
 				</StyledMenu>
 				<StyledSecondaryMenu />
-				<div className={classes.pulloutBox} onClick={() => togglePullout()}>
+				<div className={classes.pulloutBox} id="side-panel-pullout-btn" onClick={() => togglePullout()}>
 					{mapControlsStateValues.expandedPanel ? (
 						<ArrowBackIosIcon id="arrowBackIcon" />
 					) : (

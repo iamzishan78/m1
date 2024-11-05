@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
     Grid, Card, CardHeader, CardContent, Accordion, AccordionSummary, Typography,
-    List, ListItem, ListItemText, Tooltip
+    List, ListItem, ListItemText, Tooltip, IconButton 
 } from "@material-ui/core";
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import _ from "lodash";
@@ -102,6 +103,10 @@ const useStyles = makeStyles((theme) => ({
             paddingBottom: '0px',
             color: '#d3d3d3'
         }
+    },
+    locationIcon: {
+        paddingTop: "5px",
+        marginRight: "-25px"
     }
 }));
 
@@ -121,7 +126,7 @@ function LayerSelectionPopup(props) {
     const classes = useStyles(props);
     const [search, setSearch] = useState('');
     // contexts
-    let { selectionLayers } = props;
+    let { selectionLayers, coordinate } = props;
 
     const getSourceName = (name) => {
         return capitalizeFirstLetter(name)
@@ -198,7 +203,18 @@ function LayerSelectionPopup(props) {
                 return includes(search, [properties.agreementNumber, properties.agreementName])
         })
     const groupFeatures = _.groupBy(selectionLayers, 'sourceKey');
-    function GetTitle() {
+
+    const handleLocationClick = () => {
+        const latitude = coordinate[1]; 
+        const longitude = coordinate[0]; 
+        // Google Maps Street View URL
+        const streetViewUrl = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${latitude},${longitude}`;
+
+        window.open(streetViewUrl, '_blank');
+    };
+
+
+    function GetTitle(handleLocationClick) {
         const classes = useStyles();
 
         const [clicked, setClicked] = useState(false);
@@ -222,6 +238,16 @@ function LayerSelectionPopup(props) {
                     </Grid>
                 </Grid>
                 <Grid item >
+                    <IconButton
+                        className={classes.locationIcon}
+                        color="inherit"
+                        onClick={() => {
+                            handleLocationClick();
+                        }}
+                        style={{ "display" : (clicked ? 'none' : ''), height: "40px" }}
+                    >
+                        <LocationOnIcon />
+                    </IconButton>
                     <ExpandableSearch setSearch={setSearch} search={search} setClicked={setClicked} focusColor='inherit' hoverColor={'inherit'} />
                 </Grid>
             </Grid>
@@ -233,7 +259,7 @@ function LayerSelectionPopup(props) {
             <Card className={classes.card} data-testid='layer-selection-popup' >
                 <CardHeader
                     classes={{ title: classes.title, subheader: classes.subheader }}
-                    title={GetTitle()}
+                    title={GetTitle( handleLocationClick )}
                 >
                 </CardHeader >
                 <CardContent className={classes.content}>

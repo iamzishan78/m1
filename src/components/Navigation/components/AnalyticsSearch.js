@@ -62,7 +62,7 @@ const AnalyticsSearch = () => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [search, setSearch] = useState(stateApp.landAnalyticsSearchQuery);
-  const { activeModule } = useSelector(({ common }) => common);
+  const { quickActionsPanelState,  activeModule } = useSelector(({ common }) => common);
 
   useEffect(() => {
     return () => {
@@ -98,7 +98,7 @@ const AnalyticsSearch = () => {
           justify="space-between"
           alignItems="center"
           style={{
-            marginLeft: "433px",
+            marginLeft: quickActionsPanelState ? "433px" : "0px", // Adjust header position on toggling sidebar
           }}
         >
           <Grid item md={8}>

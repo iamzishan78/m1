@@ -23,6 +23,7 @@ import { navController } from './navStateController';
 import { mapControlsController } from './mapControlsController';
 import { NotificationManager } from 'react-notifications';
 import { debounce } from 'lodash';
+import { v4 as uuid } from 'uuid';
 import { layerFilters, layerState, layerStateInitialState } from './initialStates';
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
@@ -321,7 +322,6 @@ const layerStateControllerHandler = state => {
 
 	const updateLayer = (layer, updatedState) => {
 		const layerId = `${layer?.identifier}_${layer._id}`;
-
 		DeckGlLayer.updateLayer(updatedState, window.mapRef?.getLayer(layerId)?.implementation);
 	};
 
@@ -545,7 +545,7 @@ const layerStateControllerHandler = state => {
 		deckLayers[layerId].beforeLayerId = beforeLayerId;
 	};
 
-	const handleDeckLayer = dbLayer => {
+	const handleDeckLayer = (dbLayer, isUpdateTrigger) => {
 		const client = layerController.getValue('client');
 		if (!client) return;
 
@@ -608,6 +608,16 @@ const layerStateControllerHandler = state => {
 
 		reinitializeLayer({ meta, layerId, beforeLayerId, labelProps, pickable, visible });
 
+		if (isUpdateTrigger) {
+			const newId = uuid();
+			updatedProps.updateTriggers = {
+				getFillColor: newId,
+				getLineColor: newId,
+				getLineWidth: newId,
+				defaultColor: newId,
+				getPointRadius: newId,
+			};
+		}
 		if (!boundingState.show?.current)
 			return updateLayer(dbLayer, {
 				pickable,

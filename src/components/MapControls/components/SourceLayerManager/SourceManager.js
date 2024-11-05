@@ -261,7 +261,8 @@ function SourceManager(props) {
   }, [currentLayers, layers]);
 
   const M1Layers = React.useMemo(() => {
-    const layers = currentLayers?.filter((layer) => layer.layerCategory === "M1 Layer" || ['Parcels', 'Agreements', 'Units', 'Area of Interest'].includes(layer.groupName || layer.layerName));
+    // Filter layers
+    const layers = currentLayers?.filter((layer) => layer.layerCategory === "M1 Layer" || ['Parcels', 'Agreements', 'Units', 'Area of Interest', 'My Wells'].includes(layer.groupName || layer.layerName));
     const groupHandled = [];
     for (let index = 0; index < layers.length; index++) {
       const UdLayer = layers[index];

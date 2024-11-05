@@ -37,16 +37,25 @@ function WellSearchApiField(props) {
 
 		const leaseToSet = dataTenantWell?.tenantWell?.lease || '';
 		const leaseAcresToSet = dataTenantWell?.tenantWell?.leaseAcres;
+		const measuredDepth = dataTenantWell?.tenantWell?.measuredDepth;
+		const lateralLength = dataTenantWell?.tenantWell?.lateralLength;
+		const lastTwelveMonthBOE = dataTenantWell?.tenantWell?.lastTwelveMonthBOE;
 
 		setSelectedWell({
 			...selectedWell,
 			Lease: leaseToSet,
 			LeaseAcreage: leaseAcresToSet,
+			measuredDepth: measuredDepth,
+			lateralLength: lateralLength,
+			lastTwelveMonthBOE: lastTwelveMonthBOE,
 		});
 		props.setSelectedWell({
 			...selectedWell,
 			Lease: leaseToSet,
 			LeaseAcreage: leaseAcresToSet,
+			measuredDepth: measuredDepth, // Measured depth of the selected well
+			lateralLength: lateralLength, // Lateral length of the selected well
+			lastTwelveMonthBOE: lastTwelveMonthBOE, // Last twelve months (BOE) for the selected well
 		});
 		props.setTenantWell(dataTenantWell?.tenantWell);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
