@@ -92,7 +92,6 @@ const viewOptions = [
 ];
 
 function MapViewOptions({ handleDefaultView, tableKey, allMapViews, defaultView, fetchMapViews }) {
-	console.log(allMapViews, defaultView);
 	const mapViewState = globalStateController.useState(['filters', 'mapView']);
 	const mapViewStateValues = mapViewState.stateValues;
 	const classes = useStyles();
@@ -146,7 +145,6 @@ function MapViewOptions({ handleDefaultView, tableKey, allMapViews, defaultView,
 
 	const handleClick = view => {
 		let data = JSON.parse(JSON.stringify(view));
-		console.log(data);
 		// if (data.type === 'Default') {
 		//     data = handleDefaultView(data, getUser?._id);
 		// }
@@ -324,13 +322,14 @@ function InputField({ editMapViewId, viewName, setViewName, upsertMapView, setEd
 							tableGlobalController.reInitialized();
 						});
 					} else {
+						const { filters } = globalStateController.getValue('mapView')?.selectedMapView;
 						upsertMapView({
 							variables: {
 								mapView: {
 									name: viewName,
 									type: 'Custom',
 									userId: globalStateController.getValue('user').mongoId,
-									filters: globalStateController.getValue('allMapViewFilters'),
+									filters,
 								},
 							},
 							refetchQueries: ['getMapViews'],

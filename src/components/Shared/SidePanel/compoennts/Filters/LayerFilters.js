@@ -197,7 +197,7 @@ const LayerFilters = () => {
 			});
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [mapStateValues?.mapView?.selectedMapView]);
+	}, []);
 
 	const resetFilters = (params, additionalParamsToReset = {}) => {
 		const geoFiltersToReset = {};

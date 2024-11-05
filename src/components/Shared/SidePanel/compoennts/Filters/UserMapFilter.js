@@ -141,7 +141,8 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 			const state = layerFiltersController.getValue([dataSourceName]); // Get layer filters from hookstate
 			const initialFilters = state?.variables?.filters || []; // Get initial filters
 			let filters = initialFilters.filter(filter => filter.field !== fieldName?.value); // Remove existing filter
-			let globalFilters = globalStateController.getValue('allMapViewFilters') || [];
+			const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView;
+			let globalFilters = selectedMapView?.filters || [];
 
 			const canUpdateMapView = dataSourceName && fieldName && filterType;
 
@@ -151,15 +152,21 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 					filter => filter.fieldName !== (fieldName?.value || fieldName) || filter.dataSourceName !== dataSourceName
 				);
 				globalStateController.updateState({
-					allMapViewFilters: [
-						...globalFilters.filter(filter => filter?.fieldName),
-						{
-							dataSourceName,
-							filterType: filterType?.value || filterType,
-							fieldName: fieldName?.value || fieldName,
-							filterValues: typeof debouncedFilterValues === 'string' ? [debouncedFilterValues] : debouncedFilterValues,
+					mapView: {
+						selectedMapView: {
+							...selectedMapView,
+							filters: [
+								...globalFilters.filter(filter => filter?.fieldName),
+								{
+									dataSourceName,
+									filterType: filterType?.value || filterType,
+									fieldName: fieldName?.value || fieldName,
+									filterValues:
+										typeof debouncedFilterValues === 'string' ? [debouncedFilterValues] : debouncedFilterValues,
+								},
+							],
 						},
-					],
+					},
 				});
 			}
 
@@ -240,13 +247,20 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 		const initialFilters = state?.variables?.filters || []; // Get initial filters
 		const filters = initialFilters.filter(filter => filter.field !== fieldName.value); // Remove existing filter
 		layerFiltersController.setVariables(dataSourceName, { filters }); // Clear filter from layer filters
-		let globalFilters = globalStateController.getValue('allMapViewFilters') || [];
+		const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView;
+		let globalFilters = selectedMapView?.filters || [];
 		globalFilters = globalFilters.filter(
 			filter => filter.fieldName !== (fieldName?.value || fieldName) || filter.dataSourceName !== dataSourceName
 		);
 		remove(index); // Set the filter cleared state to true
+
 		globalStateController.updateState({
-			allMapViewFilters: globalFilters.filter(filter => filter?.fieldName),
+			mapView: {
+				selectedMapView: {
+					...selectedMapView,
+					filters: [...globalFilters.filter(filter => filter?.fieldName)],
+				},
+			},
 		});
 	};
 

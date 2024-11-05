@@ -25,6 +25,7 @@ import { NotificationManager } from 'react-notifications';
 import { debounce } from 'lodash';
 import { layerFilters, layerState, layerStateInitialState } from './initialStates';
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 const getWellColor = w => {
 	// Check if the well status is of Permit type
@@ -715,17 +716,20 @@ const layerStateControllerHandler = state => {
 		},
 		resetMapStates: (mapReady = false) => {
 			const rigsData = layerController.getValue('rigsData');
-			const mapViewFilters = globalStateController.getValue('mapViewFilters');
 			removeLayers(false);
 			popupController.reset();
 			drawController.reset();
 			layerFiltersController.reset();
+			const mapViewFilters = globalStateController.getValue('mapView')?.selectedMapView?.filters || [];
 			// for of loop on mapViewFilters
-			for (const mapView of mapViewFilters) {
-				const state = layerFiltersController.getValue([mapView.dataSourceName]);
+			for (const filter of mapViewFilters) {
+				const state = layerFiltersController.getValue([filter.dataSourceName]);
 				const initialFilters = state?.variables?.filters || []; // Get initial filters
-				layerFiltersController.setVariables(mapView.dataSourceName, {
-					filters: [...mapView.filters, ...initialFilters],
+				layerFiltersController.setVariables(filter.dataSourceName, {
+					filters: [
+						getFormattedFilterBasedOnType(filter.filterType, filter.fieldName, filter.filterValues),
+						...initialFilters,
+					],
 				});
 			}
 			layerController.setState({ rigsData });

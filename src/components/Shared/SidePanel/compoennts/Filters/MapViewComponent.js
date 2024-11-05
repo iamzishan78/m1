@@ -16,7 +16,7 @@ function MapViewComponent({ Icon, label, fetchMapViews }) {
 	const [showIcon, setShowIcon] = useState(false);
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
-	const mapViewState = globalStateController.useState(['allMapViewFilters', 'mapView']);
+	const mapViewState = globalStateController.useState(['mapView']);
 	const mapViewStateValues = mapViewState.stateValues;
 	const selectedMapView = mapViewStateValues?.mapView?.selectedMapView;
 
@@ -31,14 +31,13 @@ function MapViewComponent({ Icon, label, fetchMapViews }) {
 	const handleUpdateClick = async () => {
 		try {
 			setIsLoading(true);
-			console.log(globalStateController.getValue('allMapViewFilters'));
-			console.log(globalStateController.getValue('mapView')?.selectedMapView?._id);
 
+			const { _id, filters } = globalStateController.getValue('mapView')?.selectedMapView;
 			await updateMapView({
 				variables: {
 					mapView: {
-						_id: globalStateController.getValue('mapView')?.selectedMapView?._id, // ID for updating existing data
-						filters: globalStateController.getValue('allMapViewFilters'),
+						_id, // ID for updating existing data
+						filters,
 						userId: globalStateController.getValue('user').mongoId,
 					},
 				},
@@ -48,7 +47,6 @@ function MapViewComponent({ Icon, label, fetchMapViews }) {
 			setIsLoading(false);
 			handleClose();
 		} catch (error) {
-			console.log('Error updating view:', error);
 			setIsLoading(false);
 		}
 	};

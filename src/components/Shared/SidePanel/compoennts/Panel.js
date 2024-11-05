@@ -221,8 +221,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 		const currentMapView = result?.data?.getMapViews?.mapViews?.find(view => view.isCurrent);
 		globalStateController.updateState({
 			allMapViews,
-			currentMapViewId: currentMapView?._id,
-			allMapViewFilters: currentMapView?.filters,
 			mapView: {
 				selectedMapView: currentMapView,
 			},

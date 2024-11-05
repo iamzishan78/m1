@@ -69,7 +69,6 @@ import { drawController } from 'hookstate/drawStateController';
 import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
 import { MapFeatureTenants } from 'utils/data';
 import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
-import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 const useStyles = makeStyles(() => ({
 	mapWrapper: {
@@ -209,31 +208,8 @@ function Map({
 		onCompleted: data => {
 			const mapViews = data?.getMapViews?.mapViews;
 			const currentMapView = mapViews?.find(view => view.isCurrent);
-			const dataSources = currentMapView?.filters?.map(view => view.dataSourceName);
-
-			// unique data sources
-			const uniqueDataSources = [...new Set(dataSources)];
-			let filters = [];
-
-			// for of loop to get the filters for each data source
-			for (const dataSourceName of uniqueDataSources) {
-				const dataSourceViews = currentMapView?.filters?.filter(view => view.dataSourceName === dataSourceName);
-				const mapViewFilters = dataSourceViews.map(view =>
-					getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)
-				);
-				filters = [
-					...filters,
-					{
-						dataSourceName,
-						filters: mapViewFilters,
-					},
-				];
-			}
 
 			globalStateController.updateState({
-				mapViewFilters: filters,
-				currentMapViewId: currentMapView?._id,
-				allMapViewFilters: currentMapView?.filters,
 				mapView: {
 					selectedMapView: currentMapView,
 				},
