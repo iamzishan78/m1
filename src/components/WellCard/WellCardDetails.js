@@ -404,9 +404,6 @@ export default function WellCardDetails(props) {
             tabLabels={[
               "Production",
               "Interest Owners",
-              "Stimulation",
-              "Formation",
-              "Permits",
               "Documents"
             ]}
             tabPanels={[
@@ -482,7 +479,6 @@ export default function WellCardDetails(props) {
                 </div>
               </Paper>,
 
-              <SimulationContainer showSummary={showSummary} />,
               <FormationContainer showSummary={showSummary} />,
               <PermitsContainer showSummary={showSummary} />,
               <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.wellDocument}`}>
