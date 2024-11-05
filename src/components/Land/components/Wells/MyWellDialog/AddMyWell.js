@@ -11,7 +11,6 @@ import PropTypes from 'prop-types';
 import NumberFormat from 'react-number-format';
 import { wellParams } from './helpers';
 import { addMyWellStyles as useStyles } from './styles';
-
 import { UPSERT_MY_WELL } from 'graphQL/useMutationUpsertMyWell';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { tableGlobalController } from 'hookstate/tableController';
@@ -85,14 +84,15 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 		},
 	});
 
-	const { control, reset } = useForm();
+	const { control, reset, getValues  } = useForm();
 	useEffect(() => {
 		if (platformWell) reset(platformWell);
 	}, [platformWell, reset]);
 
 	useEffect(() => {
 		if (myWellData) {
-			const globalWellId = myWellData?.upsertMyWell?.myWell?.wellData?.Id;
+			const { wellData } = myWellData?.upsertMyWell?.myWell ?? {};
+			const globalWellId =  wellData?.Id ?? wellData?.id;
 			if (globalWellId) {
 				handleWellDetail({ Id: globalWellId });
 			}
@@ -100,12 +100,30 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [myWellData]);
 
-	const handleSave = (key, value) => {
+	 // Function to check if saving is allowed based on the 'wellName' value
+	 const isSaveAllowed = (formData) => {
+		const wellName = formData.wellName;
+		// Check if 'wellName' is defined and not just whitespace after trimming
+	  return (wellName && wellName?.trim() !== '');
+	  };
+
+	const handleSave = (formData) => {
+		if (!isSaveAllowed(formData)) return   // Check if saving is allowed using the isSaveAllowed function.
+		const processedValues = {};
+		Object.entries(formData).forEach(([key, value]) => {
+		  const param = wellParams.find(p => (p.esKey ?? p.key) === key);
+		  if (param) {
+			// Handle date conversion if needed
+			processedValues[key] = param.type === 'date'
+			  ? new Date(value)
+			  : value;
+		  }
+		});
 		upsertMyWell({
 			variables: {
-				myWell: { ...platformWell, _id: platformWell.id, [key]: value },
+			  myWell: { ...platformWell, _id: platformWell.id, ...processedValues },
 			},
-			refetchQueries: ['getESSimpleSearch'],
+			refetchQueries: ["getESSimpleSearch"],
 			awaitRefetchQueries: true,
 		});
 	};
@@ -118,12 +136,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 						<Autocomplete
 							options={foundWells || []}
 							onChange={async (e, well) => {
-								const myWell = await handleWellDetail(well);
-								upsertMyWell({
-									variables: { myWell },
-									refetchQueries: ['getESSimpleSearch'],
-									awaitRefetchQueries: true,
-								});
+								await handleWellDetail(well);
 							}}
 							disabled={!!upsertWellLoading}
 							value={platformWell}
@@ -219,6 +232,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 							name={param.esKey ?? param.key}
 							render={params => (
 								<TextField
+									className={classes.textField}
 									{...params}
 									label={param.label}
 									variant="outlined"
@@ -226,7 +240,10 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 									InputLabelProps={{ shrink: true }}
 									InputProps={{ 'data-testid': param.label }}
 									fullWidth
+									placeholder={param.key === 'wellName' ? "Click to enter Well Name" : ""} 
 									defaultValue=""
+									error={param.key === 'wellName' ? !params.value : false} // Mark field as error if validation fails
+									helperText={ !params.value ? (param.key === 'wellName' ? "Enter a Well name to get started" : "") : ""}
 									value={
 										param.type === 'text'
 											? params.value
@@ -237,12 +254,12 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 												: ''
 									}
 									onChange={event => {
-										const value = event.target.value;
+										const value = event.target.value.replace(/^\s+/, ''); // Remove only the leading whitespace
 										params.onChange(value);
 									}}
 									onBlur={event => {
-										const value = event.target.value;
-										handleSave(param.esKey ?? param.key, param.type === 'date' ? new Date(value) : value);
+										const values = getValues();
+										handleSave(values);
 									}}
 									disabled={upsertWellLoading}
 								/>
