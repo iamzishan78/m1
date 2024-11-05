@@ -478,9 +478,6 @@ export default function WellCardDetails(props) {
                   />
                 </div>
               </Paper>,
-
-              <FormationContainer showSummary={showSummary} />,
-              <PermitsContainer showSummary={showSummary} />,
               <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.wellDocument}`}>
                 <WellDetailsDocumentTable
                   selectedWell={stateValues.selectedWell}
