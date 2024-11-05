@@ -1,3 +1,4 @@
+import { Box } from '@mui/material';
 import { formatDate } from 'components/Shared/functions';
 
 export const CommonSchema = {
@@ -35,10 +36,10 @@ export const CommonSchema = {
 		enableColumnOrdering: false,
 		enableResizing: false,
 		showInLast: true,
-		isExport: "tags",
+		isExport: 'tags',
 		handleArrayExport: {
-			esType: "collection",
-			actualKey: "tag"
+			esType: 'collection',
+			actualKey: 'tag',
 		},
 	},
 	HIDDEN: {
@@ -124,7 +125,7 @@ export const CommonSchema = {
 		isSearchField: false,
 		type: 'string',
 		Cell: ({ row }) => {
-			return <>{row.original?.createBy?.name}</>
+			return <>{row.original?.createBy?.name}</>;
 		},
 	},
 	CREATED_DATE: {
@@ -136,7 +137,7 @@ export const CommonSchema = {
 		isSearchField: false,
 		type: 'date',
 		Cell: ({ row }) => {
-			return <>{formatDate(row.original?.createAt)}</>
+			return <>{formatDate(row.original?.createAt)}</>;
 		},
 	},
 	LAST_UPDATED_BY: {
@@ -148,7 +149,7 @@ export const CommonSchema = {
 		isSearchField: false,
 		type: 'string',
 		Cell: ({ row }) => {
-			return <>{row.original?.lastUpdateBy?.name}</>
+			return <>{row.original?.lastUpdateBy?.name}</>;
 		},
 	},
 	LAST_UPDATED_DATE: {
@@ -160,7 +161,26 @@ export const CommonSchema = {
 		isSearchField: false,
 		type: 'date',
 		Cell: ({ row }) => {
-			return <>{formatDate(row.original?.lastUpdateAt)}</>
+			return <>{formatDate(row.original?.lastUpdateAt)}</>;
 		},
 	},
+	AGGREGATED_FIELD: (name, aggregationFn = 'sum', sx = {}) => ({
+		aggregationFn,
+		AggregatedCell: ({ cell, table }) => (
+			<>
+				{name} by {table.getColumn(cell.row.groupingColumnId ?? '').columnDef.header}:
+				<Box
+					sx={{
+						color: 'info.main',
+						display: 'inline',
+						fontWeight: 'bold',
+						paddingLeft: '0.3rem',
+						...sx,
+					}}
+				>
+					{parseFloat(cell.getValue().toFixed(3))}
+				</Box>
+			</>
+		),
+	}),
 };
