@@ -44,9 +44,9 @@ const AcerageSummaryMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'prospect',
-			accessorFn: row => row?.prospect,
-			id: 'prospect',
-			header: 'Prospect',
+			accessorFn: row => row?.shape?.shapeJson?.properties?.prospectID,
+			id: 'shape.shapeJson.properties.prospectID',
+			header: 'shape.shapeJson.properties.prospectID.keyword',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,

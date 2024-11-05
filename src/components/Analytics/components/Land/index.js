@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Divider, makeStyles, Tab, Tabs, withStyles } from '@material-ui/core';
 import AcerageDetailsTabPanel from './AcerageDetails';
-import ExhibitATabPanel from './ExhibitA';
 import WellMasterTabPanel from './WellMaster';
 import MRTTable from 'components/MRTTable';
 
@@ -87,7 +86,7 @@ export default function LandAnalytics() {
 					<StyledTab label="Well Master" />
 				</StyledTabs>
 			</div>
-			{tab === 0 && <ExhibitATabPanel />}
+			{tab === 0 && <MRTTable name={'ExhibitATable'} />}
 			{tab === 1 && <MRTTable name={'AcerageSummaryTable'} />}
 			{tab === 2 && <AcerageDetailsTabPanel />}
 			{tab === 3 && <WellMasterTabPanel />}

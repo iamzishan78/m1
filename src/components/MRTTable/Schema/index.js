@@ -24,6 +24,7 @@ import AgreementRelatedUnitsMeta from './agreement_relatedUnits_schema';
 import UnitRelatedAgreementMeta from './unit_relatedAgreements_schema';
 import SalesVolumeComparisonMeta from './sales-volume-comparison-schema';
 import AcerageSummaryMeta from './acerage_summary_schema';
+import ExhibitAMeta from './exhibit_a_schema';
 
 export const SCHEMA = {
 	ContactTable: ContactMeta,
@@ -57,4 +58,5 @@ export const SCHEMA = {
 	UnitRelatedAgreementTable: UnitRelatedAgreementMeta,
 	SalesVolumeComparisonTable: SalesVolumeComparisonMeta, // Sales Volume comparison grid => analytrics/revenue
 	AcerageSummaryTable: AcerageSummaryMeta,
+	ExhibitATable: ExhibitAMeta,
 };
