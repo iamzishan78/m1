@@ -25,6 +25,7 @@ import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIco
 import { globalStateController } from 'hookstate/globalStateController';
 import { ADD_ASSOCIATED_MODEL_DATA } from 'graphQL/useMutationAssociatedModelData';
 import { isEmpty } from 'lodash';
+import { formatDate } from 'components/Shared/functions';
 
 const useStyles = makeStyles(theme => ({
 	maxWidth: {
@@ -140,6 +141,11 @@ function AssociationDialog() {
 		}
 	};
 
+	const getFormattedValue = (key, selectedOption) => {
+		const value = key.keyType === 'user' ? selectedOption[key.mappingKey]?.['name'] : selectedOption[key.mappingKey];
+		return key.keyType === 'date' ? formatDate(value) : value || 'N/A';
+	};
+
 	return (
 		<RightDialog open={isOpen} handleClickDialogClose={handleClickRightDialogClose} width="450px">
 			<Grid container display="flex" direction="row" justifyContent="space-between" alignItems="center">
@@ -214,7 +220,7 @@ function AssociationDialog() {
 											className={classes.maxWidth}
 											margin="dense"
 											label={key.label}
-											value={selectedOption[key.mappingKey] || 'N/A'}
+											value={getFormattedValue(key, selectedOption)}
 											variant="outlined"
 											disabled
 											fullWidth
