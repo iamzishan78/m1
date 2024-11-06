@@ -165,22 +165,22 @@ function DetailCardBottom({ data }) {
 								</Typography>
 
 								<List component="nav" aria-label="main mailbox folders">
-									{data.map((row, index) => {
-										const Icon = row.Icon;
+									{data?.map((row, index) => {
+										const Icon = row?.Icon;
 										return (
-											<FeatureFlag feature={row.feature} noCheck={!row.feature}>
+											<FeatureFlag feature={row?.feature} noCheck={!row?.feature}>
 												<ListItem
 													button
-													selected={row.value === searchTapValue.value}
+													selected={row?.value === searchTapValue?.value}
 													onClick={() => {
 														detailCardController.setBottomSelectedTab(index);
-														detailCardController.updateState({ selectedAssoicatedModel: row.associatedModel });
+														detailCardController.updateState({ selectedAssoicatedModel: row?.associatedModel });
 													}}
 												>
 													<ListItemIcon style={{ minWidth: '35px' }}>
 														<Icon />
 													</ListItemIcon>
-													<ListItemText>{row.label} </ListItemText>
+													<ListItemText>{row?.label} </ListItemText>
 												</ListItem>
 											</FeatureFlag>
 										);
