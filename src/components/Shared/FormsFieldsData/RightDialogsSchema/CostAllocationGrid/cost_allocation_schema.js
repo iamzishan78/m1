@@ -1,25 +1,30 @@
 import { InputAdornment } from '@material-ui/core';
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 
-const payeeForm = ({ setValue }) => {
+const costAllocationForm = ({ setValue }) => {
 	const formFields = [
 		{
-			label: 'Payee Name',
-			name: 'payeeName',
+			label: 'Cost Center',
+			name: 'costCenter',
 			renderField: 'autoComplete',
 			query: GET_ES_SIMPLE_SEARCH,
 			isESSearch: true,
 			variables: {
-				index: 'contacts_flat',
+				index: 'properties_flat',
 				pagination: {
 					first: 50,
 					keep_alive: '1micros',
 				},
 				search: {
 					query: `*`,
-					fields: ['name.keyword'],
+					fields: ['number.keyword', 'name.keyword'],
 				},
 				filters: [],
+				sort: {
+					field: 'lastUpdateAt',
+					order: 'desc',
+					unmapped_type: 'date',
+				},
 			},
 			getOptions: apiRes => {
 				// Transform API response into options for autocomplete
@@ -29,23 +34,15 @@ const payeeForm = ({ setValue }) => {
 				}));
 				return filterData;
 			},
-			onChange: contact => {
-				setValue('payeeName', contact);
-				setValue('payeeAddress', contact?.primaryAddress || contact?.address1 || contact?.address2 || '');
+			onChange: property => {
+				setValue('costCenter', property);
 			},
 		},
 		{
-			label: 'Payee Address',
-			name: 'payeeAddress',
+			label: 'Cost Allocation',
+			name: 'allocation',
 			onChange: value => {
-				setValue('payeeAddress', value);
-			},
-		},
-		{
-			label: 'Payment Allocation',
-			name: 'paymentAllocation',
-			onChange: value => {
-				setValue('paymentAllocation', value);
+				setValue('allocation', value);
 			},
 			type: 'number',
 			InputProps: {
@@ -53,31 +50,19 @@ const payeeForm = ({ setValue }) => {
 			},
 		},
 		{
-			label: 'Payment Amount',
-			name: 'paymentAmount',
+			label: 'Cost Allocation Amount',
+			name: 'amount',
 			onChange: value => {
-				setValue('paymentAmount', value);
+				setValue('amount', value);
 			},
 			type: 'number',
 			InputProps: {
 				endAdornment: <InputAdornment position="end">$</InputAdornment>,
 			},
 		},
-
-		// drop down menu with default option
-		{
-			label: 'Status',
-			name: 'status',
-			renderField: 'autoComplete',
-			defaultOptions: [
-				{ label: 'On Hold', value: 'On Hold' },
-				{ label: 'Approved', value: 'Approved' },
-				{ label: 'Unapproved', value: 'Unapproved' },
-			],
-		},
 	];
 
 	return formFields;
 };
 
-export default payeeForm;
+export default costAllocationForm;

@@ -1,11 +1,11 @@
 import { InputAdornment } from '@material-ui/core';
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 
-const payeeForm = ({ setValue }) => {
+const billingPartiesForm = ({ setValue }) => {
 	const formFields = [
 		{
-			label: 'Payee Name',
-			name: 'payeeName',
+			label: 'Billing Party Name',
+			name: 'name',
 			renderField: 'autoComplete',
 			query: GET_ES_SIMPLE_SEARCH,
 			isESSearch: true,
@@ -30,22 +30,22 @@ const payeeForm = ({ setValue }) => {
 				return filterData;
 			},
 			onChange: contact => {
-				setValue('payeeName', contact);
-				setValue('payeeAddress', contact?.primaryAddress || contact?.address1 || contact?.address2 || '');
+				setValue('name', contact);
+				setValue('address', contact?.primaryAddress || contact?.address1 || contact?.address2 || '');
 			},
 		},
 		{
-			label: 'Payee Address',
-			name: 'payeeAddress',
+			label: 'Billing Party Address',
+			name: 'address',
 			onChange: value => {
-				setValue('payeeAddress', value);
+				setValue('address', value);
 			},
 		},
 		{
-			label: 'Payment Allocation',
-			name: 'paymentAllocation',
+			label: 'Billing Party Allocation',
+			name: 'allocation',
 			onChange: value => {
-				setValue('paymentAllocation', value);
+				setValue('allocation', value);
 			},
 			type: 'number',
 			InputProps: {
@@ -53,10 +53,10 @@ const payeeForm = ({ setValue }) => {
 			},
 		},
 		{
-			label: 'Payment Amount',
-			name: 'paymentAmount',
+			label: 'Billing Party Amount',
+			name: 'amount',
 			onChange: value => {
-				setValue('paymentAmount', value);
+				setValue('amount', value);
 			},
 			type: 'number',
 			InputProps: {
@@ -80,4 +80,4 @@ const payeeForm = ({ setValue }) => {
 	return formFields;
 };
 
-export default payeeForm;
+export default billingPartiesForm;

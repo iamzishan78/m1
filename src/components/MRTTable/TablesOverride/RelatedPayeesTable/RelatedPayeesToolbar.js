@@ -1,22 +1,24 @@
-import React, { memo } from "react";
-import { Button } from "@material-ui/core";
-import { detailCardController } from "hookstate/detailCardController";
+import React, { memo } from 'react';
+import { Button } from '@material-ui/core';
+import { detailCardController } from 'hookstate/detailCardController';
+import { PayeeRightDialog } from './RightDialog';
 
 // This component is used in the RelatedPayeesTable component for the toolbar
 function RelatedPayeesToolbar({ table, tableKey }) {
-    return (
-        <>
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                    detailCardController.updateState({ drawer: "payeeDialog" })
-                }}
-            >
-                + ADD Payee
-            </Button>
-        </>
-    );
+	return (
+		<>
+			<Button
+				variant="contained"
+				color="primary"
+				onClick={() => {
+					detailCardController.updateState({ drawer: 'payeeDialog' });
+				}}
+			>
+				+ ADD Payee
+			</Button>
+			<PayeeRightDialog />
+		</>
+	);
 }
 
 export default memo(RelatedPayeesToolbar);
