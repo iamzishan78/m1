@@ -78,6 +78,15 @@ export const getCustomFieldHeaders = (jobType, metaData) => {
 				}));
 			break;
 
+		case 'AGREEMENT_SHAPE':
+			customFieldHeaders = (metaData || [])
+				.filter(md => md.category === 'Agreement')
+				.map(md => ({
+					...md,
+					actual_key: `custom_data.${md.name}`,
+				}));
+			break;
+
 		case 'TRACT_SHAPE':
 			customFieldHeaders = (metaData || [])
 				.filter(md => md.category === 'Parcel')

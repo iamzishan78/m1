@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
@@ -9,6 +9,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import $ from 'jquery';
 import { useLazyQuery } from '@apollo/client';
 import { Close, Layers, Sync } from '@material-ui/icons';
+import { Menu, MenuItem } from '@material-ui/core';
 
 import { AppContext } from '../../AppContext';
 import { clearMapAndCloseShapeActionsPopup } from 'components/MapControls/commonHelper';
@@ -22,6 +23,7 @@ import M1neral_headers, { getCustomFieldHeaders } from 'components/BulkUpload/jo
 import { history } from 'store';
 import { jobController } from 'hookstate/jobStateController';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+import { userDefinedInitialData } from 'components/MapGridCard/components/data';
 
 const useStyles = makeStyles(theme => ({
 	root: {},
@@ -104,6 +106,10 @@ function UdLayerCard(props) {
 	const [stateApp, setStateApp] = useContext(AppContext);
 
 	const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
+
+	const [anchorEl, setAnchorEl] = useState(null);
+
+	const isCreateParcelMenu = Boolean(anchorEl);
 
 	useEffect(() => {
 		getMetaData({
@@ -204,7 +210,7 @@ function UdLayerCard(props) {
 		);
 	};
 
-	const handleSync = async () => {
+	const handleSync = async jobType => {
 		let columns = [];
 
 		const hits = [props.selectedUserDefinedLayer];
@@ -213,8 +219,6 @@ function UdLayerCard(props) {
 			const currentColumns = Object.keys(hit.properties);
 			if (currentColumns.length > columns.length) columns = currentColumns;
 		});
-
-		const jobType = 'TRACT_SHAPE';
 
 		let m1neralHeaders = M1neral_headers[jobType] || [];
 
@@ -242,6 +246,12 @@ function UdLayerCard(props) {
 			columns[i] = column;
 		}
 
+		const category = {
+			AGREEMENT_SHAPE: userDefinedInitialData[0],
+			TRACT_SHAPE: userDefinedInitialData[1],
+			UNIT_SHAPE: userDefinedInitialData[2],
+		};
+
 		jobController.updateState({
 			transferData: {
 				selectedSourceCategory: {
@@ -249,12 +259,7 @@ function UdLayerCard(props) {
 					mappedHeadersFromCSV: columns,
 					hits,
 				},
-				selectedPlatformCategory: {
-					index: 8,
-					value: 'tract',
-					label: 'Tracts',
-					mapGrid: false,
-				},
+				selectedPlatformCategory: category[jobType],
 			},
 		});
 
@@ -263,6 +268,14 @@ function UdLayerCard(props) {
 
 	return (
 		<React.Fragment>
+			<Menu anchorEl={anchorEl} open={isCreateParcelMenu} onClose={() => setAnchorEl(null)}>
+				<MenuItem onClick={() => handleSync('AGREEMENT_SHAPE')}>Agreement</MenuItem>
+
+				<MenuItem onClick={() => handleSync('TRACT_SHAPE')}>Tract</MenuItem>
+
+				<MenuItem onClick={() => handleSync('UNIT_SHAPE')}>Unit Boundary</MenuItem>
+			</Menu>
+
 			<Card className={classes.card}>
 				<CardHeader
 					data-testid="ud-layer-card-header"
@@ -287,7 +300,13 @@ function UdLayerCard(props) {
 							</Tooltip>
 
 							<Tooltip title={'Add + Sync'} placement="top">
-								<IconButton size={'small'} onClick={e => handleSync()} aria-label="close" className={classes.icons}>
+								<IconButton
+									size="small"
+									aria-haspopup="true"
+									aria-expanded={isCreateParcelMenu ? 'true' : undefined}
+									className={classes.icons}
+									onClick={event => setAnchorEl(event.currentTarget)}
+								>
 									<Sync color="secondary" />
 								</IconButton>
 							</Tooltip>
