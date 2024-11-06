@@ -110,6 +110,7 @@ function AssociationDialog() {
 						unmapped_type: 'date',
 					},
 					filters: [],
+					isDynamicAsset: true,
 				},
 			});
 		}
