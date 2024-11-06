@@ -114,7 +114,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 	useEffect(() => {
 		getShapeFileSchema({
 			variables: {
-				layerId: dataSourceName?.value,
+				layerId: dataSourceName?.value || dataSourceName,
 			},
 		});
 	}, [dataSourceName, getShapeFileSchema]);
@@ -142,7 +142,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 				esIndex = 'shapefile_flat';
 				const selectedLayer = globalStateController
 					.getValue('layers')
-					?.find(layer => layer?.layerId === dataSourceName?.value);
+					?.find(layer => layer?.layerId === (dataSourceName?.value || dataSourceName));
 				filters = generateFileFilters({ fileLayer: selectedLayer }).variables.filters;
 				search = generateFileFilters({ fileLayer: selectedLayer }).variables.search;
 				search.fields = [];
@@ -241,14 +241,15 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 		const fileLayers = layers?.filter(layer => layer?.layerShapeName && layer?.layerSchema);
 		const layerShapeNames = fileLayers?.map(layer => ({ label: layer?.layerShapeName, value: layer?.layerId || '' }));
 		const m1LayersOptions = Object.keys(customLayersFieldAccessors).map(layer => ({ label: layer, value: layer }));
-		console.log(customLayersFieldAccessors[dataSourceName?.value]?.keys ?? []);
 
 		return [
 			{
 				name: `mapViews.${index}.dataSourceName`,
 				label: 'Data Source Name',
 				options: [...m1LayersOptions, ...layerShapeNames], // Static options from constants
-				defaultValue: mapView?.dataSourceName, // Set default value if mapView is provided
+				defaultValue: mapView?.dataSourceName
+					? [...m1LayersOptions, ...layerShapeNames]?.find(option => option.value === mapView?.dataSourceName)
+					: null, // Set default value if mapView is provided
 				onChange: () => {
 					setValue(`mapViews.${index}.fieldName`, null);
 					setValue(`mapViews.${index}.filterType`, null);
@@ -259,7 +260,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 				name: `mapViews.${index}.fieldName`,
 				label: 'Field Name',
 				options: customLayersFieldAccessors[dataSourceName?.value]?.keys || shapeFileSchema?.getShapeFileSchema || [], // Dynamic based on data source
-				defaultValue: mapView?.dataSourceName ? getSelectedField(mapView?.fieldName) : null, // Set default value if mapView is provided
+				defaultValue: mapView?.dataSourceName ? getSelectedField(mapView?.fieldName) || mapView?.fieldName : null, // Set default value if mapView is provided
 				onChange: () => {
 					setValue(`mapViews.${index}.filterType`, null);
 					setValue(`mapViews.${index}.filterValues`, null);

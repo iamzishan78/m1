@@ -663,6 +663,7 @@ const layerStateControllerHandler = state => {
 			layerController.updateState({ client, history });
 		},
 		resetBounds: identifier => {
+			if (typeof identifier !== 'string') return;
 			if (identifier === 'Agreements') {
 				['Deeds', 'Leases', 'Contracts', 'Surfaces'].forEach(type => {
 					layerController.resetBounds(type);
