@@ -734,9 +734,13 @@ const layerStateControllerHandler = state => {
 			const mapViewFilters = globalStateController.getValue('mapView')?.selectedMapView?.filters || [];
 			// for of loop on mapViewFilters
 			for (const filter of mapViewFilters) {
-				const state = layerFiltersController.getValue([filter.dataSourceName]);
+				const shapeFileLayer = globalStateController
+					.getValue('layers')
+					.find(layer => layer.layerId === filter.dataSourceName);
+				const dataSource = shapeFileLayer ? shapeFileLayer.layerShapeName : filter.dataSourceName;
+				const state = layerFiltersController.getValue([dataSource]);
 				const initialFilters = state?.variables?.filters || []; // Get initial filters
-				layerFiltersController.setVariables(filter.dataSourceName, {
+				layerFiltersController.setVariables(dataSource, {
 					filters: [
 						getFormattedFilterBasedOnType(filter.filterType, filter.fieldName, filter.filterValues),
 						...initialFilters,

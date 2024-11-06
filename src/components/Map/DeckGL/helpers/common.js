@@ -494,8 +494,8 @@ export const generateFileFilters = ({
 			search: {
 				advanceSearch,
 			},
-			filters,
 			...extendFilters.variables,
+			filters: [...filters, ...(extendFilters.variables?.filters || [])],
 		},
 	};
 };

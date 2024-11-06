@@ -69,6 +69,8 @@ import { drawController } from 'hookstate/drawStateController';
 import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
 import { MapFeatureTenants } from 'utils/data';
 import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
+import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 const useStyles = makeStyles(() => ({
 	mapWrapper: {
@@ -485,6 +487,23 @@ function Map({
 			}));
 			globalState.layers.set(layers);
 			stateApp.layers = layers;
+
+			const mapViewFilters = globalStateController.getValue('mapView')?.selectedMapView?.filters || [];
+			// for of loop on mapViewFilters
+			for (const filter of mapViewFilters) {
+				const shapeFileLayer = globalStateController
+					.getValue('layers')
+					.find(layer => layer.layerId === filter.dataSourceName);
+				const dataSource = shapeFileLayer ? shapeFileLayer.layerShapeName : filter.dataSourceName;
+				const state = layerFiltersController.getValue([dataSource]);
+				const initialFilters = state?.variables?.filters || []; // Get initial filters
+				layerFiltersController.setVariables(dataSource, {
+					filters: [
+						getFormattedFilterBasedOnType(filter.filterType, filter.fieldName, filter.filterValues),
+						...initialFilters,
+					],
+				});
+			}
 		}
 	}, [layerStates]);
 
