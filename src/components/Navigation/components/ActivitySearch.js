@@ -21,17 +21,16 @@ const useStyles = makeStyles(theme => ({
 		alignItems: 'center',
 		marginRight: '45px',
 		display: 'flex',
-		fontWeight: 'bold',
 		'& svg': {
 			fill: 'black !important',
 			fontSize: '2rem',
-			marginRight: '5px',
-			marginLeft: '-15px',
+			marginLeft: '10px',
 		},
 		'& .MuiTypography-root': {
-			fontSize: '30px',
+			fontSize: '1.7rem',
 			fontWeight: 'bold',
 			color: 'black',
+			marginLeft: '10px',
 		},
 	},
 	search: {
@@ -167,12 +166,12 @@ const ActivitySearch = () => {
 			display="flex"
 			direction="row"
 			alignItems="center"
-			style={{ marginLeft: quickActionsPanelState ? '425px' : '0px', width: '55%' }}
+			style={{ marginLeft: quickActionsPanelState ? '425px' : '0px', width: '55%', marginTop: '15px' }}
 			ref={childRef}
 		>
 			<Grid item className={classes.barTitle}>
 				<EventIcon />
-				<Typography color="primary">{activeModule.title}</Typography>
+				<Typography variant="h5">{activeModule.title}</Typography>
 			</Grid>
 			<Grid item>
 				<Autocomplete
