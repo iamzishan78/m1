@@ -29,6 +29,8 @@ import { useForm } from 'react-hook-form';
 import { sideDialogController } from 'hookstate/sideDialogController';
 import payeeForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/PayeeGrid/payee_form_schema';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
+import billingPartiesForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/BillingPartyGrid/billing_parties_form_schema';
+import costAllocationForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/CostAllocationGrid/cost_allocation_schema';
 
 const useStyles = makeStyles({
 	list: {
@@ -164,7 +166,7 @@ const useStyles = makeStyles({
 
 export default function AddNewRelatedData({ title, addNewData, formName, payeeFieldsData, ...rest }) {
 	const classes = useStyles();
-	const [stateApp, setStateApp] = React.useContext(AppContext);
+	const [stateApp] = React.useContext(AppContext);
 
 	let [loader, setLoader] = useState(false);
 
@@ -175,9 +177,21 @@ export default function AddNewRelatedData({ title, addNewData, formName, payeeFi
 	const [newData, setNewData] = useState(null);
 	const [contact, setContact] = useState();
 	const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
+	const [disabled, setDisabled] = useState(true);
 	const [state, setState] = useState({
 		right: false,
 	});
+
+	  // Watch specific form fields to handle Save button
+	  const watchName = watch("name");
+	  const watchPayeeName = watch("payeeName");
+	  useEffect(() => {
+		if (getValues()?.name?._id || getValues()?.payeeName?._id) {
+		  setDisabled(false);
+		}else{
+			setDisabled(true);
+		}
+	  }, [watchName, watchPayeeName]);
 
 	const cell = {
 		id: 'property.number',
@@ -198,6 +212,18 @@ export default function AddNewRelatedData({ title, addNewData, formName, payeeFi
 		switch (formName) {
 			case 'payeeDialog': {
 				return payeeForm({
+					getValues,
+					setValue,
+				});
+			}
+			case 'billingPartiesDialog': {
+				return billingPartiesForm({
+					getValues,
+					setValue,
+				});
+			}
+			case 'costAllocationDialog': {
+				return costAllocationForm({
 					getValues,
 					setValue,
 				});
@@ -539,15 +565,10 @@ export default function AddNewRelatedData({ title, addNewData, formName, payeeFi
 					color="secondary"
 					size="medium"
 					disableElevation
+					disabled={disabled}
 					onClick={() => {
 						const data = formName ? getValues() : newData;
-
-						formName
-							? addNewData(
-									{ ...data, payeeName: data?.payeeName?.name || '', contactId: data?.payeeName?._id || '' },
-									setLoader
-								)
-							: addNewData(data, setLoader);
+						addNewData(data, setLoader);
 					}}
 					className={classes.footerButton}
 				>
