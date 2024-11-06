@@ -545,7 +545,7 @@ function MapGridCard(props) {
 														},
 														maxTableHeight: '45vh',
 														filterLayerType: 'Units',
-														customLayerIdentifier: 'Units',
+														layerIdentifier: 'Units',
 													}}
 												/>
 											)}
@@ -561,7 +561,7 @@ function MapGridCard(props) {
 														},
 														maxTableHeight: '45vh',
 														filterLayerType: 'Agreements',
-														customLayerIdentifier: 'Agreements',
+														layerIdentifier: 'Agreements',
 													}}
 												/>
 											)}
@@ -578,7 +578,7 @@ function MapGridCard(props) {
 														},
 														maxTableHeight: '45vh',
 														filterLayerType: 'Parcels',
-														customLayerIdentifier: 'Parcels',
+														layerIdentifier: 'Parcels',
 													}}
 												/>
 											)}
@@ -594,6 +594,7 @@ function MapGridCard(props) {
 														},
 														maxTableHeight: '45vh',
 														filterLayerType: 'My Wells',
+														layerIdentifier: 'My Wells',
 													}}
 												/>
 											)}

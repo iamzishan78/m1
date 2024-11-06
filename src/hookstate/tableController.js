@@ -157,7 +157,7 @@ const tableESStateControllerHandler = state => ({
 		tableKey,
 		{
 			esIndex,
-			customLayerIdentifier,
+			layerIdentifier,
 			pageSize,
 			defaultSort,
 			isInFiniteScroll,
@@ -213,7 +213,7 @@ const tableESStateControllerHandler = state => ({
 		const { filters } = globalStateController.getValue('mapView')?.selectedMapView;
 		const selectedMapViewFilters = filters;
 
-		const dataSourceViews = selectedMapViewFilters?.filter(view => view.dataSourceName === customLayerIdentifier);
+		const dataSourceViews = selectedMapViewFilters?.filter(view => view.dataSourceName === layerIdentifier);
 		const mapViewFilters = dataSourceViews.map(view =>
 			getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)
 		);

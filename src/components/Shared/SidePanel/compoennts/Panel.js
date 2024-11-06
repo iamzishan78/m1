@@ -52,7 +52,7 @@ import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
 import { globalStateController } from 'hookstate/globalStateController';
 
 // actions
-import { setActiveModule } from "store/actions/commonActions";
+import { setActiveModule } from 'store/actions/commonActions';
 
 const layerIcons = [
 	{
@@ -410,9 +410,9 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 	};
 
 	useEffect(() => {
-		togglePullout()
+		togglePullout();
 		dispatch(setActiveModule({})); // reset to default value on selecting map tab
-	}, [])
+	}, [dispatch]);
 
 	return (
 		<div>
@@ -515,6 +515,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 							<MapViewComponent
 								label={'Map'}
 								Icon={() => <MapIcon sx={{ color: 'white' }} />}
+								defaultView={{
+									name: 'Standard Map View',
+									type: 'Default',
+								}}
 								fetchMapViews={fetchMapViews}
 							/>
 

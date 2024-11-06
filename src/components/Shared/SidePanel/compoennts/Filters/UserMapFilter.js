@@ -3,13 +3,15 @@ import { Box, Grid, IconButton } from '@material-ui/core';
 import { Close as ClearButton } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { useLazyQuery } from '@apollo/client';
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import CustomAutocomplete from './CustomAutocomplete';
 import { customLayersFieldAccessors } from './consts';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { globalStateController } from 'hookstate/globalStateController';
 import { useFormContext } from 'react-hook-form';
 import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } from 'components/MRTTable/utils/data';
+import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
+import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
+import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 
 // Define custom styles using Material-UI's makeStyles hook
 const useStyles = makeStyles(theme => ({
@@ -86,7 +88,8 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 	const { control, setValue, watch } = useFormContext(); // Get form control methods
 
 	// Lazy query to fetch filter list from the GraphQL API when required
-	const [getFiltersList, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
+	const [getFiltersList, { data: filtersData }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
+	const [getShapeFileSchema, { data: shapeFileSchema }] = useLazyQuery(GET_SHAPE_FILE_SCHEMA);
 
 	// Watch form fields to dynamically react to their values
 	const dataSourceName = watch(`mapViews.${index}.dataSourceName`);
@@ -108,28 +111,57 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 		};
 	}, [filterValues]);
 
+	useEffect(() => {
+		getShapeFileSchema({
+			variables: {
+				layerId: dataSourceName?.value,
+			},
+		});
+	}, [dataSourceName, getShapeFileSchema]);
+
 	// Effect to trigger data fetching based on the selected data source and field name
 	useEffect(() => {
 		if (dataSourceName && fieldName) {
-			let filters = [];
-			const esIndex = 'shapes_flat'; // Elasticsearch index used in the query
-			const layerType = customLayersFieldAccessors[dataSourceName].layerKey.toLowerCase(); // Get the layer type
+			let esIndex; // Elasticsearch index used in the query
+			let filters = []; // Filters to apply to the query
+			let search = { fields: [] };
+			const layerType = customLayersFieldAccessors[dataSourceName?.value]?.layerKey?.toLowerCase(); // Get the layer type
 
 			// Determine the filters based on the layer type
+
 			if (layerType === 'agreement') {
+				esIndex = 'shapes_flat';
 				filters = [{ field: 'shapeJson.properties.layerType', value: 'agreement' }];
-			} else {
+			} else if (layerType === 'wells') {
+				esIndex = 'mywells_flat';
+				filters = [];
+			} else if (layerType === 'Parcel' || layerType === 'Unit') {
+				esIndex = 'shapes_flat';
 				filters = [{ field: 'layer.keyword', value: layerType }];
+			} else {
+				esIndex = 'shapefile_flat';
+				const selectedLayer = globalStateController
+					.getValue('layers')
+					?.find(layer => layer?.layerId === dataSourceName?.value);
+				filters = generateFileFilters({ fileLayer: selectedLayer }).variables.filters;
+				search = generateFileFilters({ fileLayer: selectedLayer }).variables.search;
+				search.fields = [];
 			}
 
 			// Execute the lazy query to fetch filter options
 			getFiltersList({
 				variables: {
-					search: '*', // Search query to fetch all data
-					filterKey: fieldName?.value,
-					size: 10000, // Maximum number of results to fetch
+					search,
+					filterAggs: {
+						field: fieldName?.value,
+						query: '',
+						size: 10000,
+					},
 					esIndex,
+					index: esIndex,
 					filters,
+					pagination: { first: 10000, after: null },
+					size: 10,
 				},
 			});
 		}
@@ -138,7 +170,10 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 	// Effect to log filter values when they change
 	useEffect(() => {
 		if (dataSourceName) {
-			const state = layerFiltersController.getValue([dataSourceName]); // Get layer filters from hookstate
+			const layerShapeName = globalStateController
+				.getValue('layers')
+				?.find(layer => layer?.layerId === (dataSourceName?.value || dataSourceName))?.layerShapeName;
+			const state = layerFiltersController.getValue([layerShapeName || dataSourceName?.value || dataSourceName]); // Get layer filters from hookstate
 			const initialFilters = state?.variables?.filters || []; // Get initial filters
 			let filters = initialFilters.filter(filter => filter.field !== fieldName?.value); // Remove existing filter
 			const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView;
@@ -149,7 +184,9 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 			// Upsert the map view data to the GraphQL API
 			if (canUpdateMapView) {
 				globalFilters = globalFilters.filter(
-					filter => filter.fieldName !== (fieldName?.value || fieldName) || filter.dataSourceName !== dataSourceName
+					filter =>
+						filter.fieldName !== (fieldName?.value || fieldName) ||
+						filter.dataSourceName !== (dataSourceName?.value || dataSourceName)
 				);
 				globalStateController.updateState({
 					mapView: {
@@ -158,7 +195,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 							filters: [
 								...globalFilters.filter(filter => filter?.fieldName),
 								{
-									dataSourceName,
+									dataSourceName: dataSourceName?.value || dataSourceName,
 									filterType: filterType?.value || filterType,
 									fieldName: fieldName?.value || fieldName,
 									filterValues:
@@ -185,14 +222,14 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 
 	const getSelectedField = useCallback(
 		fieldName => {
-			return customLayersFieldAccessors[mapView?.dataSourceName].keys.find(key => key.value === fieldName);
+			return customLayersFieldAccessors[mapView?.dataSourceName]?.keys?.find(key => key.value === fieldName);
 		},
 		[mapView?.dataSourceName]
 	);
 
 	// Memoized calculation of autocomplete fields to optimize rendering
 	const autocompleteFields = useMemo(() => {
-		const filterValueHits = filtersData?.getESFilterList?.hits || []; // Get filter options from query results
+		const filterValueHits = filtersData?.getESSimpleFilter?.hits || []; // Get filter options from query results
 		const filterValuesOptions = filterValueHits.map(hit => hit.key).filter(key => key.trim()); // Clean options
 
 		// Map filter type options to autocomplete options
@@ -200,11 +237,17 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 			return { label: tableESSimpleFilterModes[option].label, value: tableESSimpleFilterModes[option].option };
 		});
 
+		const layers = globalStateController.getValue('layers');
+		const fileLayers = layers?.filter(layer => layer?.layerShapeName && layer?.layerSchema);
+		const layerShapeNames = fileLayers?.map(layer => ({ label: layer?.layerShapeName, value: layer?.layerId || '' }));
+		const m1LayersOptions = Object.keys(customLayersFieldAccessors).map(layer => ({ label: layer, value: layer }));
+		console.log(customLayersFieldAccessors[dataSourceName?.value]?.keys ?? []);
+
 		return [
 			{
 				name: `mapViews.${index}.dataSourceName`,
 				label: 'Data Source Name',
-				options: Object.keys(customLayersFieldAccessors), // Static options from constants
+				options: [...m1LayersOptions, ...layerShapeNames], // Static options from constants
 				defaultValue: mapView?.dataSourceName, // Set default value if mapView is provided
 				onChange: () => {
 					setValue(`mapViews.${index}.fieldName`, null);
@@ -215,7 +258,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 			{
 				name: `mapViews.${index}.fieldName`,
 				label: 'Field Name',
-				options: dataSourceName ? customLayersFieldAccessors[dataSourceName].keys : [], // Dynamic based on data source
+				options: customLayersFieldAccessors[dataSourceName?.value]?.keys || shapeFileSchema?.getShapeFileSchema || [], // Dynamic based on data source
 				defaultValue: mapView?.dataSourceName ? getSelectedField(mapView?.fieldName) : null, // Set default value if mapView is provided
 				onChange: () => {
 					setValue(`mapViews.${index}.filterType`, null);
@@ -239,18 +282,24 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 					]
 				: []),
 		];
-	}, [dataSourceName, filtersData, filterType, index, mapView, getSelectedField, setValue]); // Dependencies for recalculating when data changes
+	}, [dataSourceName, filtersData, filterType, index, mapView, getSelectedField, setValue, shapeFileSchema]); // Dependencies for recalculating when data changes
 
 	// Function to clear the filter when the clear button is clicked
 	const clearFilter = () => {
-		const state = layerFiltersController.getValue([dataSourceName]); // Get layer filters from hookstate
+		const layerShapeName = globalStateController
+			.getValue('layers')
+			?.find(layer => layer?.layerId === (dataSourceName?.value || dataSourceName))?.layerShapeName;
+		const filterAccessor = layerShapeName || dataSourceName?.value || dataSourceName;
+		const state = layerFiltersController.getValue([filterAccessor]); // Get layer filters from hookstate
 		const initialFilters = state?.variables?.filters || []; // Get initial filters
 		const filters = initialFilters.filter(filter => filter.field !== fieldName.value); // Remove existing filter
-		layerFiltersController.setVariables(dataSourceName, { filters }); // Clear filter from layer filters
+		layerFiltersController.setVariables(filterAccessor, { filters }); // Clear filter from layer filters
 		const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView;
 		let globalFilters = selectedMapView?.filters || [];
 		globalFilters = globalFilters.filter(
-			filter => filter.fieldName !== (fieldName?.value || fieldName) || filter.dataSourceName !== dataSourceName
+			filter =>
+				filter.fieldName !== (fieldName?.value || fieldName) ||
+				filter.dataSourceName !== (dataSourceName?.value || dataSourceName)
 		);
 		remove(index); // Set the filter cleared state to true
 

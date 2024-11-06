@@ -7,7 +7,7 @@ import { UPSERT_MAP_VIEW } from 'graphQL/useMutationUpsertMapView';
 import { CircularProgress } from '@material-ui/core';
 import { globalStateController } from 'hookstate/globalStateController';
 
-function MapViewComponent({ Icon, label, fetchMapViews }) {
+function MapViewComponent({ Icon, label, fetchMapViews, defaultView }) {
 	const [updateMapView] = useMutation(UPSERT_MAP_VIEW, {
 		onCompleted: () => {
 			fetchMapViews();
@@ -100,7 +100,9 @@ function MapViewComponent({ Icon, label, fetchMapViews }) {
 						onMouseLeave={() => setShowIcon(false)}
 					>
 						<Typography>
-							<span style={selectedMapView?.isModified ? { 'font-style': 'italic' } : {}}>{selectedMapView?.name}</span>
+							<span style={selectedMapView?.isModified ? { 'font-style': 'italic' } : {}}>
+								{selectedMapView?.name || defaultView?.name}
+							</span>
 						</Typography>
 						<span
 							style={{
@@ -127,7 +129,7 @@ function MapViewComponent({ Icon, label, fetchMapViews }) {
 						<MenuItem
 							style={{ width: '250px' }}
 							onClick={handleUpdateClick}
-							disabled={selectedMapView?.type === 'Default'}
+							disabled={(selectedMapView?.type || defaultView?.type) === 'Default'}
 						>
 							Update view
 						</MenuItem>
