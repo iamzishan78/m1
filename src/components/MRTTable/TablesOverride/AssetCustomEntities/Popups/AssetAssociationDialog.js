@@ -5,12 +5,12 @@ import Loader from 'components/Loaders';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { tableGlobalController } from 'hookstate/tableController';
-import { UPSERT_CUSTOM_ASSET_INFO } from 'graphQL/useMutationUpsertCustomAssetInfo';
+import { UPSERT_ASSOCIATED_MODELS } from 'graphQL/useMutationUpsertCustomAssetInfo';
 import { GET_ALL_MODELS } from 'graphQL/useQueryModels';
 import DynamicForm from '../Forms/DynamicForm';
 import { useStyles } from './styles';
 import { useDispatch } from 'react-redux';
-import { showInfoMessage } from "actions";
+import { showInfoMessage } from 'actions';
 
 function AssetAssociationDialog() {
 	const classes = useStyles();
@@ -61,11 +61,11 @@ function AssetAssociationDialog() {
 		},
 	});
 
-	const [storeCustomAsset, { data }] = useMutation(UPSERT_CUSTOM_ASSET_INFO, {
+	const [upsertAssociatedModels, { data }] = useMutation(UPSERT_ASSOCIATED_MODELS, {
 		onCompleted: () => {
 			tableGlobalController.refetch();
 
-			const updatedAsset = data?.upsertCustomAssetInfo?.newModel || {};
+			const updatedAsset = data?.upsertAssociatedModels?.asset || {};
 			tableGlobalController.updateState({
 				AssetAssociationDialog: {},
 				selectedAsset: updatedAsset,
@@ -116,16 +116,14 @@ function AssetAssociationDialog() {
 			resultantModels = [...selectedAsset.associatedModels, { ...associatedModels, modelKeys: fields }];
 		}
 
-		storeCustomAsset({
+		upsertAssociatedModels({
 			variables: {
 				tableName: selectedAsset.tableName,
-				modelKeys: selectedAsset.modelKeys,
-				creationPlace: selectedAsset.creationPlace,
 				associatedModels: resultantModels, // Use the updated array
 			},
 		}).then(res => {
-			if (res?.data?.upsertCustomAssetInfo) {
-				const { success, message } = res.data.upsertCustomAssetInfo;
+			if (res?.data?.upsertAssociatedModels) {
+				const { success, message } = res.data.upsertAssociatedModels;
 				if (success) {
 					Loader.successToast(toastType, message);
 				} else Loader.errorToast(toastType, message);
