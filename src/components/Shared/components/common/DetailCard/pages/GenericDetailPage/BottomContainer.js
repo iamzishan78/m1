@@ -23,32 +23,37 @@ const BottomContainer = () => {
 
 	const transformAssociatedModels = useCallback(
 		models => {
-			return models?.map((model, index) => ({
-				index: index + 1,
-				value: model.modelName,
-				associatedModel: model,
-				Icon: UnitIcon,
-				label: `Related ${model.modelName}`,
-				showCounts: true,
-				isMRTTable: true,
-				tableKey: 'DynamicAssoicationTable',
-				props: {
-					overrideMeta: {
-						esIndex: model.associationflatModel,
-						assetName: currentAsset?.tableName,
-						associatedAssetName: model.modelName,
-						maxTableHeight: tableHeight,
-						CustomToolBar: AssetAssociationToolbar,
-						defaultFilters: [{ field: 'descriptorObject._id.keyword', value: currentAssetRecord?._id }],
-						fetchDynamicSchema: {
-							variables: { tableName: currentAsset?.tableName },
-							tableName: currentAsset?.tableName,
-							isAssociatedModel: true,
-							associatedModel: model.modelName,
+			return models?.map((model, index) => {
+				const associationKey = model?.useDescriptorKey ? 'descriptorObject' : 'relatedObject';
+				const mrtDataMappingKey = model?.useDescriptorKey ? 'relatedObject' : 'descriptorObject';
+				return {
+					index: index + 1,
+					value: model.modelName,
+					associatedModel: model,
+					Icon: UnitIcon,
+					label: `Related ${model.modelName}`,
+					showCounts: true,
+					isMRTTable: true,
+					tableKey: 'DynamicAssoicationTable',
+					props: {
+						overrideMeta: {
+							esIndex: model.associationflatModel,
+							assetName: currentAsset?.tableName,
+							associatedAssetName: model.modelName,
+							maxTableHeight: tableHeight,
+							CustomToolBar: AssetAssociationToolbar,
+							defaultFilters: [{ field: `${associationKey}._id.keyword`, value: currentAssetRecord?._id }],
+							fetchDynamicSchema: {
+								variables: { tableName: currentAsset?.tableName },
+								tableName: currentAsset?.tableName,
+								isAssociatedModel: true,
+								associatedModel: model.modelName,
+								associationKey: mrtDataMappingKey,
+							},
 						},
 					},
-				},
-			}));
+				};
+			});
 		},
 		[currentAsset, currentAssetRecord, tableHeight]
 	);

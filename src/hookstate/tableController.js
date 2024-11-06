@@ -136,8 +136,9 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, 
 	const customAsset = result?.data?.getCustomAssetInfo?.asset;
 	let columns = customAsset?.modelKeys || [];
 
+	let associatedModel = {};
 	if (fetchDynamicSchema.isAssociatedModel) {
-		const associatedModel = customAsset.associatedModels.find(
+		associatedModel = customAsset.associatedModels.find(
 			model => model.modelName === fetchDynamicSchema.associatedModel
 		);
 		columns = associatedModel?.modelKeys || [];
@@ -149,7 +150,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, 
 		.map((item, index) => {
 			let key, modelName;
 			if (fetchDynamicSchema.isAssociatedModel) {
-				key = `relatedObject.${item.mappingKey}`;
+				key = `${fetchDynamicSchema?.associationKey || 'relatedObject'}.${item.mappingKey}`;
 				modelName = fetchDynamicSchema.associatedModel;
 			} else {
 				key = item.mappingKey;
