@@ -37,6 +37,8 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		let sort = tableStateValues.sorting[0]
 			? {
 					field: (() => {
+						if (tableStateValues.sorting[0].field) return tableStateValues.sorting[0].field;
+
 						const sortingId = tableStateValues.sorting[0].id;
 						const matchingSchema = TableSchema.find(val => (val.accessorKey || val.id) === sortingId);
 
@@ -52,6 +54,8 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		if (metaField?.isCustom) {
 			sort.unmapped_type = 'keyword';
 		}
+
+		console.log('🚀 ~ callQuery ~ sort:', sort);
 
 		const filters = [...(tableMeta?.defaultFilters || []), ...(tableMeta?.filters || [])];
 

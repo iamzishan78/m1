@@ -1,4 +1,5 @@
 import { CommonSchema } from './common_schema';
+import { Summarize } from '@mui/icons-material';
 
 const esIndex = 'shapetracts_flat';
 
@@ -11,6 +12,41 @@ const AcerageSummaryMeta = {
 		pageSize: 25,
 	},
 	defaultSort: { field: '_ts', order: 'asc' },
+	gridViewSettings: {
+		label: 'Acerage Summary',
+		module: 'Acerage Summary',
+		Icon: Summarize,
+		defaultView: {
+			name: 'All Acerage Summary',
+			type: 'Default',
+		},
+		handleDefaultView: (view, user) => {
+			switch (view?.name) {
+				case 'My Acerage Summary':
+					view.filters[0].value = user._id;
+					break;
+
+				case 'Recently Added':
+					view.filters = [];
+					view.sorting = [{ field: '_ts', desc: true }];
+					break;
+
+				case 'Recently Modified':
+					view.filters = [];
+					view.sorting = [{ field: 'flatSyncAt', desc: true }];
+					break;
+
+				default:
+					break;
+			}
+
+			return view;
+		},
+		cssOverride: {
+			top: '263px',
+			left: '19px',
+		},
+	},
 	maxTableHeight: 'calc(100vh - 350px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,

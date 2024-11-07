@@ -4,6 +4,7 @@ import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import { AgreementTypes } from './agreement_schema';
 import { formatDate } from 'components/Shared/functions';
 import ExhibitAToolbar from '../TablesOverride/ExhibitATable/ExhibitAToolbar';
+import { Summarize } from '@mui/icons-material';
 
 const esIndex = 'shapetracts_flat';
 
@@ -23,6 +24,41 @@ const ExhibitAMeta = {
 		},
 	],
 	CustomToolBar: ExhibitAToolbar,
+	gridViewSettings: {
+		label: 'Exhibit A',
+		module: 'Exhibit A',
+		Icon: Summarize,
+		defaultView: {
+			name: 'All Exhibit A',
+			type: 'Default',
+		},
+		handleDefaultView: (view, user) => {
+			switch (view?.name) {
+				case 'My Exhibit A':
+					view.filters[0].value = user._id;
+					break;
+
+				case 'Recently Added':
+					view.filters = [];
+					view.sorting = [{ field: '_ts', desc: true }];
+					break;
+
+				case 'Recently Modified':
+					view.filters = [];
+					view.sorting = [{ field: 'flatSyncAt', desc: true }];
+					break;
+
+				default:
+					break;
+			}
+
+			return view;
+		},
+		cssOverride: {
+			top: '198px',
+			left: '19px',
+		},
+	},
 	maxTableHeight: 'calc(100vh - 290px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
