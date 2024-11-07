@@ -25,7 +25,7 @@ const ExhibitAMeta = {
 	CustomToolBar: ExhibitAToolbar,
 	maxTableHeight: 'calc(100vh - 290px)',
 	isInFiniteScroll: true,
-	columnVirtualization: false,
+	columnVirtualization: true,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,

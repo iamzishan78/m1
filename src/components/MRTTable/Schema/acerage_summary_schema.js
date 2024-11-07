@@ -13,7 +13,7 @@ const AcerageSummaryMeta = {
 	defaultSort: { field: '_ts', order: 'asc' },
 	maxTableHeight: 'calc(100vh - 350px)',
 	isInFiniteScroll: true,
-	columnVirtualization: false,
+	columnVirtualization: true,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
