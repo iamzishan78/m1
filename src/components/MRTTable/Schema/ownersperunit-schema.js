@@ -119,6 +119,7 @@ const OwnersPerUnitMeta = {
 		parentRecord: { key: 'shape._id' }
 	},
 	defaultFlterMode: 'multiselect',
+	isShowActionMenuFirst: true,
 	TableSchema: [
 		{
 			...CommonSchema.MONGO_ID,
@@ -673,13 +674,15 @@ const OwnersPerUnitMeta = {
 
 		{
 			...CommonSchema.ACTION_COLUMN,
+			showInLast: false,
+			size: 80,
 			name: 'actionMenu',
 			accessorKey: 'actionMenu',
 			Cell: ({ row }) => {
-				const id = row.getValue('_id');
 				const name = row.getValue('name');
+				const contactId = row.getValue('ownerEntity');
 
-				return <ContactActionMenu id={id} name={name} esIndex={esIndex} dialogType="dialog" />;
+				return <ContactActionMenu id={contactId} name={name} esIndex={esIndex} dialogType="dialog" />;
 			},
 		},
 	],
