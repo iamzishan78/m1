@@ -10,6 +10,7 @@ export const globalInitialState = {
 	layers: [],
 	panelItems: [],
 	emptyGroups: [],
+	globalSearch: '',
 	universalLoader: false,
 	layerLoading: {},
 	user: null,

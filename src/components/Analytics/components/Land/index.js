@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { Divider, makeStyles, Tab, Tabs, withStyles } from '@material-ui/core';
 import AcerageDetailsTabPanel from './AcerageDetails';
 import WellMasterTabPanel from './WellMaster';
-import MRTTable from 'components/MRTTable';
+import { globalStateController } from 'hookstate/globalStateController';
+import AcerageSummary from './AcerageSummary';
+import ExhibitA from './ExhibitA';
 
 const useStyles = makeStyles(theme => ({
 	mainTabContainer: {
@@ -77,6 +79,7 @@ export default function LandAnalytics() {
 					onChange={(event, tab) => {
 						setTab(tab);
 						window.setStateApp(state => ({ ...state, landAnalyticsSearchQuery: '' }));
+						globalStateController.updateState({ globalSearch: '' });
 					}}
 					aria-label="ant example"
 				>
@@ -86,8 +89,8 @@ export default function LandAnalytics() {
 					<StyledTab label="Well Master" />
 				</StyledTabs>
 			</div>
-			{tab === 0 && <MRTTable name={'ExhibitATable'} />}
-			{tab === 1 && <MRTTable name={'AcerageSummaryTable'} />}
+			{tab === 0 && <ExhibitA />}
+			{tab === 1 && <AcerageSummary />}
 			{tab === 2 && <AcerageDetailsTabPanel />}
 			{tab === 3 && <WellMasterTabPanel />}
 			{/* <AnalyticsCards cards={cards} /> */}
