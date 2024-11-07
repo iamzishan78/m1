@@ -85,10 +85,10 @@ const viewOptions = [
 		label: 'All Views',
 		value: 'views',
 	},
-	// {
-	//     label: 'Favorites',
-	//     value: 'favorites',
-	// },
+	{
+		label: 'Favorites',
+		value: 'favorites',
+	},
 ];
 
 function MapViewOptions({ handleDefaultView, tableKey, allMapViews, defaultView, fetchMapViews }) {
@@ -120,7 +120,7 @@ function MapViewOptions({ handleDefaultView, tableKey, allMapViews, defaultView,
 		if (selectedTab === 'views') {
 			setFilterMapView(JSON.parse(JSON.stringify(allMapViews)));
 		} else if (selectedTab === 'favorites') {
-			const data = allMapViews.filter(view => view.favouriteBy?.includes(getUser?._id));
+			const data = allMapViews.filter(view => view.isFavourite);
 			setFilterMapView(data);
 		} else {
 			setFilterMapView([]);
@@ -197,34 +197,6 @@ function MapViewOptions({ handleDefaultView, tableKey, allMapViews, defaultView,
 							</div>
 						))}
 					</div>
-
-					<Accordion defaultExpanded style={{ marginTop: 20 }}>
-						<AccordionSummary
-							expandIcon={<KeyboardArrowDownIcon />}
-							aria-controls="panel1a-content"
-							id="panel1a-header"
-							className={classes.summary}
-						>
-							Standard
-						</AccordionSummary>
-						<AccordionDetails className={classes.details}>
-							{filterMapView.map(
-								view =>
-									view.type === 'Default' && (
-										<View
-											view={view}
-											setEditMapView={setEditMapView}
-											setViewName={setViewName}
-											upsertMapView={upsertMapView}
-											userId={getUser?._id}
-											onClick={handleClick}
-											tableKey={tableKey}
-											defaultView={defaultView}
-										/>
-									)
-							)}
-						</AccordionDetails>
-					</Accordion>
 				</div>
 
 				<div style={{ flex: '1 1 auto', overflow: 'auto' }}>
@@ -384,15 +356,17 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 				<div style={{ cursor: 'pointer' }} onClick={() => onClick(view)}>
 					{view.name}
 				</div>
-				{view.favouriteBy?.includes(userId) && (
+				{view.isFavourite && (
 					<StarIcon
 						style={{ marginTop: '5px' }}
 						onClick={() => {
 							upsertMapView({
 								variables: {
-									_id: view._id,
-									userId,
-									toggleFavourite: true,
+									mapView: {
+										_id: view._id,
+										userId,
+										isFavourite: !view.isFavourite,
+									},
 								},
 								refetchQueries: ['getMapViews'],
 							}).then(res => {
@@ -476,26 +450,26 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 					</MenuItem>
 				)}
 
-				{/* <MenuItem
-                    style={{ width: '250px' }}
-                    onClick={() => {
-                        handleClose();
-                        upsertMapView({
-                            variables: {
-                                _id: view._id,
-                                userId,
-                                toggleFavourite: true,
-                            },
-                        }).then(
-                            res => {
-                                tableGlobalController.reInitialized();
-                            }
-                        );
-                        globalStateController.updateState({ mapView: { ...mapViewStateValues.mapView, showViewModal: false } });
-                    }}
-                >
-                    {view.favouriteBy?.includes(userId) ? 'Remove as favorite' : 'Set as favorite'}
-                </MenuItem> */}
+				<MenuItem
+					style={{ width: '250px' }}
+					onClick={() => {
+						handleClose();
+						upsertMapView({
+							variables: {
+								mapView: {
+									_id: view._id,
+									userId,
+									isFavourite: !view.isFavourite,
+								},
+							},
+						}).then(res => {
+							tableGlobalController.reInitialized();
+						});
+						globalStateController.updateState({ mapView: { ...mapViewStateValues.mapView, showViewModal: false } });
+					}}
+				>
+					{view.isFavourite ? 'Remove as favorite' : 'Set as favorite'}
+				</MenuItem>
 				{view.type !== 'Default' && (
 					<MenuItem
 						style={{ width: '250px' }}
