@@ -22,6 +22,7 @@ import AssociatedAgreements from "./AssociatedAgreements";
 import AssociatedContacts from "./AssociatedContacts";
 import { DocumentContext } from "../DocumentContext";
 import AssociatedChecks from "./AssociatedChecks";
+import AssociatedProperties from "./AssociatedProperties";
 
 const useStyles = makeStyles({
   drawer: {
@@ -172,6 +173,8 @@ export default function DocumentDrawer(props) {
     shapes,
     getChecksFromDocument,
     checks,
+    getPropertiesFromDocument,
+    properties,
   } = React.useContext(DocumentContext);
   // Fetching wells from descriptor
   useEffect(() => {
@@ -194,6 +197,12 @@ export default function DocumentDrawer(props) {
       });
       // get checks on drawer load
       getChecksFromDocument({
+        variables: {
+          descriptorObject: stateApp.selectedDocument?._id,
+        },
+      });
+      // get properties on drawer load
+      getPropertiesFromDocument({
         variables: {
           descriptorObject: stateApp.selectedDocument?._id,
         },
@@ -423,6 +432,7 @@ export default function DocumentDrawer(props) {
               contactsCount={contacts?.length}
               shapesCount={shapes?.length}
               checksCount={checks?.length}
+              propertiesCount={properties?.length}
             />
           )}
           <div className={!props.isRelatedDocuments ? classes.detailsFileWrapper : ""}>
@@ -454,6 +464,8 @@ export default function DocumentDrawer(props) {
             {activePanel === "Contacts" && <AssociatedContacts />}
             {/* revenue statements tab in document detail panel */}
             {activePanel === "Revenue Statements" && <AssociatedChecks />}
+            {/* revenue statements tab in document detail panel */}
+            {activePanel === "Related Properties" && <AssociatedProperties />}
           </div>
         </div>
       </div>

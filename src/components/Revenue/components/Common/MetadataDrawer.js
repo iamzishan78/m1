@@ -239,7 +239,7 @@ export default function MetadataDrawer(props) {
 	}, [files, uploadedFiles, viewFiles]);
 
 	useEffect(() => {
-		const owner = props.data.metaOwner?._id ?? props.data.owner;
+		const owner = props.data?.metaOwner?._id ?? props.data?.owner; // null checks to avoid crashing
 		if (owner) {
 			setOwnerId(owner);
 		}
@@ -287,7 +287,7 @@ export default function MetadataDrawer(props) {
 						<div style={{ marginTop: 10 }}>
 							<FormControl variant="outlined" fullWidth size="small">
 								{isOwner && targetLabel === 'Shape' && (
-									<ShapeOwnerInput data={data} shapeType={shapeType} shapeData={shapeData} label='Owner'/>
+									<ShapeOwnerInput data={data} shapeType={shapeType} shapeData={shapeData} label="Owner" />
 								)}
 								{isOwner && targetLabel !== 'Shape' && (
 									<UsersListWithIcon

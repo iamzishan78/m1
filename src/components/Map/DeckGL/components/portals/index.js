@@ -12,7 +12,6 @@ import UdLayerCardProvider from 'components/UdLayerCard/UdLayerCardProvider';
 import LayerSelectionPopup from 'components/Map/components/popup/LayerSelectionPopup';
 import { popupController } from 'hookstate/popupStateController';
 import { globalStateController } from 'hookstate/globalStateController';
-import { drawController } from 'hookstate/drawStateController';
 import WellClick from './WellClick';
 import PermitClick from './PermitClick';
 import { layerController } from 'hookstate/layerStateController';
@@ -31,22 +30,24 @@ function Portals({ hideShape }) {
 		'selectedUserDefinedLayer',
 		'layerSelectionPopup',
 		'selectionLayers',
+		'coordinate',
 	]);
 
 	const popupVals = popupState.stateValues;
 
-	const drawState = drawController.useState(['shapeEdit']);
-
-	// Set the shape subtitle
 	const commonSahpeSubTitle = useMemo(() => {
-		let shapeSubtitle = '';
-		if (popupVals.selectedShape) { // For agreemennt and unit
-			shapeSubtitle = `${popupVals.selectedShape.originalProperties.County || ''}, ${popupVals.selectedShape.originalProperties.State || ''}`;
-		} else if (popupVals.selectedParcel) { // For parcel
-			shapeSubtitle = `${popupVals.selectedParcel.originalProperties.County || ''}, ${popupVals.selectedParcel.originalProperties.State || ''}`;
+		const getSubtitle = ({ County = '', State = '' } = {}) => `${County}, ${State}`.trim();
+
+		if (popupVals.selectedShape?.originalProperties) {
+			return getSubtitle(popupVals.selectedShape.originalProperties);
 		}
-		return shapeSubtitle;
-		},[popupVals.selectedShape, popupVals.selectedParcel]);
+
+		if (popupVals.selectedParcel?.originalProperties) {
+			return getSubtitle(popupVals.selectedParcel.originalProperties);
+		}
+
+		return '';
+	}, [popupVals.selectedShape, popupVals.selectedParcel]);
 
 	const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
 
@@ -63,8 +64,8 @@ function Portals({ hideShape }) {
 			onCompleted: () => {
 				globalStateController.updateState({ reFetchLayer: layer });
 			},
-		}).then((res) => {
-			layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)
+		}).then(res => {
+			layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer);
 		});
 	};
 
@@ -107,11 +108,12 @@ function Portals({ hideShape }) {
 			popupOpen: true,
 		});
 	}, [
-		popupState.selectedWell,
+		popupVals.selectedWell,
 		// popupState.selectedShape,
 		// popupState.selectedPermit,
 		// popupState.selectedParcel,
-		popupState.selectedUserDefinedLayer,
+		popupVals.selectedUserDefinedLayer,
+		popupVals.expandedCard,
 	]);
 
 	return (
@@ -140,27 +142,29 @@ function Portals({ hideShape }) {
 					/>
 				</div>
 			)}
-			{(popupVals.selectedShape?.shapeLabel || popupVals.selectedParcel?.shapeLabel) && popupVals.expandedCard && !hideShape && (
-				<div /* className={classes.draggable} */>
-					<ExpandableCardProvider
-						expanded
-						handleCloseExpandableCard={popupController.reset}
-						component={<ShapeDetailCard type={popupVals?.selectedShape?.type || popupVals?.selectedParcel?.type} />}
-						title={popupVals?.selectedShape?.shapeLabel || popupVals.selectedParcel?.shapeLabel}
-						subTitle={commonSahpeSubTitle}
-						parent="map"
-						position="relative"
-						cardTop={0}
-						cardLeft={0}
-						zIndex={99}
-						cardWidthExpanded="50vw"
-						cardHeightExpanded="calc(100vh - 64px)"
-						targetSourceId={popupVals.selectedShape?.id || popupVals.selectedParcel?.id}
-						targetLabel={popupVals.selectedShape?.type || "parcel"}
-						deleteCustomLayer={deleteCustomLayer}
-					/>
-				</div>
-			)}
+			{(popupVals.selectedShape?.shapeLabel || popupVals.selectedParcel?.shapeLabel) &&
+				popupVals.expandedCard &&
+				!hideShape && (
+					<div /* className={classes.draggable} */>
+						<ExpandableCardProvider
+							expanded
+							handleCloseExpandableCard={popupController.reset}
+							component={<ShapeDetailCard type={popupVals?.selectedShape?.type || popupVals?.selectedParcel?.type} />}
+							title={popupVals?.selectedShape?.shapeLabel || popupVals.selectedParcel?.shapeLabel}
+							subTitle={commonSahpeSubTitle}
+							parent="map"
+							position="relative"
+							cardTop={0}
+							cardLeft={0}
+							zIndex={99}
+							cardWidthExpanded="50vw"
+							cardHeightExpanded="calc(100vh - 64px)"
+							targetSourceId={popupVals.selectedShape?.id || popupVals.selectedParcel?.id}
+							targetLabel={popupVals.selectedShape?.type || 'parcel'}
+							deleteCustomLayer={deleteCustomLayer}
+						/>
+					</div>
+				)}
 			{popupVals.selectedPermit && popupVals.selectedPermit.hasOwnProperty('Lease') && (
 				<PortalD id="popupContainer">
 					{!popupVals.expandedCard && (
@@ -216,7 +220,7 @@ function Portals({ hideShape }) {
 								)}
 							</PortalD>
 						)}
-						{(popupVals?.selectedUserDefinedLayer?.file) && (
+						{popupVals?.selectedUserDefinedLayer?.file && (
 							<PortalD id="popupContainer">
 								<UdLayerCardProvider
 									parent="map"
@@ -237,6 +241,7 @@ function Portals({ hideShape }) {
 									parent="map"
 									handleCloseExpandableCard={popupController.reset}
 									selectionLayers={popupVals.selectionLayers}
+									coordinate={popupVals.coordinate}
 									zIndex={3000}
 									cardWidth="450px"
 									mouseX={0}

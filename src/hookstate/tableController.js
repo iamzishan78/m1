@@ -242,6 +242,22 @@ const tableESStateControllerHandler = state => ({
 			columnVirtualization,
 		});
 
+		// Set default pinning and ordering
+		const defaultColumnsOrdering = ['over-ride-checkbox', 'mrt-row-numbers', ...columnOrder];
+		const defaultColumnsPinning = {
+			left: [
+				...(pinnedFields.length > 0
+					? _.concat(['over-ride-checkbox', 'mrt-row-numbers'], _.slice(pinnedFields, 1))
+					: ['over-ride-checkbox', 'mrt-row-numbers']),
+			],
+		};
+
+		// Push action menu in first place
+		if(rest.isShowActionMenuFirst) {
+			defaultColumnsOrdering?.unshift('actionMenu');
+			defaultColumnsPinning?.left?.unshift('actionMenu')
+		}
+
 		state.merge({
 			...rest,
 			refetchQueries,
@@ -283,18 +299,8 @@ const tableESStateControllerHandler = state => ({
 			density,
 			advanceSearch,
 			enableHiding,
-			columnOrdering: formatedGridView?.columnOrdering
-				? formatedGridView.columnOrdering
-				: ['over-ride-checkbox', 'mrt-row-numbers', ...columnOrder],
-			columnPinning: formatedGridView?.columnPinning
-				? formatedGridView.columnPinning
-				: {
-						left: [
-							...(pinnedFields.length > 0
-								? _.concat(['over-ride-checkbox', 'mrt-row-numbers'], _.slice(pinnedFields, 1))
-								: ['over-ride-checkbox', 'mrt-row-numbers']),
-						],
-					},
+			columnOrdering: formatedGridView?.columnOrdering ? formatedGridView.columnOrdering : defaultColumnsOrdering,
+			columnPinning: formatedGridView?.columnPinning ? formatedGridView.columnPinning : defaultColumnsPinning,
 		});
 	},
 
@@ -350,6 +356,7 @@ const tableESStateControllerHandler = state => ({
 			const tableCss = {
 				...state.tableCss?.get({ noproxy: true }),
 				'& .MuiTableRow-root>:nth-child(2)': { marginLeft: `-${size}px !important` },
+				'& .MuiTableRow-root>:nth-child(1)': { width: `${size}px !important`}, // set width of first hidden column
 			};
 			state.columnPinning?.set(columnPinning);
 
