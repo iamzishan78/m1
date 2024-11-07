@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
-import { useHistory } from 'react-router-dom';
-
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { Grid, FormControlLabel, FormGroup, Switch, Box } from '@material-ui/core';
 
 import { getAssetFields } from '../../helpers';
-import { removeSpaces } from 'components/MRTTable/utils/helper';
 
 import { detailCardController } from 'hookstate/detailCardController';
 import { globalStateController } from 'hookstate/globalStateController';
@@ -195,7 +192,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function DetailInfo() {
-	let history = useHistory();
 	const classes = useStyles();
 	const [basicInfExp, setBasicInfExp] = useState(true);
 	const [showEmpty, setShowEmpty] = useState(true);
@@ -266,7 +262,7 @@ export default function DetailInfo() {
 
 				<Box display="flex" justifyContent="flex-end">
 					<ToggleEmptyFieldButton />
-					<h4
+					{/* <h4
 						className={classes.viewAll}
 						onClick={() => {
 							history.push(
@@ -275,7 +271,7 @@ export default function DetailInfo() {
 						}}
 					>
 						View All
-					</h4>
+					</h4> */}
 				</Box>
 			</Grid>
 
