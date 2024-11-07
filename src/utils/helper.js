@@ -5,7 +5,7 @@ import { wellsKeys } from 'utils/data';
 import { tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
 import { globalStateController } from 'hookstate/globalStateController';
 
-export const apolloClientEndpointDev = 'http://localhost:7072/api/m1graph';
+export const apolloClientEndpointDev = 'http://localhost:7071/api/m1graph';
 export const isDev = process.env.REACT_APP_NODE_ENV === 'development';
 const decimalForamtter = new Intl.NumberFormat('en-US', {
 	style: 'decimal',
