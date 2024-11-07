@@ -28,7 +28,7 @@ const AcerageSummaryMeta = {
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'state',
+			name: 'state.keyword',
 			accessorFn: row => row?.state,
 			id: 'state',
 			header: 'State',
@@ -36,7 +36,7 @@ const AcerageSummaryMeta = {
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'county',
+			name: 'county.keyword',
 			accessorFn: row => row?.county,
 			id: 'county',
 			header: 'County',
