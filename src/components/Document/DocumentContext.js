@@ -6,6 +6,7 @@ import { GETWELLSFROMDOCUMENTS } from "graphQL/useQueryGetWellsFromDocument";
 import { GETCONTACTSFROMDOCUMENTS } from "graphQL/useQueryGetContactsFromDocument";
 import { GET_AGREEMENTS_FROM_DOCUMENTS } from "graphQL/useQueryGetAgreementsFromDocument";
 import { GET_CHECKS_FROM_DOCUMENT } from "graphQL/useQueryGetChecksFromDocument";
+import { GET_PROPERTIES_FROM_DOCUMENT } from "graphQL/useQueryGetPropertiesFromDocument";
 
 const DocumentContext = createContext([{}, () => {}]);
 
@@ -14,6 +15,7 @@ const DocumentContextProvider = (props) => {
   const [contacts, setContacts] = useState([]);
   const [shapes, setShapes] = useState([]);
   const [checks, setChecks] = useState([]); // state to manage checks data
+  const [properties, setProperties] = useState([]); // state to manage properties data
 
   //Queries
   const [
@@ -48,6 +50,14 @@ const DocumentContextProvider = (props) => {
     nextFetchPolicy: "cache-first",
   });
 
+  const [
+    getPropertiesFromDocument,
+    { data: propertiesFromDocument, loading: getPropertiesLoading },
+  ] = useLazyQuery(GET_PROPERTIES_FROM_DOCUMENT, {
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
+  });
+
   useEffect(() => {
     const wellDescriptor = wellsFromDocument?.getWellDescriptors[0];
     setWells(wellDescriptor?.wells);
@@ -70,6 +80,13 @@ const DocumentContextProvider = (props) => {
     setChecks(checkDescriptor?.checks);
   }, [checksFromDocument]);
 
+  // useEffect to handle property data changes
+  useEffect(() => {
+    const propertyDescriptor =
+      propertiesFromDocument?.getPropertyDescriptors;
+    setProperties(propertyDescriptor?.properties);
+  }, [propertiesFromDocument]);
+
   const contextValue = {
     getWellsFromDocument,
     wells,
@@ -91,6 +108,11 @@ const DocumentContextProvider = (props) => {
     checksFromDocument,
     checks,
     setChecks,
+    getPropertiesFromDocument,
+    getPropertiesLoading,
+    propertiesFromDocument,
+    properties,
+    setProperties,
   };
 
   return (

@@ -1,390 +1,422 @@
-import React, { useState, useEffect, useContext } from "react";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { makeStyles } from "@material-ui/core/styles";
-import { Calendar, momentLocalizer, Views } from "react-big-calendar";
-import moment from "moment";
-import { uniqueId } from "lodash";
-import { useLazyQuery } from "@apollo/client";
-import { useHistory } from "react-router-dom";
+import React, { useState, useEffect, useContext } from 'react';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
+import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
+import moment from 'moment';
+import { uniqueId } from 'lodash';
+import { useLazyQuery } from '@apollo/client';
+import { useHistory } from 'react-router-dom';
 
-import { GETALLACTIVITIES } from "../../graphQL/useQueryGetAllActivities";
-import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
-import ActivitiesToolbar from "./components/ActivitiesToolbar";
-import ActivitiesEvent from "./components/ActivitiesEvent";
-import ActivitiesAppBar from "./components/ActivitiesAppbar";
-import { AppContext } from "../../AppContext";
-import ActivitiesSlideout from "./components/ActivitiesSlideout";
-import { GET_CONTACTS_FOR_ACTIVITY } from "graphQL/useQueryGetContactsForActivity";
-import { slidoutStateController } from "hookstate/slidoutStateController";
-import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
-import MRTTable from "components/MRTTable";
-import { tableController } from "hookstate/tableController";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import "./index.css";
+import { GETALLACTIVITIES } from '../../graphQL/useQueryGetAllActivities';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+import ActivitiesToolbar from './components/ActivitiesToolbar';
+import ActivitiesEvent from './components/ActivitiesEvent';
+import { AppContext } from '../../AppContext';
+import ActivitiesSlideout from './components/ActivitiesSlideout';
+import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
+import { slidoutStateController } from 'hookstate/slidoutStateController';
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+import MRTTable from 'components/MRTTable';
+import { tableController } from 'hookstate/tableController';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import './index.css';
 
 const localizer = momentLocalizer(moment);
 
 Date.prototype.addHours = function (h) {
-  this.setHours(this.getHours() + h * 60 * 60 * 1000);
-  return this;
+	this.setHours(this.getHours() + h * 60 * 60 * 1000);
+	return this;
 };
 
-const ActivitiesCalendar = (props) => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+const ActivitiesCalendar = props => {
+	const [selectedDate, setSelectedDate] = useState(new Date());
 
-  return (
-    <div>
-      <Calendar
-        drilldownView="month"
-        popup={true}
-        localizer={localizer}
-        events={props.events}
-        endAccessor={"end"}
-        startAccessor={"start"}
-        view={props.view}
-        date={selectedDate || new Date()}
-        style={{ height: "calc(100vh - 67px)", position: "relative" }}
-        step={60}
-        onSelectEvent={(e) => props.onEventClick(e)}
-        showMultiDayTimes
-        components={{
-          toolbar: (params) => <ActivitiesToolbar selectedDate={selectedDate} setSelectedDate={setSelectedDate} {...params} {...props} />,
-          event: (props) => <ActivitiesEvent isObligation={true} {...props} />,
-        }}
-      />
-    </div>
-  );
+	return (
+		<div>
+			<Calendar
+				drilldownView="month"
+				popup={true}
+				localizer={localizer}
+				events={props.events}
+				endAccessor={'end'}
+				startAccessor={'start'}
+				view={props.view}
+				date={selectedDate || new Date()}
+				style={{ height: 'calc(100vh - 67px)', position: 'relative' }}
+				step={60}
+				onSelectEvent={e => props.onEventClick(e)}
+				showMultiDayTimes
+				components={{
+					toolbar: params => (
+						<ActivitiesToolbar selectedDate={selectedDate} setSelectedDate={setSelectedDate} {...params} {...props} />
+					),
+					event: props => <ActivitiesEvent isObligation={true} {...props} />,
+				}}
+			/>
+		</div>
+	);
 };
 
-const useStyles = makeStyles((theme) => ({
-  progress: {
-    marginLeft: "30px",
-    verticalAlign: "middle",
-  },
-  root: {
-    marginTop: "65px",
-  },
-  table: {
-    borderTop: "solid 1px#E0E0E0",
-    maxHeight: "calc(100vh - 147px) !important",
-    overflowY: "auto",
-    "&::-webkit-scrollbar": {
-      width: "0.75em",
-      height: "0.75em",
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "#929292",
-      borderRadius: 10,
-    },
-  },
+const useStyles = makeStyles(theme => ({
+	progress: {
+		marginLeft: '30px',
+		verticalAlign: 'middle',
+	},
+	root: {
+		marginTop: '65px',
+	},
+	table: {
+		borderTop: 'solid 1px#E0E0E0',
+		maxHeight: 'calc(100vh - 147px) !important',
+		overflowY: 'auto',
+		'&::-webkit-scrollbar': {
+			width: '0.75em',
+			height: '0.75em',
+		},
+		'&::-webkit-scrollbar-thumb': {
+			backgroundColor: '#929292',
+			borderRadius: 10,
+		},
+	},
 }));
 
-const getFilterCondition = (e, activityFilterByType, activityFilterByTime, activityFilterByOwner, activityFilterByResponsibleParty) => {
-  const filterByTypeCondition = e.type === activityFilterByType || activityFilterByType === "all";
-  const filterByOwnerCondition = e.ownerId === activityFilterByOwner || activityFilterByOwner === "all";
-  const filterByResponsiblePartyCondition = e.responsibleParty === activityFilterByResponsibleParty || activityFilterByResponsibleParty === "all";
-  let filterByTimeCondition;
-  const today = new Date();
-  // const tomorrow = moment().add(1, "d");
-  // const nextWeekDay = moment().add(7, "d");
+const getFilterCondition = (
+	e,
+	activityFilterByType,
+	activityFilterByTime,
+	activityFilterByOwner,
+	activityFilterByResponsibleParty
+) => {
+	const filterByTypeCondition = e.type === activityFilterByType || activityFilterByType === 'all';
+	const filterByOwnerCondition = e.ownerId === activityFilterByOwner || activityFilterByOwner === 'all';
+	const filterByResponsiblePartyCondition =
+		e.responsibleParty === activityFilterByResponsibleParty || activityFilterByResponsibleParty === 'all';
+	let filterByTimeCondition;
+	const today = new Date();
+	// const tomorrow = moment().add(1, "d");
+	// const nextWeekDay = moment().add(7, "d");
 
-  switch (activityFilterByTime) {
-    case "all":
-      filterByTimeCondition = true;
-      break;
-    case "upcoming":
-      filterByTimeCondition = moment(e.start).isSameOrAfter(today, "day");
-      break;
-    case "overdue":
-      filterByTimeCondition = moment(e.end).isBefore(today, "day");
-      break;
-    case "open":
-      filterByTimeCondition = !e.isClosed;
-      break;
-    case "closed":
-      filterByTimeCondition = e.isClosed;
-      break;
-    default:
-      filterByTimeCondition = true;
-  }
+	switch (activityFilterByTime) {
+		case 'all':
+			filterByTimeCondition = true;
+			break;
+		case 'upcoming':
+			filterByTimeCondition = moment(e.start).isSameOrAfter(today, 'day');
+			break;
+		case 'overdue':
+			filterByTimeCondition = moment(e.end).isBefore(today, 'day');
+			break;
+		case 'open':
+			filterByTimeCondition = !e.isClosed;
+			break;
+		case 'closed':
+			filterByTimeCondition = e.isClosed;
+			break;
+		default:
+			filterByTimeCondition = true;
+	}
 
-  return filterByTypeCondition && filterByTimeCondition && filterByOwnerCondition && filterByResponsiblePartyCondition;
+	return filterByTypeCondition && filterByTimeCondition && filterByOwnerCondition && filterByResponsiblePartyCondition;
 };
 
 const Activities = () => {
-  const classes = useStyles();
-  let history = useHistory();
-  const [getAllActivities, { data: activitiesData, loading: activitiesLoading }] = useLazyQuery(GETALLACTIVITIES, {
-    fetchPolicy: `network-only`,
-  });
-  const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
-    fetchPolicy: `network-only`,
-  });
+	const classes = useStyles();
+	let history = useHistory();
+	const [getAllActivities, { data: activitiesData, loading: activitiesLoading }] = useLazyQuery(GETALLACTIVITIES, {
+		fetchPolicy: `network-only`,
+	});
+	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
+		fetchPolicy: `network-only`,
+	});
 
-  const [getOperatorList, { data: operatorList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+	const [getOperatorList, { data: operatorList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
 
+	const [getContactsForActivity, { data: getContactsForActivityResult }] = useLazyQuery(GET_CONTACTS_FOR_ACTIVITY, {
+		fetchPolicy: 'no-cache',
+	});
 
-  const [getContactsForActivity, { data: getContactsForActivityResult }] = useLazyQuery(GET_CONTACTS_FOR_ACTIVITY, {
-    fetchPolicy: "no-cache",
-  });
+	const [stateApp, setStateApp] = useContext(AppContext);
 
-  const [stateApp, setStateApp] = useContext(AppContext);
+	const [events, setEvents] = useState([]);
+	const [filteredEvents, setFilteredEvents] = useState([]);
+	const [activityFilterByType, setActivityFilterByType] = useState('all');
+	const [activityFilterByOwner, setActivityFilterByOwner] = useState('all');
+	const [activityFilterByResponsibleParty, setActivityFilterByResponsibleParty] = useState('all');
+	const [activityFilterByTime, setActivityFilterByTime] = useState('all');
+	const activitiesGridState = tableController('ActivitiesTable').useState(['filters']).stateValues;
+	const [view, setView] = React.useState(Views.MONTH);
 
-  const [events, setEvents] = useState([]);
-  const [filteredEvents, setFilteredEvents] = useState([]);
-  const [activityFilterByType, setActivityFilterByType] = useState("all");
-  const [activityFilterByOwner, setActivityFilterByOwner] = useState("all");
-  const [activityFilterByResponsibleParty, setActivityFilterByResponsibleParty] = useState("all");
-  const [activityFilterByTime, setActivityFilterByTime] = useState("all");
-  const activitiesGridState = tableController("ActivitiesTable").useState(["filters"]).stateValues;
-  const [view, setView] = React.useState(Views.MONTH);
+	const obligationOptions = React.useMemo(() => {
+		if (activitiesData?.activities) {
+			let obligationTypes = activitiesData?.activities.map(activity => activity.type);
+			obligationTypes = Array.from(new Set(obligationTypes));
 
-  const obligationOptions = React.useMemo(() => {
-    if (activitiesData?.activities) {
-      let obligationTypes = activitiesData?.activities.map(activity => activity.type);
-      obligationTypes = Array.from(new Set(obligationTypes));
+			let obligations = obligationTypes.filter(Boolean).map(type => ({
+				label: type,
+				value: type,
+			}));
+			obligations.unshift({ label: 'All', value: 'all' });
+			return obligations;
+		} else return [];
+	}, [activitiesData]);
 
-      let obligations = obligationTypes.filter(Boolean).map((type) => ({
-        label: type,
-        value: type,
-      }));
-      obligations.unshift({ label: "All", value: "all" });
-      return obligations;
-    } else return [];
-  }, [activitiesData]);
+	useEffect(() => {
+		getAllActivities({
+			variables: {
+				category: 'Obligation',
+			},
+		});
+		getAllMongoUsers();
+	}, []);
 
+	useEffect(() => {
+		if (events.length > 0) {
+			const eventId = history.location.pathname.split('/')[3];
+			if (eventId) {
+				setSelectedActivityId(eventId);
+				onModalOpen();
+			}
+		}
+	}, [events]);
 
-  useEffect(() => {
-    getAllActivities({
-      variables: {
-        category: "Obligation",
-      },
-    });
-    getAllMongoUsers();
-  }, []);
+	useEffect(() => {
+		if (activitiesData) {
+			setEvents(
+				activitiesData?.activities?.map(act => {
+					const start = new Date(act.dateTime);
+					const end = act.endDateTime ? new Date(act.endDateTime) : start;
+					return {
+						id: uniqueId(),
+						...act,
+						start,
+						end,
+						title: act.fullname,
+						notes: act.notes,
+						ownerId: act.ownerId,
+						type: act.type,
+						name: act.name,
+						// isContact: act.contactId,
+					};
+				})
+			);
+		}
+	}, [activitiesData]);
 
-  useEffect(() => {
-    if (events.length > 0) {
-      const eventId = history.location.pathname.split("/")[3];
-      if (eventId) {
-        setSelectedActivityId(eventId);
-        onModalOpen();
-      }
-    }
-  }, [events]);
+	useEffect(() => {
+		setFilteredEvents(
+			events.filter(e =>
+				getFilterCondition(
+					e,
+					activityFilterByType,
+					activityFilterByTime,
+					activityFilterByOwner,
+					activityFilterByResponsibleParty
+				)
+			)
+		);
+	}, [
+		events,
+		activityFilterByType,
+		activityFilterByTime,
+		activityFilterByOwner,
+		activityFilterByResponsibleParty,
+		view,
+	]);
 
-  useEffect(() => {
-    if (activitiesData) {
-      setEvents(
-        activitiesData?.activities?.map((act) => {
-          const start = new Date(act.dateTime);
-          const end = act.endDateTime ? new Date(act.endDateTime) : start;
-          return {
-            id: uniqueId(),
-            ...act,
-            start,
-            end,
-            title: act.fullname,
-            notes: act.notes,
-            ownerId: act.ownerId,
-            type: act.type,
-            name: act.name,
-            // isContact: act.contactId,
-          };
-        })
-      );
-    }
-  }, [activitiesData]);
+	useEffect(() => {
+		if (stateApp.selectedActivityId) {
+			setStateApp(() => ({
+				...stateApp,
+				selectedActivity: events.find(act => act._id === stateApp.selectedActivityId),
+			}));
+		} else {
+			setStateApp(() => ({ ...stateApp, selectedActivity: null }));
+		}
+	}, [stateApp.selectedActivityId]);
 
-  useEffect(() => {
-    setFilteredEvents(events.filter((e) => getFilterCondition(e, activityFilterByType, activityFilterByTime, activityFilterByOwner, activityFilterByResponsibleParty)));
-  }, [events, activityFilterByType, activityFilterByTime, activityFilterByOwner, activityFilterByResponsibleParty, view]);
+	useEffect(() => {
+		if (activitiesGridState) {
+			tableController('ActivitiesTable').clearFilters();
+			const filters = [
+				{ field: 'type.keyword', value: 'Expiration', notInclude: true },
+				{ field: 'type.keyword', value: 'Option to Extend', notInclude: true },
+			];
 
-  useEffect(() => {
-    if (stateApp.selectedActivityId) {
-      setStateApp(() => ({ ...stateApp, selectedActivity: events.find((act) => act._id === stateApp.selectedActivityId) }));
-    } else {
-      setStateApp(() => ({ ...stateApp, selectedActivity: null }))
-    }
-  }, [stateApp.selectedActivityId]);
+			if (activityFilterByType && activityFilterByType !== 'all') {
+				filters.push({ field: 'type.keyword', value: activityFilterByType });
+			}
+			if (activityFilterByType && activityFilterByOwner !== 'all') {
+				filters.push({ field: 'ownerId.keyword', value: activityFilterByOwner });
+			}
 
-  useEffect(() => {
-    if (activitiesGridState) {
-      tableController("ActivitiesTable").clearFilters();
-      const filters = [
-        { field: 'type.keyword', value: 'Expiration', notInclude: true },
-        { field: 'type.keyword', value: 'Option to Extend', notInclude: true },
-      ]
+			if (activityFilterByResponsibleParty && activityFilterByResponsibleParty !== 'all') {
+				filters.push({ field: 'responsibleParty.keyword', value: activityFilterByResponsibleParty });
+			}
+			const today = moment().format('yyyy-MM-DD');
+			switch (activityFilterByTime) {
+				case 'upcoming':
+					filters.push({
+						field: 'dateTime',
+						value: {
+							gte: `${today}T00:00:00.000Z`,
+						},
+						type: 'range',
+					});
+					break;
+				case 'overdue':
+					filters.push({
+						field: 'endDateTime',
+						value: {
+							lte: `${today}T00:00:00.000Z`,
+						},
+						type: 'range',
+					});
+					filters.push({ field: 'isClosed', value: 'false' });
+					break;
+				case 'open':
+					filters.push({
+						field: 'isClosed',
+						value: 'false',
+					});
+					break;
+				case 'closed':
+					filters.push({
+						field: 'isClosed',
+						value: 'true',
+					});
+					break;
 
-      if (activityFilterByType && activityFilterByType !== "all") {
-        filters.push({ field: "type.keyword", value: activityFilterByType })
-      }
-      if (activityFilterByType && activityFilterByOwner !== "all") {
-        filters.push({ field: "ownerId.keyword", value: activityFilterByOwner })
-      }
+				default:
+					break;
+			}
+			tableController('ObligationsTable').setFilters(filters);
+		}
+	}, [activityFilterByType, activityFilterByOwner, activityFilterByTime, activityFilterByResponsibleParty]);
 
-      if (activityFilterByResponsibleParty && activityFilterByResponsibleParty !== "all") {
-        filters.push({ field: "responsibleParty.keyword", value: activityFilterByResponsibleParty })
-      }
-      const today = moment().format("yyyy-MM-DD");
-      switch (activityFilterByTime) {
+	const onEventClick = event => {
+		window.history.pushState('', '', `/calendar/activities/${event._id}`);
+		setSelectedActivityId(event._id);
+		onModalOpen();
+	};
 
-        case "upcoming":
-          filters.push({
-            field: 'dateTime',
-            value: {
-              gte: `${today}T00:00:00.000Z`,
-            },
-            type: "range"
-          });
-          break;
-        case "overdue":
-          filters.push({
-            field: 'endDateTime',
-            value: {
-              lte: `${today}T00:00:00.000Z`,
-            },
-            type: "range"
-          });
-          filters.push({ field: "isClosed", value: 'false' });
-          break;
-        case "open":
-          filters.push({
-            field: "isClosed",
-            value: 'false'
-          });
-          break;
-        case "closed":
-          filters.push({
-            field: "isClosed",
-            value: 'true'
-          });
-          break;
+	const onModalOpen = () => {
+		slidoutStateController.showSlideout();
+		// setStateApp((stateApp) => ({
+		//   ...stateApp,
+		//   activityDialog: true,
+		// }));
+	};
 
-        default:
-          break;
-      }
-      tableController("ObligationsTable").setFilters(filters);
-    }
-  }, [activityFilterByType, activityFilterByOwner, activityFilterByTime, activityFilterByResponsibleParty])
+	const setSelectedActivityId = id => {
+		setStateApp(stateApp => ({
+			...stateApp,
+			selectedActivityId: id,
+		}));
+	};
 
-  const onEventClick = (event) => {
-    window.history.pushState("", "", `/calendar/activities/${event._id}`);
-    setSelectedActivityId(event._id);
-    onModalOpen();
-  };
+	useEffect(() => {
+		if (stateApp.selectedActivityId) {
+			setStateApp(() => ({
+				...stateApp,
+				selectedActivity: events.find(act => act._id === stateApp.selectedActivityId),
+			}));
+		} else {
+			setStateApp(() => ({ ...stateApp, selectedActivity: null }));
+		}
+	}, [stateApp.selectedActivityId]);
 
-  const onModalOpen = () => {
-    slidoutStateController.showSlideout()
-    // setStateApp((stateApp) => ({
-    //   ...stateApp,
-    //   activityDialog: true,
-    // }));
-  };
+	React.useEffect(() => {
+		getAllMongoUsers();
+	}, []);
 
-  const setSelectedActivityId = (id) => {
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      selectedActivityId: id,
-    }));
-  };
+	React.useEffect(() => {
+		getOperatorList({
+			variables: {
+				search: '*',
+				filterKey: 'operator.name.keyword',
+				esIndex: 'properties_flat',
+				size: 50,
+			},
+		});
+	}, []);
 
-  useEffect(() => {
-    if (stateApp.selectedActivityId) {
-      setStateApp(() => ({ ...stateApp, selectedActivity: events.find((act) => act._id === stateApp.selectedActivityId) }));
-    } else {
-      setStateApp(() => ({ ...stateApp, selectedActivity: null }))
-    }
-  }, [stateApp.selectedActivityId]);
+	const overrideMeta = {
+		defaultFilters: [{ field: 'category.keyword', value: 'Obligation' }],
+	};
 
-  React.useEffect(() => {
-    getAllMongoUsers();
-  }, []);
+	return (
+		<div className={classes.root}>
+			{activitiesLoading ? (
+				<CircularProgress className={classes.progress} size={80} disableShrink color="secondary" />
+			) : (
+				<>
+					{/* create a line break to avoid overlapping */}
+					<hr style={{ backgroundColor: 'transparent', border: 0, marginTop: '7vh' }} size={'4'} />
+					{stateApp.activityDisplayType === 'calendar' ? (
+						<ActivitiesCalendar
+							activityFilterByType={activityFilterByType}
+							setActivityFilterByType={setActivityFilterByType}
+							activityFilterByTime={activityFilterByTime}
+							setActivityFilterByTime={setActivityFilterByTime}
+							activityFilterByOwner={activityFilterByOwner}
+							setActivityFilterByOwner={setActivityFilterByOwner}
+							activityFilterByResponsibleParty={activityFilterByResponsibleParty}
+							setActivityFilterByResponsibleParty={setActivityFilterByResponsibleParty}
+							view={view}
+							obligationOptions={obligationOptions}
+							events={filteredEvents}
+							setView={setView}
+							onEventClick={onEventClick}
+							mongoUsers={userLists?.allMongoUsers}
+							activities={activitiesData?.activities}
+							operatorList={operatorList}
+							type="Obligation"
+						/>
+					) : (
+						<div>
+							<div
+								style={{
+									padding: '8px 0',
+								}}
+							>
+								<ActivitiesToolbar
+									activityFilterByType={activityFilterByType}
+									setActivityFilterByType={setActivityFilterByType}
+									activityFilterByTime={activityFilterByTime}
+									setActivityFilterByTime={setActivityFilterByTime}
+									activityFilterByOwner={activityFilterByOwner}
+									setActivityFilterByOwner={setActivityFilterByOwner}
+									activityFilterByResponsibleParty={activityFilterByResponsibleParty}
+									setActivityFilterByResponsibleParty={setActivityFilterByResponsibleParty}
+									view={view}
+									obligationOptions={obligationOptions}
+									setView={setView}
+									events={filteredEvents}
+									onEventClick={onEventClick}
+									mongoUsers={userLists?.allMongoUsers}
+									activities={activitiesData?.activities}
+									operatorList={operatorList}
+									type="Obligation"
+								/>
+							</div>
+							<div className={classes.table}>
+								<MRTTable name="ObligationsTable" overrideMeta={overrideMeta} />
+							</div>
+						</div>
+					)}
+					{/* <ActivitiesModal setSelectedActivityId={setSelectedActivityId} events={events} /> */}
 
-  React.useEffect(() => {
-    getOperatorList({
-      variables: {
-        search: "*",
-        filterKey: "operator.name.keyword",
-        esIndex: "properties_flat",
-        size: 50,
-      }
-    })
-  }, []);
-
-  const overrideMeta = {
-    defaultFilters: [
-      { field: "category.keyword", value: "Obligation" },
-    ],
-  }
-
-  return (
-    <div className={classes.root}>
-      {activitiesLoading ? (
-        <CircularProgress className={classes.progress} size={80} disableShrink color="secondary" />
-      ) : (
-        <>
-        	{/* create a line break to avoid overlapping */}
-          <hr style={{backgroundColor: "transparent", border: 0, marginTop: "7vh"}} size={"4"}/>
-          {stateApp.activityDisplayType === "calendar" ? (
-            <ActivitiesCalendar
-              activityFilterByType={activityFilterByType}
-              setActivityFilterByType={setActivityFilterByType}
-              activityFilterByTime={activityFilterByTime}
-              setActivityFilterByTime={setActivityFilterByTime}
-              activityFilterByOwner={activityFilterByOwner}
-              setActivityFilterByOwner={setActivityFilterByOwner}
-              activityFilterByResponsibleParty={activityFilterByResponsibleParty}
-              setActivityFilterByResponsibleParty={setActivityFilterByResponsibleParty}
-              view={view}
-              obligationOptions={obligationOptions}
-              events={filteredEvents}
-              setView={setView}
-              onEventClick={onEventClick}
-              mongoUsers={userLists?.allMongoUsers}
-              activities={activitiesData?.activities}
-              operatorList={operatorList}
-              type="Obligation"
-            />
-          ) : (
-            <div>
-              <div
-                style={{
-                  padding: "8px 0",
-                }}
-              >
-                <ActivitiesToolbar
-                  activityFilterByType={activityFilterByType}
-                  setActivityFilterByType={setActivityFilterByType}
-                  activityFilterByTime={activityFilterByTime}
-                  setActivityFilterByTime={setActivityFilterByTime}
-                  activityFilterByOwner={activityFilterByOwner}
-                  setActivityFilterByOwner={setActivityFilterByOwner}
-                  activityFilterByResponsibleParty={activityFilterByResponsibleParty}
-                  setActivityFilterByResponsibleParty={setActivityFilterByResponsibleParty}
-                  view={view}
-                  obligationOptions={obligationOptions}
-                  setView={setView}
-                  events={filteredEvents}
-                  onEventClick={onEventClick}
-                  mongoUsers={userLists?.allMongoUsers}
-                  activities={activitiesData?.activities}
-                  operatorList={operatorList}
-                  type="Obligation"
-                />
-              </div>
-              <div className={classes.table}>
-                <MRTTable name="ObligationsTable" overrideMeta={overrideMeta} />
-              </div>
-            </div>
-          )}
-          {/* <ActivitiesModal setSelectedActivityId={setSelectedActivityId} events={events} /> */}
-
-          <ActivitiesSlideout activityId={stateApp.selectedActivity?._id} setSelectedActivityId={setSelectedActivityId} events={events} getContactsForActivity={getContactsForActivity} type="obligations" />
-        </>
-      )}
-    </div>
-  );
+					<ActivitiesSlideout
+						activityId={stateApp.selectedActivity?._id}
+						setSelectedActivityId={setSelectedActivityId}
+						events={events}
+						getContactsForActivity={getContactsForActivity}
+						type="obligations"
+					/>
+				</>
+			)}
+		</div>
+	);
 };
 
 export default Activities;

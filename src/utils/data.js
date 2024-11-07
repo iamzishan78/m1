@@ -668,6 +668,7 @@ export const bypassTenants = [
 	'localhost',
 	// "m1Preview",
 	'm1dev',
+	'm1cypress',
 	'm1Staging',
 	// "m1Production",
 	// "m1Development",
@@ -691,4 +692,4 @@ export const OWNERTYPE = {
 	CORPORATION: 'CORPORATION',
 };
 
-export const MapFeatureTenants = ['m1dev', 'frontier', 'localhost']
+export const MapFeatureTenants = ['m1dev', 'frontier', 'localhost'];

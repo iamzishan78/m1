@@ -126,9 +126,11 @@ export default function DocumentAssociation({
   addFileLoading,
   deleteFileLoading,
   updateDocumentLoading,
+  sort = {},
 }) {
   // Initials
   const classes = useStyles();
+  const tenantName = window.sessionStorage.getItem("tenantName")
 
   // States
   const [addSelection, setAddSelection] = useState(false);
@@ -198,6 +200,7 @@ export default function DocumentAssociation({
                 getSelectedItem(selection, relatedObjectType);
               }}
               fieldName={title}
+              sort={sort}
             />
           </Grid>
         )}
@@ -232,7 +235,7 @@ export default function DocumentAssociation({
                   <a
                     style={{ color: "inherit" }}
                     className={classes.Link}
-                    href="_blank"
+                    href={`${href ? href.replace("{ID}",shape._id.toLowerCase()).replace("{TENANT}", tenantName) : "_blank"}`}
                     onClick={(e) => {
                       e.preventDefault();
                       navigateTo(shape);
