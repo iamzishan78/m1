@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { Grid, FormControlLabel, FormGroup, Switch, Box } from '@material-ui/core';
 
-import { getAssetFields } from '../../helpers';
+import { getAssetFields, getNonEmptyFields } from '../../helpers';
 
 import { detailCardController } from 'hookstate/detailCardController';
 import { globalStateController } from 'hookstate/globalStateController';
 
-import FieldContent from '../../Fields/FieldContent';
+import CommonSummaryFieldsComponent from '../../CommonSummaryFields';
 
 const AntSwitch = withStyles(theme => ({
 	root: {
@@ -126,7 +126,6 @@ const useStyles = makeStyles(theme => ({
 		borderTop: '2px solid #C9C9C9',
 		color: '#757575',
 		width: '100%',
-		overflow: 'overlay',
 		maxHeight: '45.25vh',
 		'& p': {
 			wordWrap: 'break-word',
@@ -196,7 +195,6 @@ export default function DetailInfo() {
 	const [basicInfExp, setBasicInfExp] = useState(true);
 	const [showEmpty, setShowEmpty] = useState(true);
 	const [selectedTab, setSelectedTab] = useState('Basic Info');
-	const [loading, setLoading] = useState(false);
 
 	const {
 		globalStateValues: { currentAsset },
@@ -205,14 +203,6 @@ export default function DetailInfo() {
 	const {
 		stateValues: { currentAssetRecord },
 	} = detailCardController.useState(['currentAssetRecord']);
-
-	useEffect(() => {
-		setLoading(true);
-		async function update() {
-			setLoading(false);
-		}
-		update();
-	}, [currentAssetRecord]);
 
 	const handleEmptyFields = () => {
 		setShowEmpty(!showEmpty);
@@ -243,6 +233,7 @@ export default function DetailInfo() {
 
 	const tabs = ['Basic Info'];
 	const nonSummaryFields = getAssetFields(currentAsset, false);
+	const nonEmptyFields = getNonEmptyFields(currentAssetRecord, nonSummaryFields);
 
 	return (
 		<div className={classes.root}>
@@ -278,47 +269,11 @@ export default function DetailInfo() {
 			{selectedTab === 'Basic Info' && (
 				<>
 					<Grid item xs={12} container className={classes.dataSect} spacing={0}>
-						{!loading &&
-							nonSummaryFields?.map((field, key) => {
-								const mappingKey = field.mappingKey;
-								const fieldContent = { [mappingKey]: currentAssetRecord?.[mappingKey] };
-
-								if (showEmpty) {
-									return (
-										<React.Fragment>
-											<Grid item xs={3} className="fieldName">
-												<p className="dataLabels">{field?.label}</p>
-											</Grid>
-											<Grid item xs={9}>
-												<FieldContent id={currentAssetRecord?._id} content={fieldContent} name={mappingKey} />
-											</Grid>
-										</React.Fragment>
-									);
-								} else {
-									if (
-										currentAssetRecord?.[mappingKey] !== undefined &&
-										currentAssetRecord?.[mappingKey] !== null &&
-										currentAssetRecord?.[mappingKey] !== `""` &&
-										currentAssetRecord?.[mappingKey] !== '' &&
-										currentAssetRecord?.[mappingKey] !== '' &&
-										currentAssetRecord?.[mappingKey].length !== 0 &&
-										currentAssetRecord?.[mappingKey] != null
-									) {
-										return (
-											<React.Fragment>
-												<Grid item xs={3} className="fieldName">
-													<p className="dataLabels">{field?.label}</p>
-												</Grid>
-												<Grid item xs={9}>
-													<FieldContent id={currentAssetRecord?._id} content={fieldContent} name={mappingKey} />
-												</Grid>
-											</React.Fragment>
-										);
-									}
-								}
-								// Return null if nothing needs to be rendered
-								return null;
-							})}
+						{showEmpty ? (
+							<CommonSummaryFieldsComponent formFields={nonSummaryFields} isBasicInfo={true} />
+						) : (
+							<CommonSummaryFieldsComponent formFields={nonEmptyFields} isBasicInfo={true} />
+						)}
 					</Grid>
 					<Grid item xs={12}>
 						<h4
