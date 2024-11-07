@@ -1,6 +1,7 @@
 import React, { memo } from "react";
 import { Button } from "@material-ui/core";
 import { detailCardController } from "hookstate/detailCardController";
+import { PaymentRightDialog } from "./RightDialog";
 
 // This component is used in the RelatedPaymentsTable component for the toolbar
 function RelatedPaymentsToolbar({ table, tableKey }) {
@@ -10,11 +11,12 @@ function RelatedPaymentsToolbar({ table, tableKey }) {
                 variant="contained"
                 color="primary"
                 onClick={() => {
-                    detailCardController.updateState({ drawer: "pymnt" })
+                    detailCardController.updateState({ drawer: "paymentDialog" })
                 }}
             >
                 + ADD Payment
             </Button>
+            <PaymentRightDialog/>
         </>
     );
 }

@@ -1,7 +1,6 @@
 import React from 'react';
 import { detailCardController } from 'hookstate/detailCardController';
 import AddNewRelatedData from 'components/Land/components/Common/AddNewRelatedData';
-import { get } from 'lodash';
 import { tableGlobalController } from 'hookstate/tableController';
 import { useMutation } from '@apollo/client';
 import { ADD_PAYMENT_CONTACT_DESCRIPTOR } from 'graphQL/useMutationAddPaymentContactDescriptor';
@@ -41,16 +40,6 @@ export const PayeeRightDialog = () => {
 	};
 
 	return (
-		<>
-			{drawer === 'payeeDialog' && (
-				<AddNewRelatedData
-					title="Payee"
-					addNewData={addNewPayee}
-					formName={drawer}
-					relatedObjectType="Shape"
-					relatedObjectId={get(agreementDetailsValues, 'customLayer._id')}
-				/>
-			)}
-		</>
+		<>{drawer === 'payeeDialog' && <AddNewRelatedData title="Payee" addNewData={addNewPayee} formName={drawer} />}</>
 	);
 };

@@ -1,7 +1,6 @@
 import React from 'react';
 import { detailCardController } from 'hookstate/detailCardController';
 import AddNewRelatedData from 'components/Land/components/Common/AddNewRelatedData';
-import { get } from 'lodash';
 import { tableGlobalController } from 'hookstate/tableController';
 import { useMutation } from '@apollo/client';
 import { ADD_BILLING_PARTY_CONTACT_DESCRIPTOR } from 'graphQL/useMutationAddPaymentContactDescriptor';
@@ -43,13 +42,7 @@ export const BillingPartiesRightDialog = () => {
 	return (
 		<>
 			{drawer === 'billingPartiesDialog' && (
-				<AddNewRelatedData
-					title="Billing Party"
-					addNewData={addNewBillingParty}
-					formName={drawer}
-					relatedObjectType="Shape"
-					relatedObjectId={get(agreementDetailsValues, 'customLayer._id')}
-				/>
+				<AddNewRelatedData title="Billing Party" addNewData={addNewBillingParty} formName={drawer} />
 			)}
 		</>
 	);

@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
@@ -6,12 +6,6 @@ import { useStyles as customStyles } from '../style';
 
 import MultiGridsComponent from 'components/Shared/MultiGridsComponent';
 import { paymentGridsInitialData } from 'utils/data';
-import { AppContext } from 'AppContext';
-import get from 'lodash/get';
-import AddNewRelatedData from 'components/Land/components/Common/AddNewRelatedData';
-import { useMutation } from '@apollo/client';
-import { paymentFieldsData } from 'components/Land/components/Agreements/detailComponents/summary/data';
-import { ADD_PAYMENT } from 'graphQL/useMutationAddPayment';
 import { detailCardController } from 'hookstate/detailCardController';
 import MRTTable from 'components/MRTTable';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
@@ -73,7 +67,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const RelatedPayments = () => {
-	const [stateApp] = useContext(AppContext);
 	const classes = useStyles();
 	const customClasses = customStyles();
 	const agreementDetailState = detailCardController.useState(['customLayer', 'drawer']);
@@ -81,15 +74,8 @@ const RelatedPayments = () => {
 	const paymentsCount = tableController('RelatedPaymentsTable')?.useState(['data']);
 	const agreementDetailsValues = agreementDetailState.stateValues;
 	const tableGlobalValues = tableGlobalState.stateValues;
-	const drawer = agreementDetailsValues.drawer;
 	const paymentMultiGrid = tableGlobalValues.paymentMultiGrid;
 	const { paymentId } = paymentMultiGrid || {};
-	const relatedObjectId = get(agreementDetailsValues, 'customLayer._id');
-
-	const [addPayment] = useMutation(ADD_PAYMENT, {
-		refetchQueries: ['getESSimpleSearch'],
-		awaitRefetchQueries: true,
-	});
 
 	// override meta for related payments
 	const overrideMetaRelatedPayments = useMemo(
@@ -99,24 +85,6 @@ const RelatedPayments = () => {
 		}),
 		[agreementDetailsValues]
 	);
-
-	const addNewPayment = (newData, setLoader) => {
-		setLoader(true);
-		addPayment({
-			variables: {
-				payment: {
-					...newData,
-					userId: stateApp.user.mongoId,
-					relatedObjectId: relatedObjectId,
-					relatedObjectType: 'Shape',
-				},
-			},
-		}).then(() => {
-			detailCardController.updateState({ drawer: '' });
-			tableGlobalController.refetch();
-			setLoader(false);
-		});
-	};
 
 	return (
 		<>
@@ -160,16 +128,6 @@ const RelatedPayments = () => {
 					</AccordionDetails>
 				</Accordion>
 			</div>
-
-			{drawer === 'pymnt' && (
-				<AddNewRelatedData
-					title="Payments"
-					addNewData={addNewPayment}
-					payeeFieldsData={paymentFieldsData}
-					relatedObjectType="Shape"
-					relatedObjectId={get(agreementDetailsValues, 'customLayer._id')}
-				/>
-			)}
 		</>
 	);
 };

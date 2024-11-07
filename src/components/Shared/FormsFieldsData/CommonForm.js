@@ -7,6 +7,8 @@ import RadioGroup from 'components/Shared/FormsFieldsData/Fields/RadioGroup';
 import { sideDialogController } from 'hookstate/sideDialogController';
 import { Controller } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
+import AutoCompleteNewOption from './Fields/AutoCompleteNewOption';
+import DatePicker from './Fields/DatePicker';
 
 function CommonForm({ formSchema, control, watch, dialogKey }) {
 	return (
@@ -61,6 +63,10 @@ function CommonForm({ formSchema, control, watch, dialogKey }) {
 						</Grid>
 					) : item.renderField === 'radioButton' ? (
 						<RadioGroup key={index} item={item} control={control} dialogKey={dialogKey} />
+					) : item.renderField === 'autoCompleteNewOption' ? (
+						<AutoCompleteNewOption item={item} control={control} />
+					) : item.renderField === 'datePicker' ? (
+						<DatePicker item={item} control={control} />
 					) : (
 						<TextFieldComponent key={index} item={item} control={control} watch={watch} />
 					)}

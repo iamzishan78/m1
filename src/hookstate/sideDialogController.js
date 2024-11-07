@@ -100,6 +100,18 @@ export const costAllocationState = {
 	amount: null,
 	status: null,
 };
+export const paymentState = {
+	paymentType: null,
+	startDate: null,
+	endDate: null,
+	frequency: null,
+	amount: null,
+	nextPayment: null,
+	companyShare: null,
+	responsibleParty: null,
+	assignedTo: null,
+	paymentStatus: null,
+};
 
 const initialStates = {
 	tractInterestDialog: tractInterestOwnerState,
@@ -108,6 +120,7 @@ const initialStates = {
 	payeeDialog: payeeState,
 	billingPartiesDialog: billingPartiesState,
 	costAllocationDialog: costAllocationState,
+	paymentDialog: paymentState,
 };
 
 export const sideDialogState = {};

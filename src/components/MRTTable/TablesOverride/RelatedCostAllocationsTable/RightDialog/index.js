@@ -1,7 +1,6 @@
 import React from 'react';
 import { detailCardController } from 'hookstate/detailCardController';
 import AddNewRelatedData from 'components/Land/components/Common/AddNewRelatedData';
-import { get } from 'lodash';
 import { tableGlobalController } from 'hookstate/tableController';
 import { useMutation } from '@apollo/client';
 import { ADD_PAYMENT_PROPERTY_DESCRIPTOR } from 'graphQL/useMutationAddPaymentContactDescriptor';
@@ -43,13 +42,7 @@ export const CostAllocationRightDialog = () => {
 	return (
 		<>
 			{drawer === 'costAllocationDialog' && (
-				<AddNewRelatedData
-					title="Cost Allocation"
-					addNewData={addNewCostAllocation}
-					formName={drawer}
-					relatedObjectType="Shape"
-					relatedObjectId={get(agreementDetailsValues, 'customLayer._id')}
-				/>
+				<AddNewRelatedData title="Cost Allocation" addNewData={addNewCostAllocation} formName={drawer} />
 			)}
 		</>
 	);

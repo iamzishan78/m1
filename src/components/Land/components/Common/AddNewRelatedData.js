@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import get from 'lodash/get';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -8,22 +7,13 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import { AppContext } from 'AppContext';
-
-import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from '@material-ui/core';
+import { CircularProgress, Dialog, DialogTitle, IconButton } from '@material-ui/core';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
-import { useLazyQuery } from '@apollo/client';
 
-import moment from 'moment';
-import { Clear } from '@material-ui/icons';
 
 // functions
 import { grey600, grey400 } from 'material-ui/styles/colors';
-import { Autocomplete } from '@material-ui/lab';
-import AutoCompleteESField from 'components/Shared/Forms/Fields/AutoCompleteESField';
 
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { detailCardController } from 'hookstate/detailCardController';
 import { useForm } from 'react-hook-form';
 import { sideDialogController } from 'hookstate/sideDialogController';
@@ -31,6 +21,7 @@ import payeeForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/Paye
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import billingPartiesForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/BillingPartyGrid/billing_parties_form_schema';
 import costAllocationForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/CostAllocationGrid/cost_allocation_schema';
+import paymentForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/PaymentGrid/payment_form_schema';
 
 const useStyles = makeStyles({
 	list: {
@@ -164,48 +155,31 @@ const useStyles = makeStyles({
 	},
 });
 
-export default function AddNewRelatedData({ title, addNewData, formName, payeeFieldsData, ...rest }) {
+export default function AddNewRelatedData({ title, addNewData, formName }) {
 	const classes = useStyles();
-	const [stateApp] = React.useContext(AppContext);
-
 	let [loader, setLoader] = useState(false);
-
-	const Controller = sideDialogController(formName);
-	const formState = Controller.useCompleteState();
-	const { control, reset, getValues, setValue, watch } = useForm();
-
-	const [newData, setNewData] = useState(null);
-	const [contact, setContact] = useState();
-	const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
 	const [disabled, setDisabled] = useState(true);
+	const { control, reset, getValues, setValue, watch } = useForm();
+	const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
 	const [state, setState] = useState({
 		right: false,
 	});
 
-	  // Watch specific form fields to handle Save button
-	  const watchName = watch("name");
-	  const watchPayeeName = watch("payeeName");
-	  useEffect(() => {
+	const Controller = sideDialogController(formName);
+	const formState = Controller.useCompleteState();
+
+	// Watch specific form fields to handle Save button
+	const watchName = watch('name');
+	const watchPayeeName = watch('payeeName');
+
+	useEffect(() => {
 		if (getValues()?.name?._id || getValues()?.payeeName?._id) {
-		  setDisabled(false);
-		}else{
+			setDisabled(false);
+		} else {
 			setDisabled(true);
 		}
-	  }, [watchName, watchPayeeName]);
+	}, [watchName, watchPayeeName]);
 
-	const cell = {
-		id: 'property.number',
-		title: 'Property #',
-		filterKey: ['number.keyword', 'name.keyword'],
-		sort: true,
-		type: 'autocomplete',
-		esIndex: 'properties_flat',
-		width: '180px',
-	};
-
-	const [getESSearch, { data: esFilter, loading }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
-		fetchPolicy: 'no-cache',
-	});
 
 	// Memoize form schema to avoid unnecessary re-renders
 	const formSchema = useMemo(() => {
@@ -228,6 +202,12 @@ export default function AddNewRelatedData({ title, addNewData, formName, payeeFi
 					setValue,
 				});
 			}
+			case 'paymentDialog': {
+				return paymentForm({
+					getValues,
+					setValue,
+				});
+			}
 			default: {
 				return null;
 			}
@@ -235,46 +215,6 @@ export default function AddNewRelatedData({ title, addNewData, formName, payeeFi
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [formState?.rerenderJson]);
-
-	useEffect(() => {
-		getContacts();
-	}, [stateApp.paymentMultiGrid]);
-
-	const formattedContactOptions = useMemo(() => {
-		const options = get(esFilter, 'getESSimpleSearch.hits', []).map(option => ({
-			value: option._id,
-			name: option.name,
-			fullObject: option,
-		}));
-
-		return options;
-	}, [esFilter, loading]);
-
-	const getContacts = (search = '') => {
-		getESSearch({
-			variables: {
-				index: 'contacts_flat',
-				pagination: {
-					first: 25,
-					after: null,
-				},
-				search: {
-					query: search ? `*${search}*` : null,
-					fields: ['name^4', '_id'],
-				},
-				sort: {
-					field: 'lastUpdateAt',
-					order: 'desc',
-					unmapped_type: 'date',
-				},
-				filters: [],
-			},
-		});
-	};
-
-	const onInputChange = (_, value) => {
-		getContacts(value);
-	};
 
 	const handleDeleteCancel = () => {
 		setOpenDeleteConfirmDialog(false);
@@ -329,216 +269,7 @@ export default function AddNewRelatedData({ title, addNewData, formName, payeeFi
 						</IconButton>
 					</ListItemIcon>
 				</ListItem>
-				{payeeFieldsData ? (
-					payeeFieldsData.map(field => (
-						<React.Fragment key={field.key}>
-							{field.type === 'searchableContacts' && (
-								<ListItem
-									style={{
-										flexDirection: 'column',
-										justifyContent: 'start',
-										alignItems: 'start',
-									}}
-								>
-									<h4>{field.name}</h4>
-									<Autocomplete
-										className={classes.maxWidth}
-										id="search-contacts"
-										getOptionSelected={(option, value) => option.name === value.name}
-										getOptionLabel={option => option.name}
-										options={formattedContactOptions}
-										loading={loading}
-										value={contact}
-										onInputChange={onInputChange}
-										onChange={(_, selectedContact) => {
-											setNewData({
-												...newData,
-												[field.key]: selectedContact?.name || '',
-												contactId: selectedContact?.value || '',
-											});
-											setContact(selectedContact);
-										}}
-										renderInput={params => (
-											<TextField
-												{...params}
-												label=""
-												multiline
-												size="small"
-												InputProps={{
-													...params.InputProps,
-													endAdornment: (
-														<React.Fragment>
-															{loading ? <CircularProgress color="inherit" size={20} /> : null}
-															{params.InputProps.endAdornment}
-														</React.Fragment>
-													),
-												}}
-											/>
-										)}
-									/>
-								</ListItem>
-							)}
-
-							{field.type === 'searchableProperties' && (
-								<ListItem
-									style={{
-										flexDirection: 'column',
-										justifyContent: 'start',
-										alignItems: 'start',
-									}}
-								>
-									<h4>{field.name}</h4>
-									<AutoCompleteESField
-										style={{ maxWidth: '468px', width: '468px' }}
-										label={cell.title}
-										value=""
-										column={cell}
-										index={0}
-										getAllValues={true}
-										onChange={value => {
-											setNewData({
-												...newData,
-												[field.key]: value,
-											});
-										}}
-										query={GET_ES_FILTER_LIST}
-										esIndex={cell.esIndex}
-									/>
-								</ListItem>
-							)}
-
-							{field.type === 'startEndDateInput' && (
-								<ListItem
-									style={{
-										flexDirection: 'row',
-										justifyContent: 'start',
-										alignItems: 'start',
-									}}
-								>
-									<div
-										style={{
-											marginRight: '15px',
-										}}
-									>
-										<h4>Start Date</h4>
-										<TextField
-											// autoOk
-											type="date"
-											id="startdate"
-											//variant="outlined"
-											defaultValue={newData?.startDate ? moment(newData?.startDate).format('yyyy-MM-DD') : ''}
-											value={newData?.startDate ? moment(newData?.startDate).format('yyyy-MM-DD') : ''}
-											margin="none"
-											fullWidth
-											onChange={event => {
-												const splittedDate = event?.target?.value.split('-');
-												if (splittedDate.length === 3) {
-													const newDate = new Date();
-													newDate.setFullYear(Number(splittedDate[0])); // Use setFullYear instead of setYear
-													newDate.setMonth(Number(splittedDate[1]) - 1);
-													newDate.setDate(Number(splittedDate[2]));
-													setNewData({ ...newData, startDate: newDate });
-												} else {
-													setNewData({ ...newData, startDate: '' });
-												}
-											}}
-											InputLabelProps={{
-												shrink: true,
-											}}
-											disableToolbar
-											KeyboardButtonProps={{ 'aria-label': 'change date' }}
-											format="MM/DD/YYYY"
-											PopoverProps={{ disablePortal: false }}
-											InputProps={{
-												endAdornment: (
-													<IconButton onClick={event => setNewData({ ...newData, startDate: '' })}>
-														<Clear style={{ height: 22, width: 22 }} />
-													</IconButton>
-												),
-												classes: {
-													root: classes.dateRoot,
-												},
-											}}
-										/>
-									</div>
-
-									<div
-										style={{
-											marginRight: '15px',
-										}}
-									>
-										<h4>End Date</h4>
-										<TextField
-											// autoOk
-											type="date"
-											id="enddate"
-											//variant="outlined"
-											defaultValue={newData?.endDate ? moment(newData?.endDate).format('yyyy-MM-DD') : ''}
-											value={newData?.endDate ? moment(newData?.endDate).format('yyyy-MM-DD') : ''}
-											margin="none"
-											fullWidth
-											onChange={event => {
-												const splittedDate = event?.target?.value.split('-');
-												if (splittedDate.length === 3) {
-													const newDate = new Date();
-													newDate.setFullYear(Number(splittedDate[0])); // Use setFullYear instead of setYear
-													newDate.setMonth(Number(splittedDate[1]) - 1);
-													newDate.setDate(Number(splittedDate[2]));
-													setNewData({ ...newData, endDate: newDate });
-												} else {
-													setNewData({ ...newData, endDate: '' });
-												}
-											}}
-											InputLabelProps={{
-												shrink: true,
-											}}
-											disableToolbar
-											KeyboardButtonProps={{ 'aria-label': 'change date' }}
-											format="MM/DD/YYYY"
-											PopoverProps={{ disablePortal: false }}
-											InputProps={{
-												endAdornment: (
-													<IconButton onClick={event => setNewData({ ...newData, endDate: '' })}>
-														<Clear style={{ height: 22, width: 22 }} />
-													</IconButton>
-												),
-												classes: {
-													root: classes.dateRoot,
-												},
-											}}
-										/>
-									</div>
-								</ListItem>
-							)}
-
-							{field.type === 'text' && (
-								<ListItem
-									style={{
-										flexDirection: 'column',
-										justifyContent: 'start',
-										alignItems: 'start',
-									}}
-								>
-									<h4>{field.name}</h4>
-									<TextField
-										className={classes.maxWidth}
-										multiline
-										id={field.key}
-										value={newData?.[field.key]}
-										onChange={e => {
-											setNewData({
-												...newData,
-												[field.key]: e.target.value,
-											});
-										}}
-									/>
-								</ListItem>
-							)}
-						</React.Fragment>
-					))
-				) : (
-					<CommonForm formSchema={formSchema} control={control} reset={reset} watch={watch} dialogKey={formName} />
-				)}
+				<CommonForm formSchema={formSchema} control={control} reset={reset} watch={watch} dialogKey={formName} />
 			</List>
 
 			<div className={classes.dialogFooter}>
@@ -567,7 +298,7 @@ export default function AddNewRelatedData({ title, addNewData, formName, payeeFi
 					disableElevation
 					disabled={disabled}
 					onClick={() => {
-						const data = formName ? getValues() : newData;
+						const data = getValues();
 						addNewData(data, setLoader);
 					}}
 					className={classes.footerButton}
