@@ -274,6 +274,7 @@ function MapGridCard(props) {
 			tableGlobalController.reInitialized();
 			return {
 				filterLayerType: mapControlsStateValues.selectedLayer?.layerShapeName,
+				layerIdentifier: mapControlsStateValues.selectedLayer?.layerShapeName,
 				maxTableHeight: '40vh',
 				toolbarInternalActions: {
 					onClose,

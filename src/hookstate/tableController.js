@@ -213,7 +213,14 @@ const tableESStateControllerHandler = state => ({
 		const { filters } = globalStateController.getValue('mapView')?.selectedMapView;
 		const selectedMapViewFilters = filters;
 
-		const dataSourceViews = selectedMapViewFilters?.filter(view => view.dataSourceName === layerIdentifier);
+		const layers = globalStateController.getValue('layers');
+		const gridLayersIds = layers
+			?.filter(layer => layer?.layerShapeName === layerIdentifier)
+			.map(layer => layer?.layerId);
+
+		const dataSourceViews = selectedMapViewFilters?.filter(
+			view => view.dataSourceName === layerIdentifier || gridLayersIds.includes(view.dataSourceName)
+		);
 		const mapViewFilters = dataSourceViews.map(view =>
 			getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)
 		);
