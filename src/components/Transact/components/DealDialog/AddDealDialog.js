@@ -972,7 +972,7 @@ function AddDealDialog(props) {
 
 	useEffect(() => {
 		if (stateApp.transactBarView !== 'Deal') {
-			if (!(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id)) {
+			if (!(stateApp.activeDeal?.cardId || stateApp.activeDeal?.id || stateApp.activeDeal?._id)) {
 				addUpdateDeal(null, false);
 			}
 		}
