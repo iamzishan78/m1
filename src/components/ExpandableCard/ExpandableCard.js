@@ -333,7 +333,7 @@ function ExpandableCard(props) {
 		};
 
 		disableBodyScrollBarIfExpanded();
-		if (document.getElementById('side-panel-pullout-btn')) document.getElementById(' ').style.display = 'none'; // hide pullout button from the sidebar when details card is opened
+		if (document.getElementById('side-panel-pullout-btn')) document.getElementById('side-panel-pullout-btn').style.display = 'none'; // hide pullout button from the sidebar when details card is opened
 		return () => {
 			if (document.getElementById('side-panel-pullout-btn'))
 				document.getElementById('side-panel-pullout-btn').style.display = 'flex'; // Show pullout button from the sidebar when details card get closed
