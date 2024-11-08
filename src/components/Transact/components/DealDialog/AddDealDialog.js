@@ -699,75 +699,99 @@ function AddDealDialog(props) {
 		}
 	}, [nameAutValue]);
 
-	const addUpdateDeal = useCallback(
-		async (newContact = null, closeAfterUpdate = true) => {
-			let tempContact = newContact ? newContact?.addContact?.contact : contact;
-			let contactId = tempContact?._id;
+	const addUpdateDeal = async (newContact = null, closeAfterUpdate = true) => {
+		let tempContact = newContact ? newContact?.addContact?.contact : contact;
+		let contactId = tempContact?._id;
 
-			//// foreing deal ids:
-			//// stageId, pipelineId, ownerId, contactId
+		//// foreing deal ids:
+		//// stageId, pipelineId, ownerId, contactId
 
-			if (pipelineId && stageId && title && title.trim() !== '') {
-				const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?._id;
-				let selectedReceivedDate = receivedDate;
-				if (receivedDate instanceof Date) {
-					selectedReceivedDate = moment(receivedDate).format('YYYY-MM-DD');
-				}
-				let selectedBidDate = bidDate;
-				if (bidDate instanceof Date) {
-					selectedBidDate = moment(bidDate).format('YYYY-MM-DD');
-				}
-				let selectedCloseDate = closeDate;
-				if (closeDate instanceof Date) {
-					selectedCloseDate = moment(closeDate).format('YYYY-MM-DD');
-				}
-				let selectedDueDate = dueDate;
-				if (closeDate instanceof Date) {
-					selectedCloseDate = moment(dueDate).format('YYYY-MM-DD');
-				}
-				const deal = {
-					name: title ? title.trim() : null,
-					offerPrice: label,
-					notes: description ? description.trim() : null,
-					status: dealState ? dealState : 'open',
-					closedPrice: closedPrice,
-					totalNRA: totalNRA,
-					receivedDate:
-						selectedReceivedDate && selectedReceivedDate !== ''
-							? new Date(`${selectedReceivedDate}T08:00`).toUTCString()
-							: null,
-					bidDate:
-						selectedBidDate && selectedBidDate !== '' ? new Date(`${selectedBidDate}T08:00`).toUTCString() : null,
-					dueDate:
-						selectedDueDate && selectedDueDate !== '' ? new Date(`${selectedDueDate}T08:00`).toUTCString() : null,
-					closeDate:
-						selectedCloseDate && selectedCloseDate !== '' ? new Date(`${selectedCloseDate}T08:00`).toUTCString() : null,
-					mapSettings: mapSettings,
-				};
+		if (pipelineId && stageId && title && title.trim() !== '') {
+			const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?._id;
+			let selectedReceivedDate = receivedDate;
+			if (receivedDate instanceof Date) {
+				selectedReceivedDate = moment(receivedDate).format('YYYY-MM-DD');
+			}
+			let selectedBidDate = bidDate;
+			if (bidDate instanceof Date) {
+				selectedBidDate = moment(bidDate).format('YYYY-MM-DD');
+			}
+			let selectedCloseDate = closeDate;
+			if (closeDate instanceof Date) {
+				selectedCloseDate = moment(closeDate).format('YYYY-MM-DD');
+			}
+			let selectedDueDate = dueDate;
+			if (closeDate instanceof Date) {
+				selectedCloseDate = moment(dueDate).format('YYYY-MM-DD');
+			}
+			const deal = {
+				name: title ? title.trim() : null,
+				offerPrice: label,
+				notes: description ? description.trim() : null,
+				status: dealState ? dealState : 'open',
+				closedPrice: closedPrice,
+				totalNRA: totalNRA,
+				receivedDate:
+					selectedReceivedDate && selectedReceivedDate !== ''
+						? new Date(`${selectedReceivedDate}T08:00`).toUTCString()
+						: null,
+				bidDate: selectedBidDate && selectedBidDate !== '' ? new Date(`${selectedBidDate}T08:00`).toUTCString() : null,
+				dueDate: selectedDueDate && selectedDueDate !== '' ? new Date(`${selectedDueDate}T08:00`).toUTCString() : null,
+				closeDate:
+					selectedCloseDate && selectedCloseDate !== '' ? new Date(`${selectedCloseDate}T08:00`).toUTCString() : null,
+				mapSettings: mapSettings,
+			};
 
-				if (cardId) {
-					//// update existing deal
+			if (cardId) {
+				//// update existing deal
 
-					let allPromises = [];
-					//// checking where it change
-					if (
-						contactId &&
-						((stateApp.activeDeal?.contacts?.length > 0 &&
-							stateApp.activeDeal?.contacts[0]?.relatedObject?._id !== contactId) ||
-							!stateApp.activeDeal.contacts ||
-							stateApp.activeDeal.contacts.length <= 0)
-					) {
-						//// updating the contact
+				let allPromises = [];
+				//// checking where it change
+				if (
+					contactId &&
+					((stateApp.activeDeal?.contacts?.length > 0 &&
+						stateApp.activeDeal?.contacts[0]?.relatedObject?._id !== contactId) ||
+						!stateApp.activeDeal.contacts ||
+						stateApp.activeDeal.contacts.length <= 0)
+				) {
+					//// updating the contact
+					allPromises.push(
+						new Promise((resolve, reject) => {
+							upsertDealDescriptor({
+								variables: {
+									dealId: cardId,
+									relatedObject: [contactId],
+									relatedObjectType: 'Contact',
+									userId: stateApp.user.mongoId,
+								},
+								refetchQueries: ['getPipeline', 'getContactDeals', 'getContactSummary'],
+								awaitRefetchQueries: true,
+							}).then(result => {
+								resolve();
+							});
+						})
+					);
+				}
+
+				if (
+					(stateApp.activeDeal?.owners?.length > 0 && stateApp.activeDeal?.owners[0]?.relatedObject?._id !== ownerId) ||
+					!stateApp.activeDeal.owners ||
+					stateApp.activeDeal.owners.length <= 0
+				) {
+					//// updating the owner
+
+					if (ownerId) {
 						allPromises.push(
 							new Promise((resolve, reject) => {
 								upsertDealDescriptor({
 									variables: {
 										dealId: cardId,
-										relatedObject: [contactId],
-										relatedObjectType: 'Contact',
+										relatedObject: [ownerId],
+										relatedObjectType: 'User',
 										userId: stateApp.user.mongoId,
 									},
 									refetchQueries: ['getPipeline', 'getContactDeals', 'getContactSummary'],
+
 									awaitRefetchQueries: true,
 								}).then(result => {
 									resolve();
@@ -775,92 +799,17 @@ function AddDealDialog(props) {
 							})
 						);
 					}
-
-					if (
-						(stateApp.activeDeal?.owners?.length > 0 &&
-							stateApp.activeDeal?.owners[0]?.relatedObject?._id !== ownerId) ||
-						!stateApp.activeDeal.owners ||
-						stateApp.activeDeal.owners.length <= 0
-					) {
-						//// updating the owner
-
-						if (ownerId) {
-							allPromises.push(
-								new Promise((resolve, reject) => {
-									upsertDealDescriptor({
-										variables: {
-											dealId: cardId,
-											relatedObject: [ownerId],
-											relatedObjectType: 'User',
-											userId: stateApp.user.mongoId,
-										},
-										refetchQueries: ['getPipeline', 'getContactDeals', 'getContactSummary'],
-
-										awaitRefetchQueries: true,
-									}).then(result => {
-										resolve();
-									});
-								})
-							);
-						}
-						// removing the owner
-						else if (!ownerId && stateApp.activeDeal?.owners?.length > 0) {
-							allPromises.push(
-								new Promise((resolve, reject) => {
-									removeDealDescriptor({
-										variables: {
-											id: stateApp.activeDeal?.owners[0]?._id,
-											relatedObjectType: 'User',
-										},
-										refetchQueries: ['getPipeline', 'getContactDeals', 'getContactSummary'],
-
-										awaitRefetchQueries: true,
-									}).then(result => {
-										resolve();
-									});
-								})
-							);
-						}
-					}
-
-					//// checking if stage or pipe changed
-					if (
-						(stateApp.activeDeal?.laneId !== stageId || stateApp.activeDeal?.pipeline !== pipelineId) &&
-						stateApp.activeDeal?.descriptorId
-					) {
-						//// updating the stageDealDescriptor
+					// removing the owner
+					else if (!ownerId && stateApp.activeDeal?.owners?.length > 0) {
 						allPromises.push(
 							new Promise((resolve, reject) => {
-								const movedCardDescriptor = {
-									// _id: stateApp.activeDeal.descriptorId,
-									descriptorObject: stateApp.activeDeal._id,
-									descriptorType: 'Deal',
-									relatedObject: stageId,
-									relatedObjectType: 'Stage',
-									// position: dealPosition ? dealPosition : 0,
-									pipeline: pipelineId,
-									pipelineType: 'Pipeline',
-									isCurrent: true,
-									user: stateApp.user.mongoId,
-								};
-
-								updateStageDealDescriptors({
+								removeDealDescriptor({
 									variables: {
-										stageDealDescriptors: [
-											{
-												_id: stateApp.activeDeal.descriptorId,
-												isCurrent: false,
-											},
-										],
-									},
-									refetchQueries: ['getPipeline'],
-								});
-
-								updateStageDealDescriptor({
-									variables: {
-										descriptor: movedCardDescriptor,
+										id: stateApp.activeDeal?.owners[0]?._id,
+										relatedObjectType: 'User',
 									},
 									refetchQueries: ['getPipeline', 'getContactDeals', 'getContactSummary'],
+
 									awaitRefetchQueries: true,
 								}).then(result => {
 									resolve();
@@ -868,142 +817,156 @@ function AddDealDialog(props) {
 							})
 						);
 					}
+				}
 
-					//// checking if deal change
-					let updated = false;
-					for (const k in deal) {
-						if (deal[k] !== stateApp.activeDeal[k]) {
-							updated = true;
-							break;
-						}
-					}
-					if (updated) {
-						//// updating the deal
-						deal._id = cardId;
-						allPromises.push(
-							new Promise((resolve, reject) => {
-								updateDeal({
-									variables: {
-										deal,
-									},
-									refetchQueries: ['getPipeline', 'getContactDeals', 'getContactSummary'],
-									awaitRefetchQueries: true,
-								}).then(result => {
-									resolve();
-								});
-							})
-						);
-					}
+				//// checking if stage or pipe changed
+				if (
+					(stateApp.activeDeal?.laneId !== stageId || stateApp.activeDeal?.pipeline !== pipelineId) &&
+					stateApp.activeDeal?.descriptorId
+				) {
+					//// updating the stageDealDescriptor
+					allPromises.push(
+						new Promise((resolve, reject) => {
+							const movedCardDescriptor = {
+								// _id: stateApp.activeDeal.descriptorId,
+								descriptorObject: stateApp.activeDeal._id,
+								descriptorType: 'Deal',
+								relatedObject: stageId,
+								relatedObjectType: 'Stage',
+								// position: dealPosition ? dealPosition : 0,
+								pipeline: pipelineId,
+								pipelineType: 'Pipeline',
+								isCurrent: true,
+								user: stateApp.user.mongoId,
+							};
 
-					////////////////////////////////////////////
-					if (allPromises.length > 0)
-						Promise.all(allPromises)
-							.then(values => {
-								// if (success === true)
-								// 	dispatch(
-								// 		showSuccessMessage("The Deal was successfully updated.")
-								// 	);
-								// else
-								// 	dispatch(
-								// 		showErrorMessage("An error occurred during the update.")
-								// 	);
-							})
-							.catch(reason => {
-								console.log(reason);
+							updateStageDealDescriptors({
+								variables: {
+									stageDealDescriptors: [
+										{
+											_id: stateApp.activeDeal.descriptorId,
+											isCurrent: false,
+										},
+									],
+								},
+								refetchQueries: ['getPipeline'],
 							});
-				} else if (!addDealLoading) {
-					//// add a new deal
-					let variables = {
-						deal,
-						stageId,
-						pipelineId,
-						// ownerId,
-						// ownerName,
-						// contactId,
-						// contactName,
-						position: dealPosition,
-						userId: stateApp.user.mongoId,
-					};
 
-					if (ownerId) {
-						let user = users.find(user => user.value === ownerId);
-						variables = user?.text ? { ...variables, ownerId, ownerName: user.text } : { ...variables, ownerId };
+							updateStageDealDescriptor({
+								variables: {
+									descriptor: movedCardDescriptor,
+								},
+								refetchQueries: ['getPipeline', 'getContactDeals', 'getContactSummary'],
+								awaitRefetchQueries: true,
+							}).then(result => {
+								resolve();
+							});
+						})
+					);
+				}
+
+				//// checking if deal change
+				let updated = false;
+				for (const k in deal) {
+					if (deal[k] !== stateApp.activeDeal[k]) {
+						updated = true;
+						break;
 					}
+				}
+				if (updated) {
+					//// updating the deal
+					deal._id = cardId;
+					allPromises.push(
+						new Promise((resolve, reject) => {
+							updateDeal({
+								variables: {
+									deal,
+								},
+								refetchQueries: ['getPipeline', 'getContactDeals', 'getContactSummary'],
+								awaitRefetchQueries: true,
+							}).then(result => {
+								resolve();
+							});
+						})
+					);
+				}
 
-					if (contactId) {
-						variables = tempContact?.name
-							? { ...variables, contactId, contactName: tempContact.name }
-							: { ...variables, contactId };
-					}
-
-					const ID = [];
-					for (let i = 0; i < uploadedFiles.length; i++) {
-						ID.push({
-							id: uploadedFiles[i].addFileDescriptor.file.id,
-							name: uploadedFiles[i].addFileDescriptor.file.name,
+				////////////////////////////////////////////
+				if (allPromises.length > 0)
+					Promise.all(allPromises)
+						.then(values => {
+							// if (success === true)
+							// 	dispatch(
+							// 		showSuccessMessage("The Deal was successfully updated.")
+							// 	);
+							// else
+							// 	dispatch(
+							// 		showErrorMessage("An error occurred during the update.")
+							// 	);
+						})
+						.catch(reason => {
+							console.log(reason);
 						});
-					}
+			} else if (!addDealLoading) {
+				//// add a new deal
+				let variables = {
+					deal,
+					stageId,
+					pipelineId,
+					// ownerId,
+					// ownerName,
+					// contactId,
+					// contactName,
+					position: dealPosition,
+					userId: stateApp.user.mongoId,
+				};
 
-					if (ID.length > 0) {
-						variables = { ...variables, files: ID };
-					}
+				if (ownerId) {
+					let user = users.find(user => user.value === ownerId);
+					variables = user?.text ? { ...variables, ownerId, ownerName: user.text } : { ...variables, ownerId };
+				}
 
-					if (newCommentsIds.length > 0) {
-						variables = { ...variables, comments: newCommentsIds };
-					}
-					addDeal({
-						variables: { ...variables, deal: { ...variables.deal, _id: get(stateTransact, 'dealToCreate._id') } },
-						refetchQueries: [
-							'getPipeline',
-							'getContactDeals',
-							'getContact',
-							'getAllActivities',
-							'getAllActivitiesForSearch',
-							'getOpenDeals',
-							'openDeals',
-							'getContactSummary',
-						],
-						awaitRefetchQueries: true,
-					}).then(result => {
-						finishCreatingDeal(result?.data);
+				if (contactId) {
+					variables = tempContact?.name
+						? { ...variables, contactId, contactName: tempContact.name }
+						: { ...variables, contactId };
+				}
+
+				const ID = [];
+				for (let i = 0; i < uploadedFiles.length; i++) {
+					ID.push({
+						id: uploadedFiles[i].addFileDescriptor.file.id,
+						name: uploadedFiles[i].addFileDescriptor.file.name,
 					});
 				}
+
+				if (ID.length > 0) {
+					variables = { ...variables, files: ID };
+				}
+
+				if (newCommentsIds.length > 0) {
+					variables = { ...variables, comments: newCommentsIds };
+				}
+				addDeal({
+					variables: { ...variables, deal: { ...variables.deal, _id: get(stateTransact, 'dealToCreate._id') } },
+					refetchQueries: [
+						'getPipeline',
+						'getContactDeals',
+						'getContact',
+						'getAllActivities',
+						'getAllActivitiesForSearch',
+						'getOpenDeals',
+						'openDeals',
+						'getContactSummary',
+					],
+					awaitRefetchQueries: true,
+				}).then(result => {
+					finishCreatingDeal(result?.data);
+				});
 			}
-			setUploadedFiles([]);
-		},
-		[
-			addDeal,
-			addDealLoading,
-			bidDate,
-			closeDate,
-			closedPrice,
-			contact,
-			dealPosition,
-			dealState,
-			description,
-			dueDate,
-			finishCreatingDeal,
-			label,
-			mapSettings,
-			newCommentsIds,
-			ownerId,
-			pipelineId,
-			receivedDate,
-			removeDealDescriptor,
-			stageId,
-			stateApp.activeDeal,
-			stateApp.user?.mongoId,
-			stateTransact,
-			title,
-			totalNRA,
-			updateDeal,
-			updateStageDealDescriptor,
-			updateStageDealDescriptors,
-			uploadedFiles,
-			upsertDealDescriptor,
-			users,
-		]
-	);
+		}
+		setUploadedFiles([]);
+	};
 
 	const { handleFlyto } = useDealMapFlyto(globalStateValues.mapReady);
 
@@ -1018,7 +981,8 @@ function AddDealDialog(props) {
 			const contactIds = stateApp?.activeDeal?.contacts?.map(contact => contact._id) || [];
 			handleFlyto(contactIds, dealId);
 		}
-	}, [addUpdateDeal, handleFlyto, stateApp.activeDeal, stateApp.transactBarView, globalStateValues.mapReady]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [handleFlyto, stateApp.activeDeal, stateApp.transactBarView, globalStateValues.mapReady]);
 
 	useEffect(() => {
 		if (userLists && userLists.allMongoUsers) {
@@ -1128,7 +1092,8 @@ function AddDealDialog(props) {
 		if (addContactData) {
 			addUpdateDeal(addContactData);
 		}
-	}, [addContactData, addUpdateDeal]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [addContactData]);
 
 	useEffect(() => {
 		if (
