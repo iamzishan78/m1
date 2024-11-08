@@ -55,8 +55,6 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			sort.unmapped_type = 'keyword';
 		}
 
-		console.log('🚀 ~ callQuery ~ sort:', sort);
-
 		const filters = [...(tableMeta?.defaultFilters || []), ...(tableMeta?.filters || [])];
 
 		if (tableStateValues.geoKey && drawStateValues.selectedPolygonString && drawStateValues.currentFeature) {
@@ -173,6 +171,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 					esIndex,
 					filters: [...filters, ...defaultFilters],
 					aggs: Object.assign({}, ...aggregationColumns),
+					isElasticQuery: tableStateValues.isElasticQuery,
 				},
 				query: GET_ES_AGGS_LIST,
 			});

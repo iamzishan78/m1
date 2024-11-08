@@ -1,5 +1,6 @@
 import { Box } from '@mui/material';
-import { formatDate } from 'components/Shared/functions';
+import { addTrailingZeros, formatDate } from 'components/Shared/functions';
+import { tableController } from 'hookstate/tableController';
 
 export const CommonSchema = {
 	COMMENTS: {
@@ -182,5 +183,21 @@ export const CommonSchema = {
 				</Box>
 			</>
 		),
+	}),
+	AGGREGATED_FOOTER: (field, tableKey) => ({
+		Aggregation: {
+			[`sum_${field}`]: {
+				sum: { field },
+			},
+		},
+		Footer: () => {
+			const Controller = tableController(tableKey);
+			const footerProps = Controller.getValue('footerProps') || {};
+
+			const mongoKey = `sum_${field}`.replace(/\./g, '_');
+			const value = footerProps[mongoKey];
+
+			return <div>{value ? addTrailingZeros(parseFloat(value).toFixed(8)) : 0}</div>;
+		},
 	}),
 };
