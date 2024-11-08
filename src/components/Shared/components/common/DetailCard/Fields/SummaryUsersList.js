@@ -27,7 +27,14 @@ const SummaryUsersList = ({ fieldData, field }) => {
 		setValue(fieldData?._id || '');
 	}, [fieldData]);
 
-	return <UsersListWithIcon placeholder={`Enter ${field?.label}`} selectedUserId={value} onChangeUser={handleChange} />
+	return (
+		<UsersListWithIcon
+			field={field}
+			placeholder={`Enter ${field?.label}`}
+			selectedUserId={value}
+			onChangeUser={handleChange}
+		/>
+	);
 };
 
 export default SummaryUsersList;

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, InputAdornment, CircularProgress } from '@material-ui/core';
 import { Autorenew as AutorenewIcon } from '@material-ui/icons';
-import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import { makeStyles } from '@material-ui/core/styles';
 import { detailCardController } from 'hookstate/detailCardController';
@@ -52,12 +51,10 @@ const useStyles = makeStyles(() => ({
 const SummaryTextField = ({ fieldData, field, summaryData, isMetaField }) => {
 	const classes = useStyles();
 	const {
-		stateValues: { page },
-	} = detailCardController.useState(['page']);
+		stateValues: { page, loadingField },
+	} = detailCardController.useState(['page', 'loadingField']);
 	const { useUpdate } = Pages[page];
 	const { callApi, isChanged, renewFunction } = useUpdate() || {};
-	const { loadingField } = detailCardController.useState(['loadingField']);
-	const activeLoadingField = loadingField.get({ noproxy: true });
 
 	const [value, setValue] = useState(fieldData || '');
 
@@ -125,13 +122,7 @@ const SummaryTextField = ({ fieldData, field, summaryData, isMetaField }) => {
 				startAdornment:
 					field.type === 'currency' && !value ? <InputAdornment position="start">$</InputAdornment> : undefined,
 				endAdornment:
-					field.type === 'email' && value ? (
-						<a href={'mailto:' + value}>
-							<InputAdornment position="end">
-								<EmailOutlinedIcon htmlColor="#757575" />
-							</InputAdornment>
-						</a>
-					) : activeLoadingField && activeLoadingField === field.key ? (
+					loadingField && loadingField === field?.key ? (
 						<CircularProgress size={22} color="secondary" />
 					) : (
 						<>

@@ -286,6 +286,7 @@ export default function MetadataDrawer(props) {
 							<FormControl variant="outlined" fullWidth size="small">
 								{isOwner && (
 									<UsersListWithIcon
+										field={{ key: 'owner' }}
 										label={ownerTitle}
 										placeholder={ownerPlaceHolder}
 										selectedUserId={ownerId}

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import TextField from '@material-ui/core/TextField';
 import moment from 'moment';
 import { makeStyles } from '@material-ui/core/styles';
 import { parseDate } from 'utils/helper';
 import { detailCardController } from 'hookstate/detailCardController';
 import * as Pages from 'components/Shared/components/common/DetailCard/pages';
+import { TextField, CircularProgress } from '@material-ui/core';
 
 const useStyles = makeStyles({
 	dateRoot: {
@@ -31,8 +31,9 @@ const useStyles = makeStyles({
 function DateField({ fieldData, field }) {
 	const classes = useStyles();
 	const {
-		stateValues: { page },
-	} = detailCardController.useState(['page']);
+		stateValues: { page, loadingField },
+	} = detailCardController.useState(['page', 'loadingField']);
+
 	const { useUpdate } = Pages[page];
 	const { callApi } = useUpdate();
 
@@ -76,6 +77,9 @@ function DateField({ fieldData, field }) {
 			onChange={e => handleDateChange(e.target.value)}
 			InputLabelProps={{
 				shrink: true,
+			}}
+			InputProps={{
+				endAdornment: loadingField && loadingField === field?.key && <CircularProgress size={22} color="secondary" />,
 			}}
 			disableToolbar
 			KeyboardButtonProps={{ 'aria-label': 'change date' }}

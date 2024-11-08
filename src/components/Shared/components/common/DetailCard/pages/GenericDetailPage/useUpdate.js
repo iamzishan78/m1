@@ -11,17 +11,15 @@ const useUpdate = () => {
 	const { stateValues } = detailCardController.useState(['currentAssetRecord']);
 	const currentAssetRecord = stateValues.currentAssetRecord;
 
-	const { loadingField } = detailCardController.useState(['loadingField']);
-
 	const [updateRecordInRunTimeModel, { data }] = useMutation(UPDATE_RECORD_IN_RUN_TIME_MODEL, {
 		fetchPolicy: 'network-only',
 	});
 
 	useEffect(() => {
 		if (data) {
-			loadingField.set(null);
+			detailCardController.updateState({ loadingField: null });
 		}
-	}, [data, loadingField]);
+	}, [data]);
 
 	return {
 		callApi: (key, value, originalKey) => {

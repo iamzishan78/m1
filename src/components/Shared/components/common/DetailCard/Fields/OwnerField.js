@@ -43,13 +43,13 @@ function OwnerField({ fieldData, field }) {
 	const classes = useStyles();
 	let history = useHistory();
 	const {
-		stateValues: { page },
-	} = detailCardController.useState(['page']);
+		stateValues: { page, loadingField },
+	} = detailCardController.useState(['page', 'loadingField']);
+
 	const { useUpdate } = Pages[page];
 	const { callApi } = useUpdate();
 	const prevValue = fieldData?.get({ noproxy: true });
-	const { loadingField } = detailCardController.useState(['loadingField']);
-	const activeLoadingField = loadingField.get({ noproxy: true });
+
 	const [getContactEntity, { data: contactEntityData }] = useLazyQuery(CONTACT_ENTITY);
 
 	const contactEntity = contactId => {
@@ -89,6 +89,7 @@ function OwnerField({ fieldData, field }) {
 						endAdornment: (
 							<React.Fragment>
 								{params.InputProps.endAdornment}
+								{loadingField && loadingField === field?.key && <CircularProgress size={22} color="secondary" />}
 								<div
 									className={classes.contactCardIcon}
 									onClick={e => {
@@ -102,11 +103,7 @@ function OwnerField({ fieldData, field }) {
 										}
 									}}
 								>
-									{activeLoadingField && activeLoadingField === field.key ? (
-										<CircularProgress size={22} color="secondary" />
-									) : (
-										<ContactCardIcon fill={!prevValue?.contactId ? 'darkgrey' : undefined} />
-									)}
+									<ContactCardIcon fill={!prevValue?.contactId ? 'darkgrey' : undefined} />
 								</div>
 							</React.Fragment>
 						),
