@@ -174,7 +174,9 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, 
 				isPinned: !!item?.isControlColumn,
 				Cell: ({ renderedCellValue, row }) => {
 					if (!!item?.isControlColumn) {
-						const id = fetchDynamicSchema.isAssociatedModel ? row?.original?.relatedObject?._id : row.getValue('_id');
+						const id = fetchDynamicSchema.isAssociatedModel
+							? row?.original?.[fetchDynamicSchema?.associationKey]?._id
+							: row.getValue('_id');
 						return (
 							<ColumnWithLink
 								value={renderedCellValue}
