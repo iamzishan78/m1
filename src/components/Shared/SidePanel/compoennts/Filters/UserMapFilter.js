@@ -125,7 +125,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 			let esIndex; // Elasticsearch index used in the query
 			let filters = []; // Filters to apply to the query
 			let search = { fields: [] };
-			const layerType = customLayersFieldAccessors[dataSourceName?.value]?.layerKey?.toLowerCase(); // Get the layer type
+			const layerType = customLayersFieldAccessors[dataSourceName?.value || dataSourceName]?.layerKey?.toLowerCase(); // Get the layer type
 
 			// Determine the filters based on the layer type
 
@@ -135,7 +135,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 			} else if (layerType === 'wells') {
 				esIndex = 'mywells_flat';
 				filters = [];
-			} else if (layerType === 'Parcel' || layerType === 'Unit') {
+			} else if (layerType === 'parcel' || layerType === 'unit') {
 				esIndex = 'shapes_flat';
 				filters = [{ field: 'layer.keyword', value: layerType }];
 			} else {
@@ -143,8 +143,8 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 				const selectedLayer = globalStateController
 					.getValue('layers')
 					?.find(layer => layer?.layerId === (dataSourceName?.value || dataSourceName));
-				filters = generateFileFilters({ fileLayer: selectedLayer }).variables.filters;
-				search = generateFileFilters({ fileLayer: selectedLayer }).variables.search;
+				filters = selectedLayer ? generateFileFilters({ fileLayer: selectedLayer }).variables.filters : [];
+				search = selectedLayer ? generateFileFilters({ fileLayer: selectedLayer }).variables.search : {};
 				search.fields = [];
 			}
 
