@@ -106,6 +106,12 @@ export default function UnitDetailCard(props) {
     customProps: { customLayer: dataCustomLayer?.customLayer },
   }), [dataCustomLayer]);
 
+  // Table overridden meta
+  const RelatedAgreementOverrideMeta = useMemo(() => ({
+    defaultFilters: [{ field: "relatedShape._id", value: dataCustomLayer?.customLayer?._id }],
+    maxTableHeight: "calc(60vh - 200px)",
+  }), [dataCustomLayer]);
+
 
   useEffect(() => {
     if (updatedUnit) {
@@ -262,7 +268,7 @@ export default function UnitDetailCard(props) {
           </Grid>
           <Grid item sm={12}>
             <Taps
-              tabLabels={['Summary', 'Interest Owners', 'Runsheet', 'Wells', 'Tracts', 'Documents']}
+              tabLabels={['Summary', 'Interest Owners', 'Runsheet', 'Wells', 'Tracts', 'Agreements', 'Documents']}
               openTabIdex={selectedTab}
               tabPanels={[
                 <div
@@ -369,6 +375,9 @@ export default function UnitDetailCard(props) {
                     </div>,
                   ]}
                 />,
+                <div>
+                  <MRTTable name="UnitRelatedAgreementTable" overrideMeta={RelatedAgreementOverrideMeta} />
+                </div>,
                 <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
                   <RelatedDetailsDocumentTable
                     customLayer={uniObj}

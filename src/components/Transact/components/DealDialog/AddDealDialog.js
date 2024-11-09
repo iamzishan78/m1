@@ -1719,6 +1719,7 @@ function AddDealDialog(props) {
 
 													<Grid item xs={9}>
 														<TextField
+															id="flowline"
 															variant="outlined"
 															margin="dense"
 															select

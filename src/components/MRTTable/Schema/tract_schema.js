@@ -6,23 +6,23 @@ import CampaignNameField from 'components/ContactDetailCard/components/FieldCont
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
 import Loader from 'components/Loaders';
 import { globalStateController } from 'hookstate/globalStateController';
-import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { tableGlobalController } from 'hookstate/tableController';
-import { copy } from "utils/helper";
+import { copy } from 'utils/helper';
 import { formatDate } from 'components/Shared/functions';
+import _ from 'lodash';
 
 const esIndex = 'shapes_flat';
-
 
 const onCustomKeyChange = async (client, row, value, item) => {
 	const loaderId = `upadting-${row?._id}`;
 
 	try {
 		Loader.createToast(loaderId, 'Updation in Progress');
-		const user = globalStateController.getValue('user')
+		const user = globalStateController.getValue('user');
 
 		const customData = copy(row?.shapeJson?.properties?.custom_data) ?? {};
-		const filteredCustomData = _.pickBy(customData, (value) => value !== "" && !_.isEmpty(value));
+		const filteredCustomData = _.pickBy(customData, value => value !== '' && !_.isEmpty(value));
 
 		const shapeJson = {
 			...row?.shapeJson,
@@ -31,9 +31,9 @@ const onCustomKeyChange = async (client, row, value, item) => {
 				custom_data: {
 					...filteredCustomData,
 					[item.name]: value,
-				}
+				},
 			},
-		}
+		};
 
 		await client.mutate({
 			variables: {
@@ -66,18 +66,22 @@ const TractMeta = {
 	isInFiniteScroll: true,
 	columnVirtualization: true,
 	onCustomKeyChange,
+	// get metadata for the grid
+	fetchMetaData: {
+		category: 'Parcel',
+	},
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
 			accessorKey: 'id',
 		},
- 		// M1neral System ID field added
+		// M1neral System ID field added
 		{
 			...CommonSchema.MONGO_ID,
 			name: '_id',
 			accessorKey: '_id',
-			header: "M1neral System ID",
+			header: 'M1neral System ID',
 			isHiddenFieldExport: true,
 		},
 		{
@@ -92,7 +96,10 @@ const TractMeta = {
 						alignItems: 'center',
 					}}
 				>
-					<ColumnWithLink value={renderedCellValue || row.getValue('shapeJson.properties.originalProperties.State')} link={`/map/parcels/${row.getValue('_id')}`} />
+					<ColumnWithLink
+						value={renderedCellValue || row.getValue('shapeJson.properties.originalProperties.State')}
+						link={`/map/parcels/${row.getValue('_id')}`}
+					/>
 				</div>
 			),
 		},
@@ -143,7 +150,6 @@ const TractMeta = {
 			id: 'shapeJson.properties.originalProperties.abstractNameShortName',
 			header: 'Abstract/ Section',
 		},
-
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -274,9 +280,15 @@ const TractMeta = {
 			Cell: ({ row }) => {
 				const targetSourceId = row.getValue('_id');
 				const targetLabel = 'parcel';
-				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={targetLabel} />;
+				return (
+					<TagCell
+						id={targetSourceId}
+						targetSourceId={targetSourceId}
+						tags={row?.original?.tags}
+						targetLabel={targetLabel}
+					/>
+				);
 			},
-
 		},
 		{
 			...CommonSchema.COMMENTS,
@@ -285,8 +297,7 @@ const TractMeta = {
 				const targetLabel = 'parcel';
 				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={targetLabel} />;
 			},
-
-		}
+		},
 	],
 };
 

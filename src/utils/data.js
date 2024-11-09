@@ -645,12 +645,24 @@ export const AdminManagementRoutes = {
 		search: true,
 		isDefault: true,
 	},
+	DATA_EDITING_DETAIL: {
+		featureFlag: 'CONTACTSUBMENU',
+		title: 'Bulk Data Editing',
+		headerText: 'Bulk Data Editing',
+		link: '/admin/bulk-editing/:jobId',
+		component: 'BulkDataEditingDetail',
+		value: 'Activities',
+		search: true,
+		isDefault: true,
+		isExcluded: true,
+	},
 };
 
 export const bypassTenants = [
 	'localhost',
 	// "m1Preview",
 	'm1dev',
+	'm1cypress',
 	'm1Staging',
 	// "m1Production",
 	// "m1Development",
@@ -674,4 +686,4 @@ export const OWNERTYPE = {
 	CORPORATION: 'CORPORATION',
 };
 
-export const MapFeatureTenants = ['m1dev', 'frontier', 'localhost']
+export const MapFeatureTenants = ['m1dev', 'frontier', 'localhost'];

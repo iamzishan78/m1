@@ -42,11 +42,13 @@ import {
 import SortableLayer from './SortableLayer';
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
 // Contexts
-import AddGroup from './AddGroup';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { layerController } from 'hookstate/layerStateController';
-import { mapStateController } from 'hookstate/mapStateController';
-import { navController } from 'hookstate/navStateController';
+import AddGroup from "./AddGroup";
+import { mapControlsController } from "hookstate/mapControlsController";
+import { layerController } from "hookstate/layerStateController";
+import { mapStateController } from "hookstate/mapStateController";
+import { navController } from "hookstate/navStateController";
+// actions
+import { setActiveModule } from "store/actions/commonActions";
 
 const layerIcons = [
 	{
@@ -358,9 +360,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 		filterLayers(value);
 	};
 
-	useEffect(() => {
-		togglePullout();
-	}, []);
+  useEffect(() => {
+    togglePullout()
+    dispatch(setActiveModule({})); // reset to default value on selecting map tab
+  }, [])
 
 	return (
 		<div>
@@ -526,7 +529,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 					</div>
 				</StyledMenu>
 				<StyledSecondaryMenu />
-				<div className={classes.pulloutBox} onClick={() => togglePullout()}>
+				<div className={classes.pulloutBox}  id="side-panel-pullout-btn" onClick={() => togglePullout()}>
 					{mapControlsStateValues.expandedPanel ? (
 						<ArrowBackIosIcon id="arrowBackIcon" />
 					) : (
