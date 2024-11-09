@@ -1,163 +1,161 @@
-import { Grid, Typography } from "@material-ui/core";
-import Box from "@material-ui/core/Box";
-import Button from "@material-ui/core/Button";
-import CardMedia from "@material-ui/core/CardMedia";
-import MuiDialogContent from "@material-ui/core/DialogContent";
-import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
-import Skeleton from "@material-ui/lab/Skeleton";
-import React, { useContext } from "react";
-import { AppContext } from "../../AppContext";
-import { ProfileContext } from "./ProfileContext";
-import ProfileActions from "./ProfileActions";
+import { Grid, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import CardMedia from '@material-ui/core/CardMedia';
+import MuiDialogContent from '@material-ui/core/DialogContent';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Skeleton from '@material-ui/lab/Skeleton';
+import React, { useContext } from 'react';
+import { ProfileContext } from './ProfileContext';
+import ProfileActions from './ProfileActions';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    padding: theme.spacing(2),
-  },
-  label: {
-    position: "initial",
-    textAlign: "left",
-    transform: "none",
-    fontSize: 16,
-    color: "black",
-    "&& + *": {
-      marginTop: theme.spacing(1),
-    },
-  },
-  focused: {
-    "&$label": {
-      color: "black",
-    },
-  },
-  helperText: {
-    color: "#6c757d",
-    lineHeight: "19.2px",
-    marginTop: theme.spacing(1) / 2,
-    fontSize: 12.8,
-  },
-  input: {
-    borderRadius: 4,
-    position: "relative",
-    backgroundColor: "white",
-    borderWidth: 1,
-    borderStyle: "solid",
-    borderColor: "#ced4da",
-    fontSize: 16,
-    width: "225px",
-    padding: "10px 12px",
-    marginRight: "30px",
-    transition: theme.transitions.create(["border-color", "box-shadow"]),
-    "&:focus": {
-      borderRadius: 4,
-      borderColor: "#ced4da",
-    },
-    '&:disabled': {
-      backgroundColor: '#f9f8f8',
-    }
-  },
-  disabledLabel: {
-    color: 'rgba(0, 0, 0, 0.87) !important', // Custom color for disabled label
-  },
-  fullWidth: {
-    width: '100% !Important',
-  },
-  aboutMeInput: {
-    width: '100%',
-    marginRight: '0px'
-  },
-  button: {
-    textTransform: "none",
-    width: "100%",
-    textAlign: "center",
-  },
-  image: {
-    width: '200px',
-    height: '200px',
-    borderRadius: "50%",
-    objectFit: "contain",
-  },
-  removeImage: {
-    "&:hover": {
-      color: '#00abed',
-      cursor: "pointer",
-      textDecoration: "underline"
-    }
-  },
+const useStyles = makeStyles(theme => ({
+	root: {
+		padding: theme.spacing(2),
+	},
+	label: {
+		position: 'initial',
+		textAlign: 'left',
+		transform: 'none',
+		fontSize: 16,
+		color: 'black',
+		'&& + *': {
+			marginTop: theme.spacing(1),
+		},
+	},
+	focused: {
+		'&$label': {
+			color: 'black',
+		},
+	},
+	helperText: {
+		color: '#6c757d',
+		lineHeight: '19.2px',
+		marginTop: theme.spacing(1) / 2,
+		fontSize: 12.8,
+	},
+	input: {
+		borderRadius: 4,
+		position: 'relative',
+		backgroundColor: 'white',
+		borderWidth: 1,
+		borderStyle: 'solid',
+		borderColor: '#ced4da',
+		fontSize: 16,
+		width: '225px',
+		padding: '10px 12px',
+		marginRight: '30px',
+		transition: theme.transitions.create(['border-color', 'box-shadow']),
+		'&:focus': {
+			borderRadius: 4,
+			borderColor: '#ced4da',
+		},
+		'&:disabled': {
+			backgroundColor: '#f9f8f8',
+		},
+	},
+	disabledLabel: {
+		color: 'rgba(0, 0, 0, 0.87) !important', // Custom color for disabled label
+	},
+	fullWidth: {
+		width: '100% !Important',
+	},
+	aboutMeInput: {
+		width: '100%',
+		marginRight: '0px',
+	},
+	button: {
+		textTransform: 'none',
+		width: '100%',
+		textAlign: 'center',
+	},
+	image: {
+		width: '200px',
+		height: '200px',
+		borderRadius: '50%',
+		objectFit: 'contain',
+	},
+	removeImage: {
+		'&:hover': {
+			color: '#00abed',
+			cursor: 'pointer',
+			textDecoration: 'underline',
+		},
+	},
 }));
 
 const ProfileContent = () => {
-  const classes = useStyles();
-  const [stateProfile, setStateProfile] = useContext(ProfileContext);
-  const [app] = useContext(AppContext);
-  const {
-    fields: { email,  about, fullname, displayName, jobTitle, phone, profileImage }
-  } = stateProfile;
-  const onChange = ({ name, value }) => {
-    let disectFullname = {};
+	const classes = useStyles();
+	const [stateProfile, setStateProfile] = useContext(ProfileContext);
+	const {
+		fields: { email, about, displayName, jobTitle, phone, profileImage },
+	} = stateProfile;
+	const onChange = ({ name, value }) => {
+		let disectFullname = {};
 
-    if (name === "fullname") {
-      let temp = value.split(" ");
-      if (temp.length === 1) {
-        disectFullname['firstname'] = temp[0];
-      } else if (temp.length === 2) {
-        disectFullname['firstname'] = temp[0];
-        disectFullname['lastname'] = temp[1];
-      } else if (temp.length >= 3) {
-        disectFullname['firstname'] = temp[0];
-        disectFullname['middlename'] = temp[1];
-        disectFullname['firstname'] = temp[2];
-      }
-    }
+		if (name === 'fullname') {
+			let temp = value.split(' ');
+			if (temp.length === 1) {
+				disectFullname['firstname'] = temp[0];
+			} else if (temp.length === 2) {
+				disectFullname['firstname'] = temp[0];
+				disectFullname['lastname'] = temp[1];
+			} else if (temp.length >= 3) {
+				disectFullname['firstname'] = temp[0];
+				disectFullname['middlename'] = temp[1];
+				disectFullname['firstname'] = temp[2];
+			}
+		}
 
-    setStateProfile({
-      ...stateProfile,
-      fields: {
-        ...stateProfile.fields,
-        [name]: value,
-        ...disectFullname
-      },
-    });
-  };
+		setStateProfile({
+			...stateProfile,
+			fields: {
+				...stateProfile.fields,
+				[name]: value,
+				...disectFullname,
+			},
+		});
+	};
 
-  const handleImage = (e) => {
-    if (e.target.files?.length > 0) {
-      const reader = new FileReader();
-      reader.addEventListener("load", () =>
-        setStateProfile({
-          ...stateProfile,
-          isImageModalOpen: true,
-          selectedImage: reader.result,
-        })
-      );
-      reader.readAsDataURL(e.target.files[0]);
-    }
-  };
+	const handleImage = e => {
+		if (e.target.files?.length > 0) {
+			const reader = new FileReader();
+			reader.addEventListener('load', () =>
+				setStateProfile({
+					...stateProfile,
+					isImageModalOpen: true,
+					selectedImage: reader.result,
+				})
+			);
+			reader.readAsDataURL(e.target.files[0]);
+		}
+	};
 
-  const clearImage = (e) => {
-    setStateProfile({
-      ...stateProfile,
-      fields: {
-        ...stateProfile.fields,
-        profileImage: null,
-      },
-    });
-  };
+	const clearImage = e => {
+		setStateProfile({
+			...stateProfile,
+			fields: {
+				...stateProfile.fields,
+				profileImage: null,
+			},
+		});
+	};
 
-  const formatPhone = (number) => {
-    const formatted = `${number}`.replace(/\D/g, "");
-    const match = formatted.match(/^(\d{3})(\d{3})(\d{4})$/);
-    if (match) {
-      return `(${match[1]}) ${match[2]}-${match[3]}`;
-    }
-    return number;
-  };
+	const formatPhone = number => {
+		const formatted = `${number}`.replace(/\D/g, '');
+		const match = formatted.match(/^(\d{3})(\d{3})(\d{4})$/);
+		if (match) {
+			return `(${match[1]}) ${match[2]}-${match[3]}`;
+		}
+		return number;
+	};
 
-  return (
-    <MuiDialogContent>
-      <Grid container>
-        <Grid item sm={7}>
-          {/* <TextField
+	return (
+		<MuiDialogContent>
+			<Grid container>
+				<Grid item sm={7}>
+					{/* <TextField
             InputLabelProps={{
               classes: { root: classes.label, focused: classes.focused },
               shrink: true,
@@ -175,165 +173,157 @@ const ProfileContent = () => {
             value={fullname}
             onChange={({ target }) => onChange(target)}
           /> */}
-          <Box pb={2.5} />
-          <TextField
-            InputLabelProps={{
-              classes: { root: classes.label, focused: classes.focused },
-              shrink: true,
-            }}
-            InputProps={{
-              disableUnderline: true,
-              classes: { input: classes.input },
-              inputProps: { maxLength: 50 }, // Limit the length to 50 characters
-            }}
-            FormHelperTextProps={{
-              classes: { root: classes.helperText },
-            }}
-            label={"Display Name"}
-            placeholder={"Display Name"}
-            helperText={displayName?.length >= 50 && "Maximum length of 50 characters has reached"} // Helper text to display 
-            name="displayName"
-            value={displayName}
-            onChange={({ target }) => onChange(target)}
-          />
-          <Box pb={2.5} />
-          <TextField
-            InputLabelProps={{
-              classes: { root: classes.label, focused: classes.focused },
-              shrink: true,
-            }}
-            InputProps={{
-              disableUnderline: true,
-              error: true,
-              classes: { input: classes.input },
-            }}
-            FormHelperTextProps={{
-              classes: { root: classes.helperText },
-            }}
-            label={"What you do"}
-            placeholder={"Your role or title"}
-            //helperText={"Let people know what you do"}
-            name="jobTitle"
-            value={jobTitle}
-            onChange={({ target }) => onChange(target)}
-          />
-          <Box pb={2.5} />
-          <TextField
-            InputLabelProps={{
-              classes: { root: classes.label, focused: classes.focused },
-              shrink: true,
-            }}
-            InputProps={{
-              disableUnderline: true,
-              error: true,
-              classes: { input: classes.input },
-              inputProps: { maxLength: 20 }, // Limit the length to 20 characters
-            }}
-            FormHelperTextProps={{
-              classes: { root: classes.helperText },
-            }}
-            label={"Phone number"}
-            placeholder={formatPhone("555-555-5555")}
-            helperText={phone?.length >= 20 && "Maximum length of 20 characters has reached"} // Helper text to display 
-            name="phone"
-            value={formatPhone(phone)}
-            onChange={({ target }) => onChange(target)}
-          />
-          <Box pb={2.5} />
-          <TextField
-            InputLabelProps={{
-              classes: { 
-                root: classes.label, 
-                focused: classes.focused, 
-                disabled: classes.disabledLabel, // Apply custom styles for disabled label
-              },
-              shrink: true,
-            }}
-            InputProps={{
-              disableUnderline: true,
-              error: true,
-              classes: { input: classes.input },
-            }}
-            label={"Email"}
-            name="email"
-            value={email}
-            disabled={true}
-          />
-          
-        </Grid>
-        <Grid item sm={5}>
-          {profileImage?.length > 0 ? (
-            <CardMedia
-              className={classes.image}
-              component={"img"}
-              image={profileImage}
-              title="Profile Image"
-            />
-          ) : (
-            <Skeleton variant="rect" className={classes.image} />
-          )}
-          <Box pb={2.5} />
-          <input
-            accept="image/*"
-            style={{ display: "none" }}
-            id="profile-image"
-            type="file"
-            name="profileimage"
-            onChange={(e) => handleImage(e)}
-          />
-          <label htmlFor="profile-image">
-            <Button
-              variant="outlined"
-              component="span"
-              className={classes.button}
-            >
-              Upload an image
-            </Button>
-          </label>
-          {profileImage?.length > 0 && (
-            <Box textAlign="center" paddingTop={1}>
-              <Typography variant="body2" className={classes.removeImage} onClick={clearImage}>
-                Remove Image
-              </Typography>
-            </Box>
-          )}
-          <ProfileActions />
-        </Grid>
-        <Grid sm={12}>
-        <Box pb={2.5} />
-          <TextField
-            InputLabelProps={{
-              classes: { 
-                root: classes.label, 
-                focused: classes.focused, 
-              },
-              shrink: true,
-            }}
-            InputProps={{
-              disableUnderline: true,
-              error: true,
-              classes: { input: classes.input +' '+ classes.aboutMeInput },
-            }}
-            label={"About me"}
-            name="about"
-            value={about}
-            multiline
-            fullWidth
-            className={classes.fullWidth} // Apply custom full width class
-            rows={2} // Sets the number of visible rows
-            onChange={({ target }) => onChange(target)}
-          />
-        </Grid>
-        {/* <Grid item sm={12} style={{paddingTop: 10, color: '#1daee1'}}>
+					<Box pb={2.5} />
+					<TextField
+						InputLabelProps={{
+							classes: { root: classes.label, focused: classes.focused },
+							shrink: true,
+						}}
+						InputProps={{
+							disableUnderline: true,
+							classes: { input: classes.input },
+							inputProps: { maxLength: 50 }, // Limit the length to 50 characters
+						}}
+						FormHelperTextProps={{
+							classes: { root: classes.helperText },
+						}}
+						label={'Display Name'}
+						placeholder={'Display Name'}
+						helperText={displayName?.length >= 50 && 'Maximum length of 50 characters has reached'} // Helper text to display
+						name="displayName"
+						value={displayName}
+						onChange={({ target }) => onChange(target)}
+					/>
+					<Box pb={2.5} />
+					<TextField
+						InputLabelProps={{
+							classes: { root: classes.label, focused: classes.focused },
+							shrink: true,
+						}}
+						InputProps={{
+							disableUnderline: true,
+							error: true,
+							classes: { input: classes.input },
+						}}
+						FormHelperTextProps={{
+							classes: { root: classes.helperText },
+						}}
+						label={'What you do'}
+						placeholder={'Your role or title'}
+						//helperText={"Let people know what you do"}
+						name="jobTitle"
+						value={jobTitle}
+						onChange={({ target }) => onChange(target)}
+					/>
+					<Box pb={2.5} />
+					<TextField
+						InputLabelProps={{
+							classes: { root: classes.label, focused: classes.focused },
+							shrink: true,
+						}}
+						InputProps={{
+							disableUnderline: true,
+							error: true,
+							classes: { input: classes.input },
+							inputProps: { maxLength: 20 }, // Limit the length to 20 characters
+						}}
+						FormHelperTextProps={{
+							classes: { root: classes.helperText },
+						}}
+						label={'Phone number'}
+						placeholder={formatPhone('555-555-5555')}
+						helperText={phone?.length >= 20 && 'Maximum length of 20 characters has reached'} // Helper text to display
+						name="phone"
+						value={formatPhone(phone)}
+						onChange={({ target }) => onChange(target)}
+					/>
+					<Box pb={2.5} />
+					<TextField
+						InputLabelProps={{
+							classes: {
+								root: classes.label,
+								focused: classes.focused,
+								disabled: classes.disabledLabel, // Apply custom styles for disabled label
+							},
+							shrink: true,
+						}}
+						InputProps={{
+							disableUnderline: true,
+							error: true,
+							classes: { input: classes.input },
+						}}
+						label={'Email'}
+						name="email"
+						value={email}
+						disabled={true}
+					/>
+				</Grid>
+				<Grid item sm={5}>
+					{profileImage?.length > 0 ? (
+						<CardMedia className={classes.image} component={'img'} image={profileImage} title="Profile Image" />
+					) : (
+						<Skeleton variant="rect" className={classes.image} />
+					)}
+					<Box pb={2.5} />
+					<input
+						accept="image/*"
+						style={{ display: 'none' }}
+						id="profile-image"
+						type="file"
+						name="profileimage"
+						onChange={e => handleImage(e)}
+					/>
+					<label htmlFor="profile-image">
+						<Button variant="outlined" component="span" className={classes.button}>
+							Upload an image
+						</Button>
+					</label>
+					{profileImage?.length > 0 && (
+						<Box textAlign="center" paddingTop={1}>
+							<Typography variant="body2" className={classes.removeImage} onClick={clearImage}>
+								Remove Image
+							</Typography>
+						</Box>
+					)}
+				</Grid>
+				<Grid sm={12}>
+					<Box pb={2.5} />
+					<TextField
+						InputLabelProps={{
+							classes: {
+								root: classes.label,
+								focused: classes.focused,
+							},
+							shrink: true,
+						}}
+						InputProps={{
+							disableUnderline: true,
+							error: true,
+							classes: { input: classes.input + ' ' + classes.aboutMeInput },
+						}}
+						label={'About me'}
+						name="about"
+						value={about}
+						multiline
+						fullWidth
+						className={classes.fullWidth} // Apply custom full width class
+						rows={2} // Sets the number of visible rows
+						onChange={({ target }) => onChange(target)}
+					/>
+				</Grid>
+				{/* <Grid item sm={12} style={{paddingTop: 10, color: '#1daee1'}}>
           <Link to="/myaccount">
             <Typography variant="subtitle2">
               View more profile settings
             </Typography>
           </Link>
         </Grid> */}
-      </Grid>
-    </MuiDialogContent>
-  );
+			</Grid>
+			<Grid sm={12}>
+				<ProfileActions />
+			</Grid>
+		</MuiDialogContent>
+	);
 };
 
 export default ProfileContent;
