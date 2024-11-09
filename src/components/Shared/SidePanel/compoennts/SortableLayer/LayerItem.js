@@ -116,7 +116,7 @@ const LayerItem = React.memo(props => {
 		mapStateController.moved();
 	};
 
-	const layerFilters = mapView.selectedMapView.filters.filter(
+	const layerFilters = mapView?.selectedMapView?.filters.filter(
 		filter => filter?.dataSourceName === data?.identifier || filter?.dataSourceName === data?.layerName
 	);
 

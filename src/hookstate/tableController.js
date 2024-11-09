@@ -210,7 +210,7 @@ const tableESStateControllerHandler = state => ({
 		let formatedGridView = null;
 		let gridView = {};
 
-		const { filters } = globalStateController.getValue('mapView')?.selectedMapView;
+		const { filters } = globalStateController.getValue('mapView')?.selectedMapView || {};
 		const selectedMapViewFilters = filters;
 
 		const layers = globalStateController.getValue('layers');
