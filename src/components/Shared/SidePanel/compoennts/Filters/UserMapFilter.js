@@ -12,6 +12,7 @@ import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } fr
 import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import { tableGlobalController } from 'hookstate/tableController';
 
 // Define custom styles using Material-UI's makeStyles hook
 const useStyles = makeStyles(theme => ({
@@ -180,7 +181,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 			const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView;
 			let globalFilters = selectedMapView?.filters || [];
 
-			const canUpdateMapView = dataSourceName && fieldName && filterType;
+			const canUpdateMapView = dataSourceName && fieldName?.value && filterType;
 
 			// Upsert the map view data to the GraphQL API
 			if (canUpdateMapView) {
@@ -216,6 +217,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 
 			// Set the updated filters in the layer filters
 			layerFiltersController.setVariables(dataSourceName, { filters });
+			tableGlobalController.reInitialized();
 		}
 	}, [debouncedFilterValues, filterType, fieldName, dataSourceName]); // Dependencies trigger re-run when they change
 
@@ -309,6 +311,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 				},
 			},
 		});
+		tableGlobalController.reInitialized();
 	};
 
 	return (
