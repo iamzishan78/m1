@@ -294,7 +294,7 @@ function InputField({ editMapViewId, viewName, setViewName, upsertMapView, setEd
 							tableGlobalController.reInitialized();
 						});
 					} else {
-						const { filters } = globalStateController.getValue('mapView')?.selectedMapView;
+						const { filters } = globalStateController.getValue('mapView')?.selectedMapView || {};
 						upsertMapView({
 							variables: {
 								mapView: {

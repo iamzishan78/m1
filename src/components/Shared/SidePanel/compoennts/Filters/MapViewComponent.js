@@ -32,7 +32,7 @@ function MapViewComponent({ Icon, label, fetchMapViews, defaultView }) {
 		try {
 			setIsLoading(true);
 
-			const { _id, filters } = globalStateController.getValue('mapView')?.selectedMapView;
+			const { _id, filters } = globalStateController.getValue('mapView')?.selectedMapView || {};
 			await updateMapView({
 				variables: {
 					mapView: {
