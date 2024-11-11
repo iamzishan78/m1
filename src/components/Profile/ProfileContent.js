@@ -8,7 +8,6 @@ import TextField from '@material-ui/core/TextField';
 import Skeleton from '@material-ui/lab/Skeleton';
 import React, { useContext } from 'react';
 import { ProfileContext } from './ProfileContext';
-import ProfileActions from './ProfileActions';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -318,9 +317,6 @@ const ProfileContent = () => {
             </Typography>
           </Link>
         </Grid> */}
-			</Grid>
-			<Grid sm={12}>
-				<ProfileActions />
 			</Grid>
 		</MuiDialogContent>
 	);

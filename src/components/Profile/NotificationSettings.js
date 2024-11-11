@@ -1,9 +1,8 @@
 import React, { useContext } from 'react';
-import { Box, FormControlLabel, makeStyles, Checkbox, Grid } from '@material-ui/core';
+import { Box, FormControlLabel, makeStyles, Checkbox } from '@material-ui/core';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 // component
 import { ProfileContext } from './ProfileContext';
-import ProfileActions from './ProfileActions';
 
 const useStyles = makeStyles(() => ({
 	boldCheckboxLabel: {
@@ -144,10 +143,6 @@ const NotificationSettings = () => {
 					</dd>
 				</dl>
 			</Box>
-
-			<Grid sm={12}>
-				<ProfileActions />
-			</Grid>
 		</MuiDialogContent>
 	);
 };

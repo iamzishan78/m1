@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useRef, useEffect } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { Tabs, Tab } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -11,6 +11,7 @@ import NotificationSettings from './NotificationSettings';
 import { globalStateController } from 'hookstate/globalStateController';
 import { useMutation } from '@apollo/client';
 import { UPSERTPROFILE } from 'graphQL/useMutationUpsertProfile';
+import { deepEqual } from 'components/Shared/functions';
 
 const useStyles = makeStyles(theme => ({
 	paper: {
@@ -33,50 +34,43 @@ const Profile = () => {
 	const classes = useStyles();
 	const [stateNav, setStateNav] = useContext(NavigationContext);
 	const { isProfileOpen } = stateNav;
-	const [stateProfile, setStateProfile] = useContext(ProfileContext);
-	const [defaultProfile, setDefaultProfile] = useState(null);
-
-	// Destructure fields from stateProfile
-	const {
-		fields: { displayName },
-		isSaving,
-	} = stateProfile;
+	const [stateProfile] = useContext(ProfileContext);
+	const defaultProfile = useRef(null);
+	const [updateProfile] = useMutation(UPSERTPROFILE);
 
 	useEffect(() => {
 		// check if defaultProfile is null and displayName is defined
-		if (!defaultProfile && displayName) {
-			setDefaultProfile(stateProfile);
-		} else if (defaultProfile && isSaving) {
-			setDefaultProfile({ ...stateProfile, isSaving: false });
+		if (!defaultProfile.current && stateProfile?.fields?.displayName) {
+			defaultProfile.current = stateProfile;
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [stateProfile]);
 
-	const [updateProfile] = useMutation(UPSERTPROFILE);
-
-	const handleClose = async () => {
-		const user = globalStateController.getValue('user');
-
-		setStateProfile({ ...stateProfile, isSaving: true });
-		await updateProfile({
-			variables: { profileData: { ...stateProfile.fields, email: user.email } },
-		});
-		window.setStateApp(state => ({
-			...state,
-			user: {
-				...state.user,
-				...stateProfile.fields,
-				email: user.email,
-			},
-		}));
-
-		setStateNav({ ...stateNav, isProfileOpen: false });
-
-		setStateProfile({ ...stateProfile, isSaving: false });
+	const handleSaveProfile = async () => {
+		if (!deepEqual(stateProfile, defaultProfile.current)) {
+			const user = globalStateController.getValue('user');
+			await updateProfile({
+				variables: { profileData: { ...stateProfile.fields, email: user.email } },
+			});
+			defaultProfile.current = stateProfile;
+			window.setStateApp(state => ({
+				...state,
+				user: {
+					...state.user,
+					...stateProfile.fields,
+					email: user.email,
+				},
+			}));
+		}
 	};
 
-	const handleTabChange = (event, newValue) => {
+	const handleClose = async () => {
+		setStateNav({ ...stateNav, isProfileOpen: false });
+		await handleSaveProfile();
+	};
+
+	const handleTabChange = async (event, newValue) => {
 		setTab(newValue);
+		await handleSaveProfile();
 	};
 
 	return (
