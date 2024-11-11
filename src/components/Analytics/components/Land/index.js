@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Divider, makeStyles, Tab, Tabs, withStyles } from '@material-ui/core';
-import AcerageDetailsTabPanel from './AcerageDetails';
 import WellMasterTabPanel from './WellMaster';
 import { globalStateController } from 'hookstate/globalStateController';
 import AcerageSummary from './AcerageSummary';
 import ExhibitA from './ExhibitA';
+import AcerageDetail from './AcerageDetail';
 
 const useStyles = makeStyles(theme => ({
 	mainTabContainer: {
@@ -91,7 +91,7 @@ export default function LandAnalytics() {
 			</div>
 			{tab === 0 && <ExhibitA />}
 			{tab === 1 && <AcerageSummary />}
-			{tab === 2 && <AcerageDetailsTabPanel />}
+			{tab === 2 && <AcerageDetail />}
 			{tab === 3 && <WellMasterTabPanel />}
 			{/* <AnalyticsCards cards={cards} /> */}
 			<Divider className={classes.divider} />
