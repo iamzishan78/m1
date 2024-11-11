@@ -46,7 +46,7 @@ const Profile = () => {
 	}, [stateProfile]);
 
 	const handleSaveProfile = async () => {
-		if (!deepEqual(stateProfile, defaultProfile.current)) {
+		if (defaultProfile.current && !deepEqual(stateProfile, defaultProfile.current)) {
 			const user = globalStateController.getValue('user');
 			await updateProfile({
 				variables: { profileData: { ...stateProfile.fields, email: user.email } },
