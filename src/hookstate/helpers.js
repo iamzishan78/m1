@@ -236,6 +236,10 @@ export const handleMRTSchema = ({ _Schema, tableKey, esIndex, defaultFlterMode, 
 		tableCss['& .MuiTableRow-root>:nth-child(2)'] = {
 			marginLeft: `-${size}px !important`,
 		};
+		tableCss['& .MuiTableRow-root>:nth-child(1)'] = {
+			// set width of first hidden column
+			width: `${size}px !important`,
+		};
 	}
 	const groupedField =
 		_TableSchema.find(column => column.isGrouped)?.accessorKey || _TableSchema.find(column => column.isGrouped)?.id;
