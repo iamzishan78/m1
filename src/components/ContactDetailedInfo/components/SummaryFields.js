@@ -9,6 +9,8 @@ import { Autorenew as AutorenewIcon } from "@material-ui/icons";
 import EmailOutlinedIcon from "@material-ui/icons/EmailOutlined";
 import AddIcCallIcon from '@mui/icons-material/AddIcCall';
 import { makeStyles } from "@material-ui/core/styles";
+import { IconButton } from "@material-ui/core";
+import Tooltip from "@material-ui/core/Tooltip";
 
 import vf_number from "components/Shared/valueformatters/vf_number";
 import AutoCompleteWithAddNew from 'components/ContactDetailCard/components/AutoCompleteWithAddNew'
@@ -17,6 +19,8 @@ import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
 import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import { NumberFormatComma } from "components/Shared/Forms/Formatting/NumberFormatComma";
+import TextSmsIcon from "components/Shared/svgIcons/textsms";
+import VoiceMailIcon from "components/Shared/svgIcons/voicemail";
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -45,10 +49,26 @@ const useStyles = makeStyles(() => ({
     },
     "& .MuiInputBase-root": {
       borderRadius: "7px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      // Hide the quick actions
+      "& #voicemail-icon, & #textsms-icon, & #call-icon, & #mail-icon": { 
+        visibility: "hidden",
+        opacity: 0,
+        transition: "visibility 0.3s, opacity 0.3s ease-in-out",
+      },
+      // Show the quick actions on hover
+      "&:hover #voicemail-icon, &:hover #textsms-icon, &:hover #call-icon, &:hover #mail-icon": {
+        visibility: "visible",
+        opacity: 1,
+      },
     },
   },
   emailAdornment: {
     cursor: "pointer",
+    padding: "0px", // Remove extra padding
+    margin: "0 2px", // Adjust spacing between icons
   },
   baseValueChanged: {
     width: "100%",
@@ -59,7 +79,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function SummaryFields({ contactData }) {
+export default function SummaryFields({ contactData, handleQuickActionActivity }) {
   const classes = useStyles();
   const { control, reset } = useForm();
   const [activeLoadingField, setLoading] = useState();
@@ -227,17 +247,43 @@ export default function SummaryFields({ contactData }) {
                             inputComponent: field.type === "currency" ? CurrencyFormatCustom : field.key.includes('nraSum') ? NumberFormatComma : undefined,
                             endAdornment:
                               field.type === "email" && contactData[field.key] ? (
-                                <a href={`mailto: ${contactData.primaryEmail}`} className={classes.emailAdornment}>
-                                  <InputAdornment position="end">
-                                    <EmailOutlinedIcon htmlColor="#757575" />
-                                  </InputAdornment>
-                                </a>
-                              ) : ['homePhone', 'mobilePhone', 'AltPhone'].includes(field.key) && contactData[field.key] ? (
-                                <a href={`tel: ${contactData[field.key]}`} className={classes.emailAdornment}>
-                                  <InputAdornment position="end">
-                                    <AddIcCallIcon htmlColor="#757575" />
-                                  </InputAdornment>
-                                </a>
+                                <InputAdornment position="end">
+                                  {/* Email quick actions icons */}
+                                  <Tooltip title={"Email"} placement="top">
+                                    <IconButton id="mail-icon" href={`mailto: ${contactData.primaryEmail}`} className={classes.emailAdornment}>
+                                      <EmailOutlinedIcon htmlColor="#757575" />
+                                    </IconButton>
+                                  </Tooltip>
+                                </InputAdornment>
+                              ) : field.isPhoneNumber && contactData[field.key] ? (
+                                <>
+                                {/* Phone quick actions icons */}
+                                <InputAdornment position="end">
+                                  <Tooltip title={"Voice Mail"} placement="top">
+                                    <IconButton id="voicemail-icon" className={classes.emailAdornment} onClick={() => handleQuickActionActivity({phoneNumber: contactData[field.key], type: 'call'})}>
+                                      <VoiceMailIcon htmlColor="#757575" />
+                                    </IconButton>
+                                  </Tooltip>
+                                </InputAdornment>
+
+                                <InputAdornment position="end">
+                                  <Tooltip title={"Text SMS"} placement="top">
+                                    <IconButton id="textsms-icon" className={classes.emailAdornment} onClick={() => handleQuickActionActivity({phoneNumber: contactData[field.key], type: 'text_message'})}>
+                                      <TextSmsIcon htmlColor="#757575" />
+                                    </IconButton>
+                                  </Tooltip>
+                                </InputAdornment>
+
+                                <InputAdornment position="end">
+                                  <Tooltip title={"Call"} placement="top">
+                                    <IconButton id="call-icon" href={`tel: ${contactData[field.key]}`} className={classes.emailAdornment}>
+                                      <AddIcCallIcon htmlColor="#757575" />
+                                    </IconButton>
+                                  </Tooltip>
+                                </InputAdornment>
+                                </>
+                              ) : activeLoadingField === field.key ? (
+                                <CircularProgress className={classes.loader} size={22} color="secondary" />
                               ) : activeLoadingField === field.key ? (
                                 <CircularProgress className={classes.loader} size={22} color="secondary" />
                               ) : (

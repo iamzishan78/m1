@@ -50,6 +50,8 @@ export default function FieldContent({
   isEdited = false,
   isMerged = false,
   disabled,
+  row,
+  handleQuickActionActivity,
   metafields,
   ...props
 }) {
@@ -581,6 +583,8 @@ export default function FieldContent({
           isCopy={true}
           setEditContent={setEditContent}
           editContent={content}
+          row={row}
+          handleQuickActionActivity={handleQuickActionActivity}
         />
       )}
       {fieldType === FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />}
