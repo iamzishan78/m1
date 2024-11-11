@@ -92,7 +92,8 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 	const [getShapeFileSchema, { data: shapeFileSchema }] = useLazyQuery(GET_SHAPE_FILE_SCHEMA);
 
 	// Watch form fields to dynamically react to their values
-	const dataSourceName = watch(`mapViews.${index}.dataSourceName`);
+	const dataSourceNameField = watch(`mapViews.${index}.dataSourceName`);
+	const dataSourceName = dataSourceNameField?.value || dataSourceNameField;
 	const fieldName = watch(`mapViews.${index}.fieldName`);
 	const filterValues = watch(`mapViews.${index}.filterValues`);
 	const filterType = watch(`mapViews.${index}.filterType`);
@@ -114,7 +115,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 	useEffect(() => {
 		getShapeFileSchema({
 			variables: {
-				layerId: dataSourceName?.value || dataSourceName,
+				layerId: dataSourceName,
 			},
 		});
 	}, [dataSourceName, getShapeFileSchema]);
@@ -125,7 +126,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 			let esIndex; // Elasticsearch index used in the query
 			let filters = []; // Filters to apply to the query
 			let search = { fields: [] };
-			const layerType = customLayersFieldAccessors[dataSourceName?.value || dataSourceName]?.layerKey?.toLowerCase(); // Get the layer type
+			const layerType = customLayersFieldAccessors[dataSourceName]?.layerKey?.toLowerCase(); // Get the layer type
 
 			// Determine the filters based on the layer type
 
@@ -142,7 +143,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 				esIndex = 'shapefile_flat';
 				const selectedLayer = globalStateController
 					.getValue('layers')
-					?.find(layer => layer?.layerId === (dataSourceName?.value || dataSourceName));
+					?.find(layer => layer?.layerId === dataSourceName);
 				filters = selectedLayer ? generateFileFilters({ fileLayer: selectedLayer }).variables.filters : [];
 				search = selectedLayer ? generateFileFilters({ fileLayer: selectedLayer }).variables.search : {};
 				search.fields = [];
@@ -172,8 +173,8 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 		if (dataSourceName) {
 			const layerShapeName = globalStateController
 				.getValue('layers')
-				?.find(layer => layer?.layerId === (dataSourceName?.value || dataSourceName))?.layerShapeName;
-			const state = layerFiltersController.getValue([layerShapeName || dataSourceName?.value || dataSourceName]); // Get layer filters from hookstate
+				?.find(layer => layer?.layerId === dataSourceName)?.layerShapeName;
+			const state = layerFiltersController.getValue([layerShapeName || dataSourceName]); // Get layer filters from hookstate
 			const initialFilters = state?.variables?.filters || []; // Get initial filters
 			let filters = initialFilters.filter(filter => filter.field !== fieldName?.value); // Remove existing filter
 			const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView;
@@ -184,9 +185,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 			// Upsert the map view data to the GraphQL API
 			if (canUpdateMapView) {
 				globalFilters = globalFilters.filter(
-					filter =>
-						filter.fieldName !== (fieldName?.value || fieldName) ||
-						filter.dataSourceName !== (dataSourceName?.value || dataSourceName)
+					filter => filter.fieldName !== (fieldName?.value || fieldName) || filter.dataSourceName !== dataSourceName
 				);
 				globalStateController.updateState({
 					mapView: {
@@ -195,7 +194,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 							filters: [
 								...globalFilters.filter(filter => filter?.fieldName),
 								{
-									dataSourceName: dataSourceName?.value || dataSourceName,
+									dataSourceName: dataSourceName,
 									filterType: filterType?.value || filterType,
 									fieldName: fieldName?.value || fieldName,
 									filterValues:
@@ -259,7 +258,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 			{
 				name: `mapViews.${index}.fieldName`,
 				label: 'Field Name',
-				options: customLayersFieldAccessors[dataSourceName?.value]?.keys || shapeFileSchema?.getShapeFileSchema || [], // Dynamic based on data source
+				options: customLayersFieldAccessors[dataSourceName]?.keys || shapeFileSchema?.getShapeFileSchema || [], // Dynamic based on data source
 				defaultValue: mapView?.dataSourceName ? getSelectedField(mapView?.fieldName) || mapView?.fieldName : null, // Set default value if mapView is provided
 				onChange: () => {
 					setValue(`mapViews.${index}.filterType`, null);
@@ -289,8 +288,8 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 	const clearFilter = () => {
 		const layerShapeName = globalStateController
 			.getValue('layers')
-			?.find(layer => layer?.layerId === (dataSourceName?.value || dataSourceName))?.layerShapeName;
-		const filterAccessor = layerShapeName || dataSourceName?.value || dataSourceName;
+			?.find(layer => layer?.layerId === dataSourceName)?.layerShapeName;
+		const filterAccessor = layerShapeName || dataSourceName;
 		const state = layerFiltersController.getValue([filterAccessor]); // Get layer filters from hookstate
 		const initialFilters = state?.variables?.filters || []; // Get initial filters
 		const filters = initialFilters.filter(filter => filter.field !== fieldName.value); // Remove existing filter
@@ -298,9 +297,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 		const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView;
 		let globalFilters = selectedMapView?.filters || [];
 		globalFilters = globalFilters.filter(
-			filter =>
-				filter.fieldName !== (fieldName?.value || fieldName) ||
-				filter.dataSourceName !== (dataSourceName?.value || dataSourceName)
+			filter => filter.fieldName !== (fieldName?.value || fieldName) || filter.dataSourceName !== dataSourceName
 		);
 		remove(index); // Set the filter cleared state to true
 

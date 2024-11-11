@@ -222,12 +222,11 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 			query: GET_MAP_VIEWS,
 		});
 		const allMapViews = result?.data?.getMapViews?.mapViews;
-		const currentMapView = result?.data?.getMapViews?.mapViews?.find(view => view.isCurrent);
 		globalStateController.updateState({
 			allMapViews,
-			mapView: {
-				selectedMapView: currentMapView,
-			},
+			// mapView: {
+			// 	selectedMapView: currentMapView,
+			// },
 		});
 	}
 
