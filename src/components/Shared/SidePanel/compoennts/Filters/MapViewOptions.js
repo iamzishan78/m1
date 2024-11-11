@@ -447,7 +447,7 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 							globalStateController.updateState({ mapView: { ...mapViewStateValues.mapView, showViewModal: false } });
 						}}
 					>
-						{view?.defaultDisplayBy?.includes(userId) ? 'Remove as default view' : 'Set as default view'}
+						{view?.isCurrent ? 'Remove as default view' : 'Set as default view'}
 					</MenuItem>
 				)}
 
