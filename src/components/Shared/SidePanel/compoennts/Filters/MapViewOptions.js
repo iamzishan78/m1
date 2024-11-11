@@ -106,9 +106,10 @@ function MapViewOptions({ handleDefaultView, tableKey, allMapViews, defaultView,
 	const [upsertMapView] = useMutation(UPSERT_MAP_VIEW, {
 		onCompleted: data => {
 			fetchMapViews();
+			const mapView = globalStateController.getValue('mapView');
 			globalStateController.updateState({
 				mapView: {
-					selectedMapView: data?.upsertMapView?.mapView,
+					...mapView,
 					showViewModal: false,
 					showSaveAsNew: false,
 				},
