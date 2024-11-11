@@ -263,12 +263,12 @@ export default function AgreementDetailCard(props) {
 	// Table overridden meta
 	const RelatedUnitsOverrideMeta = useMemo(
 		() => ({
-			defaultFilters: [{ field: 'shape._id', value: dataCustomLayer?.customLayer?._id }],
+			defaultFilters: [{ field: 'shape._id', value: uniObj?._id }],
 			CustomToolBar: AgreementRelatedUnitsToolbar,
 			maxTableHeight: 'calc(60vh - 200px)',
-			customProps: { customLayer: dataCustomLayer?.customLayer },
+			customProps: { customLayer: uniObj },
 		}),
-		[dataCustomLayer]
+		[uniObj]
 	);
 
 	const DocumentHeader = () => {

@@ -418,6 +418,13 @@ const AgreementMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.reportNet.keyword',
+			accessorKey: 'shapeJson.properties.reportNet',
+			header: 'Report Net',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.netAcres.keyword',
 			accessorKey: 'shapeJson.properties.netAcres',
 			header: 'Net',
@@ -436,6 +443,11 @@ const AgreementMeta = {
 			accessorKey: 'shapeJson.properties.netRoyalty',
 			header: 'NRA',
 		},
+
+		CommonSchema.CREATED_BY,
+		CommonSchema.CREATED_DATE,
+		CommonSchema.LAST_UPDATED_BY,
+		CommonSchema.LAST_UPDATED_DATE,
 
 		{
 			...CommonSchema.COMMON_COLUMN,
