@@ -59,7 +59,7 @@ const ExhibitAMeta = {
 			left: '19px',
 		},
 	},
-	maxTableHeight: 'calc(100vh - 290px)',
+	maxTableHeight: 'calc(100vh - 365px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
 	TableSchema: [

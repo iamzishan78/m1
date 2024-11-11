@@ -35,6 +35,7 @@ function ESAutoCompleteFilter({
 	},
 	extendSearchQuery,
 	multiple,
+	_value,
 }) {
 	if (isComposite) field = field.split(',');
 	const searchMode = type === 'date' ? 'FE' : 'BE';
@@ -211,7 +212,7 @@ function ESAutoCompleteFilter({
 			options={requiredOptions}
 			loading={loading}
 			filterOptions={searchMapping[searchMode].filterOptions}
-			value={formatValue(filterValue, field)}
+			value={formatValue(filterValue || _value, field)}
 			renderInput={params => (
 				<TextField
 					{...params}
