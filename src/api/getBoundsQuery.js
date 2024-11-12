@@ -83,6 +83,7 @@ const getBoundsQuery = async ({
 	onData,
 	geoField,
 	filters,
+	isElasticQuery,
 	multiQuery,
 	polygonFilter,
 	polygonsFilter,
@@ -94,7 +95,9 @@ const getBoundsQuery = async ({
 			identifier,
 			id: uuid(),
 			finished: false,
-			variables: {},
+			variables: {
+				...(isElasticQuery === false && { isElasticQuery }),
+			},
 		};
 
 		await handleQuery(queryHandler, onData);
@@ -136,6 +139,8 @@ const getBoundsQuery = async ({
 
 	geoPolygons.forEach(geoPolygon => {
 		const { variables = {} } = copy(filters || {});
+
+		if (isElasticQuery === false) variables.isElasticQuery = isElasticQuery;
 
 		if (isAgreementLayer)
 			variables.filters = filters.variables.filters.map(filter => {
