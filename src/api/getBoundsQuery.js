@@ -117,7 +117,7 @@ const getBoundsQuery = async ({
 		if (!queryHandler.finished) queryHandler.observable.unsubscribe();
 	});
 
-	const { polygon } = boundingState || {};
+	const { polygon, lastBounds } = boundingState || {};
 
 	if (!polygon) return;
 
@@ -161,6 +161,14 @@ const getBoundsQuery = async ({
 				field: filters.geoBoundingField || geoField,
 				value: polygonsFilter.length === 0 ? geoPolygon.geometry : polygonsFilter,
 			});
+
+			if (lastBounds?.geometry) {
+				variables.filters.push({
+					type: 'geo_notintersects',
+					field: filters.geoBoundingField || geoField,
+					value: lastBounds?.geometry,
+				});
+			}
 		}
 
 		const queryHandler = {

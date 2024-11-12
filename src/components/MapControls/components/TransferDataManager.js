@@ -18,7 +18,7 @@ import { snapGridSideBarData } from 'components/MapGridCard/components/data';
 import { history } from 'store';
 import { useApolloClient, useLazyQuery } from '@apollo/client';
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
-import M1neral_headers from 'components/BulkUpload/jobHeaders';
+import M1neral_headers, { getCustomFieldHeaders } from 'components/BulkUpload/jobHeaders';
 import { jobController } from 'hookstate/jobStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
@@ -135,30 +135,7 @@ export default function TransferDataManager(props) {
 
 		let m1neralHeaders = M1neral_headers[jobType] || [];
 
-		let customFieldHeaders = [];
-
-		switch (jobType) {
-			case 'TRACT_SHAPE':
-				customFieldHeaders = (metaDataRes?.getMetaData?.metaData || [])
-					.filter(md => md.category === 'Parcel')
-					.map(md => ({
-						...md,
-						actual_key: `custom_data.${md.name}`,
-					}));
-				break;
-
-			case 'UNIT_SHAPE':
-				customFieldHeaders = (metaDataRes?.getMetaData?.metaData || [])
-					.filter(md => md.category === 'Unit')
-					.map(md => ({
-						...md,
-						actual_key: `custom_data.${md.name}`,
-					}));
-				break;
-
-			default:
-				break;
-		}
+		const customFieldHeaders = getCustomFieldHeaders(jobType, metaDataRes?.getMetaData?.metaData);
 
 		m1neralHeaders = [...m1neralHeaders, ...customFieldHeaders];
 

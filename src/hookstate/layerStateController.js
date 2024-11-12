@@ -23,6 +23,7 @@ import { navController } from './navStateController';
 import { mapControlsController } from './mapControlsController';
 import { NotificationManager } from 'react-notifications';
 import { debounce } from 'lodash';
+import { v4 as uuid } from 'uuid';
 import { layerFilters, layerState, layerStateInitialState } from './initialStates';
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
@@ -278,6 +279,8 @@ const layerStateControllerHandler = state => {
 			const bboxIntersects = bbox && layerBBox ? booleanIntersects(bbox, bboxPolygon(layerBBox)) : true;
 			const show = visible && zoom > defaultZoom;
 
+			const lastBounds = previousBounds;
+
 			if (isOutside && bboxIntersects && show) {
 				if (previousBounds) {
 					newPolygon = difference(newPolygon, previousBounds);
@@ -290,6 +293,7 @@ const layerStateControllerHandler = state => {
 
 			const boundingState = {
 				...rest,
+				lastBounds,
 				previousBounds,
 				polygon: newPolygon,
 				callApi: isOutside && bboxIntersects && show,
@@ -320,7 +324,6 @@ const layerStateControllerHandler = state => {
 
 	const updateLayer = (layer, updatedState) => {
 		const layerId = `${layer?.identifier}_${layer._id}`;
-
 		DeckGlLayer.updateLayer(updatedState, window.mapRef?.getLayer(layerId)?.implementation);
 	};
 
@@ -537,9 +540,6 @@ const layerStateControllerHandler = state => {
 					...(labelProps && { getText: d => d.properties?.label }),
 					pickable,
 					visible,
-					parameters: {
-						depthTest: false, // Disable depth testing to draw points on top
-					},
 				},
 			});
 		}
@@ -547,7 +547,7 @@ const layerStateControllerHandler = state => {
 		deckLayers[layerId].beforeLayerId = beforeLayerId;
 	};
 
-	const handleDeckLayer = dbLayer => {
+	const handleDeckLayer = (dbLayer, isUpdateTrigger) => {
 		const client = layerController.getValue('client');
 		if (!client) return;
 
@@ -610,6 +610,16 @@ const layerStateControllerHandler = state => {
 
 		reinitializeLayer({ meta, layerId, beforeLayerId, labelProps, pickable, visible });
 
+		if (isUpdateTrigger) {
+			const newId = uuid();
+			updatedProps.updateTriggers = {
+				getFillColor: newId,
+				getLineColor: newId,
+				getLineWidth: newId,
+				defaultColor: newId,
+				getPointRadius: newId,
+			};
+		}
 		if (!boundingState.show?.current)
 			return updateLayer(dbLayer, {
 				pickable,
