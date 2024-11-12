@@ -444,11 +444,6 @@ const AgreementMeta = {
 			header: 'NRA',
 		},
 
-		CommonSchema.CREATED_BY,
-		CommonSchema.CREATED_DATE,
-		CommonSchema.LAST_UPDATED_BY,
-		CommonSchema.LAST_UPDATED_DATE,
-
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.ownerName.keyword',
