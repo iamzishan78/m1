@@ -410,47 +410,23 @@ export const createFilterPopup = filterFeature => {
 	}
 };
 
-export const getAdvancedSearch = (layerGeometry, mustQuery) =>
-	layerGeometry === 'Polygon'
-		? [
+// Utility function to get advanced search query
+export const getAdvancedSearch = (layerGeometry, mustQuery) => [
+	{
+		$and: [
 			{
-				bool: {
-					must: [
-						...mustQuery,
-						{
-							bool: {
-								should: [
-									{
-										term: { 'properties.layerGeometry.keyword': 'Polygon' },
-									},
-									{
-										term: { 'properties.layerGeometry.keyword': 'MultiPolygon' },
-									},
-								],
-							},
-						},
-					],
-				},
+				$or: mustQuery,
 			},
-		]
-		: [
 			{
-				bool: {
-					must: [
-						...mustQuery,
-						{
-							bool: {
-								should: [
-									{
-										term: { 'properties.layerGeometry.keyword': layerGeometry },
-									},
-								],
-							},
-						},
-					],
-				},
+				$or:
+					layerGeometry === 'Polygon'
+						? [{ 'properties.layerGeometry': 'Polygon' }, { 'properties.layerGeometry': 'MultiPolygon' }]
+						: [{ 'properties.layerGeometry': layerGeometry }],
 			},
-		];
+		],
+	},
+];
+
 // Query made generic to support in both TransferData Manager and layerStateController
 export const generateFileFilters = ({
 	fileLayer,
@@ -464,21 +440,8 @@ export const generateFileFilters = ({
 	// Altered query accordingly
 	if (fileLayer.layerShapeName) {
 		mustQuery = [
-			{
-				bool: {
-					should: [{
-						term: {
-							'properties.layerShapeName.keyword': fileAlternateName
-						}
-					},
-					{
-						term: {
-							'properties.layerShapeName.keyword': fileLayer.layerShapeName
-						}
-					}
-					]
-				}
-			}
+			{ 'properties.layerShapeName': fileAlternateName },
+			{ 'properties.layerShapeName': fileLayer.layerShapeName },
 		];
 	}
 
@@ -589,7 +552,7 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 				props.getFillColor = getLayerFillColor(dbLayer, fillColor, fillOpacity);
 				props.defaultColor = getRGBA(fillColor, fillOpacity);
 				props.getLineColor = getLayerStrokeColor(dbLayer, fillStroke);
-				props.getLineWidth = (feature) => {
+				props.getLineWidth = feature => {
 					// Calculate area of the shape
 					const area = turf.area(feature);
 					// If area is less than 10 sq meters, return 0
@@ -597,7 +560,7 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 					// If area is less than 1000 sq meters, return 1
 					if (area < 1000) return 1;
 					return strokeWidth || 20;
-				}
+				};
 
 				break;
 
@@ -614,7 +577,7 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 				props.getLineColor = getLayerStrokeColor(dbLayer, pointStroke);
 
 				props.getPointRadius = pointRadius * 40;
-				props.getLineWidth = (feature) => {
+				props.getLineWidth = feature => {
 					// Calculate area of the shape
 					const area = turf.area(feature);
 					// If area is less than 10 sq meters, return 0
@@ -622,7 +585,7 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 					// If area is less than 1000 sq meters, return 1
 					if (area < 1000) return 1;
 					return pointWidth * 40;
-				}
+				};
 
 				break;
 
