@@ -293,6 +293,15 @@ const ContactMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'county.keyword',
+			accessorKey: 'county',
+			header: 'County',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'zip.keyword',
 			accessorKey: 'zip',
 			header: 'Zip',
