@@ -601,8 +601,8 @@ function Map({
 		if (stateApp.heatLayers && stateApp.heatLayers.length > 0 && map) {
 			stateApp.heatLayers.forEach(l => {
 				l.id.forEach(k => {
-					if (map.getLayer(k)) {
-						map.setLayoutProperty(k, 'visibility', 'none');
+					if (map?.getLayer(k)) {
+						map?.setLayoutProperty(k, 'visibility', 'none');
 					}
 				});
 			});
