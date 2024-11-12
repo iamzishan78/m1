@@ -279,6 +279,8 @@ const layerStateControllerHandler = state => {
 			const bboxIntersects = bbox && layerBBox ? booleanIntersects(bbox, bboxPolygon(layerBBox)) : true;
 			const show = visible && zoom > defaultZoom;
 
+			const lastBounds = previousBounds;
+
 			if (isOutside && bboxIntersects && show) {
 				if (previousBounds) {
 					newPolygon = difference(newPolygon, previousBounds);
@@ -291,6 +293,7 @@ const layerStateControllerHandler = state => {
 
 			const boundingState = {
 				...rest,
+				lastBounds,
 				previousBounds,
 				polygon: newPolygon,
 				callApi: isOutside && bboxIntersects && show,
