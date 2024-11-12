@@ -3,7 +3,6 @@ import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
 import moment from 'moment';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
-import { formatDate } from 'components/Shared/functions';
 import Contact from 'components/Shared/svgIcons/contact';
 import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActionMenu';
 import ContactToolbar from 'components/MRTTable/TablesOverride/ContactTable/ContactToolbar';
@@ -16,7 +15,6 @@ import Loaders from 'components/Loaders';
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact.js';
 import { copy } from 'utils/helper';
 import { isEmpty, pickBy } from 'lodash';
-import { globalStateController } from 'hookstate/globalStateController';
 import { tableGlobalController } from 'hookstate/tableController';
 
 const esIndex = 'contacts_flat';
@@ -25,17 +23,12 @@ const onCustomKeyChange = async (client, row, value, item) => {
 	const loaderId = `upadting-${row?._id}`;
 
 	try {
-
 		// Starting update loader
-		const user = globalStateController.getValue('user');
 		Loaders.createToast(loaderId, 'Updation in Progress');
 
 		// Copying all custom data of user
 		const customData = copy(row?.custom_data) ?? {};
-		const filteredCustomData = pickBy(
-			customData,
-			value => value !== '' && !isEmpty(value)
-		);
+		const filteredCustomData = pickBy(customData, value => value !== '' && !isEmpty(value));
 
 		const contact = {
 			_id: row._id,
@@ -49,7 +42,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 		await client.mutate({
 			variables: {
 				contact,
-				ignoreResponse: true
+				ignoreResponse: true,
 			},
 			mutation: UPDATECONTACT,
 		});
@@ -104,7 +97,7 @@ const ContactMeta = {
 	},
 	onCustomKeyChange,
 	search: {
-		fields: ["name^4", "_all"]
+		fields: ['name^4', '_all'],
 	},
 	showAddContactButton: true,
 	TableSchema: [
@@ -112,7 +105,7 @@ const ContactMeta = {
 			...CommonSchema.MONGO_ID,
 			name: '_id',
 			accessorKey: '_id',
-			header: "M1neral Contact System ID",
+			header: 'M1neral Contact System ID',
 			isHiddenFieldExport: true,
 		},
 
@@ -135,12 +128,17 @@ const ContactMeta = {
 					>
 						{typeof renderedCellValue === 'string' && (
 							<Avatar
-								color={Avatar.getRandomColor(renderedCellValue, ['#b5d2f6', '#ade2e9', '#eaeaea', '#f2c1e2', '#d7d6fb'])}
+								color={Avatar.getRandomColor(renderedCellValue, [
+									'#b5d2f6',
+									'#ade2e9',
+									'#eaeaea',
+									'#f2c1e2',
+									'#d7d6fb',
+								])}
 								fgColor="#000"
 								name={renderedCellValue.split(' ').splice(0, 2).join(' ')}
 								size="35"
 								round
-
 							/>
 						)}
 
@@ -165,15 +163,14 @@ const ContactMeta = {
 									<MonetizationOnIcon
 										style={{
 											marginLeft: '10px',
-											color: "gray"
+											color: 'gray',
 										}}
-
 									/>
 								</FeatureFlag>
 							)}
 						</p>
 					</div>
-				)
+				);
 			},
 		},
 
@@ -369,7 +366,6 @@ const ContactMeta = {
 			hidden: true,
 		},
 
-
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'department.keyword',
@@ -453,8 +449,6 @@ const ContactMeta = {
 			accessorKey: 'account',
 			header: 'Account',
 		},
-
-
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -592,7 +586,7 @@ const ContactMeta = {
 			isHiddenFieldExport: true,
 			hidden: true,
 			Cell: ({ row }) => {
-				return <CampaignNameField value={row?.original?.campaignName?.[0]} fullWidth disabled />
+				return <CampaignNameField value={row?.original?.campaignName?.[0]} fullWidth disabled />;
 			},
 		},
 
@@ -628,7 +622,6 @@ const ContactMeta = {
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
-
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -681,7 +674,7 @@ const ContactMeta = {
 				{ label: 'Yes', value: 'true' },
 				{ label: 'No', value: 'false' },
 			],
-			type: "boolean",
+			type: 'boolean',
 			Cell: ({ row }) => {
 				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
 
@@ -696,8 +689,8 @@ const ContactMeta = {
 			header: 'Contact Owner',
 			isExport: 'contactOwners[0].name',
 			Cell: ({ row }) => {
-				const name = row?.original?.contactOwners?.map(obj => obj.name)
-				return <p>{name?.[0]}</p>
+				const name = row?.original?.contactOwners?.map(obj => obj.name);
+				return <p>{name?.[0]}</p>;
 			},
 		},
 
@@ -710,7 +703,14 @@ const ContactMeta = {
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const targetSourceId = row.getValue('_id');
-				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'contact'} />;
+				return (
+					<TagCell
+						id={targetSourceId}
+						targetSourceId={targetSourceId}
+						tags={row?.original?.tags}
+						targetLabel={'contact'}
+					/>
+				);
 			},
 		},
 
