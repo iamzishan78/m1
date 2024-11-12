@@ -212,7 +212,7 @@ function ESAutoCompleteFilter({
 			options={requiredOptions}
 			loading={loading}
 			filterOptions={searchMapping[searchMode].filterOptions}
-			value={formatValue(filterValue || _value, field)}
+			value={formatValue(filterValue ?? _value, field)}
 			renderInput={params => (
 				<TextField
 					{...params}
