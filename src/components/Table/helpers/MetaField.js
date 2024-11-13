@@ -391,9 +391,9 @@ const MetaField = ({
 		rippleEffectCall(data);
 	};
 
-	const isDisabled = ['text', 'number', 'date'].includes(type)
-		? !title
-		: !title || items.filter(item => !!item.value).length === 0;
+	const isBasicType = ['text', 'number', 'date'].includes(type);
+	const isDisabled = isBasicType ? !title : !title || items.filter(item => !!item.value).length === 0;
+
 	const postFix = type === 'number' ? '' : customDataPostfix;
 
 	return (
@@ -564,26 +564,30 @@ const MetaField = ({
 											)}
 										</Grid>
 										<Grid container item xs={5}>
-											<label style={{ margin: '15px 0px 5px 0px' }}>Icon Type</label>
-											<Controller
-												control={control}
-												name="iconType"
-												defaultValue={iconOptions[0].value}
-												render={params => (
-													<Select
-														styles={{
-															menu: provided => ({ ...provided, zIndex: 9999 }),
-														}}
-														value={iconOptions.find(op => op.value === params.value)}
-														menuPlacement="auto"
-														options={iconOptions}
-														className={classes.select}
-														onChange={e => {
-															params.onChange(e.value);
-														}}
+											{!isBasicType && (
+												<>
+													<label style={{ margin: '15px 0px 5px 0px' }}>Icon Type</label>
+													<Controller
+														control={control}
+														name="iconType"
+														defaultValue={iconOptions[0].value}
+														render={params => (
+															<Select
+																styles={{
+																	menu: provided => ({ ...provided, zIndex: 9999 }),
+																}}
+																value={iconOptions.find(op => op.value === params.value)}
+																menuPlacement="auto"
+																options={iconOptions}
+																className={classes.select}
+																onChange={e => {
+																	params.onChange(e.value);
+																}}
+															/>
+														)}
 													/>
-												)}
-											/>
+												</>
+											)}
 											<div style={{ width: '100%', marginTop: 5 }}>
 												<label>Module</label>
 												<Controller
@@ -611,7 +615,7 @@ const MetaField = ({
 										</Grid>
 									</Grid>
 								</div>
-								{(type === 'dropdown' || type === 'multiselect') && (
+								{!isBasicType && (
 									<div style={{ padding: '0px 35px' }}>
 										<SortableComponent setItems={setItems} items={items} />
 									</div>
