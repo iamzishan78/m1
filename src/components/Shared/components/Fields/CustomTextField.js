@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextField } from '@material-ui/core';
 
-const NumberField = ({ value, defaultValue, id, field, fieldKey, index, onChange, ...props }) => {
+const CustomTextField = ({ value, defaultValue, id, field, fieldKey, index, onChange, ...props }) => {
 	const [fieldValue, setFieldValue] = useState(value || defaultValue || '');
 
 	useEffect(() => {
@@ -9,11 +9,9 @@ const NumberField = ({ value, defaultValue, id, field, fieldKey, index, onChange
 	}, [value, defaultValue]);
 
 	const handleChange = e => {
-		const val = Number(e.target.value.trim());
-		if (!isNaN(val)) {
-			setFieldValue(val);
-			onChange?.(e, val);
-		}
+		const val = e.target.value;
+		setFieldValue(val);
+		onChange?.(e, val);
 	};
 
 	return (
@@ -21,7 +19,7 @@ const NumberField = ({ value, defaultValue, id, field, fieldKey, index, onChange
 			id={id || `field-${index}`}
 			variant="outlined"
 			margin="dense"
-			type="number"
+			type="text"
 			fullWidth
 			value={fieldValue}
 			InputProps={props.InputProps}
@@ -36,4 +34,4 @@ const NumberField = ({ value, defaultValue, id, field, fieldKey, index, onChange
 	);
 };
 
-export default NumberField;
+export default CustomTextField;
