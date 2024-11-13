@@ -2,7 +2,7 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import RelatedCostAllocationsToolbar from '../TablesOverride/RelatedCostAllocationsTable/RelatedCostAllocationsToolbar';
 import { tableGlobalController } from 'hookstate/tableController';
 import { getArrayValue } from '../utils/helper';
-import vf_currency from 'components/Shared/valueformatters/vf_currency';
+import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 
 const esIndex = 'properties_flat';
@@ -103,7 +103,7 @@ const RelatedCostAllocationsMeta = {
 			Cell: ({ row }) => {
 				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
 				const value = getArrayValue(row.original.costAllocations, 'amount', paymentId, 'paymentId');
-				return value ? vf_currency(parseFloat(value)) : '';
+				return value ? vf_currency_to_fixed(parseFloat(value), 2) : '';
 			},
 		},
 	],

@@ -10,7 +10,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { CircularProgress, Dialog, DialogTitle, IconButton } from '@material-ui/core';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
-
 // functions
 import { grey600, grey400 } from 'material-ui/styles/colors';
 
@@ -180,7 +179,6 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 		}
 	}, [watchName, watchPayeeName]);
 
-
 	// Memoize form schema to avoid unnecessary re-renders
 	const formSchema = useMemo(() => {
 		switch (formName) {
@@ -269,7 +267,14 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 						</IconButton>
 					</ListItemIcon>
 				</ListItem>
-				<CommonForm formSchema={formSchema} control={control} reset={reset} watch={watch} dialogKey={formName} />
+				<ListItem
+					style={{
+						flexDirection: 'column',
+						alignItems: 'normal',
+					}}
+				>
+					<CommonForm formSchema={formSchema} control={control} reset={reset} watch={watch} dialogKey={formName} />
+				</ListItem>
 			</List>
 
 			<div className={classes.dialogFooter}>
@@ -296,7 +301,7 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 					color="secondary"
 					size="medium"
 					disableElevation
-					disabled={disabled}
+					disabled={false}
 					onClick={() => {
 						const data = getValues();
 						addNewData(data, setLoader);

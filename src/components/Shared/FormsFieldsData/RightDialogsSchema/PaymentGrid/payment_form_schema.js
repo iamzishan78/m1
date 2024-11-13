@@ -1,60 +1,108 @@
 import { InputAdornment } from '@material-ui/core';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_PAYMENT_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetPaymentAutoCompleteList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
-const paymentForm = ({ setValue }) => {
+const calculateNextPayment = (value, totalAmount, startDate, endDate) => {
+	if(!value || !totalAmount || !startDate || !endDate) return 0
+	
+
+	const start = new Date(startDate);
+	const end = new Date(endDate);
+	const timeDiff = end - start;
+	const daysDiff = timeDiff / (1000 * 60 * 60 * 24); // Convert to days
+
+	if (end <= start) {
+		return 0; // Return 0 or another value indicating invalid input
+	}
+
+
+	switch(value){
+		case 'Annual': {
+			const yearInDays = 365;
+			if (daysDiff < yearInDays) {
+				// Prorate the annual payment if period is less than a year
+				return 0;
+			}
+			const years = daysDiff / yearInDays;
+			return totalAmount / Math.floor(years+1);
+		}
+		case 'Monthly': {
+			const monthInDays = 30.44;
+			if (daysDiff < monthInDays) {
+				// Prorate the monthly payment if period is less than a month
+				return  0;
+			}
+			const months = daysDiff / monthInDays;
+			return totalAmount / Math.floor(months+1);
+		}
+		case 'Quarterly': {
+			const quarterInDays = 30.44 * 3;
+			if (daysDiff < quarterInDays) {
+				// Prorate the quarterly payment if period is less than a quarter
+				return 0;
+			}
+			const quarters = daysDiff / quarterInDays;
+			return totalAmount / Math.floor(quarters+1);
+		}
+		case 'Weekly': {
+			const weekInDays = 7;
+			if (daysDiff < weekInDays) {
+				// Prorate the weekly payment if period is less than a week
+				return 0;
+			}
+			const weeks = daysDiff / weekInDays;
+			return totalAmount / Math.floor(weeks+1);
+		}
+		default: {
+			return 0;
+		}
+	}
+};
+
+const paymentForm = ({ setValue, getValues }) => {
 	const formFields = [
 		{
 			label: 'Payment Type',
 			name: 'paymentType',
 			renderField: 'autoCompleteNewOption',
-			query: GET_ES_SIMPLE_SEARCH,
-			isESSearch: true,
+			query: GET_PAYMENT_AUTOCOMPLETE_LIST,
 			variables: {
-				index: 'contacts_flat',
-				pagination: {
-					first: 50,
-					keep_alive: '1micros',
-				},
-				search: {
-					query: `*`,
-					fields: ['name.keyword'],
-				},
-				filters: [],
+				key: 'paymentType',
 			},
 			getOptions: apiRes => {
 				// Transform API response into options for autocomplete
-				const filterData = apiRes?.data?.getESSimpleSearch?.hits.map(hit => ({
-					label: hit?.name,
-					value: hit,
+				const filterData = apiRes?.data?.paymentAutoCompleteList.map(option => ({
+					label: option,
+					value: option,
 				}));
 				return filterData;
 			},
 			onChange: selectedOption => {
-				setValue('paymentType', selectedOption);
+				 setValue('paymentType', selectedOption?.name || selectedOption || "");
 			},
 		},
 		{
-			label: 'Start Date',
-			renderField: 'datePicker',
-			name: 'startDate',
-			onChange: value => {
+			renderField: 'startEndDate',
+			onStartDateChange: value => {
 				setValue('startDate', value);
+				const {endDate, frequency, amount} = getValues()
+				setValue('nextPayment', calculateNextPayment(frequency,amount,value,endDate));
 			},
-		},
-		{
-			label: 'End Date',
-			name: 'endDate',
-			renderField: 'datePicker',
-			onChange: value => {
+			onEndDateChange: value => {
 				setValue('endDate', value);
+				const {startDate, frequency, amount} = getValues()
+				setValue('nextPayment', calculateNextPayment(frequency,amount,startDate,value));
 			},
 		},
-
 		{
 			label: 'Frequency',
 			name: 'frequency',
 			renderField: 'autoComplete',
+			onChange: value => {
+				setValue('frequency', value);
+				const {startDate, endDate, amount} = getValues()
+				setValue('nextPayment', calculateNextPayment(value,amount,startDate,endDate));
+			},
 			defaultOptions: [
 				{ label: 'Annual', value: 'Annual' },
 				{ label: 'Monthly', value: 'Monthly' },
@@ -68,6 +116,8 @@ const paymentForm = ({ setValue }) => {
 			name: 'amount',
 			onChange: value => {
 				setValue('amount', value);
+				const {startDate, endDate, frequency} = getValues()
+				setValue('nextPayment', calculateNextPayment(frequency,value,startDate,endDate));
 			},
 			type: 'number',
 			InputProps: {
@@ -98,30 +148,21 @@ const paymentForm = ({ setValue }) => {
 			label: 'Responsible Party',
 			name: 'responsibleParty',
 			renderField: 'autoCompleteNewOption',
-			query: GET_ES_SIMPLE_SEARCH,
-			isESSearch: true,
+			query: GET_PAYMENT_AUTOCOMPLETE_LIST,
 			variables: {
-				index: 'contacts_flat',
-				pagination: {
-					first: 50,
-					keep_alive: '1micros',
-				},
-				search: {
-					query: `*`,
-					fields: ['name.keyword'],
-				},
-				filters: [],
+				key: 'responsibleParty',
 			},
 			getOptions: apiRes => {
 				// Transform API response into options for autocomplete
-				const filterData = apiRes?.data?.getESSimpleSearch?.hits.map(hit => ({
-					label: hit?.name,
-					value: hit,
+				const filterData = apiRes?.data?.paymentAutoCompleteList.map(option => ({
+					label: option,
+					value: option,
 				}));
 				return filterData;
 			},
 			onChange: selectedOption => {
-				setValue('responsibleParty', selectedOption);
+				if(selectedOption._id === 'newEntity') setValue('responsibleParty', selectedOption.name);
+				else setValue('responsibleParty', selectedOption);
 			},
 		},
 

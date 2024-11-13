@@ -1,5 +1,6 @@
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import vf_number from './vf_number';
+import { toNumber } from 'lodash';
 
 // this function is intended to convert a numeric string to currency
 
@@ -40,4 +41,15 @@ export function vf_currency_dollar(value, toFixed) {
       {value ? vf_number(Math.abs(value?.toFixed(toFixed))) : "0.00"}
     </div>
   );
+
+}
+
+export function calculatePercentage(percentage, total, toFixed = 2) {
+  const totalAmount = toNumber(total)
+  if(totalAmount){
+    return ((percentage/100)*toNumber(totalAmount)).toFixed(toFixed)
+    
+  }else{
+    return 0
+  }
 }

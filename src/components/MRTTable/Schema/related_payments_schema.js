@@ -2,14 +2,22 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
 import { tableGlobalController } from 'hookstate/tableController';
 import RelatedPaymentsToolbar from '../TablesOverride/RelatedPaymentsTable/RelatedPaymentsToolbar';
+import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 
 const esIndex = 'payment_flat';
 
 // click on row
 const onClickedRow = selectedRow => {
-	tableGlobalController.updateState({
-		paymentMultiGrid: { showMultiGrid: true, paymentId: selectedRow._id },
-	});
+	const paymentMultiGrid = tableGlobalController.getValue('paymentMultiGrid');
+	if (paymentMultiGrid?.paymentId && paymentMultiGrid?.paymentId === selectedRow._id) {
+		tableGlobalController.updateState({
+			paymentMultiGrid: { showMultiGrid: false },
+		});
+	} else if (selectedRow?._id) {
+		tableGlobalController.updateState({
+			paymentMultiGrid: { showMultiGrid: true, paymentId: selectedRow._id, paymentAmount: selectedRow?.amount },
+		});
+	}
 };
 
 // Related Payments Meta
@@ -21,10 +29,11 @@ const RelatedPaymentsMeta = {
 		pageIndex: 0,
 		pageSize: 50,
 	},
-	maxTableHeight: '400px',
+	maxTableHeight: 'calc(100vh - 550px)',
 	CustomToolBar: RelatedPaymentsToolbar,
 	isInFiniteScroll: true,
 	columnReordering: false,
+	enableRowSelected: true,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
@@ -52,7 +61,7 @@ const RelatedPaymentsMeta = {
 			simple: true,
 			type: 'date',
 			isSearchField: false,
-			Cell: ({ renderedCellValue, row }) => {
+			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.startDate)}</>;
 			},
 		},
@@ -65,7 +74,7 @@ const RelatedPaymentsMeta = {
 			simple: true,
 			type: 'date',
 			isSearchField: false,
-			Cell: ({ renderedCellValue, row }) => {
+			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.endDate)}</>;
 			},
 		},
@@ -82,6 +91,10 @@ const RelatedPaymentsMeta = {
 			accessorFn: row => row?.nextPayment,
 			id: 'nextPayment',
 			header: 'Next Payment',
+			Cell: ({ row }) => {
+				const value = row?.original?.nextPayment;
+				return value ? vf_currency_to_fixed(parseFloat(value), 2) : '';
+			},
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -89,6 +102,10 @@ const RelatedPaymentsMeta = {
 			accessorFn: row => row?.amount,
 			id: 'amount',
 			header: 'Amount',
+			Cell: ({ row }) => {
+				const value = row?.original?.amount;
+				return value ? vf_currency_to_fixed(parseFloat(value), 2) : '';
+			},
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -96,6 +113,10 @@ const RelatedPaymentsMeta = {
 			accessorFn: row => row?.companyShare,
 			id: 'companyShare',
 			header: 'Company Share',
+			Cell: ({ row }) => {
+				const value = row?.original?.companyShare;
+				return value ? vf_currency_to_fixed(parseFloat(value), 2) : '';
+			},
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -106,9 +127,9 @@ const RelatedPaymentsMeta = {
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'assignedTo.keyword',
-			accessorFn: row => row?.assignedTo,
-			id: 'assignedTo',
+			name: 'assignedTo.displayName.keyword',
+			accessorFn: row => row?.assignedTo?.displayName,
+			id: 'assignedTo.displayName',
 			header: 'Assigned To',
 		},
 		{
@@ -117,13 +138,6 @@ const RelatedPaymentsMeta = {
 			accessorFn: row => row?.paymentStatus,
 			id: 'paymentStatus',
 			header: 'Payment Status',
-		},
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'calendarLinks.keyword',
-			accessorFn: row => row?.calendarLinks,
-			id: 'calendarLinks',
-			header: 'Calendar Link',
 		},
 	],
 };

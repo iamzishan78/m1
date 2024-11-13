@@ -1,7 +1,11 @@
 import { InputAdornment } from '@material-ui/core';
+import { calculatePercentage } from 'components/Shared/valueformatters/vf_currency';
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { tableGlobalController } from 'hookstate/tableController';
 
 const billingPartiesForm = ({ setValue }) => {
+	const { paymentAmount } = tableGlobalController.getValue('paymentMultiGrid');
+
 	const formFields = [
 		{
 			label: 'Billing Party Name',
@@ -46,6 +50,7 @@ const billingPartiesForm = ({ setValue }) => {
 			name: 'allocation',
 			onChange: value => {
 				setValue('allocation', value);
+				setValue('amount', calculatePercentage(value, paymentAmount));
 			},
 			type: 'number',
 			InputProps: {
@@ -55,9 +60,7 @@ const billingPartiesForm = ({ setValue }) => {
 		{
 			label: 'Billing Party Amount',
 			name: 'amount',
-			onChange: value => {
-				setValue('amount', value);
-			},
+			disabled: true,
 			type: 'number',
 			InputProps: {
 				endAdornment: <InputAdornment position="end">$</InputAdornment>,

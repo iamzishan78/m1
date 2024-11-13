@@ -9,10 +9,11 @@ import { Controller } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
 import AutoCompleteNewOption from './Fields/AutoCompleteNewOption';
 import DatePicker from './Fields/DatePicker';
+import StartEndDate from './Fields/StartEndDate';
 
 function CommonForm({ formSchema, control, watch, dialogKey }) {
 	return (
-		<div style={{ width: '100%', paddingRight: '15px' }}>
+		<>
 			{formSchema.map((item, index) => (
 				<React.Fragment key={item.name}>
 					{item.renderField === 'autoComplete' ? (
@@ -67,12 +68,14 @@ function CommonForm({ formSchema, control, watch, dialogKey }) {
 						<AutoCompleteNewOption item={item} control={control} />
 					) : item.renderField === 'datePicker' ? (
 						<DatePicker item={item} control={control} />
+					) : item.renderField === 'startEndDate' ? (
+						<StartEndDate item={item} control={control} />
 					) : (
 						<TextFieldComponent key={index} item={item} control={control} watch={watch} />
 					)}
 				</React.Fragment>
 			))}
-		</div>
+		</>
 	);
 }
 

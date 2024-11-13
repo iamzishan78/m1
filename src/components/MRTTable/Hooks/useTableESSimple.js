@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { tableController } from 'hookstate/tableController';
@@ -22,6 +22,7 @@ const useTableESSimple = tableKey => {
 		tableState,
 		tableStateValues,
 	});
+	const [rowId, setRowId] = useState(null);
 
 	useHandleAdditionalQueries({ tableKey, tableState, tableStateValues });
 
@@ -246,10 +247,17 @@ const useTableESSimple = tableKey => {
 							className?.includes('row-click'))
 					) {
 						tableStateValues?.onClickedRow(row?.row?.original);
+						
+						// set rowId to apply styling based on row selection
+						if(rowId && rowId === row?.row?.original._id) setRowId(null)
+						else tableStateValues?.enableRowSelected && setRowId(row?.row?.original._id);
 					}
 				},
 				sx: {
 					cursor: 'pointer',
+					...(rowId && tableStateValues?.enableRowSelected && rowId === row?.row?.original._id
+						? { border: '5px solid rgb(128 128 128 / 40%)' }
+						: {}),
 				},
 			}),
 

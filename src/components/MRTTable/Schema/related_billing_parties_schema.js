@@ -3,7 +3,7 @@ import RelatedBillingPartiesToolbar from '../TablesOverride/RelatedBillingPartie
 import { tableGlobalController } from 'hookstate/tableController';
 import { getArrayValue } from '../utils/helper';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
-import vf_currency from 'components/Shared/valueformatters/vf_currency';
+import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 
 const esIndex = 'contacts_flat';
 
@@ -128,7 +128,7 @@ const RelatedBillingPartiesMeta = {
 			Cell: ({ row }) => {
 				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
 				const value = getArrayValue(row.original.billingParties, 'amount', paymentId, 'paymentId');
-				return value ? vf_currency(parseFloat(value)) : '';
+				return value ? vf_currency_to_fixed(parseFloat(value), 2) : '';
 			},
 		},
 		{

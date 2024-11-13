@@ -2,7 +2,7 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import RelatedPayeesToolbar from '../TablesOverride/RelatedPayeesTable/RelatedPayeesToolbar';
 import { getArrayValue } from '../utils/helper';
 import { tableGlobalController } from 'hookstate/tableController';
-import vf_currency from 'components/Shared/valueformatters/vf_currency';
+import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 
@@ -128,7 +128,7 @@ const RelatedPaymentsMeta = {
 			Cell: ({ row }) => {
 				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
 				const value = getArrayValue(row.original.payments, 'paymentAmount', paymentId, 'paymentId');
-				return value ? vf_currency(parseFloat(value)) : '';
+				return value ? vf_currency_to_fixed(parseFloat(value), 2) : '';
 			},
 		},
 		{

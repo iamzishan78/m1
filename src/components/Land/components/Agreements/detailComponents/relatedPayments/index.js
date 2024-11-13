@@ -113,7 +113,7 @@ const RelatedPayments = () => {
 								<>
 									<MRTTable name="RelatedPaymentsTable" overrideMeta={overrideMetaRelatedPayments} />
 									{paymentMultiGrid?.showMultiGrid && (
-										<Grid item xs={12} style={{ padding: '35px 20px 0px 0px' }}>
+										<Grid item xs={12} style={{ padding: '35px 0px 0px 0px' }}>
 											<MultiGridsComponent
 												moduleId={agreementDetailsValues?.customLayer?._id}
 												multiGridInitialData={paymentGridsInitialData}

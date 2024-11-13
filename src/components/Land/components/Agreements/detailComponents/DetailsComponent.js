@@ -45,6 +45,7 @@ import RelatedFile from "components/Document/components/RelatedFile";
 import { jobController } from "hookstate/jobStateController";
 import RelatedPayments from "./relatedPayments";
 import { detailCardController } from "hookstate/detailCardController";
+import { tableGlobalController } from "hookstate/tableController";
 
 const useStyles = makeStyles((theme) => ({
   mapProvider: {
@@ -349,6 +350,10 @@ export function DetailComponents(props) {
     return () => {
       setStateApp({ ...stateApp, viewDoc: null });
       document.removeEventListener("keyup", escapeFunc);
+      tableGlobalController.updateState({
+        paymentMultiGrid: { showMultiGrid: false },
+      });
+      detailCardController.updateState({ customLayer: null});
     };
   }, []);
 
