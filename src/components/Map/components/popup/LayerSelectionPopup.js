@@ -264,6 +264,18 @@ function LayerSelectionPopup(props) {
                 </CardHeader >
                 <CardContent className={classes.content}>
                     {
+                         Object.keys(groupFeatures)?.length === 0 ? ( // Check if groupFeatures is empty
+                            <Accordion defaultExpanded={true} className={classes.accordian} >
+                            <AccordionSummary
+                                aria-controls="panel1a-content"
+                                id="panel1a-header"
+                            >
+                                    {/* If empty, display "No Layers" message */}
+                                <Typography variant="body2"  className={classes.heading}>No Layers</Typography>
+                            </AccordionSummary>
+                            </Accordion>
+                        ) :
+                         // If groupFeatures has data, map over each key to create an Accordion
                         Object.keys(groupFeatures).map((key) =>
                             <Accordion key={key} defaultExpanded={true} className={classes.accordian} data-testid={`${key}-group`} >
                                 <AccordionSummary

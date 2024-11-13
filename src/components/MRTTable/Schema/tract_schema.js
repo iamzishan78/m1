@@ -250,6 +250,13 @@ const TractMeta = {
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.ownerName.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.ownerName,
+			id: 'shapeJson.properties.ownerName',
+			header: 'Owner',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'createBy.name.keyword',
 			accessorFn: row => row?.createBy?.name,
 			id: 'createBy.name',

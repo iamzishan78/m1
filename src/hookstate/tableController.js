@@ -1,6 +1,6 @@
 import React from 'react';
 import { hookstate } from '@hookstate/core';
-import _, { get, isEqual, isEmpty } from 'lodash';
+import _, { get, isEqual, isEmpty, pull } from 'lodash';
 import { copy, deepEqual, formatDate } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
@@ -253,9 +253,13 @@ const tableESStateControllerHandler = state => ({
 		};
 
 		// Push action menu in first place
-		if(rest.isShowActionMenuFirst) {
+		if (rest.isShowActionMenuFirst) {
+			// removing 'actionMenu' from array and adding it at start
+			pull(defaultColumnsOrdering, 'actionMenu');
+			pull(defaultColumnsPinning.left, 'actionMenu');
+
 			defaultColumnsOrdering?.unshift('actionMenu');
-			defaultColumnsPinning?.left?.unshift('actionMenu')
+			defaultColumnsPinning?.left?.unshift('actionMenu');
 		}
 
 		state.merge({
@@ -356,7 +360,6 @@ const tableESStateControllerHandler = state => ({
 			const tableCss = {
 				...state.tableCss?.get({ noproxy: true }),
 				'& .MuiTableRow-root>:nth-child(2)': { marginLeft: `-${size}px !important` },
-				'& .MuiTableRow-root>:nth-child(1)': { width: `${size}px !important`}, // set width of first hidden column
 			};
 			state.columnPinning?.set(columnPinning);
 

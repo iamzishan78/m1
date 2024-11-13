@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { set } from 'lodash';
 import { useHistory } from 'react-router-dom';
@@ -325,6 +325,7 @@ export default function AgreementDetailCard(props) {
 									id={props.id}
 									provisions={agreementProvisions?.getAgreementProvisions || []}
 									standardProvisions={dataStandardProvisions?.getStandardProvisions || []}
+									customLayer={uniObj}
 								/>
 							</div>,
 							<div style={{ overflow: 'overlay', maxHeight: 'calc(100vh - 285px)' }}>
