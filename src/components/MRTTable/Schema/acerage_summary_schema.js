@@ -65,7 +65,7 @@ const AcerageSummaryMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'state.keyword',
-			accessorFn: row => row?.state,
+			accessorFn: row => row?.state || '',
 			id: 'state',
 			header: 'State',
 			isGrouped: true,
@@ -73,14 +73,14 @@ const AcerageSummaryMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'county.keyword',
-			accessorFn: row => row?.county,
+			accessorFn: row => row?.county || '',
 			id: 'county',
 			header: 'County',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shape.shapeJson.properties.prospectID.keyword',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.prospectID,
+			accessorFn: row => row?.shape?.shapeJson?.properties?.prospectID || '',
 			id: 'shape.shapeJson.properties.prospectID',
 			header: 'Prospect',
 		},
