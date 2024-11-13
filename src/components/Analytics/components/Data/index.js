@@ -115,5 +115,3 @@ export default function LandAnalytics() {
 		</>
 	);
 }
-
-// 'calc(100vh - 290px)'

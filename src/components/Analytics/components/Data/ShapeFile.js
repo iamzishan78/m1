@@ -16,6 +16,8 @@ const ShapeFile = () => {
 	const subFiles = useMemo(() => {
 		if (!dataset) return null;
 
+		simpleTableGlobalController.setSelectedTab(0);
+
 		const ds = {
 			_id: dataset._id,
 			fileName: dataset.fileName,
