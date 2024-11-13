@@ -112,6 +112,8 @@ const options = [
 	{ value: 'dropdown', label: 'Drop-down' },
 	{ value: 'multiselect', label: 'Multi-select' },
 	{ value: 'text', label: 'Text' },
+	{ value: 'number', label: 'Number' },
+	{ value: 'date', label: 'Date' },
 ];
 
 const viewOptions = [
@@ -287,8 +289,8 @@ const MetaField = ({
 						esKey: esKey
 							? esKey
 							: values.type === 'dropdown'
-								? `${customDataPrefix}.${name}${customDataPostfix}`
-								: `${customDataPrefix}.${values.title.replace(/ /g, '_').toLowerCase()}${customDataPostfix}`,
+								? `${customDataPrefix}.${name}${postFix}`
+								: `${customDataPrefix}.${values.title.replace(/ /g, '_').toLowerCase()}${postFix}`,
 						options: {
 							display: false,
 							filter: true,
@@ -389,7 +391,10 @@ const MetaField = ({
 		rippleEffectCall(data);
 	};
 
-	const isDisabled = type === 'text' ? !title : !title || items.filter(item => !!item.value).length === 0;
+	const isDisabled = ['text', 'number', 'date'].includes(type)
+		? !title
+		: !title || items.filter(item => !!item.value).length === 0;
+	const postFix = type === 'number' ? '' : customDataPostfix;
 
 	return (
 		<>
