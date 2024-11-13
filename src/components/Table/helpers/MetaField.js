@@ -7,7 +7,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { Grid, Dialog, Menu, MenuItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import { Grid, Dialog, Menu, MenuItem, ListItemIcon, ListItemText, FormHelperText } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
 import AddIcon from '@material-ui/icons/Add';
 import { arrayMoveImmutable } from 'array-move';
@@ -24,7 +24,7 @@ import ListItem from '@material-ui/core/ListItem';
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 import { SortableContainer, SortableElement, sortableHandle } from 'react-sortable-hoc';
 
-import { GET_ALL_LIBRARY_META_DATA } from 'graphQL/useQueryGetMetaData';
+import { GET_ALL_LIBRARY_META_DATA, CHECK_META_KEY_EXISTS } from 'graphQL/useQueryGetMetaData';
 import { ADD_META_DATA } from 'graphQL/useMutationAddMetaData';
 import { UPDATE_META_DATA } from 'graphQL/useMutationUpdateMetaData';
 import { colorPallete } from 'components/Table/helpers';
@@ -198,6 +198,7 @@ const MetaField = ({
 	const [selectedTab, setSelectedTab] = useState('new');
 	const [metaData, setMetaData] = useState(null);
 	const [filteredMetaData, setFilteredMetaData] = useState(null);
+	const [isKeyExists, setIsKeyExists] = useState(false);
 	const [anchorEl, setAnchorEl] = useState();
 	const TableController = !!tableKey && tableController(tableKey);
 
@@ -235,6 +236,12 @@ const MetaField = ({
 	});
 
 	const [getAllLibraryMetaData, { data: metaDataRes }] = useLazyQuery(GET_ALL_LIBRARY_META_DATA);
+	const [checkMetaKeyExists] = useLazyQuery(CHECK_META_KEY_EXISTS, {
+		fetchPolicy: 'no-cache',
+		onCompleted: data => {
+			setIsKeyExists(data?.checkMetaDataKeyExists?.exists);
+		},
+	});
 
 	useEffect(() => {
 		getAllLibraryMetaData();
@@ -499,9 +506,14 @@ const MetaField = ({
 														fullWidth
 														defaultValue=""
 														disabled={stateApp.selectedMeta}
+														onBlur={e => {
+															const name = e.target.value?.replace(/ /g, '_').toLowerCase();
+															checkMetaKeyExists({ variables: { name, category } });
+														}}
 													/>
 												)}
 											/>
+											{isKeyExists && <FormHelperText error={true}>{'Field name already exists'}</FormHelperText>}
 										</Grid>
 										<Grid container item xs={5} alignItems="center">
 											<label style={{ margin: '5px 0px' }}>Field Type</label>
@@ -648,11 +660,11 @@ const MetaField = ({
 											Cancel
 										</Button>
 										<Button
-											className={isDisabled ? '' : classes.btnColor}
+											className={isDisabled || isKeyExists ? '' : classes.btnColor}
 											style={{ margin: '25px 25px 25px 5px' }}
 											variant="outlined"
 											onClick={handleSave}
-											disabled={isDisabled}
+											disabled={isDisabled || isKeyExists}
 										>
 											{stateApp.selectedMeta ? 'Update Field' : 'Create Field'}
 										</Button>
