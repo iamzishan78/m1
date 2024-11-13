@@ -1,5 +1,4 @@
 import React, { useEffect, useState, Fragment, useContext } from 'react';
-import moment from 'moment';
 import { get } from 'lodash';
 import uniqBy from 'lodash/uniqBy';
 import { useLazyQuery } from '@apollo/client';
@@ -16,7 +15,6 @@ import {
 	InputAdornment,
 } from '@material-ui/core';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
-import { Clear } from '@material-ui/icons';
 import { useStyles as summaryStyles } from '../style';
 import AddIcon from '@material-ui/icons/Add';
 import CreateTwoToneIcon from '@material-ui/icons/CreateTwoTone';
@@ -26,8 +24,8 @@ import EditIcon from '@material-ui/icons/Edit';
 import keys from 'components/Shared/SpreadsheetGrid/kit/keymap';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
 import MetaField from 'components/Table/helpers/MetaField';
-import { copy } from 'utils/helper';
 import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
+import { copy } from 'utils/helper';
 
 import { AppContext } from 'AppContext';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
@@ -40,6 +38,8 @@ import ReactSelectField from 'components/Shared/M1nTable/components/SubComponent
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
 import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';
 import { popupController } from 'hookstate/popupStateController';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
+import DateField from 'components/Shared/components/Fields/DateField';
 
 const useStyles = makeStyles(theme => ({
 	valueOveridden: {
@@ -134,21 +134,16 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 		}
 	};
 
-	const offClickHandler = (key, value, isCustom) => {
-		updateAgreement(key, value, isCustom);
-	};
-
-	// Utility  for fetching nested object keys
-	function getNestedValue(obj, key) {
-		return key.split('.').reduce((acc, part) => acc && acc[part], obj);
-	}
-
 	const addAgreementCustomData = data => {
 		const customData = copy(agreementDetails.custom_data) ?? {};
 		data.forEach(d => {
 			if (!customData[d.name]) customData[d.name] = null;
 		});
 		updateAgreement('custom_data', customData);
+	};
+
+	const offClickHandler = (key, value, isCustom) => {
+		updateAgreement(key, value, isCustom);
 	};
 
 	return (
@@ -222,6 +217,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 								<Fragment key={index}>
 									{(field.type === 'text' ||
 										field.type === 'number' ||
+										field.type === 'date' ||
 										field.type === 'dropdown' ||
 										field.type === 'multiselect' ||
 										field.type === 'select') && (
@@ -232,32 +228,54 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 												return (
 													<Fragment>
 														{field.type === 'text' && (
-															<TextField
+															<CustomTextField
 																{...params}
 																id={`field-${field.key}`}
-																variant="outlined"
-																margin="dense"
-																type="text"
-																fullWidth
-																InputLabelProps={{
-																	shrink: true,
+																index={index}
+																field={field}
+																fieldKey={field.key}
+																defaultValue={get(agreementDetails, `${field.key}`, '')}
+																offClickHandler={(key, value) => {
+																	offClickHandler(key, value);
 																}}
 																InputProps={{
 																	...field.InputProps,
 																	endAdornment,
 																}}
-																onBlur={event => offClickHandler(field.key, event.target.value)}
 															/>
 														)}
 														{field.type === 'number' && (
 															<NumberField
+																{...params}
 																id={`field-${field.key}`}
 																index={index}
 																field={field}
+																fieldKey={field.key}
+																defaultValue={get(agreementDetails, `${field.key}`, '')}
 																offClickHandler={(key, value) => {
 																	offClickHandler(key, value);
 																}}
+																InputProps={{
+																	...field.InputProps,
+																	endAdornment,
+																}}
+															/>
+														)}
+														{field.type === 'date' && (
+															<DateField
 																{...params}
+																id={`field-${field.key}`}
+																index={index}
+																field={field}
+																fieldKey={field.key}
+																defaultValue={get(agreementDetails, `${field.key}`, '')}
+																offClickHandler={(key, value) => {
+																	offClickHandler(key, value);
+																}}
+																InputProps={{
+																	...field.InputProps,
+																	endAdornment,
+																}}
 															/>
 														)}
 														{field.type === 'dropdown' && (
@@ -324,54 +342,6 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 														)}
 													</Fragment>
 												);
-											}}
-										/>
-									)}
-									{field.type === 'date' && (
-										<TextField
-											id={`field-${field.key}`}
-											autoOk
-											type="date"
-											variant="outlined"
-											margin="dense"
-											fullWidth
-											value={
-												getNestedValue(agreementDetailCopied, field.key)
-													? moment(getNestedValue(agreementDetailCopied, field.key)).utc(true).format('yyyy-MM-DD')
-													: ''
-											}
-											onChange={event => {
-												if (field.isCustomData) {
-													setAgreementCopied({
-														...agreementDetailCopied,
-														custom_data: {
-															...agreementDetailCopied.custom_data,
-															[field.key.split('.')[1]]: event?.target?.value || null,
-														},
-													});
-													return;
-												}
-												setAgreementCopied({ ...agreementDetailCopied, [field.key]: event?.target?.value || null });
-											}}
-											onBlur={event => {
-												offClickHandler(field.key, event?.target?.value || null);
-											}}
-											InputLabelProps={{
-												shrink: true,
-											}}
-											disableToolbar
-											KeyboardButtonProps={{ 'aria-label': 'change date' }}
-											format="MM/DD/YYYY"
-											PopoverProps={{ disablePortal: false }}
-											InputProps={{
-												endAdornment: (
-													<IconButton onClick={event => offClickHandler(field.key, null)}>
-														<Clear style={{ height: 22, width: 22 }} />
-													</IconButton>
-												),
-												classes: {
-													root: classes.dateRoot,
-												},
 											}}
 										/>
 									)}
