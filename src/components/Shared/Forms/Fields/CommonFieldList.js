@@ -6,6 +6,7 @@ import CustomTextField from 'components/Shared/components/Fields/CustomTextField
 import { get } from 'lodash';
 import React, { Fragment, useState } from 'react';
 import { Controller } from 'react-hook-form';
+import DateField from 'components/Shared/components/Fields/DateField';
 
 const useStyles = makeStyles(theme => ({
 	text: {
@@ -68,6 +69,7 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 					<Fragment key={index}>
 						{(field.type === 'text' ||
 							field.type === 'number' ||
+							field.type === 'date' ||
 							field.type === 'dropdown' ||
 							field.type === 'multiselect' ||
 							field.type === 'select') && (
@@ -105,6 +107,26 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 													index={index}
 													fieldKey={fieldKey}
 													field={field}
+													defaultValue={get(data, `${fieldKey}`, '')}
+													offClickHandler={(key, value) => {
+														offClickHandler(key, value);
+													}}
+													InputProps={{
+														...field.InputProps,
+														endAdornment,
+													}}
+													props={{
+														className: classes.text,
+													}}
+												/>
+											)}
+											{field.type === 'date' && (
+												<DateField
+													{...params}
+													id={`field-${fieldKey}`}
+													index={index}
+													field={field}
+													fieldKey={fieldKey}
 													defaultValue={get(data, `${fieldKey}`, '')}
 													offClickHandler={(key, value) => {
 														offClickHandler(key, value);
