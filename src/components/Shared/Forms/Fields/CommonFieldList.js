@@ -88,6 +88,7 @@ const CommonFieldList = ({ data, fields, control, offClickHandler = () => {} }) 
 													fieldKey={fieldKey}
 													field={field}
 													defaultValue={get(data, `${fieldKey}`, '')}
+													showLinkPopup={true}
 													offClickHandler={(key, value) => {
 														offClickHandler(key, value);
 													}}

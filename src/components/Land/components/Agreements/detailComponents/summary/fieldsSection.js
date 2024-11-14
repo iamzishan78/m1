@@ -235,6 +235,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 																field={field}
 																fieldKey={field.key}
 																defaultValue={get(agreementDetails, `${field.key}`, '')}
+																showLinkPopup={true}
 																offClickHandler={(key, value) => {
 																	offClickHandler(key, value);
 																}}

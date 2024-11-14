@@ -18,7 +18,7 @@ import CampaignNameField from 'components/ContactDetailCard/components/FieldCont
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
-import { getRoundedNra } from 'utils/helper';
+import { getRoundedNra, validateUrl } from 'utils/helper';
 import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
 import { copy } from 'components/Shared/functions';
 import { AppContext } from 'AppContext';
@@ -31,6 +31,8 @@ import { hookstate, useHookstate } from '@hookstate/core';
 import { globalStateController } from 'hookstate/globalStateController';
 import NumberField from 'components/Shared/components/Fields/NumberField';
 import DateField from 'components/Shared/components/Fields/DateField';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
+import LinkPopup from 'components/Shared/components/Popups/Link';
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps, loading }) {
 	const dispatch = useDispatch();
@@ -128,6 +130,7 @@ export default function SummaryTableInfo({
 	const [tableDataState, setTableDataState] = useState({});
 	const [state, setState] = useState();
 	const [county, setCounty] = useState();
+	const [tooltipVisible, setTooltipVisible] = useState({});
 
 	const [filteredTableData, setFilteredTableData] = useState(tableData);
 
@@ -341,6 +344,11 @@ export default function SummaryTableInfo({
 		[properties]
 	);
 
+	const handleLinkClick = (e, key) => {
+		e.stopPropagation();
+		setTooltipVisible(prev => ({ ...prev, [key]: false }));
+	};
+
 	return (
 		<Table className={classes.table} size="small" aria-label="unit table">
 			<TableBody>
@@ -418,9 +426,12 @@ export default function SummaryTableInfo({
 								data-testid={`data-cell-${data.label}`}
 								onMouseEnter={() => {
 									editIconState.set({ [data.key]: true });
+									const isValidURL = validateUrl(get(tableTempProperties, `${data.key}`, ''));
+									setTooltipVisible(prev => ({ ...prev, [data.key]: isValidURL }));
 								}}
 								onMouseLeave={() => {
 									editIconState.set({ [data.key]: false });
+									setTooltipVisible(prev => ({ ...prev, [data.key]: false }));
 								}}
 							>
 								{tableDataState[data.key] ? (
@@ -478,24 +489,42 @@ export default function SummaryTableInfo({
 											/>
 										)}
 										{(data.type === 'text' || data.type === 'currency' || data.type === 'comma-number') && (
-											<TableTextField
-												data={data}
-												value={get(tableTempProperties, `${data.key}`)}
-												showMessage={tableDataState[data.key] === true}
-												onChange={(e, data, type) => {
-													checkFieldChange(e, data, type, onChange);
-												}}
-												onKeyDown={(e, data, type) => {
-													checkFieldChange(e, data, type, onKeyDown);
-												}}
-												onBlur={(e, data, type) => {
-													checkFieldChange(e, data, type, onBlur);
-												}}
-												onWheel={e => e.target.blur()}
-												type="value"
-												InputProps={data.InputProps}
-												loading={updating}
-											/>
+											<>
+												{data.isCustom || data.isCustomData ? (
+													<CustomTextField
+														id={`field-${data.key}`}
+														index={data.key}
+														field={data}
+														fieldKey={data.key}
+														defaultValue={get(tableTempProperties, `${data.key}`, '')}
+														showLinkPopup={false}
+														offClickHandler={(key, value) => {
+															set(tableTempProperties, key, value);
+															setTableTempProperties(tableTempProperties);
+															updateProperties(null, key, value);
+														}}
+													/>
+												) : (
+													<TableTextField
+														data={data}
+														value={get(tableTempProperties, `${data.key}`)}
+														showMessage={tableDataState[data.key] === true}
+														onChange={(e, data, type) => {
+															checkFieldChange(e, data, type, onChange);
+														}}
+														onKeyDown={(e, data, type) => {
+															checkFieldChange(e, data, type, onKeyDown);
+														}}
+														onBlur={(e, data, type) => {
+															checkFieldChange(e, data, type, onBlur);
+														}}
+														onWheel={e => e.target.blur()}
+														type="value"
+														InputProps={data.InputProps}
+														loading={updating}
+													/>
+												)}
+											</>
 										)}
 										{data.type === 'number' && (
 											<NumberField
@@ -613,9 +642,11 @@ export default function SummaryTableInfo({
 											alignItems="center"
 										>
 											{data.formatValue ? (
-												<Grid item>{data.formatValue(data.value || properties[data.key]) || '-'}</Grid>
+												<Grid item style={{ overflowWrap: 'break-word' }}>
+													{data.formatValue(data.value || properties[data.key]) || '-'}
+												</Grid>
 											) : (
-												<Grid item style={{ width: '100%' }}>
+												<Grid item style={{ width: '100%', overflowWrap: 'break-word' }}>
 													{data.type === 'date' &&
 														(get(properties, `${data.key}`, '')
 															? moment(get(properties, `${data.key}`, ''))
@@ -634,6 +665,19 @@ export default function SummaryTableInfo({
 														data.type !== 'state' &&
 														data.type !== 'county' &&
 														(data.value || get(properties, `${data.key}`, '-'))}
+
+													{data.type === 'text' && tooltipVisible[data.key] && (
+														<div style={{ position: 'relative' }} id={data.key}>
+															<LinkPopup
+																id={data.key}
+																url={data.value || get(properties, `${data.key}`, '-')}
+																onLinkClick={e => handleLinkClick(e, data.key)}
+																maxLength={40}
+																className={classes.linkTooltip}
+															/>
+														</div>
+													)}
+
 													{data.type === 'state' &&
 														(get(properties, 'originalProperties.StateAbbreviation', '') ||
 															get(properties, 'originalProperties.State', '') ||
