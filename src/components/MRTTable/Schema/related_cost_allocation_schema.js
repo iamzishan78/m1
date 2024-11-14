@@ -81,7 +81,7 @@ const RelatedCostAllocationsMeta = {
 			Cell: ({ row }) => {
 				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
 				const value = getArrayValue(row.original.costAllocations, 'allocation', paymentId, 'paymentId');
-				return `${value}%`;
+				return value ? `${value}%` : '';
 			},
 		},
 		{

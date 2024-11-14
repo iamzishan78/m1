@@ -34,6 +34,7 @@ const RelatedPaymentsMeta = {
 	isInFiniteScroll: true,
 	columnReordering: false,
 	enableRowSelected: true,
+	bypassSelectAll: true,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
@@ -58,7 +59,6 @@ const RelatedPaymentsMeta = {
 			accessorFn: row => row?.startDate,
 			id: 'startDate',
 			header: 'Start Date',
-			simple: true,
 			type: 'date',
 			isSearchField: false,
 			Cell: ({ row }) => {
@@ -71,7 +71,6 @@ const RelatedPaymentsMeta = {
 			accessorFn: row => row?.endDate,
 			id: 'endDate',
 			header: 'End Date',
-			simple: true,
 			type: 'date',
 			isSearchField: false,
 			Cell: ({ row }) => {
@@ -87,13 +86,14 @@ const RelatedPaymentsMeta = {
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'nextPayment.keyword',
+			name: 'nextPayment',
 			accessorFn: row => row?.nextPayment,
 			id: 'nextPayment',
 			header: 'Next Payment',
+			type: 'date',
+			isSearchField: false,
 			Cell: ({ row }) => {
-				const value = row?.original?.nextPayment;
-				return value ? vf_currency_to_fixed(parseFloat(value), 2) : '';
+				return <>{formatDate(row?.original?.nextPayment)}</>;
 			},
 		},
 		{

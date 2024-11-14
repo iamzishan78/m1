@@ -1,62 +1,64 @@
 import { InputAdornment } from '@material-ui/core';
 import { GET_PAYMENT_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetPaymentAutoCompleteList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+import moment from 'moment';
 
-const calculateNextPayment = (value, totalAmount, startDate, endDate) => {
-	if(!value || !totalAmount || !startDate || !endDate) return 0
-	
+const getNextPaymentDate = (value, startDate, endDate) => {
+	if (!value || !startDate || !endDate) return startDate;
 
 	const start = new Date(startDate);
 	const end = new Date(endDate);
-	const timeDiff = end - start;
-	const daysDiff = timeDiff / (1000 * 60 * 60 * 24); // Convert to days
 
 	if (end <= start) {
-		return 0; // Return 0 or another value indicating invalid input
+		return startDate; // Return startDate if endDate is less than or equal to startDate
 	}
 
+	let nextPaymentDate;
 
-	switch(value){
+	switch (value) {
 		case 'Annual': {
-			const yearInDays = 365;
-			if (daysDiff < yearInDays) {
-				// Prorate the annual payment if period is less than a year
-				return 0;
+			const oneYear = 365 * 24 * 60 * 60 * 1000; // 365 days in milliseconds
+			nextPaymentDate = new Date(start.getTime() + oneYear);
+
+			// Check if the next payment date is beyond the end date
+			if (nextPaymentDate > end) {
+				return startDate; // Return startDate if the frequency does not align
 			}
-			const years = daysDiff / yearInDays;
-			return totalAmount / Math.floor(years+1);
+			break;
 		}
 		case 'Monthly': {
-			const monthInDays = 30.44;
-			if (daysDiff < monthInDays) {
-				// Prorate the monthly payment if period is less than a month
-				return  0;
+			nextPaymentDate = new Date(start);
+			nextPaymentDate.setMonth(start.getMonth() + 1);
+
+			if (nextPaymentDate > end) {
+				return startDate;
 			}
-			const months = daysDiff / monthInDays;
-			return totalAmount / Math.floor(months+1);
+			break;
 		}
 		case 'Quarterly': {
-			const quarterInDays = 30.44 * 3;
-			if (daysDiff < quarterInDays) {
-				// Prorate the quarterly payment if period is less than a quarter
-				return 0;
+			nextPaymentDate = new Date(start);
+			nextPaymentDate.setMonth(start.getMonth() + 3);
+
+			if (nextPaymentDate > end) {
+				return startDate;
 			}
-			const quarters = daysDiff / quarterInDays;
-			return totalAmount / Math.floor(quarters+1);
+			break;
 		}
 		case 'Weekly': {
-			const weekInDays = 7;
-			if (daysDiff < weekInDays) {
-				// Prorate the weekly payment if period is less than a week
-				return 0;
+			const oneWeek = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+			nextPaymentDate = new Date(start.getTime() + oneWeek);
+
+			if (nextPaymentDate > end) {
+				return startDate;
 			}
-			const weeks = daysDiff / weekInDays;
-			return totalAmount / Math.floor(weeks+1);
+			break;
 		}
 		default: {
-			return 0;
+			return startDate; // Return startDate if frequency is invalid
 		}
 	}
+
+	return moment(nextPaymentDate).format('MM/DD/YYYY'); // Return date in YYYY-MM-DD format
 };
 
 const paymentForm = ({ setValue, getValues }) => {
@@ -78,20 +80,20 @@ const paymentForm = ({ setValue, getValues }) => {
 				return filterData;
 			},
 			onChange: selectedOption => {
-				 setValue('paymentType', selectedOption?.name || selectedOption || "");
+				setValue('paymentType', selectedOption || '');
 			},
 		},
 		{
 			renderField: 'startEndDate',
 			onStartDateChange: value => {
 				setValue('startDate', value);
-				const {endDate, frequency, amount} = getValues()
-				setValue('nextPayment', calculateNextPayment(frequency,amount,value,endDate));
+				const { endDate, frequency } = getValues();
+				setValue('nextPayment', getNextPaymentDate(frequency, value, endDate));
 			},
 			onEndDateChange: value => {
 				setValue('endDate', value);
-				const {startDate, frequency, amount} = getValues()
-				setValue('nextPayment', calculateNextPayment(frequency,amount,startDate,value));
+				const { startDate, frequency } = getValues();
+				setValue('nextPayment', getNextPaymentDate(frequency, startDate, value));
 			},
 		},
 		{
@@ -100,8 +102,8 @@ const paymentForm = ({ setValue, getValues }) => {
 			renderField: 'autoComplete',
 			onChange: value => {
 				setValue('frequency', value);
-				const {startDate, endDate, amount} = getValues()
-				setValue('nextPayment', calculateNextPayment(value,amount,startDate,endDate));
+				const { startDate, endDate } = getValues();
+				setValue('nextPayment', getNextPaymentDate(value, startDate, endDate));
 			},
 			defaultOptions: [
 				{ label: 'Annual', value: 'Annual' },
@@ -116,8 +118,6 @@ const paymentForm = ({ setValue, getValues }) => {
 			name: 'amount',
 			onChange: value => {
 				setValue('amount', value);
-				const {startDate, endDate, frequency} = getValues()
-				setValue('nextPayment', calculateNextPayment(frequency,value,startDate,endDate));
 			},
 			type: 'number',
 			InputProps: {
@@ -128,10 +128,7 @@ const paymentForm = ({ setValue, getValues }) => {
 			label: 'Next Payment',
 			name: 'nextPayment',
 			disabled: true,
-			type: 'number',
-			InputProps: {
-				endAdornment: <InputAdornment position="end">$</InputAdornment>,
-			},
+			renderField: 'datePicker',
 		},
 		{
 			label: 'Company Share',
@@ -161,8 +158,7 @@ const paymentForm = ({ setValue, getValues }) => {
 				return filterData;
 			},
 			onChange: selectedOption => {
-				if(selectedOption._id === 'newEntity') setValue('responsibleParty', selectedOption.name);
-				else setValue('responsibleParty', selectedOption);
+				setValue('responsibleParty', selectedOption);
 			},
 		},
 

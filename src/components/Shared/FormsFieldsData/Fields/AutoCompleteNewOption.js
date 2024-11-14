@@ -100,6 +100,10 @@ function AutoCompleteNewOption({ control, item }) {
 						}
 						value={options.find(option => option.value === value) || null}
 						onChange={(e, option) => {
+							if (option && option._id === 'newEntity') {
+								const newOption = { label: option.label, value: option.value };
+								setOptions(prev => [...prev, newOption]);
+							}
 							onChange ? onChange(option?.value) : onInputChange(option ? option.value : null);
 						}}
 						filterOptions={(options, params) => {
@@ -112,14 +116,14 @@ function AutoCompleteNewOption({ control, item }) {
 							if (inputValue !== '' && (!isExist || isExist.length === 0)) {
 								filtered.unshift({
 									label: inputValue,
-									value: { name: inputValue },
+									value: inputValue,
 									_id: 'newEntity',
 								});
 							}
 							return filtered;
 						}}
 						renderOption={option => {
-							if (option._id === 'newEntity')
+							if (option?._id === 'newEntity')
 								return <Typography style={{ color: 'midnightblue' }}>Add '{option.label}'</Typography>;
 
 							return (
@@ -127,10 +131,6 @@ function AutoCompleteNewOption({ control, item }) {
 									<Grid container item xs={12} alignItems="center">
 										<Grid item xs>
 											<span style={{ fontWeight: 400 }}>{option.label}</span>
-
-											{/* <Typography variant="body2" color="textSecondary">
-                                                {option}
-                                            </Typography> */}
 										</Grid>
 									</Grid>
 								</Grid>
@@ -140,7 +140,6 @@ function AutoCompleteNewOption({ control, item }) {
 							<TextField
 								{...params}
 								size="small"
-								multiline
 								variant="standard"
 								onChange={async event => {
 									if (isESSearch) {

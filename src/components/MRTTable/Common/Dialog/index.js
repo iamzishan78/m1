@@ -64,10 +64,16 @@ function AllDialogs(props) {
 					else Loader.errorToast('deletion', message);
 				} else Loader.errorToast('deletion', 'Failed to delete row (s)');
 				tableGlobalController.refetch();
+				tableGlobalController.updateState({
+					paymentMultiGrid: { showMultiGrid: false },
+				});
 			},
 			() => {
 				Loader.errorToast('deletion', 'Failed to delete row (s)');
 				tableGlobalController.refetch();
+				tableGlobalController.updateState({
+					paymentMultiGrid: { showMultiGrid: false },
+				});
 			}
 		);
 	};

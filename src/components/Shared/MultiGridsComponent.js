@@ -194,7 +194,8 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
             mainRecord: { key: '_id' },
             parentRecord: { key: 'paymentId', value: rest.paymentId },
             bypassSelectAll: true,
-        }
+        },
+        refetchQueries: ['getAgreementPaymentSummary']
     }), [rest.paymentId]);
 
     // override meta for related billing parties
@@ -204,6 +205,7 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
             mainRecord: { key: '_id' },
             parentRecord: { key: 'paymentId', value: rest.paymentId },
             bypassSelectAll: true,
+            refetchQueries: ['getAgreementPaymentSummary']
         }
     }), [rest.paymentId]);
 
@@ -214,6 +216,7 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
             mainRecord: { key: '_id' },
             parentRecord: { key: 'paymentId', value: rest.paymentId },
             bypassSelectAll: true,
+            refetchQueries: ['getAgreementPaymentSummary']
         }
     }), [rest.paymentId]);
 

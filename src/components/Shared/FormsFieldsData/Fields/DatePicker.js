@@ -28,7 +28,7 @@ function DatePicker({ control, item }) {
 	} = item || {};
 
 	return (
-		<Grid item xs={6}>
+		<Grid item xs={12}>
 			<Controller
 				control={control}
 				name={name}
