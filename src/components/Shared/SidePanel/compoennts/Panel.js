@@ -244,7 +244,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 	const [searchState, setSearchState] = useState(false);
 	const [tab, setTab] = useState(0);
 
-	const totalFilterCount = navStateValues.geographyFilterCount + navStateValues.wellFilterCount;
+	const totalFilterCount =
+		navStateValues.geographyFilterCount +
+		navStateValues.wellFilterCount +
+		(mapViewStateValues?.mapView?.selectedMapView?.filters?.length || 0);
 
 	useEffect(() => {
 		setTotalHitMapCount(stateApp.checkedHeats.length);

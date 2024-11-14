@@ -210,7 +210,8 @@ const tableESStateControllerHandler = state => ({
 		let formatedGridView = null;
 		let gridView = {};
 
-		const { filters } = globalStateController.getValue('mapView')?.selectedMapView || {};
+		const mapView = globalStateController.getValue('mapView');
+		const { filters } = mapView?.selectedMapView || {};
 		const selectedMapViewFilters = filters;
 
 		const layers = globalStateController.getValue('layers');
@@ -221,12 +222,12 @@ const tableESStateControllerHandler = state => ({
 		const dataSourceViews = selectedMapViewFilters?.filter(
 			view => view.dataSourceName === layerIdentifier || gridLayersIds.includes(view.dataSourceName)
 		);
-		const mapViewFilters = dataSourceViews.map(view =>
+		const mapViewFilters = dataSourceViews?.map(view =>
 			getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)
 		);
 
 		const mrtDefaultFilters = defaultFilters || state?.defaultFilters?.get({ noproxy: true });
-		const mergedMapGridFilters = [...mrtDefaultFilters, ...mapViewFilters];
+		let mergedMapGridFilters = [...mrtDefaultFilters];
 		if (gridViewSettings) {
 			// Fetch user-specific or default grid views based on provided settings and overrides.
 			const userDefaultDisplay = await fetchGridViews(client, gridViewSettings.module, tableKey, rest.gridViewOverride);
@@ -261,6 +262,11 @@ const tableESStateControllerHandler = state => ({
 			columnVirtualization,
 		});
 
+		const formattedmapViewsFilters = mapViewFilters.map(filter => ({
+			...filter,
+			field: filter.field.replace('.keyword', ''),
+			value: typeof filter.value === 'string' ? [filter.value] : filter.value,
+		}));
 		state.merge({
 			...rest,
 			refetchQueries,
@@ -284,7 +290,10 @@ const tableESStateControllerHandler = state => ({
 			customProps: isEmpty(state?.customProps?.get({ noproxy: true }))
 				? customProps
 				: state?.customProps?.get({ noproxy: true }),
-			filters: formatedGridView?.filters ? formatedGridView.filters : [],
+			filters: formatedGridView?.filters
+				? [...formatedGridView.filters, ...formattedmapViewsFilters]
+				: [...formattedmapViewsFilters],
+			layerIdentifier,
 			sorting: formatedGridView?.sorting ? formatedGridView.sorting : [],
 			rowSelection: {},
 			searchFields,
@@ -315,6 +324,9 @@ const tableESStateControllerHandler = state => ({
 						],
 					},
 		});
+		mapViewFilters?.forEach(filter => {
+			tableController(tableKey).setFilterMode(filter.field.replace('.keyword', ''), 'multiselect');
+		});
 	},
 
 	setFilterMode: (column, mode) => {
@@ -337,6 +349,7 @@ const tableESStateControllerHandler = state => ({
 			state.TableSchema?.[index]?.merge({ Filter: null });
 		}
 
+		if (!columnSchema) return;
 		state.filterModes?.merge({
 			[column]: {
 				mode,
@@ -444,6 +457,39 @@ const tableESStateControllerHandler = state => ({
 		)
 			return;
 
+		const mapView = globalStateController.getValue('mapView');
+		const mapViewsFitlers = mapView?.selectedMapView?.filters || [];
+
+		const tableState = state.get({
+			noproxy: true,
+		});
+
+		if (tableState?.layerIdentifier) {
+			const layers = globalStateController.getValue('layers');
+			const gridLayersIds = layers
+				?.filter(layer => layer?.layerShapeName === tableState?.layerIdentifier)
+				.map(layer => layer?.layerId);
+			globalStateController.updateState({
+				viewChanged: true,
+				mapView: {
+					...mapView,
+					viewChanged: true,
+					selectedMapView: {
+						...mapView?.selectedMapView,
+						filters: [
+							...mapViewsFitlers.filter(({ fieldName }) => (fieldName?.value || fieldName) !== filter.field),
+							{
+								dataSourceName: gridLayersIds?.[0] || tableState?.layerIdentifier,
+								filterType: tableState?.filterModes[filter.field.replace('.keyword', '')]?.mode || 'singleselect',
+								fieldName: filter.field,
+								filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
+							},
+						],
+					},
+				},
+			});
+		}
+
 		state.filters?.set([...filtersState.filter(({ field }) => field !== filter.field), filter]);
 	},
 
@@ -456,6 +502,30 @@ const tableESStateControllerHandler = state => ({
 
 	clearFilter: field => {
 		const filtersState = state.filters?.get({ noproxy: true });
+		const mapView = globalStateController.getValue('mapView');
+		const mapViewsFitlers = mapView?.selectedMapView?.filters || [];
+		if (mapViewsFitlers.find(({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') === field)) {
+			const tableState = state.get({
+				noproxy: true,
+			});
+
+			if (tableState?.layerIdentifier)
+				globalStateController.updateState({
+					viewChanged: true,
+					mapView: {
+						...mapView,
+						viewChanged: true,
+						selectedMapView: {
+							...mapView?.selectedMapView,
+							filters: [
+								...mapViewsFitlers.filter(
+									({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') !== field
+								),
+							],
+						},
+					},
+				});
+		}
 
 		if (!filtersState.find(filter => filter.field === field)) return;
 
@@ -467,7 +537,7 @@ const tableESStateControllerHandler = state => ({
 
 		if (!filtersState?.length === 0) return;
 
-		state.filters?.set([]);
+		state.filters?.set(filtersState.filter(filter => filter.isMapViewFilter));
 	},
 
 	syncFilters: filters => {

@@ -151,6 +151,7 @@ function MapViewOptions({ handleDefaultView, tableKey, allMapViews, defaultView,
 		// }
 		globalStateController.updateState({
 			mapView: { ...mapViewStateValues.mapView, selectedMapView: data, showViewModal: false },
+			viewChanged: true,
 		});
 	};
 
