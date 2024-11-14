@@ -491,10 +491,11 @@ function Map({
 			const mapViewFilters = globalStateController.getValue('mapView')?.selectedMapView?.filters || [];
 			// for of loop on mapViewFilters
 			for (const filter of mapViewFilters) {
-				const shapeFileLayer = globalStateController
-					.getValue('layers')
-					.find(layer => layer.layerId === filter.dataSourceName);
-				const dataSource = shapeFileLayer ? shapeFileLayer.layerShapeName : filter.dataSourceName;
+				// Identifying layer data source shapeFile/geojson
+				const shapeFileLayer = layers.find(layer => layer?.layerId === filter?.dataSourceName);
+				const dataSource = shapeFileLayer ? shapeFileLayer?.layerShapeName : filter?.dataSourceName;
+
+				// Get initial filters and merge with the latest ones
 				const state = layerFiltersController.getValue([dataSource]);
 				const initialFilters = state?.variables?.filters || []; // Get initial filters
 				layerFiltersController.setVariables(dataSource, {

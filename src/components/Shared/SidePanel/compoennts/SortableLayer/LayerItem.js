@@ -116,9 +116,10 @@ const LayerItem = React.memo(props => {
 		mapStateController.moved();
 	};
 
-	const layerFilters = mapView?.selectedMapView?.filters.filter(
-		filter => filter?.dataSourceName === data?.identifier || filter?.dataSourceName === data?.layerName
-	);
+	const layerFilters = mapView?.selectedMapView?.filters.filter(filter => {
+		const { dataSourceName } = filter || {};
+		return [data?.identifier, data?.layerName].includes(dataSourceName);
+	});
 
 	return (
 		<Flipped flipId={id}>

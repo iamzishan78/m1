@@ -226,8 +226,6 @@ const tableESStateControllerHandler = state => ({
 			getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)
 		);
 
-		const mrtDefaultFilters = defaultFilters || state?.defaultFilters?.get({ noproxy: true });
-		let mergedMapGridFilters = [...mrtDefaultFilters];
 		if (gridViewSettings) {
 			// Fetch user-specific or default grid views based on provided settings and overrides.
 			const userDefaultDisplay = await fetchGridViews(client, gridViewSettings.module, tableKey, rest.gridViewOverride);
@@ -286,7 +284,7 @@ const tableESStateControllerHandler = state => ({
 			isLoading: false,
 			isFetching: false,
 			isError: false,
-			defaultFilters: mergedMapGridFilters || [],
+			defaultFilters: defaultFilters || state?.defaultFilters?.get({ noproxy: true }) || [],
 			customProps: isEmpty(state?.customProps?.get({ noproxy: true }))
 				? customProps
 				: state?.customProps?.get({ noproxy: true }),
@@ -325,7 +323,7 @@ const tableESStateControllerHandler = state => ({
 					},
 		});
 		mapViewFilters?.forEach(filter => {
-			tableController(tableKey).setFilterMode(filter.field.replace('.keyword', ''), 'multiselect');
+			tableController(tableKey).setFilterMode(filter?.field.replace('.keyword', ''), 'multiselect');
 		});
 	},
 

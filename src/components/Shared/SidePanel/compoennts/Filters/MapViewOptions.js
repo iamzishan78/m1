@@ -146,9 +146,6 @@ function MapViewOptions({ handleDefaultView, tableKey, allMapViews, defaultView,
 
 	const handleClick = view => {
 		let data = JSON.parse(JSON.stringify(view));
-		// if (data.type === 'Default') {
-		//     data = handleDefaultView(data, getUser?._id);
-		// }
 		globalStateController.updateState({
 			mapView: { ...mapViewStateValues.mapView, selectedMapView: data, showViewModal: false },
 			viewChanged: true,

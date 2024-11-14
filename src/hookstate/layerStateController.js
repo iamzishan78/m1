@@ -732,21 +732,22 @@ const layerStateControllerHandler = state => {
 			drawController.reset();
 			layerFiltersController.reset();
 			const mapViewFilters = globalStateController.getValue('mapView')?.selectedMapView?.filters || [];
-			// for of loop on mapViewFilters
-			for (const filter of mapViewFilters) {
-				const shapeFileLayer = globalStateController
-					.getValue('layers')
-					.find(layer => layer.layerId === filter.dataSourceName);
-				const dataSource = shapeFileLayer ? shapeFileLayer.layerShapeName : filter.dataSourceName;
-				const state = layerFiltersController.getValue([dataSource]);
-				const initialFilters = state?.variables?.filters || []; // Get initial filters
+			const layers = globalStateController.getValue('layers') || [];
+			mapViewFilters.forEach(filter => {
+				// Check if its a UD layer or a shape file layer
+				const shapeFileLayer = layers.find(layer => layer.layerId === filter.dataSourceName);
+				const dataSource = shapeFileLayer?.layerShapeName || filter?.dataSourceName;
+
+				const initialFilters = layerFiltersController.getValue([dataSource])?.variables?.filters || [];
+
 				layerFiltersController.setVariables(dataSource, {
 					filters: [
 						getFormattedFilterBasedOnType(filter.filterType, filter.fieldName, filter.filterValues),
 						...initialFilters,
 					],
 				});
-			}
+			});
+
 			layerController.setState({ rigsData });
 			navController.reset();
 			mapControlsController.setState({

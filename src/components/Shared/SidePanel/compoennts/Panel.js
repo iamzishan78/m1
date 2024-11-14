@@ -224,9 +224,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 		const allMapViews = result?.data?.getMapViews?.mapViews;
 		globalStateController.updateState({
 			allMapViews,
-			// mapView: {
-			// 	selectedMapView: currentMapView,
-			// },
 		});
 	}
 

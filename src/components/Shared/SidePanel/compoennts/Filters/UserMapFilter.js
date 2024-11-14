@@ -121,52 +121,55 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 		});
 	}, [dataSourceName, getShapeFileSchema]);
 
+	const getLayerTypeAndFilters = dataSourceName => {
+		let esIndex,
+			filters = [],
+			search = { fields: [] };
+		const layerType = customLayersFieldAccessors[dataSourceName]?.layerKey?.toLowerCase(); // Get the layer type
+
+		// Determine the filters based on the layer type
+
+		if (layerType === 'agreement') {
+			esIndex = 'shapes_flat';
+			filters = [{ field: 'shapeJson.properties.layerType', value: 'agreement' }];
+		} else if (layerType === 'wells') {
+			esIndex = 'mywells_flat';
+			filters = [];
+		} else if (layerType === 'parcel' || layerType === 'unit') {
+			esIndex = 'shapes_flat';
+			filters = [{ field: 'layer.keyword', value: layerType }];
+		} else {
+			esIndex = 'shapefile_flat';
+			const selectedLayer = globalStateController.getValue('layers')?.find(layer => layer?.layerId === dataSourceName);
+			filters = selectedLayer ? generateFileFilters({ fileLayer: selectedLayer }).variables.filters : [];
+			search = selectedLayer ? generateFileFilters({ fileLayer: selectedLayer }).variables.search : {};
+			search.fields = [];
+		}
+		return { esIndex, filters, search };
+	};
+
 	// Effect to trigger data fetching based on the selected data source and field name
 	useEffect(() => {
-		if (dataSourceName && fieldName) {
-			let esIndex; // Elasticsearch index used in the query
-			let filters = []; // Filters to apply to the query
-			let search = { fields: [] };
-			const layerType = customLayersFieldAccessors[dataSourceName]?.layerKey?.toLowerCase(); // Get the layer type
+		if (!(dataSourceName && fieldName)) return;
 
-			// Determine the filters based on the layer type
+		const { esIndex, filters, search } = getLayerTypeAndFilters(dataSourceName);
 
-			if (layerType === 'agreement') {
-				esIndex = 'shapes_flat';
-				filters = [{ field: 'shapeJson.properties.layerType', value: 'agreement' }];
-			} else if (layerType === 'wells') {
-				esIndex = 'mywells_flat';
-				filters = [];
-			} else if (layerType === 'parcel' || layerType === 'unit') {
-				esIndex = 'shapes_flat';
-				filters = [{ field: 'layer.keyword', value: layerType }];
-			} else {
-				esIndex = 'shapefile_flat';
-				const selectedLayer = globalStateController
-					.getValue('layers')
-					?.find(layer => layer?.layerId === dataSourceName);
-				filters = selectedLayer ? generateFileFilters({ fileLayer: selectedLayer }).variables.filters : [];
-				search = selectedLayer ? generateFileFilters({ fileLayer: selectedLayer }).variables.search : {};
-				search.fields = [];
-			}
-
-			// Execute the lazy query to fetch filter options
-			getFiltersList({
-				variables: {
-					search,
-					filterAggs: {
-						field: fieldName?.value,
-						query: '',
-						size: 10000,
-					},
-					esIndex,
-					index: esIndex,
-					filters,
-					pagination: { first: 10000, after: null },
-					size: 10,
+		// Execute the lazy query to fetch filter options
+		getFiltersList({
+			variables: {
+				search,
+				filterAggs: {
+					field: fieldName?.value,
+					query: '',
+					size: 10000,
 				},
-			});
-		}
+				esIndex,
+				index: esIndex,
+				filters,
+				pagination: { first: 10000, after: null },
+				size: 10,
+			},
+		});
 	}, [dataSourceName, fieldName, getFiltersList]); // Dependencies trigger re-run when they change
 
 	// Effect to log filter values when they change
