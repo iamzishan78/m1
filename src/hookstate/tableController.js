@@ -212,9 +212,9 @@ const tableESStateControllerHandler = state => ({
 
 		const mapView = globalStateController.getValue('mapView');
 		const { filters } = mapView?.selectedMapView || {};
-		const selectedMapViewFilters = filters;
+		const selectedMapViewFilters = filters || [];
 
-		const layers = globalStateController.getValue('layers');
+		const layers = globalStateController.getValue('layers') || [];
 		const gridLayersIds = layers
 			?.filter(layer => layer?.layerShapeName === layerIdentifier)
 			.map(layer => layer?.layerId);
@@ -222,9 +222,9 @@ const tableESStateControllerHandler = state => ({
 		const dataSourceViews = selectedMapViewFilters?.filter(
 			view => view.dataSourceName === layerIdentifier || gridLayersIds.includes(view.dataSourceName)
 		);
-		const mapViewFilters = dataSourceViews?.map(view =>
-			getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)
-		);
+		const mapViewFilters =
+			dataSourceViews?.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)) ||
+			[];
 
 		if (gridViewSettings) {
 			// Fetch user-specific or default grid views based on provided settings and overrides.
@@ -463,7 +463,7 @@ const tableESStateControllerHandler = state => ({
 		});
 
 		if (tableState?.layerIdentifier) {
-			const layers = globalStateController.getValue('layers');
+			const layers = globalStateController.getValue('layers') || [];
 			const gridLayersIds = layers
 				?.filter(layer => layer?.layerShapeName === tableState?.layerIdentifier)
 				.map(layer => layer?.layerId);
