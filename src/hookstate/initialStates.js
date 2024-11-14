@@ -320,7 +320,7 @@ export const layerFilters = hookstate(copy(layerFilterInitialState));
 /* -------------------------------------------------------------------------- */
 
 export const mapControlsInitialState = {
-	fileUploadedContent: null,
+	fileUploaded: null,
 	selectedControl: 'layer',
 	layerAddControl: null,
 	selectedMapControl: null,

@@ -85,6 +85,7 @@ export function uploadFileData(file, fileContent) {
 				maxSingleShotSize: 4 * 1024 * 1024,
 				blobHTTPHeaders: {
 					blobContentDisposition: `attachment; filename="${file_name}"`,
+					blobContentType: fileContent.fileType,
 				},
 				metadata: {
 					Internalkey: interal_key,

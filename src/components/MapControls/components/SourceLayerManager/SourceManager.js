@@ -15,7 +15,6 @@ import { copy, deepEqual, deepEqualObjects } from 'components/Shared/functions';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 import { useMutation } from '@apollo/client';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
-import geojsonMerge from '@mapbox/geojson-merge';
 import { IconButton } from '@material-ui/core';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -30,7 +29,6 @@ import UploadIcon from 'components/Shared/svgIcons/uploadIcon';
 import EditableTextField from 'components/Shared/components/Fields/EditableTextField';
 import { truncate } from 'components/Shared/functions';
 import Button from '@material-ui/core/Button';
-import * as turf from '@turf/turf';
 
 // cra webpack hack to call this a png to get included in bundle
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
@@ -40,10 +38,7 @@ import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
 import { UPDATE_DATASET } from 'graphQL/useMutationDataset';
 
-import { showErrorMessage } from 'actions';
-import { useDispatch } from 'react-redux';
 import { Close as ClearButton } from '@material-ui/icons';
-import JSZip from 'jszip';
 import { globalStateController } from 'hookstate/globalStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 import { layerController } from 'hookstate/layerStateController';
@@ -230,9 +225,7 @@ function SourceManager(props) {
 	const classes = useStyles();
 	let history = useHistory();
 
-	const dispatch = useDispatch();
-
-	const { stateApp, setStateApp } = props;
+	const { stateApp } = props;
 	const { globalStateValues } = globalStateController.useState(['layers', 'datasets'], 'globalStateValues');
 	const [openM1, setOpenM1] = React.useState(true);
 	const [isOpenUserSources, setIsOpenUserSources] = React.useState(true);
@@ -417,196 +410,18 @@ function SourceManager(props) {
 		setCurrentLayers(update(currentLayers, updatefn));
 	};
 
-	const parseGeoForTypesAndNames = (geo, name) => {
-		const layerTypes = [];
-		const fileNames = [];
-		// Define the source and target projections
-		geo.features.forEach((feature, index) => {
-			feature.id = index + 1;
-			if (!feature.properties) {
-				feature.properties = {};
-			}
-
-			const layerType = feature.geometry.type === 'MultiPolygon' ? 'Polygon' : feature.geometry.type;
-
-			const layerShapeName = `${geo.fileName || name} - ${layerType}`;
-			feature.properties = { ...feature.properties, layerGeometry: layerType, layerShapeName };
-			if (!layerTypes.includes(layerType)) {
-				layerTypes.push(layerType);
-			}
-		});
-
-		layerTypes.forEach(layerType => {
-			fileNames.push(`${geo.fileName || geo.name || name} - ${layerType}`);
-		});
-
-		// Create a MultiPoint geometry from the FeatureCollection's coordinates
-		const allCoordinates = turf.explode(geo).features.map(feature => feature.geometry.coordinates);
-		const multiPoint = turf.multiPoint(allCoordinates);
-
-		// Calculate the bounding box
-		const bbox = turf.bbox(multiPoint);
-
-		return { layerTypes, fileNames, bbox };
-	};
-
-	const singleGeojson = (geojson, groupName) => {
-		const { layerTypes, fileNames, bbox } = parseGeoForTypesAndNames(geojson, groupName);
-		geojson.fileNames = fileNames;
-		geojson.featureTypes = layerTypes;
-		geojson.groupName = groupName;
-		geojson.bboxes = [bbox];
-		return geojson;
-	};
-
-	async function handleFileAsync(file) {
-		try {
-			let inputFile = null;
-			let fileData = null;
-			let fileName = null;
-			let fileType = null;
-			if (Array.isArray(file)) {
-				inputFile = file[0].data;
-				fileData = file[0].file;
-				fileName = file[0].file.name;
-				fileType = file[0].file.type;
-			} else {
-				inputFile = file;
-				fileName = file.split('?')[0].split('/');
-				fileName = fileName[fileName.length - 1];
-			}
-			let res;
-			fileName = fileName.toLowerCase();
-			if (fileName.endsWith('.geojson') || fileName.endsWith('.json')) {
-				res = await new Promise((resolve, reject) => {
-					fetch(inputFile)
-						.then(response => {
-							return response.json();
-						})
-						.then(response => {
-							resolve({
-								data: singleGeojson(response, fileName.replace('.geojson', '').replace('.json', '')),
-								originalData: { file: fileData, fileName, fileType },
-							});
-						})
-						.catch(error => reject(error));
-				});
-			} else if (fileName.endsWith('.zip')) {
-				res = await new Promise((resolve, reject) => {
-					fetch(inputFile).then(async response => {
-						const zip = await JSZip.loadAsync(response.arrayBuffer());
-
-						// Iterate through each file in the zip
-						const zipFiles = {};
-						zip.forEach(async (relativePath, zipEntry) => {
-							if (
-								!zipEntry.dir &&
-								!relativePath.includes('xml') &&
-								!relativePath.includes('pdf') &&
-								!relativePath.includes('__MACOSX')
-							) {
-								const name = relativePath.split('.').slice(0, -1).join('.');
-								if (!zipFiles[name]) zipFiles[name] = [];
-								zipFiles[name].push(zipEntry);
-							}
-						});
-						const geojsons = [];
-						const zipKeys = Object.keys(zipFiles);
-
-						for (let i = 0; i < zipKeys.length; i++) {
-							const zipKey = zipKeys[i];
-							const newZip = new JSZip();
-							zipFiles[zipKey].forEach(file => {
-								newZip.file(file.name, file.async('arraybuffer'));
-							});
-							const newZipContent = await newZip.generateAsync({ type: 'blob' });
-
-							var formdata = new FormData();
-							formdata.append('upload', newZipContent, zipKey + '.zip');
-							formdata.append('rfc7946', 'on');
-
-							var requestOptions = {
-								method: 'POST',
-								body: formdata,
-								redirect: 'follow',
-							};
-							// eslint-disable-next-line no-loop-func
-							res = await new Promise(resolve => {
-								fetch('https://ogre.adc4gis.com/convert', requestOptions)
-									.then(response => response.json())
-									.then(result => {
-										const name = fileName.replace('.zip', '');
-										geojsons.push(result);
-										resolve({
-											data: singleGeojson(result, name),
-											originalData: { file: fileData, fileName, fileType },
-										});
-									})
-									.catch(error => console.log('error', error));
-							});
-						}
-
-						let allFileNames = [];
-						let allLayerTypes = [];
-						const allLayerBboxs = [];
-						geojsons.forEach(geo => {
-							const { layerTypes, fileNames, bbox } = parseGeoForTypesAndNames(geo, geo.name);
-							allLayerTypes = allLayerTypes.concat(layerTypes);
-							allFileNames = allFileNames.concat(fileNames);
-							allLayerBboxs.push(bbox);
-						});
-						const merged = geojsonMerge.merge(geojsons);
-						merged.features.forEach((feature, index) => {
-							feature.id = index + 1;
-						});
-						merged.fileNames = allFileNames;
-						merged.featureTypes = allLayerTypes;
-						merged.bboxes = allLayerBboxs;
-						merged.groupName = fileName.replace('.zip', '');
-						resolve({ data: merged, originalData: { file: fileData, fileName, fileType } });
-					});
-				});
-			}
-			return res;
-		} catch (err) {
-			console.log('🚀 ~ handleFileAsync ~ err:', err);
-			return {
-				error: true,
-				message: err.message,
-			};
-		}
-	}
-
 	async function handleFileInput(fileObj) {
-		console.log(1);
+		if (!fileObj?.[0]?.file) return;
 
-		setStateApp(stateApp => ({
-			...stateApp,
-			universalCircularLoaderAct: {
-				localLoader: true,
-				text: 'This may take some time depending on the file size',
-			},
-		}));
-		let originalData;
-		let fileContent = await handleFileAsync(fileObj);
-		if (fileContent.error) {
-			dispatch(showErrorMessage('Failed to parse the file'));
-		}
-		if (fileContent?.originalData) {
-			originalData = fileContent.originalData;
-			fileContent = fileContent.data;
-		}
-		setStateApp(stateApp => ({
-			...stateApp,
-			universalCircularLoaderAct: false,
-		}));
+		const fileData = fileObj[0].file;
+		const fileName = fileObj[0].file.name;
+		const fileNameParsed = fileName.replace('.zip', '').replace('.geojson', '').replace('.json', '');
+		const fileType = fileObj[0].file.type;
 
-		if (fileContent?.featureTypes)
-			mapControlsController.updateState({
-				layerAddControl: 'addGroup',
-				fileUploadedContent: fileContent,
-				fileUploadedOriginalContent: originalData,
-			});
+		mapControlsController.updateState({
+			layerAddControl: 'addGroup',
+			fileUploaded: { file: fileData, fileName, fileNameParsed, fileType },
+		});
 	}
 
 	const checkIfDeleteAllow = layer => {
