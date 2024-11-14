@@ -58,7 +58,7 @@ const UserManagementMeta = {
       header: 'Role',
       accessorKey: 'role',
       name: 'role',
-      accessorFn: (row) => row?.role || '',
+      accessorFn: (row) =>  UserRole[row?.role] || '',
       Cell: ({ row }) => {
         const value =  row?.original?.role
           // Use the enum to get the user-friendly name for the role
@@ -71,7 +71,7 @@ const UserManagementMeta = {
       header: 'Role Privileges',
       accessorKey: 'rolePrivileges',
       name: 'rolePrivileges',
-      accessorFn: (row) => row?.rolePrivileges || '',
+      accessorFn: (row) =>  RolePrivilege[row?.rolePrivileges] || '',
       Cell: ({ row }) => {
         const value =  row?.original?.rolePrivileges
           // Use the enum to get the user-friendly name for the role privileges
