@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Divider, makeStyles, Tab, Tabs, withStyles } from '@material-ui/core';
 import WellMasterTabPanel from './WellMaster';
 import { globalStateController } from 'hookstate/globalStateController';
-import AcerageSummary from './AcerageSummary';
+import AcreageSummary from './AcreageSummary';
 import ExhibitA from './ExhibitA';
-import AcerageDetail from './AcerageDetail';
+import AcreageDetail from './AcreageDetail';
 
 const useStyles = makeStyles(theme => ({
 	mainTabContainer: {
@@ -90,8 +90,8 @@ export default function LandAnalytics() {
 				</StyledTabs>
 			</div>
 			{tab === 0 && <ExhibitA />}
-			{tab === 1 && <AcerageSummary />}
-			{tab === 2 && <AcerageDetail />}
+			{tab === 1 && <AcreageSummary />}
+			{tab === 2 && <AcreageDetail />}
 			{tab === 3 && <WellMasterTabPanel />}
 			{/* <AnalyticsCards cards={cards} /> */}
 			<Divider className={classes.divider} />

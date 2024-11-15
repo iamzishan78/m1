@@ -3,7 +3,7 @@ import { Summarize } from '@mui/icons-material';
 
 const esIndex = 'shapetracts_flat';
 
-const AcerageSummaryMeta = {
+const AcreageSummaryMeta = {
 	esIndex,
 	isElasticQuery: false,
 	pageSize: 25,
@@ -13,16 +13,16 @@ const AcerageSummaryMeta = {
 	},
 	defaultSort: { field: '_ts', order: 'asc' },
 	gridViewSettings: {
-		label: 'Acerage Summary',
-		module: 'Acerage Summary',
+		label: 'Acreage Summary',
+		module: 'Acreage Summary',
 		Icon: Summarize,
 		defaultView: {
-			name: 'All Acerage Summary',
+			name: 'All Acreage Summary',
 			type: 'Default',
 		},
 		handleDefaultView: (view, user) => {
 			switch (view?.name) {
-				case 'My Acerage Summary':
+				case 'My Acreage Summary':
 					view.filters[0].value = user._id;
 					break;
 
@@ -92,7 +92,7 @@ const AcerageSummaryMeta = {
 			id: 'shape.shapeJson.properties.report.devReportGrossAcres',
 			header: 'Report Dev Gross',
 			...CommonSchema.AGGREGATED_FIELD('Report Dev Gross'),
-			...CommonSchema.AGGREGATED_FOOTER('shape.shapeJson.properties.report.devReportGrossAcres', 'AcerageSummaryTable'),
+			...CommonSchema.AGGREGATED_FOOTER('shape.shapeJson.properties.report.devReportGrossAcres', 'AcreageSummaryTable'),
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -102,7 +102,7 @@ const AcerageSummaryMeta = {
 			id: 'shape.shapeJson.properties.report.devReportNet',
 			header: 'Report Dev Net',
 			...CommonSchema.AGGREGATED_FIELD('Report Dev Net'),
-			...CommonSchema.AGGREGATED_FOOTER('shape.shapeJson.properties.report.devReportNet', 'AcerageSummaryTable'),
+			...CommonSchema.AGGREGATED_FOOTER('shape.shapeJson.properties.report.devReportNet', 'AcreageSummaryTable'),
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -112,7 +112,7 @@ const AcerageSummaryMeta = {
 			id: 'shape.shapeJson.properties.report.devCompanyNetAcres',
 			header: 'Dev Co Net',
 			...CommonSchema.AGGREGATED_FIELD('Dev Co Net'),
-			...CommonSchema.AGGREGATED_FOOTER('shape.shapeJson.properties.report.devCompanyNetAcres', 'AcerageSummaryTable'),
+			...CommonSchema.AGGREGATED_FOOTER('shape.shapeJson.properties.report.devCompanyNetAcres', 'AcreageSummaryTable'),
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -124,7 +124,7 @@ const AcerageSummaryMeta = {
 			...CommonSchema.AGGREGATED_FIELD('Report Undev Gross'),
 			...CommonSchema.AGGREGATED_FOOTER(
 				'shape.shapeJson.properties.report.undevReportGrossAcres',
-				'AcerageSummaryTable'
+				'AcreageSummaryTable'
 			),
 		},
 		{
@@ -135,7 +135,7 @@ const AcerageSummaryMeta = {
 			id: 'shape.shapeJson.properties.report.undevReportNet',
 			header: 'Report Undev Net',
 			...CommonSchema.AGGREGATED_FIELD('Report Undev Net'),
-			...CommonSchema.AGGREGATED_FOOTER('shape.shapeJson.properties.report.undevReportNet', 'AcerageSummaryTable'),
+			...CommonSchema.AGGREGATED_FOOTER('shape.shapeJson.properties.report.undevReportNet', 'AcreageSummaryTable'),
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -147,7 +147,7 @@ const AcerageSummaryMeta = {
 			...CommonSchema.AGGREGATED_FIELD('Undev Co Net'),
 			...CommonSchema.AGGREGATED_FOOTER(
 				'shape.shapeJson.properties.report.undevCompanyNetAcres',
-				'AcerageSummaryTable'
+				'AcreageSummaryTable'
 			),
 		},
 		{
@@ -158,7 +158,7 @@ const AcerageSummaryMeta = {
 			id: 'shape.shapeJson.properties.report.reportGrossAcres',
 			header: 'Total Report Gross',
 			...CommonSchema.AGGREGATED_FIELD('Total Report Gross'),
-			...CommonSchema.AGGREGATED_FOOTER('shape.shapeJson.properties.report.reportGrossAcres', 'AcerageSummaryTable'),
+			...CommonSchema.AGGREGATED_FOOTER('shape.shapeJson.properties.report.reportGrossAcres', 'AcreageSummaryTable'),
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -168,7 +168,7 @@ const AcerageSummaryMeta = {
 			id: 'shape.shapeJson.properties.report.reportNet',
 			header: 'Total Report Net',
 			...CommonSchema.AGGREGATED_FIELD('Total Report Net'),
-			...CommonSchema.AGGREGATED_FOOTER('shape.shapeJson.properties.report.reportNet', 'AcerageSummaryTable'),
+			...CommonSchema.AGGREGATED_FOOTER('shape.shapeJson.properties.report.reportNet', 'AcreageSummaryTable'),
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -178,9 +178,9 @@ const AcerageSummaryMeta = {
 			id: 'shape.shapeJson.properties.report.companyNetAcres',
 			header: 'Total Co Net',
 			...CommonSchema.AGGREGATED_FIELD('Total Co Net'),
-			...CommonSchema.AGGREGATED_FOOTER('shape.shapeJson.properties.report.companyNetAcres', 'AcerageSummaryTable'),
+			...CommonSchema.AGGREGATED_FOOTER('shape.shapeJson.properties.report.companyNetAcres', 'AcreageSummaryTable'),
 		},
 	],
 };
 
-export default AcerageSummaryMeta;
+export default AcreageSummaryMeta;
