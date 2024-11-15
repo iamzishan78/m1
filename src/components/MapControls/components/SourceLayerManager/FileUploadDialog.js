@@ -12,7 +12,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { getFileExtension, uploadFileData } from 'components/Shared/functions';
 import { ADDFILE } from 'graphQL/useMutationAddFile';
 import { useApolloClient, useMutation } from '@apollo/client';
-import { getDefaultSettings, SimpleOrShapeFileImport } from '../addUserHelper';
+import { getDefaultSettings, SimpleOrShapeFileImport } from './fileUploadHelper';
 import { GET_DATASET } from 'graphQL/useQueryDataset';
 import { CheckBox, CheckBoxOutlineBlank } from '@material-ui/icons';
 import { showErrorMessage } from 'actions';
