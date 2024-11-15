@@ -9,7 +9,7 @@ const random_rgb = () => {
 	return 'rgb(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ')';
 };
 
-export const getDefaultSettings = (type, layerName, sourceProps) => {
+export const getDefaultSettings = (type, layerName, sourceProps, bbox) => {
 	const idColor = random_rgb();
 	let paintProps = {};
 	if (type === 'Point' || type === 'MultiPoint') type = 'circle';
@@ -58,7 +58,7 @@ export const getDefaultSettings = (type, layerName, sourceProps) => {
 		showable: true,
 		visiable: true,
 	};
-	return { layerPaintProps, layerSettings };
+	return { layerPaintProps, layerSettings, bbox };
 };
 
 export const SimpleOrShapeFileImport = async params => {

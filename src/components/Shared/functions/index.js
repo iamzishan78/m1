@@ -75,20 +75,20 @@ export function capitalizeFirstLetter(string) {
 
 export function uploadFileData(file, fileContent) {
 	const url = file.uri;
-	const interal_key = file.internalKey;
+	const internal_key = file.internalKey;
 	const file_name = file.name;
-	// const content = JSON.stringify(fileContent.file);
+
 	return new Promise((resolve, reject) => {
 		const blockBlobClient = new BlockBlobClient(url);
 		blockBlobClient
-			.uploadBrowserData(fileContent.file, {
+			.uploadData(fileContent.file, {
 				maxSingleShotSize: 4 * 1024 * 1024,
 				blobHTTPHeaders: {
 					blobContentDisposition: `attachment; filename="${file_name}"`,
 					blobContentType: fileContent.fileType,
 				},
 				metadata: {
-					Internalkey: interal_key,
+					Internalkey: internal_key,
 				},
 			})
 			.then(response => {

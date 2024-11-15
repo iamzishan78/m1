@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -6,16 +6,23 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { Box } from '@material-ui/core';
+import { Box, Checkbox, FormControlLabel } from '@material-ui/core';
 import { mapControlsController } from 'hookstate/mapControlsController';
 import { globalStateController } from 'hookstate/globalStateController';
 import { getFileExtension, uploadFileData } from 'components/Shared/functions';
 import { ADDFILE } from 'graphQL/useMutationAddFile';
-import { useApolloClient } from '@apollo/client';
-import { SimpleOrShapeFileImport } from '../addUserHelper';
+import { useApolloClient, useMutation } from '@apollo/client';
+import { getDefaultSettings, SimpleOrShapeFileImport } from '../addUserHelper';
+import { GET_DATASET } from 'graphQL/useQueryDataset';
+import { CheckBox, CheckBoxOutlineBlank } from '@material-ui/icons';
+import { showErrorMessage } from 'actions';
+import { useDispatch } from 'react-redux';
+import { CREATE_DATASET_LAYERS } from 'graphQL/useMutationDataset';
+import { v4 as uuid } from 'uuid';
 
 const FileUploadDialog = () => {
 	const client = useApolloClient();
+	const dispatch = useDispatch();
 
 	const {
 		mapControlsStateValues: { fileUploaded },
@@ -24,8 +31,13 @@ const FileUploadDialog = () => {
 	const [error, setError] = useState(false);
 	const [isOpen, setIsOpen] = useState(true);
 	const [groupName, setGroupName] = useState(fileUploaded.fileNameParsed);
+	const [dataset, setDataset] = useState(null);
+	const [isCreateLayers, setIsCreateLayers] = useState(true);
+	const [layerNames, setLayerNames] = useState([]);
 
-	const handleApplyChanges = async () => {
+	const [createDatasetLayers] = useMutation(CREATE_DATASET_LAYERS);
+
+	const handleCreateDataset = async () => {
 		if (!groupName || !fileUploaded) {
 			return setError(true);
 		}
@@ -55,7 +67,61 @@ const FileUploadDialog = () => {
 			await SimpleOrShapeFileImport({ user, client, fileId });
 		}
 
-		globalStateController.updateState({ universalLoader: false });
+		const interval = setInterval(async () => {
+			try {
+				const datasetRes = await client.query({
+					query: GET_DATASET,
+					variables: {
+						fileId,
+					},
+				});
+
+				if (datasetRes?.data?.getDataset?.data) {
+					clearInterval(interval);
+
+					setDataset(datasetRes?.data?.getDataset?.data);
+
+					globalStateController.updateState({ universalLoader: false });
+				}
+			} catch {
+				clearInterval(interval);
+
+				globalStateController.updateState({ universalLoader: false });
+			}
+		}, 5000);
+	};
+
+	const handleCreateLayers = async () => {
+		if (!groupName || !layerNames.length) {
+			return setError(true);
+		}
+
+		const source = groupName + uuid() + '_source';
+
+		createDatasetLayers({
+			variables: {
+				dataset,
+				groupName,
+				layerNames,
+				isCreateLayers,
+				defaultSettings: dataset.categories.map(({ layerGeometry, name, bbox }) =>
+					getDefaultSettings(layerGeometry, name, source, bbox)
+				),
+			},
+			refetchQueries: ['getDatasets', ...(isCreateLayers ? ['getLayerGroups', 'getAllLayerSettingsByUser'] : [])],
+			awaitRefetchQueries: true,
+		});
+
+		mapControlsController.updateState({
+			layerAddControl: null,
+			fileUploaded: null,
+		});
+	};
+
+	const handleApplyChanges = () => {
+		if (!dataset) return handleCreateDataset();
+
+		handleCreateLayers();
 	};
 
 	const handleCancel = () => {
@@ -66,9 +132,24 @@ const FileUploadDialog = () => {
 		});
 	};
 
+	useEffect(() => {
+		if (!dataset?.categories) return;
+
+		setLayerNames(dataset.categories.map(c => c.name));
+	}, [dataset]);
+
+	const handleLayerNameChanges = (value, index) => {
+		if (value && layerNames.includes(value)) {
+			dispatch(showErrorMessage('Layer with this name already exist'));
+		} else {
+			layerNames[index] = value;
+			setLayerNames([...layerNames]);
+		}
+	};
+
 	return (
 		<Dialog maxWidth="xs" fullWidth open={isOpen} onClose={handleCancel}>
-			<DialogTitle>Create a new Source</DialogTitle>
+			<DialogTitle>{dataset ? 'Create new Source Layers' : 'Create a new Source'}</DialogTitle>
 			<DialogContent dividers>
 				<Box fontWeight="bold">Source File Name</Box>
 				<Typography variant="subtitle1" gutterBottom>
@@ -89,6 +170,37 @@ const FileUploadDialog = () => {
 						setGroupName(e.target.value);
 					}}
 				/>
+
+				{dataset && (
+					<>
+						{dataset.categories.map(({ name }, i) => (
+							<TextField
+								focused
+								required
+								margin="dense"
+								id="layerName"
+								value={layerNames[i]}
+								label={`Source Category ${i + 1} ( ${name} )`}
+								fullWidth
+								error={error}
+								onChange={e => handleLayerNameChanges(e.target.value, i)}
+							/>
+						))}
+
+						<FormControlLabel
+							control={
+								<Checkbox
+									icon={<CheckBoxOutlineBlank fontSize="small" />}
+									checkedIcon={<CheckBox fontSize="small" />}
+									checked={isCreateLayers}
+									onChange={event => setIsCreateLayers(event.target.checked)}
+									color="default"
+								/>
+							}
+							label="Auto-Add Source Data to Map Layers"
+						/>
+					</>
+				)}
 			</DialogContent>
 
 			<DialogActions>
@@ -96,7 +208,7 @@ const FileUploadDialog = () => {
 					Cancel
 				</Button>
 				<Button id="createSourceButton" disabled={!groupName} autoFocus onClick={handleApplyChanges} color="primary">
-					Create Source
+					{dataset ? 'Update' : 'Create'} Source
 				</Button>
 			</DialogActions>
 		</Dialog>
