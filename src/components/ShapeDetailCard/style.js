@@ -379,7 +379,7 @@ export const summaryTableStyles = makeStyles(theme => ({
 	},
 	linkTooltip: {
 		position: 'absolute',
-		top: '-60px',
+		top: '0',
 		left: '0',
 		backgroundColor: '#fff',
 		border: '1px solid #ccc',
@@ -387,6 +387,5 @@ export const summaryTableStyles = makeStyles(theme => ({
 		borderRadius: '4px',
 		zIndex: 1,
 		boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-		overflowWrap: 'anywhere',
 	},
 }));

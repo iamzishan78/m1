@@ -646,7 +646,7 @@ export default function SummaryTableInfo({
 													{data.formatValue(data.value || properties[data.key]) || '-'}
 												</Grid>
 											) : (
-												<Grid item style={{ width: '100%', overflowWrap: 'break-word' }}>
+												<Grid item style={{ width: '100%', overflowWrap: 'break-word', position: 'relative' }}>
 													{data.type === 'date' &&
 														(get(properties, `${data.key}`, '')
 															? moment(get(properties, `${data.key}`, ''))
@@ -667,15 +667,13 @@ export default function SummaryTableInfo({
 														(data.value || get(properties, `${data.key}`, '-'))}
 
 													{data.type === 'text' && tooltipVisible[data.key] && (
-														<div style={{ position: 'relative' }} id={data.key}>
-															<LinkPopup
-																id={data.key}
-																url={data.value || get(properties, `${data.key}`, '-')}
-																onLinkClick={e => handleLinkClick(e, data.key)}
-																maxLength={40}
-																className={classes.linkTooltip}
-															/>
-														</div>
+														<LinkPopup
+															id={data.key}
+															url={data.value || get(properties, `${data.key}`, '-')}
+															onLinkClick={e => handleLinkClick(e, data.key)}
+															maxLength={40}
+															className={classes.linkTooltip}
+														/>
 													)}
 
 													{data.type === 'state' &&
