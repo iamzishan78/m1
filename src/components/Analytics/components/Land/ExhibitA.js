@@ -73,7 +73,17 @@ const FilterComp = ({ filterColumn }) => {
 
 	if (!column) return null;
 
-	return <Comp column={column} _value={value} isCustom />;
+	return (
+		<Comp
+			column={column}
+			_value={value}
+			isCustom
+			textFieldProps={{
+				size: 'small',
+				variant: 'outlined',
+			}}
+		/>
+	);
 };
 
 const ExhibitA = () => {

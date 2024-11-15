@@ -35,6 +35,7 @@ function ESAutoCompleteFilter({
 	},
 	extendSearchQuery,
 	multiple,
+	textFieldProps = {},
 	_value,
 }) {
 	if (isComposite) field = field.split(',');
@@ -234,6 +235,7 @@ function ESAutoCompleteFilter({
 						searchText.current = e.target.value;
 						getFiltersAction();
 					}}
+					{...textFieldProps}
 				/>
 			)}
 			onChange={(e, option) => {
