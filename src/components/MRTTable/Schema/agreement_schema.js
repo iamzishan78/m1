@@ -46,6 +46,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 				},
 			},
 			mutation: UPDATECUSTOMLAYER,
+			refetchQueries: ['getESSimpleFilter'],
 		});
 		Loader.successToast(loaderId, 'Updation Complete');
 		tableGlobalController.refetch();
@@ -54,7 +55,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 	}
 };
 
-const AgreementTypes = {
+export const AgreementTypes = {
 	lease: 'Lease',
 	deed: 'Deed',
 	contract: 'Contract',
@@ -194,7 +195,7 @@ const AgreementMeta = {
 			accessorKey: 'shapeJson.properties.agreementSubtype',
 			header: 'Agreement Subtype',
 		},
-		// state column
+
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.originalProperties.State.keyword',
@@ -248,8 +249,8 @@ const AgreementMeta = {
 			name: 'shapeJson.properties.effectiveDate.keyword',
 			accessorKey: 'shapeJson.properties.effectiveDate',
 			header: 'Efftv Date',
-			type: 'date',
 			isSearchField: false,
+			type: 'date',
 			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.shapeJson?.properties?.effectiveDate)}</>;
 			},
@@ -267,8 +268,8 @@ const AgreementMeta = {
 			name: 'shapeJson.properties.expirationDate.keyword',
 			accessorKey: 'shapeJson.properties.expirationDate',
 			header: 'Exp Date',
-			type: 'date',
 			isSearchField: false,
+			type: 'date',
 			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.shapeJson?.properties?.expirationDate)}</>;
 			},
@@ -286,8 +287,8 @@ const AgreementMeta = {
 			name: 'shapeJson.properties.extensionDate.keyword',
 			accessorKey: 'shapeJson.properties.extensionDate',
 			header: 'Extension Exp Date',
-			type: 'date',
 			isSearchField: false,
+			type: 'date',
 			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.shapeJson?.properties?.extensionDate)}</>;
 			},
@@ -363,7 +364,7 @@ const AgreementMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.metaDescription.keyword',
-			accessorKey: 'shapeJson.properties.metaDescription', // accessorKey to display Description
+			accessorKey: 'shapeJson.properties.metaDescription.keyword',
 			header: 'Description',
 		},
 
@@ -444,6 +445,13 @@ const AgreementMeta = {
 			header: 'NRA',
 		},
 
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.ownerName.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.ownerName,
+			id: 'shapeJson.properties.ownerName',
+			header: 'Owner',
+		},
 		CommonSchema.CREATED_BY,
 		CommonSchema.CREATED_DATE,
 		CommonSchema.LAST_UPDATED_BY,

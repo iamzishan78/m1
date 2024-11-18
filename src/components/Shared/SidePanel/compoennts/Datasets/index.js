@@ -122,7 +122,7 @@ function Datasets({ headerButton, search, stateApp }) {
 	useEffect(() => {
 		userMapSettings({ variables: { user: stateApp.user._id, type: 'DatasetVisibility' } });
 		getDatasets({ variables: { userId: stateApp.user._id } });
-	}, []);
+	}, [getDatasets, stateApp.user._id, userMapSettings]);
 
 	const datasets = useMemo(() => {
 		if (_datasets?.getDatasets?.length && mapSettings?.userMapSettings?.message) {
@@ -156,14 +156,12 @@ function Datasets({ headerButton, search, stateApp }) {
 		} else return [];
 	}, [_datasets, mapSettings, search]);
 
-	const { selectedDataset, mapControlsStateValues } = mapControlsController.useState(
-		['selectedDataset'],
-		'mapControlsStateValues'
-	);
+
+	const { mapControlsStateValues } = mapControlsController.useState(['selectedDataset'], 'mapControlsStateValues');
 
 	const getBorderColor = useCallback(
 		name => (mapControlsStateValues.selectedDataset?.sourceName === name ? '#05aff0' : '#263451'),
-		[selectedDataset]
+		[mapControlsStateValues.selectedDataset?.sourceName]
 	);
 
 	const onItemClick = dataset => {

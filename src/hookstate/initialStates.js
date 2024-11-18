@@ -8,7 +8,9 @@ import { simpleAuthBypass } from 'utils/data';
 /* -------------------------------------------------------------------------- */
 export const globalInitialState = {
 	layers: [],
+	panelItems: [],
 	emptyGroups: [],
+	globalSearch: '',
 	universalLoader: false,
 	layerLoading: {},
 	user: null,
@@ -19,7 +21,6 @@ export const globalInitialState = {
 	x_zumo_auth: null,
 	cypress: null,
 	testCase: null,
-	panelItems: [],
 	bypassLogin: simpleAuthBypass || false,
 	bypassType: '',
 	tenant: null,
@@ -422,7 +423,7 @@ export const popupInitialState = {
 	parcelDetailCardTabIndex: 0,
 	permitSelectedCoordinates: null,
 	selectionLayers: [],
-    coordinate: null
+	coordinate: null,
 };
 
 export const popupState = hookstate(copy(popupInitialState));

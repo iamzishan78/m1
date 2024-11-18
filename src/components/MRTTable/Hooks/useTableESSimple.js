@@ -55,7 +55,7 @@ const useTableESSimple = tableKey => {
 			showColumnFilters: tableStateValues?.showColumnFilters,
 			sorting: tableStateValues.sorting,
 			...(!tableStateValues?.isInFiniteScroll && { pagination: tableStateValues.pagination }),
-			...(tableState?.groupedField?.get() && { grouping: tableStateValues.grouping }),
+			grouping: tableStateValues.grouping,
 			isLoading: tableStateValues?.isLoading,
 			showAlertBanner: tableStateValues?.isError,
 			showProgressBars: tableStateValues?.isFetching,
@@ -71,25 +71,23 @@ const useTableESSimple = tableKey => {
 				showColumnFilters: tableStateValues?.showColumnFilters,
 				rowSelection: tableStateValues?.rowSelection,
 			},
-			...(tableStateValues?.groupedField && {
-				enableGrouping: true,
-				manualGroupinng: true,
-				onGroupingChange: groupingFunc => {
-					const newGrouping = groupingFunc(tableStateValues.grouping);
-					tableState.grouping.set(newGrouping);
+			enableGrouping: true,
+			manualGroupinng: true,
+			onGroupingChange: groupingFunc => {
+				const newGrouping = groupingFunc(tableStateValues.grouping);
+				tableState.grouping.set(newGrouping);
 
-					if (newGrouping.length === 1)
-						return tableState.sorting.set([
-							{
-								id: newGrouping[0],
-								desc: false,
-							},
-						]);
+				if (newGrouping.length === 1)
+					return tableState.sorting.set([
+						{
+							id: newGrouping[0],
+							desc: false,
+						},
+					]);
 
-					if (newGrouping.length > 0) tableState.sorting.set([]);
-					return newGrouping;
-				},
-			}),
+				if (newGrouping.length > 0) tableState.sorting.set([]);
+				return newGrouping;
+			},
 			...(tableStateValues?.isInFiniteScroll && { enablePagination: false }),
 			...(!tableStateValues?.isInFiniteScroll && {
 				manualPagination: true,

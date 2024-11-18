@@ -15,7 +15,7 @@ import GenericMeta from './generic-schema';
 import ShapesFilesGenericMeta from './shapefiles_generic_schema';
 import PropertiesMeta from './properties_schema';
 import RevenueStatementsMeta from './revenue_statements_schema';
-import ContactWellInterestMeta from "./contact_well_Interest_schema"
+import ContactWellInterestMeta from './contact_well_Interest_schema';
 import MyWellsMeta from './my_wells_schema';
 import WellsMeta from './wells_schema';
 import TaxOwnerMeta from './map-grid-tax-owner-schema';
@@ -30,6 +30,9 @@ import RelatedPaymentsMeta from './related_payments_schema';
 import RelatedPayeesMeta from './related_payees_schema';
 import RelatedCostAllocationsMeta from './related_cost_allocation_schema';
 import RelatedBillingPartiesMeta from './related_billing_parties_schema';
+import AcreageSummaryMeta from './acreage_summary_schema';
+import ExhibitAMeta from './exhibit_a_schema';
+import AcreageDetilsMeta from './acreage_details_schema';
 
 export const SCHEMA = {
 	ContactTable: ContactMeta,
@@ -52,12 +55,15 @@ export const SCHEMA = {
 	CampaignTractInterestTable: TractInterestsMeta,
 	GenericTable: GenericMeta,
 	ShapesFilesGenericTable: ShapesFilesGenericMeta,
-	PropertiesTable: PropertiesMeta,  //main property Grid => /revenue/properties
+	PropertiesTable: PropertiesMeta, //main property Grid => /revenue/properties
 	RevenueStatementsTable: RevenueStatementsMeta, // Revenue Statement grid => revenue/statements
 	MyWellsTable: MyWellsMeta,
 	WellsTable: WellsMeta,
 	TaxOwnerTable: TaxOwnerMeta,
-	SalesVolumeComparisonTable: SalesVolumeComparisonMeta, // Sales Volume comparison grid => analytrics/revenue,
+	SalesVolumeComparisonTable: SalesVolumeComparisonMeta, // Sales Volume comparison grid => analytrics/revenue
+	AcreageSummaryTable: AcreageSummaryMeta,
+	ExhibitATable: ExhibitAMeta,
+	AcreageDetailsTable: AcreageDetilsMeta,
 	ActivitiesTable: ActivitiesMeta,
 	ExpirationsTable: ExpirationsMeta,
 	ObligationsTable: ObligationsMeta,

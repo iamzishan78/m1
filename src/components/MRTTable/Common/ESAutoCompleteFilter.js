@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useLazyQuery } from '@apollo/client';
 import _, { debounce } from 'lodash';
@@ -7,6 +7,17 @@ import { tableController } from 'hookstate/tableController';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
 import vf_currency from 'components/Shared/valueformatters/vf_currency.js';
+
+// format value to show filter value & option with $ sign as prefix
+const formatValue = (value, field) => {
+	if (
+		field === 'shapeJson.properties.uMaxUnitPricing.keyword' ||
+		field === 'shapeJson.properties.uUnitPricing.keyword'
+	) {
+		value = vf_currency(value);
+	}
+	return value;
+};
 
 function ESAutoCompleteFilter({
 	tableKey,
@@ -24,6 +35,8 @@ function ESAutoCompleteFilter({
 	},
 	extendSearchQuery,
 	multiple,
+	textFieldProps = {},
+	_value,
 }) {
 	if (isComposite) field = field.split(',');
 	const searchMode = type === 'date' ? 'FE' : 'BE';
@@ -48,11 +61,12 @@ function ESAutoCompleteFilter({
 	const appendOptions = useRef(false);
 	const filtersRef = useRef(null);
 
-	const { searchFields, filters, defaultFilters, advanceSearch } = tableController(tableKey).getValues([
+	const { searchFields, filters, defaultFilters, advanceSearch, isElasticQuery } = tableController(tableKey).getValues([
 		'searchFields',
 		'filters',
 		'defaultFilters',
 		'advanceSearch',
+		'isElasticQuery',
 	]);
 
 	const getFiltersAction = debounce(({ afterKey } = {}) => {
@@ -69,6 +83,9 @@ function ESAutoCompleteFilter({
 			let search = '';
 			if (searchText.current) search = type === 'number' ? searchText.current : `*${searchText.current}*`;
 			filtersRef.current = currentFilterRef;
+
+			const isMongo = isElasticQuery === false;
+
 			getFilters({
 				variables: {
 					esIndex,
@@ -91,6 +108,7 @@ function ESAutoCompleteFilter({
 						size: searchMapping[searchMode].size,
 						afterKey,
 					},
+					...(isMongo && { isElasticQuery: false }),
 				},
 			});
 		}
@@ -124,7 +142,7 @@ function ESAutoCompleteFilter({
 		}
 
 		options = options.filter(op => {
-			op.label = formatValue(op.label); // format value to show $ sign as prefix
+			op.label = formatValue(op.label, field); // format value to show $ sign as prefix
 			return op.value;
 		});
 
@@ -132,7 +150,7 @@ function ESAutoCompleteFilter({
 			appendOptions.current = false;
 			setOptions(prevOptions => [...prevOptions, ...options]);
 		} else setStateIfDeepEqual(setOptions, filterSelectOptions || options);
-	}, [filtersData, filterValue]);
+	}, [filtersData, filterValue, type, filterSelectOptions, field]);
 
 	// If we have orFilter then filterValue is null due to id mismatch
 	if (isComposite) {
@@ -180,17 +198,6 @@ function ESAutoCompleteFilter({
 				? options?.filter(item => !filterValue.includes(item.value))
 				: options;
 
-	// format value to show filter value & option with $ sign as prefix
-	const formatValue = value => {
-		if (
-			field === 'shapeJson.properties.uMaxUnitPricing.keyword' ||
-			field === 'shapeJson.properties.uUnitPricing.keyword'
-		) {
-			value = vf_currency(value);
-		}
-		return value;
-	};
-
 	const handleScroll = event => {
 		const bottom = event.target.scrollHeight - event.target.scrollTop === event.target.clientHeight;
 		if (bottom && hasMore.current && !loading) {
@@ -206,7 +213,7 @@ function ESAutoCompleteFilter({
 			options={requiredOptions}
 			loading={loading}
 			filterOptions={searchMapping[searchMode].filterOptions}
-			value={formatValue(filterValue)}
+			value={formatValue(filterValue ?? _value, field)}
 			renderInput={params => (
 				<TextField
 					{...params}
@@ -228,6 +235,7 @@ function ESAutoCompleteFilter({
 						searchText.current = e.target.value;
 						getFiltersAction();
 					}}
+					{...textFieldProps}
 				/>
 			)}
 			onChange={(e, option) => {

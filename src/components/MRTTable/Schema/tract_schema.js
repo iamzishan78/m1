@@ -45,6 +45,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 				},
 			},
 			mutation: UPDATECUSTOMLAYER,
+			refetchQueries: ['getESSimpleFilter'],
 		});
 		Loader.successToast(loaderId, 'Updation Complete');
 		tableGlobalController.refetch();
@@ -246,6 +247,13 @@ const TractMeta = {
 			accessorFn: row => row?.shapeJson?.properties?.department,
 			id: 'shapeJson.properties.department',
 			header: 'Department',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.ownerName.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.ownerName,
+			id: 'shapeJson.properties.ownerName',
+			header: 'Owner',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
