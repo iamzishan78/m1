@@ -32,7 +32,6 @@ import { globalStateController } from 'hookstate/globalStateController';
 import NumberField from 'components/Shared/components/Fields/NumberField';
 import DateField from 'components/Shared/components/Fields/DateField';
 import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
-import LinkPopup from 'components/Shared/components/Popups/Link';
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps, loading }) {
 	const dispatch = useDispatch();
@@ -130,7 +129,6 @@ export default function SummaryTableInfo({
 	const [tableDataState, setTableDataState] = useState({});
 	const [state, setState] = useState();
 	const [county, setCounty] = useState();
-	const [tooltipVisible, setTooltipVisible] = useState({});
 
 	const [filteredTableData, setFilteredTableData] = useState(tableData);
 
@@ -344,11 +342,6 @@ export default function SummaryTableInfo({
 		[properties]
 	);
 
-	const handleLinkClick = (e, key) => {
-		e.stopPropagation();
-		setTooltipVisible(prev => ({ ...prev, [key]: false }));
-	};
-
 	return (
 		<Table className={classes.table} size="small" aria-label="unit table">
 			<TableBody>
@@ -426,12 +419,9 @@ export default function SummaryTableInfo({
 								data-testid={`data-cell-${data.label}`}
 								onMouseEnter={() => {
 									editIconState.set({ [data.key]: true });
-									const isValidURL = validateUrl(get(tableTempProperties, `${data.key}`, ''));
-									setTooltipVisible(prev => ({ ...prev, [data.key]: isValidURL }));
 								}}
 								onMouseLeave={() => {
 									editIconState.set({ [data.key]: false });
-									setTooltipVisible(prev => ({ ...prev, [data.key]: false }));
 								}}
 							>
 								{tableDataState[data.key] ? (
@@ -664,17 +654,13 @@ export default function SummaryTableInfo({
 														data.type !== 'calculation' &&
 														data.type !== 'state' &&
 														data.type !== 'county' &&
-														(data.value || get(properties, `${data.key}`, '-'))}
-
-													{data.type === 'text' && tooltipVisible[data.key] && (
-														<LinkPopup
-															id={data.key}
-															url={data.value || get(properties, `${data.key}`, '-')}
-															onLinkClick={e => handleLinkClick(e, data.key)}
-															maxLength={40}
-															className={classes.linkTooltip}
-														/>
-													)}
+														(data.type === 'text' && validateUrl(get(tableTempProperties, `${data.key}`, '')) ? (
+															<a href={get(tableTempProperties, `${data.key}`, '')} target="_blank">
+																{get(tableTempProperties, `${data.key}`, '')}
+															</a>
+														) : (
+															data.value || get(properties, `${data.key}`, '-')
+														))}
 
 													{data.type === 'state' &&
 														(get(properties, 'originalProperties.StateAbbreviation', '') ||

@@ -15,6 +15,7 @@ import { formatGridViewToMRT } from 'components/MRTTable/utils/helper';
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
 import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 import { handleMRTSchema, handleVisiblityMenu } from './helpers';
+import { validateUrl } from 'utils/helper';
 
 function isDateFormat(inputString) {
 	// Regular expression for MM/DD/YYYY format
@@ -98,6 +99,12 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 				}
 
 				if (item?.type === 'text') {
+					if (validateUrl(value))
+						return (
+							<a href={value} target="_blank">
+								{value?.length > 40 ? value?.slice(0, 40) + '...' : value}
+							</a>
+						);
 					return (
 						<CustomFieldText
 							value={value}
@@ -253,9 +260,9 @@ const tableESStateControllerHandler = state => ({
 		};
 
 		// Push action menu in first place
-		if(rest.isShowActionMenuFirst) {
+		if (rest.isShowActionMenuFirst) {
 			defaultColumnsOrdering?.unshift('actionMenu');
-			defaultColumnsPinning?.left?.unshift('actionMenu')
+			defaultColumnsPinning?.left?.unshift('actionMenu');
 		}
 
 		state.merge({
@@ -356,7 +363,7 @@ const tableESStateControllerHandler = state => ({
 			const tableCss = {
 				...state.tableCss?.get({ noproxy: true }),
 				'& .MuiTableRow-root>:nth-child(2)': { marginLeft: `-${size}px !important` },
-				'& .MuiTableRow-root>:nth-child(1)': { width: `${size}px !important`}, // set width of first hidden column
+				'& .MuiTableRow-root>:nth-child(1)': { width: `${size}px !important` }, // set width of first hidden column
 			};
 			state.columnPinning?.set(columnPinning);
 
