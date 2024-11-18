@@ -386,9 +386,8 @@ export default function ObligationForm({ setSelectedActivityId }) {
     };
 
     const onModalClose = () => {
-        if (history.location.pathname !== "/contacts/activityDashboard") {
-            window.history.pushState("", "", `/calendar/activities`);
-        }
+        window.history.pushState("", "", `/calendar/obligations`);
+        
 
         clearFields();
         setSelectedActivityId(null);
@@ -494,8 +493,8 @@ export default function ObligationForm({ setSelectedActivityId }) {
 
                 <FormControl variant="outlined" fullWidth size="small">
                     <Grid container className={classes.gridStyle}>
-                        <DateField disabled title="Start Date" date={startDate.get()} setDate={() => { }} />
-                        <DateField disabled title="End Date" date={endDate.get()} setDate={() => { }} />
+                        <DateField disabled={true} title="Start Date" date={startDate.get()} setDate={() => { }} />
+                        <DateField disabled={true} title="End Date" date={endDate.get()} setDate={() => { }} />
                     </Grid>
                 </FormControl>
 
@@ -504,7 +503,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
                 <SimpleTextField disabled title="Value" value={obligationValue.get()} setValue={() => { }} />
                 <SimpleTextField disabled title="Responsible Party" value={responsibleParty.get()} setValue={() => { }} />
 
-                <OwnerField title="Assigned To" users={users} setOwnerId={(value) => {
+                <OwnerField disabled={true} title="Assigned To" users={users} setOwnerId={(value) => {
                     const foundText = users.find(item => item.value === value)?.text || '';
                     owner.set({ id: value, name: foundText })
                 }} ownerId={owner.get()?.id} />

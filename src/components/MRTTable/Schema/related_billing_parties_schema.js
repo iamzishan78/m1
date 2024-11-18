@@ -10,6 +10,7 @@ const esIndex = 'contacts_flat';
 // Related Billing Parties Meta
 const RelatedBillingPartiesMeta = {
 	esIndex,
+	isElasticQuery: false,
 	pageSize: 50,
 	pagination: {
 		pageIndex: 0,

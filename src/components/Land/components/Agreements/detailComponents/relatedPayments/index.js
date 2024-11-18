@@ -103,7 +103,7 @@ const RelatedPayments = () => {
 								<Typography variant="h5" className={customClasses.titleText}>
 									Payment Obligations
 								</Typography>
-								<Chip color="info" label={paymentsCount?.stateValues?.data?.total || 0} />
+								<Chip color="info" label={paymentsCount?.stateValues?.data?.x || 0} />
 							</Grid>
 						</Grid>
 					</AccordionSummary>

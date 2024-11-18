@@ -294,17 +294,13 @@ const Activities = () => {
 	}, [activityFilterByType, activityFilterByOwner, activityFilterByTime, activityFilterByResponsibleParty]);
 
 	const onEventClick = event => {
-		window.history.pushState('', '', `/calendar/activities/${event._id}`);
+		window.history.pushState('', '', `/calendar/obligations/${event._id}`);
 		setSelectedActivityId(event._id);
 		onModalOpen();
 	};
 
 	const onModalOpen = () => {
 		slidoutStateController.showSlideout();
-		// setStateApp((stateApp) => ({
-		//   ...stateApp,
-		//   activityDialog: true,
-		// }));
 	};
 
 	const setSelectedActivityId = id => {
@@ -325,11 +321,8 @@ const Activities = () => {
 		}
 	}, [stateApp.selectedActivityId]);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		getAllMongoUsers();
-	}, []);
-
-	React.useEffect(() => {
 		getOperatorList({
 			variables: {
 				search: '*',
@@ -338,6 +331,15 @@ const Activities = () => {
 				size: 50,
 			},
 		});
+
+		return () => {
+			setStateApp(stateApp => ({
+				...stateApp,
+				activityDialog: false,
+				selectedActivity: null,
+			}));
+			slidoutStateController.hideSlideout();
+		};
 	}, []);
 
 	const overrideMeta = {

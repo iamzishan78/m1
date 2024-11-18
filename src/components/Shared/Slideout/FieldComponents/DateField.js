@@ -36,7 +36,8 @@ const useStyles = makeStyles(theme => ({
 function DateField({
     title,
     date,
-    setDate
+    setDate,
+    disabled = false
 }) {
     const classes = useStyles();
 
@@ -54,6 +55,7 @@ function DateField({
                     autoFocus
                     placeholder=""
                     fullWidth
+                    disabled={disabled}
                     className={`${classes.dateRoot} ${classes.inputFieldDate}`}
                     onChange={(e) => {
                         setDate(e.target.value);

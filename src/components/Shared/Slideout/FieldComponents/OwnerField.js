@@ -68,6 +68,7 @@ function OwnerField({
     users,
     setOwnerId,
     ownerId,
+    disabled = false
 }) {
     const classes = useStyles();
 
@@ -79,6 +80,7 @@ function OwnerField({
                 </Grid>
                 <Grid item xs={9}>
                     <Autocomplete
+                    disabled={disabled}
                         options={users
                             .filter((u) => u.text)
                             .sort((a, b) => {

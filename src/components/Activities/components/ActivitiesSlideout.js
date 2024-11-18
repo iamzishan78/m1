@@ -162,7 +162,7 @@ export default function ActivitiesSlideout({ activityId, events, setSelectedActi
     const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
         fetchPolicy: "cache-and-network",
     });
-    const [upsertCommonDescriptor, { loading: upsertCommonDescriptorLoading }] = useMutation(UPSERTCOMMONDESCRIPTOR);
+    const [upsertCommonDescriptor] = useMutation(UPSERTCOMMONDESCRIPTOR);
     const [removeCommonDescriptor] = useMutation(REMOVECOMMONDESCRIPTOR);
 
     const views = useMemo(

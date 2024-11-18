@@ -21,6 +21,7 @@ import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import billingPartiesForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/BillingPartyGrid/billing_parties_form_schema';
 import costAllocationForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/CostAllocationGrid/cost_allocation_schema';
 import paymentForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/PaymentGrid/payment_form_schema';
+import { isEmpty } from 'lodash';
 
 const useStyles = makeStyles({
 	list: {
@@ -157,7 +158,6 @@ const useStyles = makeStyles({
 export default function AddNewRelatedData({ title, addNewData, formName }) {
 	const classes = useStyles();
 	let [loader, setLoader] = useState(false);
-	const [disabled, setDisabled] = useState(true);
 	const { control, reset, getValues, setValue, watch } = useForm();
 	const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
 	const [state, setState] = useState({
@@ -167,17 +167,6 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 	const Controller = sideDialogController(formName);
 	const formState = Controller.useCompleteState();
 
-	// Watch specific form fields to handle Save button
-	const watchName = watch('name');
-	const watchPayeeName = watch('payeeName');
-
-	useEffect(() => {
-		if (getValues()?.name?._id || getValues()?.payeeName?._id) {
-			setDisabled(false);
-		} else {
-			setDisabled(true);
-		}
-	}, [watchName, watchPayeeName]);
 
 	// Memoize form schema to avoid unnecessary re-renders
 	const formSchema = useMemo(() => {
@@ -231,7 +220,7 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 
 	const DocumentDetail = anchor => (
 		<div
-			style={{ width: '500px', marginLeft: '15px' }}
+			style={{ width: '500px', marginLeft: '15px', overflowX: 'hidden' }}
 			className={clsx(classes.list, {
 				[classes.fullList]: anchor === 'top' || anchor === 'bottom',
 			})}
@@ -304,6 +293,7 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 					disabled={false}
 					onClick={() => {
 						const data = getValues();
+						if (isEmpty(Object.keys(data)?.filter(key => data[key]))) return;
 						addNewData(data, setLoader);
 					}}
 					className={classes.footerButton}

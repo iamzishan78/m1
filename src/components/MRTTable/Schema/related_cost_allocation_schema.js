@@ -15,6 +15,7 @@ const RelatedCostAllocationsMeta = {
 		pageIndex: 0,
 		pageSize: 50,
 	},
+	isElasticQuery: false,
 	maxTableHeight: 'calc(100vh - 550px)',
 	CustomToolBar: RelatedCostAllocationsToolbar,
 	isInFiniteScroll: true,

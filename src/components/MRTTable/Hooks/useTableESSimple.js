@@ -71,8 +71,10 @@ const useTableESSimple = tableKey => {
 				showColumnFilters: tableStateValues?.showColumnFilters,
 				rowSelection: tableStateValues?.rowSelection,
 			},
-			enableGrouping: true,
-			manualGroupinng: true,
+			enableGrouping:
+				typeof tableStateValues?.columnReordering === 'boolean' ? tableStateValues?.columnReordering : true,
+			manualGroupinng:
+				typeof tableStateValues?.columnReordering === 'boolean' ? tableStateValues?.columnReordering : true,
 			onGroupingChange: groupingFunc => {
 				const newGrouping = groupingFunc(tableStateValues.grouping);
 				tableState.grouping.set(newGrouping);
@@ -245,9 +247,9 @@ const useTableESSimple = tableKey => {
 							className?.includes('row-click'))
 					) {
 						tableStateValues?.onClickedRow(row?.row?.original);
-						
+
 						// set rowId to apply styling based on row selection
-						if(rowId && rowId === row?.row?.original._id) setRowId(null)
+						if (rowId && rowId === row?.row?.original._id) setRowId(null);
 						else tableStateValues?.enableRowSelected && setRowId(row?.row?.original._id);
 					}
 				},
