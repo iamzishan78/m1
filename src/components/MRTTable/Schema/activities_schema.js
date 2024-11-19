@@ -1,25 +1,27 @@
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
-import CheckIcon from "@material-ui/icons/Check";
-import { tableGlobalController } from 'hookstate/tableController';
+import CheckIcon from '@material-ui/icons/Check';
 import { getTruncateText } from '../utils/helper';
 import { activityType } from 'components/MRTTable/utils/enums';
+import { slidoutStateController } from 'hookstate/slidoutStateController';
+import { slidoutState } from 'hookstate/initialStates';
 
 const esIndex = 'activities_flat';
 
 const onClickedRow = selectedRow => {
+	const formattedActivity = {
+		start: new Date(selectedRow.dateTime),
+		end: new Date(selectedRow.endDateTime ? selectedRow.endDateTime : selectedRow.dateTime),
+		...selectedRow,
+	};
 
-    const formattedActivity = {
-        start: new Date(selectedRow.dateTime),
-        end: new Date(selectedRow.endDateTime ? selectedRow.endDateTime : selectedRow.dateTime),
-        ...selectedRow,
-    }
-    tableGlobalController.updateState({
-        activityDialog: {
-            type: 'activityDialog',
-            selectedActivity: { ...formattedActivity },
-        },
-    });
+	slidoutStateController.showSlideout();
+	slidoutState.selectedActivityId.set(selectedRow._id);
+	slidoutState.selectedActivity.set(formattedActivity);
+
+	if (window.location.pathname.startsWith('/calendar/activities')) {
+		window.history.pushState('', '', `/calendar/activities/${selectedRow._id}`);
+	}
 };
 
 const ActivitiesMeta = {

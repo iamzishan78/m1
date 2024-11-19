@@ -20,6 +20,8 @@ import MRTTable from 'components/MRTTable';
 import { tableController } from 'hookstate/tableController';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './index.css';
+import { useHookstate } from '@hookstate/core';
+import { slidoutState } from 'hookstate/initialStates';
 
 const localizer = momentLocalizer(moment);
 
@@ -146,6 +148,8 @@ const Activities = () => {
 	const activitiesGridState = tableController('ActivitiesTable').useState(['filters']).stateValues;
 	const [view, setView] = React.useState(Views.MONTH);
 
+	const selectedActivityId = useHookstate(slidoutState.selectedActivityId)
+
 	const obligationOptions = React.useMemo(() => {
 		if (activitiesData?.activities) {
 			let obligationTypes = activitiesData?.activities.map(activity => activity.type);
@@ -224,15 +228,12 @@ const Activities = () => {
 	]);
 
 	useEffect(() => {
-		if (stateApp.selectedActivityId) {
-			setStateApp(() => ({
-				...stateApp,
-				selectedActivity: events.find(act => act._id === stateApp.selectedActivityId),
-			}));
+		if (selectedActivityId.get()) {
+			slidoutState.selectedActivity.set(events.find(act => act._id === selectedActivityId.get()))
 		} else {
-			setStateApp(() => ({ ...stateApp, selectedActivity: null }));
+			slidoutState.selectedActivity.set(null)
 		}
-	}, [stateApp.selectedActivityId]);
+	}, [selectedActivityId.get()]);
 
 	useEffect(() => {
 		if (activitiesGridState) {
@@ -304,22 +305,8 @@ const Activities = () => {
 	};
 
 	const setSelectedActivityId = id => {
-		setStateApp(stateApp => ({
-			...stateApp,
-			selectedActivityId: id,
-		}));
+		slidoutState.selectedActivityId.set(id)
 	};
-
-	useEffect(() => {
-		if (stateApp.selectedActivityId) {
-			setStateApp(() => ({
-				...stateApp,
-				selectedActivity: events.find(act => act._id === stateApp.selectedActivityId),
-			}));
-		} else {
-			setStateApp(() => ({ ...stateApp, selectedActivity: null }));
-		}
-	}, [stateApp.selectedActivityId]);
 
 	useEffect(() => {
 		getAllMongoUsers();
@@ -333,11 +320,7 @@ const Activities = () => {
 		});
 
 		return () => {
-			setStateApp(stateApp => ({
-				...stateApp,
-				activityDialog: false,
-				selectedActivity: null,
-			}));
+			slidoutState.selectedActivity.set(null)
 			slidoutStateController.hideSlideout();
 		};
 	}, []);
@@ -409,7 +392,7 @@ const Activities = () => {
 					{/* <ActivitiesModal setSelectedActivityId={setSelectedActivityId} events={events} /> */}
 
 					<ActivitiesSlideout
-						activityId={stateApp.selectedActivity?._id}
+						activityId={selectedActivityId.get()}
 						setSelectedActivityId={setSelectedActivityId}
 						events={events}
 						getContactsForActivity={getContactsForActivity}

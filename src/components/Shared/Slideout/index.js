@@ -72,7 +72,7 @@ function Slideout({
         <RightDialog
           open={true}
           handleClickDialogClose={handleClose}
-          width="28vw"
+          width="32vw"
           isTransactPage={isTransactPage}
           hiddenOverflow
           noBorder

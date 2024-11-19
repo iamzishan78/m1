@@ -16,6 +16,8 @@ const initialValue = {
     nameAutValue: { name: "", _id: null },
     status: false,
     notes: "",
+    startTime: "08:00",
+    endTime: "08:00"
 };
 
 export const activityFormState = hookstate(initialValue);

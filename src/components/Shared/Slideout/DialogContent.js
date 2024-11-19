@@ -48,7 +48,9 @@ function DialogContent(props) {
       height: " calc(100vh - 120px)"
     }}>
       <Component />
+      <div>
       <CommentComponent targetLabel={"activity"} targetSourceId={parentId} />
+      </div>
     </div>);
   else if (name === 'Documents') return <Documents id={parentId} isTransactPage={true} />;
   else if (name === 'Contacts') {

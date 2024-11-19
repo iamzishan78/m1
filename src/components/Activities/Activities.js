@@ -142,6 +142,7 @@ const Activities = () => {
 
 	const [activityId, setActivityId] = useState(''); // title change from contact.name to dealName
 	const entityLoading = useHookstate(slidoutState.isLoading);
+	const selectedActivityId = useHookstate(slidoutState.selectedActivityId);
 
 	let history = useHistory();
 	const [getAllActivities, { data: activitiesData, loading: activitiesLoading }] = useLazyQuery(GETALLACTIVITIES, {
@@ -178,6 +179,11 @@ const Activities = () => {
 			},
 		});
 		getAllMongoUsers();
+
+		return () => {
+			slidoutState.selectedActivity.set(null);
+			slidoutStateController.hideSlideout();
+		};
 	}, []);
 
 	useEffect(() => {
@@ -221,15 +227,12 @@ const Activities = () => {
 	}, [events, activityFilterByType, activityFilterByTime, activityFilterByOwner, view]);
 
 	useEffect(() => {
-		if (stateApp.selectedActivityId) {
-			setStateApp(() => ({
-				...stateApp,
-				selectedActivity: events.find(act => act._id === stateApp.selectedActivityId),
-			}));
+		if (selectedActivityId.get()) {
+			slidoutState.selectedActivity.set(events.find(act => act._id === selectedActivityId.get()));
 		} else {
-			setStateApp(() => ({ ...stateApp, selectedActivity: null }));
+			slidoutState.selectedActivity.set(null);
 		}
-	}, [stateApp.selectedActivityId]);
+	}, [selectedActivityId.get()]);
 
 	useEffect(() => {
 		if (activitiesGridState) {
@@ -302,10 +305,7 @@ const Activities = () => {
 
 	const setSelectedActivityId = id => {
 		setActivityId(id);
-		setStateApp(stateApp => ({
-			...stateApp,
-			selectedActivityId: id,
-		}));
+		slidoutState.selectedActivityId.set(id);
 	};
 
 	const overrideMeta = {
@@ -369,7 +369,7 @@ const Activities = () => {
 						</div>
 					)}
 					<ActivitiesSlideout
-						activityId={stateApp.selectedActivity?._id}
+						activityId={selectedActivityId.get()}
 						setSelectedActivityId={setSelectedActivityId}
 						events={events}
 						getContactsForActivity={getContactsForActivity}

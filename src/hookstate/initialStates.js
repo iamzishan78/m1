@@ -442,6 +442,8 @@ export const slidoutInitialState = {
 	title: '',
 	formMode: '',
 	newEntity: false,
+	selectedActivity: null,
+	selectedActivityId:  "",
 };
 
 export const slidoutState = hookstate(copy(slidoutInitialState));
