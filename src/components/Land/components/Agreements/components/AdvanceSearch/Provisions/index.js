@@ -84,6 +84,7 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
 		extendSearchQuery: '',
 		custom: filter.custom,
 		aggsType: 'nested',
+		isElasticQuery: false,
 	};
 	if (filter.getOptionLabel) params['getOptionLabel'] = filter.getOptionLabel;
 	return (
