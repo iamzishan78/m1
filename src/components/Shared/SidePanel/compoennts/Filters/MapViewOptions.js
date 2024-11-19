@@ -436,7 +436,7 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 										_id: view._id,
 										userId,
 										operation: view?.defaultDisplayBy?.includes(userId) ? 'REMOVE' : 'ADD',
-										isCurrent: true,
+										isCurrent: !view?.isCurrent,
 									},
 								},
 							}).then(res => {
