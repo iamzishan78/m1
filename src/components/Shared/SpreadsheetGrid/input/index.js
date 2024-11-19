@@ -10,14 +10,14 @@ const SpreadsheetGridInput = (props) => {
 
   useEffect(() => {
     setValue(props.value)
-  },[props.value]);
+  }, [props.value]);
 
   useEffect(() => {
     prepareFocus(props.focus);
   }, [props.focus]);
 
   const onKeyDown = (e) => {
-    if (e.keyCode === keys.ENTER || e.keyCode === keys.TAB) {
+    if (e.keyCode === keys.TAB) {
       e.preventDefault();
       input.current.blur();
     }
@@ -43,6 +43,13 @@ const SpreadsheetGridInput = (props) => {
     }
   };
 
+  const onKeyPress = e => {
+    // moving on to new row
+    if (e.key === 'Enter') {
+      props.addNewRow(null, props.gridRef);
+    }
+  };
+
   return (
     <input
       className="SpreadsheetGridInput"
@@ -50,6 +57,7 @@ const SpreadsheetGridInput = (props) => {
       placeholder={props.placeholder}
       ref={input}
       onKeyDown={onKeyDown}
+      onKeyPress={onKeyPress}
       onChange={onChange}
       onBlur={onBlur}
     />

@@ -8,10 +8,10 @@ const useStyles = makeStyles((theme) => ({
       if (noMargin) return "fit-content";
     },
     borderRadius: "4px",
-    "& #contPencilIcon, & #mergeTypeIcon, & #copyIcon": {
+    "& #contPencilIcon, & #mergeTypeIcon, & #copyIcon, & #voiceMailIcon, & #textSmsIcon": {
       display: "none", // use display none to remove extra space between icon and title
     },
-    "&:hover #contPencilIcon, &:hover #mergeTypeIcon, &:hover #copyIcon": {
+    "&:hover #contPencilIcon, &:hover #mergeTypeIcon, &:hover #copyIcon, &:hover #voiceMailIcon, &:hover #textSmsIcon": {
       display: "block",
     },
     "& #GoogleMapIcon" : {

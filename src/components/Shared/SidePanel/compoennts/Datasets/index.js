@@ -132,7 +132,7 @@ function Datasets({ headerButton, search, stateApp }) {
                     dataset.categories.forEach((category) => {
                         category.file = dataset.file
                         category.originalFile = dataset.originalFile
-                        category.layerName = category.name
+                        category.fileName = dataset?.fileInfo?.name
                     })
                 }
             })
@@ -231,7 +231,7 @@ function Datasets({ headerButton, search, stateApp }) {
                         data-testid={`dataset-${sourceName === 'M1 Platform' ? 'platform' : 'custom'}`}
                         onClick={() => onItemClick({ sourceName, Icon, categories, ...rest })}
                     >
-                        <Box borderColor={getBorderColor(sourceName)} borderLeft={4} margin={1} marginLeft={0} >
+                        <Box borderColor={getBorderColor(sourceName)} borderLeft={4} margin={1} marginLeft={0} textAlign={'start'}>
 
                             <Icon className='dIcon' />
                             <Grid container direction="column" justifyContent="center" style={{ paddingLeft: '45px' }}>

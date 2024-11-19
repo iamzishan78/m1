@@ -21,6 +21,8 @@ import {
 import { globalStateController } from 'hookstate/globalStateController';
 import landgridLayerClickHandler from './landgridLayerClickHandler';
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+import { colorBasedAttributes } from 'components/MapControls/components/Layer/LayerAttributes/ColorBasedAttributes';
+import { getLayerKey } from 'hookstate/helpers';
 
 const onWellClick = (object, layerId) => {
   if (!object) return;
@@ -78,7 +80,7 @@ const onDataLayerClick = (object, layerId, layer) => {
 
   const feature = copy(object);
 
-  feature.identifier = layer.identifier;
+  feature.identifier = getLayerKey(layer.identifier, colorBasedAttributes) || layer.identifier;
   feature.layer = {
     id: layerId,
     type: 'custom',

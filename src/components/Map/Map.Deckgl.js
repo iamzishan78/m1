@@ -66,6 +66,7 @@ import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
 import { RIGSQUERY } from "graphQL/useQueryRigs";
 import { drawController } from 'hookstate/drawStateController';
 import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
+import { MapFeatureTenants } from 'utils/data';
 
 
 const useStyles = makeStyles(() => ({
@@ -242,7 +243,12 @@ function Map({
 		const { signal } = abortController;
 
 		let styleTypes = ['Satellite', 'Basic', 'Dark', 'Light', 'Outdoors'];
-		const isDarkMapAllowed = false; // Set this to the appropriate value
+		let isDarkMapAllowed = false;
+
+		// check MapFeatureTenants for dark Map	
+        if (MapFeatureTenants.includes(window.sessionStorage?.getItem("tenantName").toLowerCase())) {
+		    isDarkMapAllowed = stateApp?.user?.features?.find(f => f.name === 'DarkBaseMap')
+		}
 		if (!isDarkMapAllowed) styleTypes = styleTypes.filter(style => style !== 'Dark');
 		let recurseLimit = 5;
 
@@ -405,6 +411,7 @@ function Map({
 						...(type === "parcels" ? { selectedShape: null } : {}),
 						popupOpen: false,
 						expandedCard: true,
+						customLayerId: layer.customLayer._id
 					});
 					clearInterval(interval)
 				}
@@ -595,8 +602,8 @@ function Map({
 		if (stateApp.heatLayers && stateApp.heatLayers.length > 0 && map) {
 			stateApp.heatLayers.forEach(l => {
 				l.id.forEach(k => {
-					if (map.getLayer(k)) {
-						map.setLayoutProperty(k, 'visibility', 'none');
+					if (map?.getLayer(k)) {
+						map?.setLayoutProperty(k, 'visibility', 'none');
 					}
 				});
 			});
@@ -879,7 +886,8 @@ function Map({
 								if (!selectedPlace) { // Reset the state when slected search is not places
 									popupController.reset();
 								}
-								if (!['', '/'].includes(window.location.pathname))
+								// If the path is not '/' or ' ' and the map is not rendered through deal dialog
+								if (!['', '/'].includes(window.location.pathname) && stateApp.transactBarView !== 'Map')
 									history.replace({ pathname: "/" });
 								return;
 							}

@@ -19,6 +19,9 @@ import ContactWellInterestMeta from "./contact_well_Interest_schema"
 import MyWellsMeta from './my_wells_schema';
 import WellsMeta from './wells_schema';
 import TaxOwnerMeta from './map-grid-tax-owner-schema';
+import ShapeDetailAgreementMeta from './shapeDetail_agreement_schema';
+import AgreementRelatedUnitsMeta from './agreement_relatedUnits_schema';
+import UnitRelatedAgreementMeta from './unit_relatedAgreements_schema';
 import SalesVolumeComparisonMeta from './sales-volume-comparison-schema';
 
 export const SCHEMA = {
@@ -47,6 +50,10 @@ export const SCHEMA = {
 	MyWellsTable: MyWellsMeta,
 	WellsTable: WellsMeta,
 	TaxOwnerTable: TaxOwnerMeta,
+	// Added related shape grids
+	ShapeDetailAgreementTable: ShapeDetailAgreementMeta,
+	AgreementRelatedUnitsTable: AgreementRelatedUnitsMeta,
+	UnitRelatedAgreementTable: UnitRelatedAgreementMeta,
 	SalesVolumeComparisonTable: SalesVolumeComparisonMeta, // Sales Volume comparison grid => analytrics/revenue
 	TractInterestsTable: TractInterestsMeta, // Tracts Interest schema
 };

@@ -46,7 +46,7 @@ const UnitInterestMeta = {
 	columnVirtualization: true,
 	deletedKeys: {
 		mainRecord: { key: '_id' },
-		parentRecord: { key: 'shape._id' }
+		parentRecord: { key: 'shape._id' },
 	},
 	TableSchema: [
 		{
@@ -68,8 +68,8 @@ const UnitInterestMeta = {
 			header: 'Contact Name',
 			size: 500,
 			Cell: ({ renderedCellValue, row }) => {
-				return <ContactNameLink contact={row?.original?.contact} />
-			}
+				return <ContactNameLink contact={row?.original?.contact} />;
+			},
 		},
 
 		{
@@ -200,7 +200,20 @@ const UnitInterestMeta = {
 			accessorKey: 'shape.shapeJson.properties.uAcres',
 			header: 'Unit Acres',
 		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'unitTractId.keyword',
+			accessorKey: 'unitTractId',
+			header: 'Unit Tract ID',
+		},
 
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'tractAcres',
+			accessorKey: 'tractAcres',
+			header: 'Unit Tract Acres',
+			isSearchField: false,
+		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -238,7 +251,7 @@ const UnitInterestMeta = {
 			name: 'net_acres',
 			accessorKey: 'net_acres',
 			header: 'Net Acres',
-			isSearchField: false
+			isSearchField: false,
 		},
 
 		{
@@ -248,20 +261,7 @@ const UnitInterestMeta = {
 			header: 'NRA',
 			isSearchField: false,
 		},
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'unitTractId.keyword',
-			accessorKey: 'unitTractId',
-			header: 'Unit Tract ID',
-		},
 
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'tractAcres',
-			accessorKey: 'tractAcres',
-			header: 'Unit Tract Acres',
-			isSearchField: false
-		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'offer_price',
@@ -269,7 +269,7 @@ const UnitInterestMeta = {
 			header: 'Target Offer Price',
 			isSearchField: false,
 			Cell: ({ row }) => {
-				return <p>{vf_currency_to_fixed(row?.original?.offer_price, 2)}</p>
+				return <p>{vf_currency_to_fixed(row?.original?.offer_price, 2)}</p>;
 			},
 		},
 		{
@@ -280,7 +280,7 @@ const UnitInterestMeta = {
 			isSearchField: false,
 			type: 'number',
 			Cell: ({ row }) => {
-				return <p>{vf_currency_to_fixed(row?.original?.uUnitPricingInterest, 2)}</p>
+				return <p>{vf_currency_to_fixed(row?.original?.uUnitPricingInterest, 2)}</p>;
 			},
 		},
 		{
@@ -290,7 +290,7 @@ const UnitInterestMeta = {
 			header: 'Max Offer Price',
 			isSearchField: false,
 			Cell: ({ row }) => {
-				return <p>{vf_currency_to_fixed(row?.original?.max_offer_price, 2)}</p>
+				return <p>{vf_currency_to_fixed(row?.original?.max_offer_price, 2)}</p>;
 			},
 		},
 		{
@@ -301,7 +301,7 @@ const UnitInterestMeta = {
 			isSearchField: false,
 			type: 'number',
 			Cell: ({ row }) => {
-				return <p>{vf_currency_to_fixed(row?.original?.uMaxUnitPricingInterest, 2)}</p>
+				return <p>{vf_currency_to_fixed(row?.original?.uMaxUnitPricingInterest, 2)}</p>;
 			},
 		},
 		{
@@ -311,7 +311,7 @@ const UnitInterestMeta = {
 			header: 'Actual Offer Price',
 			isSearchField: false,
 			Cell: ({ row }) => {
-				return <p>{vf_currency_to_fixed(row?.original?.actual_offer_price, 2)}</p>
+				return <p>{vf_currency_to_fixed(row?.original?.actual_offer_price, 2)}</p>;
 			},
 		},
 
@@ -366,34 +366,17 @@ const UnitInterestMeta = {
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'dataSource.keyword',
-			accessorKey: 'dataSource',
-			header: 'Data Source',
-		},
-
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'taxYear',
-			type: 'number',
-			accessorKey: 'taxYear',
-			header: 'Tax Year',
-			isSearchField: false
-		},
-
-
-		{
-			...CommonSchema.COMMON_COLUMN,
 			name: 'deals.name.keyword',
 			accessorKey: 'deals.name',
 			header: 'Associated Deals',
 			handleArrayExport: {
-				esType: "collection",
-				actualKey: "name"
+				esType: 'collection',
+				actualKey: 'name',
 			},
 			Cell: ({ row }) => {
 				return (
 					<div>
-						{(row?.original?.deals && Array.isArray(row?.original?.deals)) ? (
+						{row?.original?.deals && Array.isArray(row?.original?.deals) ? (
 							<div
 								style={{
 									display: 'flex',
@@ -409,12 +392,33 @@ const UnitInterestMeta = {
 				);
 			},
 		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'dataSource.keyword',
+			accessorKey: 'dataSource',
+			header: 'Data Source',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'taxYear',
+			type: 'number',
+			accessorKey: 'taxYear',
+			header: 'Tax Year',
+			isSearchField: false,
+		},
 
 		{
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const targetSourceId = row.getValue('contact._id');
-				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'Unit Ownership'} />;
+				return (
+					<TagCell
+						id={targetSourceId}
+						targetSourceId={targetSourceId}
+						tags={row?.original?.tags}
+						targetLabel={'Unit Ownership'}
+					/>
+				);
 			},
 		},
 	],

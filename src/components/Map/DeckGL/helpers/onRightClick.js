@@ -18,7 +18,6 @@ const onRightClick = ({ x, y, coordinate }) => {
 
   let { features, clickedFeature } = getClickedFeature({ x, y, getLandGrid: false });
 
-  if (features?.length === 0) return;
 
   if (clickedFeature?.featureType === 'polygons') {
     let layersIntersecting = [];
@@ -72,6 +71,7 @@ const onRightClick = ({ x, y, coordinate }) => {
       selectionLayers: features,
       layerSelectionPopup: true,
       popupOpen: true,
+      coordinate: coordinate
     });
   }, 0);
 };
