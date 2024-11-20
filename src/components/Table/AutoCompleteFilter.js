@@ -178,7 +178,6 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
 					query: rawSearch,
 					field: typeof filterKey === 'string' ? filterKey : undefined,
 					fields: typeof filterKey !== 'string' ? filterKey : undefined,
-					type: others.aggsType ? others.aggsType : undefined,
 					size: 100000,
 				},
 				isElasticQuery,
