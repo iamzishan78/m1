@@ -547,8 +547,8 @@ const tableESStateControllerHandler = state => ({
 							filters: [
 								...mapViewsFitlers.filter(
 									({ dataSourceName, fieldName }) =>
-										(fieldName?.value || fieldName).replace('.keyword', '') !== field &&
-										dataSourceName === tableState?.layerIdentifier
+										(fieldName?.value || fieldName).replace('.keyword', '') !== field ||
+										dataSourceName !== tableState?.layerIdentifier
 								),
 							],
 						},
@@ -598,8 +598,8 @@ const tableESStateControllerHandler = state => ({
 						filters: [
 							...mapViewsFitlers.filter(
 								({ dataSourceName, fieldName }) =>
-									!keysToClear.includes((fieldName?.value || fieldName).replace('.keyword', '')) &&
-									dataSourceName === tableState?.layerIdentifier
+									!keysToClear.includes((fieldName?.value || fieldName).replace('.keyword', '')) ||
+									dataSourceName !== tableState?.layerIdentifier
 							),
 						],
 					},
