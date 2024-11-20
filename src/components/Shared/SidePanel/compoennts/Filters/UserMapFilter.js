@@ -232,7 +232,9 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 
 	const getSelectedField = useCallback(
 		fieldName => {
-			return customLayersFieldAccessors[mapView?.dataSourceName]?.keys?.find(key => key.value === fieldName);
+			return customLayersFieldAccessors[mapView?.dataSourceName]?.keys?.find(
+				key => key.value.replace('.keyword', '') === fieldName
+			);
 		},
 		[mapView?.dataSourceName]
 	);
