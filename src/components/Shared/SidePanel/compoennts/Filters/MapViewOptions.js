@@ -307,7 +307,7 @@ function InputField({ editMapViewId, viewName, setViewName, upsertMapView, setEd
 						});
 					}
 					globalStateController.updateState({
-						mapView: { ...mapViewStateValues.mapView, showSaveAsNew: false, showViewModal: false },
+						mapView: { ...mapViewStateValues.mapView, showSaveAsNew: false, viewChanged: true, showViewModal: false },
 					});
 				}
 				if (event.key === 'Escape') {

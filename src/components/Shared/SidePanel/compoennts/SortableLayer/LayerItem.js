@@ -118,7 +118,7 @@ const LayerItem = React.memo(props => {
 
 	const layerFilters = mapView?.selectedMapView?.filters.filter(filter => {
 		const { dataSourceName } = filter || {};
-		return [data?.identifier, data?.layerName].includes(dataSourceName);
+		return [data?.identifier, data?.layerName, data?.name].includes(dataSourceName);
 	});
 
 	return (
