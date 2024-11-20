@@ -444,6 +444,7 @@ export const slidoutInitialState = {
 	newEntity: false,
 	selectedActivity: null,
 	selectedActivityId:  "",
+	newComments:[],
 };
 
 export const slidoutState = hookstate(copy(slidoutInitialState));

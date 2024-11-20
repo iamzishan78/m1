@@ -225,7 +225,7 @@ const ActivitiesToolbar = ({
             onChange={(_, value) => {
               setActivityFilterByOwner(value?.value ?? "all");
             }}
-            renderInput={(params) => <TextField {...params} label="Assigned To" variant="outlined" value={activityFilterByOwner} />}
+            renderInput={(params) => <TextField {...params} label={type === "Obligation" ? "Assigned To":"Owner"} variant="outlined" value={activityFilterByOwner} />}
           />
         </div>
 

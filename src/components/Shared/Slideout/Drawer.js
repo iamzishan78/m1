@@ -9,7 +9,7 @@ import { slidoutState } from "hookstate/initialStates";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    height: '100vh',
+    height: '85vh',
     padding: '10px',
     position: 'absolute',
     right: 0,

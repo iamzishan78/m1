@@ -35,6 +35,7 @@ import moment from "moment";
 import DOMPurify from "dompurify";
 import { TOGGLECOMMENTREACTION } from "graphQL/userMutationToggleCommentReaction";
 import { globalStateController } from "hookstate/globalStateController";
+import { slidoutState } from "hookstate/initialStates";
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
@@ -353,7 +354,7 @@ export default function CommentComponent(props) {
 
   useEffect(() => {
     setLoadingComments(false);
-    if (!targetSourceId && newlyAddedComment?.upsertComment?.comment) {
+    if (!targetSourceId && newlyAddedComment?.upsertComment?.comment && props.targetLabel !== 'activity') {
       const comments = JSON.parse(JSON.stringify(commentsArray));
       comments.push({
         ...newlyAddedComment.upsertComment.comment,
@@ -583,24 +584,33 @@ export default function CommentComponent(props) {
       return state;
     });
     setScrollIntoView(true);
+
+    const comment ={
+      comment:
+        typeof value === "object"
+          ? newCommentCleaner(value.comment)
+          : newCommentCleaner(value),
+      commentType:
+        typeof value === "object"
+          ? value.commentType || "General"
+          : "General",
+      public: true,
+      user: user.mongoId,
+      commentedOn: targetSourceId,
+      objectType: props.targetLabel,
+      pin: false,
+      tenant: window.sessionStorage.getItem("tenantName")
+    }
+
+    if(props.targetLabel === 'activity'){
+
+    slidoutState.newComments.set([...slidoutState.newComments.get(), comment]);
+
+    }
+
     upsertComment({
       variables: {
-        comment: {
-          comment:
-            typeof value === "object"
-              ? newCommentCleaner(value.comment)
-              : newCommentCleaner(value),
-          commentType:
-            typeof value === "object"
-              ? value.commentType || "General"
-              : "General",
-          public: true,
-          user: user.mongoId,
-          commentedOn: targetSourceId,
-          objectType: props.targetLabel,
-          pin: false,
-          tenant: window.sessionStorage.getItem("tenantName")
-        },
+        comment,
       },
       refetchQueries: [
         "getCommentsByObjectId",

@@ -186,7 +186,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 	const [stateApp] = useContext(AppContext);
 	const history = useHistory();
 	const [users, setUsers] = useState([]);
-	const { selectedActivity } = slidoutState
+	const { selectedActivity } = slidoutState;
 
 	const activityName = useHookstate(slidoutState.title).get({ noproxy: true });
 	const formMode = useHookstate(slidoutState.formMode);
@@ -303,7 +303,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 	}, [allContacts]);
 
 	useEffect(() => {
-		const activity = selectedActivity.get()
+		const activity = selectedActivity.get();
 		if (activity) {
 			slidoutStateController.updateNewEntity(false);
 			notes.set(activity.notes);
@@ -379,8 +379,9 @@ export default function ActivityForm({ setSelectedActivityId }) {
 
 		clearFields();
 		setSelectedActivityId(null);
-		slidoutState.selectedActivity.set(null)
-		slidoutStateController.hideSlideout()
+		slidoutState.selectedActivity.set(null);
+		slidoutStateController.hideSlideout();
+		slidoutState.newComments.set([])
 	};
 
 	const clearFields = () => {
@@ -429,6 +430,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 					isClosed: status.get(),
 					user: stateApp.user._id,
 					createdBy: stateApp?.user?._id,
+					comments:slidoutState.newComments.get()
 				},
 			},
 		});
