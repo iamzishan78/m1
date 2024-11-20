@@ -16,6 +16,7 @@ import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOp
 import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 import { handleMRTSchema, handleVisiblityMenu } from './helpers';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
+import { extractUniqueFilters } from 'components/Map/DeckGL/helpers/common';
 
 function isDateFormat(inputString) {
 	// Regular expression for MM/DD/YYYY format
@@ -263,8 +264,13 @@ const tableESStateControllerHandler = state => ({
 		const formattedmapViewsFilters = mapViewFilters.map(filter => ({
 			...filter,
 			field: filter.field.replace('.keyword', ''),
-			value: typeof filter.value === 'string' ? [filter.value] : filter.value,
+			value: filter.value,
 		}));
+
+		const combinedFilters = formatedGridView?.filters
+			? [...formatedGridView.filters, ...formattedmapViewsFilters]
+			: [...formattedmapViewsFilters];
+
 		state.merge({
 			...rest,
 			refetchQueries,
@@ -288,9 +294,7 @@ const tableESStateControllerHandler = state => ({
 			customProps: isEmpty(state?.customProps?.get({ noproxy: true }))
 				? customProps
 				: state?.customProps?.get({ noproxy: true }),
-			filters: formatedGridView?.filters
-				? [...formatedGridView.filters, ...formattedmapViewsFilters]
-				: [...formattedmapViewsFilters],
+			filters: extractUniqueFilters(combinedFilters),
 			layerIdentifier,
 			sorting: formatedGridView?.sorting ? formatedGridView.sorting : [],
 			rowSelection: {},
@@ -322,8 +326,11 @@ const tableESStateControllerHandler = state => ({
 						],
 					},
 		});
+
+		if (mapViewFilters.length > 0) tableController(tableKey).setShowColumnFilters(true);
+
 		mapViewFilters?.forEach(filter => {
-			tableController(tableKey).setFilterMode(filter?.field.replace('.keyword', ''), 'multiselect');
+			tableController(tableKey).setFilterMode(filter?.field.replace('.keyword', ''), filter.searchType);
 		});
 	},
 
@@ -354,6 +361,10 @@ const tableESStateControllerHandler = state => ({
 				isKeyword: columnSchema.name.includes('.keyword'),
 			},
 		});
+
+		const columnFilterModesFnRefs = globalStateController.getValue('columnFilterModesFnRefs');
+
+		columnFilterModesFnRefs?.[state.tableKey.get({ noproxy: true })]?.[column]?.(mode);
 	},
 	setSelectAll: value => {
 		state.isSelectall.set(value);
@@ -467,25 +478,43 @@ const tableESStateControllerHandler = state => ({
 			const gridLayersIds = layers
 				?.filter(layer => layer?.layerShapeName === tableState?.layerIdentifier)
 				.map(layer => layer?.layerId);
-			globalStateController.updateState({
-				viewChanged: true,
-				mapView: {
-					...mapView,
+
+			const existingFilter = mapViewsFitlers.find(
+				({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') === filter.field
+			);
+
+			const isValuesEqual = _.isEqual(
+				existingFilter?.filterValues,
+				typeof filter.value === 'string' ? [filter.value] : filter.value
+			);
+			const isNonValuesFilter = ['empty', 'notEmpty'].includes(filter.searchType);
+
+			if (!(isValuesEqual || isNonValuesFilter)) {
+				globalStateController.updateState({
 					viewChanged: true,
-					selectedMapView: {
-						...mapView?.selectedMapView,
-						filters: [
-							...mapViewsFitlers.filter(({ fieldName }) => (fieldName?.value || fieldName) !== filter.field),
-							{
-								dataSourceName: gridLayersIds?.[0] || tableState?.layerIdentifier,
-								filterType: tableState?.filterModes[filter.field.replace('.keyword', '')]?.mode || 'singleselect',
-								fieldName: filter.field,
-								filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
-							},
-						],
+					mapView: {
+						...mapView,
+						viewChanged: true,
+						selectedMapView: {
+							...mapView?.selectedMapView,
+							filters: [
+								...mapViewsFitlers.filter(
+									({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') !== filter.field
+								),
+								{
+									dataSourceName: gridLayersIds?.[0] || tableState?.layerIdentifier,
+									filterType:
+										tableState?.filterModes[filter.field.replace('.keyword', '')]?.mode ||
+										existingFilter?.filterType ||
+										'singleselect',
+									fieldName: filter.field,
+									filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
+								},
+							],
+						},
 					},
-				},
-			});
+				});
+			}
 		}
 
 		state.filters?.set([...filtersState.filter(({ field }) => field !== filter.field), filter]);
@@ -517,7 +546,9 @@ const tableESStateControllerHandler = state => ({
 							...mapView?.selectedMapView,
 							filters: [
 								...mapViewsFitlers.filter(
-									({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') !== field
+									({ dataSourceName, fieldName }) =>
+										(fieldName?.value || fieldName).replace('.keyword', '') !== field &&
+										dataSourceName === tableState?.layerIdentifier
 								),
 							],
 						},
@@ -545,9 +576,35 @@ const tableESStateControllerHandler = state => ({
 
 		const filterKeys = filters.map(filter => filter.id);
 
+		const mapView = globalStateController.getValue('mapView');
+		const mapViewsFitlers = mapView?.selectedMapView?.filters || [];
+
+		const tableState = state.get({
+			noproxy: true,
+		});
+
 		const keysToClear = filtersState
 			.filter(filter => !filterKeys.includes(filter.field.replace(/.keyword/, 'g', '')))
 			.map(filter => filter.field);
+
+		if (tableState?.layerIdentifier)
+			globalStateController.updateState({
+				viewChanged: true,
+				mapView: {
+					...mapView,
+					viewChanged: true,
+					selectedMapView: {
+						...mapView?.selectedMapView,
+						filters: [
+							...mapViewsFitlers.filter(
+								({ dataSourceName, fieldName }) =>
+									!keysToClear.includes((fieldName?.value || fieldName).replace('.keyword', '')) &&
+									dataSourceName === tableState?.layerIdentifier
+							),
+						],
+					},
+				},
+			});
 
 		state.filters?.set(filtersState.filter(filter => !keysToClear.includes(filter.field)));
 	},

@@ -495,9 +495,25 @@ export const generateFileFilters = ({
 				advanceSearch,
 			},
 			...extendFilters.variables,
-			filters: [...filters, ...(extendFilters.variables?.filters || [])],
+			filters: extractUniqueFilters([...filters, ...(extendFilters.variables?.filters || [])]),
 		},
 	};
+};
+
+export const extractUniqueFilters = filters => {
+	return filters.reduce((acc, filter) => {
+		const index = acc.findIndex(existingFilter => existingFilter.field === filter.field);
+
+		if (index !== -1) {
+			// Overwrite the existing filter with the new one (higher precedence)
+			acc[index] = filter;
+		} else {
+			// Add the filter if it doesn't exist
+			acc.push(filter);
+		}
+
+		return acc;
+	}, []);
 };
 
 // Utility for getting attribute based color

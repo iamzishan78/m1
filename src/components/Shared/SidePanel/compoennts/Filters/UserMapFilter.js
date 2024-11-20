@@ -61,6 +61,7 @@ export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValue
 				field: fieldName?.value || fieldName,
 				value: filterValues,
 				isMapViewFilter: true,
+				searchType: filterType,
 			};
 		case 'empty':
 		case 'notEmpty':
@@ -75,9 +76,9 @@ export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValue
 		field: fieldName?.value || fieldName,
 		value: filterValue,
 		isMapViewFilter: true,
+		searchType: filterType,
 		...(filterType !== 'singleselect' && {
 			type: 'advanced',
-			searchType: filterType,
 			isKeyword: true,
 			columnType: 'string',
 		}),
@@ -184,7 +185,11 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 			const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView;
 			let globalFilters = selectedMapView?.filters || [];
 
-			const canUpdateMapView = dataSourceName && fieldName?.value && filterType;
+			const canUpdateMapView =
+				dataSourceName &&
+				fieldName?.value &&
+				filterType &&
+				(['empty', 'notEmpty'].includes(filterType?.value || filterType) || filterValues);
 
 			// Upsert the map view data to the GraphQL API
 			if (canUpdateMapView) {
@@ -208,6 +213,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 						},
 					},
 				});
+				tableGlobalController.reInitialized();
 			}
 
 			// Update layer filters with the new filter values
@@ -220,8 +226,8 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 
 			// Set the updated filters in the layer filters
 			layerFiltersController.setVariables(dataSourceName, { filters });
-			tableGlobalController.reInitialized();
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [debouncedFilterValues, filterType, fieldName, dataSourceName]); // Dependencies trigger re-run when they change
 
 	const getSelectedField = useCallback(

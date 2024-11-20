@@ -56,7 +56,7 @@ import { AppContext } from '../../AppContext';
 
 import DeckGL from './DeckGL';
 import onFeatureClick from './DeckGL/helpers/onFeatureClick';
-import { getClickedFeature } from './DeckGL/helpers/common';
+import { extractUniqueFilters, getClickedFeature } from './DeckGL/helpers/common';
 import { layerController } from 'hookstate/layerStateController';
 import MapControls from 'components/MapControls/MapControls';
 import SpeedDialComponent from 'components/MapControls/SpeedDialComponent';
@@ -499,10 +499,10 @@ function Map({
 				const state = layerFiltersController.getValue([dataSource]);
 				const initialFilters = state?.variables?.filters || []; // Get initial filters
 				layerFiltersController.setVariables(dataSource, {
-					filters: [
+					filters: extractUniqueFilters([
 						getFormattedFilterBasedOnType(filter.filterType, filter.fieldName, filter.filterValues),
 						...initialFilters,
-					],
+					]),
 				});
 			}
 		}
