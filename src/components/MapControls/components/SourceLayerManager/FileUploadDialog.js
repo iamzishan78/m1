@@ -13,7 +13,7 @@ import { getFileExtension, uploadFileData } from 'components/Shared/functions';
 import { ADDFILE } from 'graphQL/useMutationAddFile';
 import { useApolloClient, useMutation } from '@apollo/client';
 import { getDefaultSettings, SimpleOrShapeFileImport } from './fileUploadHelper';
-import { GET_DATASET } from 'graphQL/useQueryDataset';
+import { GET_DATASET_UPLOAD_STATE } from 'graphQL/useQueryDataset';
 import { CheckBox, CheckBoxOutlineBlank } from '@material-ui/icons';
 import { showErrorMessage } from 'actions';
 import { useDispatch } from 'react-redux';
@@ -42,7 +42,14 @@ const FileUploadDialog = () => {
 			return setError(true);
 		}
 
-		globalStateController.updateState({ universalLoader: true });
+		globalStateController.updateState({
+			universalLoader: {
+				text: 'Uploading File',
+				textStyles: {
+					color: 'green',
+				},
+			},
+		});
 
 		const user = globalStateController.getValue('user');
 		const fileName = groupName.trim().toLowerCase().replace(' ', '_') + `.${getFileExtension(fileUploaded.fileName)}`;
@@ -66,22 +73,42 @@ const FileUploadDialog = () => {
 
 			await SimpleOrShapeFileImport({ user, client, fileId });
 		}
-
 		const interval = setInterval(async () => {
 			try {
 				const datasetRes = await client.query({
-					query: GET_DATASET,
+					query: GET_DATASET_UPLOAD_STATE,
 					variables: {
 						fileId,
 					},
 				});
 
-				if (datasetRes?.data?.getDataset?.data) {
-					clearInterval(interval);
+				const data = datasetRes?.data?.getDatasetUploadState?.data;
 
-					setDataset(datasetRes?.data?.getDataset?.data);
+				if (data) {
+					globalStateController.updateState({
+						universalLoader: {
+							text: data.message,
+							textStyles: {
+								color: 'green',
+							},
+						},
+					});
 
-					globalStateController.updateState({ universalLoader: false });
+					if (data.dataset) {
+						clearInterval(interval);
+
+						setDataset(datasetRes?.data?.getDataset?.data);
+
+						globalStateController.updateState({ universalLoader: false });
+					}
+
+					if (data.uploadJob?.status === 'Failed') {
+						globalStateController.updateState({ universalLoader: false });
+
+						dispatch(showErrorMessage('Dataset upload failed'));
+
+						handleCancel();
+					}
 				}
 			} catch {
 				clearInterval(interval);

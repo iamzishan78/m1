@@ -16,3 +16,14 @@ export const GET_DATASET = gql`
 		}
 	}
 `;
+
+export const GET_DATASET_UPLOAD_STATE = gql`
+	query getDatasetUploadState($fileId: ID) {
+		getDatasetUploadState(fileId: $fileId) {
+			success
+			message
+			error
+			data
+		}
+	}
+`;
