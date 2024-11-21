@@ -19,7 +19,7 @@ export const excludeFilters = (tableKey, total) => {
 	for (let i = 0; i < missingNumbers.length; i++) {
 		excludedIds.push({
 			field: '_id',
-			value: rows[missingNumbers[i]]._id,
+			value: rows[missingNumbers[i]]?._id,
 			type: 'advanced',
 			searchType: 'notEquals',
 			isKeyword: true,
