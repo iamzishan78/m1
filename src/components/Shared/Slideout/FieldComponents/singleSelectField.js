@@ -62,7 +62,7 @@ function SingleSelectField({
                             },
                         }}
                         size="small"
-                        value={value}
+                        value={value || ''}
                         className={classes.inputFieldFlowStage}
                         onChange={(e) => onChange(e.target.value)}
                         InputProps={{

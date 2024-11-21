@@ -28,6 +28,7 @@ import { slidoutState } from 'hookstate/initialStates';
 import { useHookstate } from '@hookstate/core';
 import { activityFormState } from './activityFormStateController';
 import { globalState } from 'hookstate/initialStates';
+import { tableGlobalController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(theme => ({
 	dialogExpCard: {
@@ -218,6 +219,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 		onCompleted: () => {
 			onModalClose();
 			globalState.universalLoader.set(false);
+			tableGlobalController.refetch();
 		},
 		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
 		awaitRefetchQueries: true,
@@ -227,6 +229,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 		onCompleted: () => {
 			onModalClose();
 			globalState.universalLoader.set(false);
+			tableGlobalController.refetch();
 		},
 		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
 		awaitRefetchQueries: true,
@@ -236,6 +239,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 		onCompleted: () => {
 			onModalClose();
 			slidoutStateController.updateEntityLoading(false);
+			tableGlobalController.refetch();
 		},
 		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
 		awaitRefetchQueries: true,
@@ -270,6 +274,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 		{ _id: 'Task', name: 'Task' },
 		{ _id: 'Deadline', name: 'Deadline' },
 		{ _id: 'Mailer', name: 'Mailer' },
+		{ _id: '', name: '' },
 	];
 
 	useEffect(() => {
@@ -381,7 +386,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 		setSelectedActivityId(null);
 		slidoutState.selectedActivity.set(null);
 		slidoutStateController.hideSlideout();
-		slidoutState.newComments.set([])
+		slidoutState.newComments.set([]);
 	};
 
 	const clearFields = () => {
@@ -430,7 +435,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 					isClosed: status.get(),
 					user: stateApp.user._id,
 					createdBy: stateApp?.user?._id,
-					comments:slidoutState.newComments.get()
+					comments: slidoutState.newComments.get(),
 				},
 			},
 		});
@@ -499,8 +504,14 @@ export default function ActivityForm({ setSelectedActivityId }) {
 						title="Start Date"
 						date={startDate.get()}
 						time={startTime.get()}
-						setDate={value => startDate.set(value)}
-						setTime={value => startTime.set(value)}
+						setDate={value => {
+							startDate.set(value);
+							endDate.set(value);
+						}}
+						setTime={value => {
+							startTime.set(value);
+							endTime.set(value);
+						}}
 						isTime={true}
 					/>
 				</Grid>
