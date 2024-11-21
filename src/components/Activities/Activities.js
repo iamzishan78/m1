@@ -229,6 +229,7 @@ const Activities = () => {
 	useEffect(() => {
 		if (selectedActivityId.get()) {
 			slidoutState.selectedActivity.set(events.find(act => act._id === selectedActivityId.get()));
+			slidoutStateController.showSlideout();
 		} else {
 			slidoutState.selectedActivity.set(null);
 		}
@@ -290,15 +291,14 @@ const Activities = () => {
 		window.history.pushState('', '', `/calendar/activities/${event._id}`);
 		setSelectedActivityId(event._id);
 		onModalOpen();
+		slidoutStateController.showSlideout();
 	};
 
 	const onModalOpen = () => {
 		setActivityId(actId => {
 			getContactsForActivity({
 				variables: { activityId: actId },
-			}).then(contactsData => {
-				slidoutStateController.showSlideout();
-			});
+			})
 			return actId;
 		});
 	};

@@ -29,6 +29,7 @@ import { useHookstate } from '@hookstate/core';
 import { activityFormState } from './activityFormStateController';
 import { globalState } from 'hookstate/initialStates';
 import { tableGlobalController } from 'hookstate/tableController';
+import AutoCompleteAddNewField from 'components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField';
 
 const useStyles = makeStyles(theme => ({
 	dialogExpCard: {
@@ -182,6 +183,7 @@ const activityStatusOptions = [
 ];
 
 export default function ActivityForm({ setSelectedActivityId }) {
+	const outcomeFieldRef = useRef();
 	const classes = useStyles();
 	const [stateApp] = useContext(AppContext);
 	const history = useHistory();
@@ -325,7 +327,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 				name: activity.contactName,
 				_id: activity.contactId,
 			});
-			outcome.set(activity.outcome);
+			outcomeFieldRef.current?.updateDefaultValue(activity.outcome);
 			startTime.set(moment.parseZone(activity.start).format('HH:mm'));
 			endDate.set(moment.parseZone(activity.end).format('yyyy-MM-DD'));
 			startDate.set(moment.parseZone(activity.start).format('yyyy-MM-DD'));
@@ -489,14 +491,31 @@ export default function ActivityForm({ setSelectedActivityId }) {
 				options={typeOptions}
 				onChange={value => activityType.set(value)}
 			/>
-			<SingleSelectField
-				title="Outcome"
-				value={outcome.get()}
-				options={outcomeOptions.map(opt => ({ label: opt, value: opt }))}
-				onChange={value => {
-					outcome.set(value);
-				}}
-			/>
+
+			<FormControl variant="outlined" fullWidth size="small" style={{ marginTop: '10px' }}>
+				<Grid container className={classes.gridStyle}>
+					<Grid item xs={3}>
+						<div>Outcome</div>
+					</Grid>
+
+					<Grid item xs={9}>
+						<AutoCompleteAddNewField
+							ref={outcomeFieldRef}
+							queryParams={{
+								esIndex: 'activities_flat', // Set the correct index to get outcome options
+								filterKey: 'outcome.keyword',
+								size: 50,
+							}}
+							onChange={data => {
+								outcome.set(data.name);
+							}}
+							defaultOptions={outcomeOptions}
+							value={outcome.get()}
+							inputProps={{ variant: 'outlined', size: 'small' }}
+						/>
+					</Grid>
+				</Grid>
+			</FormControl>
 			<FormControl variant="outlined" fullWidth size="small">
 				<Grid container className={classes.gridStyle} style={{ marginTop: '10px' }}>
 					<DateField
