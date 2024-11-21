@@ -182,7 +182,6 @@ const activityStatusOptions = [
 ];
 
 export default function ActivityForm({ setSelectedActivityId }) {
-	const outcomeFieldRef = useRef();
 	const classes = useStyles();
 	const [stateApp] = useContext(AppContext);
 	const history = useHistory();
@@ -267,14 +266,13 @@ export default function ActivityForm({ setSelectedActivityId }) {
 	const dealValue = openDeals.find(deal => deal._id === dealId.get()) || null;
 
 	const typeOptions = [
-		{ _id: 'Call', name: 'Call' },
-		{ _id: 'Text Message', name: 'Text Message' },
-		{ _id: 'Email', name: 'Email' },
-		{ _id: 'Meeting', name: 'Meeting' },
-		{ _id: 'Task', name: 'Task' },
-		{ _id: 'Deadline', name: 'Deadline' },
-		{ _id: 'Mailer', name: 'Mailer' },
-		{ _id: '', name: '' },
+		{ label: 'Call', value: 'call' },
+		{ label: 'Meeting', value: 'meeting' },
+		{ label: 'Task', value: 'task' },
+		{ label: 'Deadline', value: 'deadline' },
+		{ label: 'Email', value: 'email' },
+		{ label: 'Text Message', value: 'text_message' },
+		{ label: 'Mailer', value: 'mailer' },
 	];
 
 	useEffect(() => {
@@ -327,7 +325,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 				name: activity.contactName,
 				_id: activity.contactId,
 			});
-			outcomeFieldRef.current?.updateDefaultValue(activity.outcome);
+			outcome.set(activity.outcome);
 			startTime.set(moment.parseZone(activity.start).format('HH:mm'));
 			endDate.set(moment.parseZone(activity.end).format('yyyy-MM-DD'));
 			startDate.set(moment.parseZone(activity.start).format('yyyy-MM-DD'));
@@ -406,6 +404,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 		startTime.set('08:00');
 		endTime.set('08:00');
 		setNameAutInputValue('');
+		outcome.set('');
 	};
 
 	const addActivity = async () => {
@@ -493,7 +492,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 			<SingleSelectField
 				title="Outcome"
 				value={outcome.get()}
-				options={outcomeOptions.map(opt => ({ _id: opt, name: opt }))}
+				options={outcomeOptions.map(opt => ({ label: opt, value: opt }))}
 				onChange={value => {
 					outcome.set(value);
 				}}

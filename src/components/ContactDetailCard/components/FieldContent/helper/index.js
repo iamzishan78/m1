@@ -58,6 +58,5 @@ export const outcomeOptions = [
     "Left Message",
     "No Response",
     "Not Interested",
-    "Unable to Reach",
-    ''
+    "Unable to Reach"
 ]
