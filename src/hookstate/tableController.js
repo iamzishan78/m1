@@ -354,7 +354,7 @@ const tableESStateControllerHandler = state => ({
 			state.TableSchema?.[index]?.merge({ Filter: null });
 		}
 
-		if (!columnSchema) return;
+		if (!columnSchema?.name) return;
 		state.filterModes?.merge({
 			[column]: {
 				mode,

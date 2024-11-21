@@ -194,7 +194,10 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 			// Upsert the map view data to the GraphQL API
 			if (canUpdateMapView) {
 				globalFilters = globalFilters.filter(
-					filter => filter.fieldName !== (fieldName?.value || fieldName) || filter.dataSourceName !== dataSourceName
+					filter =>
+						(filter.fieldName !== (fieldName?.value || fieldName) &&
+							filter.fieldName !== (fieldName?.value || fieldName).replace('.keyword', '')) ||
+						filter.dataSourceName !== dataSourceName
 				);
 				globalStateController.updateState({
 					mapView: {
@@ -310,7 +313,10 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 		const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView;
 		let globalFilters = selectedMapView?.filters || [];
 		globalFilters = globalFilters.filter(
-			filter => filter.fieldName !== (fieldName?.value || fieldName) || filter.dataSourceName !== dataSourceName
+			filter =>
+				(filter.fieldName !== (fieldName?.value || fieldName) &&
+					filter.fieldName !== (fieldName?.value || fieldName).replace('.keyword', '')) ||
+				filter.dataSourceName !== dataSourceName
 		);
 		remove(index); // Set the filter cleared state to true
 
