@@ -328,6 +328,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 				_id: activity.contactId,
 			});
 			outcomeFieldRef.current?.updateDefaultValue(activity.outcome);
+			outcome.set(activity.outcome)
 			startTime.set(moment.parseZone(activity.start).format('HH:mm'));
 			endDate.set(moment.parseZone(activity.end).format('yyyy-MM-DD'));
 			startDate.set(moment.parseZone(activity.start).format('yyyy-MM-DD'));
