@@ -253,7 +253,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 		});
 
 		const layers = globalStateController.getValue('layers');
-		const fileLayers = layers?.filter(layer => layer?.layerShapeName && layer?.layerSchema);
+		const fileLayers = layers?.filter(layer => layer?.layerShapeName);
 		const layerShapeNames = fileLayers?.map(layer => ({ label: layer?.layerShapeName, value: layer?.layerId || '' }));
 		const m1LayersOptions = Object.keys(customLayersFieldAccessors).map(layer => ({ label: layer, value: layer }));
 
