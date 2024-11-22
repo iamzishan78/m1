@@ -97,7 +97,7 @@ const FileUploadDialog = () => {
 					if (data.dataset) {
 						clearInterval(interval);
 
-						setDataset(datasetRes?.data?.getDataset?.data);
+						setDataset(data?.dataset);
 
 						globalStateController.updateState({ universalLoader: false });
 					}
