@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
 import { dateFilterToDate } from 'utils/helper';
 import { copy } from 'components/Shared/functions';
+import { getFirstDayOfMonth } from 'utils/helper';
 
 const useStyles = makeStyles(theme => ({
 	actionBar: {
@@ -49,11 +50,10 @@ const LastCheckDateFilter = ({
 }) => {
 	const classes = useStyles();
 
-	const [selectedFilter, setSelectedFilter] = useState('');
 	const [fromDate, setFromDate] = React.useState(null);
 	const [toDate, setToDate] = React.useState(null);
 	const [lastCheckMinDate, setLastCheckMinDate] = useState('');
-	const [status, setStatus] = useState('ALL');
+	// const [status, setStatus] = useState('ALL');
 	const [propertyFilter, setPropertyFilter] = useState([]);
 	const [checkNumberFilter, setCheckNumberFilter] = useState();
 	const [propertyNumberFilter, setPropertyNumberFilter] = useState();
@@ -78,6 +78,7 @@ const LastCheckDateFilter = ({
 				value_as_string: true,
 			},
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [getESMinValue]);
 
 	const updateFilters = useCallback(() => {
@@ -99,11 +100,10 @@ const LastCheckDateFilter = ({
 		if (fromDate && toDate)
 			filters.unshift({
 				field,
-				value: {
-					gte: fromDate ? `${fromDate}T00:00:00.000Z` : null,
-					lte: toDate ? `${dateFilterToDate(toDate)}T00:00:00.000Z` : null,
-				},
-				type: 'range',
+				value: [
+					fromDate ? `${getFirstDayOfMonth(fromDate)}` : null,
+					toDate ? `${dateFilterToDate(toDate)}T00:00:00.000Z` : null,
+				],
 				filterType: 'date',
 			});
 
@@ -117,19 +117,19 @@ const LastCheckDateFilter = ({
 		});
 		reportGroupFilters.current = _propertyFilter.map(filter => filter.field);
 
-		if (status !== 'ALL') {
-			filters.push({
-				field: 'status.keyword',
-				value: status,
-			});
-		}
+		// if (status !== 'ALL') {
+		// 	filters.push({
+		// 		field: 'status.keyword',
+		// 		value: status,
+		// 	});
+		// }
 		// Removed the conditional statement because clicking the cross icon in the comparison grid's global filter or selecting all dates was not updating the grid filters as expected.
 
 		setESFilters(filters);
 		setFilterToggle(!filterToggle);
 		// disabling this because a dependency causes infinite loop in useEffect
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [toDate, fromDate, status, propertyFilter, checkNumberFilter, propertyNumberFilter]);
+	}, [toDate, fromDate, propertyFilter, checkNumberFilter, propertyNumberFilter]);
 
 	useEffect(() => {
 		updateFilters();
@@ -145,7 +145,6 @@ const LastCheckDateFilter = ({
 					setToDate={setToDate}
 					isProperties
 					lastCheckMinDate={lastCheckMinDate}
-					onChange={setSelectedFilter}
 					datesInputWidth={2}
 				/>
 				{extraFitlers.includes('propertyGroup') && (

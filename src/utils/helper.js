@@ -29,6 +29,14 @@ export const dateFilterToDate = date => {
 	return `${endDate.getFullYear()}-${appendZeroIfSingle(endDate.getMonth() + 1)}-${appendZeroIfSingle(lastDayOfMonth.getDate())}`;
 };
 
+export const getFirstDayOfMonth = dateString => {
+	// Parse the input date string
+	const date = new Date(dateString);
+	// Set the date to the first day of the month
+	date.setUTCDate(1);
+	// Return the date in ISO 8601 format
+	return date.toISOString();
+};
 export const dateIsValid = date => {
 	try {
 		date = new Date(
