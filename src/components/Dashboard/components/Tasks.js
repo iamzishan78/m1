@@ -358,6 +358,8 @@ const Tasks = () => {
 										</span>
 										<Grid container className={classes.gridStyle}>
 											<Grid item xs={11} className={classes.paddingLeft10}>
+												<span>Deal: {activity?.dealName || 'N/A'}</span>
+												<br />
 												<span>Contact: {activity?.contactName || 'N/A'}</span>
 												<br />
 												<span>
