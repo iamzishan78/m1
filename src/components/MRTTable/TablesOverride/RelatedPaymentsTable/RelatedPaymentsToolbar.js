@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Button } from '@material-ui/core';
+import { Button, Typography } from '@material-ui/core';
 import { detailCardController } from 'hookstate/detailCardController';
 import { PaymentRightDialog } from './RightDialog';
 import { tableController } from 'hookstate/tableController';
@@ -16,20 +16,29 @@ function RelatedPaymentsToolbar({ table, tableKey }) {
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
 
 	return (
-		!isSomethingSelected && (
-			<>
-				<Button
-					variant="contained"
-					color="primary"
-					onClick={() => {
-						detailCardController.updateState({ drawer: 'paymentDialog' });
-					}}
-				>
-					+ ADD Payment
-				</Button>
-				<PaymentRightDialog />
-			</>
-		)
+		<>
+			<Typography
+				variant="h6"
+				component="h1"
+				style={{ fontWeight: 'bold', margin: '5px 0px 0px 10px', position: 'absolute', left:'0'}}
+			>
+				RELATED PAYMENTS
+			</Typography>
+			{!isSomethingSelected && (
+				<>
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={() => {
+							detailCardController.updateState({ drawer: 'paymentDialog' });
+						}}
+					>
+						+ ADD Payment
+					</Button>
+					<PaymentRightDialog />
+				</>
+			)}
+		</>
 	);
 }
 

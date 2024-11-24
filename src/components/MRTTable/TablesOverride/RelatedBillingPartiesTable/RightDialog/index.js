@@ -4,6 +4,7 @@ import AddNewRelatedData from 'components/Land/components/Common/AddNewRelatedDa
 import { tableGlobalController } from 'hookstate/tableController';
 import { useMutation } from '@apollo/client';
 import { ADD_BILLING_PARTY_CONTACT_DESCRIPTOR } from 'graphQL/useMutationAddPaymentContactDescriptor';
+import { toNumber } from 'lodash';
 
 // This component is used in the RelatedPayeesTable component for the toolbar
 export const BillingPartiesRightDialog = () => {
@@ -27,6 +28,8 @@ export const BillingPartiesRightDialog = () => {
 			variables: {
 				billingParty: {
 					...newData,
+					allocation: toNumber(newData?.allocation) || 0,
+					amount: toNumber(newData?.amount) || 0,
 					name: newData?.name?.name || '',
 					contactId: newData?.name?._id || '',
 					paymentId,

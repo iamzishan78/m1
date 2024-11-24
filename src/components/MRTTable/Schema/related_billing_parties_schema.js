@@ -107,7 +107,7 @@ const RelatedBillingPartiesMeta = {
 			Cell: ({ row }) => {
 				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
 				const value = getArrayValue(row.original.billingParties, 'allocation', paymentId, 'paymentId');
-				return value ? `${value}%` : '';
+				return value ? `${Number(value).toFixed(2)}%` : '';
 			},
 		},
 		{

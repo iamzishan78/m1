@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { detailCardController } from 'hookstate/detailCardController';
 import AddNewRelatedData from 'components/Land/components/Common/AddNewRelatedData';
-import { get } from 'lodash';
+import { get, toNumber } from 'lodash';
 import { tableGlobalController } from 'hookstate/tableController';
 import { useMutation } from '@apollo/client';
 import { ADD_PAYMENT } from 'graphQL/useMutationAddPayment';
@@ -27,6 +27,8 @@ export const PaymentRightDialog = () => {
 			variables: {
 				payment: {
 					...newData,
+					amount: toNumber(newData?.amount) || 0,
+					companyShare: toNumber(newData?.companyShare) || 0,
 					userId: stateApp.user.mongoId,
 					relatedObjectId: relatedObjectId,
 					relatedObjectType: 'Shape',

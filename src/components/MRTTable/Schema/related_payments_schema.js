@@ -103,6 +103,7 @@ const RelatedPaymentsMeta = {
 			name: 'amount.keyword',
 			accessorFn: row => row?.amount,
 			id: 'amount',
+			type: 'number',
 			header: 'Amount',
 			Cell: ({ row }) => {
 				const value = row?.original?.amount;
@@ -115,6 +116,7 @@ const RelatedPaymentsMeta = {
 			accessorFn: row => row?.companyShare,
 			id: 'companyShare',
 			header: 'Company Share',
+			type: 'number',
 			Cell: ({ row }) => {
 				const value = row?.original?.companyShare;
 				return value ? vf_currency_to_fixed(parseFloat(value), 2) : '';
