@@ -8,8 +8,8 @@ import Loader from 'components/Loaders';
 import { globalStateController } from 'hookstate/globalStateController';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { tableGlobalController } from 'hookstate/tableController';
-import { copy } from "utils/helper";
-import TractIcon from "components/Shared/svgIcons/tract";
+import { copy } from 'utils/helper';
+import TractIcon from 'components/Shared/svgIcons/tract';
 import { formatDate } from 'components/Shared/functions';
 import _ from 'lodash';
 
@@ -46,6 +46,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 				},
 			},
 			mutation: UPDATECUSTOMLAYER,
+			refetchQueries: ['getESSimpleFilter'],
 		});
 		Loader.successToast(loaderId, 'Updation Complete');
 		tableGlobalController.refetch();
@@ -62,25 +63,25 @@ const TractMeta = {
 		pageSize: 50,
 	},
 	// Grid views for tract
-    gridViewSettings: {
+	gridViewSettings: {
 		label: 'Tracts',
 		module: 'Tracts',
 		Icon: TractIcon,
 		defaultView: {
-		  name: 'All Tracts',
-		  type: 'Default',
+			name: 'All Tracts',
+			type: 'Default',
 		},
 		handleDefaultView: (view, user) => {
-		  if (view?.name === 'My Tracts') {
-			view.filters[0].value = user._id;
-		  }
-		  return view;
+			if (view?.name === 'My Tracts') {
+				view.filters[0].value = user._id;
+			}
+			return view;
 		},
 		cssOverride: {
-		  top: '340px',
-		  left: '225px',
+			top: '340px',
+			left: '225px',
 		},
-	  },
+	},
 	defaultSort: { field: '_ts', order: 'desc' },
 	defaultFilters: [{ field: 'layer.keyword', value: 'parcel' }],
 	maxTableHeight: 'calc(100vh - 450px)',
