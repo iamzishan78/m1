@@ -181,7 +181,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 				?.find(layer => layer?.layerId === dataSourceName)?.layerShapeName;
 			const state = layerFiltersController.getValue([layerShapeName || dataSourceName]); // Get layer filters from hookstate
 			const initialFilters = state?.variables?.filters || []; // Get initial filters
-			let filters = initialFilters.filter(filter => filter.field !== fieldName?.value); // Remove existing filter
+			let filters = initialFilters.filter(filter => filter.field !== (fieldName?.value || fieldName)); // Remove existing filter
 			const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView;
 			let globalFilters = selectedMapView?.filters || [];
 

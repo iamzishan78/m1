@@ -168,11 +168,10 @@ const LayerFilters = () => {
 
 	const { navStateValues } = navController.useState(['geographyFilterCount', 'wellFilterCount'], 'navStateValues');
 	const { mapStateValues } = globalStateController.useState(['mapView', 'viewChanged'], 'mapStateValues');
-	const selectedMapView = mapStateValues?.mapView?.selectedMapView;
 
 	const formMethods = useForm({
 		defaultValues: {
-			mapViews: selectedMapView?.filters || [],
+			mapViews: [],
 		},
 	});
 
@@ -188,6 +187,17 @@ const LayerFilters = () => {
 		},
 		[formMethods]
 	);
+
+	useEffect(() => {
+		const selectedMapView = mapStateValues?.mapView?.selectedMapView;
+
+		if (selectedMapView) {
+			resetForm({
+				mapViews: selectedMapView?.filters || [],
+			});
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	useEffect(() => {
 		const selectedMapView = mapStateValues?.mapView?.selectedMapView;

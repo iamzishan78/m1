@@ -23,6 +23,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 
 import StarIcon from '@material-ui/icons/Star';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
+import { layerFiltersController } from 'hookstate/layerFiltersController';
 
 const useStyles = makeStyles(() => ({
 	container: {
@@ -146,6 +147,10 @@ function MapViewOptions({ handleDefaultView, tableKey, allMapViews, defaultView,
 
 	const handleClick = view => {
 		let data = JSON.parse(JSON.stringify(view));
+		const prevMapView = globalStateController.getValue('mapView');
+		prevMapView?.selectedMapView?.filters?.forEach(filter => {
+			layerFiltersController.resetVariables(filter?.dataSourceName);
+		});
 		globalStateController.updateState({
 			mapView: { ...mapViewStateValues.mapView, selectedMapView: data, showViewModal: false },
 			viewChanged: true,
