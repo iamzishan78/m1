@@ -6,11 +6,11 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
-import vf_currency from "components/Shared/valueformatters/vf_currency.js";
+import vf_currency from 'components/Shared/valueformatters/vf_currency.js';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 import Loader from 'components/Loaders';
 import { globalStateController } from 'hookstate/globalStateController';
-import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { tableGlobalController } from 'hookstate/tableController';
 import { copy } from "utils/helper";
 import UnitToolbar from 'components/MRTTable/TablesOverride/UnitTable/UnitToolbar';
@@ -22,10 +22,10 @@ const onCustomKeyChange = async (client, row, value, item) => {
 
 	try {
 		Loader.createToast(loaderId, 'Updation in Progress');
-		const user = globalStateController.getValue('user')
+		const user = globalStateController.getValue('user');
 
 		const customData = copy(row?.shapeJson?.properties?.custom_data) ?? {};
-		const filteredCustomData = _.pickBy(customData, (value) => value !== "" && !_.isEmpty(value));
+		const filteredCustomData = _.pickBy(customData, value => value !== '' && !_.isEmpty(value));
 
 		const shapeJson = {
 			...row?.shapeJson,
@@ -34,9 +34,9 @@ const onCustomKeyChange = async (client, row, value, item) => {
 				custom_data: {
 					...filteredCustomData,
 					[item.name]: value,
-				}
+				},
 			},
-		}
+		};
 
 		await client.mutate({
 			variables: {
@@ -59,7 +59,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 const UnitMeta = {
 	esIndex,
 	pageSize: 50,
-	CustomToolBar: UnitToolbar,
+	CustomToolBar: UnitToolbar, // Add custom toolbar for showing bulkupdate button
 	pagination: {
 		pageIndex: 0,
 		pageSize: 50,
@@ -133,8 +133,9 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.originalProperties.State.keyword',
-			accessorFn: row => (row?.shapeJson?.properties?.originalProperties?.State || // Use either state of stateAbbreviation
-				row?.shapeJson?.properties?.originalProperties?.StateAbbreviation),
+			accessorFn: row =>
+				row?.shapeJson?.properties?.originalProperties?.State || // Use either state of stateAbbreviation
+				row?.shapeJson?.properties?.originalProperties?.StateAbbreviation,
 			id: 'shapeJson.properties.originalProperties.State',
 			header: 'State',
 		},
@@ -189,7 +190,7 @@ const UnitMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.netRoyalityAcres.unitNra.keyword',
 			accessorFn: row => vf_number(row?.shapeJson?.properties?.netRoyalityAcres?.unitNra),
-			header: 'Total Unit NRA'
+			header: 'Total Unit NRA',
 		},
 
 		{
@@ -208,7 +209,7 @@ const UnitMeta = {
 			header: 'Current Operator',
 		},
 
-		//added Total Unit Interest column from here 
+		//added Total Unit Interest column from here
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.totalUnitInterest.keyword',
@@ -220,7 +221,7 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uUnitPricing.keyword',
-			accessorFn: row => vf_currency(row?.shapeJson?.properties?.uUnitPricing), // format value with $ sign 
+			accessorFn: row => vf_currency(row?.shapeJson?.properties?.uUnitPricing), // format value with $ sign
 			id: 'shapeJson.properties.uUnitPricing',
 			header: 'Target Price/Acre',
 		},
@@ -266,6 +267,13 @@ const UnitMeta = {
 			id: 'shapeJson.properties.reviewer.name',
 			header: 'Reviewer',
 		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.ownerName.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.ownerName,
+			id: 'shapeJson.properties.ownerName',
+			header: 'Owner',
+		},
 
 		CommonSchema.CREATED_BY,
 		CommonSchema.CREATED_DATE,
@@ -276,7 +284,14 @@ const UnitMeta = {
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const targetSourceId = row.getValue('_id');
-				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'unit'} />;
+				return (
+					<TagCell
+						id={targetSourceId}
+						targetSourceId={targetSourceId}
+						tags={row?.original?.tags}
+						targetLabel={'unit'}
+					/>
+				);
 			},
 		},
 
@@ -297,7 +312,7 @@ const UnitMeta = {
 			Cell: ({ row }) => {
 				const id = row.getValue('_id');
 
-				return <FlyToMap id={id} type='unit' />;
+				return <FlyToMap id={id} type="unit" />;
 			},
 			isHiddenFieldExport: true, // Hide location field from the export csv
 			hidden: true, // Hide location field from the export

@@ -22,6 +22,7 @@ import { getRoundedNra, validateUrl } from 'utils/helper';
 import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
 import { copy } from 'components/Shared/functions';
 import { AppContext } from 'AppContext';
+import { Clear } from '@material-ui/icons';
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
 import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';
 import { AutoCompleteLandgrid } from 'components/Shared/Forms/Fields/AutoCompleteLandgrid';
@@ -32,6 +33,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 import NumberField from 'components/Shared/components/Fields/NumberField';
 import DateField from 'components/Shared/components/Fields/DateField';
 import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
+import ShapeOwnerInput from 'components/Shared/ShapeOwnerInput';
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps, loading }) {
 	const dispatch = useDispatch();
@@ -122,6 +124,8 @@ export default function SummaryTableInfo({
 	id,
 	updating,
 	isCustomLayerAutoComplete,
+	customLayer,
+	shapeType
 }) {
 	const classes = summaryTableStyles();
 	const dispatch = useDispatch();
@@ -621,9 +625,17 @@ export default function SummaryTableInfo({
 												}}
 											/>
 										)}
+										{data.key === 'ownerName' && (
+											<ShapeOwnerInput
+												data={properties}
+												shapeType={shapeType}
+												shapeData={customLayer}
+												onBlur={() => setTableDataState({})}
+											/>
+										)}
 									</>
 								) : (
-									<div style={{ minWidth: '30px', cursor: 'pointer', maxWidth: '14vw' }}>
+									<div style={{ minWidth: '30px', cursor: 'pointer' }}>
 										<Grid
 											style={{ display: 'flex' }}
 											container
