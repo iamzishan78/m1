@@ -426,9 +426,18 @@ const tableESStateControllerHandler = state => ({
 				filter.searchType = 'betweenInclusive';
 				filter.columnType = 'date';
 			} else {
-				if (!isDateFormat(filter.value)) return;
-				const date = new Date(filter.value);
-				filter.value = formatDate(date.toISOString());
+				if (Array.isArray(filter.value)) {
+					if (!isDateFormat(filter.value[0]) || !isDateFormat(filter.value[1])) return;
+
+					const date1 = new Date(filter.value[0]);
+					const date2 = new Date(filter.value[1]);
+
+					filter.value = [formatDate(date1.toISOString()), formatDate(date2.toISOString())];
+				} else {
+					if (!isDateFormat(filter.value)) return;
+					const date = new Date(filter.value);
+					filter.value = formatDate(date.toISOString());
+				}
 			}
 		}
 
@@ -447,8 +456,10 @@ const tableESStateControllerHandler = state => ({
 
 	getExternalFilter: () => {
 		const filtersState = state.filters?.get({ noproxy: true });
-		const requiredFields = state.ExternalFilter?.get({ noproxy: true });
-		const esFilters = (filtersState || [])?.filter(filter => requiredFields.includes(filter.field));
+		const requiredFields = state.ExternalFilter?.get({ noproxy: true })?.map(f => f.replaceAll('.keyword', ''));
+		const esFilters = (filtersState || [])?.filter(filter =>
+			requiredFields.includes(filter.field.replaceAll('.keyword', ''))
+		);
 		return esFilters;
 	},
 

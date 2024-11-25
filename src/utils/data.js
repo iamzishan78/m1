@@ -244,6 +244,16 @@ export const analyticsManagementRoutes = {
 		isDefault: true,
 		hideSearch: true,
 	},
+	Data: {
+		featureFlag: 'CONTACTSUBMENU',
+		title: 'Data',
+		link: '/analytics/data',
+		component: 'Data',
+		value: 'Data',
+		search: true,
+		isDefault: true,
+		hideSearch: true,
+	},
 	REVENUE_PROPERTY_DETAILS: {
 		featureFlag: 'CONTACTSUBMENU',
 		title: 'Revenue',

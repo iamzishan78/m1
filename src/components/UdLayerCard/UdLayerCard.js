@@ -7,9 +7,9 @@ import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import $ from 'jquery';
-import { useLazyQuery } from '@apollo/client';
-import { Close, Layers, Sync } from '@material-ui/icons';
-import { Menu, MenuItem } from '@material-ui/core';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { Close, Delete, Layers, Sync } from '@material-ui/icons';
+import { Dialog, Menu, MenuItem } from '@material-ui/core';
 
 import { AppContext } from '../../AppContext';
 import { clearMapAndCloseShapeActionsPopup } from 'components/MapControls/commonHelper';
@@ -24,6 +24,9 @@ import { history } from 'store';
 import { jobController } from 'hookstate/jobStateController';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { userDefinedInitialData } from 'components/MapGridCard/components/data';
+import DeleteConfirmationDialogContent from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
+import { layerController } from 'hookstate/layerStateController';
+import { DELETE_SHAPEFILE_FEEATURE } from 'graphQL/useMutationShapeFile';
 
 const useStyles = makeStyles(theme => ({
 	root: {},
@@ -107,6 +110,9 @@ function UdLayerCard(props) {
 
 	const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
+	const [deleteShapeFeature] = useMutation(DELETE_SHAPEFILE_FEEATURE);
+
+	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 	const [anchorEl, setAnchorEl] = useState(null);
 
 	const isCreateParcelMenu = Boolean(anchorEl);
@@ -268,6 +274,26 @@ function UdLayerCard(props) {
 
 	return (
 		<React.Fragment>
+			{deleteDialogOpen && (
+				<Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)} fullWidth={true} maxWidth={'sm'}>
+					<DeleteConfirmationDialogContent
+						header={`Delete Feature`}
+						onClose={() => setDeleteDialogOpen(false)}
+						deleteFunc={() => {
+							deleteShapeFeature({
+								variables: { feature: props.selectedUserDefinedLayer },
+								onCompleted: () => {
+									layerController.resetBounds(props.selectedUserDefinedLayer.layer.identifier);
+									handleClose();
+								},
+							});
+						}}
+					>
+						{`Do you want to delete the selected shape file feature?`}
+					</DeleteConfirmationDialogContent>
+				</Dialog>
+			)}
+
 			<Menu anchorEl={anchorEl} open={isCreateParcelMenu} onClose={() => setAnchorEl(null)}>
 				<MenuItem onClick={() => handleSync('AGREEMENT_SHAPE')}>Agreement</MenuItem>
 
@@ -284,6 +310,18 @@ function UdLayerCard(props) {
 					action={
 						<div className={classes.headerIcons}>
 							{/* Filter support added back */}
+							<Tooltip title="Delete" placement="top">
+								<IconButton
+									size="small"
+									onClick={() => {
+										setDeleteDialogOpen(true);
+									}}
+									aria-label="Delete"
+									data-testid="delete-on-map"
+								>
+									<Delete color="secondary" />
+								</IconButton>
+							</Tooltip>
 							<Tooltip title="Filter" placement="top">
 								<IconButton
 									size="small"
