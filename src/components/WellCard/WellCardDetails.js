@@ -30,7 +30,6 @@ import PlugDateCard from "../Shared/PlugDateCard";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 
-import CompletionsContainer from "./components/Completions";
 import SimulationContainer from "./components/Stimulation";
 import FormationContainer from "./components/Formation";
 import PermitsContainer from "./components/WellPermits";
@@ -405,10 +404,6 @@ export default function WellCardDetails(props) {
             tabLabels={[
               "Production",
               "Interest Owners",
-              "Completion",
-              "Stimulation",
-              "Formation",
-              "Permits",
               "Documents"
             ]}
             tabPanels={[
@@ -483,11 +478,6 @@ export default function WellCardDetails(props) {
                   />
                 </div>
               </Paper>,
-
-              <CompletionsContainer showSummary={showSummary} />,
-              <SimulationContainer showSummary={showSummary} />,
-              <FormationContainer showSummary={showSummary} />,
-              <PermitsContainer showSummary={showSummary} />,
               <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.wellDocument}`}>
                 <WellDetailsDocumentTable
                   selectedWell={stateValues.selectedWell}

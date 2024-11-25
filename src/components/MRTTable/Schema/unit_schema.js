@@ -268,6 +268,13 @@ const UnitMeta = {
 			id: 'shapeJson.properties.reviewer.name',
 			header: 'Reviewer',
 		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.ownerName.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.ownerName,
+			id: 'shapeJson.properties.ownerName',
+			header: 'Owner',
+		},
 
 		CommonSchema.CREATED_BY,
 		CommonSchema.CREATED_DATE,

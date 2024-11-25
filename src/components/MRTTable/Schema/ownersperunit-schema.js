@@ -675,6 +675,7 @@ const OwnersPerUnitMeta = {
 
 		{
 			...CommonSchema.ACTION_COLUMN,
+			isPinned: true, // pin action column so it can be moved at first position
 			showInLast: false,
 			size: 80,
 			name: 'actionMenu',

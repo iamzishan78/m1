@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { makeStyles } from "@material-ui/styles";
 import { Grid, Card, CardContent, Typography } from "@material-ui/core";
@@ -33,7 +33,7 @@ export const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount, cardsDefault, landSearchQuery }) {
+export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount, cardsDefault, landSearchQuery, searchFields }) {
   const classes = useStyles();
   const [cards, setCards] = useState(cardsDefault);
 
@@ -43,6 +43,11 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     newCards[index].points = count;
     setCards(newCards);
   };
+
+  // Function to format card points in K(thousand)
+  const formCardPointValue = (value) => {
+    return (Math.round((value + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + "K";
+  }
 
   const [getESAggsActiveCount] = useLazyQuery(GET_ES_AGGS_LIST, {
     context: { batch: true },
@@ -73,14 +78,8 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
       if (aggsData?.getESAggsList?.aggregations?.grossAcresSum) {
-        const grossAcresSum = aggsData.getESAggsList.aggregations.grossAcresSum.value.sum;
-        setCardPoint(
-          (Math.round((grossAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + "K",
-          1
-        );
-        // props.onGrossAcresSum(
-        //   aggsData?.getESAggsList?.aggregations?.grossAcresSum?.value
-        // );
+        const grossAcresSum = formCardPointValue(aggsData.getESAggsList.aggregations.grossAcresSum.value);
+        setCardPoint(grossAcresSum, 1);
       }
     },
   });
@@ -90,14 +89,8 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
       if (aggsData?.getESAggsList?.aggregations?.netAcresSum) {
-        const netAcresSum = aggsData.getESAggsList.aggregations.netAcresSum.value;
-        setCardPoint(
-          (Math.round((netAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + "K",
-          2
-        );
-        // props.onNetAcresSum(
-        //   aggsData?.getESAggsList?.aggregations?.netAcresSum?.value
-        // );
+        const netAcresSum = formCardPointValue(aggsData.getESAggsList.aggregations.netAcresSum.value);
+        setCardPoint(netAcresSum, 2);
       }
     },
   });
@@ -107,14 +100,8 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
       if (aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum) {
-        const netRoyaltyAcresSum = aggsData.getESAggsList.aggregations.netRoyaltyAcresSum.value;
-        setCardPoint(
-          (Math.round((netRoyaltyAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + "K",
-          3
-        );
-        // props.onNetRoyaltyAcresSum(
-        //   aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum?.value
-        // );
+        const netRoyaltyAcresSum = formCardPointValue(aggsData.getESAggsList.aggregations.netRoyaltyAcresSum.value);
+        setCardPoint(netRoyaltyAcresSum, 3);
       }
     },
   });
@@ -158,65 +145,121 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     });
   };
 
+  const analyticsPayload = useMemo(() => {
+    let aggsFilters = esFilters || [];
+    let grossAcersObject, netAcersField, nraField;
+
+    // Case when the Elasticsearch index is 'shapeowners_flat'
+    if (esIndex === 'shapeowners_flat') {
+      // Create a scripted metric aggregation for 'grossAcres' in 'shapeowners_flat'
+      grossAcersObject = {
+        scripted_metric: {
+          init_script: `
+            state.id_map = [:];
+            state.sum = 0.0;
+          `,
+          map_script: `
+            def id = doc['shape._id.keyword'].value;
+            if (!state.id_map.containsKey(id)) {
+              state.id_map[id] = true;
+              state.sum += doc['grossAcres'].size() == 0 ? 0 : doc['grossAcres'].value;
+            }
+          `,
+          combine_script: `
+            return state.sum;
+          `,
+          reduce_script: `
+            double totalSum = 0.0;
+            for (state in states) {
+              totalSum += state;
+            }
+            return totalSum;
+          `,
+        },
+      };
+      
+
+      // Set the field names for 'net_acres' and 'nra' specific to 'shapeowners_flat'
+      netAcersField = {
+        sum: {
+          field: 'net_acres',
+        },
+      };
+      nraField = 'nra';
+    } else if (esIndex === 'shapes_flat') {
+      // Create a simple sum aggregation for 'sdGrossAcres' in 'shapes_flat'
+      grossAcersObject = {
+        sum: {
+          field: 'shapeJson.properties.sdGrossAcres',
+        },
+      };
+
+      // Create a scripted metric aggregation for 'netAcers' in 'shapes_flat'
+      netAcersField = {
+          "scripted_metric": {
+            "init_script": "state.sum = 0.0;",
+            "map_script": `
+              if (doc['shapeJson.properties.shapeArea.keyword'].size() > 0) {
+                try {
+                  state.sum += Double.parseDouble(doc['shapeJson.properties.shapeArea.keyword'].value);
+                } catch (Exception e) {
+                  // Skip records that throw an exception
+                }
+              }
+            `,
+            "combine_script": "return state.sum;",
+            "reduce_script":`
+              double totalSum = 0.0;
+              for (s in states) {
+                if (s != null) { 
+                  totalSum += s; 
+                }
+              }
+              return totalSum;
+            `,
+        }
+      };
+
+      // Set the field names for 'nra' specific to 'shapes_flat'
+      nraField = 'shapeJson.properties.netRoyalityAcres.calculatedNra';
+    }
+
+    return { aggsFilters, grossAcersObject, netAcersField, nraField };
+  }, [esIndex, esFilters, landSearchQuery]);
+  
   const tractsAnalytics = () => {
     getESAggsGrossAcresSum({
       variables: {
-        esIndex: "shapeowners_flat",
-        search: landSearchQuery ? `${landSearchQuery}*` : "",
-        filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters],
+        esIndex: esIndex || "shapeowners_flat",
+        search: landSearchQuery ? `*${landSearchQuery}*` : "",
+        fields: searchFields,
+        filters: analyticsPayload.aggsFilters,
         aggs: {
-          grossAcresSum: {
-            scripted_metric: {
-              init_script: "state.id_map = [:]; state.sum = 0.0; state.elem_count = 0.0;",
-              map_script: `
-                def id = doc['shape._id.keyword'].value;
-                if (!state.id_map.containsKey(id)) {
-                  state.id_map[id] = true;
-                  state.elem_count++;
-                  state.sum += doc['grossAcres'].size()==0 ? 0 : doc['grossAcres'].value;
-                }
-              `,
-              combine_script: `
-                  def count = state.elem_count;
-                  def sum = state.sum;
-                  //def avg = sum / count;
-      
-                  def stats = [:];
-                  stats.count = count;
-                  stats.sum = sum;
-                  //stats.avg = avg;
-      
-                  return stats
-              `,
-              reduce_script: "return states[0]",
-            },
-          },
+          grossAcresSum: analyticsPayload.grossAcersObject,
         },
       },
     });
     getESAggsNetAcresSum({
       variables: {
-        esIndex: "shapeowners_flat",
-        search: landSearchQuery ? `${landSearchQuery}*` : "",
-        filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters],
+        esIndex: esIndex || "shapeowners_flat",
+        search: landSearchQuery ? `*${landSearchQuery}*` : "",
+        fields: searchFields,
+        filters: analyticsPayload.aggsFilters,
         aggs: {
-          netAcresSum: {
-            sum: {
-              field: "net_acres",
-            },
-          },
+          netAcresSum: analyticsPayload.netAcersField,
         },
       },
     });
     getESAggsNetRoyaltyAcresSum({
       variables: {
-        esIndex: "shapeowners_flat",
-        search: landSearchQuery ? `${landSearchQuery}*` : "",
-        filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters],
+        esIndex: esIndex || "shapeowners_flat",
+        search: landSearchQuery ? `*${landSearchQuery}*` : "",
+        fields: searchFields,
+        filters: analyticsPayload.aggsFilters,
         aggs: {
           netRoyaltyAcresSum: {
             sum: {
-              field: "nra",
+              field: analyticsPayload.nraField,
             },
           },
         },
@@ -228,10 +271,10 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     if (totalCount > 0) {
       if (parent === "Agreements") {
         agreementAnalytics();
+      } else if (parent === "Tracts") {
+        // Get tract analytics data
+        tractsAnalytics();
       }
-    }
-    if (parent === "Tracts") {
-      tractsAnalytics();
     }
   };
 
@@ -239,7 +282,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     setCardPoint(totalCount, 0);
     getAggsCounts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [totalCount]);
+  }, [totalCount, esFilters, landSearchQuery]);
 
   return (
     <Grid container direction="row" display="flex" align="center" spacing={4} textAlign="left" className={classes.root}>

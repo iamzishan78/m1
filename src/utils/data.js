@@ -683,7 +683,7 @@ export const bypassTenants = [
 	// "Republic",
 	// "Venator",
 	'Frontier',
-	// 'm1demo',
+	'm1demo',
 	// "Vector",
 	// "TableRock",
 	// "Providence",
