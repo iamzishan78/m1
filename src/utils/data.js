@@ -663,7 +663,7 @@ export const bypassTenants = [
 	// "m1Preview",
 	'm1dev',
 	'm1cypress',
-	'm1Staging',
+	'm1staging',
 	// "m1Production",
 	// "m1Development",
 	// "GHR",
