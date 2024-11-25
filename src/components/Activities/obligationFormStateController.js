@@ -12,7 +12,7 @@ const initialValue = {
     frequency: '',
     applicable: '',
     obligationValue: '',
-    responsibleParty: '[]',
+    responsibleParty: '',
     assignedOwner: '',
     owner: '',
     status: false,
