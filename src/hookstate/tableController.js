@@ -359,7 +359,9 @@ const tableESStateControllerHandler = state => ({
 			});
 			const tableCss = {
 				...state.tableCss?.get({ noproxy: true }),
-				'& .MuiTableRow-root>:nth-child(2)': { marginLeft: `-${size}px !important` },
+				...(state.columnVirtualization.get()
+					? { '& .MuiTableRow-root>:nth-child(2)': { marginLeft: `-${size}px !important` } }
+					: {}),
 			};
 			state.columnPinning?.set(columnPinning);
 
