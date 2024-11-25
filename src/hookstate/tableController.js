@@ -15,6 +15,7 @@ import { formatGridViewToMRT } from 'components/MRTTable/utils/helper';
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
 import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 import { handleMRTSchema, handleVisiblityMenu } from './helpers';
+import { validateUrl } from 'utils/helper';
 
 function isDateFormat(inputString) {
 	// Regular expression for MM/DD/YYYY format
@@ -98,6 +99,12 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 				}
 
 				if (item?.type === 'text') {
+					if (validateUrl(value))
+						return (
+							<a href={value} target="_blank">
+								{value?.length > 40 ? value?.slice(0, 40) + '...' : value}
+							</a>
+						);
 					return (
 						<CustomFieldText
 							value={value}
