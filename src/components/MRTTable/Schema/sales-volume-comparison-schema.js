@@ -11,7 +11,7 @@ const SalesVolumeComparisonMeta = {
 		pageIndex: 0,
 		pageSize: 25,
 	},
-	maxTableHeight: 'calc(100vh - 710px)',
+	maxTableHeight: 'calc(100vh - 540px)',
 	height: '767px',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
