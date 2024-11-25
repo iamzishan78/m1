@@ -10,7 +10,7 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Stepper from './components/stepper';
 import { Menu, MenuItem } from '@material-ui/core';
-import M1neral_headers from './jobHeaders';
+import M1neral_headers, { getCustomFieldHeaders } from './jobHeaders';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import isEmpty from 'lodash/isEmpty';
@@ -133,39 +133,7 @@ export default function BulkUpload(props) {
 	const reset_state = useCallback(() => {
 		let m1neralHeaders = M1neral_headers[selectedJob.type] || [];
 
-		let customFieldHeaders = [];
-
-		switch (selectedJob.type) {
-			case 'TRACTS':
-				customFieldHeaders = (metaDataRes?.getMetaData?.metaData || [])
-					.filter(md => md.category === 'Parcel')
-					.map(md => ({
-						...md,
-						actual_key: `parcel.custom_data.${md.name}`,
-					}));
-				break;
-
-			case 'UNITS':
-				customFieldHeaders = (metaDataRes?.getMetaData?.metaData || [])
-					.filter(md => md.category === 'Unit')
-					.map(md => ({
-						...md,
-						actual_key: `shape.custom_data.${md.name}`,
-					}));
-				break;
-
-			case 'CONTACTS':
-				customFieldHeaders = (metaDataRes?.getMetaData?.metaData || [])
-					.filter(md => md.category === 'Contacts')
-					.map(md => ({
-						...md,
-						actual_key: `entityDetail.custom_data.${md.name}`,
-					}));
-				break;
-
-			default:
-				break;
-		}
+		const customFieldHeaders = getCustomFieldHeaders(selectedJob.type, metaDataRes?.getMetaData?.metaData);
 
 		m1neralHeaders = [...m1neralHeaders, ...customFieldHeaders];
 

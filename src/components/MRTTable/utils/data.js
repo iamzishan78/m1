@@ -151,3 +151,15 @@ export const dateFilterOptions = [
 	'greaterThanOrEqualTo', 'lessThanOrEqualTo',
 	'singleselect',
 ];
+
+// Curreny keys
+export const currencyKeys = [
+	'shapeJson.properties.uMaxUnitPricing.keyword', 
+	'shapeJson.properties.uUnitPricing.keyword',
+	'shapeJson.properties.uUnitPricingNMA.keyword',
+	'shapeJson.properties.uMaxUnitPricingNMA.keyword',
+	'shape.shapeJson.properties.uMaxUnitPricing.keyword', 
+	'shape.shapeJson.properties.uUnitPricing.keyword',
+	'shape.shapeJson.properties.uUnitPricingNMA.keyword',
+	'shape.shapeJson.properties.uMaxUnitPricingNMA.keyword',
+]

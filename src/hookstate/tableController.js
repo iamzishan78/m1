@@ -1,6 +1,6 @@
 import React from 'react';
 import { hookstate } from '@hookstate/core';
-import _, { get, isEqual, isEmpty } from 'lodash';
+import _, { get, isEqual, isEmpty, pull } from 'lodash';
 import { copy, deepEqual, formatDate } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
@@ -242,6 +242,26 @@ const tableESStateControllerHandler = state => ({
 			columnVirtualization,
 		});
 
+		// Set default pinning and ordering
+		const defaultColumnsOrdering = ['over-ride-checkbox', 'mrt-row-numbers', ...columnOrder];
+		const defaultColumnsPinning = {
+			left: [
+				...(pinnedFields.length > 0
+					? _.concat(['over-ride-checkbox', 'mrt-row-numbers'], _.slice(pinnedFields, 1))
+					: ['over-ride-checkbox', 'mrt-row-numbers']),
+			],
+		};
+
+		// Push action menu in first place
+		if (rest.isShowActionMenuFirst) {
+			// removing 'actionMenu' from array and adding it at start
+			pull(defaultColumnsOrdering, 'actionMenu');
+			pull(defaultColumnsPinning.left, 'actionMenu');
+
+			defaultColumnsOrdering?.unshift('actionMenu');
+			defaultColumnsPinning?.left?.unshift('actionMenu');
+		}
+
 		state.merge({
 			...rest,
 			refetchQueries,
@@ -283,18 +303,8 @@ const tableESStateControllerHandler = state => ({
 			density,
 			advanceSearch,
 			enableHiding,
-			columnOrdering: formatedGridView?.columnOrdering
-				? formatedGridView.columnOrdering
-				: ['over-ride-checkbox', 'mrt-row-numbers', ...columnOrder],
-			columnPinning: formatedGridView?.columnPinning
-				? formatedGridView.columnPinning
-				: {
-						left: [
-							...(pinnedFields.length > 0
-								? _.concat(['over-ride-checkbox', 'mrt-row-numbers'], _.slice(pinnedFields, 1))
-								: ['over-ride-checkbox', 'mrt-row-numbers']),
-						],
-					},
+			columnOrdering: formatedGridView?.columnOrdering ? formatedGridView.columnOrdering : defaultColumnsOrdering,
+			columnPinning: formatedGridView?.columnPinning ? formatedGridView.columnPinning : defaultColumnsPinning,
 		});
 	},
 

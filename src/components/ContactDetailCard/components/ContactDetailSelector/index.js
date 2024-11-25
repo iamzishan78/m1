@@ -269,6 +269,7 @@ function MapGridCard(props) {
 												user={stateApp.user}
 												purchaseData={sortedPurchaseData}
 												contactData={props.contactData}
+												handleQuickActionActivity={props.handleQuickActionActivity}
 											/>
 										)}
 										{searchTapValue.value === 'activities' && (
