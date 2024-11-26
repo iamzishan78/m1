@@ -160,14 +160,12 @@ const getCurrentDate = () => {
 	return d.slice(0, d.indexOf('T'));
 };
 
-
 export default function ObligationForm({ setSelectedActivityId }) {
 	const outcomeFieldRef = useRef();
 	const classes = useStyles();
 	const [stateApp] = useContext(AppContext);
 	const [users, setUsers] = useState([]);
-	const { selectedActivity } = slidoutState
-
+	const { selectedActivity } = slidoutState;
 
 	const activityName = useHookstate(slidoutState.title).get({ noproxy: true });
 	const formMode = useHookstate(slidoutState.formMode);
@@ -213,15 +211,14 @@ export default function ObligationForm({ setSelectedActivityId }) {
 	});
 
 	const statusOptions = [
-		{ _id: 'notYetReviewed', name: 'Not Yet Reviewed' },
-		{ _id: 'inProgress', name: 'In Progress' },
-		{ _id: 'reviewCompleted', name: 'Review Completed' },
+		{ value: 'notYetReviewed', label: 'Not Yet Reviewed' },
+		{ value: 'inProgress', label: 'In Progress' },
+		{ value: 'reviewCompleted', label: 'Review Completed' },
 	];
 
 	useEffect(() => {
-		const activity = selectedActivity.get()
+		const activity = selectedActivity.get();
 		if (activity) {
-
 			activityType.set(activity.type);
 			frequency.set(activity.frequency);
 			applicable.set(activity.applicable);
@@ -242,6 +239,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
 			outcomeFieldRef.current?.updateDefaultValue(activity.outcome);
 			endDate.set(moment.parseZone(activity.end).format('yyyy-MM-DD'));
 			startDate.set(moment.parseZone(activity.start).format('yyyy-MM-DD'));
+			slidoutStateController.updateParent('Obligation');
 		}
 	}, []);
 
@@ -259,8 +257,8 @@ export default function ObligationForm({ setSelectedActivityId }) {
 
 		clearFields();
 		setSelectedActivityId(null);
-		slidoutState.selectedActivity.set(null)
-		slidoutStateController.hideSlideout()
+		slidoutState.selectedActivity.set(null);
+		slidoutStateController.hideSlideout();
 	};
 
 	const clearFields = () => {
@@ -280,7 +278,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
 			variables: {
 				activity: {
 					_id: selectedActivity.get()?._id,
-					status: status.get(),
+					...(status.get() ? { status: status.get() } : {}),
 					notes: notes.get(),
 					user: stateApp.user._id,
 				},
