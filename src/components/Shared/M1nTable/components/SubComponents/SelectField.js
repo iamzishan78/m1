@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Select, { defaultTheme, components } from 'react-select';
 import { Waypoint } from 'react-waypoint';
 import { useInView } from 'react-intersection-observer';
@@ -40,6 +40,7 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
 
 	useEffect(() => {
 		onFilterChange('');
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dropdownOptions]);
 
 	const CustomMenuList = props => {
@@ -239,7 +240,7 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
 	const Svg = p => <svg width="24" height="24" viewBox="0 0 24 24" focusable="false" role="presentation" {...p} />;
 
 	const DropdownIndicator = () => (
-		<div css={{ color: colors.neutral20, height: 24, width: 32 }}>
+		<div style={{ color: colors.neutral20, height: 24, width: 32 }}>
 			<Svg>
 				<path
 					d="M16.436 15.085l3.94 4.01a1 1 0 0 1-1.425 1.402l-3.938-4.006a7.5 7.5 0 1 1 1.423-1.406zM10.5 16a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11z"
