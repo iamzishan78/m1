@@ -32,7 +32,9 @@ import { tableGlobalController } from 'hookstate/tableController';
 import { globalStateController } from 'hookstate/globalStateController';
 import RelatedContact from "components/MRTTable/Common/Dialog/BulkUpdate/RelatedContact"
 import { ADD_RELATED_CONTACTS } from "graphQL/useMutationRelatedContact";
-
+import { UPDATE_SHAPES } from 'graphQL/useMutationUpdateShapes';
+import { copy } from 'components/Shared/functions';
+import set from "lodash/set";
 
 const styles = () => ({
   topHeading: { fontWeight: 'bold' },
@@ -260,6 +262,10 @@ export default function AssignOwnerToContactDrawer({
     ...options,
     refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
   });
+  const [updateShapes] = useMutation(UPDATE_SHAPES, {
+    ...options,
+    refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
+  });
   const [assignOwnerToContact] = useMutation(ASSIGN_OWNER_TO_CONTACT, options);
   const [updateBulkContact] = useMutation(UPDATEBULKCONTACT, options);
   const [updateBulkTags] = useMutation(BULKUPSERTTAG, options);
@@ -336,6 +342,23 @@ export default function AssignOwnerToContactDrawer({
     } else {
       setFieldKey('');
     }
+  };
+
+  const updateCampaign = (shape, field, value) => {
+    /* -------------------------------- Data Fix -------------------------------- */
+    if (field.includes('originalProperties.')) delete shape.properties[field]
+    if (field.includes('originalProperties.State')) set(shape.properties, 'originalProperties.StateAbbreviation', value);
+    if (field.includes('originalProperties.Section')) set(shape.properties, 'originalProperties.ShortName', value);
+    if (field.includes('originalProperties.Meridian')) set(shape.properties, 'originalProperties.PrincipalMeridian', value);
+    /* -------------------------------- Data Fix -------------------------------- */
+    set(shape.properties, field, value);
+    const customLayer = {};
+    if (field.includes('originalProperties')) {
+      set(shape.properties, field.replace('originalProperties.', '').toLowerCase(), value);
+    }
+    customLayer.shape = JSON.stringify(shape);
+    customLayer.shapeJson = shape;
+    return customLayer;
   };
 
   const onAssign = () => {
@@ -507,6 +530,46 @@ export default function AssignOwnerToContactDrawer({
               err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) });
 
             break;
+
+            case 'UnitTable': // update customlayer campaign name field in bulk for unitTable 
+            const campaignName = campaigns.map(campaign => campaign.campaignName)
+            const shapesToUpdate = rows.map(row =>  {
+            const customlayer = updateCampaign(copy(row.shapeJson), 'campaignName', campaignName);
+              return {
+                customLayer: customlayer,
+                customLayerId: row._id,
+                userId: getUser?._id,
+              }
+            });
+            updateShapes({
+              variables: {
+                shapes: shapesToUpdate,
+              },
+              refetchQueries: ["getESPaginatedList", "getESFilterList", "getCustomLayer"],
+              awaitRefetchQueries: true,
+            }).then(res => {
+              resetESTableToggle.set(!resetESTableToggle.get())
+              if (res.data && res.data.updateShapes) {
+                const success = res.data.updateShapes.success
+                if (success) {
+                  Loader.successToast('contact-creation', "Updated")
+                  showSuccessMessage(`${field} Bulk Updated Successfully`)
+                  if (rest.onBulkUpdateComplete)
+                    rest.onBulkUpdateComplete()
+                } else {
+                  Loader.errorToast('contact-creation', "Updated")
+                }
+              } else {
+                Loader.errorToast('contact-creation', 'Failed');
+              }
+            },
+              err => {
+                // eslint-disable-next-line no-console
+                console.log(err);
+                Loader.errorToast('contact-creation', errorMsg);
+              }
+            );
+          break;
 
           default:
             const shapeOwnersToUpdate = rows.map(row => ({
