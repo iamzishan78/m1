@@ -11,10 +11,8 @@ import { TabPanel } from 'components/Shared/TabPanels';
 import ContactDetailedInfo from 'components/ContactDetailedInfo/ContactDetailedInfo';
 import ActivitiesTable from 'components/Table/Activities/ActivitiesTable';
 import RelatedContactsTable from 'components/Table/Contact/RelatedContactTable';
-import ContactParcelInterestTable from 'components/Table/Contact/ContactParcelInterestTable';
 import ContactTaxRollInterestTable from 'components/Table/Contact/ContactTaxRollInterestTable';
 import ContactRelatedAgreementTable from 'components/Table/Contact/ContactRelatedAgreementTable';
-import UnitInterestsTable from 'components/Table/Unit/UnitInterestsTable';
 import ContactDealsProvider from 'components/DealsDetailCard/ContactDealsProvider';
 import ContactDocumentsProvider from 'components/ViewDocuments/ContactDocumentsProvider';
 
@@ -205,9 +203,34 @@ function MapGridCard(props) {
 		}
 	}, [searchTapValue, setStateApp]);
 
-	const contactWellInterestoverrideMeta = useMemo(
+	const contactWellInterestOverride = useMemo(
 		() => ({
 			defaultFilters: [{ field: 'contact._id', value: props.contactData._id || '' }],
+			customProps: {
+				contactId: props.contactData._id,
+			},
+			refetchQueries: ['getContactSummary'],
+		}),
+		[props.contactData._id]
+	);
+
+	const contactlUnitInterestOverride = useMemo(
+		() => ({
+			defaultFilters: [
+				{ field: 'shape.layer', value: 'unit' },
+				{ field: 'contact._id', value: props.contactData._id || '' },
+			],
+			refetchQueries: ['getContactSummary'],
+		}),
+		[props.contactData._id]
+	);
+
+	const contactTractInterestOverride = useMemo(
+		() => ({
+			defaultFilters: [
+				{ field: 'shape.layer', value: 'parcel' },
+				{ field: 'contact._id', value: props.contactData._id || '' },
+			],
 			customProps: {
 				contactId: props.contactData._id,
 			},
@@ -305,29 +328,33 @@ function MapGridCard(props) {
 											/>
 										)}
 										{searchTapValue.value === 'wellInterests' && (
-											<MRTTable name="ContactWellInterestTable" overrideMeta={contactWellInterestoverrideMeta} />
+											<MRTTable name="ContactWellInterestTable" overrideMeta={contactWellInterestOverride} />
 										)}
 										{searchTapValue.value === 'unitInterests' && (
-											<UnitInterestsTable
-												parent="assocTaxRollInterests"
-												header={'Unit Interests'}
-												targetLabel="contactUnits"
-												id="unitInterestTable"
-												esFilters={[{ field: 'contact._id', value: props.contactData._id }]}
-												esIndex="shapeowners_flat"
-												setESFilters={() => {}}
-												onTractCount={() => {}}
-											/>
+											<MRTTable name="ContactDetailUnitInterestTable" overrideMeta={contactlUnitInterestOverride} />
+
+											// <UnitInterestsTable
+											// 	parent="assocTaxRollInterests"
+											// 	header={'Unit Interests'}
+											// 	targetLabel="contactUnits"
+											// 	id="unitInterestTable"
+											// 	esFilters={[{ field: 'contact._id', value: props.contactData._id }]}
+											// 	esIndex="shapeowners_flat"
+											// 	setESFilters={() => {}}
+											// 	onTractCount={() => {}}
+											// />
 										)}
 										{searchTapValue.value === 'tractInterests' && (
-											<ContactParcelInterestTable
-												parent="contactAssocTaxRollInterests"
-												header={'Tract Interests'}
-												id="tractInterestTable"
-												targetLabel="parcel"
-												contactId={props.contactData._id}
-												showTracks
-											/>
+											<MRTTable name="ContactDetailTractInterestTable" overrideMeta={contactTractInterestOverride} />
+
+											// <ContactParcelInterestTable
+											// 	parent="contactAssocTaxRollInterests"
+											// 	header={'Tract Interests'}
+											// 	id="tractInterestTable"
+											// 	targetLabel="parcel"
+											// 	contactId={props.contactData._id}
+											// 	showTracks
+											// />
 										)}
 										{searchTapValue.value === 'deals' && <ContactDealsProvider />}
 										{searchTapValue.value === 'documents' && (
