@@ -166,7 +166,8 @@ export default function SummaryTableInfo({
 		if (properties?.originalProperties?.County) {
 			setCounty(properties.originalProperties.County);
 		}
-	}, [properties, metaData, tableTempProperties, tableData]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [properties, metaData]);
 
 	useEffect(() => {
 		// Check if the search input is not empty
@@ -202,7 +203,8 @@ export default function SummaryTableInfo({
 			// Set the filtered table data to the concatenated table data
 			setFilteredTableData(td);
 		}
-	}, [search, tableData, metaData, properties, tableTempProperties]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [search, tableData]);
 
 	const getKey = (data, type, e) => {
 		const appendValue = type === 'key' ? type : '';
@@ -342,7 +344,8 @@ export default function SummaryTableInfo({
 		data => {
 			return [{ field: data.filterField, value: upperFirst(data.esKey) }, ...getDependencies(data.dependencyArray)];
 		},
-		[getDependencies]
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[properties]
 	);
 
 	return (
