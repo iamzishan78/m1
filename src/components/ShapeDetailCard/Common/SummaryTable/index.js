@@ -22,7 +22,6 @@ import { getRoundedNra, validateUrl } from 'utils/helper';
 import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
 import { copy } from 'components/Shared/functions';
 import { AppContext } from 'AppContext';
-import { Clear } from '@material-ui/icons';
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
 import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';
 import { AutoCompleteLandgrid } from 'components/Shared/Forms/Fields/AutoCompleteLandgrid';
@@ -125,7 +124,7 @@ export default function SummaryTableInfo({
 	updating,
 	isCustomLayerAutoComplete,
 	customLayer,
-	shapeType
+	shapeType,
 }) {
 	const classes = summaryTableStyles();
 	const dispatch = useDispatch();
@@ -167,6 +166,7 @@ export default function SummaryTableInfo({
 		if (properties?.originalProperties?.County) {
 			setCounty(properties.originalProperties.County);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [properties, metaData]);
 
 	useEffect(() => {
@@ -203,6 +203,7 @@ export default function SummaryTableInfo({
 			// Set the filtered table data to the concatenated table data
 			setFilteredTableData(td);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [search, tableData]);
 
 	const getKey = (data, type, e) => {
@@ -336,13 +337,14 @@ export default function SummaryTableInfo({
 				};
 			}, {});
 		},
-		[properties]
+		[properties, isCustomLayerAutoComplete]
 	);
 
 	const autoCompleteLandgridFilters = useCallback(
 		data => {
 			return [{ field: data.filterField, value: upperFirst(data.esKey) }, ...getDependencies(data.dependencyArray)];
 		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[properties]
 	);
 
@@ -667,7 +669,7 @@ export default function SummaryTableInfo({
 														data.type !== 'state' &&
 														data.type !== 'county' &&
 														(data.type === 'text' && validateUrl(get(tableTempProperties, `${data.key}`, '')) ? (
-															<a href={get(tableTempProperties, `${data.key}`, '')} target="_blank">
+															<a href={get(tableTempProperties, `${data.key}`, '')} target="_blank" rel="noreferrer">
 																{get(tableTempProperties, `${data.key}`, '')}
 															</a>
 														) : (
@@ -686,7 +688,7 @@ export default function SummaryTableInfo({
 													{data.type === 'currency' &&
 														(vf_currency(data.value) || vf_currency(properties[data.key]) || '-')}
 													{data.type === 'comma-number' &&
-														(vf_number(data.value) || vf_number(properties[data.key]) || '-')}
+														(data.value ? vf_number(data.value) : vf_number(properties[data.key]) || '-')}
 													{data.type === 'calculation' &&
 														((
 															<>
