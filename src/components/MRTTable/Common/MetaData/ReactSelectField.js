@@ -90,7 +90,7 @@ const ReactSelectField = ({
 		const shadow = 'hsla(218, 50%, 10%, 0.1)';
 		return (
 			<div
-				css={{
+				style={{
 					backgroundColor: 'white',
 					borderRadius: 4,
 					boxShadow: `0 0 0 1px ${shadow}, 0 4px 11px ${shadow}`,
@@ -104,7 +104,7 @@ const ReactSelectField = ({
 	};
 	const Blanket = props => (
 		<div
-			css={{
+			style={{
 				bottom: 0,
 				left: 0,
 				top: 0,
@@ -116,7 +116,7 @@ const ReactSelectField = ({
 		/>
 	);
 	const Dropdown = ({ children, isOpen, target, onClose }) => (
-		<div css={{ position: 'relative' }}>
+		<div style={{ position: 'relative' }}>
 			{target}
 			{isOpen ? <Menu>{children}</Menu> : null}
 			{isOpen ? <Blanket onClick={onClose} /> : null}
@@ -219,18 +219,28 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
 	const getCss = value => {
 		const opt = dropdownOptions.find(opt => opt.value === value);
 		const pallete = colorPallete.find(pallete => pallete.id === opt?.palleteId);
-		return {
-			// whiteSpace: 'nowrap',
-			// overflow: 'hidden',
-			// textOverflow: 'ellipsis',
-			maxWidth: '150px',
-			backgroundColor: pallete?.color,
-			color: pallete?.textColor,
-			display: 'flex',
-			justifyContent: 'space-between',
-			alignItems: 'center',
-			margin: '0px 2px',
-		};
+		if (column.iconType === 'Chip') {
+			return {
+				maxWidth: '150px',
+				backgroundColor: pallete?.color,
+				color: pallete?.textColor,
+				display: 'flex',
+				justifyContent: 'space-between',
+				alignItems: 'center',
+				margin: '0px 2px',
+			};
+		} else {
+			return {
+				marginTop: 4,
+				marginLeft: 10,
+				marginRight: 10,
+				width: 15,
+				height: 15,
+				backgroundColor: pallete?.color || 'balck',
+				display: 'inline-block',
+				borderRadius: 10,
+			};
+		}
 	};
 
 	const Badge = ({ badgeValue, index }) => (
@@ -260,12 +270,27 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
 		</span>
 	);
 
-	const BulletPoint = ({ badgeValue }) => <li style={{ padding: '5px' }}>{badgeValue}</li>;
+	const BulletPoint = ({ bulletValue }) => {
+		const bulletStyles = getCss(bulletValue);
+
+		return (
+			<li
+				style={{
+					listStyleType: 'none',
+					display: 'flex',
+					alignItems: 'center',
+				}}
+			>
+				<span style={bulletStyles} />
+				<span>{bulletValue}</span>
+			</li>
+		);
+	};
 
 	const ToolTipView = () => (
 		<>
 			{column.iconType === 'Bullet Point' ? (
-				<BulletPoint badgeValue={value[0]} index={0} />
+				<BulletPoint bulletValue={value[0]} index={0} />
 			) : (
 				<Badge badgeValue={value[0]} index={0} />
 			)}
@@ -301,7 +326,7 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
 		<>
 			{value.map((v, index) => {
 				return column.iconType === 'Bullet Point' ? (
-					<BulletPoint key={index} badgeValue={v} />
+					<BulletPoint key={index} bulletValue={v} />
 				) : (
 					<Badge key={index} badgeValue={v} index={index} />
 				);
@@ -323,7 +348,7 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
 				<>
 					{value && typeof value === 'string' ? (
 						column.iconType === 'Bullet Point' ? (
-							<BulletPoint badgeValue={value} />
+							<BulletPoint bulletValue={value} />
 						) : (
 							<span className="colorText" style={getCss(value)}>
 								<span>{value}</span>
