@@ -270,7 +270,7 @@ export const useLayerStyle = layer => {
 								},
 							};
 						}
-						if (fColorOp && !selectedValue) {
+						if ((fColorOp || fColorOp === 0) && !selectedValue) {
 							layerPaintProps[i] = {
 								...layerPaintProps[i],
 								paintProps: {
@@ -344,7 +344,7 @@ export const useLayerStyle = layer => {
 									},
 								};
 							}
-							if (fColorOp) {
+							if (fColorOp || fColorOp === 0) {
 								layerPaintProps[i] = {
 									...layerPaintProps[i],
 									clusterProps: {
@@ -402,7 +402,7 @@ export const useLayerStyle = layer => {
 								},
 							};
 						}
-						if (fColorOp && !selectedValue) {
+						if ((fColorOp || fColorOp === 0) && !selectedValue) {
 							layerPaintProps[i] = {
 								...layerPaintProps[i],
 								paintProps: {
@@ -431,7 +431,7 @@ export const useLayerStyle = layer => {
 							};
 						}
 
-						if (fColorOp) {
+						if (fColorOp || fColorOp === 0) {
 							layerPaintProps[i] = {
 								...layerPaintProps[i],
 								paintProps: {
