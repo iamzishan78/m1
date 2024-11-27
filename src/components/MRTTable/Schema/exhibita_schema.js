@@ -176,7 +176,7 @@ const ExhibitAMeta = {
         },
         {
             ...CommonSchema.COMMON_COLUMN,
-            name: 'parcel.shapeJson.properties.originalProperties.AbstractName',
+            name: 'parcel.shapeJson.properties.originalProperties.AbstractName.keyword',
             accessorFn: row => row?.parcel?.shapeJson?.properties?.originalProperties?.AbstractName,
             id: 'parcel.shapeJson.properties.originalProperties.AbstractName',
             header: 'Abstract/Sec',
@@ -201,7 +201,7 @@ const ExhibitAMeta = {
             ...CommonSchema.COMMON_COLUMN,
             name: 'shape.shapeJson.properties.prospectID.keyword',
             accessorFn: row => row?.shape?.shapeJson?.properties?.prospectID,
-            id: 'shape.shapeJson.properties?.prospectID',
+            id: 'shape.shapeJson.properties.prospectID',
             header: 'Prospect',
         },
         {
