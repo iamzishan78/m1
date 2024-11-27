@@ -19,6 +19,7 @@ const ContactDetailUnitInterestMeta = {
 	defaultSort: { field: '_ts', order: 'desc' },
 	isInFiniteScroll: true,
 	columnVirtualization: true,
+	isElasticQuery: false,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,

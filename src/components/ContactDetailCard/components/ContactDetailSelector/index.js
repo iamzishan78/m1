@@ -217,7 +217,7 @@ function MapGridCard(props) {
 	const contactlUnitInterestOverride = useMemo(
 		() => ({
 			defaultFilters: [
-				{ field: 'shape.layer', value: 'unit' },
+				{ field: 'shape.layer.keyword', value: 'unit' },
 				{ field: 'contact._id', value: props.contactData._id || '' },
 			],
 			refetchQueries: ['getContactSummary'],
@@ -228,7 +228,7 @@ function MapGridCard(props) {
 	const contactTractInterestOverride = useMemo(
 		() => ({
 			defaultFilters: [
-				{ field: 'shape.layer', value: 'parcel' },
+				{ field: 'shape.layer.keyword', value: 'parcel' },
 				{ field: 'contact._id', value: props.contactData._id || '' },
 			],
 			customProps: {
@@ -332,29 +332,9 @@ function MapGridCard(props) {
 										)}
 										{searchTapValue.value === 'unitInterests' && (
 											<MRTTable name="ContactDetailUnitInterestTable" overrideMeta={contactlUnitInterestOverride} />
-
-											// <UnitInterestsTable
-											// 	parent="assocTaxRollInterests"
-											// 	header={'Unit Interests'}
-											// 	targetLabel="contactUnits"
-											// 	id="unitInterestTable"
-											// 	esFilters={[{ field: 'contact._id', value: props.contactData._id }]}
-											// 	esIndex="shapeowners_flat"
-											// 	setESFilters={() => {}}
-											// 	onTractCount={() => {}}
-											// />
 										)}
 										{searchTapValue.value === 'tractInterests' && (
 											<MRTTable name="ContactDetailTractInterestTable" overrideMeta={contactTractInterestOverride} />
-
-											// <ContactParcelInterestTable
-											// 	parent="contactAssocTaxRollInterests"
-											// 	header={'Tract Interests'}
-											// 	id="tractInterestTable"
-											// 	targetLabel="parcel"
-											// 	contactId={props.contactData._id}
-											// 	showTracks
-											// />
 										)}
 										{searchTapValue.value === 'deals' && <ContactDealsProvider />}
 										{searchTapValue.value === 'documents' && (
