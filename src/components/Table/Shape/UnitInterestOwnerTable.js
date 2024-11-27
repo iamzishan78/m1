@@ -433,6 +433,8 @@ function UnitInterestOwnerTable(props) {
           rows={selectedRows}
           setRows={setSelectedRows}
           setSelectedRows={onBulkUpdateComplete}
+          objectType={'contact'}
+          refetchQueries={["getESContacts"] }
         />
       )}
       {openCustomDialog === "recalculate" && (

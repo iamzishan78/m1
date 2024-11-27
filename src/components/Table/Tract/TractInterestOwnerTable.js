@@ -205,6 +205,8 @@ function TractInterestOwnerTable(props) {
           rows={selectedRows}
           setRows={setSelectedRows}
           onBulkUpdateComplete={onBulkUpdateComplete}
+          objectType={'contact'}
+          refetchQueries={["getESContacts"] }
         />
       )}
       {openCustomDialog === "recalculate" && (
