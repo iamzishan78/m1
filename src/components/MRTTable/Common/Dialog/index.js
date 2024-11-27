@@ -117,6 +117,8 @@ function AllDialogs(props) {
 					setSelectedRow={updateRows}
 					setRows={updateRows}
 					selectedCampaign={rest?.selectedCampaign}
+					objectType={rest?.objectType || 'contact'}
+			        refetchQueries={[rest?.refetchQueries || "getESContacts"] }
 				/>
 			)}
 

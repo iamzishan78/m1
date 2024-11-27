@@ -7,7 +7,7 @@ import { tableController } from 'hookstate/tableController';
 import { UPDATE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
 import { CircularProgress } from '@material-ui/core';
 
-function GridViewComponent({ Icon, label, tableKey, fetchGridViews }) {
+function GridViewComponent({ Icon, buttonRef, label, tableKey, fetchGridViews }) {
 	const [updateGridView, { data }] = useMutation(UPDATE_GRID_VIEW, {
 		onCompleted: () => {
 			fetchGridViews()
@@ -71,6 +71,7 @@ function GridViewComponent({ Icon, label, tableKey, fetchGridViews }) {
 	return (
 		<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
 			<IconButton
+				ref={buttonRef}
 				onClick={() =>
 					Controller.updateState({
 						gridView: { ...tableStateValues.gridView, showViewModal: !tableStateValues.gridView?.showViewModal },

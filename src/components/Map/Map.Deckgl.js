@@ -411,6 +411,7 @@ function Map({
 						...(type === "parcels" ? { selectedShape: null } : {}),
 						popupOpen: false,
 						expandedCard: true,
+						customLayerId: layer.customLayer._id
 					});
 					clearInterval(interval)
 				}

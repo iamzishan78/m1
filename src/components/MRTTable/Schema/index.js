@@ -76,4 +76,5 @@ export const SCHEMA = {
 	ShapeDetailAgreementTable: ShapeDetailAgreementMeta,
 	AgreementRelatedUnitsTable: AgreementRelatedUnitsMeta,
 	UnitRelatedAgreementTable: UnitRelatedAgreementMeta,
+	TractInterestsTable: TractInterestsMeta, // Tracts Interest schema
 };

@@ -263,11 +263,20 @@ const useTableESSimple = tableKey => {
 
 			onColumnVisibilityChange: visibilityFunc => {
 				let showColumns;
+				const { columnVisibility, TableSchema } = tableStateValues;
 				if (typeof visibilityFunc === 'function') {
-					showColumns = visibilityFunc(tableStateValues?.columnVisibility);
+					showColumns = visibilityFunc(columnVisibility);
 				} else if (typeof visibilityFunc === 'object') {
 					showColumns = visibilityFunc;
 				}
+
+				// Iterate over columns and ensure columns marked as `isAlwaysHidden` remain hidden
+				TableSchema.forEach(column => {
+					if (column.isAlwaysHidden) {
+						showColumns[column.accessorKey || column.id] = false;
+					}
+				});
+
 				Controller.setColumnVisibility(showColumns);
 			},
 			onShowColumnFiltersChange: showColumnFilterFunc => {
