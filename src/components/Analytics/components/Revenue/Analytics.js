@@ -85,8 +85,17 @@ function AnalyticsCards(props) {
 	const [misMatchedInterestsCount, setMisMatchedInterestsCount] = useState(0);
 	const [sumPotentialGainLoss, setSumPotentialGainLoss] = useState(0);
 
-	const tableState = tableController(props.esIndex).useState(['filters', 'data']);
+	const tableState = tableController(props.esIndex).useState([
+		'filters',
+		'data',
+		'globalFilter',
+		'searchFields',
+		'advanceSearch',
+	]);
 	const tableStateValues = tableState.stateValues;
+	const globalFilter = tableStateValues.globalFilter;
+	const searchQuery = globalFilter ? `${globalFilter}` : '';
+	const searchFields = tableStateValues.searchFields;
 
 	// const [getESSimpleFilter] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
 	//   fetchPolicy: 'no-cache',
@@ -109,6 +118,11 @@ function AnalyticsCards(props) {
 			getPropertyNumbers({
 				variables: {
 					index: 'checkdetailsinterestscomparison_flat',
+					search: {
+						query: searchQuery,
+						fields: searchFields,
+						advanceSearch: tableStateValues.advanceSearch,
+					},
 					filters: [...(tableStateValues?.filters || [])],
 					filterKey: 'property._id.keyword',
 					filterAggs: { query: '', field: 'property._id.keyword', size: tableStateValues?.data?.total || 0 },
@@ -123,6 +137,11 @@ function AnalyticsCards(props) {
 			getCheckNumbers({
 				variables: {
 					index: 'checkdetailsinterestscomparison_flat',
+					search: {
+						query: searchQuery,
+						fields: searchFields,
+						advanceSearch: tableStateValues.advanceSearch,
+					},
 					filters: [...(tableStateValues?.filters || []), { field: 'IsDeleted', value: false, type: 'term' }],
 					filterKey: 'check.checkNumber.keyword',
 					filterAggs: { query: '', field: 'check.checkNumber.keyword', size: tableStateValues?.data?.total || 0 },
@@ -138,6 +157,11 @@ function AnalyticsCards(props) {
 				variables: {
 					esIndex: 'checkdetailsinterestscomparison_flat',
 					filters: [...(tableStateValues?.filters || [])],
+					search: {
+						query: searchQuery,
+						fields: searchFields,
+						advanceSearch: tableStateValues.advanceSearch,
+					},
 					aggs: {
 						sumPotentialGainLoss: {
 							sum: {

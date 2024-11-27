@@ -73,7 +73,7 @@ const useStyles = makeStyles(theme => ({
 const StyledTabs = withStyles({
 	root: {
 		borderBottom: '0px solid #e8e8e8',
-		textTransform: 'capitaliToze',
+		textTransform: 'capitalize',
 		padding: '0px 26px',
 	},
 	indicator: {
