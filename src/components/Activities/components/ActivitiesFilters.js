@@ -400,6 +400,7 @@ const QualifierFilter = ({
           field: esFilterKey,
           size: 50,
         },
+        isElasticQuery: true,
       },
     });
     
