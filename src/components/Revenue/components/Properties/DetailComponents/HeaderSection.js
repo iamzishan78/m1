@@ -897,12 +897,21 @@ export default function HeaderSection(props) {
                 <Controller
                   control={control}
                   name="status"
-                  render={(params) => (
-                    <Select
+                  render={(params) => {
+                      // Normalize the value to match the case and format of the MenuItem values
+                      const normalizeValue = (value) => {
+                        if (value) {
+                          const formattedValue = value.replace(/\s+/g, "").toLowerCase();
+                          if (formattedValue === "inpay") return "InPay";
+                          if (formattedValue === "notinpay") return "NotInPay";
+                        }
+                        return "";
+                      }
+                    return (<Select
                       {...params}
                       id="status-simple-select-outlined-label"
                       variant="outlined"
-                      value={params.value ? params.value : ""}
+                      value={params.value ? normalizeValue(params.value) : ""}
                       fullWidth
                       onChange={(e) => {
                         updatePropertyData("status", e.target.value);
@@ -910,8 +919,9 @@ export default function HeaderSection(props) {
                     >
                       <MenuItem value="InPay">In Pay</MenuItem>
                       <MenuItem value="NotInPay">Not in Pay</MenuItem>
-                    </Select>
-                  )}
+                    </Select>)
+                    }
+                  }
                 />
               </Grid>
             </Grid>
@@ -1156,7 +1166,34 @@ export default function HeaderSection(props) {
             </Grid>
           </Grid>
 
-
+          {/* Field for approval status */}
+          <Grid item xs={5}>
+            <Grid container className={classes.gridStyle}>
+              <Grid item xs={3}>
+                <div className={classes.label}>Approval Status</div>
+              </Grid>
+              <Grid item xs={8}>
+                <Controller
+                  control={control}
+                  name="approvalStatus"
+                  render={(params) => (
+                    <TextField
+                      {...params}
+                      className={classes.textField}
+                      variant="outlined"
+                      margin="dense"
+                      type="text"
+                      fullWidth
+                      onChange={(e) => {
+                        params.onChange(e.target.value);
+                      }}
+                      onBlur={(e) => updatePropertyData("approvalStatus", e.target.value)}
+                    />
+                  )}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
 
 
 

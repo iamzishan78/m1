@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useState, useMemo } from "react";
-import { AppContext } from "AppContext";
+import React, { useEffect, useRef, useMemo } from "react";
 import { useQuery, useApolloClient } from "@apollo/client";
 import { useMutation } from "@apollo/client";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,24 +11,21 @@ import useRefetchHelper from "components/Shared/Hooks/useRefetchHelper";
 import { jobController } from "hookstate/jobStateController";
 import { debounce } from "lodash";
 import { tableGlobalController } from "hookstate/tableController";
+import { globalStateController } from "hookstate/globalStateController";
 
 const ContactBulkProgress = () => {
-  const [stateApp] = useContext(AppContext);
   const bulkUpload = useSelector((state) => state.common.bulkUpload);
   const refetchHelper = useRefetchHelper()
   const refetchHelperDebounced = useMemo(() => debounce((requestPayload) => refetchHelper(requestPayload), 1000), []);
-  const jobState = jobController.useState(
-    ['bulkUpload'],
-    'jobStateValues'
-  );
+  const { globalStateValues } = globalStateController.useState(['user'], 'globalStateValues');
+  const jobState = jobController.useState(['bulkUpload', 'storeJobOutput'], 'jobStateValues');
+  const { jobStateValues } = jobState
 
   const dispatch = useDispatch();
 
-  const [pollingStarted, setPollingStarted] = useState(false);
+  const pollingStarted = useRef(false);
 
-  const [updateJob, { data: updatedJob }] = useMutation(UPDATE_JOB, {
-    refetchQueries: [GET_JOBS_STATUS]
-  });
+  const [updateJob] = useMutation(UPDATE_JOB, { refetchQueries: [GET_JOBS_STATUS] });
 
   const {
     data: dataJobs,
@@ -37,8 +33,8 @@ const ContactBulkProgress = () => {
     stopPolling,
     refetch,
   } = useQuery(GET_JOBS_STATUS, {
-    variables: { userId: stateApp.user?.mongoId, showProgress: true },
-    skip: stateApp.user?.mongoId ? false : true,
+    variables: { userId: globalStateValues.user?.mongoId, showProgress: true },
+    skip: globalStateValues.user?.mongoId ? false : true,
   });
 
   const client = useApolloClient();
@@ -58,8 +54,8 @@ const ContactBulkProgress = () => {
   }
 
   useEffect(() => {
-    if (stateApp.user) {
-      setPollingStarted(false);
+    if (globalStateValues.user) {
+      pollingStarted.current = false
       stopPolling();
       refetch();
     }
@@ -70,10 +66,9 @@ const ContactBulkProgress = () => {
       const pendingJobs = dataJobs.getJobsStatus.jobs.find(
         (job) => job.status === "Created" || job.status === "Pending" || job.status === "Started"
       );
-
-      if (pendingJobs && !pollingStarted) {
+      if (pendingJobs && !pollingStarted.current) {
         startPolling(3000);
-        setPollingStarted(true);
+        pollingStarted.current = true
         createOrUpdateToast("create");
       } else {
         if (!pendingJobs) {
@@ -85,6 +80,20 @@ const ContactBulkProgress = () => {
       stopPolling();
     }
   }, [dataJobs?.getJobsStatus]);
+
+  // useEffect hook to run side-effects when `dataJobs?.getJobsStatus` changes
+  useEffect(() => {
+    // Check if there are jobs in dataJobs and storeJobOutput exists in jobStateValues
+    if (dataJobs?.getJobsStatus?.jobs?.length > 0 && jobStateValues?.storeJobOutput) {
+      // Find the target job output that matches the stored jobId
+      const targetJobOutput = dataJobs.getJobsStatus.jobs.find(
+        (job) => job._id === jobStateValues?.storeJobOutput?.jobId
+      );
+      // Update job state with the found job output
+      jobController.updateState({ JobOutput: targetJobOutput?.jobOutput, isJobCompleted: targetJobOutput?.status === 'Completed', isJobFailed: targetJobOutput?.status === 'Failed' });
+    }
+  }, [dataJobs?.getJobsStatus]); // Dependency array to rerun the effect when dataJobs?.getJobsStatus changes
+
 
   const onCloseToast = (jobId) => {
     updateJob({
@@ -120,7 +129,7 @@ const ContactBulkProgress = () => {
     for (let i = 0; i < dataJobs.getJobsStatus.jobs.length; i++) {
       let progress = 0; // Initialize progress
       // Extract job status, progress, totalProgress, requestPayload, and activitiesStatus
-      const { status, progress: jobProgress, totalProgress, requestPayload, activitiesStatus } = dataJobs.getJobsStatus.jobs[i];
+      const { status, progress: jobProgress, totalProgress, requestPayload, activitiesStatus, name } = dataJobs.getJobsStatus.jobs[i];
       // Extract lastMessage from activitiesStatus
       const lastMessage = activitiesStatus[activitiesStatus.length - 1];
 
@@ -144,7 +153,10 @@ const ContactBulkProgress = () => {
         const type = dataJobs.getJobsStatus.jobs[i].type; // Extract job type
 
         // Determine message for different job types
-        if (type === 'contacts') {
+        if (name === 'idiCore') {
+          message = lastMessage;
+        }
+        else if (type === 'contacts') {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Contacts creation completed" : "Contacts creation failed";
         } else if (type === 'PROPERTIES') {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Import successfully completed" : "Import Failed";
@@ -184,10 +196,10 @@ const ContactBulkProgress = () => {
           if (dataJobs.getJobsStatus.jobs[i].type === "contacts")
             refetchQueryByName("checkIfOwnersAreContacts");
           // Refetch when its the status is completed for the last job iteration
-          if(i === dataJobs.getJobsStatus.jobs.length - 1) {
+          if (i === dataJobs.getJobsStatus.jobs.length - 1) {
             const { progress: jobProgress, totalProgress } = dataJobs.getJobsStatus.jobs[i];
             // Check if the current progress is equal to the total progress
-            if(jobProgress === totalProgress) {
+            if (jobProgress === totalProgress) {
               tableGlobalController.refetch();
             }
           }

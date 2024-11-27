@@ -154,7 +154,7 @@ describe('Contact Table', () => {
   });
 
   it('Sorts by Name & Last Updated & Primary Address', () => {
-    cy.wait(100);
+    cy.wait(1000);
 
     cy.mrtSortColumn({ column: columns[0] });
     cy.mrtSortColumn({ column: columns[1] });
@@ -231,7 +231,7 @@ describe('Contact Table', () => {
     cy.get('[aria-label="Toggle select all"]').eq(0).click();
 
     // Initiate the bulk update process by clicking the bulk update button
-    cy.get('[data-testid="bulk-update"]').click({force: true});
+    cy.get('[data-testid="bulk-update"]').click({ force: true });
 
     // Find and interact with the field selection autocomplete input for choosing "Campaign Name"
     cy.get('[data-testid="select-field-autocomplete"]', { timeout: 30000 })

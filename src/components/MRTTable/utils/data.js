@@ -121,7 +121,7 @@ const mrtFilterOptions = [
 export const tableESSimpleFilterModes = mrtFilterOptions.reduce((acc, cur) => ({ ...acc, [cur.option]: cur }), {});
 
 export const tableESSimpleFilterModeOtions = {
-	string: ['fuzzy', 'contains', 'startsWith', 'endsWith'],
+	string: ['contains', 'startsWith', 'endsWith'],
 	equation: ['equals', 'notEquals'],
 	inclusive: ['between', 'betweenInclusive'],
 	comparison: ['greaterThan', 'greaterThanOrEqualTo', 'lessThan', 'lessThanOrEqualTo'],
@@ -148,6 +148,19 @@ export const customFilterOptions = [...tableESSimpleFilterModeOtions.custom];
 
 export const dateFilterOptions = [
 	// 'betweenInclusive',
-	'greaterThanOrEqualTo', 'lessThanOrEqualTo',
+	'greaterThanOrEqualTo',
+	'lessThanOrEqualTo',
 	'singleselect',
 ];
+
+// Curreny keys
+export const currencyKeys = [
+	'shapeJson.properties.uMaxUnitPricing.keyword', 
+	'shapeJson.properties.uUnitPricing.keyword',
+	'shapeJson.properties.uUnitPricingNMA.keyword',
+	'shapeJson.properties.uMaxUnitPricingNMA.keyword',
+	'shape.shapeJson.properties.uMaxUnitPricing.keyword', 
+	'shape.shapeJson.properties.uUnitPricing.keyword',
+	'shape.shapeJson.properties.uUnitPricingNMA.keyword',
+	'shape.shapeJson.properties.uMaxUnitPricingNMA.keyword',
+]

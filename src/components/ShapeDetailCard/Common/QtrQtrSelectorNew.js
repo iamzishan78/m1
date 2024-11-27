@@ -240,6 +240,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
         </Grid>
         <Grid item md={1}>
           <FormControlLabel
+           style={{ marginRight: 0 }}
             control={
               <Switch
                 checked={showAdjustGrid}
@@ -287,7 +288,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
           </Grid>
         </Grid>
         <Grid item md={3} style={{ paddingTop: '1.8em', }}>
-          <Button variant="contained" color="primary" size="large" disabled={disableUpdate} data-testid="update-qtr" onClick={() => {
+          <Button variant="contained" color="primary" size="large" style={{ width:"100%" }} disabled={disableUpdate} data-testid="update-qtr" onClick={() => {
             updateLayerQtr()
             setShowAdjustGrid(false)
           }}>Update</Button>

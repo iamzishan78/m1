@@ -12,19 +12,10 @@ const handleChange = debounce(value => {
     return;
   }
 
+  // Sending globalFilter in AdvanceSearch
   tableController(tableKey).setAdvanceSearch(
     [
-      {
-        bool: {
-          should: [
-            {
-              match: {
-                _all: value,
-              },
-            },
-          ],
-        },
-      },
+      { globalFilter: value }
     ],
     { globalFilter: value }
   );

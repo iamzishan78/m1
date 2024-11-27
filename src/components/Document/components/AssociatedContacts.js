@@ -132,6 +132,7 @@ export default function AssociatedContacts({ title }) {
       addFileLoading={addContactsLoading}
       deleteFileLoading={deleteContactLoading}
       updateDocumentLoading={getContactsLoading}
+      href={`/contact/details/{ID}?tenant={TENANT}`}
     />
   );
 }

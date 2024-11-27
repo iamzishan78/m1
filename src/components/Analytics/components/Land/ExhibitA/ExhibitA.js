@@ -123,7 +123,7 @@ function ExhibitATable(props) {
     const formatedFilter = esFilters ? copy(esFilters) : [];
     const fixedFilters = [];
     if(!toggle){
-      fixedFilters.push({ field: "shape.shapeJson.properties.agreementStatus.keyword", value: ["Active", "ACTIVE"] })
+      fixedFilters.push({ field: "shape.shapeJson.properties.agreementStatus", value: ["Active", "ACTIVE", "active"] })
     }
     // if (formatedFilter[0] && formatedFilter[0].value.range) {
     //   formatedFilter[0].type = "range";
