@@ -158,12 +158,12 @@ Cypress.Commands.add('addCustomCSS', (cssCode) => {
   });
 
 Cypress.Commands.add('addCustomCSS', (cssCode) => {
-cy.window().then((win) => {
-	const style = win.document.createElement('style');
-	style.innerHTML = cssCode;
-	win.document.head.appendChild(style);
-});
-});
+    cy.window().then((win) => {
+      const style = win.document.createElement('style');
+      style.innerHTML = cssCode;
+      win.document.head.appendChild(style);
+    });
+  });
 
 // This command is to check api was successful or not
 Cypress.Commands.add('verifyApiResponse', apiTitle => {

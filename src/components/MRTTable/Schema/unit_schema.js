@@ -12,7 +12,7 @@ import Loader from 'components/Loaders';
 import { globalStateController } from 'hookstate/globalStateController';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { tableGlobalController } from 'hookstate/tableController';
-import { copy } from "utils/helper";
+import { copy } from 'utils/helper';
 import UnitToolbar from 'components/MRTTable/TablesOverride/UnitTable/UnitToolbar';
 
 const esIndex = 'shapes_flat';
@@ -48,6 +48,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 				},
 			},
 			mutation: UPDATECUSTOMLAYER,
+			refetchQueries: ['getESSimpleFilter'],
 		});
 		Loader.successToast(loaderId, 'Updation Complete');
 		tableGlobalController.refetch();
@@ -59,7 +60,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 const UnitMeta = {
 	esIndex,
 	pageSize: 50,
-	CustomToolBar: UnitToolbar,
+	CustomToolBar: UnitToolbar, // Add custom toolbar for showing bulkupdate button
 	pagination: {
 		pageIndex: 0,
 		pageSize: 50,

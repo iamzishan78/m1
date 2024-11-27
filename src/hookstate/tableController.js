@@ -15,6 +15,7 @@ import { formatGridViewToMRT } from 'components/MRTTable/utils/helper';
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
 import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 import { handleMRTSchema, handleVisiblityMenu } from './helpers';
+import { validateUrl } from 'utils/helper';
 
 function isDateFormat(inputString) {
 	// Regular expression for MM/DD/YYYY format
@@ -98,6 +99,12 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 				}
 
 				if (item?.type === 'text') {
+					if (validateUrl(value))
+						return (
+							<a href={value} target="_blank">
+								{value?.length > 40 ? value?.slice(0, 40) + '...' : value}
+							</a>
+						);
 					return (
 						<CustomFieldText
 							value={value}
@@ -419,9 +426,18 @@ const tableESStateControllerHandler = state => ({
 				filter.searchType = 'betweenInclusive';
 				filter.columnType = 'date';
 			} else {
-				if (!isDateFormat(filter.value)) return;
-				const date = new Date(filter.value);
-				filter.value = formatDate(date.toISOString());
+				if (Array.isArray(filter.value)) {
+					if (!isDateFormat(filter.value[0]) || !isDateFormat(filter.value[1])) return;
+
+					const date1 = new Date(filter.value[0]);
+					const date2 = new Date(filter.value[1]);
+
+					filter.value = [formatDate(date1.toISOString()), formatDate(date2.toISOString())];
+				} else {
+					if (!isDateFormat(filter.value)) return;
+					const date = new Date(filter.value);
+					filter.value = formatDate(date.toISOString());
+				}
 			}
 		}
 
@@ -440,8 +456,10 @@ const tableESStateControllerHandler = state => ({
 
 	getExternalFilter: () => {
 		const filtersState = state.filters?.get({ noproxy: true });
-		const requiredFields = state.ExternalFilter?.get({ noproxy: true });
-		const esFilters = (filtersState || [])?.filter(filter => requiredFields.includes(filter.field));
+		const requiredFields = state.ExternalFilter?.get({ noproxy: true })?.map(f => f.replaceAll('.keyword', ''));
+		const esFilters = (filtersState || [])?.filter(filter =>
+			requiredFields.includes(filter.field.replaceAll('.keyword', ''))
+		);
 		return esFilters;
 	},
 

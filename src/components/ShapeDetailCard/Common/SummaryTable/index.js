@@ -18,11 +18,10 @@ import CampaignNameField from 'components/ContactDetailCard/components/FieldCont
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
-import { getRoundedNra } from 'utils/helper';
+import { getRoundedNra, validateUrl } from 'utils/helper';
 import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
 import { copy } from 'components/Shared/functions';
 import { AppContext } from 'AppContext';
-import { Clear } from '@material-ui/icons';
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
 import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';
 import { AutoCompleteLandgrid } from 'components/Shared/Forms/Fields/AutoCompleteLandgrid';
@@ -30,6 +29,9 @@ import { US_STATES_CODES } from 'utils/data';
 import filterConsts from 'components/Table/TableAddDialog/Common/filterConsts';
 import { hookstate, useHookstate } from '@hookstate/core';
 import { globalStateController } from 'hookstate/globalStateController';
+import NumberField from 'components/Shared/components/Fields/NumberField';
+import DateField from 'components/Shared/components/Fields/DateField';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import ShapeOwnerInput from 'components/Shared/ShapeOwnerInput';
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps, loading }) {
@@ -122,7 +124,7 @@ export default function SummaryTableInfo({
 	updating,
 	isCustomLayerAutoComplete,
 	customLayer,
-	shapeType
+	shapeType,
 }) {
 	const classes = summaryTableStyles();
 	const dispatch = useDispatch();
@@ -164,6 +166,7 @@ export default function SummaryTableInfo({
 		if (properties?.originalProperties?.County) {
 			setCounty(properties.originalProperties.County);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [properties, metaData]);
 
 	useEffect(() => {
@@ -200,6 +203,7 @@ export default function SummaryTableInfo({
 			// Set the filtered table data to the concatenated table data
 			setFilteredTableData(td);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [search, tableData]);
 
 	const getKey = (data, type, e) => {
@@ -333,13 +337,14 @@ export default function SummaryTableInfo({
 				};
 			}, {});
 		},
-		[properties]
+		[properties, isCustomLayerAutoComplete]
 	);
 
 	const autoCompleteLandgridFilters = useCallback(
 		data => {
 			return [{ field: data.filterField, value: upperFirst(data.esKey) }, ...getDependencies(data.dependencyArray)];
 		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[properties]
 	);
 
@@ -479,78 +484,69 @@ export default function SummaryTableInfo({
 												InputProps={data.InputProps}
 											/>
 										)}
-										{(data.type === 'text' ||
-											data.type === 'number' ||
-											data.type === 'currency' ||
-											data.type === 'comma-number') && (
-											<TableTextField
-												data={data}
-												value={get(tableTempProperties, `${data.key}`)}
-												showMessage={tableDataState[data.key] === true}
-												onChange={(e, data, type) => {
-													checkFieldChange(e, data, type, onChange);
+										{(data.type === 'text' || data.type === 'currency' || data.type === 'comma-number') && (
+											<>
+												{data.isCustom || data.isCustomData ? (
+													<CustomTextField
+														id={`field-${data.key}`}
+														index={data.key}
+														field={data}
+														fieldKey={data.key}
+														defaultValue={get(tableTempProperties, `${data.key}`, '')}
+														showLinkPopup={false}
+														offClickHandler={(key, value) => {
+															set(tableTempProperties, key, value);
+															setTableTempProperties(tableTempProperties);
+															updateProperties(null, key, value);
+														}}
+													/>
+												) : (
+													<TableTextField
+														data={data}
+														value={get(tableTempProperties, `${data.key}`)}
+														showMessage={tableDataState[data.key] === true}
+														onChange={(e, data, type) => {
+															checkFieldChange(e, data, type, onChange);
+														}}
+														onKeyDown={(e, data, type) => {
+															checkFieldChange(e, data, type, onKeyDown);
+														}}
+														onBlur={(e, data, type) => {
+															checkFieldChange(e, data, type, onBlur);
+														}}
+														onWheel={e => e.target.blur()}
+														type="value"
+														InputProps={data.InputProps}
+														loading={updating}
+													/>
+												)}
+											</>
+										)}
+										{data.type === 'number' && (
+											<NumberField
+												id={`field-${data.key}`}
+												index={index}
+												field={data}
+												fieldKey={data.key}
+												defaultValue={get(tableTempProperties, `${data.key}`, '')}
+												offClickHandler={(key, value) => {
+													set(tableTempProperties, key, value);
+													setTableTempProperties(tableTempProperties);
+													updateProperties(null, key, value);
 												}}
-												onKeyDown={(e, data, type) => {
-													checkFieldChange(e, data, type, onKeyDown);
-												}}
-												onBlur={(e, data, type) => {
-													checkFieldChange(e, data, type, onBlur);
-												}}
-												onWheel={e => e.target.blur()}
-												type="value"
-												InputProps={data.InputProps}
-												loading={updating}
 											/>
 										)}
 										{data.type === 'date' && (
-											<TextField
-												autoOk
-												type="date"
-												variant="outlined"
-												margin="normal"
-												fullWidth
-												value={
-													tableTempProperties?.[data.key]
-														? moment(tableTempProperties[data.key]).format('yyyy-MM-DD')
-														: ''
-												}
-												onChange={event => {
-													const date = String(event?.target?.value) || null;
-													if (date === null) {
-														setTableTempProperties({ ...tableTempProperties, [`${data.key}`]: date });
-													}
-													if (date) {
-														tableTempProperties[`${data.key}`] = date ? date : null;
-														setTableTempProperties({ ...tableTempProperties });
-														if (date?._pf?.overflow === -2 || !date?._strict) {
-															onKeyDown(null, data, 'value');
-														}
-													}
-												}}
-												onBlur={() => {
-													setTimeout(() => {
-														if (!tableDataState[`${data.key}date`]) {
-															setTableDataState({});
-															setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] });
-														}
-													}, 100);
-												}}
-												InputLabelProps={{
-													shrink: true,
-												}}
-												disableToolbar
-												KeyboardButtonProps={{ 'aria-label': 'change date' }}
-												format="MM/DD/YYYY"
-												PopoverProps={{ disablePortal: false }}
-												InputProps={{
-													endAdornment: (
-														<IconButton>
-															<Clear style={{ height: 22, width: 22 }} />
-														</IconButton>
-													),
-													classes: {
-														root: classes.select,
-													},
+											<DateField
+												id={`field-${data.key}`}
+												index={index}
+												field={data}
+												fieldKey={data.key}
+												defaultValue={get(tableTempProperties, `${data.key}`, '')}
+												offClickHandler={(key, value) => {
+													set(tableTempProperties, key, value);
+													setTableTempProperties(tableTempProperties);
+													updateProperties(null, key, value);
 												}}
 											/>
 										)}
@@ -650,11 +646,17 @@ export default function SummaryTableInfo({
 											alignItems="center"
 										>
 											{data.formatValue ? (
-												<Grid item>{data.formatValue(data.value || properties[data.key]) || '-'}</Grid>
+												<Grid item style={{ overflowWrap: 'break-word' }}>
+													{data.formatValue(data.value || properties[data.key]) || '-'}
+												</Grid>
 											) : (
-												<Grid item style={{ width: '100%' }}>
+												<Grid item style={{ width: '100%', overflowWrap: 'break-word', position: 'relative' }}>
 													{data.type === 'date' &&
-														(properties[data.key] ? moment(properties[data.key]).utc(true).format('MM/DD/yyyy') : '-')}
+														(get(properties, `${data.key}`, '')
+															? moment(get(properties, `${data.key}`, ''))
+																	.utc(true)
+																	.format('DD/MM/yyyy')
+															: '-')}
 													{data.type === 'custom' && (
 														<>{['qualifier', 'reviewer'].includes(data.key) && (properties[data.key]?.name || '-')}</>
 													)}
@@ -666,7 +668,14 @@ export default function SummaryTableInfo({
 														data.type !== 'calculation' &&
 														data.type !== 'state' &&
 														data.type !== 'county' &&
-														(data.value || get(properties, `${data.key}`, '-'))}
+														(data.type === 'text' && validateUrl(get(tableTempProperties, `${data.key}`, '')) ? (
+															<a href={get(tableTempProperties, `${data.key}`, '')} target="_blank" rel="noreferrer">
+																{get(tableTempProperties, `${data.key}`, '')}
+															</a>
+														) : (
+															data.value || get(properties, `${data.key}`, '-')
+														))}
+
 													{data.type === 'state' &&
 														(get(properties, 'originalProperties.StateAbbreviation', '') ||
 															get(properties, 'originalProperties.State', '') ||
@@ -679,7 +688,7 @@ export default function SummaryTableInfo({
 													{data.type === 'currency' &&
 														(vf_currency(data.value) || vf_currency(properties[data.key]) || '-')}
 													{data.type === 'comma-number' &&
-														(vf_number(data.value) || vf_number(properties[data.key]) || '-')}
+														(data.value ? vf_number(data.value) : vf_number(properties[data.key]) || '-')}
 													{data.type === 'calculation' &&
 														((
 															<>

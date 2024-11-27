@@ -24,6 +24,7 @@ import { BULKUPSERTTAG } from "graphQL/useMutationBulkUpsertTagOnContacts";
 import { UPSERT_CONTACT_CAMPAIGNS } from "graphQL/useMutationCampaign";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 import { UPDATE_PARCEL_OWNERS } from 'graphQL/useMutationUpdateParcelOwners';
+import { UPDATE_SHAPES } from 'graphQL/useMutationUpdateShapes';
 import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 import { resetESTableToggle } from "hookstate";
@@ -32,9 +33,9 @@ import { tableGlobalController } from 'hookstate/tableController';
 import { globalStateController } from 'hookstate/globalStateController';
 import RelatedContact from "components/MRTTable/Common/Dialog/BulkUpdate/RelatedContact"
 import { ADD_RELATED_CONTACTS } from "graphQL/useMutationRelatedContact";
-import { UPDATE_SHAPES } from 'graphQL/useMutationUpdateShapes';
 import { copy } from 'components/Shared/functions';
 import set from "lodash/set";
+import { CurrencyFormatCustomWithoutPrefix } from "components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix";
 
 const styles = () => ({
   topHeading: { fontWeight: 'bold' },
@@ -183,7 +184,25 @@ function SelectedField({ field, setFieldKey, setCampaigns, setContactOwner, cont
         />
       );
     // Additional cases can be added as needed for different field types
-
+    case 'Max Pricing (Per NRA)':
+    case 'Target Pricing (Per NRA)':
+      // Add text field for Max Pricing and Target Pricing bulk update
+      return (
+        <TextField
+          key={field} // Use key to force re-render and re-apply focus
+          placeholder={field}
+          value={fieldKey}
+          onChange={({ target }) => {
+            setFieldKey(target.value);
+          }}
+          autoFocus={true}  // This will automatically focus the field when rendered
+          className={classes.fullWidth}
+          InputProps={{
+            startAdornment: <InputAdornment position="start">$</InputAdornment>,
+            inputComponent: CurrencyFormatCustomWithoutPrefix,
+          }}
+      />
+    );
     case 'Entity Type':
       filterKey = 'ownerType.keyword'; // Sets filterKey to 'ownerType.keyword' for filtering by entity type
       return (
@@ -283,10 +302,10 @@ export default function AssignOwnerToContactDrawer({
   })
 
 
-  const unitTableFields = [
+  const unitTableFields = [ // Add unit grid fields for bulk update
     { title: 'Campaign Name', value: 'campaignName' },
-     { title: 'Max Pricing', value: 'timeZone' },
-    { title: 'Target Pricing', value: 'timeZone' },
+     { title: 'Max Pricing (Per NRA)', value: 'uMaxUnitPricing' },
+    { title: 'Target Pricing (Per NRA)', value: 'uUnitPricing' },
     { title: 'Tags', value: 'contactStatus' }
   ];
   
@@ -308,7 +327,6 @@ export default function AssignOwnerToContactDrawer({
     ? [ ...unitTableFields]
     : [...otherTableFields];
 
-    console.log("fieldsToUpdate",fieldsToUpdate)
   useEffect(() => {
     if (!['Industry Type', 'Lead Source', 'Territory', 'Time Zone', 'Tags'].includes(field))
       getContactCampaignAction({
@@ -351,21 +369,64 @@ export default function AssignOwnerToContactDrawer({
     if (field.includes('originalProperties.Section')) set(shape.properties, 'originalProperties.ShortName', value);
     if (field.includes('originalProperties.Meridian')) set(shape.properties, 'originalProperties.PrincipalMeridian', value);
     /* -------------------------------- Data Fix -------------------------------- */
-    set(shape.properties, field, value);
+
+    set(shape.properties, field, value); // Set field and its value in shapeJson 
+
     const customLayer = {};
+
     if (field.includes('originalProperties')) {
       set(shape.properties, field.replace('originalProperties.', '').toLowerCase(), value);
     }
-    customLayer.shape = JSON.stringify(shape);
-    customLayer.shapeJson = shape;
+    customLayer.shape = JSON.stringify(shape); // Assign updated shape
+    customLayer.shapeJson = shape; // Assign updated shapeJson
+
     return customLayer;
   };
+
+  const bulkShapeUpdate = (shapesToUpdate, errorMsg) => {
+        // Update the shapes with the new data
+        updateShapes({
+          variables: {
+            shapes: shapesToUpdate,
+          },
+          refetchQueries: ["getESPaginatedList", "getESFilterList", "getCustomLayer"], // Refetch these queries after the update
+          awaitRefetchQueries: true,
+        }).then(res => {
+          // Toggle the reset state for the table to refresh its data
+          resetESTableToggle.set(!resetESTableToggle.get())
+
+        // Check if the response data is present and updateShapes was successful
+          if (res.data && res.data.updateShapes) {
+            const success = res.data.updateShapes.success
+            if (success) {
+              // Show a success toast and message if the update was successful
+              Loader.successToast('contact-creation', "Updated")
+              showSuccessMessage(`${field} Bulk Updated Successfully`)
+            
+              // Call the onBulkUpdateComplete callback if it exists
+              if (rest.onBulkUpdateComplete)
+                rest.onBulkUpdateComplete()
+            } else {
+                // Show an error toast if the update was not successful
+              Loader.errorToast('contact-creation', "Updated")
+            }
+          } else {
+            // Show an error toast if the response data is not as expected
+            Loader.errorToast('contact-creation', 'Failed');
+          }
+        },
+          err => {
+          console.log(err);
+          Loader.errorToast('contact-creation', errorMsg);
+          }
+        );
+  }
 
   const onAssign = () => {
     const contactIds = rows.map(row => row.contactId || row._id);
 
     const errorMsg = 'Failed to assign to contact owner';
-    Loader.createToast('contact-creation', 'Contact Bulk Update in progress');
+    Loader.createToast('contact-creation', `${ (rest.header === 'UnitTable') ? 'Unit' : 'Contact'} Bulk Update in progress`);
 
     if (field === 'Contact Owner') {
       assignOwnerToContact({
@@ -460,6 +521,21 @@ export default function AssignOwnerToContactDrawer({
         }
       );
 
+    } else if (field === 'Max Pricing (Per NRA)' || field === 'Target Pricing (Per NRA)') {
+        // Map through each row to create an array of shapes to update
+        const shapesToUpdate = rows.map(row =>  {
+        // Update the campaign with the new value and fieldKey, creating a custom layer for each row
+        const customlayer = updateCampaign(copy(row.shapeJson), fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value, fieldKey);
+
+          // Return an object with the updated custom layer information
+          return {
+            customLayer: customlayer,
+            customLayerId: row._id,
+            userId: getUser?._id,
+          }
+        });
+
+        bulkShapeUpdate(shapesToUpdate, errorMsg)
     }
     else {
       const fieldToUpdate = { [fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value]: fieldKey }
@@ -531,10 +607,15 @@ export default function AssignOwnerToContactDrawer({
 
             break;
 
-            case 'UnitTable': // update customlayer campaign name field in bulk for unitTable 
+          case 'UnitTable':
+            // Extract the campaign names from the campaigns array
             const campaignName = campaigns.map(campaign => campaign.campaignName)
+
+            // Map through each row to create an array of shapes to update
             const shapesToUpdate = rows.map(row =>  {
-            const customlayer = updateCampaign(copy(row.shapeJson), 'campaignName', campaignName);
+              // Update the campaign with the new campaign names
+              const customlayer = updateCampaign(copy(row.shapeJson), 'campaignName', campaignName);
+              // Return an object with the updated custom layer information
               return {
                 customLayer: customlayer,
                 customLayerId: row._id,
@@ -569,6 +650,8 @@ export default function AssignOwnerToContactDrawer({
                 Loader.errorToast('contact-creation', errorMsg);
               }
             );
+
+            bulkShapeUpdate(shapesToUpdate, errorMsg);
           break;
 
           default:
