@@ -730,11 +730,12 @@ const layerStateControllerHandler = state => {
 		},
 		resetMapStates: (mapReady = false) => {
 			const rigsData = layerController.getValue('rigsData');
+			const client = layerController.getValue('client');
 			removeLayers(false);
 			popupController.reset();
 			drawController.reset();
 			layerFiltersController.reset();
-			layerController.setState({ rigsData });
+			layerController.setState({ rigsData, client });
 			navController.reset();
 			mapControlsController.setState({
 				selectedControl: mapControlsController.getValue('selectedControl'),
