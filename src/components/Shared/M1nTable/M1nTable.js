@@ -2226,7 +2226,8 @@ function M1nTable(props) {
       setColumns([...DealsHeadCells]);
       setLoading(false);
     }
-  }, [dataDeals]);
+    // add all the required dependencies
+  }, [dataDeals, props.parent, props.contact]);
 
   useEffect(() => {
     if (props.parent && props.parent === "Documents" && DocumentsData?.getFiles) {

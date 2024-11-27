@@ -254,6 +254,16 @@ export const analyticsManagementRoutes = {
 		isDefault: true,
 		hideSearch: true,
 	},
+	Data: {
+		featureFlag: 'CONTACTSUBMENU',
+		title: 'Data',
+		link: '/analytics/data',
+		component: 'Data',
+		value: 'Data',
+		search: true,
+		isDefault: true,
+		hideSearch: true,
+	},
 	REVENUE_PROPERTY_DETAILS: {
 		featureFlag: 'CONTACTSUBMENU',
 		title: 'Revenue',
@@ -655,13 +665,25 @@ export const AdminManagementRoutes = {
 		search: true,
 		isDefault: true,
 	},
+	DATA_EDITING_DETAIL: {
+		featureFlag: 'CONTACTSUBMENU',
+		title: 'Bulk Data Editing',
+		headerText: 'Bulk Data Editing',
+		link: '/admin/bulk-editing/:jobId',
+		component: 'BulkDataEditingDetail',
+		value: 'Activities',
+		search: true,
+		isDefault: true,
+		isExcluded: true,
+	},
 };
 
 export const bypassTenants = [
 	'localhost',
 	// "m1Preview",
 	'm1dev',
-	'm1Staging',
+	'm1cypress',
+	'm1staging',
 	// "m1Production",
 	// "m1Development",
 	// "GHR",
@@ -671,7 +693,7 @@ export const bypassTenants = [
 	// "Republic",
 	// "Venator",
 	'Frontier',
-	// 'm1demo',
+	'm1demo',
 	// "Vector",
 	// "TableRock",
 	// "Providence",
@@ -689,3 +711,5 @@ export const esIndexFilterKeyMap = {
   activities_flat: 'ownerName.keyword',  
   // Add other mappings as needed
 };
+	
+export const MapFeatureTenants = ['m1dev', 'frontier', 'localhost'];
