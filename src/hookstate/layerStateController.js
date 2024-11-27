@@ -415,7 +415,6 @@ const layerStateControllerHandler = state => {
 
 	const getBeforeLayerId = identifier => {
 		const showableLayers = getShowableLayers();
-		console.log("showableLayers ----------------------",showableLayers)
 		const layerIndex = showableLayers.findIndex(dbLayer => {
 			return identifier === dbLayer?.identifier;
 		});
