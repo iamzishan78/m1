@@ -140,7 +140,7 @@ const AcquisitionIdDropdown = ({
             }}
           >
             <MenuItem value="All Acquisitions">All Acquisitions</MenuItem>
-            {options.map(option => (
+            {options && options.map(option => (
               <MenuItem value={option.key}>{option.key}</MenuItem>
             ))}
           </Select>
