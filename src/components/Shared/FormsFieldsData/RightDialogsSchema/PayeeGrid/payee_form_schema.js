@@ -61,6 +61,7 @@ const payeeForm = ({ setValue }) => {
 		{
 			label: 'Payment Amount',
 			name: 'paymentAmount',
+			disabled: true,
 			type: 'number',
 			InputProps: {
 				endAdornment: <InputAdornment position="end">$</InputAdornment>,

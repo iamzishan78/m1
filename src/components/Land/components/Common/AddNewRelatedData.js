@@ -21,7 +21,7 @@ import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import billingPartiesForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/BillingPartyGrid/billing_parties_form_schema';
 import costAllocationForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/CostAllocationGrid/cost_allocation_schema';
 import paymentForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/PaymentGrid/payment_form_schema';
-import { isEmpty } from 'lodash';
+import { isEmpty, isString } from 'lodash';
 
 const useStyles = makeStyles({
 	list: {
@@ -167,7 +167,6 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 	const Controller = sideDialogController(formName);
 	const formState = Controller.useCompleteState();
 
-
 	// Memoize form schema to avoid unnecessary re-renders
 	const formSchema = useMemo(() => {
 		switch (formName) {
@@ -294,6 +293,9 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 					onClick={() => {
 						const data = getValues();
 						if (isEmpty(Object.keys(data)?.filter(key => data[key]))) return;
+						Object.keys(data)?.forEach(key => {
+							if (isString(data[key])) data[key] = data[key].replace(/^\s+|\s+$/g, '').replace(/\s{2,}/g, ' ');
+						});
 						addNewData(data, setLoader);
 					}}
 					className={classes.footerButton}
