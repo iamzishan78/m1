@@ -121,6 +121,9 @@ const LayerMeta = {
 					lineWidthMaxPixels: 8,
 					getPointRadius: 50,
 					getLineWidth: 20,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
 				};
 			},
 		},
