@@ -143,6 +143,9 @@ const LayerMeta = {
 					data: deckLayers[layerId].getData([]),
 					pointRadiusMinPixels: 5,
 					pointRadiusMaxPixels: 15,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
 				};
 			},
 		},
@@ -161,6 +164,9 @@ const LayerMeta = {
 					lineWidthMinPixels: 2,
 					pointRadiusMaxPixels: 15,
 					lineWidthMaxPixels: 10,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
 				};
 			},
 		},
@@ -193,6 +199,9 @@ const LayerMeta = {
 					lineWidthMinPixels: 2,
 					pointRadiusMaxPixels: 15,
 					lineWidthMaxPixels: 10,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
 				};
 			},
 		},
@@ -406,6 +415,7 @@ const layerStateControllerHandler = state => {
 
 	const getBeforeLayerId = identifier => {
 		const showableLayers = getShowableLayers();
+		console.log("showableLayers ----------------------",showableLayers)
 		const layerIndex = showableLayers.findIndex(dbLayer => {
 			return identifier === dbLayer?.identifier;
 		});
