@@ -10,6 +10,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { Grid, Dialog, Menu, MenuItem, ListItemIcon, ListItemText, FormHelperText } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
 import AddIcon from '@material-ui/icons/Add';
+import ColorLensIcon from '@mui/icons-material/ColorLens';
 import { arrayMoveImmutable } from 'array-move';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { AppContext } from 'AppContext';
@@ -31,6 +32,7 @@ import { colorPallete } from 'components/Table/helpers';
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import { globalStateController } from 'hookstate/globalStateController';
+import { getMetaCss } from './getMetaCss';
 
 const useStyles = makeStyles(theme => ({
 	header: {
@@ -210,6 +212,7 @@ const MetaField = ({
 	const [stateApp, setStateApp] = useContext(AppContext);
 	const type = watch('type', stateApp.selectedMeta ? stateApp.selectedMeta.type : 'dropdown');
 	const title = watch('title', stateApp.selectedMeta ? stateApp.selectedMeta.title : '');
+	const iconType = watch('iconType', stateApp.selectedMeta ? stateApp.selectedMeta.iconType : '');
 	const isAddedToLibrary = watch(
 		'isAddedToLibrary',
 		stateApp.selectedMeta ? stateApp.selectedMeta.isAddedToLibrary : false
@@ -246,6 +249,10 @@ const MetaField = ({
 	useEffect(() => {
 		getAllLibraryMetaData();
 	}, [getAllLibraryMetaData]);
+
+	useEffect(() => {
+		setStateApp(stateApp => ({ ...stateApp, selectedIconTpe: iconType }));
+	}, [iconType, setStateApp]);
 
 	useEffect(() => {
 		if (metaDataRes?.getAllLibraryMetaData?.metaData) {
@@ -890,6 +897,9 @@ const SortableItem = SortableElement(({ item, removeIndex, itemIndex, updateInde
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [showDrag, setShowDrag] = useState(false);
 	const [itemValue, setItemValue] = useState(item.value);
+	const [stateApp] = useContext(AppContext);
+
+	const isChipSelected = stateApp?.selectedIconTpe === 'Chip';
 
 	const handleClick = event => {
 		setAnchorEl(event.currentTarget);
@@ -898,6 +908,32 @@ const SortableItem = SortableElement(({ item, removeIndex, itemIndex, updateInde
 	const handleClose = () => {
 		setAnchorEl(null);
 	};
+
+	// const getCss = () => {
+	// 	const pallete = colorPallete.find(pallete => pallete.id === item?.palleteId);
+	// 	if (isChipSelected) {
+	// 		return {
+	// 			maxWidth: '150px',
+	// 			backgroundColor: pallete?.color,
+	// 			color: pallete?.textColor,
+	// 			display: 'flex',
+	// 			justifyContent: 'space-between',
+	// 			alignItems: 'center',
+	// 			margin: '0px 2px',
+	// 		};
+	// 	} else {
+	// 		return {
+	// 			marginTop: 4,
+	// 			marginLeft: 5,
+	// 			marginRight: 5,
+	// 			width: 15,
+	// 			height: 15,
+	// 			backgroundColor: pallete?.color || 'balck',
+	// 			display: 'inline-block',
+	// 			borderRadius: 10,
+	// 		};
+	// 	}
+	// };
 
 	return (
 		<>
@@ -909,20 +945,17 @@ const SortableItem = SortableElement(({ item, removeIndex, itemIndex, updateInde
 			>
 				<DragHandle display={showDrag} />
 				<div className={classes.itemContainer}>
-					<div style={{ width: '100%' }}>
-						<div
-							style={{
-								marginTop: 4,
-								marginLeft: 10,
-								marginRight: 10,
-								width: 15,
-								height: 15,
-								backgroundColor: colorPallete.find(pallete => pallete.id === item.palleteId).color,
-								display: 'inline-block',
-								borderRadius: 10,
-							}}
-							onClick={handleClick}
-						></div>
+					<div style={{ width: '100%', display: 'flex', gap: '5px', alignItems: 'center' }}>
+						{!isChipSelected ? (
+							<div
+								style={getMetaCss({ option: item, iconType: stateApp?.selectedIconTpe, isMetaPopup: true })}
+								onClick={handleClick}
+							/>
+						) : (
+							<IconButton id="colorChanger" style={{ padding: 0, margin: 0 }} onClick={handleClick}>
+								<ColorLensIcon fontSize="small" />
+							</IconButton>
+						)}
 
 						<Menu
 							id="simple-menu"
@@ -970,20 +1003,29 @@ const SortableItem = SortableElement(({ item, removeIndex, itemIndex, updateInde
 								})}
 							</div>
 						</Menu>
-						<TextField
-							type="text"
-							variant="standard"
-							placeholder="Enter option"
-							style={{ width: '95%', marginTop: 3 }}
-							value={itemValue}
-							onChange={e => {
-								setItemValue(e.target.value);
-							}}
-							onBlur={() => updateIndex(itemIndex, { ...item, value: itemValue })}
-							InputProps={{
-								disableUnderline: true,
-							}}
-						/>
+						<span
+							className={isChipSelected ? 'colorText' : ''}
+							style={
+								isChipSelected
+									? getMetaCss({ option: item, iconType: stateApp?.selectedIconTpe, isMetaPopup: true })
+									: {}
+							}
+						>
+							<TextField
+								type="text"
+								variant="standard"
+								placeholder="Enter option"
+								style={{ width: '95%', marginTop: 3 }}
+								value={itemValue}
+								onChange={e => {
+									setItemValue(e.target.value);
+								}}
+								onBlur={() => updateIndex(itemIndex, { ...item, value: itemValue })}
+								InputProps={{
+									disableUnderline: true,
+								}}
+							/>
+						</span>
 					</div>
 					<IconButton style={{ padding: '4px' }} onClick={() => removeIndex(itemIndex)}>
 						<CloseIcon style={{ fontSize: 16, alignSelf: 'center' }} />

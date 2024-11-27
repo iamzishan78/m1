@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { colorPallete } from 'components/Table/helpers';
-import CloseIcon from '@material-ui/icons/Close';
 import ArrowDropDownIcon from '@material-ui/lab/es/internal/svg-icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import { makeStyles } from '@material-ui/core/styles';
-import { copy } from 'components/Shared/functions';
 import { Tooltip, Typography } from '@material-ui/core';
 import SelectField from 'components/MRTTable/Common/MetaData/SelectField';
+import { BulletPointMeta } from 'components/Table/helpers/BulletPointMeta';
+import { ChipMeta } from 'components/Table/helpers/ChipMeta';
+import { getMetaCss } from 'components/Table/helpers/getMetaCss';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -215,120 +215,70 @@ export default ReactSelectField;
 
 const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleSelect, tooltipView, column }) => {
 	let tooltipValues = value?.slice(1) || [];
+	const isBulletPointMeta = column.iconType === 'Bullet Point';
 
-	const getCss = value => {
-		const opt = dropdownOptions.find(opt => opt.value === value);
-		const pallete = colorPallete.find(pallete => pallete.id === opt?.palleteId);
-		if (column.iconType === 'Chip') {
-			return {
-				maxWidth: '150px',
-				backgroundColor: pallete?.color,
-				color: pallete?.textColor,
-				display: 'flex',
-				justifyContent: 'space-between',
-				alignItems: 'center',
-				margin: '0px 2px',
-			};
-		} else {
-			return {
-				marginTop: 4,
-				marginLeft: 10,
-				marginRight: 10,
-				width: 15,
-				height: 15,
-				backgroundColor: pallete?.color || 'balck',
-				display: 'inline-block',
-				borderRadius: 10,
-			};
-		}
-	};
-
-	const Badge = ({ badgeValue, index }) => (
-		<span className="colorText" style={getCss(badgeValue)}>
-			<div
-				style={{
-					maxWidth: '100px',
-					whiteSpace: 'nowrap',
-					overflow: 'hidden',
-					textOverflow: 'ellipsis',
-				}}
-			>
-				<span id="badgeValue">{badgeValue}</span>
-			</div>
-
-			{isSingleSelect || (
-				<CloseIcon
-					style={{ fontSize: 13, marginLeft: 10, cursor: 'pointer' }}
-					onClick={e => {
-						e.stopPropagation();
-						const newValue = copy(value);
-						newValue.splice(index, 1);
-						onCustomKeyChange(newValue);
-					}}
-				/>
-			)}
-		</span>
-	);
-
-	const BulletPoint = ({ bulletValue }) => {
-		const bulletStyles = getCss(bulletValue);
-
+	const ToolTipView = () => {
+		const option = dropdownOptions.find(opt => opt.value === value[0]);
 		return (
-			<li
-				style={{
-					listStyleType: 'none',
-					display: 'flex',
-					alignItems: 'center',
-				}}
-			>
-				<span style={bulletStyles} />
-				<span>{bulletValue}</span>
-			</li>
+			<>
+				{isBulletPointMeta ? (
+					<BulletPointMeta option={option} index={0} bulletValue={value[0]} iconType={column?.iconType} />
+				) : (
+					<ChipMeta
+						index={0}
+						chipsArray={value}
+						chipValue={value[0]}
+						option={option}
+						iconType={column?.iconType}
+						onCustomKeyChange={onCustomKeyChange}
+						isSingleSelect={isSingleSelect}
+					/>
+				)}
+				{value?.slice(1).length > 0 && (
+					<Tooltip
+						title={
+							<React.Fragment>
+								{tooltipValues.map(v => (
+									<Typography color="inherit">{v}</Typography>
+								))}
+							</React.Fragment>
+						}
+					>
+						<span
+							className="colorText"
+							style={{
+								borderRadius: '20px',
+								whiteSpace: 'nowrap',
+								backgroundColor: '#c5c2c2',
+								color: 'black',
+								display: 'flex',
+								padding: '5px 10px 5px 5px',
+							}}
+						>
+							+{tooltipValues.length}
+						</span>
+					</Tooltip>
+				)}
+			</>
 		);
 	};
-
-	const ToolTipView = () => (
-		<>
-			{column.iconType === 'Bullet Point' ? (
-				<BulletPoint bulletValue={value[0]} index={0} />
-			) : (
-				<Badge badgeValue={value[0]} index={0} />
-			)}
-			{value?.slice(1).length > 0 && (
-				<Tooltip
-					title={
-						<React.Fragment>
-							{tooltipValues.map(v => (
-								<Typography color="inherit">{v}</Typography>
-							))}
-						</React.Fragment>
-					}
-				>
-					<span
-						className="colorText"
-						style={{
-							borderRadius: '20px',
-							whiteSpace: 'nowrap',
-							backgroundColor: '#c5c2c2',
-							color: 'black',
-							display: 'flex',
-							padding: '5px 10px 5px 5px',
-						}}
-					>
-						+{tooltipValues.length}
-					</span>
-				</Tooltip>
-			)}
-		</>
-	);
 
 	const MultiSelectView = () => (
 		<>
 			{value.map((v, index) => {
-				return column.iconType === 'Bullet Point' ? (
-					<BulletPoint key={index} bulletValue={v} />
+				const option = dropdownOptions.find(opt => opt.value === v);
+				return isBulletPointMeta ? (
+					<BulletPointMeta key={index} index={index} option={option} bulletValue={v} iconType={column.iconType} />
 				) : (
-					<Badge key={index} badgeValue={v} index={index} />
+					<ChipMeta
+						key={index}
+						index={index}
+						chipsArray={value}
+						chipValue={v}
+						option={option}
+						iconType={column?.iconType}
+						onCustomKeyChange={onCustomKeyChange}
+					/>
 				);
 			})}
 		</>
@@ -340,6 +290,7 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
 				width: 'fit-content',
 				flexWrap: 'wrap',
 				maxWidth: '380px',
+				gap: '5px',
 			}}
 		>
 			{value && value.length > 0 && Array.isArray(value) ? (
@@ -347,10 +298,21 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
 			) : (
 				<>
 					{value && typeof value === 'string' ? (
-						column.iconType === 'Bullet Point' ? (
-							<BulletPoint bulletValue={value} />
+						isBulletPointMeta ? (
+							<BulletPointMeta
+								index={0}
+								option={dropdownOptions.find(opt => opt.value === value)}
+								bulletValue={value}
+								iconType={column.iconType}
+							/>
 						) : (
-							<span className="colorText" style={getCss(value)}>
+							<span
+								className="colorText"
+								style={getMetaCss({
+									option: dropdownOptions.find(opt => opt.value === value),
+									iconType: column.iconType,
+								})}
+							>
 								<span>{value}</span>
 							</span>
 						)
