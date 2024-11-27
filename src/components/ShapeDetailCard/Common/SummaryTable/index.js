@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { set, get, upperFirst, capitalize } from 'lodash';
@@ -122,7 +123,7 @@ export default function SummaryTableInfo({
 	updating,
 	isCustomLayerAutoComplete,
 	customLayer,
-	shapeType
+	shapeType,
 }) {
 	const classes = summaryTableStyles();
 	const dispatch = useDispatch();
@@ -678,8 +679,7 @@ export default function SummaryTableInfo({
 															: '-')}
 													{data.type === 'currency' &&
 														(vf_currency(data.value) || vf_currency(properties[data.key]) || '-')}
-													{data.type === 'comma-number' &&
-														(vf_number(data.value) || vf_number(properties[data.key]) || '-')}
+													{data.type === 'comma-number' && (vf_number(data.value || properties[data.key]) || '-')}
 													{data.type === 'calculation' &&
 														((
 															<>
