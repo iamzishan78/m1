@@ -34,7 +34,7 @@ const jobStateControllerHandler = () => ({
 	onRowAdd: newData => {
 		return new Promise((resolve, reject) => {
 			try {
-				jobState.csvDataToSend.set(csvDataToSend);
+				jobState.csvDataToSend.set([...jobController.getValue('csvDataToSend'), newData]);
 				resolve();
 			} catch (error) {
 				reject(error);
@@ -45,15 +45,15 @@ const jobStateControllerHandler = () => ({
 	onRowUpdate: (newData, oldData) => {
 		return new Promise((resolve, reject) => {
 			try {
-				if (!oldData) throw new Error("Old data not provided");
+				if (!oldData) throw new Error('Old data not provided');
 
 				const csvDataToSend = jobController.getValue('csvDataToSend');
 				const index = csvDataToSend.indexOf(oldData);
 
-				if (index === -1) throw new Error("Old data not found in csvDataToSend");
+				if (index === -1) throw new Error('Old data not found in csvDataToSend');
 
-				delete newData.reason
-				delete newData.invalidKey
+				delete newData.reason;
+				delete newData.invalidKey;
 
 				csvDataToSend[index] = newData;
 
@@ -65,7 +65,6 @@ const jobStateControllerHandler = () => ({
 			}
 		});
 	},
-
 
 	onRowDelete: oldData => {
 		return new Promise((resolve, reject) => {
