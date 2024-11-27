@@ -23,6 +23,7 @@ import ShapeDetailAgreementMeta from './shapeDetail_agreement_schema';
 import AgreementRelatedUnitsMeta from './agreement_relatedUnits_schema';
 import UnitRelatedAgreementMeta from './unit_relatedAgreements_schema';
 import SalesVolumeComparisonMeta from './sales-volume-comparison-schema';
+import ExhibitAMeta from './exhibita_schema';
 
 export const SCHEMA = {
 	ContactTable: ContactMeta,
@@ -55,5 +56,6 @@ export const SCHEMA = {
 	AgreementRelatedUnitsTable: AgreementRelatedUnitsMeta,
 	UnitRelatedAgreementTable: UnitRelatedAgreementMeta,
 	SalesVolumeComparisonTable: SalesVolumeComparisonMeta, // Sales Volume comparison grid => analytrics/revenue
+	ExhibitATable: ExhibitAMeta, // Sales Volume comparison grid => analytrics/revenue
 	TractInterestsTable: TractInterestsMeta, // Tracts Interest schema
 };

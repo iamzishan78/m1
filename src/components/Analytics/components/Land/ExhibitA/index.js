@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useMemo } from "react";
 import { Grid, makeStyles } from "@material-ui/core";
 
 import { AppContext } from "AppContext";
@@ -8,6 +8,8 @@ import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
 import { copy, getSearchFields } from "components/Shared/functions";
 import TableHeader from "components/Table/constants/analytics-land-exhibita-schema";
+import MRTTable from 'components/MRTTable';
+import { tableController } from "hookstate/tableController";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -102,7 +104,7 @@ const filterColumnsHeader = [
 export default function ExhibitATabPanel() {
   const classes = useStyles();
   const [stateApp] = useContext(AppContext);
-  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 239px)" }
+  const tableStateValues = tableController("ExhibitATable").useState(['filters', 'isIncludeInactive']).stateValues
   const initialFilterList = [["All"], ["All"], ["All"], ["All"], ["All"], ["All"]];
   const [, setFilters] = useState([]);
 
@@ -110,7 +112,14 @@ export default function ExhibitATabPanel() {
   const [tableFilters, setTableFilters] = useState([]);
 
   useEffect(() => {
-    const filter = JSON.parse(JSON.stringify(esFilters))
+    let tablefilters = copy(esFilters) ?? [];
+    if (!tableStateValues?.isIncludeInactive) {
+      tablefilters.push({ field: "shape.shapeJson.properties.agreementStatus", value: ["Active", "ACTIVE", "active"] })
+    }
+
+    tablefilters.push({ field: "shape.shapeJson.properties.type", value: 'agreement' });
+
+    const filter = JSON.parse(JSON.stringify(tablefilters))
     for (let i = 0; i < filter.length; i++) {
       const column = filterColumnsHeader.find(h => h.filterKey === filter[i].field)
       if (column && column?.custom?.formatedFilterOptions) {
@@ -120,19 +129,14 @@ export default function ExhibitATabPanel() {
           filter[i].value = data.value
         }
       }
-      setTableFilters(filter)
     }
-    // if(column?.custom?.formatedFilterOptions){
-    //   let value = column.filterList[0];
-    //   const filterData = column?.custom?.formatedFilterOptions;
-    //   const data = filterData.find(f => f.label === value)
-    //   if (data) {
-    //     value = data.value
-    //   }
-    //   column.filterList[0] = value
-    // }
-    // setTableFilters(esFilters)
+    setTableFilters(filter)
   }, [esFilters])
+
+  useEffect(() => {
+    tableController("ExhibitATable").setFilters(tableFilters);
+  }, [tableFilters])
+
   const onChange = (filter, index, column, esKey) => {
     const newFilters = JSON.parse(JSON.stringify(esFilters));
 
@@ -169,6 +173,20 @@ export default function ExhibitATabPanel() {
   const filterChange = (filter) => {
     // console.log("filter", filter);
   };
+
+  const exhibitaOverrideMeta = useMemo(() => ({
+    filters: [
+      { field: 'shape.shapeJson.properties.type', value: 'agreement' },
+    ],
+    customProps: {
+      isIncludeInactiveAgreement: false
+    }
+  }), []);
+
+  useEffect(() => {
+    tableController("ExhibitATable").setGlobalFilter(stateApp.landAnalyticsSearchQuery) // Filter table rercords based on header seachbar value
+  }, [stateApp.landAnalyticsSearchQuery])
+
 
   return (
     <>
@@ -220,18 +238,8 @@ export default function ExhibitATabPanel() {
         </Grid>
       </div>
       <div >
-        <ExhibitA
-          filterChange={filterChange}
-          header="Exhibit A"
-          esFilters={tableFilters}
-          targetLabel="acerage"
-          parent="ExhibitA"
-          esIndex="shapetracts_flat"
-          setESFilters={setESFilters}
-          loadMore={loadMore}
-          landSearchQuery={stateApp.landAnalyticsSearchQuery}
-        />
       </div>
+      <MRTTable name="ExhibitATable" overrideMeta={exhibitaOverrideMeta} />
     </>
   );
 }
