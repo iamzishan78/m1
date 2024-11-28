@@ -352,19 +352,17 @@ export default function UnitDetailCard(props) {
                 <TabPanels
                   value={selectedTab}
                   panels={[
-                    <div className={showSummary ? classes.subContent : classes.subContent2}>
-                        <MRTTable name="UnitTractTable" 
-                         overrideMeta={{
-                          tabLabels: ['Unit Tracts', 'Potential Tracts'],
-                          defaultFilters: [
-                            { field: 'shape._id', value: dataCustomLayer?.customLayer?._id },
-                          ],
-                          customProps: {
-                            customLayer: uniObj,
-                          }
-                        }}
-                         hideSharedCommentCheck />
-                    </div>,
+                      <MRTTable name="UnitTractTable" 
+                        overrideMeta={{
+                        tabLabels: ['Unit Tracts', 'Potential Tracts'],
+                        defaultFilters: [
+                          { field: 'shape._id', value: dataCustomLayer?.customLayer?._id },
+                        ],
+                        customProps: {
+                          customLayer: uniObj,
+                        }
+                      }}
+                        hideSharedCommentCheck />,
                     <div>
                       <AssociatedTractsShapeTable
                         customLayer={uniObj}

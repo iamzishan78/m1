@@ -20,10 +20,10 @@ const onClickedRow = selectedRow => {
 
 const TractMeta = {
 	esIndex,
-	pageSize: 50,
+	pageSize: 25,
 	pagination: {
 		pageIndex: 0,
-		pageSize: 50,
+		pageSize: 25,
 	},
 	defaultSort: { field: '_ts', order: 'desc' },
 	defaultFilters: [{ field: 'layer.keyword', value: 'parcel' }],
