@@ -136,10 +136,11 @@ const Title = ({ tab, setTab, setData, copyData, stateApp, setStateApp }) => {
 	};
 
 	useEffect(() => {
-		setSearch('');
-	}, [copyData]);
+		searchTask();
+	}, [search, copyData]);
 
-	useEffect(() => {
+
+	const searchTask = () => {
 		if (search?.length && copyData?.length) {
 			setDefaultData(copyData);
 			if (search?.toLowerCase() === 'n/a') {
@@ -148,9 +149,9 @@ const Title = ({ tab, setTab, setData, copyData, stateApp, setStateApp }) => {
 				setData(copyData.filter(task => task?.name?.toLowerCase()?.includes(search?.toLowerCase())));
 			}
 		} else if (search?.length === 0 && copyData?.length) {
-			setData(defaultData);
+			setData(copyData);
 		}
-	}, [search]);
+	}
 
 	return (
 		<Grid container className={classes.gridStyle}>
