@@ -39,8 +39,8 @@ const UnitInterestMeta = {
 		{ field: 'shape.layer.keyword', value: 'unit' },
 		{ field: 'contact.IsDeleted', value: 'false' },
 		{ field: 'shape.IsDeleted', value: 'false' },
-		{ field: "descriptor", value: "ShapeOwnerDescriptor" }
-	  ],
+		{ field: 'descriptor', value: 'ShapeOwnerDescriptor' },
+	],
 	maxTableHeight: 'calc(100vh - 215px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,

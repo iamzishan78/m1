@@ -249,9 +249,9 @@ const ExhibitAMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Abstract/Sec',
-			name: 'parcel.shapeJson.properties.originalProperties.abstractNameShortName.keyword',
-			accessorFn: row => row?.parcel?.shapeJson?.properties?.originalProperties?.abstractNameShortName || '',
-			id: 'parcel.shapeJson.properties.originalProperties.abstractNameShortName',
+			name: 'parcel.shapeJson.properties.originalProperties.abstractSection.keyword',
+			accessorFn: row => row?.parcel?.shapeJson?.properties?.originalProperties?.abstractSection || '',
+			id: 'parcel.shapeJson.properties.originalProperties.abstractSection',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
