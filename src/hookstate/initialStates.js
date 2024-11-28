@@ -437,7 +437,7 @@ export const slidoutInitialState = {
 	show: false,
 	views: [],
 	parentId: '',
-	view: {},
+	view: null,
 	props: {},
 	activeTabs: { Grid: false, Map: false },
 	title: '',
@@ -446,6 +446,7 @@ export const slidoutInitialState = {
 	selectedActivity: null,
 	selectedActivityId:  "",
 	newComments:[],
+	loader: false
 };
 
 export const slidoutState = hookstate(copy(slidoutInitialState));

@@ -135,6 +135,9 @@ const Activities = () => {
 
 	const [getContactsForActivity, { data: getContactsForActivityResult }] = useLazyQuery(GET_CONTACTS_FOR_ACTIVITY, {
 		fetchPolicy: 'no-cache',
+		onCompleted: () => {
+			slidoutState.loader.set(false);
+		},
 	});
 
 	const [stateApp, setStateApp] = useContext(AppContext);
@@ -148,7 +151,7 @@ const Activities = () => {
 	const activitiesGridState = tableController('ActivitiesTable').useState(['filters']).stateValues;
 	const [view, setView] = React.useState(Views.MONTH);
 
-	const selectedActivityId = useHookstate(slidoutState.selectedActivityId)
+	const selectedActivityId = useHookstate(slidoutState.selectedActivityId);
 
 	const obligationOptions = React.useMemo(() => {
 		if (activitiesData?.activities) {
@@ -172,6 +175,14 @@ const Activities = () => {
 		});
 		getAllMongoUsers();
 	}, []);
+
+	useEffect(() => {
+		const contacts = getContactsForActivityResult?.getContactsForActivity?.contacts;
+		setStateApp(stateApp => ({
+			...stateApp,
+			activityContacts: { contacts },
+		}));
+	}, [getContactsForActivityResult]);
 
 	useEffect(() => {
 		if (events.length > 0) {
@@ -229,9 +240,9 @@ const Activities = () => {
 
 	useEffect(() => {
 		if (selectedActivityId.get()) {
-			slidoutState.selectedActivity.set(events.find(act => act._id === selectedActivityId.get()))
+			slidoutState.selectedActivity.set(events.find(act => act._id === selectedActivityId.get()));
 		} else {
-			slidoutState.selectedActivity.set(null)
+			slidoutState.selectedActivity.set(null);
 		}
 	}, [selectedActivityId.get()]);
 
@@ -301,11 +312,16 @@ const Activities = () => {
 	};
 
 	const onModalOpen = () => {
-		slidoutStateController.showSlideout();
+		slidoutState.loader.set(true)
+		getContactsForActivity({
+			variables: { activityId: selectedActivityId.get() },
+		}).then(() => {
+			slidoutStateController.showSlideout();
+		});
 	};
 
 	const setSelectedActivityId = id => {
-		slidoutState.selectedActivityId.set(id)
+		slidoutState.selectedActivityId.set(id);
 	};
 
 	useEffect(() => {
@@ -320,7 +336,8 @@ const Activities = () => {
 		});
 
 		return () => {
-			slidoutState.selectedActivity.set(null)
+			slidoutState.selectedActivityId.set('');
+			slidoutState.selectedActivity.set(null);
 			slidoutStateController.hideSlideout();
 		};
 	}, []);

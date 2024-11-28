@@ -1,45 +1,30 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { CircularProgress } from '@material-ui/core';
 
 import Drawer from './Drawer';
 import DialogContent from './DialogContent';
+import { slidoutState } from 'hookstate/initialStates';
 
 const useStyles = makeStyles(theme => ({
-  contentRoot: {
-    overflowY: 'overlay',
-    overflowX: 'hidden',
-    marginRight: '60px',
-  },
+	contentRoot: ({ selectedActivity }) => ({
+		overflowY: 'overlay',
+		overflowX: 'hidden',
+		marginRight: selectedActivity ? '60px' : '0px',
+	}),
 }));
 
-function Dialog(props) {
-  const classes = useStyles();
+function Dialog() {
+	const selectedActivity = slidoutState.selectedActivity.get({ noproxy: true });
+	const classes = useStyles({ selectedActivity });
 
-  const [loading, setLoading] = useState(false);
-
-  if (loading)
-    return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          marginTop: 5,
-        }}
-      >
-        <CircularProgress size="20px" />
-      </div>
-    );
-
-  return (
-    <div className={classes.contentRoot}>
-      <Drawer
-        dealSettingsNumber={/* getSubtaskNumber() */ null}
-        mapSettings={/* mapSettings */ null}
-      />
-      <DialogContent />
-    </div>
-  );
+	return (
+		<div className={classes.contentRoot}>
+			{selectedActivity && (
+				<Drawer dealSettingsNumber={/* getSubtaskNumber() */ null} mapSettings={/* mapSettings */ null} />
+			)}
+			<DialogContent />
+		</div>
+	);
 }
 
 export default Dialog;

@@ -140,7 +140,6 @@ const getFilterCondition = (e, activityFilterByType, activityFilterByTime, activ
 const Activities = () => {
 	const classes = useStyles();
 
-	const [activityId, setActivityId] = useState(''); // title change from contact.name to dealName
 	const entityLoading = useHookstate(slidoutState.isLoading);
 	const selectedActivityId = useHookstate(slidoutState.selectedActivityId);
 
@@ -150,6 +149,9 @@ const Activities = () => {
 	});
 	const [getContactsForActivity, { data: getContactsForActivityResult }] = useLazyQuery(GET_CONTACTS_FOR_ACTIVITY, {
 		fetchPolicy: 'no-cache',
+		onCompleted: () => {
+			slidoutState.loader.set(false);
+		},
 	});
 	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
 		fetchPolicy: `network-only`,
@@ -181,6 +183,7 @@ const Activities = () => {
 		getAllMongoUsers();
 
 		return () => {
+			slidoutState.selectedActivityId.set('');
 			slidoutState.selectedActivity.set(null);
 			slidoutStateController.hideSlideout();
 		};
@@ -295,16 +298,13 @@ const Activities = () => {
 	};
 
 	const onModalOpen = () => {
-		setActivityId(actId => {
-			getContactsForActivity({
-				variables: { activityId: actId },
-			})
-			return actId;
+		slidoutState.loader.set(true);
+		getContactsForActivity({
+			variables: { activityId: slidoutState.selectedActivityId.get() },
 		});
 	};
 
 	const setSelectedActivityId = id => {
-		setActivityId(id);
 		slidoutState.selectedActivityId.set(id);
 	};
 

@@ -156,7 +156,7 @@ const DialogHeader = ({ handleClickDialogClose, openConfirmationDialog }) => {
 					</FormControl>
 				</Grid>
 				<Grid item xs={3} className={classes.dialogActions}>
-					{!newEntity.get() && (
+					{!isObligation && !newEntity.get() && (
 						<>
 							<IconButton
 								// disabled={updateDealLoading || addContactLoading}

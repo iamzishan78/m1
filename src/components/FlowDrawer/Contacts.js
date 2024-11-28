@@ -132,7 +132,7 @@ export default function Contacts(props) {
         search: nameAutInputValue,
       },
     });
-  }, [getPaginatedContacts, nameAutInputValue]);
+  }, [nameAutInputValue]);
 
   useEffect(() => {
     if (nameAutValue) {
@@ -219,15 +219,25 @@ export default function Contacts(props) {
   }, [search, contacts]);
 
   const GettingContacts = useCallback(() => {
-    let contactnames = stateApp.activeDeal?.contacts?.map((value) => {
-      if (get(value, "relatedObject.entityDetail.name")) {
-        return value.relatedObject.entityDetail.name;
-      } else if (get(value, "name")) {
-        return value.name;
-      } else {
-        return "Empty";
-      }
-    });
+    const getContactNames = contacts => {
+			return contacts.map(value => {
+				if (get(value, 'relatedObject.entityDetail.name')) {
+					return value.relatedObject.entityDetail.name;
+				} else if (get(value, 'name')) {
+					return value.name;
+				} else {
+					return 'Empty';
+				}
+			});
+  };
+
+    let contactnames 
+    if(stateApp.activeDeal?.contacts?.length){
+      contactnames = getContactNames(stateApp.activeDeal.contacts)
+
+  }else if(props?.stateAppKey && stateApp[props.stateAppKey]?.contacts?.length){
+      contactnames = getContactNames(stateApp[props.stateAppKey].contacts)
+    }
     setContacts(contactnames);
   }, [stateApp.activeDeal?.contacts]);
 
@@ -239,7 +249,13 @@ export default function Contacts(props) {
   }, [props.loading]);
 
   const DeleteContact = async (index) => {
-    const descriptorId = get(stateApp, `activeDeal.contacts[${index}].descriptorId`) || get(stateApp, `activeDeal.contacts[${index}]._id`);
+    let descriptorId = get(stateApp, `activeDeal.contacts[${index}].descriptorId`) || get(stateApp, `activeDeal.contacts[${index}]._id`);
+    if(props?.stateAppKey && stateApp[props.stateAppKey]?.contacts?.length ){
+     descriptorId = get(stateApp[props.stateAppKey], `contacts[${index}]._id`);
+     console.log(descriptorId,stateApp[props.stateAppKey])
+     props.getRemoveDescriptorResponse(descriptorId)
+     return
+  }
     let result = await removeDealDescriptor({
       variables: { id: descriptorId, relatedObjectType: "Contact" },
       refetchQueries: ["getPipeline", "getContactDeals"],
@@ -265,6 +281,11 @@ export default function Contacts(props) {
   }
 
   const gotoContact = (index) => {
+    if(props?.stateAppKey && stateApp[props.stateAppKey]?.contacts?.length){
+      history.push(
+        `/contact/details/${stateApp[props.stateAppKey].contacts[index].relatedObject._id}?return-url=${history.location.pathname}`
+      );
+    }else{
     setStateApp((stateApp) => ({
       ...stateApp,
       selectedContact: stateApp.activeDeal?.contacts[index]?._id,
@@ -272,6 +293,7 @@ export default function Contacts(props) {
       transactBarView: "Deal",
     }));
     history.push(`/contact/details/${stateApp.activeDeal?.contacts[index]?._id}?return-url=${history.location.pathname}`);
+  }
   };
 
   return (
@@ -377,7 +399,9 @@ export default function Contacts(props) {
         </Grid>
 
         <List aria-label="contacts list">
-          {filteredContacts && filteredContacts.length > 0 ? (
+          {filteredContacts 
+          && filteredContacts.length > 0 
+          && (stateApp.activeDeal?.contacts?.length || stateApp[props.stateAppKey].contacts?.length)? (
             filteredContacts.map((c, i) => (
               <>
                 <ListItem key={i}>
