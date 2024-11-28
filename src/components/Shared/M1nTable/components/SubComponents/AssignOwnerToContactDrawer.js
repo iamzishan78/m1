@@ -463,9 +463,9 @@ export default function AssignOwnerToContactDrawer({
           tags: fieldKey,
           user: getUser?._id,
           contactIds,
-          objectType: rest?.objectType || ["contact"],
+          objectType: rest?.objectType,
         },
-        refetchQueries: rest?.refetchQueries || ["getESContacts"],
+        refetchQueries: rest?.refetchQueries,
         awaitRefetchQueries: true,
       }).then(
         (res) => {
@@ -622,6 +622,34 @@ export default function AssignOwnerToContactDrawer({
                 userId: getUser?._id,
               }
             });
+            updateShapes({
+              variables: {
+                shapes: shapesToUpdate,
+              },
+              refetchQueries: ["getESPaginatedList", "getESFilterList", "getCustomLayer"],
+              awaitRefetchQueries: true,
+            }).then(res => {
+              resetESTableToggle.set(!resetESTableToggle.get())
+              if (res.data && res.data.updateShapes) {
+                const success = res.data.updateShapes.success
+                if (success) {
+                  Loader.successToast('contact-creation', "Updated")
+                  showSuccessMessage(`${field} Bulk Updated Successfully`)
+                  if (rest.onBulkUpdateComplete)
+                    rest.onBulkUpdateComplete()
+                } else {
+                  Loader.errorToast('contact-creation', "Updated")
+                }
+              } else {
+                Loader.errorToast('contact-creation', 'Failed');
+              }
+            },
+              err => {
+                // eslint-disable-next-line no-console
+                console.log(err);
+                Loader.errorToast('contact-creation', errorMsg);
+              }
+            );
 
             bulkShapeUpdate(shapesToUpdate, errorMsg);
           break;

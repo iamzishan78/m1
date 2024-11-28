@@ -1,12 +1,24 @@
 /* eslint-disable no-undef */
-import MRTTable from "components/MRTTable";
-import { basic_timeouts } from "../../../cypress/cypressUtils/data";
-import { globalStateController } from "hookstate/globalStateController";
-import ldata from "../../fixtures/ldata.json";
-import { REVERTCYPRESSDELETE } from "graphQL/useMutationCommonCypressRevert";
-import { headers } from "../../cypressUtils/cypressHeaders";
+import MRTTable from 'components/MRTTable';
+import { basic_timeouts } from '../../../cypress/cypressUtils/data';
+import { globalStateController } from 'hookstate/globalStateController';
+import ldata from '../../fixtures/ldata.json';
+import { REVERTCYPRESSDELETE } from 'graphQL/useMutationCommonCypressRevert';
+import { headers } from '../../cypressUtils/cypressHeaders';
 
-const columns = [{ name: "M1neral System ID" }];
+const columns = [
+  { name: 'M1neral System ID' },
+  {
+    name: 'Unit #',
+    type: 'string',
+  },
+  {
+    name: 'Section/ Range',
+    type: 'string',
+  },
+];
+
+const columnNames = ['Total Unit Interest'];
 
 const countyColumn = {
   name: "County",
@@ -80,15 +92,43 @@ describe("Unit Table", () => {
     });
   });
 
-  it("checks created at/by and updated at/by fields in unit grid", () => {
+  // test case to verify Total Unit Interest column visible in grid
+  it('checks created at/by and updated at/by fields in unit grid', () => {
     cy.VerifyAuthInfoMRT();
   });
 
-  //test case to verify Total Unit Interest column visible in grid
-  it("Total Unit Interest Colummn Must Exist", () => {
-    cy.get("table thead th div.Mui-TableHeadCell-Content-Wrapper")
-      .contains("Total Unit Interest")
-      .should("exist");
+  it('Expected columns exist and in correct order', () => {
+    cy.mrtColumnOrder({ columnNames });
+  });
+
+  it('should check the filter on Unit Column', () => {
+    cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
+    cy.mrtSingleSelect({ column: columns[1] });
+  });
+
+  it('should check the filter on Owner Count Column', () => {
+    cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
+    cy.mrtSingleSelect({ column: columns[2] });
+  });
+
+  it('should check sorting is working fine on different columns', () => {
+    cy.wait(100);
+
+    cy.mrtSortColumn({ column: columns[1] });
+    cy.mrtSortColumn({ column: columns[2] });
+  });
+
+  it('should check grid have M1neral System ID column', () => {
+    cy.get('.MuiButtonBase-root[aria-label="Show/Hide columns"]').click();
+
+    cy.get('ul.MuiList-root > li.MuiButtonBase-root')
+      .contains('M1neral System ID')
+      .click();
+    cy.get('body').click();
+
+    cy.get('table thead th div.Mui-TableHeadCell-Content-Wrapper')
+      .contains('M1neral System ID')
+      .should('exist');
   });
 
   it('Open Bulk Update for Unit Grid', () => {
