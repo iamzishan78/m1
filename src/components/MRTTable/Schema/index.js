@@ -16,7 +16,8 @@ import ShapesFilesGenericMeta from './shapefiles_generic_schema';
 import PropertiesMeta from './properties_schema';
 import ReportingGroupsMeta from './property_group_schema';
 import RevenueStatementsMeta from './revenue_statements_schema';
-import ContactWellInterestMeta from './contact_well_Interest_schema';
+import ContactWellInterestMeta from "./contact_well_Interest_schema"
+import UnitTractsMeta from "./unit_tract_schema"
 import MyWellsMeta from './my_wells_schema';
 import WellsMeta from './wells_schema';
 import TaxOwnerMeta from './map-grid-tax-owner-schema';
@@ -49,6 +50,7 @@ export const SCHEMA = {
 	ShapesFilesGenericTable: ShapesFilesGenericMeta,
 	PropertiesTable: PropertiesMeta, //main property Grid => /revenue/properties
 	RevenueStatementsTable: RevenueStatementsMeta, // Revenue Statement grid => revenue/statements
+	UnitTractTable: UnitTractsMeta, // UnitDetailCard => tracts
 	MyWellsTable: MyWellsMeta,
 	RevenuePropertiesTable: ReportingGroupsMeta,
 	WellsTable: WellsMeta,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -13,12 +13,14 @@ import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/Su
 import { useForm, Controller } from "react-hook-form";
 
 // contexts 
+import { AppContext } from "AppContext";
 import { getParcelOriginalProperties } from "components/ParcelsDetailCard/utils/GetParcelOriginalProps";
 import AutoCompleteShapeLayer from "components/Shared/Forms/Fields/AutoCompleteShapeLayer";
 import TractForm from "components/Table/TableAddDialog/Common/TractForm";
 import { ADD_TRACTS_TOA_SHAPE } from "graphQL/useMutationAddTractsToAShape";
 import { UPDATE_SHAPE_TRACTS } from "graphQL/useMutationUpdateShapeTracts";
 import pick from 'lodash/pick';
+import { tableGlobalController } from 'hookstate/tableController';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -48,19 +50,20 @@ function AddUnitTractDialog(props) {
   const { control, reset, register, getValues, watch } = useForm();
 
   const [loading, setLoading] = useState(false);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [tractValue, setTractValue] = useState({ name: "", _id: null });
   const [selectedShapeLayer, setSelectedShapeLayer] = useState(null);
 
   const tract = watch()
 
-  const [addShapeTract] = useMutation(ADD_TRACTS_TOA_SHAPE, {
+  const [addShapeTract, { data: mutationData }] = useMutation(ADD_TRACTS_TOA_SHAPE, {
     onCompleted: () => {
       setLoading(false);
       handleClose();
     },
     refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
   });
-  const [updateShapeTract] = useMutation(UPDATE_SHAPE_TRACTS, {
+  const [updateShapeTract, { data: updateData }] = useMutation(UPDATE_SHAPE_TRACTS, {
     onCompleted: () => {
       setLoading(false);
       handleClose();
@@ -68,6 +71,23 @@ function AddUnitTractDialog(props) {
     onError: (err) => { },
     refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
   });
+
+  useEffect(() => {
+    let type = null;
+    if (mutationData && mutationData.addTractsToAShape) {
+      type = { name: 'add', success: mutationData.addTractsToAShape.success };
+    } else if (updateData && updateData.updateShapeTracts) {
+      type = { name: 'update', success: updateData.updateShapeTracts.success };
+    }
+    if (type) {
+      handleCloseDialog();
+      setStateApp(state => ({
+        ...state,
+        universalCircularLoaderAct: false,
+      }));
+      tableGlobalController.refetch() // refresh MRTtable data on add or update
+    }
+  }, [mutationData, updateData]);
 
   useEffect(() => {
     if (props.seletedTract) {
@@ -110,14 +130,16 @@ function AddUnitTractDialog(props) {
       updateShapeTract({
         variables: {
           shapeTracts: [{
-            _id: selectedShapeLayer._id,
             name: selectedShapeLayer.name,
             shapeId: props.shapeId,
+            parcelId: selectedShapeLayer.parcelId,
             ...getValues(),
           }],
           shapeType: props.shapeType,
+          selectedTractToUpdate: props.seletedTract._id, // Pass selectedTract id for replace tract with current selected tract
         }
       });
+      setStateApp(state => ({ ...state, universalCircularLoaderAct: true }))
     } else {
       addShapeTract({
         variables: {
@@ -130,6 +152,7 @@ function AddUnitTractDialog(props) {
           shapeType: props.shapeType,
         }
       });
+      setStateApp(state => ({ ...state, universalCircularLoaderAct: true }))
     }
   }
 
