@@ -703,3 +703,4 @@ export const OWNERTYPE = {
 };
 
 export const MapFeatureTenants = ['m1dev', 'frontier', 'localhost'];
+export const PaymentFeatureTenants = ['m1dev', 'frontier', 'localhost'];

@@ -56,6 +56,7 @@ import { jobController } from 'hookstate/jobStateController';
 import RelatedPayments from './relatedPayments';
 import { detailCardController } from 'hookstate/detailCardController';
 import { tableGlobalController } from 'hookstate/tableController';
+import { PaymentFeatureTenants } from 'utils/data';
 
 const useStyles = makeStyles(theme => ({
 	mapProvider: {
@@ -247,6 +248,8 @@ export function DetailComponents(props) {
 	const activeAgreement = useSelector(({ Land }) => Land.agreement?.activeAgreement);
 	const [stateApp, setStateApp] = useContext(AppContext);
 	const [drawer, setDrawer] = useContext(DrawerContext);
+	const isPaymentTenant = PaymentFeatureTenants.includes(window.sessionStorage?.getItem('tenantName').toLowerCase());
+	const paymentTabIndex = isPaymentTenant ? 3 : 2;
 
 	const [tab, setTab] = useState(0);
 	const selectedTabRef = useRef(null);
@@ -544,7 +547,7 @@ export function DetailComponents(props) {
 								<StyledTab id="summaryTab" label="Summary" />
 								<StyledTab label="Parties" />
 								<StyledTab id="provisionsTab" label="Provisions" />
-								<StyledTab id="paymentsTab" label="Payments" />
+								{isPaymentTenant && <StyledTab id="paymentsTab" label="Payments" />}
 								<StyledTab id="legalDescriptionTab" label="Legal Description" />
 								<StyledTab id="wellsTab" label="Wells" />
 								<StyledTab id="documentsTab" label="Documents" />
@@ -650,14 +653,22 @@ export function DetailComponents(props) {
 								/>
 							</div>
 							<div style={{ backgroundColor: '#f3f3f3 !important', height: 24 }} />
-							<div id="payments-div" className={classes.tabDetailSection} ref={tab === 3 ? selectedTabRef : null}>
-								<RelatedPayments />
-							</div>
-							<div style={{ backgroundColor: '#f3f3f3 !important', height: 24 }} />
+							{isPaymentTenant && (
+								<>
+									<div
+										id="payments-div"
+										className={classes.tabDetailSection}
+										ref={tab === paymentTabIndex ? selectedTabRef : null}
+									>
+										<RelatedPayments />
+									</div>
+									<div style={{ backgroundColor: '#f3f3f3 !important', height: 24 }} />
+								</>
+							)}
 							<div
 								id="legal-description-div"
 								className={classes.tabDetailSection}
-								ref={tab === 4 ? selectedTabRef : null}
+								ref={tab === paymentTabIndex + 1 ? selectedTabRef : null}
 							>
 								<LegalDescription
 									agreementDetails={agreementDetails}
@@ -667,15 +678,27 @@ export function DetailComponents(props) {
 								/>
 							</div>
 							<div style={{ backgroundColor: '#f3f3f3 !important', height: 24 }} />
-							<div id="related-wells-div" className={classes.tabDetailSection} ref={tab === 5 ? selectedTabRef : null}>
+							<div
+								id="related-wells-div"
+								className={classes.tabDetailSection}
+								ref={tab === paymentTabIndex + 2 ? selectedTabRef : null}
+							>
 								<RelatedWells uniObj={uniObj} shapeSummaryDetails={dataShapeSummaryDetails?.shapeSummaryDetails} />
 							</div>
 							<div style={{ backgroundColor: '#f3f3f3 !important', height: 24 }} />
-							<div id="related-docs-div" className={classes.tabDetailSection} ref={tab === 6 ? selectedTabRef : null}>
+							<div
+								id="related-docs-div"
+								className={classes.tabDetailSection}
+								ref={tab === paymentTabIndex + 3 ? selectedTabRef : null}
+							>
 								<RelatedDocumets uniObj={uniObj} setDrawer={setDrawer} />
 							</div>
 							<div style={{ backgroundColor: '#f3f3f3 !important', height: 24 }} />
-							<div id="related-agrmt-div" className={classes.tabDetailSection} ref={tab === 7 ? selectedTabRef : null}>
+							<div
+								id="related-agrmt-div"
+								className={classes.tabDetailSection}
+								ref={tab === paymentTabIndex + 4 ? selectedTabRef : null}
+							>
 								<RelatedAgreementsTable uniObj={uniObj} setDrawer={setDrawer} drawer={drawer} />
 							</div>
 						</div>
