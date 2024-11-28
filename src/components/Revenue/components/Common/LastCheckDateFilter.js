@@ -3,13 +3,12 @@ import { Grid, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/styles';
 import CustomDates from 'components/Revenue/components/Common/CustomDates';
-import { GET_ES_MIN_VALUE } from 'graphQL/useQueryESMinValue';
 import { useLazyQuery } from '@apollo/client';
 import { useSelector } from 'react-redux';
 import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
-import { dateFilterToDate } from 'utils/helper';
+import { dateFilterToDate, getFirstDayOfMonth } from 'utils/helper';
 import { copy } from 'components/Shared/functions';
-import { getFirstDayOfMonth } from 'utils/helper';
+import { GET_ES_AGGS_LIST } from 'graphQL/useQueryESAggsList';
 
 const useStyles = makeStyles(theme => ({
 	actionBar: {
@@ -49,11 +48,11 @@ const LastCheckDateFilter = ({
 	isComparisonReport = false,
 }) => {
 	const classes = useStyles();
+	const status = 'ALL';
 
 	const [fromDate, setFromDate] = React.useState(null);
 	const [toDate, setToDate] = React.useState(null);
 	const [lastCheckMinDate, setLastCheckMinDate] = useState('');
-	// const [status, setStatus] = useState('ALL');
 	const [propertyFilter, setPropertyFilter] = useState([]);
 	const [checkNumberFilter, setCheckNumberFilter] = useState();
 	const [propertyNumberFilter, setPropertyNumberFilter] = useState();
@@ -62,27 +61,32 @@ const LastCheckDateFilter = ({
 
 	const propertiesReportGroup = useSelector(({ Revenue }) => Revenue.propertiesReportGroup);
 
-	const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
+	const [getDbMinValue] = useLazyQuery(GET_ES_AGGS_LIST, {
 		fetchPolicy: 'no-cache',
 		onCompleted: data => {
-			if (data?.getESMinValue) {
-				setLastCheckMinDate(data?.getESMinValue);
+			if (data?.getESAggsList?.aggregations?.[field]) {
+				setLastCheckMinDate(data.getESAggsList.aggregations[field]);
 			}
 		},
 	});
 	useEffect(() => {
-		getESMinValue({
+		getDbMinValue({
 			variables: {
 				esIndex,
-				field,
-				value_as_string: true,
+				isElasticQuery: false,
+				aggs: {
+					[field]: {
+						min: { field },
+					},
+				},
 			},
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [getESMinValue]);
+	}, [getDbMinValue]);
 
 	const updateFilters = useCallback(() => {
 		let filters = copy(esFilters) ?? [];
+		const isDuplicateFilter = filters?.findIndex(filter => filter.field === field) !== -1;
+
 		filters = filters.filter(
 			filter =>
 				filter.type !== 'range' &&
@@ -97,7 +101,7 @@ const LastCheckDateFilter = ({
 		if (propertyNumberFilter) {
 			filters.push({ field: 'property.number.keyword', value: propertyNumberFilter });
 		}
-		if (fromDate && toDate)
+		if (fromDate && toDate && !isDuplicateFilter) {
 			filters.unshift({
 				field,
 				value: [
@@ -106,6 +110,7 @@ const LastCheckDateFilter = ({
 				],
 				filterType: 'date',
 			});
+		}
 
 		const _propertyFilter = copy(propertyFilter);
 		filters = filters.filter(filter => !reportGroupFilters.current.includes(filter.field));

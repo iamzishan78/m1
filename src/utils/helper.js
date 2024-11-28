@@ -40,6 +40,7 @@ export const getFirstDayOfMonth = dateString => {
 	// Return the date in ISO 8601 format
 	return date.toISOString();
 };
+
 export const dateIsValid = date => {
 	try {
 		date = new Date(
@@ -601,3 +602,9 @@ function hexToRgb(hex) {
 	const b = parseInt(hex.substr(5, 2), 16);
 	return [r, g, b];
 }
+
+// Function to check if a string is a valid URL
+export const validateUrl = text => {
+	const regex = /^(https?:\/\/[^\s$.?#].[^\s]*)$/i;
+	return regex.test(text);
+};

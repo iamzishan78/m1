@@ -83,6 +83,7 @@ const getBoundsQuery = async ({
 	onData,
 	geoField,
 	filters,
+	isElasticQuery,
 	multiQuery,
 	polygonFilter,
 	polygonsFilter,
@@ -94,7 +95,9 @@ const getBoundsQuery = async ({
 			identifier,
 			id: uuid(),
 			finished: false,
-			variables: {},
+			variables: {
+				...(isElasticQuery === false && { isElasticQuery }),
+			},
 		};
 
 		await handleQuery(queryHandler, onData);
@@ -137,6 +140,8 @@ const getBoundsQuery = async ({
 	geoPolygons.forEach(geoPolygon => {
 		const { variables = {} } = copy(filters || {});
 
+		if (isElasticQuery === false) variables.isElasticQuery = isElasticQuery;
+
 		if (isAgreementLayer)
 			variables.filters = filters.variables.filters.map(filter => {
 				if (filter.field !== 'shapeJson.properties.type.keyword') return filter;
@@ -151,25 +156,19 @@ const getBoundsQuery = async ({
 			const polygonString = getPolygonString(geoPolygon);
 			if (polygonString) variables.polygon = polygonString;
 		} else {
-			if (polygonsFilter.length === 0)
-				variables.filters.push({
-					type: 'geo_intersects',
-					field: filters.geoBoundingField || geoField,
-					value: geoPolygon.geometry,
-				});
-
 			variables.filters.push({
 				type: 'geo_intersects',
 				field: filters.geoBoundingField || geoField,
-				value: polygonsFilter,
+				value: polygonsFilter.length === 0 ? geoPolygon.geometry : polygonsFilter,
 			});
 
-			if (lastBounds?.geometry)
+			if (lastBounds?.geometry) {
 				variables.filters.push({
 					type: 'geo_notintersects',
 					field: filters.geoBoundingField || geoField,
 					value: lastBounds?.geometry,
 				});
+			}
 		}
 
 		const queryHandler = {

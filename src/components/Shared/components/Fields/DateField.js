@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { TextField } from '@material-ui/core';
+import moment from 'moment';
 
-const NumberField = ({ value, defaultValue, id, field, fieldKey, index, onChange, ...props }) => {
+const DateField = ({ value, defaultValue, id, field, fieldKey, index, onChange, ...props }) => {
 	const [fieldValue, setFieldValue] = useState(value || defaultValue || '');
 
 	useEffect(() => {
@@ -9,11 +10,13 @@ const NumberField = ({ value, defaultValue, id, field, fieldKey, index, onChange
 	}, [value, defaultValue]);
 
 	const handleChange = e => {
-		const val = Number(e.target.value.trim());
-		if (!isNaN(val)) {
-			setFieldValue(val);
-			onChange?.(e, val);
-		}
+		const val = e.target.value;
+		setFieldValue(val);
+		onChange?.(e, val);
+	};
+
+	const formatDate = date => {
+		return date ? moment(date).format('YYYY-MM-DD') : '';
 	};
 
 	return (
@@ -21,9 +24,9 @@ const NumberField = ({ value, defaultValue, id, field, fieldKey, index, onChange
 			id={id || `field-${index}`}
 			variant="outlined"
 			margin="dense"
-			type="number"
+			type="date"
 			fullWidth
-			value={fieldValue}
+			value={formatDate(fieldValue)}
 			InputProps={props.InputProps}
 			InputLabelProps={{ shrink: true }}
 			onBlur={() => {
@@ -36,4 +39,4 @@ const NumberField = ({ value, defaultValue, id, field, fieldKey, index, onChange
 	);
 };
 
-export default NumberField;
+export default DateField;

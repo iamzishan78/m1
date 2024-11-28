@@ -7,6 +7,7 @@ import { tableController } from 'hookstate/tableController';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
 import vf_currency from 'components/Shared/valueformatters/vf_currency.js';
+import { currencyKeys } from '../utils/data';
 
 // format value to show filter value & option with $ sign as prefix
 const formatValue = (value, field) => {
@@ -264,6 +265,8 @@ function ESAutoCompleteFilter({
 
 				if (type === 'date') {
 					value = formatDate(value);
+				} else if (type === 'boolean') {
+					value = value === 'true';
 				}
 				setFilterValue(value);
 
