@@ -148,7 +148,7 @@ const Title = ({ tab, setTab, setData, copyData, stateApp, setStateApp }) => {
 			} else {
 				setData(copyData.filter(task => task?.name?.toLowerCase()?.includes(search?.toLowerCase())));
 			}
-		} else if (search?.length === 0 && copyData?.length) {
+		} else if (search?.length === 0) {
 			setData(copyData);
 		}
 	}
