@@ -79,7 +79,7 @@ export const handleMRTSchema = ({ _Schema, tableKey, esIndex, defaultFlterMode, 
 
 	const _TableSchema = _Schema.map(schemaColumn => {
 		if (schemaColumn.filter && !schemaColumn.Filter) {
-			schemaColumn.SingleSelect = function Comp({ column }) {
+			schemaColumn.SingleSelect = function Comp({ column, isCustom, _value, textFieldProps }) {
 				return (
 					<div>
 						<ESAutoCompleteFilter
@@ -96,10 +96,14 @@ export const handleMRTSchema = ({ _Schema, tableKey, esIndex, defaultFlterMode, 
 								filterValue: column?.getFilterValue() || '',
 							}}
 							multiple={false}
+							_value={_value}
+							textFieldProps={textFieldProps}
 						/>
-						<span style={{ fontSize: '0.7rem', color: 'rgba(0, 0, 0, 0.6)', fontWeight: 400 }}>
-							Filter Mode: Single Select
-						</span>
+						{!isCustom && (
+							<span style={{ fontSize: '0.7rem', color: 'rgba(0, 0, 0, 0.6)', fontWeight: 400 }}>
+								Filter Mode: Single Select
+							</span>
+						)}
 					</div>
 				);
 			};

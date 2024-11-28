@@ -1,13 +1,16 @@
 import { hookstate } from '@hookstate/core';
 import { copy } from 'components/Shared/functions';
 import { ROUTES } from 'components/Shared/FeatureFlag/common';
+import { simpleAuthBypass } from 'utils/data';
 
 /* -------------------------------------------------------------------------- */
 /*                              Global Controller                             */
 /* -------------------------------------------------------------------------- */
 export const globalInitialState = {
 	layers: [],
+	panelItems: [],
 	emptyGroups: [],
+	globalSearch: '',
 	universalLoader: false,
 	layerLoading: {},
 	user: null,
@@ -18,7 +21,9 @@ export const globalInitialState = {
 	x_zumo_auth: null,
 	cypress: null,
 	testCase: null,
-	bypassLogin: false,
+	bypassLogin: simpleAuthBypass || false,
+	bypassType: '',
+	tenant: null,
 };
 
 export const globalState = hookstate(copy(globalInitialState));

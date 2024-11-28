@@ -1,10 +1,7 @@
 import React, { memo } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { simpleTableGlobalController } from 'hookstate/simpleTableController';
-import {
-	AssignOwnerToContactDrawerContainer,
-	MultipleOwnerToContactDrawerContainer,
-} from 'store/containers';
+import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import BuyContactsInfoDialogContent from 'components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
 import DeleteConfirmationDialogContent from './ConfirmationDialog/DeleteConfirmationDialog';
@@ -12,8 +9,8 @@ import Loader from 'components/Loaders';
 import CommentDialog from './CommentDialog';
 import TagDialog from './TagDialog';
 import ExportConfirmationDialog from './ConfirmationDialog/ExportConfirmation';
-import { useMutation } from "@apollo/client";
-import { REMOVE_USERS } from "graphQL/userManagement";
+import { useMutation } from '@apollo/client';
+import { REMOVE_USERS } from 'graphQL/userManagement';
 import { globalStateController } from 'hookstate/globalStateController';
 
 function AllDialogs() {
@@ -37,7 +34,7 @@ function AllDialogs() {
 		});
 	};
 
-	const deleteFunc = async (dataToDelete) => {
+	const deleteFunc = async dataToDelete => {
 		Loader.createToast('deletion', 'Deletion in Progress');
 
 		const userIds = dataToDelete.mainRecord || [];
@@ -46,10 +43,10 @@ function AllDialogs() {
 			removeUsers({
 				variables: {
 					userIds,
-					orgId: window.sessionStorage.getItem('tenantOrgId')
+					orgId: window.sessionStorage.getItem('tenantOrgId'),
 				},
 			}).then(
-				(res) => {
+				res => {
 					if (res?.data?.removeUsers) {
 						Loader.successToast('deletion');
 						simpleTableGlobalController.refetch();
@@ -63,15 +60,14 @@ function AllDialogs() {
 		}
 	};
 
-
 	return (
 		<>
-			{type === "tags" && (
+			{type === 'tags' && (
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={false}>
 					<TagDialog {...rest} />
 				</Dialog>
 			)}
-			{type === "comments" && (
+			{type === 'comments' && (
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
 					<CommentDialog {...rest} />
 				</Dialog>
@@ -85,7 +81,7 @@ function AllDialogs() {
 					setSelectedRow={updateRows}
 					setRows={updateRows}
 					objectType={rest?.objectType || 'contact'}
-			        refetchQueries={[rest?.refetchQueries || "getESContacts"] }
+					refetchQueries={[rest?.refetchQueries || 'getESContacts']}
 				/>
 			)}
 
@@ -107,8 +103,7 @@ function AllDialogs() {
 					header={rest.header}
 					onClose={handleCloseDialog}
 				>
-					{`Do you want to Export ${rest.isSomeRowsSelected ? 'Selected Row (s)' : ' Complete Grid'
-						} ?`}
+					{`Do you want to Export ${rest.isSomeRowsSelected ? 'Selected Row (s)' : ' Complete Grid'} ?`}
 				</ExportConfirmationDialog>
 			)}
 
@@ -120,8 +115,7 @@ function AllDialogs() {
 						deleteFunc={deleteFunc}
 						deletedData={rest?.deletedData}
 					>
-						{`Do you want to delete the selected row ${rest?.Ids?.length > 1 ? 's' : ''
-							}?`}
+						{`Do you want to delete the selected row ${rest?.Ids?.length > 1 ? 's' : ''}?`}
 					</DeleteConfirmationDialogContent>
 				</Dialog>
 			)}
@@ -132,8 +126,8 @@ function AllDialogs() {
 					jobName={rest?.jobName}
 					onClose={handleCloseDialog}
 					rows={rest?.rows}
-					onSuccess={() => { }}
-					setRows={() => { }}
+					onSuccess={() => {}}
+					setRows={() => {}}
 				/>
 			)}
 		</>

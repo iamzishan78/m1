@@ -37,6 +37,8 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		let sort = tableStateValues.sorting[0]
 			? {
 					field: (() => {
+						if (tableStateValues.sorting[0].field) return tableStateValues.sorting[0].field;
+
 						const sortingId = tableStateValues.sorting[0].id;
 						const matchingSchema = TableSchema.find(val => (val.accessorKey || val.id) === sortingId);
 
@@ -127,7 +129,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				let value = get(row, accessorKey);
 				if (value !== undefined && value !== null && !Array.isArray(value) && typeof value !== 'object')
 					value = defaultValue === '' ? `${value}` : value;
-				set(row, accessorKey, value || defaultValue, defaultValue);
+				set(row, accessorKey, value, defaultValue);
 			});
 		});
 		if (tableState?.isInFiniteScroll?.get() && !resetPagination.current) {
@@ -169,6 +171,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 					esIndex,
 					filters: [...filters, ...defaultFilters],
 					aggs: Object.assign({}, ...aggregationColumns),
+					isElasticQuery: tableStateValues.isElasticQuery,
 				},
 				query: GET_ES_AGGS_LIST,
 			});
