@@ -61,4 +61,5 @@ export const SCHEMA = {
 	AcreageSummaryTable: AcreageSummaryMeta,
 	ExhibitATable: ExhibitAMeta,
 	AcreageDetailsTable: AcreageDetilsMeta,
+	TractInterestsTable: TractInterestsMeta, // Tracts Interest schema
 };
