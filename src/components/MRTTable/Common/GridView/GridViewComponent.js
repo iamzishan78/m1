@@ -10,7 +10,7 @@ import { CircularProgress } from '@material-ui/core';
 function GridViewComponent({ Icon, buttonRef, label, tableKey, fetchGridViews }) {
 	const [updateGridView, { data }] = useMutation(UPDATE_GRID_VIEW, {
 		onCompleted: () => {
-			fetchGridViews()
+			fetchGridViews();
 		},
 	});
 	const [showIcon, setShowIcon] = useState(false);
@@ -24,7 +24,7 @@ function GridViewComponent({ Icon, buttonRef, label, tableKey, fetchGridViews })
 		'sorting',
 		'groupedField',
 		'columnPinning',
-		'columnOrdering'
+		'columnOrdering',
 	]);
 	const tableStateValues = tableState.stateValues;
 	const selectedGridView = tableStateValues?.gridView?.selectedGridView;
