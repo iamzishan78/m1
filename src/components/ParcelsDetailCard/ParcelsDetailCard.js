@@ -19,14 +19,16 @@ import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
 import { UPDATECUSTOMLAYER } from '../../graphQL/useMutationUpdateCustomLayer';
 import ParcelSummary from './ParcelSummary';
 import { copy } from 'utils/helper';
-import { popupController, popupState } from 'hookstate/popupStateController';
+import { popupController } from 'hookstate/popupStateController';
 import MRTTable from "components/MRTTable";
 import { tableController, tableGlobalController } from "hookstate/tableController";
 import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
+import { showSuccessMessage, showErrorMessage } from 'actions';
 import { jobController } from "hookstate/jobStateController";
-import { showSuccessMessage, showErrorMessage, setMapGridCardState } from 'actions';
 import { simpleTableGlobalController } from 'hookstate/simpleTableController';
 import { globalStateController } from 'hookstate/globalStateController';
+import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
 import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
@@ -236,11 +238,9 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
   const globalStateValues = globalState.stateValues;
 
   useEffect(() => {
-    dispatch(
-      setMapGridCardState({
-        mapGridCardActivated: false,
-      })
-    );
+    mapControlsController.updateState({
+      mapGridCardActivated: false,
+    });
   }, []);
 
   useEffect(() => {
@@ -327,6 +327,17 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
     customProps: { customLayer: parcelObj }
   }), [parcelObj]);
 
+  // Table overridden meta
+  const RelatedAgreementOverrideMeta = useMemo(() => ({
+    defaultFilters: [{ field: "tract.tractId", value: parcelObj?._id }],
+    onClickedRow: () => null,
+    onCustomKeyChange: null,
+    CustomToolBar: null,
+    gridViewSettings: null,
+    maxTableHeight: "calc(60vh - 200px)",
+    fetchMetaData: null,
+  }), [parcelObj]);
+
   useEffect(() => {
     if (updatedParcel) {
       if (updatedParcel.updateCustomLayer?.success) {
@@ -368,7 +379,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 
     if (field === 'shapeLabel') {
       popupController.updateState({
-        selectedParcel: { ...popupState.selectedParcel?.get({ noproxy: true }), shapeLabel: value },
+        selectedParcel: { ...popupController.getValue('selectedParcel'), shapeLabel: value },
       });
       customLayer.name = value;
     }
@@ -379,8 +390,11 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
         customLayer,
         userId: globalStateController.getValue('user')?._id
       },
-    }).then(() => {
+      refetchQueries: ['getAllLayerSettingsByUser'],
+      awaitRefetchQueries: true,
+    }).then((res) => {
       jobController.toggleBulkUpload()
+      layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)
     });
   };
 
@@ -400,8 +414,11 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
         customLayer,
         userId: globalStateController.getValue('user')?._id
       },
-    }).then(() => {
+      refetchQueries: ['allLayerSettingsByUser'],
+      awaitRefetchQueries: true,
+    }).then((res) => {
       jobController.toggleBulkUpload()
+      layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)
     });
   };
 
@@ -453,10 +470,10 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
       </Grid>
       <Grid item sm={12}>
         <Taps
-          tabLabels={['Summary', 'Interest Owners', 'Runsheet', 'Wells', 'Units', 'Documents']}
+          tabLabels={['Summary', 'Interest Owners', 'Runsheet', 'Wells', 'Units', 'Agreements', 'Documents']}
           openTabIdex={selectTabIndex}
           tabPanels={[
-            <div style={{ overflow: 'overlay', maxHeight: 'calc(100vh - 285px)' }}>
+            <div style={{ overflow: 'overlay', maxHeight: 'calc(100vh - 285px)', overflowX: 'hidden' }}>
               <ParcelSummary
                 id={id}
                 customLayer={copy(parcelObj)}
@@ -519,6 +536,9 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
                 </div>,
               ]}
             />,
+            <div>
+              <MRTTable name="ShapeDetailAgreementTable" overrideMeta={RelatedAgreementOverrideMeta} />
+            </div>,
             <div className={`${classes.subContent} ${classes.parcelDocument}`}>
               <RelatedDetailsDocumentTable
                 customLayer={copy(parcelObj)}

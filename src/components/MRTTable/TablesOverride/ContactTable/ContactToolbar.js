@@ -123,6 +123,8 @@ function ContactToolbar({ table, tableKey }) {
 			table,
 			tableKey,
 			selectedCampaign: tableStateValues.customProps?.campaign,
+			objectType: 'contact' ,
+			refetchQueries: ["getESContacts"]
 		};
 	};
 
@@ -194,7 +196,7 @@ function ContactToolbar({ table, tableKey }) {
 
 				{isSomethingSelected && <ExportData classes={classes} {...exportPropsPass} />}
 			</>
-			<ContactTableDialogs />
+			<ContactTableDialogs tableKey={tableKey} />
 		</>
 	);
 }

@@ -52,6 +52,7 @@ describe('AgreementFieldsSection', () => {
     cy.wait(100);
     cy.get('.MuiAutocomplete-option').first().click();
     cy.get('body').click();
+    cy.wait(1000);
     cy.get('#field-prospectID').should('have.value', 'cypress test value');
 
     // Clearing and entering values for the 'acquisitionID' field
@@ -61,6 +62,7 @@ describe('AgreementFieldsSection', () => {
     cy.wait(100);
     cy.get('.MuiAutocomplete-option').first().click();
     cy.get('body').click();
+    cy.wait(1000);
     cy.get('#field-acquisitionID').should('have.value', 'cypress test value');
 
     // Clearing and entering values for the 'internalCompany' field
@@ -70,6 +72,7 @@ describe('AgreementFieldsSection', () => {
     cy.wait(100);
     cy.get('.MuiAutocomplete-option').first().click();
     cy.get('body').click();
+    cy.wait(1000);
     cy.get('#field-internalCompany').should('have.value', 'cypress test value');
   });
 });

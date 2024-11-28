@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useContext, useEffect, useMemo } from "react";
 import { useHistory } from "react-router-dom";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -14,8 +14,6 @@ import HistoryIcon from '@material-ui/icons/History';
 
 import IconButton from "@material-ui/core/IconButton";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import SearchIcon from "@material-ui/icons/Search";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 
 // contexts
 import { AppContext } from "../../../AppContext";
@@ -29,17 +27,11 @@ import { USERSEARCHHISTORY } from "../../../graphQL/useQueryUserSearchHistory";
 import { ADDSEARCHHISTORY } from "../../../graphQL/useMutationAddSearchHistory";
 import { UPDATESEARCHHISTORY } from "../../../graphQL/useMutationUpdateSearchHistory";
 import { REMOVESEARCHHISTORY } from "../../../graphQL/useMutationRemoveSearchHistory";
-// import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
 import { CONTACTWELLS } from "../../../graphQL/useQueryContactWells";
-// import { PAGINATEDWELLSQUERY } from "graphQL/useQueryPaginatedWells";
-// import { PAGINATEDOWNERSQUERY } from "graphQL/useQueryPaginatedOwner";
-// import { PAGINATEDOPERATORSQUERY } from "graphQL/useQueryPaginatedOperators";
-// import { PAGINATEDLEASESQUERY } from "graphQL/useQueryPaginatedLeases";
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 
 // custom components
-import { toggleMapGridCardAtived, setMapGridCardState } from "../../../actions";
-import { deepEqualObjects } from "../../Shared/functions";
+import { setMapGridCardState } from "../../../actions";
 import WellIcon from "../../Shared/svgIcons/well";
 import LeaseGrayIcon from "../../Shared/svgIcons/lease-gray";
 import OperatorIcon from "../../Shared/svgIcons/operator";
@@ -61,6 +53,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-first-letter";
 import { SHAPE_TYPE } from "components/Navigation/components/Utils/consts";
+import { popupController } from "hookstate/popupStateController";
+import { mapControlsController } from "hookstate/mapControlsController";
+import { layerController } from "hookstate/layerStateController";
 
 const landGridIndexName = "landgrid-index";
 const leaseIndexName = "lease-index-m1corev3";
@@ -102,7 +97,6 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: "5px",
   },
   groupsHeaders: {
-    position: "-webkit-sticky",
     position: "sticky",
     top: "-9px",
     // backgroundColor: "#d4e7fce0",
@@ -183,14 +177,155 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Search() {
+const esCallData = {
+  "platform wells": {
+    esIndex: "platformData:wells",
+    search: (request) => `${request.input}`,
+    searchFields: SHAPE_TYPE['wells'].SEARCH_FIELDS,
+    formatOptions: (data) => {
+      return { ...data, Source: wellCogIndexName, Primary: data.WellName, Secondary: data.ApiNumber }
+    }
+  },
+  "my wells": {
+    esIndex: "mywells_flat",
+    search: (request) => `*${request.input}*`,
+    searchFields: SHAPE_TYPE['my wells'].SEARCH_FIELDS,
+    formatOptions: (data) => {
+      return { ...data, Source: 'mywells_flat', Primary: data.wellData.WellName, Secondary: data.wellData.ApiNumber }
+    }
+  },
+  "contacts": {
+    esIndex: "contacts_flat",
+    search: (request) => `${request.input}`,
+    searchFields: SHAPE_TYPE['contacts'].SEARCH_FIELDS,
+    formatOptions: (data) => {
+      return {
+        ...data, ...data.node, Primary: data.name || "--",
+        Source: contactIndexName,
+        Secondary: data.address1 || data.city || data.state ? data.address1 + ' ' + data.city + ', ' + data.state + ' ' + data.zip : "--"
+      }
+    }
+  },
+  "tax owners": {
+    esIndex: "platformData:globalowner",
+    search: (request) => `${request.input}`,
+    searchFields: SHAPE_TYPE['tax owners'].SEARCH_FIELDS,
+    formatOptions: (data) => {
+      return {
+        ...data, Source: 'globalowner-index-m1corev3', Primary: data.OwnerName, Secondary: `${data.StreetAddress}\n${data.City}\n${data.State}\n${data.Zip}`,
+      }
+    }
+  },
+  "operators": {
+    esIndex: "platformData:operator",
+    search: (request) => `${request.input}`,
+    searchFields: SHAPE_TYPE['operators'].SEARCH_FIELDS,
+    formatOptions: (data) => {
+      return { ...data, Source: operatorIndexName, Primary: data.Operator, Secondary: null }
+    }
+  },
+  "leases": {
+    esIndex: "platformData:lease",
+    search: (request) => `${request.input}`,
+    searchFields: ["lease", "leaseId"],
+    formatOptions: (data) => {
+      return {
+        ...data, Source: leaseIndexName, Primary: data.Lease && ["", "N/A", "(N/A)"].includes(data.Lease) ? "--" : data.Lease,
+        Secondary: data.LeaseId && ["", "N/A", "(N/A)"].includes(data.LeaseId) ? null : data.LeaseId
+      }
+    }
+  },
+  "land grid": {
+    esIndex: "platformData:landgrid",
+    search: (request) => `${request.input}`,
+    searchFields: SHAPE_TYPE['land grid'].SEARCH_FIELDS,
+    filter: [
+      { field: "level7Id.keyword", value: undefined },
+      { field: "level8Id.keyword", value: undefined },
+      { field: "level9Id.keyword", value: undefined },
+      { field: "level10Id.keyword", value: undefined }
+    ],
+    formatOptions: (data) => {
+      return {
+        ...data, Source: landGridIndexName,
+        Primary: [`${data.level1Type ? `${data.level1Type}: ${data.level1Name}` : ''}`,
+        `${data.level2Type ? `${data.level2Type}: ${data.level2Name}` : ''}`].join(' '),
+        Secondary: [`${data.level3Type ? `${data.level3Type}: ${data.level3Name}` : ''}`,
+        `${data.level4Type ? `${data.level4Type}: ${data.level4Name}` : ''}`,
+        `${data.level5Type ? `${data.level5Type}: ${data.level5Name}` : ''}`,
+        `${data.level6Type ? `${data.level6Type}: ${data.level6Name}` : ''}`].join(' ')
+      }
+    }
+  },
+  "units": {
+    esIndex: "shapes_flat",
+    search: (request) => request.input ? `*${request.input}*` : '',
+    searchFields: ["name", "shapeJson.properties.uNumber", "shapeJson.properties.originalProperties.County", "data.shapeJson.properties.originalProperties.State"],
+    filter: {
+      field: "layer",
+      value: "unit"
+    },
+    formatOptions: (data) => {
+      const Secondary = data?.shapeJson?.properties?.originalProperties ? `${data.shapeJson.properties.originalProperties.County}, ${data.shapeJson.properties.originalProperties.State || ''}` : null
+      const Primary = data?.shapeJson?.properties?.uNumber ? `${data?.shapeJson?.properties?.uNumber} - ${data.name}` : data.name
+      return {
+        ...data, Source: 'shapes_flat', Primary, Secondary
+      }
+    }
+  },
+
+  "tracts": {
+    esIndex: "shapes_flat",
+    search: (request) => request.input ? `*${request.input}*` : '',
+    searchFields: SHAPE_TYPE['tracts'].SEARCH_FIELDS,
+    filter: {
+      field: "layer",
+      value: "parcel"
+    },
+    formatOptions: (data) => {
+      const Secondary = data?.shapeJson?.properties?.originalProperties ? `${data.shapeJson.properties.originalProperties.County}, ${data.shapeJson.properties.originalProperties.State || ''}` : null
+      return {
+        ...data, Source: 'shapes_flat', Primary: data.name, Secondary
+      }
+    }
+  },
+  "agreements": {
+    esIndex: "shapes_flat",
+    search: (request) => request.input ? `*${request.input}*` : '',
+    searchFields: SHAPE_TYPE['agreements'].SEARCH_FIELDS,
+    filter: {
+      field: "shapeJson.properties.type",
+      value: "agreement"
+    },
+    formatOptions: (data) => {
+      return {
+        ...data, Source: 'shapes_flat', Primary: data?.shapeJson?.properties?.shapeLabel, Secondary: capitalizeFirstLetter(data.layer)
+      }
+    }
+  }
+};
+
+const SearchMemo = React.memo(Search);
+
+export default function SearchContainer(props) {
+  const [stateApp, setStateApp] = useContext(AppContext);
+  const setStateAppCallback = useCallback(setStateApp, [setStateApp])
+  const stateAppMemo = useMemo(() => ({ mapboxglAccessToken: stateApp.mapboxglAccessToken, user: stateApp.user, toggleLayersActivity: stateApp.toggleLayersActivity }), [stateApp.mapboxglAccessToken, stateApp.user, stateApp.toggleLayersActivity])
+  const { mapGridCardActiveTap, searchInputValue, lastSearch } = useSelector(({ MapGridCard }) => MapGridCard);
+  const MapGridCardMemo = useMemo(() => ({ mapGridCardActiveTap, searchInputValue, lastSearch }), [mapGridCardActiveTap, searchInputValue, lastSearch])
+
+  let location = useLocation();
+
+  return <SearchMemo stateApp={stateAppMemo} setStateApp={setStateAppCallback} MapGridCard={MapGridCardMemo} isDocument={location.pathname === "/documents"} />
+}
+
+function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
   const dispatch = useDispatch();
-  const { mapGridCardActivated, mapGridCardActiveTap, searchInputValue, lastSearch } = useSelector(({ MapGridCard }) => MapGridCard);
+  const { mapGridCardActiveTap, searchInputValue, lastSearch } = MapGridCard
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [stateApp, setStateApp] = React.useContext(AppContext);
   const [value, setValue] = React.useState(null);
   const [searchDropDown, setSearchDropDown] = React.useState(platformDataInitialData[0]);
-  const [searchOption, setSearchOption] = React.useState("wells");
+  const [searchOption, setSearchOption] = React.useState("platform wells");
   const [options, setOptions] = React.useState([]);
   const [searchTop, setSearchTop] = React.useState(5);
   const [maxMinWellsScore, setMaxMinWellsScore] = React.useState([0, 0]);
@@ -201,10 +336,12 @@ function Search() {
   const [maxMinMapboxSearchScore, setMaxMinMapboxSearchScore] = React.useState([0, 0]);
   const [searchHistoryList, setSearchHistoryList] = React.useState([]);
 
+  const { mapControlsStateValues } = mapControlsController.useState(['mapGridCardActivated'], 'mapControlsStateValues');
+  const { layerStateValues } = layerController.useState(['wellListFromSearch'], 'layerStateValues')
   // loaders
   const [loading, setLoading] = React.useState(false);
   const history = useHistory();
-  const classes = useStyles({ mapGridCardActivated });
+  const classes = useStyles({ mapGridCardActivated: mapControlsStateValues.mapGridCardActivated });
 
   // queries
   const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(OWNERSLATSLONS);
@@ -213,7 +350,6 @@ function Search() {
   const [getLandGridGeom, { data: dataLandGridGeom }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: "no-cache" });;
   const [getContactsWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
   const [getSearchHistory, { data: searchHistoryData }] = useLazyQuery(USERSEARCHHISTORY);
-  let location = useLocation();
 
   //////////// Search History Begin//////////////////
 
@@ -309,128 +445,6 @@ function Search() {
     []
   );
 
-
-  const esCallData = React.useMemo(
-    () => ({
-      "wells": {
-        esIndex: "platformData:wells",
-        search: (request) => `${request.input}`,
-        searchFields: SHAPE_TYPE['wells'].SEARCH_FIELDS,
-        formatOptions: (data) => {
-          return { ...data, Source: wellCogIndexName, Primary: data.WellName, Secondary: data.ApiNumber }
-        }
-      },
-      "contacts": {
-        esIndex: "contacts_flat",
-        search: (request) => `${request.input}`,
-        searchFields: SHAPE_TYPE['contacts'].SEARCH_FIELDS,
-        formatOptions: (data) => {
-          return {
-            ...data, ...data.node, Primary: data.name || "--",
-            Source: contactIndexName,
-            Secondary: data.address1 || data.city || data.state ? data.address1 + ' ' + data.city + ', ' + data.state + ' ' + data.zip : "--"
-          }
-        }
-      },
-      "tax owners": {
-        esIndex: "platformData:globalowner",
-        search: (request) => `${request.input}`,
-        searchFields: SHAPE_TYPE['tax owners'].SEARCH_FIELDS,
-        formatOptions: (data) => {
-          return {
-            ...data, Source: 'globalowner-index-m1corev3', Primary: data.OwnerName, Secondary: `${data.StreetAddress}\n${data.City}\n${data.State}\n${data.Zip}`,
-          }
-        }
-      },
-      "operators": {
-        esIndex: "platformData:operator",
-        search: (request) => `${request.input}`,
-        searchFields: SHAPE_TYPE['operators'].SEARCH_FIELDS,
-        formatOptions: (data) => {
-          return { ...data, Source: operatorIndexName, Primary: data.Operator, Secondary: null }
-        }
-      },
-      "leases": {
-        esIndex: "platformData:lease",
-        search: (request) => `${request.input}`,
-        searchFields: ["lease", "leaseId"],
-        formatOptions: (data) => {
-          return {
-            ...data, Source: leaseIndexName, Primary: data.Lease && ["", "N/A", "(N/A)"].includes(data.Lease) ? "--" : data.Lease,
-            Secondary: data.LeaseId && ["", "N/A", "(N/A)"].includes(data.LeaseId) ? null : data.LeaseId
-          }
-        }
-      },
-      "land grid": {
-        esIndex: "platformData:landgrid",
-        search: (request) => `${request.input}`,
-        searchFields: SHAPE_TYPE['land grid'].SEARCH_FIELDS,
-        filter: [
-          { field: "level7Id.keyword", value: undefined },
-          { field: "level8Id.keyword", value: undefined },
-          { field: "level9Id.keyword", value: undefined },
-          { field: "level10Id.keyword", value: undefined }
-        ],
-        formatOptions: (data) => {
-          return {
-            ...data, Source: landGridIndexName,
-            Primary: [`${data.level1Type ? `${data.level1Type}: ${data.level1Name}` : ''}`,
-            `${data.level2Type ? `${data.level2Type}: ${data.level2Name}` : ''}`].join(' '),
-            Secondary: [`${data.level3Type ? `${data.level3Type}: ${data.level3Name}` : ''}`,
-            `${data.level4Type ? `${data.level4Type}: ${data.level4Name}` : ''}`,
-            `${data.level5Type ? `${data.level5Type}: ${data.level5Name}` : ''}`,
-            `${data.level6Type ? `${data.level6Type}: ${data.level6Name}` : ''}`].join(' ')
-          }
-        }
-      },
-      "units": {
-        esIndex: "shapes_flat",
-        search: (request) => request.input ? `*${request.input}*` : '',
-        searchFields: ["name", "shapeJson.properties.uNumber", "shapeJson.properties.originalProperties.County", "data.shapeJson.properties.originalProperties.State"],
-        filter: {
-          field: "layer",
-          value: "unit"
-        },
-        formatOptions: (data) => {
-          const Secondary = data?.shapeJson?.properties?.originalProperties ? `${data.shapeJson.properties.originalProperties.County}, ${data.shapeJson.properties.originalProperties.State || ''}` : null
-          const Primary = data?.shapeJson?.properties?.uNumber ? `${data?.shapeJson?.properties?.uNumber} - ${data.name}` : data.name
-          return {
-            ...data, Source: 'shapes_flat', Primary, Secondary
-          }
-        }
-      },
-
-      "tracts": {
-        esIndex: "shapes_flat",
-        search: (request) => request.input ? `*${request.input}*` : '',
-        searchFields: SHAPE_TYPE['tracts'].SEARCH_FIELDS,
-        filter: {
-          field: "layer",
-          value: "parcel"
-        },
-        formatOptions: (data) => {
-          const Secondary = data?.shapeJson?.properties?.originalProperties ? `${data.shapeJson.properties.originalProperties.County}, ${data.shapeJson.properties.originalProperties.State || ''}` : null
-          return {
-            ...data, Source: 'shapes_flat', Primary: data.name, Secondary
-          }
-        }
-      },
-      "agreements": {
-        esIndex: "shapes_flat",
-        search: (request) => request.input ? `*${request.input}*` : '',
-        searchFields: SHAPE_TYPE['agreements'].SEARCH_FIELDS,
-        filter: {
-          field: "shapeJson.properties.type",
-          value: "agreement"
-        },
-        formatOptions: (data) => {
-          return {
-            ...data, Source: 'shapes_flat', Primary: data?.shapeJson?.properties?.shapeLabel, Secondary: capitalizeFirstLetter(data.layer)
-          }
-        }
-      }
-    }), [searchOption]);
-
   const callESSearch = React.useMemo(
     () =>
       debounce((request) => {
@@ -470,12 +484,15 @@ function Search() {
 
 
   useEffect(() => {
-    if (!mapGridCardActivated) {
+    if (!mapControlsStateValues.mapGridCardActivated) {
       if (searchInputValue === "") {
         setOptions(value ? [value] : []);
         setValue(null);
-        if (!stateApp.toggleLayerActivityValue)
-          setStateApp((state) => ({ ...state, wellListFromSearch: [], landGridListFromSearch: [] }));
+        if (!stateApp.toggleLayerActivityValue) {
+          layerController.updateState({ wellListFromSearch: [] })
+          setStateApp((state) => ({ ...state, landGridListFromSearch: [] }));
+        }
+
         setLoading(false);
         return undefined;
       }
@@ -528,33 +545,30 @@ function Search() {
   useEffect(() => {
     if (dataOwnerWells && dataOwnerWells.ownerLatsLonsArray) {
       if (dataOwnerWells.ownerLatsLonsArray.length !== 0) {
-        setStateApp((stateApp) =>
-          dataOwnerWells.ownerLatsLonsArray.length === 1
-            ? {
-              ...stateApp,
-              selectedWell: null,
-              fitBounds: null,
-              searchLoader: false,
-              selectedWellId: dataOwnerWells.ownerLatsLonsArray[0].id.toLowerCase(),
-              wellSelectedCoordinates: [dataOwnerWells.ownerLatsLonsArray[0].longitude, dataOwnerWells.ownerLatsLonsArray[0].latitude],
-              wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
-            }
-            : {
-              ...stateApp,
-              fitBounds: null,
-              searchLoader: false,
-              wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray],
-            }
-        );
+        if (dataOwnerWells.ownerLatsLonsArray.length === 1)
+          popupController.setState({
+            selectedWellId: dataOwnerWells.ownerLatsLonsArray[0].id.toLowerCase(),
+            wellSelectedCoordinates: [
+              dataOwnerWells.ownerLatsLonsArray[0].longitude,
+              dataOwnerWells.ownerLatsLonsArray[0].latitude,
+            ],
+            selectedPlaces: null
+          });
+        setStateApp(stateApp => ({
+          ...stateApp,
+          fitBounds: null,
+          searchLoader: false,
+        }));
+        layerController.updateState({ wellListFromSearch: [...dataOwnerWells.ownerLatsLonsArray] })
 
-        stateApp.toggleLayersActivity("Search", true);
+        layerController.toggleLayersActivity("Search", true);
       } else {
-        stateApp.toggleLayersActivity("Search", false);
+        layerController.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
           searchLoader: false,
-          wellListFromSearch: [],
         }));
+        layerController.updateState({ wellListFromSearch: [] })
       }
     }
   }, [dataOwnerWells]);
@@ -563,35 +577,30 @@ function Search() {
   useEffect(() => {
     if (dataOperatorWells && dataOperatorWells.operatorLatsLonsArray) {
       if (dataOperatorWells.operatorLatsLonsArray.length !== 0) {
-        setStateApp((stateApp) =>
-          dataOperatorWells.operatorLatsLonsArray.length === 1
-            ? {
-              ...stateApp,
-              selectedWell: null,
-              fitBounds: null,
-              searchLoader: false,
-              selectedWellId: dataOperatorWells.operatorLatsLonsArray[0].id.toLowerCase(),
-              wellSelectedCoordinates: [
-                dataOperatorWells.operatorLatsLonsArray[0].longitude,
-                dataOperatorWells.operatorLatsLonsArray[0].latitude,
-              ],
-              wellListFromSearch: [...dataOperatorWells.operatorLatsLonsArray],
-            }
-            : {
-              ...stateApp,
-              fitBounds: null,
-              searchLoader: false,
-              wellListFromSearch: [...dataOperatorWells.operatorLatsLonsArray],
-            }
-        );
-        stateApp.toggleLayersActivity("Search", true);
+        if (dataOperatorWells.operatorLatsLonsArray.length === 1)
+          popupController.setState({
+            selectedWellId: dataOperatorWells.operatorLatsLonsArray[0].id.toLowerCase(),
+            wellSelectedCoordinates: [
+              dataOperatorWells.operatorLatsLonsArray[0].longitude,
+              dataOperatorWells.operatorLatsLonsArray[0].latitude,
+            ],
+            selectedPlaces: null
+          });
+        setStateApp(stateApp => ({
+          ...stateApp,
+          fitBounds: null,
+          searchLoader: false
+        }));
+        layerController.updateState({ wellListFromSearch: [...dataOperatorWells.operatorLatsLonsArray] })
+
+        layerController.toggleLayersActivity("Search", true);
       } else {
-        stateApp.toggleLayersActivity("Search", false);
+        layerController.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
           searchLoader: false,
-          wellListFromSearch: [],
         }));
+        layerController.updateState({ wellListFromSearch: [] })
       }
     }
   }, [dataOperatorWells]);
@@ -600,32 +609,30 @@ function Search() {
   useEffect(() => {
     if (dataLeaseWells && dataLeaseWells.leaseLatsLonsArray) {
       if (dataLeaseWells.leaseLatsLonsArray.length !== 0) {
-        setStateApp((stateApp) =>
-          dataLeaseWells.leaseLatsLonsArray.length === 1
-            ? {
-              ...stateApp,
-              selectedWell: null,
-              fitBounds: null,
-              selectedWellId: dataLeaseWells.leaseLatsLonsArray[0].id.toLowerCase(),
-              wellSelectedCoordinates: [dataLeaseWells.leaseLatsLonsArray[0].longitude, dataLeaseWells.leaseLatsLonsArray[0].latitude],
-              searchLoader: false,
-              wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
-            }
-            : {
-              ...stateApp,
-              fitBounds: null,
-              searchLoader: false,
-              wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray],
-            }
-        );
-        stateApp.toggleLayersActivity("Search", true);
+        if (dataLeaseWells.leaseLatsLonsArray.length === 1)
+          popupController.setState({
+            selectedWellId: dataLeaseWells.leaseLatsLonsArray[0].id.toLowerCase(),
+            wellSelectedCoordinates: [
+              dataLeaseWells.leaseLatsLonsArray[0].longitude,
+              dataLeaseWells.leaseLatsLonsArray[0].latitude,
+            ],
+            selectedPlaces: null
+          });
+        setStateApp(stateApp => ({
+          ...stateApp,
+          fitBounds: null,
+          searchLoader: false,
+        }));
+        layerController.updateState({ wellListFromSearch: [...dataLeaseWells.leaseLatsLonsArray] })
+
+        layerController.toggleLayersActivity("Search", true);
       } else {
-        stateApp.toggleLayersActivity("Search", false);
+        layerController.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
           searchLoader: false,
-          wellListFromSearch: [],
         }));
+        layerController.updateState({ wellListFromSearch: [] })
       }
     }
   }, [dataLeaseWells]);
@@ -645,14 +652,14 @@ function Search() {
             }
             : stateApp
         );
-        stateApp.toggleLayersActivity("Search", true);
+        layerController.toggleLayersActivity("Search", true);
       } else {
-        stateApp.toggleLayersActivity("Search", false);
+        layerController.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
           searchLoader: false,
-          wellListFromSearch: [],
         }));
+        layerController.updateState({ wellListFromSearch: [] })
       }
     }
   }, [dataLandGridGeom]);
@@ -668,23 +675,22 @@ function Search() {
               selectedWell: null,
               fitBounds: null,
               searchLoader: false,
-              wellListFromSearch: [...dataContactWells.contactWells],
             }
             : {
               ...stateApp,
               fitBounds: null,
               searchLoader: false,
-              wellListFromSearch: [...dataContactWells.contactWells],
             }
         );
-        stateApp.toggleLayersActivity("Search", true);
+        layerController.updateState({ wellListFromSearch: [...dataContactWells.contactWells] })
+        layerController.toggleLayersActivity("Search", true);
       } else {
-        stateApp.toggleLayersActivity("Search", false);
+        layerController.toggleLayersActivity("Search", false);
         setStateApp((stateApp) => ({
           ...stateApp,
           searchLoader: false,
-          wellListFromSearch: [],
         }));
+        layerController.updateState({ wellListFromSearch: [] })
       }
     }
   }, [dataContactWells]);
@@ -751,21 +757,25 @@ function Search() {
 
       //// if well, with lat long
       if (newValue && newValue.Source === wellCogIndexName && newValue.Longitude && newValue.Latitude) {
+        popupController.setState({
+          selectedWellId: newValue.Id ? newValue.Id.toLowerCase() : null,
+          wellSelectedCoordinates: [newValue.Longitude, newValue.Latitude],
+          selectedPlaces: null
+        });
         setStateApp((stateApp) => ({
           ...stateApp,
           fitBounds: null,
-          selectedWell: null,
-          selectedWellId: newValue.Id ? newValue.Id.toLowerCase() : null,
-          wellSelectedCoordinates: [newValue.Longitude, newValue.Latitude],
+        }));
+        layerController.updateState({
           wellListFromSearch: [
             {
               id: newValue.Id,
               longitude: newValue.Longitude,
               latitude: newValue.Latitude,
-            },
-          ],
-        }));
-        stateApp.toggleLayersActivity("Search", true);
+            }
+          ]
+        })
+        layerController.toggleLayersActivity("Search", true);
       }
 
       //// if owner
@@ -834,32 +844,60 @@ function Search() {
       }
 
       //// if mapboxSearch
-      if (newValue && newValue.center && (newValue.Source === "mapboxSearch" || newValue.Source === "places")) {
+      if (newValue && newValue.center && (newValue.Source === "mapboxSearch")) {
         let minLong, maxLong, minLat, maxLat;
         if (newValue.bbox) [minLong, minLat, maxLong, maxLat] = newValue.bbox;
 
-        setStateApp((stateApp) => ({
-          ...stateApp,
+        popupController.updateState({
           selectedWell: null,
           selectedWellId: null,
           wellSelectedCoordinates: null,
+        })
+
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          fitBounds: newValue.bbox ? { maxLat, minLat, maxLong, minLong } : null,
+        }));
+        layerController.updateState({
           wellListFromSearch: [
             {
               id: newValue.Id,
               longitude: newValue.center[0],
               latitude: newValue.center[1],
-            },
-          ],
+            }
+          ]
+        })
+        layerController.toggleLayersActivity("Search", true);
+      }
+
+      if (newValue && newValue.center && (newValue.Source === "places")) {
+        let minLong, maxLong, minLat, maxLat;
+        if (newValue.bbox) [minLong, minLat, maxLong, maxLat] = newValue.bbox;
+
+        popupController.updateState({
+          selectedWell: null,
+          selectedWellId: null,
+          wellSelectedCoordinates: null,
+          selectedPlaces: newValue, // Set search places in the mapbox
+        })
+
+        setStateApp((stateApp) => ({
+          ...stateApp,
           fitBounds: newValue.bbox ? { maxLat, minLat, maxLong, minLong } : null,
         }));
-        stateApp.toggleLayersActivity("Search", true);
+        layerController.toggleLayersActivity("Search", true);
       }
     }
   };
 
   const handleSearchPanelChange = (value) => {
     setSearchDropDown({ ...value })
-    setSearchOption(value.label.toLocaleLowerCase());
+    // Set either the gridlable or the simple lable
+    const selectedSearchOptions = value?.gridLabel?.toLocaleLowerCase() || value.label.toLocaleLowerCase()
+    setSearchOption(selectedSearchOptions);
+    if (searchOption === 'places' && selectedSearchOptions !== 'places') {
+      popupController.reset(); // Reset the state when moving to other Search Item
+    }
   }
 
   //// setting the buttons header /////
@@ -882,7 +920,11 @@ function Search() {
       <SearchByTypeSelectField value={searchDropDown} handleChange={handleSearchPanelChange} color='#ffffff' backgroundColor='#1c2233' />
       <Autocomplete
         id="cognitive-search-autocomplete"
-        getOptionLabel={(option, value) => option.Primary || searchInputValue}
+        getOptionLabel={(option, value) => {
+          // On Places search we need to show address in bar
+          if (option?.Source === "places") return option?.Secondary || option?.Primary || searchInputValue;
+          return option.Primary || searchInputValue
+        }}
         forcePopupIcon
         filterOptions={(x) => x}
         options={optionsWithHeader}
@@ -890,13 +932,14 @@ function Search() {
         groupBy={(option) => {
           if (option?.shapeJson?.properties?.type === "agreement") return "Agreements"
           if (option.Source === ownerCogIndexName) return "Tax Owners";
-          if (option.Source === wellCogIndexName) return "Wells";
+          if (option.Source === wellCogIndexName) return "Platform Wells";
           if (option.Source === operatorIndexName) return "Operators";
           if (option.Source === leaseIndexName) return "Leases";
           if (option.Source === landGridIndexName) return "Land Grid";
           if (option.Source === contactIndexName) return "Contacts";
           if (option.Source === "mapboxSearch") return "Locations";
           if (option.Source === "places") return "Places";
+          if (option.Source === "mywells_flat") return "My Wells";
           if (option.layer === "unit") return "Units";
           if (option.layer === "parcel") return "Tracts";
           if (option.Source === "loader") return "loader";
@@ -907,12 +950,12 @@ function Search() {
           if (option.group === "loader")
             return <CircularProgress key="loader" style={{ margin: "10px 0 0 48%" }} size={28} color="secondary" />;
 
-          return option.group === "header" && location.pathname !== "/documents" ? (
+          return option.group === "header" && !isDocument ? (
             <div>
 
             </div>
           ) : (
-            (searchOption === "all" || searchOption === option.group.toLowerCase()) && location.pathname !== "/documents" && (
+            (searchOption === "all" || searchOption === option.group.toLowerCase()) && !isDocument && (
               <Grid key={option.group} container item>
                 <Grid container item xs={12} className={classes.groupsHeaders}>
                   <Grid item xs={6}>
@@ -959,7 +1002,7 @@ function Search() {
           else handleChange(newValue);
         }}
         onInputChange={(event, newInputValue, reason) => {
-          if (reason == "input") {
+          if (reason === "input") {
             dispatch(
               setMapGridCardState({
                 mapGridCardActiveTap: newInputValue === "" ? (mapGridCardActiveTap === 0 ? 1 : mapGridCardActiveTap) : 0,
@@ -978,7 +1021,7 @@ function Search() {
         }}
         renderInput={(params) => (
           <div>
-            {location.pathname === "/documents" ? (
+            {isDocument ? (
               <div style={{ display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "transparent" }}>
                 <TextField
                   {...params}
@@ -1000,7 +1043,7 @@ function Search() {
                     <InputAdornment className={classes.endAdornmentIcon}>
                       <div>
                         {((searchInputValue && searchInputValue !== "") ||
-                          (stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0)) && (
+                          (layerStateValues.wellListFromSearch && layerStateValues.wellListFromSearch.length > 0)) && (
                             <Tooltip title="Clear" placement="top">
                               <IconButton
                                 size="small"
@@ -1012,10 +1055,7 @@ function Search() {
                                       searchResultData: [],
                                     })
                                   );
-                                  setStateApp((state) => ({
-                                    ...state,
-                                    wellListFromSearch: [],
-                                  }));
+                                  layerController.updateState({ wellListFromSearch: [] })
                                 }}
                               >
                                 <ClearIcon htmlColor="#fff" />
@@ -1075,7 +1115,7 @@ function Search() {
                                         option.Source === ownerCogIndexName
                                           ? "tax owners"
                                           : option.Source === wellCogIndexName
-                                            ? "wells"
+                                            ? "platform wells"
                                             : option.Source === operatorIndexName
                                               ? "operators"
                                               : option.Source === leaseIndexName
@@ -1261,5 +1301,3 @@ function Search() {
     </div>
   );
 }
-
-export default React.memo(Search, deepEqualObjects);

@@ -3,7 +3,6 @@ import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
 import moment from 'moment';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
-import { formatDate } from 'components/Shared/functions';
 import Contact from 'components/Shared/svgIcons/contact';
 import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActionMenu';
 import ContactToolbar from 'components/MRTTable/TablesOverride/ContactTable/ContactToolbar';
@@ -12,8 +11,50 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import Loaders from 'components/Loaders';
+import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact.js';
+import { copy } from 'utils/helper';
+import { isEmpty, pickBy } from 'lodash';
+import { tableGlobalController } from 'hookstate/tableController';
 
 const esIndex = 'contacts_flat';
+
+const onCustomKeyChange = async (client, row, value, item) => {
+	const loaderId = `upadting-${row?._id}`;
+
+	try {
+		// Starting update loader
+		Loaders.createToast(loaderId, 'Updation in Progress');
+
+		// Copying all custom data of user
+		const customData = copy(row?.custom_data) ?? {};
+		const filteredCustomData = pickBy(customData, value => value !== '' && !isEmpty(value));
+
+		const contact = {
+			_id: row._id,
+			custom_data: {
+				...filteredCustomData,
+				[item.name]: value,
+			},
+		};
+
+		// Runnig mutation
+		await client.mutate({
+			variables: {
+				contact,
+				ignoreResponse: true,
+			},
+			mutation: UPDATECONTACT,
+			refetchQueries: ['getESSimpleFilter'],
+		});
+
+		// Updating loader for process completion
+		Loaders.successToast(loaderId, 'Updation Complete');
+		tableGlobalController.refetch();
+	} catch (err) {
+		Loaders.errorToast(loaderId, 'Failed to Update');
+	}
+};
 
 const ContactMeta = {
 	esIndex,
@@ -51,8 +92,13 @@ const ContactMeta = {
 	},
 	isInFiniteScroll: true,
 	columnVirtualization: true,
+	// Fetching Meta data for grid
+	fetchMetaData: {
+		category: 'Contacts', // enable to show custom field inside unit grid
+	},
+	onCustomKeyChange,
 	search: {
-		fields: ["name^4", "_all"]
+		fields: ['name^4', '_all'],
 	},
 	showAddContactButton: true,
 	TableSchema: [
@@ -60,7 +106,7 @@ const ContactMeta = {
 			...CommonSchema.MONGO_ID,
 			name: '_id',
 			accessorKey: '_id',
-			header: "M1neral Contact System ID",
+			header: 'M1neral Contact System ID',
 			isHiddenFieldExport: true,
 		},
 
@@ -83,12 +129,17 @@ const ContactMeta = {
 					>
 						{typeof renderedCellValue === 'string' && (
 							<Avatar
-								color={Avatar.getRandomColor(renderedCellValue, ['#b5d2f6', '#ade2e9', '#eaeaea', '#f2c1e2', '#d7d6fb'])}
+								color={Avatar.getRandomColor(renderedCellValue, [
+									'#b5d2f6',
+									'#ade2e9',
+									'#eaeaea',
+									'#f2c1e2',
+									'#d7d6fb',
+								])}
 								fgColor="#000"
 								name={renderedCellValue.split(' ').splice(0, 2).join(' ')}
 								size="35"
 								round
-
 							/>
 						)}
 
@@ -102,7 +153,7 @@ const ContactMeta = {
 							}}
 						>
 							<ColumnWithLink
-								value={renderedCellValue}
+								value={renderedCellValue || 'N/A'}
 								link={`/contact/details/${row.getValue('_id')}`}
 								onClick={e => {
 									e.stopPropagation();
@@ -113,15 +164,14 @@ const ContactMeta = {
 									<MonetizationOnIcon
 										style={{
 											marginLeft: '10px',
-											color: "gray"
+											color: 'gray',
 										}}
-
 									/>
 								</FeatureFlag>
 							)}
 						</p>
 					</div>
-				)
+				);
 			},
 		},
 
@@ -244,6 +294,15 @@ const ContactMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'county.keyword',
+			accessorKey: 'county',
+			header: 'County',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'zip.keyword',
 			accessorKey: 'zip',
 			header: 'Zip',
@@ -319,16 +378,11 @@ const ContactMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'account.keyword',
-			accessorKey: 'account',
-			header: 'Account',
-		},
-
-		{
-			...CommonSchema.COMMON_COLUMN,
 			name: 'department.keyword',
 			accessorKey: 'department',
 			header: 'Department',
+			isHiddenFieldExport: true,
+			hidden: true,
 		},
 
 		{
@@ -336,6 +390,8 @@ const ContactMeta = {
 			name: 'title.keyword',
 			accessorKey: 'title',
 			header: 'Title',
+			isHiddenFieldExport: true,
+			hidden: true,
 		},
 
 		{
@@ -397,18 +453,11 @@ const ContactMeta = {
 			accessorKey: 'primaryEmail',
 			header: 'Primary Email',
 		},
-
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'contactOwners.name.keyword',
-			accessorFn: row => row?.contactOwners?.name,
-			id: 'contactOwners.name',
-			header: 'Contact Owner',
-			isExport: 'contactOwners[0].name',
-			Cell: ({ row }) => {
-				const name = row?.original?.contactOwners?.map(obj => obj.name)
-				return <p>{name?.[0]}</p>
-			},
+			name: 'account.keyword',
+			accessorKey: 'account',
+			header: 'Account',
 		},
 
 		{
@@ -547,7 +596,7 @@ const ContactMeta = {
 			isHiddenFieldExport: true,
 			hidden: true,
 			Cell: ({ row }) => {
-				return <CampaignNameField value={row?.original?.campaignName?.[0]} fullWidth disabled />
+				return <CampaignNameField value={row?.original?.campaignName?.[0]} fullWidth disabled />;
 			},
 		},
 
@@ -583,7 +632,6 @@ const ContactMeta = {
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
-
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -636,11 +684,23 @@ const ContactMeta = {
 				{ label: 'Yes', value: 'true' },
 				{ label: 'No', value: 'false' },
 			],
-			type: "boolean",
+			type: 'boolean',
 			Cell: ({ row }) => {
 				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
 
 				return <>{isPurchased ? 'Yes' : 'No'}</>;
+			},
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contactOwners.name.keyword',
+			accessorFn: row => row?.contactOwners?.name,
+			id: 'contactOwners.name',
+			header: 'Contact Owner',
+			isExport: 'contactOwners[0].name',
+			Cell: ({ row }) => {
+				const name = row?.original?.contactOwners?.map(obj => obj.name);
+				return <p>{name?.[0]}</p>;
 			},
 		},
 
@@ -653,7 +713,14 @@ const ContactMeta = {
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const targetSourceId = row.getValue('_id');
-				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'contact'} />;
+				return (
+					<TagCell
+						id={targetSourceId}
+						targetSourceId={targetSourceId}
+						tags={row?.original?.tags}
+						targetLabel={'contact'}
+					/>
+				);
 			},
 		},
 

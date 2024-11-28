@@ -16,6 +16,7 @@ import Portal from "@material-ui/core/Portal";
 import PortalD from "../../Map/components/Portal";
 import Popover from "@material-ui/core/Popover";
 import WellCardProvider from "../../WellCard/WellCardProvider";
+import { popupController } from "hookstate/popupStateController";
 // import SpatialDataCardEdit from "../../MapControls/components/spatialDataCardEdit";
 // import FilterControl from "../../Map/components/FilterControl";
 
@@ -53,9 +54,9 @@ const useStyles = makeStyles(() => ({
 
 export default function OwnerDetailsCardMap(props) {
   let classes = useStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
   const [map, setMap] = useState(null);
-  const [mapStyles, setMapStyles] = useState([]);
+  const [mapStyles] = useState([]);
   const mapEl = useRef(null);
   const [getWells, { data: dataWells }] = useLazyQuery(WELLSQUERY);
   const [showExpandableCard, setShowExpandableCard] = useState(false);
@@ -160,24 +161,17 @@ export default function OwnerDetailsCardMap(props) {
   const handleCloseExpandableCard = () => {
     setShowExpandableCard(false);
     setAnchorElPoPOver(null);
-    setStateApp((state) => ({
-      ...state,
-      popupOpen: false,
-      // selectedWell: null,
-      expandedCard: false,
-    }));
+    popupController.reset();
   };
 
   const handleOpenExpandableCard = (well) => {
     setAnchorElPoPOver(container.current);
     setShowExpandableCard(true);
     // //show wellcard in popup Portal
-    setStateApp((state) => ({
-      ...state,
+    popupController.setState({
       popupOpen: true,
       selectedWell: well,
-      expandedCard: false,
-    }));
+    });
   };
 
   const createPopUp = useCallback(
@@ -193,7 +187,7 @@ export default function OwnerDetailsCardMap(props) {
 
       handleOpenExpandableCard(well);
     },
-    [map, setStateApp]
+    [map]
   );
 
   useEffect(() => {
@@ -384,6 +378,10 @@ export default function OwnerDetailsCardMap(props) {
     }
   }, [map, dataWells]);
 
+  const { stateValues } = popupController.useState(['popupOpen', 'expandedCard', 'selectedWell']);
+
+  const selectedWell = stateValues?.selectedWell;
+
   return (
     <div className={classes.MSWrapper}>
       <div
@@ -397,17 +395,17 @@ export default function OwnerDetailsCardMap(props) {
       </div>
       <div id="tempPopupHolder" className={classes.portal} ref={container} />
       <Portal container={container.current}>
-        {stateApp.popupOpen && (
+        {stateValues.popupOpen && (
           <div>
-            {stateApp.selectedWell && (
+            {selectedWell && (
               <PortalD id="popupContainer">
-                {showExpandableCard && !stateApp.expandedCard ? (
+                {showExpandableCard && !stateValues.expandedCard ? (
                   <ExpandableCardProvider
                     expanded={false}
                     handleCloseExpandableCard={handleCloseExpandableCard}
                     component={<WellCardProvider></WellCardProvider>}
-                    title={stateApp.selectedWell.wellName}
-                    subTitle={stateApp.selectedWell.operator}
+                    title={selectedWell.wellName}
+                    subTitle={selectedWell.operator}
                     parent="map"
                     mouseX={0}
                     mouseY={0}
@@ -419,12 +417,12 @@ export default function OwnerDetailsCardMap(props) {
                     // cardHeight="350px"
                     cardWidthExpanded="95vw"
                     cardHeightExpanded="90vh"
-                    targetSourceId={stateApp.selectedWell.id}
+                    targetSourceId={selectedWell.id}
                     targetLabel="well"
                   ></ExpandableCardProvider>
                 ) : (
                   <Popover
-                    open={stateApp.expandedCard}
+                    open={stateValues.expandedCard}
                     anchorEl={anchorElPoPOver}
                     anchorReference="anchorEl"
                     style={{ width: "100%" }} //right:30, left: "-30px"}}
@@ -442,8 +440,8 @@ export default function OwnerDetailsCardMap(props) {
                       expanded={true}
                       handleCloseExpandableCard={handleCloseExpandableCard}
                       component={<WellCardProvider></WellCardProvider>}
-                      title={stateApp.selectedWell.wellName}
-                      subTitle={stateApp.selectedWell.operator}
+                      title={selectedWell.wellName}
+                      subTitle={selectedWell.operator}
                       parent="map"
                       mouseX={0}
                       mouseY={0}
@@ -455,7 +453,7 @@ export default function OwnerDetailsCardMap(props) {
                       // cardHeight="380px"
                       cardWidthExpanded="95vw"
                       cardHeightExpanded="95vh"
-                      targetSourceId={stateApp.selectedWell.id}
+                      targetSourceId={selectedWell.id}
                       targetLabel="well"
                     ></ExpandableCardProvider>
                   </Popover>

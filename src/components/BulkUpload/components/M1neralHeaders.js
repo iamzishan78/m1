@@ -1,471 +1,463 @@
-import React, { useEffect } from "react";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Checkbox from "@material-ui/core/Checkbox";
-import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
+import React, { useCallback, useEffect } from 'react';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Checkbox from '@material-ui/core/Checkbox';
+import { anyToDate } from '@amcharts/amcharts4/.internal/core/utils/Utils';
 // queries
-import { MenuItem, Select } from "@material-ui/core";
-import { calculateStandardNraForTract } from "utils/calculatedNraHelper"
-import { useSelector } from "react-redux";
-import { NavigationContext } from "components/Navigation/NavigationContext";
-import get from "lodash/get";
-import { jobController } from "hookstate/jobStateController";
+import { MenuItem, Select } from '@material-ui/core';
+import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
+import { useSelector } from 'react-redux';
+import { NavigationContext } from 'components/Navigation/NavigationContext';
+import { jobController } from 'hookstate/jobStateController';
 // import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 // import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 
 const useStyles = makeStyles({
-  root: {
-    width: "100%",
-  },
-  container: {
-    maxHeight: "50vh",
-    overflow: "scroll",
-    overflowX: "hidden",
-    "&::-webkit-scrollbar": {
-      width: "0.75em",
-      height: "0.75em",
-    },
-    // "&:hover::-webkit-scrollbar": {
-    //     width: "1.0em",
-    // },
-    // "&::-webkit-scrollbar-track": {
-    //     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-    // },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "#929292",
-      borderRadius: 10,
-    },
-  },
+	root: {
+		width: '100%',
+	},
+	container: {
+		maxHeight: '50vh',
+		overflow: 'scroll',
+		overflowX: 'hidden',
+		'&::-webkit-scrollbar': {
+			width: '0.75em',
+			height: '0.75em',
+		},
+		// "&:hover::-webkit-scrollbar": {
+		//     width: "1.0em",
+		// },
+		// "&::-webkit-scrollbar-track": {
+		//     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
+		// },
+		'&::-webkit-scrollbar-thumb': {
+			backgroundColor: '#929292',
+			borderRadius: 10,
+		},
+	},
 });
 const main_div = {
-  textAlign: "center",
-  padding: "1.5vh",
+	textAlign: 'center',
+	padding: '1.5vh',
 };
 const style_papaer = {
-  background: "none",
-  maxWidth: "550px",
-  margin: "15px auto",
-  boxShadow: "none",
+	background: 'none',
+	maxWidth: '550px',
+	margin: '15px auto',
+	boxShadow: 'none',
 };
 const table_cell_input = {
-  padding: "3px",
+	padding: '3px',
 };
 const big_text = {
-  fontSize: "27px",
-  fontWeight: "bold",
-  color: "#101010",
+	fontSize: '27px',
+	fontWeight: 'bold',
+	color: '#101010',
 };
 const medium_text = {
-  fontSize: "20px",
-  fontWeight: "bold",
-  color: "#101010",
+	fontSize: '20px',
+	fontWeight: 'bold',
+	color: '#101010',
 };
 const padding_div_top = {
-  paddingTop: "1.3vh",
+	paddingTop: '1.3vh',
 };
 const text_grey = {
-  fontSize: "15px",
-  fontWeight: "bold",
-  color: "#a6a6a6",
+	fontSize: '15px',
+	fontWeight: 'bold',
+	color: '#a6a6a6',
 };
 
 const headers_input = {
-  width: "100%",
-  borderRadius: "5px",
-  border: "1px solid rgb(255 255 255)",
-  height: "4vh",
-  background: "unset",
-  padding: "0 8px",
-  color: "#a6a6a6",
+	width: '100%',
+	borderRadius: '5px',
+	border: '1px solid rgb(255 255 255)',
+	height: '4vh',
+	background: 'unset',
+	padding: '0 8px',
+	color: '#a6a6a6',
 };
 
-const StyledTableCell = withStyles((theme) => ({
-  head: {
-    fontWeight: "bold",
-    border: "1px solid #ddd",
-    padding: "8px 15px",
-    color: "#a6a6a6",
-    // background: "white",
-  },
-  body: {
-    fontWeight: "bold",
-    border: "1px solid #ddd",
-    padding: "0px 15px",
-    color: "#a6a6a6",
-    "& .MuiIconButton-root.Mui-disabled": {
-      color: "rgb(0 0 0 / 6%) !important",
-    },
-  },
+const StyledTableCell = withStyles(theme => ({
+	head: {
+		fontWeight: 'bold',
+		border: '1px solid #ddd',
+		padding: '8px 15px',
+		color: '#a6a6a6',
+		// background: "white",
+	},
+	body: {
+		fontWeight: 'bold',
+		border: '1px solid #ddd',
+		padding: '0px 15px',
+		color: '#a6a6a6',
+		'& .MuiIconButton-root.Mui-disabled': {
+			color: 'rgb(0 0 0 / 6%) !important',
+		},
+	},
 }))(TableCell);
 
 export default function M1neralHeaders() {
-  const classes = useStyles();
-  const [stateNav] = React.useContext(NavigationContext);
+	const classes = useStyles();
+	const [stateNav] = React.useContext(NavigationContext);
 
-  const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
+	const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
 
-  const { jobStateValues } = jobController.useState(
-    ['mappedHeadersFromCSV', 'transferData', 'selectedShapeLayerOption', 'm1neralHeaders', 'csvDataList', 'jobType'],
-    'jobStateValues'
-  );
+	const { jobStateValues } = jobController.useState(
+		['mappedHeadersFromCSV', 'transferData', 'selectedShapeLayerOption', 'm1neralHeaders', 'csvDataList', 'jobType'],
+		'jobStateValues'
+	);
 
-  let columns = [
-    { label: "Import" },
-    { label: "Your Headers" },
-    { label: "M1neral Headers" },
-  ];
-  let data = jobStateValues.m1neralHeaders;
-  let CSV_headers = jobStateValues.mappedHeadersFromCSV;
+	let columns = [{ label: 'Import' }, { label: 'Your Headers' }, { label: 'M1neral Headers' }];
+	let data = jobStateValues.m1neralHeaders;
+	let CSV_headers = jobStateValues.mappedHeadersFromCSV;
 
-  // let options_from_list = options()
-  const UpdateState = () => {
-    for (let index in CSV_headers) {
-      for (let index2 in data) {
-        if (CSV_headers[index].actual_key === data[index2].actual_key) {
-          data[index2].mapped_key = CSV_headers[index].mapped_key;
-          data[index2].required = CSV_headers[index].required;
-        }
-      }
-    }
+	// let options_from_list = options()
+	const UpdateState = () => {
+		for (let index in CSV_headers) {
+			for (let index2 in data) {
+				if (CSV_headers[index].actual_key === data[index2].actual_key) {
+					data[index2].mapped_key = CSV_headers[index].mapped_key;
+					data[index2].required = CSV_headers[index].required;
+				}
+			}
+		}
 
-    jobController.updateState({
-      mappedHeadersFromCSV: CSV_headers,
-    })
-  };
+		jobController.updateState({
+			mappedHeadersFromCSV: CSV_headers,
+		});
+	};
 
-  const handleChange_select = async (event, index) => {
-    const selectedHeader = data.find(el => el?.actual_key === event.target.value)
-    CSV_headers[index].actual_key = selectedHeader?.actual_key;
-    CSV_headers[index].label = selectedHeader?.label;
-    CSV_headers[index].required = true;
-    await changeDataToSendState();
-    UpdateState();
-  };
+	const handleChange_select = async (event, index) => {
+		const selectedHeader = data.find(el => el?.actual_key === event.target.value);
+		CSV_headers[index].actual_key = selectedHeader?.actual_key;
+		CSV_headers[index].label = selectedHeader?.label;
+		CSV_headers[index].required = true;
+		await changeDataToSendState();
+		UpdateState();
+	};
 
-  const handleChange_checkBox = async (event, index) => {
-    CSV_headers[index].required = event.target.checked;
-    await changeDataToSendState();
-    UpdateState();
-  };
+	const handleChange_checkBox = async (event, index) => {
+		CSV_headers[index].required = event.target.checked;
+		await changeDataToSendState();
+		UpdateState();
+	};
 
-  const createLeadSource = () => {
-    var newDate = new Date().toISOString();
-    // newDate = newDate.split("T")[0];
-    // newDate = newDate.split("-").reverse().join(".");
+	const createLeadSource = () => {
+		var newDate = new Date().toISOString();
+		// newDate = newDate.split("T")[0];
+		// newDate = newDate.split("-").reverse().join(".");
 
-    newDate = anyToDate(newDate).toLocaleString("en-US", {
-      year: "numeric",
-      day: "numeric",
-      month: "numeric",
-    });
+		newDate = anyToDate(newDate).toLocaleString('en-US', {
+			year: 'numeric',
+			day: 'numeric',
+			month: 'numeric',
+		});
 
-    let leadSource = "Manual Upload on " + newDate;
-    return leadSource;
-  };
+		let leadSource = 'Manual Upload on ' + newDate;
+		return leadSource;
+	};
 
-  const changeDataToSendState = async () => {
-    let headers = jobStateValues.mappedHeadersFromCSV;
-    let arr_data = jobStateValues.csvDataList;
-    let filtered_data_to_send = [];
-    for await (const obj of arr_data) {
-      let return_obj = {};
-      for (let header of headers) {
-        if (
-          header.required &&
-          obj.data[header.mapped_key] !== undefined &&
-          header.mapped_key !== "initial"
-        ) {
-          return_obj[header.actual_key] = obj.data[header.mapped_key];
-        }
-      }
-      if (['PROPERTIES'].includes(jobStateValues.jobType)) {
-        if (!return_obj["property.purchaser.name"] || !return_obj["property.purchaserNumber"]) {
-          filtered_data_to_send.push(null)
-          continue;
-        }
+	const changeDataToSendState = useCallback(async () => {
+		let headers = jobStateValues.mappedHeadersFromCSV;
+		let arr_data = jobStateValues.csvDataList;
+		let filtered_data_to_send = [];
+		for await (const obj of arr_data) {
+			let return_obj = {};
+			for (let header of headers) {
+				if (header.required && obj.data[header.mapped_key] !== undefined && header.mapped_key !== 'initial') {
+					return_obj[header.actual_key] = obj.data[header.mapped_key];
 
-        Object.keys(return_obj).forEach(key => {
-          if (return_obj[key] instanceof Date) {
-            return_obj[key] = return_obj[key].toISOString()
-          }
-          if (key === 'wellsApiNumbers' && typeof return_obj[key] === 'number') {
-            return_obj[key] = return_obj[key].toString()
-          }
-        })
-      }
-      if (['CHECKDETAILS'].includes(jobStateValues.jobType)) {
-        if (!return_obj["lineNumber"] || !return_obj["date"]) {
-          filtered_data_to_send.push(null)
-          continue;
-        }
-      }
-      if (['PARCELINTERESTS'].includes(jobStateValues.jobType)) {
-        if (!return_obj["parcel._id"] ||
-          !return_obj["parcel.name"]) {
-          filtered_data_to_send.push(null)
-          continue;
-        } else {
-          const nra = calculateStandardNraForTract(get(stateNav, 'bulkUploadParcel.sdGrossAcres'), return_obj["parcel.mineral_interest"], return_obj["parcel.royalty_interest"], return_obj["parcel.orri"], workspaceSettings)
-          if (!(!!return_obj["parcel.nra"])) {
-            return_obj["parcel.nra"] = nra
-            return_obj["parcel.isOverridden"] = true
-          } else {
-            return_obj["parcel.isOverridden"] = return_obj["parcel.nra"] === nra ? true : false
-          }
-        }
-      }
-      if (['SHAPEOWNER'].includes(jobStateValues.jobType)) {
-        if (!return_obj["shape._id"] ||
-          !return_obj["shape.name"]) {
-          filtered_data_to_send.push(null)
-          continue;
-        }
-      }
-      if (['CONTACTS', 'PARCELINTERESTS'].includes(jobStateValues.jobType)) {
-        if (
-          Object.keys(return_obj || {}).length === 0 ||
-          !(
-            return_obj["_id"] ||
-            return_obj["entityDetail.firstName"] ||
-            return_obj["entityDetail.lastName"] ||
-            return_obj["entityDetail.name"]
-          )
-        ) {
-          filtered_data_to_send.push(null)
-          continue;
-        }
-        //// mandatory fields
+					if (return_obj[header.actual_key] && header.type === 'multiselect') {
+						return_obj[header.actual_key] = return_obj[header.actual_key].split(',');
+					}
+				}
+			}
+			if (['PROPERTIES'].includes(jobStateValues.jobType)) {
+				// if (!return_obj["property.purchaser.name"] || !return_obj["property.purchaserNumber"]) {
+				//   filtered_data_to_send.push(null)
+				//   continue;
+				// }
 
-        if (!return_obj["leadSource"])
-          return_obj["leadSource"] = createLeadSource();
-        if (!return_obj["status"])
-          return_obj["status"] = "Lead";
+				// remove the row if the value of payStatus is not correct
+				if (return_obj['property.status']) {
+					const formattedValue = return_obj['property.status'].replace(/\s+/g, '').toLowerCase();
 
-        if (!return_obj["entityDetail.name"]) {
-          if (return_obj["entityDetail.firstName"] && return_obj["entityDetail.lastName"]) {
-            return_obj["entityDetail.name"] =
-              return_obj["entityDetail.firstName"] + " " + return_obj["entityDetail.lastName"];
-          } else {
-            if (return_obj["entityDetail.firstName"]) {
-              return_obj["entityDetail.name"] = return_obj["entityDetail.firstName"];
-            }
-            if (return_obj["entityDetail.lastName"]) {
-              return_obj["entityDetail.name"] = return_obj["entityDetail.lastName"];
-            }
-          }
-        }
-      }
+					if (!['inpay', 'notinpay'].some(value => value === formattedValue)) {
+						filtered_data_to_send.push(null);
+						continue;
+					}
+				}
 
-      filtered_data_to_send.push(return_obj)
-    };
-    filtered_data_to_send = filtered_data_to_send.filter((obj) => {
-      if (obj && Object.keys(obj).length !== 0) {
-        return true;
-      }
-      return false;
-    });
+				Object.keys(return_obj).forEach(key => {
+					if (return_obj[key] instanceof Date) {
+						return_obj[key] = return_obj[key].toISOString();
+					}
+					if (key === 'wellsApiNumbers' && typeof return_obj[key] === 'number') {
+						return_obj[key] = return_obj[key].toString();
+					}
+				});
+			}
+			if (['CHECKDETAILS'].includes(jobStateValues.jobType)) {
+				if (!return_obj['lineNumber'] || !return_obj['date']) {
+					filtered_data_to_send.push(null);
+					continue;
+				}
+			}
+			if (['PARCELINTERESTS'].includes(jobStateValues.jobType)) {
+				if (!return_obj['parcel._id'] || !return_obj['parcel.name']) {
+					filtered_data_to_send.push(null);
+					continue;
+				} else {
+					const sdGrossAcres = stateNav?.bulkUploadParcel?.sdGrossAcres;
+					const nra = calculateStandardNraForTract(
+						sdGrossAcres,
+						return_obj['parcel.mineral_interest'],
+						return_obj['parcel.royalty_interest'],
+						return_obj['parcel.orri'],
+						workspaceSettings
+					);
+					if (!!!return_obj['parcel.nra']) {
+						return_obj['parcel.nra'] = nra;
+						return_obj['parcel.isOverridden'] = true;
+					} else {
+						return_obj['parcel.isOverridden'] = return_obj['parcel.nra'] === nra ? true : false;
+					}
+				}
+			}
+			if (['SHAPEOWNER'].includes(jobStateValues.jobType)) {
+				if (!return_obj['shape._id'] || !return_obj['shape.name']) {
+					filtered_data_to_send.push(null);
+					continue;
+				}
+			}
+			if (['CONTACTS', 'PARCELINTERESTS'].includes(jobStateValues.jobType)) {
+				if (
+					Object.keys(return_obj || {}).length === 0 ||
+					!(
+						return_obj['_id'] ||
+						return_obj['entityDetail.firstName'] ||
+						return_obj['entityDetail.lastName'] ||
+						return_obj['entityDetail.name']
+					)
+				) {
+					filtered_data_to_send.push(null);
+					continue;
+				}
+				//// mandatory fields
 
-    jobController.updateState({
-      csvDataToSend: filtered_data_to_send,
-    })
-  };
+				if (!return_obj['leadSource']) return_obj['leadSource'] = createLeadSource();
+				if (!return_obj['status']) return_obj['status'] = 'Lead';
 
-  const shapeTransferOptions = [
-    { key: 'Both', label: 'Create new and update existing' },
-    { key: 'New', label: 'Only create new' },
-    { key: 'Existing', label: 'Only update existing' }
-  ]
+				if (!return_obj['entityDetail.name']) {
+					if (return_obj['entityDetail.firstName'] && return_obj['entityDetail.lastName']) {
+						return_obj['entityDetail.name'] =
+							return_obj['entityDetail.firstName'] + ' ' + return_obj['entityDetail.lastName'];
+					} else {
+						if (return_obj['entityDetail.firstName']) {
+							return_obj['entityDetail.name'] = return_obj['entityDetail.firstName'];
+						}
+						if (return_obj['entityDetail.lastName']) {
+							return_obj['entityDetail.name'] = return_obj['entityDetail.lastName'];
+						}
+					}
+				}
+			}
 
-  useEffect(() => {
-    changeDataToSendState();
-  }, []);
+			filtered_data_to_send.push(return_obj);
+		}
+		filtered_data_to_send = filtered_data_to_send.filter(obj => {
+			if (obj && Object.keys(obj).length !== 0) {
+				return true;
+			}
+			return false;
+		});
 
-  return (
-    <div style={main_div}>
-      <div style={{ ...big_text, ...padding_div_top }}>
-        Match your headers to M1neral headers
-      </div>
-      <div style={{ ...text_grey, ...padding_div_top }}>
-        Select the M1neral header that best represents the headers from your
-        file
-      </div>
-      <div style={padding_div_top}>
-        <Paper className={classes.root} style={style_papaer}>
-          <TableContainer className={classes.container}>
-            <Table id="headerTable" stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                  {columns.map((column) => (
-                    <StyledTableCell key={column.label}>
-                      {column.label}
-                    </StyledTableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {CSV_headers.map((row, index) => {
-                  return (
-                    <TableRow key={index}>
-                      <StyledTableCell key={columns[0].label}>
-                        <Checkbox
-                          id={`checkbox-${index}`}
-                          disabled={row.actual_key === "" ? true : false}
-                          checked={row.required}
-                          color="default"
-                          onChange={(event) =>
-                            handleChange_checkBox(event, index)
-                          }
-                          inputProps={{
-                            "aria-label": "checkbox with default color",
-                          }}
-                        />
-                      </StyledTableCell>
-                      <StyledTableCell key={columns[1].label}>
-                        {row.mapped_key}
-                      </StyledTableCell>
-                      <StyledTableCell
-                        key={columns[2].label}
-                        style={table_cell_input}
-                      >
-                        <div>
-                          <select
-                            style={headers_input}
-                            id={"select" + index}
-                            defaultValue={(() => {
-                              const matchedKeyIndex = data.find(el => el?.actual_key === row?.actual_key)
-                              return row.actual_key === ""
-                                ? "initial"
-                                : matchedKeyIndex?.actual_key
-                            })()}
-                            onChange={(event) =>
-                              handleChange_select(event, index)
-                            }
-                          >
-                            <option disabled hidden value="initial">
-                              {" "}
-                              Select Header{" "}
-                            </option>
-                            {[...data].sort((a, b) => a.label.toUpperCase() < b.label.toUpperCase() ? -1 : 1)
-                              .map((option, i) => {
-                                return (
-                                  <option value={option.actual_key} key={i}>
-                                    {(() => {
-                                      return option.label
-                                    })()}
-                                  </option>
-                                );
-                              })}
-                          </select>
-                        </div>
-                      </StyledTableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
+		jobController.updateState({
+			csvDataToSend: filtered_data_to_send,
+		});
+	}, [
+		jobStateValues.csvDataList,
+		jobStateValues.jobType,
+		jobStateValues.mappedHeadersFromCSV,
+		stateNav?.bulkUploadParcel?.sdGrossAcres,
+		workspaceSettings,
+	]);
 
-        {(() => {
-          switch (jobStateValues.jobType) {
-            case 'AGREEMENT_PROVISIONS':
-            case 'AGREEMENT_HEADER':
-            case 'SHAPE_TO_M1_LAYER':
-            case 'UNITS':
-            case 'TRACTS':
-              return (
-                <>
-                  <div style={{ ...medium_text, ...padding_div_top }}>
-                    Select an import option for your data
-                  </div>
-                  <div>
-                    <Select
-                      variant="outlined"
-                      style={{
-                        width: '400px',
-                        marginTop: '10px',
-                        marginBottom: '10px',
-                        height: 40,
-                      }}
-                      labelId="agreement-outlined-label"
-                      id="agreement-outlined"
-                      value={jobStateValues.selectedShapeLayerOption}
-                      dense
-                      fullWidth
-                      onChange={e => {
-                        jobController.updateState({
-                          selectedShapeLayerOption: e.target.value,
-                        })
-                      }}
-                    >
-                      {shapeTransferOptions.map(option => (
-                        <MenuItem
-                          id={`${option.label}`}
-                          style={{
-                            display:
-                              jobStateValues.selectedShapeLayerOption === option
-                                ? 'none'
-                                : 'inherit',
-                          }}
-                          value={option.key}
-                        >
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </div>
+	const shapeTransferOptions = [
+		{ key: 'Both', label: 'Create new and update existing' },
+		{ key: 'New', label: 'Only create new' },
+		{ key: 'Existing', label: 'Only update existing' },
+	];
 
-                  {!['UNITS', 'TRACTS'].includes(jobStateValues.jobType) && (
-                    <div style={{ ...text_grey }}>
-                      *Note: Existing{' '}
-                      {jobStateValues?.transferData?.selectedPlatformCategory?.label} will be
-                      matched on M1neral ID
-                      {(jobStateValues?.transferData?.selectedPlatformCategory?.label ===
-                        'Agreements' || jobStateValues.jobType === 'AGREEMENT_PROVISIONS') && ' or Agreement Number'}
-                    </div>
-                  )}
-                </>
-              );
-            case 'AGREEMENT_COMMENTS':
-              return (
-                <div>
-                  * Comment will be tied to agreement when match on Agreement System ID or
-                  Agreement Number is made
-                </div>
-              );
-            case 'PROPERTIES':
-              return (
-                <div style={{ ...text_grey }}>
-                  * Payor and Payor Prop # are required to be <br /> populated before
-                  uploading properties.
-                </div>
-              );
-            case 'CHECKDETAILS':
-              return (
-                <div style={{ ...text_grey }}>
-                  * Line Number and Sales Date is required to be <br /> populated before
-                  uploading check details.
-                </div>
-              );
-            default:
-              if (!['CHECKDETAILS'].includes(jobStateValues.jobType)) {
-                return (
-                  <div style={{ ...text_grey }}>
-                    *First Name or Last Name is required to be mapped <br /> before
-                    uploading contacts.
-                  </div>
-                );
-              }
-              return null; // Default case
-          }
-        })()}
-      </div>
-    </div>
-  );
+	useEffect(() => {
+		changeDataToSendState();
+	}, [changeDataToSendState]);
+
+	return (
+		<div style={main_div}>
+			<div style={{ ...big_text, ...padding_div_top }}>Match your headers to M1neral headers</div>
+			<div style={{ ...text_grey, ...padding_div_top }}>
+				Select the M1neral header that best represents the headers from your file
+			</div>
+			<div style={padding_div_top}>
+				<Paper className={classes.root} style={style_papaer}>
+					<TableContainer className={classes.container}>
+						<Table id="headerTable" stickyHeader aria-label="sticky table">
+							<TableHead>
+								<TableRow>
+									{columns.map(column => (
+										<StyledTableCell key={column.label}>{column.label}</StyledTableCell>
+									))}
+								</TableRow>
+							</TableHead>
+							<TableBody>
+								{CSV_headers.map((row, index) => {
+									return (
+										<TableRow key={index}>
+											<StyledTableCell key={columns[0].label}>
+												<Checkbox
+													id={`checkbox-${index}`}
+													disabled={row.actual_key === '' ? true : false}
+													checked={row.required}
+													color="default"
+													onChange={event => handleChange_checkBox(event, index)}
+													inputProps={{
+														'aria-label': 'checkbox with default color',
+													}}
+												/>
+											</StyledTableCell>
+											<StyledTableCell key={columns[1].label}>{row.mapped_key}</StyledTableCell>
+											<StyledTableCell key={columns[2].label} style={table_cell_input}>
+												<div>
+													<select
+														style={headers_input}
+														id={'select' + index}
+														defaultValue={(() => {
+															const matchedKeyIndex = data.find(el => el?.actual_key === row?.actual_key);
+															return row.actual_key === '' ? 'initial' : matchedKeyIndex?.actual_key;
+														})()}
+														onChange={event => handleChange_select(event, index)}
+													>
+														<option disabled hidden value="initial">
+															{' '}
+															Select Header{' '}
+														</option>
+														{[...data]
+															.sort((a, b) => (a.label.toUpperCase() < b.label.toUpperCase() ? -1 : 1))
+															.map((option, i) => {
+																return (
+																	<option value={option.actual_key} key={i}>
+																		{(() => {
+																			return option.label;
+																		})()}
+																	</option>
+																);
+															})}
+													</select>
+												</div>
+											</StyledTableCell>
+										</TableRow>
+									);
+								})}
+							</TableBody>
+						</Table>
+					</TableContainer>
+				</Paper>
+
+				{(() => {
+					switch (jobStateValues.jobType) {
+						case 'AGREEMENT_PROVISIONS':
+						case 'AGREEMENT_HEADER':
+						case 'SHAPE_TO_M1_LAYER':
+						case 'UNITS':
+						case 'TRACTS':
+							return (
+								<>
+									<div style={{ ...medium_text, ...padding_div_top }}>Select an import option for your data</div>
+									<div>
+										<Select
+											variant="outlined"
+											style={{
+												width: '400px',
+												marginTop: '10px',
+												marginBottom: '10px',
+												height: 40,
+											}}
+											labelId="agreement-outlined-label"
+											id="agreement-outlined"
+											value={jobStateValues.selectedShapeLayerOption}
+											dense
+											fullWidth
+											onChange={e => {
+												jobController.updateState({
+													selectedShapeLayerOption: e.target.value,
+												});
+											}}
+										>
+											{shapeTransferOptions.map(option => (
+												<MenuItem
+													id={`${option.label}`}
+													style={{
+														display: jobStateValues.selectedShapeLayerOption === option ? 'none' : 'inherit',
+													}}
+													value={option.key}
+												>
+													{option.label}
+												</MenuItem>
+											))}
+										</Select>
+									</div>
+
+									{!['UNITS', 'TRACTS'].includes(jobStateValues.jobType) && (
+										<div style={{ ...text_grey }}>
+											*Note: Existing {jobStateValues?.transferData?.selectedPlatformCategory?.label} will be matched on
+											M1neral ID
+											{(jobStateValues?.transferData?.selectedPlatformCategory?.label === 'Agreements' ||
+												jobStateValues.jobType === 'AGREEMENT_PROVISIONS') &&
+												' or Agreement Number'}
+										</div>
+									)}
+								</>
+							);
+						case 'AGREEMENT_COMMENTS':
+							return (
+								<div>
+									* Comment will be tied to agreement when match on Agreement System ID or Agreement Number is made
+								</div>
+							);
+						case 'PROPERTIES':
+							return (
+								// <div style={{ ...text_grey }}>
+								//   * Payor and Payor Prop # are required to be <br /> populated before
+								//   uploading properties.
+								// </div>
+								<></>
+							);
+						case 'CHECKDETAILS':
+							return (
+								<div style={{ ...text_grey }}>
+									* Line Number and Sales Date is required to be <br /> populated before uploading check details.
+								</div>
+							);
+						default:
+							if (!['CHECKDETAILS'].includes(jobStateValues.jobType)) {
+								return (
+									<div style={{ ...text_grey }}>
+										*First Name or Last Name is required to be mapped <br /> before uploading contacts.
+									</div>
+								);
+							}
+							return null; // Default case
+					}
+				})()}
+			</div>
+		</div>
+	);
 }

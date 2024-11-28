@@ -28,6 +28,7 @@ const ComparisonMeta = {
 			name: 'check.checkNumber.keyword',
 			accessorFn: row => row?.check?.checkNumber,
 			id: 'check.checkNumber',
+			isExternalFilter: true,
 			header: 'Check Number',
 			Cell: ({ row, cell }) => {
 				const interestAmount = row.getValue('property.interest.interestAmount');
@@ -206,6 +207,7 @@ const ComparisonMeta = {
 			id: 'check.checkDate',
 			header: 'Check Date',
 			type: 'date',
+			isExternalFilter: true,
 			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.check?.checkDate)}</>
 			},
@@ -294,7 +296,6 @@ const ComparisonMeta = {
 			accessorKey: 'date',
 			header: 'Sales Date',
 			type: 'date',
-			isExternalFilter: true,
 			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.date)}</>
 			},

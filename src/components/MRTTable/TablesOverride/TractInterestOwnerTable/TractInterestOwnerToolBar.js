@@ -51,7 +51,6 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 		'defaultFilters',
 		'isAllRowsSelected',
 		'rowSelection',
-		'defaultFilters',
 	]);
 	const tableStateValues = tableState.stateValues;
 
@@ -116,7 +115,9 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 			total: tableStateValues?.data.total,
 			client,
 			table,
-			tableKey
+			tableKey,
+			objectType: 'contact' ,
+			refetchQueries: ["getESContacts"]
 		};
 	};
 

@@ -91,11 +91,13 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
           SetOptions(hits);
         } else if (custom?.isDate) {
           filtersData[keys[0]].hits = filtersData[keys[0]]?.hits.filter((hit) => hit.key);
-          const hits = filtersData[keys[0]].hits.map((hit) => ({
+          let hits = filtersData[keys[0]].hits.map((hit) => ({
             ...hit,
             key: moment(new Date(hit.key)).format("MM/DD/YYYY"),
             key_as_string: hit.key_as_string || hit.key,
           }));
+          // making records unique
+          hits = uniqBy(hits, "key")
           SetOptions(hits);
           setStateApp((state, props) => {
             return { ...state, filtersData: { ...state.filtersData, [column.name]: hits } };
@@ -194,7 +196,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
         if (reason === "clear" || (multiple && value2.length === 0) || (!multiple && !value2?.key)) {
           filterList[index] = [];
           setSearch("");
-          setValue(multiple ? [] : {});
+          setValue(multiple ? [] : {key: 'All'}); // Reset dropdwon to default value correctly
         } else {
           if (multiple) {
             filterList[index].length = 0;

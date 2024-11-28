@@ -1,20 +1,21 @@
 import React from 'react';
 import { hookstate } from '@hookstate/core';
-import _, { get, isEqual, isEmpty } from 'lodash';
+import _, { get, isEqual, isEmpty, pull } from 'lodash';
 import { copy, deepEqual, formatDate } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
-import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { globalStateController } from 'hookstate/globalStateController';
-import ReactSelectField from "components/MRTTable/Common/MetaData/ReactSelectField";
-import CustomFieldText from "components/MRTTable/Common/MetaData/CustomFieldText";
-import { metaDataColumnStateController } from 'components/MRTTable/Common/MetaData/MetaDataColumnsController'
+import ReactSelectField from 'components/MRTTable/Common/MetaData/ReactSelectField';
+import CustomFieldText from 'components/MRTTable/Common/MetaData/CustomFieldText';
+import { metaDataColumnStateController } from 'components/MRTTable/Common/MetaData/MetaDataColumnsController';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
-import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController'
-import { formatGridViewToMRT } from "components/MRTTable/utils/helper"
+import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController';
+import { formatGridViewToMRT } from 'components/MRTTable/utils/helper';
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
-import MRT_SelectCheckbox_OverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
+import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 import { handleMRTSchema, handleVisiblityMenu } from './helpers';
+import { validateUrl } from 'utils/helper';
 
 function isDateFormat(inputString) {
 	// Regular expression for MM/DD/YYYY format
@@ -40,7 +41,8 @@ const initialState = {
 	columnPinning: {
 		left: [],
 	},
-}
+	isIncludeInactive: false
+};
 
 export const tableESState = {};
 export const tableGlobalState = hookstate({
@@ -49,7 +51,7 @@ export const tableGlobalState = hookstate({
 });
 
 async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyChange, tableKey) {
-	const _user = globalStateController.getValue('user')
+	const _user = globalStateController.getValue('user');
 
 	const result = await client.query({
 		variables: {
@@ -59,63 +61,72 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 		query: GET_META_DATA,
 	});
 
-	const data = result?.data?.getMetaData?.metaData
+	const data = result?.data?.getMetaData?.metaData;
 
 	const metaDataTableSchema = data.map((item, index) => {
-		const key = item?.esKey.replaceAll('.keyword', '')
+		const key = item?.esKey.replaceAll('.keyword', '');
 
-		return ({
+		return {
 			...item,
 			...CommonSchema.COMMON_COLUMN,
 			name: `${key}.keyword`,
 			id: key,
-			accessorFn: (row) => get(row, key),
+			accessorFn: row => get(row, key),
 			header: item?.label,
 			isCustom: true,
 			size: 350,
 			inputType: item?.type,
 			dbKey: item?.name,
+			isSearchField: !item.type === 'date',
 			Cell: ({ row }) => {
-				const value = _.get(row?.original, `custom_data.${item?.name}`)
+				const value = _.get(row?.original, `custom_data.${item?.name}`);
 
-				if (item?.type === "multiselect" || item?.type === "dropdown") {
+				if (item?.type === 'multiselect' || item?.type === 'dropdown') {
 					return (
 						<div>
 							<ReactSelectField
 								tooltipView={true}
-								isSingleSelect={item.type !== "multiselect"}
+								isSingleSelect={item.type !== 'multiselect'}
 								dropdownOptions={item.dropdownOptions}
 								index={index}
 								column={item}
 								value={value}
 								id={item.label}
 								tableKey={tableKey}
-								onCustomKeyChange={(value) => onCustomKeyChange(client, row?.original, value, item)}
+								onCustomKeyChange={value => onCustomKeyChange(client, row?.original, value, item)}
 							/>
 						</div>
 					);
 				}
 
-				if (item?.type === "text") {
+				if (item?.type === 'text') {
+					if (validateUrl(value))
+						return (
+							<a href={value} target="_blank">
+								{value?.length > 40 ? value?.slice(0, 40) + '...' : value}
+							</a>
+						);
 					return (
 						<CustomFieldText
 							value={value}
-							onCustomKeyChange={(value) => { onCustomKeyChange(client, row?.original, value, item) }}
+							onCustomKeyChange={value => {
+								onCustomKeyChange(client, row?.original, value, item);
+							}}
 						/>
-					)
+					);
 				}
 
-				return <>{value}</>
+				return <>{value}</>;
 			},
-		})
+		};
 	});
 
 	metaDataColumnStateController(tableKey)?.initialize(tableKey, metaDataTableSchema);
 
-	const lastColumns = TableSchema.filter(obj => obj.showInLast === true)
-	const defaultColumns = TableSchema.filter(obj => obj.showInLast !== true)
-	const newTableSchema = [...defaultColumns, ...metaDataTableSchema, ...lastColumns]
-	return newTableSchema
+	const lastColumns = TableSchema.filter(obj => obj.showInLast === true);
+	const defaultColumns = TableSchema.filter(obj => obj.showInLast !== true);
+	const newTableSchema = [...defaultColumns, ...metaDataTableSchema, ...lastColumns];
+	return newTableSchema;
 }
 
 async function fetchGridViews(client, module, tableKey, gridViewOverride) {
@@ -142,8 +153,7 @@ async function fetchGridViews(client, module, tableKey, gridViewOverride) {
 	let defaultDisplay = allGridViews?.find(obj => obj.name === gridViewOverride);
 
 	// If no override is found or provided, attempt to find a default grid view for the user.
-	if (!defaultDisplay)
-		defaultDisplay = allGridViews?.find(obj => obj.defaultDisplayBy?.includes(user?._id));
+	if (!defaultDisplay) defaultDisplay = allGridViews?.find(obj => obj.defaultDisplayBy?.includes(user?._id));
 
 	// Return the determined default or overridden grid view configuration.
 	return defaultDisplay;
@@ -156,6 +166,7 @@ const tableESStateControllerHandler = state => ({
 			esIndex,
 			pageSize,
 			defaultSort,
+			isIncludeInactive,
 			isInFiniteScroll,
 			columnVirtualization,
 			TableSchema,
@@ -172,9 +183,10 @@ const tableESStateControllerHandler = state => ({
 			advanceSearch = [],
 			isDefaultGridView,
 			enableHiding = true,
+			refetchQueries = [],
 			...rest
 		},
-		client,
+		client
 	) => {
 		if (state.TableSchema.get()) return;
 
@@ -187,12 +199,19 @@ const tableESStateControllerHandler = state => ({
 					const tableState = tableController(tableKey).useState(['mrtTableRef']);
 					const tableStateValues = tableState.stateValues;
 					// eslint-disable-next-line react/jsx-pascal-case
-					return <MRT_SelectCheckbox_OverRide row={row} selectAll={false} table={tableStateValues?.mrtTableRef} tableKey={tableKey} />
+					return (
+						<MRTSelectCheckboxOverRide
+							row={row}
+							selectAll={false}
+							table={tableStateValues?.mrtTableRef}
+							tableKey={tableKey}
+						/>
+					);
 				},
 			});
 
 		if (fetchMetaData) {
-			_Schema = await fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyChange, tableKey)
+			_Schema = await fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyChange, tableKey);
 		}
 
 		let formatedGridView = null;
@@ -207,10 +226,7 @@ const tableESStateControllerHandler = state => ({
 
 			// Setup the gridView object with the selected grid view configuration and some flags for UI control.
 			gridView = {
-				selectedGridView:
-					isDefaultGridView || !userDefaultDisplay
-						? gridViewSettings.defaultView
-						: userDefaultDisplay,
+				selectedGridView: isDefaultGridView || !userDefaultDisplay ? gridViewSettings.defaultView : userDefaultDisplay,
 				showViewModal: false,
 				showSaveAsNew: false,
 			};
@@ -235,8 +251,29 @@ const tableESStateControllerHandler = state => ({
 			columnVirtualization,
 		});
 
+		// Set default pinning and ordering
+		const defaultColumnsOrdering = ['over-ride-checkbox', 'mrt-row-numbers', ...columnOrder];
+		const defaultColumnsPinning = {
+			left: [
+				...(pinnedFields.length > 0
+					? _.concat(['over-ride-checkbox', 'mrt-row-numbers'], _.slice(pinnedFields, 1))
+					: ['over-ride-checkbox', 'mrt-row-numbers']),
+			],
+		};
+
+		// Push action menu in first place
+		if (rest.isShowActionMenuFirst) {
+			// removing 'actionMenu' from array and adding it at start
+			pull(defaultColumnsOrdering, 'actionMenu');
+			pull(defaultColumnsPinning.left, 'actionMenu');
+
+			defaultColumnsOrdering?.unshift('actionMenu');
+			defaultColumnsPinning?.left?.unshift('actionMenu');
+		}
+
 		state.merge({
 			...rest,
+			refetchQueries,
 			defaultFlterMode,
 			search,
 			initialized: true,
@@ -254,7 +291,9 @@ const tableESStateControllerHandler = state => ({
 			isFetching: false,
 			isError: false,
 			defaultFilters: defaultFilters || state?.defaultFilters?.get({ noproxy: true }),
-			customProps: isEmpty(state?.customProps?.get({ noproxy: true })) ? customProps : state?.customProps?.get({ noproxy: true }),
+			customProps: isEmpty(state?.customProps?.get({ noproxy: true }))
+				? customProps
+				: state?.customProps?.get({ noproxy: true }),
 			filters: formatedGridView?.filters ? formatedGridView.filters : [],
 			sorting: formatedGridView?.sorting ? formatedGridView.sorting : [],
 			rowSelection: {},
@@ -269,18 +308,13 @@ const tableESStateControllerHandler = state => ({
 			ExternalFilter,
 			columnVisibility: formatedGridView?.columnVisibility ? formatedGridView.columnVisibility : columnVisibility,
 			defaultSort,
+			isIncludeInactive,
 			filterModes,
 			density,
 			advanceSearch,
 			enableHiding,
-			columnOrdering: formatedGridView?.columnOrdering ? formatedGridView.columnOrdering : ['over-ride-checkbox', 'mrt-row-numbers', ...columnOrder],
-			columnPinning: formatedGridView?.columnPinning ? formatedGridView.columnPinning : {
-				left: [
-					...(pinnedFields.length > 0
-						? _.concat(['over-ride-checkbox', 'mrt-row-numbers'], _.slice(pinnedFields, 1))
-						: ['over-ride-checkbox', 'mrt-row-numbers']),
-				],
-			},
+			columnOrdering: formatedGridView?.columnOrdering ? formatedGridView.columnOrdering : defaultColumnsOrdering,
+			columnPinning: formatedGridView?.columnPinning ? formatedGridView.columnPinning : defaultColumnsPinning,
 		});
 	},
 
@@ -324,7 +358,7 @@ const tableESStateControllerHandler = state => ({
 			let size = 0;
 			columnPinning.left.forEach(pin => {
 				if (pin === 'mrt-row-numbers') {
-					size += 60
+					size += 60;
 				} else if (pin === 'mrt-row-select') {
 					size += 0;
 				} else {
@@ -386,23 +420,27 @@ const tableESStateControllerHandler = state => ({
 		!deepEqual(state.globalFilter?.get({ noproxy: true }), globalFilter) && state.globalFilter?.set(globalFilter),
 
 	setFilter: filter => {
-		const TableSchema = state.TableSchema.get({ noproxy: true }) || []
-		console.log('TableSchema', TableSchema)
-		const column = TableSchema?.find(
-			column => column.id === filter.field || column.accessorKey === filter.field
-		);
-
-		console.log('column', column)
+		const TableSchema = state.TableSchema.get({ noproxy: true }) || [];
+		const column = TableSchema?.find(column => column.id === filter.field || column.accessorKey === filter.field);
 
 		if (column?.type === 'date') {
 			if (filter.type !== 'advanced') {
-				filter.type = 'advanced'
-				filter.searchType = 'betweenInclusive'
-				filter.columnType = 'date'
+				filter.type = 'advanced';
+				filter.searchType = 'betweenInclusive';
+				filter.columnType = 'date';
 			} else {
-				if (!isDateFormat(filter.value)) return
-				const date = new Date(filter.value)
-				filter.value = formatDate(date.toISOString())
+				if (Array.isArray(filter.value)) {
+					if (!isDateFormat(filter.value[0]) || !isDateFormat(filter.value[1])) return;
+
+					const date1 = new Date(filter.value[0]);
+					const date2 = new Date(filter.value[1]);
+
+					filter.value = [formatDate(date1.toISOString()), formatDate(date2.toISOString())];
+				} else {
+					if (!isDateFormat(filter.value)) return;
+					const date = new Date(filter.value);
+					filter.value = formatDate(date.toISOString());
+				}
 			}
 		}
 
@@ -421,8 +459,10 @@ const tableESStateControllerHandler = state => ({
 
 	getExternalFilter: () => {
 		const filtersState = state.filters?.get({ noproxy: true });
-		const requiredFields = state.ExternalFilter?.get({ noproxy: true });
-		const esFilters = (filtersState || [])?.filter(filter => requiredFields.includes(filter.field));
+		const requiredFields = state.ExternalFilter?.get({ noproxy: true })?.map(f => f.replaceAll('.keyword', ''));
+		const esFilters = (filtersState || [])?.filter(filter =>
+			requiredFields.includes(filter.field.replaceAll('.keyword', ''))
+		);
 		return esFilters;
 	},
 
@@ -459,13 +499,11 @@ const tableESStateControllerHandler = state => ({
 	setIsAllRowsSelected: value => {
 		if (!state.isSelectAllAllowed.get()) return;
 
-		if (!isEqual(value, state.isAllRowsSelected.get()))
-			state.isAllRowsSelected.set(value);
+		if (!isEqual(value, state.isAllRowsSelected.get())) state.isAllRowsSelected.set(value);
 	},
 
 	setShowColumnFilters: value => {
-		if (!isEqual(value, state.showColumnFilters.get()))
-			state.showColumnFilters.set(value);
+		if (!isEqual(value, state.showColumnFilters.get())) state.showColumnFilters.set(value);
 	},
 
 	setSorting: sorting => {
@@ -473,11 +511,15 @@ const tableESStateControllerHandler = state => ({
 	},
 
 	setFilters: filters => {
-		state.filters.set(filters)
+		state.filters.set(filters);
+	},
+
+	setIncludeInactive: isIncludeInactive => {
+		state.isIncludeInactive?.set(isIncludeInactive)
 	},
 
 	setMrtTableRef: mrtTableRef => {
-		!deepEqual(state.mrtTableRef?.get({ noproxy: true }), mrtTableRef) && state.mrtTableRef?.set(mrtTableRef)
+		!deepEqual(state.mrtTableRef?.get({ noproxy: true }), mrtTableRef) && state.mrtTableRef?.set(mrtTableRef);
 	},
 
 	setAdvanceSearch: (value, otherState) => {
@@ -485,7 +527,7 @@ const tableESStateControllerHandler = state => ({
 			state.merge({
 				advanceSearch: value,
 				...(otherState && { globalFilter: otherState.globalFilter || '' }),
-			})
+			});
 		}
 	},
 
@@ -585,7 +627,6 @@ const tableESStateControllerHandler = state => ({
 
 		return genericState;
 	},
-
 });
 
 export const tableController = TableKey => {
@@ -602,7 +643,7 @@ const tableGlobalControllerHandler = state => ({
 	},
 	reInitialized: () => {
 		state.reInitialized.set(!state.reInitialized.get({ noproxy: true }));
-	}
+	},
 });
 
 export const tableGlobalController = {

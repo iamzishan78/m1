@@ -5,6 +5,7 @@ export const ADDACTIVITY = gql`
     addActivity(activity: $activity) {
       success
       message
+      activity
     }
   }
 `;

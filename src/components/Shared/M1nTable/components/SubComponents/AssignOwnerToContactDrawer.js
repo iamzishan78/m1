@@ -24,12 +24,18 @@ import { BULKUPSERTTAG } from "graphQL/useMutationBulkUpsertTagOnContacts";
 import { UPSERT_CONTACT_CAMPAIGNS } from "graphQL/useMutationCampaign";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 import { UPDATE_PARCEL_OWNERS } from 'graphQL/useMutationUpdateParcelOwners';
+import { UPDATE_SHAPES } from 'graphQL/useMutationUpdateShapes';
 import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 import { resetESTableToggle } from "hookstate";
 import { Modals } from 'styles/Modal';
 import { tableGlobalController } from 'hookstate/tableController';
 import { globalStateController } from 'hookstate/globalStateController';
+import RelatedContact from "components/MRTTable/Common/Dialog/BulkUpdate/RelatedContact"
+import { ADD_RELATED_CONTACTS } from "graphQL/useMutationRelatedContact";
+import { copy } from 'components/Shared/functions';
+import set from "lodash/set";
+import { CurrencyFormatCustomWithoutPrefix } from "components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix";
 
 const styles = () => ({
   topHeading: { fontWeight: 'bold' },
@@ -86,6 +92,152 @@ const styles = () => ({
 
 const useStyles = makeStyles(styles);
 
+/**
+ * Component that renders different input fields based on the provided field type.
+ * @param {Object} props - Component props.
+ * @param {string} props.field - Field type to render.
+ * @param {Function} props.setFieldKey - Function to set the field value.
+ * @param {Function} props.setCampaigns - Function to set the campaigns array.
+ * @param {Function} props.setContactOwner - Function to set the contact owner.
+ * @param {string} props.contactOwner - Current contact owner value.
+ * @param {string} props.fieldKey - Current field value.
+ * @param {Array} props.campaigns - Current campaigns array.
+ */
+function SelectedField({ field, setFieldKey, setCampaigns, setContactOwner, contactOwner, fieldKey, campaigns, classes, publicTags }) {
+  let filterKey = ''; // Initialize filterKey variable to determine specific filter criteria
+
+  // Switch statement to render different input fields based on the field type
+  switch (field) {
+    case 'Contact Owner':
+      // Renders autocomplete field for selecting contact owner
+      return (
+        <ContactAutoComplete
+          value={contactOwner}
+          onChange={(e, user) => {
+            const value = user && user.value ? user.value : '';
+            setFieldKey(value); // Sets the field key value
+            setContactOwner(value); // Sets the contact owner value
+          }}
+        />
+      );
+    case 'Campaign Name':
+      // Renders field for updating campaign name
+      // filterKey is not set for this case
+      return (
+        <CampaignNameField
+          value={fieldKey}
+          onChange={(values, id) => {
+            setFieldKey(values); // Sets the field key value
+            setCampaigns([...campaigns, { _id: id, campaignName: values[values.length - 1] }]); // Updates campaigns array
+          }}
+          fullWidth // Renders field with full width
+          targetLabel="Contact" // Sets target label to 'Contact'
+          simpleChips // Uses simple chips for rendering
+        />
+      );
+    case 'Stage':
+      filterKey = 'status.keyword'; // Sets filterKey to 'status.keyword' for filtering by stage
+      break;
+    case 'Status':
+      filterKey = 'contactStatus.keyword'; // Sets filterKey to 'contactStatus.keyword' for filtering by status
+      break;
+    case 'Industry Type':
+    case 'Lead Source':
+    case 'Territory':
+      // Renders text field for entering values for industry type, lead source, or territory
+      return (
+        <TextField
+          placeholder="Enter a value"
+          value={fieldKey}
+          onChange={({ target }) => {
+            setFieldKey(target.value); // Sets the field key value based on input
+          }}
+          autoFocus={true} // Automatically focuses on input
+          className={classes.fullWidth} // Uses CSS class 'fullWidth'
+        />
+      );
+    case 'Time Zone':
+      // Renders autocomplete field for selecting time zone
+      return (
+        <Autocomplete
+          id="combo-box-demo"
+          options={timeZoneOptions} // Provides time zone options for selection
+          onChange={(e, newValue) => {
+            setFieldKey(newValue); // Sets the field key value based on selected time zone
+          }}
+          value={fieldKey} // Current selected time zone value
+          renderInput={params => <TextField {...params} size="small" placeholder="Select Timezone" />} // Renders input field for selecting time zone
+        />
+      );
+    case 'Tags':
+      // Renders autocomplete field for selecting multiple tags
+      return (
+        <Autocomplete
+          multiple // Allows selecting multiple tags
+          className={classes.chip} // Uses CSS class 'chip' for styling
+          id="update-contacts-tags"
+          options={publicTags?.publicTags || []} // Provides options for tags selection
+          getOptionLabel={option => option} // Retrieves label for each tag option
+          value={fieldKey || []} // Current selected tags array
+          onChange={(e, newTagsArr) => setFieldKey(newTagsArr)} // Sets the field key value based on selected tags array
+          renderInput={params => <TextField {...params} variant="outlined" className={classes.input} />} // Renders input field for selecting tags
+        />
+      );
+    // Additional cases can be added as needed for different field types
+    case 'Max Pricing (Per NRA)':
+    case 'Target Pricing (Per NRA)':
+      // Add text field for Max Pricing and Target Pricing bulk update
+      return (
+        <TextField
+          key={field} // Use key to force re-render and re-apply focus
+          placeholder={field}
+          value={fieldKey}
+          onChange={({ target }) => {
+            setFieldKey(target.value);
+          }}
+          autoFocus={true}  // This will automatically focus the field when rendered
+          className={classes.fullWidth}
+          InputProps={{
+            startAdornment: <InputAdornment position="start">$</InputAdornment>,
+            inputComponent: CurrencyFormatCustomWithoutPrefix,
+          }}
+      />
+    );
+    case 'Entity Type':
+      filterKey = 'ownerType.keyword'; // Sets filterKey to 'ownerType.keyword' for filtering by entity type
+      return (
+        <EntityType
+          setDocumentType={value => {
+            setFieldKey(value._id); // Sets the field key value based on selected entity type
+          }}
+          value={fieldKey} // Current selected entity type value
+        />
+      );
+    case 'Related Contact':
+      // Renders component for selecting related contacts
+      return (
+        <RelatedContact setFieldKey={setFieldKey} />
+      );
+    default:
+  }
+
+  // Conditional rendering based on filterKey value
+  if (filterKey) {
+    return (
+      <FieldBulkAutoComplete
+        value={fieldKey || []} // Current selected value or empty array
+        placeholder={`Select ${field}`} // Placeholder text for the field
+        filterKey={filterKey} // Sets filter key based on field type
+        onChange={(e, fieldKey) => {
+          setFieldKey(fieldKey.value); // Sets the field key value based on selected value
+        }}
+      />
+    );
+  }
+  return ''; // Default case returns an empty string
+}
+
+
 export default function AssignOwnerToContactDrawer({
   onClose,
   rows,
@@ -106,7 +258,6 @@ export default function AssignOwnerToContactDrawer({
   const [field, setField] = useState('');
   const [fieldKey, setFieldKey] = useState();
   const [loading, setLoading] = useState(false);
-  const [inputFocused, _setFocused] = useState(false);
   const [campaigns, setCampaigns] = useState([]);
   const [rowsLoading, setRowsLoading] = useState(false);
 
@@ -130,6 +281,10 @@ export default function AssignOwnerToContactDrawer({
     ...options,
     refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
   });
+  const [updateShapes] = useMutation(UPDATE_SHAPES, {
+    ...options,
+    refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
+  });
   const [assignOwnerToContact] = useMutation(ASSIGN_OWNER_TO_CONTACT, options);
   const [updateBulkContact] = useMutation(UPDATEBULKCONTACT, options);
   const [updateBulkTags] = useMutation(BULKUPSERTTAG, options);
@@ -139,7 +294,22 @@ export default function AssignOwnerToContactDrawer({
     },
   });
 
-  const fieldsToUpdate = [
+  //add RelatedContacts Api 
+  const [addRelatedContacts, { data: response, loading: isSubmitting }] = useMutation(ADD_RELATED_CONTACTS, {
+    onCompleted: () => {
+      tableGlobalController.refetch();
+    },
+  })
+
+
+  const unitTableFields = [ // Add unit grid fields for bulk update
+    { title: 'Campaign Name', value: 'campaignName' },
+     { title: 'Max Pricing (Per NRA)', value: 'uMaxUnitPricing' },
+    { title: 'Target Pricing (Per NRA)', value: 'uUnitPricing' },
+    { title: 'Tags', value: 'contactStatus' }
+  ];
+  
+  const otherTableFields = [
     { title: 'Campaign Name', value: 'campaignName' },
     { title: 'Contact Owner', value: 'contactOwner' },
     { title: 'Entity Type', value: 'ownerType' },
@@ -150,7 +320,12 @@ export default function AssignOwnerToContactDrawer({
     { title: 'Tags', value: 'contactStatus' },
     { title: 'Territory', value: 'territory' },
     { title: 'Time Zone', value: 'timeZone' },
+    { title: 'Related Contact', value: 'relatedcontact' },
   ];
+
+  const fieldsToUpdate = rest.header === "UnitTable" 
+    ? [ ...unitTableFields]
+    : [...otherTableFields];
 
   useEffect(() => {
     if (!['Industry Type', 'Lead Source', 'Territory', 'Time Zone', 'Tags'].includes(field))
@@ -187,11 +362,71 @@ export default function AssignOwnerToContactDrawer({
     }
   };
 
+  const updateCampaign = (shape, field, value) => {
+    /* -------------------------------- Data Fix -------------------------------- */
+    if (field.includes('originalProperties.')) delete shape.properties[field]
+    if (field.includes('originalProperties.State')) set(shape.properties, 'originalProperties.StateAbbreviation', value);
+    if (field.includes('originalProperties.Section')) set(shape.properties, 'originalProperties.ShortName', value);
+    if (field.includes('originalProperties.Meridian')) set(shape.properties, 'originalProperties.PrincipalMeridian', value);
+    /* -------------------------------- Data Fix -------------------------------- */
+
+    set(shape.properties, field, value); // Set field and its value in shapeJson 
+
+    const customLayer = {};
+
+    if (field.includes('originalProperties')) {
+      set(shape.properties, field.replace('originalProperties.', '').toLowerCase(), value);
+    }
+    customLayer.shape = JSON.stringify(shape); // Assign updated shape
+    customLayer.shapeJson = shape; // Assign updated shapeJson
+
+    return customLayer;
+  };
+
+  const bulkShapeUpdate = (shapesToUpdate, errorMsg) => {
+        // Update the shapes with the new data
+        updateShapes({
+          variables: {
+            shapes: shapesToUpdate,
+          },
+          refetchQueries: ["getESPaginatedList", "getESFilterList", "getCustomLayer"], // Refetch these queries after the update
+          awaitRefetchQueries: true,
+        }).then(res => {
+          // Toggle the reset state for the table to refresh its data
+          resetESTableToggle.set(!resetESTableToggle.get())
+
+        // Check if the response data is present and updateShapes was successful
+          if (res.data && res.data.updateShapes) {
+            const success = res.data.updateShapes.success
+            if (success) {
+              // Show a success toast and message if the update was successful
+              Loader.successToast('contact-creation', "Updated")
+              showSuccessMessage(`${field} Bulk Updated Successfully`)
+            
+              // Call the onBulkUpdateComplete callback if it exists
+              if (rest.onBulkUpdateComplete)
+                rest.onBulkUpdateComplete()
+            } else {
+                // Show an error toast if the update was not successful
+              Loader.errorToast('contact-creation', "Updated")
+            }
+          } else {
+            // Show an error toast if the response data is not as expected
+            Loader.errorToast('contact-creation', 'Failed');
+          }
+        },
+          err => {
+          console.log(err);
+          Loader.errorToast('contact-creation', errorMsg);
+          }
+        );
+  }
+
   const onAssign = () => {
     const contactIds = rows.map(row => row.contactId || row._id);
 
     const errorMsg = 'Failed to assign to contact owner';
-    Loader.createToast('contact-creation', 'Contact Bulk Update in progress');
+    Loader.createToast('contact-creation', `${ (rest.header === 'UnitTable') ? 'Unit' : 'Contact'} Bulk Update in progress`);
 
     if (field === 'Contact Owner') {
       assignOwnerToContact({
@@ -228,9 +463,9 @@ export default function AssignOwnerToContactDrawer({
           tags: fieldKey,
           user: getUser?._id,
           contactIds,
-          objectType: 'contact',
+          objectType: rest?.objectType,
         },
-        refetchQueries: ["getESContacts"],
+        refetchQueries: rest?.refetchQueries,
         awaitRefetchQueries: true,
       }).then(
         (res) => {
@@ -254,6 +489,53 @@ export default function AssignOwnerToContactDrawer({
           Loader.errorToast('contact-creation', errorMsg);
         }
       );
+    } else if (field === 'Related Contact') {
+      // calling addRelatedContacts api
+      addRelatedContacts({
+        variables: {
+          relationshipType: fieldKey?.relationshipType,
+          descriptorObject: fieldKey?.descriptorObject?.value,
+          relatedObject: contactIds,
+          userId: getUser?._id,
+        }
+      }).then(
+        (res) => {
+          resetESTableToggle.set(!resetESTableToggle.get())
+          if (res.data && res.data.addRelatedContacts) {
+            const { success, message } = res.data.addRelatedContacts;
+
+            if (success) {
+              Loader.successToast('contact-creation', message);
+              showSuccessMessage('Contacts Updated Successfuly');
+            } else {
+              Loader.errorToast('contact-creation', message);
+            }
+          } else {
+            Loader.errorToast('contact-creation', errorMsg);
+          }
+        },
+        err => {
+          // eslint-disable-next-line no-console
+          console.log(err);
+          Loader.errorToast('contact-creation', errorMsg);
+        }
+      );
+
+    } else if (field === 'Max Pricing (Per NRA)' || field === 'Target Pricing (Per NRA)') {
+        // Map through each row to create an array of shapes to update
+        const shapesToUpdate = rows.map(row =>  {
+        // Update the campaign with the new value and fieldKey, creating a custom layer for each row
+        const customlayer = updateCampaign(copy(row.shapeJson), fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value, fieldKey);
+
+          // Return an object with the updated custom layer information
+          return {
+            customLayer: customlayer,
+            customLayerId: row._id,
+            userId: getUser?._id,
+          }
+        });
+
+        bulkShapeUpdate(shapesToUpdate, errorMsg)
     }
     else {
       const fieldToUpdate = { [fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value]: fieldKey }
@@ -324,6 +606,53 @@ export default function AssignOwnerToContactDrawer({
               err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) });
 
             break;
+
+          case 'UnitTable':
+            // Extract the campaign names from the campaigns array
+            const campaignName = campaigns.map(campaign => campaign.campaignName)
+
+            // Map through each row to create an array of shapes to update
+            const shapesToUpdate = rows.map(row =>  {
+              // Update the campaign with the new campaign names
+              const customlayer = updateCampaign(copy(row.shapeJson), 'campaignName', campaignName);
+              // Return an object with the updated custom layer information
+              return {
+                customLayer: customlayer,
+                customLayerId: row._id,
+                userId: getUser?._id,
+              }
+            });
+            updateShapes({
+              variables: {
+                shapes: shapesToUpdate,
+              },
+              refetchQueries: ["getESPaginatedList", "getESFilterList", "getCustomLayer"],
+              awaitRefetchQueries: true,
+            }).then(res => {
+              resetESTableToggle.set(!resetESTableToggle.get())
+              if (res.data && res.data.updateShapes) {
+                const success = res.data.updateShapes.success
+                if (success) {
+                  Loader.successToast('contact-creation', "Updated")
+                  showSuccessMessage(`${field} Bulk Updated Successfully`)
+                  if (rest.onBulkUpdateComplete)
+                    rest.onBulkUpdateComplete()
+                } else {
+                  Loader.errorToast('contact-creation', "Updated")
+                }
+              } else {
+                Loader.errorToast('contact-creation', 'Failed');
+              }
+            },
+              err => {
+                // eslint-disable-next-line no-console
+                console.log(err);
+                Loader.errorToast('contact-creation', errorMsg);
+              }
+            );
+
+            bulkShapeUpdate(shapesToUpdate, errorMsg);
+          break;
 
           default:
             const shapeOwnersToUpdate = rows.map(row => ({
@@ -406,112 +735,6 @@ export default function AssignOwnerToContactDrawer({
     setLoading(false);
   };
 
-  // eslint-disable-next-line react/no-unstable-nested-components
-  function SelectedField() {
-    let filterKey = '';
-    switch (field) {
-      case 'Contact Owner':
-        return (
-          <ContactAutoComplete
-            value={contactOwner}
-            onChange={(e, user) => {
-              const value = user && user.value ? user.value : '';
-              setFieldKey(value);
-              setContactOwner(value);
-            }}
-          />
-        );
-      case 'Campaign Name':
-        // filterKey = 'campaignName.keyword'
-        return (
-          <CampaignNameField
-            value={fieldKey}
-            className={classes.maxWidth}
-            onChange={(values, id) => {
-              setFieldKey(values);
-              setCampaigns([...campaigns, { _id: id, campaignName: values[values.length - 1] }])
-            }}
-            fullWidth
-            targetLabel="Contact"
-            simpleChips
-          />
-        );
-      case 'Stage':
-        filterKey = 'status.keyword';
-        break;
-      case 'Status':
-        filterKey = 'contactStatus.keyword';
-        break;
-      case 'Industry Type':
-      case 'Lead Source':
-      case 'Territory':
-        return (
-          <TextField
-            placeholder="Enter a value"
-            value={fieldKey}
-            onChange={({ target }) => {
-              setFieldKey(target.value);
-            }}
-            autoFocus={inputFocused}
-            onFocus={() => _setFocused(true)}
-            onBlur={() => _setFocused}
-            className={classes.fullWidth}
-          />
-        );
-      case 'Time Zone':
-        return (
-          <Autocomplete
-            id="combo-box-demo"
-            options={timeZoneOptions}
-            onChange={(e, newValue) => {
-              setFieldKey(newValue);
-            }}
-            value={fieldKey}
-            renderInput={params => <TextField {...params} size="small" placeholder="Select Timezone" />}
-          />
-        );
-      case 'Tags':
-        return (
-          <Autocomplete
-            multiple
-            className={classes.chip}
-            id="update-contacts-tags"
-            options={publicTags?.publicTags || []}
-            getOptionLabel={option => option}
-            value={fieldKey || []}
-            onChange={(e, newTagsArr) => setFieldKey(newTagsArr)}
-            renderInput={params => <TextField {...params} variant="outlined" className={classes.input} />}
-          />
-        );
-      // .. etc
-      case 'Entity Type':
-        filterKey = 'ownerType.keyword';
-        return (
-          <EntityType
-            setDocumentType={value => {
-              setFieldKey(value._id);
-            }}
-            value={fieldKey}
-          />
-        );
-      default:
-    }
-
-    if (filterKey) {
-      return (
-        <FieldBulkAutoComplete
-          value={fieldKey || []}
-          placeholder={`Select ${field}`}
-          filterKey={filterKey}
-          onChange={(e, fieldKey) => {
-            setFieldKey(fieldKey.value);
-          }}
-        />
-      );
-    }
-    return '';
-  }
-
   return (
     <RightDialog open width="700px">
       {rowsLoading ? (
@@ -592,7 +815,17 @@ export default function AssignOwnerToContactDrawer({
                   <Typography style={{ fontWeight: 'bold', marginTop: '30px' }}>{field}</Typography>
                 </Grid>
                 <Grid item>
-                  <SelectedField />
+                  <SelectedField
+                    field={field}
+                    setFieldKey={setFieldKey}
+                    setCampaigns={setCampaigns}
+                    setContactOwner={setContactOwner}
+                    contactOwner={contactOwner}
+                    fieldKey={fieldKey}
+                    campaigns={campaigns}
+                    classes={classes}
+                    publicTags={publicTags}
+                  />
                 </Grid>
               </Grid>
             </Box>

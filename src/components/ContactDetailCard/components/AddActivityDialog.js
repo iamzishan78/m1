@@ -151,6 +151,13 @@ const getCurrentDate = () => {
   return d.slice(0, d.indexOf("T"));
 };
 
+const getCurrentTime = () => {
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
+};
+
 const mergeDateAndTime = (d, t) => {
   return `${d}T${t}`;
 };
@@ -166,26 +173,27 @@ const activityStatus = [
 ]
 function AddActivityDialog(props) {
   const classes = useStyles();
-  const { selectedActivity, onClose, contactData, defaultActivityType } = props;
+  const { selectedActivity, onClose, contactData, defaultActivityType, actionActivityData } = props;
+  const { activity_name, activity_type, activity_outcome, activity_notes, activity_status } = actionActivityData || {};
 
   const [stateApp] = useContext(AppContext);
   const dispatch = useDispatch();
 
   const [addNew, setAddNew] = useState(true);
-  const [activityType, setActivityType] = useState(defaultActivityType || "call");
-  const [activityName, setActivityName] = useState("");
-  const [closed, setClosed] = useState(activityStatus[0]);
+  const [activityType, setActivityType] = useState(activity_type || defaultActivityType || "call"); // set default activity type
+  const [activityName, setActivityName] = useState(activity_name || ""); // set default activity name
+  const [closed, setClosed] = useState(activity_status || activityStatus[0]); // set default activity status
   const [startDate, setStartDate] = useState(getCurrentDate());
   const [endDate, setEndDate] = useState(getCurrentDate());
-  const [startTime, setStartTime] = useState("08:00");
-  const [endTime, setEndTime] = useState("08:00");
-  const [notes, setNotes] = useState("");
+  const [startTime, setStartTime] = useState(getCurrentTime() || "08:00");
+  const [endTime, setEndTime] = useState(getCurrentTime() || "08:00");
+  const [notes, setNotes] = useState(activity_notes || ""); // set default activity notes
   const [owner, setOwner] = useState({ name: "", id: null });
   const [dealId, setDealId] = useState(null);
   const [errors, setErrors] = useState({ ...initialErrors });
   const [users, setUsers] = useState([]);
   const [anchorEl, setAnchorEl] = useState();
-  const [outcome, setOutcome] = useState();
+  const [outcome, setOutcome] = useState(activity_outcome || ''); // set default activity outcome
 
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "no-cache",
@@ -306,19 +314,19 @@ function AddActivityDialog(props) {
       );
     } else {
       setAddNew(true);
-      setClosed(activityStatus[0]);
-      setNotes("");
+      setClosed(activity_status || activityStatus[0]); // set activity status
+      setNotes(activity_notes || ""); // set activity notes
       setOwner({
         name: stateApp.user.fullname || stateApp.user.displayName,
         id: stateApp.user.mongoId,
       });
       setDealId(null);
-      setActivityType(defaultActivityType || "call");
-      setActivityName("");
+      setActivityType(activity_type || defaultActivityType || "call"); // set activity type
+      setActivityName(activity_name || ""); // set activity name
       setStartDate(getCurrentDate());
       setEndDate(getCurrentDate());
-      setStartTime("08:00");
-      setEndTime("08:00");
+      setStartTime(getCurrentTime() || "08:00"); // set activity start time
+      setEndTime(getCurrentTime() || "08:00"); // set activity end time
     }
   }, [selectedActivity]);
 
@@ -548,6 +556,7 @@ function AddActivityDialog(props) {
         value={activityName}
         onChange={(e) => setActivityName(e.target.value)}
         disabled={loading}
+        data-testid='activity-name-field'
       />
       <FormControl
         variant="outlined"
@@ -600,7 +609,7 @@ function AddActivityDialog(props) {
       >
         <AutoCompleteAddNewField
           queryParams={{
-            esIndex: "contacts_flat",
+            esIndex: "activities_flat",
             filterKey: "outcome.keyword",
             size: 50,
           }}

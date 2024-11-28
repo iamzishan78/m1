@@ -28,6 +28,8 @@ function TableHeaderMoreOptions({ tableKey }) {
     'esIndex',
     'filters',
     'defaultFilters',
+    'asyncRowSelection',
+    'pageSize',
   ]);
   const tableStateValues = tableState.stateValues;
 
@@ -40,9 +42,22 @@ function TableHeaderMoreOptions({ tableKey }) {
   };
 
   const handleSelect = async (number) => {
+    let newstate = {}
+    if (tableStateValues.asyncRowSelection && number === tableStateValues?.data?.total) {
+      for (let i = 0; i < tableStateValues?.data?.rows?.length; i++) {
+        newstate[i] = true
+      }
+      tableController(tableKey).setColumnCheck(newstate)
+      tableController(tableKey).updateState({
+        onScrollCheck: true,
+        isSubSetSelect: null
+      })
+      handleClose()
+      return
+    }
+
     number = number > tableStateValues?.data?.total ? tableStateValues?.data?.total : number
 
-    let newstate = {}
     for (let i = 0; i < number; i++) {
       newstate[i] = true
     }
@@ -52,7 +67,8 @@ function TableHeaderMoreOptions({ tableKey }) {
       tableController(tableKey).updateState({
         isSubSetSelect: {
           total: number
-        }
+        },
+        onScrollCheck: false
       });
       tableController(tableKey).setIsAllRowsSelected(false);
     }

@@ -179,17 +179,35 @@ function CheckDetailsEditableTable(props) {
       set(row, `property.name`, "");
       set(row, `property.state`, "");
       set(row, `property.county`, "");
-      const { data: checkDetail } = await client.query({
+      let checkDetail
+      const { data: result1 } = await client.query({
         query: GET_ES_PAGINATED_LIST,
         variables: {
           esIndex: "properties_flat",
-          search: `purchaserNumber:"${value}"`,
+          search: `number:"${value}"`,
           pagination: {
             first: 1,
             keep_alive: "1micros",
           },
         },
       });
+      if (result1?.getESPaginatedList?.hits.length) {
+        checkDetail = result1
+      } else {
+        const { data: result2 } = await client.query({
+          query: GET_ES_PAGINATED_LIST,
+          variables: {
+            esIndex: "properties_flat",
+            search: `name:"${value}"`,
+            pagination: {
+              first: 1,
+              keep_alive: "1micros",
+            },
+          },
+        });
+        checkDetail = result2
+      }
+
       let newProperty = {};
       if (checkDetail?.getESPaginatedList?.hits.length > 0) {
         newProperty = checkDetail.getESPaginatedList.hits[0];
@@ -231,10 +249,6 @@ function CheckDetailsEditableTable(props) {
         // }
       }
     });
-
-    // moving on to new row
-    const nextCell = RevenueStatementHeadCells[RevenueStatementHeadCells.findIndex(cell => cell.id === field) + 1];
-    if (nextCell && nextCell.id === "action") addNewRow(null, gridRef);
   };
 
   useEffect(() => {
@@ -280,7 +294,15 @@ function CheckDetailsEditableTable(props) {
             ) : cell.type === "action" ? (
               <ActionCell id={cell.id + index} onChange={onFieldChange(row._id, "IsDeleted")} />
             ) : (
-              <Input value={value} focus={focus} onChange={onFieldChange(row._id, cell.id)} />
+              <Input
+                value={value}
+                focus={focus}
+                onChange={onFieldChange(row._id, cell.id)}
+                addNewRow={addNewRow}
+                RevenueStatementHeadCells={RevenueStatementHeadCells}
+                field={cell.id}
+                gridRef={gridRef}
+              />
             )}
           </>
         );

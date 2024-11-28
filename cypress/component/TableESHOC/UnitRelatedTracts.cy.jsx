@@ -6,7 +6,7 @@ describe('UnitRelatedTracts ESHOC Table', () => {
     cy.interceptAndWait(['getESPaginatedList', 'shapetracts_flat'], () => {
       cy.viewport(1600, 1200).mount(
         <UnitTractsTable
-          customLayer={{ _id: "659ce96d97935e0ffa85792e" }}
+          customLayer={{ _id: "661eaa597d7f7a2368c2daf9" }}
           shapeType="Unit"
           dense
         />

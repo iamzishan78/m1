@@ -43,7 +43,6 @@ export default function FilterTrackedOwners() {
       if (stateNav.filterTrackedOwners) {
         stateApp.toggleLayersActivity("Tracked Owners", false);
         if (
-          !stateNav.filterTrackedWells &&
           stateNav.selectedTags &&
           stateNav.selectedTags.length == 0
         )

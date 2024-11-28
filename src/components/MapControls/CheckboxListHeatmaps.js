@@ -1,4 +1,4 @@
-import React, { useContext, forwardRef } from "react";
+import React, { useContext } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 //import Button from '@material-ui/core/Button';
 import Menu from "@material-ui/core/Menu";
@@ -9,22 +9,13 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 //import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import { ListItemText, FormControlLabel, Switch } from "@material-ui/core";
-import Checkbox from "@material-ui/core/Checkbox";
-import VisibilityIcon from "@material-ui/icons/Visibility";
-import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
-//import IconButton from '@material-ui/core/IconButton';
-//import EditIcon from '@material-ui/icons/Edit';
-import { MapControlsContext } from "./MapControlsContext";
 import { AppContext } from "../../AppContext";
-import { Divider } from "@material-ui/core";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import Collapse from "@material-ui/core/Collapse";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import ExpandLess from "@material-ui/icons/ExpandLess";
-import ExpandMore from "@material-ui/icons/ExpandMore";
 import DragIndicator from "@material-ui/icons/DragIndicator";
 import RootRef from "@material-ui/core/RootRef";
+import { mapControlsController } from "hookstate/mapControlsController";
 
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
@@ -45,9 +36,8 @@ const reorder = (list, startIndex, endIndex) => {
 };
 
 export default function CheckboxListHeatmaps(props) {
-  const [stateMapControls, setStateMapControls] = useContext(
-    MapControlsContext
-  );
+  const { mapControlsStateValues } = mapControlsController.useState(['anchorEl'], 'mapControlsStateValues');
+
   const [stateApp, setStateApp] = useContext(AppContext);
   //const theme = useTheme()
   const classes = useStyles();
@@ -164,19 +154,16 @@ export default function CheckboxListHeatmaps(props) {
   }))(MenuItem);
 
   const handleClose = () => {
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      anchorEl: null,
-    }));
+    mapControlsController.reset()
   };
 
   return (
     <ClickAwayListener onClickAway={handleClose}>
       <StyledMenu
         id="checklist-menu"
-        anchorEl={stateMapControls.anchorEl}
+        anchorEl={mapControlsStateValues.anchorEl}
         keepMounted
-        open={Boolean(stateMapControls.anchorEl)}
+        open={Boolean(mapControlsStateValues.anchorEl)}
         onClose={handleClose}
       >
         <StyledMenuItem
@@ -248,7 +235,7 @@ export default function CheckboxListHeatmaps(props) {
                                   checked={
                                     stateApp.checkedHeats
                                       ? stateApp.checkedHeats.indexOf(index) !==
-                                        -1
+                                      -1
                                       : false
                                   }
                                   onChange={handleToggle(index)}

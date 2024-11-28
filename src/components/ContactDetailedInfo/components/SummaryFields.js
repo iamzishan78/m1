@@ -7,7 +7,10 @@ import { useSelector } from 'react-redux';
 import { Grid, TextField, InputAdornment, CircularProgress } from "@material-ui/core";
 import { Autorenew as AutorenewIcon } from "@material-ui/icons";
 import EmailOutlinedIcon from "@material-ui/icons/EmailOutlined";
+import AddIcCallIcon from '@mui/icons-material/AddIcCall';
 import { makeStyles } from "@material-ui/core/styles";
+import { IconButton } from "@material-ui/core";
+import Tooltip from "@material-ui/core/Tooltip";
 
 import vf_number from "components/Shared/valueformatters/vf_number";
 import AutoCompleteWithAddNew from 'components/ContactDetailCard/components/AutoCompleteWithAddNew'
@@ -16,6 +19,8 @@ import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
 import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import { NumberFormatComma } from "components/Shared/Forms/Formatting/NumberFormatComma";
+import TextSmsIcon from "components/Shared/svgIcons/textsms";
+import VoiceMailIcon from "components/Shared/svgIcons/voicemail";
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -44,10 +49,26 @@ const useStyles = makeStyles(() => ({
     },
     "& .MuiInputBase-root": {
       borderRadius: "7px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      // Hide the quick actions
+      "& #voicemail-icon, & #textsms-icon, & #call-icon, & #mail-icon": { 
+        visibility: "hidden",
+        opacity: 0,
+        transition: "visibility 0.3s, opacity 0.3s ease-in-out",
+      },
+      // Show the quick actions on hover
+      "&:hover #voicemail-icon, &:hover #textsms-icon, &:hover #call-icon, &:hover #mail-icon": {
+        visibility: "visible",
+        opacity: 1,
+      },
     },
   },
   emailAdornment: {
     cursor: "pointer",
+    padding: "0px", // Remove extra padding
+    margin: "0 2px", // Adjust spacing between icons
   },
   baseValueChanged: {
     width: "100%",
@@ -58,7 +79,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function SummaryFields({ contactData }) {
+export default function SummaryFields({ contactData, handleQuickActionActivity }) {
   const classes = useStyles();
   const { control, reset } = useForm();
   const [activeLoadingField, setLoading] = useState();
@@ -83,7 +104,8 @@ export default function SummaryFields({ contactData }) {
           contactInterests: {
             nraSum: getCommaValue(_contact.contactInterests.nraSum),
             offerPriceSum: getCommaValue(_contact.contactInterests.offerPriceSum),
-            maxOfferPriceSum: getCommaValue(_contact.contactInterests.maxOfferPriceSum)
+            maxOfferPriceSum: getCommaValue(_contact.contactInterests.maxOfferPriceSum),
+            closedPriceSum: getCommaValue(_contact.contactInterests.closedPriceSum) // Add thousand comma seprator to closedPriceSum
           }
         };
       }
@@ -141,6 +163,8 @@ export default function SummaryFields({ contactData }) {
       return get(contactData, "evaluatedContactInterests.offerPriceSum")?.toFixed(2) !== _value?.toFixed(2);
     } else if (key.includes("maxOfferPriceSum")) {
       return get(contactData, "evaluatedContactInterests.maxOfferPriceSum")?.toFixed(2) !== _value?.toFixed(2);
+    } else if (key.includes("closedPriceSum")) {
+      return get(contactData, "evaluatedContactInterests.closedPriceSum")?.toFixed(2) !== _value?.toFixed(2); // allow user to override closedPriceSum value
     }
     return false;
   }
@@ -167,7 +191,7 @@ export default function SummaryFields({ contactData }) {
                   useEffect(() => {
                     if (initialized.current) return
 
-                    if (field.key.includes('offerPriceSum') || field.key.includes('nraSum') || field.key.includes('maxOfferPriceSum')) {
+                    if (field.key.includes('offerPriceSum') || field.key.includes('nraSum') || field.key.includes('maxOfferPriceSum') || field.key.includes('closedPriceSum')) { // allow user to override closedPrimeSum
                       let value = field.value ?? params.value;
                       if (value) {
                         initialized.current = true
@@ -199,7 +223,7 @@ export default function SummaryFields({ contactData }) {
                               // params.onChange(parseFloat(event.target.value).toFixed(2));
                             }
 
-                            if (field.key.includes('offerPriceSum') || field.key.includes('nraSum') || field.key.includes('maxOfferPriceSum')) currValue = parseFloat(currValue.replace(/[^\d.-]/g, ''))
+                            if (field.key.includes('offerPriceSum') || field.key.includes('nraSum') || field.key.includes('maxOfferPriceSum') || field.key.includes('closedPriceSum')) currValue = parseFloat(currValue.replace(/[^\d.-]/g, ''))
 
                             const prevValue = get(contactData, field.key) || ''
 
@@ -215,18 +239,51 @@ export default function SummaryFields({ contactData }) {
                           disabled={field.disabled}
                           className={`${classes.field} ${isValueOveridden ? classes.baseValueChanged : null}`}
                           value={field.value ?? params.value}
-                          // If field type = "email", show msg icon adornment
+                          // If field type = "email", show mail icon adornment
                           // If field info is updating, show loading as adornment
+                          // If field is one of 'homePhone', 'mobilePhone', 'AltPhone', show phone icon adornment
                           // else show nothing
                           InputProps={{
                             inputComponent: field.type === "currency" ? CurrencyFormatCustom : field.key.includes('nraSum') ? NumberFormatComma : undefined,
                             endAdornment:
                               field.type === "email" && contactData[field.key] ? (
-                                <a href={"mailto:" + contactData.primaryEmail} className={classes.emailAdornment}>
-                                  <InputAdornment position="end">
-                                    <EmailOutlinedIcon htmlColor="#757575" />
-                                  </InputAdornment>
-                                </a>
+                                <InputAdornment position="end">
+                                  {/* Email quick actions icons */}
+                                  <Tooltip title={"Email"} placement="top">
+                                    <IconButton id="mail-icon" href={`mailto: ${contactData.primaryEmail}`} className={classes.emailAdornment}>
+                                      <EmailOutlinedIcon htmlColor="#757575" />
+                                    </IconButton>
+                                  </Tooltip>
+                                </InputAdornment>
+                              ) : field.isPhoneNumber && contactData[field.key] ? (
+                                <>
+                                {/* Phone quick actions icons */}
+                                <InputAdornment position="end">
+                                  <Tooltip title={"Voice Mail"} placement="top">
+                                    <IconButton id="voicemail-icon" className={classes.emailAdornment} onClick={() => handleQuickActionActivity({phoneNumber: contactData[field.key], type: 'call'})}>
+                                      <VoiceMailIcon htmlColor="#757575" />
+                                    </IconButton>
+                                  </Tooltip>
+                                </InputAdornment>
+
+                                <InputAdornment position="end">
+                                  <Tooltip title={"Text SMS"} placement="top">
+                                    <IconButton id="textsms-icon" className={classes.emailAdornment} onClick={() => handleQuickActionActivity({phoneNumber: contactData[field.key], type: 'text_message'})}>
+                                      <TextSmsIcon htmlColor="#757575" />
+                                    </IconButton>
+                                  </Tooltip>
+                                </InputAdornment>
+
+                                <InputAdornment position="end">
+                                  <Tooltip title={"Call"} placement="top">
+                                    <IconButton id="call-icon" href={`tel: ${contactData[field.key]}`} className={classes.emailAdornment}>
+                                      <AddIcCallIcon htmlColor="#757575" />
+                                    </IconButton>
+                                  </Tooltip>
+                                </InputAdornment>
+                                </>
+                              ) : activeLoadingField === field.key ? (
+                                <CircularProgress className={classes.loader} size={22} color="secondary" />
                               ) : activeLoadingField === field.key ? (
                                 <CircularProgress className={classes.loader} size={22} color="secondary" />
                               ) : (
@@ -238,7 +295,7 @@ export default function SummaryFields({ contactData }) {
                                         const key = `evaluatedContactInterests.${field.key.split(".")[1]}`;
 
                                         let value = get(contactData, key)
-                                        if (field.key.includes('offerPriceSum') || field.key.includes('nraSum') || field.key.includes('maxOfferPriceSum')) {
+                                        if (field.key.includes('offerPriceSum') || field.key.includes('nraSum') || field.key.includes('maxOfferPriceSum') || field.key.includes('closedPriceSum')) {
                                           value = parseFloat(value).toFixed(2);
                                         }
 

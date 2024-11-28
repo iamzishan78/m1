@@ -2,8 +2,8 @@ import React, { memo } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { useMutation } from '@apollo/client';
 import ExportContactsPurchaseAndOwners from 'components/MRTTable/Common/Dialog/ExportContactsPurchaseAndOwners';
-import { tableGlobalController } from 'hookstate/tableController';
-import { AssignOwnerToContactDrawerContainer } from 'store/containers';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import BuyContactsInfoDialogContent from 'components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
 import DeleteConfirmationDialogContent from './ConfirmationDialog/DeleteConfirmationDialog';
@@ -17,10 +17,15 @@ import { globalStateController } from 'hookstate/globalStateController';
 function AllDialogs(props) {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
 	const { type, ...rest } = stateValues.dialog || {};
-	const tableKey = rest?.tableKey
+	const tableKey = rest?.tableKey;
+
+	const {
+		stateValues: { refetchQueries },
+	} = tableController(props.tableKey).useState(['refetchQueries']);
 
 	const [removeCommonDelete] = useMutation(REMOVECOMMONGRIDFUNCTIONALITY, {
 		awaitRefetchQueries: true,
+		refetchQueries,
 	});
 
 	const handleCloseDialog = () => {
@@ -40,10 +45,17 @@ function AllDialogs(props) {
 
 	const deleteFunc = async dataToDelete => {
 		Loader.createToast('deletion', 'Deletion in Progress');
-		const user = globalStateController.getValue('user')
-		const testCase = globalStateController.getValue('testCase')
+		const user = globalStateController.getValue('user');
+		const testCase = globalStateController.getValue('testCase');
 		removeCommonDelete({
-			variables: { tableKey, deletedData: dataToDelete, userId: user?.mongoId, ESVariables: rest?.ESVariables, isSelectAll: rest?.isSelectAll, cypressDelete: testCase?.cypressDelete }
+			variables: {
+				tableKey,
+				deletedData: dataToDelete,
+				userId: user?.mongoId,
+				ESVariables: rest?.ESVariables,
+				isSelectAll: rest?.isSelectAll,
+				cypressDelete: testCase?.cypressDelete,
+			},
 		}).then(
 			res => {
 				if (res?.data?.gridGenericRemove) {
@@ -62,19 +74,32 @@ function AllDialogs(props) {
 
 	return (
 		<>
-			{type === "tags" && (
+			{type === 'tags' && (
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={false}>
 					<TagDialog {...rest} />
 				</Dialog>
 			)}
-			{type === "comments" && (
+			{type === 'comments' && (
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
 					<CommentDialog {...rest} hideSharedCommentCheck={props.hideSharedCommentCheck} />
 				</Dialog>
 			)}
 
+			{type === 'convertContactSlideout' && (
+				<MultipleOwnerToContactDrawerContainer
+					onClose={() => {
+						rest.onRemoveRows(null, true);
+						handleCloseDialog();
+					}}
+					rows={rest.selectedRows}
+					setRows={rest.onRemoveRows}
+				/>
+			)}
+
 			{/* Note: Columns are passed to access in other components */}
-			{type === 'exportContacts' && <ExportContactsPurchaseAndOwners {...rest} columns={props.columns} onClose={handleCloseDialog} />}
+			{type === 'exportContacts' && (
+				<ExportContactsPurchaseAndOwners {...rest} columns={props.columns} onClose={handleCloseDialog} />
+			)}
 
 			{type === 'asign' && (
 				<AssignOwnerToContactDrawerContainer
@@ -84,6 +109,8 @@ function AllDialogs(props) {
 					setSelectedRow={updateRows}
 					setRows={updateRows}
 					selectedCampaign={rest?.selectedCampaign}
+					objectType={rest?.objectType}
+			        refetchQueries={[rest?.refetchQueries]}
 				/>
 			)}
 

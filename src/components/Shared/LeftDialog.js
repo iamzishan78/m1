@@ -17,7 +17,8 @@ export default function AlertDialogSlide(props) {
       "& .MuiDialog-paper": {
         position: 'fixed',
         top: props.top ? props.top : '',
-        left: quickActionsPanelState ? `calc(485px + ${props.left || '0px'}) !important` : `calc(60px + ${props.left || '0px'}) !important`,
+        left: props.useLeftKey ? `${props.left || '0px'}` 
+        : quickActionsPanelState ? `calc(485px + ${props.left || '0px'}) !important` : `calc(60px + ${props.left || '0px'}) !important`,
         width: props.width ? String(props.width) : null,
         maxHeight: props.maxHeight ? props.maxHeight : '',
         maxWidth: '100% !important',
@@ -55,7 +56,7 @@ export default function AlertDialogSlide(props) {
   } = useSelector((state) => state.router);
 
   const isLeftMargin = useMemo(() => {
-    const isPadding = quickActionsPanelState && !!user?.features?.find((f) => f.name === FEATURES[activeModule.featureFlag]);
+    const isPadding = quickActionsPanelState && (pathname.includes("/revenue") || !!user?.features?.find((f) => f.name === FEATURES[activeModule.featureFlag]))
     return isPadding;
   }, [quickActionsPanelState]);
 

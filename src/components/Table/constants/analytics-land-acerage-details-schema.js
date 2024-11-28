@@ -11,12 +11,9 @@ const AcerageSummaryHeadCells = [
     options: {
       ...GlobalStickyStyles({
         setCellProps: {
-          left: '76.5px',
-          maxWidth: "392px",
+          maxWidth: "492px",
         },
-        setCellHeaderProps: {
-          left: '76.5px',
-        }
+        isSnapGrid : false // Fix issue table title slightly hide while scrolling horizontally
       }),
       dbName: "shapeJson.properties.agreementNumber",
       isSnapGrid: false,

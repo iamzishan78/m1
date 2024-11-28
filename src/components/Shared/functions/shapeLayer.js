@@ -1,21 +1,25 @@
 import { area, convertArea, length } from "@turf/turf";
+import { drawController } from "hookstate/drawStateController";
+import { popupController } from "hookstate/popupStateController";
 import * as turf from "@turf/turf";
 import { calculateShapeCenter } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
 
-export const showIfUserDefinedLayer = (stateApp) => {
-    return stateApp.selectedUserDefinedLayer !== null &&
-        stateApp.currentFeature?.source !== "parcels_source" &&
-        stateApp.currentFeature?.source !== "units_source" &&
-        stateApp.currentFeature?.source !== "area of interest_source" &&
-        stateApp.currentFeature?.source !== "interests_source" &&
+export const showIfUserDefinedLayer = () => {
+    const currentFeature = drawController.getValue('currentFeature');
+    const selectedUserDefinedLayer = popupController.getValue('selectedUserDefinedLayer');
 
-        stateApp.currentFeature?.source !== "agreements_source" &&
-        stateApp.currentFeature?.source !== "contracts_source" &&
-        stateApp.currentFeature?.source !== "deeds_source" &&
-        stateApp.currentFeature?.source !== "leases_source" &&
-        stateApp.currentFeature?.source !== "surfaces_source"
-
-}
+    return (
+        !selectedUserDefinedLayer &&
+        currentFeature?.source !== 'parcels_source' &&
+        currentFeature?.source !== 'units_source' &&
+        !['Area of Interest'].includes(currentFeature?.identifier) &&
+        currentFeature?.source !== 'agreements_source' &&
+        currentFeature?.source !== 'contracts_source' &&
+        currentFeature?.source !== 'deeds_source' &&
+        currentFeature?.source !== 'leases_source' &&
+        currentFeature?.source !== 'surfaces_source'
+    );
+};
 
 export const layersWithSelectedShapeKey = () => {
     const layers = ['units', 'agreements', 'contracts', 'deeds', 'leases', 'surfaces'];
@@ -38,6 +42,23 @@ export const ifGenericShapeSource = (source) => {
     return source === "units_source" || source === "agreements_source" ||
         source === "contracts_source" || source === "deeds_source" || source === "leases_source" || source === "surfaces_source"
 }
+
+const genericShapeIdentifiers = [
+    "Units",
+    "Agreements",
+    "Contracts",
+    "Deeds",
+    "Leases",
+    "Surfaces",
+]
+const defaultIdentifiers = [
+    ...genericShapeIdentifiers,
+    'Parcels',
+    'Interests'
+]
+
+export const ifGenericShapeIdentifier = (identifier) => genericShapeIdentifiers.includes(identifier)
+export const ifDefaultIdentifier = (identifier) => defaultIdentifiers.includes(identifier)
 
 export const ifFileShapeSource = source => {
     // Check if source is not in predefined sources and isn't a serach layer
@@ -78,6 +99,19 @@ export const setLayerLabelLayout = (layerId, labelLayout) => {
 export const shapeTypeLayers = ["unit", "agreement", "contract", "lease", "deed", "surface", 'parcel']
 export const defaultLayers = ["interest", "parcel", "unit", "contract", "lease", "deed", "surface"]
 export const agreementLayers = ["agreement", "contract", "lease", "deed", "surface"]
+
+export const agreementLayerIdentifiers = ['Deeds', 'Leases', 'Contracts', 'Surfaces'];
+export const deckGlDataLayerIdentifiers = [...agreementLayerIdentifiers, 'Units', 'Parcels', 'Area of Interest', 'My Wells'];
+export const deckGlLandGridIdentifiers = ["AbstractGeo", "Pls", "Land Grid"];
+export const deckGlLayerIdentifiers = [...deckGlDataLayerIdentifiers, 'Wells', 'Recent Submitted Permits'/* , 'Rig Activity' */];
+export const isCustomLayerCopy = identifier => deckGlLayerIdentifiers.some((layer) => identifier.toLowerCase().includes(layer.toLowerCase()));
+export const mapBoxLayerIdentifiers = ['Search', 'Rig Activity'];
+export const staticMapBoxLayerIdentifiers = ['Basins', 'Pipelines'];
+
+export const ifDeckGlDataLayerIdentifiers = (id) => deckGlDataLayerIdentifiers.some(identifier => id.startsWith(identifier))
+export const ifDeckGlLayerIdentifiers = (id) => deckGlLayerIdentifiers.some(identifier => id.startsWith(identifier))
+export const ifMapBoxGlLayerIdentifiers = (id) => mapBoxLayerIdentifiers.some(identifier => id.startsWith(identifier))
+export const ifStaticMapBoxGlLayerIdentifiers = (id) => staticMapBoxLayerIdentifiers.some(identifier => id.startsWith(identifier))
 
 export const modifyExandableCardStyle = (selectedShape) => {
     let backgroundColor = '#112040'

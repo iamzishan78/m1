@@ -7,7 +7,6 @@ import CampaignNameField from 'components/ContactDetailCard/components/FieldCont
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActionMenu';
 import IsContactCell from 'components/MRTTable/Common/TableCells/isContactIcone';
-import NameCell from 'components/MRTTable/TablesOverride/OwnersPerUnit/TableCell/NameCell';
 import OwnersPerUnitToolBar from 'components/MRTTable/TablesOverride/OwnersPerUnit/OwnersPerUnitToolBar';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import ListChips from 'components/Common/ListChips';
@@ -31,10 +30,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 		Loaders.createToast(loaderId, 'Updation in Progress');
 
 		const customData = copy(row?.custom_data) ?? {};
-		const filteredCustomData = pickBy(
-			customData,
-			value => value !== '' && !isEmpty(value)
-		);
+		const filteredCustomData = pickBy(customData, value => value !== '' && !isEmpty(value));
 
 		const shapeOwners = {
 			_id: row._id,
@@ -48,9 +44,10 @@ const onCustomKeyChange = async (client, row, value, item) => {
 			variables: {
 				shapeOwners,
 				shapeType: 'Unit',
-				userId: user._id
+				userId: user._id,
 			},
 			mutation: UPDATE_SHAPE_OWNERS,
+			refetchQueries: ['getESSimpleFilter'],
 		});
 
 		Loaders.successToast(loaderId, 'Updation Complete');
@@ -59,7 +56,6 @@ const onCustomKeyChange = async (client, row, value, item) => {
 		Loaders.errorToast(loaderId, 'Failed to Update');
 	}
 };
-
 
 const onClickedRow = selectedRow => {
 	const Controller = tableController('OwnersPerUnitTable');
@@ -116,9 +112,10 @@ const OwnersPerUnitMeta = {
 	columnVirtualization: true,
 	deletedKeys: {
 		mainRecord: { key: '_id' },
-		parentRecord: { key: 'shape._id' }
+		parentRecord: { key: 'shape._id' },
 	},
 	defaultFlterMode: 'multiselect',
+	isShowActionMenuFirst: true,
 	TableSchema: [
 		{
 			...CommonSchema.MONGO_ID,
@@ -170,16 +167,15 @@ const OwnersPerUnitMeta = {
 										data-testid="monetization-icon"
 										style={{
 											marginLeft: '10px',
-											color: "gray"
+											color: 'gray',
 										}}
-
 									/>
 								</FeatureFlag>
 							)}
 						</p>
 					</div>
-				)
-			}
+				);
+			},
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -246,8 +242,6 @@ const OwnersPerUnitMeta = {
 			id: 'contact.ownerType',
 			header: 'Entity Type',
 		},
-
-
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -378,7 +372,6 @@ const OwnersPerUnitMeta = {
 			},
 		},
 
-
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'nra',
@@ -430,7 +423,9 @@ const OwnersPerUnitMeta = {
 			Footer: () => {
 				const Controller = tableController('OwnersPerUnitTable');
 				const { sumUnitTractAcres } = Controller.getValue('footerProps') || {};
-				return <div>{sumUnitTractAcres?.value ? addTrailingZeros(parseFloat(sumUnitTractAcres?.value).toFixed(8)) : 0}</div>;
+				return (
+					<div>{sumUnitTractAcres?.value ? addTrailingZeros(parseFloat(sumUnitTractAcres?.value).toFixed(8)) : 0}</div>
+				);
 			},
 		},
 
@@ -545,8 +540,8 @@ const OwnersPerUnitMeta = {
 			accessorKey: 'contactOwners',
 			header: 'Contact Owner',
 			Cell: ({ row }) => {
-				return <div>{row?.original?.contactOwners[0]}</div>
-			}
+				return <div>{row?.original?.contactOwners[0]}</div>;
+			},
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -594,7 +589,7 @@ const OwnersPerUnitMeta = {
 			accessorFn: row => row?.taxYear,
 			id: 'taxYear',
 			header: 'Tax Year',
-			isSearchField: false
+			isSearchField: false,
 		},
 
 		{
@@ -603,11 +598,15 @@ const OwnersPerUnitMeta = {
 			accessorFn: row => row?.deals?.name,
 			id: 'deals.name',
 			header: 'Associated Deals',
+			handleArrayExport: {
+				esType: 'collection',
+				actualKey: 'name',
+			},
 			isSearchField: false,
 			Cell: ({ row }) => {
 				return (
 					<div>
-						{(row?.original?.deals && Array.isArray(row?.original?.deals)) ? (
+						{row?.original?.deals && Array.isArray(row?.original?.deals) ? (
 							<div
 								style={{
 									display: 'flex',
@@ -638,14 +637,21 @@ const OwnersPerUnitMeta = {
 				const isPurchased = [true, 'true', 'True'].includes(row.getValue('contact.isPurchased'));
 				return <>{isPurchased ? 'Yes' : 'No'}</>;
 			},
-			isSearchField: false
+			isSearchField: false,
 		},
 
 		{
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const targetSourceId = row.getValue('ownerEntity');
-				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'Unit Ownership'} />;
+				return (
+					<TagCell
+						id={targetSourceId}
+						targetSourceId={targetSourceId}
+						tags={row?.original?.tags}
+						targetLabel={'Unit Ownership'}
+					/>
+				);
 			},
 		},
 
@@ -669,13 +675,16 @@ const OwnersPerUnitMeta = {
 
 		{
 			...CommonSchema.ACTION_COLUMN,
+			isPinned: true, // pin action column so it can be moved at first position
+			showInLast: false,
+			size: 80,
 			name: 'actionMenu',
 			accessorKey: 'actionMenu',
 			Cell: ({ row }) => {
-				const id = row.getValue('_id');
 				const name = row.getValue('name');
+				const contactId = row.getValue('ownerEntity');
 
-				return <ContactActionMenu id={id} name={name} esIndex={esIndex} dialogType="dialog" />;
+				return <ContactActionMenu id={contactId} name={name} esIndex={esIndex} dialogType="dialog" />;
 			},
 		},
 	],

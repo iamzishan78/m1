@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import ReactApexChart from "react-apexcharts";
 
-const StackedBarChart = ({ data, toolTipFormatter, xAxisFormatter, xAxisLabel, hideLegends, eachBarHeight }) => {
+const StackedBarChart = ({ data, toolTipFormatter, xAxisFormatter, xAxisLabel, hideLegends, eachBarHeight, dataLabelEnabled}) => {
 
   const [series, setSeries] = useState([])
   const [options, setOptions] = useState({
@@ -22,6 +22,11 @@ const StackedBarChart = ({ data, toolTipFormatter, xAxisFormatter, xAxisLabel, h
         formatter: xAxisFormatter ? xAxisFormatter: (val) => { return val}
       }
     },
+    yaxis: {
+      labels: {
+        show: true, // Hide Y-axis labels
+      },
+    },
     fill: {
       opacity: 1,
     },
@@ -30,7 +35,7 @@ const StackedBarChart = ({ data, toolTipFormatter, xAxisFormatter, xAxisLabel, h
       position: "bottom",
     },
     dataLabels: {
-      enabled: false,
+      enabled: dataLabelEnabled,
     },
     tooltip: {
         enabled: true,
@@ -44,6 +49,7 @@ const StackedBarChart = ({ data, toolTipFormatter, xAxisFormatter, xAxisLabel, h
     setSeries(data.series);
     const opt = JSON.parse(JSON.stringify(options));
     opt.xaxis.categories = data.xaxis
+    opt.yaxis.labels.show = !!data.xaxis?.length; // Hide yaxis label when no data found
     setOptions(opt);
   },[data]);
 

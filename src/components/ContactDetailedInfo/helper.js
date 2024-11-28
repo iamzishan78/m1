@@ -2,6 +2,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 import { LinkTypes } from "../ContactDetailCard/components/FieldContent/helper";
 import moment from "moment";
+import _ from 'lodash';
 
 export const entityTypeOptions = [
   { label: "CORPORATION", value: "CORPORATION" },
@@ -133,6 +134,15 @@ export const getBasicInfoContent = (contactData) => {
       data: { ownerType: ownerType },
       linkType: LinkTypes.None,
     },
+    // Added county for basic info
+    "County": {
+      data: { county: contactData?.county },
+      linkType: LinkTypes.None,
+    },
+    "Account": {
+      data: { account: contactData?.account },
+      linkType: LinkTypes.None,
+    },
     "Primary Address": {
       data: {
         address1: contactData?.address1,
@@ -159,25 +169,30 @@ export const getBasicInfoContent = (contactData) => {
     "Primary Home Phone": { // 1
       data: { homePhone: contactData?.homePhone },
       linkType: LinkTypes.None,
+      isPhoneNumber: true // Added check property for phones
     },
     "Primary Mobile Phone": { // 2
       data: { mobilePhone: contactData?.mobilePhone },
       linkType: LinkTypes.None,
+      isPhoneNumber: true 
     },
-    "Mobile Phone 2": {  // 3
-      data: { mobilephone2: contactData?.mobilephone2 },
-      linkType: LinkTypes.None,
-    },
-    "Primary Work Phone": { // 4
+    "Primary Work Phone": { // 3
       data: { AltPhone: contactData?.AltPhone },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
+    "Mobile Phone 2": {  // 4
+      data: { mobilephone2: contactData?.mobilephone2 },
+      linkType: LinkTypes.None,
+      isPhoneNumber: true
+    },
+
 
 
   };
 };
 
-export const getBasicInfoExpContent = (contactData) => {
+export const getBasicInfoExpContent = (contactData, metafields = []) => {
   let stage = null;
   if (contactData?.status) {
     const data = contactStatusOptions.find((status) => status.value === contactData.status);
@@ -205,26 +220,31 @@ export const getBasicInfoExpContent = (contactData) => {
     campaignName = contactData.campaignName;
   }
 
-  return {
+  const formFields = {
     "Mobile Phone 3": {
       data: { mobilephone3: contactData?.mobilephone3 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Home Phone 2": {
       data: { homePhone2: contactData?.homePhone2 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Home Phone 3": {
       data: { homePhone3: contactData?.homePhone3 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Work Phone 2": {
       data: { AltPhone2: contactData?.AltPhone2 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Work Phone 3": {
       data: { AltPhone3: contactData?.AltPhone3 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Primary Email": {
       data: { primaryEmail: contactData?.primaryEmail },
@@ -236,6 +256,14 @@ export const getBasicInfoExpContent = (contactData) => {
     },
     "Email 3": {
       data: { email3: contactData?.email3 },
+      linkType: LinkTypes.None,
+    },
+    "Department": {
+      data: { department: contactData?.department },
+      linkType: LinkTypes.None,
+    },
+    "Title": {
+      data: { title: contactData?.title },
       linkType: LinkTypes.None,
     },
 
@@ -318,6 +346,27 @@ export const getBasicInfoExpContent = (contactData) => {
       hideFromPurchase: true,
     },
   };
+
+  // Making key value pairs of custom_data fields 
+  // Also setting  raw meta for editing  custom meta data
+  const customDataJson = metafields.reduce((acc, field) => {
+    return {
+      ...acc,
+      [field.label]: {
+        rawMeta: field,
+        label: field.label,
+        isMeta: true,
+        data: { [field.esKey]: _.get(contactData, field.esKey) },
+        renderField: field.type === "dropdown" ? "autoComplete" : field.type,
+        defaultOptions: field.type === "dropdown" ? field.dropdownOptions.map(op => ({
+          value: op.value,
+          label: op.value,
+        })) : [],
+      }
+    }
+  }, {});
+
+  return { ...formFields, ...customDataJson };
 };
 
 export const getBasicPurchaseInfoExpContent = (contactData) => {
@@ -385,6 +434,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
     "Phone 1": {
       data: { phone1: contactData?.phone1 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Phone 1 Type": {
       data: { phone1Type: contactData?.phone1Type },
@@ -397,6 +447,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
     "Phone 2": {
       data: { phone2: contactData?.phone2 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Phone 2 Type": {
       data: { phone2Type: contactData?.phone2Type },
@@ -409,6 +460,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
     "Phone 3": {
       data: { phone3: contactData?.phone3 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Phone 3 Type": {
       data: { phone3Type: contactData?.phone3Type },
@@ -421,6 +473,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
     "Phone 4": {
       data: { phone4: contactData?.phone4 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Phone 4 Type": {
       data: { phone4Type: contactData?.phone4Type },
@@ -433,6 +486,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
     "Phone 5": {
       data: { phone5: contactData?.phone5 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Phone 5 Type": {
       data: { phone5Type: contactData?.phone5Type },
@@ -497,14 +551,17 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
     "Relative 1 Phone 1": {
       data: { relative1Phone1: contactData?.relative1Phone1 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Relative 1 Phone 2": {
       data: { relative1Phone2: contactData?.relative1Phone2 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Relative 1 Phone 3": {
       data: { relative1Phone3: contactData?.relative1Phone3 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Relative 2 First Name": {
       data: { relative2FirstName: contactData?.relative2FirstName },
@@ -521,14 +578,17 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
     "Relative 2 Phone 1": {
       data: { relative2Phone1: contactData?.relative2Phone1 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Relative 2 Phone 2": {
       data: { relative2Phone2: contactData?.relative2Phone2 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Relative 2 Phone 3": {
       data: { relative2Phone3: contactData?.relative2Phone3 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Relative 3 First Name": {
       data: { relative3FirstName: contactData?.relative3FirstName },
@@ -545,14 +605,17 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
     "Relative 3 Phone 1": {
       data: { relative3Phone1: contactData?.relative3Phone1 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Relative 3 Phone 2": {
       data: { relative3Phone2: contactData?.relative3Phone2 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Relative 3 Phone 3": {
       data: { relative3Phone3: contactData?.relative3Phone3 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Relative 4 First Name": {
       data: { relative4FirstName: contactData?.relative4FirstName },
@@ -569,14 +632,17 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
     "Relative 4 Phone 1": {
       data: { relative4Phone1: contactData?.relative4Phone1 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Relative 4 Phone 2": {
       data: { relative4Phone2: contactData?.relative4Phone2 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Relative 4 Phone 3": {
       data: { relative4Phone3: contactData?.relative4Phone3 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Relative 5 First Name": {
       data: { relative5FirstName: contactData?.relative5FirstName },
@@ -593,14 +659,17 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
     "Relative 5 Phone 1": {
       data: { relative5Phone1: contactData?.relative5Phone1 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Relative 5 Phone 2": {
       data: { relative5Phone2: contactData?.relative5Phone2 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Relative 5 Phone 3": {
       data: { relative5Phone3: contactData?.relative5Phone3 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
   };
 };
@@ -608,7 +677,8 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
 export const SUMMARY_FIELDS = (contactData) => {
   let nraSumKey = contactData?.contactInterests?.nraSum ? "contactInterests.nraSum" : "evaluatedContactInterests.nraSum",
     maxOfferPriceSum = contactData?.contactInterests?.maxOfferPriceSum ? "contactInterests.maxOfferPriceSum" : "evaluatedContactInterests.maxOfferPriceSum",
-    offerPriceSum = contactData?.contactInterests?.offerPriceSum ? "contactInterests.offerPriceSum" : "evaluatedContactInterests.offerPriceSum";
+    offerPriceSum = contactData?.contactInterests?.offerPriceSum ? "contactInterests.offerPriceSum" : "evaluatedContactInterests.offerPriceSum",
+    closedPriceSum = contactData?.contactInterests?.closedPriceSum ? "contactInterests.closedPriceSum" : "evaluatedContactInterests.closedPriceSum"; // get closedPriceSum from  evaluatedContactInterests 
   return [
     {
       label: "Full Name",
@@ -645,18 +715,21 @@ export const SUMMARY_FIELDS = (contactData) => {
       key: "homePhone",
       type: "text",
       position: "right",
+      isPhoneNumber: true,
     },
     {
       label: "Mobile Phone",
       key: "mobilePhone",
       type: "text",
       position: "right",
+      isPhoneNumber: true,
     },
     {
       label: "Work Phone",
       key: "AltPhone",
       type: "text",
       position: "right",
+      isPhoneNumber: true,
     },
     {
       label: "Email",
@@ -692,6 +765,12 @@ export const SUMMARY_FIELDS = (contactData) => {
     {
       label: "Max Offer Amount",
       key: maxOfferPriceSum,
+      type: "currency",
+      position: "right",
+    },
+    {
+      label: "Closed Price Amount", // Add closed price sum to contact details summary section
+      key: closedPriceSum,
       type: "currency",
       position: "right",
     },
@@ -735,6 +814,7 @@ export const getBasicPurchaseInfoContent = (contactData) => {
     "Phone 1": {
       data: { phone1: contactData?.phone1 },
       linkType: LinkTypes.None,
+      isPhoneNumber: true
     },
     "Email 1": {
       data: { email1: contactData?.email1 },

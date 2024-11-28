@@ -111,9 +111,13 @@ function WellMasterTable(props) {
           orderByTracks={false}
           startPaginationAt={props.startPaginationAt}
           onTableChange={props.onTableChange}
-          options={{ ...props.options, ...props.customOptions }}
+          options={{
+            ...props.options,
+            ...props.customOptions,
+          }}
           parent={props.parent}
           setColumnsBase={[]}
+          {...props.esHocProps} // allow table to load more data on scrolling
           setRefetchData={setRefetchData}
           refetchData={refetchData}
         />

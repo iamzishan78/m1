@@ -9,6 +9,8 @@ import CheckSharpIcon from "@material-ui/icons/CheckSharp";
 import Button from "@material-ui/core/Button";
 import useStyles from 'components/ContactDetailCard/components/FieldContent/style'
 import CopyIcon from "components/Shared/svgIcons/CopyIcon";
+import TextSmsIcon from "components/Shared/svgIcons/textsms";
+import VoiceMailIcon from "components/Shared/svgIcons/voicemail";
 
 function PencilEditIcon({
     onClick,
@@ -18,12 +20,18 @@ function PencilEditIcon({
     handleUpdating,
     isCopy = false,
     editContent,
-    setEditContent
+    setEditContent,
+    row,
+    handleQuickActionActivity
 }) {
     const classes = useStyles();
     const [copied, setCopied] = useState(false); // Add new state for updating copy icon tooltip value
 
-    
+     // Destructure the first key-value pair from `editContent`
+     const [editFieldKey, editFieldValue] = Object.entries(editContent || {})?.[0] || [];
+     
+     // Show voicemail and text SMS icons if the field is a non-empty phone field
+     const isPhoneField = editFieldKey && row?.isPhoneNumber && editFieldValue;
     return (
         <React.Fragment>
             <EditionPopover anchorEl={anchorEl} setAnchorEl={setAnchorEl}>
@@ -92,6 +100,31 @@ function PencilEditIcon({
                     />
                 </IconButton>
             </Tooltip>
+            { /* Show voicemail and testSMS icons if the field is a non-empty phone field*/}
+            { isPhoneField && ( <>
+            <Tooltip title={"Voice Mail"} placement="top">
+                <IconButton
+                    size="small"
+                    onClick={() => handleQuickActionActivity({phoneNumber: editFieldValue, type: 'call'})}
+                >
+                    <VoiceMailIcon
+                        id="voiceMailIcon"
+                        className={classes.pencilIcon}
+                    />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title={"Text SMS"} placement="top">
+                <IconButton
+                    size="small"
+                    onClick={() => handleQuickActionActivity({phoneNumber: editFieldValue, type: 'text_message'})}
+                >
+                    <TextSmsIcon
+                        id="textSmsIcon"
+                        className={classes.pencilIcon}
+                    />
+                </IconButton>
+            </Tooltip>
+            </> )}
         </React.Fragment>
     );
 }

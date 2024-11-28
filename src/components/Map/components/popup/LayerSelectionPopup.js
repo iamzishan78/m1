@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import {
     Grid, Card, CardHeader, CardContent, Accordion, AccordionSummary, Typography,
-    List, ListItem, ListItemText, Tooltip
+    List, ListItem, ListItemText, Tooltip, IconButton 
 } from "@material-ui/core";
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import _ from "lodash";
@@ -13,9 +13,7 @@ import LayerSelectionIcon from "components/Shared/svgIcons/layerSelection";
 // contexts
 import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-first-letter";
-import { copy } from "utils/helper";
-import { drawBoundary } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
-import { ifFileShapeSource, parseUserDefinedLayerFeature } from "components/Shared/functions/shapeLayer";
+import onFeatureClick from "components/Map/DeckGL/helpers/onFeatureClick";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -105,14 +103,18 @@ const useStyles = makeStyles((theme) => ({
             paddingBottom: '0px',
             color: '#d3d3d3'
         }
+    },
+    locationIcon: {
+        paddingTop: "5px",
+        marginRight: "-25px"
     }
 }));
 
 
-const startsWith = (value, keys) => {
+const includes = (value, keys) => {
     let val = false
     keys.forEach(key => {
-        if (key && key.toString().toLowerCase().startsWith(value.toLowerCase())) {
+        if (key && key.toString().toLowerCase().includes(value.toLowerCase())) {
             val = true
             return
         }
@@ -122,142 +124,97 @@ const startsWith = (value, keys) => {
 
 function LayerSelectionPopup(props) {
     const classes = useStyles(props);
-    const history = useHistory();
     const [search, setSearch] = useState('');
     // contexts
-    let { selectionLayers } = props;
+    let { selectionLayers, coordinate } = props;
 
     const getSourceName = (name) => {
-        name = name.replace('VT', '').replace('_source', '')
         return capitalizeFirstLetter(name)
     }
 
-    const getLayerName = (layer) => {
-        if (layer.properties) {
-            const properties = layer?.properties
-            if (layer.source === 'wellsVT') {
-                return `${properties.api}-${properties.wellName}`
-            } else if (layer.source === 'parcels_source' || ["interests_source", "area of interest_source"].includes(layer.source)) { // Check if the source of the layer is 'parcels_source' or 'area of interest_source'
-                // Return the shape label in both cases
-                return properties.shapeLabel
-            } else if (layer.source === 'units_source') {
-                return `${properties.uNumber ? properties.uNumber + '-' : ''}${properties.shapeLabel}`
-            } else if (properties.layerShapeName) {
-                return layer.properties.Unit_Name || layer.layer.id
-            } else
-                return `${properties.agreementNumber ? properties.agreementNumber + '-' : ''}${properties.agreementName}`
+    const getLayerName = layer => {
+        const object = layer.object || layer;
+
+        if (object.properties) {
+            const properties = object?.properties;
+
+            const labels = [];
+
+            switch (layer.sourceKey) {
+                case 'Wells':
+                case 'My Wells':
+                    labels.push(properties.api);
+                    labels.push(properties.wellName);
+                    break;
+
+                case 'Parcels':
+                case 'Area of Interest':
+                    labels.push(properties.shapeLabel || properties.label);
+                    break;
+
+                case 'Units':
+                    labels.push(properties.uNumber);
+                    labels.push(properties.shapeLabel || properties.label);
+                    break;
+
+                case 'Recent Submitted Permits':
+                    labels.push(properties.PermitId);
+                    break;
+
+                default:
+                    if (properties.layerShapeName) {
+                        labels.push(
+                            properties.Unit_Name || properties.layerShapeName || layer.layer.id
+                        );
+                    } else {
+                        labels.push(properties.agreementNumber);
+                        labels.push(properties.agreementName);
+                    }
+                    break;
+            }
+
+            return labels.filter(Boolean).join(' - ');
         }
-    }
+    };
 
     const selectLayer = (layer) => {
-        // Check if the layer source is "area of interest_source"
-        if (["interests_source", "area of interest_source"].includes(layer.source)) {
-            // Create a copy of the layer
-            const selectedUserDefinedLayer = copy(layer)
-            // Update the application state using setStateApp
-            props.setStateApp((state) => {
-                // If drawing mode is active, return the current state
-
-                if (state.isDrawing) return state;
-                // Update state with various properties related to layer selection and UI control visibility
-
-                state = {
-                    ...state,
-
-                    selectedParcel: null,
-                    selectedShape: null,
-                    expandedCard: false,
-                    popupOpen: false,
-                    showAddShapePopup: false,
-                    layerSelectionPopup: false,
-                    showShapeActionsPopup: true,
-                    selectedUserDefinedLayer,
-                    openDrawShapesControl: true,
-                };
-                drawBoundary(props.map, selectedUserDefinedLayer);
-                // If editDraw is not active, toggle the draw shapes popup and set editDraw to true
-
-                if (!state.editDraw) {
-                    state = {
-                        ...state,
-                        showDrawShapesPopup: !state.showDrawShapesPopup,
-                        editDraw: true,
-                    };
-                } else {
-                    state = {
-                        ...state,
-                        editDraw: false,
-                        currentFeature: undefined,
-                        isAbstractedLayersPolygon: false,
-                        multiSelectLandGrids: false,
-                        selectedAbstracts: [],
-                        showShapeActionsPopup: false,
-                        showDrawShapesPopup: false,
-                    };
-                }
-                return state;
-            });
-            return
-        }
-
-        if (ifFileShapeSource(layer.source) && layer.properties.layerShapeName) {
-            const jsonLayer = copy(layer)
-
-            const featureLayer = { ...jsonLayer.layer };
-            const feature = parseUserDefinedLayerFeature(jsonLayer, featureLayer)
-
-            if (props.map)
-                drawBoundary(props.map, feature);
-
-            props.setStateApp((state) => {
-                return {
-                    ...state,
-                    selectedUserDefinedLayer: jsonLayer,
-                    selectedParcel: null,
-                };
-            });
-            props.setStateApp((state) => {
-                if (!state.showDrawShapesPopup && state.shapeEditMode !== 'redraw') {
-                    props.createUDPopUp(feature.properties);
-                }
-                return state;
-            });
-            props.map?.resize?.();
-
-            return
-        }
-
-        let newPath
-        if (layer.source === 'wellsVT') {
-            newPath = `/map/wells/${layer.properties.id}/${layer.properties.latitude}/${layer.properties.longitude}`;
-        } else {
-            newPath = `/map/${layer.source.replace("_source", "")}/${layer.properties.id}`;
-        }
-
-        history.location.pathname !== newPath && history.replace(newPath);
+        onFeatureClick(layer);
     }
 
     selectionLayers.forEach((selectionLayer) => {
-        selectionLayer.sourceKey = selectionLayer.source
-        if (ifFileShapeSource(selectionLayer.source) && selectionLayer?.properties?.layerShapeName)
-            selectionLayer.sourceKey = selectionLayer?.properties.layerShapeName
+        selectionLayer.sourceKey = selectionLayer.layer.id.split('_')[0];
+        if (selectionLayer?.object?.properties?.layerShapeName) {
+            selectionLayer.sourceKey = selectionLayer?.object?.properties?.layerShapeName
+        }
     })
 
     if (search)
         selectionLayers = selectionLayers.filter((selectionLayer) => {
-            const properties = selectionLayer?.properties
-            if (selectionLayer.source === 'wellsVT') {
-                return startsWith(search, [properties.api, properties.wellName])
-            } else if (selectionLayer.source === 'parcels_source') {
-                return startsWith(search, [properties.shapeLabel])
-            } else if (selectionLayer.source === 'units_source') {
-                return startsWith(search, [properties.uNumber, properties.shapeLabel])
+            const properties = selectionLayer?.object?.properties;
+            if (selectionLayer.sourceKey === 'Wells') {
+                return includes(search, [properties.api, properties.wellName])
+            } else if (selectionLayer.sourceKey === 'Parcels') {
+                return includes(search, [properties.shapeLabel])
+            } else if (selectionLayer.sourceKey === 'Units') {
+                return includes(search, [properties.uNumber, properties.shapeLabel])
+            } else if (selectionLayer.sourceKey === 'Recent Submitted Permits') {
+                return includes(search, [properties.PermitId])
             } else
-                return startsWith(search, [properties.agreementNumber, properties.agreementName])
+                return includes(search, [properties.agreementNumber, properties.agreementName])
         })
     const groupFeatures = _.groupBy(selectionLayers, 'sourceKey');
-    // console.log(groupFeatures)
-    function GetTitle() {
+
+    const handleLocationClick = () => {
+        const latitude = coordinate[1]; 
+        const longitude = coordinate[0]; 
+        // Google Maps Street View URL
+        const streetViewUrl = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${latitude},${longitude}`;
+
+        window.open(streetViewUrl, '_blank');
+    };
+
+
+    function GetTitle(handleLocationClick) {
         const classes = useStyles();
 
         const [clicked, setClicked] = useState(false);
@@ -281,6 +238,16 @@ function LayerSelectionPopup(props) {
                     </Grid>
                 </Grid>
                 <Grid item >
+                    <IconButton
+                        className={classes.locationIcon}
+                        color="inherit"
+                        onClick={() => {
+                            handleLocationClick();
+                        }}
+                        style={{ "display" : (clicked ? 'none' : ''), height: "40px" }}
+                    >
+                        <LocationOnIcon />
+                    </IconButton>
                     <ExpandableSearch setSearch={setSearch} search={search} setClicked={setClicked} focusColor='inherit' hoverColor={'inherit'} />
                 </Grid>
             </Grid>
@@ -289,16 +256,28 @@ function LayerSelectionPopup(props) {
 
     return (
         <React.Fragment>
-            <Card className={classes.card}>
+            <Card className={classes.card} data-testid='layer-selection-popup' >
                 <CardHeader
                     classes={{ title: classes.title, subheader: classes.subheader }}
-                    title={GetTitle()}
+                    title={GetTitle( handleLocationClick )}
                 >
                 </CardHeader >
                 <CardContent className={classes.content}>
                     {
+                         Object.keys(groupFeatures)?.length === 0 ? ( // Check if groupFeatures is empty
+                            <Accordion defaultExpanded={true} className={classes.accordian} >
+                            <AccordionSummary
+                                aria-controls="panel1a-content"
+                                id="panel1a-header"
+                            >
+                                    {/* If empty, display "No Layers" message */}
+                                <Typography variant="body2"  className={classes.heading}>No Layers</Typography>
+                            </AccordionSummary>
+                            </Accordion>
+                        ) :
+                         // If groupFeatures has data, map over each key to create an Accordion
                         Object.keys(groupFeatures).map((key) =>
-                            <Accordion key={key} defaultExpanded={true} className={classes.accordian}>
+                            <Accordion key={key} defaultExpanded={true} className={classes.accordian} data-testid={`${key}-group`} >
                                 <AccordionSummary
                                     expandIcon={<ExpandMoreIcon />}
                                     aria-controls="panel1a-content"

@@ -1,4 +1,8 @@
+import { layerController } from "hookstate/layerStateController";
+
 export const getLayerColor = (layer, type, colors) => {
+    // seting layer color to disabled if selectedAttribute is selected
+    if (layer?.layerSettings?.selectedAttribute?.label) return '#263551';
     const { basinLayerColor, GLOUnitsColor, GLOLeasesColor } = colors
     // layerName: "Rig Activity"
     if (type !== "layer" && type !== "marketplace") return {};
@@ -41,23 +45,25 @@ export const getLayerColor = (layer, type, colors) => {
     return "#263451";
 };
 
-export const ifLayerHaveData = (layer, stateApp) => {
+export const ifLayerHaveData = (layer) => {
     //// temporary disabling the Title Layer
     if (layer.identifier === "Title") return false;
     ////
 
+    const { wellListFromSearch } = layerController.getValues(['wellListFromSearch'])
+
     if (
-        (layer.identifier === "User Tags" &&
-            !(
-                stateApp.wellListFromTagsFilter &&
-                stateApp.wellListFromTagsFilter.length > 0
-            )) ||
+        // (layer.identifier === "User Tags" &&
+        //     !(
+        //         stateApp.wellListFromTagsFilter &&
+        //         stateApp.wellListFromTagsFilter.length > 0
+        //     )) ||
         (layer.identifier === "Search" &&
-            !(stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0) &&
-            !(stateApp.landGridListFromSearch && stateApp.landGridListFromSearch.length > 0)
-        ) ||
-        (layer.identifier === "Tracked Owners" &&
-            !(stateApp.trackedOwnerWells && stateApp.trackedOwnerWells.length > 0))
+            !(wellListFromSearch && wellListFromSearch.length > 0)
+            // && !(stateApp.landGridListFromSearch && stateApp.landGridListFromSearch.length > 0)
+        )
+        // || (layer.identifier === "Tracked Owners" &&
+        //     !(stateApp.trackedOwnerWells && stateApp.trackedOwnerWells.length > 0))
     )
         return false;
     return true;
