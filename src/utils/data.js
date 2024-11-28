@@ -706,6 +706,16 @@ export const OWNERTYPE = {
   CORPORATION: "CORPORATION" 
 }
 
+export const UserRole = {
+	OWNER: "Owner",
+	ADMIN: "Admin",
+	USER: "User",
+};
+
+export const RolePrivilege = {
+	ADD_OR_EDIT: "Add/Edit",
+	READ_ONLY: "Read Only",
+};
 export const esIndexFilterKeyMap = {
   contacts_flat: 'lastUpdateBy.name.keyword',
   activities_flat: 'ownerName.keyword',  
