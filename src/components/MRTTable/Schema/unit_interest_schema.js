@@ -35,7 +35,12 @@ const UnitInterestMeta = {
 		},
 	},
 	defaultSort: { field: '_ts', order: 'desc' },
-	defaultFilters: [{ field: 'shape.layer.keyword', value: 'unit' }],
+	defaultFilters: [
+		{ field: 'shape.layer.keyword', value: 'unit' },
+		{ field: 'contact.IsDeleted', value: 'false' },
+		{ field: 'shape.IsDeleted', value: 'false' },
+		{ field: 'descriptor', value: 'ShapeOwnerDescriptor' },
+	],
 	maxTableHeight: 'calc(100vh - 215px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,

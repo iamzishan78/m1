@@ -410,47 +410,23 @@ export const createFilterPopup = filterFeature => {
 	}
 };
 
-export const getAdvancedSearch = (layerGeometry, mustQuery) =>
-	layerGeometry === 'Polygon'
-		? [
-				{
-					bool: {
-						must: [
-							...mustQuery,
-							{
-								bool: {
-									should: [
-										{
-											term: { 'properties.layerGeometry.keyword': 'Polygon' },
-										},
-										{
-											term: { 'properties.layerGeometry.keyword': 'MultiPolygon' },
-										},
-									],
-								},
-							},
-						],
-					},
-				},
-			]
-		: [
-				{
-					bool: {
-						must: [
-							...mustQuery,
-							{
-								bool: {
-									should: [
-										{
-											term: { 'properties.layerGeometry.keyword': layerGeometry },
-										},
-									],
-								},
-							},
-						],
-					},
-				},
-			];
+// Utility function to get advanced search query
+export const getAdvancedSearch = (layerGeometry, mustQuery) => [
+	{
+		$and: [
+			{
+				$or: mustQuery,
+			},
+			{
+				$or:
+					layerGeometry === 'Polygon'
+						? [{ 'properties.layerGeometry': 'Polygon' }, { 'properties.layerGeometry': 'MultiPolygon' }]
+						: [{ 'properties.layerGeometry': layerGeometry }],
+			},
+		],
+	},
+];
+
 // Query made generic to support in both TransferData Manager and layerStateController
 export const generateFileFilters = ({
 	fileLayer,
@@ -464,22 +440,8 @@ export const generateFileFilters = ({
 	// Altered query accordingly
 	if (fileLayer.layerShapeName) {
 		mustQuery = [
-			{
-				bool: {
-					should: [
-						{
-							term: {
-								'properties.layerShapeName.keyword': fileAlternateName,
-							},
-						},
-						{
-							term: {
-								'properties.layerShapeName.keyword': fileLayer.layerShapeName,
-							},
-						},
-					],
-				},
-			},
+			{ 'properties.layerShapeName': fileAlternateName },
+			{ 'properties.layerShapeName': fileLayer.layerShapeName },
 		];
 	}
 

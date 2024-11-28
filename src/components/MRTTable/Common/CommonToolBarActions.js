@@ -99,6 +99,8 @@ export const openSideDialog = async ({
 	tableKey,
 	props = {},
 	selectedCampaign,
+	objectType,
+	refetchQueries,
 }) => {
 	let showRows = selectedRows;
 	const isSubSetSelect = tableController(tableKey).getValue('isSubSetSelect');
@@ -128,6 +130,8 @@ export const openSideDialog = async ({
 			tableKey,
 			...props,
 			selectedCampaign,
+			objectType,
+			refetchQueries,
 		},
 	});
 
@@ -151,6 +155,8 @@ export function BulkUpdate({
 	table,
 	tableKey,
 	selectedCampaign,
+	objectType,
+	refetchQueries,
 }) {
 	return (
 		<Button
@@ -173,6 +179,8 @@ export function BulkUpdate({
 					table,
 					tableKey,
 					selectedCampaign,
+					objectType,
+					refetchQueries,
 				})
 			}
 			data-testid="bulk-update"
