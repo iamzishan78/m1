@@ -142,28 +142,40 @@ export default function TrackTaskCard() {
 
     const getFilters = (appliedFilters) => {
         let filters = [];
+
+        // Helper function to check if a date is valid
+        const isValidDate = (date) => !isNaN(new Date(date).getTime());
+
         if (appliedFilters) {
             let range = [];
-            range = getRangeFilters(
-                {
-                    dateTime: {
-                        from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
-                        to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
-                    },
-                },
-                "simple"
-            );
+
+            // Check if both fromDate and toDate are valid
+            const { fromDate, toDate } = appliedFilters;
+
+            if (isValidDate(fromDate) && isValidDate(toDate)) {
+                const fromISO = new Date(fromDate).toISOString();
+                const toISO = new Date(toDate).toISOString();
+
+                // Apply filters for dateTime and endDateTime
+                const dateFilters = [
+                    getRangeFilters(
+                        { dateTime: { from: fromISO, to: toISO } },
+                        "simple"
+                    ),
+                    getRangeFilters(
+                        { endDateTime: { from: fromISO, to: toISO } },
+                        "simple"
+                    ),
+                ];
+
+                // Flatten and merge the filters
+                range = dateFilters.flat();
+            }
+
+            // Add range filters if available
             if (range.length > 0) filters = [...filters, ...range];
-            range = getRangeFilters(
-                {
-                    endDateTime: {
-                        from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
-                        to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
-                    },
-                },
-                "simple"
-            );
-            if (range.length > 0) filters = [...filters, ...range];
+
+            // If no filters were generated, fall back to the appliedFilters directly
             if (!filters.length && appliedFilters.length) filters = appliedFilters;
         }
         return filters;
@@ -254,10 +266,10 @@ export default function TrackTaskCard() {
             labelBullet.label.fontSize = 12;
             labelBullet.label.fontWeight = "bold";
 
-             // Add an adapter to hide the label when valueX is zero
-            labelBullet.label.adapter.add("text", function(text, target) {
+            // Add an adapter to hide the label when valueX is zero
+            labelBullet.label.adapter.add("text", function (text, target) {
                 if (target.dataItem && target.dataItem.valueX === 0) {
-                return ""; // Return empty string to hide the label
+                    return ""; // Return empty string to hide the label
                 }
                 return text; // Return original text otherwise
             });
@@ -307,17 +319,17 @@ export default function TrackTaskCard() {
 
     useEffect(() => {
         const handleResize = () => {
-          if (headerRef.current) {
-            const headerHeight = headerRef.current.offsetHeight; // Get the height of the CardHeader
-            setBarChartHeight(`calc(100% - ${headerHeight}px)`); // Calculate and set the height of the bar chart
-          }
+            if (headerRef.current) {
+                const headerHeight = headerRef.current.offsetHeight; // Get the height of the CardHeader
+                setBarChartHeight(`calc(100% - ${headerHeight}px)`); // Calculate and set the height of the bar chart
+            }
         };
-    
+
         handleResize(); // Initial calculation
         window.addEventListener('resize', handleResize); // Recalculate on window resize
-    
+
         return () => window.removeEventListener('resize', handleResize); // Cleanup event listener
-      }, []);
+    }, []);
 
 
     useEffect(() => {
@@ -354,7 +366,7 @@ export default function TrackTaskCard() {
             {(loading) ? (
                 <CircularProgress className={classes.progress} size={80} disableShrink color="secondary"></CircularProgress>
             ) : (
-                <div id={'bar-chart'} style={{ paddingBottom: "40px",  height: barChartHeight,  width: "100%" }} />
+                <div id={'bar-chart'} style={{ paddingBottom: "40px", height: barChartHeight, width: "100%" }} />
             )}
         </Fragment>
     )

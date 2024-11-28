@@ -487,6 +487,16 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  textEllipsis: {
+    flexDirection: "row",
+    alignItems: "center",
+    minWidth: "300px",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    display: "block",
+    overflow: "hidden",
+    width: "100%"
+  },
   actionButtons: {
     display: "none",
     justifyContent: "flex-start",
@@ -1533,7 +1543,7 @@ function SubTable(props) {
                         style={{
                           display: 'flex',
                           alignItems: 'center',
-                          minWidth: "250px",
+                          minWidth: "300px",
                         }}
                       >
                         <Grid container spacing={0} direction="row"
@@ -1544,15 +1554,11 @@ function SubTable(props) {
                             style={{
                               display: "flex",
                               justifyContent: "flex-start",
+                              width: "100%"
                             }}
                           >
                             <p
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                                minWidth: "300px",
-                              }}
+                              className={classes.textEllipsis}
                             >
                               {value}
 
@@ -4864,6 +4870,8 @@ function SubTable(props) {
             onClose={handleCloseDialog}
             rows={expandedObject}
             setRows={setExpandedObject}
+            objectType={'contact'}
+            refetchQueries={["getESContacts"] }
           />
         )}
         {openDialog === "merge" && (

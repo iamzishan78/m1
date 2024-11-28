@@ -21,6 +21,7 @@ import AttrsAutocomplete from './LayerAttributes/AttrsAutocomplete';
 import AttrsValuesDropdown from './LayerAttributes/AttrsValuesDropdown';
 import { getLayerKey } from 'hookstate/helpers';
 import _ from 'lodash';
+import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
 
 function LayerStyling() {
 	const classes = useStyles();
@@ -66,10 +67,19 @@ function LayerStyling() {
 
 	const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
+	const [getShapeFileSchema, { data: shapeFileSchema }] = useLazyQuery(GET_SHAPE_FILE_SCHEMA);
+
 	const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
 
 	// Getting meta data for selected layer
 	useEffect(() => {
+		if (selectedLayer?._id)
+			getShapeFileSchema({
+				variables: {
+					layerId: selectedLayer?.layerId,
+				},
+			});
+
 		if (colorBasedAttributes[getLayerKey(selectedLayer?.identifier, colorBasedAttributes)]?.layerKey)
 			getMetaData({
 				variables: {
@@ -85,21 +95,8 @@ function LayerStyling() {
 	}, [layerDataCount]);
 
 	useEffect(() => {
-		setRows(0);
-		if (selectedLayer.file) {
-			layerFeaturesCount({ variables: { fileId: selectedLayer.file } });
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [mapControlStates.selectedLayer.file, layerFeaturesCount]);
-
-	const handleClose = () => {
-		mapControlsController.updateState({ selectedLayerControl: null });
-	};
-
-	const handleApplyChanges = () => {
 		const hookStateAppLayers = globalStateController.getValue('layers');
 
-		// Checks to check if we wanted to run handleApplyChnages
 		if (
 			(hookStateAppLayers &&
 				selectedLayer &&
@@ -117,33 +114,64 @@ function LayerStyling() {
 			selectedLayer.layerSettings?.selectedStrokeAttribute?.label !== selectedStrokeValue?.label
 		) {
 			let { currentLayer } = handleLayerChange();
-			//// saving to stateApp
 			const currentLayers = [...hookStateAppLayers];
 			const index = currentLayers.findIndex(l => l._id === currentLayer._id);
 			currentLayers[index] = currentLayer;
-			globalStateController.updateState({ layers: currentLayers });
-			layerController.handleDeckLayer(currentLayer);
 
-			//// saving to mongo
-			updateLayerSettings({
-				variables: {
-					settings: {
-						_id: currentLayer._id,
-						layerPaintProps: currentLayer.layerPaintProps,
-						layerSettings: currentLayer.layerSettings,
+			const debouncedUpdate = _.debounce(() => {
+				globalStateController.updateState({ layers: currentLayers });
+				layerController.handleDeckLayer(currentLayer, true);
+				updateLayerSettings({
+					variables: {
+						settings: {
+							_id: currentLayer._id,
+							layerPaintProps: currentLayer.layerPaintProps,
+							layerSettings: currentLayer.layerSettings,
+						},
 					},
-				},
-			});
-			layerController.resetBounds(selectedLayer?.identifier);
-			////
+				});
+			}, 250); // Adjust the debounce delay as needed
+
+			debouncedUpdate();
+
+			return () => {
+				debouncedUpdate.cancel(); // Clean up on unmount or dependencies change
+			};
 		}
-		handleClose();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [
+		layerClickability,
+		layerLabelVisibility,
+		enablefillColor,
+		enableStrokeColor,
+		attributeBasedColors,
+		attributeBasedStrokeColors,
+		selectedValue,
+		selectedStrokeValue,
+		strokeWidth,
+		fillColor,
+		strokeColor,
+		width,
+	]);
+
+	useEffect(() => {
+		setRows(0);
+		if (selectedLayer.file) {
+			layerFeaturesCount({ variables: { fileId: selectedLayer.file } });
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [mapControlStates.selectedLayer.file, layerFeaturesCount]);
+
+	const handleClose = () => {
+		mapControlsController.updateState({ selectedLayerControl: null });
 	};
 
 	// Merging summaryfield keys and custom data keys of selected  layer
 	const options = useMemo(() => {
 		const colorAttributes =
-			colorBasedAttributes[getLayerKey(selectedLayer?.identifier, colorBasedAttributes)]?.keys || [];
+			colorBasedAttributes[getLayerKey(selectedLayer?.identifier, colorBasedAttributes)]?.keys ||
+			shapeFileSchema?.getShapeFileSchema ||
+			[];
 		const metaDataOptions =
 			metaDataRes?.getMetaData?.metaData?.map(md => ({
 				label: md.name,
@@ -151,10 +179,10 @@ function LayerStyling() {
 			})) || [];
 
 		return [...colorAttributes, ...metaDataOptions];
-	}, [selectedLayer, metaDataRes]);
+	}, [selectedLayer, metaDataRes, shapeFileSchema]);
 
 	return (
-		<ClickAwayListener onClickAway={handleApplyChanges}>
+		<ClickAwayListener onClickAway={handleClose}>
 			<div style={{ width: '100%', height: '100vh', overflowY: 'auto', overflowX: 'hidden' }}>
 				<Grid container direction="row" justify="space-between" alignItems="center" style={{ padding: '15px' }}>
 					<Grid item md={11}>
@@ -168,7 +196,7 @@ function LayerStyling() {
 						</Typography>
 					</Grid>
 					<Grid item>
-						<IconButton size="small" onClick={handleApplyChanges} data-testid="close">
+						<IconButton size="small" onClick={handleClose} data-testid="close">
 							<CloseIcon />
 						</IconButton>
 					</Grid>

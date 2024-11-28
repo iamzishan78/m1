@@ -7,7 +7,7 @@ import { tableController } from 'hookstate/tableController';
 import { UPDATE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
 import { CircularProgress } from '@material-ui/core';
 
-function GridViewComponent({ Icon, label, tableKey, fetchGridViews }) {
+function GridViewComponent({ Icon, buttonRef, label, tableKey, fetchGridViews }) {
 	const [updateGridView, { data }] = useMutation(UPDATE_GRID_VIEW, {
 		onCompleted: () => {
 			fetchGridViews()
@@ -24,10 +24,12 @@ function GridViewComponent({ Icon, label, tableKey, fetchGridViews }) {
 		'sorting',
 		'groupedField',
 		'columnPinning',
-		'columnOrdering'
+		'columnOrdering',
+		'isNotBreadcrumbView'
 	]);
 	const tableStateValues = tableState.stateValues;
 	const selectedGridView = tableStateValues?.gridView?.selectedGridView;
+	const isNotBreadcrumbView = tableStateValues?.isNotBreadcrumbView || false; // MetaData for the table use for show and hide Breadcrumb in the toolbar
 
 	const handleClose = () => {
 		setAnchorEl(null);
@@ -71,6 +73,7 @@ function GridViewComponent({ Icon, label, tableKey, fetchGridViews }) {
 	return (
 		<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
 			<IconButton
+				ref={buttonRef}
 				onClick={() =>
 					Controller.updateState({
 						gridView: { ...tableStateValues.gridView, showViewModal: !tableStateValues.gridView?.showViewModal },
@@ -80,7 +83,18 @@ function GridViewComponent({ Icon, label, tableKey, fetchGridViews }) {
 				<Icon />
 			</IconButton>
 
-			<Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+			{isNotBreadcrumbView ? (
+				<Typography
+					style={{
+						marginLeft: '10px',
+						fontSize: '16px',
+					}}
+					color="inherit"
+				>
+					{label}
+				</Typography>
+			) :
+				(<Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
 				<Typography
 					style={{
 						marginLeft: '10px',
@@ -151,6 +165,7 @@ function GridViewComponent({ Icon, label, tableKey, fetchGridViews }) {
 					</Menu>
 				</div>
 			</Breadcrumbs>
+			)}
 		</div>
 	);
 }

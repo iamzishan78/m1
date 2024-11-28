@@ -411,6 +411,7 @@ function Map({
 						...(type === "parcels" ? { selectedShape: null } : {}),
 						popupOpen: false,
 						expandedCard: true,
+						customLayerId: layer.customLayer._id
 					});
 					clearInterval(interval)
 				}
@@ -601,8 +602,8 @@ function Map({
 		if (stateApp.heatLayers && stateApp.heatLayers.length > 0 && map) {
 			stateApp.heatLayers.forEach(l => {
 				l.id.forEach(k => {
-					if (map.getLayer(k)) {
-						map.setLayoutProperty(k, 'visibility', 'none');
+					if (map?.getLayer(k)) {
+						map?.setLayoutProperty(k, 'visibility', 'none');
 					}
 				});
 			});
@@ -885,7 +886,8 @@ function Map({
 								if (!selectedPlace) { // Reset the state when slected search is not places
 									popupController.reset();
 								}
-								if (!['', '/'].includes(window.location.pathname))
+								// If the path is not '/' or ' ' and the map is not rendered through deal dialog
+								if (!['', '/'].includes(window.location.pathname) && stateApp.transactBarView !== 'Map')
 									history.replace({ pathname: "/" });
 								return;
 							}

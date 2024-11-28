@@ -134,6 +134,7 @@ export default function AssociatedAgreements() {
       addFileLoading={addAgreementsLoading}
       deleteFileLoading={deleteAgreementLoading}
       updateDocumentLoading={getAgreementsLoading}
+      href={`/land/agreement/details/{ID}?tenant={TENANT}`}
     />
   );
 }

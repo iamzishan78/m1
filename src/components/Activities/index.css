@@ -1,126 +1,131 @@
+.rbc-overlay {
+	/* z-index to bring modal to front */
+	z-index: 1300;
+}
+
 .rbc-event {
-  min-width: 50px;
-  min-height: 50px !important;
-  background-color: #d0f1fc;
-  color: #15a9d7;
-  border: 2px solid #fff !important;
-  padding: 0px !important;
+	min-width: 50px;
+	min-height: 50px !important;
+	background-color: #d0f1fc;
+	color: #15a9d7;
+	border: 2px solid #fff !important;
+	padding: 0px !important;
 }
 
 .rbc-event.rbc-selected {
-  background-color: #d0f1fc !important;
-  border: 2px solid #fff !important;
-  z-index: 1000;
+	background-color: #d0f1fc !important;
+	border: 2px solid #fff !important;
+	z-index: 1000;
 }
 
 .rbc-event-label {
-  display: none !important;
+	display: none !important;
 }
 
 .rbc-row.rbc-time-header-cell {
-  height: 40px !important;
+	height: 40px !important;
 }
 
 .rbc-header {
-  height: 40px !important;
-  background-color: #e6ebee !important;
-  color: #7c92a9 !important;
-  border: 1px solid #e6ebee !important;
-  border-bottom: 3px solid #e6ebee !important;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  pointer-events: none;
+	height: 40px !important;
+	background-color: #e6ebee !important;
+	color: #7c92a9 !important;
+	border: 1px solid #e6ebee !important;
+	border-bottom: 3px solid #e6ebee !important;
+	text-align: left;
+	display: flex;
+	align-items: center;
+	pointer-events: none;
 }
 
 .rbc-header a {
-  pointer-events: none;
+	pointer-events: none;
 }
 
 .rbc-header.rbc-today {
-  color: #12b8f1 !important;
-  border-bottom: 3px solid #12b8f1 !important;
+	color: #12b8f1 !important;
+	border-bottom: 3px solid #12b8f1 !important;
 }
 
 .rbc-today {
-  background-color: #fff;
+	background-color: #fff;
 }
 
 .rbc-current-time-indicator {
-  background-color: red !important;
-  height: 2px !important;
-  border-radius: 2px;
+	background-color: red !important;
+	height: 2px !important;
+	border-radius: 2px;
 }
 
 .rbc-current-time-indicator::before {
-  display: block;
-  content: "";
-  height: 8px;
-  width: 8px;
-  background-color: red !important;
-  border-radius: 50%;
-  transform: translateY(-3px);
+	display: block;
+	content: '';
+	height: 8px;
+	width: 8px;
+	background-color: red !important;
+	border-radius: 50%;
+	transform: translateY(-3px);
 }
 
 .rbc-allday-cell {
-  display: none;
+	display: none;
 }
 
 .rbc-day-bg.rbc-today {
-  background-color: #d0f1fc66 !important;
+	background-color: #d0f1fc66 !important;
 }
 
 .rbc-date-cell.rbc-now.rbc-current a {
-  color: #259aed !important;
-  font-weight: bolder;
+	color: #259aed !important;
+	font-weight: bolder;
 }
 
-.react-datepicker{
-    width: 100%;
-    border: 0;
+.react-datepicker {
+	width: 100%;
+	border: 0;
 }
-.react-datepicker__header{
-    border: 0;
-    background: #1A1F27;
+.react-datepicker__header {
+	border: 0;
+	background: #1a1f27;
 }
-.react-datepicker__month-container{
-    width: 100%;
+.react-datepicker__month-container {
+	width: 100%;
 }
-.react-datepicker__current-month{
-    color: #DFECFB;
-    font-size: 14px;
+.react-datepicker__current-month {
+	color: #dfecfb;
+	font-size: 14px;
 }
-.react-datepicker__day-name{
-    color: #DFECFB;
-    font-size: 14px;
+.react-datepicker__day-name {
+	color: #dfecfb;
+	font-size: 14px;
 }
-.react-datepicker__day{
-    color: #DFECFB;
-    font-size: 14px;
+.react-datepicker__day {
+	color: #dfecfb;
+	font-size: 14px;
 }
-.react-datepicker__day:hover{
-    background: #3A4453 !important;
+.react-datepicker__day:hover {
+	background: #3a4453 !important;
 }
-.react-datepicker__day--selected{
-    background: #0D74E6 !important;
-    color: #DFECFB;
-    font-size: 14px;
+.react-datepicker__day--selected {
+	background: #0d74e6 !important;
+	color: #dfecfb;
+	font-size: 14px;
 }
-.react-datepicker__day-names{
-    display: flex;
-    justify-content: space-between;
-    background: #1A1F27;
+.react-datepicker__day-names {
+	display: flex;
+	justify-content: space-between;
+	background: #1a1f27;
 }
-.react-datepicker__month{
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 10px;
-    background: #1A1F27;
+.react-datepicker__month {
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 10px;
+	background: #1a1f27;
 }
-.react-datepicker__week{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.react-datepicker__week {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }

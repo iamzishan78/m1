@@ -74,6 +74,12 @@ export default [
         actual_key: "shape.actual_offer_price"
     },
     {
+        label: "Closed Price", // Add new field to bulkupload for shapeOwners
+        mapped_key: "",
+        required: false,
+        actual_key: "shape.closed_price"
+    },
+    {
         label: "Overriding Royalty",
         mapped_key: "",
         required: false,
