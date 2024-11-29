@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useLazyQuery } from '@apollo/client';
 
-import ActivityAnalytics from './ActivityAnalytics';
-import ActivitiesDashboardFilter from './ActivitiesDashboardFilter';
-import ActivitiesTable from 'components/Table/Activities/ActivitiesTable';
+import ActivitiesDashboardFilter from 'components/Activities/components/ActivitiesDashboardFilter';
+import ActivityAnalytics from 'components/Activities/components/ActivityAnalytics';
 import { GET_ES_MIN_VALUE } from 'graphQL/useQueryESMinValue';
 
 const useStyles = makeStyles(theme => ({
@@ -13,19 +12,19 @@ const useStyles = makeStyles(theme => ({
 		'& div': {
 			'&>.MuiPaper-root': {
 				'&>:nth-child(3)': {
-					maxHeight: '49vh',
-					minHeight: '49vh',
+					maxHeight: '53vh',
+					minHeight: '53vh',
 					'@media (max-height:900px)': {
-						maxHeight: '33vh',
-						minHeight: '33vh',
+						maxHeight: '47vh',
+						minHeight: '47vh',
 					},
 					'@media (max-height:800px)': {
-						maxHeight: '25vh',
-						minHeight: '25vh',
+						maxHeight: '45vh',
+						minHeight: '45vh',
 					},
 					'@media (max-height:768px)': {
-						maxHeight: '25vh',
-						minHeight: '25vh',
+						maxHeight: '45vh',
+						minHeight: '45vh',
 					},
 				},
 			},
@@ -35,12 +34,13 @@ const useStyles = makeStyles(theme => ({
 
 const ActivitiesDashboard = () => {
 	const classes = useStyles();
-	const esIndex = 'activities_flat';
+	const esIndex = 'contacts_flat';
 	const searchFields = ['name', '_all'];
 	const [filterToggle, setFilterToggle] = useState(false);
 	const [appliedFilters, setAppliedFilters] = useState({
 		toDate: null,
 		fromDate: null,
+		filter: 'audit',
 	});
 	const [tableFilters, setTableFilters] = useState([]);
 	const [minDate, setMinDate] = useState('');
@@ -59,7 +59,7 @@ const ActivitiesDashboard = () => {
 		getESMinValue({
 			variables: {
 				esIndex,
-				field: 'dateTime',
+				field: 'lastUpdateAt',
 				value_as_string: true,
 			},
 		});
@@ -71,32 +71,28 @@ const ActivitiesDashboard = () => {
 
 	return (
 		<div className={classes.root}>
-			<ActivitiesDashboardFilter
-				esIndex={esIndex}
-				searchFields={searchFields}
-				setFilterToggle={setFilterToggle}
-				filterToggle={filterToggle}
-				tableFilters={tableFilters}
-				appliedFilters={appliedFilters}
-				minDate={minDate}
-				setAppliedFilters={setAppliedFilters}
-				label={'Activity Owner'} // to pass the dynamic label in filter
-			/>
-			<ActivityAnalytics
-				filterToggle={filterToggle}
-				tableFilters={tableFilters}
-				appliedFilters={appliedFilters}
-				setAppliedFilters={setAppliedFilters}
-			/>
-			<ActivitiesTable
-				esIndex={esIndex}
-				searchFields={searchFields}
-				filtersChange={filtersChange}
-				appliedFilters={appliedFilters}
-				filterToggle={filterToggle}
-				targetLabel={'activitiesDashboard'}
-				header="Activities"
-			/>
+			{
+				<ActivitiesDashboardFilter
+					esIndex={esIndex}
+					searchFields={searchFields}
+					setFilterToggle={setFilterToggle}
+					filterToggle={filterToggle}
+					tableFilters={tableFilters}
+					appliedFilters={appliedFilters}
+					minDate={minDate}
+					setAppliedFilters={setAppliedFilters}
+					label={'User'} // to pass the dynamic label in filter
+				/>
+			}
+			{
+				<ActivityAnalytics
+					esIndex={esIndex}
+					filterToggle={filterToggle}
+					tableFilters={tableFilters}
+					appliedFilters={appliedFilters}
+					setAppliedFilters={setAppliedFilters}
+				/>
+			}
 		</div>
 	);
 };

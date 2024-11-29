@@ -472,9 +472,9 @@ export default function AssignOwnerToContactDrawer({
 					tags: fieldKey,
 					user: getUser?._id,
 					contactIds,
-					objectType: rest?.objectType || ['contact'],
+					objectType: rest?.objectType,
 				},
-				refetchQueries: rest?.refetchQueries || ['getESContacts'],
+				refetchQueries: rest?.refetchQueries,
 				awaitRefetchQueries: true,
 			}).then(
 				res => {

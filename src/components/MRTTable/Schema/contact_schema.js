@@ -151,7 +151,7 @@ const ContactMeta = {
 							}}
 						>
 							<ColumnWithLink
-								value={renderedCellValue}
+								value={renderedCellValue || 'N/A'}
 								link={`/contact/details/${row.getValue('_id')}`}
 								onClick={e => {
 									e.stopPropagation();
