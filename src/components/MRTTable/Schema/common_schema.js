@@ -35,10 +35,10 @@ export const CommonSchema = {
 		enableColumnOrdering: false,
 		enableResizing: false,
 		showInLast: true,
-		isExport: "tags",
+		isExport: 'tags',
 		handleArrayExport: {
-			esType: "collection",
-			actualKey: "tag"
+			esType: 'collection',
+			actualKey: 'tag',
 		},
 	},
 	HIDDEN: {
@@ -63,6 +63,7 @@ export const CommonSchema = {
 		enableSorting: false,
 		size: 250,
 		isHiddenFieldExport: true,
+		type: 'mongoID',
 	},
 	INITAIL_PINNED: {
 		isPinned: true,
@@ -125,7 +126,7 @@ export const CommonSchema = {
 		isSearchField: false,
 		type: 'string',
 		Cell: ({ row }) => {
-			return <>{row.original?.createBy?.name}</>
+			return <>{row.original?.createBy?.name}</>;
 		},
 	},
 	CREATED_DATE: {
@@ -137,7 +138,7 @@ export const CommonSchema = {
 		isSearchField: false,
 		type: 'date',
 		Cell: ({ row }) => {
-			return <>{formatDate(row.original?.createAt)}</>
+			return <>{formatDate(row.original?.createAt)}</>;
 		},
 	},
 	LAST_UPDATED_BY: {
@@ -149,7 +150,7 @@ export const CommonSchema = {
 		isSearchField: false,
 		type: 'string',
 		Cell: ({ row }) => {
-			return <>{row.original?.lastUpdateBy?.name}</>
+			return <>{row.original?.lastUpdateBy?.name}</>;
 		},
 	},
 	LAST_UPDATED_DATE: {
@@ -161,7 +162,7 @@ export const CommonSchema = {
 		isSearchField: false,
 		type: 'date',
 		Cell: ({ row }) => {
-			return <>{formatDate(row.original?.lastUpdateAt)}</>
+			return <>{formatDate(row.original?.lastUpdateAt)}</>;
 		},
 	},
 };
