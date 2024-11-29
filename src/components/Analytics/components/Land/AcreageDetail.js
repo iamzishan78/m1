@@ -3,9 +3,9 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { tableController } from 'hookstate/tableController';
 import React, { useEffect } from 'react';
 
-const TableKey = 'AcerageSummaryTable';
+const TableKey = 'AcreageDetailsTable';
 
-const AcerageSummary = () => {
+const AcreageDetail = () => {
 	const { stateValues } = globalStateController.useState(['globalSearch']);
 
 	useEffect(() => {
@@ -15,4 +15,4 @@ const AcerageSummary = () => {
 	return <MRTTable name={TableKey} />;
 };
 
-export default AcerageSummary;
+export default AcreageDetail;

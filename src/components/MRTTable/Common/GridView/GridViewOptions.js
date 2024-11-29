@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo } from 'react';
+import React, { useEffect, useState, memo, useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
 	TextField,
@@ -20,7 +20,11 @@ import StarIcon from '@material-ui/icons/Star';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 
 import LeftDialog from 'components/Shared/LeftDialog';
-import { UPDATE_GRID_VIEW, UPDATE_FAVOURITE_GRID_VIEW, UPDATE_DEFAULT_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
+import {
+	UPDATE_GRID_VIEW,
+	UPDATE_FAVOURITE_GRID_VIEW,
+	UPDATE_DEFAULT_GRID_VIEW,
+} from 'graphQL/useMutationUpdateGridView';
 import { ADD_GRID_VIEW } from 'graphQL/useMutationAddGridView';
 
 import { tableController, tableGlobalController } from 'hookstate/tableController';
@@ -93,7 +97,15 @@ const viewOptions = [
 	},
 ];
 
-function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, defaultView, fetchGridViews }) {
+function GridViewOptions({
+	handleDefaultView,
+	module,
+	buttonRef,
+	tableKey,
+	allGridViews,
+	defaultView,
+	fetchGridViews,
+}) {
 	const Controller = tableController(tableKey);
 	const tableState = Controller.useState(['filters', 'columnVisibility', 'gridView', 'gridViewSettings']);
 	const tableStateValues = tableState.stateValues;
@@ -108,7 +120,7 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 	const [viewName, setViewName] = useState(`${tableStateValues?.gridView?.selectedGridView?.name}-copy`);
 	const [addGridView] = useMutation(ADD_GRID_VIEW, {
 		onCompleted: data => {
-			fetchGridViews()
+			fetchGridViews();
 			Controller.updateState({
 				gridView: {
 					selectedGridView: data?.addGridView?.newGridView,
@@ -158,13 +170,33 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 		});
 	};
 
+	// Apply stylinng dynamically for mainn grid
+	const gridViewCss = useMemo(() => {
+		let top,
+			left = '0px';
+
+		if (buttonRef.current) {
+			// Get the bounding rectangle of the button
+			const rect = buttonRef.current.getBoundingClientRect();
+			// Calculate top and left based on button position
+			top = `${rect.bottom + window.scrollY}px`; // Button bottom + scroll position
+			left = `${rect.left + window.scrollX}px`; // Button left + scroll position
+		}
+
+		return {
+			top,
+			left,
+		};
+	}, [buttonRef.current]);
+
 	return (
 		<LeftDialog
 			open
 			width="325px"
-			maxHeight={tableStateValues?.gridViewSettings?.cssOverride?.maxHeight || '600px'}
-			top={`${tableStateValues?.gridViewSettings?.cssOverride?.top} !important`}
-			left={tableStateValues?.gridViewSettings?.cssOverride?.left}
+			useLeftKey={true}
+			maxHeight={tableStateValues?.gridViewSettings?.cssOverride?.maxHeight || '40%'} // Set max height of dialog as 40%
+			top={gridViewCss.top}
+			left={gridViewCss.left}
 			handleClickDialogClose={() =>
 				Controller.updateState({ gridView: { ...tableStateValues.gridView, showViewModal: false } })
 			}
@@ -289,7 +321,7 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 					</Accordion>
 				</div>
 			</div>
-		</LeftDialog >
+		</LeftDialog>
 	);
 }
 
@@ -308,7 +340,15 @@ function InputField({
 }) {
 	const classes = useStyles();
 	const Controller = tableController(tableKey);
-	const tableState = Controller.useState(['filters', 'columnVisibility', 'sorting', 'groupedField', 'columnPinning', 'columnOrdering', 'gridView']);
+	const tableState = Controller.useState([
+		'filters',
+		'columnVisibility',
+		'sorting',
+		'groupedField',
+		'columnPinning',
+		'columnOrdering',
+		'gridView',
+	]);
 	const tableStateValues = tableState.stateValues;
 
 	return (
@@ -340,11 +380,9 @@ function InputField({
 								},
 							},
 							refetchQueries: ['getGridViews'],
-						}).then(
-							res => {
-								tableGlobalController.reInitialized();
-							}
-						);
+						}).then(res => {
+							tableGlobalController.reInitialized();
+						});
 					} else {
 						addGridView({
 							variables: {
@@ -365,7 +403,7 @@ function InputField({
 								},
 							},
 							refetchQueries: ['getGridViews'],
-						})
+						});
 					}
 					Controller.updateState({
 						gridView: { ...tableStateValues.gridView, showSaveAsNew: false, showViewModal: false },
@@ -430,7 +468,8 @@ function View({
 					{view.name}
 				</div>
 				{view.favouriteBy?.includes(userId) && (
-					<StarIcon style={{ marginTop: '5px' }}
+					<StarIcon
+						style={{ marginTop: '5px' }}
 						onClick={() => {
 							updateFavouriteGridView({
 								variables: {
@@ -438,29 +477,26 @@ function View({
 									userId,
 								},
 								refetchQueries: ['getGridViews'],
-							}).then(
-								res => {
-									tableGlobalController.reInitialized();
-								}
-							);
+							}).then(res => {
+								tableGlobalController.reInitialized();
+							});
 						}}
 					/>
 				)}
-				{!!(view?.defaultDisplayBy?.includes(userId)) && (
-					<BookmarkIcon style={{ marginTop: '5px' }}
+				{!!view?.defaultDisplayBy?.includes(userId) && (
+					<BookmarkIcon
+						style={{ marginTop: '5px' }}
 						onClick={() => {
 							updateDefaultGridView({
 								variables: {
 									id: view._id,
 									userId,
 									operation: 'REMOVE',
-									module
+									module,
 								},
-							}).then(
-								res => {
-									tableGlobalController.reInitialized();
-								}
-							);
+							}).then(res => {
+								tableGlobalController.reInitialized();
+							});
 						}}
 					/>
 				)}
@@ -505,13 +541,11 @@ function View({
 									id: view._id,
 									userId,
 									operation: view?.defaultDisplayBy?.includes(userId) ? 'REMOVE' : 'ADD',
-									module
+									module,
 								},
-							}).then(
-								res => {
-									tableGlobalController.reInitialized();
-								}
-							);
+							}).then(res => {
+								tableGlobalController.reInitialized();
+							});
 							Controller.updateState({ gridView: { ...tableStateValues.gridView, showViewModal: false } });
 						}}
 					>
@@ -528,11 +562,9 @@ function View({
 								id: view._id,
 								userId,
 							},
-						}).then(
-							res => {
-								tableGlobalController.reInitialized();
-							}
-						);
+						}).then(res => {
+							tableGlobalController.reInitialized();
+						});
 						Controller.updateState({ gridView: { ...tableStateValues.gridView, showViewModal: false } });
 					}}
 				>
@@ -551,11 +583,9 @@ function View({
 									},
 								},
 								refetchQueries: ['getGridViews'],
-							}).then(
-								res => {
-									tableGlobalController.reInitialized();
-								}
-							);
+							}).then(res => {
+								tableGlobalController.reInitialized();
+							});
 							if (view?._id === tableStateValues?.gridView?.selectedGridView?._id) {
 								Controller.updateState({
 									gridView: { ...tableStateValues.gridView, showViewModal: false, selectedGridView: defaultView },

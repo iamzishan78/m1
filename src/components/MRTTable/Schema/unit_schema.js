@@ -60,7 +60,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 const UnitMeta = {
 	esIndex,
 	pageSize: 50,
-	CustomToolBar: UnitToolbar,
+	CustomToolBar: UnitToolbar, // Add custom toolbar for showing bulkupdate button
 	pagination: {
 		pageIndex: 0,
 		pageSize: 50,
@@ -89,6 +89,7 @@ const UnitMeta = {
 	maxTableHeight: 'calc(100vh - 215px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
+	isElasticQuery: false,
 	fetchMetaData: {
 		category: 'Unit', // enable to show custom field inside unit grid
 	},
@@ -98,6 +99,7 @@ const UnitMeta = {
 			...CommonSchema.HIDDEN,
 			name: 'id',
 			accessorKey: 'id',
+			header: 'ID',
 		},
 
 		{
@@ -191,6 +193,7 @@ const UnitMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.netRoyalityAcres.unitNra.keyword',
 			accessorFn: row => vf_number(row?.shapeJson?.properties?.netRoyalityAcres?.unitNra),
+			id: 'shapeJson.properties.netRoyalityAcres.unitNra',
 			header: 'Total Unit NRA',
 		},
 

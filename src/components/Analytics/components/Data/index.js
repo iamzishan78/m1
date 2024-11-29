@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import { Divider, makeStyles, Tab, Tabs, withStyles } from '@material-ui/core';
-import WellMasterTabPanel from './WellMaster';
-import { globalStateController } from 'hookstate/globalStateController';
-import AcreageSummary from './AcreageSummary';
-import ExhibitA from './ExhibitA';
-import AcreageDetail from './AcreageDetail';
+import MRTTable from 'components/MRTTable';
+import ShapeFile from './ShapeFile';
 
 const useStyles = makeStyles(theme => ({
 	mainTabContainer: {
@@ -67,6 +64,15 @@ const StyledTab = withStyles(theme => ({
 	selected: {},
 }))(props => <Tab disableRipple {...props} />);
 
+const tabs = [
+	{ label: 'Platform Wells', table: 'WellsTable', overrideMeta: { isElasticQuery: true } },
+	{ label: 'Agreements', table: 'AgreementTable' },
+	{ label: 'Units', table: 'UnitTable' },
+	{ label: 'Tracts', table: 'TractsTable' },
+	{ label: 'My Wells', table: 'MyWellsTable' },
+	{ label: 'Shape File', type: 'shapeFile' },
+];
+
 export default function LandAnalytics() {
 	const classes = useStyles();
 	const [tab, setTab] = useState(0);
@@ -79,21 +85,32 @@ export default function LandAnalytics() {
 					onChange={(event, tab) => {
 						setTab(tab);
 						window.setStateApp(state => ({ ...state, landAnalyticsSearchQuery: '' }));
-						globalStateController.updateState({ globalSearch: '' });
 					}}
 					aria-label="ant example"
 				>
-					<StyledTab label="Exhibit A" />
-					<StyledTab label="Acreage Summary" />
-					<StyledTab label="Acreage Detail" />
-					<StyledTab label="Well Master" />
+					{tabs.map(({ label }) => (
+						<StyledTab key={label} label={label} />
+					))}
 				</StyledTabs>
 			</div>
-			{tab === 0 && <ExhibitA />}
-			{tab === 1 && <AcreageSummary />}
-			{tab === 2 && <AcreageDetail />}
-			{tab === 3 && <WellMasterTabPanel />}
-			{/* <AnalyticsCards cards={cards} /> */}
+
+			{tabs.map(({ label, table, overrideMeta, type }, index) => {
+				if (tab !== index) return null;
+
+				if (type === 'shapeFile') return <ShapeFile />;
+
+				return (
+					<MRTTable
+						key={label}
+						name={table}
+						overrideMeta={{
+							maxTableHeight: 'calc(100vh - 290px)',
+							isElasticQuery: false,
+							...overrideMeta,
+						}}
+					/>
+				);
+			})}
 			<Divider className={classes.divider} />
 		</>
 	);

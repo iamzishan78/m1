@@ -25,9 +25,7 @@ import _ from 'lodash';
 
 import parseLinkHeader from 'parse-link-header';
 import { drawShapeStyles, findBoundsMap } from 'components/MapControls/commonHelper';
-import {
-	layersWithSelectedShapeKey,
-} from 'components/Shared/functions/shapeLayer';
+import { layersWithSelectedShapeKey } from 'components/Shared/functions/shapeLayer';
 
 import './Map.css';
 import { popupController } from 'hookstate/popupStateController';
@@ -40,7 +38,11 @@ import { copy } from '../Shared/functions';
 import DefaultFiltersTest from './filtersDefaultTest';
 import MarkerIcon from './sprites/marker-icon.png';
 import MapGridCardProvider from '../MapGridCard/MapGridProvider';
-import { drawBoundary, drawWellBoundary, drawPlaceBoundary } from '../MapControls/components/DrawShapes/drawShapesHelpers';
+import {
+	drawBoundary,
+	drawWellBoundary,
+	drawPlaceBoundary,
+} from '../MapControls/components/DrawShapes/drawShapesHelpers';
 import HugeRequest from './components/HugeRequest';
 import ZoomFault from './components/ZoomFault';
 import { SRMode } from './MapBoxDrawRotate/index';
@@ -63,11 +65,10 @@ import onRightClick from './DeckGL/helpers/onRightClick';
 import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
 import { convertToTitleCase } from 'components/Shared/M1nTable/components/MUIDataTable/utils';
 import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
-import { RIGSQUERY } from "graphQL/useQueryRigs";
+import { RIGSQUERY } from 'graphQL/useQueryRigs';
 import { drawController } from 'hookstate/drawStateController';
 import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
 import { MapFeatureTenants } from 'utils/data';
-
 
 const useStyles = makeStyles(() => ({
 	mapWrapper: {
@@ -130,10 +131,16 @@ function Map({
 }) {
 	// context states
 	const globalState = globalStateController.useState(['layers']);
-	const { filterDrawing, navStateValues } = navController.useState(['filterDrawing'], 'navStateValues')
-	const { selectedShapeFile, selectedPlaces, popupStateValues } = popupController.useState(['selectedShapeFile', "selectedPlaces"], 'popupStateValues');
-	const { mapStateValues } = mapStateController.useState(['mapVars', 'defaultMapVars', 'toggle3d', 'toggleZoomOut'], 'mapStateValues');
-	const { wellListFromSearch, layerStateValues } = layerController.useState(['wellListFromSearch'], 'layerStateValues')
+	const { filterDrawing, navStateValues } = navController.useState(['filterDrawing'], 'navStateValues');
+	const { selectedShapeFile, selectedPlaces, popupStateValues } = popupController.useState(
+		['selectedShapeFile', 'selectedPlaces'],
+		'popupStateValues'
+	);
+	const { mapStateValues } = mapStateController.useState(
+		['mapVars', 'defaultMapVars', 'toggle3d', 'toggleZoomOut'],
+		'mapStateValues'
+	);
+	const { wellListFromSearch, layerStateValues } = layerController.useState(['wellListFromSearch'], 'layerStateValues');
 	const [stateApp, setStateApp] = useContext(AppContext);
 
 	const client = useApolloClient();
@@ -142,7 +149,7 @@ function Map({
 
 	// styles
 	let classes = useStyles({
-		drawingCircle: stateApp.draw && stateApp.draw.getMode() === "drag_circle" ? true : false,
+		drawingCircle: stateApp.draw && stateApp.draw.getMode() === 'drag_circle' ? true : false,
 		expandedPanel: mapLayersPanelExtended ? true : false,
 	});
 
@@ -245,9 +252,9 @@ function Map({
 		let styleTypes = ['Satellite', 'Basic', 'Dark', 'Light', 'Outdoors'];
 		let isDarkMapAllowed = false;
 
-		// check MapFeatureTenants for dark Map	
-        if (MapFeatureTenants.includes(window.sessionStorage?.getItem("tenantName").toLowerCase())) {
-		    isDarkMapAllowed = stateApp?.user?.features?.find(f => f.name === 'DarkBaseMap')
+		// check MapFeatureTenants for dark Map
+		if (MapFeatureTenants.includes(window.sessionStorage?.getItem('tenantName').toLowerCase())) {
+			isDarkMapAllowed = stateApp?.user?.features?.find(f => f.name === 'DarkBaseMap');
 		}
 		if (!isDarkMapAllowed) styleTypes = styleTypes.filter(style => style !== 'Dark');
 		let recurseLimit = 5;
@@ -262,11 +269,7 @@ function Map({
 					link = parseLinkHeader(response.headers.get('Link'))?.next?.url;
 					styles.push(
 						..._.uniqBy(
-							data.filter(
-								style =>
-									styleTypes.includes(style.name) &&
-									!styles.find(el => el.name === style.name)
-							),
+							data.filter(style => styleTypes.includes(style.name) && !styles.find(el => el.name === style.name)),
 							'name'
 						)
 					);
@@ -286,23 +289,20 @@ function Map({
 		const abortController = new AbortController();
 		await getRigs({});
 		fetchStyles(abortController)
-			.then((styles) => {
+			.then(styles => {
 				setMapStyles(styles);
-				setStateApp((state) => ({
+				setStateApp(state => ({
 					...state,
 					mapStyles: styles,
 				}));
 			})
-			.catch((error) => {
+			.catch(error => {
 				// Handle any errors from fetchStyles
 				console.error('fetchStyles error:', error);
 			});
 
 		popupController.updateState({
-			popupOpen: !!(
-				popupController.getValue('wellSelectedCoordinates')?.length > 0 &&
-				searchInputValue
-			),
+			popupOpen: !!(popupController.getValue('wellSelectedCoordinates')?.length > 0 && searchInputValue),
 			expandedCard: false,
 		});
 
@@ -311,7 +311,7 @@ function Map({
 			try {
 				abortController.abort();
 			} catch (err) {
-				console.log("🚀 ~ cleanup ~ err:", err.message);
+				console.log('🚀 ~ cleanup ~ err:', err.message);
 			}
 
 			layerController.resetMap();
@@ -323,14 +323,14 @@ function Map({
 		};
 	}, []);
 
-	const getElasticWell = async (paramId) => {
+	const getElasticWell = async paramId => {
 		const { data: well } = await client.query({
 			query: GET_ES_PAGINATED_LIST,
 			variables: {
-				esIndex: "platformData:wells",
+				esIndex: 'platformData:wells',
 				pagination: {
 					first: 1,
-					keep_alive: "1micros"
+					keep_alive: '1micros',
 				},
 				search: `_id:${paramId.toLowerCase()}`,
 				filters: [],
@@ -341,20 +341,19 @@ function Map({
 		if (wellFeature?.Id) wellFeature.id = wellFeature.Id;
 		const interval = setInterval(() => {
 			if (window.mapRef) {
-				layerController.updateState({ clickedFeature: { object: { id: paramId } } })
+				layerController.updateState({ clickedFeature: { object: { id: paramId } } });
 				popupController.updateState({
 					selectedWellId: paramId.toLowerCase(),
 					wellSelectedCoordinates: [wellFeature.longitude, wellFeature.latitude],
 					popupOpen: false,
 					expandedCard: true,
 				});
-				if (wellFeature?.longitude)
-					drawWellBoundary([wellFeature.longitude, wellFeature.latitude])
+				if (wellFeature?.longitude) drawWellBoundary([wellFeature.longitude, wellFeature.latitude]);
 				popupController.fitWellBounds(wellFeature);
-				clearInterval(interval)
+				clearInterval(interval);
 			}
 		}, 100);
-	}
+	};
 
 	useEffect(() => {
 		if (rigData && rigData.rigs && rigData.rigs.length > 0) {
@@ -379,14 +378,14 @@ function Map({
 					query: LAYERSETTINGSBYUSER,
 					variables: {
 						userId: stateApp.user.mongoId,
-						identifier: convertToTitleCase(layer.customLayer.layer + 's')
+						identifier: convertToTitleCase(layer.customLayer.layer + 's'),
 					},
 				});
 				layers = globalStateController.getValue('layers');
 				if ((!layers || layers?.length === 0) && data?.layerSettingsByUser) {
 					globalStateController.updateState({
-						deckLayer: data.layerSettingsByUser
-					})
+						deckLayer: data.layerSettingsByUser,
+					});
 				}
 			}
 
@@ -401,22 +400,22 @@ function Map({
 					findBoundsMap([jsonLayer], window.mapRef, layerPadding);
 					drawBoundary(jsonLayer);
 
-					layerController.updateState({ clickedFeature: { object: { id: paramId } } })
+					layerController.updateState({ clickedFeature: { object: { id: paramId } } });
 					popupController.updateState({
 						[keys[type]]: {
 							...jsonLayer.properties,
 							feature: jsonLayer,
 							id: layer.customLayer._id,
 						},
-						...(type === "parcels" ? { selectedShape: null } : {}),
+						...(type === 'parcels' ? { selectedShape: null } : {}),
 						popupOpen: false,
 						expandedCard: true,
+						customLayerId: layer.customLayer._id,
 					});
-					clearInterval(interval)
+					clearInterval(interval);
 				}
 			}, 100);
-		}
-		else {
+		} else {
 			history.push('/');
 		}
 	}
@@ -424,36 +423,36 @@ function Map({
 	useEffect(() => {
 		if (!window.mapRef || !popupStateValues.selectedShapeFile) return;
 
-		popupController.updateState({ popupOpen: false })
+		popupController.updateState({ popupOpen: false });
 
-		const combined = turf.combine(turf.featureCollection([popupStateValues.selectedShapeFile]))
-		const bbox = turf.bbox(combined)
+		const combined = turf.combine(turf.featureCollection([popupStateValues.selectedShapeFile]));
+		const bbox = turf.bbox(combined);
 		window.mapRef.fitBounds(
 			[
 				[bbox[0] - 0.03, bbox[1] - 0.03], // Southwest coordinates
-				[bbox[0] + 0.03, bbox[1] + 0.03]  // Northeast coordinates
+				[bbox[0] + 0.03, bbox[1] + 0.03], // Northeast coordinates
 			],
-			{ padding: { top: 100, bottom: 200, left: 10, right: 100 }, easing: () => 1, }
-		)
+			{ padding: { top: 100, bottom: 200, left: 10, right: 100 }, easing: () => 1 }
+		);
 
 		const layers = globalStateController.getValue('layers');
 
 		const layer = layers.find(l => popupStateValues.selectedShapeFile.properties?.layerShapeName === l.layerShapeName);
 
 		udLayerClickHandler(popupStateValues.selectedShapeFile, layer);
-	}, [selectedShapeFile])
+	}, [selectedShapeFile]);
 
 	useEffect(() => {
-		const clickedFeature = layerController.getValue('clickedFeature')
+		const clickedFeature = layerController.getValue('clickedFeature');
 		if (paramId && clickedFeature?.object?.id !== paramId) {
 			try {
 				if (type === 'wells') {
-					getElasticWell(paramId)
+					getElasticWell(paramId);
 				} else {
 					getCustomLayer(paramId);
 				}
 			} catch (e) {
-				history.push('/')
+				history.push('/');
 			}
 		}
 	}, [paramId]);
@@ -478,7 +477,7 @@ function Map({
 				layers,
 			}));
 			globalState.layers.set(layers);
-			stateApp.layers = layers
+			stateApp.layers = layers;
 		}
 	}, [layerStates]);
 
@@ -525,7 +524,7 @@ function Map({
 		if (!stateApp.baseMapLayers || stateApp.baseMapLayers.length === 0 || !map) return;
 		const landLayer = mapLayers?.find(layer => layer.identifier === 'Land Grid');
 		const baseMapLandIndex = stateApp.baseMapLayers.findIndex(layer => layer.name === 'Land Grid');
-		const landLayerVisible = landLayer?.layerSettings?.visiable && landLayer?.layerSettings?.showable
+		const landLayerVisible = landLayer?.layerSettings?.visiable && landLayer?.layerSettings?.showable;
 
 		if (!landLayerVisible && stateApp.checkedBaseLayers.includes(baseMapLandIndex)) {
 			setStateApp(state => ({
@@ -652,8 +651,8 @@ function Map({
 					center: map.getCenter(),
 					pitch: map.getPitch(),
 					bearing: map.getBearing(),
-				}
-			})
+				},
+			});
 			setMap(null);
 		}
 	}, [mapStateValues.mapVars.styleId]);
@@ -680,7 +679,7 @@ function Map({
 
 	useEffect(() => {
 		if (map) {
-			mapStateController.updateState({ mapVars: mapStateValues.defaultMapVars })
+			mapStateController.updateState({ mapVars: mapStateValues.defaultMapVars });
 			map.jumpTo({
 				center: [mapStateValues.defaultMapVars.center.lng, mapStateValues.defaultMapVars.center.lat],
 				zoom: mapStateValues.defaultMapVars.zoom,
@@ -776,7 +775,7 @@ function Map({
 				}),
 				'bottom-right'
 			);
-			newMap.addControl(new mapboxgl.NavigationControl({showCompass: true}), "bottom-right");
+			newMap.addControl(new mapboxgl.NavigationControl({ showCompass: true }), 'bottom-right');
 
 			const geoLocate = new mapboxgl.GeolocateControl({
 				positionOptions: {
@@ -798,8 +797,6 @@ function Map({
 					bearing: 20,
 				});
 			});
-
-
 
 			/// / selecting the rect after draw
 			const CostumDrawRectangle = { ...DrawRectangle };
@@ -875,25 +872,27 @@ function Map({
 								return;
 							}
 
-							const getLandGrid = window.event.ctrlKey || window.event.metaKey || drawController.getValue('multiSelectLandGrids');
+							const getLandGrid =
+								window.event.ctrlKey || window.event.metaKey || drawController.getValue('multiSelectLandGrids');
 
 							const { clickedFeature, layer } = getClickedFeature({ x, y, getLandGrid });
-							const previousClickedFeature = layerController.getValue('clickedFeature')
-							const clickOnSameFeature = previousClickedFeature && previousClickedFeature?.object?.id === clickedFeature?.object?.id
+							const previousClickedFeature = layerController.getValue('clickedFeature');
+							const clickOnSameFeature =
+								previousClickedFeature && previousClickedFeature?.object?.id === clickedFeature?.object?.id;
 							if (!clickedFeature || clickOnSameFeature) {
-								const selectedPlace = selectedPlaces.get({noproxy: true})
-								if (!selectedPlace) { // Reset the state when slected search is not places
+								const selectedPlace = selectedPlaces.get({ noproxy: true });
+								if (!selectedPlace) {
+									// Reset the state when slected search is not places
 									popupController.reset();
 								}
 								// If the path is not '/' or ' ' and the map is not rendered through deal dialog
 								if (!['', '/'].includes(window.location.pathname) && stateApp.transactBarView !== 'Map')
-									history.replace({ pathname: "/" });
+									history.replace({ pathname: '/' });
 								return;
 							}
-							if (!getLandGrid)
-								drawBoundary(clickedFeature.object);
+							if (!getLandGrid) drawBoundary(clickedFeature.object);
 
-							layerController.updateState({ clickedFeature })
+							layerController.updateState({ clickedFeature });
 							onFeatureClick(clickedFeature, layer);
 						},
 					});
@@ -960,13 +959,18 @@ function Map({
 		if (!loading) {
 			if (navStateValues.filterDrawing && navStateValues.filterDrawing.length === 0) {
 				if (draw) draw.delete(drawingFilterFeatureId);
-				navController.updateState({ drawingMode: null })
+				navController.updateState({ drawingMode: null });
 				setDrawingFilterFeatureId(null);
 				popupController.updateState({
 					popupOpen: false,
 				});
 			}
-			const { filterBasin, filterAOI, filterParcel, filterDrawing } = navController.getValues(['filterBasin', 'filterAOI', 'filterParcel', 'filterDrawing'])
+			const { filterBasin, filterAOI, filterParcel, filterDrawing } = navController.getValues([
+				'filterBasin',
+				'filterAOI',
+				'filterParcel',
+				'filterDrawing',
+			]);
 			if (filterBasin || filterAOI || filterParcel || (filterDrawing && filterDrawing[1])) {
 				let features = [];
 				features = [
@@ -981,7 +985,7 @@ function Map({
 					...map.querySourceFeatures('recentsub_permits_source', { sourceLayer: 'recent_submitted_permit_laterals' }),
 				];
 
-				navController.updateState({ filterIntersectingWellLines: features })
+				navController.updateState({ filterIntersectingWellLines: features });
 			}
 		}
 	}, [filterDrawing]);
@@ -1015,8 +1019,8 @@ function Map({
 					center,
 					pitch,
 					bearing,
-				}
-			})
+				},
+			});
 
 			// Loading state is not being handled and causes undefined mapList Array
 			// Added '?' to mapList, temp fix to avoid undefined errors.
@@ -1140,7 +1144,7 @@ function Map({
 				}));
 			}
 		}
-	}, [map, wellListFromSearch, ]);
+	}, [map, wellListFromSearch]);
 
 	useEffect(() => {
 		if (map && selectedPlaces) {
@@ -1148,9 +1152,9 @@ function Map({
 				noproxy: true,
 			});
 			if (!places) return;
-			const longitude  = places?.geometry?.coordinates[0]
-			const latitude  = places?.geometry?.coordinates[1]
-			drawPlaceBoundary([longitude, latitude]) // show dot on searched places coordinates
+			const longitude = places?.geometry?.coordinates[0];
+			const latitude = places?.geometry?.coordinates[1];
+			drawPlaceBoundary([longitude, latitude]); // show dot on searched places coordinates
 			map.jumpTo({
 				center: {
 					lng: longitude,
@@ -1163,8 +1167,7 @@ function Map({
 				searchLoader: false,
 			}));
 		}
-
-	}, [map, selectedPlaces]) // create separate effect for the selectedPlaces
+	}, [map, selectedPlaces]); // create separate effect for the selectedPlaces
 
 	useEffect(() => {
 		if (map && stateApp?.findLocation?.location?.length > 0) {
@@ -1240,7 +1243,7 @@ function Map({
 					bearing: mapStateValues.defaultMapVars.bearing,
 				});
 
-				mapStateController.updateState({ toggleZoomOut: null })
+				mapStateController.updateState({ toggleZoomOut: null });
 			}
 		}
 	}, [mapStateValues.toggleZoomOut]);
@@ -1265,19 +1268,18 @@ function Map({
 						pitch: map.getPitch(),
 						bearing: map.getBearing(),
 					},
-					toggle3d: null
-				})
+					toggle3d: null,
+				});
 			}
 		}
 	}, [mapStateValues.toggle3d]);
 
 	useEffect(() => {
-
-		// Map will be reset if we move to another page 
+		// Map will be reset if we move to another page
 		return () => {
-			layerController.resetMap()
-		}
-	}, [])
+			layerController.resetMap();
+		};
+	}, []);
 
 	return (
 		<div className={classes.mapWrapper}>

@@ -23,9 +23,9 @@ import ShapeDetailAgreementMeta from './shapeDetail_agreement_schema';
 import AgreementRelatedUnitsMeta from './agreement_relatedUnits_schema';
 import UnitRelatedAgreementMeta from './unit_relatedAgreements_schema';
 import SalesVolumeComparisonMeta from './sales-volume-comparison-schema';
-import AcerageSummaryMeta from './acerage_summary_schema';
+import AcreageSummaryMeta from './acreage_summary_schema';
 import ExhibitAMeta from './exhibit_a_schema';
-import AcerageDetilsMeta from './acerage_details_schema';
+import AcreageDetilsMeta from './acreage_details_schema';
 
 export const SCHEMA = {
 	ContactTable: ContactMeta,
@@ -58,7 +58,8 @@ export const SCHEMA = {
 	AgreementRelatedUnitsTable: AgreementRelatedUnitsMeta,
 	UnitRelatedAgreementTable: UnitRelatedAgreementMeta,
 	SalesVolumeComparisonTable: SalesVolumeComparisonMeta, // Sales Volume comparison grid => analytrics/revenue
-	AcerageSummaryTable: AcerageSummaryMeta,
+	AcreageSummaryTable: AcreageSummaryMeta,
 	ExhibitATable: ExhibitAMeta,
-	AcerageDetailsTable: AcerageDetilsMeta,
+	AcreageDetailsTable: AcreageDetilsMeta,
+	TractInterestsTable: TractInterestsMeta, // Tracts Interest schema
 };

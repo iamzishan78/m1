@@ -7,7 +7,7 @@ import { Summarize } from '@mui/icons-material';
 
 const esIndex = 'shapetracts_flat';
 
-const AcerageDetilsMeta = {
+const AcreageDetilsMeta = {
 	esIndex,
 	isElasticQuery: false,
 	pageSize: 25,
@@ -24,16 +24,16 @@ const AcerageDetilsMeta = {
 	],
 	CustomToolBar: ExhibitAToolbar,
 	gridViewSettings: {
-		label: 'Acerage Detail',
-		module: 'Acerage Detail',
+		label: 'Acreage Detail',
+		module: 'Acreage Detail',
 		Icon: Summarize,
 		defaultView: {
-			name: 'All Acerage Detail',
+			name: 'All Acreage Detail',
 			type: 'Default',
 		},
 		handleDefaultView: (view, user) => {
 			switch (view?.name) {
-				case 'My Acerage Detail':
+				case 'My Acreage Detail':
 					view.filters[0].value = user._id;
 					break;
 
@@ -220,7 +220,7 @@ const AcerageDetilsMeta = {
 			name: 'parcel.shapeJson.properties.report.reportGrossAcres',
 			type: 'number',
 			...CommonSchema.AGGREGATED_FIELD('Total Report Gross'),
-			...CommonSchema.AGGREGATED_FOOTER('parcel.shapeJson.properties.report.reportGrossAcres', 'AcerageDetailsTable'),
+			...CommonSchema.AGGREGATED_FOOTER('parcel.shapeJson.properties.report.reportGrossAcres', 'AcreageDetailsTable'),
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -230,7 +230,7 @@ const AcerageDetilsMeta = {
 			name: 'parcel.shapeJson.properties.report.sdGrossAcres',
 			type: 'number',
 			...CommonSchema.AGGREGATED_FIELD('Gross'),
-			...CommonSchema.AGGREGATED_FOOTER('parcel.shapeJson.properties.report.sdGrossAcres', 'AcerageDetailsTable'),
+			...CommonSchema.AGGREGATED_FOOTER('parcel.shapeJson.properties.report.sdGrossAcres', 'AcreageDetailsTable'),
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -240,7 +240,7 @@ const AcerageDetilsMeta = {
 			name: 'parcel.shapeJson.properties.report.netAcres',
 			type: 'number',
 			...CommonSchema.AGGREGATED_FIELD('Net'),
-			...CommonSchema.AGGREGATED_FOOTER('parcel.shapeJson.properties.report.netAcres', 'AcerageDetailsTable'),
+			...CommonSchema.AGGREGATED_FOOTER('parcel.shapeJson.properties.report.netAcres', 'AcreageDetailsTable'),
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -250,7 +250,7 @@ const AcerageDetilsMeta = {
 			name: 'parcel.shapeJson.properties.report.companyNetAcres',
 			type: 'number',
 			...CommonSchema.AGGREGATED_FIELD('NRA'),
-			...CommonSchema.AGGREGATED_FOOTER('parcel.shapeJson.properties.report.companyNetAcres', 'AcerageDetailsTable'),
+			...CommonSchema.AGGREGATED_FOOTER('parcel.shapeJson.properties.report.companyNetAcres', 'AcreageDetailsTable'),
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -260,7 +260,7 @@ const AcerageDetilsMeta = {
 			name: 'parcel.shapeJson.properties.report.netRoyalty',
 			type: 'number',
 			...CommonSchema.AGGREGATED_FIELD('NRA'),
-			...CommonSchema.AGGREGATED_FOOTER('parcel.shapeJson.properties.report.netRoyalty', 'AcerageDetailsTable'),
+			...CommonSchema.AGGREGATED_FOOTER('parcel.shapeJson.properties.report.netRoyalty', 'AcreageDetailsTable'),
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -286,4 +286,4 @@ const AcerageDetilsMeta = {
 	],
 };
 
-export default AcerageDetilsMeta;
+export default AcreageDetilsMeta;
