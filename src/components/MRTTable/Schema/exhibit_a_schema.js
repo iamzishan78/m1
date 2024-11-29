@@ -4,7 +4,7 @@ import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import { AgreementTypes } from './agreement_schema';
 import { formatDate } from 'components/Shared/functions';
 import { Summarize } from '@mui/icons-material';
-import _ExhibitaToolbar from '../TablesOverride/_ExhibitaTable/_ExhibitaToolbar';
+import ExhibitAToolbar from '../TablesOverride/ExhibitATable/ExhibitAToolbar';
 
 const esIndex = 'shapetracts_flat';
 
@@ -23,7 +23,7 @@ const ExhibitAMeta = {
 			value: 'agreement',
 		},
 	],
-	CustomToolBar: _ExhibitaToolbar,
+	CustomToolBar: ExhibitAToolbar,
 	gridViewSettings: {
 		label: 'Exhibit A',
 		module: 'Exhibit A',
