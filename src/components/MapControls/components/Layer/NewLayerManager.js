@@ -14,7 +14,7 @@ import {
 	TextField,
 } from '@material-ui/core';
 import { Close as CloseIcon } from '@material-ui/icons';
-import { getDefaultSettings } from '../addUserHelper';
+import { getDefaultSettings } from '../SourceLayerManager/fileUploadHelper';
 import { ADDLAYER } from 'graphQL/useMutationAddLayer';
 import { AppContext } from 'AppContext';
 import { ColorPickerStyledBox, useLayerStyle, WidthPicker } from './Common';

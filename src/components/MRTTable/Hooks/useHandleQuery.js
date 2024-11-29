@@ -184,11 +184,13 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 	useEffect(() => {
 		fetchFooterAggregationData();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [refetch, tableState.filters]);
 
 	useEffect(() => {
 		resetPagination.current = true;
 		if (tableStateValues?.data?.rows?.length > 0) tableRef?.current?.scrollToIndex?.(0);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState.filters, tableState.sorting, tableState.grouping, tableState.globalFilter, refetch]);
 
 	useEffect(() => {
@@ -214,6 +216,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				callQuery(pagination);
 			}
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState.pagination]);
 
 	useEffect(() => {
@@ -225,6 +228,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			first: tableStateValues?.pageSize || 50,
 			after: null,
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		tableState.filters,
 		tableState.searchFields,
@@ -236,6 +240,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		refetch,
 	]);
 
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const fetchMoreOnBottomReached = useCallback(
 		debounce(containerRefElement => {
 			if (!tableState?.isInFiniteScroll?.get()) return;

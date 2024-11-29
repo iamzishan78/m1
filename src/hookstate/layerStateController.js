@@ -635,6 +635,7 @@ const layerStateControllerHandler = state => {
 			});
 
 		updateLayer(dbLayer, updatedProps);
+
 		getBoundsQuery({
 			multiQuery: meta.multiQuery,
 			layerId,
@@ -644,6 +645,7 @@ const layerStateControllerHandler = state => {
 			polygonFilter,
 			polygonsFilter,
 			filters: isFileLayer ? generateFileFilters({ fileLayer: dbLayer, extendFilters: filters }) : filters,
+			isElasticQuery: isFileLayer ? false : true,
 			onData: data => {
 				if (!Array.isArray(data)) return;
 				let geoJson = { features: [] };

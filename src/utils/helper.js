@@ -29,6 +29,18 @@ export const dateFilterToDate = date => {
 	return `${endDate.getFullYear()}-${appendZeroIfSingle(endDate.getMonth() + 1)}-${appendZeroIfSingle(lastDayOfMonth.getDate())}`;
 };
 
+export const getFirstDayOfMonth = dateString => {
+	// Parse the input date string
+	const date = new Date(dateString);
+	if (isNaN(date.getTime())) {
+		throw new Error('Invalid date string');
+	}
+	// Set the date to the first day of the month
+	date.setUTCDate(1);
+	// Return the date in ISO 8601 format
+	return date.toISOString();
+};
+
 export const dateIsValid = date => {
 	try {
 		date = new Date(
@@ -590,3 +602,9 @@ function hexToRgb(hex) {
 	const b = parseInt(hex.substr(5, 2), 16);
 	return [r, g, b];
 }
+
+// Function to check if a string is a valid URL
+export const validateUrl = text => {
+	const regex = /^(https?:\/\/[^\s$.?#].[^\s]*)$/i;
+	return regex.test(text);
+};

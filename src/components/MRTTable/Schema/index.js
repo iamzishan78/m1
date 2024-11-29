@@ -58,6 +58,7 @@ export const SCHEMA = {
 	AgreementRelatedUnitsTable: AgreementRelatedUnitsMeta,
 	UnitRelatedAgreementTable: UnitRelatedAgreementMeta,
 	SalesVolumeComparisonTable: SalesVolumeComparisonMeta, // Sales Volume comparison grid => analytrics/revenue
+	TractInterestsTable: TractInterestsMeta, // Tracts Interest schema
 	AcreageSummaryTable: AcreageSummaryMeta,
 	ExhibitATable: ExhibitAMeta,
 	AcreageDetailsTable: AcreageDetilsMeta,

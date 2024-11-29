@@ -115,6 +115,9 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 		);
 
 		table.resetRowSelection();
+		tableController(tableKey).updateState({
+			isSubSetSelect: null,
+		});
 		onClose();
 	};
 

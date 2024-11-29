@@ -264,6 +264,8 @@ function ESAutoCompleteFilter({
 
 				if (type === 'date') {
 					value = formatDate(value);
+				} else if (type === 'boolean') {
+					value = value === 'true';
 				}
 				setFilterValue(value);
 
