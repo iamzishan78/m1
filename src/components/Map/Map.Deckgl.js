@@ -132,7 +132,7 @@ function Map({
 	const globalState = globalStateController.useState(['layers']);
 	const { filterDrawing, navStateValues } = navController.useState(['filterDrawing'], 'navStateValues')
 	const { selectedShapeFile, selectedPlaces, popupStateValues } = popupController.useState(['selectedShapeFile', "selectedPlaces"], 'popupStateValues');
-	const { mapStateValues } = mapStateController.useState(['mapVars', 'defaultMapVars', 'toggle3d', 'toggleZoomOut'], 'mapStateValues');
+	const { mapStateValues } = mapStateController.useState(['mapVars', 'defaultMapVars', 'toggle3d', 'toggleZoomOut', 'isDefaultViewAllowed'], 'mapStateValues');
 	const { wellListFromSearch, layerStateValues } = layerController.useState(['wellListFromSearch'], 'layerStateValues')
 	const [stateApp, setStateApp] = useContext(AppContext);
 
@@ -680,7 +680,7 @@ function Map({
 	}, [mapStateValues.mapVars.styleId, mapStyles]);
 
 	useEffect(() => {
-		if (map) {
+		if (map && mapStateValues.isDefaultViewAllowed) { // Add check to update mapVars if position is updated
 			mapStateController.updateState({ mapVars: mapStateValues.defaultMapVars })
 			map.jumpTo({
 				center: [mapStateValues.defaultMapVars.center.lng, mapStateValues.defaultMapVars.center.lat],
