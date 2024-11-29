@@ -10,9 +10,10 @@ const esIndex = 'activities_flat';
 
 const onClickedRow = selectedRow => {
 	const formattedActivity = {
+		...selectedRow,
 		start: new Date(selectedRow.dateTime),
 		end: new Date(selectedRow.endDateTime ? selectedRow.endDateTime : selectedRow.dateTime),
-		...selectedRow,
+		isClosed: selectedRow?.isClosed === 'true' || selectedRow?.isClosed === true,
 	};
 
 	slidoutStateController.showSlideout();

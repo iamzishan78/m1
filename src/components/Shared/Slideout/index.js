@@ -24,7 +24,6 @@ const useStyles = makeStyles(theme => ({
 
 function Slideout({ isTransactPage, show }) {
 	const classes = useStyles();
-	const history = useHistory();
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
 	const formMode = useHookstate(slidoutState.formMode);
@@ -37,7 +36,7 @@ function Slideout({ isTransactPage, show }) {
 
 	const handleClose = async () => {
 		if (view?.name !== 'Home') {
-			if (history.location.pathname !== '/contacts/activityDashboard') {
+			if (window.location.pathname.startsWith('/calendar/activities')) {
 				window.history.pushState('', '', `/calendar/activities`);
 			}
 

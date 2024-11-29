@@ -107,6 +107,20 @@ const ActivitiesDashboard = () => {
 		tableController(tableKey).setFilters(getActivityFilters(appliedFilters));
 	}, [appliedFilters]);
 
+	useEffect(() => {
+		getContactsForActivity({
+			variables: { activityId: selectedActivityId.get() },
+		});
+	},[selectedActivityId.get()])
+
+	useEffect(() => {
+		return () => {
+			slidoutState.selectedActivityId.set('');
+			slidoutState.selectedActivity.set(null);
+			slidoutState.show.set(false);
+		};
+	},[]);
+
 	return (
 		<div className={classes.root}>
 			<ActivitiesDashboardFilter

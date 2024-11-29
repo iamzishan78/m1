@@ -305,6 +305,12 @@ const Activities = () => {
 		}
 	}, [activityFilterByType, activityFilterByOwner, activityFilterByTime, activityFilterByResponsibleParty]);
 
+	useEffect(() => {
+		getContactsForActivity({
+			variables: { activityId: selectedActivityId.get() },
+		});
+	},[selectedActivityId.get()])
+
 	const onEventClick = event => {
 		window.history.pushState('', '', `/calendar/obligations/${event._id}`);
 		setSelectedActivityId(event._id);

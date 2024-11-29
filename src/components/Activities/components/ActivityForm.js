@@ -186,7 +186,6 @@ export default function ActivityForm({ setSelectedActivityId }) {
 	const outcomeFieldRef = useRef();
 	const classes = useStyles();
 	const [stateApp] = useContext(AppContext);
-	const history = useHistory();
 	const [users, setUsers] = useState([]);
 	const { selectedActivity } = slidoutState;
 
@@ -379,7 +378,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 	}, [formMode.get()]);
 
 	const onModalClose = () => {
-		if (history.location.pathname !== '/contacts/activityDashboard') {
+		if (window.location.pathname.startsWith('/calendar/activities')) {
 			window.history.pushState('', '', `/calendar/activities`);
 		}
 
