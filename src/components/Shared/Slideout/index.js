@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useEffect, memo } from 'react';
+import React, { useState, memo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Dialog as MuiDialog } from '@material-ui/core';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
@@ -29,15 +29,24 @@ function Slideout({ isTransactPage, show }) {
 
 	const formMode = useHookstate(slidoutState.formMode);
 	const parentType = useHookstate(slidoutState.parentType);
-	const views = slidoutState.views.get({ noproxy: true });
+	const view = useHookstate(slidoutState.view).get({ noproxy: true });
 
 	const handleCloseDialog = () => {
 		setDeleteDialogOpen(false);
 	};
 
 	const handleClose = async () => {
-		slidoutState.formMode.set('update');
-		slidoutState.view.set(views[0]);
+		if (view?.name !== 'Home') {
+			if (history.location.pathname !== '/contacts/activityDashboard') {
+				window.history.pushState('', '', `/calendar/activities`);
+			}
+
+			slidoutState.selectedActivity.set(null);
+			slidoutState.selectedActivityId.set('');
+			slidoutStateController.hideSlideout();
+		} else {
+			slidoutState.formMode.set('update');
+		}
 	};
 
 	const openConfirmationDialog = () => {
