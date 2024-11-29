@@ -17,6 +17,7 @@ import PropertiesMeta from './properties_schema';
 import ReportingGroupsMeta from './property_group_schema';
 import RevenueStatementsMeta from './revenue_statements_schema';
 import ContactWellInterestMeta from './contact_well_Interest_schema';
+import UnitTractsMeta from './unit_tract_schema';
 import MyWellsMeta from './my_wells_schema';
 import WellsMeta from './wells_schema';
 import TaxOwnerMeta from './map-grid-tax-owner-schema';
@@ -25,7 +26,9 @@ import AgreementRelatedUnitsMeta from './agreement_relatedUnits_schema';
 import UnitRelatedAgreementMeta from './unit_relatedAgreements_schema';
 import SalesVolumeComparisonMeta from './sales-volume-comparison-schema';
 import DocumentMeta from './document_schema';
-import ExhibitAMeta from './exhibita_schema';
+import AcreageSummaryMeta from './acreage_summary_schema';
+import ExhibitAMeta from './exhibit_a_schema';
+import AcreageDetilsMeta from './acreage_details_schema';
 
 export const SCHEMA = {
 	ContactTable: ContactMeta,
@@ -50,6 +53,7 @@ export const SCHEMA = {
 	ShapesFilesGenericTable: ShapesFilesGenericMeta,
 	PropertiesTable: PropertiesMeta, //main property Grid => /revenue/properties
 	RevenueStatementsTable: RevenueStatementsMeta, // Revenue Statement grid => revenue/statements
+	UnitTractTable: UnitTractsMeta, // UnitDetailCard => tracts
 	MyWellsTable: MyWellsMeta,
 	RevenuePropertiesTable: ReportingGroupsMeta,
 	WellsTable: WellsMeta,
@@ -61,6 +65,8 @@ export const SCHEMA = {
 	SalesVolumeComparisonTable: SalesVolumeComparisonMeta, // Sales Volume comparison grid => analytrics/revenue
 	DocumentTable: DocumentMeta, // Documnet table schema
 	RelatedDocumentTable: DocumentMeta, // RelatedDocument table schema
-	ExhibitATable: ExhibitAMeta, // Sales Volume comparison grid => analytrics/revenue
 	TractInterestsTable: TractInterestsMeta, // Tracts Interest schema
+	AcreageSummaryTable: AcreageSummaryMeta,
+	AcreageDetailsTable: AcreageDetilsMeta,
+	ExhibitATable: ExhibitAMeta, // Sales Volume comparison grid => analytrics/revenue
 };

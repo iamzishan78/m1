@@ -225,15 +225,15 @@ export const analyticsManagementRoutes = {
 		hideSearch: true,
 	},
 	AUDITING_REPORTING: {
-		featureFlag: "CONTACTSUBMENU",
-		title: "Audit Reporting",
-		link: "/analytics/audit",
-		component: "AuditReporting",
-		value: "Permits", // Need to change value 
+		featureFlag: 'CONTACTSUBMENU',
+		title: 'Audit Reporting',
+		link: '/analytics/audit',
+		component: 'AuditReporting',
+		value: 'Permits', // Need to change value
 		search: true,
 		isDefault: true,
 		hideSearch: true,
-	  },
+	},
 	PRODUCTION: {
 		featureFlag: 'CONTACTSUBMENU',
 		title: 'Production by State/County',
@@ -703,13 +703,23 @@ export const bypassTenants = [
 export const simpleAuthBypass = false;
 
 export const OWNERTYPE = {
-  CORPORATION: "CORPORATION" 
-}
-
-export const esIndexFilterKeyMap = {
-  contacts_flat: 'lastUpdateBy.name.keyword',
-  activities_flat: 'ownerName.keyword',  
-  // Add other mappings as needed
+	CORPORATION: 'CORPORATION',
 };
-	
+
+export const UserRole = {
+	OWNER: 'Owner',
+	ADMIN: 'Admin',
+	USER: 'User',
+};
+
+export const RolePrivilege = {
+	ADD_OR_EDIT: 'Add/Edit',
+	READ_ONLY: 'Read Only',
+};
+export const esIndexFilterKeyMap = {
+	contacts_flat: 'lastUpdateBy.name.keyword',
+	activities_flat: 'ownerName.keyword',
+	// Add other mappings as needed
+};
+
 export const MapFeatureTenants = ['m1dev', 'frontier', 'localhost'];

@@ -1,7 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const GET_CHECK_MIN_DATE = gql`
-  query getCheckMinDate {
-    getCheckMinDate
-  }
+	query getCheckMinDate {
+		getCheckMinDate
+	}
 `;

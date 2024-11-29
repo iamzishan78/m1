@@ -41,7 +41,7 @@ const initialState = {
 	columnPinning: {
 		left: [],
 	},
-	isIncludeInactive: false
+	isIncludeInactive: false,
 };
 
 export const tableESState = {};
@@ -102,7 +102,7 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 				if (item?.type === 'text') {
 					if (validateUrl(value))
 						return (
-							<a href={value} target="_blank">
+							<a href={value} target="_blank" rel="noreferrer">
 								{value?.length > 40 ? value?.slice(0, 40) + '...' : value}
 							</a>
 						);
@@ -515,7 +515,7 @@ const tableESStateControllerHandler = state => ({
 	},
 
 	setIncludeInactive: isIncludeInactive => {
-		state.isIncludeInactive?.set(isIncludeInactive)
+		state.isIncludeInactive?.set(isIncludeInactive);
 	},
 
 	setMrtTableRef: mrtTableRef => {

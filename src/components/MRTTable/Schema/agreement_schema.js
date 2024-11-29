@@ -55,7 +55,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 	}
 };
 
-const AgreementTypes = {
+export const AgreementTypes = {
 	lease: 'Lease',
 	deed: 'Deed',
 	contract: 'Contract',

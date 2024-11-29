@@ -2,7 +2,7 @@ import React, { useEffect, memo, useRef } from 'react';
 import GridViewComponent from 'components/MRTTable/Common/GridView/GridViewComponent';
 import GridViewOptions from 'components/MRTTable/Common/GridView/GridViewOptions';
 import { tableController } from 'hookstate/tableController';
-import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController'
+import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 import { useApolloClient } from '@apollo/client';
 import { globalStateController } from 'hookstate/globalStateController';
@@ -29,9 +29,8 @@ function GridView({ tableKey, defaultView, handleDefaultView, Icon, label, modul
 
 	useEffect(() => {
 		const selectedGridView = tableStateValues?.gridView?.selectedGridView;
-		gridViewStateController(tableKey).gridViewApply(selectedGridView)
+		gridViewStateController(tableKey).gridViewApply(selectedGridView);
 	}, [tableState.stateValues?.gridView?.selectedGridView]);
-
 
 	async function fetchGridViews() {
 		const result = await client.query({
@@ -41,14 +40,20 @@ function GridView({ tableKey, defaultView, handleDefaultView, Icon, label, modul
 			},
 			query: GET_GRID_VIEWS,
 		});
-		const allGridViews = result?.data?.getGridViews?.gridViews
-		const gridViewController = gridViewStateController(tableKey)
-		gridViewController?.updateState({ allGridViews })
+		const allGridViews = result?.data?.getGridViews?.gridViews;
+		const gridViewController = gridViewStateController(tableKey);
+		gridViewController?.updateState({ allGridViews });
 	}
 
 	return (
 		<div>
-			<GridViewComponent Icon={Icon} buttonRef={buttonRef} label={label} tableKey={tableKey} fetchGridViews={fetchGridViews} />
+			<GridViewComponent
+				Icon={Icon}
+				buttonRef={buttonRef}
+				label={label}
+				tableKey={tableKey}
+				fetchGridViews={fetchGridViews}
+			/>
 
 			{tableStateValues?.gridView?.showViewModal && (
 				<GridViewOptions

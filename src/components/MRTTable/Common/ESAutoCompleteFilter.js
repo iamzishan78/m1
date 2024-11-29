@@ -6,8 +6,7 @@ import _, { debounce } from 'lodash';
 import { tableController } from 'hookstate/tableController';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
-import vf_currency from "components/Shared/valueformatters/vf_currency.js";
-import { currencyKeys } from '../utils/data';
+import vf_currency from 'components/Shared/valueformatters/vf_currency.js';
 
 // format value to show filter value & option with $ sign as prefix
 const formatValue = (value, field) => {
@@ -36,6 +35,8 @@ function ESAutoCompleteFilter({
 	},
 	extendSearchQuery,
 	multiple,
+	textFieldProps = {},
+	_value,
 }) {
 	if (isComposite) field = field.split(',');
 	const searchMode = type === 'date' ? 'FE' : 'BE';
@@ -212,7 +213,7 @@ function ESAutoCompleteFilter({
 			options={requiredOptions}
 			loading={loading}
 			filterOptions={searchMapping[searchMode].filterOptions}
-			value={formatValue(filterValue, field)}
+			value={formatValue(filterValue ?? _value, field)}
 			renderInput={params => (
 				<TextField
 					{...params}
@@ -234,6 +235,7 @@ function ESAutoCompleteFilter({
 						searchText.current = e.target.value;
 						getFiltersAction();
 					}}
+					{...textFieldProps}
 				/>
 			)}
 			onChange={(e, option) => {
@@ -262,6 +264,8 @@ function ESAutoCompleteFilter({
 
 				if (type === 'date') {
 					value = formatDate(value);
+				} else if (type === 'boolean') {
+					value = value === 'true';
 				}
 				setFilterValue(value);
 

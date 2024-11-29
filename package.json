@@ -180,7 +180,7 @@
 		"lint": "eslint . --fix --max-warnings=0",
 		"format": "prettier . --write",
 		"prepare": "husky install",
-    "cy:run": "node cypress/scripts/logCypressHistory/index.js"
+		"cy:run": "node cypress/scripts/logCypressHistory/index.js"
 	},
 	"eslintConfig": {
 		"extends": "react-app"

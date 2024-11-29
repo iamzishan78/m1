@@ -1,163 +1,153 @@
-import React, { useState, useEffect, useContext, } from "react";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import Button from "@material-ui/core/Button";
-import { useMutation } from "@apollo/client";
-import { Modals } from "styles/Modal";
-import HighlightOffIcon from "@material-ui/icons/HighlightOff";
-import { ADD_USER, UPDATE_USER } from "graphQL/userManagement";
-import { Select, FormControl, MenuItem, TextField, Grid } from "@material-ui/core";
-import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
-import { FEATURES } from "components/Shared/FeatureFlag/common";
+import React, { useState, useEffect, useContext } from 'react';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import Button from '@material-ui/core/Button';
+import { useMutation } from '@apollo/client';
+import { Modals } from 'styles/Modal';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import { ADD_USER, UPDATE_USER } from 'graphQL/userManagement';
+import { Select, FormControl, MenuItem, TextField, Grid } from '@material-ui/core';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+import { RolePrivilege, UserRole } from 'utils/data';
 
 export default function InviteUserDialog(props) {
+	const modalClass = Modals();
+	const { stateValues } = simpleTableGlobalController.useState(['dialog']);
+	const { activeUser } = stateValues?.dialog || {};
+	const [loading, setLoading] = useState(false);
+	const [displayName, setName] = useState('');
+	const [emails, setEmailAddress] = useState('');
+	const [role, setUserRole] = useState('USER');
+	const [rolePrivileges, setRolePrivileges] = useState('ADD_OR_EDIT');
+	const [lastLogin, setLastLogin] = useState();
+	const [addUser] = useMutation(ADD_USER, {
+		onCompleted: () => {
+			setLoading(false);
+			handleClose();
+			simpleTableGlobalController.refetch();
+		},
+	});
+	const [updateUser] = useMutation(UPDATE_USER, {
+		onCompleted: () => {
+			setLoading(false);
+			handleClose();
+			simpleTableGlobalController.refetch();
+		},
+	});
 
-  const modalClass = Modals();
-  const { stateValues } = simpleTableGlobalController.useState(['dialog']);
-  const { activeUser } = stateValues?.dialog || {};
-  const [loading, setLoading] = useState(false);
-  const [displayName, setName] = useState("");
-  const [emails, setEmailAddress] = useState("");
-  const [role, setUserRole] = useState("USER");
-  const [rolePrivileges, setRolePrivileges] = useState("ADD_OR_EDIT");
-  const [lastLogin, setLastLogin] = useState();
-  const [addUser] = useMutation(ADD_USER, {
-    onCompleted: () => {
-      setLoading(false);
-      handleClose();
-      simpleTableGlobalController.refetch();
-    },
-  });
-  const [updateUser] = useMutation(UPDATE_USER, {
-    onCompleted: () => {
-      setLoading(false);
-      handleClose();
-      simpleTableGlobalController.refetch();
-    },
-  });
+	useEffect(() => {
+		if (activeUser) {
+			setName(activeUser.displayName);
+			setEmailAddress(activeUser.email);
+			setUserRole(activeUser.role?.toUpperCase());
+			setLastLogin(activeUser.lastLogin);
+			setRolePrivileges(activeUser.rolePrivileges);
+		}
+	}, [activeUser]);
 
-  useEffect(() => {
-    if (activeUser) {
-      setName(activeUser.displayName);
-      setEmailAddress(activeUser.email);
-      setUserRole(activeUser.role?.toUpperCase());
-      setLastLogin(activeUser.lastLogin);
-      setRolePrivileges(activeUser.rolePrivileges);
-    }
-  }, [activeUser]);
+	const submitAddUser = () => {
+		setLoading(true);
+		// const rowData = props.rows;
+		// let temp_last_ts = new Date();
+		// setLastLogin(temp_last_ts.toString());
+		// rowData.push({displayName, emails, userType, role, adminAccess, lastLogin: "Invite sent" });
+		addUser({
+			variables: {
+				user: {
+					displayName,
+					email: emails,
+					role,
+					rolePrivileges,
+					// identities: [{
+					//     signInType: "emailAddress",
+					//     issuer: "mineralb2c.onmicrosoft.com",
+					//     issuerAssignedId: emails
+					//   },],
+					// passwordProfile : {
+					//   forceChangePasswordNextSignIn: false,
+					//   password: "1"
+					// },
+					// passwordPolicies: "DisablePasswordExpiration,DisableStrongPassword",
+					// extension_ecdc741a6b2c415893d3b5bccc2d7e76_mustResetPassword: true
+				},
+			},
+		});
 
-  const submitAddUser = () => {
-    setLoading(true);
-    // const rowData = props.rows;
-    // let temp_last_ts = new Date();
-    // setLastLogin(temp_last_ts.toString());
-    // rowData.push({displayName, emails, userType, role, adminAccess, lastLogin: "Invite sent" });
-    addUser({
-      variables: {
-        user: {
-          displayName,
-          email: emails,
-          role,
-          rolePrivileges
-          // identities: [{
-          //     signInType: "emailAddress",
-          //     issuer: "mineralb2c.onmicrosoft.com",
-          //     issuerAssignedId: emails
-          //   },],
-          // passwordProfile : {
-          //   forceChangePasswordNextSignIn: false,
-          //   password: "1"
-          // },
-          // passwordPolicies: "DisablePasswordExpiration,DisableStrongPassword",
-          // extension_ecdc741a6b2c415893d3b5bccc2d7e76_mustResetPassword: true
-        }
-      }
-    });
+		// props.setRows(rowData);
+	};
 
-    // props.setRows(rowData);
-  }
+	const submitUpdateUser = () => {
+		setLoading(true);
+		// const rowData = props.rows;
+		// let temp_last_ts = new Date();
+		// setLastLogin(temp_last_ts.toString());
+		// rowData.push({displayName, emails, userType, role, adminAccess, lastLogin: "Invite sent" });
+		updateUser({
+			variables: {
+				user: {
+					id: activeUser.id,
+					displayName,
+					email: emails,
+					role,
+					rolePrivileges,
+					// identities: [{
+					//     signInType: "emailAddress",
+					//     issuer: "mineralb2c.onmicrosoft.com",
+					//     issuerAssignedId: emails
+					//   },],
+					// passwordProfile : {
+					//   forceChangePasswordNextSignIn: false,
+					//   password: "1"
+					// },
+					// passwordPolicies: "DisablePasswordExpiration,DisableStrongPassword",
+					// extension_ecdc741a6b2c415893d3b5bccc2d7e76_mustResetPassword: true
+				},
+			},
+		});
 
-  const submitUpdateUser = () => {
-    setLoading(true);
-    // const rowData = props.rows;
-    // let temp_last_ts = new Date();
-    // setLastLogin(temp_last_ts.toString());
-    // rowData.push({displayName, emails, userType, role, adminAccess, lastLogin: "Invite sent" });
-    updateUser({
-      variables: {
-        user: {
-          id: activeUser.id,
-          displayName,
-          email: emails,
-          role,
-          rolePrivileges
-          // identities: [{
-          //     signInType: "emailAddress",
-          //     issuer: "mineralb2c.onmicrosoft.com",
-          //     issuerAssignedId: emails
-          //   },],
-          // passwordProfile : {
-          //   forceChangePasswordNextSignIn: false,
-          //   password: "1"
-          // },
-          // passwordPolicies: "DisablePasswordExpiration,DisableStrongPassword",
-          // extension_ecdc741a6b2c415893d3b5bccc2d7e76_mustResetPassword: true
-        }
-      }
-    });
+		// props.setRows(rowData);
+	};
 
-    // props.setRows(rowData);
-  }
-
-  const handleClose = () => {
-    setName("");
-    setEmailAddress("");
-    setUserRole("USER");
-    setLastLogin(null);
+	const handleClose = () => {
+		setName('');
+		setEmailAddress('');
+		setUserRole('USER');
+		setLastLogin(null);
 
 		simpleTableGlobalController.updateState({
 			dialog: {},
 		});
-  
-    props.onClose();
-  }
 
-  return (
-    <React.Fragment>
-      <DialogTitle className={modalClass.title} id="customized-dialog-title">
-        {activeUser ? "Update User" : "Invite a New User"}
-        <HighlightOffIcon
-          fontSize="large"
-          className={modalClass.titleClose}
-          onClick={handleClose}
-        />
-      </DialogTitle>
-      <DialogContent>
+		props.onClose();
+	};
 
-        <Grid container spacing={2}>
-          <FormControl style={{ minWidth: 350 }}>
-            <Grid item xs={12}>
-              <h3>Name</h3>
-              <TextField
-                size="small"
-                fullWidth
-                value={displayName}
-                onChange={e => setName(e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <h3>Email</h3>
-              <TextField
-                size="small"
-                fullWidth
-                disabled={activeUser}
-                value={emails}
-                onChange={e => setEmailAddress(e.target.value)}
-              />
-            </Grid>
-            {/* <Grid item xs={12}>
+	return (
+		<React.Fragment>
+			<DialogTitle className={modalClass.title} id="customized-dialog-title">
+				{activeUser ? 'Update User' : 'Invite a New User'}
+				<HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={handleClose} />
+			</DialogTitle>
+			<DialogContent>
+				<Grid container spacing={2}>
+					<FormControl style={{ minWidth: 350 }}>
+						<Grid item xs={12}>
+							<h3>Name</h3>
+							<TextField size="small" fullWidth value={displayName} onChange={e => setName(e.target.value)} />
+						</Grid>
+						<Grid item xs={12}>
+							<h3>Email</h3>
+							<TextField
+								size="small"
+								fullWidth
+								disabled={activeUser}
+								value={emails}
+								onChange={e => setEmailAddress(e.target.value)}
+							/>
+						</Grid>
+						{/* <Grid item xs={12}>
             <h3>User Type</h3>
             <Select
                 fullWidth
@@ -168,51 +158,40 @@ export default function InviteUserDialog(props) {
                 <MenuItem value="Guest">Guest</MenuItem>
             </Select>
           </Grid> */}
-            <Grid item xs={12}>
-              <h3>User Role</h3>
-              <Select
-                fullWidth
-                value={role}
-                onChange={e => setUserRole(e.target.value)}
-              >
-                <MenuItem value="OWNER">Owner</MenuItem>
-                <MenuItem value="ADMIN">Admin</MenuItem>
-                <MenuItem value="USER">User</MenuItem>
-              </Select>
-            </Grid>
+						<Grid item xs={12}>
+							<h3>User Role</h3>
+							<Select fullWidth value={role} onChange={e => setUserRole(e.target.value)}>
+								{Object.entries(UserRole).map(([key, value]) => (
+									<MenuItem key={key} value={key}>
+										{value}
+									</MenuItem>
+								))}
+							</Select>
+						</Grid>
 
-            <FeatureFlag feature={FEATURES.SHOWUSERPRIVILEGES}>
-              <Grid item xs={12}>
-                <h3>User Privileges</h3>
-                <Select
-                  fullWidth
-                  value={rolePrivileges}
-                  onChange={e => setRolePrivileges(e.target.value)}
-                >
-                  <MenuItem value="ADD_OR_EDIT">Add/Edit</MenuItem>
-                  <MenuItem value="READ_ONLY">Read Only</MenuItem>
-                </Select>
-              </Grid>
-            </FeatureFlag>
-
-          </FormControl>
-        </Grid>
-
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={handleClose}
-          color="primary"
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={activeUser ? submitUpdateUser : submitAddUser}
-          color="secondary"
-        >
-          {activeUser ? "Update" : "Send Invite"}
-        </Button>
-      </DialogActions>
-    </React.Fragment>
-  );
+						<FeatureFlag feature={FEATURES.SHOWUSERPRIVILEGES}>
+							<Grid item xs={12}>
+								<h3>User Privileges</h3>
+								<Select fullWidth value={rolePrivileges} onChange={e => setRolePrivileges(e.target.value)}>
+									{Object.entries(RolePrivilege).map(([key, value]) => (
+										<MenuItem key={key} value={key}>
+											{value}
+										</MenuItem>
+									))}
+								</Select>
+							</Grid>
+						</FeatureFlag>
+					</FormControl>
+				</Grid>
+			</DialogContent>
+			<DialogActions>
+				<Button onClick={handleClose} color="primary">
+					Cancel
+				</Button>
+				<Button onClick={activeUser ? submitUpdateUser : submitAddUser} color="secondary">
+					{activeUser ? 'Update' : 'Send Invite'}
+				</Button>
+			</DialogActions>
+		</React.Fragment>
+	);
 }
