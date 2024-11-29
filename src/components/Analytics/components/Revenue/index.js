@@ -79,7 +79,7 @@ const useStyles = makeStyles(theme => ({
 const StyledTabs = withStyles({
 	root: {
 		borderBottom: '0px solid #e8e8e8',
-		textTransform: 'capitaliToze',
+		textTransform: 'capitalize',
 		padding: '0px 26px',
 	},
 	indicator: {
@@ -137,8 +137,6 @@ export default function RevenueAnalytics(props) {
 	const [checkNumbers, setCheckNumbers] = useState([]);
 	const [comparisonReport, setComparisonReport] = useState('Check Detail Comparison');
 	const [filters, setFilters] = useState([...(propertiesReportGroup || [])]);
-	const Controller = simpleTableController(propertiesRevenueTableKey);
-	const [selectedFilter, setSelectedFilter] = useState('');
 
 	const comparisonTableState = tableController('ComparisonTable').useState(['filters', 'data']).stateValues; // get StateValues for ComparisonTable
 	const salesVolumeComparisonTableState = tableController('SalesVolumeComparisonTable').useState([
@@ -153,14 +151,6 @@ export default function RevenueAnalytics(props) {
 		onCompleted: data => {
 			if (data?.getESMinValue) {
 				setLastCheckMinDate(data?.getESMinValue);
-			}
-		},
-	});
-	const [getCheckMinDate] = useLazyQuery(GET_CHECK_MIN_DATE, {
-		fetchPolicy: 'no-cache',
-		onCompleted: data => {
-			if (data?.getCheckMinDate) {
-				setLastCheckMinDate(data?.getCheckMinDate);
 			}
 		},
 	});
@@ -192,6 +182,7 @@ export default function RevenueAnalytics(props) {
 					],
 					filterKey: 'property.number.keyword',
 					filterAggs: { query: '', field: 'property.number.keyword', size: getTableStateValues()?.data?.total || 0 },
+					isElasticQuery: false,
 				},
 				onCompleted: res => resolve(res?.getESSimpleFilter?.hits),
 				onError: error => reject(error),
@@ -205,6 +196,7 @@ export default function RevenueAnalytics(props) {
 					filters: [...(getTableStateValues()?.filters || []), { field: 'IsDeleted', value: false, type: 'term' }],
 					filterKey: 'check.checkNumber.keyword',
 					filterAggs: { query: '', field: 'check.checkNumber.keyword', size: getTableStateValues()?.data?.total || 0 },
+					isElasticQuery: false,
 				},
 				onCompleted: res => resolve(res?.getESSimpleFilter?.hits),
 				onError: error => reject(error),
@@ -226,6 +218,7 @@ export default function RevenueAnalytics(props) {
 			setPropertyNumbers(propertiesOptions?.map(hit => hit.key) || []);
 			setCheckNumbers(checkOptions?.map(hit => hit.key) || []);
 		})();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		comparisonTableState?.filters,
 		comparisonTableState?.data?.total,
@@ -251,6 +244,7 @@ export default function RevenueAnalytics(props) {
 				index: 'checkdetailsinterestscomparison_flat',
 			},
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -273,6 +267,7 @@ export default function RevenueAnalytics(props) {
 			data = sortBy(data, ['ReportDate']);
 			setCheckDetailsData(data);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [checkDetailData]);
 
 	useEffect(() => {
@@ -291,23 +286,8 @@ export default function RevenueAnalytics(props) {
 	}, []);
 
 	useEffect(() => {
-		if (tabs[tab] === 'Revenue by Month') {
-			getCheckMinDate();
-			setFromDate(moment().startOf('year').format('yyyy-MM-DD'));
-			setToDate(moment().endOf('month').format('yyyy-MM-DD'));
-		} else {
-			getESMinValue({
-				variables: {
-					esIndex: 'checks_flat',
-					field: 'checkDate',
-					value_as_string: true,
-				},
-			});
-		}
-	}, [tab, getCheckMinDate]);
-
-	useEffect(() => {
 		setFilters([...(propertiesReportGroup || []), ...(filters || [])]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [propertiesReportGroup]);
 
 	useEffect(() => {
@@ -319,29 +299,8 @@ export default function RevenueAnalytics(props) {
 				filterDate: { toDate: new Date(toDate || Date.now()), fromDate: new Date(fromDate) },
 			},
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [filters, toDate, fromDate]);
-
-	useEffect(() => {
-		if (!fromDate) return;
-
-		if (tabs[tab] === 'Revenue by Month') {
-			if (selectedFilter === CUSTOM_DATES.ALL_DATES) {
-				setFromDate(null);
-				setToDate(null);
-			}
-			const months = generateMonthYearArray(new Date(fromDate), new Date(toDate || Date.now()));
-			const updatedMeta = getPropertiesRevenueTableSchema(months);
-			Controller.updateState({
-				TableSchema: [...updatedMeta],
-				customProps: {
-					filters,
-					filterDate: { toDate: new Date(toDate || Date.now()), fromDate: new Date(fromDate) },
-					...(selectedFilter === CUSTOM_DATES.ALL_DATES ? { allDates: true } : {}),
-				},
-			});
-			return;
-		}
-	}, [filters, toDate, fromDate, selectedFilter]);
 
 	const onChangeDates = (fromDate, toDate) => {
 		const months = [];
@@ -360,6 +319,16 @@ export default function RevenueAnalytics(props) {
 		}
 		setMonths(months);
 	};
+	useEffect(() => {
+		const newFilters = tableController(TableKey).getExternalFilter();
+		if (comparisonReport === 'Check Detail Comparison') {
+			setTableKey('ComparisonTable');
+		} else {
+			setTableKey('SalesVolumeComparisonTable');
+		}
+		setEsFilters(newFilters);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [comparisonReport]);
 
 	const setESFilters = useCallback(
 		newFilter => {
@@ -383,31 +352,6 @@ export default function RevenueAnalytics(props) {
 		},
 		[TableKey]
 	);
-
-	useEffect(() => {
-		const newFilters = tableController(TableKey).getExternalFilter();
-		if (comparisonReport === 'Check Detail Comparison') {
-			setTableKey('ComparisonTable');
-		} else {
-			setTableKey('SalesVolumeComparisonTable');
-		}
-		setEsFilters(newFilters);
-	}, [comparisonReport]);
-
-	// override meta for MRSimpleTable
-	const overrideMeta = React.useMemo(() => {
-		const startDate = moment().startOf('year').format('yyyy-MM-DD');
-		const endDate = moment().endOf('month').format('yyyy-MM-DD');
-		const months = generateMonthYearArray(startDate, endDate);
-		const updatedMeta = getPropertiesRevenueTableSchema(months);
-		return {
-			TableSchema: [...updatedMeta],
-			customProps: {
-				filters,
-				filterDate: { toDate: endDate, fromDate: startDate },
-			},
-		};
-	}, []);
 
 	return (
 		<>
@@ -549,54 +493,6 @@ export default function RevenueAnalytics(props) {
 				<Box sx={{ padding: '1em', marginLeft: '1em' }}>
 					<MRTTable name="PropertyIntrestTable" />
 				</Box>
-			)}
-			{/* implementation for revenue by month tab */}
-			{tabs[tab] === 'Revenue by Month' && (
-				<div className={classes.actionBar}>
-					<Grid container direction="row" display="flex" spacing={4} style={{ padding: '0px 36px' }}>
-						<Grid item xs={8} md={6} style={{ marginTop: '4px' }}>
-							<Grid container display="flex" alignItems="center" spacing={3} justifyContent="space-between">
-								<CustomDates
-									onChangeDates={onChangeDates}
-									fromDate={fromDate}
-									setFromDate={setFromDate}
-									toDate={toDate}
-									setToDate={setToDate}
-									isProperties={true}
-									lastCheckMinDate={lastCheckMinDate}
-									datesInputWidth={4}
-									setAllDateToNull={false}
-									defaultRange={CUSTOM_DATES.THIS_YEAR_TO_DATE}
-									setSelectedFilter={setSelectedFilter}
-								/>
-							</Grid>
-						</Grid>
-						<Grid item xs={4} md={2}>
-							<Grid container display="flex" className={classes.actionsGrid}>
-								<ReportGroupHeader
-									type="Properties"
-									esFilters={filters}
-									setESFilters={setFilters}
-									setFilterToggle={() => {}}
-									isBackground={false}
-									noUpdate={true}
-									strechedWidth
-									isShrink
-									noPadding
-								/>
-							</Grid>
-						</Grid>
-						<Grid item xs={4} md={2}>
-							<PurchasersDropdown esFilters={filters} setESFilters={setFilters} />
-						</Grid>
-						<Grid item xs={4} md={2}>
-							<AcquisitionIdDropdown esFilters={filters} setESFilters={setFilters} />
-						</Grid>
-					</Grid>
-					<div style={{ margin: '2%' }}>
-						<MRSimpleTable name={propertiesRevenueTableKey} overrideMeta={overrideMeta} />
-					</div>
-				</div>
 			)}
 		</>
 	);

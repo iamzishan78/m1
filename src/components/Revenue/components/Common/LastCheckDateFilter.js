@@ -108,9 +108,7 @@ const LastCheckDateFilter = ({
 					fromDate ? `${getFirstDayOfMonth(fromDate)}` : null,
 					toDate ? `${dateFilterToDate(toDate)}T00:00:00.000Z` : null,
 				],
-				type: 'advanced',
-				searchType: 'betweenInclusive',
-				columnType: 'date',
+				filterType: 'date',
 			});
 		}
 
@@ -124,19 +122,19 @@ const LastCheckDateFilter = ({
 		});
 		reportGroupFilters.current = _propertyFilter.map(filter => filter.field);
 
-		if (status !== 'ALL') {
-			filters.push({
-				field: 'status.keyword',
-				value: status,
-			});
-		}
+		// if (status !== 'ALL') {
+		// 	filters.push({
+		// 		field: 'status.keyword',
+		// 		value: status,
+		// 	});
+		// }
 		// Removed the conditional statement because clicking the cross icon in the comparison grid's global filter or selecting all dates was not updating the grid filters as expected.
 
 		setESFilters(filters);
 		setFilterToggle(!filterToggle);
 		// disabling this because a dependency causes infinite loop in useEffect
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [toDate, fromDate, status, propertyFilter, checkNumberFilter, propertyNumberFilter]);
+	}, [toDate, fromDate, propertyFilter, checkNumberFilter, propertyNumberFilter]);
 
 	useEffect(() => {
 		updateFilters();

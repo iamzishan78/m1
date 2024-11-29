@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
 			marginBottom: 8,
 		},
 		'& .MuiOutlinedInput-input': {
-			paddingLeft: '0px',
+			// paddingLeft: "0px",
 		},
 	},
 	label: {
@@ -63,7 +63,6 @@ export default function Portfolio({
 	lastCheckMinDate,
 	onChange,
 	defaultRange,
-	setSelectedFilter,
 	datesInputWidth = 1,
 	setAllDateToNull = true,
 }) {
@@ -99,9 +98,6 @@ export default function Portfolio({
 	}, [lastCheckMinDate]);
 
 	const handleDateTypeChange = date => {
-		if (setSelectedFilter) {
-			setSelectedFilter(date);
-		}
 		handleCustomDateTypeChange(
 			date,
 			onChange,
@@ -151,11 +147,11 @@ export default function Portfolio({
 				<TextField
 					size="small"
 					margin="dense"
-					type="month"
+					type="date"
 					variant="outlined"
-					placeholder=""
+					placeholder="from"
 					fullWidth
-					value={moment(fromDate).format('yyyy-MM')}
+					value={moment(fromDate).format('yyyy-MM-DD')}
 					className={classes.inputFieldDate}
 					InputLabelProps={{
 						shrink: true,
@@ -189,11 +185,11 @@ export default function Portfolio({
 				<TextField
 					size="small"
 					margin="dense"
-					type="month"
+					type="date"
 					variant="outlined"
 					placeholder="to"
 					fullWidth
-					value={moment(toDate).format('yyyy-MM')}
+					value={moment(toDate).format('yyyy-MM-DD')}
 					className={classes.inputFieldDate}
 					onChange={event => {
 						if (event.target.value === '') {
