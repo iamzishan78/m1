@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import { AppContext } from 'AppContext';
 import AnalyticsCards from 'components/Land/components/Common/AnalyticsCards';
 import MRTTable from 'components/MRTTable';
@@ -9,29 +8,39 @@ import { simpleTableGlobalController } from 'hookstate/simpleTableController';
 
 const Tracts = () => {
 	const [stateApp] = useContext(AppContext); // Accessing global state from AppContext
-	const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings); // Fetching user-specific grid view settings from Redux
 
 	// Static data for table keys, Elasticsearch indices, and tab labels
 	const tableKeys = useMemo(() => ['TractsTable', 'TractInterestsTable'], []);
 	const esIndex = useMemo(() => ['shapes_flat', 'shapeowners_flat'], []);
 	const tabLabels = useMemo(() => ['Tracts', 'Tract Interests'], []);
-	const gridModules = useMemo(() => ['Tracts', 'TractInterest'], []);
 
 	// Get the currently selected tab, defaulting to the first tab if not defined
 	const selectedTab = simpleTableGlobalController?.useState(['tabKey'])?.stateValues?.tabKey || 0;
 	const currentTableKey = tableKeys[selectedTab] || tableKeys[0]; // Ensure fallback to first table key
 
-	// Retrieve grid view settings for the selected tab
-	const TableGridViewModule = userGridViewSettings?.[gridModules[selectedTab]];
-
 	// Retrieve the current state of the table data and filters for each table
 	const tractTableState =
-		tableController('TractsTable')?.useState(['filters', 'data', 'defaultFilters', 'searchFields'])?.stateValues || {};
+		tableController('TractsTable')?.useState([
+			'filters',
+			'data',
+			'defaultFilters',
+			'globalFilter',
+			'searchFields',
+			'advanceSearch',
+		])?.stateValues || {};
 	const tractInterestsTableState =
-		tableController('TractInterestsTable')?.useState(['filters', 'data', 'defaultFilters', 'searchFields'])
-			?.stateValues || {};
-	const tableState = selectedTab ? tractInterestsTableState : tractTableState; // Use the correct table state based on the selected tab
-
+		tableController('TractInterestsTable')?.useState([
+			'filters',
+			'data',
+			'defaultFilters',
+			'globalFilter',
+			'searchFields',
+			'advanceSearch',
+		])?.stateValues || {};
+	const tableStateValues = selectedTab ? tractInterestsTableState : tractTableState; // Use the correct table state based on the selected tab
+	const globalFilter = tableStateValues?.globalFilter;
+	const searchQuery = globalFilter ? `${globalFilter}` : '';
+	const searchFields = tableStateValues.searchFields;
 	// Default card data to display in the AnalyticsCards component
 	const cardsDefault = useMemo(
 		() => [
@@ -67,11 +76,12 @@ const Tracts = () => {
 				<AnalyticsCards
 					parent="Tracts"
 					esIndex={esIndex[selectedTab]}
-					esFilters={[...tableState.defaultFilters, ...tableState?.filters] || []}
-					totalCount={tableState?.data?.total || 0}
+					esFilters={[...tableStateValues.defaultFilters, ...tableStateValues?.filters] || []}
+					totalCount={tableStateValues?.data?.rows?.length ? tableStateValues?.data?.total : 0}
 					cardsDefault={cardsDefault}
-					landSearchQuery={stateApp.landSearchQuery}
-					searchFields={tableState.searchFields}
+					searchQuery={searchQuery}
+					searchFields={searchFields}
+					advanceSearch={tableStateValues?.advanceSearch}
 				/>
 			</div>
 

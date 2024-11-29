@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 export const GET_ES_AGGS_LIST = gql`
 	query getESAggsList(
 		$esIndex: String
-		$search: String
+		$search: esSearchInput
 		$fields: [JSON]
 		$filters: [JSON]
 		$aggs: JSON
