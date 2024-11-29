@@ -288,7 +288,7 @@ export default function CommentComponent(props) {
   });
   const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(
     COMMENTSBYOBJECTIDQUERY,
-    { fetchPolicy: "no-cache", nextFetchPolicy: "cache-first" }
+    { fetchPolicy: "no-cache" }
   );
   useEffect(() => {
     getAllMongoUsers();
