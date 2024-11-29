@@ -4,7 +4,7 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import { copy } from 'components/Shared/functions';
 import { formatDate } from 'components/Shared/functions';
-import ExhibitaToolBar from 'components/MRTTable/TablesOverride/ExhibitaTable/ExhibitaToolbar';
+import _ExhibitaToolbar from '../TablesOverride/_ExhibitaTable/_ExhibitaToolbar';
 // Elasticsearch index for properties
 const esIndex = 'shapetracts_flat';
 
@@ -22,7 +22,7 @@ const ExhibitAMeta = {
 	isDeleteDisabled: true,
 	isInFiniteScroll: true,
 	columnVirtualization: true,
-	CustomToolBar: ExhibitaToolBar,
+	CustomToolBar: _ExhibitaToolbar,
 	gridViewSettings: {
 		label: 'Exhibit A',
 		Icon: 'none',

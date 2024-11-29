@@ -2,8 +2,8 @@ import { Grid } from '@mui/material';
 import { CommonSchema } from './common_schema';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import { AgreementTypes } from './agreement_schema';
-import ExhibitAToolbar from '../TablesOverride/ExhibitATable/ExhibitAToolbar';
 import { Summarize } from '@mui/icons-material';
+import _ExhibitaToolbar from '../TablesOverride/_ExhibitaTable/_ExhibitaToolbar';
 
 const esIndex = 'shapetracts_flat';
 
@@ -22,7 +22,7 @@ const AcreageDetilsMeta = {
 			value: 'agreement',
 		},
 	],
-	CustomToolBar: ExhibitAToolbar,
+	CustomToolBar: _ExhibitaToolbar,
 	gridViewSettings: {
 		label: 'Acreage Detail',
 		module: 'Acreage Detail',
