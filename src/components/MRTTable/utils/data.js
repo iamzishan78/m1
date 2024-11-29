@@ -144,6 +144,8 @@ export const numberFilterOptions = [
 	...tableESSimpleFilterModeOtions.custom,
 ];
 
+export const searchFilterOptions = [...tableESSimpleFilterModeOtions.string, ...tableESSimpleFilterModeOtions.equation];
+
 export const customFilterOptions = [...tableESSimpleFilterModeOtions.custom];
 
 export const dateFilterOptions = [

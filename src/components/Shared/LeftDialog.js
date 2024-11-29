@@ -63,7 +63,7 @@ export default function AlertDialogSlide(props) {
 			quickActionsPanelState &&
 			(pathname.includes('/revenue') || !!user?.features?.find(f => f.name === FEATURES[activeModule.featureFlag]));
 		return isPadding;
-	}, [quickActionsPanelState]);
+	}, [quickActionsPanelState, activeModule.featureFlag, pathname, user]);
 
 	const classes = useStyles({
 		...props,
@@ -79,7 +79,7 @@ export default function AlertDialogSlide(props) {
 			onClose={props.handleClickDialogClose}
 			aria-labelledby="alert-dialog-slide-title"
 			aria-describedby="alert-dialog-slide-description"
-			style={{ zIndex: 1301, border: '4px solid green', inset: 'unset' }}
+			style={{ zIndex: props.zIndex || 1301, border: '4px solid green', inset: 'unset' }}
 		>
 			{props.header && <DialogTitle id="alert-dialog-slide-title">{props.header}</DialogTitle>}
 

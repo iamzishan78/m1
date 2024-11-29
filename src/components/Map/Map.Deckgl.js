@@ -16,7 +16,7 @@ import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from 'mapbox
 import StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
-import { useLazyQuery, useApolloClient } from '@apollo/client';
+import { useLazyQuery, useApolloClient, useQuery } from '@apollo/client';
 
 // material-ui
 import { makeStyles } from '@material-ui/core/styles';
@@ -56,7 +56,7 @@ import { AppContext } from '../../AppContext';
 
 import DeckGL from './DeckGL';
 import onFeatureClick from './DeckGL/helpers/onFeatureClick';
-import { getClickedFeature } from './DeckGL/helpers/common';
+import { extractUniqueFilters, getClickedFeature } from './DeckGL/helpers/common';
 import { layerController } from 'hookstate/layerStateController';
 import MapControls from 'components/MapControls/MapControls';
 import SpeedDialComponent from 'components/MapControls/SpeedDialComponent';
@@ -65,10 +65,12 @@ import onRightClick from './DeckGL/helpers/onRightClick';
 import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
 import { convertToTitleCase } from 'components/Shared/M1nTable/components/MUIDataTable/utils';
 import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
-import { RIGSQUERY } from 'graphQL/useQueryRigs';
 import { drawController } from 'hookstate/drawStateController';
 import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
 import { MapFeatureTenants } from 'utils/data';
+import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
+import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 const useStyles = makeStyles(() => ({
 	mapWrapper: {
@@ -199,7 +201,23 @@ function Map({
 
 	// queries
 	const [getAllLayerSettingsByUser, { data: layerStates }] = useLazyQuery(ALLLAYERSETTINGSBYUSER);
-	const [getRigs, { data: rigData }] = useLazyQuery(RIGSQUERY);
+
+	// Query to fetch map views from the GraphQL API
+	useQuery(GET_MAP_VIEWS, {
+		variables: {
+			userId: globalStateController.getValue('user').mongoId,
+		},
+		onCompleted: data => {
+			const mapViews = data?.getMapViews?.mapViews;
+			const currentMapView = mapViews?.find(view => view.isCurrent);
+
+			globalStateController.updateState({
+				mapView: {
+					selectedMapView: currentMapView,
+				},
+			});
+		},
+	});
 
 	/// //end/////////temporary
 
@@ -287,7 +305,7 @@ function Map({
 
 	useEffect(async () => {
 		const abortController = new AbortController();
-		await getRigs({});
+
 		fetchStyles(abortController)
 			.then(styles => {
 				setMapStyles(styles);
@@ -354,14 +372,6 @@ function Map({
 			}
 		}, 100);
 	};
-
-	useEffect(() => {
-		if (rigData && rigData.rigs && rigData.rigs.length > 0) {
-			layerController.updateState({
-				rigsData: rigData.rigs,
-			});
-		}
-	}, [rigData]);
 
 	async function getCustomLayer(paramId) {
 		const keys = { parcels: 'selectedParcel', ...layersWithSelectedShapeKey(), wells: 'selectedWell' };
@@ -478,6 +488,24 @@ function Map({
 			}));
 			globalState.layers.set(layers);
 			stateApp.layers = layers;
+
+			const mapViewFilters = globalStateController.getValue('mapView')?.selectedMapView?.filters || [];
+			// for of loop on mapViewFilters
+			for (const filter of mapViewFilters) {
+				// Identifying layer data source shapeFile/geojson
+				const shapeFileLayer = layers.find(layer => layer?.layerId === filter?.dataSourceName);
+				const dataSource = shapeFileLayer ? shapeFileLayer?.layerShapeName : filter?.dataSourceName;
+
+				// Get initial filters and merge with the latest ones
+				const state = layerFiltersController.getValue([dataSource]);
+				const initialFilters = state?.variables?.filters || []; // Get initial filters
+				layerFiltersController.setVariables(dataSource, {
+					filters: extractUniqueFilters([
+						getFormattedFilterBasedOnType(filter.filterType, filter.fieldName, filter.filterValues),
+						...initialFilters,
+					]),
+				});
+			}
 		}
 	}, [layerStates]);
 
@@ -545,7 +573,6 @@ function Map({
 		const mapLayers = copy(stateApp.layers);
 		if (stateApp.baseMapLayers && stateApp.baseMapLayers.length > 0 && map) {
 			const landLayer = mapLayers?.find(layer => layer.identifier === 'Land Grid');
-			const baseMapLandIndex = stateApp.baseMapLayers.findIndex(layer => layer.name === 'Land Grid');
 			stateApp.baseMapLayers.forEach((l, index) => {
 				if (l.name === 'Land Grid' && !stateApp.checkedBaseLayers.includes(index)) {
 					if (landLayer) {

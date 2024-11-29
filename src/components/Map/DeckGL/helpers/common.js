@@ -464,10 +464,26 @@ export const generateFileFilters = ({
 			search: {
 				advanceSearch,
 			},
-			filters,
 			...extendFilters.variables,
+			filters: extractUniqueFilters([...filters, ...(extendFilters.variables?.filters || [])]),
 		},
 	};
+};
+
+export const extractUniqueFilters = filters => {
+	return filters.reduce((acc, filter) => {
+		const index = acc.findIndex(existingFilter => existingFilter.field === filter.field);
+
+		if (index !== -1) {
+			// Overwrite the existing filter with the new one (higher precedence)
+			acc[index] = filter;
+		} else {
+			// Add the filter if it doesn't exist
+			acc.push(filter);
+		}
+
+		return acc;
+	}, []);
 };
 
 // Utility for getting attribute based color
@@ -558,7 +574,7 @@ export const getLayerFillColor = (dbLayer, fillColor, fillOpacity) => {
 	};
 };
 
-export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
+export function getGeoJsonLayerProps(dbLayer, labelProps) {
 	const props = {};
 
 	dbLayer.layerPaintProps?.forEach(prop => {
@@ -650,7 +666,7 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 	}
 
 	return props;
-};
+}
 
 export const getClickedFeature = ({ x, y, depth = Infinity, getLandGrid = true }) => {
 	let features = pickDeckObjects({ x, y, depth });

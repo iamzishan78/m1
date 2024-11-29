@@ -1,5 +1,5 @@
 // Summary field keys and  there eskeys
-export const colorBasedAttributes = {
+export const customLayersFieldAccessors = {
 	Units: {
 		keys: [
 			{ label: 'County', value: 'shapeJson.properties.originalProperties.County.keyword' },
@@ -32,52 +32,7 @@ export const colorBasedAttributes = {
 		],
 		layerKey: 'Parcel',
 	},
-	Contracts: {
-		keys: [
-			{ label: 'Agremeent Type', value: 'shapeJson.properties.agreementType.keyword' },
-			{ label: 'Agremeent Subtype', value: 'shapeJson.properties.agreementSubtype.keyword' },
-			{ label: 'Rights Type', value: 'shapeJson.properties.rightsType.keyword' },
-			{ label: 'Agreement Status', value: 'shapeJson.properties.agreementStatus.keyword' },
-			{ label: 'Grantor', value: 'shapeJson.properties.grantor.keyword' },
-			{ label: 'Grantee', value: 'shapeJson.properties.grantee.keyword' },
-			{ label: 'County', value: 'shapeJson.properties.originalProperties.County.keyword' },
-			{ label: 'State', value: 'shapeJson.properties.originalProperties.State.keyword', orKey: 'StateAbbreviation' },
-			{ label: 'Status', value: 'shapeJson.properties.agreementStatus.keyword' },
-			{ label: 'Internal Company', value: 'shapeJson.properties.internalCompany.keyword' },
-		],
-		layerKey: 'Agreement',
-	},
-	Deeds: {
-		keys: [
-			{ label: 'Agremeent Type', value: 'shapeJson.properties.agreementType.keyword' },
-			{ label: 'Agremeent Subtype', value: 'shapeJson.properties.agreementSubtype.keyword' },
-			{ label: 'Rights Type', value: 'shapeJson.properties.rightsType.keyword' },
-			{ label: 'Agreement Status', value: 'shapeJson.properties.agreementStatus.keyword' },
-			{ label: 'Grantor', value: 'shapeJson.properties.grantor.keyword' },
-			{ label: 'Grantee', value: 'shapeJson.properties.grantee.keyword' },
-			{ label: 'County', value: 'shapeJson.properties.originalProperties.County.keyword' },
-			{ label: 'State', value: 'shapeJson.properties.originalProperties.State.keyword', orKey: 'StateAbbreviation' },
-			{ label: 'Status', value: 'shapeJson.properties.agreementStatus.keyword' },
-			{ label: 'Internal Company', value: 'shapeJson.properties.internalCompany.keyword' },
-		],
-		layerKey: 'Agreement',
-	},
-	Leases: {
-		keys: [
-			{ label: 'Agremeent Type', value: 'shapeJson.properties.agreementType.keyword' },
-			{ label: 'Agremeent Subtype', value: 'shapeJson.properties.agreementSubtype.keyword' },
-			{ label: 'Rights Type', value: 'shapeJson.properties.rightsType.keyword' },
-			{ label: 'Agreement Status', value: 'shapeJson.properties.agreementStatus.keyword' },
-			{ label: 'Grantor', value: 'shapeJson.properties.grantor.keyword' },
-			{ label: 'Grantee', value: 'shapeJson.properties.grantee.keyword' },
-			{ label: 'County', value: 'shapeJson.properties.originalProperties.County.keyword' },
-			{ label: 'State', value: 'shapeJson.properties.originalProperties.State.keyword', orKey: 'StateAbbreviation' },
-			{ label: 'Status', value: 'shapeJson.properties.agreementStatus.keyword' },
-			{ label: 'Internal Company', value: 'shapeJson.properties.internalCompany.keyword' },
-		],
-		layerKey: 'Agreement',
-	},
-	Surfaces: {
+	Agreements: {
 		keys: [
 			{ label: 'Agremeent Type', value: 'shapeJson.properties.agreementType.keyword' },
 			{ label: 'Agremeent Subtype', value: 'shapeJson.properties.agreementSubtype.keyword' },
