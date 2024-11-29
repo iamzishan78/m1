@@ -199,7 +199,7 @@ function AnalyticsCards(props) {
 			setSumPotentialGainLoss(revenueComparisonAnalytics?.sumPotentialGainLoss || 0);
 		})();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [tableState?.filters, tableState?.data?.total]);
+	}, [tableState?.filters, tableState?.data?.total, searchQuery]);
 
 	useEffect(() => {
 		let filters = copy(props.esFilters);
