@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Grid, TextField, Button } from "@material-ui/core";
+import { Grid, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { useLazyQuery } from "@apollo/client";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -7,10 +7,10 @@ import moment from "moment";
 import get from "lodash/get";
 
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
-import { getFilters } from "components/Table/Activities/ActivitiesTable";
 import { AppContext } from "AppContext";
 import { CUSTOM_DATES } from 'utils/data'
 import { handleCustomDateTypeChange } from 'utils/helper';
+import { getActivityFilters } from "./ActivitiesDashboard";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: {
@@ -162,7 +162,7 @@ export default function CustomDatesActivities({
               },
             }}
             onChange={(event) => {
-              if (event.target.value == "") {
+              if (event.target.value === "") {
                 setFromDate(
                   `${Math.round(new Date().getFullYear())}-${getFlaggedMoment(
                     Math.ceil(new Date().getMonth()) + 1
@@ -188,7 +188,7 @@ export default function CustomDatesActivities({
             value={moment(toDate).format("yyyy-MM-DD")}
             className={classes.inputFieldDate}
             onChange={(event) => {
-              if (event.target.value == "") {
+              if (event.target.value === "") {
                 setToDate(
                   `${Math.round(new Date().getFullYear())}-${getFlaggedMoment(
                     Math.ceil(new Date().getMonth()) + 1
@@ -261,7 +261,7 @@ const CampaignFilter = ({
   const getAllFilters = () => {
     let rangeFilters = [];
     if (!tableFilters.find((filter) => filter.type === "range")) {
-      rangeFilters = getFilters(appliedFilters);
+      rangeFilters = getActivityFilters(appliedFilters);
     }
     const filters = [...rangeFilters, ...tableFilters]
     const index = filters.findIndex(f => f.field === 'contact.campaignName.keyword')
@@ -289,7 +289,7 @@ const CampaignFilter = ({
       },
     });
     onCampaignChange('campaign', search);
-  }, [search, selectedFilters.qualifier]);
+  }, [search, selectedFilters.qualifier, tableFilters, appliedFilters]);
 
   return (
     <Autocomplete
@@ -350,7 +350,7 @@ const QualifierFilter = ({
   const getAllFilters = () => {
     let rangeFilters = [];
     if (!tableFilters.find((filter) => filter.type === "range")) {
-      rangeFilters = getFilters(appliedFilters);
+      rangeFilters = getActivityFilters(appliedFilters);
     }
     const filters = [...rangeFilters, ...tableFilters]
     const index = filters.findIndex(f => f.field === 'ownerName.keyword')
@@ -378,7 +378,7 @@ const QualifierFilter = ({
       },
     });
     onQualifierChange('qualifier', search)
-  }, [search, selectedFilters.campaign]);
+  }, [search, selectedFilters.campaign,  tableFilters, appliedFilters]);
 
   return (
     <Autocomplete

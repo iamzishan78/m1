@@ -8,7 +8,7 @@ import { AppContext } from "AppContext";
 import { GET_ACTIVITY_ANALYTICS } from "graphQL/useQueryActivityAnalytics";
 import DonutChart from "components/Shared/Charts/DonutChart";
 import StackedBarChart from "components/Shared/Charts/StackedBarChart";
-import { getFilters } from "components/Table/Activities/ActivitiesTable";
+import { getActivityFilters } from "./ActivitiesDashboard";
 
 const defaultSeriesActivities = [
   {
@@ -75,7 +75,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters }) => {
   const getAllFilters = () => {
     let rangeFilters = [];
     if (!tableFilters.find((filter) => filter.type === "range")) {
-      rangeFilters = getFilters(appliedFilters);
+      rangeFilters = getActivityFilters(appliedFilters);
     }
     return [...rangeFilters, ...tableFilters];
   };

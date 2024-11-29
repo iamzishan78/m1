@@ -24,6 +24,7 @@ const onClickedRow = selectedRow => {
 const ExpirationsMeta = {
     esIndex,
     onClickedRow,
+    isElasticQuery: false,
     pageSize: 50,
     pagination: {
         pageIndex: 0,
@@ -136,6 +137,10 @@ const ExpirationsMeta = {
                 return getTruncateText(renderedCellValue)
             }
         },
+        CommonSchema.CREATED_BY,
+		CommonSchema.CREATED_DATE,
+		CommonSchema.LAST_UPDATED_BY,
+		CommonSchema.LAST_UPDATED_DATE,
     ],
 };
 

@@ -13,10 +13,11 @@ import { slidoutStateController } from 'hookstate/slidoutStateController';
 import { slidoutState } from 'hookstate/initialStates';
 import { useHookstate } from '@hookstate/core';
 import { AppContext } from 'AppContext';
-import { UPDATEACTIVITY } from 'graphQL/useMutationActivity';
+import { DELETEACTIVITY, UPDATEACTIVITY } from 'graphQL/useMutationActivity';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { obligationFormState } from './obligationFormStateController';
 import { globalState } from 'hookstate/initialStates';
+import { tableGlobalController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(theme => ({
 	dialogExpCard: {
@@ -205,6 +206,17 @@ export default function ObligationForm({ setSelectedActivityId }) {
 	const [updateActivityMutation] = useMutation(UPDATEACTIVITY, {
 		onCompleted: () => {
 			onModalClose();
+			tableGlobalController.refetch();
+		},
+		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
+		awaitRefetchQueries: true,
+	});
+
+	const [deleteActivityMutation] = useMutation(DELETEACTIVITY, {
+		onCompleted: () => {
+			onModalClose();
+			globalState.universalLoader.set(false);
+			tableGlobalController.refetch();
 		},
 		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
 		awaitRefetchQueries: true,
@@ -215,6 +227,15 @@ export default function ObligationForm({ setSelectedActivityId }) {
 		{ value: 'inProgress', label: 'In Progress' },
 		{ value: 'reviewCompleted', label: 'Review Completed' },
 	];
+
+	const deleteActivity = async () => {
+		globalState.universalLoader.set(true);
+		await deleteActivityMutation({
+			variables: {
+				id: selectedActivity.get()._id,
+			},
+		});
+	};
 
 	useEffect(() => {
 		const activity = selectedActivity.get();
@@ -246,6 +267,9 @@ export default function ObligationForm({ setSelectedActivityId }) {
 	useEffect(() => {
 		if (formMode.get()) {
 			if (formMode.get() === 'update') updateActivity();
+			else if (formMode.get() === 'delete') {
+				deleteActivity();
+			}
 
 			formMode.set('');
 			slidoutStateController.hideSlideout();

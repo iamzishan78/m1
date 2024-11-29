@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react';
-import { hookstate, useHookstate } from '@hookstate/core';
+import { useHookstate } from '@hookstate/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Menu, MenuItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
@@ -156,7 +156,7 @@ const DialogHeader = ({ handleClickDialogClose, openConfirmationDialog }) => {
 					</FormControl>
 				</Grid>
 				<Grid item xs={3} className={classes.dialogActions}>
-					{!isObligation && !newEntity.get() && (
+					{!newEntity.get() && (
 						<>
 							<IconButton
 								// disabled={updateDealLoading || addContactLoading}
