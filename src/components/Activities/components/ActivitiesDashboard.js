@@ -1,4 +1,4 @@
-import React, { useState, useEffect, } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import { useLazyQuery } from "@apollo/client";
 
@@ -8,6 +8,7 @@ import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
 import MRTTable from 'components/MRTTable';
 import { tableController } from 'hookstate/tableController';
 import { getFilters } from "components/Table/Activities/ActivitiesTable";
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
 
 const ActivitiesDashboard = () => {
   const classes = useStyles();
+  const [stateApp] = useContext(AppContext);
   const esIndex = "activities_flat";
   const searchFields = ["name", "_all"];
   const [filterToggle, setFilterToggle] = useState(false);
@@ -53,6 +55,10 @@ const ActivitiesDashboard = () => {
     ]
     tableController("ActivityTable").setFilters(filters);
   }, [appliedFilters])
+
+  useEffect(() => {
+    tableController("ActivityTable").setGlobalFilter(stateApp.landAnalyticsSearchQuery)
+  }, [stateApp.landAnalyticsSearchQuery]) // Update table filter state based on navbar search
 
   return (
     <div className={classes.root}>
