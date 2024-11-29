@@ -3,8 +3,8 @@ import { CommonSchema } from './common_schema';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import { AgreementTypes } from './agreement_schema';
 import { formatDate } from 'components/Shared/functions';
-import ExhibitAToolbar from '../TablesOverride/ExhibitATable/ExhibitAToolbar';
 import { Summarize } from '@mui/icons-material';
+import ExhibitAToolbar from '../TablesOverride/ExhibitATable/ExhibitAToolbar';
 
 const esIndex = 'shapetracts_flat';
 
