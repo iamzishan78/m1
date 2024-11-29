@@ -41,6 +41,7 @@ const ActivitiesDashboardFilter = ({
   tableFilters,
   appliedFilters,
   minDate,
+  label,
 }) => {
   const classes = useStyles();
 
@@ -85,6 +86,7 @@ const ActivitiesDashboardFilter = ({
             setFilterToggle={setFilterToggle}
             filterToggle={filterToggle}
             setAppliedFilters={setAppliedFilters}
+            label={label}
           />
         </Grid>
       </Grid>

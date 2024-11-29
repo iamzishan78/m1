@@ -11,6 +11,7 @@ import { Select, FormControl, MenuItem, TextField, Grid } from "@material-ui/cor
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+import { RolePrivilege, UserRole } from 'utils/data';
 
 export default function InviteUserDialog(props) {
 
@@ -175,9 +176,11 @@ export default function InviteUserDialog(props) {
                 value={role}
                 onChange={e => setUserRole(e.target.value)}
               >
-                <MenuItem value="OWNER">Owner</MenuItem>
-                <MenuItem value="ADMIN">Admin</MenuItem>
-                <MenuItem value="USER">User</MenuItem>
+                {Object.entries(UserRole).map(([key, value]) => (
+                    <MenuItem key={key} value={key}>
+                      {value}
+                    </MenuItem>
+                ))}
               </Select>
             </Grid>
 
@@ -189,8 +192,11 @@ export default function InviteUserDialog(props) {
                   value={rolePrivileges}
                   onChange={e => setRolePrivileges(e.target.value)}
                 >
-                  <MenuItem value="ADD_OR_EDIT">Add/Edit</MenuItem>
-                  <MenuItem value="READ_ONLY">Read Only</MenuItem>
+                  {Object.entries(RolePrivilege).map(([key, value]) => (
+                    <MenuItem key={key} value={key}>
+                      {value}
+                    </MenuItem>
+                  ))}
                 </Select>
               </Grid>
             </FeatureFlag>

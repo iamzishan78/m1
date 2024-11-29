@@ -70,7 +70,7 @@ function LayerManager() {
     if (isReady)
       layerController.handleChange();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bbox, recalculate, isReady, polygonFilter, polygonsFilter]);
+  }, [bbox, recalculate, isReady, polygonFilter, polygonsFilter, layers]);
 
   return null;
 }

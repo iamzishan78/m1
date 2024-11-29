@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useLazyQuery } from '@apollo/client';
 import _, { debounce } from 'lodash';
@@ -9,28 +9,50 @@ import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
 import vf_currency from "components/Shared/valueformatters/vf_currency.js";
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
+import { currencyKeys } from '../utils/data';
+
+// format value to show filter value & option with $ sign as prefix
+const formatValue = (value, field) => {
+	if (
+		field === 'shapeJson.properties.uMaxUnitPricing.keyword' ||
+		field === 'shapeJson.properties.uUnitPricing.keyword'
+	) {
+		value = vf_currency(value);
+	}
+	return value;
+};
 
 function ESAutoCompleteFilter({
 	tableKey,
 	esIndex,
-	column: { field, label, type, custom, defaultFilterOptions = [], setFilterValue, filterValue, filterSelectOptions, isComposite },
+	column: {
+		field,
+		label,
+		type,
+		custom,
+		defaultFilterOptions = [],
+		setFilterValue,
+		filterValue,
+		filterSelectOptions,
+		isComposite,
+	},
 	extendSearchQuery,
 	multiple,
 }) {
-	if (isComposite) field = field.split(',')
-	const searchMode = type === 'date' ? 'FE' : 'BE'
+	if (isComposite) field = field.split(',');
+	const searchMode = type === 'date' ? 'FE' : 'BE';
 	const searchMapping = {
 		FE: {
 			size: 10000,
-			searchText: () => "*",
-			filterOptions: undefined
+			searchText: () => '*',
+			filterOptions: undefined,
 		},
 		BE: {
 			size: 100,
 			searchText: () => searchText.current,
-			filterOptions: (options) => options
-		}
-	}
+			filterOptions: options => options,
+		},
+	};
 
 	const [getFilters, { data: filtersData, loading }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
 
@@ -40,11 +62,12 @@ function ESAutoCompleteFilter({
 	const appendOptions = useRef(false);
 	const filtersRef = useRef(null);
 
-	const { searchFields, filters, defaultFilters, advanceSearch } = tableController(tableKey).getValues([
+	const { searchFields, filters, defaultFilters, advanceSearch, isElasticQuery } = tableController(tableKey).getValues([
 		'searchFields',
 		'filters',
 		'defaultFilters',
 		'advanceSearch',
+		'isElasticQuery',
 	]);
 
 	const getFiltersAction = debounce(({ afterKey } = {}) => {
@@ -55,19 +78,23 @@ function ESAutoCompleteFilter({
 			filters,
 			defaultFilters,
 			searchText: searchMapping[searchMode].searchText(),
-			afterKey
-		}
+			afterKey,
+		};
 		if (!_.isEqual(currentFilterRef, filtersRef.current)) {
-			let search = ''
+			let search = '';
 			if (searchText.current) search = type === 'number' ? searchText.current : `*${searchText.current}*`;
 			filtersRef.current = currentFilterRef;
+
+			const isMongo = isElasticQuery === false;
+
 			getFilters({
 				variables: {
 					esIndex,
 					index: esIndex,
-					filters: typeof field === 'string' ? filtersArray.filter(
-						filter => filter?.field !== field?.replace('.keyword', '')
-					) : filtersArray,
+					filters:
+						typeof field === 'string'
+							? filtersArray.filter(filter => filter?.field !== field?.replace('.keyword', ''))
+							: filtersArray,
 					filterKeys: typeof field !== 'string' ? field : undefined,
 					filterKey: typeof field === 'string' ? field : undefined,
 					search: { query: extendSearchQuery, fields: searchFields, advanceSearch },
@@ -80,8 +107,9 @@ function ESAutoCompleteFilter({
 						field: typeof field === 'string' ? field : undefined,
 						fields: typeof field !== 'string' ? field : undefined,
 						size: searchMapping[searchMode].size,
-						afterKey
+						afterKey,
 					},
+					...(isMongo && { isElasticQuery: false }),
 				},
 			});
 		}
@@ -94,14 +122,22 @@ function ESAutoCompleteFilter({
 
 		let options = hits.map(({ key }) => ({
 			label: Array.isArray(key) ? key.join(' ') : key,
-			value: key
+			value: key,
 		}));
 
 		if (type === 'date') {
-			options = hits.map(({ key_as_string }) => ({
-				label: formatDate(key_as_string),
-				value: key_as_string,
-			}));
+			options = hits.map(({ key_as_string, key }) => {
+				if (key_as_string) {
+					return {
+						label: formatDate(key_as_string),
+						value: key_as_string,
+					};
+				}
+				return {
+					label: key,
+					value: key,
+				};
+			});
 
 			options = _.uniqWith(options, (a, b) => a.label === b.label);
 		}
@@ -128,19 +164,17 @@ function ESAutoCompleteFilter({
 		});
 
 		if (appendOptions.current) {
-			appendOptions.current = false
+			appendOptions.current = false;
 			setOptions(prevOptions => [...prevOptions, ...options]);
-		}
-		else
-			setStateIfDeepEqual(setOptions, filterSelectOptions || options);
-	}, [filtersData, filterValue]);
+		} else setStateIfDeepEqual(setOptions, filterSelectOptions || options);
+	}, [filtersData, filterValue, type, filterSelectOptions, field]);
 
 	// If we have orFilter then filterValue is null due to id mismatch
 	if (isComposite) {
-		const key = field[0].replace('.keyword', '')
-		const _field = filters.find((f) => f?.field === key)
+		const key = field[0].replace('.keyword', '');
+		const _field = filters.find(f => f?.field === key);
 		if (Array.isArray(_field?.value)) {
-			filterValue = _field.value.join(' ')
+			filterValue = _field.value.join(' ');
 		}
 	}
 
@@ -150,13 +184,13 @@ function ESAutoCompleteFilter({
 	}
 
 	// Handle Filter Value is changed from Single Select to Multi Select and vice versa
-	if (multiple && (typeof filterValue === 'string')) {
+	if (multiple && typeof filterValue === 'string') {
 		filterValue = [];
 	} else if (!multiple && Array.isArray(filterValue)) {
 		filterValue = '';
 	} else if (multiple && !Array.isArray(filterValue)) {
-		filterValue = []
-		tableController(tableKey).clearFilter(field.replace('.keyword', ''))
+		filterValue = [];
+		tableController(tableKey).clearFilter(field.replace('.keyword', ''));
 	} else if (type === 'date' && (typeof filterValue === 'string' ? filterValue : filterValue.length)) {
 		if (typeof filterValue === 'string') {
 			filterValue = formatDate(filterValue);
@@ -166,9 +200,9 @@ function ESAutoCompleteFilter({
 			filterValue = `${formattedGte} to ${formattedLte}`;
 		} else if (Array.isArray(filterValue)) {
 			filterValue = filterValue.map(val => formatDate(val));
-		} else if (typeof filterValue === 'boolean' || type === "defaultFiltersOptions") {
-			// If there are default filters, use them 
-			const requiredFilterValue = defaultFilterOptions?.find((option) => option?.value === filterValue)?.label;
+		} else if (typeof filterValue === 'boolean' || type === 'defaultFiltersOptions') {
+			// If there are default filters, use them
+			const requiredFilterValue = defaultFilterOptions?.find(option => option?.value === filterValue)?.label;
 			filterValue = requiredFilterValue;
 		}
 	} else if (type === 'price') {
@@ -199,21 +233,18 @@ function ESAutoCompleteFilter({
 	}
 	const id = Array.isArray(field) ? field.join(' ') : field;
 	// Filter out the options
-	const requiredOptions = defaultFilterOptions?.length > 0 ? defaultFilterOptions : (multiple ? options?.filter(item => !filterValue.includes(item.value)) : options);
+	const requiredOptions =
+		defaultFilterOptions?.length > 0
+			? defaultFilterOptions
+			: multiple
+				? options?.filter(item => !filterValue.includes(item.value))
+				: options;
 
-	// format value to show filter value & option with $ sign as prefix
-	const formatValue = (value) => {
-		if (field === 'shapeJson.properties.uMaxUnitPricing.keyword' || field === 'shapeJson.properties.uUnitPricing.keyword') {
-			value = vf_currency(value);
-		}
-		return value;
-	}
-
-	const handleScroll = (event) => {
+	const handleScroll = event => {
 		const bottom = event.target.scrollHeight - event.target.scrollTop === event.target.clientHeight;
 		if (bottom && hasMore.current && !loading) {
-			appendOptions.current = true
-			getFiltersAction({ afterKey: options[options.length - 1].value })
+			appendOptions.current = true;
+			getFiltersAction({ afterKey: options[options.length - 1].value });
 		}
 	};
 
@@ -224,7 +255,7 @@ function ESAutoCompleteFilter({
 			options={requiredOptions}
 			loading={loading}
 			filterOptions={searchMapping[searchMode].filterOptions}
-			value={formatValue(filterValue)}
+			value={formatValue(filterValue, field)}
 			renderInput={params => (
 				<TextField
 					{...params}
@@ -239,12 +270,12 @@ function ESAutoCompleteFilter({
 					placeholder={`Filter by ${label}`}
 					variant="standard"
 					onChange={e => {
-						searchText.current = e.target.value
-						getFiltersAction()
+						searchText.current = e.target.value;
+						getFiltersAction();
 					}}
 					onFocus={e => {
-						searchText.current = e.target.value
-						getFiltersAction()
+						searchText.current = e.target.value;
+						getFiltersAction();
 					}}
 				/>
 			)}
@@ -263,17 +294,17 @@ function ESAutoCompleteFilter({
 
 				let value = multiple
 					? option.map(option => {
-						if (typeof option === 'object') {
-							return option.value
-						} else {
-							const foundOption = _.find(options, { label: option });
-							return foundOption ? foundOption.value : option;
-						}
-					})
+							if (typeof option === 'object') {
+								return option.value;
+							} else {
+								const foundOption = _.find(options, { label: option });
+								return foundOption ? foundOption.value : option;
+							}
+						})
 					: option.value;
 
 				if (type === 'date') {
-					value = formatDate(value)
+					value = formatDate(value);
 				}
 				setFilterValue(value);
 
@@ -294,7 +325,6 @@ function ESAutoCompleteFilter({
 			ListboxProps={{
 				onScroll: handleScroll,
 			}}
-
 		/>
 	);
 }

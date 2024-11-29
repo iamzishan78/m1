@@ -166,7 +166,9 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 			total: tableStateValues?.data.total,
 			client,
 			table,
-			tableKey
+			tableKey,
+			objectType: 'contact' ,
+			refetchQueries: ["getESContacts"]
 		};
 	};
 

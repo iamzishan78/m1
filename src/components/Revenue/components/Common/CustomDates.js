@@ -63,13 +63,14 @@ export default function Portfolio({
   lastCheckMinDate,
   onChange,
   defaultRange,
+  setSelectedFilter,
   datesInputWidth = 1,
   setAllDateToNull = true
 }) {
   const classes = useStyles();
   const [value, setValue] = useState(defaultRange ? defaultRange : CUSTOM_DATES.ALL_DATES)
   useEffect(() => {
-    handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+    if(!defaultRange) handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
 
     delete CUSTOM_DATES.THIS_WEEK;
     delete CUSTOM_DATES.LAST_WEEK;
@@ -93,11 +94,14 @@ export default function Portfolio({
   // }
 
   useEffect(() => {
-    if (lastCheckMinDate) handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+    if (lastCheckMinDate && !defaultRange) handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastCheckMinDate]);
 
   const handleDateTypeChange = (date) => {
+    if(setSelectedFilter){
+      setSelectedFilter(date)
+    }
     handleCustomDateTypeChange(date, onChange, CUSTOM_DATES, setFromDate, setToDate, lastCheckMinDate, setAllDateToNull);
   };
 

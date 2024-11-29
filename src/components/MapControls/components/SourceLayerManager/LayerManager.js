@@ -379,6 +379,13 @@ export default function AddLayer(props) {
     return true
   }
 
+  const checkIfcustomLayerCopy = (layer) => {
+    const customLayers = ['Units', 'Parcels', 'Tracts', 'Agreements', 'Deeds', 'Leases', 'Contracts', 'Surfaces'];
+    if (customLayers.includes(layer.identifier)) return false;
+    // Checking if layer.layerName starts with any customLayers
+    return customLayers.some((customLayer) => layer.identifier.startsWith(customLayer));
+  }
+
   const M1Layers = React.useMemo(() => {
     return currentLayers.filter((layer) => layer.layerCategory === "M1 Layer");
   }, [currentLayers]);
@@ -397,6 +404,8 @@ export default function AddLayer(props) {
     }
     return layers.filter((UdLayer) => !((UdLayer.layerType === "file layer" || UdLayer.groupName === "Agreements") && UdLayer.groupId));
   }, [currentLayers]);
+
+  console.log(UdLayers);
 
   return (
     <ClickAwayListener onClickAway={() => { }}>
@@ -427,8 +436,8 @@ export default function AddLayer(props) {
                 <Collapse in={openM1} timeout="auto" unmountOnExit>
                   <List className={classes.list}>
                     {M1Layers?.filter(
-                      (layer) => (!props.search || layer.layerName?.toLowerCase().includes(props.search)) && 
-                      !['Land Grid', 'TX GLO Units', 'TX GLO Active Leases', 'Rig Activity'].includes(layer.layerName)
+                      (layer) => (!props.search || layer.layerName?.toLowerCase().includes(props.search)) &&
+                        !['Land Grid', 'TX GLO Units', 'TX GLO Active Leases', 'Rig Activity'].includes(layer.layerName)
                     )?.map((layer, index) => {
                       const labelId = `m1layer-list-label-${index}`;
                       if (layer.layerName === "Recent Submitted Permits") {
@@ -578,7 +587,7 @@ export default function AddLayer(props) {
                                 onChange={() => changeShowAble(layer)}
                                 inputProps={{ "aria-label": "primary checkbox" }}
                               />
-                              {layer.layerType === "file layer" ? (
+                              {(layer.layerType === "file layer" || checkIfcustomLayerCopy(layer)) ? (
                                 <>
                                   {/* Layer */}
                                   <EditableTextField onChange={changeLayerName} item={layer} name={layer.layerName} isEditable={false} openEditField={layer?.layerId === actionItem?.layer?.layerId && actionItem?.type === 'editName'} />

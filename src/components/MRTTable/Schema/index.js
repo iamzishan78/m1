@@ -14,13 +14,19 @@ import TractInterestsMeta from './tract_interest_schema';
 import GenericMeta from './generic-schema';
 import ShapesFilesGenericMeta from './shapefiles_generic_schema';
 import PropertiesMeta from './properties_schema';
+import ReportingGroupsMeta from './property_group_schema';
 import RevenueStatementsMeta from './revenue_statements_schema';
 import ContactWellInterestMeta from "./contact_well_Interest_schema"
 import RevenueCheckDetailMeta from "./revenue_checkdetail_schema"
+import UnitTractsMeta from "./unit_tract_schema"
 import MyWellsMeta from './my_wells_schema';
 import WellsMeta from './wells_schema';
 import TaxOwnerMeta from './map-grid-tax-owner-schema';
+import ShapeDetailAgreementMeta from './shapeDetail_agreement_schema';
+import AgreementRelatedUnitsMeta from './agreement_relatedUnits_schema';
+import UnitRelatedAgreementMeta from './unit_relatedAgreements_schema';
 import SalesVolumeComparisonMeta from './sales-volume-comparison-schema';
+import ExhibitAMeta from './exhibita_schema';
 
 export const SCHEMA = {
 	ContactTable: ContactMeta,
@@ -43,11 +49,19 @@ export const SCHEMA = {
 	CampaignTractInterestTable: TractInterestsMeta,
 	GenericTable: GenericMeta,
 	ShapesFilesGenericTable: ShapesFilesGenericMeta,
-	PropertiesTable: PropertiesMeta,  //main property Grid => /revenue/properties
+	PropertiesTable: PropertiesMeta, //main property Grid => /revenue/properties
 	RevenueStatementsTable: RevenueStatementsMeta, // Revenue Statement grid => revenue/statements
 	RevenueCheckDetailTable: RevenueCheckDetailMeta,
+	UnitTractTable: UnitTractsMeta, // UnitDetailCard => tracts
 	MyWellsTable: MyWellsMeta,
+	RevenuePropertiesTable: ReportingGroupsMeta,
 	WellsTable: WellsMeta,
 	TaxOwnerTable: TaxOwnerMeta,
+	// Added related shape grids
+	ShapeDetailAgreementTable: ShapeDetailAgreementMeta,
+	AgreementRelatedUnitsTable: AgreementRelatedUnitsMeta,
+	UnitRelatedAgreementTable: UnitRelatedAgreementMeta,
 	SalesVolumeComparisonTable: SalesVolumeComparisonMeta, // Sales Volume comparison grid => analytrics/revenue
+	ExhibitATable: ExhibitAMeta, // Sales Volume comparison grid => analytrics/revenue
+	TractInterestsTable: TractInterestsMeta, // Tracts Interest schema
 };

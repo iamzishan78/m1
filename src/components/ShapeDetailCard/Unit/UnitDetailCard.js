@@ -106,6 +106,12 @@ export default function UnitDetailCard(props) {
     customProps: { customLayer: dataCustomLayer?.customLayer },
   }), [dataCustomLayer]);
 
+  // Table overridden meta
+  const RelatedAgreementOverrideMeta = useMemo(() => ({
+    defaultFilters: [{ field: "relatedShape._id", value: dataCustomLayer?.customLayer?._id }],
+    maxTableHeight: "calc(60vh - 200px)",
+  }), [dataCustomLayer]);
+
 
   useEffect(() => {
     if (updatedUnit) {
@@ -175,6 +181,8 @@ export default function UnitDetailCard(props) {
         customLayer,
         userId: stateApp.user.mongoId,
       },
+      refetchQueries: ["getAllLayerSettingsByUser"],
+      awaitRefetchQueries: true,
     }).then((res) => {
       jobController.toggleBulkUpload()
       layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)
@@ -197,6 +205,8 @@ export default function UnitDetailCard(props) {
         customLayer,
         userId: stateApp.user.mongoId,
       },
+      refetchQueries: ["allLayerSettingsByUser"],
+      awaitRefetchQueries: true,
     }).then((res) => {
       jobController.toggleBulkUpload()
       layerController.resetBounds(res?.data?.updateCustomLayer?.customLayer?.layer)
@@ -258,7 +268,7 @@ export default function UnitDetailCard(props) {
           </Grid>
           <Grid item sm={12}>
             <Taps
-              tabLabels={['Summary', 'Interest Owners', 'Runsheet', 'Wells', 'Tracts', 'Documents']}
+              tabLabels={['Summary', 'Interest Owners', 'Runsheet', 'Wells', 'Tracts', 'Agreements', 'Documents']}
               openTabIdex={selectedTab}
               tabPanels={[
                 <div
@@ -340,24 +350,25 @@ export default function UnitDetailCard(props) {
                   ]}
                 />,
                 <TabPanels
-                  value={selectedTractTab}
+                  value={selectedTab}
                   panels={[
-                    <div className={showSummary ? classes.subContent : classes.subContent2}>
-                      <UnitTractsTable
-                        customLayer={uniObj}
-                        shapeType="Unit"
-                        header={
-                          <TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />
+                      <MRTTable name="UnitTractTable" 
+                        overrideMeta={{
+                        tabLabels: ['Unit Tracts', 'Potential Tracts'],
+                        defaultFilters: [
+                          { field: 'shape._id', value: dataCustomLayer?.customLayer?._id },
+                        ],
+                        customProps: {
+                          customLayer: uniObj,
                         }
-                        dense
-                      />
-                    </div>,
-                    <div className={showSummary ? classes.subContent : classes.subContent2}>
+                      }}
+                        hideSharedCommentCheck />,
+                    <div>
                       <AssociatedTractsShapeTable
                         customLayer={uniObj}
                         shapeType="Unit"
                         header={
-                          <TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />
+                          <TractHeader selectedTractTab={selectedTab} setTractSelectedTab={setSelectedTab} />
                         }
                         setSelectedTab={setTractSelectedTab}
                         dense
@@ -365,6 +376,9 @@ export default function UnitDetailCard(props) {
                     </div>,
                   ]}
                 />,
+                <div>
+                  <MRTTable name="UnitRelatedAgreementTable" overrideMeta={RelatedAgreementOverrideMeta} />
+                </div>,
                 <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
                   <RelatedDetailsDocumentTable
                     customLayer={uniObj}

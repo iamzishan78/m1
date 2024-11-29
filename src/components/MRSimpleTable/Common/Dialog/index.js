@@ -84,6 +84,8 @@ function AllDialogs() {
 					rows={rest?.selectedRows}
 					setSelectedRow={updateRows}
 					setRows={updateRows}
+					objectType={rest?.objectType}
+			        refetchQueries={[rest?.refetchQueries] }
 				/>
 			)}
 

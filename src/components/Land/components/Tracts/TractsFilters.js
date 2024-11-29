@@ -85,11 +85,13 @@ const TractsFilters = ({ selectedTractTab }) => {
             GridViewModule = TractGridViewModule
             moduleName = "Tracts"
             columnsHeader = tractFilterColumnsHeader
+            tableName = "TractsTable" // Table name
         }
         else {
             GridViewModule = TractInterestGridViewModule
             moduleName = "TractInterest"
             columnsHeader = tractInterestFilterColumnsHeader
+            tableName = "TractInterestsTable"  // Table name
         }
 
         if (GridViewModule) {

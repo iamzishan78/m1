@@ -3,7 +3,7 @@ import moment from 'moment';
 import { CommonSchema } from './common_schema';
 import { GET_ALL_USERS } from 'graphQL/userManagement';
 import { simpleTableGlobalController } from 'hookstate/simpleTableController';
-
+import { UserRole, RolePrivilege } from 'utils/data';
 export const userManagementTableKey = 'UserManagement';
 
 const onClickedRow = (selectedRow) => {
@@ -25,7 +25,7 @@ const UserManagementMeta = {
   },
   getDataFromRes: (res) => res?.data?.users || [],
   getIdsFromRows: (rows) => rows?.map((row) => row?._id) || [],
-
+  isInFiniteScroll: true, // added infinite scroll
   CustomToolBar: UserManagementToolbar,
   onClickedRow,
   isSelectAllAllowed: true,
@@ -58,21 +58,33 @@ const UserManagementMeta = {
       header: 'Role',
       accessorKey: 'role',
       name: 'role',
-      accessorFn: (row) => row?.role || '',
+      accessorFn: (row) =>  UserRole[row?.role] || '',
+      Cell: ({ row }) => {
+        const value =  row?.original?.role
+          // Use the enum to get the user-friendly name for the role
+          const displayValue = UserRole[value] || '';
+          return <>{displayValue}</>;
+      },
     },
     {
       ...CommonSchema.STRING_COLUMN,
       header: 'Role Privileges',
       accessorKey: 'rolePrivileges',
       name: 'rolePrivileges',
-      accessorFn: (row) => row?.rolePrivileges || '',
+      accessorFn: (row) =>  RolePrivilege[row?.rolePrivileges] || '',
+      Cell: ({ row }) => {
+        const value =  row?.original?.rolePrivileges
+          // Use the enum to get the user-friendly name for the role privileges
+          const displayValue = RolePrivilege[value] || '';
+          return <>{displayValue}</>;
+      },
     },
     {
       ...CommonSchema.STRING_COLUMN,
       header: 'Last Login',
-      accessorKey: 'ts',
-      name: 'ts',
-      accessorFn: (row) => moment(row?.ts).format('MM/DD/YYYY') || '',
+      accessorKey: 'lastLogin',
+      name: 'lastLogin',
+      accessorFn: (row) => (row?.lastLogin ? moment(row?.lastLogin).format('MM/DD/YYYY') || '' : ''),
     },
   ],
 };
