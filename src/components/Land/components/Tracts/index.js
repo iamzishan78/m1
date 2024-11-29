@@ -1,155 +1,112 @@
-import React, { useState, useContext } from "react";
-// import { useHistory } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
-import { AppContext } from "AppContext";
-import AnalyticsCards from "components/Land/components/Common/AnalyticsCards";
-import TractsTable from "../../../Table/Tract/TractsTable";
-import TractInterestsTable from "../../../Table/Tract/TractInterestsTable";
-import { setStateIfDeepEqual } from "components/Shared/functions";
-import TabPanels from "components/Shared/TabPanels";
-import TabButtons from "components/Shared/TabPanels/TabButtons";
-import TractsFilters from "components/Land/components/Tracts/TractsFilters";
+import React, { useContext, useEffect, useMemo } from 'react';
+import { AppContext } from 'AppContext';
+import AnalyticsCards from 'components/Land/components/Common/AnalyticsCards';
+import MRTTable from 'components/MRTTable';
+import TabPanels from 'components/Shared/TabPanels';
+import { tableController } from 'hookstate/tableController';
+import { simpleTableGlobalController } from 'hookstate/simpleTableController';
 
-const useStyles = makeStyles((theme) => ({
-  gridRoot: {
-    marginTop: "65px",
-    "& div": {
-      "&>.MuiPaper-root": {
-        display: "flex",
-        "flex-direction": "column",
-        height: "calc(100vh - 375px)",
-        position: "relative",
-        boxShadow: "none",
-        "align-items": "stretch",
-        "&>.MuiPaper-root": {
-          display: "contents",
-        },
-        "&>:nth-child(3)": {
-          height: "inherit !important",
-        },
-        "&> table": {
-          bottom: 0,
-        },
-      },
-    },
-  },
-}));
+const Tracts = () => {
+	const [stateApp] = useContext(AppContext); // Accessing global state from AppContext
 
-function Tracts(props) {
-  const [stateApp] = useContext(AppContext);
+	// Static data for table keys, Elasticsearch indices, and tab labels
+	const tableKeys = useMemo(() => ['TractsTable', 'TractInterestsTable'], []);
+	const esIndex = useMemo(() => ['shapes_flat', 'shapeowners_flat'], []);
+	const tabLabels = useMemo(() => ['Tracts', 'Tract Interests'], []);
 
-  // waypointKey should any key of Table Header which do not have customRender in schema file
-  const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 445px)' }
+	// Get the currently selected tab, defaulting to the first tab if not defined
+	const selectedTab = simpleTableGlobalController?.useState(['tabKey'])?.stateValues?.tabKey || 0;
+	const currentTableKey = tableKeys[selectedTab] || tableKeys[0]; // Ensure fallback to first table key
 
+	// Retrieve the current state of the table data and filters for each table
+	const tractTableState =
+		tableController('TractsTable')?.useState([
+			'filters',
+			'data',
+			'defaultFilters',
+			'globalFilter',
+			'searchFields',
+			'advanceSearch',
+		])?.stateValues || {};
+	const tractInterestsTableState =
+		tableController('TractInterestsTable')?.useState([
+			'filters',
+			'data',
+			'defaultFilters',
+			'globalFilter',
+			'searchFields',
+			'advanceSearch',
+		])?.stateValues || {};
+	const tableStateValues = selectedTab ? tractInterestsTableState : tractTableState; // Use the correct table state based on the selected tab
+	const globalFilter = tableStateValues?.globalFilter;
+	const searchQuery = globalFilter ? `${globalFilter}` : '';
+	const searchFields = tableStateValues.searchFields;
+	// Default card data to display in the AnalyticsCards component
+	const cardsDefault = useMemo(
+		() => [
+			{
+				heading: `Total ${tabLabels[selectedTab]}`, // Dynamic heading based on selected tab
+				points: 0,
+			},
+			{
+				heading: 'Gross Acres',
+				points: 0,
+			},
+			{
+				heading: 'Net Acres',
+				points: 0,
+			},
+			{
+				heading: 'Net Royalty Acres',
+				points: 0,
+			},
+		],
+		[selectedTab, tabLabels]
+	);
 
+	// Apply global filter from the land search query in the stateApp context
+	useEffect(() => {
+		tableController(currentTableKey).setGlobalFilter(stateApp.landSearchQuery);
+	}, [stateApp.landSearchQuery, selectedTab, currentTableKey]);
 
-  const [esFilters, ESFilters] = useState([]);
-  const setESFilters = (newState) => {
-    setStateIfDeepEqual(ESFilters, newState);
-  };
+	return (
+		<>
+			{/* Analytics cards section */}
+			<div style={{ marginTop: '65px', padding: '20px 26px 0px 33px' }}>
+				<AnalyticsCards
+					parent="Tracts"
+					esIndex={esIndex[selectedTab]}
+					esFilters={[...tableStateValues.defaultFilters, ...tableStateValues?.filters] || []}
+					totalCount={tableStateValues?.data?.rows?.length ? tableStateValues?.data?.total : 0}
+					cardsDefault={cardsDefault}
+					searchQuery={searchQuery}
+					searchFields={searchFields}
+					advanceSearch={tableStateValues?.advanceSearch}
+				/>
+			</div>
 
-  const [selectedTractTab, setTractSelectedTab] = useState(0);
-  const [tractCount, setTractCount] = useState(0);
-  const onTractCount = (count) => {
-    setTractCount(count);
-  }
+			{/* Tab panels section with tables */}
+			<div style={{ marginTop: '40px' }}>
+				<TabPanels
+					value={selectedTab} // Current active tab
+					panels={[
+						<div key="tracts" style={{ padding: '0rem 1.5rem' }}>
+							<MRTTable
+								name="TractsTable"
+								overrideMeta={{ tabLabels }} // Passing tab labels for display
+							/>
+						</div>,
+						<div key="tract-interests" style={{ padding: '0rem 1.5rem' }}>
+							<MRTTable
+								name="TractInterestsTable"
+								overrideMeta={{ tabLabels }} // Passing tab labels for display
+							/>
+						</div>,
+					]}
+				/>
+			</div>
+		</>
+	);
+};
 
-  const esIndex = ["shapes_flat", "shapeowners_flat"];
-  const tabLabels = ["Tracts", "Tract Interests"]
-
-  let cardsDefault = [
-    {
-      heading: `Total ${tabLabels[selectedTractTab]}`,
-      points: 0,
-    },
-    {
-      heading: "Gross Acres",
-      points: 0,
-    },
-    {
-      heading: "Net Acres",
-      points: 0,
-    },
-    {
-      heading: "Net Royalty Acres",
-      points: 0,
-    },
-  ];
-
-  const TractHeader = ({ selectedTractTab, setTractSelectedTab }) => (
-    <TabButtons
-      labels={tabLabels}
-      value={selectedTractTab}
-      setValue={(n) => {
-        setTractSelectedTab(n);
-      }}
-    />
-  );
-
-  return (
-    <>
-
-      <div
-        style={{
-          marginTop: '65px',
-          padding: "20px 26px 0px 33px"
-        }}
-      >
-        <TractsFilters selectedTractTab={selectedTractTab} />
-        <AnalyticsCards
-          parent={"Tracts"}
-          esIndex={esIndex[selectedTractTab]}
-          esFilters={esFilters}
-          totalCount={tractCount}
-          setESFilters={setESFilters}
-          cardsDefault={cardsDefault}
-          landSearchQuery={stateApp.landSearchQuery}
-        />
-      </div>
-
-      <div
-        // className={classes.gridRoot}
-        style={{
-          marginTop: "40px",
-          // marginLeft: "-10px",
-        }}
-      >
-        <TabPanels
-          value={selectedTractTab}
-          panels={[
-            <div>
-              <TractsTable
-                esIndex={esIndex[selectedTractTab]}
-                header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
-                esFilters={esFilters}
-                parent="TractTable"
-                targetLabel="parcel"
-                setESFilters={setESFilters}
-                onTractCount={onTractCount}
-                landSearchQuery={stateApp.landSearchQuery}
-                loadMore={loadMore}
-              />
-            </div>,
-            <div>
-              <TractInterestsTable
-                esIndex={esIndex[selectedTractTab]}
-                header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
-                esFilters={esFilters}
-                parent="TractInterestsTable"
-                targetLabel="parcel"
-                setESFilters={setESFilters}
-                onTractCount={onTractCount}
-                landSearchQuery={stateApp.landSearchQuery}
-                loadMore={loadMore}
-              />
-
-            </div>
-          ]}
-        />
-
-      </div>
-    </>
-  )
-}
-
-export default Tracts
+export default Tracts;
