@@ -4870,6 +4870,8 @@ function SubTable(props) {
             onClose={handleCloseDialog}
             rows={expandedObject}
             setRows={setExpandedObject}
+            objectType={'contact'}
+            refetchQueries={["getESContacts"] }
           />
         )}
         {openDialog === "merge" && (

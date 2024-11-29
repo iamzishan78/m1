@@ -381,6 +381,8 @@ export default function DetailInfo(props) {
                           linkType={row.linkType}
                           isPurchased={selectedTab === "Purchased Info"}
                           name={key}
+                          row={row}
+                          handleQuickActionActivity={props.handleQuickActionActivity}
                         />
                       </Grid>
                     </React.Fragment>
@@ -408,6 +410,8 @@ export default function DetailInfo(props) {
                             isMerged={!!props.contactData.mergedContacts}
                             content={row.data}
                             linkType={row.linkType}
+                            row={row}
+                            handleQuickActionActivity={props.handleQuickActionActivity}
                           />
                         </Grid>
                       </React.Fragment>
@@ -459,6 +463,8 @@ export default function DetailInfo(props) {
                             isMerged={!!props.contactData.mergedContacts}
                             content={row.data}
                             linkType={row.linkType}
+                            row={row}
+                            handleQuickActionActivity={props.handleQuickActionActivity}
                             metafields={metafields}
                           >
                             {row.inner}
@@ -518,6 +524,8 @@ export default function DetailInfo(props) {
                               isMerged={!!props.contactData.mergedContacts}
                               content={row.data}
                               linkType={row.linkType}
+                              row={row}
+                              handleQuickActionActivity={props.handleQuickActionActivity}
                             >
                               {row.inner}
                             </FieldContent>
@@ -569,6 +577,8 @@ export default function DetailInfo(props) {
                           content={row.data}
                           linkType={row.linkType}
                           isPurchased
+                          row={row}
+                          handleQuickActionActivity={props.handleQuickActionActivity}
                         />
                       </Grid>
                     </React.Fragment>
@@ -595,6 +605,8 @@ export default function DetailInfo(props) {
                             content={row.data}
                             linkType={row.linkType}
                             isPurchased
+                            row={row}
+                            handleQuickActionActivity={props.handleQuickActionActivity}
                           />
                         </Grid>
                       </React.Fragment>
@@ -623,6 +635,8 @@ export default function DetailInfo(props) {
                             content={row.data}
                             linkType={row.linkType}
                             isPurchased
+                            row={row}
+                            handleQuickActionActivity={props.handleQuickActionActivity}
                           >
                             {row.inner}
                           </FieldContent>
@@ -654,6 +668,8 @@ export default function DetailInfo(props) {
                               content={row.data}
                               linkType={row.linkType}
                               isPurchased
+                              row={row}
+                              handleQuickActionActivity={props.handleQuickActionActivity}
                             >
                               {row.inner}
                             </FieldContent>

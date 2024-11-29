@@ -1,6 +1,6 @@
 import React from 'react';
 import { hookstate } from '@hookstate/core';
-import _, { get, isEqual, isEmpty } from 'lodash';
+import _, { get, isEqual, isEmpty, pull } from 'lodash';
 import { copy, deepEqual, formatDate } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
@@ -15,6 +15,7 @@ import { formatGridViewToMRT } from 'components/MRTTable/utils/helper';
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
 import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 import { handleMRTSchema, handleVisiblityMenu } from './helpers';
+import { validateUrl } from 'utils/helper';
 
 function isDateFormat(inputString) {
 	// Regular expression for MM/DD/YYYY format
@@ -40,6 +41,7 @@ const initialState = {
 	columnPinning: {
 		left: [],
 	},
+	isIncludeInactive: false
 };
 
 export const tableESState = {};
@@ -98,6 +100,12 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 				}
 
 				if (item?.type === 'text') {
+					if (validateUrl(value))
+						return (
+							<a href={value} target="_blank">
+								{value?.length > 40 ? value?.slice(0, 40) + '...' : value}
+							</a>
+						);
 					return (
 						<CustomFieldText
 							value={value}
@@ -158,6 +166,7 @@ const tableESStateControllerHandler = state => ({
 			esIndex,
 			pageSize,
 			defaultSort,
+			isIncludeInactive,
 			isInFiniteScroll,
 			columnVirtualization,
 			TableSchema,
@@ -242,6 +251,26 @@ const tableESStateControllerHandler = state => ({
 			columnVirtualization,
 		});
 
+		// Set default pinning and ordering
+		const defaultColumnsOrdering = ['over-ride-checkbox', 'mrt-row-numbers', ...columnOrder];
+		const defaultColumnsPinning = {
+			left: [
+				...(pinnedFields.length > 0
+					? _.concat(['over-ride-checkbox', 'mrt-row-numbers'], _.slice(pinnedFields, 1))
+					: ['over-ride-checkbox', 'mrt-row-numbers']),
+			],
+		};
+
+		// Push action menu in first place
+		if (rest.isShowActionMenuFirst) {
+			// removing 'actionMenu' from array and adding it at start
+			pull(defaultColumnsOrdering, 'actionMenu');
+			pull(defaultColumnsPinning.left, 'actionMenu');
+
+			defaultColumnsOrdering?.unshift('actionMenu');
+			defaultColumnsPinning?.left?.unshift('actionMenu');
+		}
+
 		state.merge({
 			...rest,
 			refetchQueries,
@@ -279,22 +308,13 @@ const tableESStateControllerHandler = state => ({
 			ExternalFilter,
 			columnVisibility: formatedGridView?.columnVisibility ? formatedGridView.columnVisibility : columnVisibility,
 			defaultSort,
+			isIncludeInactive,
 			filterModes,
 			density,
 			advanceSearch,
 			enableHiding,
-			columnOrdering: formatedGridView?.columnOrdering
-				? formatedGridView.columnOrdering
-				: ['over-ride-checkbox', 'mrt-row-numbers', ...columnOrder],
-			columnPinning: formatedGridView?.columnPinning
-				? formatedGridView.columnPinning
-				: {
-						left: [
-							...(pinnedFields.length > 0
-								? _.concat(['over-ride-checkbox', 'mrt-row-numbers'], _.slice(pinnedFields, 1))
-								: ['over-ride-checkbox', 'mrt-row-numbers']),
-						],
-					},
+			columnOrdering: formatedGridView?.columnOrdering ? formatedGridView.columnOrdering : defaultColumnsOrdering,
+			columnPinning: formatedGridView?.columnPinning ? formatedGridView.columnPinning : defaultColumnsPinning,
 		});
 	},
 
@@ -409,9 +429,18 @@ const tableESStateControllerHandler = state => ({
 				filter.searchType = 'betweenInclusive';
 				filter.columnType = 'date';
 			} else {
-				if (!isDateFormat(filter.value)) return;
-				const date = new Date(filter.value);
-				filter.value = formatDate(date.toISOString());
+				if (Array.isArray(filter.value)) {
+					if (!isDateFormat(filter.value[0]) || !isDateFormat(filter.value[1])) return;
+
+					const date1 = new Date(filter.value[0]);
+					const date2 = new Date(filter.value[1]);
+
+					filter.value = [formatDate(date1.toISOString()), formatDate(date2.toISOString())];
+				} else {
+					if (!isDateFormat(filter.value)) return;
+					const date = new Date(filter.value);
+					filter.value = formatDate(date.toISOString());
+				}
 			}
 		}
 
@@ -430,8 +459,10 @@ const tableESStateControllerHandler = state => ({
 
 	getExternalFilter: () => {
 		const filtersState = state.filters?.get({ noproxy: true });
-		const requiredFields = state.ExternalFilter?.get({ noproxy: true });
-		const esFilters = (filtersState || [])?.filter(filter => requiredFields.includes(filter.field));
+		const requiredFields = state.ExternalFilter?.get({ noproxy: true })?.map(f => f.replaceAll('.keyword', ''));
+		const esFilters = (filtersState || [])?.filter(filter =>
+			requiredFields.includes(filter.field.replaceAll('.keyword', ''))
+		);
 		return esFilters;
 	},
 
@@ -481,6 +512,10 @@ const tableESStateControllerHandler = state => ({
 
 	setFilters: filters => {
 		state.filters.set(filters);
+	},
+
+	setIncludeInactive: isIncludeInactive => {
+		state.isIncludeInactive?.set(isIncludeInactive)
 	},
 
 	setMrtTableRef: mrtTableRef => {

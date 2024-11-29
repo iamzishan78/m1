@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo } from 'react';
+import React, { useEffect, useState, memo, useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
 	TextField,
@@ -93,7 +93,7 @@ const viewOptions = [
 	},
 ];
 
-function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, defaultView, fetchGridViews }) {
+function GridViewOptions({ handleDefaultView, module, buttonRef, tableKey, allGridViews, defaultView, fetchGridViews }) {
 	const Controller = tableController(tableKey);
 	const tableState = Controller.useState(['filters', 'columnVisibility', 'gridView', 'gridViewSettings']);
 	const tableStateValues = tableState.stateValues;
@@ -158,13 +158,32 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 		});
 	};
 
+	// Apply stylinng dynamically for mainn grid
+	const gridViewCss = useMemo(() => {
+		let top, left = '0px';
+
+		if (buttonRef.current) {
+		   // Get the bounding rectangle of the button
+		   const rect = buttonRef.current.getBoundingClientRect();
+		   // Calculate top and left based on button position
+		   top = `${rect.bottom + window.scrollY}px`; // Button bottom + scroll position
+		   left = `${rect.left + window.scrollX}px`;  // Button left + scroll position
+		} 
+
+		return {
+			top,
+			left,
+		  };
+	}, [buttonRef.current])
+
 	return (
 		<LeftDialog
 			open
 			width="325px"
-			maxHeight={tableStateValues?.gridViewSettings?.cssOverride?.maxHeight || '600px'}
-			top={`${tableStateValues?.gridViewSettings?.cssOverride?.top} !important`}
-			left={tableStateValues?.gridViewSettings?.cssOverride?.left}
+			useLeftKey={true}
+			maxHeight={tableStateValues?.gridViewSettings?.cssOverride?.maxHeight || '40%'} // Set max height of dialog as 40%
+			top={gridViewCss.top}
+			left={gridViewCss.left}
 			handleClickDialogClose={() =>
 				Controller.updateState({ gridView: { ...tableStateValues.gridView, showViewModal: false } })
 			}

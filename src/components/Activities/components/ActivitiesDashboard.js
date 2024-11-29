@@ -65,6 +65,8 @@ const ActivitiesDashboard = () => {
         appliedFilters={appliedFilters}
         minDate={minDate}
         setAppliedFilters={setAppliedFilters}
+        label={"Activity Owner"} // to pass the dynamic label in filter
+        
       />
       <ActivityAnalytics
         filterToggle={filterToggle}

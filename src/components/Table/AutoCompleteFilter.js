@@ -196,7 +196,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
         if (reason === "clear" || (multiple && value2.length === 0) || (!multiple && !value2?.key)) {
           filterList[index] = [];
           setSearch("");
-          setValue(multiple ? [] : {});
+          setValue(multiple ? [] : {key: 'All'}); // Reset dropdwon to default value correctly
         } else {
           if (multiple) {
             filterList[index].length = 0;

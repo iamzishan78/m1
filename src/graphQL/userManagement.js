@@ -26,6 +26,7 @@ export const GET_ALL_USERS = gql`
       roles
       rolePrivileges
       ts
+      lastLogin
     }
   }
 `;

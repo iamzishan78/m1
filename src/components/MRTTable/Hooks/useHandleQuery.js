@@ -1,5 +1,5 @@
 import { useApolloClient } from '@apollo/client';
-import { debounce, set, get } from 'lodash';
+import { debounce, set, get, isNumber } from 'lodash';
 import { useCallback, useEffect, useRef } from 'react';
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
@@ -7,6 +7,7 @@ import { GET_ES_AGGS_LIST } from 'graphQL/useQueryESAggsList';
 import { copy } from 'utils/helper';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { drawController } from 'hookstate/drawStateController';
+import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
 
 const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) => {
 	const Controller = tableController(tableKey);
@@ -21,46 +22,40 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		const tableMeta = tableState.get({ noproxy: true });
 		const pagination = _pagination || tableMeta.pagination;
 		const { TableSchema } = tableMeta;
-		if (!TableSchema) return
+		if (!TableSchema) return;
 
 		Controller.updateState({
 			isLoading: true,
 			isFetching: true,
 			isError: false,
 		});
-		let metaField = {}
+		let metaField = {};
 		if (tableStateValues.sorting.length) {
 			metaField = TableSchema?.find(item => (item.accessorKey || item.id) === tableStateValues.sorting[0]?.id);
 		}
 
 		let sort = tableStateValues.sorting[0]
 			? {
-				field: (() => {
-					const sortingId = tableStateValues.sorting[0].id;
-					const matchingSchema = TableSchema.find(
-						val => (val.accessorKey || val.id) === sortingId
-					);
+					field: (() => {
+						const sortingId = tableStateValues.sorting[0].id;
+						const matchingSchema = TableSchema.find(val => (val.accessorKey || val.id) === sortingId);
 
-					if (matchingSchema?.isComposite) {
-						return matchingSchema.name.split(',')[0];
-					}
+						if (matchingSchema?.isComposite) {
+							return matchingSchema.name.split(',')[0];
+						}
 
-					return matchingSchema?.name;
-				})(),
-				order: tableStateValues.sorting[0].desc ? 'desc' : 'asc',
-			}
+						return matchingSchema?.name;
+					})(),
+					order: tableStateValues.sorting[0].desc ? 'desc' : 'asc',
+				}
 			: tableState?.defaultSort?.get({ noproxy: true });
 		if (metaField?.isCustom) {
-			sort.unmapped_type = "keyword"
+			sort.unmapped_type = 'keyword';
 		}
 
-		const filters = [...tableMeta?.defaultFilters || [], ...tableMeta?.filters || []];
+		const filters = [...(tableMeta?.defaultFilters || []), ...(tableMeta?.filters || [])];
 
-		if (
-			tableStateValues.geoKey &&
-			drawStateValues.selectedPolygonString &&
-			drawStateValues.currentFeature
-		) {
+		if (tableStateValues.geoKey && drawStateValues.selectedPolygonString && drawStateValues.currentFeature) {
 			filters.push({
 				type: 'geo_intersects',
 				field: tableStateValues.geoKey,
@@ -70,24 +65,47 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		let globalFilter = tableStateValues.globalFilter;
 
-		if (tableStateValues.isGeneric && !tableStateValues.globalSearch)
-			globalFilter = null;
+		if (tableStateValues.isGeneric && !tableStateValues.globalSearch) globalFilter = null;
+
+		const isMongo = tableStateValues.isElasticQuery === false;
 
 		const variables = {
 			index: tableStateValues.esIndex,
 			pagination: { ...pagination, pageIndex: undefined, pageSize: undefined },
 			search: {
-				query: globalFilter ? `*${globalFilter}*` : '*',
+				query: globalFilter ? `${globalFilter}` : '',
 				fields: tableMeta.searchFields,
 				advanceSearch: tableStateValues.advanceSearch,
 			},
 			sort,
 			filters,
+			...(isMongo && { isElasticQuery: false }),
 		};
-
 
 		if (tableStateValues.filterLayerType)
 			layerFiltersController.setVariables(tableStateValues.filterLayerType, variables);
+
+		let total = isMongo ? tableStateValues?.data?.total : null;
+
+		if (pagination.pageIndex === 0 && isMongo) {
+			(async () => {
+				const dbDataTotal = await client.query({
+					variables,
+					query: GET_DB_DATA_TOTAL,
+				});
+
+				if (isNumber(dbDataTotal?.data?.getDbDataTotal?.data)) {
+					total = dbDataTotal.data.getDbDataTotal.data;
+
+					Controller.updateState({
+						data: {
+							...Controller.getValue('data'),
+							total,
+						},
+					});
+				}
+			})();
+		}
 
 		const allSelectedRows = await client.query({
 			variables,
@@ -107,7 +125,8 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				const defaultValue =
 					!columnsType.current[accessorKey] || columnsType.current[accessorKey] === 'number' ? undefined : '';
 				let value = get(row, accessorKey);
-				if (value !== undefined && value !== null && !Array.isArray(value) && typeof value !== 'object') value = defaultValue === '' ? `${value}` : value;
+				if (value !== undefined && value !== null && !Array.isArray(value) && typeof value !== 'object')
+					value = defaultValue === '' ? `${value}` : value;
 				set(row, accessorKey, value || defaultValue, defaultValue);
 			});
 		});
@@ -120,7 +139,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		Controller.updateState({
 			data: {
 				rows,
-				total: data.total,
+				total: total ?? data.total,
 				pit: data.pit,
 			},
 			pagination,
@@ -134,7 +153,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	async function fetchFooterAggregationData() {
 		const tableMeta = tableState.get({ noproxy: true });
 		const { TableSchema, defaultFilters, esIndex, filters } = tableMeta;
-		if (!TableSchema) return
+		if (!TableSchema) return;
 
 		const aggregationColumns = TableSchema?.filter(column => column.Aggregation)?.map(column => column.Aggregation);
 
@@ -257,12 +276,12 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				}
 
 				if (tableStateValues.onScrollCheck) {
-					const startIndex = Object.keys(tableStateValues.rowSelection).length
-					const newstate = tableStateValues.rowSelection
+					const startIndex = Object.keys(tableStateValues.rowSelection).length;
+					const newstate = tableStateValues.rowSelection;
 					for (let i = startIndex; i < startIndex + 50; i++) {
-						newstate[i] = true
+						newstate[i] = true;
 					}
-					Controller.setColumnCheck(newstate)
+					Controller.setColumnCheck(newstate);
 				}
 
 				callQuery(pagination);
