@@ -36,6 +36,8 @@ import RelatedBillingPartiesMeta from './related_billing_parties_schema';
 import AcreageSummaryMeta from './acreage_summary_schema';
 import ExhibitAMeta from './exhibit_a_schema';
 import AcreageDetilsMeta from './acreage_details_schema';
+import ContactDetailUnitInterestMeta from './contactDetail_unit_interests_schema';
+import ContactDetailTractInterestMeta from './contactDetail_tract_interest_schema';
 
 export const SCHEMA = {
 	ContactTable: ContactMeta,
@@ -84,4 +86,6 @@ export const SCHEMA = {
 	AgreementRelatedUnitsTable: AgreementRelatedUnitsMeta,
 	UnitRelatedAgreementTable: UnitRelatedAgreementMeta,
 	TractInterestsTable: TractInterestsMeta, // Tracts Interest schema
+	ContactDetailUnitInterestTable: ContactDetailUnitInterestMeta,
+	ContactDetailTractInterestTable: ContactDetailTractInterestMeta,
 };

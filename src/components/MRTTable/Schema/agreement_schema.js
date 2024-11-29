@@ -64,6 +64,7 @@ export const AgreementTypes = {
 
 const AgreementMeta = {
 	esIndex,
+	isElasticQuery: false,
 	pageSize: 50,
 	pagination: {
 		pageIndex: 0,

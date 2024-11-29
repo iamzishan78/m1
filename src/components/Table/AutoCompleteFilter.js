@@ -25,6 +25,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
 	setFilters,
 	multiple,
 	isDate,
+	isElasticQuery = true,
 	...others
 }) {
 	const getDefaultSearchValue = () => {
@@ -64,6 +65,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
 		if (!filterVal) {
 			setValue(filterValue);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [filterList[index][0]]);
 
 	useEffect(() => {
@@ -72,6 +74,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
 		} else {
 			SetOptions(custom?.filterOptions);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [filters]);
 
 	useEffect(() => {
@@ -139,6 +142,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
 				}
 			}
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [filtersData]);
 
 	const getFiltersAction = search => {
@@ -174,9 +178,9 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
 					query: rawSearch,
 					field: typeof filterKey === 'string' ? filterKey : undefined,
 					fields: typeof filterKey !== 'string' ? filterKey : undefined,
-					type: others.aggsType ? others.aggsType : undefined,
 					size: 100000,
 				},
+				isElasticQuery,
 			},
 		});
 	};
@@ -195,7 +199,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
 			inputValue={customStartCaseString(search?.toString(), isDate)}
 			getOptionSelected={(option, value) => option.key === value.key}
 			getOptionLabel={option =>
-				customStartCaseString(capitalizeFirstLetter(option?.key?.toString().replace(/^\,|\,$/gm, '')), isDate)
+				customStartCaseString(capitalizeFirstLetter(option?.key?.toString().replace(/^,|,$/gm, '')), isDate)
 			}
 			onChange={(e, value2, reason) => {
 				if (reason === 'clear' || (multiple && value2.length === 0) || (!multiple && !value2?.key)) {
@@ -206,12 +210,12 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
 					if (multiple) {
 						filterList[index].length = 0;
 						value2.forEach(v => {
-							const val = typeof v.key === 'string' ? v.key.replace(/^\,|\,$/gm, '') : v.key;
+							const val = typeof v.key === 'string' ? v.key.replace(/^,|,$/gm, '') : v.key;
 							filterList[index].push(val);
 						});
 						// setSearch(value2[value2.length - 1]?.key);
 					} else {
-						filterList[index][0] = typeof value2.key === 'string' ? value2.key.replace(/^\,|\,$/gm, '') : value2.key;
+						filterList[index][0] = typeof value2.key === 'string' ? value2.key.replace(/^,|,$/gm, '') : value2.key;
 						if (custom?.initialCapitalization) {
 							setSearch(capitalizeFirstLetter(value2.key));
 						} else {
