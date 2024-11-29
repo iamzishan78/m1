@@ -257,7 +257,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 			} else if (updatedMapSettings) {
 				dispatch(showErrorMessage('Error in saving Map Default Position.'));
 			}
-			setMapVars(mapStateValues.defaultMapVars);
+			setMapVars(mapDefaultPosition);
 		}
 	}, [updatedMapSettings]);
 
