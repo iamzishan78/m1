@@ -280,9 +280,10 @@ function MapGridCard(props) {
 												filtersChange={() => {}}
 												appliedFilters={[
 													{
-														field: 'contactName.keyword',
-														value: props.contactData?.name,
-													},
+														field: ['contactId', 'relatedContacts._id'],
+														value: props.contactData?._id,
+														oRFilter: true
+													}
 												]}
 												filterToggle={() => {}}
 												targetLabel={'activitiesDashboard'}

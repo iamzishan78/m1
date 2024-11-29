@@ -325,6 +325,7 @@ export const layerFilters = hookstate(copy(layerFilterInitialState));
 /* -------------------------------------------------------------------------- */
 
 export const mapControlsInitialState = {
+	fileUploadedContent: null,
 	fileUploaded: null,
 	selectedControl: 'layer',
 	layerAddControl: null,
@@ -436,12 +437,16 @@ export const slidoutInitialState = {
 	show: false,
 	views: [],
 	parentId: '',
-	view: {},
+	view: null,
 	props: {},
 	activeTabs: { Grid: false, Map: false },
 	title: '',
 	formMode: '',
 	newEntity: false,
+	selectedActivity: null,
+	selectedActivityId:  "",
+	newComments:[],
+	loader: false
 };
 
 export const slidoutState = hookstate(copy(slidoutInitialState));

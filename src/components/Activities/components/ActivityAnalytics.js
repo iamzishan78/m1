@@ -11,6 +11,7 @@ import DonutChart from 'components/Shared/Charts/DonutChart';
 import StackedBarChart from 'components/Shared/Charts/StackedBarChart';
 import { getFilters } from 'components/Table/Activities/ActivitiesTable';
 import { useSelector } from 'react-redux';
+import { getActivityFilters } from './ActivitiesDashboard';
 
 const defaultSeriesActivities = [
 	{
@@ -61,7 +62,7 @@ const defaultUpdateUsers = [
 		data: [],
 	},
 ];
-const ActivityAnalytics = ({ appliedFilters, tableFilters }) => {
+const ActivityAnalytics = ({ appliedFilters, tableFilters, module }) => {
 	const [stateApp] = useContext(AppContext);
 	const [analyticsData, setAnalyticsData] = useState([]);
 	const [contactData, setContactData] = useState([]);
@@ -104,6 +105,10 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters }) => {
 				appliedFilters.filter = 'audit';
 			}
 			rangeFilters = getFilters(appliedFilters);
+
+			if (module === 'Activities') {
+				rangeFilters = getActivityFilters(appliedFilters);
+			}
 		}
 		return [...rangeFilters, ...tableFilters];
 	};

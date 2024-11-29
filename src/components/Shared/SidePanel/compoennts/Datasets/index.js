@@ -156,6 +156,7 @@ function Datasets({ headerButton, search, stateApp }) {
 		} else return [];
 	}, [_datasets, mapSettings, search]);
 
+
 	const { mapControlsStateValues } = mapControlsController.useState(['selectedDataset'], 'mapControlsStateValues');
 
 	const getBorderColor = useCallback(

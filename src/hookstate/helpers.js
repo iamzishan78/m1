@@ -31,12 +31,14 @@ export const handleVisiblityMenu = () => {
 
 export const handleVisiblityMenuClick = () => {
 	const interval = setInterval(() => {
-		const element = document.querySelector('[aria-label="Show/Hide columns"]');
-		if (element) {
-			element.addEventListener('click', () => {
-				handleVisiblityMenu();
+		const elements = document.querySelectorAll('[aria-label="Show/Hide columns"]');
+		if (elements.length) {
+			elements.forEach(element => {
+				element.addEventListener('click', () => {
+					handleVisiblityMenu();
+				});
+				clearInterval(interval);
 			});
-			clearInterval(interval);
 		}
 	}, 1000);
 };

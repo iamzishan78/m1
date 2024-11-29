@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Grid, TextField, Button } from '@material-ui/core';
+import { Grid, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { useLazyQuery } from '@apollo/client';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -13,6 +13,7 @@ import { CUSTOM_DATES } from 'utils/data';
 import { useSelector } from 'react-redux';
 import { handleCustomDateTypeChange } from 'utils/helper';
 import { esIndexFilterKeyMap } from 'utils/data';
+import { getActivityFilters } from './ActivitiesDashboard';
 
 const useStyles = makeStyles(theme => ({
 	actionBar: {
@@ -255,6 +256,9 @@ const CampaignFilter = ({
 		let rangeFilters = [];
 		if (!tableFilters.find(filter => filter.type === 'range')) {
 			rangeFilters = getFilters(appliedFilters);
+			if (esIndex === 'activities_flat') {
+				rangeFilters = getActivityFilters(appliedFilters);
+			}
 		}
 		const filters = [...rangeFilters, ...tableFilters];
 		const index = filters.findIndex(f => f.field === 'contact.campaignName.keyword');
@@ -282,7 +286,7 @@ const CampaignFilter = ({
 			},
 		});
 		onCampaignChange('campaign', search);
-	}, [search, selectedFilters.qualifier]);
+	}, [search, selectedFilters.qualifier, tableFilters, appliedFilters]);
 
 	return (
 		<Autocomplete
@@ -344,6 +348,9 @@ const QualifierFilter = ({
 				appliedFilters.filter = 'audit';
 			}
 			rangeFilters = getFilters(appliedFilters);
+			if (esIndex === 'activities_flat') {
+				rangeFilters = getActivityFilters(appliedFilters);
+			}
 		}
 		const filters = [...rangeFilters, ...tableFilters];
 
@@ -373,7 +380,12 @@ const QualifierFilter = ({
 		});
 
 		onQualifierChange(esIndex === 'contacts_flat' ? 'audit' : 'qualifier', search);
-	}, [search, esIndex === 'contacts_flat' ? selectedFilters.audit : selectedFilters.campaign]);
+	}, [
+		search,
+		esIndex === 'contacts_flat' ? selectedFilters.audit : selectedFilters.campaign,
+		tableFilters,
+		appliedFilters,
+	]);
 
 	return (
 		<Autocomplete

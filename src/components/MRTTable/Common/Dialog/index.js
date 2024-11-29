@@ -47,6 +47,7 @@ function AllDialogs(props) {
 		Loader.createToast('deletion', 'Deletion in Progress');
 		const user = globalStateController.getValue('user');
 		const testCase = globalStateController.getValue('testCase');
+		const hasMultiGrids = tableController(tableKey).getValue('hasMultiGrids')
 		gridGenericRemove({
 			variables: {
 				tableKey,
@@ -71,6 +72,12 @@ function AllDialogs(props) {
 				tableGlobalController.refetch();
 			}
 		);
+		
+		if (hasMultiGrids) {
+			tableGlobalController.updateState({
+				paymentMultiGrid: { showMultiGrid: false },
+			});
+		}
 	};
 
 	return (

@@ -488,7 +488,6 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                       )}
                     />
                   </Grid>
-
                   <Grid item md={2} id={`responsibleParty-${index}`}>
                     <Controller
                       control={control}
@@ -502,11 +501,8 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                             props.onChange(value?.name || null);
                           }}
                         />
-
-
                       )}
                     />
-
                   </Grid>
                   <Grid item md={2} id={`provisions-${index}`}>
                     <Controller

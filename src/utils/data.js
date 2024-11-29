@@ -678,6 +678,12 @@ export const AdminManagementRoutes = {
 	},
 };
 
+export const paymentGridsInitialData = [
+  { index: 0, value: "payees", label: "Payees", showCounts: true },
+  { index: 0, value: "billingParties", label: "Billing Parties", showCounts: true },
+  { index: 0, value: "costAllocations", label: "Cost Allocation", showCounts: true },
+];
+
 export const bypassTenants = [
 	'localhost',
 	// "m1Preview",
@@ -723,3 +729,4 @@ export const esIndexFilterKeyMap = {
 };
 
 export const MapFeatureTenants = ['m1dev', 'frontier', 'localhost'];
+export const PaymentFeatureTenants = ['m1dev', 'frontier', 'localhost'];
