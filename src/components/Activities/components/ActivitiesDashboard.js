@@ -4,7 +4,6 @@ import { useLazyQuery } from '@apollo/client';
 
 import ActivityAnalytics from './ActivityAnalytics';
 import ActivitiesDashboardFilter from './ActivitiesDashboardFilter';
-import ActivitiesTable from 'components/Table/Activities/ActivitiesTable';
 import { GET_ES_MIN_VALUE } from 'graphQL/useQueryESMinValue';
 import MRTTable from 'components/MRTTable';
 import { tableController } from 'hookstate/tableController';
