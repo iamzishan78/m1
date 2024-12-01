@@ -566,19 +566,11 @@ export const AdminManagementRoutes = {
 		isDefault: true,
 		showSettingString: true,
 	},
-	FLATTEN: {
+	ADMINOPERATION: {
 		featureFlag: 'AlWAYSSHOW',
-		title: 'Flatten',
-		link: '/admin/runFlattening',
-		component: 'Flatten',
-		noCheck: true,
-		showSettingString: false,
-	},
-	REINDEX: {
-		featureFlag: 'AlWAYSSHOW',
-		title: 'Reindex',
-		link: '/admin/runReindexing',
-		component: 'Reindex',
+		title: 'AdminOperation',
+		link: '/admin/adminOperation',
+		component: 'AdminOperation',
 		noCheck: true,
 		showSettingString: false,
 	},
@@ -679,9 +671,9 @@ export const AdminManagementRoutes = {
 };
 
 export const paymentGridsInitialData = [
-  { index: 0, value: "payees", label: "Payees", showCounts: true },
-  { index: 0, value: "billingParties", label: "Billing Parties", showCounts: true },
-  { index: 0, value: "costAllocations", label: "Cost Allocation", showCounts: true },
+	{ index: 0, value: 'payees', label: 'Payees', showCounts: true },
+	{ index: 0, value: 'billingParties', label: 'Billing Parties', showCounts: true },
+	{ index: 0, value: 'costAllocations', label: 'Cost Allocation', showCounts: true },
 ];
 
 export const bypassTenants = [

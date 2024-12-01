@@ -444,9 +444,9 @@ export const slidoutInitialState = {
 	formMode: '',
 	newEntity: false,
 	selectedActivity: null,
-	selectedActivityId:  "",
-	newComments:[],
-	loader: false
+	selectedActivityId: '',
+	newComments: [],
+	loader: false,
 };
 
 export const slidoutState = hookstate(copy(slidoutInitialState));
@@ -463,3 +463,19 @@ export const detailCardInitialState = {
 };
 
 export const detailCardState = hookstate(copy(detailCardInitialState));
+
+/* -------------------------------------------------------------------------- */
+/*                         Admin Operations Controller                        */
+/* -------------------------------------------------------------------------- */
+
+export const adminOperationsInitialState = {
+	tenants: [],
+	selectedScript: null,
+	models: [],
+	chunkSize: null,
+	reflatDependencies: 'No',
+	createNewFlatData: 'No',
+	warning: null,
+	message: null,
+};
+export const adminOperationsState = hookstate(copy(adminOperationsInitialState));
