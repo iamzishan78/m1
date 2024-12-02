@@ -1,18 +1,21 @@
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import Analytics from 'components/Shared/svgIcons/analytics';
 import { formatDateTime,formatDate } from 'components/Shared/functions';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import ActivityAnalyticsToolBar from 'components/MRTTable/TablesOverride/ActivityAnalytics/ActivityAnalyticsToolBar';
 
 const esIndex = 'activities_flat';
 
+const convertToBoolean = value => 
+    ({ "true": true, "false": false }[value] ?? value);
+
 const onClickedRow = selectedRow => {
-	const Controller = tableController('ActivityTable');
-	const { customLayer } = Controller.getValue('customProps');
 	tableGlobalController.updateState({
 		dialog: {
 			type: 'activitydetailmodal',
-			selectedRow,
+			selectedRow: {
+                ...selectedRow,
+                isClosed: convertToBoolean(selectedRow.isClosed) // Convert "isClosed" to boolean if it's a string, else keep original value.
+            }
 		},
 	});
 };
