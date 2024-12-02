@@ -1,20 +1,20 @@
-import { SET_FLOW_STATE } from "../constants/ActionTypes";
+import { SET_FLOW_STATE } from '../constants/ActionTypes';
 
 const INIT_STATE = {
-  selectedPipe: null,
-  openPipeDialog: false,
-  pipeToShow: null,
-  pipeToShowTab: null,
-  pipelines: [],
+	selectedPipe: null,
+	openPipeDialog: false,
+	pipeToShow: null,
+	pipeToShowTab: null,
+	pipelines: [],
 };
 
 export default function Flow(state = INIT_STATE, action) {
-  switch (action.type) {
-    case SET_FLOW_STATE: {
-      return { ...state, ...(action.payload ? action.payload : {}) };
-    }
+	switch (action.type) {
+		case SET_FLOW_STATE: {
+			return { ...state, ...(action.payload ? action.payload : {}) };
+		}
 
-    default:
-      return state;
-  }
-};
+		default:
+			return state;
+	}
+}

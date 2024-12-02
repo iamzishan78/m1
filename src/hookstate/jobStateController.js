@@ -1,7 +1,6 @@
 import { hookStateController } from 'hookstate/hookStateController';
 import { jobInitialState, jobState } from './initialStates';
 
-
 const jobStateControllerHandler = () => ({
 	toggleBulkUpload: () => {
 		jobState.bulkUpload.set(!jobState.bulkUpload.get());

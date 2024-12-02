@@ -1,10 +1,7 @@
 import { useApolloClient } from '@apollo/client';
 import { debounce } from 'lodash';
 import { useCallback, useEffect } from 'react';
-import {
-	simpleTableController,
-	simpleTableGlobalController,
-} from 'hookstate/simpleTableController';
+import { simpleTableController, simpleTableGlobalController } from 'hookstate/simpleTableController';
 
 const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) => {
 	const Controller = simpleTableController(tableKey);
@@ -30,9 +27,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		Controller.updateState({
 			data: {
-				rows: JSON.parse(
-					JSON.stringify(rows).replaceAll(' \\u0000', '').replaceAll('\\u0000', '')
-				),
+				rows: JSON.parse(JSON.stringify(rows).replaceAll(' \\u0000', '').replaceAll('\\u0000', '')),
 				total: rows.length,
 			},
 			isLoading: false,

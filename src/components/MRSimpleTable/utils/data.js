@@ -118,10 +118,7 @@ const mrtFilterOptions = [
 	// },
 ];
 
-export const tableSimpleFilterModes = mrtFilterOptions.reduce(
-	(acc, cur) => ({ ...acc, [cur.option]: cur }),
-	{}
-);
+export const tableSimpleFilterModes = mrtFilterOptions.reduce((acc, cur) => ({ ...acc, [cur.option]: cur }), {});
 
 export const tableSimpleFilterModeOtions = {
 	string: ['fuzzy', 'contains', 'startsWith', 'endsWith'],
@@ -129,7 +126,7 @@ export const tableSimpleFilterModeOtions = {
 	inclusive: ['between', 'betweenInclusive'],
 	comparison: ['greaterThan', 'greaterThanOrEqualTo', 'lessThan', 'lessThanOrEqualTo'],
 	vacancy: ['empty', 'notEmpty'],
-	custom: ['singleselect'/* , 'multiselect' */],
+	custom: ['singleselect' /* , 'multiselect' */],
 };
 
 export const stringFilterOptions = [

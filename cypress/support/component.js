@@ -17,20 +17,20 @@
 import 'cypress-wait-until';
 
 // Import commands.js using ES2015 syntax:
-import './cypress.css'
-import './commands'
-import '../component/MRT/commands'
-import '../component/TableESHOC/commands'
-import '../component/M1nTable/commands'
-import '../component/Jobs/commands'
-import '../component/Map/Draw/commands'
-import '../component/Map/LayerManager/commands'
+import './cypress.css';
+import './commands';
+import '../component/MRT/commands';
+import '../component/TableESHOC/commands';
+import '../component/M1nTable/commands';
+import '../component/Jobs/commands';
+import '../component/Map/Draw/commands';
+import '../component/Map/LayerManager/commands';
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
-import { mount } from 'cypress/react'
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+import { mount } from 'cypress/react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 import Providers from 'Providers';
 import { globalStateController } from 'hookstate/globalStateController';
@@ -40,42 +40,40 @@ import { ConnectedRouter } from 'connected-react-router';
 import { history } from 'store';
 
 // Adds a new command 'mount' to Cypress for mounting a React component with custom global state and providers.
-Cypress.Commands.add(
-  'mount',
-  (component, { disableContactBulkProgress, testCase, spec, mrtOverrideMeta } = {}) => {
-    // Updates the global state with specific parameters before mounting the component.
-    // This includes setting various authentication and user data, as well as specific flags and metadata for the test.
-    globalStateController.setState({
-      apolloClientEndpoint: ldata.url, // Sets the GraphQL endpoint URL.
-      x_zumo_auth: ldata.x_zumo_auth, // Authentication token for Azure Mobile Services.
-      access_token: ldata.access_token, // OAuth2 access token.
-      user: userData, // User data object.
-      cypress: {
-        spec, // The current test specification.
-        disableContactBulkProgress: disableContactBulkProgress ?? true, // Disables contact bulk progress by default.
-        mrtOverrideMeta: {
-          isDefaultGridView: true,
-          columnVirtualization: false,
-          ...mrtOverrideMeta,
-        }, // Overrides for MRT (Material React Table) settings.
-      },
-      testCase, // The specific test case being run.
-    });
+Cypress.Commands.add('mount', (component, { disableContactBulkProgress, testCase, spec, mrtOverrideMeta } = {}) => {
+	// Updates the global state with specific parameters before mounting the component.
+	// This includes setting various authentication and user data, as well as specific flags and metadata for the test.
+	globalStateController.setState({
+		apolloClientEndpoint: ldata.url, // Sets the GraphQL endpoint URL.
+		x_zumo_auth: ldata.x_zumo_auth, // Authentication token for Azure Mobile Services.
+		access_token: ldata.access_token, // OAuth2 access token.
+		user: userData, // User data object.
+		cypress: {
+			spec, // The current test specification.
+			disableContactBulkProgress: disableContactBulkProgress ?? true, // Disables contact bulk progress by default.
+			mrtOverrideMeta: {
+				isDefaultGridView: true,
+				columnVirtualization: false,
+				...mrtOverrideMeta,
+			}, // Overrides for MRT (Material React Table) settings.
+		},
+		testCase, // The specific test case being run.
+	});
 
-    // Wraps the component with Providers and a ConnectedRouter, ensuring that the component has access to Redux state, routing, etc.
+	// Wraps the component with Providers and a ConnectedRouter, ensuring that the component has access to Redux state, routing, etc.
 
-    const wrapped = <Providers>
-      <ConnectedRouter history={history}>
-        <DndProvider backend={HTML5Backend}>
-          {component}
-        </DndProvider>
-      </ConnectedRouter>
-    </Providers>;
+	const wrapped = (
+		<Providers>
+			<ConnectedRouter history={history}>
+				<DndProvider backend={HTML5Backend}>{component}</DndProvider>
+			</ConnectedRouter>
+		</Providers>
+	);
 
-    // Mounts the wrapped component within the Cypress test, making it ready for testing.
+	// Mounts the wrapped component within the Cypress test, making it ready for testing.
 
-    return mount(wrapped);
-  });
+	return mount(wrapped);
+});
 
 // Example use:
 // cy.mount(<MyComponent />)

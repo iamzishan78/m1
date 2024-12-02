@@ -174,7 +174,7 @@ const ActivitiesToolbar = ({
 					if (
 						(activityDate.isSame(selectedMonth, 'month') && view === Views.MONTH) ||
 						(activityDate.isBetween(weekStart, weekEnd, undefined, '[]') && view === Views.WEEK) || // '[]' includes start and end dates
-            stateApp.activityDisplayType !== 'calendar'
+						stateApp.activityDisplayType !== 'calendar'
 					) {
 						uniqueOwners.set(activity.responsibleParty, activity.responsibleParty);
 						ownerOptions.push({ value: activity.responsibleParty, label: activity.responsibleParty });

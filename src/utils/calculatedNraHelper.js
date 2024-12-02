@@ -1,37 +1,47 @@
-import { addTrailingZeros } from "components/Shared/functions";
+import { addTrailingZeros } from 'components/Shared/functions';
 
 // Handle NaN while parsing
-export const safeParseFloat = value => isNaN(parseFloat(value)) ? 0 : parseFloat(value);
+export const safeParseFloat = value => (isNaN(parseFloat(value)) ? 0 : parseFloat(value));
 
 export const calculateNRAForAgreementOwnerAndTractDialog = (interest1, interest2, net_acres) => {
-  if (!interest1 && !interest2) return null;
-  let nra = parseFloat(net_acres || 0) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0)) * 8;
-  nra = addTrailingZeros(nra.toFixed(8));
+	if (!interest1 && !interest2) return null;
+	let nra = parseFloat(net_acres || 0) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0)) * 8;
+	nra = addTrailingZeros(nra.toFixed(8));
 
-  return nra;
+	return nra;
 };
 
-export const calculateStandardNraForUnit = ({ uAcres, working_interest, royalty_interest, orri, nri, ownershipPercentage, workspaceSettings }) => {
-  // Use safeParseFloat to remove NaN
-  const sumOfDecimalInterest = ownershipPercentage ? ownershipPercentage : (safeParseFloat(working_interest) + safeParseFloat(royalty_interest) + safeParseFloat(orri) + safeParseFloat(nri))
-  const isCustomType = workspaceSettings?.settings?.map?.unitNra?.type === "custom";
-  const divisor = parseFloat(workspaceSettings?.settings?.map?.unitNra?.value || 0);
-  let nra = parseFloat(uAcres || 0) * sumOfDecimalInterest
-  if (isCustomType)
-    nra /= divisor;
-  nra = isNaN(nra) ? 0 : nra;
-  nra = addTrailingZeros(nra.toFixed(8));
-  return nra;
+export const calculateStandardNraForUnit = ({
+	uAcres,
+	working_interest,
+	royalty_interest,
+	orri,
+	nri,
+	ownershipPercentage,
+	workspaceSettings,
+}) => {
+	// Use safeParseFloat to remove NaN
+	const sumOfDecimalInterest = ownershipPercentage
+		? ownershipPercentage
+		: safeParseFloat(working_interest) + safeParseFloat(royalty_interest) + safeParseFloat(orri) + safeParseFloat(nri);
+	const isCustomType = workspaceSettings?.settings?.map?.unitNra?.type === 'custom';
+	const divisor = parseFloat(workspaceSettings?.settings?.map?.unitNra?.value || 0);
+	let nra = parseFloat(uAcres || 0) * sumOfDecimalInterest;
+	if (isCustomType) nra /= divisor;
+	nra = isNaN(nra) ? 0 : nra;
+	nra = addTrailingZeros(nra.toFixed(8));
+	return nra;
 };
 
 export const calculateStandardNraForTract = (tract_gross_acres, mineral_interest, ri, orri, workspaceSettings) => {
-  const isStandardType = workspaceSettings?.settings?.map?.tractNra?.type === "standard";
-  let divisor = isStandardType ? 0.125 : parseFloat(workspaceSettings?.settings?.map?.tractNra?.value || 0);
-  if (!divisor) divisor = 0.125;
-  // Use safeParseFloat to remove NaN
-  let nra = (safeParseFloat(tract_gross_acres) * safeParseFloat(mineral_interest) * (safeParseFloat(ri) + safeParseFloat(orri)))
-  nra /= divisor;
-  nra = isNaN(nra) ? 0 : nra;
-  nra = addTrailingZeros(nra.toFixed(8));
-  return nra;
+	const isStandardType = workspaceSettings?.settings?.map?.tractNra?.type === 'standard';
+	let divisor = isStandardType ? 0.125 : parseFloat(workspaceSettings?.settings?.map?.tractNra?.value || 0);
+	if (!divisor) divisor = 0.125;
+	// Use safeParseFloat to remove NaN
+	let nra =
+		safeParseFloat(tract_gross_acres) * safeParseFloat(mineral_interest) * (safeParseFloat(ri) + safeParseFloat(orri));
+	nra /= divisor;
+	nra = isNaN(nra) ? 0 : nra;
+	nra = addTrailingZeros(nra.toFixed(8));
+	return nra;
 };

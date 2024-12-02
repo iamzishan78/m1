@@ -1,109 +1,110 @@
-import React from "react";
+import React from 'react';
 
-import loadashFilter from "lodash/filter";
+import loadashFilter from 'lodash/filter';
 
-import Grid from "@material-ui/core/Grid";
-import { makeStyles } from "@material-ui/core";
-import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography";
-import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 
 const filter = createFilterOptions();
 
 const useStyles = makeStyles({
-  inputRoot: {
-    backgroundColor: "#ffffff",
-  },
-  listbox: {
-    boxSizing: "border-box",
-    "& ul": {
-      padding: 0,
-      margin: 0,
-    },
-  },
+	inputRoot: {
+		backgroundColor: '#ffffff',
+	},
+	listbox: {
+		boxSizing: 'border-box',
+		'& ul': {
+			padding: 0,
+			margin: 0,
+		},
+	},
 });
 
 const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant, type, ...rest }) => {
-  const classes = useStyles();
+	const classes = useStyles();
 
-  const onInputChange = (event, value) => {
-    const _value = event?.target?.value ?? value;
-    if (onSearch) onSearch(_value);
-  };
-  return (
-    <Autocomplete
-      // defaultValue={value}
-      value={value}
-      disableListWrap
-      classes={classes}
-      id="autoCompleteWithAddNew"
-      options={options}
-      getOptionLabel={(option) => {
-        if (typeof option === "string") {
-          return option;
-        }
-        if (option?.name) return option.name;
-        else return "";
-      }}
-      getOptionSelected={(option, value) => {
-        return option?.name === value;
-      }}
-      renderOption={(option) => {
-        if (option._id === "newEntity") return <Typography style={{ color: "midnightblue" }}>Add '{option.name}'</Typography>;
+	const onInputChange = (event, value) => {
+		const _value = event?.target?.value ?? value;
+		if (onSearch) onSearch(_value);
+	};
+	return (
+		<Autocomplete
+			// defaultValue={value}
+			value={value}
+			disableListWrap
+			classes={classes}
+			id="autoCompleteWithAddNew"
+			options={options}
+			getOptionLabel={option => {
+				if (typeof option === 'string') {
+					return option;
+				}
+				if (option?.name) return option.name;
+				else return '';
+			}}
+			getOptionSelected={(option, value) => {
+				return option?.name === value;
+			}}
+			renderOption={option => {
+				if (option._id === 'newEntity')
+					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
 
-        return (
-          <Grid container spacing={0}>
-            <Grid container item xs={12} alignItems="center">
-              <Grid item xs>
-                <span style={{ fontWeight: 400 }}>{option.name}</span>
-              </Grid>
-            </Grid>
-          </Grid>
-        );
-      }}
-      onInputChange={onInputChange}
-      filterOptions={(options, params) => {
-        // const { inputValue } = params;
-        let inputValue = value ? JSON.parse(JSON.stringify(value)) : "";
-        if (params.inputValue === '' && inputValue) {
-          params.inputValue = inputValue
-        }
-        // if (typeof inputValue.name === "string") {
-        //   inputValue = inputValue.name;
-        // }
-        const filtered = filter(options, { ...params, inputValue });
-        const isExist = loadashFilter(filtered, (filter) => {
-          return filter._id === params.inputValue?.trim() || filter.name === params.inputValue?.trim();
-        });
-        // Suggest the creation of a new value
-        if (params.inputValue !== "" && (!isExist || isExist.length === 0)) {
-          filtered.unshift({
-            name: params.inputValue,
-            _id: "newEntity",
-          });
-        }
-        return filtered;
-      }}
-      onChange={(event, newValue) => {
-        if (newValue && newValue._id) {
-          if (newValue._id !== "newEntity") setValue(newValue);
-          else setValue({ _id: "newEntity", name: newValue.name });
-        } else setValue("");
-      }}
-      renderInput={(params) => (
-        <TextField
-          margin={rest.margin}
-          label={rest.label}
-          variant={variant ? variant : "standard"}
-          {...params}
-          InputProps={{
-            ...params.InputProps,
-          }}
-        //size="small"
-        />
-      )}
-    />
-  );
+				return (
+					<Grid container spacing={0}>
+						<Grid container item xs={12} alignItems="center">
+							<Grid item xs>
+								<span style={{ fontWeight: 400 }}>{option.name}</span>
+							</Grid>
+						</Grid>
+					</Grid>
+				);
+			}}
+			onInputChange={onInputChange}
+			filterOptions={(options, params) => {
+				// const { inputValue } = params;
+				let inputValue = value ? JSON.parse(JSON.stringify(value)) : '';
+				if (params.inputValue === '' && inputValue) {
+					params.inputValue = inputValue;
+				}
+				// if (typeof inputValue.name === "string") {
+				//   inputValue = inputValue.name;
+				// }
+				const filtered = filter(options, { ...params, inputValue });
+				const isExist = loadashFilter(filtered, filter => {
+					return filter._id === params.inputValue?.trim() || filter.name === params.inputValue?.trim();
+				});
+				// Suggest the creation of a new value
+				if (params.inputValue !== '' && (!isExist || isExist.length === 0)) {
+					filtered.unshift({
+						name: params.inputValue,
+						_id: 'newEntity',
+					});
+				}
+				return filtered;
+			}}
+			onChange={(event, newValue) => {
+				if (newValue && newValue._id) {
+					if (newValue._id !== 'newEntity') setValue(newValue);
+					else setValue({ _id: 'newEntity', name: newValue.name });
+				} else setValue('');
+			}}
+			renderInput={params => (
+				<TextField
+					margin={rest.margin}
+					label={rest.label}
+					variant={variant ? variant : 'standard'}
+					{...params}
+					InputProps={{
+						...params.InputProps,
+					}}
+					//size="small"
+				/>
+			)}
+		/>
+	);
 };
 
 export default AutoCompleteWithAddNew;

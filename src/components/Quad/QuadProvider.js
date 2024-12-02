@@ -1,14 +1,14 @@
-import React from "react";
-import { QuadContextProvider } from "./QuadContext";
+import React from 'react';
+import { QuadContextProvider } from './QuadContext';
 
-import QuadSummary from "./QuadSummary";
+import QuadSummary from './QuadSummary';
 
 function QuadProvider(props) {
-  return (
-    <QuadContextProvider>
-      <QuadSummary />
-    </QuadContextProvider>
-  );
+	return (
+		<QuadContextProvider>
+			<QuadSummary />
+		</QuadContextProvider>
+	);
 }
 
 export default QuadProvider;

@@ -51,7 +51,6 @@ const payeeForm = ({ setValue }) => {
 			onChange: value => {
 				setValue('paymentAllocation', value);
 				setValue('paymentAmount', calculatePercentage(value, paymentAmount));
-
 			},
 			type: 'number',
 			InputProps: {

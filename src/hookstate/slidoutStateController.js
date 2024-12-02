@@ -22,15 +22,15 @@ const slidoutStateControllerHandler = state => ({
 	changeView: view => {
 		state.view.set(view);
 	},
-	updateParent: (newParent) => {
+	updateParent: newParent => {
 		state.parentType.set(newParent);
 	},
-	updateNewEntity: (newEntity) => {
-		state.newEntity.set(newEntity)
+	updateNewEntity: newEntity => {
+		state.newEntity.set(newEntity);
 	},
-	updateEntityLoading: (isLoading) => {
+	updateEntityLoading: isLoading => {
 		state.isLoading.set(isLoading);
-	}
+	},
 });
 
 export const slidoutStateController = {

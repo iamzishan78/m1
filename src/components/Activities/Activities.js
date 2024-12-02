@@ -294,7 +294,7 @@ const Activities = () => {
 		getContactsForActivity({
 			variables: { activityId: selectedActivityId.get() },
 		});
-	},[selectedActivityId.get()])
+	}, [selectedActivityId.get()]);
 
 	const onEventClick = event => {
 		window.history.pushState('', '', `/calendar/activities/${event._id}`);

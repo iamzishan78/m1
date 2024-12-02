@@ -1,16 +1,10 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const DELETE_CHECK_FROM_FILE_DESCRIPTOR = gql`
-  mutation deleteCheckFromFileDescriptor(
-    $descriptorId: String
-    $checkId: String
-  ) {
-    deleteCheckFromFileDescriptor(
-      descriptorId: $descriptorId
-      checkId: $checkId
-    ) {
-      success
-      message
-    }
-  }
+	mutation deleteCheckFromFileDescriptor($descriptorId: String, $checkId: String) {
+		deleteCheckFromFileDescriptor(descriptorId: $descriptorId, checkId: $checkId) {
+			success
+			message
+		}
+	}
 `;

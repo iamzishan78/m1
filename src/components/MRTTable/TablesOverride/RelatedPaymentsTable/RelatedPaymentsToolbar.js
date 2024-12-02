@@ -20,7 +20,7 @@ function RelatedPaymentsToolbar({ table, tableKey }) {
 			<Typography
 				variant="h6"
 				component="h1"
-				style={{ fontWeight: 'bold', margin: '5px 0px 0px 10px', position: 'absolute', left:'0'}}
+				style={{ fontWeight: 'bold', margin: '5px 0px 0px 10px', position: 'absolute', left: '0' }}
 			>
 				RELATED PAYMENTS
 			</Typography>

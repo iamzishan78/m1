@@ -1,13 +1,13 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const GETMONGOUSERS = gql`
-  query getAllMongoUsers {
-    allMongoUsers {
-      _id
-      email
-      name
-      displayName
-      ts
-    }
-  }
+	query getAllMongoUsers {
+		allMongoUsers {
+			_id
+			email
+			name
+			displayName
+			ts
+		}
+	}
 `;

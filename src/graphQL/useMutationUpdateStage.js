@@ -1,11 +1,11 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const UPDATESTAGE = gql`
-  mutation updateStage($stage: JSON) {
-    updateStage(stage: $stage) {
-      success
-      message
-      error
-    }
-  }
+	mutation updateStage($stage: JSON) {
+		updateStage(stage: $stage) {
+			success
+			message
+			error
+		}
+	}
 `;

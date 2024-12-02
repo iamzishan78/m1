@@ -42,6 +42,10 @@ export const PaymentRightDialog = () => {
 	};
 
 	return (
-		<>{drawer === 'paymentDialog' && <AddNewRelatedData title="Payments" addNewData={addNewPayment} formName={drawer} />}</>
+		<>
+			{drawer === 'paymentDialog' && (
+				<AddNewRelatedData title="Payments" addNewData={addNewPayment} formName={drawer} />
+			)}
+		</>
 	);
 };

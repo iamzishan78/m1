@@ -44,11 +44,11 @@ const ColumnWithLink = ({ value, link, ...rest }) => {
 				rest.onClick
 					? rest.onClick
 					: e => {
-						e.stopPropagation();
-						history.push(link);
-					}
+							e.stopPropagation();
+							history.push(link);
+						}
 			}
-			data-testid='column-with-link'
+			data-testid="column-with-link"
 		>
 			{!rest.disabled ? (
 				<div className={classes.root}>

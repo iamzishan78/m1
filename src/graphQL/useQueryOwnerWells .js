@@ -1,7 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const OWNERWELLSQUERY = gql`
-  query getOwnerWells($ownerId: String) {
-    ownerWells(ownerId: $ownerId)
-  }
+	query getOwnerWells($ownerId: String) {
+		ownerWells(ownerId: $ownerId)
+	}
 `;
