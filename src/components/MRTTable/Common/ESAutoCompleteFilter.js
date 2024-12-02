@@ -6,7 +6,8 @@ import _, { debounce } from 'lodash';
 import { tableController } from 'hookstate/tableController';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
-import vf_currency from 'components/Shared/valueformatters/vf_currency.js';
+import vf_currency, { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+import vf_number from 'components/Shared/valueformatters/vf_number';
 
 // format value to show filter value & option with $ sign as prefix
 const formatValue = (value, field) => {
@@ -141,8 +142,24 @@ function ESAutoCompleteFilter({
 			options = _.uniqWith(options, (a, b) => a.label === b.label);
 		}
 
+		if (type === 'price') {
+			options = hits.map(({ key }) => ({
+				label: vf_currency_to_fixed(key, 2),
+				value: key,
+			}));
+			options = _.uniqWith(options, (a, b) => a.label === b.label);
+		}
+
+		if (type === 'decimal') {
+			options = hits.map(({ key }) => ({
+				label: vf_number(key, 2),
+				value: key,
+			}));
+			options = _.uniqWith(options, (a, b) => a.label === b.label);
+		}
+
 		options = options.filter(op => {
-			op.label = formatValue(op.label, field); // format value to show $ sign as prefix
+			op.label = formatValue(op.label); // format value to show $ sign as prefix
 			return op.value;
 		});
 
@@ -188,6 +205,31 @@ function ESAutoCompleteFilter({
 			const requiredFilterValue = defaultFilterOptions?.find(option => option?.value === filterValue)?.label;
 			filterValue = requiredFilterValue;
 		}
+	} else if (type === 'price') {
+		if (typeof filterValue === 'number') {
+			filterValue = vf_currency_to_fixed(filterValue, 2);
+		} else if (typeof filterValue === 'object' && !Array.isArray(filterValue)) {
+			filterValue = vf_currency_to_fixed(filterValue, 2);
+		} else if (Array.isArray(filterValue)) {
+			filterValue = filterValue.map(val => vf_currency_to_fixed(val, 2));
+		} else if (typeof filterValue === 'boolean' || type === 'defaultFiltersOptions') {
+			// If there are default filters, use them
+			const requiredFilterValue = defaultFilterOptions?.find(option => option?.value === filterValue)?.label;
+			filterValue = vf_currency_to_fixed(requiredFilterValue, 2);
+		}
+	} else if (type === 'decimal' && filterValue !== '') {
+		if (typeof filterValue === 'number') {
+			filterValue = vf_number(filterValue, 2);
+		} else if (typeof filterValue === 'object' && !Array.isArray(filterValue)) {
+			filterValue = vf_number(filterValue, 2);
+		} else if (Array.isArray(filterValue)) {
+			filterValue = filterValue.map(val => vf_number(val, 2));
+		} else if (typeof filterValue === 'boolean' || type === 'defaultFiltersOptions') {
+			// If there are default filters, use them
+			const requiredFilterValue = defaultFilterOptions?.find(option => option?.value === filterValue)?.label;
+			filterValue = vf_number(requiredFilterValue, 2);
+		}
+		filterValue = vf_number(filterValue, 2);
 	}
 	const id = Array.isArray(field) ? field.join(' ') : field;
 	// Filter out the options

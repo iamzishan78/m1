@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import { useLazyQuery } from '@apollo/client';
@@ -23,12 +23,6 @@ import { tableController } from 'hookstate/tableController';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 import PurchasersDropdown from './PurchasersDropdown';
 import AcquisitionIdDropdown from './AcquisitionIdDropdown';
-import MRSimpleTable from 'components/MRSimpleTable';
-import { propertiesRevenueTableKey } from 'components/MRSimpleTable/Schema/properties_revenue_schema';
-import { simpleTableController } from 'hookstate/simpleTableController';
-import { generateMonthYearArray, getPropertiesRevenueTableSchema } from './helper';
-import { CUSTOM_DATES } from 'utils/data';
-import { GET_CHECK_MIN_DATE } from 'graphQL/useQueryGetCheckMinDate';
 
 const useStyles = makeStyles(theme => ({
 	mainTabContainer: {
