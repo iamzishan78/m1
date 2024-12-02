@@ -3,15 +3,15 @@ import { formatDate } from 'components/Shared/functions';
 
 const esIndex = 'checkdetailsinterestscomparison_flat';
 
-
 const SalesVolumeComparisonMeta = {
 	esIndex,
+	isElasticQuery: false,
 	pageSize: 25,
 	pagination: {
 		pageIndex: 0,
 		pageSize: 25,
 	},
-	maxTableHeight: 'calc(100vh - 710px)',
+	maxTableHeight: 'calc(100vh - 540px)',
 	height: '767px',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
@@ -26,9 +26,9 @@ const SalesVolumeComparisonMeta = {
 		// Property Name column
 		{
 			...CommonSchema.INITAIL_PINNED,
-			name: "property.name.keyword",
+			name: 'property.name.keyword',
 			accessorKey: 'property.name',
-			header: "Property Name",
+			header: 'Property Name',
 		},
 		// Property Number column
 		{
@@ -47,7 +47,7 @@ const SalesVolumeComparisonMeta = {
 			header: 'Well API',
 			Cell: ({ row }) => {
 				const apiNumbers = row?.original?.wells?.map(item => item.apiNumber) || [];
-				return (apiNumbers?.length && apiNumbers?.length > 1) ? "Multiple" : apiNumbers[0];
+				return apiNumbers?.length && apiNumbers?.length > 1 ? 'Multiple' : apiNumbers[0];
 			},
 		},
 		// Well Name column with custom cell rendering
@@ -59,7 +59,7 @@ const SalesVolumeComparisonMeta = {
 			header: 'Well Name',
 			Cell: ({ row }) => {
 				const wellName = row?.original?.wells?.map(item => item.wellName) || [];
-				return (wellName?.length && wellName?.length > 1) ? "Multiple" : wellName[0];
+				return wellName?.length && wellName?.length > 1 ? 'Multiple' : wellName[0];
 			},
 		},
 		// Sales Date column with custom cell rendering to format the date
@@ -72,7 +72,7 @@ const SalesVolumeComparisonMeta = {
 			type: 'date',
 			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.date)}</>;
-			}
+			},
 		},
 		// Product column
 		{
@@ -86,7 +86,7 @@ const SalesVolumeComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'reportedVolume',
-			accessorKey: "reportedVolume",
+			accessorKey: 'reportedVolume',
 			header: 'Reported Volume',
 			isHiddenFieldExport: true,
 		},
@@ -134,7 +134,7 @@ const SalesVolumeComparisonMeta = {
 					<p
 						style={{
 							fontWeight: 600,
-							color: renderedCellValue > 0 ? "#177B1E" : "#F4273D",
+							color: renderedCellValue > 0 ? '#177B1E' : '#F4273D',
 						}}
 					>
 						{renderedCellValue > 0 ? renderedCellValue : renderedCellValue * -1}
@@ -157,7 +157,7 @@ const SalesVolumeComparisonMeta = {
 					<p
 						style={{
 							fontWeight: 600,
-							color: overShort > 0 ? "#177B1E" : "#F4273D",
+							color: overShort > 0 ? '#177B1E' : '#F4273D',
 						}}
 					>
 						{renderedCellValue?.replace('-', '')}
@@ -171,7 +171,7 @@ const SalesVolumeComparisonMeta = {
 			accessorFn: row => row?.check?.checkNumber,
 			header: 'Check Number',
 			isExternalFilter: true,
-		}
+		},
 	],
 };
 

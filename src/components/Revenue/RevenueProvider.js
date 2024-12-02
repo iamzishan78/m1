@@ -1,12 +1,12 @@
-import React from "react";
+import React from 'react';
 
-import { RevenueContextProvider } from "./RevenueContext";
-import Revenue from "./Revenue";
+import { RevenueContextProvider } from './RevenueContext';
+import Revenue from './Revenue';
 
 export default function ContactDetailsProvider(props) {
-  return (
-    <RevenueContextProvider>
-      <Revenue>{props.children}</Revenue>
-    </RevenueContextProvider>
-  );
+	return (
+		<RevenueContextProvider>
+			<Revenue>{props.children}</Revenue>
+		</RevenueContextProvider>
+	);
 }

@@ -114,5 +114,6 @@ export const colorBasedAttributes = {
 			{ label: 'Cost Free', value: 'propertyDescriptor.costFree.keyword' },
 			{ label: 'Internal Company', value: 'properties.internalCompany.keyword' },
 		],
+		layerKey: 'wells',
 	},
 };

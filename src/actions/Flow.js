@@ -1,8 +1,8 @@
-import { SET_FLOW_STATE } from "../constants/ActionTypes";
+import { SET_FLOW_STATE } from '../constants/ActionTypes';
 
-export const setFlowState = (payload) => {
-  return {
-    type: SET_FLOW_STATE,
-    payload,
-  };
+export const setFlowState = payload => {
+	return {
+		type: SET_FLOW_STATE,
+		payload,
+	};
 };

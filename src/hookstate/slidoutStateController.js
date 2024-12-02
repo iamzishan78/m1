@@ -1,20 +1,8 @@
-import { hookstate } from '@hookstate/core';
 import { hookStateController } from 'hookstate/hookStateController';
-import { copy } from 'utils/helper';
+import { slidoutInitialState, slidoutState } from './initialStates';
+import { useHookstate } from '@hookstate/core';
 
-const initialState = {
-	show: false,
-	views: [],
-	parentId: '',
-	view: {},
-	props: {},
-	activeTabs: { Grid: false, Map: false },
-	title: '',
-	formMode: '',
-};
-
-export const slidoutState = hookstate(copy(initialState));
-
+export const useSlideoutState = () => useHookstate(slidoutState);
 const slidoutStateControllerHandler = state => ({
 	updateProps: newProps => {
 		state.props.set(prevProps => ({ ...prevProps, ...newProps }));
@@ -25,9 +13,27 @@ const slidoutStateControllerHandler = state => ({
 	updateTitle: newTitle => {
 		state.title.set(newTitle);
 	},
+	showSlideout: () => {
+		state.show.set(true);
+	},
+	hideSlideout: () => {
+		state.show.set(false);
+	},
+	changeView: view => {
+		state.view.set(view);
+	},
+	updateParent: newParent => {
+		state.parentType.set(newParent);
+	},
+	updateNewEntity: newEntity => {
+		state.newEntity.set(newEntity);
+	},
+	updateEntityLoading: isLoading => {
+		state.isLoading.set(isLoading);
+	},
 });
 
 export const slidoutStateController = {
 	...slidoutStateControllerHandler(slidoutState),
-	...hookStateController(slidoutState, initialState),
+	...hookStateController(slidoutState, slidoutInitialState),
 };

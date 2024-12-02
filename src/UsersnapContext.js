@@ -1,41 +1,36 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from 'react';
 // import { USERSNAP_GLOBAL_API_KEY } from "./constants";
 
 export const UsersnapContext = React.createContext(null);
 
-export const USERSNAP_PROJECT_API_KEY = "b55a7d4f-c5a9-4f52-a0d1-d5ec51e5530d"
+export const USERSNAP_PROJECT_API_KEY = 'b55a7d4f-c5a9-4f52-a0d1-d5ec51e5530d';
 
 export const UsersnapProvider = ({ initParams = {}, children }) => {
-    const [usersnapApi, setUsersnapApi] = useState(null);
+	const [usersnapApi, setUsersnapApi] = useState(null);
 
-    useEffect(() => {
-        let usersnapApi = null
-        window.onUsersnapCXLoad = function(api) {
-            api.init(initParams);
-            usersnapApi = api
-            setUsersnapApi(api)
-        }
-        const script = document.createElement('script');
-        script.defer = 1;
-        script.src = `https://widget.usersnap.com/load/${USERSNAP_PROJECT_API_KEY}?onload=onUsersnapCXLoad`;
-        document.head.appendChild(script);
+	useEffect(() => {
+		let usersnapApi = null;
+		window.onUsersnapCXLoad = function (api) {
+			api.init(initParams);
+			usersnapApi = api;
+			setUsersnapApi(api);
+		};
+		const script = document.createElement('script');
+		script.defer = 1;
+		script.src = `https://widget.usersnap.com/load/${USERSNAP_PROJECT_API_KEY}?onload=onUsersnapCXLoad`;
+		document.head.appendChild(script);
 
-        return () => {
-            if (usersnapApi) {
-                usersnapApi.destroy();
-            }
-            script.remove();
-        }
-    }, [])
+		return () => {
+			if (usersnapApi) {
+				usersnapApi.destroy();
+			}
+			script.remove();
+		};
+	}, []);
 
-
-    return (
-        <UsersnapContext.Provider value={usersnapApi}>
-            {children}
-        </UsersnapContext.Provider>
-    )
-}
+	return <UsersnapContext.Provider value={usersnapApi}>{children}</UsersnapContext.Provider>;
+};
 
 export function useUsersnapApi() {
-    return useContext(UsersnapContext)
+	return useContext(UsersnapContext);
 }

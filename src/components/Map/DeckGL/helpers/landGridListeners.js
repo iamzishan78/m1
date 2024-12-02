@@ -20,6 +20,6 @@ export const drawUpdateListener = (e, getAbstractGeoContains) => {
 
 		createFilterPopup(feature);
 
-		navController.updateState({ filterDrawing: ['within', feature] })
+		navController.updateState({ filterDrawing: ['within', feature] });
 	}
 };

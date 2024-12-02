@@ -16,9 +16,9 @@ import ShapesFilesGenericMeta from './shapefiles_generic_schema';
 import PropertiesMeta from './properties_schema';
 import ReportingGroupsMeta from './property_group_schema';
 import RevenueStatementsMeta from './revenue_statements_schema';
-import ContactWellInterestMeta from "./contact_well_Interest_schema"
-import RevenueCheckDetailMeta from "./revenue_checkdetail_schema"
-import UnitTractsMeta from "./unit_tract_schema"
+import ContactWellInterestMeta from './contact_well_Interest_schema';
+import UnitTractsMeta from './unit_tract_schema';
+import RevenueCheckDetailMeta from './revenue_checkdetail_schema';
 import MyWellsMeta from './my_wells_schema';
 import WellsMeta from './wells_schema';
 import TaxOwnerMeta from './map-grid-tax-owner-schema';
@@ -26,7 +26,19 @@ import ShapeDetailAgreementMeta from './shapeDetail_agreement_schema';
 import AgreementRelatedUnitsMeta from './agreement_relatedUnits_schema';
 import UnitRelatedAgreementMeta from './unit_relatedAgreements_schema';
 import SalesVolumeComparisonMeta from './sales-volume-comparison-schema';
-import ExhibitAMeta from './exhibita_schema';
+import DocumentMeta from './document_schema';
+import ActivitiesMeta from './activities_schema';
+import ObligationsMeta from './obligations_schema';
+import ExpirationsMeta from './expirations_schema';
+import RelatedPaymentsMeta from './related_payments_schema';
+import RelatedPayeesMeta from './related_payees_schema';
+import RelatedCostAllocationsMeta from './related_cost_allocation_schema';
+import RelatedBillingPartiesMeta from './related_billing_parties_schema';
+import AcreageSummaryMeta from './acreage_summary_schema';
+import ExhibitAMeta from './exhibit_a_schema';
+import AcreageDetilsMeta from './acreage_details_schema';
+import ContactDetailUnitInterestMeta from './contactDetail_unit_interests_schema';
+import ContactDetailTractInterestMeta from './contactDetail_tract_interest_schema';
 
 export const SCHEMA = {
 	ContactTable: ContactMeta,
@@ -57,11 +69,25 @@ export const SCHEMA = {
 	RevenuePropertiesTable: ReportingGroupsMeta,
 	WellsTable: WellsMeta,
 	TaxOwnerTable: TaxOwnerMeta,
+	SalesVolumeComparisonTable: SalesVolumeComparisonMeta, // Sales Volume comparison grid => analytrics/revenue
+	DocumentTable: DocumentMeta, // Documnet table schema
+	RelatedDocumentTable: DocumentMeta, // RelatedDocument table schema
+	AcreageSummaryTable: AcreageSummaryMeta,
+	ExhibitATable: ExhibitAMeta,
+	AcreageDetailsTable: AcreageDetilsMeta,
+	ActivitiesTable: ActivitiesMeta,
+	ExpirationsTable: ExpirationsMeta,
+	ObligationsTable: ObligationsMeta,
+	// Payments grids
+	RelatedPaymentsTable: RelatedPaymentsMeta,
+	RelatedPayeesTable: RelatedPayeesMeta,
+	RelatedCostAllocationsTable: RelatedCostAllocationsMeta,
+	RelatedBillingPartiesTable: RelatedBillingPartiesMeta,
 	// Added related shape grids
 	ShapeDetailAgreementTable: ShapeDetailAgreementMeta,
 	AgreementRelatedUnitsTable: AgreementRelatedUnitsMeta,
 	UnitRelatedAgreementTable: UnitRelatedAgreementMeta,
-	SalesVolumeComparisonTable: SalesVolumeComparisonMeta, // Sales Volume comparison grid => analytrics/revenue
-	ExhibitATable: ExhibitAMeta, // Sales Volume comparison grid => analytrics/revenue
 	TractInterestsTable: TractInterestsMeta, // Tracts Interest schema
+	ContactDetailUnitInterestTable: ContactDetailUnitInterestMeta,
+	ContactDetailTractInterestTable: ContactDetailTractInterestMeta,
 };

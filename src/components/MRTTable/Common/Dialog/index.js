@@ -7,7 +7,7 @@ import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContai
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import BuyContactsInfoDialogContent from 'components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
 import DeleteConfirmationDialogContent from './ConfirmationDialog/DeleteConfirmationDialog';
-import { REMOVECOMMONGRIDFUNCTIONALITY } from 'graphQL/useMutationCommonGridRemove';
+import { GRID_GENERIC_REMOVE } from 'graphQL/useMutationCommonGridRemove';
 import Loader from 'components/Loaders';
 import CommentDialog from './CommentDialog';
 import TagDialog from './TagDialog';
@@ -20,10 +20,10 @@ function AllDialogs(props) {
 	const tableKey = rest?.tableKey;
 
 	const {
-		stateValues: { refetchQueries },
-	} = tableController(props.tableKey).useState(['refetchQueries']);
+		stateValues: { refetchQueries, isElasticQuery },
+	} = tableController(props.tableKey).useState(['refetchQueries', 'isElasticQuery']);
 
-	const [removeCommonDelete] = useMutation(REMOVECOMMONGRIDFUNCTIONALITY, {
+	const [gridGenericRemove] = useMutation(GRID_GENERIC_REMOVE, {
 		awaitRefetchQueries: true,
 		refetchQueries,
 	});
@@ -47,7 +47,8 @@ function AllDialogs(props) {
 		Loader.createToast('deletion', 'Deletion in Progress');
 		const user = globalStateController.getValue('user');
 		const testCase = globalStateController.getValue('testCase');
-		removeCommonDelete({
+		const hasMultiGrids = tableController(tableKey).getValue('hasMultiGrids');
+		gridGenericRemove({
 			variables: {
 				tableKey,
 				deletedData: dataToDelete,
@@ -55,6 +56,7 @@ function AllDialogs(props) {
 				ESVariables: rest?.ESVariables,
 				isSelectAll: rest?.isSelectAll,
 				cypressDelete: testCase?.cypressDelete,
+				isElasticQuery,
 			},
 		}).then(
 			res => {
@@ -70,6 +72,12 @@ function AllDialogs(props) {
 				tableGlobalController.refetch();
 			}
 		);
+
+		if (hasMultiGrids) {
+			tableGlobalController.updateState({
+				paymentMultiGrid: { showMultiGrid: false },
+			});
+		}
 	};
 
 	return (
@@ -110,7 +118,7 @@ function AllDialogs(props) {
 					setRows={updateRows}
 					selectedCampaign={rest?.selectedCampaign}
 					objectType={rest?.objectType}
-			        refetchQueries={[rest?.refetchQueries]}
+					refetchQueries={[rest?.refetchQueries]}
 				/>
 			)}
 

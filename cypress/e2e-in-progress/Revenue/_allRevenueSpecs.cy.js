@@ -1,1 +1,1 @@
-import './portfolio.cy'
+import './portfolio.cy';

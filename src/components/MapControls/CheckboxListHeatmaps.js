@@ -1,182 +1,172 @@
-import React, { useContext } from "react";
-import { withStyles, makeStyles } from "@material-ui/core/styles";
+import React, { useContext } from 'react';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 //import Button from '@material-ui/core/Button';
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 //import List from '@material-ui/core/List';
 //import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 //import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import { ListItemText, FormControlLabel, Switch } from "@material-ui/core";
-import { AppContext } from "../../AppContext";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import DragIndicator from "@material-ui/icons/DragIndicator";
-import RootRef from "@material-ui/core/RootRef";
-import { mapControlsController } from "hookstate/mapControlsController";
+import { ListItemText, FormControlLabel, Switch } from '@material-ui/core';
+import { AppContext } from '../../AppContext';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import DragIndicator from '@material-ui/icons/DragIndicator';
+import RootRef from '@material-ui/core/RootRef';
+import { mapControlsController } from 'hookstate/mapControlsController';
 
-const useStyles = makeStyles((theme) => ({
-  subHeaderItem: {
-    backgroundColor: "#011133 !important",
-    width: "350px",
-  },
-  list: {
-    padding: 0,
-  },
+const useStyles = makeStyles(theme => ({
+	subHeaderItem: {
+		backgroundColor: '#011133 !important',
+		width: '350px',
+	},
+	list: {
+		padding: 0,
+	},
 }));
 
 const reorder = (list, startIndex, endIndex) => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
+	const result = Array.from(list);
+	const [removed] = result.splice(startIndex, 1);
+	result.splice(endIndex, 0, removed);
 
-  return result;
+	return result;
 };
 
 export default function CheckboxListHeatmaps(props) {
-  const { mapControlsStateValues } = mapControlsController.useState(['anchorEl'], 'mapControlsStateValues');
+	const { mapControlsStateValues } = mapControlsController.useState(['anchorEl'], 'mapControlsStateValues');
 
-  const [stateApp, setStateApp] = useContext(AppContext);
-  //const theme = useTheme()
-  const classes = useStyles();
-  const handleToggle = (idx) => () => {
-    const currentIndex = stateApp.checkedHeats.indexOf(idx);
-    const newChecked = [...stateApp.checkedHeats];
+	const [stateApp, setStateApp] = useContext(AppContext);
+	//const theme = useTheme()
+	const classes = useStyles();
+	const handleToggle = idx => () => {
+		const currentIndex = stateApp.checkedHeats.indexOf(idx);
+		const newChecked = [...stateApp.checkedHeats];
 
-    if (currentIndex === -1) {
-      newChecked.push(idx);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-    setStateApp((stateApp) => ({ ...stateApp, checkedHeats: newChecked }));
-  };
+		if (currentIndex === -1) {
+			newChecked.push(idx);
+		} else {
+			newChecked.splice(currentIndex, 1);
+		}
+		setStateApp(stateApp => ({ ...stateApp, checkedHeats: newChecked }));
+	};
 
-  const onDragEnd = (result) => {
-    // dropped outside the list
-    if (!result.destination) {
-      return;
-    }
+	const onDragEnd = result => {
+		// dropped outside the list
+		if (!result.destination) {
+			return;
+		}
 
-    const items = reorder(
-      stateApp.heatLayers,
-      result.source.index,
-      result.destination.index
-    );
+		const items = reorder(stateApp.heatLayers, result.source.index, result.destination.index);
 
-    let checkedHeats = stateApp.checkedHeats.slice(0);
-    const sourceIndex = checkedHeats.indexOf(result.source.index);
+		let checkedHeats = stateApp.checkedHeats.slice(0);
+		const sourceIndex = checkedHeats.indexOf(result.source.index);
 
-    let direction = 0;
-    let from,
-      to = 0;
-    if (result.destination.index > result.source.index) {
-      direction = -1;
-      from = result.source.index;
-      to = result.destination.index;
-    } else {
-      direction = 1;
-      to = result.source.index;
-      from = result.destination.index;
-    }
+		let direction = 0;
+		let from,
+			to = 0;
+		if (result.destination.index > result.source.index) {
+			direction = -1;
+			from = result.source.index;
+			to = result.destination.index;
+		} else {
+			direction = 1;
+			to = result.source.index;
+			from = result.destination.index;
+		}
 
-    for (let i = 0; i < checkedHeats.length; i++) {
-      if (checkedHeats[i] <= to && checkedHeats[i] >= from) {
-        checkedHeats[i] += direction;
-      }
-    }
+		for (let i = 0; i < checkedHeats.length; i++) {
+			if (checkedHeats[i] <= to && checkedHeats[i] >= from) {
+				checkedHeats[i] += direction;
+			}
+		}
 
-    if (sourceIndex !== -1) {
-      checkedHeats[sourceIndex] = result.destination.index;
-    }
+		if (sourceIndex !== -1) {
+			checkedHeats[sourceIndex] = result.destination.index;
+		}
 
-    setStateApp({
-      ...stateApp,
-      heatLayers: items,
-      checkedHeats: checkedHeats,
-    });
-  };
+		setStateApp({
+			...stateApp,
+			heatLayers: items,
+			checkedHeats: checkedHeats,
+		});
+	};
 
-  const StyledListItem = withStyles((theme) => ({
-    root: {
-      fontFamily: "Poppins",
-      "&:hover": {
-        background: "#4B618F",
-      },
-      backgroundColor: "#263451",
-      "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-        color: theme.palette.common.white,
-        // },
-      },
-    },
-  }))(ListItem);
+	const StyledListItem = withStyles(theme => ({
+		root: {
+			fontFamily: 'Poppins',
+			'&:hover': {
+				background: '#4B618F',
+			},
+			backgroundColor: '#263451',
+			'& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+				color: theme.palette.common.white,
+				// },
+			},
+		},
+	}))(ListItem);
 
-  const StyledMenu = withStyles({
-    paper: {
-      border: "1px solid #011133",
-      left: "unset !important",
-      right: "80px !important",
-    },
-  })((props) => (
-    <Menu
-      elevation={0}
-      variant="menu"
-      transitionDuration={0}
-      getContentAnchorEl={null}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "left",
-      }}
-      MenuListProps={{
-        disablePadding: true,
-      }}
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      {...props}
-    />
-  ));
+	const StyledMenu = withStyles({
+		paper: {
+			border: '1px solid #011133',
+			left: 'unset !important',
+			right: '80px !important',
+		},
+	})(props => (
+		<Menu
+			elevation={0}
+			variant="menu"
+			transitionDuration={0}
+			getContentAnchorEl={null}
+			anchorOrigin={{
+				vertical: 'top',
+				horizontal: 'left',
+			}}
+			MenuListProps={{
+				disablePadding: true,
+			}}
+			transformOrigin={{
+				vertical: 'top',
+				horizontal: 'right',
+			}}
+			{...props}
+		/>
+	));
 
-  const StyledMenuItem = withStyles((theme) => ({
-    root: {
-      fontFamily: "Poppins",
-      "&:hover": {
-        background: "#4B618F",
-      },
-      backgroundColor: "#263451",
-      "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-        color: theme.palette.common.white,
-        // },
-      },
-    },
-  }))(MenuItem);
+	const StyledMenuItem = withStyles(theme => ({
+		root: {
+			fontFamily: 'Poppins',
+			'&:hover': {
+				background: '#4B618F',
+			},
+			backgroundColor: '#263451',
+			'& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+				color: theme.palette.common.white,
+				// },
+			},
+		},
+	}))(MenuItem);
 
-  const handleClose = () => {
-    mapControlsController.reset()
-  };
+	const handleClose = () => {
+		mapControlsController.reset();
+	};
 
-  return (
-    <ClickAwayListener onClickAway={handleClose}>
-      <StyledMenu
-        id="checklist-menu"
-        anchorEl={mapControlsStateValues.anchorEl}
-        keepMounted
-        open={Boolean(mapControlsStateValues.anchorEl)}
-        onClose={handleClose}
-      >
-        <StyledMenuItem
-          disableRipple
-          key="subheader"
-          role={undefined}
-          dense
-          className={classes.subHeaderItem}
-        >
-          <ListItemText primary="Heatmaps" />
-        </StyledMenuItem>
+	return (
+		<ClickAwayListener onClickAway={handleClose}>
+			<StyledMenu
+				id="checklist-menu"
+				anchorEl={mapControlsStateValues.anchorEl}
+				keepMounted
+				open={Boolean(mapControlsStateValues.anchorEl)}
+				onClose={handleClose}
+			>
+				<StyledMenuItem disableRipple key="subheader" role={undefined} dense className={classes.subHeaderItem}>
+					<ListItemText primary="Heatmaps" />
+				</StyledMenuItem>
 
-        {/* 
+				{/* 
         {stateApp.heatLayers.map((layer, index) => {
           const labelId = `checkbox-list-label-${index}`;
 
@@ -203,57 +193,44 @@ export default function CheckboxListHeatmaps(props) {
           );
         })} */}
 
-        {/* <Collapse in={open} timeout="auto" unmountOnExit> */}
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="droppable">
-            {(provided, snapshot) => (
-              <RootRef rootRef={provided.innerRef}>
-                <List className={classes.list}>
-                  {stateApp.heatLayers.map((layer, index) => {
-                    const labelId = `checkbox-list-label-${index}`;
-                    return (
-                      <Draggable
-                        key={labelId}
-                        draggableId={labelId}
-                        index={index}
-                      >
-                        {(provided, snapshot) => (
-                          <StyledListItem
-                            ContainerComponent="li"
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                          >
-                            <ListItemIcon {...provided.dragHandleProps}>
-                              <DragIndicator />
-                            </ListItemIcon>
+				{/* <Collapse in={open} timeout="auto" unmountOnExit> */}
+				<DragDropContext onDragEnd={onDragEnd}>
+					<Droppable droppableId="droppable">
+						{(provided, snapshot) => (
+							<RootRef rootRef={provided.innerRef}>
+								<List className={classes.list}>
+									{stateApp.heatLayers.map((layer, index) => {
+										const labelId = `checkbox-list-label-${index}`;
+										return (
+											<Draggable key={labelId} draggableId={labelId} index={index}>
+												{(provided, snapshot) => (
+													<StyledListItem ContainerComponent="li" ref={provided.innerRef} {...provided.draggableProps}>
+														<ListItemIcon {...provided.dragHandleProps}>
+															<DragIndicator />
+														</ListItemIcon>
 
-                            <ListItemText id={labelId} primary={layer.name} />
+														<ListItemText id={labelId} primary={layer.name} />
 
-                            <FormControlLabel
-                              control={
-                                <Switch
-                                  checked={
-                                    stateApp.checkedHeats
-                                      ? stateApp.checkedHeats.indexOf(index) !==
-                                      -1
-                                      : false
-                                  }
-                                  onChange={handleToggle(index)}
-                                />
-                              }
-                            />
-                          </StyledListItem>
-                        )}
-                      </Draggable>
-                    );
-                  })}
-                </List>
-              </RootRef>
-            )}
-          </Droppable>
-        </DragDropContext>
-        {/* </Collapse> */}
-      </StyledMenu>
-    </ClickAwayListener>
-  );
+														<FormControlLabel
+															control={
+																<Switch
+																	checked={stateApp.checkedHeats ? stateApp.checkedHeats.indexOf(index) !== -1 : false}
+																	onChange={handleToggle(index)}
+																/>
+															}
+														/>
+													</StyledListItem>
+												)}
+											</Draggable>
+										);
+									})}
+								</List>
+							</RootRef>
+						)}
+					</Droppable>
+				</DragDropContext>
+				{/* </Collapse> */}
+			</StyledMenu>
+		</ClickAwayListener>
+	);
 }

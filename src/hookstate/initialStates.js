@@ -1,13 +1,16 @@
 import { hookstate } from '@hookstate/core';
 import { copy } from 'components/Shared/functions';
 import { ROUTES } from 'components/Shared/FeatureFlag/common';
+import { simpleAuthBypass } from 'utils/data';
 
 /* -------------------------------------------------------------------------- */
 /*                              Global Controller                             */
 /* -------------------------------------------------------------------------- */
 export const globalInitialState = {
 	layers: [],
+	panelItems: [],
 	emptyGroups: [],
+	globalSearch: '',
 	universalLoader: false,
 	layerLoading: {},
 	user: null,
@@ -18,7 +21,9 @@ export const globalInitialState = {
 	x_zumo_auth: null,
 	cypress: null,
 	testCase: null,
-	bypassLogin: false,
+	bypassLogin: simpleAuthBypass || false,
+	bypassType: '',
+	tenant: null,
 };
 
 export const globalState = hookstate(copy(globalInitialState));
@@ -320,6 +325,7 @@ export const layerFilters = hookstate(copy(layerFilterInitialState));
 /* -------------------------------------------------------------------------- */
 
 export const mapControlsInitialState = {
+	fileUploadedContent: null,
 	fileUploaded: null,
 	selectedControl: 'layer',
 	layerAddControl: null,
@@ -431,12 +437,16 @@ export const slidoutInitialState = {
 	show: false,
 	views: [],
 	parentId: '',
-	view: {},
+	view: null,
 	props: {},
 	activeTabs: { Grid: false, Map: false },
 	title: '',
 	formMode: '',
 	newEntity: false,
+	selectedActivity: null,
+	selectedActivityId: '',
+	newComments: [],
+	loader: false,
 };
 
 export const slidoutState = hookstate(copy(slidoutInitialState));
@@ -453,3 +463,19 @@ export const detailCardInitialState = {
 };
 
 export const detailCardState = hookstate(copy(detailCardInitialState));
+
+/* -------------------------------------------------------------------------- */
+/*                         Admin Operations Controller                        */
+/* -------------------------------------------------------------------------- */
+
+export const adminOperationsInitialState = {
+	tenants: [],
+	selectedScript: null,
+	models: [],
+	chunkSize: null,
+	reflatDependencies: 'No',
+	createNewFlatData: 'No',
+	warning: null,
+	message: null,
+};
+export const adminOperationsState = hookstate(copy(adminOperationsInitialState));

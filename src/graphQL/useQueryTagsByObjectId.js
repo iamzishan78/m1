@@ -1,18 +1,18 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const TAGSBYOBJECTIDQUERY = gql`
-  query getTagsByObjectId($objectId: String!) {
-    tagsByObjectId(objectId: $objectId) {
-      _id
-      tag
-      ts
-      public
-      taggedOn
-      color
-      user {
-        name
-        email
-      }
-    }
-  }
+	query getTagsByObjectId($objectId: String!) {
+		tagsByObjectId(objectId: $objectId) {
+			_id
+			tag
+			ts
+			public
+			taggedOn
+			color
+			user {
+				name
+				email
+			}
+		}
+	}
 `;

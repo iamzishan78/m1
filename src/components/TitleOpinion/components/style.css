@@ -1,16 +1,14 @@
 .MORDiv > div {
-  padding: 0;
-  width: 100%;
+	padding: 0;
+	width: 100%;
 }
 
 .sectionHeader > div > span {
-  font-size: 1rem !important;
+	font-size: 1rem !important;
 }
 
 #TOmap > .mapboxgl-canvas-container,
 #TOmap canvas {
-  height: 100% !important;
-  width: 100% !important;
+	height: 100% !important;
+	width: 100% !important;
 }
-
-

@@ -1,8 +1,8 @@
-import { deepEqual } from "./deepEqual";
+import { deepEqual } from './deepEqual';
 
 export const setStateIfDeepEqual = (setState, newState) => {
-  setState((state) => {
-    if (!deepEqual(state, newState)) return newState;
-    return state;
-  });
+	setState(state => {
+		if (!deepEqual(state, newState)) return newState;
+		return state;
+	});
 };

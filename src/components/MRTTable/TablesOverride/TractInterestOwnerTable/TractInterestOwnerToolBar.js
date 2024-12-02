@@ -10,7 +10,12 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 import { navController } from 'hookstate/navStateController';
 import TractInterestTableDialogs from 'components/MRTTable/TablesOverride/TractInterestOwnerTable/RightDialogs';
 import { popupController } from 'hookstate/popupStateController';
-import { BulkUpdate, ViewContactData, openSideDialog, ExportData } from 'components/MRTTable/Common/CommonToolBarActions';
+import {
+	BulkUpdate,
+	ViewContactData,
+	openSideDialog,
+	ExportData,
+} from 'components/MRTTable/Common/CommonToolBarActions';
 import { NavigationContext } from 'components/Navigation/NavigationContext';
 
 const useStyles = makeStyles(() => ({
@@ -84,7 +89,7 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 					bulkUploadParcel: popupController.getValue('selectedParcel'),
 				});
 
-				setStateNav((state) => ({
+				setStateNav(state => ({
 					...state,
 					bulkUploadShape: null,
 					bulkUploadFromMap: true,
@@ -95,7 +100,8 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 		},
 	];
 
-	const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
+	const isSomeRowsSelected =
+		table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
@@ -116,8 +122,8 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 			client,
 			table,
 			tableKey,
-			objectType: 'contact' ,
-			refetchQueries: ["getESContacts"]
+			objectType: 'contact',
+			refetchQueries: ['getESContacts'],
 		};
 	};
 
@@ -125,9 +131,9 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 		const query = tableStateValues?.globalFilter ? `*${tableStateValues?.globalFilter}*` : '*';
 		const search = { fields: tableStateValues?.searchFields, query };
 
-		let sort = tableStateValues.defaultSort
+		let sort = tableStateValues.defaultSort;
 		if (tableStateValues?.sorting?.length) {
-			sort = { field: tableStateValues?.sorting?.[0].id, order: tableStateValues.sorting?.[0].desc ? 'desc' : 'asc', }
+			sort = { field: tableStateValues?.sorting?.[0].id, order: tableStateValues.sorting?.[0].desc ? 'desc' : 'asc' };
 		}
 
 		return {
@@ -157,8 +163,8 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 					startIcon={<AutorenewIcon color="white" />}
 					className={classes.selectTopBarButtons}
 					disabled={false}
-					onClick={() => openSideDialog(
-						{
+					onClick={() =>
+						openSideDialog({
 							type: 'recalculate',
 							selectedRows,
 							isAllRowsSelected: sidePropsPass.isAllRowsSelected,
@@ -171,8 +177,8 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 							client,
 							table,
 							tableKey,
-						}
-					)}
+						})
+					}
 					data-testid="recalculate"
 				>
 					Recalculate
@@ -191,9 +197,7 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 				<BulkUpdate isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} />
 			)}
 
-			{isSomethingSelected && (
-				<ExportData classes={classes} {...exportPropsPass} />
-			)}
+			{isSomethingSelected && <ExportData classes={classes} {...exportPropsPass} />}
 
 			{isSomethingSelected && (
 				<ViewContactData isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} />

@@ -18,29 +18,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Base from './base';
 
 export default class Warning extends Component {
-  static propTypes = {
-    /** Set the height of the icon, ex. '16px' */
-    height: PropTypes.string
-  };
+	static propTypes = {
+		/** Set the height of the icon, ex. '16px' */
+		height: PropTypes.string,
+	};
 
-  static defaultProps = {
-    height: '16px',
-    predefinedClassName: 'data-ex-icons-warning',
-    stroke: '#FFF'
-  };
+	static defaultProps = {
+		height: '16px',
+		predefinedClassName: 'data-ex-icons-warning',
+		stroke: '#FFF',
+	};
 
-  render() {
-    return (
-      <Base viewBox="0 0 64 64" {...this.props}>
-        <path d="M0.349,49h49.302L25,1.842L0.349,49z M3.651,47L25,6.159L46.349,47H3.651z" />
-        <rect height="18" width="2" x="24" y="18" />
-        <rect height="3" width="2" x="24" y="39" />
-      </Base>
-    );
-  }
+	render() {
+		return (
+			<Base viewBox="0 0 64 64" {...this.props}>
+				<path d="M0.349,49h49.302L25,1.842L0.349,49z M3.651,47L25,6.159L46.349,47H3.651z" />
+				<rect height="18" width="2" x="24" y="18" />
+				<rect height="3" width="2" x="24" y="39" />
+			</Base>
+		);
+	}
 }

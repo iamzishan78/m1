@@ -11,7 +11,11 @@ import Table from './Table';
 function MRTTable({ tableKey, name, overrideMeta = {}, hideSharedCommentCheck = true }) {
 	const client = useApolloClient();
 	const meta = SCHEMA[name];
-	const extendedMeta = { ...copy(meta), ...overrideMeta, ...globalStateController.getValue('cypress')?.mrtOverrideMeta };
+	const extendedMeta = {
+		...copy(meta),
+		...overrideMeta,
+		...globalStateController.getValue('cypress')?.mrtOverrideMeta,
+	};
 	tableKey = tableKey || name; // table key should be different if two tables with same name exist in same screen.
 	const Controller = tableController(tableKey);
 	const { reInitialized } = tableGlobalController.useState(['reInitialized']);
@@ -21,24 +25,22 @@ function MRTTable({ tableKey, name, overrideMeta = {}, hideSharedCommentCheck = 
 	useEffect(() => {
 		(async () => {
 			await Controller.initialize(tableKey, extendedMeta, client);
-		})()
+		})();
 
 		return () => {
-			Controller.reset()
+			Controller.reset();
 		};
 	}, [reInitialized]);
 
 	if (!stateValues.initialized)
 		return (
 			<MaterialReactTable
-				columns={extendedMeta.TableSchema.filter(column => !column.hidden).map(
-					column => ({
-						id: column.id,
-						accessorKey: column.accessorKey,
-						header: column.header,
-						size: column.size,
-					})
-				)}
+				columns={extendedMeta.TableSchema.filter(column => !column.hidden).map(column => ({
+					id: column.id,
+					accessorKey: column.accessorKey,
+					header: column.header,
+					size: column.size,
+				}))}
 				data={[]}
 				state={{
 					isLoading: true,

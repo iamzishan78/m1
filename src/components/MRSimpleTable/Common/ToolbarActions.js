@@ -2,10 +2,7 @@ import React from 'react';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { IconButton, Tooltip } from '@mui/material';
 import DeleteIcon from '@material-ui/icons/Delete';
-import {
-	simpleTableController,
-	simpleTableGlobalController,
-} from 'hookstate/simpleTableController';
+import { simpleTableController, simpleTableGlobalController } from 'hookstate/simpleTableController';
 import { globalStateController } from 'hookstate/globalStateController';
 import _ from 'lodash';
 import TabHeader from './TabHeader';
@@ -51,10 +48,10 @@ function ToolbarActions({ table, tableKey, children }) {
 			acc[key] =
 				selectedRows?.length > 0
 					? selectedRows.map(item => {
-						let val = _.get(item, originalKey);
-						if (func) val = func(val);
-						return val;
-					})
+							let val = _.get(item, originalKey);
+							if (func) val = func(val);
+							return val;
+						})
 					: null;
 			return acc;
 		}, {});

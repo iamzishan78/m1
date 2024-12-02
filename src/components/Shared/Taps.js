@@ -1,126 +1,134 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 
-export const TabPanel = (props) => {
-  const { children, value, index, ...other } = props;
+export const TabPanel = props => {
+	const { children, value, index, ...other } = props;
 
-  return (
-    <Typography
-      component="div"
-      role="tabpanel"
-      hidden={value !== index}
-      id={`scrollable-auto-tabpanel-${index}`}
-      aria-labelledby={`scrollable-auto-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box style={{ padding: "0", margin: "10px" }} p={3}>
-          {children}
-        </Box>
-      )}
-    </Typography>
-  );
+	return (
+		<Typography
+			component="div"
+			role="tabpanel"
+			hidden={value !== index}
+			id={`scrollable-auto-tabpanel-${index}`}
+			aria-labelledby={`scrollable-auto-tab-${index}`}
+			{...other}
+		>
+			{value === index && (
+				<Box style={{ padding: '0', margin: '10px' }} p={3}>
+					{children}
+				</Box>
+			)}
+		</Typography>
+	);
 };
 
 TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired,
+	children: PropTypes.node,
+	index: PropTypes.any.isRequired,
+	value: PropTypes.any.isRequired,
 };
 
 function a11yProps(index) {
-  return {
-    id: `scrollable-auto-tab-${index}`,
-    "aria-controls": `scrollable-auto-tabpanel-${index}`,
-  };
+	return {
+		id: `scrollable-auto-tab-${index}`,
+		'aria-controls': `scrollable-auto-tabpanel-${index}`,
+	};
 }
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-    width: "100%",
-    backgroundColor: theme.palette.background.paper,
-  },
-  WellsDetailsCardAppBar: {
-    zIndex: 99999,
-    backgroundColor: (props) => (props.white ? "#FFFFFF" : "#7a7d82"),
-    color: (props) => (props.white ? "rgb(1,17,51)" : "#FFFFFF"),
-  },
+const useStyles = makeStyles(theme => ({
+	root: {
+		flexGrow: 1,
+		width: '100%',
+		backgroundColor: theme.palette.background.paper,
+	},
+	WellsDetailsCardAppBar: {
+		zIndex: 99999,
+		backgroundColor: props => (props.white ? '#FFFFFF' : '#7a7d82'),
+		color: props => (props.white ? 'rgb(1,17,51)' : '#FFFFFF'),
+	},
 
-  tab: {
-    display: "flex",
-    justifyContent: "center",
-    backgroundColor: "transparent",
-  },
+	tab: {
+		display: 'flex',
+		justifyContent: 'center',
+		backgroundColor: 'transparent',
+	},
 
-  tabPanel: {
-    "& > div": {
-      margin: "0px !important",
-    },
-  },
+	tabPanel: {
+		'& > div': {
+			margin: '0px !important',
+		},
+	},
 }));
 
-const StyledTabs = withStyles((theme) => ({
-  indicator: {
-    display: "flex",
-    justifyContent: "center",
-    backgroundColor: "transparent",
-    "& > div": {
-      maxWidth: 80,
-      width: "100%",
-      backgroundColor: "#33b4e0",
-    },
-  },
-}))((props) => <Tabs {...props} TabIndicatorProps={{ children: <div /> }} />);
+const StyledTabs = withStyles(theme => ({
+	indicator: {
+		display: 'flex',
+		justifyContent: 'center',
+		backgroundColor: 'transparent',
+		'& > div': {
+			maxWidth: 80,
+			width: '100%',
+			backgroundColor: '#33b4e0',
+		},
+	},
+}))(props => <Tabs {...props} TabIndicatorProps={{ children: <div /> }} />);
 
 export default function Taps(props) {
-  const classes = useStyles(props);
-  const [value, setValue] = React.useState(props.openTabIdex ?? 0);
-  ////props.tabLabels brings an array of labels////
-  ////props.tabPanels brings an array of panels////
-  ////props.whichTapIsActive is an optional function to return the active index////
-  ////props.white is an optional, a white taps version////
-  ////props.backgroundColor is an optional////
-  const { tabLabels, tabPanels } = props;
+	const classes = useStyles(props);
+	const [value, setValue] = React.useState(props.openTabIdex ?? 0);
+	////props.tabLabels brings an array of labels////
+	////props.tabPanels brings an array of panels////
+	////props.whichTapIsActive is an optional function to return the active index////
+	////props.white is an optional, a white taps version////
+	////props.backgroundColor is an optional////
+	const { tabLabels, tabPanels } = props;
 
-  const handleChange = (event, newValue) => {
-    if (props.whichTapIsActive) {
-      props.whichTapIsActive(newValue);
-    }
-    setValue(newValue);
-  };
+	const handleChange = (event, newValue) => {
+		if (props.whichTapIsActive) {
+			props.whichTapIsActive(newValue);
+		}
+		setValue(newValue);
+	};
 
-  return (
-    <div
-      style={{ backgroundColor: props.backgroundColor ? props.backgroundColor : "#efefef" }}
-      className={classes.root}
-      id="M1nTaps"
-    >
-      <AppBar className={classes.WellsDetailsCardAppBar} position="static" color="default">
-        <StyledTabs
-          value={value}
-          onChange={handleChange}
-          variant="scrollable"
-          scrollButtons="auto"
-          aria-label="scrollable auto tabs example"
-        >
-          {tabLabels.map((label, i) => {
-            return <Tab key={i} label={label} {...a11yProps(i)} id={`unitWells${i}`} data-testid={`shape-detail-tab-${label}`} />;
-          })}
-        </StyledTabs>
-      </AppBar>
+	return (
+		<div
+			style={{ backgroundColor: props.backgroundColor ? props.backgroundColor : '#efefef' }}
+			className={classes.root}
+			id="M1nTaps"
+		>
+			<AppBar className={classes.WellsDetailsCardAppBar} position="static" color="default">
+				<StyledTabs
+					value={value}
+					onChange={handleChange}
+					variant="scrollable"
+					scrollButtons="auto"
+					aria-label="scrollable auto tabs example"
+				>
+					{tabLabels.map((label, i) => {
+						return (
+							<Tab
+								key={i}
+								label={label}
+								{...a11yProps(i)}
+								id={`unitWells${i}`}
+								data-testid={`shape-detail-tab-${label}`}
+							/>
+						);
+					})}
+				</StyledTabs>
+			</AppBar>
 
-      {tabPanels.map((panel, i) => (
-        <TabPanel className={classes.tabPanel} key={i} value={value} index={i}>
-          {panel}
-        </TabPanel>
-      ))}
-    </div>
-  );
+			{tabPanels.map((panel, i) => (
+				<TabPanel className={classes.tabPanel} key={i} value={value} index={i}>
+					{panel}
+				</TabPanel>
+			))}
+		</div>
+	);
 }

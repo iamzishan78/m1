@@ -1,35 +1,35 @@
 .MuiListItemSecondaryAction-root {
-    top: 50%;
-    right: -13px !important;
-    position: absolute;
-    transform: translateY(-50%);
+	top: 50%;
+	right: -13px !important;
+	position: absolute;
+	transform: translateY(-50%);
 }
 .MuiAccordionSummary-root {
-    width: 297px!important;
+	width: 297px !important;
 }
-.MuiIconButton-label{
-    margin-left: 3px!important;
+.MuiIconButton-label {
+	margin-left: 3px !important;
 }
 .MuiIconButton-edgeEnd {
-    margin-right: 17px!important;
+	margin-right: 17px !important;
 }
-.MuiAccordion-rounded{
-    width: 100%!important;
-    box-shadow: none!important;
+.MuiAccordion-rounded {
+	width: 100% !important;
+	box-shadow: none !important;
 }
 .makeStyles-list-572 {
-   padding: 0px 0px!important;
+	padding: 0px 0px !important;
 }
-.MuiAccordionSummary-root{
-    max-width: 100%!important;
-    min-width: 100%!important;
+.MuiAccordionSummary-root {
+	max-width: 100% !important;
+	min-width: 100% !important;
 }
-.MuiAccordionSummary-content{
-    align-items: center !important;
+.MuiAccordionSummary-content {
+	align-items: center !important;
 }
-.address{
-    display: flex;
+.address {
+	display: flex;
 }
-.address_tabs{
-    margin-left: 10px !important;
+.address_tabs {
+	margin-left: 10px !important;
 }

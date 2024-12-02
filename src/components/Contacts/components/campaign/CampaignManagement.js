@@ -55,10 +55,15 @@ const CampaignManagement = () => {
 	}, [fromDate, toDate, setAppliedFilters]);
 
 	const setESFilters = useCallback(newFilter => {
-		if (newFilter.length === 0) {
-			let externalFilters = tableController(TableKey).getExternalFilter();
-			tableController(TableKey).clearFilter(externalFilters[0]?.field);
-		} else {
+		let externalFilters = tableController(TableKey).getExternalFilter();
+
+		externalFilters.forEach(externalFilter => {
+			if (newFilter.find(f => f.field === externalFilter.field)) return;
+
+			tableController(TableKey).clearFilter(externalFilter.field);
+		});
+
+		if (newFilter.length !== 0) {
 			newFilter.forEach(filter => {
 				const { field, value, type, columnType, searchType } = filter;
 				let filterToAdd;

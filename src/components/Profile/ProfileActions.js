@@ -1,65 +1,66 @@
-import { useMutation } from "@apollo/client";
-import Button from "@material-ui/core/Button";
-import MuiDialogActions from "@material-ui/core/DialogActions";
-import { withStyles } from "@material-ui/core/styles";
-import React, { useContext } from "react";
-import { useHistory } from "react-router-dom";
-import { AppContext } from "../../AppContext";
-import { UPSERTPROFILE } from "../../graphQL/useMutationUpsertProfile";
-import { GETPROFILE } from "../../graphQL/useQueryGetProfile";
-import { NavigationContext } from "../Navigation/NavigationContext";
-import { ProfileContext } from "./ProfileContext";
-import { CircularProgress } from "@material-ui/core";
-const DialogActions = withStyles((theme) => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(1),
-  },
+import { useMutation } from '@apollo/client';
+import Button from '@material-ui/core/Button';
+import MuiDialogActions from '@material-ui/core/DialogActions';
+import { withStyles } from '@material-ui/core/styles';
+import React, { useContext } from 'react';
+import { useHistory } from 'react-router-dom';
+import { AppContext } from '../../AppContext';
+import { UPSERTPROFILE } from '../../graphQL/useMutationUpsertProfile';
+import { GETPROFILE } from '../../graphQL/useQueryGetProfile';
+import { NavigationContext } from '../Navigation/NavigationContext';
+import { ProfileContext } from './ProfileContext';
+import { CircularProgress } from '@material-ui/core';
+const DialogActions = withStyles(theme => ({
+	root: {
+		margin: 0,
+		padding: theme.spacing(1),
+	},
 }))(MuiDialogActions);
 
 const ProfileActions = () => {
-  const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [stateProfile, setStateProfile] = useContext(ProfileContext);
-  const [appContext, setStateApp] = useContext(AppContext);
+	const [stateNav, setStateNav] = useContext(NavigationContext);
+	const [stateProfile, setStateProfile] = useContext(ProfileContext);
+	const [appContext, setStateApp] = useContext(AppContext);
 
-  const [updateProfile] = useMutation(UPSERTPROFILE);
-  const { isSaving } = stateProfile;
-  const { user } = appContext;
+	const [updateProfile] = useMutation(UPSERTPROFILE);
+	const { isSaving } = stateProfile;
+	const { user } = appContext;
 
-  const handleClose = () => {
-    setStateNav({ ...stateNav, isProfileOpen: false });
-  };
+	const handleClose = () => {
+		setStateNav({ ...stateNav, isProfileOpen: false });
+	};
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setStateProfile({ ...stateProfile, isSaving: true });
-    await updateProfile({
-      variables: { profileData: { ...stateProfile.fields, email: user.email } },
-    });
-    setStateApp((state) => ({
-      ...state,
-      user: {
-        ...state.user,
-        ...stateProfile.fields, email: user.email
-      },
-    }));
-    handleClose();
+	const handleSubmit = async e => {
+		e.preventDefault();
+		setStateProfile({ ...stateProfile, isSaving: true });
+		await updateProfile({
+			variables: { profileData: { ...stateProfile.fields, email: user.email } },
+		});
+		setStateApp(state => ({
+			...state,
+			user: {
+				...state.user,
+				...stateProfile.fields,
+				email: user.email,
+			},
+		}));
+		handleClose();
 
-    setStateProfile({ ...stateProfile, isSaving: false });
-  };
+		setStateProfile({ ...stateProfile, isSaving: false });
+	};
 
-  return (
-    <DialogActions>
-      <Button
-        style={{ backgroundColor: "#00abed", color: "white" }}
-        variant="contained"
-        onClick={handleSubmit}
-        endIcon={isSaving && <CircularProgress style={{ width: 12, height: 12 }} />}
-      >
-        {isSaving ? "Saving..." : "Save changes"}
-      </Button>
-    </DialogActions>
-  );
+	return (
+		<DialogActions>
+			<Button
+				style={{ backgroundColor: '#00abed', color: 'white' }}
+				variant="contained"
+				onClick={handleSubmit}
+				endIcon={isSaving && <CircularProgress style={{ width: 12, height: 12 }} />}
+			>
+				{isSaving ? 'Saving...' : 'Save changes'}
+			</Button>
+		</DialogActions>
+	);
 };
 
 export default ProfileActions;

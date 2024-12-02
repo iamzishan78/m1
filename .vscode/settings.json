@@ -1,16 +1,10 @@
 {
-    "git.ignoreLimitWarning": true,
-    "git.autofetch": true,
-    // "editor.formatOnSave": true,
-    "editor.codeActionsOnSave": {
-        "source.fixAll": "explicit"
-    },
-    "spellright.language": [
-        "en"
-    ],
-    "spellright.documentTypes": [
-        "markdown",
-        "latex",
-        "plaintext"
-    ]
+	"git.ignoreLimitWarning": true,
+	"git.autofetch": true,
+	// "editor.formatOnSave": true,
+	"editor.codeActionsOnSave": {
+		"source.fixAll": "explicit"
+	},
+	"spellright.language": ["en"],
+	"spellright.documentTypes": ["markdown", "latex", "plaintext"]
 }

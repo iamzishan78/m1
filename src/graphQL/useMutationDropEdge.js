@@ -1,5 +1,5 @@
 import React from 'react';
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 /* *************************
 EXAMPLE
@@ -20,12 +20,11 @@ properties:[{key:"other",value:"other user prop"}]
 
 ************************* */
 
-
-  export const DROPEDGEQUERY = gql`mutation dropGraphEdge($source:VertexInput,$target:VertexInput,$relationshipLabel:String){
-    dropEdge(source:$source,target:$target,relationshipLabel:$relationshipLabel) {
-          success
-          message
-        }
-      
-  }`
-
+export const DROPEDGEQUERY = gql`
+	mutation dropGraphEdge($source: VertexInput, $target: VertexInput, $relationshipLabel: String) {
+		dropEdge(source: $source, target: $target, relationshipLabel: $relationshipLabel) {
+			success
+			message
+		}
+	}
+`;

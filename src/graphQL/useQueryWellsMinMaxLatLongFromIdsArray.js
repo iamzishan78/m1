@@ -1,7 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const WELLSMINMAXLATLONGFROMIDSARRAY = gql`
-  query getWellsMinMaxLatLongFromIdsArray($idsArray: [String]) {
-    wellsMinMaxLatLongFromIdsArray(idsArray: $idsArray)
-  }
+	query getWellsMinMaxLatLongFromIdsArray($idsArray: [String]) {
+		wellsMinMaxLatLongFromIdsArray(idsArray: $idsArray)
+	}
 `;

@@ -1,12 +1,12 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const DUPLICATE_PIPELINES = gql`
-  mutation duplicatePipelines($pipelines: [JSON]) {
-    duplicatePipelines(pipelines: $pipelines) {
-      success
-      message
-      error
-      pipelines
-    }
-  }
+	mutation duplicatePipelines($pipelines: [JSON]) {
+		duplicatePipelines(pipelines: $pipelines) {
+			success
+			message
+			error
+			pipelines
+		}
+	}
 `;

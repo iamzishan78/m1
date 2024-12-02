@@ -54,11 +54,10 @@ function WellClick() {
 				currentFeature.properties = { ...data };
 				await new Promise(resolve => setTimeout(resolve, 0));
 			} else {
-				currentFeature.properties = { ...(await getElasticWell(selectedWellIdVal)) }
+				currentFeature.properties = { ...(await getElasticWell(selectedWellIdVal)) };
 			}
 
-			if (currentFeature?.properties?.Id)
-				currentFeature.properties.id = currentFeature.properties.Id;
+			if (currentFeature?.properties?.Id) currentFeature.properties.id = currentFeature.properties.Id;
 
 			if (currentFeature) {
 				popupController.createPopUp(currentFeature.properties, paramId);
@@ -74,7 +73,7 @@ function WellClick() {
 					if (popupController.getValue('data'))
 						popupController.updateState({
 							selectedWell: currentFeature.properties,
-							data: undefined
+							data: undefined,
 						});
 				}
 			}
