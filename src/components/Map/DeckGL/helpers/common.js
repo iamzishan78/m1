@@ -541,7 +541,6 @@ export const getLayerFillColor = (dbLayer, fillColor, fillOpacity) => {
 	const selectAttr = dbLayer.layerSettings?.selectedAttribute?.label;
 	const attributeBasedColors = dbLayer.layerSettings?.attributeBasedColors;
 
-	console.log('getlayerfill', dbLayer?.identifier, fillOpacity);
 	return d => {
 		if (selectAttr) {
 			let path = colorBasedAttributes[getLayerKey(dbLayer?.identifier, colorBasedAttributes)]?.keys.find(
