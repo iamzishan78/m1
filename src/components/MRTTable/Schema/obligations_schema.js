@@ -31,7 +31,6 @@ const statusOptions = {
 const ObligationsMeta = {
 	esIndex,
 	onClickedRow,
-    isElasticQuery: false,
 	pageSize: 50,
 	pagination: {
 		pageIndex: 0,
@@ -133,28 +132,32 @@ const ObligationsMeta = {
 			accessorFn: row => row?.status,
 			id: 'status',
 			header: 'Status',
-            Cell: ({ renderedCellValue, row }) => {
+			Cell: ({ renderedCellValue, row }) => {
 				return <>{statusOptions[row?.original?.status] || row?.original?.status}</>;
 			},
 		},
 		{
-            ...CommonSchema.COMMON_COLUMN,
-            name: "isClosed",
-            esKey: "isClosed",
-            accessorFn: row => row?.isClosed,
-            id: "isClosed",
-            header: "Completed?",
-            type: "boolean",
-            defaultFilterOptions: [
-                { label: 'Y', value: true, type: "term" },
-                { label: 'N', value: false, type: "term" }
-            ],
-            Cell: ({ renderedCellValue }) => {
-                return (renderedCellValue === "true" ? <div style={{ textAlign: "center" }}>
-                    <CheckIcon id="checkIcon" />
-                </div> : <div style={{ textAlign: "center" }}>--</div>)
-            }
-        },
+			...CommonSchema.COMMON_COLUMN,
+			name: 'isClosed',
+			esKey: 'isClosed',
+			accessorFn: row => row?.isClosed,
+			id: 'isClosed',
+			header: 'Completed?',
+			type: 'boolean',
+			defaultFilterOptions: [
+				{ label: 'Y', value: true, type: 'term' },
+				{ label: 'N', value: false, type: 'term' },
+			],
+			Cell: ({ renderedCellValue }) => {
+				return renderedCellValue === 'true' ? (
+					<div style={{ textAlign: 'center' }}>
+						<CheckIcon id="checkIcon" />
+					</div>
+				) : (
+					<div style={{ textAlign: 'center' }}>--</div>
+				);
+			},
+		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			enableColumnFilter: false,

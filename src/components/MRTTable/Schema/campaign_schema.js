@@ -45,7 +45,6 @@ const onCustomKeyChange = async (client, row, value, item) => {
 
 const CampaignMeta = {
 	esIndex,
-	isElasticQuery: false,
 	pageSize: 50,
 	pagination: {
 		pageIndex: 0,

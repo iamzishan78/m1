@@ -25,7 +25,6 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
 	setFilters,
 	multiple,
 	isDate,
-	isElasticQuery = true,
 	...others
 }) {
 	const getDefaultSearchValue = () => {
@@ -180,7 +179,6 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
 					fields: typeof filterKey !== 'string' ? filterKey : undefined,
 					size: 100000,
 				},
-				isElasticQuery,
 			},
 		});
 	};

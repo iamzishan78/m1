@@ -23,7 +23,6 @@ const onClickedRow = selectedRow => {
 // Related Payments Meta
 const RelatedPaymentsMeta = {
 	esIndex,
-	isElasticQuery: false,
 	onClickedRow,
 	pageSize: 50,
 	pagination: {

@@ -62,12 +62,11 @@ function ESAutoCompleteFilter({
 	const appendOptions = useRef(false);
 	const filtersRef = useRef(null);
 
-	const { searchFields, filters, defaultFilters, advanceSearch, isElasticQuery } = tableController(tableKey).getValues([
+	const { searchFields, filters, defaultFilters, advanceSearch } = tableController(tableKey).getValues([
 		'searchFields',
 		'filters',
 		'defaultFilters',
 		'advanceSearch',
-		'isElasticQuery',
 	]);
 
 	const getFiltersAction = debounce(({ afterKey } = {}) => {
@@ -84,8 +83,6 @@ function ESAutoCompleteFilter({
 			let search = '';
 			if (searchText.current) search = type === 'number' ? searchText.current : `*${searchText.current}*`;
 			filtersRef.current = currentFilterRef;
-
-			const isMongo = isElasticQuery === false;
 
 			getFilters({
 				variables: {
@@ -109,7 +106,6 @@ function ESAutoCompleteFilter({
 						size: searchMapping[searchMode].size,
 						afterKey,
 					},
-					...(isMongo && { isElasticQuery: false }),
 				},
 			});
 		}

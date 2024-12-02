@@ -10,7 +10,6 @@ const esIndex = 'shapetracts_flat';
 
 const ExhibitAMeta = {
 	esIndex,
-	isElasticQuery: false,
 	pageSize: 25,
 	pagination: {
 		pageIndex: 0,

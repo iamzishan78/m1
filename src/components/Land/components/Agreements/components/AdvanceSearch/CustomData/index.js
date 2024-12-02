@@ -50,7 +50,6 @@ export default function CustomDataFilters(props) {
 				index: 'shapes_flat',
 				pathToKey: 'shapeJson.properties.custom_data',
 				filters: [{ field: 'shapeJson.properties.type.keyword', value: 'agreement' }],
-				isElasticQuery: false,
 			},
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps

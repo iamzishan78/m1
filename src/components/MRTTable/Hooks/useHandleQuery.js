@@ -69,8 +69,6 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		if (tableStateValues.isGeneric && !tableStateValues.globalSearch) globalFilter = null;
 
-		const isMongo = tableStateValues.isElasticQuery === false;
-
 		const variables = {
 			index: tableStateValues.esIndex,
 			pagination: { ...pagination, pageIndex: undefined, pageSize: undefined },
@@ -81,15 +79,14 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			},
 			sort,
 			filters,
-			...(isMongo && { isElasticQuery: false }),
 		};
 
 		if (tableStateValues.filterLayerType)
 			layerFiltersController.setVariables(tableStateValues.filterLayerType, variables);
 
-		let total = isMongo ? tableStateValues?.data?.total : null;
+		let total = tableStateValues?.data?.total;
 
-		if (pagination.pageIndex === 0 && isMongo) {
+		if (pagination.pageIndex === 0) {
 			(async () => {
 				const dbDataTotal = await client.query({
 					variables,
@@ -171,7 +168,6 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 					esIndex,
 					filters: [...filters, ...defaultFilters],
 					aggs: Object.assign({}, ...aggregationColumns),
-					isElasticQuery: tableStateValues.isElasticQuery,
 				},
 				query: GET_ES_AGGS_LIST,
 			});

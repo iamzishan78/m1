@@ -57,7 +57,6 @@ const onCustomKeyChange = async (client, row, value, item) => {
 
 const TractMeta = {
 	esIndex,
-	isElasticQuery: false,
 	pageSize: 50,
 	pagination: {
 		pageIndex: 0,

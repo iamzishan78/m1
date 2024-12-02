@@ -25,7 +25,6 @@ const MyWellsMeta = {
 	columnVirtualization: true,
 	getIdsFromRows: rows => rows?.map(row => row?._id) || [],
 	additionalQueries: ['comments'],
-	isElasticQuery: false,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,

@@ -82,7 +82,6 @@ const WellsFilters = ({ filters, setFilters }) => {
 							searchFields={['*']}
 							filters={appliedFilters}
 							extendSearchQuery={''}
-							isElasticQuery={false}
 						/>
 					</Grid>
 				);

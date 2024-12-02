@@ -29,7 +29,6 @@ const ActivitiesMeta = {
 	esIndex,
 	onClickedRow,
 	pageSize: 50,
-	isElasticQuery: false,
 	pagination: {
 		pageIndex: 0,
 		pageSize: 50,

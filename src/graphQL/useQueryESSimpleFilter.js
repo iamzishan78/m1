@@ -10,7 +10,6 @@ export const GET_ES_SIMPLE_FILTER = gql`
 		$filterAggs: esFilterAggsInput
 		$key_as_string: Boolean
 		$multi_filter_keys: Boolean
-		$isElasticQuery: Boolean
 	) {
 		getESSimpleFilter(
 			index: $index
@@ -21,7 +20,6 @@ export const GET_ES_SIMPLE_FILTER = gql`
 			filterAggs: $filterAggs
 			key_as_string: $key_as_string
 			multi_filter_keys: $multi_filter_keys
-			isElasticQuery: $isElasticQuery
 		)
 	}
 `;
