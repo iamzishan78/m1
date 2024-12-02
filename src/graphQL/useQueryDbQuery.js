@@ -16,3 +16,14 @@ export const GET_DB_DATA_TOTAL = gql`
 		}
 	}
 `;
+
+export const GET_DB_MIN_VALUE = gql`
+	query getDbMinValue($index: String, $field: String) {
+		getDbMinValue(index: $index, field: $field) {
+			success
+			message
+			error
+			data
+		}
+	}
+`;

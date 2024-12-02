@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Grid, Button, Divider } from '@material-ui/core';
+import { Grid, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { useSelector } from 'react-redux';
 
@@ -8,7 +8,7 @@ import DetailTabsSection from 'components/Revenue/components/Portfolio/DetailTab
 import { useLazyQuery } from '@apollo/client';
 import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from 'graphQL/useQueryGetPortfolioGrossRevenueSummary';
 import moment from 'moment';
-import { GET_ES_MIN_VALUE } from 'graphQL/useQueryESMinValue';
+import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles(theme => ({
 	actionBar: {
@@ -39,26 +39,25 @@ export default function Portfolio() {
 	const [monthsInterval, setMonths] = useState([]);
 	const [lastCheckMinDate, setLastCheckMinDate] = useState('');
 
-	const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
+	const [getDbMinValue] = useLazyQuery(GET_DB_MIN_VALUE, {
 		fetchPolicy: 'no-cache',
 		onCompleted: data => {
-			if (data?.getESMinValue) {
-				setLastCheckMinDate(data?.getESMinValue);
-				// setFromDate(`${moment(data.getESMinValue).startOf('month').format("yyyy-MM-DD")}`);
+			if (data?.getDbMinValue?.data) {
+				setLastCheckMinDate(data?.getDbMinValue?.data);
+				// setFromDate(`${moment(data.getDbMinValue?.data).startOf('month').format("yyyy-MM-DD")}`);
 				// setToDate(`${moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD')}`);
 			}
 		},
 	});
 
 	useEffect(() => {
-		getESMinValue({
+		getDbMinValue({
 			variables: {
-				esIndex: 'checks_flat',
+				index: 'checks_flat',
 				field: 'checkDate',
-				value_as_string: true,
 			},
 		});
-	}, [getESMinValue]);
+	}, [getDbMinValue]);
 
 	useEffect(() => {
 		setFromDate(moment().startOf('year').format('yyyy-MM-DD'));
@@ -93,7 +92,7 @@ export default function Portfolio() {
 				filterDate: { toDate: new Date(toDate), fromDate: new Date(fromDate) },
 			},
 		});
-	}, [propertiesReportGroup, toDate, fromDate]);
+	}, [propertiesReportGroup, toDate, fromDate, getPortfolioSummary]);
 
 	return (
 		<>
