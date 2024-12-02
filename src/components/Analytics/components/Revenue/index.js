@@ -30,6 +30,7 @@ import { generateMonthYearArray, getPropertiesRevenueTableSchema } from './helpe
 import { CUSTOM_DATES } from 'utils/data';
 import { GET_CHECK_MIN_DATE } from 'graphQL/useQueryGetCheckMinDate';
 
+
 const useStyles = makeStyles(theme => ({
   mainTabContainer: {
     display: 'flex',
@@ -497,9 +498,9 @@ export default function RevenueAnalytics(props) {
       )}
 
       {tabs[tab] === 'Check Details' && (
-        <div className={`${classes.sectionCard}`}>
-          <CheckDetailsSection header="Check Details" loadMore={loadMore} />
-        </div>
+          <Box sx={{ padding: '1em', marginLeft: '1em' }}>
+           <MRTTable name="RevenueCheckDetailTable" />
+         </Box>
       )}
 
       {tabs[tab] === 'Comparisons' && (
