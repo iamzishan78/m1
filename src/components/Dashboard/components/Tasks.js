@@ -139,7 +139,6 @@ const Title = ({ tab, setTab, setData, copyData, stateApp, setStateApp }) => {
 		searchTask();
 	}, [search, copyData]);
 
-
 	const searchTask = () => {
 		if (search?.length && copyData?.length) {
 			setDefaultData(copyData);
@@ -151,7 +150,7 @@ const Title = ({ tab, setTab, setData, copyData, stateApp, setStateApp }) => {
 		} else if (search?.length === 0) {
 			setData(copyData);
 		}
-	}
+	};
 
 	return (
 		<Grid container className={classes.gridStyle}>
@@ -261,11 +260,11 @@ const Tasks = () => {
 			const sortCallBack = (a, b) => moment(b.dateTime).valueOf() - moment(a.dateTime).valueOf();
 			if (tab === 0) {
 				const filterFirstTabData = orginalData.activities
-					.filter(activity => stateApp.user._id === activity.ownerId )
+					.filter(activity => stateApp.user._id === activity.ownerId)
 					.sort(sortCallBack);
 				setCopyData(filterFirstTabData);
 				setData(filterFirstTabData);
-			} 
+			}
 			if (tab === 1) {
 				const filterFirstTabData = orginalData.activities
 					.filter(

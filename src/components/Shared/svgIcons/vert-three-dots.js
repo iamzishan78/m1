@@ -18,28 +18,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Base from './base';
 
 export default class VertThreeDots extends Component {
-  static propTypes = {
-    /** Set the height of the icon, ex. '16px' */
-    height: PropTypes.string
-  };
+	static propTypes = {
+		/** Set the height of the icon, ex. '16px' */
+		height: PropTypes.string,
+	};
 
-  static defaultProps = {
-    height: '16px',
-    predefinedClassName: 'data-ex-icons-vert-three-dots'
-  };
+	static defaultProps = {
+		height: '16px',
+		predefinedClassName: 'data-ex-icons-vert-three-dots',
+	};
 
-  render() {
-    return (
-      <Base {...this.props}>
-        <rect x="28" y="44" width="8" height="8" />
-        <rect x="28" y="28" width="8" height="8" />
-        <rect x="28" y="12" width="8" height="8" />
-      </Base>
-    );
-  }
+	render() {
+		return (
+			<Base {...this.props}>
+				<rect x="28" y="44" width="8" height="8" />
+				<rect x="28" y="28" width="8" height="8" />
+				<rect x="28" y="12" width="8" height="8" />
+			</Base>
+		);
+	}
 }

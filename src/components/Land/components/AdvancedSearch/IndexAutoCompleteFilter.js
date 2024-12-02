@@ -21,19 +21,10 @@ function IndexAutoCompleteFilter({ sx, multiple, value, setValue }) {
 			sx={sx}
 			multiple={true}
 			id={`index-filter-autocomplete`}
-			options={
-				multiple ? options?.filter(option => !value.includes(option)) : options
-			}
+			options={multiple ? options?.filter(option => !value.includes(option)) : options}
 			loading={loading}
 			value={value}
-			renderInput={params => (
-				<TextField
-					{...params}
-					label="Indices"
-					placeholder="Search by index"
-					variant="standard"
-				/>
-			)}
+			renderInput={params => <TextField {...params} label="Indices" placeholder="Search by index" variant="standard" />}
 			onChange={(e, option) => {
 				setValue(option);
 			}}

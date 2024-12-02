@@ -3,9 +3,4 @@ import Input from './input';
 import Date from './date';
 import Select from './select';
 
-export {
-    Grid,
-    Input,
-    Date,
-    Select
-};
+export { Grid, Input, Date, Select };

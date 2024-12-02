@@ -53,6 +53,7 @@ import RevenueAppBar from 'components/Navigation/AppBar/Revenue';
 import AdminSettingsAppBar from 'components/Navigation/AppBar/AdminSettings';
 import { ROUTES } from 'components/Shared/FeatureFlag/common';
 import { navController } from 'hookstate/navStateController';
+import { slidoutStateController } from 'hookstate/slidoutStateController';
 
 const TabPanel = props => {
 	const { children, value, index, ...other } = props;
@@ -169,13 +170,6 @@ export default function Navigation(props) {
 		window.open('mailto:sales@m1neral.com?subject=Request for demo of premium features', '_blank');
 	};
 
-	const handleClickAddActivity = () => {
-		setStateApp(stateApp => ({
-			...stateApp,
-			activityDialog: true,
-		}));
-	};
-
 	const checkIfIgnoreHeader = () => {
 		if (
 			location.pathname.startsWith('/revenue/statement/details') ||
@@ -278,7 +272,12 @@ export default function Navigation(props) {
 							{matchActivities ? (
 								<div>
 									<div className={classes.filterTabs} style={{ paddingRight: '10px' }}>
-										<Button onClick={handleClickAddActivity} color="primary" variant="contained" startIcon={<Add />}>
+										<Button
+											onClick={() => slidoutStateController.showSlideout()}
+											color="primary"
+											variant="contained"
+											startIcon={<Add />}
+										>
 											Add Activity
 										</Button>
 									</div>

@@ -30,8 +30,7 @@ const useHandleAdditionalQueries = ({ tableKey, tableState, tableStateValues }) 
 
 		const commentsCounter = res?.data?.commentsCounter;
 
-		if (!isEqual(commentsCounterState, commentsCounter))
-			Controller.updateState({ commentsCounter });
+		if (!isEqual(commentsCounterState, commentsCounter)) Controller.updateState({ commentsCounter });
 	};
 
 	const callTagsQuery = async () => {

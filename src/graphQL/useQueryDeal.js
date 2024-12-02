@@ -1,7 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const GETDEAL = gql`
-  query getDeal($id:ID){
-    deal(dealId:$id)
-  }
+	query getDeal($id: ID) {
+		deal(dealId: $id)
+	}
 `;

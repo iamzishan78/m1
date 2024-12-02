@@ -12,16 +12,14 @@ import QuickActionPanel from 'components/Land/components/QuickActionPanel';
 import { AdminManagementRoutes } from 'utils/data';
 import Map from './components/Map';
 import AdminSettings from 'components/Shared/AdminSettings';
-import Flatten from 'components/Admin/Flatten';
-import Reindex from 'components/Admin/Reindex';
+import AdminOperation from 'components/Admin/AdminOperation';
 import BulkDataEditing from 'components/Admin/components/BulkDataEditing';
 import BulkDataEditingDetail from './components/BulkDataEditingDetail';
 
 const Components = {
 	Map,
 	AdminSettings,
-	Flatten,
-	Reindex,
+	AdminOperation,
 	BulkDataEditing,
 	BulkDataEditingDetail,
 };
@@ -68,8 +66,7 @@ export default function Admin() {
 	useEffect(() => {
 		const allPaths = JSON.parse(JSON.stringify(AdminManagementRoutes));
 		if (!isM1neralAddress(stateApp.user.email)) {
-			delete allPaths['FLATTENING'];
-			delete allPaths['REINDEX'];
+			delete allPaths['ADMINOPERATION'];
 		}
 		const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.CONTACTSUBMENU);
 		// const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.ANALYTICSSUBMENU);

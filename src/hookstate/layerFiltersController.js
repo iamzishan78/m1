@@ -12,14 +12,14 @@ const layerFiltersControllerHandler = state => ({
 
 		if (!filters?.variables) {
 			filters = {
-				variables: {}
-			}
+				variables: {},
+			};
 		}
 
 		const updatedVariables = {
 			...filters.variables,
 			filters: variables.filters,
-			search: variables.search
+			search: variables.search,
 		};
 
 		if (!deepEqual(filters.variables, updatedVariables)) {
@@ -27,7 +27,7 @@ const layerFiltersControllerHandler = state => ({
 			layerController.resetBounds(layerType);
 		}
 	},
-	resetVariables: layerType => {
+	resetVariables: (layerType, mapViewFilters = []) => {
 		const initialVariables = layerFilterInitialState[layerType]?.variables;
 
 		if (!initialVariables) return;
@@ -35,7 +35,9 @@ const layerFiltersControllerHandler = state => ({
 		const filters = layerFilters[layerType].get({ noproxy: true });
 
 		if (!deepEqual(filters.variables, initialVariables)) {
-			layerFilters[layerType]?.set({ ...filters, variables: initialVariables });
+			const mergedFilters = [...initialVariables.filters, ...mapViewFilters];
+			const updatedVariables = { ...filters, variables: { ...initialVariables, filters: mergedFilters } };
+			layerFilters[layerType]?.set(updatedVariables);
 			layerController.resetBounds(layerType);
 		}
 	},
@@ -92,9 +94,13 @@ const layerFiltersControllerHandler = state => ({
 		});
 	},
 	clearSnapGridFilters: () => {
-		['Wells', 'Agreements', 'Units', 'Parcels'].forEach((key) => {
-			layerFiltersController.resetVariables(key)
-		})
+		['Wells', 'Agreements', 'Units', 'Parcels'].forEach(key => {
+			const mapViewFilters = layerFilters[key].get({ noproxy: true });
+			layerFiltersController.resetVariables(
+				key,
+				mapViewFilters?.variables?.filters?.filter(filter => filter.isMapViewFilter)
+			);
+		});
 	},
 	setPolygonFilter: polygon => {
 		layerController.removeLayers();

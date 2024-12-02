@@ -10,7 +10,7 @@ import { CircularProgress } from '@material-ui/core';
 function GridViewComponent({ Icon, buttonRef, label, tableKey, fetchGridViews }) {
 	const [updateGridView, { data }] = useMutation(UPDATE_GRID_VIEW, {
 		onCompleted: () => {
-			fetchGridViews()
+			fetchGridViews();
 		},
 	});
 	const [showIcon, setShowIcon] = useState(false);
@@ -25,7 +25,7 @@ function GridViewComponent({ Icon, buttonRef, label, tableKey, fetchGridViews })
 		'groupedField',
 		'columnPinning',
 		'columnOrdering',
-		'isNotBreadcrumbView'
+		'isNotBreadcrumbView',
 	]);
 	const tableStateValues = tableState.stateValues;
 	const selectedGridView = tableStateValues?.gridView?.selectedGridView;
@@ -93,78 +93,78 @@ function GridViewComponent({ Icon, buttonRef, label, tableKey, fetchGridViews })
 				>
 					{label}
 				</Typography>
-			) :
-			(<Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-				<Typography
-					style={{
-						marginLeft: '10px',
-						fontSize: '16px',
-					}}
-					color="inherit"
-				>
-					{label}
-				</Typography>
-				<div>
-					<div
+			) : (
+				<Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+					<Typography
 						style={{
-							display: 'flex',
-							color: '#18AADD',
+							marginLeft: '10px',
 							fontSize: '16px',
-							cursor: 'pointer',
 						}}
-						onClick={event => handleClick(event)}
-						onFocus={() => setShowIcon(true)}
-						onMouseOver={() => setShowIcon(true)}
-						onMouseLeave={() => setShowIcon(false)}
+						color="inherit"
 					>
-						<Typography>
-							<span style={selectedGridView?.isModified ? { 'font-style': 'italic' } : {}}>
-								{selectedGridView?.name}
-							</span>
-						</Typography>
-						<span
+						{label}
+					</Typography>
+					<div>
+						<div
 							style={{
-								height: '0px',
+								display: 'flex',
 								color: '#18AADD',
 								fontSize: '16px',
 								cursor: 'pointer',
 							}}
+							onClick={event => handleClick(event)}
+							onFocus={() => setShowIcon(true)}
+							onMouseOver={() => setShowIcon(true)}
+							onMouseLeave={() => setShowIcon(false)}
 						>
-							{showIcon && <ExpandMoreIcon />}
-						</span>
-						<span>{isLoading && <CircularProgress size={24} />}</span>
+							<Typography>
+								<span style={selectedGridView?.isModified ? { 'font-style': 'italic' } : {}}>
+									{selectedGridView?.name}
+								</span>
+							</Typography>
+							<span
+								style={{
+									height: '0px',
+									color: '#18AADD',
+									fontSize: '16px',
+									cursor: 'pointer',
+								}}
+							>
+								{showIcon && <ExpandMoreIcon />}
+							</span>
+							<span>{isLoading && <CircularProgress size={24} />}</span>
+						</div>
+						<Menu
+							style={{ zIndex: '1305' }}
+							id="menu"
+							anchorEl={anchorEl}
+							keepMounted
+							open={Boolean(anchorEl)}
+							onClose={handleClose}
+							getContentAnchorEl={null}
+							anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+							transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+						>
+							<MenuItem
+								style={{ width: '250px' }}
+								onClick={handleUpdateClick}
+								disabled={selectedGridView?.type === 'Default' || selectedGridView?.name === 'All Contacts'}
+							>
+								Update view
+							</MenuItem>
+							<MenuItem
+								onClick={() => {
+									handleClose();
+									Controller.updateState({
+										gridView: { ...tableStateValues.gridView, showViewModal: true, showSaveAsNew: true },
+									});
+								}}
+							>
+								Save as new view
+							</MenuItem>
+						</Menu>
 					</div>
-					<Menu
-						style={{ zIndex: '1305' }}
-						id="menu"
-						anchorEl={anchorEl}
-						keepMounted
-						open={Boolean(anchorEl)}
-						onClose={handleClose}
-						getContentAnchorEl={null}
-						anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-						transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-					>
-						<MenuItem
-							style={{ width: '250px' }}
-							onClick={handleUpdateClick}
-							disabled={selectedGridView?.type === 'Default' || selectedGridView?.name === 'All Contacts'}
-						>
-							Update view
-						</MenuItem>
-						<MenuItem
-							onClick={() => {
-								handleClose();
-								Controller.updateState({
-									gridView: { ...tableStateValues.gridView, showViewModal: true, showSaveAsNew: true },
-								});
-							}}
-						>
-							Save as new view
-						</MenuItem>
-					</Menu>
-				</div>
-			</Breadcrumbs>
+				</Breadcrumbs>
 			)}
 		</div>
 	);

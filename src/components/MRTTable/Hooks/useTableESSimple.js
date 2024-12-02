@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { tableController } from 'hookstate/tableController';
@@ -22,6 +22,7 @@ const useTableESSimple = tableKey => {
 		tableState,
 		tableStateValues,
 	});
+	const [rowId, setRowId] = useState(null);
 
 	useHandleAdditionalQueries({ tableKey, tableState, tableStateValues });
 
@@ -32,7 +33,7 @@ const useTableESSimple = tableKey => {
 
 	const localizationOptions = {
 		filterCustomFilterFn: 'AutoComplete',
-		selectedCountOfRowCountRowsSelected: `${Object.keys(tableStateValues?.rowSelection || {})?.length} of ${tableStateValues?.data.total} row(s) selected`
+		selectedCountOfRowCountRowsSelected: `${Object.keys(tableStateValues?.rowSelection || {})?.length} of ${tableStateValues?.data.total} row(s) selected`,
 	};
 
 	if (tableStateValues.asyncRowSelection && !tableStateValues.isSubSetSelect)
@@ -54,7 +55,7 @@ const useTableESSimple = tableKey => {
 			showColumnFilters: tableStateValues?.showColumnFilters,
 			sorting: tableStateValues.sorting,
 			...(!tableStateValues?.isInFiniteScroll && { pagination: tableStateValues.pagination }),
-			...(tableState?.groupedField?.get() && { grouping: tableStateValues.grouping }),
+			grouping: tableStateValues.grouping,
 			isLoading: tableStateValues?.isLoading,
 			showAlertBanner: tableStateValues?.isError,
 			showProgressBars: tableStateValues?.isFetching,
@@ -70,25 +71,25 @@ const useTableESSimple = tableKey => {
 				showColumnFilters: tableStateValues?.showColumnFilters,
 				rowSelection: tableStateValues?.rowSelection,
 			},
-			...(tableStateValues?.groupedField && {
-				enableGrouping: true,
-				manualGroupinng: true,
-				onGroupingChange: groupingFunc => {
-					const newGrouping = groupingFunc(tableStateValues.grouping);
-					tableState.grouping.set(newGrouping);
+			enableGrouping:
+				typeof tableStateValues?.columnReordering === 'boolean' ? tableStateValues?.columnReordering : true,
+			manualGroupinng:
+				typeof tableStateValues?.columnReordering === 'boolean' ? tableStateValues?.columnReordering : true,
+			onGroupingChange: groupingFunc => {
+				const newGrouping = groupingFunc(tableStateValues.grouping);
+				tableState.grouping.set(newGrouping);
 
-					if (newGrouping.length === 1)
-						return tableState.sorting.set([
-							{
-								id: newGrouping[0],
-								desc: false,
-							},
-						]);
+				if (newGrouping.length === 1)
+					return tableState.sorting.set([
+						{
+							id: newGrouping[0],
+							desc: false,
+						},
+					]);
 
-					if (newGrouping.length > 0) tableState.sorting.set([]);
-					return newGrouping;
-				},
-			}),
+				if (newGrouping.length > 0) tableState.sorting.set([]);
+				return newGrouping;
+			},
 			...(tableStateValues?.isInFiniteScroll && { enablePagination: false }),
 			...(!tableStateValues?.isInFiniteScroll && {
 				manualPagination: true,
@@ -104,7 +105,8 @@ const useTableESSimple = tableKey => {
 			// rowVirtualizerProps: { overscan: 5 },
 			enableDensityToggle: false,
 			enableColumnFilterModes: true,
-			enableColumnOrdering: true,
+			enableColumnOrdering:
+				typeof tableStateValues?.columnReordering === 'boolean' ? tableStateValues?.columnReordering : true,
 			enableColumnResizing: true,
 			enableRowSelection: true,
 			enablePinning: true,
@@ -126,31 +128,32 @@ const useTableESSimple = tableKey => {
 
 				Controller.setColumnPinning(newPinning, tableStateValues?.columnPinning, tableStateValues.TableSchema);
 			},
-			onRowSelectionChange: (checkFunc) => {
+			onRowSelectionChange: checkFunc => {
 				if (typeof checkFunc !== 'function') {
-					Controller.setIsAllRowsSelected(false)
-					Controller.setColumnCheck(checkFunc)
-					return
+					Controller.setIsAllRowsSelected(false);
+					Controller.setColumnCheck(checkFunc);
+					return;
 				}
 
-				let newstate = checkFunc(tableStateValues?.rowSelection)
+				let newstate = checkFunc(tableStateValues?.rowSelection);
 				const allNumbers = _.range(0, tableStateValues?.pageSize);
 				const missingNumbers = _.difference(allNumbers, _.keys(newstate).map(Number));
-				const selectAll = (tableStateValues.data?.rows?.length === Object.keys(newstate)?.length) && !missingNumbers.length;
+				const selectAll =
+					tableStateValues.data?.rows?.length === Object.keys(newstate)?.length && !missingNumbers.length;
 				if (selectAll) {
 					if (tableStateValues.asyncRowSelection) {
 						for (let i = 0; i < tableStateValues?.data?.rows?.length; i++) {
-							newstate[i] = true
+							newstate[i] = true;
 						}
-						Controller.setColumnCheck(newstate)
+						Controller.setColumnCheck(newstate);
 						Controller.updateState({
 							onScrollCheck: true,
-							isSubSetSelect: null
-						})
-						return
+							isSubSetSelect: null,
+						});
+						return;
 					}
 					for (let i = 0; i < tableStateValues.data?.total; i++) {
-						newstate[i] = true
+						newstate[i] = true;
 					}
 				}
 				let unselectAll = true;
@@ -163,18 +166,18 @@ const useTableESSimple = tableKey => {
 				}
 
 				if (unselectAll) {
-					Controller.setIsAllRowsSelected(false)
-					newstate = {}
+					Controller.setIsAllRowsSelected(false);
+					newstate = {};
 					if (tableStateValues?.isSubSetSelect) {
 						Controller.updateState({
 							isSubSetSelect: null,
 						});
 					}
 					Controller.updateState({
-						onScrollCheck: false
+						onScrollCheck: false,
 					});
 				}
-				Controller.setColumnCheck(newstate)
+				Controller.setColumnCheck(newstate);
 			},
 			onColumnFiltersChange: filtersFunc => {
 				const newFilters = filtersFunc(
@@ -212,8 +215,7 @@ const useTableESSimple = tableKey => {
 						value = isKeyword ? filter.value : +filter.value || 0;
 					if (mode && tableESSimpleFilterModeOtions.inclusive.includes(mode))
 						value = filter.value.map(value => +value || 0);
-					if (columnType === 'date')
-						value = filter.value
+					if (columnType === 'date') value = filter.value;
 
 					Controller.setFilter({
 						field: filter.id,
@@ -222,16 +224,16 @@ const useTableESSimple = tableKey => {
 						oRFilter,
 						...(mode &&
 							!['multiselect', 'singleselect'].includes(mode) && {
-							type: 'advanced',
-							searchType: mode,
-							isKeyword,
-							columnType,
-						}),
+								type: 'advanced',
+								searchType: mode,
+								isKeyword,
+								columnType,
+							}),
 					});
 				});
 			},
 
-			onColumnOrderChange: (ordering) => {
+			onColumnOrderChange: ordering => {
 				Controller.setColumnOrdering(ordering);
 			},
 
@@ -240,13 +242,22 @@ const useTableESSimple = tableKey => {
 					const { className } = e.target;
 					if (
 						tableStateValues?.onClickedRow &&
-						(typeof className === 'object' || className?.includes('MuiTableCell-root') || className?.includes('row-click'))
+						(typeof className === 'object' ||
+							className?.includes('MuiTableCell-root') ||
+							className?.includes('row-click'))
 					) {
 						tableStateValues?.onClickedRow(row?.row?.original);
+
+						// set rowId to apply styling based on row selection
+						if (rowId && rowId === row?.row?.original._id) setRowId(null);
+						else tableStateValues?.enableRowSelected && setRowId(row?.row?.original._id);
 					}
 				},
 				sx: {
 					cursor: 'pointer',
+					...(rowId && tableStateValues?.enableRowSelected && rowId === row?.row?.original._id
+						? { border: '5px solid rgb(128 128 128 / 40%)' }
+						: {}),
 				},
 			}),
 
@@ -283,9 +294,9 @@ const useTableESSimple = tableKey => {
 			enableRowNumbers: true,
 			muiToolbarAlertBannerProps: tableStateValues?.isError
 				? {
-					color: 'error',
-					children: 'Error loading data',
-				}
+						color: 'error',
+						children: 'Error loading data',
+					}
 				: undefined,
 			muiTableContainerProps: {
 				ref: tableContainerRef, // get access to the table container element
@@ -311,12 +322,12 @@ const useTableESSimple = tableKey => {
 				),
 			renderToolbarInternalActions: tableStateValues.toolbarInternalActions
 				? ({ table }) => (
-					<ToolbarInternalActions
-						table={table}
-						toolbarInternalActions={tableStateValues.toolbarInternalActions}
-						enableHiding={tableStateValues.enableHiding}
-					/>
-				)
+						<ToolbarInternalActions
+							table={table}
+							toolbarInternalActions={tableStateValues.toolbarInternalActions}
+							enableHiding={tableStateValues.enableHiding}
+						/>
+					)
 				: undefined,
 		},
 	};

@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { useApolloClient } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
-import { tableController,  } from 'hookstate/tableController';
+import { tableController } from 'hookstate/tableController';
 import { BulkUpdate } from 'components/MRTTable/Common/CommonToolBarActions';
 
 const useStyles = makeStyles(() => ({
@@ -45,7 +45,8 @@ function UnitToolbar({ table, tableKey }) {
 		'customProps',
 	]);
 	const tableStateValues = tableState.stateValues;
-	const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
+	const isSomeRowsSelected =
+		table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
@@ -67,8 +68,8 @@ function UnitToolbar({ table, tableKey }) {
 			table,
 			tableKey,
 			selectedCampaign: tableStateValues.customProps?.campaign,
-			objectType: "unit",
-			refetchQueries: ["getESSimpleSearch"]
+			objectType: 'unit',
+			refetchQueries: ['getESSimpleSearch'],
 		};
 	};
 

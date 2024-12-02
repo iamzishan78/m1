@@ -1,1 +1,1 @@
-export { default as RelatedWellsFilters } from "./RelatedWells";
+export { default as RelatedWellsFilters } from './RelatedWells';

@@ -1,95 +1,124 @@
-
-import React, { useEffect, useState } from "react";
-import { Grid, TextField, Autocomplete } from '@mui/material';
-import { Controller } from "react-hook-form";
+import React, { useEffect, useState } from 'react';
+import { Grid, TextField, Autocomplete, CircularProgress } from '@mui/material';
+import { Controller } from 'react-hook-form';
 import { useApolloClient } from '@apollo/client';
+import { debounce } from 'lodash';
 
 function AutoCompleteComponent({ control, item }) {
-  const {
-    name,
-    label,
-    defaultOptions = [],
-    variables,
-    query,
-    getOptions
-  } = item;
+	const { name, label, defaultOptions = [], variables, query, getOptions, onChange, isESSearch } = item;
 
-  const client = useApolloClient();
-  const [options, setOptions] = useState(defaultOptions);
+	const client = useApolloClient();
+	const [options, setOptions] = useState(defaultOptions);
+	const [loading, setLoading] = useState(false); // state to manage loading
 
-  const callQuery = async () => {
-    if (query) {
-      const res = await client.query({
-        variables,
-        query,
-      });
-      let filterData = getOptions(res)
-      for (let i = 0; i < defaultOptions.length; i++) {
-        filterData = filterData.filter(
-          (d) =>
-            d !== defaultOptions[i].value &&
-            d !== defaultOptions[i].label
-        );
-      }
-      for (let i = 0; i < defaultOptions.length; i++) {
-        filterData.push(defaultOptions[i].label);
-      }
+	const callQuery = debounce(async value => {
+		if (query) {
+			setLoading(true);
+			setOptions([]);
+			try {
+				let res;
+				if (value && isESSearch) {
+					res = await client.query({
+						variables: {
+							...variables,
+							search: {
+								...variables?.search,
+								query: value,
+							},
+						},
+						query,
+					});
+				} else {
+					res = await client.query({
+						variables,
+						query,
+					});
+				}
+				let filterData = getOptions(res);
 
-      filterData = filterData.map(item => {
-        if (typeof item === 'string') {
-          return { label: item.trim(), value: item.trim() };
-        } else {
-          return item;
-        }
-      });
+				// Filter out duplicates
+				filterData = filterData.filter(d => !defaultOptions.some(option => d.value === option.value));
 
-      const alreadyInLabelValueForm = filterData.every(item => typeof item === 'object' && 'label' in item && 'value' in item);
-      filterData = alreadyInLabelValueForm ? filterData : filterData.map(item => ({
-        label: item,
-        value: item
-      }));
+				// Add default options at the end
+				filterData = [...filterData, ...defaultOptions.map(option => option.label)];
 
-      setOptions(filterData);
-    }
-  }
+				// Normalize data
+				filterData = filterData.map(item => {
+					if (typeof item === 'string') {
+						return { label: item.trim(), value: item.trim() };
+					} else {
+						return item;
+					}
+				});
 
-  useEffect(() => {
-    callQuery()
-  }, [])
+				setOptions(filterData);
+			} catch (error) {
+				console.error('Error fetching data:', error);
+			}
+			setLoading(false);
+		}
+	}, 500);
 
+	useEffect(() => {
+		callQuery('');
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
-  return (
-    <Grid item xs={12}>
-      <h3>{label}</h3>
+	return (
+		<Grid item xs={12}>
+			<h3>{label}</h3>
 
-      <Controller
-        control={control}
-        name={name}
-        render={props => {
-          return (
-            <Autocomplete
-              options={options}
-              getOptionLabel={option => option.label}
-              getOptionSelected={(option, value) => option.value === value}
-              value={
-                Array.isArray(props.value)
-                  ? { label: props.value[0] || '', value: props.value[0] || '' }
-                  : typeof props.value === 'object'
-                    ? props.value
-                    : { label: props.value || '', value: props.value || '' }
-              }
-              onChange={(e, option) => {
-                props.onChange(option ? option : null)
-              }}
-              renderInput={params => (
-                <TextField {...params} size="small" multiline variant="standard" />
-              )}
-            />
-          )
-        }}
-      />
-    </Grid>
-  );
+			<Controller
+				control={control}
+				name={name}
+				render={({ onChange: onInputChange, value, onBlur, ref }) => (
+					<Autocomplete
+						options={options}
+						getOptionLabel={option => option.label}
+						getOptionSelected={(option, value) => option.value === value.value}
+						loading={loading}
+						loadingText={
+							loading ? (
+								<div style={{ textAlign: 'center' }}>
+									<CircularProgress />
+								</div>
+							) : (
+								''
+							)
+						}
+						noOptionsText={
+							loading ? (
+								<div style={{ textAlign: 'center' }}>
+									<CircularProgress />
+								</div>
+							) : (
+								'No Record Found'
+							)
+						}
+						value={options.find(option => option.value === value) || null}
+						onChange={(e, option) => {
+							onChange ? onChange(option?.value) : onInputChange(option ? option.value : null);
+						}}
+						renderInput={params => (
+							<TextField
+								{...params}
+								size="small"
+								multiline
+								variant="standard"
+								onChange={async event => {
+									if (isESSearch) {
+										callQuery(event.target.value);
+									}
+								}}
+								onBlur={onBlur}
+								inputRef={ref}
+							/>
+						)}
+					/>
+				)}
+			/>
+		</Grid>
+	);
 }
 
-export default AutoCompleteComponent
+export default AutoCompleteComponent;

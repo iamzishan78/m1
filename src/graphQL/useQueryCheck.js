@@ -1,9 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const GETCHECK = gql`
-  query getCheck($id:ID){
-    getCheck(checkId:$id)
-  }
+	query getCheck($id: ID) {
+		getCheck(checkId: $id)
+	}
 `;
-
-

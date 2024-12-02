@@ -407,7 +407,7 @@ export default function ParcelSummary(props) {
 								metaData={metaDataRes}
 								updating={props.updating}
 								customLayer={props.customLayer}
-								shapeType={"Tract"}
+								shapeType={'Tract'}
 							/>
 						</Grid>
 						<Grid item>

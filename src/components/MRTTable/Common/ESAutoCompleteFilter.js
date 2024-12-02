@@ -6,10 +6,8 @@ import _, { debounce } from 'lodash';
 import { tableController } from 'hookstate/tableController';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
-import vf_currency from "components/Shared/valueformatters/vf_currency.js";
-import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+import vf_currency, { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
-import { currencyKeys } from '../utils/data';
 
 // format value to show filter value & option with $ sign as prefix
 const formatValue = (value, field) => {
@@ -38,6 +36,8 @@ function ESAutoCompleteFilter({
 	},
 	extendSearchQuery,
 	multiple,
+	textFieldProps = {},
+	_value,
 }) {
 	if (isComposite) field = field.split(',');
 	const searchMode = type === 'date' ? 'FE' : 'BE';
@@ -158,8 +158,8 @@ function ESAutoCompleteFilter({
 			options = _.uniqWith(options, (a, b) => a.label === b.label);
 		}
 
-		options = options.filter((op) => {
-			op.label = formatValue(op.label) // format value to show $ sign as prefix
+		options = options.filter(op => {
+			op.label = formatValue(op.label); // format value to show $ sign as prefix
 			return op.value;
 		});
 
@@ -212,10 +212,10 @@ function ESAutoCompleteFilter({
 			filterValue = vf_currency_to_fixed(filterValue, 2);
 		} else if (Array.isArray(filterValue)) {
 			filterValue = filterValue.map(val => vf_currency_to_fixed(val, 2));
-		} else if (typeof filterValue === 'boolean' || type === "defaultFiltersOptions") {
-			// If there are default filters, use them 
-			const requiredFilterValue = defaultFilterOptions?.find((option) => option?.value === filterValue)?.label;
-			filterValue =   vf_currency_to_fixed(requiredFilterValue, 2); ;
+		} else if (typeof filterValue === 'boolean' || type === 'defaultFiltersOptions') {
+			// If there are default filters, use them
+			const requiredFilterValue = defaultFilterOptions?.find(option => option?.value === filterValue)?.label;
+			filterValue = vf_currency_to_fixed(requiredFilterValue, 2);
 		}
 	} else if (type === 'decimal' && filterValue !== '') {
 		if (typeof filterValue === 'number') {
@@ -224,10 +224,10 @@ function ESAutoCompleteFilter({
 			filterValue = vf_number(filterValue, 2);
 		} else if (Array.isArray(filterValue)) {
 			filterValue = filterValue.map(val => vf_number(val, 2));
-		} else if (typeof filterValue === 'boolean' || type === "defaultFiltersOptions") {
-			// If there are default filters, use them 
-			const requiredFilterValue = defaultFilterOptions?.find((option) => option?.value === filterValue)?.label;
-			filterValue =   vf_number(requiredFilterValue, 2); ;
+		} else if (typeof filterValue === 'boolean' || type === 'defaultFiltersOptions') {
+			// If there are default filters, use them
+			const requiredFilterValue = defaultFilterOptions?.find(option => option?.value === filterValue)?.label;
+			filterValue = vf_number(requiredFilterValue, 2);
 		}
 		filterValue = vf_number(filterValue, 2);
 	}
@@ -255,7 +255,7 @@ function ESAutoCompleteFilter({
 			options={requiredOptions}
 			loading={loading}
 			filterOptions={searchMapping[searchMode].filterOptions}
-			value={formatValue(filterValue, field)}
+			value={formatValue(filterValue ?? _value, field)}
 			renderInput={params => (
 				<TextField
 					{...params}
@@ -277,6 +277,7 @@ function ESAutoCompleteFilter({
 						searchText.current = e.target.value;
 						getFiltersAction();
 					}}
+					{...textFieldProps}
 				/>
 			)}
 			onChange={(e, option) => {
@@ -305,6 +306,8 @@ function ESAutoCompleteFilter({
 
 				if (type === 'date') {
 					value = formatDate(value);
+				} else if (type === 'boolean') {
+					value = value === 'true';
 				}
 				setFilterValue(value);
 

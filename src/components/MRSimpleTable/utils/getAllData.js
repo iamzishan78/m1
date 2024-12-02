@@ -1,14 +1,6 @@
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 
-export const getAllData = async (
-	search,
-	sorting,
-	defaultSort,
-	esIndex,
-	filters,
-	total,
-	client
-) => {
+export const getAllData = async (search, sorting, defaultSort, esIndex, filters, total, client) => {
 	let sortOrder;
 	if (sorting?.length > 0) {
 		sortOrder = { field: sorting[0]?.id, order: sorting[0]?.desc ? 'desc' : 'asc' };

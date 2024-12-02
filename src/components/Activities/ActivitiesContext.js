@@ -1,18 +1,18 @@
-import React, { useState, createContext } from "react";
+import React, { useState, createContext } from 'react';
 
 const ActivitiesContext = createContext([{}, () => {}]);
 
-const ActivitiesContextProvider = (props) => {
-  const [stateActivities, setStateActivities] = useState({
-    openDialog: false,
-    selectedDate:new Date(),
-  });
+const ActivitiesContextProvider = props => {
+	const [stateActivities, setStateActivities] = useState({
+		openDialog: false,
+		selectedDate: new Date(),
+	});
 
-  return (
-    <ActivitiesContext.Provider value={[stateActivities, setStateActivities]}>
-      {props.children}
-    </ActivitiesContext.Provider>
-  );
+	return (
+		<ActivitiesContext.Provider value={[stateActivities, setStateActivities]}>
+			{props.children}
+		</ActivitiesContext.Provider>
+	);
 };
 
 export { ActivitiesContext, ActivitiesContextProvider };

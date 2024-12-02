@@ -1,22 +1,5 @@
-import { hookstate } from '@hookstate/core';
-import { copy } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
-
-const initialState = {
-	activeStepNumber: 0,
-	csvDataToSend: [],
-	mappedHeadersFromCSV: [],
-	m1neralHeaders: [],
-	csvDataList: [],
-	transferData: null,
-	uploaderFormValues: {},
-	selectedShapeLayerOption: null,
-	bulkUpload: false,
-	jobType: null,
-	job: null,
-};
-
-export const jobState = hookstate(copy(initialState));
+import { jobInitialState, jobState } from './initialStates';
 
 const jobStateControllerHandler = () => ({
 	toggleBulkUpload: () => {
@@ -85,5 +68,5 @@ const jobStateControllerHandler = () => ({
 
 export const jobController = {
 	...jobStateControllerHandler(jobState),
-	...hookStateController(jobState, initialState),
+	...hookStateController(jobState, jobInitialState),
 };

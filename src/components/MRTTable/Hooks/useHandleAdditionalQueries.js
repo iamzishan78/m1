@@ -30,7 +30,7 @@ const useHandleAdditionalQueries = ({ tableKey, tableState, tableStateValues }) 
 		const idsArray = rows.map(row => row.id);
 		const res = await client.query({
 			variables: { idsArray },
-			query: IFARECONTACTS
+			query: IFARECONTACTS,
 		});
 
 		if (res?.data?.ifAreContacts) {
@@ -49,7 +49,7 @@ const useHandleAdditionalQueries = ({ tableKey, tableState, tableStateValues }) 
 			isFetching: false,
 			isError: false,
 		});
-	}
+	};
 
 	const callCommentsQuery = async () => {
 		const user = globalStateController.getValue('user');
@@ -84,8 +84,6 @@ const useHandleAdditionalQueries = ({ tableKey, tableState, tableStateValues }) 
 
 		if (additionalQueries.includes('isContact')) callIfOwnersAreContactsQuery();
 		if (additionalQueries.includes('comments')) callCommentsQuery();
-
-
 	}, [tableState.data, tableState.additionalQueries, refetchAdditionalQueries]);
 };
 

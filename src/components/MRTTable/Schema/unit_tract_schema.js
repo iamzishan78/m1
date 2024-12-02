@@ -1,6 +1,6 @@
 import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import TractPerUnitToolBar from "components/MRTTable/TablesOverride/TractPerUnit/TractPerUnitToolBar";
+import TractPerUnitToolBar from 'components/MRTTable/TablesOverride/TractPerUnit/TractPerUnitToolBar';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 const esIndex = 'shapetracts_flat';
@@ -58,7 +58,10 @@ const TractMeta = {
 						alignItems: 'center',
 					}}
 				>
-					<ColumnWithLink value={renderedCellValue || row.getValue('shapeJson.properties.originalProperties.State')} link={`/map/parcels/${row.getValue('_id')}`} />
+					<ColumnWithLink
+						value={renderedCellValue || row.getValue('shapeJson.properties.originalProperties.State')}
+						link={`/map/parcels/${row.getValue('_id')}`}
+					/>
 				</div>
 			),
 		},
@@ -141,7 +144,6 @@ const TractMeta = {
 			accessorKey: 'uAcres',
 			header: 'Unit Tract Acres',
 			isSearchField: false,
-
 		},
 	],
 };

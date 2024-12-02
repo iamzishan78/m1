@@ -1,77 +1,77 @@
-import { Grid } from "@material-ui/core";
-import CardHeader from "@material-ui/core/CardHeader";
-import IconButton from "@material-ui/core/IconButton";
-import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
-import DragIndicatorOutlinedIcon from "@material-ui/icons/DragIndicatorOutlined";
-import React, { Fragment, useContext, useEffect, useState } from "react";
-import { sortableHandle } from "react-sortable-hoc";
-import { DashboardContext } from "../DashboardContext";
-import TwitterWidget from "./TwitterWidget";
-import SearchIcon from "@material-ui/icons/Search";
-import Paper from "@material-ui/core/Paper";
-import InputBase from "@material-ui/core/InputBase";
+import { Grid } from '@material-ui/core';
+import CardHeader from '@material-ui/core/CardHeader';
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import DragIndicatorOutlinedIcon from '@material-ui/icons/DragIndicatorOutlined';
+import React, { Fragment, useContext, useEffect, useState } from 'react';
+import { sortableHandle } from 'react-sortable-hoc';
+import { DashboardContext } from '../DashboardContext';
+import TwitterWidget from './TwitterWidget';
+import SearchIcon from '@material-ui/icons/Search';
+import Paper from '@material-ui/core/Paper';
+import InputBase from '@material-ui/core/InputBase';
 
-const useStyles = makeStyles((theme) => ({
-  header: {
-    padding: "8px 8px 0 8px",
-    backgroundColor:'#FFFFF',
-    color: 'black'
-  },
-  boldtxt: {
-    fontWeight: "bold",
-  },
-  search: {
-    display: "flex",
-    alignItems: "center",
-    width: "calc(100% + 32px)",
-    transform: "scale(0.8)",
-    marginLeft: "-16px",
-    marginBottom: "-8px",
-  },
-  input: {
-    marginLeft: "8px",
-    flex: 1,
-  },
-  iconButton: {
-    padding: 10,
-  },
+const useStyles = makeStyles(theme => ({
+	header: {
+		padding: '8px 8px 0 8px',
+		backgroundColor: '#FFFFF',
+		color: 'black',
+	},
+	boldtxt: {
+		fontWeight: 'bold',
+	},
+	search: {
+		display: 'flex',
+		alignItems: 'center',
+		width: 'calc(100% + 32px)',
+		transform: 'scale(0.8)',
+		marginLeft: '-16px',
+		marginBottom: '-8px',
+	},
+	input: {
+		marginLeft: '8px',
+		flex: 1,
+	},
+	iconButton: {
+		padding: 10,
+	},
 }));
 
 const DragHandle = sortableHandle(() => (
-  <IconButton aria-label="drag">
-    <DragIndicatorOutlinedIcon fontSize="default" htmlColor="#808080" />
-  </IconButton>
+	<IconButton aria-label="drag">
+		<DragIndicatorOutlinedIcon fontSize="default" htmlColor="#808080" />
+	</IconButton>
 ));
 
 const TwitterCard = () => {
-  const classes = useStyles();
-  const [stateDashboard, setStateDashboard] = useContext(DashboardContext);
-  const [name, setName] = useState("");
-  const [timeOut, setTime] = useState(null);
+	const classes = useStyles();
+	const [stateDashboard, setStateDashboard] = useContext(DashboardContext);
+	const [name, setName] = useState('');
+	const [timeOut, setTime] = useState(null);
 
-  const debounceFunc = (func, time) => {
-    clearTimeout(timeOut);
-    return setTime(setTimeout(func, time));
-  };
+	const debounceFunc = (func, time) => {
+		clearTimeout(timeOut);
+		return setTime(setTimeout(func, time));
+	};
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-    const thandleRegex = /^[A-Za-z0-9_]{1,15}$/;
-    if (thandleRegex.test(name)) {
-      return setStateDashboard({ ...stateDashboard, userhandle: name });
-    }
-    if (name.trim() == "") {
-      return setStateDashboard({
-        ...stateDashboard,
-        userhandle: "m1neraltech",
-      });
-    }
-  };
+	const onSubmit = e => {
+		e.preventDefault();
+		const thandleRegex = /^[A-Za-z0-9_]{1,15}$/;
+		if (thandleRegex.test(name)) {
+			return setStateDashboard({ ...stateDashboard, userhandle: name });
+		}
+		if (name.trim() == '') {
+			return setStateDashboard({
+				...stateDashboard,
+				userhandle: 'm1neraltech',
+			});
+		}
+	};
 
-  return (
-    <Fragment>
-      {/* <CardHeader
+	return (
+		<Fragment>
+			{/* <CardHeader
         className={classes.header}
        // action={<DragHandle />}
         title={`Twitter Feed`}
@@ -98,9 +98,9 @@ const TwitterCard = () => {
           <SearchIcon />
         </IconButton>
       </Paper> */}
-      <TwitterWidget />
-    </Fragment>
-  );
+			<TwitterWidget />
+		</Fragment>
+	);
 };
 
 export default TwitterCard;

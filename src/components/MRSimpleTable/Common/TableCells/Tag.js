@@ -2,10 +2,7 @@ import React, { memo } from 'react';
 import Badge from '@material-ui/core/Badge';
 import Tooltip from '@material-ui/core/Tooltip';
 import { makeStyles } from '@material-ui/core/styles';
-import {
-	simpleTableController,
-	simpleTableGlobalController,
-} from 'hookstate/simpleTableController';
+import { simpleTableController, simpleTableGlobalController } from 'hookstate/simpleTableController';
 
 const useStyles = makeStyles(() => ({
 	tagsDiv: {

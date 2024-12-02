@@ -26,6 +26,7 @@ import { debounce } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { layerFilters, layerState, layerStateInitialState } from './initialStates';
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 const getWellColor = w => {
 	// Check if the well status is of Permit type
@@ -667,6 +668,7 @@ const layerStateControllerHandler = state => {
 			layerController.updateState({ client, history });
 		},
 		resetBounds: identifier => {
+			if (typeof identifier !== 'string') return;
 			if (identifier === 'Agreements') {
 				['Deeds', 'Leases', 'Contracts', 'Surfaces'].forEach(type => {
 					layerController.resetBounds(type);
@@ -734,6 +736,23 @@ const layerStateControllerHandler = state => {
 			popupController.reset();
 			drawController.reset();
 			layerFiltersController.reset();
+			const mapViewFilters = globalStateController.getValue('mapView')?.selectedMapView?.filters || [];
+			const layers = globalStateController.getValue('layers') || [];
+			mapViewFilters.forEach(filter => {
+				// Check if its a UD layer or a shape file layer
+				const shapeFileLayer = layers.find(layer => layer.layerId === filter.dataSourceName);
+				const dataSource = shapeFileLayer?.layerShapeName || filter?.dataSourceName;
+
+				const initialFilters = layerFiltersController.getValue([dataSource])?.variables?.filters || [];
+
+				layerFiltersController.setVariables(dataSource, {
+					filters: [
+						getFormattedFilterBasedOnType(filter.filterType, filter.fieldName, filter.filterValues),
+						...initialFilters,
+					],
+				});
+			});
+
 			layerController.setState({ rigsData });
 			navController.reset();
 			mapControlsController.setState({

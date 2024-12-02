@@ -36,6 +36,7 @@ const RevenueStatementsMeta = {
 	maxTableHeight: 'calc(100vh - 500px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
+	isElasticQuery: false,
 	gridViewSettings: {
 		label: 'Revenue Statements',
 		module: 'RevenueStatements',
@@ -55,12 +56,7 @@ const RevenueStatementsMeta = {
 	TableSchema: [
 		// Hidden columns
 		{
-			...CommonSchema.HIDDEN,
-			name: 'id',
-			accessorKey: 'id',
-		},
-		{
-			...CommonSchema.HIDDEN,
+			...CommonSchema.MONGO_ID,
 			name: '_id',
 			accessorKey: '_id',
 		},

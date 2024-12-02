@@ -4,7 +4,7 @@ import { findBoundsMap } from 'components/MapControls/commonHelper';
 import {
 	drawBoundary,
 	drawWellBoundary,
-	drawPlaceBoundary
+	drawPlaceBoundary,
 } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 import { layerController } from './layerStateController';
 import { popupInitialState, popupState } from './initialStates';
@@ -49,12 +49,8 @@ const popupStateControllerHandler = state => ({
 				.setHTML(`<div id="popupContainer"></div>`)
 				.addTo(window.mapRef);
 	},
-	fitParcelBounds: () =>
-		findBoundsMap(
-			[popupState?.selectedParcel?.get({ noproxy: true })?.feature],
-			window.mapRef
-		),
-	fitWellBounds: (wellFeature) => {
+	fitParcelBounds: () => findBoundsMap([popupState?.selectedParcel?.get({ noproxy: true })?.feature], window.mapRef),
+	fitWellBounds: wellFeature => {
 		const selectedWell = wellFeature || popupState?.selectedWell?.get({ noproxy: true });
 
 		// mathematical formula for screen fit
@@ -80,7 +76,7 @@ const popupStateControllerHandler = state => ({
 		drawBoundary();
 		drawWellBoundary();
 		drawPlaceBoundary();
-		layerController.updateState({ clickedFeature: null })
+		layerController.updateState({ clickedFeature: null });
 	}, // reset whole state back to initial state
 });
 

@@ -1,10 +1,9 @@
 import React from 'react';
-import { useQuery } from "@apollo/client";
-import gql from "graphql-tag";
+import { useQuery } from '@apollo/client';
+import gql from 'graphql-tag';
 
 export default function useQueryProdHistory(id) {
-
-  const WELLPRODHISTORYQUERY = gql`query {
+	const WELLPRODHISTORYQUERY = gql`query {
     wellProdHistory(wellId:"${id}") {
             year
             month
@@ -13,9 +12,8 @@ export default function useQueryProdHistory(id) {
             oil
             water
     }
-  }`
-      const { data,loading, error} = useQuery(WELLPRODHISTORYQUERY);
-    
-      return {data,loading,error}
+  }`;
+	const { data, loading, error } = useQuery(WELLPRODHISTORYQUERY);
 
+	return { data, loading, error };
 }

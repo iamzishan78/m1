@@ -1,14 +1,14 @@
-import React from "react";
-import gql from "graphql-tag";
+import React from 'react';
+import gql from 'graphql-tag';
 
 export const PROJECTSQUERY = gql`
-  query {
-    projects {
-      id
-      name
-      titleOpinions {
-        id
-      }
-    }
-  }
+	query {
+		projects {
+			id
+			name
+			titleOpinions {
+				id
+			}
+		}
+	}
 `;
