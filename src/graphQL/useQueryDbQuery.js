@@ -27,3 +27,14 @@ export const GET_DB_MIN_VALUE = gql`
 		}
 	}
 `;
+
+export const GET_DB_MODELS = gql`
+	query getDbModels($flatOnly: Boolean) {
+		getDbModels(flatOnly: $flatOnly) {
+			success
+			message
+			error
+			data
+		}
+	}
+`;
