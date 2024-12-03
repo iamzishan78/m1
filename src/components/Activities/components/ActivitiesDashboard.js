@@ -58,6 +58,7 @@ export const getActivityFilters = appliedFilters => {
 const ActivitiesDashboard = () => {
 	const classes = useStyles();
 	const selectedActivityId = useHookstate(slidoutState.selectedActivityId);
+	const [stateApp] = useContext(AppContext);
 
 	const tableKey = 'ActivitiesTable';
 	const esIndex = 'activities_flat';
@@ -92,6 +93,10 @@ const ActivitiesDashboard = () => {
 			activityContacts: { contacts },
 		}));
 	}, [getContactsForActivityResult]);
+
+	useEffect(() => {
+		tableController(tableKey).setGlobalFilter(stateApp.landAnalyticsSearchQuery)
+	  }, [stateApp.landAnalyticsSearchQuery]) // Update table filter state based on navbar search
 
 	useEffect(() => {
 		getESMinValue({
