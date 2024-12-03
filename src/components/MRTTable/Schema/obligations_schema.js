@@ -145,9 +145,9 @@ const ObligationsMeta = {
 			id: 'isClosed',
 			header: 'Completed?',
 			type: 'boolean',
-			defaultFilterOptions: [
-				{ label: 'Y', value: true, type: 'term' },
-				{ label: 'N', value: false, type: 'term' },
+			filterSelectOptions: [
+				{ label: 'Yes', value: 'true' },
+				{ label: 'No', value: 'false' },
 			],
 			Cell: ({ renderedCellValue }) => {
 				return renderedCellValue === 'true' ? (

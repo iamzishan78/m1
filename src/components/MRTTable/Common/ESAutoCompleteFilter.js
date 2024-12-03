@@ -231,15 +231,6 @@ function ESAutoCompleteFilter({
 		}
 		filterValue = vf_number(filterValue, 2);
 	}
-	else if (type === 'boolean' &&  typeof filterValue !== 'undefined' && filterValue !== '' && defaultFilterOptions?.length ) {
-		 if (Array.isArray(filterValue)) {
-			filterValue = filterValue.map(val => defaultFilterOptions?.find(option => option?.value === val)?.label);
-		} else {
-		// If there are default filters, use them
-			const requiredFilterValue = defaultFilterOptions?.find(option => option?.value === filterValue)?.label;
-			filterValue = requiredFilterValue || filterValue;
-		} 
-	}
 	const id = Array.isArray(field) ? field.join(' ') : field;
 	// Filter out the options
 	const requiredOptions =
