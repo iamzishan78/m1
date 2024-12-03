@@ -306,7 +306,7 @@ export default function Comments(props) {
 			setCommentsArray(sortArrayBasedOnTs(comments));
 		}
 		setLoadingComments(false);
-	}, [dataCommentsMultiIds, props.multipleIds.length, publicComment, sortArrayBasedOnTs, stateApp.user.mongoId]);
+	}, [dataCommentsMultiIds, props.multipleIds?.length, publicComment, sortArrayBasedOnTs, stateApp.user?.mongoId]);
 
 	/// ////////////////// INSERTING NEW COMMENT ///////////////////////////////////////////////
 
@@ -491,7 +491,7 @@ export default function Comments(props) {
 							)}
 						</Grid>
 					)}
-					{props.hideSharedCommentCheck ? null : (
+					{!props.hideShareCommentsToggle && (
 						<Grid item xs={12} style={{ marginBottom: '8px' }} data-testid="shared-comment-section">
 							<FormGroup style={{ display: 'block' }}>
 								{(props.detailCard || props.handleRightDialogClose) && (

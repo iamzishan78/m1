@@ -669,7 +669,14 @@ const OwnersPerUnitMeta = {
 			...CommonSchema.COMMENTS,
 			Cell: ({ renderedCellValue, row }) => {
 				const id = row.getValue('ownerEntity');
-				return <CommentCell id={id} value={row?.original?.commentsCount} targetLabel={'Unit Ownership'} />;
+				return (
+					<CommentCell
+						id={id}
+						value={row?.original?.commentsCount}
+						targetLabel={'Unit Ownership'}
+						hideShareCommentsToggle
+					/>
+				);
 			},
 		},
 
