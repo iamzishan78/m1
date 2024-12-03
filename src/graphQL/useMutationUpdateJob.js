@@ -1,7 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const UPDATE_JOB = gql`
-  mutation updateJob($job: jobInput) {
-    updateJob(job: $job)
-  }
+	mutation updateJob($job: jobInput) {
+		updateJob(job: $job)
+	}
 `;

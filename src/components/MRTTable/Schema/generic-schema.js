@@ -1,6 +1,6 @@
-import { get } from "lodash";
+import { get } from 'lodash';
 
-const onClickedRow = selectedRow => { };
+const onClickedRow = selectedRow => {};
 
 const GenericMeta = {
 	pageSize: 25,
@@ -16,35 +16,36 @@ const GenericMeta = {
 	isGeneric: true,
 	density: 'compact',
 	TableSchema: [],
-	generateSchema: (keys, rows) => keys.map(key => ({
-		size: 250,
-		isPinned: false,
-		hidden: false,
-		filter: false,
-		isSearchField: false,
-		enableSorting: false,
-		type: 'string',
-		name: key,
-		accessorKey: key,
-		accessorFn: (row) => {
-			let value = get(row, key);
+	generateSchema: (keys, rows) =>
+		keys.map(key => ({
+			size: 250,
+			isPinned: false,
+			hidden: false,
+			filter: false,
+			isSearchField: false,
+			enableSorting: false,
+			type: 'string',
+			name: key,
+			accessorKey: key,
+			accessorFn: row => {
+				let value = get(row, key);
 
-			switch (typeof value) {
-				case 'object':
-					value = JSON.stringify(value);
-					break;
+				switch (typeof value) {
+					case 'object':
+						value = JSON.stringify(value);
+						break;
 
-				case 'string':
-					break;
+					case 'string':
+						break;
 
-				default:
-					break;
-			}
+					default:
+						break;
+				}
 
-			return value;
-		},
-		header: key,
-	})),
+				return value;
+			},
+			header: key,
+		})),
 };
 
 export default GenericMeta;

@@ -1,11 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const SHAPEWELLSCOUNT = gql`
-  query getShapeWellsCount(
-    $polygon: String
-  ) {
-    shapeWellsCount(
-      polygon: $polygon
-    )
-  }
+	query getShapeWellsCount($polygon: String) {
+		shapeWellsCount(polygon: $polygon)
+	}
 `;

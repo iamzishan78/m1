@@ -284,198 +284,196 @@
 // ];
 
 const checkDetailsKeys = [
-    {
-        label: "UID",
-        mapped_key: "Line Number",
-        required: true,
-        actual_key: "lineNumber",
-        showAsSample: false
-    },
-    {
-        label: "Payor",
-        mapped_key: "",
-        required: false,
-        actual_key: "check.payor.name",
-        showAsSample: false
-    },
-    {
-        label: "Check Number",
-        mapped_key: "",
-        required: false,
-        actual_key: "check.checkNumber",
-        showAsSample: false
-    },
-    {
-        label: "Check Amount",
-        mapped_key: "",
-        required: false,
-        actual_key: "check.checkAmount",
-        showAsSample: false
-    },
-    {
-        label: "Check Date",
-        mapped_key: "",
-        required: false,
-        actual_key: "check.checkDate",
-        showAsSample: false
-    },
-    {
-        label: "M1 Property ID",
-        mapped_key: "",
-        required: false,
-        actual_key: "property._id",
-    },
-    {
-        label: "Payor Prop #",
-        mapped_key: "",
-        required: false,
-        actual_key: "property.purchaserNumber",
-    },
-    {
-        label: "Operator Prop #",
-        mapped_key: "",
-        required: false,
-        actual_key: "property.number",
-    },
-    {
-        label: "Accounting Ref ID",
-        mapped_key: "",
-        required: false,
-        actual_key: "property.internalID",
-    },
-    {
-        label: "Property Name",
-        mapped_key: "",
-        required: false,
-        actual_key: "property.name",
-    },
-    {
-        label: "Operator Name",
-        mapped_key: "",
-        required: false,
-        actual_key: "property.operator",
-    },
-    {
-        label: "Owner Number",
-        mapped_key: "",
-        required: false,
-        actual_key: "check.payee.number",
-        showAsSample: false
-    },
-    {
-        label: "Owner Name",
-        mapped_key: "",
-        required: false,
-        actual_key: "check.payee.name",
-        showAsSample: false
-    },
-    {
-        label: "Sales Date",
-        mapped_key: "",
-        required: true,
-        actual_key: "date",
-    },
-    {
-        label: "Product Code",
-        mapped_key: "",
-        required: false,
-        actual_key: "product",
-    },
-    {
-        label: "Property Description",
-        mapped_key: "",
-        required: false,
-        actual_key: "property.description",
-    },
-    {
-        label: "Decimal Interest",
-        mapped_key: "",
-        required: false,
-        actual_key: "disbursement",
-    },
-    {
-        label: "Interest Type",
-        mapped_key: "",
-        required: false,
-        actual_key: "interestType",
-    },
-    {
-        label: "Avg Price",
-        mapped_key: "",
-        required: false,
-        actual_key: "price",
-    },
-    {
-        label: "Property Gross Volume",
-        mapped_key: "",
-        required: false,
-        actual_key: "grossPropertyVolume",
-    },
-    {
-        label: "Property Gross Revenue",
-        mapped_key: "",
-        required: false,
-        actual_key: "grossPropertyValue",
-    },
-    {
-        label: "Owner Volume",
-        mapped_key: "",
-        required: false,
-        actual_key: "grossOwnerVolume",
-    },
-    {
-        label: "Owner Value",
-        mapped_key: "",
-        required: false,
-        actual_key: "grossOwnerValue",
-    },
-    {
-        label: "Owner Tax Amount",
-        mapped_key: "",
-        required: false,
-        actual_key: "ownerTax",
-    },
-    {
-        label: "Tax Type",
-        mapped_key: "",
-        required: false,
-        actual_key: "taxType",
-    },
-    {
-        label: "Owner Deduct Amount",
-        mapped_key: "",
-        required: false,
-        actual_key: "ownerDeducts",
-    },
-    {
-        label: "Deduct Code",
-        mapped_key: "",
-        required: false,
-        actual_key: "deductType",
-    },
-    {
-        label: "Owner Net Revenue",
-        mapped_key: "",
-        required: false,
-        actual_key: "netOwnerValue",
-    },
+	{
+		label: 'UID',
+		mapped_key: 'Line Number',
+		required: true,
+		actual_key: 'lineNumber',
+		showAsSample: false,
+	},
+	{
+		label: 'Payor',
+		mapped_key: '',
+		required: false,
+		actual_key: 'check.payor.name',
+		showAsSample: false,
+	},
+	{
+		label: 'Check Number',
+		mapped_key: '',
+		required: false,
+		actual_key: 'check.checkNumber',
+		showAsSample: false,
+	},
+	{
+		label: 'Check Amount',
+		mapped_key: '',
+		required: false,
+		actual_key: 'check.checkAmount',
+		showAsSample: false,
+	},
+	{
+		label: 'Check Date',
+		mapped_key: '',
+		required: false,
+		actual_key: 'check.checkDate',
+		showAsSample: false,
+	},
+	{
+		label: 'M1 Property ID',
+		mapped_key: '',
+		required: false,
+		actual_key: 'property._id',
+	},
+	{
+		label: 'Payor Prop #',
+		mapped_key: '',
+		required: false,
+		actual_key: 'property.purchaserNumber',
+	},
+	{
+		label: 'Operator Prop #',
+		mapped_key: '',
+		required: false,
+		actual_key: 'property.number',
+	},
+	{
+		label: 'Accounting Ref ID',
+		mapped_key: '',
+		required: false,
+		actual_key: 'property.internalID',
+	},
+	{
+		label: 'Property Name',
+		mapped_key: '',
+		required: false,
+		actual_key: 'property.name',
+	},
+	{
+		label: 'Operator Name',
+		mapped_key: '',
+		required: false,
+		actual_key: 'property.operator',
+	},
+	{
+		label: 'Owner Number',
+		mapped_key: '',
+		required: false,
+		actual_key: 'check.payee.number',
+		showAsSample: false,
+	},
+	{
+		label: 'Owner Name',
+		mapped_key: '',
+		required: false,
+		actual_key: 'check.payee.name',
+		showAsSample: false,
+	},
+	{
+		label: 'Sales Date',
+		mapped_key: '',
+		required: true,
+		actual_key: 'date',
+	},
+	{
+		label: 'Product Code',
+		mapped_key: '',
+		required: false,
+		actual_key: 'product',
+	},
+	{
+		label: 'Property Description',
+		mapped_key: '',
+		required: false,
+		actual_key: 'property.description',
+	},
+	{
+		label: 'Decimal Interest',
+		mapped_key: '',
+		required: false,
+		actual_key: 'disbursement',
+	},
+	{
+		label: 'Interest Type',
+		mapped_key: '',
+		required: false,
+		actual_key: 'interestType',
+	},
+	{
+		label: 'Avg Price',
+		mapped_key: '',
+		required: false,
+		actual_key: 'price',
+	},
+	{
+		label: 'Property Gross Volume',
+		mapped_key: '',
+		required: false,
+		actual_key: 'grossPropertyVolume',
+	},
+	{
+		label: 'Property Gross Revenue',
+		mapped_key: '',
+		required: false,
+		actual_key: 'grossPropertyValue',
+	},
+	{
+		label: 'Owner Volume',
+		mapped_key: '',
+		required: false,
+		actual_key: 'grossOwnerVolume',
+	},
+	{
+		label: 'Owner Value',
+		mapped_key: '',
+		required: false,
+		actual_key: 'grossOwnerValue',
+	},
+	{
+		label: 'Owner Tax Amount',
+		mapped_key: '',
+		required: false,
+		actual_key: 'ownerTax',
+	},
+	{
+		label: 'Tax Type',
+		mapped_key: '',
+		required: false,
+		actual_key: 'taxType',
+	},
+	{
+		label: 'Owner Deduct Amount',
+		mapped_key: '',
+		required: false,
+		actual_key: 'ownerDeducts',
+	},
+	{
+		label: 'Deduct Code',
+		mapped_key: '',
+		required: false,
+		actual_key: 'deductType',
+	},
+	{
+		label: 'Owner Net Revenue',
+		mapped_key: '',
+		required: false,
+		actual_key: 'netOwnerValue',
+	},
 
+	{
+		label: 'Line Number',
+		mapped_key: '',
+		required: true,
+		actual_key: 'lineNumber',
+		showAsSample: false,
+	},
 
-    {
-        label: "Line Number",
-        mapped_key: "",
-        required: true,
-        actual_key: "lineNumber",
-        showAsSample: false
-    },
-
-
-    // {
-    //     label: "Purchaser Name",
-    //     mapped_key: "",
-    //     required: false,
-    //     actual_key: "property.purchaser.name",
-    // },
+	// {
+	//     label: "Purchaser Name",
+	//     mapped_key: "",
+	//     required: false,
+	//     actual_key: "property.purchaser.name",
+	// },
 ];
 
 export default checkDetailsKeys;

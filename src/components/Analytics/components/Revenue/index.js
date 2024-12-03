@@ -7,7 +7,6 @@ import { Grid, Divider, Tab, Tabs, TextField, Box } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import sortBy from 'lodash/sortBy';
 
-import { GET_ES_MIN_VALUE } from 'graphQL/useQueryESMinValue';
 import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from 'graphQL/useQueryGetPortfolioGrossRevenueSummary';
 import CustomDates from 'components/Revenue/components/Common/CustomDates';
 import DetailTabsSection from 'components/Analytics/components/Revenue/DetailTabsSection';
@@ -23,6 +22,7 @@ import { tableController } from 'hookstate/tableController';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 import PurchasersDropdown from './PurchasersDropdown';
 import AcquisitionIdDropdown from './AcquisitionIdDropdown';
+import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles(theme => ({
 	mainTabContainer: {
@@ -140,11 +140,11 @@ export default function RevenueAnalytics(props) {
 	const [esFilters, setEsFilters] = useState(tableController('ComparisonTable').getExternalFilter());
 
 	const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 166px)' };
-	const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
+	const [getDbMinValue] = useLazyQuery(GET_DB_MIN_VALUE, {
 		fetchPolicy: 'no-cache',
 		onCompleted: data => {
-			if (data?.getESMinValue) {
-				setLastCheckMinDate(data?.getESMinValue);
+			if (data?.getDbMinValue?.data) {
+				setLastCheckMinDate(data?.getDbMinValue.data);
 			}
 		},
 	});
@@ -263,14 +263,13 @@ export default function RevenueAnalytics(props) {
 	}, [checkDetailData]);
 
 	useEffect(() => {
-		getESMinValue({
+		getDbMinValue({
 			variables: {
-				esIndex: 'checks_flat',
+				index: 'checks_flat',
 				field: 'checkDate',
-				value_as_string: true,
 			},
 		});
-	}, [getESMinValue]);
+	}, [getDbMinValue]);
 
 	useEffect(() => {
 		setFromDate(moment().startOf('year').format('yyyy-MM-DD'));

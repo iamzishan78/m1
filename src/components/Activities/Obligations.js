@@ -309,7 +309,7 @@ const Activities = () => {
 		getContactsForActivity({
 			variables: { activityId: selectedActivityId.get() },
 		});
-	},[selectedActivityId.get()])
+	}, [selectedActivityId.get()]);
 
 	const onEventClick = event => {
 		window.history.pushState('', '', `/calendar/obligations/${event._id}`);
@@ -318,7 +318,7 @@ const Activities = () => {
 	};
 
 	const onModalOpen = () => {
-		slidoutState.loader.set(true)
+		slidoutState.loader.set(true);
 		getContactsForActivity({
 			variables: { activityId: selectedActivityId.get() },
 		}).then(() => {

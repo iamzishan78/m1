@@ -31,12 +31,12 @@ const useStyles = makeStyles(() => ({
 		marginRight: '8px',
 	},
 	link: {
-        textDecoration: 'none',
-        color: 'inherit',
-        display: 'flex',
-        alignItems: 'center',
-        width: '100%',
-    },
+		textDecoration: 'none',
+		color: 'inherit',
+		display: 'flex',
+		alignItems: 'center',
+		width: '100%',
+	},
 }));
 
 function ContactActionMenu({ id, name, esIndex, dialogType }) {
@@ -62,9 +62,9 @@ function ContactActionMenu({ id, name, esIndex, dialogType }) {
 				contactId: [id],
 				userId: stateApp.user.mongoId,
 				deletedData: {
-					mainRecord: [id]
+					mainRecord: [id],
 				},
-				tableKey: "ContactTable",
+				tableKey: 'ContactTable',
 				esIndex,
 			},
 		});
@@ -97,12 +97,11 @@ function ContactActionMenu({ id, name, esIndex, dialogType }) {
 					open
 					onClose={closeMenu}
 				>
-					<MenuItem className={classes.actionMenuItem} >
+					<MenuItem className={classes.actionMenuItem}>
 						<Link
-							to={
-							`/contact/details/${id}/?tenant=${window.sessionStorage.getItem("tenantName")}`
-							}
-							className={classes.link}>
+							to={`/contact/details/${id}/?tenant=${window.sessionStorage.getItem('tenantName')}`}
+							className={classes.link}
+						>
 							<ContactPageOutlinedIcon className={classes.menuIcons} />
 							Contact Details
 						</Link>

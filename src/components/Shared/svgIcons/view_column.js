@@ -23,21 +23,24 @@ import PropTypes from 'prop-types';
 import Base from './base';
 
 export default class ViewColumn extends Component {
-  static propTypes = {
-    /** Set the height of the icon, ex. '16px' */
-    height: PropTypes.string
-  };
+	static propTypes = {
+		/** Set the height of the icon, ex. '16px' */
+		height: PropTypes.string,
+	};
 
-  static defaultProps = {
-    height: '24px',
-  };
+	static defaultProps = {
+		height: '24px',
+	};
 
-  render() {
-    return (
-      <Base id="viewColumnIcon" viewBox="0 0 24 24" {...this.props}>
-        <path d="M0 0h24v24H0z" fill="none" />
-        <path d="M10 18h5V5h-5v13zm-6 0h5V5H4v13zM16 5v13h5V5h-5z" fill={`${this.props.fill ? this.props.fill : "#011232"}`} />
-      </Base>
-    );
-  }
+	render() {
+		return (
+			<Base id="viewColumnIcon" viewBox="0 0 24 24" {...this.props}>
+				<path d="M0 0h24v24H0z" fill="none" />
+				<path
+					d="M10 18h5V5h-5v13zm-6 0h5V5H4v13zM16 5v13h5V5h-5z"
+					fill={`${this.props.fill ? this.props.fill : '#011232'}`}
+				/>
+			</Base>
+		);
+	}
 }

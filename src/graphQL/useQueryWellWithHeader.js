@@ -1,7 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const WELL_SUMMARY_WITH_HEADER = gql`
-  query getWellSummaryWithHeaderDetails($globalWellId: String) {
-    wellSummaryWithHeaderDetails(globalWellId: $globalWellId)
-  }
+	query getWellSummaryWithHeaderDetails($globalWellId: String) {
+		wellSummaryWithHeaderDetails(globalWellId: $globalWellId)
+	}
 `;

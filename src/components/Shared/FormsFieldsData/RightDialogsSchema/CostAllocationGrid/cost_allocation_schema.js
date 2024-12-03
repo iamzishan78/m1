@@ -48,7 +48,6 @@ const costAllocationForm = ({ setValue }) => {
 			onChange: value => {
 				setValue('allocation', value);
 				setValue('amount', calculatePercentage(value, paymentAmount));
-
 			},
 			type: 'number',
 			InputProps: {

@@ -11,8 +11,7 @@ function MRSimpleTable({ tableKey, name, overrideMeta = {} }) {
 	tableKey = tableKey || name; // table key should be different if two tables with same name exist in same screen.
 	const Controller = simpleTableController(tableKey);
 	Controller.initialize(tableKey, extendedMeta);
-	const { tableProps, tablePropsState, initialized, classes } =
-		useMRSimpleTable(tableKey);
+	const { tableProps, tablePropsState, initialized, classes } = useMRSimpleTable(tableKey);
 
 	useEffect(() => {
 		return () => {

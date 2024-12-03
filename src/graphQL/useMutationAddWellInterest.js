@@ -1,7 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const ADDWELLINTEREST = gql`
-  mutation AddWellInterest($wellInterest: wellInterestInput!) {
-    addWellInterest(wellInterest: $wellInterest)
-  }
+	mutation AddWellInterest($wellInterest: wellInterestInput!) {
+		addWellInterest(wellInterest: $wellInterest)
+	}
 `;

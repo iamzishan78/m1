@@ -18,29 +18,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Base from './base';
 
 export default class ArrowUp extends Component {
-  static propTypes = {
-    /** Set the height of the icon, ex. '16px' */
-    height: PropTypes.string
-  };
+	static propTypes = {
+		/** Set the height of the icon, ex. '16px' */
+		height: PropTypes.string,
+	};
 
-  static defaultProps = {
-    height: '16px',
-    predefinedClassName: 'data-ex-icons-arrow_up'
-  };
+	static defaultProps = {
+		height: '16px',
+		predefinedClassName: 'data-ex-icons-arrow_up',
+	};
 
-  render() {
-    return (
-      <Base {...this.props}>
-        <path
-          d="M50.9,46.7c-0.4,0.4-1.1,0.4-1.6,0L32,29.3L14.6,46.7c-0.4,0.4-1.1,0.4-1.6,0l-4.7-4.7c-0.4-0.4-0.4-1.1,0-1.6l22.9-22.9
+	render() {
+		return (
+			<Base {...this.props}>
+				<path
+					d="M50.9,46.7c-0.4,0.4-1.1,0.4-1.6,0L32,29.3L14.6,46.7c-0.4,0.4-1.1,0.4-1.6,0l-4.7-4.7c-0.4-0.4-0.4-1.1,0-1.6l22.9-22.9
 	c0.4-0.4,1.1-0.4,1.6,0l22.9,22.9c0.4,0.4,0.4,1.1,0,1.6L50.9,46.7z"
-        />
-      </Base>
-    );
-  }
+				/>
+			</Base>
+		);
+	}
 }

@@ -84,7 +84,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 		},
 	});
 
-	const { control, reset, getValues  } = useForm();
+	const { control, reset, getValues } = useForm();
 	useEffect(() => {
 		if (platformWell) reset(platformWell);
 	}, [platformWell, reset]);
@@ -92,7 +92,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 	useEffect(() => {
 		if (myWellData) {
 			const { wellData } = myWellData?.upsertMyWell?.myWell ?? {};
-			const globalWellId =  wellData?.Id ?? wellData?.id;
+			const globalWellId = wellData?.Id ?? wellData?.id;
 			if (globalWellId) {
 				handleWellDetail({ Id: globalWellId });
 			}
@@ -100,30 +100,28 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [myWellData]);
 
-	 // Function to check if saving is allowed based on the 'wellName' value
-	 const isSaveAllowed = (formData) => {
+	// Function to check if saving is allowed based on the 'wellName' value
+	const isSaveAllowed = formData => {
 		const wellName = formData.wellName;
 		// Check if 'wellName' is defined and not just whitespace after trimming
-	  return (wellName && wellName?.trim() !== '');
-	  };
+		return wellName && wellName?.trim() !== '';
+	};
 
-	const handleSave = (formData) => {
-		if (!isSaveAllowed(formData)) return   // Check if saving is allowed using the isSaveAllowed function.
+	const handleSave = formData => {
+		if (!isSaveAllowed(formData)) return; // Check if saving is allowed using the isSaveAllowed function.
 		const processedValues = {};
 		Object.entries(formData).forEach(([key, value]) => {
-		  const param = wellParams.find(p => (p.esKey ?? p.key) === key);
-		  if (param) {
-			// Handle date conversion if needed
-			processedValues[key] = param.type === 'date'
-			  ? new Date(value)
-			  : value;
-		  }
+			const param = wellParams.find(p => (p.esKey ?? p.key) === key);
+			if (param) {
+				// Handle date conversion if needed
+				processedValues[key] = param.type === 'date' ? new Date(value) : value;
+			}
 		});
 		upsertMyWell({
 			variables: {
-			  myWell: { ...platformWell, _id: platformWell.id, ...processedValues },
+				myWell: { ...platformWell, _id: platformWell.id, ...processedValues },
 			},
-			refetchQueries: ["getESSimpleSearch"],
+			refetchQueries: ['getESSimpleSearch'],
 			awaitRefetchQueries: true,
 		});
 	};
@@ -240,10 +238,10 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 									InputLabelProps={{ shrink: true }}
 									InputProps={{ 'data-testid': param.label }}
 									fullWidth
-									placeholder={param.key === 'wellName' ? "Click to enter Well Name" : ""} 
+									placeholder={param.key === 'wellName' ? 'Click to enter Well Name' : ''}
 									defaultValue=""
 									error={param.key === 'wellName' ? !params.value : false} // Mark field as error if validation fails
-									helperText={ !params.value ? (param.key === 'wellName' ? "Enter a Well name to get started" : "") : ""}
+									helperText={!params.value ? (param.key === 'wellName' ? 'Enter a Well name to get started' : '') : ''}
 									value={
 										param.type === 'text'
 											? params.value

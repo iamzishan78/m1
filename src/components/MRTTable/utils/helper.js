@@ -1,25 +1,25 @@
 import { Tooltip, Typography } from '@material-ui/core';
 
-export const formatGridViewToMRT = (selectedGridView) => {
-  const tableProperties = {}
-  if (selectedGridView?.columns) {
-    tableProperties.columnVisibility = selectedGridView?.columns.reduce((acc, obj) => {
-      acc[obj.name] = obj.display;
-      return acc;
-    }, {});
-  }
-  if (selectedGridView?.filters?.length) {
-    tableProperties.filters = selectedGridView.filters
-  }
-  if (selectedGridView?.sorting?.length) {
-    tableProperties.sorting = selectedGridView.sorting;
-  }
-  if (selectedGridView?.columnPinning) {
-    tableProperties.columnPinning = selectedGridView.columnPinning;
-  }
-  if (selectedGridView?.columnOrdering) {
-    tableProperties.columnOrdering = selectedGridView.columnOrdering;
-  }
+export const formatGridViewToMRT = selectedGridView => {
+	const tableProperties = {};
+	if (selectedGridView?.columns) {
+		tableProperties.columnVisibility = selectedGridView?.columns.reduce((acc, obj) => {
+			acc[obj.name] = obj.display;
+			return acc;
+		}, {});
+	}
+	if (selectedGridView?.filters?.length) {
+		tableProperties.filters = selectedGridView.filters;
+	}
+	if (selectedGridView?.sorting?.length) {
+		tableProperties.sorting = selectedGridView.sorting;
+	}
+	if (selectedGridView?.columnPinning) {
+		tableProperties.columnPinning = selectedGridView.columnPinning;
+	}
+	if (selectedGridView?.columnOrdering) {
+		tableProperties.columnOrdering = selectedGridView.columnOrdering;
+	}
 
 	return tableProperties;
 };
@@ -50,24 +50,28 @@ export const getDocumentSizeInKBs = size => {
 	return Math.round((size || 0) / 1024) + ' KB';
 };
 
-
-export const getTruncateText = (value) => {
-  return <Tooltip title={value} arrow>
-    <Typography style={{
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-    }}>{value}
-    </Typography>
-  </Tooltip>
-}
+export const getTruncateText = value => {
+	return (
+		<Tooltip title={value} arrow>
+			<Typography
+				style={{
+					whiteSpace: 'nowrap',
+					overflow: 'hidden',
+					textOverflow: 'ellipsis',
+				}}
+			>
+				{value}
+			</Typography>
+		</Tooltip>
+	);
+};
 
 // Helper for extracting values
 export const getArrayValue = (array, valueKey, id, idKey) => {
-  if (id) {
-    const val = array.find(e => e?.[idKey] === id);
-    if (val) {
-      return val[valueKey];
-    }
-  }
-}
+	if (id) {
+		const val = array.find(e => e?.[idKey] === id);
+		if (val) {
+			return val[valueKey];
+		}
+	}
+};

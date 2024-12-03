@@ -1,5 +1,5 @@
 import React from 'react';
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 /* *************************
 EXAMPLE
@@ -20,34 +20,33 @@ properties:[{key:"other",value:"other user prop"}]
 
 ************************* */
 
-
-  export const EDGEQUERY = gql`mutation CreateGraphEdge($source:VertexInput,$target:VertexInput,$relationshipLabel:String){
-        v2e(source:$source,target:$target,relationshipLabel:$relationshipLabel) {
-          success
-          message
-          source {
-            id
-            label
-            type
-            properties
-          },
-          target {
-            id
-            label
-            type
-            properties
-          }
-          edge {
-            id
-            inV
-            inVLabel
-            label
-            outV
-            outVLabel
-            type
-            properties
-          }
-        }
-      
-  }`
-
+export const EDGEQUERY = gql`
+	mutation CreateGraphEdge($source: VertexInput, $target: VertexInput, $relationshipLabel: String) {
+		v2e(source: $source, target: $target, relationshipLabel: $relationshipLabel) {
+			success
+			message
+			source {
+				id
+				label
+				type
+				properties
+			}
+			target {
+				id
+				label
+				type
+				properties
+			}
+			edge {
+				id
+				inV
+				inVLabel
+				label
+				outV
+				outVLabel
+				type
+				properties
+			}
+		}
+	}
+`;

@@ -1,80 +1,92 @@
 export const SHAPE_TYPE = {
-  wells: {
-    SEARCH_FIELDS: ["wellName", "api", 'ApiNumber'],
-  },
-  "my wells": {
-    SEARCH_FIELDS: [
-      "wellData.wellName",
-      "wellData.api",
-      "properties.internalID",
-      "properties.name",
-      "wellData.operator",
-      "wellData.wellType",
-      "wellData.wellBoreProfile",
-      "wellData.wellStatus",
-      "wellData.basin",
-      "wellData.field",
-      "wellData.state",
-      "wellData.county",
-      "wellData.GrId1",
-      "wellData.GrId2",
-      "wellData.GrId3",
-      "wellData.GrId4",
-      "wellData.PermitDate",
-      "wellData.SpudDate",
-      "wellData.CompletionDate",
-      "wellData.FirstProdDate",
-      "wellData.measuredDepth",
-      "wellData.TrueVerticalDepth",
-      "wellData.lateralLength",
-      "wellData.primaryFormation",
-      "properties.status",
-      "properties.divOrderStatus",
-      "properties.interestType",
-      "properties.interestAmount",
-      "properties.effectiveDate",
-      "properties.costFree",
-      "properties.internalCompany",
-      "properties.acquisitionID",
-      "properties.prospectID"
-    ]
-  },
-  contacts: {
-    SEARCH_FIELDS: ['name', 'address1', 'city', 'state', 'zip'],
-  },
-  'tax owners': {
-    SEARCH_FIELDS: ["ownerName", "streetAddress", "city", "state", "zip"],
-  },
-  operators: {
-    SEARCH_FIELDS: ["operator", 'Operator'],
-  },
-  leases: {
-    SEARCH_FIELDS: ["lease", "leaseId"],
-  },
-  'land grid': {
-    SEARCH_FIELDS: [
-      "_all"
-      // "level1Type",
-      // "level1Name",
-      // "level2Type",
-      // "level2Name",
-      // "level3Type",
-      // "level3Name",
-      // "level4Type",
-      // "level4Name",
-      // "level5Type",
-      // "level5Name",
-      // "level6Type",
-      // "level6Name"
-    ],
-  },
-  units: {
-    SEARCH_FIELDS: ["name", "shapeJson.properties.uNumber", "shapeJson.properties.originalProperties.County", "data.shapeJson.properties.originalProperties.State"],
-  },
-  tracts: {
-    SEARCH_FIELDS: ['name', 'shapeLabel', 'state', "shapeJson.properties.originalProperties.County"],
-  },
-  agreements: {
-    SEARCH_FIELDS: ['name', 'shapeJson.properties.shapeLabel', 'state', "shapeJson.properties.originalProperties.County", 'shapeJson.properties.agreementNumber', 'shapeJson.properties.agreementType'],
-  },
-}
+	wells: {
+		SEARCH_FIELDS: ['wellName', 'api', 'ApiNumber'],
+	},
+	'my wells': {
+		SEARCH_FIELDS: [
+			'wellData.wellName',
+			'wellData.api',
+			'properties.internalID',
+			'properties.name',
+			'wellData.operator',
+			'wellData.wellType',
+			'wellData.wellBoreProfile',
+			'wellData.wellStatus',
+			'wellData.basin',
+			'wellData.field',
+			'wellData.state',
+			'wellData.county',
+			'wellData.GrId1',
+			'wellData.GrId2',
+			'wellData.GrId3',
+			'wellData.GrId4',
+			'wellData.PermitDate',
+			'wellData.SpudDate',
+			'wellData.CompletionDate',
+			'wellData.FirstProdDate',
+			'wellData.measuredDepth',
+			'wellData.TrueVerticalDepth',
+			'wellData.lateralLength',
+			'wellData.primaryFormation',
+			'properties.status',
+			'properties.divOrderStatus',
+			'properties.interestType',
+			'properties.interestAmount',
+			'properties.effectiveDate',
+			'properties.costFree',
+			'properties.internalCompany',
+			'properties.acquisitionID',
+			'properties.prospectID',
+		],
+	},
+	contacts: {
+		SEARCH_FIELDS: ['name', 'address1', 'city', 'state', 'zip'],
+	},
+	'tax owners': {
+		SEARCH_FIELDS: ['ownerName', 'streetAddress', 'city', 'state', 'zip'],
+	},
+	operators: {
+		SEARCH_FIELDS: ['operator', 'Operator'],
+	},
+	leases: {
+		SEARCH_FIELDS: ['lease', 'leaseId'],
+	},
+	'land grid': {
+		SEARCH_FIELDS: [
+			'_all',
+			// "level1Type",
+			// "level1Name",
+			// "level2Type",
+			// "level2Name",
+			// "level3Type",
+			// "level3Name",
+			// "level4Type",
+			// "level4Name",
+			// "level5Type",
+			// "level5Name",
+			// "level6Type",
+			// "level6Name"
+		],
+	},
+	units: {
+		SEARCH_FIELDS: [
+			'name',
+			'shapeJson.properties.uNumber',
+			'shapeJson.properties.originalProperties.County',
+			'data.shapeJson.properties.originalProperties.State',
+		],
+	},
+	tracts: {
+		SEARCH_FIELDS: ['name', 'shapeLabel', 'state', 'shapeJson.properties.originalProperties.County'],
+	},
+	agreements: {
+		SEARCH_FIELDS: [
+			'name',
+			'shapeJson.properties.shapeLabel',
+			'state',
+			'shapeJson.properties.originalProperties.County',
+			'shapeJson.properties.agreementNumber',
+			'shapeJson.properties.agreementType',
+		],
+	},
+};

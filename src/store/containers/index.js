@@ -1,125 +1,120 @@
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import MultipleOwnerToContactDrawer from "components/Shared/M1nTable/components/SubComponents/MultipleOwnerToContactDrawer";
-import ConvertTaxOwnerToContact from "components/MapControls/components/popup/ConvertTaxOwnerToContact";
-import ExportWellsOwners from "components/MapControls/components/popup/ExportWellsOwners";
-import AssignOwnerToContactDrawer from "components/Shared/M1nTable/components/SubComponents/AssignOwnerToContactDrawer";
+import MultipleOwnerToContactDrawer from 'components/Shared/M1nTable/components/SubComponents/MultipleOwnerToContactDrawer';
+import ConvertTaxOwnerToContact from 'components/MapControls/components/popup/ConvertTaxOwnerToContact';
+import ExportWellsOwners from 'components/MapControls/components/popup/ExportWellsOwners';
+import AssignOwnerToContactDrawer from 'components/Shared/M1nTable/components/SubComponents/AssignOwnerToContactDrawer';
 
 import {
-  getShapeOwnersAndWellsAction,
-  getShapeOwnersAndCountAction,
-  getMapFilterShapeOwnersAndWellsAction,
-  getMapFilterShapeOwnersAndCountAction,
-  execAsyncExportJobAction,
-} from "store/actions/ownerActions";
+	getShapeOwnersAndWellsAction,
+	getShapeOwnersAndCountAction,
+	getMapFilterShapeOwnersAndWellsAction,
+	getMapFilterShapeOwnersAndCountAction,
+	execAsyncExportJobAction,
+} from 'store/actions/ownerActions';
 import {
-  getContactCampaignAction,
-  convertTaxOwnerToContactAction,
-  convertMultipleOwnerToContactAction
-} from "store/actions/contactActions";
-import { showSuccessMessage } from "actions";
+	getContactCampaignAction,
+	convertTaxOwnerToContactAction,
+	convertMultipleOwnerToContactAction,
+} from 'store/actions/contactActions';
+import { showSuccessMessage } from 'actions';
 
-import { getShapeOwnersSelectors } from "store/selectors/index";
+import { getShapeOwnersSelectors } from 'store/selectors/index';
 
-
-const AssignOwnerToContactDrawerProps = (state) => {
-  const { campaignList } = state.contact;
-  return {
-    campaignList,
-  };
+const AssignOwnerToContactDrawerProps = state => {
+	const { campaignList } = state.contact;
+	return {
+		campaignList,
+	};
 };
 
-const AssignOwnerToContactDrawerDispatch = (dispatch) => {
-  return bindActionCreators(
-    {
-      showSuccessMessage,
-      getContactCampaignAction: getContactCampaignAction.STARTED,
-      convertMultipleOwnerToContactAction: convertMultipleOwnerToContactAction.STARTED,
-    },
-    dispatch
-  );
+const AssignOwnerToContactDrawerDispatch = dispatch => {
+	return bindActionCreators(
+		{
+			showSuccessMessage,
+			getContactCampaignAction: getContactCampaignAction.STARTED,
+			convertMultipleOwnerToContactAction: convertMultipleOwnerToContactAction.STARTED,
+		},
+		dispatch
+	);
 };
 
 export const AssignOwnerToContactDrawerContainer = connect(
-  AssignOwnerToContactDrawerProps,
-  AssignOwnerToContactDrawerDispatch
+	AssignOwnerToContactDrawerProps,
+	AssignOwnerToContactDrawerDispatch
 )(AssignOwnerToContactDrawer);
 
-const MultipleOwnerToContactDrawerProps = (state) => {
-  const { campaignList } = state.contact;
-  return {
-    campaignList,
-  };
+const MultipleOwnerToContactDrawerProps = state => {
+	const { campaignList } = state.contact;
+	return {
+		campaignList,
+	};
 };
 
-const MultipleOwnerToContactDrawerDispatch = (dispatch) => {
-  return bindActionCreators(
-    {
-      getContactCampaignAction: getContactCampaignAction.STARTED,
-      convertMultipleOwnerToContactAction: convertMultipleOwnerToContactAction.STARTED,
-    },
-    dispatch
-  );
+const MultipleOwnerToContactDrawerDispatch = dispatch => {
+	return bindActionCreators(
+		{
+			getContactCampaignAction: getContactCampaignAction.STARTED,
+			convertMultipleOwnerToContactAction: convertMultipleOwnerToContactAction.STARTED,
+		},
+		dispatch
+	);
 };
 
 export const MultipleOwnerToContactDrawerContainer = connect(
-  MultipleOwnerToContactDrawerProps,
-  MultipleOwnerToContactDrawerDispatch
+	MultipleOwnerToContactDrawerProps,
+	MultipleOwnerToContactDrawerDispatch
 )(MultipleOwnerToContactDrawer);
 
-const convertTaxOwnerProps = (state) => {
-  const { campaignList } = state.contact;
-  const { shapeCount, fetching } = state.owner;
-  return {
-    shapeOwners: getShapeOwnersSelectors(state),
-    fetching,
-    shapeCount,
-    campaignList,
-  };
+const convertTaxOwnerProps = state => {
+	const { campaignList } = state.contact;
+	const { shapeCount, fetching } = state.owner;
+	return {
+		shapeOwners: getShapeOwnersSelectors(state),
+		fetching,
+		shapeCount,
+		campaignList,
+	};
 };
 
-const convertTaxOwnerDispatch = (dispatch) => {
-  return bindActionCreators(
-    {
-      getMapFilterShapeOwnersAndCountAction:
-        getMapFilterShapeOwnersAndCountAction.STARTED,
-      convertTaxOwnerToContactAction: convertTaxOwnerToContactAction.STARTED,
-      getShapeOwnersAndCountAction: getShapeOwnersAndCountAction.STARTED,
-      getContactCampaignAction: getContactCampaignAction.STARTED,
-    },
-    dispatch
-  );
+const convertTaxOwnerDispatch = dispatch => {
+	return bindActionCreators(
+		{
+			getMapFilterShapeOwnersAndCountAction: getMapFilterShapeOwnersAndCountAction.STARTED,
+			convertTaxOwnerToContactAction: convertTaxOwnerToContactAction.STARTED,
+			getShapeOwnersAndCountAction: getShapeOwnersAndCountAction.STARTED,
+			getContactCampaignAction: getContactCampaignAction.STARTED,
+		},
+		dispatch
+	);
 };
 export const ConvertTaxOwnerToContactContainer = connect(
-  convertTaxOwnerProps,
-  convertTaxOwnerDispatch
+	convertTaxOwnerProps,
+	convertTaxOwnerDispatch
 )(ConvertTaxOwnerToContact);
 
-const exportWellsOwnersProps = (state) => {
-  const { shapeCount, wellsCount, shapeOwners, wells, shapeOwnersInterest, shapeInterestCount, fetching } = state.owner;
-  return {
-    shapeOwnersInterest,
-    shapeInterestCount,
-    shapeOwners,
-    shapeCount,
-    wellsCount,
-    fetching,
-    wells
-  };
+const exportWellsOwnersProps = state => {
+	const { shapeCount, wellsCount, shapeOwners, wells, shapeOwnersInterest, shapeInterestCount, fetching } = state.owner;
+	return {
+		shapeOwnersInterest,
+		shapeInterestCount,
+		shapeOwners,
+		shapeCount,
+		wellsCount,
+		fetching,
+		wells,
+	};
 };
 
-const exportWellsOwnersDispatch = (dispatch) => {
-  return bindActionCreators(
-    {
-      getShapeOwnersAndWellsAction: getShapeOwnersAndWellsAction.STARTED,
-      getMapFilterShapeOwnersAndWellsAction: getMapFilterShapeOwnersAndWellsAction.STARTED,
-      execAsyncExportJobAction: execAsyncExportJobAction.STARTED
-    },
-    dispatch
-  );
+const exportWellsOwnersDispatch = dispatch => {
+	return bindActionCreators(
+		{
+			getShapeOwnersAndWellsAction: getShapeOwnersAndWellsAction.STARTED,
+			getMapFilterShapeOwnersAndWellsAction: getMapFilterShapeOwnersAndWellsAction.STARTED,
+			execAsyncExportJobAction: execAsyncExportJobAction.STARTED,
+		},
+		dispatch
+	);
 };
-export const ExportWellsOwnersContainer = connect(
-  exportWellsOwnersProps,
-  exportWellsOwnersDispatch
-)(ExportWellsOwners);
+export const ExportWellsOwnersContainer = connect(exportWellsOwnersProps, exportWellsOwnersDispatch)(ExportWellsOwners);
