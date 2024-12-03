@@ -69,7 +69,7 @@ const ActivitiesDashboard = () => {
 	});
 	const [minDate, setMinDate] = useState('');
 	const activitiesTableState = tableController(tableKey).useState(['filters', 'data', 'globalFilter']).stateValues;
-	const [, setStateApp] = useContext(AppContext);
+	const [stateApp, setStateApp] = useContext(AppContext);
 
 	const [getDbMinValue] = useLazyQuery(GET_DB_MIN_VALUE, {
 		fetchPolicy: 'no-cache',
@@ -119,6 +119,10 @@ const ActivitiesDashboard = () => {
 			slidoutState.show.set(false);
 		};
 	}, []);
+
+	useEffect(() => {
+		tableController('ActivityTable').setGlobalFilter(stateApp.landAnalyticsSearchQuery);
+	}, [stateApp.landAnalyticsSearchQuery]); // Update table filter state based on navbar search
 
 	return (
 		<div className={classes.root}>
