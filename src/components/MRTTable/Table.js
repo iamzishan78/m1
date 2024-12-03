@@ -11,8 +11,8 @@ import MRTFallback from 'components/MRTTable/MRTFallBack';
 import { MaterialReactTable } from 'material-react-table';
 // Importing the MaterialReactTable component to render the table.
 
-function Table({ tableKey, hideSharedCommentCheck }) {
-	// Functional component Table accepts tableKey and hideSharedCommentCheck as props.
+function Table({ tableKey }) {
+	// Functional component Table accepts tableKey as props.
 	const { tableProps, tablePropsState, classes } = useTableESSimple(tableKey);
 	// Destructuring the table properties, state, and CSS classes from the custom hook.
 
@@ -32,8 +32,8 @@ function Table({ tableKey, hideSharedCommentCheck }) {
 						// Spreading the state properties specific to the table into the state prop.
 					}}
 				/>
-				<AllDialogs hideSharedCommentCheck={hideSharedCommentCheck} tableKey={tableKey} />
-				{/* Rendering AllDialogs component, passing hideSharedCommentCheck prop to manage dialog visibility. */}
+				<AllDialogs tableKey={tableKey} />
+				{/* Rendering AllDialogs component. */}
 			</div>
 		</ErrorBoundary>
 	);

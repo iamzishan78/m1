@@ -27,22 +27,21 @@ import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 // import Checkbox from "@material-ui/core/Checkbox";
 // import FormControlLabel from "@material-ui/core/FormControlLabel";
-import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
-import { setStateIfDeepEqual } from "../../Shared/functions";
-import { Calendar, momentLocalizer } from "react-big-calendar";
-import ActivitiesEvent from "./ActivitiesEvent";
-import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
-import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
-import { OPENDEALS } from "../../../graphQL/useQueryOpenDeals";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import { GETMONGOUSERS } from "../../../graphQL/useQueryGetUsers";
-import Typography from "@material-ui/core/Typography";
-import { ADDACTIVITY, DELETEACTIVITY, UPDATEACTIVITY } from "../../../graphQL/useMutationActivity";
-import { workspaceTenantName } from "components/Shared/functions";
-import AutoCompleteAddNewField from "components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField";
-import { outcomeOptions } from "components/ContactDetailCard/components/FieldContent/helper";
+import AutocompEntityNamesVirtualizeList from '../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
+import { setStateIfDeepEqual } from '../../Shared/functions';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import ActivitiesEvent from './ActivitiesEvent';
+import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
+import { ADDCONTACT } from '../../../graphQL/useMutationAddContact';
+import { OPENDEALS } from '../../../graphQL/useQueryOpenDeals';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { GETMONGOUSERS } from '../../../graphQL/useQueryGetUsers';
+import Typography from '@material-ui/core/Typography';
+import { ADDACTIVITY, DELETEACTIVITY, UPDATEACTIVITY } from '../../../graphQL/useMutationActivity';
+import { workspaceTenantName } from 'components/Shared/functions';
+import AutoCompleteAddNewField from 'components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField';
+import { outcomeOptions } from 'components/ContactDetailCard/components/FieldContent/helper';
 import { tableGlobalController } from 'hookstate/tableController';
-
 
 const useStyles = makeStyles(theme => ({
 	dialogExpCard: {
@@ -243,32 +242,32 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 		}
 	}, [userLists]);
 
-  const [addActivityMutation, { loading: addLoading }] = useMutation(ADDACTIVITY, {
-    onCompleted: () => {
-      onModalClose();
-      tableGlobalController.refetch();  // refech mrttable rows
-    },
-    refetchQueries: ["getAllActivities", "getESSimpleSearch"],
-    awaitRefetchQueries: true,
-  });
+	const [addActivityMutation, { loading: addLoading }] = useMutation(ADDACTIVITY, {
+		onCompleted: () => {
+			onModalClose();
+			tableGlobalController.refetch(); // refech mrttable rows
+		},
+		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
+		awaitRefetchQueries: true,
+	});
 
-  const [updateActivityMutation, { loading: updateLoading }] = useMutation(UPDATEACTIVITY, {
-    onCompleted: () => {
-      onModalClose();
-      tableGlobalController.refetch();  // refech mrttable rows
-    },
-    refetchQueries: ["getAllActivities", "getESSimpleSearch"],
-    awaitRefetchQueries: true,
-  });
+	const [updateActivityMutation, { loading: updateLoading }] = useMutation(UPDATEACTIVITY, {
+		onCompleted: () => {
+			onModalClose();
+			tableGlobalController.refetch(); // refech mrttable rows
+		},
+		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
+		awaitRefetchQueries: true,
+	});
 
-  const [deleteActivityMutation] = useMutation(DELETEACTIVITY, {
-    onCompleted: () => {
-      onModalClose();
-      tableGlobalController.refetch(); // refech mrttable rows
-    },
-    refetchQueries: ["getAllActivities", "getESSimpleSearch"],
-    awaitRefetchQueries: true,
-  });
+	const [deleteActivityMutation] = useMutation(DELETEACTIVITY, {
+		onCompleted: () => {
+			onModalClose();
+			tableGlobalController.refetch(); // refech mrttable rows
+		},
+		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
+		awaitRefetchQueries: true,
+	});
 
 	const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(
 		PAGINATEDCONTACTSQUERY,

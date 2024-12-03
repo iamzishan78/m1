@@ -177,9 +177,9 @@ export const processInBatches = async (promises, batchSize) => {
 	}
 };
 
-export const formatDateTime = (date) => {
-  if (!date) return '--';
-  return moment.parseZone(new Date(date)).format('M/D/YYYY, hh:mm A');
+export const formatDateTime = date => {
+	if (!date) return '--';
+	return moment.parseZone(new Date(date)).format('M/D/YYYY, hh:mm A');
 };
 
 export const isValidDate = dateString => {

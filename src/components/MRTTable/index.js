@@ -8,7 +8,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { copy } from '../Shared/functions/index';
 import Table from './Table';
 
-function MRTTable({ tableKey, name, overrideMeta = {}, hideSharedCommentCheck = true }) {
+function MRTTable({ tableKey, name, overrideMeta = {} }) {
 	const client = useApolloClient();
 	const meta = SCHEMA[name];
 	const extendedMeta = {
@@ -30,6 +30,7 @@ function MRTTable({ tableKey, name, overrideMeta = {}, hideSharedCommentCheck = 
 		return () => {
 			Controller.reset();
 		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [reInitialized]);
 
 	if (!stateValues.initialized)
@@ -51,7 +52,7 @@ function MRTTable({ tableKey, name, overrideMeta = {}, hideSharedCommentCheck = 
 			/>
 		);
 
-	return <Table tableKey={tableKey} hideSharedCommentCheck={hideSharedCommentCheck} />;
+	return <Table tableKey={tableKey} />;
 }
 
 export default memo(MRTTable);

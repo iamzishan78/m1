@@ -89,7 +89,7 @@ function AllDialogs(props) {
 			)}
 			{type === 'comments' && (
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
-					<CommentDialog {...rest} hideSharedCommentCheck={props.hideSharedCommentCheck} />
+					<CommentDialog {...rest} />
 				</Dialog>
 			)}
 

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useState, useEffect, useCallback, useRef, useMemo, memo } from 'react';
 import { useDispatch } from 'react-redux';
 import { useApolloClient, useLazyQuery } from '@apollo/client';
@@ -5,7 +6,7 @@ import { Button, Tooltip, IconButton } from '@material-ui/core';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { useHistory } from 'react-router-dom';
-import { isEmpty, isEqual, uniqWith } from 'lodash';
+import { isEmpty, isEqual, isNumber, uniqWith } from 'lodash';
 
 import { AppContext } from 'AppContext';
 // import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
@@ -28,17 +29,16 @@ import { updateUserGridViewSettingAction } from 'store/actions/sessionActions';
 import { handleSelectedGridChange, setColumnDisplayAndFilter } from './helpers';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { formattingGridView, sortColumns } from 'utils/helper';
-import { DrawerContext } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
 import moment from 'moment';
 
 import GlobalSettings from 'GlobalSettings.js';
 import { execCommonAsyncExportJobAction } from 'store/actions/commonActions';
 import { useResetESTableToggle } from 'hookstate';
+import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
 
 export const TableESHOC = Component => {
 	const HocWithDefaultProps = function HOC(props) {
 		const { stateApp, setStateApp, loadMore } = props;
-		const [drawer, setDrawer] = useContext(DrawerContext);
 		const dispatch = useDispatch();
 		const client = useApolloClient();
 		const [tableMeta, setTableMeta] = useState([]);
@@ -122,6 +122,8 @@ export const TableESHOC = Component => {
 		const history = useHistory();
 
 		const tableData = elasticData?.getESSimpleSearch || {};
+
+		const [dataTotal, setDataTotal] = useState(null);
 
 		const getNonGridViewColumnsData = (cols = columns, metaDatas = metaDataRef.current) => {
 			if (cols?.length > 0 && metaDatas) {
@@ -285,27 +287,49 @@ export const TableESHOC = Component => {
 				setPage(0);
 				setCurrentRowsLength(0);
 				setLoading(true);
+
+				const variables = {
+					index: tableMeta.esIndex,
+					pagination: {
+						first: tableMeta.startPaginationAt,
+						after: null,
+					},
+					search: {
+						query: searchQuery,
+						fields: tableMeta.searchFields,
+						advanceSearch: tableMeta.advanceSearch,
+					},
+					sort: tableMeta.defaultSort,
+					filters: handleMultiFieldFilter([
+						...(initialFilters ? initialFilters : []),
+						...(tableMeta.filters ? tableMeta.filters : []),
+						...(selectedGridView?.filters ? selectedGridView?.filters : []),
+						...(tableMeta.polygon ? [tableMeta.polygon] : []),
+					]),
+				};
+
+				let total = dataTotal;
+
+				(async () => {
+					const dbDataTotal = await client.query({
+						variables,
+						query: GET_DB_DATA_TOTAL,
+					});
+
+					if (isNumber(dbDataTotal?.data?.getDbDataTotal?.data)) {
+						total = dbDataTotal.data.getDbDataTotal.data;
+
+						setDataTotal(dbDataTotal.data.getDbDataTotal.data);
+					}
+				})();
+
 				getESSimpleSearch({
-					variables: {
-						index: tableMeta.esIndex,
-						pagination: {
-							first: tableMeta.startPaginationAt,
-							after: null,
-						},
-						search: {
-							query: searchQuery,
-							fields: tableMeta.searchFields,
-							advanceSearch: tableMeta.advanceSearch,
-						},
-						sort: tableMeta.defaultSort,
-						filters: handleMultiFieldFilter([
-							...(initialFilters ? initialFilters : []),
-							...(tableMeta.filters ? tableMeta.filters : []),
-							...(selectedGridView?.filters ? selectedGridView?.filters : []),
-							...(tableMeta.polygon ? [tableMeta.polygon] : []),
-						]),
+					variables,
+					onCompleted: data => {
+						setDataTotal(total ?? data?.getESSimpleSearch?.total);
 					},
 				});
+
 				if (selectedGridView)
 					handleSelectedGridChange(
 						tableMeta.TableHeader,
@@ -326,7 +350,7 @@ export const TableESHOC = Component => {
 
 		useEffect(() => {
 			if (tableData?.hits?.length > 0) {
-				currentRowsLength === 0 && setCurrentRowsLength(tableData?.total);
+				currentRowsLength === 0 && setCurrentRowsLength(dataTotal);
 				let { TableHeader, formatColumns, formatHits } = tableMeta;
 
 				TableHeader = columns.length > 0 ? columns : TableHeader;
@@ -1206,7 +1230,7 @@ export const TableESHOC = Component => {
 			Columns(addColumnOptions([...cols]));
 		};
 
-		const count = tableData?.total || 0;
+		const count = dataTotal || 0;
 
 		const options = {
 			rowsPerPageOptions: [10, 25, 50, 100, 250],
@@ -1315,7 +1339,6 @@ export const TableESHOC = Component => {
 				// if(drawer === "wells"){
 				//   setDrawer(null);
 				// }
-				setDrawer('tract');
 				setClickedRow({ ...rows[dataIndex] });
 			},
 		};
@@ -1352,7 +1375,7 @@ export const TableESHOC = Component => {
 					rows={rows}
 					searchedRows={searchedRows}
 					setSearchedRows={setSearchedRows}
-					total={tableData?.total}
+					total={dataTotal}
 					loading={loading}
 					dataTracks={dataTracksIds}
 					onInfiniteScroll={onInfiniteScroll}

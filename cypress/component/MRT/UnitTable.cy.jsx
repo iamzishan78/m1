@@ -25,8 +25,6 @@ const countyColumn = {
 	type: 'string',
 };
 
-let responseHits = [];
-
 describe('Unit Table', () => {
 	beforeEach(() => {
 		cy.interceptAndWait(['getESSimpleSearch', 'shapes_flat'], () => {
@@ -44,8 +42,6 @@ describe('Unit Table', () => {
 		cy.mrtApplyFilter({
 			column: countyColumn,
 			callback: response => {
-				const deletedIdsArray = response.map(item => item._id);
-
 				globalStateController.updateState({
 					testCase: {
 						cypressDelete: true,
@@ -320,5 +316,15 @@ describe('Unit Table', () => {
 				// Assert that the campaign name displayed in the UI matches the one selected for the update
 				cy.get('[data-testid="campaign-name-chip"]').eq(0).should('have.text', campaignName);
 			});
+	});
+
+	it('Should hide the shared button', () => {
+		cy.get('.MuiButtonBase-root[data-testid="comment-icon-button-0"]').scrollIntoView();
+		cy.get('.MuiButtonBase-root[data-testid="comment-icon-button-0"]').click({
+			force: true,
+		});
+		cy.get('[data-testid=shared-comment-section]').should('not.exist');
+		cy.get('[data-testid=share-comments-label]').should('not.exist');
+		cy.get('[data-testid=share-comments-switch]').should('not.exist');
 	});
 });

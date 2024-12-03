@@ -4,7 +4,7 @@ import { useLazyQuery } from '@apollo/client';
 
 import ActivitiesDashboardFilter from 'components/Activities/components/ActivitiesDashboardFilter';
 import ActivityAnalytics from 'components/Activities/components/ActivityAnalytics';
-import { GET_ES_MIN_VALUE } from 'graphQL/useQueryESMinValue';
+import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -42,32 +42,26 @@ const ActivitiesDashboard = () => {
 		fromDate: null,
 		filter: 'audit',
 	});
-	const [tableFilters, setTableFilters] = useState([]);
 	const [minDate, setMinDate] = useState('');
 
-	const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
+	const [getDbMinValue] = useLazyQuery(GET_DB_MIN_VALUE, {
 		fetchPolicy: 'no-cache',
 		onCompleted: data => {
-			if (data?.getESMinValue) {
+			if (data?.getDbMinValue?.data) {
 				setFilterToggle(!filterToggle);
-				setMinDate(data?.getESMinValue);
+				setMinDate(data?.getDbMinValue.data);
 			}
 		},
 	});
 
 	useEffect(() => {
-		getESMinValue({
+		getDbMinValue({
 			variables: {
-				esIndex,
+				index: esIndex,
 				field: 'lastUpdateAt',
-				value_as_string: true,
 			},
 		});
-	}, [getESMinValue]);
-
-	const filtersChange = filters => {
-		setTableFilters(filters);
-	};
+	}, [getDbMinValue]);
 
 	return (
 		<div className={classes.root}>
@@ -77,7 +71,7 @@ const ActivitiesDashboard = () => {
 					searchFields={searchFields}
 					setFilterToggle={setFilterToggle}
 					filterToggle={filterToggle}
-					tableFilters={tableFilters}
+					tableFilters={[]}
 					appliedFilters={appliedFilters}
 					minDate={minDate}
 					setAppliedFilters={setAppliedFilters}
@@ -88,7 +82,7 @@ const ActivitiesDashboard = () => {
 				<ActivityAnalytics
 					esIndex={esIndex}
 					filterToggle={filterToggle}
-					tableFilters={tableFilters}
+					tableFilters={[]}
 					appliedFilters={appliedFilters}
 					setAppliedFilters={setAppliedFilters}
 				/>

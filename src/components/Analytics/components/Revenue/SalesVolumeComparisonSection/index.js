@@ -44,7 +44,7 @@ export default function SalesVolumeComparisonSection({ checkDetailsData, esFilte
 		<>
 			<AnalyticsCharts esFilters={esFilters} propertiesIds={propertiesIds} checkDetailsData={checkDetailsData} />
 
-			<MRTTable name="SalesVolumeComparisonTable" hideSharedCommentCheck />
+			<MRTTable name="SalesVolumeComparisonTable" />
 		</>
 	);
 }
