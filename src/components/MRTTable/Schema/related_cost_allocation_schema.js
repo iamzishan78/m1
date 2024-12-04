@@ -15,7 +15,6 @@ const RelatedCostAllocationsMeta = {
 		pageIndex: 0,
 		pageSize: 50,
 	},
-	isElasticQuery: false,
 	maxTableHeight: 'calc(100vh - 550px)',
 	CustomToolBar: RelatedCostAllocationsToolbar,
 	isInFiniteScroll: true,
@@ -82,7 +81,7 @@ const RelatedCostAllocationsMeta = {
 			Cell: ({ row }) => {
 				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
 				const value = getArrayValue(row.original.costAllocations, 'allocation', paymentId, 'paymentId');
-				return value ? `${Number(value).toFixed(2)}%` : '';
+				return value ? `${Number(value).toFixed(2)}%` : value === 0 ? `0%` : '';
 			},
 		},
 		{
@@ -104,7 +103,7 @@ const RelatedCostAllocationsMeta = {
 			Cell: ({ row }) => {
 				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
 				const value = getArrayValue(row.original.costAllocations, 'amount', paymentId, 'paymentId');
-				return value ? vf_currency_to_fixed(parseFloat(value), 2) : '';
+				return value ? vf_currency_to_fixed(parseFloat(value), 2) : value === 0 ? `$0` : '';
 			},
 		},
 	],

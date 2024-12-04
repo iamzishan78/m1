@@ -218,7 +218,6 @@ const CampaignStatusFilter = ({ esIndex, tableFilters, appliedFilters, searchFie
 					field: filterKey,
 					size: 50,
 				},
-				isElasticQuery: false,
 			},
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -295,7 +294,6 @@ const SupervisorFilter = ({ esIndex, tableFilters, appliedFilters, searchFields,
 					field: filterKey,
 					size: 50,
 				},
-				isElasticQuery: false,
 			},
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps

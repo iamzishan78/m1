@@ -8,7 +8,6 @@ export const GRID_GENERIC_REMOVE = gql`
 		$ESVariables: JSON
 		$isSelectAll: Boolean
 		$cypressDelete: Boolean
-		$isElasticQuery: Boolean
 	) {
 		gridGenericRemove(
 			tableKey: $tableKey
@@ -17,7 +16,6 @@ export const GRID_GENERIC_REMOVE = gql`
 			ESVariables: $ESVariables
 			isSelectAll: $isSelectAll
 			cypressDelete: $cypressDelete
-			isElasticQuery: $isElasticQuery
 		) {
 			success
 			message

@@ -43,7 +43,6 @@ function ContactToolbar({ table, tableKey }) {
 	const Controller = tableController(tableKey);
 	const tableState = Controller.useState([
 		'esIndex',
-		'isElasticQuery',
 		'globalFilter',
 		'searchFields',
 		'data',
@@ -97,7 +96,6 @@ function ContactToolbar({ table, tableKey }) {
 			tableKey,
 			type: 'exportContacts',
 			contactIdKey: '_id',
-			isElasticQuery: tableStateValues?.isElasticQuery,
 		};
 	};
 

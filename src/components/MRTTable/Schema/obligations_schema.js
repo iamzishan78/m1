@@ -31,7 +31,6 @@ const statusOptions = {
 const ObligationsMeta = {
 	esIndex,
 	onClickedRow,
-	isElasticQuery: false,
 	pageSize: 50,
 	pagination: {
 		pageIndex: 0,

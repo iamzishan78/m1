@@ -87,7 +87,6 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
 		],
 		extendSearchQuery: '',
 		custom: filter.custom,
-		isElasticQuery: false,
 	};
 	if (filter.getOptionLabel) params['getOptionLabel'] = filter.getOptionLabel;
 	return (

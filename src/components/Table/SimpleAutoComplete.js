@@ -36,13 +36,6 @@ export const SimpleAutoCompleteFilter = React.memo(function SimpleAutoCompleteFi
 		}
 	}, [filterList[index][0]]);
 
-	useEffect(() => {
-		if (!custom?.filterOptions) {
-		} else {
-			setOptions(custom?.filterOptions);
-		}
-	}, [filters]);
-
 	const handleChange = search => {
 		setSearch(search);
 	};

@@ -5,7 +5,6 @@ const esIndex = 'shapetracts_flat';
 
 const AcreageSummaryMeta = {
 	esIndex,
-	isElasticQuery: false,
 	pageSize: 25,
 	pagination: {
 		pageIndex: 0,
@@ -24,16 +23,6 @@ const AcreageSummaryMeta = {
 			switch (view?.name) {
 				case 'My Acreage Summary':
 					view.filters[0].value = user._id;
-					break;
-
-				case 'Recently Added':
-					view.filters = [];
-					view.sorting = [{ field: '_ts', desc: true }];
-					break;
-
-				case 'Recently Modified':
-					view.filters = [];
-					view.sorting = [{ field: 'flatSyncAt', desc: true }];
 					break;
 
 				default:
