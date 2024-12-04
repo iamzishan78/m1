@@ -666,8 +666,9 @@ export const TableESHOC = Component => {
 			if (activeFiltersRef.current && activeFiltersRef.current.length > 0) {
 				esFilter = esFilter.filter(Boolean).map(filter => {
 					const refFilter = activeFiltersRef.current.filter(Boolean).find(refFilter => {
-						if (Array.isArray(filter.field)) return refFilter.field === JSON.stringify(filter.field);
-
+						if (Array.isArray(filter.field) && Array.isArray(refFilter.field)) {
+							return isEqual(filter.field, refFilter.field); // Use deep comparison for arrays
+						}
 						return refFilter.field === filter.field;
 					});
 
@@ -689,7 +690,7 @@ export const TableESHOC = Component => {
 				esFilter.forEach(filter => {
 					if (filter?.oRFilter) {
 						filters.push({
-							field: Array.isArray(filter.field) ? JSON.stringify(filter.field) : filter.field,
+							field: filter.field,
 							value: filter.value,
 							oRFilter: filter?.oRFilter,
 						});

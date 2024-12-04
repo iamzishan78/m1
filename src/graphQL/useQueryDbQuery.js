@@ -38,3 +38,27 @@ export const GET_DB_MODELS = gql`
 		}
 	}
 `;
+
+export const GET_DB_FILTERS = gql`
+	query getDbFilters(
+		$index: String
+		$search: esSearchInput
+		$filters: [esFilterInput]
+		$sort: esSortInput
+		$pagination: esPaginationInput
+		$filterAggs: esFilterAggsInput
+		$key_as_string: Boolean
+		$multi_filter_keys: Boolean
+	) {
+		getDbFilters(
+			index: $index
+			search: $search
+			filters: $filters
+			filterAggs: $filterAggs
+			sort: $sort
+			pagination: $pagination
+			key_as_string: $key_as_string
+			multi_filter_keys: $multi_filter_keys
+		)
+	}
+`;

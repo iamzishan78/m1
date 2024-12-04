@@ -10,7 +10,6 @@ const esIndex = 'contacts_flat';
 // Related Billing Parties Meta
 const RelatedBillingPartiesMeta = {
 	esIndex,
-	isElasticQuery: false,
 	pageSize: 50,
 	pagination: {
 		pageIndex: 0,
@@ -107,7 +106,7 @@ const RelatedBillingPartiesMeta = {
 			Cell: ({ row }) => {
 				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
 				const value = getArrayValue(row.original.billingParties, 'allocation', paymentId, 'paymentId');
-				return value ? `${Number(value).toFixed(2)}%` : '';
+				return value ? `${Number(value).toFixed(2)}%` : value === 0 ? `0%` : '';
 			},
 		},
 		{
@@ -129,7 +128,7 @@ const RelatedBillingPartiesMeta = {
 			Cell: ({ row }) => {
 				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
 				const value = getArrayValue(row.original.billingParties, 'amount', paymentId, 'paymentId');
-				return value ? vf_currency_to_fixed(parseFloat(value), 2) : '';
+				return value ? vf_currency_to_fixed(parseFloat(value), 2) : value === 0 ? `$0` : '';
 			},
 		},
 		{

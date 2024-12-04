@@ -14,8 +14,6 @@ import SearchIcon from '@material-ui/icons/Search';
 import { useMutation } from '@apollo/client';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import LockOpenIcon from '@material-ui/icons/LockOpen';
-import LockIcon from '@material-ui/icons/Lock';
 import StarIcon from '@material-ui/icons/Star';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 
@@ -29,6 +27,7 @@ import { ADD_GRID_VIEW } from 'graphQL/useMutationAddGridView';
 
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import { globalStateController } from 'hookstate/globalStateController';
+import { defaultHandleDefaultView } from 'components/Shared/GridView';
 
 const useStyles = makeStyles(() => ({
 	container: {
@@ -142,6 +141,7 @@ function GridViewOptions({
 		} else {
 			setFilterGridView([]);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedTab]);
 
 	useEffect(() => {
@@ -158,11 +158,13 @@ function GridViewOptions({
 				setFilterGridView(allGridViews);
 			}
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [search]);
 
 	const handleClick = view => {
 		let data = JSON.parse(JSON.stringify(view));
 		if (data.type === 'Default') {
+			data = defaultHandleDefaultView(data);
 			data = handleDefaultView(data, getUser?._id);
 		}
 		Controller.updateState({
@@ -187,6 +189,7 @@ function GridViewOptions({
 			top,
 			left,
 		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [buttonRef.current]);
 
 	return (

@@ -48,7 +48,6 @@ const LastCheckDateFilter = ({
 	isComparisonReport = false,
 }) => {
 	const classes = useStyles();
-	const status = 'ALL';
 
 	const [fromDate, setFromDate] = React.useState(null);
 	const [toDate, setToDate] = React.useState(null);
@@ -73,7 +72,6 @@ const LastCheckDateFilter = ({
 		getDbMinValue({
 			variables: {
 				esIndex,
-				isElasticQuery: false,
 				aggs: {
 					[field]: {
 						min: { field },
@@ -81,7 +79,7 @@ const LastCheckDateFilter = ({
 				},
 			},
 		});
-	}, [getDbMinValue]);
+	}, [getDbMinValue, esIndex, field]);
 
 	const updateFilters = useCallback(() => {
 		let filters = copy(esFilters) ?? [];

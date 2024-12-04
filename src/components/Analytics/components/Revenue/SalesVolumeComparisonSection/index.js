@@ -25,7 +25,6 @@ export default function SalesVolumeComparisonSection({ checkDetailsData, esFilte
 						filters: [...formattedFilters, { field: 'property.IsDeleted', value: false, type: 'term' }],
 						filterKey: 'property._id.keyword',
 						filterAggs: { query: '', field: 'property._id.keyword', size: tableStateValues?.data?.total || 0 },
-						isElasticQuery: false,
 					},
 					onCompleted: res => {
 						if (res) {

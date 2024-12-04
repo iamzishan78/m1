@@ -23,7 +23,6 @@ const onClickedRow = selectedRow => {
 const ExpirationsMeta = {
 	esIndex,
 	onClickedRow,
-	isElasticQuery: false,
 	pageSize: 50,
 	pagination: {
 		pageIndex: 0,

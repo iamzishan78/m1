@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useLazyQuery } from '@apollo/client';
-import _, { debounce } from 'lodash';
+import _, { debounce, isNil } from 'lodash';
 
 import { tableController } from 'hookstate/tableController';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
@@ -62,12 +62,11 @@ function ESAutoCompleteFilter({
 	const appendOptions = useRef(false);
 	const filtersRef = useRef(null);
 
-	const { searchFields, filters, defaultFilters, advanceSearch, isElasticQuery } = tableController(tableKey).getValues([
+	const { searchFields, filters, defaultFilters, advanceSearch } = tableController(tableKey).getValues([
 		'searchFields',
 		'filters',
 		'defaultFilters',
 		'advanceSearch',
-		'isElasticQuery',
 	]);
 
 	const getFiltersAction = debounce(({ afterKey } = {}) => {
@@ -84,8 +83,6 @@ function ESAutoCompleteFilter({
 			let search = '';
 			if (searchText.current) search = type === 'number' ? searchText.current : `*${searchText.current}*`;
 			filtersRef.current = currentFilterRef;
-
-			const isMongo = isElasticQuery === false;
 
 			getFilters({
 				variables: {
@@ -109,7 +106,6 @@ function ESAutoCompleteFilter({
 						size: searchMapping[searchMode].size,
 						afterKey,
 					},
-					...(isMongo && { isElasticQuery: false }),
 				},
 			});
 		}
@@ -160,7 +156,7 @@ function ESAutoCompleteFilter({
 
 		options = options.filter(op => {
 			op.label = formatValue(op.label); // format value to show $ sign as prefix
-			return op.value;
+			return !isNil(op.value);
 		});
 
 		if (appendOptions.current) {

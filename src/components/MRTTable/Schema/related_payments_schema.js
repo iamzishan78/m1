@@ -23,7 +23,6 @@ const onClickedRow = selectedRow => {
 // Related Payments Meta
 const RelatedPaymentsMeta = {
 	esIndex,
-	isElasticQuery: false,
 	onClickedRow,
 	pageSize: 50,
 	pagination: {
@@ -107,7 +106,7 @@ const RelatedPaymentsMeta = {
 			header: 'Amount',
 			Cell: ({ row }) => {
 				const value = row?.original?.amount;
-				return value ? vf_currency_to_fixed(parseFloat(value), 2) : '';
+				return value ? vf_currency_to_fixed(parseFloat(value), 2) : value === 0 ? `$0` : '';
 			},
 		},
 		{
@@ -119,7 +118,7 @@ const RelatedPaymentsMeta = {
 			type: 'number',
 			Cell: ({ row }) => {
 				const value = row?.original?.companyShare;
-				return value ? vf_currency_to_fixed(parseFloat(value), 2) : '';
+				return value ? vf_currency_to_fixed(parseFloat(value), 2) : value === 0 ? `$0` : '';
 			},
 		},
 		{

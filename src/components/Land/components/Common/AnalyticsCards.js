@@ -117,7 +117,6 @@ export default function AnalyticsCards({
 		getESAggsActiveCount({
 			variables: {
 				esIndex,
-				isElasticQuery: false,
 				search: {
 					query: searchQuery,
 					fields: searchFields,
@@ -140,7 +139,6 @@ export default function AnalyticsCards({
 		getESAggsApprovedCount({
 			variables: {
 				esIndex,
-				isElasticQuery: false,
 				search: {
 					query: searchQuery,
 					fields: searchFields,
@@ -229,7 +227,6 @@ export default function AnalyticsCards({
 		getESAggsGrossAcresSum({
 			variables: {
 				esIndex: esIndex || 'shapeowners_flat',
-				isElasticQuery: false,
 				search: {
 					query: searchQuery,
 					fields: searchFields,
@@ -245,7 +242,6 @@ export default function AnalyticsCards({
 		getESAggsNetAcresSum({
 			variables: {
 				esIndex: esIndex || 'shapeowners_flat',
-				isElasticQuery: false,
 				search: {
 					query: searchQuery,
 					fields: searchFields,
@@ -261,7 +257,6 @@ export default function AnalyticsCards({
 		getESAggsNetRoyaltyAcresSum({
 			variables: {
 				esIndex: esIndex || 'shapeowners_flat',
-				isElasticQuery: false,
 				search: {
 					query: searchQuery,
 					fields: searchFields,

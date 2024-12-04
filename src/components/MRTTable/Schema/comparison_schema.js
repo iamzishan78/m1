@@ -7,7 +7,6 @@ const esIndex = 'checkdetailsinterestscomparison_flat';
 
 const ComparisonMeta = {
 	esIndex,
-	isElasticQuery: false,
 	pageSize: 50,
 	pagination: {
 		pageIndex: 0,

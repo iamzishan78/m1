@@ -15,7 +15,6 @@ const ShapesFilesGenericMeta = {
 	onClickedRow,
 	maxTableHeight: 'calc(100vh - 290px)',
 	isInFiniteScroll: true,
-	isElasticQuery: false,
 	// columnVirtualization: true,
 	defaultFlterMode: 'multiselect',
 	globalSearch: true,

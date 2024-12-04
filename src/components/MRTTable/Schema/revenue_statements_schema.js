@@ -36,7 +36,6 @@ const RevenueStatementsMeta = {
 	maxTableHeight: 'calc(100vh - 500px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
-	isElasticQuery: false,
 	gridViewSettings: {
 		label: 'Revenue Statements',
 		module: 'RevenueStatements',
