@@ -5,9 +5,8 @@ import FormControl from '@material-ui/core/FormControl';
 import { AppContext } from 'AppContext';
 import { useLazyQuery } from '@apollo/client';
 import { GET_ALL_CUSTOM_DATA_KEYS } from 'graphQL/useQueryGetAllCustomKeys';
-import _, { isArray } from 'lodash';
-import { useSelector } from 'react-redux';
-import { convertToTitleCase } from 'components/Shared/M1nTable/components/MUIDataTable/utils';
+import _ from 'lodash';
+import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 
 const AutoCompleteDropdown = ({ options, onChange, loading, label, value }) => {
 	return (
@@ -18,7 +17,6 @@ const AutoCompleteDropdown = ({ options, onChange, loading, label, value }) => {
 				loading={loading}
 				onChange={onChange}
 				value={value}
-				getOptionLabel={option => option.label}
 				renderInput={params => <TextField {...params} label={label} variant="outlined" fullWidth />}
 			/>
 		</FormControl>
@@ -27,17 +25,18 @@ const AutoCompleteDropdown = ({ options, onChange, loading, label, value }) => {
 export default function CustomDataFilters(props) {
 	const [stateApp, setStateApp] = useContext(AppContext);
 	const [selectedKey, setSelectedKey] = useState(null);
-	const [key, setKey] = useState(null);
 	const [selectedValue, setSelectedValue] = useState(null);
-	const agreementDetails = useSelector(({ Land }) => Land.agreement?.activeAgreement?.shape)?.properties;
 
-	const [getCustomKey, { data: customData, loading }] = useLazyQuery(GET_ALL_CUSTOM_DATA_KEYS, {
+	const [getCustomKey, { data: customKeyData, loadingKey }] = useLazyQuery(GET_ALL_CUSTOM_DATA_KEYS, {
+		fetchPolicy: 'no-cache',
+	});
+	const [getCustomValues, { data: customValueData, loadingVal }] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
 		fetchPolicy: 'no-cache',
 	});
 
 	useEffect(() => {
+		console.log('length: ', stateApp.landSearchFilters?.customData);
 		if (stateApp.landSearchFilters?.customData.length === 0) {
-			setKey(null);
 			setSelectedValue(null);
 			setSelectedKey(null);
 		}
@@ -64,6 +63,7 @@ export default function CustomDataFilters(props) {
 	}, []);
 
 	useEffect(() => {
+		console.log('useEffect: ', { selectedKey }, { selectedValue });
 		if (selectedKey && selectedValue) {
 			const filterKey = `shapeJson.properties.custom_data.${selectedKey}`;
 			const landCustomDataFilters = [...stateApp.landSearchFilters.customData];
@@ -80,7 +80,8 @@ export default function CustomDataFilters(props) {
 				...stateApp,
 				landSearchFilters: { ...stateApp.landSearchFilters, customData: landCustomDataFilters },
 			}));
-		} else {
+		} else if (selectedKey === null) {
+			console.log('In the else statement');
 			let landCustomDataFilters = [...stateApp.landSearchFilters.customData];
 			const _index = landCustomDataFilters.findIndex(f => f.field.startsWith('shapeJson.properties.custom_data'));
 
@@ -95,38 +96,52 @@ export default function CustomDataFilters(props) {
 				}));
 			}
 		}
+
+		if (selectedKey) {
+			getCustomValues({
+				variables: {
+					esIndex: 'shapes_flat',
+					index: 'shapes_flat',
+					filters: [{ field: 'shapeJson.properties.type.keyword', value: 'agreement' }],
+					filterAggs: {
+						field: `shapeJson.properties.custom_data.${selectedKey}`,
+					},
+					isElasticQuery: false,
+				},
+			});
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedKey, selectedValue]);
 
 	const getKeysOptions = useMemo(() => {
-		const getAllKeys = _.get(customData, 'getAllKeys', {});
+		const allKeys = _.get(customKeyData, 'getAllKeys', []);
 
-		let allKeys = Object.keys(getAllKeys).flatMap(key => {
-			if (isArray(getAllKeys[key].label))
-				return getAllKeys[key].label.map(label => ({ label: label || convertToTitleCase(key), value: key }));
-
-			return { label: getAllKeys[key].label || convertToTitleCase(key), value: key };
-		});
-
-		// Removing the keys that are already in agreementDetails
-		allKeys = allKeys.filter(
-			key => !(key.value.replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase()) in (agreementDetails || {}))
-		);
-
-		return allKeys.filter(key => !Array.isArray(key.label));
-	}, [customData, agreementDetails]);
+		return allKeys;
+	}, [customKeyData]);
 
 	const getValueOptions = useMemo(() => {
-		let allValues = (customData?.getAllKeys[selectedKey]?.value || []).map(key => ({ label: key, value: key }));
+		const hits = _.get(customValueData, 'getESSimpleFilter.hits', []);
+		let allValues = [];
+
+		if (hits?.length) {
+			allValues = [
+				...new Set(
+					hits.flatMap(hit =>
+						Array.isArray(hit.key) ? hit.key.filter(key => key !== null).map(String) : [String(hit.key)]
+					)
+				),
+			];
+		}
 
 		return allValues;
-	}, [customData, selectedKey]);
+	}, [customValueData]);
 
 	const handleKeyChange = key => {
-		if (!key) return;
-		setSelectedKey(key.value);
-		setKey(key);
+		console.log('I am being called');
+		// if (key) {
+		setSelectedKey(key);
 		setSelectedValue(null);
+		// }
 	};
 	return (
 		<Grid container item spacing={2} style={{ padding: '8px', width: '100%', margin: '0' }}>
@@ -137,17 +152,17 @@ export default function CustomDataFilters(props) {
 					}}
 					options={getKeysOptions}
 					label={'Key'}
-					loading={loading}
-					value={key}
+					loading={loadingKey}
+					value={selectedKey}
 				/>
 			</Grid>
 			<Grid item xs={12}>
 				<AutoCompleteDropdown
-					onChange={(e, val) => setSelectedValue(val?.value)}
+					onChange={(e, val) => setSelectedValue(val)}
 					options={getValueOptions}
 					label={'Value'}
-					loading={loading}
-					value={selectedKey && { label: selectedValue, value: selectedValue }}
+					loading={loadingVal}
+					value={selectedValue}
 				/>
 			</Grid>
 		</Grid>
