@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useContext, useCallback } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState, useContext } from 'react';
 import { Grid, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { useLazyQuery } from '@apollo/client';
@@ -252,7 +253,7 @@ const CampaignFilter = ({
 
 	const [getCampaign, { data: filtersData }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
 
-	const getAllFilters = useCallback(() => {
+	const getAllFilters = () => {
 		let rangeFilters = [];
 		if (!tableFilters.find(filter => filter.type === 'range')) {
 			rangeFilters = getFilters(appliedFilters);
@@ -266,7 +267,7 @@ const CampaignFilter = ({
 			filters.splice(index, 1);
 		}
 		return filters;
-	}, [tableFilters, appliedFilters, esIndex]);
+	};
 
 	useEffect(() => {
 		const filterKey = 'contact.campaignName.keyword';
@@ -286,18 +287,7 @@ const CampaignFilter = ({
 			},
 		});
 		onCampaignChange('campaign', search);
-	}, [
-		search,
-		selectedFilters.qualifier,
-		tableFilters,
-		appliedFilters,
-		esIndex,
-		searchFields,
-		stateApp.activitySearchQuery,
-		onCampaignChange,
-		getCampaign,
-		getAllFilters,
-	]);
+	}, [search, selectedFilters.qualifier, tableFilters, appliedFilters]);
 
 	return (
 		<Autocomplete
@@ -352,7 +342,7 @@ const QualifierFilter = ({
 
 	const [getQualifiers, { data: filtersData }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
 
-	const getAllFilters = useCallback(() => {
+	const getAllFilters = () => {
 		let rangeFilters = [];
 		if (!tableFilters.find(filter => filter.type === 'range')) {
 			if (esIndex === 'contacts_flat') {
@@ -370,7 +360,7 @@ const QualifierFilter = ({
 			filters.splice(index, 1);
 		}
 		return filters;
-	}, [tableFilters, appliedFilters, esIndex, esFilterKey]);
+	};
 
 	useEffect(() => {
 		getQualifiers({
@@ -392,18 +382,9 @@ const QualifierFilter = ({
 		onQualifierChange(esIndex === 'contacts_flat' ? 'audit' : 'qualifier', search);
 	}, [
 		search,
+		esIndex === 'contacts_flat' ? selectedFilters.audit : selectedFilters.campaign,
 		tableFilters,
-		selectedFilters.audit,
-		selectedFilters.campaign,
 		appliedFilters,
-		esIndex,
-		searchFields,
-		stateApp.activitySearchQuery,
-		onQualifierChange,
-		getQualifiers,
-		getAllFilters,
-		esFilterKey,
-		selectedFilters,
 	]);
 
 	return (
