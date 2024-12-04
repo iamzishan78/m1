@@ -4,9 +4,8 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import FormControl from '@material-ui/core/FormControl';
 import { AppContext } from 'AppContext';
 import { useLazyQuery } from '@apollo/client';
-import { GET_ALL_CUSTOM_DATA_KEYS } from 'graphQL/useQueryGetAllCustomKeys';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 import _ from 'lodash';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 
 const AutoCompleteDropdown = ({ options, onChange, loading, label, value }) => {
 	return (
@@ -27,10 +26,10 @@ export default function CustomDataFilters(props) {
 	const [selectedKey, setSelectedKey] = useState(null);
 	const [selectedValue, setSelectedValue] = useState(null);
 
-	const [getCustomKey, { data: customKeyData, loadingKey }] = useLazyQuery(GET_ALL_CUSTOM_DATA_KEYS, {
+	const [getCustomKey, { data: customKeyData, loadingKey }] = useLazyQuery(GET_DB_FILTERS, {
 		fetchPolicy: 'no-cache',
 	});
-	const [getCustomValues, { data: customValueData, loadingVal }] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
+	const [getCustomValues, { data: customValueData, loadingVal }] = useLazyQuery(GET_DB_FILTERS, {
 		fetchPolicy: 'no-cache',
 	});
 
@@ -46,9 +45,11 @@ export default function CustomDataFilters(props) {
 		getCustomKey({
 			variables: {
 				index: 'shapes_flat',
-				pathToKey: 'shapeJson.properties.custom_data',
+				filterAggs: {
+					field: 'shapeJson.properties.custom_data',
+					type: 'objectKeys',
+				},
 				filters: [{ field: 'shapeJson.properties.type.keyword', value: 'agreement' }],
-				isElasticQuery: false,
 			},
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -103,7 +104,6 @@ export default function CustomDataFilters(props) {
 					filterAggs: {
 						field: `shapeJson.properties.custom_data.${selectedKey}`,
 					},
-					isElasticQuery: false,
 				},
 			});
 		}
@@ -111,13 +111,18 @@ export default function CustomDataFilters(props) {
 	}, [selectedKey, selectedValue]);
 
 	const getKeysOptions = useMemo(() => {
-		const allKeys = _.get(customKeyData, 'getAllKeys', []);
+		const hits = _.get(customKeyData, 'getDbFilters.hits', []);
+		let allKeys = [];
+
+		if (hits?.length) {
+			allKeys = hits.map(hit => hit.key);
+		}
 
 		return allKeys;
 	}, [customKeyData]);
 
 	const getValueOptions = useMemo(() => {
-		const hits = _.get(customValueData, 'getESSimpleFilter.hits', []);
+		const hits = _.get(customValueData, 'getDbFilters.hits', []);
 		let allValues = [];
 
 		if (hits?.length) {
