@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { FormControl, Grid, InputLabel, Select } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import CustomDates from 'components/Revenue/components/Common/CustomDates';
-import { GET_ES_MIN_VALUE } from 'graphQL/useQueryESMinValue';
-import { useLazyQuery } from '@apollo/client';
 import moment from 'moment';
-import { useSelector } from 'react-redux';
-import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
-import { MenuItem } from 'material-ui';
-import { MuiThemeProvider } from 'material-ui/styles';
 
 const useStyles = makeStyles(theme => ({
 	actionBar: {
@@ -41,8 +35,8 @@ const ValidationFilter = ({ field, defaultStartDate, setESFilters, filterToggle,
 	const [selectedFilter, setSelectedFilter] = useState('');
 	const [fromDate, setFromDate] = React.useState(null);
 	const [toDate, setToDate] = React.useState(null);
-	const [status, setStatus] = useState('ALL');
-	const [propertyFilter, setPropertyFilter] = useState([]);
+	const [status] = useState('ALL');
+	const [propertyFilter] = useState([]);
 
 	useEffect(() => {
 		setFromDate(
@@ -55,6 +49,7 @@ const ValidationFilter = ({ field, defaultStartDate, setESFilters, filterToggle,
 
 	useEffect(() => {
 		updateFilters();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [toDate, fromDate, status, propertyFilter]);
 
 	const updateFilters = () => {
@@ -70,7 +65,7 @@ const ValidationFilter = ({ field, defaultStartDate, setESFilters, filterToggle,
 			}
 		}
 		if (toDate) {
-			const d = toDate.split('-');
+			toDate.split('-');
 		}
 		filters.push({
 			field,

@@ -4,7 +4,7 @@ import Button from '@material-ui/core/Button';
 import ChatIcon from '@material-ui/icons/Chat';
 import { tableGlobalController } from 'hookstate/tableController';
 
-function CommentCell({ value, id, targetLabel }) {
+function CommentCell({ rowNumber, value, id, targetLabel, hideShareCommentsToggle }) {
 	return (
 		<Tooltip title={!value || value === 0 ? 'Add Comments' : 'View Comments'} placement="top">
 			<Button
@@ -19,9 +19,11 @@ function CommentCell({ value, id, targetLabel }) {
 							value,
 							targetSourceId: id,
 							targetLabel,
+							hideShareCommentsToggle,
 						},
 					});
 				}}
+				data-testid={`comment-icon-button-${rowNumber}`}
 				aria-label="show comments"
 			>
 				{value}

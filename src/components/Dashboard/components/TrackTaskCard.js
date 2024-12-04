@@ -1,11 +1,10 @@
-import React, { Fragment, useState, useEffect, useRef } from 'react';
+import React, { Fragment, useState, useEffect, useRef, useCallback } from 'react';
 import CardHeader from '@material-ui/core/CardHeader';
-import { Grid, Typography, TextField, CircularProgress, Box } from '@material-ui/core';
+import { Grid, TextField, CircularProgress, Box } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { CUSTOM_DATES } from 'utils/data';
 import { makeStyles } from '@material-ui/styles';
 import moment from 'moment';
-import { copy } from 'utils/helper';
 import { useLazyQuery } from '@apollo/client';
 import { GET_ACTIVITY_TASK_PER_USER } from 'graphQL/useQueryActivityTaskPerUser';
 import * as am4core from '@amcharts/amcharts4/core';
@@ -13,8 +12,8 @@ import * as am4charts from '@amcharts/amcharts4/charts';
 import { getRangeFilters } from 'utils/helper';
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';
 import ReactDOMServer from 'react-dom/server';
-import { GET_ES_MIN_VALUE } from 'graphQL/useQueryESMinValue';
 import { handleCustomDateTypeChange } from 'utils/helper';
+import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles(theme => ({
 	actionBar: {
@@ -113,25 +112,24 @@ export default function TrackTaskCard() {
 		},
 	});
 
-	const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
+	const [getDbMinValue] = useLazyQuery(GET_DB_MIN_VALUE, {
 		fetchPolicy: 'no-cache',
 		onCompleted: data => {
-			if (data?.getESMinValue) {
-				setFromDate(`${moment(data?.getESMinValue).startOf('month').format('yyyy-MM-DD')}`);
-				setMinDate(data?.getESMinValue);
+			if (data?.getDbMinValue?.data) {
+				setFromDate(`${moment(data?.getDbMinValue?.data).startOf('month').format('yyyy-MM-DD')}`);
+				setMinDate(data?.getDbMinValue?.data);
 			}
 		},
 	});
 
 	useEffect(() => {
-		getESMinValue({
+		getDbMinValue({
 			variables: {
-				esIndex: 'activities_flat',
+				index: 'activities_flat',
 				field: 'dateTime',
-				value_as_string: true,
 			},
 		});
-	}, [getESMinValue]);
+	}, [getDbMinValue]);
 
 	const getFilters = appliedFilters => {
 		let filters = [];
@@ -168,14 +166,13 @@ export default function TrackTaskCard() {
 		return filters;
 	};
 
-	const getAllFilters = () => {
+	const getAllFilters = useCallback(() => {
 		let rangeFilters = [];
 		rangeFilters = getFilters({ fromDate, toDate });
 		return [...rangeFilters];
-	};
+	}, [fromDate, toDate]);
 
 	useEffect(() => {
-		// setTaskperUser([]);
 		getActivityAnalytics({
 			variables: {
 				search: {
@@ -185,7 +182,7 @@ export default function TrackTaskCard() {
 				filters: getAllFilters(),
 			},
 		});
-	}, [fromDate, toDate]);
+	}, [getActivityAnalytics, getAllFilters]);
 
 	useEffect(() => {
 		if (!taskperUser) return;
@@ -413,7 +410,7 @@ function TaskFilters({ fromDate, setFromDate, toDate, setToDate, minDate }) {
 						},
 					}}
 					onChange={event => {
-						if (event.target.value == '') {
+						if (event.target.value === '') {
 							setFromDate(
 								`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`
 							);
@@ -446,7 +443,7 @@ function TaskFilters({ fromDate, setFromDate, toDate, setToDate, minDate }) {
 						},
 					}}
 					onChange={event => {
-						if (event.target.value == '') {
+						if (event.target.value === '') {
 							setToDate(
 								`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`
 							);

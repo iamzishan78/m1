@@ -14,7 +14,6 @@ import TableHeader from 'components/Table/constants/check-details-header-schema'
 
 // Utilities
 import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
-import { GET_ES_COUNT } from 'graphQL/useQueryESCount';
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { ADD_PROPERTY } from 'graphQL/useMutationAddProperty';
 import { usetableStyles } from 'components/Table/Styles';
@@ -32,6 +31,7 @@ import moment from 'moment';
 
 import { PopoverProperty } from './PopoverProperty';
 import { RevenueStatementHeadCells } from './data';
+import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles({
 	root: {
@@ -127,7 +127,10 @@ function CheckDetailsEditableTable(props) {
 			props.setLoading(false);
 		},
 	});
-	const [getESCount, { data: eSCount }] = useLazyQuery(GET_ES_COUNT, { fetchPolicy: 'no-cache' });
+	const [getDbDataTotal, { data: dbCount }] = useLazyQuery(GET_DB_DATA_TOTAL, {
+		fetchPolicy: 'no-cache',
+	});
+
 	const [loadMoreList, { data: loadMoreData, loading }] = useLazyQuery(GET_ES_PAGINATED_LIST, {});
 
 	useEffect(() => {
@@ -137,28 +140,32 @@ function CheckDetailsEditableTable(props) {
 			props.setRows(hits.concat(rows));
 			setTimeout(() => document.getElementById(`${hits.length - 1}-0`)?.scrollIntoView(), 0);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [loadMoreData]);
 
 	useEffect(() => {
-		getESCount({
+		getDbDataTotal({
 			variables: {
-				esIndex,
+				index: esIndex,
 				filters: [
 					{
 						field: 'check._id.keyword',
 						value: props.checkId,
 					},
 				],
-				search: search.text ? `${search.text}*` : '',
+				search: {
+					query: search.text ? `${search.text}*` : '',
+					fields: ['checkNumber', '_all'],
+				},
 			},
 		});
-	}, [props.parent, props.checkId, search.text]);
+	}, [props.parent, props.checkId, search.text, getDbDataTotal]);
 
 	useEffect(() => {
-		if (eSCount?.getESCount) {
-			setStartPaginationAt(eSCount.getESCount.total);
+		if (dbCount?.getDbDataTotal) {
+			setStartPaginationAt(dbCount.getDbDataTotal.data);
 		}
-	}, [eSCount]);
+	}, [dbCount]);
 
 	const [updateCheckDetail] = useMutation(UPDATE_CHECK_DETAIL);
 
@@ -172,7 +179,7 @@ function CheckDetailsEditableTable(props) {
 		setCurrentRowIndex(currentRow);
 		// let newPropertyAdded = false
 		let row = rows.find(r => r._id === rowId);
-		if (get(row, field) == value && type !== 'date') return;
+		if (get(row, field) === value && type !== 'date') return;
 
 		set(row, field, value);
 		// made check for purchaser prop instead of simple number to get name, state and county
@@ -256,6 +263,7 @@ function CheckDetailsEditableTable(props) {
 		if (currentRowIndex) {
 			AnchorEl(document.getElementById(`${currentRowIndex}-0`));
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [resetAnchor]);
 
 	const cols = () =>
@@ -341,7 +349,7 @@ function CheckDetailsEditableTable(props) {
 				search: search.text ? `${search.text}*` : '',
 			},
 		});
-	}, [props.parent, props.checkId, search.text, sort, startPaginationAt]);
+	}, [props.parent, props.checkId, search.text, sort, startPaginationAt, getESPaginatedList]);
 
 	useEffect(() => {
 		if (tableData?.hits?.length > 0) {
@@ -380,6 +388,7 @@ function CheckDetailsEditableTable(props) {
 			props.setRows([]);
 			props.setLoading(false);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [elasticData, props.dependencyUpdate]);
 
 	const addNewRow = (e, gridRef) => {

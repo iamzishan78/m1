@@ -41,6 +41,7 @@ import { ADDACTIVITY, DELETEACTIVITY, UPDATEACTIVITY } from '../../../graphQL/us
 import { workspaceTenantName } from 'components/Shared/functions';
 import AutoCompleteAddNewField from 'components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField';
 import { outcomeOptions } from 'components/ContactDetailCard/components/FieldContent/helper';
+import { tableGlobalController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(theme => ({
 	dialogExpCard: {
@@ -244,6 +245,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 	const [addActivityMutation, { loading: addLoading }] = useMutation(ADDACTIVITY, {
 		onCompleted: () => {
 			onModalClose();
+			tableGlobalController.refetch(); // refech mrttable rows
 		},
 		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
 		awaitRefetchQueries: true,
@@ -252,6 +254,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 	const [updateActivityMutation, { loading: updateLoading }] = useMutation(UPDATEACTIVITY, {
 		onCompleted: () => {
 			onModalClose();
+			tableGlobalController.refetch(); // refech mrttable rows
 		},
 		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
 		awaitRefetchQueries: true,
@@ -260,6 +263,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 	const [deleteActivityMutation] = useMutation(DELETEACTIVITY, {
 		onCompleted: () => {
 			onModalClose();
+			tableGlobalController.refetch(); // refech mrttable rows
 		},
 		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
 		awaitRefetchQueries: true,
