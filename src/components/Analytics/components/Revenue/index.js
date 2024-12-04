@@ -176,7 +176,6 @@ export default function RevenueAnalytics(props) {
 					],
 					filterKey: 'property.number.keyword',
 					filterAggs: { query: '', field: 'property.number.keyword', size: getTableStateValues()?.data?.total || 0 },
-					isElasticQuery: false,
 				},
 				onCompleted: res => resolve(res?.getESSimpleFilter?.hits),
 				onError: error => reject(error),
@@ -190,7 +189,6 @@ export default function RevenueAnalytics(props) {
 					filters: [...(getTableStateValues()?.filters || []), { field: 'IsDeleted', value: false, type: 'term' }],
 					filterKey: 'check.checkNumber.keyword',
 					filterAggs: { query: '', field: 'check.checkNumber.keyword', size: getTableStateValues()?.data?.total || 0 },
-					isElasticQuery: false,
 				},
 				onCompleted: res => resolve(res?.getESSimpleFilter?.hits),
 				onError: error => reject(error),
@@ -245,7 +243,7 @@ export default function RevenueAnalytics(props) {
 		if (checkDetailData?.getCheckDetailsData?.checkDetails?.length > 0) {
 			let data = [];
 			for (let i = 0; i < checkDetailData?.getCheckDetailsData?.checkDetails?.length; i++) {
-				const check = checkDetailData?.getCheckDetailsData?.checkDetails[i]._source;
+				const check = checkDetailData?.getCheckDetailsData?.checkDetails[i];
 				data.push({
 					wells: check.wells,
 					date: check.date,

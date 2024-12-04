@@ -20,8 +20,8 @@ function AllDialogs(props) {
 	const tableKey = rest?.tableKey;
 
 	const {
-		stateValues: { refetchQueries, isElasticQuery },
-	} = tableController(props.tableKey).useState(['refetchQueries', 'isElasticQuery']);
+		stateValues: { refetchQueries },
+	} = tableController(props.tableKey).useState(['refetchQueries']);
 
 	const [gridGenericRemove] = useMutation(GRID_GENERIC_REMOVE, {
 		awaitRefetchQueries: true,
@@ -56,7 +56,6 @@ function AllDialogs(props) {
 				ESVariables: rest?.ESVariables,
 				isSelectAll: rest?.isSelectAll,
 				cypressDelete: testCase?.cypressDelete,
-				isElasticQuery,
 			},
 		}).then(
 			res => {

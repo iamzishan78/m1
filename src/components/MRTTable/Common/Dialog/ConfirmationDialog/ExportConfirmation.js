@@ -109,7 +109,6 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 					counts: {
 						exportGrid: tableStateValues?.data.total,
 					},
-					isElasticQuery: tableStateValues.isElasticQuery,
 				},
 			})
 		);

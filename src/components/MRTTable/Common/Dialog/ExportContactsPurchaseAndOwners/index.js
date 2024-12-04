@@ -73,7 +73,6 @@ const ExportContactsAndPurchase = ({
 	columns,
 	contactIdKey,
 	_selectedRows,
-	isElasticQuery,
 }) => {
 	const classes = useStyles();
 	const modalClass = Modals();
@@ -141,7 +140,6 @@ const ExportContactsAndPurchase = ({
 					datasets,
 					counts,
 					selectedIds,
-					isElasticQuery,
 				},
 			})
 		);

@@ -59,7 +59,6 @@ const onCustomKeyChange = async (client, row, value, item) => {
 const ContactMeta = {
 	esIndex,
 	pageSize: 25,
-	isElasticQuery: false,
 	defaultSort: { field: 'lastUpdateAt', order: 'desc', unmapped_type: 'date' },
 	maxTableHeight: 'calc(100vh - 200px)',
 	CustomToolBar: ContactToolbar,

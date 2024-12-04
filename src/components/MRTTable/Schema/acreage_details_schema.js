@@ -9,7 +9,6 @@ const esIndex = 'shapetracts_flat';
 
 const AcreageDetilsMeta = {
 	esIndex,
-	isElasticQuery: false,
 	pageSize: 25,
 	pagination: {
 		pageIndex: 0,

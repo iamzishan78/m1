@@ -11,7 +11,6 @@ const esIndex = 'contacts_flat';
 // Related Payments Meta
 const RelatedPaymentsMeta = {
 	esIndex,
-	isElasticQuery: false,
 	pageSize: 50,
 	pagination: {
 		pageIndex: 0,
