@@ -35,7 +35,6 @@ export default function CustomDataFilters(props) {
 	});
 
 	useEffect(() => {
-		console.log('length: ', stateApp.landSearchFilters?.customData);
 		if (stateApp.landSearchFilters?.customData.length === 0) {
 			setSelectedValue(null);
 			setSelectedKey(null);
@@ -63,7 +62,6 @@ export default function CustomDataFilters(props) {
 	}, []);
 
 	useEffect(() => {
-		console.log('useEffect: ', { selectedKey }, { selectedValue });
 		if (selectedKey && selectedValue) {
 			const filterKey = `shapeJson.properties.custom_data.${selectedKey}`;
 			const landCustomDataFilters = [...stateApp.landSearchFilters.customData];
@@ -81,7 +79,6 @@ export default function CustomDataFilters(props) {
 				landSearchFilters: { ...stateApp.landSearchFilters, customData: landCustomDataFilters },
 			}));
 		} else if (selectedKey === null) {
-			console.log('In the else statement');
 			let landCustomDataFilters = [...stateApp.landSearchFilters.customData];
 			const _index = landCustomDataFilters.findIndex(f => f.field.startsWith('shapeJson.properties.custom_data'));
 
@@ -137,11 +134,8 @@ export default function CustomDataFilters(props) {
 	}, [customValueData]);
 
 	const handleKeyChange = key => {
-		console.log('I am being called');
-		// if (key) {
 		setSelectedKey(key);
 		setSelectedValue(null);
-		// }
 	};
 	return (
 		<Grid container item spacing={2} style={{ padding: '8px', width: '100%', margin: '0' }}>
