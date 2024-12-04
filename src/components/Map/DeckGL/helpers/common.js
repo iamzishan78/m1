@@ -230,15 +230,17 @@ export const getRGBA = (rgb, a) => {
 
 	if (rgb.includes('#')) rgb = hexToRGB(rgb);
 
-	let alpha;
-	if (typeof a === 'number') alpha = a;
-	// else if (Array.isArray(a)) [alpha] = a.filter(val => typeof val === 'number');
+	// Determine alpha value
+	let alpha = typeof a === 'number' ? a : undefined;
 
 	const concatIndex = rgb.indexOf('rgba') === -1 ? 4 : 5;
 
 	let colorArray;
-	if (rgb.indexOf('rgb') === -1) colorArray = hexRgb(rgb, { format: 'array', alpha });
-	else
+	if (rgb.indexOf('rgb') === -1) {
+		// Parse hex color
+		colorArray = hexRgb(rgb, { format: 'array', alpha });
+	} else {
+		// Parse rgb or rgba color string
 		colorArray = [
 			...rgb
 				.substring(concatIndex, rgb.length - 1)
@@ -246,12 +248,18 @@ export const getRGBA = (rgb, a) => {
 				.split(',')
 				.map(s => +s),
 		];
+	}
 
+	// Convert alpha to 0-255 range if it's a fractional value
 	if (colorArray[3] < 1) colorArray[3] = Math.round((colorArray[3] || 1) * 255.0);
 
-	if (alpha) colorArray[3] = Math.round((alpha || 1) * 255.0);
+	// Override alpha if explicitly provided
+	if (alpha !== undefined) {
+		colorArray[3] = Math.round(alpha * 255.0);
+	}
 
-	if (!colorArray[3]) colorArray[3] = 255;
+	// Default to full opacity if alpha is undefined
+	if (colorArray[3] === undefined) colorArray[3] = 255;
 
 	return colorArray;
 };
@@ -456,10 +464,26 @@ export const generateFileFilters = ({
 			search: {
 				advanceSearch,
 			},
-			filters,
 			...extendFilters.variables,
+			filters: extractUniqueFilters([...filters, ...(extendFilters.variables?.filters || [])]),
 		},
 	};
+};
+
+export const extractUniqueFilters = filters => {
+	return filters.reduce((acc, filter) => {
+		const index = acc.findIndex(existingFilter => existingFilter.field === filter.field);
+
+		if (index !== -1) {
+			// Overwrite the existing filter with the new one (higher precedence)
+			acc[index] = filter;
+		} else {
+			// Add the filter if it doesn't exist
+			acc.push(filter);
+		}
+
+		return acc;
+	}, []);
 };
 
 // Utility for getting attribute based color
@@ -549,7 +573,7 @@ export const getLayerFillColor = (dbLayer, fillColor, fillOpacity) => {
 	};
 };
 
-export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
+export function getGeoJsonLayerProps(dbLayer, labelProps) {
 	const props = {};
 
 	dbLayer.layerPaintProps?.forEach(prop => {
@@ -641,7 +665,7 @@ export const getGeoJsonLayerProps = (dbLayer, labelProps) => {
 	}
 
 	return props;
-};
+}
 
 export const getClickedFeature = ({ x, y, depth = Infinity, getLandGrid = true }) => {
 	let features = pickDeckObjects({ x, y, depth });

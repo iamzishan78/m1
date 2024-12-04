@@ -14,200 +14,204 @@ import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 
 const genericDataActions = ['comments', 'tracks'];
 function UnitInterestOwnersTable(props) {
-  const classes = usetableStyles();
-  const [stateApp] = useContext(AppContext);
+	const classes = usetableStyles();
+	const [stateApp] = useContext(AppContext);
 
-  const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS)
+	const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS);
 
-  const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
+	const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
 
-  const GridViewModule = userGridViewSettings?.UnitInterest;
-  const defaultView = {
-    name: `All Unit Interest`,
-    type: 'Default',
-  };
+	const GridViewModule = userGridViewSettings?.UnitInterest;
+	const defaultView = {
+		name: `All Unit Interest`,
+		type: 'Default',
+	};
 
-  const searchInput = useSelector(state => state.MapGridCard.searchInputValue);
+	const searchInput = useSelector(state => state.MapGridCard.searchInputValue);
 
-  const setTableMeta = React.useMemo(
-    () =>
-      debounce((request, top, callback) => {
-        props.setTableMeta(request);
-      }, 500),
-    []
-  );
+	const setTableMeta = React.useMemo(
+		() =>
+			debounce((request, top, callback) => {
+				props.setTableMeta(request);
+			}, 500),
+		[]
+	);
 
-  const formatHits = hits => {
-    hits = hits.map(hit => {
-      hit.descriptorId = hit?._id
-      hit._id = hit?.contact?._id
-      hit.commentsCounter = hit.comments ? hit.comments.length : 0;
-      hit.qualifier = hit?.shape?.shapeJson?.properties?.qualifier?.name;
-      hit.reviewer = hit?.shape?.shapeJson?.properties?.reviewer?.name;
-      hit.uUnitPricing = hit?.shape?.shapeJson?.properties?.uUnitPricing;
-      hit.uMaxUnitPricing = hit?.shape?.shapeJson?.properties?.uMaxUnitPricing;
-      hit.uNumber = hit?.shape?.shapeJson?.properties?.uNumber;
-      hit.shapeArea = hit?.shape?.shapeJson?.properties?.shapeArea;
-      hit.uAcres = hit?.shape?.shapeJson?.properties?.uAcres;
+	const formatHits = hits => {
+		hits = hits.map(hit => {
+			hit.descriptorId = hit?._id;
+			hit._id = hit?.contact?._id;
+			hit.commentsCounter = hit.comments ? hit.comments.length : 0;
+			hit.qualifier = hit?.shape?.shapeJson?.properties?.qualifier?.name;
+			hit.reviewer = hit?.shape?.shapeJson?.properties?.reviewer?.name;
+			hit.uUnitPricing = hit?.shape?.shapeJson?.properties?.uUnitPricing;
+			hit.uMaxUnitPricing = hit?.shape?.shapeJson?.properties?.uMaxUnitPricing;
+			hit.uNumber = hit?.shape?.shapeJson?.properties?.uNumber;
+			hit.shapeArea = hit?.shape?.shapeJson?.properties?.shapeArea;
+			hit.uAcres = hit?.shape?.shapeJson?.properties?.uAcres;
 
-      hit.contactStatus = hit?.contact?.contactStatus;
-      hit.status = hit?.contact?.status;
-      hit.block = hit?.shape?.shapeJson?.properties?.originalProperties?.Block;
-      hit.township = hit?.shape?.shapeJson?.properties?.originalProperties?.Township;
-      hit.description = hit?.shape?.shapeJson?.properties?.description;
-      hit.contactOwners = (hit?.contactOwners && hit?.contactOwners.length > 0) ? Array.isArray(hit?.contactOwners) ? hit?.contactOwners[0] : hit?.contactOwners : null;
+			hit.contactStatus = hit?.contact?.contactStatus;
+			hit.status = hit?.contact?.status;
+			hit.block = hit?.shape?.shapeJson?.properties?.originalProperties?.Block;
+			hit.township = hit?.shape?.shapeJson?.properties?.originalProperties?.Township;
+			hit.description = hit?.shape?.shapeJson?.properties?.description;
+			hit.contactOwners =
+				hit?.contactOwners && hit?.contactOwners.length > 0
+					? Array.isArray(hit?.contactOwners)
+						? hit?.contactOwners[0]
+						: hit?.contactOwners
+					: null;
 
-      if (hit?.tags?.length > 0) {
-        const tags = hit.tags.map((tag) => tag.tag);
-        if (tags[0]) {
-          hit.tags = [[tags], hit.tags.length];
-        }
-      } else {
-        hit.tags = [[], 0];
-      }
+			if (hit?.tags?.length > 0) {
+				const tags = hit.tags.map(tag => tag.tag);
+				if (tags[0]) {
+					hit.tags = [[tags], hit.tags.length];
+				}
+			} else {
+				hit.tags = [[], 0];
+			}
 
-      hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);
+			hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);
 
-      return hit;
-    });
-    return hits;
-  };
+			return hit;
+		});
+		return hits;
+	};
 
-  useEffect(() => {
-    const search = esExtentedSearch(props.landSearchQuery, searchInput)
+	useEffect(() => {
+		const search = esExtentedSearch(props.landSearchQuery, searchInput);
 
-    const defaultFilters = [
-      {
-        field: 'shape.layer.keyword',
-        value: 'unit',
-      },
-      {
-        field: 'contact.IsDeleted',
-        value: 'false',
-      },
-      {
-        field: 'shape.IsDeleted',
-        value: 'false',
-      },
-      ...(props.campaignName ? [{
-        field: 'campaignName.keyword',
-        value: props.campaignName
-      }] : [])
-    ]
+		const defaultFilters = [
+			{
+				field: 'shape.layer.keyword',
+				value: 'unit',
+			},
+			{
+				field: 'contact.IsDeleted',
+				value: 'false',
+			},
+			{
+				field: 'shape.IsDeleted',
+				value: 'false',
+			},
+			...(props.campaignName
+				? [
+						{
+							field: 'campaignName.keyword',
+							value: props.campaignName,
+						},
+					]
+				: []),
+		];
 
-    props.setInitialFilters(defaultFilters);
+		props.setInitialFilters(defaultFilters);
 
-    setTableMeta({
-      extendSearchQuery: isNaN(parseFloat(search.replaceAll('*', ''))) ? search : search.replaceAll('*', ''),
-      searchFields: [
-        'contact.entityDetail.name',
-        'shape.shapeJson.properties.uName',
-        'shape.shapeJson.properties.uNumber',
-        'shape.shapeJson.properties.shapeArea',
-        'shape.shapeJson.properties.uUnitPricing',
-        'shape.shapeJson.properties.uAcres',
-        'contact.contactStatus',
-        'campaignName',
-        'shape.shapeJson.properties.reviewer.name',
-        'shape.shapeJson.properties.qualifier.name',
-        ...(!search.includes(' ') ? [
-          'working_interest',
-          'royalty_interest',
-          'orri',
-          'nra',
-          'offer_price',
-        ] : [])
-      ],
-      TableHeader: copy(TableHeader(!!props.isSnapGrid)),
-      esIndex: 'shapeowners_flat',
-      selectedGridView: GridViewModule || defaultView,
-      typeKeyword: { gridViewCategory: 'UnitInterest' },
-      startPaginationAt: 50,
-      filters: defaultFilters,
-      defaultSort: { field: '_ts', order: 'desc' },
-      polygon: stateApp?.currentFeature?.geometry && {
-        type: 'geo_intersects',
-        field: 'geoJSON',
-        value: stateApp?.currentFeature?.geometry,
-      },
-      formatHits,
-      downloadAll: { exportPx: '121px' }
-    });
-    // eslint-disable-next-line
-  }, [searchInput, props.landSearchQuery, userGridViewSettings, props.campaignName]);
+		setTableMeta({
+			extendSearchQuery: isNaN(parseFloat(search.replaceAll('*', ''))) ? search : search.replaceAll('*', ''),
+			searchFields: [
+				'contact.entityDetail.name',
+				'shape.shapeJson.properties.uName',
+				'shape.shapeJson.properties.uNumber',
+				'shape.shapeJson.properties.shapeArea',
+				'shape.shapeJson.properties.uUnitPricing',
+				'shape.shapeJson.properties.uAcres',
+				'contact.contactStatus',
+				'campaignName',
+				'shape.shapeJson.properties.reviewer.name',
+				'shape.shapeJson.properties.qualifier.name',
+				...(!search.includes(' ') ? ['working_interest', 'royalty_interest', 'orri', 'nra', 'offer_price'] : []),
+			],
+			TableHeader: copy(TableHeader(!!props.isSnapGrid)),
+			esIndex: 'shapeowners_flat',
+			selectedGridView: GridViewModule || defaultView,
+			typeKeyword: { gridViewCategory: 'UnitInterest' },
+			startPaginationAt: 50,
+			filters: defaultFilters,
+			defaultSort: { field: '_ts', order: 'desc' },
+			polygon: stateApp?.currentFeature?.geometry && {
+				type: 'geo_intersects',
+				field: 'geoJSON',
+				value: stateApp?.currentFeature?.geometry,
+			},
+			formatHits,
+			downloadAll: { exportPx: '121px' },
+		});
+		// eslint-disable-next-line
+	}, [searchInput, props.landSearchQuery, userGridViewSettings, props.campaignName]);
 
-  const isCampaignUnitInterestTable = props.targetLabel === 'campaignUnit'
+	const isCampaignUnitInterestTable = props.targetLabel === 'campaignUnit';
 
-  const campaignUnitInterestDeleteFunc = (shapeOwnerIds) => {
-    if (!shapeOwnerIds || shapeOwnerIds.length === 0) return
+	const campaignUnitInterestDeleteFunc = shapeOwnerIds => {
+		if (!shapeOwnerIds || shapeOwnerIds.length === 0) return;
 
-    props.setLoading(true);
+		props.setLoading(true);
 
-    const shapeOwners = props.selectedRowsValues.map(row => ({
-      _id: row.descriptorId,
-      campaignName: row.campaignName?.filter?.(name => name !== props.campaignName) || []
-    }))
+		const shapeOwners = props.selectedRowsValues.map(row => ({
+			_id: row.descriptorId,
+			campaignName: row.campaignName?.filter?.(name => name !== props.campaignName) || [],
+		}));
 
-    updateShapeOwners({
-      variables: {
-        shapeOwners,
-      },
-      onCompleted: () => {
-        props.setLoading(false)
-      },
-      refetchQueries: ["getCampaign", "getESSimpleSearch"],
-      awaitRefetchQueries: true
-    });
-  }
+		updateShapeOwners({
+			variables: {
+				shapeOwners,
+			},
+			onCompleted: () => {
+				props.setLoading(false);
+			},
+			refetchQueries: ['getCampaign', 'getESSimpleSearch'],
+			awaitRefetchQueries: true,
+		});
+	};
 
-  const deleteFunc = isCampaignUnitInterestTable ? campaignUnitInterestDeleteFunc : () => { }
+	const deleteFunc = isCampaignUnitInterestTable ? campaignUnitInterestDeleteFunc : () => {};
 
-  return (
-    <Container
-      maxWidth={false}
-      className={classes.container}
-      id={props.id ? props.id : props.parent}
-    >
-      <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
-        {props.openDialog === "delete" && (
-          <DeleteConfirmationDialogContent
-            header={`Delete ${isCampaignUnitInterestTable ? 'Record' : 'Unit Interest'}(s)`}
-            onClose={() => props.setOpenDialog(null)}
-            deleteFunc={deleteFunc}
-            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]?._id)}
-            setM1nSelectedRowsIndexes={props.setSelectedRows}
-          >
-            {`Do you want to delete the selected ${isCampaignUnitInterestTable ? 'record' : 'unit interest'
-              }${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? 's' : ''
-              }?`}
-          </DeleteConfirmationDialogContent>
-        )}
-      </Dialog>
+	return (
+		<Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
+			<Dialog
+				open={props.openDialog ? true : false}
+				onClose={() => props.setOpenDialog(null)}
+				fullWidth={true}
+				maxWidth={'sm'}
+			>
+				{props.openDialog === 'delete' && (
+					<DeleteConfirmationDialogContent
+						header={`Delete ${isCampaignUnitInterestTable ? 'Record' : 'Unit Interest'}(s)`}
+						onClose={() => props.setOpenDialog(null)}
+						deleteFunc={deleteFunc}
+						m1nSelectedRowsIds={props.selectedRows.map(sR => props.rows[sR.dataIndex]?._id)}
+						setM1nSelectedRowsIndexes={props.setSelectedRows}
+					>
+						{`Do you want to delete the selected ${isCampaignUnitInterestTable ? 'record' : 'unit interest'}${
+							props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? 's' : ''
+						}?`}
+					</DeleteConfirmationDialogContent>
+				)}
+			</Dialog>
 
-      <Table
-        style={{ backgroundColor: '#fff' }}
-        header={props.header}
-        columns={props.columns}
-        rows={props.rows}
-        total={false}
-        addAble={{ type: 'UnitInterests' }}
-        loading={props.loading}
-        targetLabel={props.targetLabel}
-        uploadIcon={null}
-        dense={props.dense ? props.dense : undefined}
-        orderByTracks={false}
-        startPaginationAt={null}
-        onTableChange={props.onTableChange}
-        options={{
-          ...props.options,
-          ...props.customOptions,
-        }}
-        parent={props.parent}
-        setColumnsBase={[]}
-        {...props.esHocProps}
-      />
-    </Container>
-  );
+			<Table
+				style={{ backgroundColor: '#fff' }}
+				header={props.header}
+				columns={props.columns}
+				rows={props.rows}
+				total={false}
+				addAble={{ type: 'UnitInterests' }}
+				loading={props.loading}
+				targetLabel={props.targetLabel}
+				uploadIcon={null}
+				dense={props.dense ? props.dense : undefined}
+				orderByTracks={false}
+				startPaginationAt={null}
+				onTableChange={props.onTableChange}
+				options={{
+					...props.options,
+					...props.customOptions,
+				}}
+				parent={props.parent}
+				setColumnsBase={[]}
+				{...props.esHocProps}
+			/>
+		</Container>
+	);
 }
 
 export default React.memo(TableESHOC(UnitInterestOwnersTable), deepEqualObjects);

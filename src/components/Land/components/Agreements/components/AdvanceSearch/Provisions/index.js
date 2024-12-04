@@ -29,13 +29,11 @@ const provisionFilters = [
 		label: 'Type',
 		filterKey: 'provisions.type.keyword',
 		searchFields: ['provisions.type'],
-		type: 'nested',
 	},
 	{
 		label: 'Applicable',
 		filterKey: 'provisions.applicable',
 		searchFields: ['provisions.applicable'],
-		type: 'nested',
 		customOnChange: value => (value ? (value === 'Yes' ? true : false) : null),
 		custom: {
 			key_as_string: true,
@@ -55,13 +53,11 @@ const provisionFilters = [
 		label: 'Provision Value',
 		filterKey: 'provisions.value.keyword',
 		searchFields: ['provisions.value'],
-		type: 'nested',
 	},
 	{
 		label: 'Party Name',
 		filterKey: 'provisions.partyName.keyword',
 		searchFields: ['provisions.partyName'],
-		type: 'nested',
 	},
 ];
 
@@ -83,7 +79,7 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
 		filters: [{ field: 'shapeJson.properties.type.keyword', value: 'agreement' }, ...appliedFilters],
 		extendSearchQuery: '',
 		custom: filter.custom,
-		aggsType: 'nested',
+		isElasticQuery: false,
 	};
 	if (filter.getOptionLabel) params['getOptionLabel'] = filter.getOptionLabel;
 	return (

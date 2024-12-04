@@ -1,9 +1,7 @@
 import React from 'react';
 
 const Validations = () => {
-    return (
-        <>Validation</>
-    )
-}
+	return <>Validation</>;
+};
 
-export default Validations
+export default Validations;

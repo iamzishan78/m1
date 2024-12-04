@@ -12,11 +12,16 @@ import { GETALLACTIVITIES } from '../../graphQL/useQueryGetAllActivities';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import ActivitiesToolbar from './components/ActivitiesToolbar';
 import ActivitiesEvent from './components/ActivitiesEvent';
+import { AppContext } from '../../AppContext';
+import ActivitiesSlideout from './components/ActivitiesSlideout';
+import { slidoutStateController } from 'hookstate/slidoutStateController';
+import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
+import { useHookstate } from '@hookstate/core';
+import MRTTable from 'components/MRTTable';
+import { tableController } from 'hookstate/tableController';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './index.css';
-import ActivitiesModal from './components/ActivitiesModal';
-import { AppContext } from '../../AppContext';
-import ActivitiesTable from '../../components/Table/Activities/ActivitiesTable';
+import { slidoutState } from 'hookstate/initialStates';
 
 const localizer = momentLocalizer(moment);
 
@@ -86,7 +91,7 @@ const useStyles = makeStyles(theme => ({
 		verticalAlign: 'middle',
 	},
 	root: {
-		marginTop: '64px',
+		marginTop: '54px',
 	},
 	table: {
 		borderTop: 'solid 1px#E0E0E0',
@@ -99,11 +104,6 @@ const useStyles = makeStyles(theme => ({
 		'&::-webkit-scrollbar-thumb': {
 			backgroundColor: '#929292',
 			borderRadius: 10,
-		},
-		'& div': {
-			'&>.MuiPaper-root': {
-				'&>:nth-child(3)': { minHeight: 'calc(100vh - 265px) !important' },
-			},
 		},
 	},
 }));
@@ -140,22 +140,18 @@ const getFilterCondition = (e, activityFilterByType, activityFilterByTime, activ
 const Activities = () => {
 	const classes = useStyles();
 
-	const esIndex = 'activities_flat';
-	const searchFields = ['name', '_all'];
-	const [filterToggle, setFilterToggle] = useState(false);
-	const [appliedFilters, setAppliedFilters] = useState({
-		toDate: null,
-		fromDate: null,
-	});
-	const [tableFilters, setTableFilters] = useState([]);
-
-	const filtersChange = filters => {
-		setTableFilters(filters);
-	};
+	const entityLoading = useHookstate(slidoutState.isLoading);
+	const selectedActivityId = useHookstate(slidoutState.selectedActivityId);
 
 	let history = useHistory();
 	const [getAllActivities, { data: activitiesData, loading: activitiesLoading }] = useLazyQuery(GETALLACTIVITIES, {
 		fetchPolicy: `network-only`,
+	});
+	const [getContactsForActivity, { data: getContactsForActivityResult }] = useLazyQuery(GET_CONTACTS_FOR_ACTIVITY, {
+		fetchPolicy: 'no-cache',
+		onCompleted: () => {
+			slidoutState.loader.set(false);
+		},
 	});
 	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
 		fetchPolicy: `network-only`,
@@ -168,7 +164,15 @@ const Activities = () => {
 	const [activityFilterByType, setActivityFilterByType] = useState('all');
 	const [activityFilterByOwner, setActivityFilterByOwner] = useState('all');
 	const [activityFilterByTime, setActivityFilterByTime] = useState('all');
+	const activitiesGridState = tableController('ActivitiesTable').useState(['filters']).stateValues;
 	const [view, setView] = React.useState(Views.MONTH);
+	useEffect(() => {
+		const contacts = getContactsForActivityResult?.getContactsForActivity?.contacts;
+		setStateApp(stateApp => ({
+			...stateApp,
+			activityContacts: { contacts },
+		}));
+	}, [getContactsForActivityResult]);
 
 	useEffect(() => {
 		getAllActivities({
@@ -176,6 +180,13 @@ const Activities = () => {
 				category: 'CRM',
 			},
 		});
+		getAllMongoUsers();
+
+		return () => {
+			slidoutState.selectedActivityId.set('');
+			slidoutState.selectedActivity.set(null);
+			slidoutStateController.hideSlideout();
+		};
 	}, []);
 
 	useEffect(() => {
@@ -218,44 +229,101 @@ const Activities = () => {
 		);
 	}, [events, activityFilterByType, activityFilterByTime, activityFilterByOwner, view]);
 
-	const onModalOpen = () => {
-		setStateApp(stateApp => ({
-			...stateApp,
-			activityDialog: true,
-		}));
-	};
-
-	const setSelectedActivityId = id => {
-		setStateApp(stateApp => ({
-			...stateApp,
-			selectedActivityId: id,
-		}));
-	};
+	useEffect(() => {
+		if (selectedActivityId.get()) {
+			slidoutState.selectedActivity.set(events.find(act => act._id === selectedActivityId.get()));
+			slidoutStateController.showSlideout();
+		} else {
+			slidoutState.selectedActivity.set(null);
+		}
+	}, [selectedActivityId.get()]);
 
 	useEffect(() => {
-		if (stateApp.selectedActivityId) {
-			setStateApp(() => ({
-				...stateApp,
-				selectedActivity: events.find(act => act._id === stateApp.selectedActivityId),
-			}));
-		} else {
-			setStateApp(() => ({ ...stateApp, selectedActivity: null }));
-		}
-	}, [stateApp.selectedActivityId]);
+		if (activitiesGridState) {
+			tableController('ActivitiesTable').clearFilters();
+			const filters = [];
 
-	React.useEffect(() => {
-		getAllMongoUsers();
-	}, []);
+			if (activityFilterByType && activityFilterByType !== 'all') {
+				filters.push({ field: 'type.keyword', value: activityFilterByType });
+			}
+			if (activityFilterByType && activityFilterByOwner !== 'all') {
+				filters.push({ field: 'ownerId.keyword', value: activityFilterByOwner });
+			}
+			const today = moment().format('yyyy-MM-DD');
+			switch (activityFilterByTime) {
+				case 'upcoming':
+					filters.push({
+						field: 'dateTime',
+						value: {
+							gte: `${today}T00:00:00.000Z`,
+						},
+						type: 'range',
+					});
+					break;
+				case 'overdue':
+					filters.push({
+						field: 'endDateTime',
+						value: {
+							lte: `${today}T00:00:00.000Z`,
+						},
+						type: 'range',
+					});
+					filters.push({ field: 'isClosed', value: 'false' });
+					break;
+				case 'open':
+					filters.push({
+						field: 'isClosed',
+						value: 'false',
+					});
+					break;
+				case 'closed':
+					filters.push({
+						field: 'isClosed',
+						value: 'true',
+					});
+					break;
+
+				default:
+					break;
+			}
+			tableController('ActivitiesTable').setFilters(filters);
+		}
+	}, [activityFilterByType, activityFilterByOwner, activityFilterByTime]);
+
+	useEffect(() => {
+		getContactsForActivity({
+			variables: { activityId: selectedActivityId.get() },
+		});
+	}, [selectedActivityId.get()]);
 
 	const onEventClick = event => {
 		window.history.pushState('', '', `/calendar/activities/${event._id}`);
 		setSelectedActivityId(event._id);
 		onModalOpen();
+		slidoutStateController.showSlideout();
+	};
+
+	const onModalOpen = () => {
+		slidoutState.loader.set(true);
+		getContactsForActivity({
+			variables: { activityId: slidoutState.selectedActivityId.get() },
+		});
+	};
+
+	const setSelectedActivityId = id => {
+		slidoutState.selectedActivityId.set(id);
+	};
+
+	const overrideMeta = {
+		defaultFilters: [
+			{ field: 'category.keyword', value: 'CRM' },
+			{ field: 'type.keyword', value: 'Expiration', type: 'advanced', searchType: 'notEquals' },
+		],
 	};
 
 	return (
 		<div className={classes.root}>
-			{activitiesLoading ? (
+			{activitiesLoading || entityLoading.get() ? (
 				<CircularProgress className={classes.progress} size={80} disableShrink color="secondary" />
 			) : (
 				<>
@@ -274,6 +342,7 @@ const Activities = () => {
 							events={filteredEvents}
 							onEventClick={onEventClick}
 							mongoUsers={userLists?.allMongoUsers}
+							activities={activitiesData?.activities}
 							type="Activity"
 						/>
 					) : (
@@ -295,32 +364,22 @@ const Activities = () => {
 									events={filteredEvents}
 									onEventClick={onEventClick}
 									mongoUsers={userLists?.allMongoUsers}
+									activities={activitiesData?.activities}
 									type="Activity"
 								/>
 							</div>
 
-							{/* <div className={classes.table}>
-                <M1nTable dense activities={filteredEvents} parent="Activities" />
-              </div> */}
-
 							<div className={classes.table}>
-								<ActivitiesTable
-									activityFilterByType={activityFilterByType}
-									activityFilterByTime={activityFilterByTime}
-									activityFilterByOwner={activityFilterByOwner}
-									esIndex={esIndex}
-									searchFields={searchFields}
-									filtersChange={filtersChange}
-									appliedFilters={appliedFilters}
-									filterToggle={filterToggle}
-									targetLabel={'activitiesDashboard'}
-									header="Activities"
-									parent="Activities"
-								/>
+								<MRTTable name="ActivitiesTable" overrideMeta={overrideMeta} />
 							</div>
 						</div>
 					)}
-					<ActivitiesModal setSelectedActivityId={setSelectedActivityId} events={events} />
+					<ActivitiesSlideout
+						activityId={selectedActivityId.get()}
+						setSelectedActivityId={setSelectedActivityId}
+						events={events}
+						getContactsForActivity={getContactsForActivity}
+					/>
 				</>
 			)}
 		</div>

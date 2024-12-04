@@ -14,8 +14,6 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TractIcon from 'components/Shared/svgIcons/tract';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
-import AgreementIcon from 'components/Shared/svgIcons/agreements';
-import { useHistory } from 'react-router-dom';
 
 const esIndex = 'shapeowners_flat';
 
@@ -86,7 +84,6 @@ const TractPerUnitMeta = {
 			id: 'contact.entityDetail.name',
 			header: 'Owner Name',
 			Cell: ({ renderedCellValue, row }) => {
-				const history = useHistory();
 				// Check if the contact is purchased
 				const isPurchased = [true, 'true', 'True'].includes(row.getValue('contact.isPurchased'));
 				return (
@@ -124,7 +121,8 @@ const TractPerUnitMeta = {
 								</FeatureFlag>
 							)}
 							{/* check if agreement record is present and not deleted */}
-							{!row?.original?.agreement?.IsDeleted && row?.original?.agreement?._id && (
+							{/* functionality not working properly commenting this code until further notice */}
+							{/* {!row?.original?.agreement?.IsDeleted && row?.original?.agreement?._id && (
 								<div
 									style={{ marginLeft: '15px', cursor: 'pointer', position: 'absolute', right: 0, marginRight: '15px' }}
 									onClick={e => {
@@ -134,7 +132,7 @@ const TractPerUnitMeta = {
 								>
 									<AgreementIcon color={'#17aadd'} />
 								</div>
-							)}
+							)} */}
 						</p>
 					</div>
 				);
@@ -628,7 +626,14 @@ const TractPerUnitMeta = {
 			...CommonSchema.COMMENTS,
 			Cell: ({ renderedCellValue, row }) => {
 				const id = row.getValue('ownerEntity');
-				return <CommentCell id={id} value={row?.original?.commentsCount} targetLabel={'Parcel Ownership'} />;
+				return (
+					<CommentCell
+						id={id}
+						value={row?.original?.commentsCount}
+						targetLabel={'Parcel Ownership'}
+						hideShareCommentsToggle
+					/>
+				);
 			},
 		},
 

@@ -1,12 +1,12 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const UPDATESTAGEDEALDESCRIPTORS = gql`
-  mutation updateStageDealDescriptors($stageDealDescriptors: [StageDealDescriptorInput]!) {
-    updateStageDealDescriptors(stageDealDescriptors: $stageDealDescriptors) {
-        success
-        error
-        message
-        stageDealDescriptors
-    }
-  }
+	mutation updateStageDealDescriptors($stageDealDescriptors: [StageDealDescriptorInput]!) {
+		updateStageDealDescriptors(stageDealDescriptors: $stageDealDescriptors) {
+			success
+			error
+			message
+			stageDealDescriptors
+		}
+	}
 `;

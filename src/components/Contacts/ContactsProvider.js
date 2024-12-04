@@ -1,20 +1,20 @@
-import React from "react";
-import { ContactsContextProvider } from "./ContactsContext";
-import { makeStyles } from "@material-ui/core/styles";
-import Contacts from "./Contacts";
-import { createTheme, MuiThemeProvider } from "@material-ui/core/styles";
+import React from 'react';
+import { ContactsContextProvider } from './ContactsContext';
+import { makeStyles } from '@material-ui/core/styles';
+import Contacts from './Contacts';
+import { createTheme, MuiThemeProvider } from '@material-ui/core/styles';
 const useStyles = makeStyles(theme => ({
-  ContactsWrapper: {
-    width: "100%",
-    height: "100%"
-  }
+	ContactsWrapper: {
+		width: '100%',
+		height: '100%',
+	},
 }));
 
 export default function ContactsProvider(props) {
-  let classes = useStyles();
-  return (
-    <ContactsContextProvider>
-      <Contacts className={classes.ContactsWrapper}>{props.children}</Contacts>
-    </ContactsContextProvider>
-  );
+	let classes = useStyles();
+	return (
+		<ContactsContextProvider>
+			<Contacts className={classes.ContactsWrapper}>{props.children}</Contacts>
+		</ContactsContextProvider>
+	);
 }

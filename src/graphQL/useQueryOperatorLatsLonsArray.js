@@ -1,7 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const OPERATORSLATSLONS = gql`
-  query getOperatorLatsLonsArray($operatorName: String) {
-    operatorLatsLonsArray(operatorName: $operatorName)
-  }
+	query getOperatorLatsLonsArray($operatorName: String) {
+		operatorLatsLonsArray(operatorName: $operatorName)
+	}
 `;

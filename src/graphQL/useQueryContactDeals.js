@@ -1,7 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const CONTACTDEALS = gql`
-  query getContactDeals($contactId: ID) {
-    contactDeals(contactId: $contactId)
-  }
+	query getContactDeals($contactId: ID) {
+		contactDeals(contactId: $contactId)
+	}
 `;

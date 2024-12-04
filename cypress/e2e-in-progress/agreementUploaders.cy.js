@@ -1,5 +1,5 @@
-import '../e2e-combined-specs/AgreementUploaders/agreementUploader.cy'
-import '../e2e-combined-specs/AgreementUploaders/relatedTractUploader.cy'
-import '../e2e-combined-specs/AgreementUploaders/commentsUploader.cy'
-import '../e2e-combined-specs/AgreementUploaders/agreementProvisionsUploader.cy'
-import '../e2e-combined-specs/AgreementUploaders/relatedWellsUploader.cy'
+import '../e2e-combined-specs/AgreementUploaders/agreementUploader.cy';
+import '../e2e-combined-specs/AgreementUploaders/relatedTractUploader.cy';
+import '../e2e-combined-specs/AgreementUploaders/commentsUploader.cy';
+import '../e2e-combined-specs/AgreementUploaders/agreementProvisionsUploader.cy';
+import '../e2e-combined-specs/AgreementUploaders/relatedWellsUploader.cy';

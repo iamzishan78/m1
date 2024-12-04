@@ -136,10 +136,10 @@ const Title = ({ tab, setTab, setData, copyData, stateApp, setStateApp }) => {
 	};
 
 	useEffect(() => {
-		setSearch('');
-	}, [copyData]);
+		searchTask();
+	}, [search, copyData]);
 
-	useEffect(() => {
+	const searchTask = () => {
 		if (search?.length && copyData?.length) {
 			setDefaultData(copyData);
 			if (search?.toLowerCase() === 'n/a') {
@@ -147,10 +147,10 @@ const Title = ({ tab, setTab, setData, copyData, stateApp, setStateApp }) => {
 			} else {
 				setData(copyData.filter(task => task?.name?.toLowerCase()?.includes(search?.toLowerCase())));
 			}
-		} else if (search?.length === 0 && copyData?.length) {
-			setData(defaultData);
+		} else if (search?.length === 0) {
+			setData(copyData);
 		}
-	}, [search]);
+	};
 
 	return (
 		<Grid container className={classes.gridStyle}>
@@ -206,6 +206,7 @@ const Title = ({ tab, setTab, setData, copyData, stateApp, setStateApp }) => {
 							setTab(newValue);
 						}}
 					>
+						<Tab label="All" />
 						<Tab label="Today" />
 						<Tab label="Next Week" />
 						<Tab label="Overdue" />
@@ -259,6 +260,13 @@ const Tasks = () => {
 			const sortCallBack = (a, b) => moment(b.dateTime).valueOf() - moment(a.dateTime).valueOf();
 			if (tab === 0) {
 				const filterFirstTabData = orginalData.activities
+					.filter(activity => stateApp.user._id === activity.ownerId)
+					.sort(sortCallBack);
+				setCopyData(filterFirstTabData);
+				setData(filterFirstTabData);
+			}
+			if (tab === 1) {
+				const filterFirstTabData = orginalData.activities
 					.filter(
 						activity =>
 							!activity.isClosed &&
@@ -268,7 +276,7 @@ const Tasks = () => {
 					.sort(sortCallBack);
 				setCopyData(filterFirstTabData);
 				setData(filterFirstTabData);
-			} else if (tab === 1) {
+			} else if (tab === 2) {
 				const tomorrow = moment().add(1, 'days').startOf('day'); // Start of the next day
 				const futureDate = moment().add(7, 'days').endOf('day'); // Include the end of the 7th day
 				const filterSecondTabData = orginalData.activities
@@ -336,7 +344,7 @@ const Tasks = () => {
 			{loading ? (
 				<CircularProgress className={classes.progress} size={80} disableShrink color="secondary"></CircularProgress>
 			) : (
-				<List style={{ maxHeight: 'calc(100% - 48px)', overflow: 'auto' }}>
+				<List style={{ maxHeight: 'calc(100% - 120px)', overflow: 'auto' }}>
 					{data.map((activity, i) => {
 						return (
 							<Paper key={i} className={classes.paper}>

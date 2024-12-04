@@ -25,13 +25,3 @@ export const GET_ES_SIMPLE_FILTER = gql`
 		)
 	}
 `;
-
-export const GET_ES_INDICES = gql`
-	query getESIndices {
-		getESIndices {
-			success
-			message
-			indices
-		}
-	}
-`;

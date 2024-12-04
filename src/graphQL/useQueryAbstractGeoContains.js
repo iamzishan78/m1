@@ -1,7 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const ABSTRACTGEOCONTAINSQUERY = gql`
-  query getAbstractGeoContains($polygon: String) {
-    abstractGeoContains(polygon: $polygon)
-  }
+	query getAbstractGeoContains($polygon: String) {
+		abstractGeoContains(polygon: $polygon)
+	}
 `;

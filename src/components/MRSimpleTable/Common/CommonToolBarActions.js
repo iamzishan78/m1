@@ -7,15 +7,7 @@ import RequestPageIcon from 'components/Shared/svgIcons/request_page';
 import { simpleTableGlobalController } from 'hookstate/simpleTableController';
 import { getAllData } from 'components/MRSimpleTable/utils/getAllData';
 
-const openSideExportDialog = (
-	_selectedRows,
-	search,
-	filters,
-	total,
-	isSelectAll,
-	esIndex,
-	table
-) => {
+const openSideExportDialog = (_selectedRows, search, filters, total, isSelectAll, esIndex, table) => {
 	simpleTableGlobalController.updateState({
 		dialog: {
 			type: 'exportContacts',
@@ -54,15 +46,7 @@ const openSideDialog = async (
 				selectedRows: [],
 			},
 		});
-		showRows = await getAllData(
-			search,
-			sorting,
-			defaultSort,
-			esIndex,
-			filters,
-			total,
-			client
-		);
+		showRows = await getAllData(search, sorting, defaultSort, esIndex, filters, total, client);
 	}
 	simpleTableGlobalController.updateState({
 		dialog: {
@@ -94,9 +78,7 @@ export function BulkUpdate({
 		<Button
 			color="secondary"
 			startIcon={<EditIcon />}
-			className={
-				isSomethingSelected ? classes.selectTopBarButtons : classes.disabledTopBarButtons
-			}
+			className={isSomethingSelected ? classes.selectTopBarButtons : classes.disabledTopBarButtons}
 			disabled={!isSomethingSelected}
 			onClick={() =>
 				openSideDialog(
@@ -122,32 +104,13 @@ export function BulkUpdate({
 	);
 }
 
-export function ExportData({
-	classes,
-	_selectedRows,
-	search,
-	filters,
-	total,
-	isSelectAll,
-	esIndex,
-	table,
-}) {
+export function ExportData({ classes, _selectedRows, search, filters, total, isSelectAll, esIndex, table }) {
 	return (
 		<Button
 			color="secondary"
 			startIcon={<CloudDownloadIcon color="white" />}
 			className={classes.selectTopBarButtons}
-			onClick={() =>
-				openSideExportDialog(
-					_selectedRows,
-					search,
-					filters,
-					total,
-					isSelectAll,
-					esIndex,
-					table
-				)
-			}
+			onClick={() => openSideExportDialog(_selectedRows, search, filters, total, isSelectAll, esIndex, table)}
 		>
 			Export
 		</Button>
@@ -175,11 +138,7 @@ export function ViewContactData({
 			<Button
 				color="secondary"
 				startIcon={<RequestPageIcon color="#B3B3B3" />}
-				className={
-					isSomethingSelected
-						? classes.selectTopBarButtons
-						: classes.disabledTopBarButtons
-				}
+				className={isSomethingSelected ? classes.selectTopBarButtons : classes.disabledTopBarButtons}
 				disabled={!isSomethingSelected}
 				onClick={() =>
 					openSideDialog(

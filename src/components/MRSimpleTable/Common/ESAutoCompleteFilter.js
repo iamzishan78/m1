@@ -10,30 +10,20 @@ import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
 function ESAutoCompleteFilter({
 	tableKey,
 	esIndex,
-	column: {
-		field,
-		label,
-		type,
-		custom,
-		setFilterValue,
-		filterValue,
-		filterSelectOptions,
-		isComposite,
-	},
+	column: { field, label, type, custom, setFilterValue, filterValue, filterSelectOptions, isComposite },
 	extendSearchQuery,
 	multiple,
 }) {
-	const [getFilters, { data: filtersData, loading }] = useLazyQuery(
-		GET_ES_SIMPLE_FILTER,
-		{ fetchPolicy: 'no-cache' }
-	);
+	const [getFilters, { data: filtersData, loading }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
 
 	const [options, setOptions] = useState([]);
 	const filtersRef = useRef(null);
 
-	const { searchFields, filters, defaultFilters } = simpleTableController(
-		tableKey
-	).getValues(['searchFields', 'filters', 'defaultFilters']);
+	const { searchFields, filters, defaultFilters } = simpleTableController(tableKey).getValues([
+		'searchFields',
+		'filters',
+		'defaultFilters',
+	]);
 
 	const getFiltersAction = search => {
 		if (filtersData && multiple && filterValue?.length !== 0) return;
@@ -49,9 +39,7 @@ function ESAutoCompleteFilter({
 					index: esIndex,
 					filters:
 						typeof field === 'string'
-							? filtersArray.filter(
-								filter => filter?.field !== field?.replace('.keyword', '')
-							)
+							? filtersArray.filter(filter => filter?.field !== field?.replace('.keyword', ''))
 							: filtersArray,
 					filterKeys: typeof field !== 'string' ? field : undefined,
 					filterKey: typeof field === 'string' ? field : undefined,
@@ -117,10 +105,7 @@ function ESAutoCompleteFilter({
 	} else if (multiple && !Array.isArray(filterValue)) {
 		filterValue = [];
 		simpleTableController(tableKey).clearFilter(field.replace('.keyword', ''));
-	} else if (
-		type === 'date' &&
-		(typeof filterValue === 'string' ? filterValue : filterValue.length)
-	) {
+	} else if (type === 'date' && (typeof filterValue === 'string' ? filterValue : filterValue.length)) {
 		if (typeof filterValue === 'string') {
 			filterValue = formatDate(filterValue);
 		} else if (typeof filterValue === 'object' && !Array.isArray(filterValue)) {
@@ -136,9 +121,7 @@ function ESAutoCompleteFilter({
 		<Autocomplete
 			multiple={multiple}
 			id={`${id}-filter-autocomplete`}
-			options={
-				multiple ? options?.filter(item => !filterValue.includes(item.value)) : options
-			}
+			options={multiple ? options?.filter(item => !filterValue.includes(item.value)) : options}
 			loading={loading}
 			value={filterValue}
 			renderInput={params => (
@@ -147,8 +130,7 @@ function ESAutoCompleteFilter({
 					inputProps={{
 						...params.inputProps,
 						value: filterSelectOptions
-							? filterSelectOptions.find(op => op.value === params.inputProps.value)
-								?.label
+							? filterSelectOptions.find(op => op.value === params.inputProps.value)?.label
 							: params?.inputProps?.value,
 					}}
 					placeholder={`Filter by ${label}`}
@@ -162,9 +144,7 @@ function ESAutoCompleteFilter({
 					setFilterValue(null);
 					if (Array.isArray(field)) {
 						field.forEach(singleField => {
-							simpleTableController(tableKey).clearFilter(
-								singleField.replace('.keyword', '')
-							);
+							simpleTableController(tableKey).clearFilter(singleField.replace('.keyword', ''));
 						});
 					} else {
 						simpleTableController(tableKey).clearFilter(field.replace('.keyword', ''));
@@ -174,13 +154,13 @@ function ESAutoCompleteFilter({
 
 				const value = multiple
 					? option.map(option => {
-						if (typeof option === 'object') {
-							return option.value;
-						} else {
-							const foundOption = _.find(options, { label: option });
-							return foundOption ? foundOption.value : option;
-						}
-					})
+							if (typeof option === 'object') {
+								return option.value;
+							} else {
+								const foundOption = _.find(options, { label: option });
+								return foundOption ? foundOption.value : option;
+							}
+						})
 					: option.value;
 				setFilterValue(value);
 

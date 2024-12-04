@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { useMutation, useLazyQuery, useQuery } from '@apollo/client';
 import Card from '@material-ui/core/Card';
@@ -254,27 +254,30 @@ export default function Comments(props) {
 				},
 			});
 		}
-	}, [props.targetSourceId, props.multipleIds]);
+	}, [props.targetSourceId, props.multipleIds, getCommentsByObjectId, getCommentsByObjectsIds, stateApp.user.mongoId]);
 
-	const sortArrayBasedOnTs = array => {
-		const compare = (a, b) => {
-			if (a.ts > b.ts) return -1;
-			if (b.ts > a.ts) return 1;
+	const sortArrayBasedOnTs = useCallback(
+		array => {
+			const compare = (a, b) => {
+				if (a.ts > b.ts) return -1;
+				if (b.ts > a.ts) return 1;
 
-			return 0;
-		};
+				return 0;
+			};
 
-		if (!props.multipleIds) array.sort(compare);
+			if (!props.multipleIds) array.sort(compare);
 
-		return array;
-	};
+			return array;
+		},
+		[props.multipleIds]
+	);
 
 	useEffect(() => {
 		if (dataComments && dataComments.commentsByObjectId) {
 			setCommentsArray(sortArrayBasedOnTs([...dataComments.commentsByObjectId]));
 		}
 		setLoadingComments(false);
-	}, [dataComments]);
+	}, [dataComments, sortArrayBasedOnTs]);
 
 	useEffect(() => {
 		if (dataCommentsMultiIds && dataCommentsMultiIds.commentsByObjectsIds) {
@@ -303,7 +306,7 @@ export default function Comments(props) {
 			setCommentsArray(sortArrayBasedOnTs(comments));
 		}
 		setLoadingComments(false);
-	}, [dataCommentsMultiIds, publicComment]);
+	}, [dataCommentsMultiIds, props.multipleIds?.length, publicComment, sortArrayBasedOnTs, stateApp.user?.mongoId]);
 
 	/// ////////////////// INSERTING NEW COMMENT ///////////////////////////////////////////////
 
@@ -315,6 +318,7 @@ export default function Comments(props) {
 						if (line.trim() !== '.') {
 							return line.trim();
 						}
+						return undefined;
 					})
 					.join('\n')
 			: `${value
@@ -323,6 +327,7 @@ export default function Comments(props) {
 						if (line.trim() !== '.') {
 							return line.trim();
 						}
+						return undefined;
 					})
 					.join('\n')}.`;
 
@@ -338,7 +343,7 @@ export default function Comments(props) {
 					objectType: props.targetLabel,
 					commentType: selectedCommentType,
 					pin: false,
-					tenant: window.sessionStorage.getItem("tenantName")
+					tenant: window.sessionStorage.getItem('tenantName'),
 				},
 			},
 			refetchQueries: [
@@ -455,7 +460,7 @@ export default function Comments(props) {
 					props.detailCard || props.handleRightDialogClose
 						? {
 								padding: '23px 23px 8px 23px',
-						  }
+							}
 						: {}
 				}
 			>
@@ -486,30 +491,32 @@ export default function Comments(props) {
 							)}
 						</Grid>
 					)}
-					{
-					props.hideSharedCommentCheck ? null :
-					<Grid item xs={12} style={{ marginBottom: '8px' }}>
-						<FormGroup style={{ display: 'block' }}>
-							{(props.detailCard || props.handleRightDialogClose) && (
-								<h4 className={classes.sharedCommentLabel}>Share comments</h4>
-							)}
-							<FormControlLabel
-								className={`${classes.switchButtom} ${!publicComment ? classes.switchTextDeselected : ''}`}
-								control={
-									<AntSwitch
-										checked={publicComment}
-										onChange={() => {
-											setPublicComment(!publicComment);
-										}}
-										name="checkedC"
-									/>
-								}
-								label={!props.detailCard && !props.handleRightDialogClose ? 'Shared' : ''}
-								labelPlacement="start"
-							/>
-						</FormGroup>
-					</Grid>
-					}
+					{!props.hideShareCommentsToggle && (
+						<Grid item xs={12} style={{ marginBottom: '8px' }} data-testid="shared-comment-section">
+							<FormGroup style={{ display: 'block' }}>
+								{(props.detailCard || props.handleRightDialogClose) && (
+									<h4 className={classes.sharedCommentLabel} data-testid="share-comments-label">
+										Share comments
+									</h4>
+								)}
+								<FormControlLabel
+									className={`${classes.switchButtom} ${!publicComment ? classes.switchTextDeselected : ''}`}
+									control={
+										<AntSwitch
+											checked={publicComment}
+											onChange={() => {
+												setPublicComment(!publicComment);
+											}}
+											name="checkedC"
+											data-testid="share-comments-switch"
+										/>
+									}
+									label={!props.detailCard && !props.handleRightDialogClose ? 'Shared' : ''}
+									labelPlacement="start"
+								/>
+							</FormGroup>
+						</Grid>
+					)}
 					<Grid item xs={12}>
 						<TextField
 							className={`${classes.textInput} ${emptyInput ? classes.emptyInput : ''}`}
@@ -566,8 +573,8 @@ export default function Comments(props) {
 							props.detailCard
 								? ((publicComment && comment.public) ||
 										(!publicComment && !comment.public && stateApp?.user?.email === comment?.user?.email)) &&
-								  (commentsDisplayedCount += 1) &&
-								  (props.top && props.top < commentsDisplayedCount ? null : (
+									(commentsDisplayedCount += 1) &&
+									(props.top && props.top < commentsDisplayedCount ? null : (
 										/// / ListItem ////
 										<div key={index}>
 											{commentsDisplayedCount !== 1 && (
@@ -610,9 +617,9 @@ export default function Comments(props) {
 												Delete
 											</h5>
 										</div>
-								  ))
+									))
 								: /// / ListItem  End ////
-								  ((publicComment && comment.public) ||
+									((publicComment && comment.public) ||
 										(!publicComment && stateApp.user.email === comment?.user?.email && !comment.public)) && (
 										<ListItem key={index} className={classes.listItem} alignItems="flex-start">
 											<ListItemAvatar className={classes.avatar}>
@@ -642,7 +649,7 @@ export default function Comments(props) {
 																day: '2-digit',
 																hour: '2-digit',
 																minute: '2-digit',
-														  }).format(comment.ts)}`
+															}).format(comment.ts)}`
 												}`}
 											/>
 											<ListItemSecondaryAction>
@@ -651,7 +658,7 @@ export default function Comments(props) {
 												</IconButton>
 											</ListItemSecondaryAction>
 										</ListItem>
-								  )
+									)
 						)}
 					</List>
 				) : (

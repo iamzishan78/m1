@@ -1,148 +1,151 @@
-import React, { useContext, useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import FormControl from "@material-ui/core/FormControl";
-import debounce from "lodash/debounce";
-import { copy } from "components/Shared/functions";
+import React, { useContext, useState, useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import FormControl from '@material-ui/core/FormControl';
+import debounce from 'lodash/debounce';
+import { copy } from 'components/Shared/functions';
 
-import { AutoCompleteFilter } from "components/Table/AutoCompleteFilter";
-import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
+import { AutoCompleteFilter } from 'components/Table/AutoCompleteFilter';
+import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 
-import { AppContext } from "AppContext";
+import { AppContext } from 'AppContext';
 
-const useStyles = makeStyles((theme) => ({
-  gridItem: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  formControl: {
-    minWidth: 249,
-    color: "black",
-    "& .MuiInputBase-root": {
-      backgroundColor: "#101d29",
-    },
-  },
+const useStyles = makeStyles(theme => ({
+	gridItem: {
+		display: 'flex',
+		flexDirection: 'column',
+	},
+	formControl: {
+		minWidth: 249,
+		color: 'black',
+		'& .MuiInputBase-root': {
+			backgroundColor: '#101d29',
+		},
+	},
 }));
 
 const documentFilters = [
-  {
-    label: "File Name",
-    filterKey: "relatedDocs.documentName.keyword",
-    searchFields: ["relatedDocs.documentName"],
-  },
-  {
-    label: "File Number",
-    filterKey: "relatedDocs.documentNumber.keyword",
-    searchFields: ["relatedDocs.documentNumber"],
-  },
-  {
-    label: "File Types",
-    filterKey: "relatedDocs.documentType.keyword",
-    searchFields: ["relatedDocs.documentType"],
-  },
-  {
-    label: "File Date",
-    filterKey: "relatedDocs.uploadedDate",
-    searchFields: ["relatedDocs.uploadedDate"],
-    isDate: true
-  },
-  {
-    label: "Book",
-    filterKey: "relatedDocs.book.keyword",
-    searchFields: ["relatedDocs.book"],
-  },
-  {
-    label: "Page",
-    filterKey: "relatedDocs.page.keyword",
-    searchFields: ["relatedDocs.page"],
-  },
-  {
-    label: "Instument#",
-    filterKey: "relatedDocs.instrument.keyword",
-    searchFields: ["relatedDocs.instrument"],
-  },
+	{
+		label: 'File Name',
+		filterKey: 'relatedDocs.documentName.keyword',
+		searchFields: ['relatedDocs.documentName'],
+	},
+	{
+		label: 'File Number',
+		filterKey: 'relatedDocs.documentNumber.keyword',
+		searchFields: ['relatedDocs.documentNumber'],
+	},
+	{
+		label: 'File Types',
+		filterKey: 'relatedDocs.documentType.keyword',
+		searchFields: ['relatedDocs.documentType'],
+	},
+	{
+		label: 'File Date',
+		filterKey: 'relatedDocs.uploadedDate',
+		searchFields: ['relatedDocs.uploadedDate'],
+		isDate: true,
+	},
+	{
+		label: 'Book',
+		filterKey: 'relatedDocs.book.keyword',
+		searchFields: ['relatedDocs.book'],
+	},
+	{
+		label: 'Page',
+		filterKey: 'relatedDocs.page.keyword',
+		searchFields: ['relatedDocs.page'],
+	},
+	{
+		label: 'Instument#',
+		filterKey: 'relatedDocs.instrument.keyword',
+		searchFields: ['relatedDocs.instrument'],
+	},
 ];
 
 const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, appliedFilters }) => {
-  const params = {
-    esIndex: "shapes_flat",
-    variant: "outlined",
-    setFilters: () => { },
-    filterList,
-    column: {
-      label: filter.label,
-      filterKey: filter.filterKey,
-    },
-    index,
-    onChange,
-    query: GET_ES_SIMPLE_FILTER,
-    searchFields: filter.searchFields,
-    filters: [{ field: "shapeJson.properties.type.keyword", value: "agreement" }, ...appliedFilters.filter((af, i) => i < index)],
-    extendSearchQuery: "",
-    custom: filter.custom,
-  };
-  if (filter.getOptionLabel) params["getOptionLabel"] = filter.getOptionLabel;
-  return (
-    <FormControl variant="outlined" className={classes.formControl}>
-      <AutoCompleteFilter {...params} isDate={filter.isDate} />
-    </FormControl>
-  );
+	const params = {
+		esIndex: 'shapes_flat',
+		variant: 'outlined',
+		setFilters: () => {},
+		filterList,
+		column: {
+			label: filter.label,
+			filterKey: filter.filterKey,
+		},
+		index,
+		onChange,
+		query: GET_ES_SIMPLE_FILTER,
+		searchFields: filter.searchFields,
+		filters: [
+			{ field: 'shapeJson.properties.type.keyword', value: 'agreement' },
+			...appliedFilters.filter((af, i) => i < index),
+		],
+		extendSearchQuery: '',
+		custom: filter.custom,
+		isElasticQuery: false,
+	};
+	if (filter.getOptionLabel) params['getOptionLabel'] = filter.getOptionLabel;
+	return (
+		<FormControl variant="outlined" className={classes.formControl}>
+			<AutoCompleteFilter {...params} isDate={filter.isDate} />
+		</FormControl>
+	);
 };
 
 export default function RelatedDocumentFilters(props) {
-  const classes = useStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const [filterList, setFilterList] = useState([[], [], [], [], [], [], []]);
+	const classes = useStyles();
+	const [stateApp, setStateApp] = useContext(AppContext);
+	const [filterList, setFilterList] = useState([[], [], [], [], [], [], []]);
 
-  useEffect(() => {
-    if (stateApp.landSearchFilters.relatedDocuments?.length === 0 && filterList.find((fl) => fl.length !== 0)) {
-      setFilterList([[], [], [], [], [], [], []]);
-    }
-  }, [stateApp.landSearchFilters.relatedDocuments]);
+	useEffect(() => {
+		if (stateApp.landSearchFilters.relatedDocuments?.length === 0 && filterList.find(fl => fl.length !== 0)) {
+			setFilterList([[], [], [], [], [], [], []]);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [stateApp.landSearchFilters.relatedDocuments]);
 
-  const changeLandProvisions = React.useMemo(
-    () =>
-      debounce((request, callback, index) => {
-        const { filterKey } = callback;
-        const landProvisionsFilters = [...stateApp.landSearchFilters.relatedDocuments];
-        const _index = landProvisionsFilters.findIndex((f) => f.field === filterKey);
-        if (_index === -1 && request[0] !== null) landProvisionsFilters.push({ field: filterKey, value: request[0] });
-        else if (request.length > 0 && request[0] !== null) landProvisionsFilters[_index].value = request[0];
-        else if (_index !== -1) landProvisionsFilters.splice(_index, 1);
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          landSearchFilters: { ...stateApp.landSearchFilters, relatedDocuments: landProvisionsFilters },
-        }));
-      }, 1000),
-    [setStateApp, stateApp.landSearchFilters.relatedDocuments]
-  );
+	const changeLandProvisions = React.useMemo(
+		() =>
+			debounce((request, callback, index) => {
+				const { filterKey } = callback;
+				const landProvisionsFilters = [...stateApp.landSearchFilters.relatedDocuments];
+				const _index = landProvisionsFilters.findIndex(f => f.field === filterKey);
+				if (_index === -1 && request[0] !== null) landProvisionsFilters.push({ field: filterKey, value: request[0] });
+				else if (request.length > 0 && request[0] !== null) landProvisionsFilters[_index].value = request[0];
+				else if (_index !== -1) landProvisionsFilters.splice(_index, 1);
+				setStateApp(stateApp => ({
+					...stateApp,
+					landSearchFilters: { ...stateApp.landSearchFilters, relatedDocuments: landProvisionsFilters },
+				}));
+			}, 1000),
+		[setStateApp, stateApp.landSearchFilters.relatedDocuments]
+	);
 
-  const onFilterChange = (request, callback, filter, index) => {
-    let _filterList = [...filterList];
-    _filterList[index] = request;
-    setFilterList(_filterList);
+	const onFilterChange = (request, callback, filter, index) => {
+		let _filterList = [...filterList];
+		_filterList[index] = request;
+		setFilterList(_filterList);
 
-    const _request = copy(request);
-    if (filter.customOnChange) _request[0] = filter.customOnChange(_request[0]);
-    changeLandProvisions(_request, callback, index);
-  };
+		const _request = copy(request);
+		if (filter.customOnChange) _request[0] = filter.customOnChange(_request[0]);
+		changeLandProvisions(_request, callback, index);
+	};
 
-  return (
-    <Grid container item spacing={2} style={{ padding: "8px", width: "100%", margin: "0" }}>
-      {documentFilters.map((filter, index) => (
-        <Grid item key={index} sm={12} className={classes.gridItem}>
-          <AutoCompleteDropdown
-            classes={classes}
-            onChange={(request, top, callback) => onFilterChange(request, callback, filter, index)}
-            filter={filter}
-            filterList={filterList}
-            index={index}
-            appliedFilters={stateApp.landSearchFilters.relatedDocuments}
-          />
-        </Grid>
-      ))}
-    </Grid>
-  );
+	return (
+		<Grid container item spacing={2} style={{ padding: '8px', width: '100%', margin: '0' }}>
+			{documentFilters.map((filter, index) => (
+				<Grid item key={index} sm={12} className={classes.gridItem}>
+					<AutoCompleteDropdown
+						classes={classes}
+						onChange={(request, top, callback) => onFilterChange(request, callback, filter, index)}
+						filter={filter}
+						filterList={filterList}
+						index={index}
+						appliedFilters={stateApp.landSearchFilters.relatedDocuments}
+					/>
+				</Grid>
+			))}
+		</Grid>
+	);
 }
-
-

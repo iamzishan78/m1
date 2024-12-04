@@ -8,8 +8,8 @@ import { FEATURES } from 'components/Shared/FeatureFlag/common';
 
 import RevenueAnalytics from 'components/Analytics/components/Revenue';
 import LandAnalytics from 'components/Analytics/components/Land';
-import Data from 'components/Analytics/components/Data';
 import ActivitiesDashboard from 'components/Activities/components/ActivitiesDashboard';
+import AuditReporting from 'components/AuditReporting/AuditReporting';
 import RigsCard from 'components/Dashboard/components/RigsCard';
 import PermitsCard from 'components/Dashboard/components/PermitsCard';
 import ProdCard from 'components/Dashboard/components/ProdCard';
@@ -18,6 +18,7 @@ import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import QuickActionPanel from 'components/Land/components/QuickActionPanel';
 import { analyticsManagementRoutes } from 'utils/data';
 import { RevenuePropertyDetails } from 'components/Revenue/components';
+import Data from 'components/Analytics/components/Data';
 
 const Components = {
 	Land: LandAnalytics,
@@ -28,6 +29,7 @@ const Components = {
 	ProdCard: ProdCard,
 	RevenuePropertyDetails,
 	AdvancedSearch: AdvancedSearch,
+	AuditReporting: AuditReporting,
 	Data: Data,
 };
 

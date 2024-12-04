@@ -31,12 +31,14 @@ export const handleVisiblityMenu = () => {
 
 export const handleVisiblityMenuClick = () => {
 	const interval = setInterval(() => {
-		const element = document.querySelector('[aria-label="Show/Hide columns"]');
-		if (element) {
-			element.addEventListener('click', () => {
-				handleVisiblityMenu();
+		const elements = document.querySelectorAll('[aria-label="Show/Hide columns"]');
+		if (elements.length) {
+			elements.forEach(element => {
+				element.addEventListener('click', () => {
+					handleVisiblityMenu();
+				});
+				clearInterval(interval);
 			});
-			clearInterval(interval);
 		}
 	}, 1000);
 };
@@ -79,7 +81,7 @@ export const handleMRTSchema = ({ _Schema, tableKey, esIndex, defaultFlterMode, 
 
 	const _TableSchema = _Schema.map(schemaColumn => {
 		if (schemaColumn.filter && !schemaColumn.Filter) {
-			schemaColumn.SingleSelect = function Comp({ column }) {
+			schemaColumn.SingleSelect = function Comp({ column, isCustom, _value, textFieldProps }) {
 				return (
 					<div>
 						<ESAutoCompleteFilter
@@ -96,10 +98,14 @@ export const handleMRTSchema = ({ _Schema, tableKey, esIndex, defaultFlterMode, 
 								filterValue: column?.getFilterValue() || '',
 							}}
 							multiple={false}
+							_value={_value}
+							textFieldProps={textFieldProps}
 						/>
-						<span style={{ fontSize: '0.7rem', color: 'rgba(0, 0, 0, 0.6)', fontWeight: 400 }}>
-							Filter Mode: Single Select
-						</span>
+						{!isCustom && (
+							<span style={{ fontSize: '0.7rem', color: 'rgba(0, 0, 0, 0.6)', fontWeight: 400 }}>
+								Filter Mode: Single Select
+							</span>
+						)}
 					</div>
 				);
 			};

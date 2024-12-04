@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import Select, { defaultTheme, components } from 'react-select';
 import { Waypoint } from 'react-waypoint';
 import { useInView } from 'react-intersection-observer';
-import { colorPallete } from 'components/Table/helpers';
-import { Grid, Tooltip, Typography } from '@material-ui/core';
+import { Grid, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
 import { copy } from 'components/Shared/functions';
 import EditIcon from '@material-ui/icons/Edit';
 import { globalStateController } from 'hookstate/globalStateController';
+import { BulletPointMeta } from 'components/Table/helpers/BulletPointMeta';
+import { ChipMeta } from 'components/Table/helpers/ChipMeta';
 
 const useStyles = makeStyles(theme => ({
 	myClass: {
@@ -28,6 +29,7 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
 	const [displayedOptions, setDisplayedOptions] = useState(100);
 	const [options, setOptions] = useState([]);
 	const [isOpen, setIsOpen] = useState(true);
+	const isBulletPointMeta = column?.iconType === 'Bullet Point';
 
 	const defaultValue = {
 		label: '--',
@@ -79,7 +81,6 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
 
 	const MyOption = ({ opt, setValue, index }) => {
 		const [ref, inView] = useInView();
-		const pallete = colorPallete.find(pallete => pallete.id === opt.palleteId);
 		return (
 			<div ref={ref} id={`waypoint-${index}`}>
 				{inView ? (
@@ -188,23 +189,24 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
 								>
 									<Grid style={{ 'flex-grow': 1, width: 'fit-content' }} item xs>
 										<Tooltip title={opt.value} placement="top">
-											<Typography
-												style={{
-													width: '100%',
-													fontWeight: 400,
-													backgroundColor: pallete?.color,
-													color: pallete?.textColor,
-													padding: '3px 10px',
-													borderRadius: 26,
-													fontSize: 14,
-													overflow: 'hidden',
-													whiteSpace: 'nowrap',
-													textOverflow: 'ellipsis',
-													maxWidth: '187px',
-												}}
-											>
-												{opt.value}
-											</Typography>
+											{isBulletPointMeta ? (
+												<BulletPointMeta
+													option={opt}
+													key={index}
+													index={index}
+													bulletValue={opt.value}
+													iconType={column?.iconType}
+												/>
+											) : (
+												<ChipMeta
+													option={opt}
+													key={index}
+													index={index}
+													chipValue={opt.value}
+													iconType={column?.iconType}
+													isSingleSelect
+												/>
+											)}
 										</Tooltip>
 									</Grid>
 								</Grid>
@@ -226,7 +228,7 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
 		setDropDownValues(filteroptions);
 		const endIndex = Math.min(displayedOptions, filteroptions.length);
 		const initialOptions = filteroptions.slice(0, endIndex);
-		setOptions([...initialOptions, { label: 'edit', value: 'editOption' }]);
+		setOptions([...initialOptions]);
 	};
 
 	const handleKeyDown = e => {
@@ -280,6 +282,8 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
 			zIndex: 9999,
 			backgroundColor: 'white',
 			position: 'fixed',
+			maxHeight: '200px',
+			overflowY: 'auto',
 		}),
 	};
 

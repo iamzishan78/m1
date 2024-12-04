@@ -1,7 +1,7 @@
 import { hookStateController } from 'hookstate/hookStateController';
 import { mapState, mapStateInitialState } from './initialStates';
 
-const mapStateControllerHandler = (state) => ({
+const mapStateControllerHandler = state => ({
 	moved: () => {
 		state.moved.set(!state.moved.get({ noproxy: true }));
 	},

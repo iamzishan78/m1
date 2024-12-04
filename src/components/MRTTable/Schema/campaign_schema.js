@@ -68,9 +68,25 @@ const CampaignMeta = {
 			type: 'Default',
 		},
 		handleDefaultView: (view, user) => {
-			if (view?.name === 'My Campaigns') {
-				view.filters[0].value = user._id;
+			switch (view?.name) {
+				case 'My Campaigns':
+					view.filters[0].value = user._id;
+					break;
+
+				case 'Recently Added':
+					view.filters = [];
+					view.sorting = [{ field: '_ts', desc: true }];
+					break;
+
+				case 'Recently Modified':
+					view.filters = [];
+					view.sorting = [{ field: 'flatSyncAt', desc: true }];
+					break;
+
+				default:
+					break;
 			}
+
 			return view;
 		},
 		cssOverride: {

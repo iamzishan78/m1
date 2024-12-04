@@ -55,7 +55,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 	}
 };
 
-const AgreementTypes = {
+export const AgreementTypes = {
 	lease: 'Lease',
 	deed: 'Deed',
 	contract: 'Contract',
@@ -64,6 +64,7 @@ const AgreementTypes = {
 
 const AgreementMeta = {
 	esIndex,
+	isElasticQuery: false,
 	pageSize: 50,
 	pagination: {
 		pageIndex: 0,

@@ -11,19 +11,15 @@ import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/d
 const PermitClick = () => {
 	const { id: paramId } = useParams();
 
-	const { permitSelectedCoordinates, selectedPermit, popupStateValues } =
-		popupController.useState(
-			['selectedPermitId', 'permitSelectedCoordinates', 'selectedPermit'],
-			'popupStateValues'
-		);
+	const { permitSelectedCoordinates, selectedPermit, popupStateValues } = popupController.useState(
+		['selectedPermitId', 'permitSelectedCoordinates', 'selectedPermit'],
+		'popupStateValues'
+	);
 	const client = useApolloClient();
 
-	const [getRecentPermitDetail, { data: dataPermitSummary }] = useLazyQuery(
-		PERMITDETAILQUERY,
-		{
-			fetchPolicy: 'network-only',
-		}
-	);
+	const [getRecentPermitDetail, { data: dataPermitSummary }] = useLazyQuery(PERMITDETAILQUERY, {
+		fetchPolicy: 'network-only',
+	});
 
 	const getElasticWell = async paramId => {
 		const { data: well } = await client.query({
@@ -58,12 +54,7 @@ const PermitClick = () => {
 		const properties = popupController.getValue('data');
 
 		(async () => {
-			if (
-				!selectedPermitId ||
-				!permitSelectedCoordinates ||
-				permitSelectedCoordinates?.length === 0
-			)
-				return;
+			if (!selectedPermitId || !permitSelectedCoordinates || permitSelectedCoordinates?.length === 0) return;
 
 			let currentFeature = properties ? { properties } : null;
 
@@ -71,8 +62,7 @@ const PermitClick = () => {
 				currentFeature = {
 					properties: { ...(await getElasticWell(selectedPermitId)) },
 				};
-				if (currentFeature?.properties?.Id)
-					currentFeature.properties.id = currentFeature.properties.Id;
+				if (currentFeature?.properties?.Id) currentFeature.properties.id = currentFeature.properties.Id;
 			}
 			if (currentFeature) {
 				drawWellBoundary(permitSelectedCoordinates);
