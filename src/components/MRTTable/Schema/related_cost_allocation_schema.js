@@ -81,7 +81,7 @@ const RelatedCostAllocationsMeta = {
 			Cell: ({ row }) => {
 				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
 				const value = getArrayValue(row.original.costAllocations, 'allocation', paymentId, 'paymentId');
-				return value ? `${Number(value).toFixed(2)}%` : '';
+				return value ? `${Number(value).toFixed(2)}%` : value === 0 ? `0%` : '';
 			},
 		},
 		{
@@ -103,7 +103,7 @@ const RelatedCostAllocationsMeta = {
 			Cell: ({ row }) => {
 				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
 				const value = getArrayValue(row.original.costAllocations, 'amount', paymentId, 'paymentId');
-				return value ? vf_currency_to_fixed(parseFloat(value), 2) : '';
+				return value ? vf_currency_to_fixed(parseFloat(value), 2) : value === 0 ? `$0` : '';
 			},
 		},
 	],
