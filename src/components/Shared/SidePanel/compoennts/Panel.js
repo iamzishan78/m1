@@ -340,7 +340,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 			}
 			setMapVars(mapDefaultPosition);
 		}
-		setMapVars(mapDefaultPosition);
 	}, [updatedMapSettings, mapStateValues.defaultMapVars.center, dispatch, setMapVars]);
 
 	const togglePullout = () => {

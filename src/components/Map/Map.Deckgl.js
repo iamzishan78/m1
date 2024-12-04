@@ -977,6 +977,9 @@ function Map({
 		};
 
 		if (!map) {
+			window.mapRef?.remove(); // Remove the existing map instance to avoid rendering multiple maps
+			window.mapRef = null; // Remove the existing map instance to avoid rendering multiple maps
+			window.drawRef = null; //  Remove the existing map instance to avoid rendering multiple maps
 			initializeMap({ setMap, mapEl, setStateApp, setDraw });
 		}
 	}, [map, mapStyles]);
