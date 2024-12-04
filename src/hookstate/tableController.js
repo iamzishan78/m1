@@ -466,6 +466,8 @@ const tableESStateControllerHandler = state => ({
 		const column = TableSchema?.find(column => column.id === filter.field || column.accessorKey === filter.field);
 
 		if (column?.type === 'date') {
+			filter.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
 			if (filter.type !== 'advanced') {
 				filter.type = 'advanced';
 				filter.searchType = 'betweenInclusive';
