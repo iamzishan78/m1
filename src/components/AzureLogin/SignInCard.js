@@ -155,6 +155,7 @@ const SignInCard = props => {
 		if (tenant.trim() !== '' && tenant === props.tenant) {
 			signInAAD();
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.tenant]);
 
 	const updateTenantFlags = errorText => {
@@ -213,7 +214,7 @@ const SignInCard = props => {
 				spacing={0}
 				direction="column"
 				alignItems="center"
-				justify="center"
+				justifyContent="center"
 				style={{ minHeight: 'calc(100vh - 70px)' }}
 			>
 				<Card square={true} className={classes.card}>
