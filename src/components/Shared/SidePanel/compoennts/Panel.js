@@ -356,9 +356,9 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 		layerController.resetMapStates();
 		mapStateController.updateState({
 			mapVars: {
-				...mapStateValues.mapVars,
-				center: map.getCenter(),
-				zoom: map.getZoom(),
+				...mapStateValues?.mapVars,
+				center: map?.getCenter(),
+				zoom: map?.getZoom(),
 				styleId: style.name,
 			},
 			isDefaultViewAllowed: false // disable map position change on updating layer style  
