@@ -626,7 +626,14 @@ const TractPerUnitMeta = {
 			...CommonSchema.COMMENTS,
 			Cell: ({ renderedCellValue, row }) => {
 				const id = row.getValue('ownerEntity');
-				return <CommentCell id={id} value={row?.original?.commentsCount} targetLabel={'Parcel Ownership'} />;
+				return (
+					<CommentCell
+						id={id}
+						value={row?.original?.commentsCount}
+						targetLabel={'Parcel Ownership'}
+						hideShareCommentsToggle
+					/>
+				);
 			},
 		},
 

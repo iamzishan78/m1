@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { useMutation, useLazyQuery, useQuery } from '@apollo/client';
 import Card from '@material-ui/core/Card';
@@ -254,27 +254,30 @@ export default function Comments(props) {
 				},
 			});
 		}
-	}, [props.targetSourceId, props.multipleIds]);
+	}, [props.targetSourceId, props.multipleIds, getCommentsByObjectId, getCommentsByObjectsIds, stateApp.user.mongoId]);
 
-	const sortArrayBasedOnTs = array => {
-		const compare = (a, b) => {
-			if (a.ts > b.ts) return -1;
-			if (b.ts > a.ts) return 1;
+	const sortArrayBasedOnTs = useCallback(
+		array => {
+			const compare = (a, b) => {
+				if (a.ts > b.ts) return -1;
+				if (b.ts > a.ts) return 1;
 
-			return 0;
-		};
+				return 0;
+			};
 
-		if (!props.multipleIds) array.sort(compare);
+			if (!props.multipleIds) array.sort(compare);
 
-		return array;
-	};
+			return array;
+		},
+		[props.multipleIds]
+	);
 
 	useEffect(() => {
 		if (dataComments && dataComments.commentsByObjectId) {
 			setCommentsArray(sortArrayBasedOnTs([...dataComments.commentsByObjectId]));
 		}
 		setLoadingComments(false);
-	}, [dataComments]);
+	}, [dataComments, sortArrayBasedOnTs]);
 
 	useEffect(() => {
 		if (dataCommentsMultiIds && dataCommentsMultiIds.commentsByObjectsIds) {
@@ -303,7 +306,7 @@ export default function Comments(props) {
 			setCommentsArray(sortArrayBasedOnTs(comments));
 		}
 		setLoadingComments(false);
-	}, [dataCommentsMultiIds, publicComment]);
+	}, [dataCommentsMultiIds, props.multipleIds?.length, publicComment, sortArrayBasedOnTs, stateApp.user?.mongoId]);
 
 	/// ////////////////// INSERTING NEW COMMENT ///////////////////////////////////////////////
 
@@ -315,6 +318,7 @@ export default function Comments(props) {
 						if (line.trim() !== '.') {
 							return line.trim();
 						}
+						return undefined;
 					})
 					.join('\n')
 			: `${value
@@ -323,6 +327,7 @@ export default function Comments(props) {
 						if (line.trim() !== '.') {
 							return line.trim();
 						}
+						return undefined;
 					})
 					.join('\n')}.`;
 
@@ -486,11 +491,13 @@ export default function Comments(props) {
 							)}
 						</Grid>
 					)}
-					{props.hideSharedCommentCheck ? null : (
-						<Grid item xs={12} style={{ marginBottom: '8px' }}>
+					{!props.hideShareCommentsToggle && (
+						<Grid item xs={12} style={{ marginBottom: '8px' }} data-testid="shared-comment-section">
 							<FormGroup style={{ display: 'block' }}>
 								{(props.detailCard || props.handleRightDialogClose) && (
-									<h4 className={classes.sharedCommentLabel}>Share comments</h4>
+									<h4 className={classes.sharedCommentLabel} data-testid="share-comments-label">
+										Share comments
+									</h4>
 								)}
 								<FormControlLabel
 									className={`${classes.switchButtom} ${!publicComment ? classes.switchTextDeselected : ''}`}
@@ -501,6 +508,7 @@ export default function Comments(props) {
 												setPublicComment(!publicComment);
 											}}
 											name="checkedC"
+											data-testid="share-comments-switch"
 										/>
 									}
 									label={!props.detailCard && !props.handleRightDialogClose ? 'Shared' : ''}
