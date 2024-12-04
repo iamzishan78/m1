@@ -10,6 +10,7 @@ import { agreementLayerIdentifiers } from 'components/Shared/functions/shapeLaye
 import { RECENT_SUBMITTED_PERMITS_QUERY } from 'graphQL/useQueryRecentSubmittedPermits';
 import { ABSTRACTGEOQUERY } from 'graphQL/useQueryAbstractGeo';
 import { PLSSSECONDDIVISIONGEO } from 'graphQL/useQueryPLSSSecondDivisionGeo';
+import { useApolloClient } from '@apollo/client';
 
 const queries = {
 	Wells: {
@@ -45,7 +46,8 @@ const handleQuery = (queryHandler, onData) => {
 	const { queryString, getterKey, isLandGridQuery } = queries[queryHandler.identifier] || queries['search'];
 
 	const client = layerController.getValue('client');
-
+	if (!client) return;
+	
 	return new Promise(async (resolve, reject) => {
 		const query = client.watchQuery({
 			query: queryString,
