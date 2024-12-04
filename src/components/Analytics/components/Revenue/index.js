@@ -243,7 +243,7 @@ export default function RevenueAnalytics(props) {
 		if (checkDetailData?.getCheckDetailsData?.checkDetails?.length > 0) {
 			let data = [];
 			for (let i = 0; i < checkDetailData?.getCheckDetailsData?.checkDetails?.length; i++) {
-				const check = checkDetailData?.getCheckDetailsData?.checkDetails[i]._source;
+				const check = checkDetailData?.getCheckDetailsData?.checkDetails[i];
 				data.push({
 					wells: check.wells,
 					date: check.date,
