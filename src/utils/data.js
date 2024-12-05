@@ -721,4 +721,5 @@ export const esIndexFilterKeyMap = {
 };
 
 export const MapFeatureTenants = ['m1dev', 'frontier', 'localhost'];
+export const BaseMapRealStateFeatureTenants = ['m1demo','m1dev', 'frontier', 'localhost'];
 export const PaymentFeatureTenants = ['m1dev', 'frontier', 'localhost'];

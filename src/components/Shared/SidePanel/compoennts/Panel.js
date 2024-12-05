@@ -100,6 +100,7 @@ const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle
 								{style.name === 'Light' && <Box component="img" src={'./icons/MapLightIcon.jpeg'} />}
 								{style.name === 'Dark' && <Box component="img" src={'./icons/MapDarkIcon.jpeg'} />}
 								{style.name === 'Basic' && <Box component="img" src={'./icons/MapBasicIcon.jpeg'} />}
+								{style.name === 'Real Estate' && <Box component="img" src={'./icons/MapDarkIcon.jpeg'} />}
 							</Grid>
 							<Grid item>
 								<ListItemText primary={style.name} style={{ paddingLeft: '25px' }} />

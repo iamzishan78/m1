@@ -67,7 +67,7 @@ import { convertToTitleCase } from 'components/Shared/M1nTable/components/MUIDat
 import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
 import { drawController } from 'hookstate/drawStateController';
 import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
-import { MapFeatureTenants } from 'utils/data';
+import { MapFeatureTenants, BaseMapRealStateFeatureTenants } from 'utils/data';
 import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
@@ -267,7 +267,7 @@ function Map({
 
 		const { signal } = abortController;
 
-		let styleTypes = ['Satellite', 'Basic', 'Dark', 'Light', 'Outdoors'];
+		let styleTypes = ['Satellite', 'Basic', 'Dark', 'Light', 'Outdoors', 'Real Estate'];
 		let isDarkMapAllowed = false;
 
 		// check MapFeatureTenants for dark Map
@@ -275,6 +275,8 @@ function Map({
 			isDarkMapAllowed = stateApp?.user?.features?.find(f => f.name === 'DarkBaseMap');
 		}
 		if (!isDarkMapAllowed) styleTypes = styleTypes.filter(style => style !== 'Dark');
+		if (!BaseMapRealStateFeatureTenants.includes(window.sessionStorage?.getItem('tenantName').toLowerCase())) 
+			styleTypes = styleTypes.filter(style => style !== 'Real Estate');
 		let recurseLimit = 5;
 
 		try {
@@ -294,7 +296,6 @@ function Map({
 				}
 				return styles;
 			}, []);
-
 			return styles;
 		} catch (error) {
 			// Handle any errors here
@@ -573,7 +574,7 @@ function Map({
 		const mapLayers = copy(stateApp.layers);
 		if (stateApp.baseMapLayers && stateApp.baseMapLayers.length > 0 && map) {
 			const landLayer = mapLayers?.find(layer => layer.identifier === 'Land Grid');
-			stateApp.baseMapLayers.forEach((l, index) => {
+			stateApp.baseMapLayers?.forEach((l, index) => {
 				if (l.name === 'Land Grid' && !stateApp.checkedBaseLayers.includes(index)) {
 					if (landLayer) {
 						landLayer.layerSettings.visiable = false;
