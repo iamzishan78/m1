@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/styles';
 import { Grid, Typography, FormControl, InputLabel, InputBase, Button } from '@material-ui/core';
 import { useStyles } from './style';
 import { mapStateController } from 'hookstate/mapStateController';
-
+import { globalStateController } from 'hookstate/globalStateController';
 const BootstrapInput = withStyles(theme => ({
 	root: {
 		'label + &': {
@@ -47,6 +47,7 @@ export default function MapPositions(props) {
 	const classes = useStyles();
 	const { control, handleSubmit, reset, watch, setValue } = useForm();
 	const { stateValues } = mapStateController.useState(['defaultMapVars', 'mapVars']);
+	const { mapReady } = globalStateController.useState(['mapReady']);
 	const { setMapDefaultPosition } = props;
 	const { defaultMapVars, mapVars } = stateValues;
 	const [centerError, setCenterError] = useState(false);
@@ -106,7 +107,7 @@ export default function MapPositions(props) {
 				mapRef.off('rotate', updateFormFields);
 			};
 		}
-	}, [setValue]);
+	}, [setValue, mapReady]);
 
 	const submitFunc = values => {
 		if (values.center) {
