@@ -166,7 +166,7 @@ function AnalyticsCards(props) {
 								field: 'potentialGainLoss',
 							},
 						},
-						sumMisMatchedInterest: {
+						isMisMatchedInterest: {
 							sum: {
 								field: 'isMisMatchedInterest',
 							},
@@ -192,8 +192,8 @@ function AnalyticsCards(props) {
 			const { propertiesCount, revenueComparisonAnalytics, checkNumbersHits } = await getRevenueComparisonAnalytics();
 			setPropertyNumbers(propertiesCount || 0);
 			setCheckNumbers(checkNumbersHits?.length || 0);
-			setMisMatchedInterestsCount(revenueComparisonAnalytics?.sumMisMatchedInterest || 0);
-			setSumPotentialGainLoss(revenueComparisonAnalytics?.sumPotentialGainLoss || 0);
+			setMisMatchedInterestsCount(revenueComparisonAnalytics?.isMisMatchedInterest[0].count || 0);
+			setSumPotentialGainLoss(revenueComparisonAnalytics?.sumPotentialGainLoss[0].sumPotentialGainLoss || 0);
 		})();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState?.filters, tableState?.data?.total, searchQuery]);
