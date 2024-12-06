@@ -83,7 +83,6 @@ function ESAutoCompleteFilter({
 			let search = '';
 			if (searchText.current) search = type === 'number' ? searchText.current : `*${searchText.current}*`;
 			filtersRef.current = currentFilterRef;
-
 			getFilters({
 				variables: {
 					esIndex,
@@ -94,7 +93,7 @@ function ESAutoCompleteFilter({
 							: filtersArray,
 					filterKeys: typeof field !== 'string' ? field : undefined,
 					filterKey: typeof field === 'string' ? field : undefined,
-					search: { query: extendSearchQuery, fields: searchFields, advanceSearch },
+					search: { query: tableController(tableKey).getGlobalFilter(), fields: searchFields, advanceSearch },
 					extendSearchQuery,
 					size: 10,
 					key_as_string: custom?.key_as_string,

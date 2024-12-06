@@ -188,6 +188,7 @@ const tableESStateControllerHandler = state => ({
 			isDefaultGridView,
 			enableHiding = true,
 			refetchQueries = [],
+			globalFilter,
 			...rest
 		},
 		client
@@ -252,7 +253,7 @@ const tableESStateControllerHandler = state => ({
 				showSaveAsNew: false,
 			};
 		}
-
+		console.log('globalFilter', globalFilter);
 		const {
 			_TableSchema,
 			tableCss,
@@ -270,6 +271,7 @@ const tableESStateControllerHandler = state => ({
 			defaultFlterMode,
 			search,
 			columnVirtualization,
+			globalFilter,
 		});
 
 		// Set default pinning and ordering
@@ -461,6 +463,8 @@ const tableESStateControllerHandler = state => ({
 
 	setGlobalFilter: globalFilter =>
 		!deepEqual(state.globalFilter?.get({ noproxy: true }), globalFilter) && state.globalFilter?.set(globalFilter),
+
+	getGlobalFilter: () => state.globalFilter?.get({ noproxy: true }),
 
 	setFilter: _filter => {
 		const TableSchema = state.TableSchema.get({ noproxy: true }) || [];
