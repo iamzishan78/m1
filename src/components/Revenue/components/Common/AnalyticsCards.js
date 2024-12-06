@@ -175,7 +175,7 @@ export default function AnalyticsCards({
 
 			const inPayCounts = approvedCount.find(a => a.status === 'InPay')?.count || 0;
 			const notInPayCounts = approvedCount.find(a => a.status === 'NotInPay')?.count || 0;
-			const apprrovedCount = approvedCount.find(a => a.status.toLowerCase() === 'approved')?.count || 0;
+			const apprrovedCount = approvedCount.find(a => a.status?.toLowerCase?.() === 'approved')?.count || 0;
 			// const otherCounts = approvedCount.find(a => !a.status)?.count || 0;
 
 			setCardPoint(totalCount - apprrovedCount, 3);
