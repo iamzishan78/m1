@@ -93,7 +93,6 @@ export default function LandAnalytics() {
 			{tab === 1 && <AcreageSummary />}
 			{tab === 2 && <AcreageDetail />}
 			{tab === 3 && <WellMasterTabPanel />}
-			{/* <AnalyticsCards cards={cards} /> */}
 			<Divider className={classes.divider} />
 		</>
 	);

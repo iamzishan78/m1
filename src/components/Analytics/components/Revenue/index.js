@@ -425,7 +425,6 @@ export default function RevenueAnalytics(props) {
 							</Grid>
 						</Grid>
 					</div>
-					{/* <AnalyticsCards cards={cards} /> */}
 					<Divider className={classes.divider} />
 					<DetailTabsSection
 						monthsInterval={monthsInterval}
