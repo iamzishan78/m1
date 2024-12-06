@@ -10,11 +10,11 @@ import orderBy from 'lodash/orderBy';
 import { Controller, useForm } from 'react-hook-form';
 import { useMutation, useQuery, useLazyQuery } from '@apollo/client';
 import { UPDATE_CHECK_DATA } from 'graphQL/useMutationUpdateCheck';
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
 import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import { showInfoMessage } from 'actions';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
 import { CurrencyFormatCustomWithoutPrefix } from 'components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix';
 import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
@@ -86,7 +86,7 @@ function HeaderFunction(props) {
 	});
 	const history = useHistory();
 	const dispatch = useDispatch();
-	const [getPayorList, { data: payorListData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
+	const [getPayorList, { data: payorListData }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 	const [searchOperator, setSearchOperator] = useState('');
 	const [payorList, setPayyorList] = useState([]);
 	const { control, reset, watch } = useForm();
@@ -119,10 +119,13 @@ function HeaderFunction(props) {
 	useEffect(() => {
 		getPayorList({
 			variables: {
+				index: 'checks_flat',
 				search: searchOperator ? `${searchOperator}*` : '*', // allow to search the user typed value from the list
-				filterKey: 'payor.name.keyword',
-				esIndex: 'checks_flat',
-				size: 50,
+				filterAggs: {
+					field: 'payor.name.keyword',
+					size: 50,
+					type: 'withOriginalIds',
+				},
 			},
 		});
 	}, [getPayorList, searchOperator]);
@@ -156,7 +159,7 @@ function HeaderFunction(props) {
 	};
 
 	useEffect(() => {
-		const sortList = orderBy(payorListData?.getESFilterList?.hits, 'key', 'asc'); // sort payorlist in alphabatically order
+		const sortList = orderBy(payorListData?.getDbFilters?.hits, 'key', 'asc'); // sort payorlist in alphabatically order
 		if (sortList?.length > 0) {
 			setPayyorList(sortList);
 		} else {
@@ -232,7 +235,7 @@ function HeaderFunction(props) {
 											setSearchOperator(value);
 										}}
 										options={payorList?.map(payor => ({
-											_id: get(payor, `original.hits.hits.${0}._id`),
+											_id: get(payor, `original[0]._id`),
 											name: payor.key,
 										}))}
 									/>
