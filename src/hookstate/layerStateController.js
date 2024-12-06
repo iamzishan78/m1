@@ -341,6 +341,8 @@ const layerStateControllerHandler = state => {
 	};
 
 	const removeLayer = (layer, recalculate = false) => {
+		if (!layer) return;
+
 		const layerId = `${layer?.identifier}_${layer._id}`;
 		DeckGlLayer.removeLayer(layerId);
 		delete deckLayers[layerId];
@@ -372,6 +374,14 @@ const layerStateControllerHandler = state => {
 
 	const recalculate = () => {
 		state.recalculate.set(!state.recalculate.get({ noproxy: true }));
+	};
+
+	const getLayerFromMongoId = layerId => {
+		const layers = getShowableLayers();
+
+		const layer = layers.find(layer => layer.layerId === layerId);
+
+		return layer;
 	};
 
 	const getShowableLayers = () => {
@@ -722,6 +732,8 @@ const layerStateControllerHandler = state => {
 		recalculate,
 		handleDeckLayer,
 		handleMapBoxLayer,
+		getLayerFromMongoId,
+		removeLayer,
 		removeLayers,
 		toggleLayersActivity,
 		handleChange: () => {

@@ -76,7 +76,15 @@ export const handleColumnMenuClick = () => {
 	}, 300);
 };
 
-export const handleMRTSchema = ({ _Schema, tableKey, esIndex, defaultFlterMode, search, columnVirtualization }) => {
+export const handleMRTSchema = ({
+	_Schema,
+	tableKey,
+	esIndex,
+	defaultFlterMode,
+	search,
+	columnVirtualization,
+	globalFilter,
+}) => {
 	_Schema = _.uniqBy(_Schema, item => item.accessorKey || item.id);
 
 	const _TableSchema = _Schema.map(schemaColumn => {
@@ -97,6 +105,7 @@ export const handleMRTSchema = ({ _Schema, tableKey, esIndex, defaultFlterMode, 
 								filterSelectOptions: column.columnDef.filterSelectOptions,
 								filterValue: column?.getFilterValue() || '',
 							}}
+							extendSearchQuery={globalFilter}
 							multiple={false}
 							_value={_value}
 							textFieldProps={textFieldProps}

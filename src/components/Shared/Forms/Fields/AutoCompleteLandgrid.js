@@ -71,28 +71,28 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({
 	// const { filterKey, type } = column
 	const [getFilters, { data: filtersData, loading }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
 
-	const [getautoCompleteList, { data: dataAutoCompleteList = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
+	// const [getautoCompleteList, { data: dataAutoCompleteList = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
 
 	const condition = useMemo(
 		() => Object.entries(newOptionFilters || {}).reduce((acc, [key, val]) => ({ ...acc, [`${key}`]: val }), {}),
 		[newOptionFilters]
 	);
 
-	useEffect(() => {
-		if (!newOptions) return;
+	// useEffect(() => {
+	// 	if (!newOptions) return;
 
-		getautoCompleteList({
-			variables: {
-				type: autoCompleteType,
-				data: { key: label.toLowerCase(), inTract: autoCompleteType === 'AgreementShapeOwner', condition },
-			},
-		});
-	}, [label, condition]);
+	// 	getautoCompleteList({
+	// 		variables: {
+	// 			type: autoCompleteType,
+	// 			data: { key: label.toLowerCase(), inTract: autoCompleteType === 'AgreementShapeOwner', condition },
+	// 		},
+	// 	});
+	// }, [label, condition]);
 
-	const autoCompleteList = React.useMemo(
-		() => dataAutoCompleteList?.autoCompleteList || [],
-		[dataAutoCompleteList?.autoCompleteList]
-	);
+	// const autoCompleteList = React.useMemo(
+	// 	() => dataAutoCompleteList?.autoCompleteList || [],
+	// 	[dataAutoCompleteList?.autoCompleteList]
+	// );
 
 	useEffect(() => {
 		setSearch(value);
@@ -127,21 +127,21 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({
 			);
 		}
 
-		if (!autoCompleteList) return setOptions(hits);
+		return setOptions(hits);
 
-		const uniqueVals = [
-			...new Set([...hits.map(hit => hit.key?.toLowerCase()), ...autoCompleteList.map(val => val?.toLowerCase())]),
-		];
+		// const uniqueVals = [
+		// 	...new Set([...hits.map(hit => hit.key?.toLowerCase()), ...autoCompleteList.map(val => val?.toLowerCase())]),
+		// ];
 
-		const hitsObj = hits.reduce((acc, val) => ({ ...acc, ...(val?.key ? { [val.key.toLowerCase()]: val } : {}) }), {});
-		const autoCompleteListObj = autoCompleteList.reduce(
-			(acc, val) => ({ ...acc, ...(val ? { [val.toLowerCase()]: { key: val } } : {}) }),
-			{}
-		);
+		// const hitsObj = hits.reduce((acc, val) => ({ ...acc, ...(val?.key ? { [val.key.toLowerCase()]: val } : {}) }), {});
+		// const autoCompleteListObj = autoCompleteList.reduce(
+		// 	(acc, val) => ({ ...acc, ...(val ? { [val.toLowerCase()]: { key: val } } : {}) }),
+		// 	{}
+		// );
 
-		const combinedHits = uniqueVals.map(val => hitsObj[val] || autoCompleteListObj[val]).filter(val => val);
+		// const combinedHits = uniqueVals.map(val => hitsObj[val] || autoCompleteListObj[val]).filter(val => val);
 
-		setOptions(combinedHits);
+		// setOptions(combinedHits);
 	}, [filtersData, compoundValue]);
 
 	const handleChange = search => {

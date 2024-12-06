@@ -44,6 +44,7 @@ const initialState = {
 		left: [],
 	},
 	isIncludeInactive: false,
+	gridView: {},
 };
 
 export const tableESState = {};
@@ -67,10 +68,9 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 
 	const metaDataTableSchema = data.map((item, index) => {
 		const key = item?.esKey.replaceAll('.keyword', '');
-
 		return {
-			...item,
 			...CommonSchema.COMMON_COLUMN,
+			...item,
 			name: `${key}.keyword`,
 			id: key,
 			accessorFn: row => get(row, key),
@@ -187,6 +187,7 @@ const tableESStateControllerHandler = state => ({
 			isDefaultGridView,
 			enableHiding = true,
 			refetchQueries = [],
+			globalFilter,
 			...rest
 		},
 		client
@@ -218,6 +219,7 @@ const tableESStateControllerHandler = state => ({
 		}
 
 		let formatedGridView = null;
+
 		let gridView = {};
 
 		const mapView = globalStateController.getValue('mapView');
@@ -250,7 +252,6 @@ const tableESStateControllerHandler = state => ({
 				showSaveAsNew: false,
 			};
 		}
-
 		const {
 			_TableSchema,
 			tableCss,
@@ -268,6 +269,7 @@ const tableESStateControllerHandler = state => ({
 			defaultFlterMode,
 			search,
 			columnVirtualization,
+			globalFilter,
 		});
 
 		// Set default pinning and ordering
@@ -347,7 +349,6 @@ const tableESStateControllerHandler = state => ({
 		});
 
 		if (mapViewFilters.length > 0) tableController(tableKey).setShowColumnFilters(true);
-
 		mapViewFilters?.forEach(filter => {
 			tableController(tableKey).setFilterMode(filter?.field.replace('.keyword', ''), filter.searchType);
 		});
@@ -461,14 +462,15 @@ const tableESStateControllerHandler = state => ({
 	setGlobalFilter: globalFilter =>
 		!deepEqual(state.globalFilter?.get({ noproxy: true }), globalFilter) && state.globalFilter?.set(globalFilter),
 
-	setFilter: filter => {
-		const TableSchema = state.TableSchema.get({ noproxy: true }) || [];
-		const column = TableSchema?.find(column => column.id === filter.field || column.accessorKey === filter.field);
+	getGlobalFilter: () => state.globalFilter?.get({ noproxy: true }),
 
+	setFilter: _filter => {
+		const TableSchema = state.TableSchema.get({ noproxy: true }) || [];
+		const filter = copy(_filter);
+		const column = TableSchema?.find(column => column.id === filter.field || column.accessorKey === filter.field);
 		if (column?.type === 'date') {
 			filter.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-			if (filter.type !== 'advanced') {
+			if (filter.type !== 'advanced' || (filter.type === 'advanced' && !filter.searchType)) {
 				filter.type = 'advanced';
 				filter.searchType = 'betweenInclusive';
 				filter.columnType = 'date';

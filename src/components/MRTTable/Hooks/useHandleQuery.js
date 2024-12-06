@@ -3,11 +3,10 @@ import { debounce, set, get, isNumber } from 'lodash';
 import { useCallback, useEffect, useRef } from 'react';
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { GET_ES_AGGS_LIST } from 'graphQL/useQueryESAggsList';
 import { copy } from 'utils/helper';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { drawController } from 'hookstate/drawStateController';
-import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
+import { GET_DB_AGGS, GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
 
 const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) => {
 	const Controller = tableController(tableKey);
@@ -165,15 +164,15 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		if (aggregationColumns?.length) {
 			const result = await client.query({
 				variables: {
-					esIndex,
+					index: esIndex,
 					filters: [...filters, ...defaultFilters],
 					aggs: Object.assign({}, ...aggregationColumns),
 				},
-				query: GET_ES_AGGS_LIST,
+				query: GET_DB_AGGS,
 			});
 
 			Controller.updateState({
-				footerProps: result?.data?.getESAggsList?.aggregations,
+				footerProps: result?.data?.getDbAggs?.aggregations,
 			});
 		}
 	}

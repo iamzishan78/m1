@@ -10,6 +10,7 @@ const billingPartiesForm = ({ setValue }) => {
 		{
 			label: 'Billing Party Name',
 			name: 'name',
+			required: true,
 			renderField: 'autoComplete',
 			query: GET_ES_SIMPLE_SEARCH,
 			isESSearch: true,
@@ -48,6 +49,7 @@ const billingPartiesForm = ({ setValue }) => {
 		{
 			label: 'Billing Party Allocation',
 			name: 'allocation',
+			required: true,
 			onChange: value => {
 				setValue('allocation', value);
 				setValue('amount', calculatePercentage(value, paymentAmount));

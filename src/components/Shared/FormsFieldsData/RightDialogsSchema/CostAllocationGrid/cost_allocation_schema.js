@@ -11,6 +11,7 @@ const costAllocationForm = ({ setValue }) => {
 			label: 'Cost Center',
 			name: 'costCenter',
 			renderField: 'autoComplete',
+			required: true,
 			query: GET_ES_SIMPLE_SEARCH,
 			isESSearch: true,
 			variables: {
@@ -45,6 +46,7 @@ const costAllocationForm = ({ setValue }) => {
 		{
 			label: 'Cost Allocation',
 			name: 'allocation',
+			required: true,
 			onChange: value => {
 				setValue('allocation', value);
 				setValue('amount', calculatePercentage(value, paymentAmount));

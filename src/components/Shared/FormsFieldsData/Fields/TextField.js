@@ -16,7 +16,7 @@ const classes = {
 	},
 };
 
-function TextFieldComponent({ control, item, watch }) {
+function TextFieldComponent({ control, item, watch, error }) {
 	const [baseValueChanged, setbaseValueChanged] = useState(false);
 	const {
 		// field props
@@ -33,6 +33,7 @@ function TextFieldComponent({ control, item, watch }) {
 		onBlur,
 		onChange,
 		disabled = false,
+		required = false,
 	} = item || {};
 
 	const watchTextFieldValue = watch(name);
@@ -73,6 +74,7 @@ function TextFieldComponent({ control, item, watch }) {
 						multiline={multiline}
 						variant={variant}
 						disabled={disabled}
+						error={required && !watchTextFieldValue && error}
 					/>
 				)}
 			/>

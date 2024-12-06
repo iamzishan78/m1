@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useLazyQuery } from '@apollo/client';
-import _, { debounce, isNil } from 'lodash';
+import _, { debounce } from 'lodash';
 
 import { tableController } from 'hookstate/tableController';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
@@ -83,7 +83,6 @@ function ESAutoCompleteFilter({
 			let search = '';
 			if (searchText.current) search = type === 'number' ? searchText.current : `*${searchText.current}*`;
 			filtersRef.current = currentFilterRef;
-
 			getFilters({
 				variables: {
 					esIndex,
@@ -94,7 +93,7 @@ function ESAutoCompleteFilter({
 							: filtersArray,
 					filterKeys: typeof field !== 'string' ? field : undefined,
 					filterKey: typeof field === 'string' ? field : undefined,
-					search: { query: extendSearchQuery, fields: searchFields, advanceSearch },
+					search: { query: tableController(tableKey).getGlobalFilter(), fields: searchFields, advanceSearch },
 					extendSearchQuery,
 					size: 10,
 					key_as_string: custom?.key_as_string,
@@ -156,7 +155,7 @@ function ESAutoCompleteFilter({
 
 		options = options.filter(op => {
 			op.label = formatValue(op.label); // format value to show $ sign as prefix
-			return !isNil(op.value);
+			return op.value || op.value === 0;
 		});
 
 		if (appendOptions.current) {
