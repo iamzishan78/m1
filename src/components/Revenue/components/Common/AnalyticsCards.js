@@ -159,8 +159,6 @@ export default function AnalyticsCards({
 
 			let count = currentAgg?.count || 0;
 
-			console.log('🚀 ~ count:', count);
-
 			cards[1].points = count;
 			cards[2].points = totalCount - count;
 			setCards(cards);

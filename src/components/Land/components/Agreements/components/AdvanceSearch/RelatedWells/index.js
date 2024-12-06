@@ -102,7 +102,7 @@ export default function RelatedWellsFilters(props) {
 	const [filterList, setFilterList] = useState([[], [], [], [], [], [], [], []]);
 
 	useEffect(() => {
-		if (stateApp.landSearchFilters.relatedWells?.length === 0 && filterList.find(fl => fl.length !== 0)) {
+		if (stateApp.landSearchFilters?.relatedWells?.length === 0 && filterList.find(fl => fl.length !== 0)) {
 			setFilterList([[], [], [], [], [], [], [], []]);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps

@@ -285,16 +285,16 @@ const SummarySection = ({ checkId }) => {
 				{ name: 'Gross Revenue', value: `${revSummary?.grossRevenue[0]?.grossRevenue?.toFixed(2)}` },
 				{
 					name: 'Adjustments',
-					value: `${(revSummary?.ownerDeducts[0]?.ownerDeducts + revSummary?.ownerTax[0].ownerTax).toFixed(2)}`,
+					value: `${(revSummary?.ownerDeducts[0]?.ownerDeducts + revSummary?.ownerTax[0].ownerTax)?.toFixed(2)}`,
 				},
-				{ name: 'Net Revenue', value: `${(revSummary?.netOwnerValue[0].netOwnerValue).toFixed(2)}` },
+				{ name: 'Net Revenue', value: `${revSummary?.netOwnerValue[0]?.netOwnerValue?.toFixed(2)}` },
 				{
 					name: 'Lease Payments',
-					value: revSummary?.leasePayments[0].leasePayments.value
-						? `${revSummary.leasePayments[0].leasePayments.toFixed(2)}`
+					value: revSummary?.leasePayments[0]?.leasePayments?.value
+						? `${revSummary.leasePayments[0]?.leasePayments?.toFixed(2)}`
 						: '-',
 				},
-				{ name: 'Other', value: revSummary?.other[0].other ? `${revSummary?.other[0].other.toFixed(2)}` : '-' },
+				{ name: 'Other', value: revSummary?.other[0]?.other ? `${revSummary?.other[0]?.other?.toFixed(2)}` : '-' },
 				{
 					name: 'Total Income',
 					value: `${(
@@ -310,15 +310,15 @@ const SummarySection = ({ checkId }) => {
 	// // products summary
 	useEffect(() => {
 		if (prodSummary) {
-			const productMapping = metaData?.find(meta => meta.name === 'product_type');
+			const productMapping = metaData?.find(meta => meta?.name === 'product_type');
 
-			const products = uniqBy(productMapping?.mapping, 'to').map(product => product.to);
+			const products = uniqBy(productMapping?.mapping, 'to').map(product => product?.to);
 			let buckets = [];
 			products.forEach(p => {
-				const mappings = productMapping?.mapping?.filter(m => m.to === p);
+				const mappings = productMapping?.mapping?.filter(m => m?.to === p);
 				const bucket = { key: p.includes('NGL') ? 'NGL' : p };
 				mappings.forEach(m => {
-					const fundBucket = prodSummary?.product?.find(p => p.product.toLowerCase() === m.from.toLowerCase());
+					const fundBucket = prodSummary?.product?.find(p => p?.product?.toLowerCase() === m?.from?.toLowerCase());
 					if (fundBucket) {
 						set(
 							bucket,
@@ -356,8 +356,8 @@ const SummarySection = ({ checkId }) => {
 		if (adjSummary) {
 			let { deductType, taxType } = adjSummary;
 
-			const deducts = deductType.map(d => ({ name: d.deductType, value: d.ownerDeducts.toFixed(2) }));
-			const taxes = taxType.map(t => ({ name: t.taxType, value: t.ownerTax.toFixed(2) }));
+			const deducts = deductType.map(d => ({ name: d?.deductType, value: d?.ownerDeducts?.toFixed(2) }));
+			const taxes = taxType.map(t => ({ name: t?.taxType, value: t?.ownerTax?.toFixed(2) }));
 
 			const adjustments = [...deducts, ...taxes];
 			let totalAdjustment = 0;
