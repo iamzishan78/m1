@@ -963,7 +963,7 @@ function Map({
 							data: [],
 						},
 					});
-				}, 0);
+				}, 250);
 
 				// FOR aoi_labels
 				newMap.addSource('aoi_label_source', {
