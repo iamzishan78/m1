@@ -13,6 +13,7 @@ import { UPDATE_DATASET } from 'graphQL/useMutationDataset';
 import { Modals } from 'styles/Modal';
 import { DialogContent } from '@material-ui/core';
 import { REMOVE_LAYER_GROUP } from 'graphQL/useMutationLayerGroup';
+import { layerController } from 'hookstate/layerStateController';
 
 export default function DeleteSourceAndCategoryConfirmationDialog(props) {
 	const dispatch = useDispatch();
@@ -45,6 +46,10 @@ export default function DeleteSourceAndCategoryConfirmationDialog(props) {
 					universalCircularLoaderAct: false,
 				}));
 				props.handleDialogClose(false);
+				layersDeleted.updateManyLayer.res?.forEach?.(l => {
+					const layer = layerController.getLayerFromMongoId(l._id);
+					layerController.removeLayer(layer);
+				});
 			} else {
 				setStateApp(state => ({
 					...state,
@@ -53,6 +58,7 @@ export default function DeleteSourceAndCategoryConfirmationDialog(props) {
 				dispatch(showErrorMessage('Error occurred'));
 			}
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [layersDeleted]);
 
 	const handleAccept = () => {
