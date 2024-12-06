@@ -198,6 +198,8 @@ const useTableESSimple = tableKey => {
 							id: idValue,
 							value: item?.value,
 							type: item?.type,
+							field: item?.field,
+							searchType: item?.searchType,
 							columnType: column?.type,
 						};
 						result.push(newItem);
@@ -210,15 +212,17 @@ const useTableESSimple = tableKey => {
 					const { mode, isKeyword } = tableState?.filterModes?.get({ noproxy: true })?.[filter.id] || {};
 
 					let { value } = filter;
-					const { type, oRFilter, columnType } = filter;
+					const { type, oRFilter, columnType, searchType } = filter;
 					if (mode && typeof filter.value === 'string' && columnType !== 'date')
 						value = isKeyword ? filter.value : +filter.value || 0;
 					if (mode && tableESSimpleFilterModeOtions.inclusive.includes(mode))
 						value = filter.value.map(value => +value || 0);
 					if (columnType === 'date') value = filter.value;
-
 					Controller.setFilter({
 						field: filter.id,
+						columnType,
+						searchType,
+						isKeyword,
 						value,
 						type,
 						oRFilter,

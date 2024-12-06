@@ -19,7 +19,6 @@ const filterModeMenu =
 		globalStateController.updateState({
 			columnFilterModesFnRefs: filterModes,
 		});
-
 		return options.map(option => (
 			<FilterModeMenuItems
 				option={option}
