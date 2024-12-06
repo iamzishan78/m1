@@ -64,7 +64,7 @@ export default function OperatorFilterJ() {
 			onInputChange={(event, newInputValue) => {
 				handleOperatorChangeByInput(newInputValue);
 			}}
-			options={operatorList}
+			options={operatorList || []}
 			renderInput={params => <TextField {...params} variant="outlined" label="Operator" placeholder="" fullWidth />}
 			disableListWrap
 			id="virtualize-operators"
