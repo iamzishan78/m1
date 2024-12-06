@@ -62,3 +62,9 @@ export const GET_DB_FILTERS = gql`
 		)
 	}
 `;
+
+export const GET_DB_AGGS = gql`
+	query getDbAggs($index: String, $search: esSearchInput, $fields: [JSON], $filters: [JSON], $aggs: JSON) {
+		getDbAggs(index: $index, search: $search, fields: $fields, filters: $filters, aggs: $aggs)
+	}
+`;

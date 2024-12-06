@@ -15,9 +15,9 @@ import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEnti
 import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import { showInfoMessage } from 'actions';
-import { GET_ES_AGGS_LIST } from 'graphQL/useQueryESAggsList';
 import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
 import { CurrencyFormatCustomWithoutPrefix } from 'components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix';
+import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
 
 const formatter = new Intl.NumberFormat('en-US', {
 	style: 'currency',
@@ -68,16 +68,16 @@ function HeaderFunction(props) {
 	const params = useParams();
 	const { check, setCheck } = props;
 	const [updateCheck] = useMutation(UPDATE_CHECK_DATA);
-	const { data: elasticData } = useQuery(GET_ES_AGGS_LIST, {
+	const { data: aggsData } = useQuery(GET_DB_AGGS, {
 		variables: {
-			esIndex: 'checkdetails_flat',
+			index: 'checkdetails_flat',
 			filters: [
 				{
-					field: 'check._id.keyword',
+					field: 'check._id',
 					value: params.id,
 				},
 			],
-			search: '',
+			search: { query: '', fields: [] },
 			aggs: {
 				totalNetOwnerValue: { sum: { field: 'netOwnerValue' } },
 			},
@@ -132,6 +132,7 @@ function HeaderFunction(props) {
 			reset({ ...check });
 			setCheck(check);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.check]);
 
 	const handleUpdateCheck = debounce(checkKey => {
@@ -143,24 +144,12 @@ function HeaderFunction(props) {
 		});
 	}, 500);
 
-	const handleCheckAmount = () => {
-		if (check) {
-			let checkAmount = check.checkAmount;
-			if (checkAmount) {
-				const data = checkAmount.toString().split('.');
-				if (data[1] && data[1].length === 1 && !/[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(data[1])) {
-					checkAmount = Number(checkAmount).toFixed(2);
-				}
-			}
-			reset({ ...check, checkAmount });
-			setCheck(check);
-		}
-	};
-
 	const isEqualCheckAmount = checkAmount => {
-		if (isNaN(elasticData?.getESAggsList?.aggregations?.totalNetOwnerValue?.value) || isNaN(checkAmount)) return true;
+		const totalNetOwnerValue = get(aggsData, 'getDbAggs.aggregations.totalNetOwnerValue[0].totalNetOwnerValue');
 
-		const totalSum = formatter.format(elasticData?.getESAggsList?.aggregations?.totalNetOwnerValue?.value || 0);
+		if (isNaN(totalNetOwnerValue) || isNaN(checkAmount)) return true;
+
+		const totalSum = formatter.format(totalNetOwnerValue || 0);
 		const fCheckAmount = formatter.format(checkAmount || 0);
 
 		return totalSum === fCheckAmount;

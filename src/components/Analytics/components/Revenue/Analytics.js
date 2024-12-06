@@ -7,7 +7,8 @@ import { copy } from 'components/Shared/functions';
 import { vf_currency_dollar } from 'components/Shared/valueformatters/vf_currency';
 import { tableController } from 'hookstate/tableController';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import { GET_ES_AGGS_LIST } from 'graphQL/useQueryESAggsList';
+import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
+import { get } from 'lodash';
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -109,7 +110,7 @@ function AnalyticsCards(props) {
 		fetchPolicy: 'no-cache',
 	});
 
-	const [getCardsCount] = useLazyQuery(GET_ES_AGGS_LIST, {
+	const [getCardsCount] = useLazyQuery(GET_DB_AGGS, {
 		fetchPolicy: 'no-cache',
 	});
 
@@ -153,7 +154,7 @@ function AnalyticsCards(props) {
 		const otherSummaryPromise = new Promise((resolve, reject) => {
 			getCardsCount({
 				variables: {
-					esIndex: 'checkdetailsinterestscomparison_flat',
+					index: 'checkdetailsinterestscomparison_flat',
 					filters: [...(tableStateValues?.filters || [])],
 					search: {
 						query: searchQuery,
@@ -173,7 +174,7 @@ function AnalyticsCards(props) {
 						},
 					},
 				},
-				onCompleted: res => resolve(res?.getESAggsList?.aggregations),
+				onCompleted: res => resolve(res?.getDbAggs?.aggregations),
 				onError: error => reject(error),
 			});
 		});
@@ -192,8 +193,8 @@ function AnalyticsCards(props) {
 			const { propertiesCount, revenueComparisonAnalytics, checkNumbersHits } = await getRevenueComparisonAnalytics();
 			setPropertyNumbers(propertiesCount || 0);
 			setCheckNumbers(checkNumbersHits?.length || 0);
-			setMisMatchedInterestsCount(revenueComparisonAnalytics?.isMisMatchedInterest[0].count || 0);
-			setSumPotentialGainLoss(revenueComparisonAnalytics?.sumPotentialGainLoss[0].sumPotentialGainLoss || 0);
+			setMisMatchedInterestsCount(get(revenueComparisonAnalytics, 'isMisMatchedInterest[0].count', 0));
+			setSumPotentialGainLoss(get(revenueComparisonAnalytics, 'sumPotentialGainLoss[0].sumPotentialGainLoss', 0));
 		})();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState?.filters, tableState?.data?.total, searchQuery]);

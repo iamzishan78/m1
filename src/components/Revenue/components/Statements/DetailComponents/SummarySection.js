@@ -6,12 +6,12 @@ import vf_number from 'components/Shared/valueformatters/vf_number';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 
 import { useLazyQuery } from '@apollo/client';
-import { GET_ES_AGGS_LIST } from 'graphQL/useQueryESAggsList';
 
 // Components
 import PieChartWithLegend from './Charts/PieChartWithLegend';
 import ProductChart from './Charts/ProductChart';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
 
 export const TabButtons = ({ tab, actiiveId, setActive }) => {
 	return (
@@ -175,26 +175,26 @@ const SummarySection = ({ checkId }) => {
 	const [productSummaryDetails, setProductSummaryDetails] = useState([]);
 
 	// queries
-	const [getESAggsRevenue, { data: revenueSummary }] = useLazyQuery(GET_ES_AGGS_LIST, {
+	const [getAggsRevenue, { data: revenueSummary }] = useLazyQuery(GET_DB_AGGS, {
 		context: { batch: true },
 		fetchPolicy: 'no-cache',
 	});
 
-	const [getESAggAdjustment, { data: adjustmentSummary }] = useLazyQuery(GET_ES_AGGS_LIST, {
+	const [getAggAdjustment, { data: adjustmentSummary }] = useLazyQuery(GET_DB_AGGS, {
 		context: { batch: true },
 		fetchPolicy: 'no-cache',
 	});
 
-	const [getESProductSummary, { data: productSummary }] = useLazyQuery(GET_ES_AGGS_LIST, {
+	const [getProductSummary, { data: productSummary }] = useLazyQuery(GET_DB_AGGS, {
 		context: { batch: true },
 		fetchPolicy: 'no-cache',
 	});
 
 	const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
-	let revSummary = revenueSummary?.getESAggsList?.aggregations;
-	let adjSummary = adjustmentSummary?.getESAggsList?.aggregations;
-	let prodSummary = productSummary?.getESAggsList?.aggregations;
+	let revSummary = revenueSummary?.getDbAggs?.aggregations;
+	let adjSummary = adjustmentSummary?.getDbAggs?.aggregations;
+	let prodSummary = productSummary?.getDbAggs?.aggregations;
 	let metaData = metaDataRes?.getMetaData?.metaData;
 	const summaryTabs = [
 		{ id: 1, label: 'Revenue' },
@@ -211,9 +211,9 @@ const SummarySection = ({ checkId }) => {
 	}, [getMetaData]);
 
 	useEffect(() => {
-		getESAggsRevenue({
+		getAggsRevenue({
 			variables: {
-				esIndex: 'checkdetails_flat',
+				index: 'checkdetails_flat',
 				filters: [
 					{
 						field: 'check._id',
@@ -231,9 +231,9 @@ const SummarySection = ({ checkId }) => {
 			},
 		});
 
-		getESAggAdjustment({
+		getAggAdjustment({
 			variables: {
-				esIndex: 'checkdetails_flat',
+				index: 'checkdetails_flat',
 				filters: [
 					{
 						field: 'check._id',
@@ -253,9 +253,9 @@ const SummarySection = ({ checkId }) => {
 			},
 		});
 
-		getESProductSummary({
+		getProductSummary({
 			variables: {
-				esIndex: 'checkdetails_flat',
+				index: 'checkdetails_flat',
 				filters: [
 					{
 						field: 'check._id',

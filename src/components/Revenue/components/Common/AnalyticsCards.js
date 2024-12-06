@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-import _ from 'lodash';
+import { get } from 'lodash';
 import { makeStyles } from '@material-ui/styles';
 import { Grid, Card, CardContent, Typography, CircularProgress, IconButton } from '@material-ui/core';
 import { Warning as WarningIcon } from '@material-ui/icons';
 import { useLazyQuery } from '@apollo/client';
 
-import { GET_ES_AGGS_LIST } from 'graphQL/useQueryESAggsList';
 import FilterIcon from 'components/Common/SvgIcons/Filter';
+import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -105,6 +105,8 @@ export default function AnalyticsCards({
 	const [isFiltered, setFiltered] = useState([]);
 	const [cards, setCards] = useState(cardsDefault);
 
+	const aggsKey = useRef(null);
+
 	useEffect(() => {
 		const filterInfo = {
 			unmapped: {
@@ -132,6 +134,7 @@ export default function AnalyticsCards({
 
 		setESFilters(filters);
 		setFilterToggle(!filterToggle);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isFiltered]);
 
 	const setCardPoint = (count, index) => {
@@ -146,81 +149,68 @@ export default function AnalyticsCards({
 		return myDate.toISOString();
 	};
 
-	const [getESAggsActiveCount, { loading: activeCountLoading }] = useLazyQuery(GET_ES_AGGS_LIST, {
+	const [getAggsActiveCount, { loading: activeCountLoading }] = useLazyQuery(GET_DB_AGGS, {
 		context: { batch: true },
 		fetchPolicy: 'no-cache',
 		onCompleted: aggsData => {
-			if (aggsData?.getESAggsList?.aggregations?.aggs?.buckets) {
-				const buckets = aggsData.getESAggsList.aggregations.aggs?.buckets;
-				const activeBucket = buckets[0];
-				cards[1].points = activeBucket?.['doc_count'];
-				cards[2].points = totalCount - activeBucket?.['doc_count'];
+			const aggs = get(aggsData, 'getDbAggs.aggregations.aggs');
+
+			const currentAgg = aggs.find(agg => agg._id === aggsKey.current);
+
+			let count = currentAgg?.count || 0;
+
+			console.log('🚀 ~ count:', count);
+
+			cards[1].points = count;
+			cards[2].points = totalCount - count;
+			setCards(cards);
+		},
+	});
+
+	const [getAggsApprovedCount, { loading: approvedCountLoading }] = useLazyQuery(GET_DB_AGGS, {
+		context: { batch: true },
+		fetchPolicy: 'no-cache',
+		onCompleted: aggsData => {
+			const approvedCount = get(aggsData, 'getDbAggs.aggregations.approvedCount') || [];
+
+			const inPayCounts = approvedCount.find(a => a.status === 'InPay')?.count || 0;
+			const notInPayCounts = approvedCount.find(a => a.status === 'NotInPay')?.count || 0;
+			const apprrovedCount = approvedCount.find(a => a.status.toLowerCase() === 'approved')?.count || 0;
+			// const otherCounts = approvedCount.find(a => !a.status)?.count || 0;
+
+			setCardPoint(totalCount - apprrovedCount, 3);
+
+			if (esIndex === 'properties_flat') {
+				cards[1].points = inPayCounts;
+				cards[2].points = notInPayCounts;
+				cards[3].points = unmappedPropertyCount;
 				setCards(cards);
 			}
 		},
 	});
 
-	const getApprovedCount = buckets => {
-		const activeBucket = buckets.filter(item => item.key.toLowerCase() === 'approved' && item);
-		return activeBucket && activeBucket?.length > 0 ? activeBucket[0]['doc_count'] : 0;
-	};
-
-	const getInPayCount = buckets => {
-		const activeBucket = buckets.filter(item => item.key.toLowerCase() === 'inpay' && item);
-		return activeBucket && activeBucket?.length > 0 ? _.sumBy(activeBucket, 'doc_count') : 0;
-	};
-
-	const getNotInPayCounts = buckets => {
-		const activeBucket = buckets.filter(item => item.key.toLowerCase() === 'notinpay' && item);
-		return activeBucket && activeBucket?.length > 0 ? activeBucket[0]['doc_count'] : 0;
-	};
-
-	const [getESAggsApprovedCount, { loading: approvedCountLoading }] = useLazyQuery(GET_ES_AGGS_LIST, {
-		context: { batch: true },
-		fetchPolicy: 'no-cache',
-		onCompleted: aggsData => {
-			if (aggsData?.getESAggsList?.aggregations?.approvedCount?.buckets) {
-				const buckets = aggsData?.getESAggsList?.aggregations?.approvedCount?.buckets;
-				const count = buckets && buckets.length > 0 ? getApprovedCount(buckets) : 0;
-
-				setCardPoint(totalCount - count, 3);
-				if (esIndex === 'properties_flat') {
-					const inPayCounts = buckets && buckets.length > 0 ? getInPayCount(buckets) : 0;
-					const notInPayCounts = buckets && buckets.length > 0 ? getNotInPayCounts(buckets) : 0;
-					cards[1].points = inPayCounts;
-					cards[2].points = notInPayCounts;
-					cards[3].points = unmappedPropertyCount;
-					setCards(cards);
-				}
-			}
-		},
-	});
-
 	const propertiesAnalytics = () => {
-		getESAggsActiveCount({
+		aggsKey.current = `${addDays(new Date(new Date().setMonth(new Date().getMonth() - 3)).toISOString(), 1)}`;
+
+		getAggsActiveCount({
 			variables: {
-				esIndex,
-				search: landSearchQuery ? `${landSearchQuery}*` : '',
+				index: esIndex,
+				search: { query: landSearchQuery ? `${landSearchQuery}*` : '' },
 				filters: esFilters.filter(appliedFilter => !appliedFilter.field === 'wells._id'),
 				aggs: {
-					name: {
-						terms: { field: 'lastCheck._id.keyword' },
-					},
 					aggs: {
 						range: {
 							field: 'lastCheck.checkDate',
-							ranges: [
-								{ from: `${addDays(new Date(new Date().setMonth(new Date().getMonth() - 3)).toISOString(), 1)}` },
-							],
+							ranges: [{ from: aggsKey.current }],
 						},
 					},
 				},
 			},
 		});
-		getESAggsApprovedCount({
+		getAggsApprovedCount({
 			variables: {
-				esIndex,
-				search: landSearchQuery ? `${landSearchQuery}*` : '',
+				index: esIndex,
+				search: { query: landSearchQuery ? `${landSearchQuery}*` : '' },
 				filters: esFilters,
 				aggs: {
 					approvedCount: {
