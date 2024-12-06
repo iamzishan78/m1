@@ -1,6 +1,7 @@
 import { Box } from '@mui/material';
 import { addTrailingZeros, formatDate } from 'components/Shared/functions';
 import { tableController } from 'hookstate/tableController';
+import { get } from 'lodash';
 
 export const CommonSchema = {
 	COMMENTS: {
@@ -196,7 +197,7 @@ export const CommonSchema = {
 			const footerProps = Controller.getValue('footerProps') || {};
 
 			const mongoKey = `sum_${field}`.replace(/\./g, '_');
-			const value = footerProps[mongoKey];
+			const value = get(footerProps, `${mongoKey}[0].${mongoKey}`);
 
 			return <div>{value ? addTrailingZeros(parseFloat(value).toFixed(8)) : 0}</div>;
 		},

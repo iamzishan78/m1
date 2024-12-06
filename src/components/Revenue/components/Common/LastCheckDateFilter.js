@@ -8,7 +8,8 @@ import { useSelector } from 'react-redux';
 import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
 import { dateFilterToDate, getFirstDayOfMonth } from 'utils/helper';
 import { copy } from 'components/Shared/functions';
-import { GET_ES_AGGS_LIST } from 'graphQL/useQueryESAggsList';
+import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
+import { get } from 'lodash';
 
 const useStyles = makeStyles(theme => ({
 	actionBar: {
@@ -60,18 +61,21 @@ const LastCheckDateFilter = ({
 
 	const propertiesReportGroup = useSelector(({ Revenue }) => Revenue.propertiesReportGroup);
 
-	const [getDbMinValue] = useLazyQuery(GET_ES_AGGS_LIST, {
+	const [getDbMinValue] = useLazyQuery(GET_DB_AGGS, {
 		fetchPolicy: 'no-cache',
 		onCompleted: data => {
-			if (data?.getESAggsList?.aggregations?.[field]) {
-				setLastCheckMinDate(data.getESAggsList.aggregations[field]);
+			const key = field.replace(/\./g, '_');
+			const value = get(data, `getDbAggs.aggregations.${key}[0].${key}`);
+
+			if (value) {
+				setLastCheckMinDate(value);
 			}
 		},
 	});
 	useEffect(() => {
 		getDbMinValue({
 			variables: {
-				esIndex,
+				index: esIndex,
 				aggs: {
 					[field]: {
 						min: { field },
