@@ -174,15 +174,6 @@ const ContactMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'entity',
-			accessorKey: 'entity',
-			header: 'Entity',
-			hidden: true,
-			isSearchField: false,
-		},
-
-		{
-			...CommonSchema.COMMON_COLUMN,
 			name: 'country',
 			accessorKey: 'country',
 			header: 'Country',
