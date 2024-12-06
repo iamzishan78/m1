@@ -15,9 +15,6 @@ function ToolbarActions({ table, tableKey, children }) {
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user.get({ noproxy: true });
 
-	const globalState = tableGlobalController.useState(['cypress']);
-	const globalStateValues = globalState.stateValues;
-
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const isSomeRowsSelected =
 		table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
@@ -140,7 +137,7 @@ function ToolbarActions({ table, tableKey, children }) {
 			<div style={{ display: 'flex', gap: '0.5rem', marginLeft: '0.5rem' }}>
 				{children || <div />}
 
-				{!tableStateValues.isGeneric && (
+				{!tableStateValues.isGeneric && tableStateValues.data?.total > 0 && (
 					<IconButton onClick={handleExport} data-testid="download-csv">
 						<Tooltip title="Download CSV" aria-label="add">
 							<CloudDownloadIcon />
