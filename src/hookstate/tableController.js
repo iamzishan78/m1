@@ -252,7 +252,6 @@ const tableESStateControllerHandler = state => ({
 				showSaveAsNew: false,
 			};
 		}
-		console.log('globalFilter', globalFilter);
 		const {
 			_TableSchema,
 			tableCss,

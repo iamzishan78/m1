@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useLazyQuery } from '@apollo/client';
-import _, { debounce, isEmpty, isEqual } from 'lodash';
+import _, { debounce } from 'lodash';
 
 import { tableController } from 'hookstate/tableController';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
@@ -155,7 +155,7 @@ function ESAutoCompleteFilter({
 
 		options = options.filter(op => {
 			op.label = formatValue(op.label); // format value to show $ sign as prefix
-			return !isEmpty(op.value) || isEqual(op.value, 0);
+			return op.value || op.value === 0;
 		});
 
 		if (appendOptions.current) {
