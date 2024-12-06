@@ -68,10 +68,9 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 
 	const metaDataTableSchema = data.map((item, index) => {
 		const key = item?.esKey.replaceAll('.keyword', '');
-
 		return {
-			...item,
 			...CommonSchema.COMMON_COLUMN,
+			...item,
 			name: `${key}.keyword`,
 			id: key,
 			accessorFn: row => get(row, key),
