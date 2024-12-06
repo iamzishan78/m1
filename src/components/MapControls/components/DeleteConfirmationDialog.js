@@ -9,6 +9,7 @@ import { AppContext } from '../../../AppContext';
 import { useDispatch } from 'react-redux';
 import { setMainMapState, showErrorMessage, showSuccessMessage } from 'actions';
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
+import { layerController } from 'hookstate/layerStateController';
 
 export default function DeleteConfirmationDialog(props) {
 	const dispatch = useDispatch();
@@ -26,6 +27,8 @@ export default function DeleteConfirmationDialog(props) {
 					universalCircularLoaderAct: false,
 				}));
 				props.handleDialogClose(false);
+				const layer = layerController.getLayerFromMongoId(layerDeleted.updateLayer.layer._id);
+				layerController.removeLayer(layer);
 			} else {
 				setStateApp(state => ({
 					...state,
@@ -34,6 +37,7 @@ export default function DeleteConfirmationDialog(props) {
 				dispatch(showErrorMessage('Error occurred'));
 			}
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [layerDeleted]);
 
 	useEffect(() => {
@@ -46,6 +50,10 @@ export default function DeleteConfirmationDialog(props) {
 					universalCircularLoaderAct: false,
 				}));
 				props.handleDialogClose(false);
+				layersDeleted.updateManyLayer.res?.forEach?.(l => {
+					const layer = layerController.getLayerFromMongoId(l._id);
+					layerController.removeLayer(layer);
+				});
 			} else {
 				setStateApp(state => ({
 					...state,
@@ -54,6 +62,7 @@ export default function DeleteConfirmationDialog(props) {
 				dispatch(showErrorMessage('Error occurred'));
 			}
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [layersDeleted]);
 
 	const handleAccept = () => {
