@@ -143,7 +143,7 @@ const ActivitiesMeta = {
 			accessorFn: row => row?.isClosed,
 			id: 'isClosed',
 			header: 'Completed?',
-			type: 'boolean',
+			type: 'defaultFiltersOptions',
 			defaultFilterOptions: [
 				{ label: 'Y', value: true, type: 'term' },
 				{ label: 'N', value: false, type: 'term' },
