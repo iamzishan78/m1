@@ -121,7 +121,7 @@ const ActivitiesDashboard = () => {
 	}, []);
 
 	useEffect(() => {
-		tableController('ActivityTable').setGlobalFilter(stateApp.landAnalyticsSearchQuery);
+		tableController(tableKey).setGlobalFilter(stateApp.landAnalyticsSearchQuery);
 	}, [stateApp.landAnalyticsSearchQuery]); // Update table filter state based on navbar search
 
 	return (
