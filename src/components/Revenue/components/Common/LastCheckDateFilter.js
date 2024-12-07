@@ -111,8 +111,8 @@ const LastCheckDateFilter = ({
 					toDate ? `${dateFilterToDate(toDate)}T00:00:00.000Z` : null,
 				],
 				type: 'advanced',
+				searchType: 'betweenInclusive',
 				columnType: 'date',
-				searchType: 'between',
 			});
 		}
 
