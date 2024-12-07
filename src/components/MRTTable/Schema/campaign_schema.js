@@ -45,7 +45,6 @@ const onCustomKeyChange = async (client, row, value, item) => {
 
 const CampaignMeta = {
 	esIndex,
-	isElasticQuery: false,
 	pageSize: 50,
 	pagination: {
 		pageIndex: 0,
@@ -68,9 +67,15 @@ const CampaignMeta = {
 			type: 'Default',
 		},
 		handleDefaultView: (view, user) => {
-			if (view?.name === 'My Campaigns') {
-				view.filters[0].value = user._id;
+			switch (view?.name) {
+				case 'My Campaigns':
+					view.filters[0].value = user._id;
+					break;
+
+				default:
+					break;
 			}
+
 			return view;
 		},
 		cssOverride: {
@@ -130,7 +135,7 @@ const CampaignMeta = {
 			type: 'number',
 			Cell: ({ row }) => {
 				const totalNra = row.getValue('totalNra');
-				return <>{totalNra ? vf_number(totalNra.toFixed(2)) : ''}</>;
+				return <>{totalNra || totalNra === 0 ? vf_number(totalNra.toFixed(2)) : ''}</>;
 			},
 		},
 		{

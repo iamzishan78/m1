@@ -75,9 +75,7 @@ function IsContactCell({ contactId, rows }) {
 				target="_blank"
 			>
 				<Link
-					to={`/contact/details/${contactId}/?tenant=${window.sessionStorage.getItem(
-						'tenantName'
-					)}`}
+					to={`/contact/details/${contactId}/?tenant=${window.sessionStorage.getItem('tenantName')}`}
 					onClick={e => e.preventDefault()}
 				>
 					<ContactCard style={{ margin: '4px' }} />

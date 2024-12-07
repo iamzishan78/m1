@@ -1,7 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const BASINNAMESQUERY = gql`
-  query getBasinNames {
-    basinNames
-  }
+	query getBasinNames {
+		basinNames
+	}
 `;

@@ -1,3 +1,8 @@
+import React from 'react';
+import _ from 'lodash';
+import DataType from 'components/Common/DataType';
+import { tableController } from 'hookstate/tableController';
+import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
 import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';
 import {
 	customFilterOptions,
@@ -5,9 +10,6 @@ import {
 	numberFilterOptions,
 	stringFilterOptions,
 } from 'components/MRTTable/utils/data';
-import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
-import _ from 'lodash';
-import React from 'react';
 
 export const handleVisiblityMenu = () => {
 	const interval2 = setInterval(() => {
@@ -31,12 +33,14 @@ export const handleVisiblityMenu = () => {
 
 export const handleVisiblityMenuClick = () => {
 	const interval = setInterval(() => {
-		const element = document.querySelector('[aria-label="Show/Hide columns"]');
-		if (element) {
-			element.addEventListener('click', () => {
-				handleVisiblityMenu();
+		const elements = document.querySelectorAll('[aria-label="Show/Hide columns"]');
+		if (elements.length) {
+			elements.forEach(element => {
+				element.addEventListener('click', () => {
+					handleVisiblityMenu();
+				});
+				clearInterval(interval);
 			});
-			clearInterval(interval);
 		}
 	}, 1000);
 };
@@ -74,12 +78,20 @@ export const handleColumnMenuClick = () => {
 	}, 300);
 };
 
-export const handleMRTSchema = ({ _Schema, tableKey, esIndex, defaultFlterMode, search, columnVirtualization }) => {
+export const handleMRTSchema = ({
+	_Schema,
+	tableKey,
+	esIndex,
+	defaultFlterMode,
+	search,
+	columnVirtualization,
+	globalFilter,
+}) => {
 	_Schema = _.uniqBy(_Schema, item => item.accessorKey || item.id);
 
 	const _TableSchema = _Schema.map(schemaColumn => {
 		if (schemaColumn.filter && !schemaColumn.Filter) {
-			schemaColumn.SingleSelect = function Comp({ column }) {
+			schemaColumn.SingleSelect = function Comp({ column, isCustom, _value, textFieldProps }) {
 				return (
 					<div>
 						<ESAutoCompleteFilter
@@ -95,11 +107,16 @@ export const handleMRTSchema = ({ _Schema, tableKey, esIndex, defaultFlterMode, 
 								filterSelectOptions: column.columnDef.filterSelectOptions,
 								filterValue: column?.getFilterValue() || '',
 							}}
+							extendSearchQuery={globalFilter}
 							multiple={false}
+							_value={_value}
+							textFieldProps={textFieldProps}
 						/>
-						<span style={{ fontSize: '0.7rem', color: 'rgba(0, 0, 0, 0.6)', fontWeight: 400 }}>
-							Filter Mode: Single Select
-						</span>
+						{!isCustom && (
+							<span style={{ fontSize: '0.7rem', color: 'rgba(0, 0, 0, 0.6)', fontWeight: 400 }}>
+								Filter Mode: Single Select
+							</span>
+						)}
 					</div>
 				);
 			};
@@ -166,6 +183,16 @@ export const handleMRTSchema = ({ _Schema, tableKey, esIndex, defaultFlterMode, 
 				tableKey,
 				name: schemaColumn.accessorKey || schemaColumn.id,
 			});
+		}
+
+		if (schemaColumn.header) {
+			schemaColumn.Header = () => {
+				const { header, type } = schemaColumn;
+				const {
+					stateValues: { showTypes },
+				} = tableController(tableKey).useState(['showTypes']);
+				return <DataType title={header} type={type || 'unknown'} showType={showTypes} />;
+			};
 		}
 
 		return schemaColumn;

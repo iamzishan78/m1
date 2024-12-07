@@ -84,41 +84,26 @@ function ContactActionMenu({ id, name, esIndex, dialogType }) {
 					open
 					onClose={closeMenu}
 				>
-					<MenuItem
-						className={classes.actionMenuItem}
-						onClick={() => handleActivity('call')}
-					>
+					<MenuItem className={classes.actionMenuItem} onClick={() => handleActivity('call')}>
 						<CallOutlinedIcon className={classes.menuIcons} />
 						Add call log
 					</MenuItem>
 					<Divider />
-					<MenuItem
-						className={classes.actionMenuItem}
-						onClick={() => handleActivity('text_message')}
-					>
+					<MenuItem className={classes.actionMenuItem} onClick={() => handleActivity('text_message')}>
 						<TextSMS className={classes.menuIcons} />
 						Add text exchange
 					</MenuItem>
-					<MenuItem
-						className={classes.actionMenuItem}
-						onClick={() => handleActivity('email')}
-					>
+					<MenuItem className={classes.actionMenuItem} onClick={() => handleActivity('email')}>
 						<EmailIcon className={classes.menuIcons} />
 						Add email exchange
 					</MenuItem>
 					<Divider />
-					<MenuItem
-						className={classes.actionMenuItem}
-						onClick={() => handleActivity('meeting')}
-					>
+					<MenuItem className={classes.actionMenuItem} onClick={() => handleActivity('meeting')}>
 						<EventOutlinedIcon className={classes.menuIcons} />
 						Add meeting notes
 					</MenuItem>
 					<Divider />
-					<MenuItem
-						className={classes.actionMenuItem}
-						onClick={() => handleActivity('task')}
-					>
+					<MenuItem className={classes.actionMenuItem} onClick={() => handleActivity('task')}>
 						<AssignmentTurnedInOutlinedIcon className={classes.menuIcons} />
 						Add new task
 					</MenuItem>

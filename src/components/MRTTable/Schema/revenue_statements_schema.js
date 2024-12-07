@@ -55,12 +55,7 @@ const RevenueStatementsMeta = {
 	TableSchema: [
 		// Hidden columns
 		{
-			...CommonSchema.HIDDEN,
-			name: 'id',
-			accessorKey: 'id',
-		},
-		{
-			...CommonSchema.HIDDEN,
+			...CommonSchema.MONGO_ID,
 			name: '_id',
 			accessorKey: '_id',
 		},

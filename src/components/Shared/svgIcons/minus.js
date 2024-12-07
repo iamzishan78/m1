@@ -18,28 +18,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Base from './base';
 
 export default class Minus extends Component {
-  static propTypes = {
-    /** Set the height of the icon, ex. '16px' */
-    height: PropTypes.string
-  };
+	static propTypes = {
+		/** Set the height of the icon, ex. '16px' */
+		height: PropTypes.string,
+	};
 
-  static defaultProps = {
-    height: '16px',
-    predefinedClassName: 'data-ex-icons-minus'
-  };
+	static defaultProps = {
+		height: '16px',
+		predefinedClassName: 'data-ex-icons-minus',
+	};
 
-  render() {
-    return (
-      <Base {...this.props}>
-        <g>
-          <path d="M55 36H9a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h46a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1z" />
-        </g>
-      </Base>
-    );
-  }
+	render() {
+		return (
+			<Base {...this.props}>
+				<g>
+					<path d="M55 36H9a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h46a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1z" />
+				</g>
+			</Base>
+		);
+	}
 }

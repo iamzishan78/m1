@@ -1,16 +1,15 @@
-import { memo,useRef} from 'react';
+import { memo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
-const PortalD = (props) => {
-  const { id, children, ...rest } = props
+const PortalD = props => {
+	const { id, children, ...rest } = props;
 
-  const el = useRef(document.getElementById(id));
-  if(el.current && children){
-    return createPortal(children, el.current);
-  }
-  return null;
-  
+	const el = useRef(document.getElementById(id));
+	if (el.current && children) {
+		return createPortal(children, el.current);
+	}
+	return null;
 };
 
-PortalD.whyDidYouRender = true
+PortalD.whyDidYouRender = true;
 export default memo(PortalD);

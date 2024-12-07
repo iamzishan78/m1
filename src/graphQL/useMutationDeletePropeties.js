@@ -1,7 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const DELETE_REVENUE_PROPERTIES = gql`
-  mutation removeProperties($properties: [String]) {
-    removeProperties(properties: $properties)
-  }
+	mutation removeProperties($properties: [String]) {
+		removeProperties(properties: $properties)
+	}
 `;

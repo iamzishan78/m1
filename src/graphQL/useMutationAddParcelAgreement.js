@@ -1,11 +1,11 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const ADD_PARCEL_AGREEMENT = gql`
-  mutation addParcelAgreement($agreement: AgreementInput) {
-    addParcelAgreement(agreement: $agreement) {
-      success
-      message
-      error
-    }
-  }
+	mutation addParcelAgreement($agreement: AgreementInput) {
+		addParcelAgreement(agreement: $agreement) {
+			success
+			message
+			error
+		}
+	}
 `;

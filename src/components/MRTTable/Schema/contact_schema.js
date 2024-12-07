@@ -97,9 +97,6 @@ const ContactMeta = {
 		category: 'Contacts', // enable to show custom field inside unit grid
 	},
 	onCustomKeyChange,
-	search: {
-		fields: ['name^4', '_all'],
-	},
 	showAddContactButton: true,
 	TableSchema: [
 		{
@@ -177,15 +174,9 @@ const ContactMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'entity',
-			accessorKey: 'entity',
-			hidden: true,
-		},
-
-		{
-			...CommonSchema.COMMON_COLUMN,
 			name: 'country',
 			accessorKey: 'country',
+			header: 'Country',
 			hidden: true,
 		},
 
@@ -254,8 +245,6 @@ const ContactMeta = {
 			name: 'primaryAddress.keyword',
 			accessorKey: 'primaryAddress',
 			header: 'Primary Address',
-			size: 700,
-			isSearchField: false,
 		},
 
 		{
@@ -314,7 +303,9 @@ const ContactMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'melissaRowsCount',
 			accessorKey: 'melissaRowsCount',
+			header: 'Melissa Rows Count',
 			hidden: true,
+			isSearchField: false,
 		},
 
 		{

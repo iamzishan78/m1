@@ -1,10 +1,10 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const BULKTRACKALLUNTRACKALL = gql`
-  mutation bulkTrackAllUntrackAll($tracks: [TrackInput], $trackAll: Boolean) {
-    bulkTrackAllUntrackAll(tracks: $tracks, trackAll: $trackAll) {
-      success
-      error
-    }
-  }
+	mutation bulkTrackAllUntrackAll($tracks: [TrackInput], $trackAll: Boolean) {
+		bulkTrackAllUntrackAll(tracks: $tracks, trackAll: $trackAll) {
+			success
+			error
+		}
+	}
 `;

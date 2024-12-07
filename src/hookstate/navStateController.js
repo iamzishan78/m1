@@ -17,49 +17,48 @@ const initialState = {
 	geographyFilterCount: 0,
 	interestFilter: {
 		shapes: [],
-		value: []
+		value: [],
 	},
 	parcelFilter: {
 		shapes: [],
-		value: []
-	}
+		value: [],
+	},
 	// For Geography Filter
 };
 
 export const navState = hookstate(copy(initialState));
 export const useNavState = () => useHookstate(navState);
 
-export const WellsGeographyFilters = ['state', 'county', 'GrId1', 'GrId2', 'GrId3', 'GrId4', 'GrId5']
+export const WellsGeographyFilters = ['state', 'county', 'GrId1', 'GrId2', 'GrId3', 'GrId4', 'GrId5'];
 
 const navStateControllerHandler = () => ({
-	handleGeographyFilters: (newFilters) => {
+	handleGeographyFilters: newFilters => {
 		if (!Array.isArray(newFilters)) {
-			navController.updateState({ [newFilters.field]: newFilters.value })
+			navController.updateState({ [newFilters.field]: newFilters.value });
 			setTimeout(() => {
-				const { parcelFilter, interestFilter } = navController.getValues(['interestFilter', 'parcelFilter'])
+				const { parcelFilter, interestFilter } = navController.getValues(['interestFilter', 'parcelFilter']);
 				findBoundsMap([...parcelFilter.shapes, ...interestFilter.shapes], window.mapRef, {
-					top: 300, bottom: 300, left: 300, right: 300
+					top: 300,
+					bottom: 300,
+					left: 300,
+					right: 300,
 				});
 			}, 0);
 		} else {
-			navController.handleWellsFilters(newFilters)
+			navController.handleWellsFilters(newFilters);
 		}
 	},
-	handleWellsFilters: (newFilters) => {
+	handleWellsFilters: newFilters => {
 		// eslint-disable-next-line no-use-before-define
 		const { variables } = layerFiltersController.getValue('Wells');
-		let filters = copy(variables.filters)
-		if (!Array.isArray(newFilters)) newFilters = [newFilters]
+		let filters = copy(variables.filters);
+		if (!Array.isArray(newFilters)) newFilters = [newFilters];
 
-		newFilters.forEach((filter) => {
-			const { field, value, type } = filter
+		newFilters.forEach(filter => {
+			const { field, value, type } = filter;
 			filters = filters.filter(filter => filter.field !== field);
 
-			if (
-				value?.length > 0 ||
-				value?.hasOwnProperty?.('min') ||
-				value?.hasOwnProperty?.('max')
-			) {
+			if (value?.length > 0 || value?.hasOwnProperty?.('min') || value?.hasOwnProperty?.('max')) {
 				if (type === 'range') {
 					if (value?.hasOwnProperty?.('min') && value?.hasOwnProperty?.('max')) {
 						filters.push({
@@ -96,8 +95,10 @@ const navStateControllerHandler = () => ({
 					});
 				}
 			}
-		})
-		navController.updateState({ wellFilterCount: filters.filter(filter => !WellsGeographyFilters.includes(filter.field)).length })
+		});
+		navController.updateState({
+			wellFilterCount: filters.filter(filter => !WellsGeographyFilters.includes(filter.field)).length,
+		});
 
 		if (!deepEqual(filters, variables.filters))
 			layerFiltersController.setVariables('Wells', {
@@ -109,16 +110,16 @@ const navStateControllerHandler = () => ({
 		navController.updateState({
 			interestFilter: {
 				shapes: [],
-				value: []
+				value: [],
 			},
 			parcelFilter: {
 				shapes: [],
-				value: []
-			}
-		})
-		const WellsFilter = WellsGeographyFilters.map((filter) => ({ [filter]: null }))
-		navController.handleWellsFilters(WellsFilter)
-	}
+				value: [],
+			},
+		});
+		const WellsFilter = WellsGeographyFilters.map(filter => ({ [filter]: null }));
+		navController.handleWellsFilters(WellsFilter);
+	},
 });
 
 export const navController = { ...navStateControllerHandler(navState), ...hookStateController(navState, initialState) };

@@ -1,39 +1,37 @@
 export const workerFunction = event => {
-  try {
-    const { data, type } = event.data;
+	try {
+		const { data, type } = event.data;
 
-    const customMessageObject = {};
-    const customMessageArray = [];
+		const customMessageObject = {};
+		const customMessageArray = [];
 
-    // const options = { PositionDataType: Float64Array };
+		// const options = { PositionDataType: Float64Array };
 
-    switch (type) {
-      case 'geojson':
-        // const binaryFeatures = geojsonToBinary(data, options);
-        customMessageObject.data = data;
+		switch (type) {
+			case 'geojson':
+				// const binaryFeatures = geojsonToBinary(data, options);
+				customMessageObject.data = data;
 
-        break;
+				break;
 
-      case 'polygon':
-        // const binaryFeatures = geojsonToBinary(data, options);
-        customMessageObject.data = data;
+			case 'polygon':
+				// const binaryFeatures = geojsonToBinary(data, options);
+				customMessageObject.data = data;
 
-        break;
+				break;
 
-      case 'text':
-        // const binaryFeatures = geojsonToBinary(data, options);
-        customMessageObject.data = data;
+			case 'text':
+				// const binaryFeatures = geojsonToBinary(data, options);
+				customMessageObject.data = data;
 
-        break;
+				break;
 
-      default:
-        break;
-    }
+			default:
+				break;
+		}
 
-    postMessage({ /* count: data.length ,*/ ...customMessageObject }, [
-      ...customMessageArray,
-    ]);
-  } catch (err) {
-    console.log('🚀 ~ file: default.js:1393 ~ workerFunction ~ err:', err);
-  }
+		postMessage({ /* count: data.length ,*/ ...customMessageObject }, [...customMessageArray]);
+	} catch (err) {
+		console.log('🚀 ~ file: default.js:1393 ~ workerFunction ~ err:', err);
+	}
 };

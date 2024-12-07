@@ -1,7 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const USERAVAILABLEFILTERTAGSQUERY = gql`
-  query getUserAvailableFilterTags($userId: ID) {
-    userAvailableFilterTags(userId: $userId)
-  }
+	query getUserAvailableFilterTags($userId: ID) {
+		userAvailableFilterTags(userId: $userId)
+	}
 `;

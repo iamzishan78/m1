@@ -3,11 +3,10 @@ import { debounce, set, get, isNumber } from 'lodash';
 import { useCallback, useEffect, useRef } from 'react';
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { GET_ES_AGGS_LIST } from 'graphQL/useQueryESAggsList';
 import { copy } from 'utils/helper';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { drawController } from 'hookstate/drawStateController';
-import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
+import { GET_DB_AGGS, GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
 
 const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) => {
 	const Controller = tableController(tableKey);
@@ -37,6 +36,8 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		let sort = tableStateValues.sorting[0]
 			? {
 					field: (() => {
+						if (tableStateValues.sorting[0].field) return tableStateValues.sorting[0].field;
+
 						const sortingId = tableStateValues.sorting[0].id;
 						const matchingSchema = TableSchema.find(val => (val.accessorKey || val.id) === sortingId);
 
@@ -67,8 +68,6 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		if (tableStateValues.isGeneric && !tableStateValues.globalSearch) globalFilter = null;
 
-		const isMongo = tableStateValues.isElasticQuery === false;
-
 		const variables = {
 			index: tableStateValues.esIndex,
 			pagination: { ...pagination, pageIndex: undefined, pageSize: undefined },
@@ -79,15 +78,14 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			},
 			sort,
 			filters,
-			...(isMongo && { isElasticQuery: false }),
 		};
 
 		if (tableStateValues.filterLayerType)
 			layerFiltersController.setVariables(tableStateValues.filterLayerType, variables);
 
-		let total = isMongo ? tableStateValues?.data?.total : null;
+		let total = tableStateValues?.data?.total;
 
-		if (pagination.pageIndex === 0 && isMongo) {
+		if (pagination.pageIndex === 0) {
 			(async () => {
 				const dbDataTotal = await client.query({
 					variables,
@@ -127,7 +125,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				let value = get(row, accessorKey);
 				if (value !== undefined && value !== null && !Array.isArray(value) && typeof value !== 'object')
 					value = defaultValue === '' ? `${value}` : value;
-				set(row, accessorKey, value || defaultValue, defaultValue);
+				set(row, accessorKey, value, defaultValue);
 			});
 		});
 		if (tableState?.isInFiniteScroll?.get() && !resetPagination.current) {
@@ -166,26 +164,28 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		if (aggregationColumns?.length) {
 			const result = await client.query({
 				variables: {
-					esIndex,
+					index: esIndex,
 					filters: [...filters, ...defaultFilters],
 					aggs: Object.assign({}, ...aggregationColumns),
 				},
-				query: GET_ES_AGGS_LIST,
+				query: GET_DB_AGGS,
 			});
 
 			Controller.updateState({
-				footerProps: result?.data?.getESAggsList?.aggregations,
+				footerProps: result?.data?.getDbAggs?.aggregations,
 			});
 		}
 	}
 
 	useEffect(() => {
 		fetchFooterAggregationData();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [refetch, tableState.filters]);
 
 	useEffect(() => {
 		resetPagination.current = true;
 		if (tableStateValues?.data?.rows?.length > 0) tableRef?.current?.scrollToIndex?.(0);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState.filters, tableState.sorting, tableState.grouping, tableState.globalFilter, refetch]);
 
 	useEffect(() => {
@@ -211,17 +211,20 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				callQuery(pagination);
 			}
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState.pagination]);
 
 	useEffect(() => {
 		const tableMeta = tableState.get({ noproxy: true });
 
-		if (!tableMeta || tableMeta.isFetching) return;
+		if (!tableMeta) return;
+
 		callQuery({
 			pageIndex: 0,
 			first: tableStateValues?.pageSize || 50,
 			after: null,
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		tableState.filters,
 		tableState.searchFields,
@@ -233,6 +236,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		refetch,
 	]);
 
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const fetchMoreOnBottomReached = useCallback(
 		debounce(containerRefElement => {
 			if (!tableState?.isInFiniteScroll?.get()) return;

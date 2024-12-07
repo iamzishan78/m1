@@ -18,28 +18,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import Base from "./base";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import Base from './base';
 
 export default class Envelope extends Component {
-  static propTypes = {
-    /** Set the height of the icon, ex. '16px' */
-    height: PropTypes.string,
-  };
+	static propTypes = {
+		/** Set the height of the icon, ex. '16px' */
+		height: PropTypes.string,
+	};
 
-  static defaultProps = {
-    height: "16px",
-    predefinedClassName: "data-ex-icons-email",
-  };
+	static defaultProps = {
+		height: '16px',
+		predefinedClassName: 'data-ex-icons-email',
+	};
 
-  render() {
-    return (
-      <Base {...this.props}>
-        <g transform="translate(8, 8)">
-          <path d="M10 21v54h76V21zm40.122 34.464a3.01 3.01 0 01-4.244 0L13.431 23.017a.01.01 0 01.007-.017h69.124a.01.01 0 01.01.01.01.01 0 01-.003.007zM35.586 48L12.017 71.569a.01.01 0 01-.017-.007V24.438a.01.01 0 01.01-.01.01.01 0 01.007.003zM37 49.414l7.464 7.464a5 5 0 007.071 0h.001L59 49.414l23.569 23.569a.01.01 0 01-.007.017H13.438a.01.01 0 01-.01-.01.01.01 0 01.003-.007zM60.414 48l23.569-23.569a.01.01 0 01.017.007v47.124a.01.01 0 01-.01.01.01.01 0 01-.007-.003z" />
-        </g>
-      </Base>
-    );
-  }
+	render() {
+		return (
+			<Base {...this.props}>
+				<g transform="translate(8, 8)">
+					<path d="M10 21v54h76V21zm40.122 34.464a3.01 3.01 0 01-4.244 0L13.431 23.017a.01.01 0 01.007-.017h69.124a.01.01 0 01.01.01.01.01 0 01-.003.007zM35.586 48L12.017 71.569a.01.01 0 01-.017-.007V24.438a.01.01 0 01.01-.01.01.01 0 01.007.003zM37 49.414l7.464 7.464a5 5 0 007.071 0h.001L59 49.414l23.569 23.569a.01.01 0 01-.007.017H13.438a.01.01 0 01-.01-.01.01.01 0 01.003-.007zM60.414 48l23.569-23.569a.01.01 0 01.017.007v47.124a.01.01 0 01-.01.01.01.01 0 01-.007-.003z" />
+				</g>
+			</Base>
+		);
+	}
 }

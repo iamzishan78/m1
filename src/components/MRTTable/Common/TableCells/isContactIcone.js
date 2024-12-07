@@ -51,13 +51,11 @@ function IsContactCell({ contactId }) {
 				target="_blank"
 			>
 				<Link
-					to={
-						`/contact/details/${contactId}/?tenant=${window.sessionStorage.getItem("tenantName")}`
-					}
-					onClick={(e) => e.preventDefault()}>
-					<Contact_card style={{ margin: "4px" }} />
+					to={`/contact/details/${contactId}/?tenant=${window.sessionStorage.getItem('tenantName')}`}
+					onClick={e => e.preventDefault()}
+				>
+					<Contact_card style={{ margin: '4px' }} />
 				</Link>
-
 			</IconButton>
 		</Tooltip>
 	);

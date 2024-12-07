@@ -5,11 +5,11 @@ import { AppContext } from 'AppContext';
 
 import CampaignAnalytics from 'components/Contacts/components/CampaignAnalytics';
 import CustomCampaignFilters from 'components/Contacts/components/CampaignFilter';
-import { GET_ES_MIN_VALUE } from 'graphQL/useQueryESMinValue';
 import MRTTable from 'components/MRTTable';
 import { tableController } from 'hookstate/tableController';
 import { copy, dateFilterToDate } from 'utils/helper';
 import { formatDate } from 'components/Shared/functions';
+import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
 
 const CampaignManagement = () => {
 	const esIndex = 'campaigns_flat';
@@ -26,25 +26,24 @@ const CampaignManagement = () => {
 
 	const { stateValues } = tableController(TableKey).useState(['filters']);
 
-	const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
+	const [getDbMinValue] = useLazyQuery(GET_DB_MIN_VALUE, {
 		fetchPolicy: 'no-cache',
 		onCompleted: data => {
-			if (data?.getESMinValue) {
-				const date = new Date(data?.getESMinValue);
-				if (date?.toString() !== 'Invalid Date') setLastCampaignMinDate(data?.getESMinValue);
+			if (data?.getDbMinValue?.data) {
+				const date = new Date(data?.getDbMinValue.data);
+				if (date?.toString() !== 'Invalid Date') setLastCampaignMinDate(data?.getDbMinValue.data);
 			}
 		},
 	});
 
 	useEffect(() => {
-		getESMinValue({
+		getDbMinValue({
 			variables: {
-				esIndex,
+				index: esIndex,
 				field: 'createdAt',
-				value_as_string: true,
 			},
 		});
-	}, [getESMinValue]);
+	}, [getDbMinValue]);
 
 	useEffect(() => {
 		setAppliedFilters(appliedFilters => ({
@@ -55,10 +54,15 @@ const CampaignManagement = () => {
 	}, [fromDate, toDate, setAppliedFilters]);
 
 	const setESFilters = useCallback(newFilter => {
-		if (newFilter.length === 0) {
-			let externalFilters = tableController(TableKey).getExternalFilter();
-			tableController(TableKey).clearFilter(externalFilters[0]?.field);
-		} else {
+		let externalFilters = tableController(TableKey).getExternalFilter();
+
+		externalFilters.forEach(externalFilter => {
+			if (newFilter.find(f => f.field === externalFilter.field)) return;
+
+			tableController(TableKey).clearFilter(externalFilter.field);
+		});
+
+		if (newFilter.length !== 0) {
 			newFilter.forEach(filter => {
 				const { field, value, type, columnType, searchType } = filter;
 				let filterToAdd;

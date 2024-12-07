@@ -18,26 +18,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Base from './base';
 
 export default class ArrowDownSolid extends Component {
-  static propTypes = {
-    /** Set the height of the icon, ex. '16px' */
-    height: PropTypes.string
-  };
+	static propTypes = {
+		/** Set the height of the icon, ex. '16px' */
+		height: PropTypes.string,
+	};
 
-  static defaultProps = {
-    height: '16px',
-    predefinedClassName: 'data-ex-icons-arrowdown-solid'
-  };
+	static defaultProps = {
+		height: '16px',
+		predefinedClassName: 'data-ex-icons-arrowdown-solid',
+	};
 
-  render() {
-    return (
-      <Base {...this.props}>
-        <polygon points="6.4,20.8 56.4,20.8 31.4,45.8 " />
-      </Base>
-    );
-  }
+	render() {
+		return (
+			<Base {...this.props}>
+				<polygon points="6.4,20.8 56.4,20.8 31.4,45.8 " />
+			</Base>
+		);
+	}
 }

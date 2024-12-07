@@ -1,18 +1,18 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const CUSTOMLAYERSQUERY = gql`
-  query getCustomLayers {
-    allCustomLayers {
-      _id
-      shapeJson
-      shape
-      name
-      layer
-      user {
-        _id
-        name
-        email
-      }
-    }
-  }
+	query getCustomLayers {
+		allCustomLayers {
+			_id
+			shapeJson
+			shape
+			name
+			layer
+			user {
+				_id
+				name
+				email
+			}
+		}
+	}
 `;

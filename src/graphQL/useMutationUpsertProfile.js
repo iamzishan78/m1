@@ -1,10 +1,10 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const UPSERTPROFILE = gql`
-    mutation upsertProfile($profileData: ProfileInput ){
-        upsertProfile(profile: $profileData) {
-            success
-            message
-        }
-    }
+	mutation upsertProfile($profileData: ProfileInput) {
+		upsertProfile(profile: $profileData) {
+			success
+			message
+		}
+	}
 `;

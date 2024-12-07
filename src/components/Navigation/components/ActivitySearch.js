@@ -13,8 +13,9 @@ import List from '@material-ui/icons/List';
 import EventIcon from '@material-ui/icons/Event';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 
-import { GETALLACTIVITIESFORSEARCH } from 'graphQL/useQueryGetAllActivities';
+import { GETALLACTIVITIES } from 'graphQL/useQueryGetAllActivities';
 import { AppContext } from 'AppContext';
+import { slidoutState } from 'hookstate/initialStates';
 
 const useStyles = makeStyles(theme => ({
 	barTitle: {
@@ -97,15 +98,24 @@ const ActivitySearch = () => {
 
 	const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
 
-	const handleSelectActivity = id => {
-		setStateApp(stateApp => ({
-			...stateApp,
-			activityDialog: id ? true : false,
-			selectedActivityId: id || null,
-		}));
-	};
+	const [getAllActivitiesForSearch, { data: activitiesData, loading }] = useLazyQuery(GETALLACTIVITIES, {
+		fetchPolicy: `network-only`,
+	});
 
-	const [getAllActivitiesForSearch, { data: activitiesData, loading }] = useLazyQuery(GETALLACTIVITIESFORSEARCH);
+	const handleSelectActivity = id => {
+		if (activeModule.title === 'Expirations') {
+			setStateApp(stateApp => ({
+				...stateApp,
+				activityDialog: id ? true : false,
+				selectedActivityId: id || null,
+			}));
+		} else if (id) {
+			window.history.pushState('', '', `/calendar/activities/${id}`);
+			slidoutState.selectedActivityId.set(id);
+			slidoutState.show.set(true);
+			slidoutState.selectedActivity.set(activitiesData?.activities?.find(act => act._id === id));
+		}
+	};
 
 	useEffect(() => {
 		setActivities([]); // reset data if activityModule is changed

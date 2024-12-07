@@ -1,14 +1,14 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const REMOVE_WELLS = gql`
-  mutation removeWells($wellIds: [ID], $userId: String, $isDeleted: Boolean) {
-    removeWells(wellIds: $wellIds, userId: $userId, isDeleted: $isDeleted) {
-      success
-      message
-      error
-      agreement
-    }
-  }
+	mutation removeWells($wellIds: [ID], $userId: String, $isDeleted: Boolean) {
+		removeWells(wellIds: $wellIds, userId: $userId, isDeleted: $isDeleted) {
+			success
+			message
+			error
+			agreement
+		}
+	}
 `;
 
 // import gql from "graphql-tag";
@@ -23,4 +23,3 @@ export const REMOVE_WELLS = gql`
 //     }
 //   }
 // `;
-

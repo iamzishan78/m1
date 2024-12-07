@@ -1,12 +1,12 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const TRANSACTIONDATA = gql`
-  query getTransactionData($userId: ID) {
-    transactionData(userId: $userId) {
-      _id
-      allData
-      user
-      pipeline
-    }
-  }
+	query getTransactionData($userId: ID) {
+		transactionData(userId: $userId) {
+			_id
+			allData
+			user
+			pipeline
+		}
+	}
 `;

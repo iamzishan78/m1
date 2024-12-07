@@ -1,7 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const RIGSQUERY = gql`
-  query {
-    rigs
-  }
+	query {
+		rigs
+	}
 `;

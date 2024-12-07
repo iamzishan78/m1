@@ -139,7 +139,6 @@ const Title = ({ tab, setTab, setData, copyData, stateApp, setStateApp }) => {
 		searchTask();
 	}, [search, copyData]);
 
-
 	const searchTask = () => {
 		if (search?.length && copyData?.length) {
 			setDefaultData(copyData);
@@ -151,7 +150,7 @@ const Title = ({ tab, setTab, setData, copyData, stateApp, setStateApp }) => {
 		} else if (search?.length === 0) {
 			setData(copyData);
 		}
-	}
+	};
 
 	return (
 		<Grid container className={classes.gridStyle}>
@@ -258,21 +257,21 @@ const Tasks = () => {
 
 	useEffect(() => {
 		if (orginalData && Array.isArray(orginalData.activities)) {
-			const sortCallBack = (a, b) => moment(b.dateTime).valueOf() - moment(a.dateTime).valueOf();
+			const sortCallBack = (a, b) => moment(Number(b.dateTime)).valueOf() - moment(Number(a.dateTime)).valueOf();
 			if (tab === 0) {
 				const filterFirstTabData = orginalData.activities
-					.filter(activity => stateApp.user._id === activity.ownerId )
+					.filter(activity => stateApp.user._id === activity.ownerId)
 					.sort(sortCallBack);
 				setCopyData(filterFirstTabData);
 				setData(filterFirstTabData);
-			} 
+			}
 			if (tab === 1) {
 				const filterFirstTabData = orginalData.activities
 					.filter(
 						activity =>
 							!activity.isClosed &&
 							stateApp.user._id === activity.ownerId &&
-							moment.parseZone(new Date(activity.dateTime))?.isSame(new Date(), 'day')
+							moment.parseZone(new Date(Number(activity.dateTime)))?.isSame(new Date(), 'day')
 					)
 					.sort(sortCallBack);
 				setCopyData(filterFirstTabData);
@@ -285,7 +284,7 @@ const Tasks = () => {
 						activity =>
 							!activity.isClosed &&
 							stateApp.user._id === activity.ownerId &&
-							moment.parseZone(new Date(activity.dateTime)).isBetween(tomorrow, futureDate)
+							moment.parseZone(new Date(Number(activity.dateTime))).isBetween(tomorrow, futureDate)
 					)
 					.sort(sortCallBack);
 				setCopyData(filterSecondTabData);
@@ -296,7 +295,7 @@ const Tasks = () => {
 						activity =>
 							!activity.isClosed &&
 							stateApp.user._id === activity.ownerId &&
-							moment.parseZone(new Date(activity.dateTime)).isBefore(moment())
+							moment.parseZone(new Date(Number(activity.dateTime))).isBefore(moment())
 					)
 					.sort(sortCallBack);
 				setCopyData(filterThirldTabData);
@@ -374,7 +373,7 @@ const Tasks = () => {
 												<span>
 													Date:{' '}
 													{activity.dateTime
-														? moment.parseZone(new Date(activity.dateTime)).format('MM/DD/YYYY hh:mm:ssa')
+														? moment.parseZone(new Date(Number(activity.dateTime))).format('MM/DD/YYYY hh:mm:ssa')
 														: 'N/A'}
 												</span>
 											</Grid>

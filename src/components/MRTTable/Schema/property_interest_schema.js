@@ -33,7 +33,7 @@ const PropertyIntrestMeta = {
 
 				if (!id) return value;
 
-				return <ColumnWithLink value={value} link={`property/details/${id}`} onClick={() => { }} />;
+				return <ColumnWithLink value={value} link={`property/details/${id}`} onClick={() => {}} />;
 			},
 		},
 		{
@@ -56,9 +56,9 @@ const PropertyIntrestMeta = {
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: "property.purchaserNumber.keyword",
+			name: 'property.purchaserNumber.keyword',
 			accessorKey: 'property.purchaserNumber',
-			header: "Payor Property #",
+			header: 'Payor Property #',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,

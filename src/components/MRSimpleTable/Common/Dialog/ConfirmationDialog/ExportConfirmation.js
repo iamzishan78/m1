@@ -14,13 +14,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { AppContext } from 'AppContext';
 import { Modals } from '../../../../../styles/Modal';
 
-export default function ExportConfirmationDialog({
-	table,
-	tableKey,
-	header,
-	onClose,
-	children,
-}) {
+export default function ExportConfirmationDialog({ table, tableKey, header, onClose, children }) {
 	const [, setStateApp] = useContext(AppContext);
 	const dispatch = useDispatch();
 	const client = useApolloClient();
@@ -52,18 +46,14 @@ export default function ExportConfirmationDialog({
 
 		let filteredTableSchema = tableStateValues?.TableSchema.filter(obj => {
 			const accessorKey = obj?.accessorKey || obj?.id;
-			return (
-				filteredColumns[accessorKey] === true && !obj.hasOwnProperty('enableColumnFilter')
-			);
+			return filteredColumns[accessorKey] === true && !obj.hasOwnProperty('enableColumnFilter');
 		});
 
-		filteredTableSchema = filteredTableSchema?.map(
-			({ name, header, accessorKey, id, isExport }) => ({
-				name,
-				label: header,
-				esKey: isExport || accessorKey || id,
-			})
-		);
+		filteredTableSchema = filteredTableSchema?.map(({ name, header, accessorKey, id, isExport }) => ({
+			name,
+			label: header,
+			esKey: isExport || accessorKey || id,
+		}));
 
 		let sortOrder;
 		if (tableStateValues.sorting.length > 0) {
@@ -73,9 +63,7 @@ export default function ExportConfirmationDialog({
 			};
 		}
 
-		const query = tableStateValues?.globalFilter
-			? `*${tableStateValues?.globalFilter}*`
-			: '*';
+		const query = tableStateValues?.globalFilter ? `*${tableStateValues?.globalFilter}*` : '*';
 		const search = { fields: tableStateValues?.searchFields, query };
 
 		const selectedIds = rows && rows.length > 0 ? rows.map(item => item._id) : null;
@@ -112,11 +100,7 @@ export default function ExportConfirmationDialog({
 		<Dialog style={{ zIndex: 9999999999 }} open maxWidth="xs">
 			<DialogTitle className={modalClass.title} id="customized-dialog-title">
 				{header}
-				<HighlightOffIcon
-					fontSize="large"
-					className={modalClass.titleClose}
-					onClick={onClose}
-				/>
+				<HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={onClose} />
 			</DialogTitle>
 			<DialogContent>
 				<h3 className={modalClass.inputLabel}>{children}</h3>

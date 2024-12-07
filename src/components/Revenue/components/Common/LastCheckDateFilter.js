@@ -3,12 +3,13 @@ import { Grid, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/styles';
 import CustomDates from 'components/Revenue/components/Common/CustomDates';
-import { GET_ES_MIN_VALUE } from 'graphQL/useQueryESMinValue';
 import { useLazyQuery } from '@apollo/client';
 import { useSelector } from 'react-redux';
 import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
-import { dateFilterToDate } from 'utils/helper';
+import { dateFilterToDate, getFirstDayOfMonth } from 'utils/helper';
 import { copy } from 'components/Shared/functions';
+import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
+import { get } from 'lodash';
 
 const useStyles = makeStyles(theme => ({
 	actionBar: {
@@ -49,11 +50,9 @@ const LastCheckDateFilter = ({
 }) => {
 	const classes = useStyles();
 
-	const [selectedFilter, setSelectedFilter] = useState('');
 	const [fromDate, setFromDate] = React.useState(null);
 	const [toDate, setToDate] = React.useState(null);
 	const [lastCheckMinDate, setLastCheckMinDate] = useState('');
-	const [status, setStatus] = useState('ALL');
 	const [propertyFilter, setPropertyFilter] = useState([]);
 	const [checkNumberFilter, setCheckNumberFilter] = useState();
 	const [propertyNumberFilter, setPropertyNumberFilter] = useState();
@@ -62,26 +61,34 @@ const LastCheckDateFilter = ({
 
 	const propertiesReportGroup = useSelector(({ Revenue }) => Revenue.propertiesReportGroup);
 
-	const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
+	const [getDbMinValue] = useLazyQuery(GET_DB_AGGS, {
 		fetchPolicy: 'no-cache',
 		onCompleted: data => {
-			if (data?.getESMinValue) {
-				setLastCheckMinDate(data?.getESMinValue);
+			const key = field.replace(/\./g, '_');
+			const value = get(data, `getDbAggs.aggregations.${key}[0].${key}`);
+
+			if (value) {
+				setLastCheckMinDate(value);
 			}
 		},
 	});
 	useEffect(() => {
-		getESMinValue({
+		getDbMinValue({
 			variables: {
-				esIndex,
-				field,
-				value_as_string: true,
+				index: esIndex,
+				aggs: {
+					[field]: {
+						min: { field },
+					},
+				},
 			},
 		});
-	}, [getESMinValue]);
+	}, [getDbMinValue, esIndex, field]);
 
 	const updateFilters = useCallback(() => {
 		let filters = copy(esFilters) ?? [];
+		const isDuplicateFilter = filters?.findIndex(filter => filter.field === field) !== -1;
+
 		filters = filters.filter(
 			filter =>
 				filter.type !== 'range' &&
@@ -96,16 +103,16 @@ const LastCheckDateFilter = ({
 		if (propertyNumberFilter) {
 			filters.push({ field: 'property.number.keyword', value: propertyNumberFilter });
 		}
-		if (fromDate && toDate)
+		if (fromDate && toDate && !isDuplicateFilter) {
 			filters.unshift({
 				field,
-				value: {
-					gte: fromDate ? `${fromDate}T00:00:00.000Z` : null,
-					lte: toDate ? `${dateFilterToDate(toDate)}T00:00:00.000Z` : null,
-				},
-				type: 'range',
+				value: [
+					fromDate ? `${getFirstDayOfMonth(fromDate)}` : null,
+					toDate ? `${dateFilterToDate(toDate)}T00:00:00.000Z` : null,
+				],
 				filterType: 'date',
 			});
+		}
 
 		const _propertyFilter = copy(propertyFilter);
 		filters = filters.filter(filter => !reportGroupFilters.current.includes(filter.field));
@@ -117,19 +124,19 @@ const LastCheckDateFilter = ({
 		});
 		reportGroupFilters.current = _propertyFilter.map(filter => filter.field);
 
-		if (status !== 'ALL') {
-			filters.push({
-				field: 'status.keyword',
-				value: status,
-			});
-		}
+		// if (status !== 'ALL') {
+		// 	filters.push({
+		// 		field: 'status.keyword',
+		// 		value: status,
+		// 	});
+		// }
 		// Removed the conditional statement because clicking the cross icon in the comparison grid's global filter or selecting all dates was not updating the grid filters as expected.
 
 		setESFilters(filters);
 		setFilterToggle(!filterToggle);
 		// disabling this because a dependency causes infinite loop in useEffect
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [toDate, fromDate, status, propertyFilter, checkNumberFilter, propertyNumberFilter]);
+	}, [toDate, fromDate, propertyFilter, checkNumberFilter, propertyNumberFilter]);
 
 	useEffect(() => {
 		updateFilters();
@@ -145,7 +152,6 @@ const LastCheckDateFilter = ({
 					setToDate={setToDate}
 					isProperties
 					lastCheckMinDate={lastCheckMinDate}
-					onChange={setSelectedFilter}
 					datesInputWidth={2}
 				/>
 				{extraFitlers.includes('propertyGroup') && (

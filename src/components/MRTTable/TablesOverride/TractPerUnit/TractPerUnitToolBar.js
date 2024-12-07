@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
-import AddUnitTractDialog from "components/Table/TableAddDialog/AddUnitTractDialog";
+import AddUnitTractDialog from 'components/Table/TableAddDialog/AddUnitTractDialog';
 
 const useStyles = makeStyles(() => ({
 	multiSelectionTopBarButtons: {
@@ -34,14 +34,15 @@ function TractPerUnitToolBar({ table, tableKey }) {
 		'defaultFilters',
 	]);
 	const tableStateValues = tableState.stateValues;
-	const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection || {})?.length ? true : false;
+	const isSomeRowsSelected =
+		table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection || {})?.length ? true : false;
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
 
 	const { stateValues } = tableGlobalController.useState(['dialog']);
 	const { type, ...rest } = stateValues.dialog || {};
 
-	const addTractToUnit = (e) => {
+	const addTractToUnit = e => {
 		const { customLayer } = Controller.getValue('customProps');
 		e.stopPropagation();
 		tableGlobalController.updateState({
@@ -67,26 +68,20 @@ function TractPerUnitToolBar({ table, tableKey }) {
 	return (
 		<>
 			{!isSomethingSelected && (
-				<Button
-				color="secondary"
-				className={classes.multiSelectionTopBarButtons}
-				onClick={(e) => addTractToUnit(e)}
-			>
-				+ ADD Tract To UNIT
-			</Button>
+				<Button color="secondary" className={classes.multiSelectionTopBarButtons} onClick={e => addTractToUnit(e)}>
+					+ ADD Tract To UNIT
+				</Button>
 			)}
 
-            {type === 'addTractToUnit' && (
+			{type === 'addTractToUnit' && (
 				<AddUnitTractDialog
-				open
-				width="450px"
-				shapeId={rest?.shapeId}
-				shapeType={rest?.shapeType}
-				seletedTract={rest?.selectedRow}
-				onClose={() =>
-					handleCloseDialog()
-				}
-			  />
+					open
+					width="450px"
+					shapeId={rest?.shapeId}
+					shapeType={rest?.shapeType}
+					seletedTract={rest?.selectedRow}
+					onClose={() => handleCloseDialog()}
+				/>
 			)}
 		</>
 	);
