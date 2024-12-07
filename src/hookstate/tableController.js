@@ -45,6 +45,7 @@ const initialState = {
 	},
 	isIncludeInactive: false,
 	gridView: {},
+	showTypes: true,
 };
 
 export const tableESState = {};
