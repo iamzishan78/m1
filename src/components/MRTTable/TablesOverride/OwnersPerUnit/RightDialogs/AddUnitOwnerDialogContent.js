@@ -26,6 +26,7 @@ import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import AddIcon from '@material-ui/icons/Add';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { extractValueRecursively } from 'components/MRTTable/utils/helper';
+import { isString } from 'lodash';
 
 const useStyles = makeStyles(theme => ({
 	maxWidth: {
@@ -209,8 +210,9 @@ export default function AddUnitOwnerDialogContent({
 						_id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
 						contactStatus: ownerToAdd.contactStatus && (ownerToAdd.contactStatus.value || ownerToAdd.contactStatus),
 						status: ownerToAdd.status && (ownerToAdd.status.value || ownerToAdd.status),
-						contactOwner: ownerToAdd.contactOwners && (ownerToAdd.contactOwners.label || ownerToAdd.contactOwners),
-						contactOwnerId: ownerToAdd.contactOwners && (ownerToAdd.contactOwners.value || ownerToAdd.contactOwners),
+						...(ownerToAdd?.contactOwners && isString(ownerToAdd?.contactOwners)
+							? { contactOwnerId: ownerToAdd.contactOwners }
+							: {}),
 						lastUpdateBy: getUser?._id,
 						ownerType: ownerToAdd.ownerType && (ownerToAdd.ownerType.value || ownerToAdd.ownerType),
 						campaignPriority:
