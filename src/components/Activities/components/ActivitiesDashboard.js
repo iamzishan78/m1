@@ -148,6 +148,8 @@ const ActivitiesDashboard = () => {
 					...activitiesTableState?.filters,
 				]}
 				appliedFilters={appliedFilters}
+				setTableFilters = {tableController(tableKey)?.setFilters}
+				tableData = {activitiesTableState?.data}
 				module={'Activities'}
 			/>
 			<MRTTable
