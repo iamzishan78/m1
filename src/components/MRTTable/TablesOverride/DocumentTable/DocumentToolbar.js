@@ -18,7 +18,7 @@ function DocumentToolBar({ table, tableKey }) {
 	return (
 		<>
 			<>
-				<ButtonGroup variant="contained" style={{ height: '40px' }} color="primary" aria-label="split button">
+				<ButtonGroup variant="contained" color="primary" aria-label="split button">
 					<Button
 						id="addDocument"
 						color="primary"
@@ -35,7 +35,7 @@ function DocumentToolBar({ table, tableKey }) {
 					</Button>
 				</ButtonGroup>
 
-				<ButtonGroup variant="contained" style={{ height: '40px' }} color="primary" aria-label="split button">
+				<ButtonGroup variant="contained" color="primary" aria-label="split button">
 					<Button
 						id="addDocument"
 						color="primary"

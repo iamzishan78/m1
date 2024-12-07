@@ -137,7 +137,18 @@ function ToolbarActions({ table, tableKey, children }) {
 				)}
 			</div>
 			<div style={{ display: 'flex', gap: '0.5rem', marginLeft: '0.5rem' }}>
-				{children || <div />}
+				<div
+					style={{
+						display: 'flex',
+						height: '32px',
+						gap: '0.5rem',
+						minHeight: '32px',
+						maxHeight: '80px',
+						marginTop: '8px',
+					}}
+				>
+					{children}
+				</div>
 
 				<ToggleButton
 					style={{
