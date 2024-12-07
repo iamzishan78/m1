@@ -17,6 +17,7 @@ const formatValue = (value, field) => {
 	) {
 		value = vf_currency(value);
 	}
+	if (Array.isArray(value)) value = value.map(value => value || value === 0);
 	return value;
 };
 
@@ -242,7 +243,6 @@ function ESAutoCompleteFilter({
 			getFiltersAction({ afterKey: options[options.length - 1].value });
 		}
 	};
-
 	return (
 		<Autocomplete
 			multiple={multiple}
