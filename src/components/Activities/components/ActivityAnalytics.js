@@ -62,7 +62,7 @@ const defaultUpdateUsers = [
 		data: [],
 	},
 ];
-const ActivityAnalytics = ({ appliedFilters, tableFilters, module }) => {
+const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilters, tableData }) => {
 	const [stateApp] = useContext(AppContext);
 	const [analyticsData, setAnalyticsData] = useState([]);
 	const [contactData, setContactData] = useState([]);
@@ -146,7 +146,11 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module }) => {
 				},
 			});
 		}
-	}, [stateApp.activitySearchQuery, appliedFilters, tableFilters, stateApp.landAnalyticsSearchQuery]);
+	}, [stateApp.activitySearchQuery, appliedFilters, tableFilters, stateApp.landAnalyticsSearchQuery, tableData]);
+
+	useEffect(() => {
+		setTableFilters && setTableFilters(getActivityFilters(appliedFilters));
+	}, [appliedFilters]);
 
 	useEffect(() => {
 		if (analyticsData?.activitiesCountByTypePerOwner) {

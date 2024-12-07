@@ -106,7 +106,7 @@ function MapViewOptions({ handleDefaultView, tableKey, allMapViews, defaultView,
 	const [viewName, setViewName] = useState(`${mapViewStateValues?.mapView?.selectedMapView?.name || 'view'}-copy`);
 	const [upsertMapView] = useMutation(UPSERT_MAP_VIEW, {
 		onCompleted: data => {
-			fetchMapViews();
+			// fetchMapViews();
 			const mapView = globalStateController.getValue('mapView');
 			globalStateController.updateState({
 				mapView: {
@@ -222,6 +222,7 @@ function MapViewOptions({ handleDefaultView, tableKey, allMapViews, defaultView,
 									upsertMapView={upsertMapView}
 									user={getUser?._id}
 									tableKey={tableKey}
+									defaultView={defaultView}
 								/>
 							)}
 							{filterMapView.map(
@@ -236,6 +237,7 @@ function MapViewOptions({ handleDefaultView, tableKey, allMapViews, defaultView,
 											upsertMapView={upsertMapView}
 											user={getUser?._id}
 											tableKey={tableKey}
+											defaultView={defaultView}
 										/>
 									) : (
 										<View
@@ -260,7 +262,7 @@ function MapViewOptions({ handleDefaultView, tableKey, allMapViews, defaultView,
 
 export default memo(MapViewOptions);
 
-function InputField({ editMapViewId, viewName, setViewName, upsertMapView, setEditMapView }) {
+function InputField({ editMapViewId, viewName, setViewName, upsertMapView, setEditMapView, defaultView }) {
 	const classes = useStyles();
 	const mapViewState = globalStateController.useState(['filters', 'mapView']);
 	const mapViewStateValues = mapViewState.stateValues;
@@ -312,7 +314,8 @@ function InputField({ editMapViewId, viewName, setViewName, upsertMapView, setEd
 						});
 					}
 					globalStateController.updateState({
-						mapView: { ...mapViewStateValues.mapView, showSaveAsNew: false, viewChanged: true, showViewModal: false },
+						mapView: { ...mapViewStateValues.mapView, showViewModal: false, selectedMapView: defaultView },
+						viewChanged: true,
 					});
 				}
 				if (event.key === 'Escape') {
@@ -493,9 +496,13 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 							if (view?._id === mapViewStateValues?.mapView?.selectedMapView?._id) {
 								globalStateController.updateState({
 									mapView: { ...mapViewStateValues.mapView, showViewModal: false, selectedMapView: defaultView },
+									viewChanged: true,
 								});
 							} else {
-								globalStateController.updateState({ mapView: { ...mapViewStateValues.mapView, showViewModal: false } });
+								globalStateController.updateState({
+									mapView: { ...mapViewStateValues.mapView, showViewModal: false, selectedMapView: defaultView },
+									viewChanged: true,
+								});
 							}
 						}}
 					>

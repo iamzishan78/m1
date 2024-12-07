@@ -227,14 +227,7 @@ const tableESStateControllerHandler = state => ({
 		const { filters } = mapView?.selectedMapView || {};
 		const selectedMapViewFilters = filters || [];
 
-		const layers = globalStateController.getValue('layers') || [];
-		const gridLayersIds = layers
-			?.filter(layer => layer?.layerShapeName === layerIdentifier)
-			.map(layer => layer?.layerId);
-
-		const dataSourceViews = selectedMapViewFilters?.filter(
-			view => view.dataSourceName === layerIdentifier || gridLayersIds.includes(view.dataSourceName)
-		);
+		const dataSourceViews = selectedMapViewFilters?.filter(view => view.dataSourceName === layerIdentifier);
 		const mapViewFilters =
 			dataSourceViews?.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)) ||
 			[];
@@ -509,11 +502,6 @@ const tableESStateControllerHandler = state => ({
 		});
 
 		if (tableState?.layerIdentifier) {
-			const layers = globalStateController.getValue('layers') || [];
-			const gridLayersIds = layers
-				?.filter(layer => layer?.layerShapeName === tableState?.layerIdentifier)
-				.map(layer => layer?.layerId);
-
 			const existingFilter = mapViewsFitlers.find(
 				({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') === filter.field
 			);
@@ -537,11 +525,13 @@ const tableESStateControllerHandler = state => ({
 									({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') !== filter.field
 								),
 								{
-									dataSourceName: gridLayersIds?.[0] || tableState?.layerIdentifier,
+									dataSourceName: tableState?.layerIdentifier,
 									filterType:
 										tableState?.filterModes[filter.field.replace('.keyword', '')]?.mode ||
 										existingFilter?.filterType ||
-										'singleselect',
+										tableState?.esIndex === 'shapefile_flat'
+											? 'multiselect'
+											: 'singleselect',
 									fieldName: filter.field,
 									filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
 								},
