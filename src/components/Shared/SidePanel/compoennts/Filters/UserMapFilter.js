@@ -312,12 +312,8 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 		layerFiltersController.setVariables(filterAccessor, { filters }); // Clear filter from layer filters
 		const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView;
 		let globalFilters = selectedMapView?.filters || [];
-		globalFilters = globalFilters.filter(
-			filter =>
-				(filter.fieldName !== (fieldName?.value || fieldName) &&
-					filter.fieldName !== (fieldName?.value || fieldName).replace('.keyword', '')) ||
-				filter.dataSourceName !== dataSourceName
-		);
+
+		globalFilters = globalFilters.filter((_, i) => i !== index);
 		remove(index); // Set the filter cleared state to true
 
 		globalStateController.updateState({
