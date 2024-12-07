@@ -110,7 +110,9 @@ const LastCheckDateFilter = ({
 					fromDate ? `${getFirstDayOfMonth(fromDate)}` : null,
 					toDate ? `${dateFilterToDate(toDate)}T00:00:00.000Z` : null,
 				],
-				filterType: 'date',
+				type: 'advanced',
+				columnType: 'date',
+				searchType: 'between',
 			});
 		}
 
