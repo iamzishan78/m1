@@ -21,6 +21,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		const tableMeta = tableState.get({ noproxy: true });
 		const pagination = _pagination || tableMeta.pagination;
 		const { TableSchema } = tableMeta;
+		const isElasticIndex = tableStateValues.esIndex.includes('platformData:');
 		if (!TableSchema) return;
 
 		Controller.updateState({
@@ -84,8 +85,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			layerFiltersController.setVariables(tableStateValues.filterLayerType, variables);
 
 		let total = tableStateValues?.data?.total;
-
-		if (pagination.pageIndex === 0) {
+		if (pagination.pageIndex === 0 && !isElasticIndex) {
 			(async () => {
 				const dbDataTotal = await client.query({
 					variables,
@@ -111,6 +111,9 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		});
 
 		const data = allSelectedRows?.data?.getESSimpleSearch;
+		if (isElasticIndex) {
+			total = data.total;
+		}
 		let rows = copy(data.hits) || [];
 
 		rows.forEach(row => {
