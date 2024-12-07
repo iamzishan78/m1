@@ -101,7 +101,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module }) => {
 	const getAllFilters = () => {
 		let rangeFilters = [];
 		if (!tableFilters.find(filter => filter.type === 'range')) {
-			if (activeModule.title == 'Audit Reporting') {
+			if (activeModule.title === 'Audit Reporting') {
 				appliedFilters.filter = 'audit';
 			}
 			rangeFilters = getFilters(appliedFilters);
@@ -140,13 +140,13 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module }) => {
 				variables: {
 					search: {
 						fields: ['name', '_all'],
-						query: stateApp.activitySearchQuery,
+						query: stateApp.activitySearchQuery || stateApp.landAnalyticsSearchQuery,
 					},
 					filters: getAllFilters(),
 				},
 			});
 		}
-	}, [stateApp.activitySearchQuery, appliedFilters, tableFilters]);
+	}, [stateApp.activitySearchQuery, appliedFilters, tableFilters, stateApp.landAnalyticsSearchQuery]);
 
 	useEffect(() => {
 		if (analyticsData?.activitiesCountByTypePerOwner) {
@@ -216,10 +216,10 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module }) => {
 			style={{ padding: '30px' }}
 		>
 			{
-				<Grid item md={activeModule.value == 'CRM' ? 4 : 6} style={{ padding: '10px' }}>
+				<Grid item md={activeModule.value === 'CRM' ? 4 : 6} style={{ padding: '10px' }}>
 					<Card variant="outlined">
 						<CardContent style={{ height: '265px' }}>
-							<label>{activeModule.value == 'CRM' ? 'Total Activities' : 'Total Updates'}</label>
+							<label>{activeModule.value === 'CRM' ? 'Total Activities' : 'Total Updates'}</label>
 							<div
 								style={{
 									position: 'relative',
@@ -227,9 +227,9 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module }) => {
 									fontSize: 18,
 								}}
 							>
-								{activeModule.value == 'CRM' ? get(analyticsData, 'total', 0) : get(contactData, 'total', 0)}
+								{activeModule.value === 'CRM' ? get(analyticsData, 'total', 0) : get(contactData, 'total', 0)}
 							</div>
-							{activeModule.value == 'CRM' && (
+							{activeModule.value === 'CRM' && (
 								<DonutChart
 									height={240}
 									marginTop={-15}
@@ -257,7 +257,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module }) => {
 									]}
 								/>
 							)}
-							{activeModule.title == 'Audit Reporting' && (
+							{activeModule.title === 'Audit Reporting' && (
 								<DonutChart
 									height={240}
 									marginTop={-15}
@@ -279,18 +279,18 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module }) => {
 			}
 
 			{
-				<Grid item md={activeModule.value == 'CRM' ? 4 : 6} style={{ padding: '10px' }}>
+				<Grid item md={activeModule.value === 'CRM' ? 4 : 6} style={{ padding: '10px' }}>
 					<Card variant="outlined">
 						<CardContent style={{ height: '265px', overflow: 'auto' }}>
-							<label>{activeModule.value == 'CRM' ? 'Activities Per Qualifier' : 'Updates Per User'}</label>
+							<label>{activeModule.value === 'CRM' ? 'Activities Per Qualifier' : 'Updates Per User'}</label>
 							{!loading && !auditloading && (
-								<StackedBarChart data={activeModule.value == 'CRM' ? activitiesPerQualifier : updatesPerUser} />
+								<StackedBarChart data={activeModule.value === 'CRM' ? activitiesPerQualifier : updatesPerUser} />
 							)}
 						</CardContent>
 					</Card>
 				</Grid>
 			}
-			{activeModule.value == 'CRM' && (
+			{activeModule.value === 'CRM' && (
 				<Grid item md={4} style={{ padding: '10px' }}>
 					<Card variant="outlined">
 						<CardContent style={{ height: '265px', overflow: 'auto' }}>

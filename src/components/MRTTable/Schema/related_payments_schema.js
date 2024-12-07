@@ -34,7 +34,6 @@ const RelatedPaymentsMeta = {
 	isInFiniteScroll: true,
 	columnReordering: false,
 	enableRowSelected: true,
-	bypassSelectAll: true,
 	hasMultiGrids: true,
 	TableSchema: [
 		{
