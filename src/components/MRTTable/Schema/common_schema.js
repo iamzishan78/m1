@@ -93,7 +93,7 @@ export const CommonSchema = {
 		hidden: false,
 		filter: true,
 		isSearchField: false,
-		enableSorting: true,
+		enableSorting: false,
 		enableColumnActions: false,
 		enableHiding: false,
 		type: 'string',
