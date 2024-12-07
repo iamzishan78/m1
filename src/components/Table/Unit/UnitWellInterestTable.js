@@ -67,7 +67,7 @@ function UnitWellInterestTable(props) {
 					first: startPaginationAt,
 					keep_alive: '1micros',
 				},
-				search: `shape._id:${props.customLayer._id}`,
+				filters: [{ field: 'shape._id', value: props.customLayer._id }],
 			},
 		});
 	}, [props.parent]);
