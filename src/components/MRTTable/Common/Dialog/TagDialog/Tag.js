@@ -108,7 +108,7 @@ const useStyles = makeStyles(theme => ({
 			fontSize: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '25px'),
 			margin: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '3px'),
 			padding: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '0px !important'),
-			borderRadius: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '50%'),
+			borderRadius: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '5px'),
 			textAlign: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : 'center'),
 			cursor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : 'pointer'),
 			'&:hover': {
