@@ -329,6 +329,7 @@ export function DetailComponents(props) {
 				})
 			);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dataCustomLayer?.customLayer]);
 
 	useEffect(() => {
@@ -368,6 +369,7 @@ export function DetailComponents(props) {
 			});
 			detailCardController.updateState({ customLayer: null });
 		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const updateAgreement = (field, value, isCustom) => {
@@ -627,6 +629,7 @@ export function DetailComponents(props) {
 											params: {
 												expandedPanel: false,
 												openSpeedDial: false,
+												mapControls: false,
 												hideShape: true,
 												paramId: agreementId,
 												layerPadding: { padding: { top: 50, bottom: 50, left: !drawer ? 300 : 700, right: 20 } },
