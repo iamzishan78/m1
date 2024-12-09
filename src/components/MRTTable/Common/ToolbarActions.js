@@ -172,7 +172,7 @@ function ToolbarActions({ table, tableKey, children }) {
 					</small>
 				</ToggleButton>
 
-				{!tableStateValues.isGeneric && tableStateValues.data?.total > 0 && (
+				{!tableStateValues.isGeneric && tableStateValues.data?.total > 0 && !tableStateValues.isExportDisabled && (
 					<IconButton onClick={handleExport} data-testid="download-csv">
 						<Tooltip title="Download CSV" aria-label="add">
 							<CloudDownloadIcon />
