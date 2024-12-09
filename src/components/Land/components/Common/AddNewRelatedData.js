@@ -21,8 +21,9 @@ import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import billingPartiesForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/BillingPartyGrid/billing_parties_form_schema';
 import costAllocationForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/CostAllocationGrid/cost_allocation_schema';
 import paymentForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/PaymentGrid/payment_form_schema';
-import { isString } from 'lodash';
+import { isEmpty, isString } from 'lodash';
 import { checkFormRequireField } from 'utils/helper';
+import { tableGlobalController } from 'hookstate/tableController';
 
 const useStyles = makeStyles({
 	list: {
@@ -167,6 +168,7 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 	const [error, setError] = useState(false);
 
 	const Controller = sideDialogController(formName);
+	const paymentMultiGrid = tableGlobalController.getValue('paymentMultiGrid');
 	const formState = Controller.useCompleteState();
 
 	// Memoize form schema to avoid unnecessary re-renders
@@ -194,6 +196,7 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 				return paymentForm({
 					getValues,
 					setValue,
+					isUpdate: !isEmpty(paymentMultiGrid?.paymentData),
 				});
 			}
 			default: {
@@ -221,6 +224,11 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 
 	const onSubmit = () => {
 		const data = getValues();
+
+		if (!isEmpty(paymentMultiGrid?.paymentData) && formName === 'paymentDialog') {
+			data._id = paymentMultiGrid.paymentData._id;
+		}
+
 		if (checkFormRequireField(data, formSchema)) {
 			setError(true);
 			return;
@@ -232,6 +240,16 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 		});
 		addNewData(data, setLoader);
 	};
+
+	useEffect(() => {
+		if (!isEmpty(paymentMultiGrid?.paymentData) && formName === 'paymentDialog') {
+			const rowData = paymentMultiGrid?.paymentData;
+			rowData.assignedTo = rowData?.assignedTo?._id || '';
+			Controller.updateState(rowData);
+			reset(rowData);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [paymentMultiGrid?.paymentData]);
 
 	const DocumentDetail = anchor => (
 		<div

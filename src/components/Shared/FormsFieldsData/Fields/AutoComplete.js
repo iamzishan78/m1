@@ -15,6 +15,7 @@ function AutoCompleteComponent({ control, item, watch, error }) {
 		onChange,
 		isESSearch,
 		required = false,
+		disabled = false,
 	} = item;
 
 	const client = useApolloClient();
@@ -89,6 +90,7 @@ function AutoCompleteComponent({ control, item, watch, error }) {
 						getOptionLabel={option => option.label}
 						getOptionSelected={(option, value) => option.value === value.value}
 						loading={loading}
+						disabled={disabled}
 						loadingText={
 							loading ? (
 								<div style={{ textAlign: 'center' }}>
