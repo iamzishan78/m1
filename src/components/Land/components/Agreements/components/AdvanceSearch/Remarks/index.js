@@ -47,7 +47,6 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index }) 
 		searchFields: filter.searchFields,
 		filters: [{ field: 'shapeJson.properties.type.keyword', value: 'agreement' }],
 		extendSearchQuery: '',
-		isElasticQuery: false,
 	};
 	if (filter.getOptionLabel) params['getOptionLabel'] = filter.getOptionLabel;
 	return (

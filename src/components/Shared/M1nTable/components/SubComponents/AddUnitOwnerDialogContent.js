@@ -43,7 +43,8 @@ import DeleteConfirmationDialogContent from './DeleteConfirmationDialogContent';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
 import { Status } from 'components/ContactDetailCard/components/FieldContent';
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+
 import { tableGlobalController } from 'hookstate/tableController';
 import { calculateStandardNraForUnit } from 'utils/calculatedNraHelper';
 
@@ -142,7 +143,7 @@ export default function AddUnitOwnerDialogContent({
 		zip: '',
 	});
 
-	const [getCampaignPriorityList, { data: priorityList }] = useLazyQuery(GET_ES_FILTER_LIST, {
+	const [getCampaignPriorityList, { data: priorityList }] = useLazyQuery(GET_DB_FILTERS, {
 		fetchPolicy: 'no-cache',
 	});
 
@@ -154,23 +155,30 @@ export default function AddUnitOwnerDialogContent({
 	useEffect(() => {
 		getCampaignPriorityList({
 			variables: {
-				esIndex: 'shapeowners_flat',
-				filterKey: 'campaignPriority.keyword',
-				size: 50,
+				index: 'shapeowners_flat',
+				filterAggs: {
+					field: 'campaignPriority.keyword',
+					type: 'withOriginalIds',
+					size: 50,
+				},
 			},
 		});
 	}, [getCampaignPriorityList]);
 
-	const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
+	const [getFilters, { data: filtersData }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 
 	useEffect(() => {
 		getFilters({
 			variables: {
-				esIndex: 'contacts_flat',
-				filterKey: 'status.keyword',
-				size: 50,
+				index: 'contacts_flat',
+				filterAggs: {
+					field: 'status.keyword',
+					type: 'withOriginalIds',
+					size: 50,
+				},
 			},
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -262,12 +270,13 @@ export default function AddUnitOwnerDialogContent({
 
 			reset(owner);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedRow]);
 
 	useEffect(() => {
-		if (filtersData?.getESFilterList?.hits) {
-			const allFiltersData = filtersData.getESFilterList.hits.map(hit => hit.key);
-			let filterData = filtersData.getESFilterList.hits.map(hit => hit.key);
+		if (filtersData?.getDbFilters?.hits) {
+			const allFiltersData = filtersData.getDbFilters.hits.map(hit => hit.key);
+			let filterData = filtersData.getDbFilters.hits.map(hit => hit.key);
 			for (let i = 0; i < contactStatusOptions.length; i++) {
 				filterData = filterData.filter(d => d !== contactStatusOptions[i].value && d !== contactStatusOptions[i].label);
 			}
@@ -281,6 +290,7 @@ export default function AddUnitOwnerDialogContent({
 			}
 			setStatusOptions(filterData);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [filtersData]);
 
 	// CONTACT
@@ -320,6 +330,7 @@ export default function AddUnitOwnerDialogContent({
 			}));
 			tableGlobalController.refetch();
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [mutationData, updateData]);
 
 	useEffect(() => {
@@ -328,6 +339,7 @@ export default function AddUnitOwnerDialogContent({
 				setValue('contactStatus', nameAutValue.contactStatus);
 			}
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [nameAutValue]);
 
 	useEffect(() => {
@@ -336,6 +348,7 @@ export default function AddUnitOwnerDialogContent({
 			setValue('offer_price', calculateOfferPrice(uUnitPricing, getValues().nra));
 		if (!isMaxOfferPriceOverridden && getValues().nra)
 			setValue('max_offer_price', calculateOfferPrice(uMaxUnitPricing, getValues().nra));
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [watchedNra]);
 
 	const emptyStates = () => {
@@ -373,7 +386,7 @@ export default function AddUnitOwnerDialogContent({
 					],
 					userId: stateApp.user.mongoId,
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
+				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getDbFilters', 'getCustomLayer'],
 				awaitRefetchQueries: true,
 			});
 		} else {
@@ -395,7 +408,7 @@ export default function AddUnitOwnerDialogContent({
 						lastUpdateBy: stateApp.user.mongoId,
 					},
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
+				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getDbFilters', 'getCustomLayer'],
 				awaitRefetchQueries: true,
 			});
 		}
@@ -1392,8 +1405,8 @@ export default function AddUnitOwnerDialogContent({
 												if (value?._id === 'newEntity') delete value._id;
 												setValue('campaignPriority', value?.name);
 											}}
-											options={get(priorityList, 'getESFilterList.hits', [])?.map(payor => ({
-												_id: get(payor, `original.hits.hits.${0}._id`),
+											options={get(priorityList, 'getDbFilters.hits', [])?.map(payor => ({
+												_id: get(payor, `original[0]._id`),
 												name: payor.key,
 											}))}
 										/>

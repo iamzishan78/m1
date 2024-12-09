@@ -44,6 +44,8 @@ const initialState = {
 		left: [],
 	},
 	isIncludeInactive: false,
+	gridView: {},
+	showTypes: true,
 };
 
 export const tableESState = {};
@@ -67,10 +69,9 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 
 	const metaDataTableSchema = data.map((item, index) => {
 		const key = item?.esKey.replaceAll('.keyword', '');
-
 		return {
-			...item,
 			...CommonSchema.COMMON_COLUMN,
+			...item,
 			name: `${key}.keyword`,
 			id: key,
 			accessorFn: row => get(row, key),
@@ -187,6 +188,7 @@ const tableESStateControllerHandler = state => ({
 			isDefaultGridView,
 			enableHiding = true,
 			refetchQueries = [],
+			globalFilter,
 			...rest
 		},
 		client
@@ -218,20 +220,14 @@ const tableESStateControllerHandler = state => ({
 		}
 
 		let formatedGridView = null;
+
 		let gridView = {};
 
 		const mapView = globalStateController.getValue('mapView');
 		const { filters } = mapView?.selectedMapView || {};
 		const selectedMapViewFilters = filters || [];
 
-		const layers = globalStateController.getValue('layers') || [];
-		const gridLayersIds = layers
-			?.filter(layer => layer?.layerShapeName === layerIdentifier)
-			.map(layer => layer?.layerId);
-
-		const dataSourceViews = selectedMapViewFilters?.filter(
-			view => view.dataSourceName === layerIdentifier || gridLayersIds.includes(view.dataSourceName)
-		);
+		const dataSourceViews = selectedMapViewFilters?.filter(view => view.dataSourceName === layerIdentifier);
 		const mapViewFilters =
 			dataSourceViews?.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)) ||
 			[];
@@ -250,7 +246,6 @@ const tableESStateControllerHandler = state => ({
 				showSaveAsNew: false,
 			};
 		}
-
 		const {
 			_TableSchema,
 			tableCss,
@@ -268,6 +263,7 @@ const tableESStateControllerHandler = state => ({
 			defaultFlterMode,
 			search,
 			columnVirtualization,
+			globalFilter,
 		});
 
 		// Set default pinning and ordering
@@ -347,7 +343,6 @@ const tableESStateControllerHandler = state => ({
 		});
 
 		if (mapViewFilters.length > 0) tableController(tableKey).setShowColumnFilters(true);
-
 		mapViewFilters?.forEach(filter => {
 			tableController(tableKey).setFilterMode(filter?.field.replace('.keyword', ''), filter.searchType);
 		});
@@ -461,12 +456,15 @@ const tableESStateControllerHandler = state => ({
 	setGlobalFilter: globalFilter =>
 		!deepEqual(state.globalFilter?.get({ noproxy: true }), globalFilter) && state.globalFilter?.set(globalFilter),
 
-	setFilter: filter => {
-		const TableSchema = state.TableSchema.get({ noproxy: true }) || [];
-		const column = TableSchema?.find(column => column.id === filter.field || column.accessorKey === filter.field);
+	getGlobalFilter: () => state.globalFilter?.get({ noproxy: true }),
 
+	setFilter: _filter => {
+		const TableSchema = state.TableSchema.get({ noproxy: true }) || [];
+		const filter = copy(_filter);
+		const column = TableSchema?.find(column => column.id === filter.field || column.accessorKey === filter.field);
 		if (column?.type === 'date') {
-			if (filter.type !== 'advanced') {
+			filter.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+			if (filter.type !== 'advanced' || (filter.type === 'advanced' && !filter.searchType)) {
 				filter.type = 'advanced';
 				filter.searchType = 'betweenInclusive';
 				filter.columnType = 'date';
@@ -504,11 +502,6 @@ const tableESStateControllerHandler = state => ({
 		});
 
 		if (tableState?.layerIdentifier) {
-			const layers = globalStateController.getValue('layers') || [];
-			const gridLayersIds = layers
-				?.filter(layer => layer?.layerShapeName === tableState?.layerIdentifier)
-				.map(layer => layer?.layerId);
-
 			const existingFilter = mapViewsFitlers.find(
 				({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') === filter.field
 			);
@@ -532,11 +525,13 @@ const tableESStateControllerHandler = state => ({
 									({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') !== filter.field
 								),
 								{
-									dataSourceName: gridLayersIds?.[0] || tableState?.layerIdentifier,
+									dataSourceName: tableState?.layerIdentifier,
 									filterType:
 										tableState?.filterModes[filter.field.replace('.keyword', '')]?.mode ||
 										existingFilter?.filterType ||
-										'singleselect',
+										tableState?.esIndex === 'shapefile_flat'
+											? 'multiselect'
+											: 'singleselect',
 									fieldName: filter.field,
 									filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
 								},

@@ -5,7 +5,6 @@ const esIndex = 'checkdetailsinterestscomparison_flat';
 
 const SalesVolumeComparisonMeta = {
 	esIndex,
-	isElasticQuery: false,
 	pageSize: 25,
 	pagination: {
 		pageIndex: 0,

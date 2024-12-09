@@ -4,12 +4,24 @@ import { Controller } from 'react-hook-form';
 import { useApolloClient } from '@apollo/client';
 import { debounce } from 'lodash';
 
-function AutoCompleteComponent({ control, item }) {
-	const { name, label, defaultOptions = [], variables, query, getOptions, onChange, isESSearch } = item;
+function AutoCompleteComponent({ control, item, watch, error }) {
+	const {
+		name,
+		label,
+		defaultOptions = [],
+		variables,
+		query,
+		getOptions,
+		onChange,
+		isESSearch,
+		required = false,
+	} = item;
 
 	const client = useApolloClient();
 	const [options, setOptions] = useState(defaultOptions);
 	const [loading, setLoading] = useState(false); // state to manage loading
+
+	const watchAutoComplete = watch(name);
 
 	const callQuery = debounce(async value => {
 		if (query) {
@@ -112,6 +124,7 @@ function AutoCompleteComponent({ control, item }) {
 								}}
 								onBlur={onBlur}
 								inputRef={ref}
+								error={required && !watchAutoComplete && error}
 							/>
 						)}
 					/>

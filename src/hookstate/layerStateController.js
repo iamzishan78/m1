@@ -122,6 +122,9 @@ const LayerMeta = {
 					lineWidthMaxPixels: 8,
 					getPointRadius: 50,
 					getLineWidth: 20,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
 				};
 			},
 		},
@@ -141,6 +144,9 @@ const LayerMeta = {
 					data: deckLayers[layerId].getData([]),
 					pointRadiusMinPixels: 5,
 					pointRadiusMaxPixels: 15,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
 				};
 			},
 		},
@@ -159,6 +165,9 @@ const LayerMeta = {
 					lineWidthMinPixels: 2,
 					pointRadiusMaxPixels: 15,
 					lineWidthMaxPixels: 10,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
 				};
 			},
 		},
@@ -191,6 +200,9 @@ const LayerMeta = {
 					lineWidthMinPixels: 2,
 					pointRadiusMaxPixels: 15,
 					lineWidthMaxPixels: 10,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
 				};
 			},
 		},
@@ -329,6 +341,8 @@ const layerStateControllerHandler = state => {
 	};
 
 	const removeLayer = (layer, recalculate = false) => {
+		if (!layer) return;
+
 		const layerId = `${layer?.identifier}_${layer._id}`;
 		DeckGlLayer.removeLayer(layerId);
 		delete deckLayers[layerId];
@@ -360,6 +374,14 @@ const layerStateControllerHandler = state => {
 
 	const recalculate = () => {
 		state.recalculate.set(!state.recalculate.get({ noproxy: true }));
+	};
+
+	const getLayerFromMongoId = layerId => {
+		const layers = getShowableLayers();
+
+		const layer = layers.find(layer => layer.layerId === layerId);
+
+		return layer;
 	};
 
 	const getShowableLayers = () => {
@@ -646,7 +668,6 @@ const layerStateControllerHandler = state => {
 			polygonFilter,
 			polygonsFilter,
 			filters: isFileLayer ? generateFileFilters({ fileLayer: dbLayer, extendFilters: filters }) : filters,
-			isElasticQuery: isFileLayer ? false : true,
 			onData: data => {
 				if (!Array.isArray(data)) return;
 				let geoJson = { features: [] };
@@ -711,6 +732,8 @@ const layerStateControllerHandler = state => {
 		recalculate,
 		handleDeckLayer,
 		handleMapBoxLayer,
+		getLayerFromMongoId,
+		removeLayer,
 		removeLayers,
 		toggleLayersActivity,
 		handleChange: () => {
@@ -732,6 +755,7 @@ const layerStateControllerHandler = state => {
 		},
 		resetMapStates: (mapReady = false) => {
 			const rigsData = layerController.getValue('rigsData');
+			const client = layerController.getValue('client');
 			removeLayers(false);
 			popupController.reset();
 			drawController.reset();
@@ -753,7 +777,7 @@ const layerStateControllerHandler = state => {
 				});
 			});
 
-			layerController.setState({ rigsData });
+			layerController.setState({ rigsData, client });
 			navController.reset();
 			mapControlsController.setState({
 				selectedControl: mapControlsController.getValue('selectedControl'),

@@ -12,7 +12,6 @@ const esIndex = 'shapeowners_flat';
 
 const TractInterestsMeta = {
 	esIndex,
-	isElasticQuery: false,
 	pageSize: 50,
 	pagination: {
 		pageIndex: 0,

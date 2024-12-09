@@ -1,3 +1,8 @@
+import React from 'react';
+import _ from 'lodash';
+import DataType from 'components/Common/DataType';
+import { tableController } from 'hookstate/tableController';
+import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
 import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';
 import {
 	customFilterOptions,
@@ -5,9 +10,6 @@ import {
 	numberFilterOptions,
 	stringFilterOptions,
 } from 'components/MRTTable/utils/data';
-import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
-import _ from 'lodash';
-import React from 'react';
 
 export const handleVisiblityMenu = () => {
 	const interval2 = setInterval(() => {
@@ -76,7 +78,15 @@ export const handleColumnMenuClick = () => {
 	}, 300);
 };
 
-export const handleMRTSchema = ({ _Schema, tableKey, esIndex, defaultFlterMode, search, columnVirtualization }) => {
+export const handleMRTSchema = ({
+	_Schema,
+	tableKey,
+	esIndex,
+	defaultFlterMode,
+	search,
+	columnVirtualization,
+	globalFilter,
+}) => {
 	_Schema = _.uniqBy(_Schema, item => item.accessorKey || item.id);
 
 	const _TableSchema = _Schema.map(schemaColumn => {
@@ -97,6 +107,7 @@ export const handleMRTSchema = ({ _Schema, tableKey, esIndex, defaultFlterMode, 
 								filterSelectOptions: column.columnDef.filterSelectOptions,
 								filterValue: column?.getFilterValue() || '',
 							}}
+							extendSearchQuery={globalFilter}
 							multiple={false}
 							_value={_value}
 							textFieldProps={textFieldProps}
@@ -172,6 +183,16 @@ export const handleMRTSchema = ({ _Schema, tableKey, esIndex, defaultFlterMode, 
 				tableKey,
 				name: schemaColumn.accessorKey || schemaColumn.id,
 			});
+		}
+
+		if (schemaColumn.header) {
+			schemaColumn.Header = () => {
+				const { header, type } = schemaColumn;
+				const {
+					stateValues: { showTypes },
+				} = tableController(tableKey).useState(['showTypes']);
+				return <DataType title={header} type={type || 'unknown'} showType={showTypes} />;
+			};
 		}
 
 		return schemaColumn;

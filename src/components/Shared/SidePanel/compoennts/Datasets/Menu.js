@@ -2,7 +2,7 @@ import React from 'react';
 import Menu from '@material-ui/core/Menu';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { makeStyles, List, ListItem, ListItemText } from '@material-ui/core';
-import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined';
+import VisibilityOffOutlinedIcon from '@material-ui/icons/VisibilityOffOutlined';
 import ArrowForwardOutlinedIcon from '@material-ui/icons/ArrowForwardOutlined';
 
 const useStyles = makeStyles(theme => ({
@@ -105,8 +105,8 @@ export default function DatasetMenu({ dataset, handleRemove, handleTransfer }) {
 								handleRemove(dataset, false);
 							}}
 						>
-							<DeleteOutlineOutlinedIcon />
-							<ListItemText primary="Remove" />
+							<VisibilityOffOutlinedIcon />
+							<ListItemText primary="Hide" />
 						</ListItem>
 					</List>
 				</div>

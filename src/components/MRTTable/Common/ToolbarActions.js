@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { ToggleButton } from '@mui/material';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { IconButton, Tooltip } from '@mui/material';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -15,9 +16,6 @@ function ToolbarActions({ table, tableKey, children }) {
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user.get({ noproxy: true });
 
-	const globalState = tableGlobalController.useState(['cypress']);
-	const globalStateValues = globalState.stateValues;
-
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const isSomeRowsSelected =
 		table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
@@ -33,6 +31,7 @@ function ToolbarActions({ table, tableKey, children }) {
 
 	useEffect(() => {
 		tableController(tableKey).setMrtTableRef(table);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const handleExport = () => {
@@ -138,9 +137,42 @@ function ToolbarActions({ table, tableKey, children }) {
 				)}
 			</div>
 			<div style={{ display: 'flex', gap: '0.5rem', marginLeft: '0.5rem' }}>
-				{children || <div />}
+				<div
+					style={{
+						display: 'flex',
+						height: '32px',
+						gap: '0.5rem',
+						minHeight: '32px',
+						maxHeight: '80px',
+						marginTop: '8px',
+					}}
+				>
+					{children}
+				</div>
 
-				{!tableStateValues.isGeneric && (
+				<ToggleButton
+					style={{
+						padding: '0',
+						height: 'fit-content',
+						margin: 'auto 0',
+						color: tableStateValues.showTypes ? '#fff' : '#263451',
+						backgroundColor: tableStateValues.showTypes ? '#263451' : '#fff',
+						border: `1px solid ${tableStateValues.showTypes ? '#fff' : '#263451'}`,
+					}}
+					selected={tableStateValues.showTypes}
+					onChange={() => tableController(tableKey).updateState({ showTypes: !tableStateValues.showTypes })}
+				>
+					<small
+						style={{
+							padding: '5px',
+							fontWeight: 'normal',
+						}}
+					>
+						{'TYPES'}
+					</small>
+				</ToggleButton>
+
+				{!tableStateValues.isGeneric && tableStateValues.data?.total > 0 && (
 					<IconButton onClick={handleExport} data-testid="download-csv">
 						<Tooltip title="Download CSV" aria-label="add">
 							<CloudDownloadIcon />

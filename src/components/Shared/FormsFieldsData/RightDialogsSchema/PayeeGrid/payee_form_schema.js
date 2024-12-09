@@ -11,6 +11,7 @@ const payeeForm = ({ setValue }) => {
 			label: 'Payee Name',
 			name: 'payeeName',
 			renderField: 'autoComplete',
+			required: true,
 			query: GET_ES_SIMPLE_SEARCH,
 			isESSearch: true,
 			variables: {
@@ -48,6 +49,7 @@ const payeeForm = ({ setValue }) => {
 		{
 			label: 'Payment Allocation',
 			name: 'paymentAllocation',
+			required: true,
 			onChange: value => {
 				setValue('paymentAllocation', value);
 				setValue('paymentAmount', calculatePercentage(value, paymentAmount));

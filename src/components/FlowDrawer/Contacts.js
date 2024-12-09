@@ -259,7 +259,9 @@ export default function Contacts(props) {
 	};
 
 	useEffect(() => {
-		let filtered = contacts?.filter(c => (c ? c : c.name.toLowerCase().includes(search.toLowerCase())));
+		let filtered = contacts?.filter(c =>
+			c ? c.toLowerCase().includes(search.toLowerCase()) : c.name.toLowerCase().includes(search.toLowerCase())
+		);
 		setFilteredContacts(filtered);
 	}, [search, contacts]);
 

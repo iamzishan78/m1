@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useContext } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { set } from 'lodash';
 import { makeStyles } from '@material-ui/core/styles';
@@ -29,7 +29,6 @@ import { simpleTableGlobalController } from 'hookstate/simpleTableController';
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
-import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	grid: {
@@ -220,7 +219,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	const dispatch = useDispatch();
 	const [parcelObj, setParcelObj] = useState();
 	const [properties, setProperties] = useState();
-	const [stateApp, setStateApp] = useContext(AppContext);
 
 	const tractPerUnitGridState = tableController('TractPerUnitTable').useState(['data']).stateValue;
 	const tractUnitsGridState = tableController('TractUnitsTable').useState(['data']).stateValues;
@@ -249,7 +247,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 
 	useEffect(() => {
 		refetchCustomLayer();
-	}, [globalStateValues?.refetch]);
+	}, [globalStateValues.refetch, refetchCustomLayer]);
 
 	useEffect(() => {
 		if (id) {
@@ -259,7 +257,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 				},
 			});
 		}
-	}, [id]);
+	}, [getCustomLayer, id]);
 
 	useEffect(() => {
 		if (dataCustomLayer && dataCustomLayer.customLayer) {
@@ -337,7 +335,10 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	// Table overridden meta
 	const RelatedAgreementOverrideMeta = useMemo(
 		() => ({
-			defaultFilters: [{ field: 'tract.tractId', value: parcelObj?._id }],
+			defaultFilters: [
+				{ field: 'tract.tractId', value: parcelObj?._id },
+				{ field: 'shapeType', value: 'Agreement' },
+			],
 			onClickedRow: () => null,
 			onCustomKeyChange: null,
 			CustomToolBar: null,
@@ -363,7 +364,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 					selectedParcel: { ...feature.properties, feature },
 				});
 
-				setStateApp(state => ({
+				window.setStateApp(state => ({
 					...state,
 					selectedParcel: { ...feature.properties, feature },
 				}));
@@ -371,7 +372,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 				dispatch(showErrorMessage('Failed to update parcel'));
 			}
 		}
-	}, [updatedParcel]);
+	}, [dispatch, updatedParcel]);
 
 	const updateProperties = (e, field, value) => {
 		if (e?.preventDefault) {
@@ -498,7 +499,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 							value={selectedTab}
 							panels={[
 								<div>
-									<MRTTable name="TractPerUnitTable" overrideMeta={overrideMeta} hideSharedCommentCheck />
+									<MRTTable name="TractPerUnitTable" overrideMeta={overrideMeta} />
 								</div>,
 								<div className={classes.subContent}>
 									<SuggestedTaxOwnersTable

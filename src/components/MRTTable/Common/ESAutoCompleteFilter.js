@@ -17,6 +17,7 @@ const formatValue = (value, field) => {
 	) {
 		value = vf_currency(value);
 	}
+	if (Array.isArray(value)) value = value.map(value => value || value === 0);
 	return value;
 };
 
@@ -62,16 +63,38 @@ function ESAutoCompleteFilter({
 	const appendOptions = useRef(false);
 	const filtersRef = useRef(null);
 
-	const { searchFields, filters, defaultFilters, advanceSearch, isElasticQuery } = tableController(tableKey).getValues([
-		'searchFields',
-		'filters',
-		'defaultFilters',
-		'advanceSearch',
-		'isElasticQuery',
-	]);
-
 	const getFiltersAction = debounce(({ afterKey } = {}) => {
 		if (filtersData && multiple && filterValue?.length !== 0) return;
+
+		const { searchFields, filters, defaultFilters, advanceSearch, sorting, defaultSort, TableSchema } = tableController(
+			tableKey
+		).getValues([
+			'searchFields',
+			'filters',
+			'defaultFilters',
+			'advanceSearch',
+			'sorting',
+			'defaultSort',
+			'TableSchema',
+		]);
+
+		let sort = sorting[0]
+			? {
+					field: (() => {
+						if (sorting[0].field) return sorting[0].field;
+
+						const sortingId = sorting[0].id;
+						const matchingSchema = TableSchema.find(val => (val.accessorKey || val.id) === sortingId);
+
+						if (matchingSchema?.isComposite) {
+							return matchingSchema.name.split(',')[0];
+						}
+
+						return matchingSchema?.name;
+					})(),
+					order: sorting[0].desc ? 'desc' : 'asc',
+				}
+			: defaultSort;
 
 		const filtersArray = [...filters, ...defaultFilters];
 		const currentFilterRef = {
@@ -84,9 +107,6 @@ function ESAutoCompleteFilter({
 			let search = '';
 			if (searchText.current) search = type === 'number' ? searchText.current : `*${searchText.current}*`;
 			filtersRef.current = currentFilterRef;
-
-			const isMongo = isElasticQuery === false;
-
 			getFilters({
 				variables: {
 					esIndex,
@@ -97,7 +117,7 @@ function ESAutoCompleteFilter({
 							: filtersArray,
 					filterKeys: typeof field !== 'string' ? field : undefined,
 					filterKey: typeof field === 'string' ? field : undefined,
-					search: { query: extendSearchQuery, fields: searchFields, advanceSearch },
+					search: { query: tableController(tableKey).getGlobalFilter(), fields: searchFields, advanceSearch },
 					extendSearchQuery,
 					size: 10,
 					key_as_string: custom?.key_as_string,
@@ -109,7 +129,7 @@ function ESAutoCompleteFilter({
 						size: searchMapping[searchMode].size,
 						afterKey,
 					},
-					...(isMongo && { isElasticQuery: false }),
+					sort,
 				},
 			});
 		}
@@ -160,7 +180,7 @@ function ESAutoCompleteFilter({
 
 		options = options.filter(op => {
 			op.label = formatValue(op.label); // format value to show $ sign as prefix
-			return op.value;
+			return op.value || op.value === 0;
 		});
 
 		if (appendOptions.current) {
@@ -168,6 +188,8 @@ function ESAutoCompleteFilter({
 			setOptions(prevOptions => [...prevOptions, ...options]);
 		} else setStateIfDeepEqual(setOptions, filterSelectOptions || options);
 	}, [filtersData, filterValue, type, filterSelectOptions, field]);
+
+	const { filters } = tableController(tableKey).getValues(['filters']);
 
 	// If we have orFilter then filterValue is null due to id mismatch
 	if (isComposite) {
@@ -247,7 +269,6 @@ function ESAutoCompleteFilter({
 			getFiltersAction({ afterKey: options[options.length - 1].value });
 		}
 	};
-
 	return (
 		<Autocomplete
 			multiple={multiple}

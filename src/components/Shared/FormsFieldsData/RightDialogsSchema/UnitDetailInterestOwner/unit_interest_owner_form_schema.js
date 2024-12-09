@@ -215,6 +215,7 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 		{
 			label: 'Unit Tract Acres',
 			name: 'tractAcres',
+			type: 'number',
 		},
 		{
 			label: 'Seller Asking Price',

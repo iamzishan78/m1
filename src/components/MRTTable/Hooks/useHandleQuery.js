@@ -3,11 +3,10 @@ import { debounce, set, get, isNumber } from 'lodash';
 import { useCallback, useEffect, useRef } from 'react';
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { GET_ES_AGGS_LIST } from 'graphQL/useQueryESAggsList';
 import { copy } from 'utils/helper';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { drawController } from 'hookstate/drawStateController';
-import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
+import { GET_DB_AGGS, GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
 
 const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) => {
 	const Controller = tableController(tableKey);
@@ -22,6 +21,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		const tableMeta = tableState.get({ noproxy: true });
 		const pagination = _pagination || tableMeta.pagination;
 		const { TableSchema } = tableMeta;
+		const isElasticIndex = tableStateValues.esIndex.includes('platformData:');
 		if (!TableSchema) return;
 
 		Controller.updateState({
@@ -69,8 +69,6 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		if (tableStateValues.isGeneric && !tableStateValues.globalSearch) globalFilter = null;
 
-		const isMongo = tableStateValues.isElasticQuery === false;
-
 		const variables = {
 			index: tableStateValues.esIndex,
 			pagination: { ...pagination, pageIndex: undefined, pageSize: undefined },
@@ -81,15 +79,13 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			},
 			sort,
 			filters,
-			...(isMongo && { isElasticQuery: false }),
 		};
 
 		if (tableStateValues.filterLayerType)
 			layerFiltersController.setVariables(tableStateValues.filterLayerType, variables);
 
-		let total = isMongo ? tableStateValues?.data?.total : null;
-
-		if (pagination.pageIndex === 0 && isMongo) {
+		let total = tableStateValues?.data?.total;
+		if (pagination.pageIndex === 0 && !isElasticIndex) {
 			(async () => {
 				const dbDataTotal = await client.query({
 					variables,
@@ -115,6 +111,9 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		});
 
 		const data = allSelectedRows?.data?.getESSimpleSearch;
+		if (isElasticIndex) {
+			total = data.total;
+		}
 		let rows = copy(data.hits) || [];
 
 		rows.forEach(row => {
@@ -168,16 +167,15 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		if (aggregationColumns?.length) {
 			const result = await client.query({
 				variables: {
-					esIndex,
+					index: esIndex,
 					filters: [...filters, ...defaultFilters],
 					aggs: Object.assign({}, ...aggregationColumns),
-					isElasticQuery: tableStateValues.isElasticQuery,
 				},
-				query: GET_ES_AGGS_LIST,
+				query: GET_DB_AGGS,
 			});
 
 			Controller.updateState({
-				footerProps: result?.data?.getESAggsList?.aggregations,
+				footerProps: result?.data?.getDbAggs?.aggregations,
 			});
 		}
 	}
@@ -222,7 +220,8 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	useEffect(() => {
 		const tableMeta = tableState.get({ noproxy: true });
 
-		if (!tableMeta || tableMeta.isFetching) return;
+		if (!tableMeta) return;
+
 		callQuery({
 			pageIndex: 0,
 			first: tableStateValues?.pageSize || 50,

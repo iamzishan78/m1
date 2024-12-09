@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState, useContext } from 'react';
 import { Grid, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
@@ -76,7 +77,7 @@ export default function CustomDatesActivities({
 	label,
 }) {
 	const classes = useStyles();
-	const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
+	const { activeModule } = useSelector(({ common }) => common);
 	useEffect(() => {
 		if (minDate) handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -152,7 +153,7 @@ export default function CustomDatesActivities({
 							},
 						}}
 						onChange={event => {
-							if (event.target.value == '') {
+							if (event.target.value === '') {
 								setFromDate(
 									`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`
 								);
@@ -176,7 +177,7 @@ export default function CustomDatesActivities({
 						value={moment(toDate).format('yyyy-MM-DD')}
 						className={classes.inputFieldDate}
 						onChange={event => {
-							if (event.target.value == '') {
+							if (event.target.value === '') {
 								setToDate(
 									`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`
 								);
@@ -197,7 +198,7 @@ export default function CustomDatesActivities({
 					/>
 				</Grid>
 				{/* Show Campaign dropdown for CRM tab only */}
-				{activeModule.value == 'CRM' && (
+				{activeModule.value === 'CRM' && (
 					<Grid item xs={2} md={2} lg={2} xl={2} style={{ marginTop: '4px' }}>
 						<CampaignFilter
 							value={campaignName}
@@ -213,7 +214,7 @@ export default function CustomDatesActivities({
 				)}
 				{/* Show Entity dropdown for Audit Reporting tab only */}
 
-				{activeModule.title == 'Audit Reporting' && (
+				{activeModule.title === 'Audit Reporting' && (
 					<Grid item xs={2} md={2} lg={2} xl={2} style={{ marginTop: '4px' }}>
 						<EntityFilter label={'Entity Type'} />
 					</Grid>
@@ -286,7 +287,7 @@ const CampaignFilter = ({
 			},
 		});
 		onCampaignChange('campaign', search);
-	}, [search, selectedFilters.qualifier, tableFilters, appliedFilters]);
+	}, [search, selectedFilters.qualifier, tableFilters, appliedFilters, stateApp.landAnalyticsSearchQuery]);
 
 	return (
 		<Autocomplete
@@ -304,7 +305,7 @@ const CampaignFilter = ({
 			inputValue={search?.toString()}
 			options={get(filtersData, 'getESSimpleFilter.hits', []).filter(d => d.key)}
 			getOptionSelected={(option, value) => option.key === value}
-			getOptionLabel={option => option?.key?.toString().replace(/^\,|\,$/gm, '')}
+			getOptionLabel={option => option?.key?.toString().replace(/^,|,$/gm, '')}
 			renderInput={params => (
 				<TextField
 					{...params}
@@ -368,14 +369,13 @@ const QualifierFilter = ({
 				index: esIndex,
 				filters: getAllFilters(),
 				filterKey: esFilterKey,
-				search: { query: stateApp.activitySearchQuery, fields: searchFields },
+				search: { query: stateApp.activitySearchQuery || stateApp.landAnalyticsSearchQuery, fields: searchFields },
 				size: 50,
 				filterAggs: {
 					query: search,
 					field: esFilterKey,
 					size: 50,
 				},
-				isElasticQuery: true,
 			},
 		});
 
@@ -385,6 +385,7 @@ const QualifierFilter = ({
 		esIndex === 'contacts_flat' ? selectedFilters.audit : selectedFilters.campaign,
 		tableFilters,
 		appliedFilters,
+		stateApp.landAnalyticsSearchQuery,
 	]);
 
 	return (
@@ -403,7 +404,7 @@ const QualifierFilter = ({
 			inputValue={search?.toString()}
 			options={get(filtersData, 'getESSimpleFilter.hits', [])}
 			getOptionSelected={(option, value) => option.key === value}
-			getOptionLabel={option => option?.key?.toString().replace(/^\,|\,$/gm, '')}
+			getOptionLabel={option => option?.key?.toString().replace(/^,|,$/gm, '')}
 			renderInput={params => (
 				<TextField
 					{...params}

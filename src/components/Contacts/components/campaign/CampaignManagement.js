@@ -5,11 +5,11 @@ import { AppContext } from 'AppContext';
 
 import CampaignAnalytics from 'components/Contacts/components/CampaignAnalytics';
 import CustomCampaignFilters from 'components/Contacts/components/CampaignFilter';
-import { GET_ES_MIN_VALUE } from 'graphQL/useQueryESMinValue';
 import MRTTable from 'components/MRTTable';
 import { tableController } from 'hookstate/tableController';
 import { copy, dateFilterToDate } from 'utils/helper';
 import { formatDate } from 'components/Shared/functions';
+import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
 
 const CampaignManagement = () => {
 	const esIndex = 'campaigns_flat';
@@ -26,25 +26,24 @@ const CampaignManagement = () => {
 
 	const { stateValues } = tableController(TableKey).useState(['filters']);
 
-	const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
+	const [getDbMinValue] = useLazyQuery(GET_DB_MIN_VALUE, {
 		fetchPolicy: 'no-cache',
 		onCompleted: data => {
-			if (data?.getESMinValue) {
-				const date = new Date(data?.getESMinValue);
-				if (date?.toString() !== 'Invalid Date') setLastCampaignMinDate(data?.getESMinValue);
+			if (data?.getDbMinValue?.data) {
+				const date = new Date(data?.getDbMinValue.data);
+				if (date?.toString() !== 'Invalid Date') setLastCampaignMinDate(data?.getDbMinValue.data);
 			}
 		},
 	});
 
 	useEffect(() => {
-		getESMinValue({
+		getDbMinValue({
 			variables: {
-				esIndex,
+				index: esIndex,
 				field: 'createdAt',
-				value_as_string: true,
 			},
 		});
-	}, [getESMinValue]);
+	}, [getDbMinValue]);
 
 	useEffect(() => {
 		setAppliedFilters(appliedFilters => ({

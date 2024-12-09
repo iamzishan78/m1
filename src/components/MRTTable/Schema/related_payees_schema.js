@@ -11,7 +11,6 @@ const esIndex = 'contacts_flat';
 // Related Payments Meta
 const RelatedPaymentsMeta = {
 	esIndex,
-	isElasticQuery: false,
 	pageSize: 50,
 	pagination: {
 		pageIndex: 0,
@@ -107,7 +106,7 @@ const RelatedPaymentsMeta = {
 			Cell: ({ row }) => {
 				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
 				const value = getArrayValue(row.original.payments, 'paymentAllocation', paymentId, 'paymentId');
-				return value ? `${Number(value).toFixed(2)}%` : '';
+				return value ? `${Number(value).toFixed(2)}%` : value === 0 ? `0%` : '';
 			},
 		},
 		{
@@ -129,7 +128,7 @@ const RelatedPaymentsMeta = {
 			Cell: ({ row }) => {
 				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
 				const value = getArrayValue(row.original.payments, 'paymentAmount', paymentId, 'paymentId');
-				return value ? vf_currency_to_fixed(parseFloat(value), 2) : '';
+				return value ? vf_currency_to_fixed(parseFloat(value), 2) : value === 0 ? `$0` : '';
 			},
 		},
 		{

@@ -4,7 +4,6 @@ import { useLazyQuery } from '@apollo/client';
 
 import ActivityAnalytics from './ActivityAnalytics';
 import ActivitiesDashboardFilter from './ActivitiesDashboardFilter';
-import { GET_ES_MIN_VALUE } from 'graphQL/useQueryESMinValue';
 import MRTTable from 'components/MRTTable';
 import { tableController } from 'hookstate/tableController';
 import { useHookstate } from '@hookstate/core';
@@ -13,6 +12,7 @@ import ActivitiesSlideout from './ActivitiesSlideout';
 import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
 import { AppContext } from 'AppContext';
 import { getDateFilters } from 'utils/helper';
+import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -58,7 +58,6 @@ export const getActivityFilters = appliedFilters => {
 const ActivitiesDashboard = () => {
 	const classes = useStyles();
 	const selectedActivityId = useHookstate(slidoutState.selectedActivityId);
-	const [stateApp] = useContext(AppContext);
 
 	const tableKey = 'ActivitiesTable';
 	const esIndex = 'activities_flat';
@@ -70,14 +69,14 @@ const ActivitiesDashboard = () => {
 	});
 	const [minDate, setMinDate] = useState('');
 	const activitiesTableState = tableController(tableKey).useState(['filters', 'data', 'globalFilter']).stateValues;
-	const [, setStateApp] = useContext(AppContext);
+	const [stateApp, setStateApp] = useContext(AppContext);
 
-	const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
+	const [getDbMinValue] = useLazyQuery(GET_DB_MIN_VALUE, {
 		fetchPolicy: 'no-cache',
 		onCompleted: data => {
-			if (data?.getESMinValue) {
+			if (data?.getDbMinValue?.data) {
 				setFilterToggle(!filterToggle);
-				setMinDate(data?.getESMinValue);
+				setMinDate(data?.getDbMinValue.data);
 			}
 		},
 	});
@@ -92,21 +91,16 @@ const ActivitiesDashboard = () => {
 			...stateApp,
 			activityContacts: { contacts },
 		}));
-	}, [getContactsForActivityResult]);
+	}, [getContactsForActivityResult, setStateApp]);
 
 	useEffect(() => {
-		tableController(tableKey).setGlobalFilter(stateApp.landAnalyticsSearchQuery)
-	  }, [stateApp.landAnalyticsSearchQuery]) // Update table filter state based on navbar search
-
-	useEffect(() => {
-		getESMinValue({
+		getDbMinValue({
 			variables: {
-				esIndex,
+				index: esIndex,
 				field: 'dateTime',
-				value_as_string: true,
 			},
 		});
-	}, [getESMinValue]);
+	}, [getDbMinValue]);
 
 	useEffect(() => {
 		tableController(tableKey).setFilters(getActivityFilters(appliedFilters));
@@ -116,7 +110,7 @@ const ActivitiesDashboard = () => {
 		getContactsForActivity({
 			variables: { activityId: selectedActivityId.get() },
 		});
-	}, [selectedActivityId.get()]);
+	}, [getContactsForActivity, selectedActivityId]);
 
 	useEffect(() => {
 		return () => {
@@ -125,6 +119,10 @@ const ActivitiesDashboard = () => {
 			slidoutState.show.set(false);
 		};
 	}, []);
+
+	useEffect(() => {
+		tableController(tableKey).setGlobalFilter(stateApp.landAnalyticsSearchQuery);
+	}, [stateApp.landAnalyticsSearchQuery]); // Update table filter state based on navbar search
 
 	return (
 		<div className={classes.root}>
@@ -150,6 +148,8 @@ const ActivitiesDashboard = () => {
 					...activitiesTableState?.filters,
 				]}
 				appliedFilters={appliedFilters}
+				setTableFilters={tableController(tableKey)?.setFilters}
+				tableData={activitiesTableState?.data}
 				module={'Activities'}
 			/>
 			<MRTTable

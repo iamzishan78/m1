@@ -26,6 +26,8 @@ import { mapControlsController } from 'hookstate/mapControlsController';
 import { layerController } from 'hookstate/layerStateController';
 import { globalStateController } from 'hookstate/globalStateController';
 import { globalState } from 'hookstate/initialStates';
+import { showErrorMessage, showSuccessMessage } from 'actions';
+import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles(theme => ({
 	root: props => ({
@@ -110,6 +112,7 @@ export default function DatasetsContainer(props) {
 
 function Datasets({ headerButton, search, stateApp }) {
 	const classes = useStyles();
+	const dispatch = useDispatch();
 
 	const [getDatasets, { data: _datasets }] = useLazyQuery(GET_DATASETS);
 	const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
@@ -207,6 +210,12 @@ function Datasets({ headerButton, search, stateApp }) {
 					settings: { [dataset._id]: value },
 				},
 			},
+		}).then(response => {
+			if (response.data?.updateUserMapSettings?.success) {
+				dispatch(showSuccessMessage('Data source hidden successfully'));
+			} else {
+				dispatch(showErrorMessage('Failed to hide data source'));
+			}
 		});
 		if (layersSettingsToUpdate.length > 0)
 			updateManyUserLayerSettings({
@@ -245,10 +254,10 @@ function Datasets({ headerButton, search, stateApp }) {
 				)}
 			</StyledMenuSecondaryHeaderItem>
 			<div className={classes.root}>
-				{datasets?.map(({ sourceName, Icon, categories, ...rest }) => (
+				{datasets?.map(({ sourceName, Icon, categories, ...rest }, index) => (
 					<Grid
 						className="item"
-						key={sourceName}
+						key={sourceName + index}
 						data-testid={`dataset-${sourceName === 'M1 Platform' ? 'platform' : 'custom'}`}
 						onClick={() => onItemClick({ sourceName, Icon, categories, ...rest })}
 					>

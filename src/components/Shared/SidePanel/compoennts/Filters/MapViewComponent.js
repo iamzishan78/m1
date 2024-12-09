@@ -10,7 +10,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 function MapViewComponent({ Icon, label, fetchMapViews, defaultView }) {
 	const [updateMapView] = useMutation(UPSERT_MAP_VIEW, {
 		onCompleted: () => {
-			fetchMapViews();
+			// fetchMapViews();
 		},
 	});
 	const [showIcon, setShowIcon] = useState(false);

@@ -21,7 +21,8 @@ import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import billingPartiesForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/BillingPartyGrid/billing_parties_form_schema';
 import costAllocationForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/CostAllocationGrid/cost_allocation_schema';
 import paymentForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/PaymentGrid/payment_form_schema';
-import { isEmpty, isString } from 'lodash';
+import { isString } from 'lodash';
+import { checkFormRequireField } from 'utils/helper';
 
 const useStyles = makeStyles({
 	list: {
@@ -163,6 +164,7 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 	const [state, setState] = useState({
 		right: false,
 	});
+	const [error, setError] = useState(false);
 
 	const Controller = sideDialogController(formName);
 	const formState = Controller.useCompleteState();
@@ -217,6 +219,20 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 		setState({ ...state, [anchor]: open });
 	};
 
+	const onSubmit = () => {
+		const data = getValues();
+		if (checkFormRequireField(data, formSchema)) {
+			setError(true);
+			return;
+		} else {
+			setError(false);
+		}
+		Object.keys(data)?.forEach(key => {
+			if (isString(data[key])) data[key] = data[key].replace(/^\s+|\s+$/g, '').replace(/\s{2,}/g, ' ');
+		});
+		addNewData(data, setLoader);
+	};
+
 	const DocumentDetail = anchor => (
 		<div
 			style={{ width: '500px', marginLeft: '15px', overflowX: 'hidden' }}
@@ -261,7 +277,14 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 						alignItems: 'normal',
 					}}
 				>
-					<CommonForm formSchema={formSchema} control={control} reset={reset} watch={watch} dialogKey={formName} />
+					<CommonForm
+						formSchema={formSchema}
+						control={control}
+						reset={reset}
+						watch={watch}
+						dialogKey={formName}
+						error={error}
+					/>
 				</ListItem>
 			</List>
 
@@ -290,14 +313,7 @@ export default function AddNewRelatedData({ title, addNewData, formName }) {
 					size="medium"
 					disableElevation
 					disabled={false}
-					onClick={() => {
-						const data = getValues();
-						if (isEmpty(Object.keys(data)?.filter(key => data[key]))) return;
-						Object.keys(data)?.forEach(key => {
-							if (isString(data[key])) data[key] = data[key].replace(/^\s+|\s+$/g, '').replace(/\s{2,}/g, ' ');
-						});
-						addNewData(data, setLoader);
-					}}
+					onClick={onSubmit}
 					className={classes.footerButton}
 				>
 					Save

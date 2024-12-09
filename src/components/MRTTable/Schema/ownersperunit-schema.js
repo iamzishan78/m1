@@ -250,26 +250,13 @@ const OwnersPerUnitMeta = {
 			header: 'Working Interest',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumWorkingInterest: {
-					sum: { field: 'working_interest' },
-				},
-			},
 			enableSorting: true,
 			Cell: ({ renderedCellValue }) => {
 				if (renderedCellValue) {
 					return <>{addTrailingZeros(parseFloat(renderedCellValue).toFixed(8))}</>;
 				}
 			},
-			Footer: () => {
-				const Controller = tableController('OwnersPerUnitTable');
-				const { sumWorkingInterest } = Controller.getValue('footerProps') || {};
-				return (
-					<div>
-						{sumWorkingInterest?.value ? addTrailingZeros(parseFloat(sumWorkingInterest?.value).toFixed(8)) : 0}
-					</div>
-				);
-			},
+			...CommonSchema.AGGREGATED_FOOTER('working_interest', 'OwnersPerUnitTable'),
 		},
 
 		{
@@ -279,25 +266,12 @@ const OwnersPerUnitMeta = {
 			header: 'Royalty Interest',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumRoyaltyInterest: {
-					sum: { field: 'royalty_interest' },
-				},
-			},
 			Cell: ({ renderedCellValue }) => {
 				if (renderedCellValue) {
 					return <>{addTrailingZeros(parseFloat(renderedCellValue).toFixed(8))}</>;
 				}
 			},
-			Footer: () => {
-				const Controller = tableController('OwnersPerUnitTable');
-				const { sumRoyaltyInterest } = Controller.getValue('footerProps') || {};
-				return (
-					<div>
-						{sumRoyaltyInterest?.value ? addTrailingZeros(parseFloat(sumRoyaltyInterest?.value).toFixed(8)) : 0}
-					</div>
-				);
-			},
+			...CommonSchema.AGGREGATED_FOOTER('royalty_interest', 'OwnersPerUnitTable'),
 		},
 
 		{
@@ -307,22 +281,12 @@ const OwnersPerUnitMeta = {
 			header: 'ORRI',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumOrri: {
-					sum: { field: 'orri' },
-				},
-			},
 			Cell: ({ renderedCellValue }) => {
 				if (renderedCellValue) {
 					return <>{addTrailingZeros(parseFloat(renderedCellValue).toFixed(8))}</>;
 				}
 			},
-			Footer: () => {
-				const Controller = tableController('OwnersPerUnitTable');
-				const { sumOrri } = Controller.getValue('footerProps') || {};
-
-				return <div>{sumOrri?.value ? addTrailingZeros(parseFloat(sumOrri?.value).toFixed(8)) : 0}</div>;
-			},
+			...CommonSchema.AGGREGATED_FOOTER('orri', 'OwnersPerUnitTable'),
 		},
 
 		{
@@ -332,21 +296,12 @@ const OwnersPerUnitMeta = {
 			header: 'NRI',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumNri: {
-					sum: { field: 'nri' },
-				},
-			},
 			Cell: ({ row }) => {
 				if (row?.original?.nri) {
 					return <>{addTrailingZeros(parseFloat(row?.original?.nri).toFixed(8))}</>;
 				}
 			},
-			Footer: () => {
-				const Controller = tableController('OwnersPerUnitTable');
-				const { sumNri } = Controller.getValue('footerProps') || {};
-				return <div>{sumNri?.value ? addTrailingZeros(parseFloat(sumNri?.value).toFixed(8)) : 0}</div>;
-			},
+			...CommonSchema.AGGREGATED_FOOTER('nri', 'OwnersPerUnitTable'),
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -355,21 +310,12 @@ const OwnersPerUnitMeta = {
 			header: 'Net Acres',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumNetAcres: {
-					sum: { field: 'net_acres' },
-				},
-			},
 			Cell: ({ row }) => {
 				if (row?.original?.net_acres) {
 					return <>{addTrailingZeros(parseFloat(row?.original?.net_acres).toFixed(8))}</>;
 				}
 			},
-			Footer: () => {
-				const Controller = tableController('OwnersPerUnitTable');
-				const { sumNetAcres } = Controller.getValue('footerProps') || {};
-				return <div>{sumNetAcres?.value ? addTrailingZeros(parseFloat(sumNetAcres?.value).toFixed(8)) : 0}</div>;
-			},
+			...CommonSchema.AGGREGATED_FOOTER('net_acres', 'OwnersPerUnitTable'),
 		},
 
 		{
@@ -379,21 +325,12 @@ const OwnersPerUnitMeta = {
 			header: 'NRA',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumNRA: {
-					sum: { field: 'nra' },
-				},
-			},
 			Cell: ({ row }) => {
 				if (row?.original?.nra) {
 					return <>{addTrailingZeros(parseFloat(row?.original?.nra).toFixed(8))}</>;
 				}
 			},
-			Footer: () => {
-				const Controller = tableController('OwnersPerUnitTable');
-				const { sumNRA } = Controller.getValue('footerProps') || {};
-				return <div>{sumNRA?.value ? addTrailingZeros(parseFloat(sumNRA?.value).toFixed(8)) : 0}</div>;
-			},
+			...CommonSchema.AGGREGATED_FOOTER('nra', 'OwnersPerUnitTable'),
 		},
 
 		{
@@ -410,23 +347,12 @@ const OwnersPerUnitMeta = {
 			header: 'Unit Tract Acres',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumUnitTractAcres: {
-					sum: { field: 'tractAcres' },
-				},
-			},
 			Cell: ({ row }) => {
 				if (row?.original?.tractAcres) {
 					return <>{addTrailingZeros(parseFloat(row?.original?.tractAcres).toFixed(8))}</>;
 				}
 			},
-			Footer: () => {
-				const Controller = tableController('OwnersPerUnitTable');
-				const { sumUnitTractAcres } = Controller.getValue('footerProps') || {};
-				return (
-					<div>{sumUnitTractAcres?.value ? addTrailingZeros(parseFloat(sumUnitTractAcres?.value).toFixed(8)) : 0}</div>
-				);
-			},
+			...CommonSchema.AGGREGATED_FOOTER('tractAcres', 'OwnersPerUnitTable'),
 		},
 
 		{
@@ -667,9 +593,16 @@ const OwnersPerUnitMeta = {
 
 		{
 			...CommonSchema.COMMENTS,
-			Cell: ({ renderedCellValue, row }) => {
+			Cell: ({ row }) => {
 				const id = row.getValue('ownerEntity');
-				return <CommentCell id={id} value={row?.original?.commentsCount} targetLabel={'Unit Ownership'} />;
+				return (
+					<CommentCell
+						id={id}
+						value={row?.original?.commentsCount}
+						targetLabel={'Unit Ownership'}
+						hideShareCommentsToggle
+					/>
+				);
 			},
 		},
 

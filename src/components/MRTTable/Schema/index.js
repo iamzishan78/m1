@@ -16,10 +16,10 @@ import ShapesFilesGenericMeta from './shapefiles_generic_schema';
 import PropertiesMeta from './properties_schema';
 import ReportingGroupsMeta from './property_group_schema';
 import RevenueStatementsMeta from './revenue_statements_schema';
-import ContactWellInterestMeta from "./contact_well_Interest_schema"
+import ContactWellInterestMeta from './contact_well_Interest_schema';
 import ActivityMeta from './activity_schema';
-import RevenueCheckDetailMeta from "./revenue_checkdetail_schema"
-import UnitTractsMeta from "./unit_tract_schema"
+import RevenueCheckDetailMeta from './revenue_checkdetail_schema';
+import UnitTractsMeta from './unit_tract_schema';
 import MyWellsMeta from './my_wells_schema';
 import WellsMeta from './wells_schema';
 import TaxOwnerMeta from './map-grid-tax-owner-schema';

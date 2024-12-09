@@ -45,6 +45,7 @@ const handleQuery = (queryHandler, onData) => {
 	const { queryString, getterKey, isLandGridQuery } = queries[queryHandler.identifier] || queries['search'];
 
 	const client = layerController.getValue('client');
+	if (!client) return;
 
 	return new Promise(async (resolve, reject) => {
 		const query = client.watchQuery({
@@ -83,7 +84,6 @@ const getBoundsQuery = async ({
 	onData,
 	geoField,
 	filters,
-	isElasticQuery,
 	multiQuery,
 	polygonFilter,
 	polygonsFilter,
@@ -95,9 +95,6 @@ const getBoundsQuery = async ({
 			identifier,
 			id: uuid(),
 			finished: false,
-			variables: {
-				...(isElasticQuery === false && { isElasticQuery }),
-			},
 		};
 
 		await handleQuery(queryHandler, onData);
@@ -139,8 +136,6 @@ const getBoundsQuery = async ({
 
 	geoPolygons.forEach(geoPolygon => {
 		const { variables = {} } = copy(filters || {});
-
-		if (isElasticQuery === false) variables.isElasticQuery = isElasticQuery;
 
 		if (isAgreementLayer)
 			variables.filters = filters.variables.filters.map(filter => {

@@ -7,7 +7,6 @@ import { Grid, Divider, Tab, Tabs, TextField, Box } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import sortBy from 'lodash/sortBy';
 
-import { GET_ES_MIN_VALUE } from 'graphQL/useQueryESMinValue';
 import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from 'graphQL/useQueryGetPortfolioGrossRevenueSummary';
 import CustomDates from 'components/Revenue/components/Common/CustomDates';
 import DetailTabsSection from 'components/Analytics/components/Revenue/DetailTabsSection';
@@ -23,6 +22,7 @@ import { tableController } from 'hookstate/tableController';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 import PurchasersDropdown from './PurchasersDropdown';
 import AcquisitionIdDropdown from './AcquisitionIdDropdown';
+import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles(theme => ({
 	mainTabContainer: {
@@ -114,7 +114,7 @@ const StyledTab = withStyles(theme => ({
 	selected: {},
 }))(props => <Tab disableRipple {...props} />);
 
-const tabs = ['Income Statement', 'Check Details', 'Revenue by Month', 'Comparisons', 'Property Interests'];
+const tabs = ['Income Statement', 'Check Details', 'Comparisons', 'Property Interests'];
 
 export default function RevenueAnalytics(props) {
 	const classes = useStyles();
@@ -140,11 +140,11 @@ export default function RevenueAnalytics(props) {
 	const [esFilters, setEsFilters] = useState(tableController('ComparisonTable').getExternalFilter());
 
 	const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 166px)' };
-	const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
+	const [getDbMinValue] = useLazyQuery(GET_DB_MIN_VALUE, {
 		fetchPolicy: 'no-cache',
 		onCompleted: data => {
-			if (data?.getESMinValue) {
-				setLastCheckMinDate(data?.getESMinValue);
+			if (data?.getDbMinValue?.data) {
+				setLastCheckMinDate(data?.getDbMinValue.data);
 			}
 		},
 	});
@@ -176,7 +176,6 @@ export default function RevenueAnalytics(props) {
 					],
 					filterKey: 'property.number.keyword',
 					filterAggs: { query: '', field: 'property.number.keyword', size: getTableStateValues()?.data?.total || 0 },
-					isElasticQuery: false,
 				},
 				onCompleted: res => resolve(res?.getESSimpleFilter?.hits),
 				onError: error => reject(error),
@@ -190,7 +189,6 @@ export default function RevenueAnalytics(props) {
 					filters: [...(getTableStateValues()?.filters || []), { field: 'IsDeleted', value: false, type: 'term' }],
 					filterKey: 'check.checkNumber.keyword',
 					filterAggs: { query: '', field: 'check.checkNumber.keyword', size: getTableStateValues()?.data?.total || 0 },
-					isElasticQuery: false,
 				},
 				onCompleted: res => resolve(res?.getESSimpleFilter?.hits),
 				onError: error => reject(error),
@@ -245,7 +243,7 @@ export default function RevenueAnalytics(props) {
 		if (checkDetailData?.getCheckDetailsData?.checkDetails?.length > 0) {
 			let data = [];
 			for (let i = 0; i < checkDetailData?.getCheckDetailsData?.checkDetails?.length; i++) {
-				const check = checkDetailData?.getCheckDetailsData?.checkDetails[i]._source;
+				const check = checkDetailData?.getCheckDetailsData?.checkDetails[i];
 				data.push({
 					wells: check.wells,
 					date: check.date,
@@ -265,14 +263,13 @@ export default function RevenueAnalytics(props) {
 	}, [checkDetailData]);
 
 	useEffect(() => {
-		getESMinValue({
+		getDbMinValue({
 			variables: {
-				esIndex: 'checks_flat',
+				index: 'checks_flat',
 				field: 'checkDate',
-				value_as_string: true,
 			},
 		});
-	}, [getESMinValue]);
+	}, [getDbMinValue]);
 
 	useEffect(() => {
 		setFromDate(moment().startOf('year').format('yyyy-MM-DD'));
@@ -428,7 +425,6 @@ export default function RevenueAnalytics(props) {
 							</Grid>
 						</Grid>
 					</div>
-					{/* <AnalyticsCards cards={cards} /> */}
 					<Divider className={classes.divider} />
 					<DetailTabsSection
 						monthsInterval={monthsInterval}

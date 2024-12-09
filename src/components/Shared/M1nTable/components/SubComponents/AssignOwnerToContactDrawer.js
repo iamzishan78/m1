@@ -218,7 +218,7 @@ function SelectedField({
 			return (
 				<EntityType
 					setDocumentType={value => {
-						setFieldKey(value._id); // Sets the field key value based on selected entity type
+						setFieldKey(value.name); // Sets the field key value based on selected entity type
 					}}
 					value={fieldKey} // Current selected entity type value
 				/>
@@ -301,7 +301,7 @@ export default function AssignOwnerToContactDrawer({
 	});
 
 	//add RelatedContacts Api
-	const [addRelatedContacts, { data: response, loading: isSubmitting }] = useMutation(ADD_RELATED_CONTACTS, {
+	const [addRelatedContacts] = useMutation(ADD_RELATED_CONTACTS, {
 		onCompleted: () => {
 			tableGlobalController.refetch();
 		},
