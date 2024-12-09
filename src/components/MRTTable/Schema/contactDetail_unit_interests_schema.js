@@ -3,7 +3,7 @@ import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_curre
 import ListChips from 'components/Common/ListChips';
 import { CommonSchema } from './common_schema';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import { Typography } from '@material-ui/core';
 
@@ -193,11 +193,14 @@ const ContactDetailUnitInterestMeta = {
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'campaignName.keyword',
-			accessorFn: row => row?.campaignName,
-			id: 'campaignName',
-			header: 'Campaign',
-			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
+			type: 'array',
+			name: 'campaigns',
+			accessorFn: row => row?.campaigns,
+			id: 'campaigns',
+			header: 'Campaigns',
+			Cell: ({ row }) => {
+				return <CampaignField value={row?.original?.campaigns} fullWidth disabled />;
+			},
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,

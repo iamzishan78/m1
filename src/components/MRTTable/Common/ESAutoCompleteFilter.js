@@ -128,6 +128,7 @@ function ESAutoCompleteFilter({
 						fields: typeof field !== 'string' ? field : undefined,
 						size: searchMapping[searchMode].size,
 						afterKey,
+						fieldType: type,
 					},
 					sort,
 				},
@@ -140,10 +141,18 @@ function ESAutoCompleteFilter({
 
 		if (!hits) return;
 
-		let options = hits.map(({ key }) => ({
-			label: Array.isArray(key) ? key.join(' ') : key,
-			value: key,
-		}));
+		let options = hits.map(({ key }) => {
+			let label = key;
+
+			if (Array.isArray(key)) label = key.join(' ');
+
+			if (typeof label === 'object') label = label.name || '';
+
+			return {
+				label,
+				value: key,
+			};
+		});
 
 		if (type === 'date') {
 			options = hits.map(({ key_as_string, key }) => {
@@ -274,6 +283,11 @@ function ESAutoCompleteFilter({
 			multiple={multiple}
 			id={`${id}-filter-autocomplete`}
 			options={requiredOptions}
+			getOptionLabel={op => {
+				if (typeof op !== 'object') return op;
+
+				return op?.label || op?.name || '';
+			}}
 			loading={loading}
 			filterOptions={searchMapping[searchMode].filterOptions}
 			value={formatValue(filterValue ?? _value, field)}

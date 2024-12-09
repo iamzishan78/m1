@@ -99,7 +99,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-export default function CampaignNameField(props) {
+export default function CampaignField(props) {
 	const [options, setOptions] = useState([]);
 	const [inputValue, setInputValue] = useState([]);
 	const [tFActive, setTFActive] = useState(false);
@@ -117,13 +117,7 @@ export default function CampaignNameField(props) {
 	}, [campaignfiltersData]);
 
 	useEffect(() => {
-		const campaignName = props.value
-			? typeof props.value === 'string'
-				? [props.value]
-				: props.value.filter(item => item && item?.trim() !== '')
-			: [];
-
-		setInputValue(campaignName);
+		setInputValue(props.value || []);
 	}, [props.value]);
 
 	useEffect(() => {
@@ -195,10 +189,10 @@ export default function CampaignNameField(props) {
 						renderTags={(value, getTagProps) => {
 							return value.map((tag, index) => (
 								<Chip
-									key={index}
-									id={tag}
-									label={tag}
-									{...getTagProps({ index })}
+									key={tag._id}
+									id={tag._id}
+									label={tag.name}
+									{...getTagProps({ index: tag._id })}
 									deleteIcon={!props.disabled ? <ClearIcon /> : <></>}
 									data-testid="campaign-name-chip"
 								/>

@@ -3,7 +3,7 @@ import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagCompon
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActionMenu';
 import IsContactCell from 'components/MRTTable/Common/TableCells/isContactIcone';
@@ -471,11 +471,14 @@ const OwnersPerUnitMeta = {
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'campaignName.keyword',
-			accessorFn: row => row?.campaignName,
-			id: 'campaignName',
-			header: 'Campaign Name',
-			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
+			type: 'array',
+			name: 'campaigns',
+			accessorFn: row => row?.campaigns,
+			id: 'campaigns',
+			header: 'Campaigns',
+			Cell: ({ row }) => {
+				return <CampaignField value={row?.original?.campaigns} fullWidth disabled />;
+			},
 		},
 
 		{
