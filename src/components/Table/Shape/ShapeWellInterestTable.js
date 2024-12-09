@@ -132,6 +132,7 @@ function ShapeWellInterestTable(props) {
 			props.setRows([]);
 			props.setLoading(false);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableData, props.dependencyUpdate]);
 
 	useEffect(() => {

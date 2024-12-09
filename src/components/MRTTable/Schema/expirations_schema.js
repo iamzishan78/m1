@@ -111,10 +111,10 @@ const ExpirationsMeta = {
 			accessorFn: row => row?.isClosed,
 			id: 'isClosed',
 			header: 'Completed?',
-			type: 'defaultFiltersOptions',
-			defaultFilterOptions: [
-				{ label: 'Y', value: true, type: 'term' },
-				{ label: 'N', value: false, type: 'term' },
+			type: 'boolean',
+			filterSelectOptions: [
+				{ label: 'Yes', value: 'true' },
+				{ label: 'No', value: 'false' },
 			],
 			Cell: ({ renderedCellValue }) => {
 				return renderedCellValue === 'true' ? (
