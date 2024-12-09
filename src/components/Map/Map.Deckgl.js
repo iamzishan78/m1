@@ -140,7 +140,7 @@ function Map({
 		'popupStateValues'
 	);
 	const { mapStateValues } = mapStateController.useState(
-		['mapVars', 'defaultMapVars', 'toggle3d', 'toggleZoomOut'],
+		['mapVars', 'defaultMapVars', 'toggle3d', 'toggleZoomOut', 'isDefaultViewAllowed'],
 		'mapStateValues'
 	);
 	const { wellListFromSearch, layerStateValues } = layerController.useState(['wellListFromSearch'], 'layerStateValues');
@@ -706,8 +706,8 @@ function Map({
 	}, [mapStateValues.mapVars.styleId, mapStyles]);
 
 	useEffect(() => {
-		if (map) {
-			mapStateController.updateState({ mapVars: mapStateValues.defaultMapVars });
+		if (map && mapStateValues.isDefaultViewAllowed) { // Add check to update mapVars if position is updated
+			mapStateController.updateState({ mapVars: mapStateValues.defaultMapVars })
 			map.jumpTo({
 				center: [mapStateValues.defaultMapVars.center.lng, mapStateValues.defaultMapVars.center.lat],
 				zoom: mapStateValues.defaultMapVars.zoom,
@@ -929,6 +929,9 @@ function Map({
 			}, 500);
 
 			newMap.on('load', () => {
+				window.mapRef?.remove(); // Remove the existing map instance to avoid rendering multiple maps
+				window.mapRef = null; // Remove the existing map instance to avoid rendering multiple maps
+				window.drawRef = null; //  Remove the existing map instance to avoid rendering multiple maps
 				window.mapRef = newMap;
 				window.drawRef = Draw;
 				layerController.resetMapStates(true);
