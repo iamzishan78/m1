@@ -573,6 +573,8 @@ export function DetailComponents(props) {
 								startIcon={<MapImgViewIcon />}
 								className={classes.mapButton}
 								onClick={() => {
+									setButtonScroll(true);
+									setTab(0);
 									setMapCollapse(o => !o);
 								}}
 							>
