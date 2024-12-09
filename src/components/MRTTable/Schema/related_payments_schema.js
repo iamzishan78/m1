@@ -19,7 +19,6 @@ const onClickedRow = selectedRow => {
 				showMultiGrid: true,
 				paymentId: selectedRow._id,
 				paymentAmount: selectedRow?.amount,
-				paymentData: selectedRow,
 			},
 		});
 	}
