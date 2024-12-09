@@ -64,7 +64,7 @@ import DeckGlLayer from './DeckGL/helpers/DeckGlLayer';
 import onRightClick from './DeckGL/helpers/onRightClick';
 import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
 import { convertToTitleCase } from 'components/Shared/M1nTable/components/MUIDataTable/utils';
-import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { drawController } from 'hookstate/drawStateController';
 import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
 import { MapFeatureTenants } from 'utils/data';
@@ -344,19 +344,23 @@ function Map({
 
 	const getElasticWell = async paramId => {
 		const { data: well } = await client.query({
-			query: GET_ES_PAGINATED_LIST,
+			query: GET_ES_SIMPLE_SEARCH,
 			variables: {
-				esIndex: 'platformData:wells',
+				index: 'platformData:wells',
 				pagination: {
 					first: 1,
 					keep_alive: '1micros',
 				},
-				search: `_id:${paramId.toLowerCase()}`,
-				filters: [],
+				filters: [
+					{
+						field: '_id',
+						value: paramId.toLowerCase(),
+					},
+				],
 				sort: [],
 			},
 		});
-		const wellFeature = { ...well.getESPaginatedList.hits[0] };
+		const wellFeature = { ...well.getESSimpleSearch.hits[0] };
 		if (wellFeature?.Id) wellFeature.id = wellFeature.Id;
 		const interval = setInterval(() => {
 			if (window.mapRef) {
