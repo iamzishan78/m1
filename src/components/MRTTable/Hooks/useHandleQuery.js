@@ -7,6 +7,7 @@ import { copy } from 'utils/helper';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { drawController } from 'hookstate/drawStateController';
 import { GET_DB_AGGS, GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
+import { mergeArrays } from 'components/Shared/functions';
 
 const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) => {
 	const Controller = tableController(tableKey);
@@ -133,7 +134,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		});
 		if (tableState?.isInFiniteScroll?.get() && !resetPagination.current) {
 			const prevData = tableState?.data?.get({ noproxy: true }).rows || [];
-			rows = [...prevData, ...rows];
+			rows = mergeArrays(prevData, rows, '_id');
 		}
 		resetPagination.current = false;
 		previousPagination.current = pagination;
