@@ -126,6 +126,7 @@ function Map({
 	type,
 	paramId,
 	expandedPanel = true,
+	mapControls = true,
 	openSpeedDial = true,
 	width,
 	hideShape = false,
@@ -1318,8 +1319,9 @@ function Map({
 			</div>
 
 			<DeckGL hideShape={hideShape} />
-			<SpeedDialComponent expandedPanel={expandedPanel} openSpeedDial={openSpeedDial} />
-			<MapControls />
+			{openSpeedDial && <SpeedDialComponent expandedPanel={expandedPanel} openSpeedDial={openSpeedDial} />}
+
+			{mapControls && <MapControls />}
 			<ZoomFault zoomFaultStatus={stateApp.zoomFault} />
 			<HugeRequest />
 
