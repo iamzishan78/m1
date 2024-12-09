@@ -361,7 +361,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 				zoom: map?.getZoom(),
 				styleId: style.name,
 			},
-			isDefaultViewAllowed: false // disable map position change on updating layer style  
+			isDefaultViewAllowed: false, // disable map position change on updating layer style
 		});
 
 		updateUserMapSettings({

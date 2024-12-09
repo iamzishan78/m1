@@ -66,6 +66,7 @@ export const CommonSchema = {
 		enableSorting: false,
 		size: 250,
 		isHiddenFieldExport: true,
+		type: 'mongoID',
 	},
 	INITAIL_PINNED: {
 		isPinned: true,
@@ -92,7 +93,7 @@ export const CommonSchema = {
 		hidden: false,
 		filter: true,
 		isSearchField: false,
-		enableSorting: true,
+		enableSorting: false,
 		enableColumnActions: false,
 		enableHiding: false,
 		type: 'string',

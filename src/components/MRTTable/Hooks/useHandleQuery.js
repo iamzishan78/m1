@@ -7,6 +7,7 @@ import { copy } from 'utils/helper';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { drawController } from 'hookstate/drawStateController';
 import { GET_DB_AGGS, GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
+import { mergeArrays } from 'components/Shared/functions';
 
 const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) => {
 	const Controller = tableController(tableKey);
@@ -21,6 +22,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		const tableMeta = tableState.get({ noproxy: true });
 		const pagination = _pagination || tableMeta.pagination;
 		const { TableSchema } = tableMeta;
+		const isElasticIndex = tableStateValues.esIndex.includes('platformData:');
 		if (!TableSchema) return;
 
 		Controller.updateState({
@@ -84,8 +86,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			layerFiltersController.setVariables(tableStateValues.filterLayerType, variables);
 
 		let total = tableStateValues?.data?.total;
-
-		if (pagination.pageIndex === 0) {
+		if (pagination.pageIndex === 0 && !isElasticIndex) {
 			(async () => {
 				const dbDataTotal = await client.query({
 					variables,
@@ -111,6 +112,9 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		});
 
 		const data = allSelectedRows?.data?.getESSimpleSearch;
+		if (isElasticIndex) {
+			total = data.total;
+		}
 		let rows = copy(data.hits) || [];
 
 		rows.forEach(row => {
@@ -130,7 +134,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		});
 		if (tableState?.isInFiniteScroll?.get() && !resetPagination.current) {
 			const prevData = tableState?.data?.get({ noproxy: true }).rows || [];
-			rows = [...prevData, ...rows];
+			rows = mergeArrays(prevData, rows, '_id');
 		}
 		resetPagination.current = false;
 		previousPagination.current = pagination;
@@ -217,7 +221,8 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	useEffect(() => {
 		const tableMeta = tableState.get({ noproxy: true });
 
-		if (!tableMeta || tableMeta.isFetching) return;
+		if (!tableMeta) return;
+
 		callQuery({
 			pageIndex: 0,
 			first: tableStateValues?.pageSize || 50,

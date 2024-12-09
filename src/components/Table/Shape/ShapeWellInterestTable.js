@@ -71,7 +71,7 @@ function ShapeWellInterestTable(props) {
 						first: startPaginationAt,
 						keep_alive: '1micros',
 					},
-					search: `shape._id:${props.customLayer._id}`,
+					filters: [{ field: 'shape._id', value: props.customLayer._id }],
 				},
 			});
 	}, [props.customLayer]);
@@ -132,6 +132,7 @@ function ShapeWellInterestTable(props) {
 			props.setRows([]);
 			props.setLoading(false);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableData, props.dependencyUpdate]);
 
 	useEffect(() => {

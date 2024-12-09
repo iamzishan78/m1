@@ -61,7 +61,7 @@ const getNextPaymentDate = (value, startDate, endDate) => {
 	return moment(nextPaymentDate); // Return date in YYYY-MM-DD format
 };
 
-const paymentForm = ({ setValue, getValues }) => {
+const paymentForm = ({ setValue, getValues, isUpdate }) => {
 	const formFields = [
 		{
 			label: 'Payment Type',
@@ -86,6 +86,7 @@ const paymentForm = ({ setValue, getValues }) => {
 		{
 			renderField: 'startEndDate',
 			required: true,
+			disabled: isUpdate,
 			onStartDateChange: value => {
 				setValue('startDate', value);
 				const { endDate, frequency } = getValues();
@@ -100,6 +101,7 @@ const paymentForm = ({ setValue, getValues }) => {
 		{
 			label: 'Frequency',
 			name: 'frequency',
+			disabled: isUpdate,
 			renderField: 'autoComplete',
 			required: true,
 			onChange: value => {
@@ -119,6 +121,7 @@ const paymentForm = ({ setValue, getValues }) => {
 			label: 'Amount',
 			name: 'amount',
 			required: true,
+			disabled: isUpdate,
 			onChange: value => {
 				setValue('amount', value);
 			},

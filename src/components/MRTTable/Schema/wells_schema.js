@@ -14,6 +14,7 @@ const WellsMeta = {
 		pageSize: 50,
 	},
 	maxTableHeight: 'calc(100vh - 290px)',
+	isExportDisabled: true,
 	isInFiniteScroll: true,
 	isDeleteDisabled: true,
 	columnVirtualization: true,

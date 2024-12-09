@@ -287,7 +287,7 @@ const CampaignFilter = ({
 			},
 		});
 		onCampaignChange('campaign', search);
-	}, [search, selectedFilters.qualifier, tableFilters, appliedFilters]);
+	}, [search, selectedFilters.qualifier, tableFilters, appliedFilters, stateApp.landAnalyticsSearchQuery]);
 
 	return (
 		<Autocomplete
@@ -369,7 +369,7 @@ const QualifierFilter = ({
 				index: esIndex,
 				filters: getAllFilters(),
 				filterKey: esFilterKey,
-				search: { query: stateApp.activitySearchQuery, fields: searchFields },
+				search: { query: stateApp.activitySearchQuery || stateApp.landAnalyticsSearchQuery, fields: searchFields },
 				size: 50,
 				filterAggs: {
 					query: search,
@@ -385,6 +385,7 @@ const QualifierFilter = ({
 		esIndex === 'contacts_flat' ? selectedFilters.audit : selectedFilters.campaign,
 		tableFilters,
 		appliedFilters,
+		stateApp.landAnalyticsSearchQuery,
 	]);
 
 	return (

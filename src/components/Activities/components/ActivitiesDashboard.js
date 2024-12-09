@@ -121,7 +121,7 @@ const ActivitiesDashboard = () => {
 	}, []);
 
 	useEffect(() => {
-		tableController('ActivityTable').setGlobalFilter(stateApp.landAnalyticsSearchQuery);
+		tableController(tableKey).setGlobalFilter(stateApp.landAnalyticsSearchQuery);
 	}, [stateApp.landAnalyticsSearchQuery]); // Update table filter state based on navbar search
 
 	return (
@@ -148,6 +148,8 @@ const ActivitiesDashboard = () => {
 					...activitiesTableState?.filters,
 				]}
 				appliedFilters={appliedFilters}
+				setTableFilters={tableController(tableKey)?.setFilters}
+				tableData={activitiesTableState?.data}
 				module={'Activities'}
 			/>
 			<MRTTable

@@ -27,6 +27,7 @@ import { mapControlsController } from 'hookstate/mapControlsController';
 import { tableGlobalController } from 'hookstate/tableController';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
+import { globalStateController } from 'hookstate/globalStateController';
 
 const useStyles = makeStyles(theme => {
 	return {
@@ -272,9 +273,13 @@ function MapGridCard(props) {
 		if (mapControlsStateValues?.selectedLayer?.layerShapeName) {
 			const fileQuery = generateFileFilters({ fileLayer: mapControlsStateValues.selectedLayer });
 			tableGlobalController.reInitialized();
+			const layers = globalStateController.getValue('layers') || [];
+			const selectedLayer = layers?.find(
+				layer => layer?.layerShapeName === mapControlsStateValues?.selectedLayer?.layerShapeName
+			);
 			return {
 				filterLayerType: mapControlsStateValues.selectedLayer?.layerShapeName,
-				layerIdentifier: mapControlsStateValues.selectedLayer?.layerShapeName,
+				layerIdentifier: selectedLayer?.layerId,
 				maxTableHeight: '40vh',
 				toolbarInternalActions: {
 					onClose,

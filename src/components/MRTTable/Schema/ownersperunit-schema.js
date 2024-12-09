@@ -593,7 +593,7 @@ const OwnersPerUnitMeta = {
 
 		{
 			...CommonSchema.COMMENTS,
-			Cell: ({ renderedCellValue, row }) => {
+			Cell: ({ row }) => {
 				const id = row.getValue('ownerEntity');
 				return (
 					<CommentCell

@@ -18,6 +18,7 @@ import { handleMRTSchema, handleVisiblityMenu } from './helpers';
 import { validateUrl } from 'utils/helper';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 import { extractUniqueFilters } from 'components/Map/DeckGL/helpers/common';
+import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 
 function isDateFormat(inputString) {
 	// Regular expression for MM/DD/YYYY format
@@ -45,6 +46,7 @@ const initialState = {
 	},
 	isIncludeInactive: false,
 	gridView: {},
+	showTypes: false,
 };
 
 export const tableESState = {};
@@ -226,14 +228,7 @@ const tableESStateControllerHandler = state => ({
 		const { filters } = mapView?.selectedMapView || {};
 		const selectedMapViewFilters = filters || [];
 
-		const layers = globalStateController.getValue('layers') || [];
-		const gridLayersIds = layers
-			?.filter(layer => layer?.layerShapeName === layerIdentifier)
-			.map(layer => layer?.layerId);
-
-		const dataSourceViews = selectedMapViewFilters?.filter(
-			view => view.dataSourceName === layerIdentifier || gridLayersIds.includes(view.dataSourceName)
-		);
+		const dataSourceViews = selectedMapViewFilters?.filter(view => view.dataSourceName === layerIdentifier);
 		const mapViewFilters =
 			dataSourceViews?.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)) ||
 			[];
@@ -508,46 +503,50 @@ const tableESStateControllerHandler = state => ({
 		});
 
 		if (tableState?.layerIdentifier) {
-			const layers = globalStateController.getValue('layers') || [];
-			const gridLayersIds = layers
-				?.filter(layer => layer?.layerShapeName === tableState?.layerIdentifier)
-				.map(layer => layer?.layerId);
+			const currentIdentifier = customLayersFieldAccessors[tableState?.layerIdentifier];
 
-			const existingFilter = mapViewsFitlers.find(
-				({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') === filter.field
-			);
+			if (
+				currentIdentifier &&
+				currentIdentifier.keys?.find(key => key.value.replace('.keyword', '') === filter.field.replace('.keyword', ''))
+			) {
+				const existingFilter = mapViewsFitlers.find(
+					({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') === filter.field
+				);
 
-			const isValuesEqual = _.isEqual(
-				existingFilter?.filterValues,
-				typeof filter.value === 'string' ? [filter.value] : filter.value
-			);
-			const isNonValuesFilter = ['empty', 'notEmpty'].includes(filter.searchType);
+				const isValuesEqual = _.isEqual(
+					existingFilter?.filterValues,
+					typeof filter.value === 'string' ? [filter.value] : filter.value
+				);
+				const isNonValuesFilter = ['empty', 'notEmpty'].includes(filter.searchType);
 
-			if (!(isValuesEqual || isNonValuesFilter)) {
-				globalStateController.updateState({
-					viewChanged: true,
-					mapView: {
-						...mapView,
+				if (!(isValuesEqual || isNonValuesFilter)) {
+					globalStateController.updateState({
 						viewChanged: true,
-						selectedMapView: {
-							...mapView?.selectedMapView,
-							filters: [
-								...mapViewsFitlers.filter(
-									({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') !== filter.field
-								),
-								{
-									dataSourceName: gridLayersIds?.[0] || tableState?.layerIdentifier,
-									filterType:
-										tableState?.filterModes[filter.field.replace('.keyword', '')]?.mode ||
-										existingFilter?.filterType ||
-										'singleselect',
-									fieldName: filter.field,
-									filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
-								},
-							],
+						mapView: {
+							...mapView,
+							viewChanged: true,
+							selectedMapView: {
+								...mapView?.selectedMapView,
+								filters: [
+									...mapViewsFitlers.filter(
+										({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') !== filter.field
+									),
+									{
+										dataSourceName: tableState?.layerIdentifier,
+										filterType:
+											tableState?.filterModes[filter.field.replace('.keyword', '')]?.mode ||
+											existingFilter?.filterType ||
+											tableState?.esIndex === 'shapefile_flat'
+												? 'multiselect'
+												: 'singleselect',
+										fieldName: filter.field,
+										filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
+									},
+								],
+							},
 						},
-					},
-				});
+					});
+				}
 			}
 		}
 

@@ -17,6 +17,7 @@ const formatValue = (value, field) => {
 	) {
 		value = vf_currency(value);
 	}
+	if (Array.isArray(value)) value = value.map(value => value || value === 0);
 	return value;
 };
 
@@ -62,15 +63,38 @@ function ESAutoCompleteFilter({
 	const appendOptions = useRef(false);
 	const filtersRef = useRef(null);
 
-	const { searchFields, filters, defaultFilters, advanceSearch } = tableController(tableKey).getValues([
-		'searchFields',
-		'filters',
-		'defaultFilters',
-		'advanceSearch',
-	]);
-
 	const getFiltersAction = debounce(({ afterKey } = {}) => {
 		if (filtersData && multiple && filterValue?.length !== 0) return;
+
+		const { searchFields, filters, defaultFilters, advanceSearch, sorting, defaultSort, TableSchema } = tableController(
+			tableKey
+		).getValues([
+			'searchFields',
+			'filters',
+			'defaultFilters',
+			'advanceSearch',
+			'sorting',
+			'defaultSort',
+			'TableSchema',
+		]);
+
+		let sort = sorting[0]
+			? {
+					field: (() => {
+						if (sorting[0].field) return sorting[0].field;
+
+						const sortingId = sorting[0].id;
+						const matchingSchema = TableSchema.find(val => (val.accessorKey || val.id) === sortingId);
+
+						if (matchingSchema?.isComposite) {
+							return matchingSchema.name.split(',')[0];
+						}
+
+						return matchingSchema?.name;
+					})(),
+					order: sorting[0].desc ? 'desc' : 'asc',
+				}
+			: defaultSort;
 
 		const filtersArray = [...filters, ...defaultFilters];
 		const currentFilterRef = {
@@ -105,6 +129,7 @@ function ESAutoCompleteFilter({
 						size: searchMapping[searchMode].size,
 						afterKey,
 					},
+					sort,
 				},
 			});
 		}
@@ -163,6 +188,8 @@ function ESAutoCompleteFilter({
 			setOptions(prevOptions => [...prevOptions, ...options]);
 		} else setStateIfDeepEqual(setOptions, filterSelectOptions || options);
 	}, [filtersData, filterValue, type, filterSelectOptions, field]);
+
+	const { filters } = tableController(tableKey).getValues(['filters']);
 
 	// If we have orFilter then filterValue is null due to id mismatch
 	if (isComposite) {
@@ -242,7 +269,6 @@ function ESAutoCompleteFilter({
 			getFiltersAction({ afterKey: options[options.length - 1].value });
 		}
 	};
-
 	return (
 		<Autocomplete
 			multiple={multiple}
@@ -293,7 +319,7 @@ function ESAutoCompleteFilter({
 							if (typeof option === 'object') {
 								return option.value;
 							} else {
-								const foundOption = _.find(options, { label: option });
+								const foundOption = _.find(requiredOptions, { label: option });
 								return foundOption ? foundOption.value : option;
 							}
 						})

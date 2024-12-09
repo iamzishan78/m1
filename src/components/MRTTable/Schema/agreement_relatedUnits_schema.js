@@ -184,7 +184,7 @@ const UnitMeta = {
 			header: 'Last Updated',
 			type: 'date',
 			isSearchField: false,
-			Cell: ({ row }) => <div>{formatDate(row.getValue('_ts'), false)}</div>,
+			Cell: ({ row }) => <div>{formatDate(row.getValue('_ts'))}</div>,
 		},
 	],
 };

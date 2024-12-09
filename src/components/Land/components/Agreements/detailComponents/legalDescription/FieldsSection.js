@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo } from 'react';
-import _ from 'underscore';
 import { get } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 import { makeStyles } from '@material-ui/styles';
@@ -109,7 +108,8 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
 
 	useEffect(() => {
 		reset(agreementDetails);
-	}, [reset, agreementDetails]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [agreementDetails]);
 
 	const offClickHandler = (key, value) => {
 		if (agreementDetails[key] === value) return;

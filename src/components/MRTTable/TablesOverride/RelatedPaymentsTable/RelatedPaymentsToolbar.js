@@ -1,19 +1,34 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import { Button, Typography } from '@material-ui/core';
 import { detailCardController } from 'hookstate/detailCardController';
 import { PaymentRightDialog } from './RightDialog';
-import { tableController } from 'hookstate/tableController';
+import { tableGlobalController } from 'hookstate/tableController';
+import EditIcon from '@material-ui/icons/Edit';
 
 // This component is used in the RelatedPaymentsTable component for the toolbar
 function RelatedPaymentsToolbar({ table, tableKey }) {
-	const Controller = tableController(tableKey);
-	const tableState = Controller.useState(['rowSelection']);
-	const tableStateValues = tableState.stateValues;
+	const paymentMultiGrid = tableGlobalController.getValue('paymentMultiGrid');
 
-	const isSomeRowsSelected =
-		table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
-	const isAllRowsSelected = table.getIsAllRowsSelected();
-	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
+	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
+
+	useEffect(() => {
+		if (selectedRows.length === 1) {
+			tableGlobalController.updateState({
+				paymentMultiGrid: {
+					...paymentMultiGrid,
+					paymentData: selectedRows[0],
+				},
+			});
+		} else {
+			tableGlobalController.updateState({
+				paymentMultiGrid: {
+					...paymentMultiGrid,
+					paymentData: null,
+				},
+			});
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [selectedRows]);
 
 	return (
 		<>
@@ -24,20 +39,30 @@ function RelatedPaymentsToolbar({ table, tableKey }) {
 			>
 				RELATED PAYMENTS
 			</Typography>
-			{!isSomethingSelected && (
-				<>
-					<Button
-						variant="contained"
-						color="primary"
-						onClick={() => {
-							detailCardController.updateState({ drawer: 'paymentDialog' });
-						}}
-					>
-						+ ADD Payment
-					</Button>
-					<PaymentRightDialog />
-				</>
-			)}
+			<>
+				<Button
+					variant="contained"
+					color="primary"
+					onClick={() => {
+						detailCardController.updateState({ drawer: 'paymentDialog' });
+					}}
+					disabled={selectedRows.length}
+				>
+					+ ADD Payment
+				</Button>
+				<PaymentRightDialog />
+				<Button
+					variant="contained"
+					color="primary"
+					startIcon={<EditIcon />}
+					disabled={!selectedRows.length || !selectedRows.length === 1 || selectedRows.length > 1}
+					onClick={() => {
+						detailCardController.updateState({ drawer: 'paymentDialog' });
+					}}
+				>
+					Edit Payment
+				</Button>
+			</>
 		</>
 	);
 }

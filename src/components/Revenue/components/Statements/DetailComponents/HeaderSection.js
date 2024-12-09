@@ -120,7 +120,6 @@ function HeaderFunction(props) {
 		getPayorList({
 			variables: {
 				index: 'checks_flat',
-				search: searchOperator ? `${searchOperator}*` : '*', // allow to search the user typed value from the list
 				filterAggs: {
 					field: 'payor.name.keyword',
 					size: 50,
@@ -134,6 +133,7 @@ function HeaderFunction(props) {
 		if (check) {
 			reset({ ...check });
 			setCheck(check);
+			setSearchOperator(check?.payor?.name || '');
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.check]);
@@ -217,7 +217,7 @@ function HeaderFunction(props) {
 								render={params => (
 									<AutoCompleteWithAddNew
 										{...params}
-										value={get(params, 'value.name', '')}
+										value={searchOperator}
 										variant="outlined"
 										setValue={value => {
 											if (value?._id) params.onChange({ _id: value._id, name: value.name });
