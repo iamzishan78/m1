@@ -177,10 +177,6 @@ const getCurrentDate = () => {
 	return d.slice(0, d.indexOf('T'));
 };
 
-const getDateFromString = d => {
-	return d.slice(0, d.indexOf('T'));
-};
-
 const mergeDateAndTime = (d, t) => {
 	return `${d}T${t}`;
 };

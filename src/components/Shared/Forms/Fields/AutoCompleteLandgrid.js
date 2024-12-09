@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLazyQuery } from '@apollo/client';
 
 import TextField from '@material-ui/core/TextField';
@@ -7,7 +7,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 import { US_STATES } from 'utils/data';
 import { uniqBy } from 'lodash';
-import { GET_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetAutoCompleteList';
 import { Grid, Typography } from '@material-ui/core';
 import loadashFilter from 'lodash/filter';
 
@@ -60,10 +59,10 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({
 	variant,
 	compoundValue,
 	newOptions,
-	newOptionFilters,
+	// newOptionFilters,
 	onBlur,
 	disabled = false,
-	autoCompleteType = 'AgreementShapeOwner',
+	// autoCompleteType = 'AgreementShapeOwner',
 }) {
 	const [open, setOpen] = useState(false);
 	const [options, setOptions] = useState([]);
@@ -73,10 +72,10 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({
 
 	// const [getautoCompleteList, { data: dataAutoCompleteList = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
 
-	const condition = useMemo(
-		() => Object.entries(newOptionFilters || {}).reduce((acc, [key, val]) => ({ ...acc, [`${key}`]: val }), {}),
-		[newOptionFilters]
-	);
+	// const condition = useMemo(
+	// 	() => Object.entries(newOptionFilters || {}).reduce((acc, [key, val]) => ({ ...acc, [`${key}`]: val }), {}),
+	// 	[newOptionFilters]
+	// );
 
 	// useEffect(() => {
 	// 	if (!newOptions) return;

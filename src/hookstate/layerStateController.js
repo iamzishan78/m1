@@ -122,6 +122,9 @@ const LayerMeta = {
 					lineWidthMaxPixels: 8,
 					getPointRadius: 50,
 					getLineWidth: 20,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
 				};
 			},
 		},
@@ -141,6 +144,9 @@ const LayerMeta = {
 					data: deckLayers[layerId].getData([]),
 					pointRadiusMinPixels: 5,
 					pointRadiusMaxPixels: 15,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
 				};
 			},
 		},
@@ -159,6 +165,9 @@ const LayerMeta = {
 					lineWidthMinPixels: 2,
 					pointRadiusMaxPixels: 15,
 					lineWidthMaxPixels: 10,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
 				};
 			},
 		},
@@ -191,6 +200,9 @@ const LayerMeta = {
 					lineWidthMinPixels: 2,
 					pointRadiusMaxPixels: 15,
 					lineWidthMaxPixels: 10,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
 				};
 			},
 		},
@@ -743,6 +755,7 @@ const layerStateControllerHandler = state => {
 		},
 		resetMapStates: (mapReady = false) => {
 			const rigsData = layerController.getValue('rigsData');
+			const client = layerController.getValue('client');
 			removeLayers(false);
 			popupController.reset();
 			drawController.reset();
@@ -764,7 +777,7 @@ const layerStateControllerHandler = state => {
 				});
 			});
 
-			layerController.setState({ rigsData });
+			layerController.setState({ rigsData, client });
 			navController.reset();
 			mapControlsController.setState({
 				selectedControl: mapControlsController.getValue('selectedControl'),

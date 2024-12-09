@@ -1870,6 +1870,7 @@ function AddDealDialog(props) {
 								params: {
 									expandedPanel: false,
 									openSpeedDial: false,
+									mapControls: false,
 									viewPortCallback: mapSettings => {
 										setMapSettings(mapSettings);
 									},

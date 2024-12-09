@@ -1,4 +1,5 @@
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import CheckIcon from '@material-ui/icons/LocalAtm';
 import { formatDate } from 'components/Shared/functions';
 import { getTruncateText } from '../utils/helper';
 import { slidoutStateController } from 'hookstate/slidoutStateController';
@@ -133,6 +134,28 @@ const ObligationsMeta = {
 			header: 'Status',
 			Cell: ({ renderedCellValue, row }) => {
 				return <>{statusOptions[row?.original?.status] || row?.original?.status}</>;
+			},
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'isClosed',
+			esKey: 'isClosed',
+			accessorFn: row => row?.isClosed,
+			id: 'isClosed',
+			header: 'Completed?',
+			type: 'boolean',
+			filterSelectOptions: [
+				{ label: 'Yes', value: 'true' },
+				{ label: 'No', value: 'false' },
+			],
+			Cell: ({ renderedCellValue }) => {
+				return renderedCellValue === 'true' ? (
+					<div style={{ textAlign: 'center' }}>
+						<CheckIcon id="checkIcon" />
+					</div>
+				) : (
+					<div style={{ textAlign: 'center' }}>--</div>
+				);
 			},
 		},
 		{

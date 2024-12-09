@@ -111,9 +111,6 @@ const DocumentMeta = {
 			isKeyword: true,
 		},
 	],
-	search: {
-		fields: ['name^4', '_all'],
-	},
 	maxTableHeight: 'calc(100vh - 200px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,

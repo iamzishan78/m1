@@ -45,6 +45,7 @@ const handleQuery = (queryHandler, onData) => {
 	const { queryString, getterKey, isLandGridQuery } = queries[queryHandler.identifier] || queries['search'];
 
 	const client = layerController.getValue('client');
+	if (!client) return;
 
 	return new Promise(async (resolve, reject) => {
 		const query = client.watchQuery({
