@@ -140,6 +140,7 @@ const useStyles = makeStyles(theme => ({
 		wordWrap: 'break-word',
 		wordBreak: 'break-word',
 		hyphens: 'auto',
+		margin: '0px !Important',
 	},
 }));
 
@@ -164,7 +165,7 @@ export function getLikedPeoplesName(comment, myUserId) {
 }
 export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 	const classes = useStyles();
-	let formatComment = (eachComment?.comment || '').split(' ');
+	let formatComment = (eachComment?.comment || '').split(/[\s\n]+/);
 
 	return (
 		<div id={eachComment?._id} className={`${classes.whiteSpace}`}>
@@ -182,32 +183,62 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 				if (word.includes('{{') && word.includes('}}')) {
 					const splittedWord = word.split(/\r?\n/);
 
-					// splitt word to manage new lines in the word
+					// split word to manage new lines in the word
 					if (splittedWord.length) {
 						return (
 							<>
 								{splittedWord.map(sWord => {
-									if (sWord.includes('{{') && sWord.includes('}}')) {
-										const firstPart = sWord.split('{{')[0];
-										const secondPart = sWord.split('}}')[1];
-										let id = sWord.split('{{')[1];
-										id = id.split('}}')[0];
-										return (
-											<>
-												{' '}
-												<span className={`${classes.commentWords} blue`}>
-													{firstPart}@{users?.find(user => user._id === id)?.name}
-													{secondPart}{' '}
-												</span>
-												{splittedWord.length > 1 && <br />}{' '}
-											</>
+									const idRegex = /\{\{(.*?)\}\}/g;
+									let match;
+									let parts = [];
+									let lastIndex = 0;
+
+									// Process all matches of {{id}} in sWord
+									while ((match = idRegex.exec(sWord)) !== null) {
+										const id = match[1]; // Extract the ID inside {{ }}
+										const username = users?.find(user => user._id === id)?.name || "";
+
+										// Capture the text before the current match
+										if (match.index > lastIndex) {
+											// Replace \n with <br /> for the text portion
+											parts.push(
+												sWord.substring(lastIndex, match.index).split("\n").map((text, idx) => (
+													<React.Fragment key={`text-${idx}`}>
+														{idx > 0 && <br />}
+														{text}
+													</React.Fragment>
+												))
+											);
+										}
+
+										// Add the username
+										parts.push(
+											<span className={`${classes.commentWords} blue`} key={id}>
+												@{username}
+											</span>
 										);
-									} else
-										return (
-											<p className={classes.commentWords}>
-												{sWord} <br />{' '}
-											</p>
+
+										// Update lastIndex to continue processing
+										lastIndex = match.index + match[0].length;
+									}
+
+									// Add any remaining text after the last match, replacing \n with <br />
+									if (lastIndex < sWord.length) {
+										parts.push(
+											sWord.substring(lastIndex).split("\n").map((text, idx) => (
+												<React.Fragment key={`end-text-${idx}`}>
+													{idx > 0 && <br />}
+													{text}
+												</React.Fragment>
+											))
 										);
+									}
+
+									return (
+										<p className={classes.commentWords} key={sWord}>
+											{parts.flat()}
+										</p>
+									);
 								})}
 							</>
 						);
