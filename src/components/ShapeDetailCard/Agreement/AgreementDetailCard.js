@@ -88,8 +88,12 @@ export default function AgreementDetailCard(props) {
 				...dataCustomLayer.customLayer,
 				shape,
 			});
+
+			let feature = shape;
+			feature.id = dataCustomLayer.customLayer?._id;
+			feature.properties.id = dataCustomLayer.customLayer?._id;
 			popupController.updateState({
-				selectedShape: { ...shape.properties, id: dataCustomLayer.customLayer._id },
+				selectedShape: { ...shape.properties, feature, id: dataCustomLayer.customLayer._id },
 			});
 
 			// Dispatch action for validation error if there is no agreement number
