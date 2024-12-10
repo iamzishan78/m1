@@ -235,6 +235,13 @@ function Datasets({ headerButton, search, stateApp }) {
 		});
 	};
 
+	const handleAddLayer = dataset => {
+		mapControlsController.updateState({
+			layerAddControl: 'addLayers',
+			selectedDataset: dataset,
+		});
+	};
+
 	return (
 		<>
 			<StyledMenuSecondaryHeaderItem>
@@ -292,6 +299,7 @@ function Datasets({ headerButton, search, stateApp }) {
 												<DatasetMenu
 													handleRemove={handleRemove}
 													handleTransfer={handleTransfer}
+													handleAddLayer={handleAddLayer}
 													dataset={{ sourceName, Icon, categories, ...rest }}
 												/>
 											)}
