@@ -160,6 +160,7 @@
 		"uid": "^2.0.0",
 		"universal-cookie": "^4.0.4",
 		"validate-date": "^2.0.0",
+		"victor": "^1.1.0",
 		"viewport-mercator-project": "^7.0.2",
 		"webpack-bundle-analyzer": "^4.10.2",
 		"yarn": "^1.22.19"
