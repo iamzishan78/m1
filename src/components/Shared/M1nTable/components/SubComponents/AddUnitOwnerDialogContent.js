@@ -37,7 +37,7 @@ import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/Currenc
 import ContactStatus from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
 import EntityType from 'components/ContactDetailCard/components/FieldContent/EntityType';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import AssociatedDealField from 'components/ContactDetailCard/components/FieldContent/AssociatedDealField';
 import DeleteConfirmationDialogContent from './DeleteConfirmationDialogContent';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
@@ -1368,14 +1368,14 @@ export default function AddUnitOwnerDialogContent({
 								/>
 							</Grid>
 							<Grid item xs={12}>
-								<h3>Campaign Names</h3>
+								<h3>Campaigns</h3>
 
 								<Controller
 									control={control}
 									defaultValue={''}
-									name="campaignName"
+									name="campaigns"
 									render={params => (
-										<CampaignNameField
+										<CampaignField
 											{...params}
 											className={classes.maxWidth}
 											onChange={(values, id) => {

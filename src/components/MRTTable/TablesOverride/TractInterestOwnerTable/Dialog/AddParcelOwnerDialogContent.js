@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useMemo } from 'react';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -320,7 +321,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 			});
 		}
 
-		setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
+		window.setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
 	};
 
 	useEffect(() => {
