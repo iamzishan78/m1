@@ -6,6 +6,13 @@ import { tableGlobalController } from 'hookstate/tableController';
 import { useMutation } from '@apollo/client';
 import { ADD_PAYMENT } from 'graphQL/useMutationAddPayment';
 import { AppContext } from 'AppContext';
+import { UPDATE_PAYMENT } from 'graphQL/useMutationUpdatePayment';
+
+const onCompletion = setLoader => {
+	detailCardController.updateState({ drawer: '' });
+	tableGlobalController.refetch();
+	setLoader(false);
+};
 
 // This component is used in the RelatedPayeesTable component for the toolbar
 export const PaymentRightDialog = () => {
@@ -20,25 +27,40 @@ export const PaymentRightDialog = () => {
 		refetchQueries: ['getESSimpleSearch'],
 		awaitRefetchQueries: true,
 	});
+	const [updatePayment] = useMutation(UPDATE_PAYMENT, {
+		refetchQueries: ['getESSimpleSearch'],
+		awaitRefetchQueries: true,
+	});
 
 	const addNewPayment = (newData, setLoader) => {
 		setLoader(true);
-		addPayment({
-			variables: {
-				payment: {
-					...newData,
-					amount: toNumber(newData?.amount) || 0,
-					companyShare: toNumber(newData?.companyShare) || 0,
-					userId: stateApp.user.mongoId,
-					relatedObjectId: relatedObjectId,
-					relatedObjectType: 'Shape',
+
+		const payment = {
+			...newData,
+			amount: toNumber(newData?.amount) || 0,
+			companyShare: toNumber(newData?.companyShare) || 0,
+			userId: stateApp.user.mongoId,
+			relatedObjectId: relatedObjectId,
+			relatedObjectType: 'Shape',
+		};
+
+		if (newData?._id) {
+			updatePayment({
+				variables: {
+					payment,
 				},
-			},
-		}).then(() => {
-			detailCardController.updateState({ drawer: '' });
-			tableGlobalController.refetch();
-			setLoader(false);
-		});
+			}).then(() => {
+				onCompletion(setLoader);
+			});
+		} else {
+			addPayment({
+				variables: {
+					payment,
+				},
+			}).then(() => {
+				onCompletion(setLoader);
+			});
+		}
 	};
 
 	return (

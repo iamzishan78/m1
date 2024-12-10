@@ -18,6 +18,7 @@ import { handleMRTSchema, handleVisiblityMenu } from './helpers';
 import { validateUrl } from 'utils/helper';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 import { extractUniqueFilters } from 'components/Map/DeckGL/helpers/common';
+import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 
 function isDateFormat(inputString) {
 	// Regular expression for MM/DD/YYYY format
@@ -45,7 +46,7 @@ const initialState = {
 	},
 	isIncludeInactive: false,
 	gridView: {},
-	showTypes: true,
+	showTypes: false,
 };
 
 export const tableESState = {};
@@ -502,43 +503,50 @@ const tableESStateControllerHandler = state => ({
 		});
 
 		if (tableState?.layerIdentifier) {
-			const existingFilter = mapViewsFitlers.find(
-				({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') === filter.field
-			);
+			const currentIdentifier = customLayersFieldAccessors[tableState?.layerIdentifier];
 
-			const isValuesEqual = _.isEqual(
-				existingFilter?.filterValues,
-				typeof filter.value === 'string' ? [filter.value] : filter.value
-			);
-			const isNonValuesFilter = ['empty', 'notEmpty'].includes(filter.searchType);
+			if (
+				currentIdentifier &&
+				currentIdentifier.keys?.find(key => key.value.replace('.keyword', '') === filter.field.replace('.keyword', ''))
+			) {
+				const existingFilter = mapViewsFitlers.find(
+					({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') === filter.field
+				);
 
-			if (!(isValuesEqual || isNonValuesFilter)) {
-				globalStateController.updateState({
-					viewChanged: true,
-					mapView: {
-						...mapView,
+				const isValuesEqual = _.isEqual(
+					existingFilter?.filterValues,
+					typeof filter.value === 'string' ? [filter.value] : filter.value
+				);
+				const isNonValuesFilter = ['empty', 'notEmpty'].includes(filter.searchType);
+
+				if (!(isValuesEqual || isNonValuesFilter)) {
+					globalStateController.updateState({
 						viewChanged: true,
-						selectedMapView: {
-							...mapView?.selectedMapView,
-							filters: [
-								...mapViewsFitlers.filter(
-									({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') !== filter.field
-								),
-								{
-									dataSourceName: tableState?.layerIdentifier,
-									filterType:
-										tableState?.filterModes[filter.field.replace('.keyword', '')]?.mode ||
-										existingFilter?.filterType ||
-										tableState?.esIndex === 'shapefile_flat'
-											? 'multiselect'
-											: 'singleselect',
-									fieldName: filter.field,
-									filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
-								},
-							],
+						mapView: {
+							...mapView,
+							viewChanged: true,
+							selectedMapView: {
+								...mapView?.selectedMapView,
+								filters: [
+									...mapViewsFitlers.filter(
+										({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') !== filter.field
+									),
+									{
+										dataSourceName: tableState?.layerIdentifier,
+										filterType:
+											tableState?.filterModes[filter.field.replace('.keyword', '')]?.mode ||
+											existingFilter?.filterType ||
+											tableState?.esIndex === 'shapefile_flat'
+												? 'multiselect'
+												: 'singleselect',
+										fieldName: filter.field,
+										filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
+									},
+								],
+							},
 						},
-					},
-				});
+					});
+				}
 			}
 		}
 

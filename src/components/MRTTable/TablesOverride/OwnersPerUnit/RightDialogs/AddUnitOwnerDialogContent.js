@@ -23,10 +23,9 @@ import { sideDialogController, unitInterestOwnerState } from 'hookstate/sideDial
 import { globalStateController } from 'hookstate/globalStateController';
 import unitInterestOwnerForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/UnitDetailInterestOwner/unit_interest_owner_form_schema';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
-import AddIcon from '@material-ui/icons/Add';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { extractValueRecursively } from 'components/MRTTable/utils/helper';
-import { isString } from 'lodash';
+import _, { get, isString } from 'lodash';
 
 const useStyles = makeStyles(theme => ({
 	maxWidth: {
@@ -282,7 +281,7 @@ export default function AddUnitOwnerDialogContent({
 				awaitRefetchQueries: true,
 			});
 		}
-		setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
+		window.setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
 	};
 
 	useEffect(() => {

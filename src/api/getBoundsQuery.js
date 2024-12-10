@@ -10,7 +10,6 @@ import { agreementLayerIdentifiers } from 'components/Shared/functions/shapeLaye
 import { RECENT_SUBMITTED_PERMITS_QUERY } from 'graphQL/useQueryRecentSubmittedPermits';
 import { ABSTRACTGEOQUERY } from 'graphQL/useQueryAbstractGeo';
 import { PLSSSECONDDIVISIONGEO } from 'graphQL/useQueryPLSSSecondDivisionGeo';
-import { useApolloClient } from '@apollo/client';
 
 const queries = {
 	Wells: {

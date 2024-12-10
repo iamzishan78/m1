@@ -1,6 +1,6 @@
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDateTime, formatDate } from 'components/Shared/functions';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import {  tableGlobalController } from 'hookstate/tableController';
 import ActivityAnalyticsToolBar from 'components/MRTTable/TablesOverride/ActivityAnalytics/ActivityAnalyticsToolBar';
 
 const esIndex = 'activities_flat';

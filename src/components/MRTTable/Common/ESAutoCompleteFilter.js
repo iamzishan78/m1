@@ -333,7 +333,7 @@ function ESAutoCompleteFilter({
 							if (typeof option === 'object') {
 								return option.value;
 							} else {
-								const foundOption = _.find(options, { label: option });
+								const foundOption = _.find(requiredOptions, { label: option });
 								return foundOption ? foundOption.value : option;
 							}
 						})

@@ -185,7 +185,7 @@ export const handleMRTSchema = ({
 			});
 		}
 
-		if (schemaColumn.header) {
+		if (schemaColumn.header && !schemaColumn.showInLast) {
 			schemaColumn.Header = () => {
 				const { header, type } = schemaColumn;
 				const {
