@@ -131,7 +131,7 @@ const AttrsValuesDropdown = ({
 	const attroptions = useMemo(() => {
 		if (!filtersData?.getESSimpleFilter?.hits || !selectedValue?.label) return [];
 
-		const filterKeys = filtersData.getESSimpleFilter.hits.map(hit => hit.key).filter(key => key.trim());
+		const filterKeys = filtersData.getESSimpleFilter.hits.map(hit => hit?.key).filter(key => key?.toString()?.trim()); // Convert the key to a string using 'toString', and use optional chaining to avoid errors if 'key' is not a valid string.
 
 		filterKeys.unshift('');
 
