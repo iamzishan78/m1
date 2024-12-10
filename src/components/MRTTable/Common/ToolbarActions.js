@@ -140,11 +140,10 @@ function ToolbarActions({ table, tableKey, children }) {
 				<div
 					style={{
 						display: 'flex',
-						height: '32px',
+						height: '75%',
 						gap: '0.5rem',
-						minHeight: '32px',
-						maxHeight: '80px',
-						marginTop: '8px',
+						marginTop: 'auto',
+						marginBottom: 'auto',
 					}}
 				>
 					{children}
