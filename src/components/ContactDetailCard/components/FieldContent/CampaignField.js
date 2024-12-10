@@ -111,7 +111,10 @@ export default function CampaignField(props) {
 
 	useEffect(() => {
 		if (campaignfiltersData?.getDbFilters?.hits) {
-			const allFiltersData = campaignfiltersData.getDbFilters.hits.map(hit => hit.key);
+			const allFiltersData = campaignfiltersData.getDbFilters.hits.map(hit => ({
+				_id: hit.original[0]._id,
+				name: hit.key,
+			}));
 			setOptions(allFiltersData.filter(d => d));
 		}
 	}, [campaignfiltersData]);
@@ -148,16 +151,14 @@ export default function CampaignField(props) {
 			};
 
 		if (reason === 'select-option') {
-			campaign = campaignfiltersData?.getDbFilters?.hits?.find(hit => hit.key === values[values.length - 1]);
+			campaign = values[values.length - 1];
 			if (campaign) {
-				payload.descriptorObject = campaign.original[0]?._id;
+				payload.descriptorObject = campaign._id;
 			}
 		} else {
-			const deletedCampaign = campaignfiltersData?.getDbFilters?.hits?.find(
-				hit => hit.key === inputValue.find(v => !values.includes(v))
-			);
+			const deletedCampaign = inputValue.find(iv => !values.some(val => val._id === iv._id));
 			if (deletedCampaign) {
-				payload.descriptorObject = deletedCampaign.original[0]?._id;
+				payload.descriptorObject = deletedCampaign._id;
 			}
 			payload.isDeleted = true;
 		}
@@ -183,6 +184,7 @@ export default function CampaignField(props) {
 						data-testid="campaign-name-autocomplete"
 						onChange={(e, newValue, reason) => handleChange(newValue, reason)}
 						options={options}
+						getOptionLabel={op => op?.name || ''}
 						value={inputValue}
 						freeSolo
 						disabled={props.disabled}
@@ -190,9 +192,9 @@ export default function CampaignField(props) {
 							return value.map((tag, index) => (
 								<Chip
 									key={tag._id}
-									id={tag._id}
+									id={index}
 									label={tag.name}
-									{...getTagProps({ index: tag._id })}
+									{...getTagProps({ index })}
 									deleteIcon={!props.disabled ? <ClearIcon /> : <></>}
 									data-testid="campaign-name-chip"
 								/>

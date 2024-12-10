@@ -18,7 +18,7 @@ import { getMapFilters } from 'utils/helper';
 import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
 import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 import { NavigationContext } from 'components/Navigation/NavigationContext';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import { drawController } from 'hookstate/drawStateController';
@@ -69,7 +69,6 @@ const ConvertTaxOwnerToContact = ({
 	const [stateNav] = useContext(NavigationContext);
 	const { user } = stateApp;
 	const [newTagsIds, setNewTagsIds] = useState([]);
-	const [searchCampaign, setSearchCampaign] = useState('');
 	const [includeFilter, setIncludeFilter] = useState(true);
 	const [campaigns, setCampaigns] = useState([]);
 	const { control, getValues, watch } = useForm();
@@ -82,10 +81,9 @@ const ConvertTaxOwnerToContact = ({
 
 	useEffect(() => {
 		getContactCampaignAction({
-			search: searchCampaign ? `${searchCampaign}*` : '*',
+			search: '*',
 		});
-		// eslint-disable-next-line
-	}, [searchCampaign]);
+	}, [getContactCampaignAction]);
 
 	useEffect(() => {
 		if (!includeFilter) {
@@ -217,14 +215,13 @@ const ConvertTaxOwnerToContact = ({
 						control={control}
 						name="campaignNames"
 						render={params => (
-							<CampaignNameField
+							<CampaignField
 								{...params}
 								value={params.value}
 								className={classes.maxWidth}
-								onChange={(values, id) => {
-									const _campaigns = [...campaigns, { id, name: values[values.length - 1] }];
+								onChange={values => {
 									params.onChange(values);
-									setCampaigns(_campaigns);
+									setCampaigns(values.map(val => ({ id: val._id, name: val.name })));
 								}}
 								fullWidth
 								targetLabel="Shape"
