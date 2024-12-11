@@ -158,7 +158,7 @@ function LayerStyling() {
 	useEffect(() => {
 		setRows(0);
 		if (selectedLayer.file) {
-			selectedLayer.layerShapeName = selectedLayer.layerCategory;
+			selectedLayer.layerShapeName = selectedLayer.layerShapeName || selectedLayer.layerCategory;
 			layerFeaturesCount({ variables: { fileId: selectedLayer.file, layerShapeName: selectedLayer.layerShapeName } });
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
