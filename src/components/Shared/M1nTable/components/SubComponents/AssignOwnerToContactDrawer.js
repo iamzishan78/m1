@@ -26,7 +26,7 @@ import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 import { UPDATE_PARCEL_OWNERS } from 'graphQL/useMutationUpdateParcelOwners';
 import { UPDATE_SHAPES } from 'graphQL/useMutationUpdateShapes';
 import EntityType from 'components/ContactDetailCard/components/FieldContent/EntityType';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import { resetESTableToggle } from 'hookstate';
 import { Modals } from 'styles/Modal';
 import { tableGlobalController } from 'hookstate/tableController';
@@ -134,11 +134,11 @@ function SelectedField({
 			// Renders field for updating campaign name
 			// filterKey is not set for this case
 			return (
-				<CampaignNameField
+				<CampaignField
 					value={fieldKey}
-					onChange={(values, id) => {
+					onChange={values => {
 						setFieldKey(values); // Sets the field key value
-						setCampaigns([...campaigns, { _id: id, campaignName: values[values.length - 1] }]); // Updates campaigns array
+						setCampaigns(values); // Updates campaigns array
 					}}
 					fullWidth // Renders field with full width
 					targetLabel="Contact" // Sets target label to 'Contact'
@@ -590,7 +590,7 @@ export default function AssignOwnerToContactDrawer({
 						const parcelOwnersToUpdate = rows.map(row => ({
 							_id: row._id,
 							shapeId: row.customLayerId,
-							campaignName: campaigns.map(campaign => campaign.campaignName),
+							campaigns,
 							relatedObject: row.ownerEntity,
 							createBy: getUser?._id,
 							lastUpdateBy: getUser?._id,
@@ -627,13 +627,10 @@ export default function AssignOwnerToContactDrawer({
 						break;
 
 					case 'UnitTable':
-						// Extract the campaign names from the campaigns array
-						const campaignName = campaigns.map(campaign => campaign.campaignName);
-
 						// Map through each row to create an array of shapes to update
 						const shapesToUpdate = rows.map(row => {
 							// Update the campaign with the new campaign names
-							const customlayer = updateCampaign(copy(row.shapeJson), 'campaignName', campaignName);
+							const customlayer = updateCampaign(copy(row.shapeJson), 'campaigns', campaigns);
 							// Return an object with the updated custom layer information
 							return {
 								customLayer: customlayer,
@@ -649,7 +646,7 @@ export default function AssignOwnerToContactDrawer({
 						const shapeOwnersToUpdate = rows.map(row => ({
 							_id: row._id,
 							shapeId: row.customLayerId,
-							campaignName: campaigns.map(campaign => campaign.campaignName),
+							campaigns,
 							relatedObject: row.ownerEntity,
 							createBy: getUser?._id,
 							lastUpdateBy: getUser?._id,

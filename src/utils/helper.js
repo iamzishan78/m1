@@ -146,6 +146,7 @@ export const formatTaxOwners = (owners, formData) => {
 			taxYear: owners[i].year,
 			dataSource: 'M1neral',
 			contactOwner: formData.contactOwner,
+			// TODO: remove this
 			campaignName: formData.campaigns?.map(campaign => campaign.name),
 			campaigns: formData.campaigns,
 			tags: formData.tags,
@@ -630,7 +631,7 @@ export const checkFormRequireField = (data, formSchema) => {
 	let error = false;
 
 	formSchema.forEach(field => {
-		if (field.required && field?.name && (!data[field.name])) {
+		if (field.required && field?.name && !data[field.name]) {
 			error = true;
 		}
 		if (field.renderField === 'startEndDate' && field.required && (!data['startDate'] || !data['endDate'])) {

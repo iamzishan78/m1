@@ -221,7 +221,7 @@ const ConvertTaxOwnerToContact = ({
 								className={classes.maxWidth}
 								onChange={values => {
 									params.onChange(values);
-									setCampaigns(values.map(val => ({ id: val._id, name: val.name })));
+									setCampaigns(values.map(val => ({ ...val, id: val._id })));
 								}}
 								fullWidth
 								targetLabel="Shape"

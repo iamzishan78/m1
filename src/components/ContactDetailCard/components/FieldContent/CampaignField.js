@@ -185,6 +185,7 @@ export default function CampaignField(props) {
 						onChange={(e, newValue, reason) => handleChange(newValue, reason)}
 						options={options}
 						getOptionLabel={op => op?.name || ''}
+						getOptionSelected={(op, value) => op?.name === value?.name}
 						value={inputValue}
 						freeSolo
 						disabled={props.disabled}
