@@ -93,6 +93,7 @@ const useStyles = makeStyles(theme => ({
 		'& .MuiChip-root': {
 			backgroundColor: '#ECEDED',
 			color: '#606060',
+			borderRadius: '4px',
 		},
 	},
 	input: {

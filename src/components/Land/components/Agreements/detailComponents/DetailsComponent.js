@@ -81,7 +81,7 @@ const useStyles = makeStyles(theme => ({
 	highlighter: {
 		background: '#263451',
 		padding: '5px 16px',
-		borderRadius: 16,
+		borderRadius: 4,
 		width: 'max-content',
 		transform: 'translateX(5px) translateY(11px)',
 		height: '32px',

@@ -94,6 +94,7 @@ const useStyles = makeStyles(theme => ({
 		'& .MuiChip-root': {
 			backgroundColor: '#ECEDED',
 			color: '#606060',
+			borderRadius: '4px',
 		},
 	},
 	input: {
@@ -107,7 +108,7 @@ const useStyles = makeStyles(theme => ({
 			fontSize: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '25px'),
 			margin: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '3px'),
 			padding: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '0px !important'),
-			borderRadius: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '50%'),
+			borderRadius: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '5px'),
 			textAlign: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : 'center'),
 			cursor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : 'pointer'),
 			'&:hover': {
