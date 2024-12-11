@@ -77,7 +77,7 @@
 		"jquery": "^3.6.0",
 		"jszip": "^3.10.1",
 		"lodash": "^4.17.21",
-		"mapbox-gl": "^3.1.2",
+		"mapbox-gl": "3.1.2",
 		"mapbox-gl-draw-circle": "^1.1.2",
 		"mapbox-gl-draw-rectangle-mode": "^1.0.4",
 		"mapbox-gl-draw-rotate-scale-rect-mode": "git+https://github.com/drykovanov/mapbox-gl-draw-rotate-scale-rect-mode#0.1.10",
