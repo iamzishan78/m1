@@ -207,23 +207,6 @@ const getBoundsQuery = async ({
 			});
 		}
 
-		// console.log('layerSettings', layerSettings)
-		// // Function to add attribute-based keys to the projection
-		// const addAttributeBasedKeys = (attributes, basePath) => {
-		// 	Object.keys(attributes || {}).forEach((key) => {
-		// 		variables.project[`${basePath}.${key}`] = 1;
-		// 		if (!isFileLayer) {
-		// 			variables.project[`shapeJson.properties.originalProperties.${key}`] = 1;
-		// 		}
-		// 	});
-		// };
-
-		// // Add attribute-based color keys
-		// addAttributeBasedKeys(layerSettings?.attributeBasedColors, isFileLayer ? 'properties' : 'shapeJson.properties');
-
-		// // Add attribute-based stroke color keys
-		// addAttributeBasedKeys(layerSettings?.attributeBasedStrokeColors, isFileLayer ? 'properties' : 'shapeJson.properties');
-
 		const queryHandler = {
 			identifier,
 			id: uuid(),
