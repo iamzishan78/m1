@@ -232,11 +232,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 				selectedRow?.contactOwners?.[0] !== ownerToAdd?.contactOwners?.label) ||
 			((ownerToAdd?.ownerType || selectedRow?.ownerType) && selectedRow?.ownerType !== ownerToAdd.ownerType) ||
 			((ownerToAdd?.campaignPriority || selectedRow?.campaignPriority) &&
-				selectedRow?.campaignPriority !== ownerToAdd.campaignPriority) ||
-			((ownerToAdd?.campaignName || selectedRow?.campaignName) &&
-				selectedRow?.campaignName !== ownerToAdd.campaignName) ||
-			ownerToAdd?.campaignName ||
-			selectedRow?.campaignName !== ownerToAdd.campaignName
+				selectedRow?.campaignPriority !== ownerToAdd.campaignPriority)
 		) {
 			// Fixed label value issue
 			updateContact({

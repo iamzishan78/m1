@@ -262,7 +262,7 @@ const CampaignFilter = ({
 			}
 		}
 		const filters = [...rangeFilters, ...tableFilters];
-		const index = filters.findIndex(f => f.field === 'contact.campaignName.keyword');
+		const index = filters.findIndex(f => f.field === 'contact.campaigns');
 		if (index > -1) {
 			filters.splice(index, 1);
 		}

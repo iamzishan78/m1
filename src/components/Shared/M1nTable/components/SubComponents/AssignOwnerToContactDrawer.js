@@ -130,7 +130,7 @@ function SelectedField({
 					}}
 				/>
 			);
-		case 'Campaign Name':
+		case 'Campaigns':
 			// Renders field for updating campaign name
 			// filterKey is not set for this case
 			return (
@@ -309,14 +309,14 @@ export default function AssignOwnerToContactDrawer({
 
 	const unitTableFields = [
 		// Add unit grid fields for bulk update
-		{ title: 'Campaign Name', value: 'campaignName' },
+		{ title: 'Campaigns', value: 'campaigns' },
 		{ title: 'Max Pricing (Per NRA)', value: 'uMaxUnitPricing' },
 		{ title: 'Target Pricing (Per NRA)', value: 'uUnitPricing' },
 		{ title: 'Tags', value: 'contactStatus' },
 	];
 
 	const otherTableFields = [
-		{ title: 'Campaign Name', value: 'campaignName' },
+		{ title: 'Campaigns', value: 'campaigns' },
 		{ title: 'Contact Owner', value: 'contactOwner' },
 		{ title: 'Entity Type', value: 'ownerType' },
 		{ title: 'Industry Type', value: 'industryType' },
@@ -349,7 +349,7 @@ export default function AssignOwnerToContactDrawer({
 
 	useEffect(() => {
 		if (selectedCampaign) {
-			setCampaigns([{ _id: selectedCampaign?._id, campaignName: selectedCampaign?.name }]);
+			setCampaigns([selectedCampaign]);
 		}
 	}, [selectedCampaign]);
 
@@ -359,7 +359,7 @@ export default function AssignOwnerToContactDrawer({
 
 	const onFieldToUpdateChange = field => {
 		setField(field);
-		if (field === 'Campaign Name' && selectedCampaign) {
+		if (field === 'Campaigns' && selectedCampaign) {
 			setFieldKey(selectedCampaign.name);
 		} else {
 			setFieldKey('');
@@ -550,7 +550,7 @@ export default function AssignOwnerToContactDrawer({
 			bulkShapeUpdate(shapesToUpdate, errorMsg);
 		} else {
 			const fieldToUpdate = { [fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value]: fieldKey };
-			if (field === 'Campaign Name') {
+			if (field === 'Campaigns') {
 				switch (rest.header) {
 					case 'ContactTable':
 					case 'CampaignContactTable':
@@ -685,7 +685,7 @@ export default function AssignOwnerToContactDrawer({
 						break;
 				}
 
-				delete fieldToUpdate.campaignName;
+				delete fieldToUpdate.campaigns;
 			} else {
 				if (Object.entries(fieldToUpdate).length > 0)
 					updateBulkContact({
@@ -720,7 +720,7 @@ export default function AssignOwnerToContactDrawer({
 						}
 					);
 
-				delete fieldToUpdate.campaignName;
+				delete fieldToUpdate.campaigns;
 			}
 		}
 
