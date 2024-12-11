@@ -165,7 +165,7 @@ function GridViewOptions({
 		let data = JSON.parse(JSON.stringify(view));
 		if (data.type === 'Default') {
 			data = defaultHandleDefaultView(data);
-			data = handleDefaultView(data, getUser?._id);
+			data = handleDefaultView(data, getUser);
 		}
 		Controller.updateState({
 			gridView: { ...tableStateValues.gridView, selectedGridView: data, showViewModal: false },
