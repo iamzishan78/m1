@@ -396,6 +396,7 @@ const useStyles = makeStyles(theme => ({
 			backgroundColor: '#ECEDED',
 			color: '#606060',
 			fontWeight: '700',
+			borderRadius: '4px',
 		},
 	},
 	input: {

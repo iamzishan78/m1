@@ -24,6 +24,7 @@ export const globalInitialState = {
 	bypassLogin: simpleAuthBypass || false,
 	bypassType: '',
 	tenant: null,
+	layerSettingsLoading: false,
 };
 
 export const globalState = hookstate(copy(globalInitialState));
