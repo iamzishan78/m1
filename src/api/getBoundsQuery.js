@@ -53,7 +53,6 @@ const handleQuery = (queryHandler, onData) => {
 			variables: queryHandler.variables,
 			fetchPolicy: 'no-cache', // Disable caching for this query
 		});
-
 		// Subscribe to it, and do something with the data
 		queryHandler.observable = query.subscribe(res => {
 			queryHandler.finished = true;
@@ -80,6 +79,8 @@ const handleQuery = (queryHandler, onData) => {
 const getBoundsQuery = async ({
 	layerId,
 	identifier,
+	layerSettings,
+	isFileLayer,
 	boundingState,
 	onData,
 	geoField,
@@ -165,6 +166,63 @@ const getBoundsQuery = async ({
 				});
 			}
 		}
+
+		// Initialize the base projection
+		variables.project = {
+			[geoField]: 1,
+			_id: 1,
+		};
+
+		// Add layer-specific fields
+		if (isFileLayer) {
+			Object.assign(variables.project, {
+				layer: 1,
+				name: 1,
+				fileId: 1,
+				type: 1,
+			});
+		} else {
+			Object.assign(variables.project, {
+				'shapeJson.id': 1,
+				'shapeJson.type': 1,
+				'shapeJson.properties.shapeSubTitle': 1,
+				'shapeJson.properties.shapeLabel': 1,
+				'shapeJson.properties.layerType': 1,
+				'shapeJson.properties.type': 1,
+				'shapeJson.properties.uName': 1,
+				'shapeJson.properties.agreementName': 1,
+				'shapeJson.properties.shapeCenter': 1,
+				shapeCenter: 1,
+				shapeArea: 1,
+			});
+		}
+		if (layerSettings.selectedAttribute) {
+			Object.assign(variables.project, {
+				[layerSettings.selectedAttribute.value.replace('.keyword', '')]: 1,
+			});
+		}
+		if (layerSettings.selectedStrokeAttribute) {
+			Object.assign(variables.project, {
+				[layerSettings.selectedStrokeAttribute.value.replace('.keyword', '')]: 1,
+			});
+		}
+
+		// console.log('layerSettings', layerSettings)
+		// // Function to add attribute-based keys to the projection
+		// const addAttributeBasedKeys = (attributes, basePath) => {
+		// 	Object.keys(attributes || {}).forEach((key) => {
+		// 		variables.project[`${basePath}.${key}`] = 1;
+		// 		if (!isFileLayer) {
+		// 			variables.project[`shapeJson.properties.originalProperties.${key}`] = 1;
+		// 		}
+		// 	});
+		// };
+
+		// // Add attribute-based color keys
+		// addAttributeBasedKeys(layerSettings?.attributeBasedColors, isFileLayer ? 'properties' : 'shapeJson.properties');
+
+		// // Add attribute-based stroke color keys
+		// addAttributeBasedKeys(layerSettings?.attributeBasedStrokeColors, isFileLayer ? 'properties' : 'shapeJson.properties');
 
 		const queryHandler = {
 			identifier,

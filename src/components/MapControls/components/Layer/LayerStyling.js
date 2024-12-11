@@ -130,6 +130,7 @@ function LayerStyling() {
 						},
 					},
 				});
+				layerController.resetBounds(selectedLayer?.identifier);
 			}, 250); // Adjust the debounce delay as needed
 
 			debouncedUpdate();

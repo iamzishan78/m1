@@ -131,8 +131,9 @@ const AttrsValuesDropdown = ({
 	// Making dropdown options with colors
 	const attroptions = useMemo(() => {
 		if (!filtersData?.getESSimpleFilter?.hits || !selectedValue?.label) return [];
-
-		const filterKeys = filtersData.getESSimpleFilter.hits.map(hit => hit.key).filter(key => key.trim());
+		const filterKeys = filtersData.getESSimpleFilter.hits
+			.map(hit => hit?.key)
+			.filter(key => key && key.toString().trim());
 
 		filterKeys.unshift('');
 
