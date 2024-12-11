@@ -24,6 +24,7 @@ export const globalInitialState = {
 	bypassLogin: simpleAuthBypass || false,
 	bypassType: '',
 	tenant: null,
+	layerSettingsLoading: false,
 };
 
 export const globalState = hookstate(copy(globalInitialState));
@@ -377,7 +378,7 @@ export const mapStateInitialState = {
 	// mapStyles: [],
 	mapVars: defaultMapVars,
 	defaultMapVars,
-	isDefaultViewAllowed:true
+	isDefaultViewAllowed: true,
 };
 
 export const mapState = hookstate(copy(mapStateInitialState));

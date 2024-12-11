@@ -15,7 +15,11 @@ const onClickedRow = selectedRow => {
 		});
 	} else if (selectedRow?._id) {
 		tableGlobalController.updateState({
-			paymentMultiGrid: { showMultiGrid: true, paymentId: selectedRow._id, paymentAmount: selectedRow?.amount },
+			paymentMultiGrid: {
+				showMultiGrid: true,
+				paymentId: selectedRow._id,
+				paymentAmount: selectedRow?.amount,
+			},
 		});
 	}
 };
@@ -34,7 +38,6 @@ const RelatedPaymentsMeta = {
 	isInFiniteScroll: true,
 	columnReordering: false,
 	enableRowSelected: true,
-	bypassSelectAll: true,
 	hasMultiGrids: true,
 	TableSchema: [
 		{

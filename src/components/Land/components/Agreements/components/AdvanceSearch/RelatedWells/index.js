@@ -102,17 +102,17 @@ export default function RelatedWellsFilters(props) {
 	const [filterList, setFilterList] = useState([[], [], [], [], [], [], [], []]);
 
 	useEffect(() => {
-		if (stateApp.landSearchFilters.relatedWells?.length === 0 && filterList.find(fl => fl.length !== 0)) {
+		if (stateApp.landSearchFilters?.relatedWells?.length === 0 && filterList.find(fl => fl.length !== 0)) {
 			setFilterList([[], [], [], [], [], [], [], []]);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [stateApp.landSearchFilters.relatedWells]);
+	}, [stateApp.landSearchFilters?.relatedWells]);
 
 	const changeLandWells = React.useMemo(
 		() =>
 			debounce((request, callback, index) => {
 				const { filterKey } = callback;
-				const landWellssFilters = [...stateApp.landSearchFilters.relatedWells];
+				const landWellssFilters = [...stateApp.landSearchFilters?.relatedWells];
 				const _index = landWellssFilters.findIndex(f => f.field === filterKey);
 				if (_index === -1 && request[0] !== null) landWellssFilters.push({ field: filterKey, value: request[0] });
 				else if (request.length > 0 && request[0] !== null) landWellssFilters[_index].value = request[0];
@@ -122,7 +122,7 @@ export default function RelatedWellsFilters(props) {
 					landSearchFilters: { ...stateApp.landSearchFilters, relatedWells: landWellssFilters },
 				}));
 			}, 1000),
-		[setStateApp, stateApp.landSearchFilters.relatedWells]
+		[setStateApp, stateApp.landSearchFilters?.relatedWells]
 	);
 
 	const onFilterChange = (request, callback, filter, index) => {
@@ -145,7 +145,7 @@ export default function RelatedWellsFilters(props) {
 						filter={filter}
 						filterList={filterList}
 						index={index}
-						appliedFilters={stateApp.landSearchFilters.relatedWells}
+						appliedFilters={stateApp.landSearchFilters?.relatedWells}
 					/>
 				</Grid>
 			))}

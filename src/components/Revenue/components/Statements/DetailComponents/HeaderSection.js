@@ -10,14 +10,14 @@ import orderBy from 'lodash/orderBy';
 import { Controller, useForm } from 'react-hook-form';
 import { useMutation, useQuery, useLazyQuery } from '@apollo/client';
 import { UPDATE_CHECK_DATA } from 'graphQL/useMutationUpdateCheck';
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
 import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
 import { showInfoMessage } from 'actions';
-import { GET_ES_AGGS_LIST } from 'graphQL/useQueryESAggsList';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
 import { CurrencyFormatCustomWithoutPrefix } from 'components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix';
+import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
 
 const formatter = new Intl.NumberFormat('en-US', {
 	style: 'currency',
@@ -68,16 +68,16 @@ function HeaderFunction(props) {
 	const params = useParams();
 	const { check, setCheck } = props;
 	const [updateCheck] = useMutation(UPDATE_CHECK_DATA);
-	const { data: elasticData } = useQuery(GET_ES_AGGS_LIST, {
+	const { data: aggsData } = useQuery(GET_DB_AGGS, {
 		variables: {
-			esIndex: 'checkdetails_flat',
+			index: 'checkdetails_flat',
 			filters: [
 				{
-					field: 'check._id.keyword',
+					field: 'check._id',
 					value: params.id,
 				},
 			],
-			search: '',
+			search: { query: '', fields: [] },
 			aggs: {
 				totalNetOwnerValue: { sum: { field: 'netOwnerValue' } },
 			},
@@ -86,7 +86,7 @@ function HeaderFunction(props) {
 	});
 	const history = useHistory();
 	const dispatch = useDispatch();
-	const [getPayorList, { data: payorListData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
+	const [getPayorList, { data: payorListData }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 	const [searchOperator, setSearchOperator] = useState('');
 	const [payorList, setPayyorList] = useState([]);
 	const { control, reset, watch } = useForm();
@@ -119,10 +119,12 @@ function HeaderFunction(props) {
 	useEffect(() => {
 		getPayorList({
 			variables: {
-				search: searchOperator ? `${searchOperator}*` : '*', // allow to search the user typed value from the list
-				filterKey: 'payor.name.keyword',
-				esIndex: 'checks_flat',
-				size: 50,
+				index: 'checks_flat',
+				filterAggs: {
+					field: 'payor.name.keyword',
+					size: 50,
+					type: 'withOriginalIds',
+				},
 			},
 		});
 	}, [getPayorList, searchOperator]);
@@ -131,7 +133,9 @@ function HeaderFunction(props) {
 		if (check) {
 			reset({ ...check });
 			setCheck(check);
+			setSearchOperator(check?.payor?.name || '');
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.check]);
 
 	const handleUpdateCheck = debounce(checkKey => {
@@ -143,31 +147,19 @@ function HeaderFunction(props) {
 		});
 	}, 500);
 
-	const handleCheckAmount = () => {
-		if (check) {
-			let checkAmount = check.checkAmount;
-			if (checkAmount) {
-				const data = checkAmount.toString().split('.');
-				if (data[1] && data[1].length === 1 && !/[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(data[1])) {
-					checkAmount = Number(checkAmount).toFixed(2);
-				}
-			}
-			reset({ ...check, checkAmount });
-			setCheck(check);
-		}
-	};
-
 	const isEqualCheckAmount = checkAmount => {
-		if (isNaN(elasticData?.getESAggsList?.aggregations?.totalNetOwnerValue?.value) || isNaN(checkAmount)) return true;
+		const totalNetOwnerValue = get(aggsData, 'getDbAggs.aggregations.totalNetOwnerValue[0].totalNetOwnerValue');
 
-		const totalSum = formatter.format(elasticData?.getESAggsList?.aggregations?.totalNetOwnerValue?.value || 0);
+		if (isNaN(totalNetOwnerValue) || isNaN(checkAmount)) return true;
+
+		const totalSum = formatter.format(totalNetOwnerValue || 0);
 		const fCheckAmount = formatter.format(checkAmount || 0);
 
 		return totalSum === fCheckAmount;
 	};
 
 	useEffect(() => {
-		const sortList = orderBy(payorListData?.getESFilterList?.hits, 'key', 'asc'); // sort payorlist in alphabatically order
+		const sortList = orderBy(payorListData?.getDbFilters?.hits, 'key', 'asc'); // sort payorlist in alphabatically order
 		if (sortList?.length > 0) {
 			setPayyorList(sortList);
 		} else {
@@ -225,7 +217,7 @@ function HeaderFunction(props) {
 								render={params => (
 									<AutoCompleteWithAddNew
 										{...params}
-										value={get(params, 'value.name', '')}
+										value={searchOperator}
 										variant="outlined"
 										setValue={value => {
 											if (value?._id) params.onChange({ _id: value._id, name: value.name });
@@ -243,7 +235,7 @@ function HeaderFunction(props) {
 											setSearchOperator(value);
 										}}
 										options={payorList?.map(payor => ({
-											_id: get(payor, `original.hits.hits.${0}._id`),
+											_id: get(payor, `original[0]._id`),
 											name: payor.key,
 										}))}
 									/>

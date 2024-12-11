@@ -1,6 +1,8 @@
 import { Box } from '@mui/material';
 import { addTrailingZeros, formatDate } from 'components/Shared/functions';
+import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import { tableController } from 'hookstate/tableController';
+import { get } from 'lodash';
 
 export const CommonSchema = {
 	COMMENTS: {
@@ -65,6 +67,7 @@ export const CommonSchema = {
 		enableSorting: false,
 		size: 250,
 		isHiddenFieldExport: true,
+		type: 'mongoID',
 	},
 	INITAIL_PINNED: {
 		isPinned: true,
@@ -91,7 +94,7 @@ export const CommonSchema = {
 		hidden: false,
 		filter: true,
 		isSearchField: false,
-		enableSorting: true,
+		enableSorting: false,
 		enableColumnActions: false,
 		enableHiding: false,
 		type: 'string',
@@ -196,9 +199,39 @@ export const CommonSchema = {
 			const footerProps = Controller.getValue('footerProps') || {};
 
 			const mongoKey = `sum_${field}`.replace(/\./g, '_');
-			const value = footerProps[mongoKey];
+			const value = get(footerProps, `${mongoKey}[0].${mongoKey}`);
 
 			return <div>{value ? addTrailingZeros(parseFloat(value).toFixed(8)) : 0}</div>;
 		},
 	}),
+	INTEREST_COLUMN: {
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: true,
+		isSearchField: false,
+		enableSorting: true,
+		type: 'number',
+		Cell: ({ renderedCellValue }) => {
+			const value = renderedCellValue?.props?.['aria-label'] ?? renderedCellValue;
+			if (value || value === 0) {
+				return <>{!value ? value : addTrailingZeros(parseFloat(value).toFixed(8))}</>;
+			}
+		},
+	},
+	CURRENCY_COLUMN: {
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: true,
+		isSearchField: false,
+		enableSorting: true,
+		type: 'number',
+		Cell: ({ renderedCellValue }) => {
+			const value = renderedCellValue?.props?.['aria-label'] ?? renderedCellValue;
+			if (value || value === 0) {
+				return <>{!value ? `$${value}` : vf_currency_to_fixed(value, 2)}</>;
+			}
+		},
+	},
 };

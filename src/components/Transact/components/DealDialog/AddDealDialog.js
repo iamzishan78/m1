@@ -396,6 +396,7 @@ const useStyles = makeStyles(theme => ({
 			backgroundColor: '#ECEDED',
 			color: '#606060',
 			fontWeight: '700',
+			borderRadius: '4px',
 		},
 	},
 	input: {
@@ -1869,6 +1870,7 @@ function AddDealDialog(props) {
 								params: {
 									expandedPanel: false,
 									openSpeedDial: false,
+									mapControls: false,
 									viewPortCallback: mapSettings => {
 										setMapSettings(mapSettings);
 									},

@@ -135,7 +135,7 @@ const CampaignMeta = {
 			type: 'number',
 			Cell: ({ row }) => {
 				const totalNra = row.getValue('totalNra');
-				return <>{totalNra ? vf_number(totalNra.toFixed(2)) : ''}</>;
+				return <>{totalNra || totalNra === 0 ? vf_number(totalNra.toFixed(2)) : ''}</>;
 			},
 		},
 		{

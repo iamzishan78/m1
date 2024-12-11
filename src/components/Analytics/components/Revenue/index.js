@@ -114,7 +114,7 @@ const StyledTab = withStyles(theme => ({
 	selected: {},
 }))(props => <Tab disableRipple {...props} />);
 
-const tabs = ['Income Statement', 'Check Details', 'Revenue by Month', 'Comparisons', 'Property Interests'];
+const tabs = ['Income Statement', 'Check Details', 'Comparisons', 'Property Interests'];
 
 export default function RevenueAnalytics(props) {
 	const classes = useStyles();
@@ -425,7 +425,6 @@ export default function RevenueAnalytics(props) {
 							</Grid>
 						</Grid>
 					</div>
-					{/* <AnalyticsCards cards={cards} /> */}
 					<Divider className={classes.divider} />
 					<DetailTabsSection
 						monthsInterval={monthsInterval}

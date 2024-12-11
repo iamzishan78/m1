@@ -1,20 +1,17 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { set, get, uniqBy } from 'lodash';
-import { Typography, Grid, Divider, Popover, List, ListItem, ListItemText, Button } from '@material-ui/core';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import { Typography, Grid, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 
 import { useLazyQuery } from '@apollo/client';
-import { GET_ES_AGGS_LIST } from 'graphQL/useQueryESAggsList';
 
 // Components
 import PieChartWithLegend from './Charts/PieChartWithLegend';
-import BarChartWithController from './Charts/BarChartWithController';
 import ProductChart from './Charts/ProductChart';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
 
 export const TabButtons = ({ tab, actiiveId, setActive }) => {
 	return (
@@ -121,54 +118,54 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const ProductDropdown = () => {
-	const classes = useStyles();
-	const [selectedProductOption, setProductOption] = useState('Gross Production');
+// const ProductDropdown = () => {
+// 	const classes = useStyles();
+// 	const [selectedProductOption, setProductOption] = useState('Gross Production');
 
-	const options = useMemo(() => ['Gross Production', 'Net Production', 'Net Revenue', 'Average Price'], []);
-	return (
-		<PopupState variant="popper" popupId="RevenueSummaryProduct">
-			{popupState => (
-				<>
-					<div style={{ cursor: 'pointer', textAlign: 'center' }} {...bindTrigger(popupState)}>
-						<Button className={classes.optionButton} endIcon={<KeyboardArrowDownIcon fontSize="small" />}>
-							{selectedProductOption}
-						</Button>
-					</div>
-					<Popover
-						{...bindPopover(popupState)}
-						getContentAnchorEl={null}
-						anchorOrigin={{
-							vertical: 'bottom',
-							horizontal: 'center',
-						}}
-						transformOrigin={{
-							vertical: 'top',
-							horizontal: 'center',
-						}}
-					>
-						<List className={classes.optionsList}>
-							{options.map((option, index) => (
-								<ListItem
-									button
-									key={index}
-									onClick={() => {
-										popupState.close();
-										setProductOption(option);
-									}}
-									style={{ textTransform: 'uppercase' }}
-									selected={option === selectedProductOption}
-								>
-									<ListItemText primary={option} />
-								</ListItem>
-							))}
-						</List>
-					</Popover>
-				</>
-			)}
-		</PopupState>
-	);
-};
+// 	const options = useMemo(() => ['Gross Production', 'Net Production', 'Net Revenue', 'Average Price'], []);
+// 	return (
+// 		<PopupState variant="popper" popupId="RevenueSummaryProduct">
+// 			{popupState => (
+// 				<>
+// 					<div style={{ cursor: 'pointer', textAlign: 'center' }} {...bindTrigger(popupState)}>
+// 						<Button className={classes.optionButton} endIcon={<KeyboardArrowDownIcon fontSize="small" />}>
+// 							{selectedProductOption}
+// 						</Button>
+// 					</div>
+// 					<Popover
+// 						{...bindPopover(popupState)}
+// 						getContentAnchorEl={null}
+// 						anchorOrigin={{
+// 							vertical: 'bottom',
+// 							horizontal: 'center',
+// 						}}
+// 						transformOrigin={{
+// 							vertical: 'top',
+// 							horizontal: 'center',
+// 						}}
+// 					>
+// 						<List className={classes.optionsList}>
+// 							{options.map((option, index) => (
+// 								<ListItem
+// 									button
+// 									key={index}
+// 									onClick={() => {
+// 										popupState.close();
+// 										setProductOption(option);
+// 									}}
+// 									style={{ textTransform: 'uppercase' }}
+// 									selected={option === selectedProductOption}
+// 								>
+// 									<ListItemText primary={option} />
+// 								</ListItem>
+// 							))}
+// 						</List>
+// 					</Popover>
+// 				</>
+// 			)}
+// 		</PopupState>
+// 	);
+// };
 
 const SummarySection = ({ checkId }) => {
 	const classes = useStyles();
@@ -178,26 +175,26 @@ const SummarySection = ({ checkId }) => {
 	const [productSummaryDetails, setProductSummaryDetails] = useState([]);
 
 	// queries
-	const [getESAggsRevenue, { data: revenueSummary }] = useLazyQuery(GET_ES_AGGS_LIST, {
+	const [getAggsRevenue, { data: revenueSummary }] = useLazyQuery(GET_DB_AGGS, {
 		context: { batch: true },
 		fetchPolicy: 'no-cache',
 	});
 
-	const [getESAggAdjustment, { data: adjustmentSummary }] = useLazyQuery(GET_ES_AGGS_LIST, {
+	const [getAggAdjustment, { data: adjustmentSummary }] = useLazyQuery(GET_DB_AGGS, {
 		context: { batch: true },
 		fetchPolicy: 'no-cache',
 	});
 
-	const [getESProductSummary, { data: productSummary }] = useLazyQuery(GET_ES_AGGS_LIST, {
+	const [getProductSummary, { data: productSummary }] = useLazyQuery(GET_DB_AGGS, {
 		context: { batch: true },
 		fetchPolicy: 'no-cache',
 	});
 
 	const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
-	let revSummary = revenueSummary?.getESAggsList?.aggregations;
-	let adjSummary = adjustmentSummary?.getESAggsList?.aggregations;
-	let prodSummary = productSummary?.getESAggsList?.aggregations;
+	let revSummary = revenueSummary?.getDbAggs?.aggregations;
+	let adjSummary = adjustmentSummary?.getDbAggs?.aggregations;
+	let prodSummary = productSummary?.getDbAggs?.aggregations;
 	let metaData = metaDataRes?.getMetaData?.metaData;
 	const summaryTabs = [
 		{ id: 1, label: 'Revenue' },
@@ -214,13 +211,12 @@ const SummarySection = ({ checkId }) => {
 	}, [getMetaData]);
 
 	useEffect(() => {
-		getESAggsRevenue({
+		getAggsRevenue({
 			variables: {
-				esIndex: 'checkdetails_flat',
-				search: '',
+				index: 'checkdetails_flat',
 				filters: [
 					{
-						field: 'check._id.keyword',
+						field: 'check._id',
 						value: checkId,
 					},
 				],
@@ -229,46 +225,46 @@ const SummarySection = ({ checkId }) => {
 					netOwnerValue: { sum: { field: 'netOwnerValue' } },
 					ownerDeducts: { sum: { field: 'ownerDeducts' } },
 					ownerTax: { sum: { field: 'ownerTax' } },
+					leasePayments: { sum: { field: 'leasePayments' } },
+					other: { sum: { field: 'other' } },
 				},
 			},
 		});
 
-		getESAggAdjustment({
+		getAggAdjustment({
 			variables: {
-				esIndex: 'checkdetails_flat',
-				search: '',
+				index: 'checkdetails_flat',
 				filters: [
 					{
-						field: 'check._id.keyword',
+						field: 'check._id',
 						value: checkId,
 					},
 				],
 				aggs: {
 					taxType: {
-						terms: { field: 'taxType.keyword' },
+						terms: { field: 'taxType' },
 						aggs: { ownerTax: { sum: { field: 'ownerTax' } } },
 					},
 					deductType: {
-						terms: { field: 'deductType.keyword', size: 10000 },
+						terms: { field: 'deductType', size: 10000 },
 						aggs: { ownerDeducts: { sum: { field: 'ownerDeducts' } } },
 					},
 				},
 			},
 		});
 
-		getESProductSummary({
+		getProductSummary({
 			variables: {
-				esIndex: 'checkdetails_flat',
-				search: '',
+				index: 'checkdetails_flat',
 				filters: [
 					{
-						field: 'check._id.keyword',
+						field: 'check._id',
 						value: checkId,
 					},
 				],
 				aggs: {
 					product: {
-						terms: { field: 'product.keyword' },
+						terms: { field: 'product' },
 						aggs: {
 							grossPropertyVolume: { sum: { field: 'grossPropertyVolume' } },
 							grossOwnerVolume: { sum: { field: 'grossOwnerVolume' } },
@@ -279,61 +275,63 @@ const SummarySection = ({ checkId }) => {
 				},
 			},
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [checkId]);
 
 	// revenue summary
 	useEffect(() => {
 		if (revSummary) {
 			setRevenueSummaryDetails([
-				{ name: 'Gross Revenue', value: `${revSummary?.grossRevenue?.value.toFixed(2)}` },
-				{ name: 'Adjustments', value: `${(revSummary?.ownerDeducts?.value + revSummary?.ownerTax?.value).toFixed(2)}` },
-				{ name: 'Net Revenue', value: `${(revSummary?.netOwnerValue?.value).toFixed(2)}` },
+				{ name: 'Gross Revenue', value: `${revSummary?.grossRevenue[0]?.grossRevenue?.toFixed(2)}` },
+				{
+					name: 'Adjustments',
+					value: `${(revSummary?.ownerDeducts[0]?.ownerDeducts + revSummary?.ownerTax[0].ownerTax)?.toFixed(2)}`,
+				},
+				{ name: 'Net Revenue', value: `${revSummary?.netOwnerValue[0]?.netOwnerValue?.toFixed(2)}` },
 				{
 					name: 'Lease Payments',
-					value: revSummary?.leasePayments?.value ? `${revSummary.leasePayments.value.toFixed(2)}` : '-',
+					value: revSummary?.leasePayments[0]?.leasePayments?.value
+						? `${revSummary.leasePayments[0]?.leasePayments?.toFixed(2)}`
+						: '-',
 				},
-				{ name: 'Other', value: revSummary?.other?.value ? `${revSummary.other.value.toFixed(2)}` : '-' },
+				{ name: 'Other', value: revSummary?.other[0]?.other ? `${revSummary?.other[0]?.other?.toFixed(2)}` : '-' },
 				{
 					name: 'Total Income',
 					value: `${(
-						get(revSummary, 'netOwnerValue.value', 0) +
-						get(revSummary, 'leasePayments.value', 0) +
-						get(revSummary, 'other.value', 0)
+						get(revSummary, 'netOwnerValue[0].netOwnerValue', 0) +
+						get(revSummary, 'leasePayments[0].leasePayments', 0) +
+						get(revSummary, 'other[0].other', 0)
 					).toFixed(2)}`,
 				},
 			]);
 		}
 	}, [revSummary]);
 
-	// products summary
+	// // products summary
 	useEffect(() => {
 		if (prodSummary) {
-			const productMapping = metaData?.find(meta => meta.name === 'product_type');
+			const productMapping = metaData?.find(meta => meta?.name === 'product_type');
 
-			const products = uniqBy(productMapping?.mapping, 'to').map(product => product.to);
+			const products = uniqBy(productMapping?.mapping, 'to').map(product => product?.to);
 			let buckets = [];
 			products.forEach(p => {
-				const mappings = productMapping?.mapping?.filter(m => m.to === p);
+				const mappings = productMapping?.mapping?.filter(m => m?.to === p);
 				const bucket = { key: p.includes('NGL') ? 'NGL' : p };
 				mappings.forEach(m => {
-					const fundBucket = prodSummary?.product?.buckets.find(b => b.key === m.from);
+					const fundBucket = prodSummary?.product?.find(p => p?.product?.toLowerCase() === m?.from?.toLowerCase());
 					if (fundBucket) {
 						set(
 							bucket,
-							'grossPropertyVolume.value',
-							(get(bucket, 'grossPropertyVolume.value') || 0) + get(fundBucket, 'grossPropertyVolume.value')
+							'grossPropertyVolume',
+							(get(bucket, 'grossPropertyVolume') || 0) + get(fundBucket, 'grossPropertyVolume')
 						);
 						set(
 							bucket,
-							'grossOwnerVolume.value',
-							(get(bucket, 'grossOwnerVolume.value') || 0) + get(fundBucket, 'grossOwnerVolume.value')
+							'grossOwnerVolume',
+							(get(bucket, 'grossOwnerVolume') || 0) + get(fundBucket, 'grossOwnerVolume')
 						);
-						set(
-							bucket,
-							'netRevenue.value',
-							(get(bucket, 'netRevenue.value') || 0) + get(fundBucket, 'netRevenue.value')
-						);
-						set(bucket, 'avgPrice.value', (get(bucket, 'avgPrice.value') || 0) + get(fundBucket, 'avgPrice.value'));
+						set(bucket, 'netRevenue', (get(bucket, 'netRevenue') || 0) + get(fundBucket, 'netRevenue'));
+						set(bucket, 'avgPrice', (get(bucket, 'avgPrice') || 0) + get(fundBucket, 'avgPrice'));
 					}
 				});
 				buckets.push(bucket);
@@ -342,31 +340,24 @@ const SummarySection = ({ checkId }) => {
 			buckets = buckets.map(b => ({
 				...b,
 				grsProd: b.grossPropertyVolume
-					? vf_number((Math.round(get(b, 'grossPropertyVolume.value') * 100) / 100).toFixed(2))
+					? vf_number((Math.round(get(b, 'grossPropertyVolume') * 100) / 100).toFixed(2))
 					: '-',
-				netProd: b.grossOwnerVolume
-					? vf_number((Math.round(get(b, 'grossOwnerVolume.value') * 100) / 100).toFixed(2))
-					: '-',
-				netRevenue: b.netRevenue ? vf_number((Math.round(get(b, 'netRevenue.value') * 100) / 100).toFixed(2)) : '-',
-				avgPrice: b.avgPrice ? vf_number((Math.round(get(b, 'avgPrice.value') * 100) / 100).toFixed(2)) : '-',
+				netProd: b.grossOwnerVolume ? vf_number((Math.round(get(b, 'grossOwnerVolume') * 100) / 100).toFixed(2)) : '-',
+				netRevenue: b.netRevenue ? vf_number((Math.round(get(b, 'netRevenue') * 100) / 100).toFixed(2)) : '-',
+				avgPrice: b.avgPrice ? vf_number((Math.round(get(b, 'avgPrice') * 100) / 100).toFixed(2)) : '-',
 			}));
 			setProductSummaryDetails(buckets);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [prodSummary]);
 
-	// adjustment summary
+	// // adjustment summary
 	useEffect(() => {
 		if (adjSummary) {
 			let { deductType, taxType } = adjSummary;
 
-			const deducts =
-				deductType?.buckets?.length > 0
-					? deductType?.buckets?.map(item => ({ name: item.key, value: (item.ownerDeducts?.value).toFixed(2) }))
-					: [];
-			const taxes =
-				taxType?.buckets?.length > 0
-					? taxType?.buckets?.map(item => ({ name: item.key, value: (item.ownerTax?.value).toFixed(2) }))
-					: [];
+			const deducts = deductType.map(d => ({ name: d?.deductType, value: d?.ownerDeducts?.toFixed(2) }));
+			const taxes = taxType.map(t => ({ name: t?.taxType, value: t?.ownerTax?.toFixed(2) }));
 
 			const adjustments = [...deducts, ...taxes];
 			let totalAdjustment = 0;
@@ -379,9 +370,9 @@ const SummarySection = ({ checkId }) => {
 		}
 	}, [adjSummary]);
 
-	const wrapWithBrackets = string => {
-		return `${string ? `(${string})` : '-'}`;
-	};
+	// const wrapWithBrackets = string => {
+	// 	return `${string ? `(${string})` : '-'}`;
+	// };
 
 	return (
 		<div className={`${classes.root} flex column justifyStart alignStart w-100`}>

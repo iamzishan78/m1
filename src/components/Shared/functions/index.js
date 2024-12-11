@@ -1,5 +1,5 @@
 import { BlockBlobClient } from '@azure/storage-blob';
-import { cloneDeep, initial, join, last, split } from 'lodash';
+import { cloneDeep, initial, join, keyBy, last, merge, split, values } from 'lodash';
 import moment from 'moment';
 
 export * from './deepEqual';
@@ -213,4 +213,15 @@ export const isDateFormat = inputString => {
 
 	// Check if the inputString matches the date format
 	return mmddyyy.test(inputString) || mmddyy.test(inputString);
+};
+
+export const mergeArrays = (arr1, arr2, uniqueField) => {
+	const keyedArr1 = keyBy(arr1, uniqueField);
+	const keyedArr2 = keyBy(arr2, uniqueField);
+
+	// Merge the keyed objects
+	const mergedKeyed = merge({}, keyedArr1, keyedArr2);
+
+	// Convert the merged object back to an array
+	return values(mergedKeyed);
 };

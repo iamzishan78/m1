@@ -2,9 +2,9 @@ import { memo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useApolloClient } from '@apollo/client';
 
-import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
 import { popupController } from 'hookstate/popupStateController';
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 
 function WellClick() {
 	const { paramId } = useParams();
@@ -18,15 +18,19 @@ function WellClick() {
 
 	const getElasticWell = async paramId => {
 		const { data: well } = await client.query({
-			query: GET_ES_PAGINATED_LIST,
+			query: GET_ES_SIMPLE_SEARCH,
 			variables: {
-				esIndex: 'platformData:wells',
+				index: 'platformData:wells',
 				pagination: {
 					first: 1,
 					keep_alive: '1micros',
 				},
-				search: `_id:${paramId.toLowerCase()}`,
-				filters: [],
+				filters: [
+					{
+						field: '_id',
+						value: paramId.toLowerCase(),
+					},
+				],
 				sort: [],
 			},
 		});
@@ -37,7 +41,7 @@ function WellClick() {
 			},
 		});
 		return {
-			...well.getESPaginatedList.hits[0],
+			...well.getESSimpleSearch.hits[0],
 			tenantWellId: tenantWell?.tenantWell?.tenantWellId,
 		};
 	};
@@ -78,7 +82,8 @@ function WellClick() {
 				}
 			}
 		})();
-	}, [wellSelectedCoordinates, selectedWellId]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [wellSelectedCoordinates, selectedWellId, paramId]);
 
 	return null;
 }

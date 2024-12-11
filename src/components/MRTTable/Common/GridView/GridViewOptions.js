@@ -170,6 +170,11 @@ function GridViewOptions({
 		Controller.updateState({
 			gridView: { ...tableStateValues.gridView, selectedGridView: data, showViewModal: false },
 		});
+		setTimeout(() => {
+			data.filters?.forEach(filter => {
+				if (filter.searchType) Controller.setFilterMode(filter?.field.replace('.keyword', ''), filter.searchType);
+			});
+		}, 0);
 	};
 
 	// Apply stylinng dynamically for mainn grid

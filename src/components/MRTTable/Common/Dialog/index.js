@@ -48,6 +48,8 @@ function AllDialogs(props) {
 		const user = globalStateController.getValue('user');
 		const testCase = globalStateController.getValue('testCase');
 		const hasMultiGrids = tableController(tableKey).getValue('hasMultiGrids');
+		const paymentMultiGrid = tableGlobalController.getValue('paymentMultiGrid');
+
 		gridGenericRemove({
 			variables: {
 				tableKey,
@@ -72,7 +74,7 @@ function AllDialogs(props) {
 			}
 		);
 
-		if (hasMultiGrids) {
+		if ((hasMultiGrids && dataToDelete?.mainRecord?.includes(paymentMultiGrid?.paymentId)) || rest?.isSelectAll) {
 			tableGlobalController.updateState({
 				paymentMultiGrid: { showMultiGrid: false },
 			});

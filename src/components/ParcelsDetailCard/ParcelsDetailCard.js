@@ -335,7 +335,10 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	// Table overridden meta
 	const RelatedAgreementOverrideMeta = useMemo(
 		() => ({
-			defaultFilters: [{ field: 'tract.tractId', value: parcelObj?._id }],
+			defaultFilters: [
+				{ field: 'tract.tractId', value: parcelObj?._id },
+				{ field: 'shapeType', value: 'Agreement' },
+			],
 			onClickedRow: () => null,
 			onCustomKeyChange: null,
 			CustomToolBar: null,

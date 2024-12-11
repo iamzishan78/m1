@@ -18,6 +18,7 @@ import { handleMRTSchema, handleVisiblityMenu } from './helpers';
 import { validateUrl } from 'utils/helper';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 import { extractUniqueFilters } from 'components/Map/DeckGL/helpers/common';
+import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 
 function isDateFormat(inputString) {
 	// Regular expression for MM/DD/YYYY format
@@ -44,6 +45,8 @@ const initialState = {
 		left: [],
 	},
 	isIncludeInactive: false,
+	gridView: {},
+	showTypes: false,
 };
 
 export const tableESState = {};
@@ -67,10 +70,9 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 
 	const metaDataTableSchema = data.map((item, index) => {
 		const key = item?.esKey.replaceAll('.keyword', '');
-
 		return {
-			...item,
 			...CommonSchema.COMMON_COLUMN,
+			...item,
 			name: `${key}.keyword`,
 			id: key,
 			accessorFn: row => get(row, key),
@@ -187,6 +189,7 @@ const tableESStateControllerHandler = state => ({
 			isDefaultGridView,
 			enableHiding = true,
 			refetchQueries = [],
+			globalFilter,
 			...rest
 		},
 		client
@@ -218,20 +221,14 @@ const tableESStateControllerHandler = state => ({
 		}
 
 		let formatedGridView = null;
+
 		let gridView = {};
 
 		const mapView = globalStateController.getValue('mapView');
 		const { filters } = mapView?.selectedMapView || {};
 		const selectedMapViewFilters = filters || [];
 
-		const layers = globalStateController.getValue('layers') || [];
-		const gridLayersIds = layers
-			?.filter(layer => layer?.layerShapeName === layerIdentifier)
-			.map(layer => layer?.layerId);
-
-		const dataSourceViews = selectedMapViewFilters?.filter(
-			view => view.dataSourceName === layerIdentifier || gridLayersIds.includes(view.dataSourceName)
-		);
+		const dataSourceViews = selectedMapViewFilters?.filter(view => view.dataSourceName === layerIdentifier);
 		const mapViewFilters =
 			dataSourceViews?.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)) ||
 			[];
@@ -250,7 +247,6 @@ const tableESStateControllerHandler = state => ({
 				showSaveAsNew: false,
 			};
 		}
-
 		const {
 			_TableSchema,
 			tableCss,
@@ -268,6 +264,7 @@ const tableESStateControllerHandler = state => ({
 			defaultFlterMode,
 			search,
 			columnVirtualization,
+			globalFilter,
 		});
 
 		// Set default pinning and ordering
@@ -347,7 +344,6 @@ const tableESStateControllerHandler = state => ({
 		});
 
 		if (mapViewFilters.length > 0) tableController(tableKey).setShowColumnFilters(true);
-
 		mapViewFilters?.forEach(filter => {
 			tableController(tableKey).setFilterMode(filter?.field.replace('.keyword', ''), filter.searchType);
 		});
@@ -461,14 +457,15 @@ const tableESStateControllerHandler = state => ({
 	setGlobalFilter: globalFilter =>
 		!deepEqual(state.globalFilter?.get({ noproxy: true }), globalFilter) && state.globalFilter?.set(globalFilter),
 
-	setFilter: filter => {
-		const TableSchema = state.TableSchema.get({ noproxy: true }) || [];
-		const column = TableSchema?.find(column => column.id === filter.field || column.accessorKey === filter.field);
+	getGlobalFilter: () => state.globalFilter?.get({ noproxy: true }),
 
+	setFilter: _filter => {
+		const TableSchema = state.TableSchema.get({ noproxy: true }) || [];
+		const filter = copy(_filter);
+		const column = TableSchema?.find(column => column.id === filter.field || column.accessorKey === filter.field);
 		if (column?.type === 'date') {
 			filter.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-			if (filter.type !== 'advanced') {
+			if (filter.type !== 'advanced' || (filter.type === 'advanced' && !filter.searchType)) {
 				filter.type = 'advanced';
 				filter.searchType = 'betweenInclusive';
 				filter.columnType = 'date';
@@ -506,46 +503,50 @@ const tableESStateControllerHandler = state => ({
 		});
 
 		if (tableState?.layerIdentifier) {
-			const layers = globalStateController.getValue('layers') || [];
-			const gridLayersIds = layers
-				?.filter(layer => layer?.layerShapeName === tableState?.layerIdentifier)
-				.map(layer => layer?.layerId);
+			const currentIdentifier = customLayersFieldAccessors[tableState?.layerIdentifier];
 
-			const existingFilter = mapViewsFitlers.find(
-				({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') === filter.field
-			);
+			if (
+				currentIdentifier &&
+				currentIdentifier.keys?.find(key => key.value.replace('.keyword', '') === filter.field.replace('.keyword', ''))
+			) {
+				const existingFilter = mapViewsFitlers.find(
+					({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') === filter.field
+				);
 
-			const isValuesEqual = _.isEqual(
-				existingFilter?.filterValues,
-				typeof filter.value === 'string' ? [filter.value] : filter.value
-			);
-			const isNonValuesFilter = ['empty', 'notEmpty'].includes(filter.searchType);
+				const isValuesEqual = _.isEqual(
+					existingFilter?.filterValues,
+					typeof filter.value === 'string' ? [filter.value] : filter.value
+				);
+				const isNonValuesFilter = ['empty', 'notEmpty'].includes(filter.searchType);
 
-			if (!(isValuesEqual || isNonValuesFilter)) {
-				globalStateController.updateState({
-					viewChanged: true,
-					mapView: {
-						...mapView,
+				if (!(isValuesEqual || isNonValuesFilter)) {
+					globalStateController.updateState({
 						viewChanged: true,
-						selectedMapView: {
-							...mapView?.selectedMapView,
-							filters: [
-								...mapViewsFitlers.filter(
-									({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') !== filter.field
-								),
-								{
-									dataSourceName: gridLayersIds?.[0] || tableState?.layerIdentifier,
-									filterType:
-										tableState?.filterModes[filter.field.replace('.keyword', '')]?.mode ||
-										existingFilter?.filterType ||
-										'singleselect',
-									fieldName: filter.field,
-									filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
-								},
-							],
+						mapView: {
+							...mapView,
+							viewChanged: true,
+							selectedMapView: {
+								...mapView?.selectedMapView,
+								filters: [
+									...mapViewsFitlers.filter(
+										({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') !== filter.field
+									),
+									{
+										dataSourceName: tableState?.layerIdentifier,
+										filterType:
+											tableState?.filterModes[filter.field.replace('.keyword', '')]?.mode ||
+											existingFilter?.filterType ||
+											tableState?.esIndex === 'shapefile_flat'
+												? 'multiselect'
+												: 'singleselect',
+										fieldName: filter.field,
+										filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
+									},
+								],
+							},
 						},
-					},
-				});
+					});
+				}
 			}
 		}
 

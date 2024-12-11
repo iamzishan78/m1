@@ -227,11 +227,12 @@ export default function BuyContactsInfoDialogContent(props) {
 			// Check if the address is primary
 			const isPrimaryAddress = address === 'primaryAddress';
 			for (const row of props.rows) {
-				if (!row.firstName || !row.lastName || !row.address1) {
+				if (!row.name || !row.firstName || !row.lastName || !row.address1) {
 					missingContacts.push(row);
-				} else if (row.firstName && row.lastName && (row.address1 || row.address1Alt)) {
+				} else if (row.name && row.firstName && row.lastName && (row.address1 || row.address1Alt)) {
 					let person = {
 						id: row.contactId || row.contact?._id || row._id,
+						name: row.name,
 						firstName: row.firstName,
 						lastName: row.lastName,
 						address: (isPrimaryAddress ? row.address1 : row.address1Alt) ?? '', // User either primary/secondary or empty string
@@ -302,7 +303,7 @@ export default function BuyContactsInfoDialogContent(props) {
 							{contactDataMissing &&
 								contactDataMissing.map((row, index) => (
 									<Grid item xs={12} className={modalClass.inputContainer}>
-										<FormLabel className={modalClass.inputLabel}>{`${row.name}`}</FormLabel>
+										<FormLabel className={modalClass.inputLabel}>{`${row.name || 'Name Missing'}`}</FormLabel>
 										<FormLabel className={modalClass.inputContent}>
 											<div className="flex jusifyEnd alignCenter">
 												{setMissingLabelsFunc(row) &&
@@ -337,7 +338,7 @@ export default function BuyContactsInfoDialogContent(props) {
 							{validContactData &&
 								validContactData.map((row, index) => (
 									<Grid item xs={12} className={modalClass.inputContainer}>
-										<FormLabel className={modalClass.inputLabel}>{`${row.firstName} ${row.lastName}`}</FormLabel>
+										<FormLabel className={modalClass.inputLabel}>{`${row.name}`}</FormLabel>
 										<FormLabel className={modalClass.inputContent}>
 											{(jobStateValues?.isJobCompleted || jobStateValues?.isJobFailed) && jobStateValues?.JobOutput && (
 												<>

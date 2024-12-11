@@ -5,6 +5,7 @@ import { TRIGGER_ADMIN_OPERATIONS } from 'graphQL/useMutationadminESOperations';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { GET_DB_OPERATIONS } from 'graphQL/useQueryadminDBOperations';
 import { adminOperationsController } from 'hookstate/adminOperationsController';
+import { getHeaders } from 'utils/helper';
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -102,12 +103,16 @@ export default function Flatten() {
 			query: 'mutation triggerAdminOperation($options: JSON) { triggerAdminOperation(options: $options) }',
 		};
 
+		const headers = getHeaders();
+
 		// Convert the JSON to a string
 		const jsonString = JSON.stringify(jsonData);
 
 		// Return the curl command
 		return `curl -X POST ${url} \\
   -H "Content-Type: application/json" \\
+  -H "X-ZUMO-AUTH: ${headers['X-ZUMO-AUTH']}" \\
+  -H "X-MS-TOKEN-AAD-ID-TOKEN: ${headers['X-MS-TOKEN-AAD-ID-TOKEN']}" \\
   -d '${jsonString}'`;
 	};
 

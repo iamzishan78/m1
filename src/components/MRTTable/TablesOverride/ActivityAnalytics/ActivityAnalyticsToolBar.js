@@ -1,45 +1,14 @@
-import React, { memo, useState, useContext, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { memo, useState, useEffect } from 'react';
 import get from 'lodash/get';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { NavigationContext } from 'components/Navigation/NavigationContext';
-import { globalStateController } from 'hookstate/globalStateController';
-import { useMutation, useApolloClient } from '@apollo/client';
-import { useDispatch } from 'react-redux';
-import { AppContext } from 'AppContext';
+import { tableGlobalController } from 'hookstate/tableController';
 import { activityTypes } from 'utils/data';
 import ActivitiesModal from 'components/Activities/components/ActivitiesModal';
 
 function ActivityAnalyticsToolBar({ table, tableKey }) {
-	const history = useHistory();
-	const client = useApolloClient();
-	const Controller = tableController(tableKey);
-	const [, setStateNav] = React.useContext(NavigationContext);
-	const tableState = Controller.useState([
-		'esIndex',
-		'globalFilter',
-		'searchFields',
-		'data',
-		'filters',
-		'defaultSort',
-		'sorting',
-		'isAllRowsSelected',
-		'rowSelection',
-		'defaultFilters',
-	]);
 	const { stateValues } = tableGlobalController.useState(['dialog']);
 	const { type, ...rest } = stateValues.dialog || {};
-	const tableStateValues = tableState.stateValues;
-	const isSomeRowsSelected =
-		table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
-	const isAllRowsSelected = table.getIsAllRowsSelected();
-	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
-	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
 
-	const { globalStateValues } = globalStateController.useState(['showFieldModal'], 'globalStateValues');
-	const [events, setEvents] = useState([]);
-	const [stateApp, setStateApp] = useContext(AppContext);
-	const [activity, setActivity] = useState(null);
+	const [events] = useState([]);
 
 	useEffect(() => {
 		if (rest?.selectedRow) {
@@ -51,7 +20,7 @@ function ActivityAnalyticsToolBar({ table, tableKey }) {
 					''
 				),
 			};
-			setStateApp(stateApp => ({
+			window.setStateApp(stateApp => ({
 				...stateApp,
 				selectedActivityId: rest?.selectedRow?._id,
 				selectedActivity: activity,
@@ -62,14 +31,14 @@ function ActivityAnalyticsToolBar({ table, tableKey }) {
 	}, [stateValues.dialog]);
 
 	const onModalOpen = (type = 'activityDialog') => {
-		setStateApp(stateApp => ({
+		window.setStateApp(stateApp => ({
 			...stateApp,
 			[type]: true,
 		}));
 	};
 
 	const setSelectedActivityId = id => {
-		setStateApp(stateApp => ({
+		window.setStateApp(stateApp => ({
 			...stateApp,
 			selectedActivityId: id,
 		}));

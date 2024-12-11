@@ -625,3 +625,18 @@ export const getDateFilters = filters => {
 	});
 	return customFilters;
 };
+
+export const checkFormRequireField = (data, formSchema) => {
+	let error = false;
+
+	formSchema.forEach(field => {
+		if (field.required && field?.name && (!data[field.name])) {
+			error = true;
+		}
+		if (field.renderField === 'startEndDate' && field.required && (!data['startDate'] || !data['endDate'])) {
+			error = true;
+		}
+	});
+
+	return error;
+};

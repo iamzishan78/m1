@@ -11,13 +11,13 @@ import AutoCompleteNewOption from './Fields/AutoCompleteNewOption';
 import DatePicker from './Fields/DatePicker';
 import StartEndDate from './Fields/StartEndDate';
 
-function CommonForm({ formSchema, control, watch, dialogKey }) {
+function CommonForm({ formSchema, control, watch, dialogKey, error }) {
 	return (
 		<>
 			{formSchema.map((item, index) => (
 				<React.Fragment key={item.name}>
 					{item.renderField === 'autoComplete' ? (
-						<AutoCompleteComponent item={item} control={control} />
+						<AutoCompleteComponent item={item} control={control} watch={watch} error={error} />
 					) : item.renderField === 'campaignName' ? (
 						<Grid item xs={12}>
 							<h3>{item.label}</h3>
@@ -69,9 +69,9 @@ function CommonForm({ formSchema, control, watch, dialogKey }) {
 					) : item.renderField === 'datePicker' ? (
 						<DatePicker item={item} control={control} />
 					) : item.renderField === 'startEndDate' ? (
-						<StartEndDate item={item} control={control} />
+						<StartEndDate item={item} control={control} watch={watch} error={error}/>
 					) : (
-						<TextFieldComponent key={index} item={item} control={control} watch={watch} />
+						<TextFieldComponent key={index} item={item} control={control} watch={watch} error={error}/>
 					)}
 				</React.Fragment>
 			))}

@@ -376,6 +376,8 @@ const simpleTableStateControllerHandler = state => ({
 	setGlobalFilter: globalFilter =>
 		!isEqual(state.globalFilter?.get({ noproxy: true }), globalFilter) && state.globalFilter?.set(globalFilter),
 
+	getGlobalFilter: () => state.globalFilter?.get({ noproxy: true }),
+
 	setFilter: filter => {
 		const filtersState = state.filters?.get({ noproxy: true });
 
