@@ -178,7 +178,6 @@ export const layerFilterInitialState = {
 					'shapeJson.properties.uStatus',
 					'shapeJson.properties.uPrimaryOperator',
 					'shapeJson.properties.uUnitPricing',
-					'shapeJson.properties.campaignName',
 					'shapeJson.properties.qualifier.name',
 					'shapeJson.properties.reviewer.name',
 					'tags.tag',

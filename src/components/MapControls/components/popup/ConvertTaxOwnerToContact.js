@@ -213,7 +213,7 @@ const ConvertTaxOwnerToContact = ({
 					<label className={classes.bold}>Campaign Names</label>
 					<Controller
 						control={control}
-						name="campaignNames"
+						name="campaigns"
 						render={params => (
 							<CampaignField
 								{...params}
