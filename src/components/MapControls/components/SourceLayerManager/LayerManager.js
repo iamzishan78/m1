@@ -196,12 +196,14 @@ export default function AddLayer(props) {
 	useEffect(() => {
 		checkAllLayers(M1Layers, 'M1');
 		checkAllLayers(UdLayers, 'UD');
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currentLayers]);
 
 	useEffect(() => {
 		if (!deepEqual(currentLayers, globalStateValues.layers)) {
 			setCurrentLayers(copy(globalStateValues.layers));
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currentLayers, layers]);
 
 	const handleClick = event => {
@@ -407,8 +409,6 @@ export default function AddLayer(props) {
 		);
 	}, [currentLayers]);
 
-	console.log(UdLayers);
-
 	return (
 		<ClickAwayListener onClickAway={() => {}}>
 			<>
@@ -483,7 +483,7 @@ export default function AddLayer(props) {
 														/>
 													</StyledListItem>
 												);
-											}
+											} else return null;
 										})}
 									</List>
 								</Collapse>
@@ -704,6 +704,7 @@ export default function AddLayer(props) {
 													);
 												}
 											}
+											return null;
 										})}
 									</List>
 								</Collapse>
@@ -714,7 +715,7 @@ export default function AddLayer(props) {
 					{openDeleteDialog && (
 						<Dialog
 							className={classes.dialog}
-							open={openDeleteDialog ? true : false}
+							open={openDeleteDialog}
 							onClose={() => {
 								setOpenDeleteDialog(false);
 							}}
@@ -722,9 +723,9 @@ export default function AddLayer(props) {
 							maxWidth={'sm'}
 						>
 							<DeleteConfirmationDialog
-								openDialog={openDeleteDialog ? true : false}
+								openDialog={openDeleteDialog}
 								handleDialogClose={setOpenDeleteDialog}
-								layer={openDeleteDialog}
+								layer={actionItem.layer || actionItem.group}
 							/>
 						</Dialog>
 					)}
@@ -751,7 +752,7 @@ export default function AddLayer(props) {
 										<MenuItem
 											onClick={e => {
 												e.stopPropagation();
-												setOpenDeleteDialog(actionItem.layer || actionItem.group);
+												setOpenDeleteDialog(Boolean(actionItem.layer || actionItem.group));
 												handleMenuClose();
 											}}
 										>
