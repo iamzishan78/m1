@@ -91,11 +91,11 @@ const ContactWellInterestMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Amount',
-			name: 'amount.keyword',
-			accessorKey: 'amount',
-			enableColumnFilter: false,
+			name: 'interest.keyword',
+			accessorKey: 'interest',
+			type: 'number',
 			Cell: ({ row }) => {
-				const amount = row.getValue('amount');
+				const amount = row.getValue('interest');
 				if (amount) {
 					return <>{addTrailingZeros(parseFloat(amount).toFixed(8))}</>;
 				}
@@ -107,6 +107,7 @@ const ContactWellInterestMeta = {
 			header: 'Tax Value',
 			name: 'value',
 			accessorKey: 'value',
+			type: 'number',
 			Cell: ({ row }) => {
 				const value = row.getValue('value');
 				if (value) {
@@ -120,6 +121,7 @@ const ContactWellInterestMeta = {
 			header: 'NRA',
 			name: 'nra',
 			accessorKey: 'nra',
+			type: 'number',
 			Cell: ({ row }) => {
 				const nra = row.getValue('nra');
 				if (nra) {
