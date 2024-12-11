@@ -63,8 +63,8 @@ export default function CustomDatesActivities({
 	toDate,
 	setToDate,
 	minDate,
-	campaignName,
-	setCampaignName,
+	campaigns,
+	setCampaigns,
 	qualifier,
 	setQualifier,
 	esIndex,
@@ -201,8 +201,8 @@ export default function CustomDatesActivities({
 				{activeModule.value === 'CRM' && (
 					<Grid item xs={2} md={2} lg={2} xl={2} style={{ marginTop: '4px' }}>
 						<CampaignFilter
-							value={campaignName}
-							setValue={setCampaignName}
+							value={campaigns}
+							setValue={setCampaigns}
 							esIndex={esIndex}
 							searchFields={searchFields}
 							tableFilters={tableFilters}
@@ -270,7 +270,7 @@ const CampaignFilter = ({
 	};
 
 	useEffect(() => {
-		const filterKey = 'contact.campaignName.keyword';
+		const filterKey = 'contact.campaigns';
 		getCampaign({
 			variables: {
 				esIndex,
@@ -283,6 +283,8 @@ const CampaignFilter = ({
 					query: search,
 					field: filterKey,
 					size: 50,
+					fieldType: 'array',
+					searchFields: ['contact.campaigns.name'],
 				},
 			},
 		});
@@ -293,19 +295,21 @@ const CampaignFilter = ({
 		<Autocomplete
 			size="small"
 			onChange={(e, selectedValue, reason) => {
-				if (reason === 'clear' || !selectedValue?.key) {
+				if (reason === 'clear' || !selectedValue) {
 					setSearch('');
 					setValue('');
 				} else {
-					setSearch(selectedValue.key);
-					setValue(selectedValue.key);
+					setSearch(selectedValue.name);
+					setValue(selectedValue);
 				}
 			}}
 			value={value}
 			inputValue={search?.toString()}
-			options={get(filtersData, 'getESSimpleFilter.hits', []).filter(d => d.key)}
-			getOptionSelected={(option, value) => option.key === value}
-			getOptionLabel={option => option?.key?.toString().replace(/^,|,$/gm, '')}
+			options={get(filtersData, 'getESSimpleFilter.hits', [])
+				.map(d => d.key)
+				.filter(Boolean)}
+			getOptionLabel={op => op?.name || ''}
+			getOptionSelected={(op, value) => op?.name === value?.name}
 			renderInput={params => (
 				<TextField
 					{...params}
