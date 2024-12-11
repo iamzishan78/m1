@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Grid } from '@material-ui/core';
 import CardHeader from '@material-ui/core/CardHeader';
 import List from '@material-ui/core/List';
@@ -264,8 +265,7 @@ const Tasks = () => {
 					.sort(sortCallBack);
 				setCopyData(filterFirstTabData);
 				setData(filterFirstTabData);
-			}
-			if (tab === 1) {
+			} else if (tab === 1) {
 				const filterFirstTabData = orginalData.activities
 					.filter(
 						activity =>
