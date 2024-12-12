@@ -422,9 +422,7 @@ export const createFilterPopup = filterFeature => {
 export const getAdvancedSearch = (layerGeometry, mustQuery) => [
 	{
 		$and: [
-			{
-				$or: mustQuery,
-			},
+			...(mustQuery?.length > 0 ? [{ $or: mustQuery }] : []),
 			{
 				$or:
 					layerGeometry === 'Polygon'

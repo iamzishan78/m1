@@ -61,13 +61,16 @@ function NewLayerManager(props) {
 	const createLayer = () => {
 		const layerType = source.name === 'M1 Platform' ? 'data layer' : 'file layer';
 		const layerCategory = source.name === 'M1 Platform' ? 'UD layer' : selectCategory.name;
-		const identifier = source.name === 'M1 Platform' ? selectCategory.label + uuid() : layerName + uuid();
+		const layerShapeName = source.name === 'M1 Platform' ? null : selectCategory.name;
+		const identifier =
+			source.name === 'M1 Platform' ? selectCategory.label.replace('Tracts', 'Parcels') + uuid() : layerName + uuid();
 
 		addLayer({
 			variables: {
 				layer: {
 					...layer,
 					layerCategory,
+					layerShapeName,
 					layerType,
 					identifier,
 					groupId: null,
@@ -110,6 +113,16 @@ function NewLayerManager(props) {
 	}, [globalStateValues.datasets]);
 	const layerCategories = useMemo(() => {
 		const dataset = globalStateValues.datasets.find(dataset => dataset.name === source?.name);
+		if (source?.name === 'M1 Platform') {
+			dataset.categories = dataset?.categories.filter(category => category.value !== 'agreement');
+			dataset.categories = [
+				...dataset.categories,
+				{ value: 'agreement', label: 'Deeds' },
+				{ value: 'agreement', label: 'Leases' },
+				{ value: 'agreement', label: 'Contracts' },
+				{ value: 'agreement', label: 'Surfaces' },
+			];
+		}
 		return dataset?.categories || [];
 	}, [source, globalStateValues.datasets]);
 
