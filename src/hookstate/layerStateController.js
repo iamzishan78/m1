@@ -592,7 +592,10 @@ const layerStateControllerHandler = state => {
 		const beforeLayerId = getBeforeLayerId(dbLayer.identifier);
 
 		const isFileLayer = dbLayer.layerType === 'file layer';
-		const isAgreementLayer = agreementLayerIdentifiers.includes(dbLayer.identifier);
+
+		const isAgreementLayer = agreementLayerIdentifiers.some(layer =>
+			dbLayer?.identifier?.toLowerCase().includes(layer.toLowerCase())
+		);
 		const filterIdentifier = isAgreementLayer
 			? 'Agreements'
 			: isFileLayer
@@ -669,8 +672,10 @@ const layerStateControllerHandler = state => {
 			multiQuery: meta.multiQuery,
 			layerId,
 			identifier: dbLayer.identifier,
+			layerSettings: dbLayer.layerSettings,
 			boundingState,
 			geoField: meta.geoField,
+			isFileLayer,
 			polygonFilter,
 			polygonsFilter,
 			filters: isFileLayer ? generateFileFilters({ fileLayer: dbLayer, extendFilters: filters }) : filters,
@@ -744,6 +749,7 @@ const layerStateControllerHandler = state => {
 		toggleLayersActivity,
 		handleChange: () => {
 			const showableLayers = getShowableLayers();
+
 			showableLayers.forEach(dbLayer => {
 				handleDeckLayer(dbLayer);
 			});
