@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
@@ -7,9 +7,9 @@ import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import $ from 'jquery';
-import { useLazyQuery, useMutation } from '@apollo/client';
+import { useApolloClient, useLazyQuery, useMutation } from '@apollo/client';
 import { Close, Delete, Layers, Sync } from '@material-ui/icons';
-import { Dialog, Menu, MenuItem } from '@material-ui/core';
+import { CircularProgress, Dialog, Menu, MenuItem } from '@material-ui/core';
 
 import { AppContext } from '../../AppContext';
 import { clearMapAndCloseShapeActionsPopup } from 'components/MapControls/commonHelper';
@@ -27,6 +27,7 @@ import { userDefinedInitialData } from 'components/MapGridCard/components/data';
 import DeleteConfirmationDialogContent from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import { layerController } from 'hookstate/layerStateController';
 import { DELETE_SHAPEFILE_FEEATURE } from 'graphQL/useMutationShapeFile';
+import { GET_SHAPE_FEATURE } from 'graphQL/useQueryGetShapeFeature';
 
 const useStyles = makeStyles(theme => ({
 	root: {},
@@ -106,9 +107,10 @@ export const getUdLayerCardTitle = ({ layer, properties }) => {
 function UdLayerCard(props) {
 	const classes = useStyles(props);
 	// contexts
+	const client = useApolloClient();
 	const [stateApp, setStateApp] = useContext(AppContext);
 
-	const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
+	const [getShapeFeature, { data: shapeFeature, loading }] = useLazyQuery(GET_SHAPE_FEATURE);
 
 	const [deleteShapeFeature] = useMutation(DELETE_SHAPEFILE_FEEATURE);
 
@@ -118,11 +120,20 @@ function UdLayerCard(props) {
 	const isCreateParcelMenu = Boolean(anchorEl);
 
 	useEffect(() => {
-		getMetaData({
-			variables: {},
+		getShapeFeature({
+			variables: { id: props.selectedUserDefinedLayer._id },
 		});
-	}, [getMetaData]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [getShapeFeature]);
 
+	const selectedUserDefinedLayer = useMemo(() => {
+		return {
+			...props.selectedUserDefinedLayer,
+			...(shapeFeature?.getShapeFeature?.data || {}),
+		};
+	}, [props.selectedUserDefinedLayer, shapeFeature]);
+
+	console.log(selectedUserDefinedLayer);
 	const handleCloseLeftSidePanel = () => {
 		mapControlsController.setState({ expandedPanel: false });
 	};
@@ -175,13 +186,12 @@ function UdLayerCard(props) {
 		}
 	};
 
-	if (!props.selectedUserDefinedLayer) {
+	if (!selectedUserDefinedLayer) {
 		return <></>;
 	}
-	const {
-		selectedUserDefinedLayer: { layer, properties },
-		parent,
-	} = props;
+	const { parent } = props;
+
+	const { layer, properties } = selectedUserDefinedLayer;
 
 	const handleClose = () => {
 		if (parent === 'map') {
@@ -219,7 +229,11 @@ function UdLayerCard(props) {
 	const handleSync = async jobType => {
 		let columns = [];
 
-		const hits = [props.selectedUserDefinedLayer];
+		const { data: metaDataRes } = await client.query({
+			query: GET_META_DATA,
+			variables: {},
+		});
+		const hits = [selectedUserDefinedLayer];
 
 		hits.forEach(hit => {
 			const currentColumns = Object.keys(hit.properties);
@@ -281,9 +295,9 @@ function UdLayerCard(props) {
 						onClose={() => setDeleteDialogOpen(false)}
 						deleteFunc={() => {
 							deleteShapeFeature({
-								variables: { feature: props.selectedUserDefinedLayer },
+								variables: { feature: selectedUserDefinedLayer },
 								onCompleted: () => {
-									layerController.resetBounds(props.selectedUserDefinedLayer.layer.identifier);
+									layerController.resetBounds(selectedUserDefinedLayer.layer.identifier);
 									handleClose();
 								},
 							});
@@ -371,19 +385,34 @@ function UdLayerCard(props) {
 					subheader={layer.groupName ? layer.layerName : ''}
 				/>
 				<CardContent className={classes.content}>
-					<Grid container direction="row" alignItems="center" justify="flex" className={classes.contentGrid}>
-						{Object.keys(properties)
-							.filter(prop => prop !== 'shapeCenter' && prop !== 'originalProperties')
-							.map(prop => (
-								<>
-									<Grid item xs={5}>
-										{prop}
-									</Grid>
-									<Grid item xs={7} style={{ fontWeight: 'bold' }}>
-										{properties[prop]}
-									</Grid>
-								</>
-							))}
+					<Grid
+						container
+						direction="row"
+						alignItems={loading ? 'center' : 'flex-start'}
+						justifyContent={loading ? 'center' : 'flex-start'}
+						display="block"
+						className={classes.contentGrid}
+					>
+						{loading ? (
+							<Grid item>
+								<CircularProgress color="secondary" />
+							</Grid>
+						) : (
+							<>
+								{Object.keys(properties)
+									.filter(prop => prop !== 'shapeCenter' && prop !== 'originalProperties')
+									.map(prop => (
+										<React.Fragment key={prop}>
+											<Grid item xs={5}>
+												{prop}
+											</Grid>
+											<Grid item xs={7} style={{ fontWeight: 'bold' }}>
+												{properties[prop]}
+											</Grid>
+										</React.Fragment>
+									))}
+							</>
+						)}
 					</Grid>
 				</CardContent>
 			</Card>

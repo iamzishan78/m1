@@ -53,7 +53,6 @@ const handleQuery = (queryHandler, onData) => {
 			variables: queryHandler.variables,
 			fetchPolicy: 'no-cache', // Disable caching for this query
 		});
-
 		// Subscribe to it, and do something with the data
 		queryHandler.observable = query.subscribe(res => {
 			queryHandler.finished = true;
@@ -80,6 +79,8 @@ const handleQuery = (queryHandler, onData) => {
 const getBoundsQuery = async ({
 	layerId,
 	identifier,
+	layerSettings,
+	isFileLayer,
 	boundingState,
 	onData,
 	geoField,
@@ -104,7 +105,9 @@ const getBoundsQuery = async ({
 
 	const zoom = layerController.getValue('zoom');
 
-	const isAgreementLayer = agreementLayerIdentifiers.includes(identifier);
+	const isAgreementLayer = agreementLayerIdentifiers.some(layer =>
+		identifier?.toLowerCase().includes(layer.toLowerCase())
+	);
 
 	if (!filters && !isLandGridQuery) return;
 
@@ -140,10 +143,12 @@ const getBoundsQuery = async ({
 		if (isAgreementLayer)
 			variables.filters = filters.variables.filters.map(filter => {
 				if (filter.field !== 'shapeJson.properties.type.keyword') return filter;
-
 				return {
 					field: 'layer.keyword',
-					value: identifier.toLowerCase().replace(/s$/, ''),
+					value: agreementLayerIdentifiers
+						.find(metaKey => identifier?.startsWith(metaKey))
+						.toLowerCase()
+						.replace(/s$/, ''),
 				};
 			});
 
@@ -164,6 +169,46 @@ const getBoundsQuery = async ({
 					value: lastBounds?.geometry,
 				});
 			}
+		}
+
+		// Initialize the base projection
+		variables.project = {
+			[geoField]: 1,
+			_id: 1,
+		};
+
+		// Add layer-specific fields
+		if (isFileLayer) {
+			Object.assign(variables.project, {
+				layer: 1,
+				name: 1,
+				fileId: 1,
+				type: 1,
+			});
+		} else {
+			Object.assign(variables.project, {
+				'shapeJson.id': 1,
+				'shapeJson.type': 1,
+				'shapeJson.properties.shapeSubTitle': 1,
+				'shapeJson.properties.shapeLabel': 1,
+				'shapeJson.properties.layerType': 1,
+				'shapeJson.properties.type': 1,
+				'shapeJson.properties.uName': 1,
+				'shapeJson.properties.agreementName': 1,
+				'shapeJson.properties.shapeCenter': 1,
+				shapeCenter: 1,
+				shapeArea: 1,
+			});
+		}
+		if (layerSettings.selectedAttribute) {
+			Object.assign(variables.project, {
+				[layerSettings.selectedAttribute.value.replace('.keyword', '')]: 1,
+			});
+		}
+		if (layerSettings.selectedStrokeAttribute) {
+			Object.assign(variables.project, {
+				[layerSettings.selectedStrokeAttribute.value.replace('.keyword', '')]: 1,
+			});
 		}
 
 		const queryHandler = {

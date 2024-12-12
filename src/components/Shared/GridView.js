@@ -104,12 +104,12 @@ export const defaultHandleDefaultView = view => {
 	switch (view?.name) {
 		case 'Recently Added':
 			view.filters = [];
-			view.sorting = [{ field: '_ts', desc: true }];
+			view.sorting = [{ field: 'createAt', desc: true }];
 			break;
 
 		case 'Recently Modified':
 			view.filters = [];
-			view.sorting = [{ field: 'flatSyncAt', desc: true }];
+			view.sorting = [{ field: 'lastUpdateAt', desc: true }];
 			break;
 
 		default:

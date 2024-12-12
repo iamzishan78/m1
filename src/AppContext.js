@@ -98,7 +98,6 @@ const AppProvider = props => {
 		checkedFileLayersInteraction: [],
 		editingUserDefinedLayers: [],
 		checkedLayersInteraction: [0, 1, 2],
-		selectedLayerId: null,
 		openWellDetails: false,
 		sourceLoaded: false,
 		map: null, // move to a map context

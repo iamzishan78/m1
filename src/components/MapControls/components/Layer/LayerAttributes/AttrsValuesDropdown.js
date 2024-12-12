@@ -130,8 +130,9 @@ const AttrsValuesDropdown = ({
 	// Making dropdown options with colors
 	const attroptions = useMemo(() => {
 		if (!filtersData?.getESSimpleFilter?.hits || !selectedValue?.label) return [];
-
-		const filterKeys = filtersData.getESSimpleFilter.hits.map(hit => hit?.key).filter(key => key?.toString()?.trim()); // Convert the key to a string using 'toString', and use optional chaining to avoid errors if 'key' is not a valid string.
+		const filterKeys = filtersData.getESSimpleFilter.hits
+			.map(hit => hit?.key)
+			.filter(key => key && key.toString().trim());
 
 		filterKeys.unshift('');
 
@@ -163,12 +164,9 @@ const AttrsValuesDropdown = ({
 				<div className={classes.dropdownContainer}>
 					<div id="color-dropdown" className={classes.dropdown}>
 						<span>{selectedValue ? selectedValue['label'] : ''}</span>
-						<span
-							className={classes.arrowIcon}
-							style={{ transform:'rotate(180deg)' }}
-						></span>
+						<span className={classes.arrowIcon} style={{ transform: 'rotate(180deg)' }}></span>
 					</div>
-					{(attroptions?.length > 0) && (
+					{attroptions?.length > 0 && (
 						<ul className={classes.dropdownList}>
 							{attroptions.map((option, index) => (
 								<li

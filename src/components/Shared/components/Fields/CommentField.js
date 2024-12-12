@@ -225,7 +225,11 @@ export default function DealComment({
 			for (let i = 0; i < users.length; i++) {
 				if (updatedValue.includes(users[i]._id)) {
 					updatedValue = replaceAllWith(updatedValue, users[i]._id, `@${users[i].name}`);
-					value = replaceAllWith(value, `{{${users[i]._id}}}`, ` <span class='blue' style='margin-left:-3px'>@${users[i].name}</span>`);
+					value = replaceAllWith(
+						value,
+						`{{${users[i]._id}}}`,
+						` <span class='blue' style='margin-left:-3px'>@${users[i].name}</span>`
+					);
 				}
 			}
 			setNameAutValue({ name: updatedValue, _id: '' });

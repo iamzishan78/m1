@@ -7,7 +7,7 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import { Tab, Tabs, Chip, CircularProgress } from '@material-ui/core';
+import { Tab, Tabs, Chip, CircularProgress, Backdrop } from '@material-ui/core';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Button from '@material-ui/core/Button';
@@ -77,9 +77,15 @@ const layerIcons = [
 ];
 
 const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle }) => {
+	const { mapStateValues } = mapStateController.useState(['reintializeMap'], 'mapStateValues');
 	return (
 		<>
-			<div>
+			<div style={{ position: 'relative' }}>
+				{mapStateValues.reintializeMap && (
+					<Backdrop style={{ zIndex: 999999, position: 'absolute', width: '100%' }} open={true} invisible={false}>
+						<CircularProgress size={80} disableShrink color="secondary" />{' '}
+					</Backdrop>
+				)}
 				{mapStyles.map(style => (
 					<StyledMenuItem
 						disableRipple
@@ -100,6 +106,7 @@ const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle
 								{style.name === 'Light' && <Box component="img" src={'./icons/MapLightIcon.jpeg'} />}
 								{style.name === 'Dark' && <Box component="img" src={'./icons/MapDarkIcon.jpeg'} />}
 								{style.name === 'Basic' && <Box component="img" src={'./icons/MapBasicIcon.jpeg'} />}
+								{style.name === 'Real Estate' && <Box component="img" src={'./icons/MapDarkIcon.jpeg'} />}
 							</Grid>
 							<Grid item>
 								<ListItemText primary={style.name} style={{ paddingLeft: '25px' }} />
@@ -363,6 +370,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 				zoom: map?.getZoom(),
 				styleId: style.name,
 			},
+			reintializeMap: true,
 			isDefaultViewAllowed: false, // disable map position change on updating layer style
 		});
 
@@ -582,7 +590,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 							<SortableLayer search={search} mongoId={stateApp.user.mongoId} />
 						)}
 						{type === 'base' && (
-							<Box height="calc((100vh - 50px) - 631px)" overflow="hidden scroll">
+							<Box height="calc((100vh - 50px) - 605px)" overflow="hidden scroll">
 								<Collapse in={true} timeout="auto" unmountOnExit>
 									<DisplayList
 										onDragEnd={onDragEnd}

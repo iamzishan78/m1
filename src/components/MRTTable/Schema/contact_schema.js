@@ -1,6 +1,5 @@
 import Avatar from 'react-avatar';
 import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
-import moment from 'moment';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
 import Contact from 'components/Shared/svgIcons/contact';
@@ -78,10 +77,7 @@ const ContactMeta = {
 			if (view?.name === 'My Contacts') {
 				view.filters[0].value = user.name;
 			}
-			if (view?.name === 'Recently Modified' || view.name === 'Recently Added') {
-				view.filters[0].value.range[view.filters[0].field].gte = moment().subtract(30, 'days').toISOString();
-				view.filters[0].value.range[view.filters[0].field].lte = moment().toISOString();
-			}
+
 			return view;
 		},
 		cssOverride: {
