@@ -117,10 +117,10 @@ function NewLayerManager(props) {
 			dataset.categories = dataset?.categories.filter(category => category.value !== 'agreement');
 			dataset.categories = [
 				...dataset.categories,
-				{ value: 'agreement', label: 'Deeds' },
-				{ value: 'agreement', label: 'Leases' },
-				{ value: 'agreement', label: 'Contracts' },
-				{ value: 'agreement', label: 'Surfaces' },
+				{ value: 'Deeds', label: 'Deeds' },
+				{ value: 'Leases', label: 'Leases' },
+				{ value: 'Contracts', label: 'Contracts' },
+				{ value: 'Surfaces', label: 'Surfaces' },
 			];
 		}
 		return dataset?.categories || [];

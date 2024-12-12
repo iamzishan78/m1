@@ -517,7 +517,7 @@ export const getLayerStrokeColor = (dbLayer, strokeColor) => {
 				orKeys.push(path.orKey);
 			}
 			let value =
-				_.get(d, keys) || (path.orKey ? _.get(d, orKeys) : null) || _.get(d, path?.value.split('.').slice(0, -1));
+				_.get(d, keys) || (path.orKey ? _.get(d, orKeys) : null) || _.get(d, path?.value.replace('.keyword', ''));
 			if (!value) {
 				keys = path?.value.split('.').slice(1, -1);
 				keys.unshift('properties');
@@ -552,7 +552,7 @@ export const getLayerFillColor = (dbLayer, fillColor, fillOpacity) => {
 				orKeys.push(path.orKey);
 			}
 			let value =
-				_.get(d, keys) || (path.orKey ? _.get(d, orKeys) : null) || _.get(d, path?.value.split('.').slice(0, -1));
+				_.get(d, keys) || (path.orKey ? _.get(d, orKeys) : null) || _.get(d, path?.value.replace('.keyword', ''));
 			if (!value) {
 				keys = path?.value.split('.').slice(1, -1);
 				keys.unshift('properties');

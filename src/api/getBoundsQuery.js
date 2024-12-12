@@ -105,7 +105,9 @@ const getBoundsQuery = async ({
 
 	const zoom = layerController.getValue('zoom');
 
-	const isAgreementLayer = agreementLayerIdentifiers.includes(identifier);
+	const isAgreementLayer = agreementLayerIdentifiers.some(layer =>
+		identifier?.toLowerCase().includes(layer.toLowerCase())
+	);
 
 	if (!filters && !isLandGridQuery) return;
 
@@ -141,10 +143,12 @@ const getBoundsQuery = async ({
 		if (isAgreementLayer)
 			variables.filters = filters.variables.filters.map(filter => {
 				if (filter.field !== 'shapeJson.properties.type.keyword') return filter;
-
 				return {
 					field: 'layer.keyword',
-					value: identifier.toLowerCase().replace(/s$/, ''),
+					value: agreementLayerIdentifiers
+						.find(metaKey => identifier?.startsWith(metaKey))
+						.toLowerCase()
+						.replace(/s$/, ''),
 				};
 			});
 
