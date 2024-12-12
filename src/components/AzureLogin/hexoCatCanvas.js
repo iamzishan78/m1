@@ -9,7 +9,7 @@ const HexocetCanvas = () => {
 			seeds: [],
 			stepCount: 0,
 			birthPeriod: 1,
-			hexSize: 40,
+			hexSize: 20,
 			targetBounceChance: 0.02,
 			springStiffness: 0.01,
 			viscosity: 0.8,
@@ -18,8 +18,8 @@ const HexocetCanvas = () => {
 			fadeLayerOpacity: 0.04,
 		};
 
-		let backgroundImage = new Image();
-		backgroundImage.src = '/icons/rock.jpg';
+		// let backgroundImage = new Image();
+		// backgroundImage.src = '/icons/rock.jpg';
 
 		const setupCanvas = () => {
 			const canvas = canvasRef.current;
@@ -64,7 +64,7 @@ const HexocetCanvas = () => {
 				targetHx: targetH.Hx,
 				targetHy: targetH.Hy,
 				age: 0,
-				hue: 190 + 15 * Math.sin(Hexocet.stepCount / 50),
+				hue: 170 + Math.random() * (190 - 170), // Generates a random hue between 140 and 190
 			};
 			Hexocet.seeds.push(seed || newSeed);
 		};
@@ -137,7 +137,7 @@ const HexocetCanvas = () => {
 			Hexocet.seeds.forEach(seed => {
 				const hsla = `hsla(${seed.hue}, 90%, 55%, ${Hexocet.particleOpacity})`;
 				ctx.strokeStyle = hsla;
-				ctx.lineWidth = 3;
+				ctx.lineWidth = 2;
 				ctx.beginPath();
 				ctx.moveTo(seed.xLast, seed.yLast);
 				ctx.lineTo(seed.x, seed.y);
@@ -180,6 +180,7 @@ const HexocetCanvas = () => {
 				pointerEvents: 'none',
 				width: window.innerWidth,
 				height: window.innerHeight,
+				background: '#000000',
 			}}
 		></canvas>
 	);
