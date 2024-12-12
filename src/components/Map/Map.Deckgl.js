@@ -67,7 +67,7 @@ import { convertToTitleCase } from 'components/Shared/M1nTable/components/MUIDat
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { drawController } from 'hookstate/drawStateController';
 import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
-import { MapFeatureTenants, BaseMapRealStateFeatureTenants } from 'utils/data';
+import { baseTenantsMaps } from 'utils/data';
 import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
@@ -269,16 +269,7 @@ function Map({
 
 		const { signal } = abortController;
 
-		let styleTypes = ['Satellite', 'Basic', 'Dark', 'Light', 'Outdoors', 'Real Estate'];
-		let isDarkMapAllowed = false;
-
-		// check MapFeatureTenants for dark Map
-		if (MapFeatureTenants.includes(window.sessionStorage?.getItem('tenantName').toLowerCase())) {
-			isDarkMapAllowed = stateApp?.user?.features?.find(f => f.name === 'DarkBaseMap');
-		}
-		if (!isDarkMapAllowed) styleTypes = styleTypes.filter(style => style !== 'Dark');
-		if (!BaseMapRealStateFeatureTenants.includes(window.sessionStorage?.getItem('tenantName').toLowerCase()))
-			styleTypes = styleTypes.filter(style => style !== 'Real Estate');
+		let styleTypes = baseTenantsMaps();
 		let recurseLimit = 5;
 
 		try {
