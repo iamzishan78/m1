@@ -21,7 +21,7 @@ import { UPDATEBULKCONTACT } from 'graphQL/useMutationUpdateBulkContact';
 import { timeZoneOptions } from 'components/ContactDetailCard/components/FieldContent/timeZoneList';
 import { PUBLICTAGSQUERY } from 'graphQL/useQueryPublicTags';
 import { BULKUPSERTTAG } from 'graphQL/useMutationBulkUpsertTagOnContacts';
-import { UPSERT_CONTACT_CAMPAIGNS } from 'graphQL/useMutationCampaign';
+import { UPSERT_ENTITY_CAMPAIGNS } from 'graphQL/useMutationCampaign';
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 import { UPDATE_PARCEL_OWNERS } from 'graphQL/useMutationUpdateParcelOwners';
 import { UPDATE_SHAPES } from 'graphQL/useMutationUpdateShapes';
@@ -295,7 +295,7 @@ export default function AssignOwnerToContactDrawer({
 	const [assignOwnerToContact] = useMutation(ASSIGN_OWNER_TO_CONTACT, options);
 	const [updateBulkContact] = useMutation(UPDATEBULKCONTACT, options);
 	const [updateBulkTags] = useMutation(BULKUPSERTTAG, options);
-	const [upsertContactCampaigns] = useMutation(UPSERT_CONTACT_CAMPAIGNS, {
+	const [upsertEntityCampaigns] = useMutation(UPSERT_ENTITY_CAMPAIGNS, {
 		onCompleted: () => {
 			tableGlobalController.refetch();
 		},
@@ -555,36 +555,47 @@ export default function AssignOwnerToContactDrawer({
 				switch (rest.header) {
 					case 'ContactTable':
 					case 'CampaignContactTable':
-						const variables = {
-							campaigns,
-							contactIds: rows.map(row => row._id),
-						};
+					case 'UnitTable':
+						{
+							let entityType = 'Contact';
+							let refetchQueries = ['getESContacts'];
 
-						upsertContactCampaigns({
-							variables,
-							refetchQueries: ['getESContacts'],
-						}).then(
-							res => {
-								if (res.data && res.data.upsertContactCampaigns) {
-									resetESTableToggle.set(!resetESTableToggle.get());
-									const success = res.data.upsertContactCampaigns.success;
-									if (success) {
-										Loader.successToast('contact-creation', 'Updated');
-										showSuccessMessage(`${field} Bulk Updated Successfully`);
-										if (rest.onBulkUpdateComplete) rest.onBulkUpdateComplete();
-									} else {
-										Loader.errorToast('contact-creation', 'Updated');
-									}
-								} else {
-									Loader.errorToast('contact-creation', 'Failed');
-								}
-							},
-							err => {
-								console.log(err);
-								Loader.errorToast('contact-creation', errorMsg);
+							if (rest.header === 'UnitTable') {
+								entityType = 'Shape';
+								refetchQueries = ['getESPaginatedList', 'getESFilterList', 'getCustomLayer'];
 							}
-						);
 
+							const variables = {
+								campaigns,
+								entityIds: rows.map(row => row._id),
+								entityType,
+							};
+
+							upsertEntityCampaigns({
+								variables,
+								refetchQueries,
+							}).then(
+								res => {
+									if (res.data && res.data.upsertEntityCampaigns) {
+										resetESTableToggle.set(!resetESTableToggle.get());
+										const success = res.data.upsertEntityCampaigns.success;
+										if (success) {
+											Loader.successToast('contact-creation', 'Updated');
+											showSuccessMessage(`${field} Bulk Updated Successfully`);
+											if (rest.onBulkUpdateComplete) rest.onBulkUpdateComplete();
+										} else {
+											Loader.errorToast('contact-creation', 'Updated');
+										}
+									} else {
+										Loader.errorToast('contact-creation', 'Failed');
+									}
+								},
+								err => {
+									console.log(err);
+									Loader.errorToast('contact-creation', errorMsg);
+								}
+							);
+						}
 						break;
 
 					case 'TractPerUnitTable':
@@ -625,22 +636,6 @@ export default function AssignOwnerToContactDrawer({
 							}
 						);
 
-						break;
-
-					case 'UnitTable':
-						// Map through each row to create an array of shapes to update
-						const shapesToUpdate = rows.map(row => {
-							// Update the campaign with the new campaign names
-							const customlayer = updateCampaign(copy(row.shapeJson), 'campaigns', campaigns);
-							// Return an object with the updated custom layer information
-							return {
-								customLayer: customlayer,
-								customLayerId: row._id,
-								userId: getUser?._id,
-							};
-						});
-
-						bulkShapeUpdate(shapesToUpdate, errorMsg);
 						break;
 
 					default:
