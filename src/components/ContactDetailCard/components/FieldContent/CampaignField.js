@@ -50,6 +50,7 @@ const useStyles = makeStyles(theme => ({
 			whiteSpace: 'normal', // Allow text to wrap
 			height: 'auto', // Auto height to accommodate multiple lines
 			maxWidth: '100%', // Ensure the chip doesn't exceed its container width
+			borderRadius: '4px',
 		},
 		'& .MuiChip-label': {
 			whiteSpace: 'normal', // Enable text wrapping within the label

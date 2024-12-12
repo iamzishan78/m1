@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import _ from 'lodash';
 import {
 	Grid,
 	Typography,
@@ -27,6 +26,7 @@ import RecodingInformation from './RecordingInfo';
 import AgreementIcon from 'components/Shared/svgIcons/agreements';
 
 export default function Summary({
+	flexDirection,
 	agreementDetails,
 	activeAgreement,
 	agreementProvisions,
@@ -100,7 +100,12 @@ export default function Summary({
 							container
 							direction="row"
 							justify="flex-start"
-							style={{ padding: '10px 0px', display: 'flex', gap: '40px' }}
+							style={{
+								padding: '10px 0px',
+								display: 'flex',
+								flexDirection: flexDirection,
+								gap: '40px',
+							}}
 						>
 							<Grid item className={classes.infoSection}>
 								<FieldsSection

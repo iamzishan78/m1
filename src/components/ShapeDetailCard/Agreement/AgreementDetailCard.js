@@ -92,6 +92,7 @@ export default function AgreementDetailCard(props) {
 			let feature = shape;
 			feature.id = dataCustomLayer.customLayer?._id;
 			feature.properties.id = dataCustomLayer.customLayer?._id;
+			feature.identifier = 'Agreements';
 			popupController.updateState({
 				selectedShape: { ...shape.properties, feature, id: dataCustomLayer.customLayer._id },
 			});

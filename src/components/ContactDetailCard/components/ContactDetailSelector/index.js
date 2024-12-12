@@ -69,7 +69,7 @@ const useStyles = makeStyles(theme => ({
 		'& .MuiBox-root': { padding: '0' },
 	},
 	tapsPanelsPadding: {
-		'& .MuiBox-root': { padding: '0', height: '100%' },
+		'& .MuiBox-root': { padding: '0' },
 	},
 	mainPanelsDiv: {
 		height: '100%',

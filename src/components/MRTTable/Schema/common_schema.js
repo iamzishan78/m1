@@ -1,5 +1,6 @@
 import { Box } from '@mui/material';
 import { addTrailingZeros, formatDate } from 'components/Shared/functions';
+import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import { tableController } from 'hookstate/tableController';
 import { get } from 'lodash';
 
@@ -203,4 +204,34 @@ export const CommonSchema = {
 			return <div>{value ? addTrailingZeros(parseFloat(value).toFixed(8)) : 0}</div>;
 		},
 	}),
+	INTEREST_COLUMN: {
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: true,
+		isSearchField: false,
+		enableSorting: true,
+		type: 'number',
+		Cell: ({ renderedCellValue }) => {
+			const value = renderedCellValue?.props?.['aria-label'] ?? renderedCellValue;
+			if (value || value === 0) {
+				return <>{!value ? value : addTrailingZeros(parseFloat(value).toFixed(8))}</>;
+			}
+		},
+	},
+	CURRENCY_COLUMN: {
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: true,
+		isSearchField: false,
+		enableSorting: true,
+		type: 'number',
+		Cell: ({ renderedCellValue }) => {
+			const value = renderedCellValue?.props?.['aria-label'] ?? renderedCellValue;
+			if (value || value === 0) {
+				return <>{!value ? `$${value}` : vf_currency_to_fixed(value, 2)}</>;
+			}
+		},
+	},
 };

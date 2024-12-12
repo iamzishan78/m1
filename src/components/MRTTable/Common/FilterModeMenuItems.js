@@ -10,8 +10,10 @@ function FilterModeMenuItems({ option, tableKey, name, onSelectFilterMode }) {
 		<MenuItem
 			divider={mode.divider}
 			onClick={() => {
-				// When filter is mode equals to between and filter mode is not between, set filter mode to equals and then set filter mode to between
-				if (previousFilter.includes('between') && ['singleselect', 'multiselect'].includes(mode.option)) {
+				const isBetween = previousFilter.includes('between');
+				const isSingleMulti = ['singleselect', 'multiselect'].includes(mode.option);
+
+				if (isBetween && isSingleMulti) {
 					tableController(tableKey).setFilterMode(name, 'equals');
 					setTimeout(() => {
 						tableController(tableKey).setFilterMode(name, mode.option);
@@ -21,6 +23,8 @@ function FilterModeMenuItems({ option, tableKey, name, onSelectFilterMode }) {
 					tableController(tableKey).setFilterMode(name, mode.option);
 					onSelectFilterMode(mode.option);
 				}
+
+				if (isSingleMulti) tableController(tableKey).clearFilter(name);
 
 				previousFilter = mode.option;
 			}}

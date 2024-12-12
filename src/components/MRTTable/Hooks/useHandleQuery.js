@@ -60,14 +60,6 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		const filters = [...(tableMeta?.defaultFilters || []), ...(tableMeta?.filters || [])];
 
-		if (tableStateValues.geoKey && drawStateValues.selectedPolygonString && drawStateValues.currentFeature) {
-			filters.push({
-				type: 'geo_intersects',
-				field: tableStateValues.geoKey,
-				value: drawStateValues.currentFeature.geometry,
-			});
-		}
-
 		let globalFilter = tableStateValues.globalFilter;
 
 		if (tableStateValues.isGeneric && !tableStateValues.globalSearch) globalFilter = null;
@@ -182,6 +174,21 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			});
 		}
 	}
+
+	useEffect(() => {
+		if (!tableStateValues.geoKey) return;
+
+		if (!drawStateValues.selectedPolygonString) return Controller.clearFilter(tableStateValues.geoKey);
+
+		if (drawStateValues.selectedPolygonString && drawStateValues.currentFeature) {
+			Controller.setFilter({
+				type: 'geo_intersects',
+				field: tableStateValues.geoKey,
+				value: drawStateValues.currentFeature.geometry,
+			});
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [drawStateValues.selectedPolygonString]);
 
 	useEffect(() => {
 		fetchFooterAggregationData();

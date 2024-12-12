@@ -201,7 +201,8 @@ function Map({
 	};
 
 	// queries
-	const [getAllLayerSettingsByUser, { data: layerStates }] = useLazyQuery(ALLLAYERSETTINGSBYUSER);
+	const [getAllLayerSettingsByUser, { data: layerStates, loading: layerSettingsLoading }] =
+		useLazyQuery(ALLLAYERSETTINGSBYUSER);
 
 	// Query to fetch map views from the GraphQL API
 	useQuery(GET_MAP_VIEWS, {
@@ -483,6 +484,10 @@ function Map({
 			});
 		}
 	}, [stateApp.user]);
+
+	useEffect(() => {
+		globalStateController.updateState({ layerSettingsLoading });
+	}, [layerSettingsLoading]);
 
 	useEffect(() => {
 		if (layerStates && layerStates.allLayerSettingsByUser) {

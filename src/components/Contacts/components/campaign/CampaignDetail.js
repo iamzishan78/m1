@@ -131,6 +131,7 @@ const CampaignDetail = ({ viewDoc }) => {
 	useEffect(() => {
 		if (campaignContactTableStateValues.isCampaignRefetch || CampaignUnitTableValues.isCampaignRefetch)
 			refetchCampaign();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [globalStateValues?.refetch]);
 
 	useEffect(() => {
@@ -349,12 +350,7 @@ const CampaignDetail = ({ viewDoc }) => {
 								<div id="header-div" className={classes.tabDetailSection} ref={tab === 0 ? selectedTabRef : null}>
 									<CampaignHeader campaign={campaign.current} updateCampaignInformation={updateCampaignInformation} />
 								</div>
-								<div
-									id="detail-div"
-									className={classes.tabDetailSection}
-									style={{ height: 'calc(100vh - 585px)' }}
-									ref={tab === 1 ? selectedTabRef : null}
-								>
+								<div id="detail-div" className={classes.tabDetailSection} ref={tab === 1 ? selectedTabRef : null}>
 									<CampaignRelatedGrids campaign={campaign.current} />
 								</div>
 							</div>
