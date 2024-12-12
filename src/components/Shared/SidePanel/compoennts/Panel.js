@@ -590,7 +590,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 							<SortableLayer search={search} mongoId={stateApp.user.mongoId} />
 						)}
 						{type === 'base' && (
-							<Box height="calc((100vh - 50px) - 631px)" overflow="hidden scroll">
+							<Box height="calc((100vh - 50px) - 605px)" overflow="hidden scroll">
 								<Collapse in={true} timeout="auto" unmountOnExit>
 									<DisplayList
 										onDragEnd={onDragEnd}
