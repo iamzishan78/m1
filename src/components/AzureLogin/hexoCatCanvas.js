@@ -10,7 +10,7 @@ const HexocetCanvas = () => {
 			stepCount: 0,
 			birthPeriod: 1,
 			hexSize: 40,
-			targetBounceChance: 0.02,
+			targetBounceChance: 0.005,
 			springStiffness: 0.01,
 			viscosity: 0.8,
 			particleOpacity: 0.7,
