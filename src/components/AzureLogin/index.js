@@ -695,10 +695,6 @@ const Login = props => {
 			<div
 				style={{
 					position: 'absolute',
-					backgroundImage: `url(/icons/rock.jpg)`,
-					backgroundPosition: 'center',
-					backgroundRepeat: 'no-repeat',
-					backgroundSize: 'cover',
 					top: 0,
 					left: 0,
 					right: 0,

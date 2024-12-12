@@ -15,7 +15,7 @@ const HexocetCanvas = () => {
 			viscosity: 0.8,
 			particleOpacity: 0.7,
 			fade: true,
-			fadeLayerOpacity: 0.1,
+			fadeLayerOpacity: 0.04,
 		};
 
 		let backgroundImage = new Image();
