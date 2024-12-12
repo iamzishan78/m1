@@ -7,7 +7,7 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import { Tab, Tabs, Chip, CircularProgress } from '@material-ui/core';
+import { Tab, Tabs, Chip, CircularProgress, Backdrop } from '@material-ui/core';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Button from '@material-ui/core/Button';
@@ -77,9 +77,15 @@ const layerIcons = [
 ];
 
 const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle }) => {
+	const { mapStateValues } = mapStateController.useState(['reintializeMap'], 'mapStateValues');
 	return (
 		<>
-			<div>
+			<div style={{ position: 'relative' }}>
+				{mapStateValues.reintializeMap && (
+					<Backdrop style={{ zIndex: 999999, position: 'absolute', width: '100%' }} open={true} invisible={false}>
+						<CircularProgress size={80} disableShrink color="secondary" />{' '}
+					</Backdrop>
+				)}
 				{mapStyles.map(style => (
 					<StyledMenuItem
 						disableRipple
@@ -364,6 +370,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 				zoom: map?.getZoom(),
 				styleId: style.name,
 			},
+			reintializeMap: true,
 			isDefaultViewAllowed: false, // disable map position change on updating layer style
 		});
 
