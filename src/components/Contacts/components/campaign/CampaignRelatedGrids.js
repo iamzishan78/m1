@@ -143,7 +143,7 @@ function CamapignRelatedGrids({ campaign }) {
 								...shapeJson,
 								properties: {
 									...shapeJson.properties,
-									campaigns: shapeJson?.properties?.campaigns?.filter?.(c => c => c._id !== campaign?._id) || [],
+									campaigns: shapeJson?.properties?.campaigns?.filter?.(c => c._id !== campaign?._id) || [],
 								},
 							},
 						};
@@ -223,13 +223,14 @@ function CamapignRelatedGrids({ campaign }) {
 								...shapeJson,
 								properties: {
 									...shapeJson.properties,
-									campaigns: shapeJson?.properties?.campaigns?.filter?.(c => c => c._id !== campaign?._id) || [],
+									campaigns: shapeJson?.properties?.campaigns?.filter?.(c => c._id !== campaign?._id) || [],
 								},
 							},
 						};
 					},
 				},
 			},
+			customValue: { parentRecord: campaign?._id, campaign: campaign },
 			isCampaignRefetch: true,
 			maxTableHeight: '35vh',
 			gridViewSettings: {
@@ -273,6 +274,7 @@ function CamapignRelatedGrids({ campaign }) {
 					func: campaigns => campaigns.filter(c => c._id !== campaign?._id),
 				},
 			},
+			customValue: { campaign: campaign },
 			isCampaignRefetch: true,
 			maxTableHeight: '35vh',
 			gridViewSettings: {
