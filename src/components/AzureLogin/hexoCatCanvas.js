@@ -64,7 +64,7 @@ const HexocetCanvas = () => {
 				targetHx: targetH.Hx,
 				targetHy: targetH.Hy,
 				age: 0,
-				hue: 170 + Math.random() * (190 - 170), // Generates a random hue between 140 and 190
+				hue: 170 + Math.random() * (200 - 170), // Generates a random hue between 140 and 190
 			};
 			Hexocet.seeds.push(seed || newSeed);
 		};
@@ -156,7 +156,7 @@ const HexocetCanvas = () => {
 		};
 
 		setupCanvas();
-		generateInitialSeeds(4000);
+		generateInitialSeeds(8000);
 		window.requestAnimationFrame(update);
 
 		const handleMouseMove = event => {
