@@ -20,14 +20,6 @@ export default function Contacts() {
 	const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
 
 	useEffect(() => {
-		console.log('🚀 ~ Object.keys ~ allowedPaths:', allowedPaths);
-		Object.keys(allowedPaths).forEach(option => {
-			const RouteComponent = Components[allowedPaths[option].component];
-			console.log('🚀 ~ Object.keys ~ RouteComponent:', option, RouteComponent);
-		});
-	}, [allowedPaths]);
-
-	useEffect(() => {
 		let option = {};
 		Object.values(contactManagementRoutes).forEach(item => {
 			if (location.pathname.startsWith(item.linkPrefix)) {
