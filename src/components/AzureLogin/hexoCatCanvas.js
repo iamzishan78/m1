@@ -15,7 +15,7 @@ const HexocetCanvas = () => {
 			viscosity: 0.8,
 			particleOpacity: 0.7,
 			fade: true,
-			fadeLayerOpacity: 0.04,
+			fadeLayerOpacity: 0.1,
 		};
 
 		let backgroundImage = new Image();
@@ -120,13 +120,39 @@ const HexocetCanvas = () => {
 			ctx.closePath();
 		};
 
+		const drawBackgroundImage = () => {
+			const ctx = Hexocet.ctx;
+
+			if (!backgroundImage.complete) return;
+
+			const canvasWidth = Hexocet.canvas.width;
+			const canvasHeight = Hexocet.canvas.height;
+
+			const imageAspectRatio = backgroundImage.width / backgroundImage.height;
+			const canvasAspectRatio = canvasWidth / canvasHeight;
+
+			let drawWidth, drawHeight;
+			if (imageAspectRatio > canvasAspectRatio) {
+				drawWidth = canvasHeight * imageAspectRatio;
+				drawHeight = canvasHeight;
+			} else {
+				drawWidth = canvasWidth;
+				drawHeight = canvasWidth / imageAspectRatio;
+			}
+
+			const drawX = (canvasWidth - drawWidth) / 2;
+			const drawY = (canvasHeight - drawHeight) / 2;
+
+			ctx.drawImage(backgroundImage, drawX, drawY, drawWidth, drawHeight);
+		};
+
 		const draw = () => {
 			const ctx = Hexocet.ctx;
-			if (Hexocet.fade) {
-				ctx.rect(0, 0, Hexocet.canvas.width, Hexocet.canvas.height);
-				ctx.fillStyle = `rgba(0, 0, 0, ${Hexocet.fadeLayerOpacity})`;
-				ctx.fill();
-			}
+			ctx.rect(0, 0, Hexocet.canvas.width, Hexocet.canvas.height);
+			ctx.globalAlpha = Hexocet.fadeLayerOpacity;
+
+			drawBackgroundImage();
+			ctx.globalAlpha = 1;
 
 			// Draw hexagons around seeds
 			Hexocet.seeds.forEach(seed => {
