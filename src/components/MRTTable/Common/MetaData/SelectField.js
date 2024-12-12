@@ -284,6 +284,7 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
 			position: 'fixed',
 			maxHeight: '200px',
 			overflowY: 'auto',
+			border: '1px solid hsl(0, 0%, 80%)',
 		}),
 	};
 

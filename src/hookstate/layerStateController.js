@@ -222,6 +222,9 @@ const LayerMeta = {
 					lineWidthMaxPixels: 8,
 					highlightColor: [136, 136, 136, 77],
 					autoHighlight: true,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
 				};
 			},
 		},
@@ -241,6 +244,9 @@ const LayerMeta = {
 					lineWidthMaxPixels: 8,
 					highlightColor: [136, 136, 136, 77],
 					autoHighlight: true,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
 				};
 			},
 		},

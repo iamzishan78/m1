@@ -209,7 +209,7 @@ body {
 
 .colorText {
 	padding: 5px 10px !important;
-	border-radius: 26px !important;
+	border-radius: 4px !important;
 	align-items: center !important;
 	text-align: center !important;
 }
@@ -253,4 +253,8 @@ body {
 
 .summary-div-small-map .mapboxgl-map {
 	height: auto !important;
+}
+
+.MuiChip-root.MuiChip-filled.MuiChip-deletable {
+	border-radius: 4px !important;
 }

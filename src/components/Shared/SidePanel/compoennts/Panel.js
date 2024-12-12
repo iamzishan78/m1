@@ -7,7 +7,7 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import { Tab, Tabs, Chip } from '@material-ui/core';
+import { Tab, Tabs, Chip, CircularProgress, Backdrop } from '@material-ui/core';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Button from '@material-ui/core/Button';
@@ -77,9 +77,15 @@ const layerIcons = [
 ];
 
 const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle }) => {
+	const { mapStateValues } = mapStateController.useState(['reintializeMap'], 'mapStateValues');
 	return (
 		<>
-			<div>
+			<div style={{ position: 'relative' }}>
+				{mapStateValues.reintializeMap && (
+					<Backdrop style={{ zIndex: 999999, position: 'absolute', width: '100%' }} open={true} invisible={false}>
+						<CircularProgress size={80} disableShrink color="secondary" />{' '}
+					</Backdrop>
+				)}
 				{mapStyles.map(style => (
 					<StyledMenuItem
 						disableRipple
@@ -100,6 +106,7 @@ const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle
 								{style.name === 'Light' && <Box component="img" src={'./icons/MapLightIcon.jpeg'} />}
 								{style.name === 'Dark' && <Box component="img" src={'./icons/MapDarkIcon.jpeg'} />}
 								{style.name === 'Basic' && <Box component="img" src={'./icons/MapBasicIcon.jpeg'} />}
+								{style.name === 'Real Estate' && <Box component="img" src={'./icons/MapDarkIcon.jpeg'} />}
 							</Grid>
 							<Grid item>
 								<ListItemText primary={style.name} style={{ paddingLeft: '25px' }} />
@@ -195,8 +202,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 	);
 	const { mapStateValues } = mapStateController.useState(['mapVars', 'defaultMapVars'], 'mapStateValues');
 	const { navStateValues } = navController.useState(['geographyFilterCount', 'wellFilterCount'], 'navStateValues');
-	const mapViewState = globalStateController.useState(['filters', 'mapView', 'allMapViews']);
-	const mapViewStateValues = mapViewState.stateValues;
+	const { globalStateValues } = globalStateController.useState(
+		['filters', 'mapView', 'allMapViews', 'layerSettingsLoading'],
+		'globalStateValues'
+	);
 	const client = useApolloClient();
 	// Query to fetch map views from the GraphQL API
 	const [mapViews, { data }] = useLazyQuery(GET_MAP_VIEWS);
@@ -247,7 +256,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 	const totalFilterCount =
 		navStateValues.geographyFilterCount +
 		navStateValues.wellFilterCount +
-		(mapViewStateValues?.mapView?.selectedMapView?.filters?.length || 0);
+		(globalStateValues?.mapView?.selectedMapView?.filters?.length || 0);
 
 	useEffect(() => {
 		setTotalHitMapCount(stateApp.checkedHeats.length);
@@ -361,6 +370,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 				zoom: map?.getZoom(),
 				styleId: style.name,
 			},
+			reintializeMap: true,
 			isDefaultViewAllowed: false, // disable map position change on updating layer style
 		});
 
@@ -525,9 +535,9 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 								fetchMapViews={fetchMapViews}
 							/>
 
-							{mapViewStateValues?.mapView?.showViewModal && (
+							{globalStateValues?.mapView?.showViewModal && (
 								<MapViewOptions
-									allMapViews={mapViewStateValues?.allMapViews || []}
+									allMapViews={globalStateValues?.allMapViews || []}
 									defaultView={{
 										name: 'Standard Map View',
 										type: 'Default',
@@ -541,7 +551,11 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 					<div className={classes.panelContent}>
 						<StyledMenuSecondaryHeaderItem>
 							<div>
-								<ListItemText primary={title} />
+								<div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+									<ListItemText primary={title} />
+									{globalStateValues.layerSettingsLoading && <CircularProgress size={20} color="secondary" />}
+								</div>
+
 								{type === 'layer' && (
 									<AddGroup userId={stateApp.user.mongoId} above={layerMap[layerMap.length - 1]?.id} />
 								)}
@@ -576,7 +590,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 							<SortableLayer search={search} mongoId={stateApp.user.mongoId} />
 						)}
 						{type === 'base' && (
-							<Box height="calc((100vh - 50px) - 631px)" overflow="hidden scroll">
+							<Box height="calc((100vh - 50px) - 605px)" overflow="hidden scroll">
 								<Collapse in={true} timeout="auto" unmountOnExit>
 									<DisplayList
 										onDragEnd={onDragEnd}

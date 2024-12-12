@@ -123,7 +123,13 @@ export default function MapPositions(props) {
 	return (
 		<div className={classes.mapPositionSection}>
 			<hr style={{ border: '1px solid #263451', borderRadius: '5px', marginTop: '20px', marginBottom: '20px' }} />
-			<Typography variant="subtitle1">Default Map Position</Typography>
+			<Grid container justifyContent="space-between" alignItems="center">
+				<Typography variant="subtitle1">Default Map Position</Typography>
+				<Button color="secondary" variant="outlined" onClick={handleSubmit(submitFunc)}>
+					Save Default
+				</Button>
+			</Grid>
+
 			<Grid
 				container
 				direction="row"
@@ -152,11 +158,6 @@ export default function MapPositions(props) {
 						error={centerError}
 						helperText={centerError ? 'Invalid Value' : ''} // helper text for errors
 					/>
-				</Grid>
-				<Grid item>
-					<Button color="secondary" variant="outlined" onClick={handleSubmit(submitFunc)}>
-						Save Default
-					</Button>
 				</Grid>
 			</Grid>
 		</div>

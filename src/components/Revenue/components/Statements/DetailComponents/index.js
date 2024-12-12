@@ -61,7 +61,7 @@ const useStyles = makeStyles(theme => ({
 	highlighter: {
 		background: '#263451',
 		padding: '5px 16px',
-		borderRadius: 16,
+		borderRadius: 5,
 		width: '160px',
 		transform: 'translateX(5px) translateY(11px)',
 		height: '32px',
@@ -75,7 +75,7 @@ const useStyles = makeStyles(theme => ({
 		height: 80,
 		width: 80,
 		backgroundColor: '#d5f4ff',
-		borderRadius: 12,
+		borderRadius: 4,
 		'& svg': {
 			fontSize: '3.1875rem',
 			fill: '#263451',

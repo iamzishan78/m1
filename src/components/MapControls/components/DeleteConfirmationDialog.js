@@ -72,10 +72,11 @@ export default function DeleteConfirmationDialog(props) {
 			updateManyLayer({
 				variables: {
 					layers: props.layer.layers.map(layer => ({ _id: layer.layerId, IsDeleted: true })),
+					layerGroupId: props.layer.id,
 				},
-				refetchQueries: ['getAllLayerSettingsByUser'],
+				refetchQueries: ['getAllLayerSettingsByUser', 'getLayerGroups'],
 			});
-		} else
+		} else {
 			updateLayer({
 				variables: {
 					layer: {
@@ -86,6 +87,7 @@ export default function DeleteConfirmationDialog(props) {
 				refetchQueries: ['getAllLayerSettingsByUser'],
 				// awaitRefetchQueries: true,
 			});
+		}
 	};
 
 	return (
