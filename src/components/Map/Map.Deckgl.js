@@ -67,7 +67,7 @@ import { convertToTitleCase } from 'components/Shared/M1nTable/components/MUIDat
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { drawController } from 'hookstate/drawStateController';
 import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
-import { MapFeatureTenants } from 'utils/data';
+import { baseTenantsMaps } from 'utils/data';
 import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
@@ -140,7 +140,7 @@ function Map({
 		'popupStateValues'
 	);
 	const { mapStateValues } = mapStateController.useState(
-		['mapVars', 'defaultMapVars', 'toggle3d', 'toggleZoomOut', 'isDefaultViewAllowed'],
+		['mapVars', 'defaultMapVars', 'toggle3d', 'toggleZoomOut', 'isDefaultViewAllowed', 'reintializeMap'],
 		'mapStateValues'
 	);
 	const { wellListFromSearch, layerStateValues } = layerController.useState(['wellListFromSearch'], 'layerStateValues');
@@ -269,14 +269,7 @@ function Map({
 
 		const { signal } = abortController;
 
-		let styleTypes = ['Satellite', 'Basic', 'Dark', 'Light', 'Outdoors'];
-		let isDarkMapAllowed = false;
-
-		// check MapFeatureTenants for dark Map
-		if (MapFeatureTenants.includes(window.sessionStorage?.getItem('tenantName').toLowerCase())) {
-			isDarkMapAllowed = stateApp?.user?.features?.find(f => f.name === 'DarkBaseMap');
-		}
-		if (!isDarkMapAllowed) styleTypes = styleTypes.filter(style => style !== 'Dark');
+		let styleTypes = baseTenantsMaps();
 		let recurseLimit = 5;
 
 		try {
@@ -296,7 +289,6 @@ function Map({
 				}
 				return styles;
 			}, []);
-
 			return styles;
 		} catch (error) {
 			// Handle any errors here
@@ -583,7 +575,7 @@ function Map({
 		const mapLayers = copy(stateApp.layers);
 		if (stateApp.baseMapLayers && stateApp.baseMapLayers.length > 0 && map) {
 			const landLayer = mapLayers?.find(layer => layer.identifier === 'Land Grid');
-			stateApp.baseMapLayers.forEach((l, index) => {
+			stateApp.baseMapLayers?.forEach((l, index) => {
 				if (l.name === 'Land Grid' && !stateApp.checkedBaseLayers.includes(index)) {
 					if (landLayer) {
 						landLayer.layerSettings.visiable = false;
@@ -670,30 +662,6 @@ function Map({
 		}
 	}, [map, stateApp.checkedHeats, stateApp.heatLayers]);
 
-	useEffect(() => {
-		// sets style of map when changed in Map Controls
-		if (stateApp.selectedLayerId && map) {
-			if (stateApp.selectedLayerId) {
-				map.setStyle(stateApp.selectedLayerId);
-			}
-		}
-	}, [map, stateApp.selectedLayerId]);
-
-	useEffect(() => {
-		if (map) {
-			mapStateController.updateState({
-				mapVars: {
-					...mapStateValues.mapVars,
-					zoom: map.getZoom(),
-					center: map.getCenter(),
-					pitch: map.getPitch(),
-					bearing: map.getBearing(),
-				},
-			});
-			setMap(null);
-		}
-	}, [mapStateValues.mapVars.styleId]);
-
 	function getIndex(value, arr, prop) {
 		for (let i = 0; i < arr.length; i++) {
 			if (arr[i][prop] === value) {
@@ -702,17 +670,6 @@ function Map({
 		}
 		return -1; // to handle the case where the value doesn't exist
 	}
-
-	useEffect(() => {
-		if (!map || !mapStyles) return;
-
-		let index = getIndex(mapStateValues.mapVars.styleId, mapStyles, 'name');
-		if (index === -1) {
-			index = 0;
-		}
-
-		map.setStyle(`mapbox://styles/m1neral/${mapStyles[index]?.id}`);
-	}, [mapStateValues.mapVars.styleId, mapStyles]);
 
 	useEffect(() => {
 		if (map && mapStateValues.isDefaultViewAllowed) {
@@ -939,7 +896,6 @@ function Map({
 			}, 500);
 
 			newMap.on('load', () => {
-				window.mapRef?.remove(); // Remove the existing map instance to avoid rendering multiple maps
 				window.mapRef = null; // Remove the existing map instance to avoid rendering multiple maps
 				window.drawRef = null; //  Remove the existing map instance to avoid rendering multiple maps
 				window.mapRef = newMap;
@@ -973,7 +929,7 @@ function Map({
 							data: [],
 						},
 					});
-				}, 0);
+				}, 250);
 
 				// FOR aoi_labels
 				newMap.addSource('aoi_label_source', {
@@ -987,13 +943,14 @@ function Map({
 				setDraw(Draw);
 				setMap(newMap);
 				setLoading(false);
+				mapStateController.updateState({ reintializeMap: false });
 			});
 		};
 
-		if (!map) {
+		if (!map || mapStateValues.reintializeMap) {
 			initializeMap({ setMap, mapEl, setStateApp, setDraw });
 		}
-	}, [map, mapStyles]);
+	}, [map, mapStyles, mapStateValues.mapVars.styleId]);
 
 	// Use effect for removing shape filter
 	useEffect(() => {

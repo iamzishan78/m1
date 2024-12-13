@@ -4,6 +4,7 @@ import react from 'eslint-plugin-react';
 import importPlugin from 'eslint-plugin-import';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import customEslintRules from './customEslintRules';
 
 // Determine the current file and directory paths
 const __filename = fileURLToPath(import.meta.url);
@@ -31,6 +32,7 @@ export default [
 			'**/docs/',
 			'**/public/',
 			'**/svgIcons/',
+			'**/customEslintRules/*', // Ignore custom rule files
 		],
 	},
 
@@ -41,6 +43,7 @@ export default [
 		plugins: {
 			react,
 			import: importPlugin,
+			'custom-rules': customEslintRules, // Use your custom plugin
 		},
 
 		// Define language options
@@ -56,6 +59,7 @@ export default [
 
 		// Custom rules for the project
 		rules: {
+			'custom-rules.no-idi-core': 'error', // Enable the custom rule
 			'no-underscore-dangle': 'off', // Allow underscores in variable names
 			// 'no-plusplus': 'off', // Allow ++ and -- operators
 			'global-require': 'off', // Allow require() statements anywhere

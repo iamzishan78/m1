@@ -1,32 +1,27 @@
 const presetReact = require('@babel/preset-react').default;
+const path = require('path');
 const presetCRA = require('babel-preset-react-app');
 const CracoEsbuildPlugin = require('craco-esbuild');
 const { ProvidePlugin } = require('webpack');
 
 module.exports = {
 	babel: {
-		loaderOptions: (babelLoaderOptions, { env, paths }) => {
-			const origBabelPresetReactAppIndex = babelLoaderOptions.presets.findIndex(preset => {
-				return preset[0].includes('babel-preset-react-app');
-			});
+		loaderOptions: babelLoaderOptions => {
+			const origBabelPresetReactAppIndex = babelLoaderOptions.presets.findIndex(preset =>
+				preset[0].includes('babel-preset-react-app')
+			);
 
-			if (origBabelPresetReactAppIndex === -1) {
-				return babelLoaderOptions;
+			if (origBabelPresetReactAppIndex !== -1) {
+				const overridenBabelPresetReactApp = (...args) => {
+					const babelPresetReactAppResult = presetCRA(...args);
+					const origPresetReact = babelPresetReactAppResult.presets.find(preset => preset[0] === presetReact);
+					Object.assign(origPresetReact[1], {
+						importSource: '@welldone-software/why-did-you-render',
+					});
+					return babelPresetReactAppResult;
+				};
+				babelLoaderOptions.presets[origBabelPresetReactAppIndex] = overridenBabelPresetReactApp;
 			}
-
-			const overridenBabelPresetReactApp = (...args) => {
-				const babelPresetReactAppResult = presetCRA(...args);
-				const origPresetReact = babelPresetReactAppResult.presets.find(preset => {
-					return preset[0] === presetReact;
-				});
-				Object.assign(origPresetReact[1], {
-					importSource: '@welldone-software/why-did-you-render',
-				});
-				return babelPresetReactAppResult;
-			};
-
-			babelLoaderOptions.presets[origBabelPresetReactAppIndex] = overridenBabelPresetReactApp;
-
 			return babelLoaderOptions;
 		},
 	},
@@ -34,14 +29,32 @@ module.exports = {
 		enable: false,
 	},
 	webpack: {
-		configure: (webpackConfig, { env, paths, ...rest }) => {
+		configure: webpackConfig => {
 			webpackConfig.entry = process.env.CYPRESS === 'true' ? './src/cypress.js' : './src/index.js';
+			webpackConfig.resolve = {
+				...webpackConfig.resolve,
+				alias: {
+					...webpackConfig.resolve.alias,
+					'mapbox-gl': path.resolve('node_modules/mapbox-gl/dist/mapbox-gl.js'),
+				},
+				extensions: ['.js', '.jsx', '.ts', '.tsx'],
+				mainFields: ['browser', 'module', 'main'],
+			};
+
+			// Ensure Babel processes mapbox-gl
+			const babelLoader = webpackConfig.module.rules
+				.find(rule => rule.oneOf && Array.isArray(rule.oneOf))
+				.oneOf.find(rule => rule.loader && rule.loader.includes('babel-loader'));
+
+			babelLoader.include = [...(babelLoader.include || []), path.resolve('node_modules/mapbox-gl')];
+
 			return webpackConfig;
 		},
-
 		plugins: [
 			new ProvidePlugin({
 				React: 'react',
+				Buffer: ['buffer', 'Buffer'],
+				process: 'process/browser',
 			}),
 		],
 	},
@@ -50,16 +63,14 @@ module.exports = {
 			plugin: CracoEsbuildPlugin,
 			options: {
 				esbuildLoaderOptions: {
-					// Optional. Defaults to auto-detect loader.
-					loader: 'jsx', // Set the value to 'tsx' if you use typescript
+					loader: 'jsx',
 					target: 'es2018',
 				},
 				esbuildMinimizerOptions: {
-					// Optional. Defaults to:
 					target: 'es2018',
-					css: true, // if true, OptimizeCssAssetsWebpackPlugin will also be replaced by esbuild.
+					css: true,
 				},
-				skipEsbuildJest: true, // Optional. Set to true if you want to use babel for jest tests,
+				skipEsbuildJest: true,
 				esbuildJestOptions: {
 					loaders: {
 						'.ts': 'ts',

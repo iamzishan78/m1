@@ -11,12 +11,14 @@ const Layers = {
 			radiusMaxPixels: 40,
 			getLineColor: [0, 0, 255],
 			stroked: true,
+			parameters: { depthTest: false },
 		},
 	},
 	LineLayer: {
 		component: LineLayer,
 		defaultProps: {
 			getWidth: 2,
+			parameters: { depthTest: false },
 		},
 	},
 	PolygonLayer: {
@@ -38,7 +40,9 @@ const Layers = {
 	},
 	GeoJsonLayer: {
 		component: GeoJsonLayer,
-		defaultProps: {},
+		defaultProps: {
+			parameters: { depthTest: false },
+		},
 	},
 };
 
