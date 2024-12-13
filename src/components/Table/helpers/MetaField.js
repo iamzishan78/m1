@@ -846,7 +846,7 @@ const SortableComponent = ({ setItems, items }) => {
 		setItems(newItems);
 		// Use a timeout to ensure the DOM updates before focusing on the next input.
     	// This prevents errors when trying to focus on an element that hasn't been rendered yet.
-		setTimeout(() => focusOnInput(index), 200);
+		setTimeout(() => focusOnInput(index), 100);
 	};
 
 	return (
@@ -893,7 +893,7 @@ const SortableList = SortableContainer(({ items, setItems, handleAddNewOption })
 		<List style={{ margin: 0, padding: 0 }} component="div">
 			{items?.map((item, index) => (
 				<SortableItem
-					key={`item-${item.value}`}
+					key={`item-${item.value}-${index}`}
 					index={index}
 					item={item}
 					removeIndex={removeIndex}
