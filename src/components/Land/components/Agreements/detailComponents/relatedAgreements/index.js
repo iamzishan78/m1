@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useMemo } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import { useStyles as customStyles } from '../style';
 
-import RelatedAgreementsTable from './RelatedAgreementsTable';
+import MRTTable from 'components/MRTTable';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+import RelatedAgreementToolbar from 'components/MRTTable/TablesOverride/RelatedAgreementTable/RelatedAgreementToolbar';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -67,10 +68,33 @@ const RelatedAgreements = props => {
 	const { uniObj } = props;
 	const classes = useStyles();
 	const customClasses = customStyles();
+	const tableState = tableController('RelatedAgreementTable').useState(['data']).stateValues;
 
-	const [counter, setCounter] = useState(0);
+	const relatedAgreementClickedRow = selectedRow => {
+		tableGlobalController.updateState({
+			dialog: {
+				type: 'createAndAddRelatedAgreement',
+				customLayerId: uniObj?._id,
+				relatedAgreement: selectedRow,
+			},
+		});
+	};
 
-	const customLayerId = useSelector(({ Land }) => Land.agreement?.activeAgreement)?._id;
+	const RelatedAgreementOverrideMeta = useMemo(
+		() => ({
+			defaultFilters: [{ field: 'relatedAgreements._id', value: uniObj?._id }],
+			onClickedRow: relatedAgreementClickedRow,
+			CustomToolBar: RelatedAgreementToolbar,
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: uniObj?._id },
+			},
+			customValue: { parentRecord: uniObj?._id },
+			columnReordering: false,
+		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[uniObj?._id]
+	);
 
 	return (
 		<div className={classes.root}>
@@ -88,7 +112,7 @@ const RelatedAgreements = props => {
 							<Typography variant="h5" className={customClasses.titleText}>
 								Related Agreements
 							</Typography>
-							<Chip color="info" label={counter} />
+							<Chip color="info" label={tableState?.data?.total} />
 						</Grid>
 					</Grid>
 				</AccordionSummary>
@@ -96,15 +120,7 @@ const RelatedAgreements = props => {
 					<Grid container direction="column" alignItems="center" spacing={4} style={{ display: 'block' }}>
 						{uniObj?._id && (
 							<Grid item xs={12} style={{ padding: '35px 20px 0px 0px' }}>
-								<RelatedAgreementsTable
-									dense
-									moduleId={customLayerId}
-									setDrawer={props.setDrawer}
-									drawer={props.drawer}
-									setCounter={setCounter}
-									targetLabel="Shape"
-									portal={'#agreementDetailsDrawer'}
-								/>
+								<MRTTable name="RelatedAgreementTable" overrideMeta={RelatedAgreementOverrideMeta} />
 							</Grid>
 						)}
 					</Grid>
