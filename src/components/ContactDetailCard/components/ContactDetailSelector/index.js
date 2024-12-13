@@ -12,7 +12,6 @@ import ContactDetailedInfo from 'components/ContactDetailedInfo/ContactDetailedI
 import ActivitiesTable from 'components/Table/Activities/ActivitiesTable';
 import RelatedContactsTable from 'components/Table/Contact/RelatedContactTable';
 import ContactTaxRollInterestTable from 'components/Table/Contact/ContactTaxRollInterestTable';
-import ContactRelatedAgreementTable from 'components/Table/Contact/ContactRelatedAgreementTable';
 import ContactDealsProvider from 'components/DealsDetailCard/ContactDealsProvider';
 import ContactDocumentsProvider from 'components/ViewDocuments/ContactDocumentsProvider';
 
@@ -82,13 +81,6 @@ const useStyles = makeStyles(theme => ({
 		'&::-webkit-scrollbar-thumb': {
 			backgroundColor: '#929292',
 			borderRadius: 10,
-		},
-		'& div': {
-			'&>.MuiPaper-root': {
-				'&>:nth-child(3)': {
-					height: 'calc(50vh - 128px) !important',
-				},
-			},
 		},
 	},
 	tapsLabelsButtons: {
@@ -239,6 +231,22 @@ function MapGridCard(props) {
 		[props.contactData._id]
 	);
 
+	const RelatedAgreementOverrideMeta = useMemo(
+		() => ({
+			defaultFilters: [{ field: 'relatedParties.contactId', value: props.contactData._id }],
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: {
+					key: 'relatedParties',
+					func: relatedParties => relatedParties.find(rp => rp.contactId === props.contactData._id)?._id,
+				},
+			},
+			customValue: { campaign: props.contactData._id },
+			refetchQueries: ['getContactSummary'],
+		}),
+		[props.contactData._id]
+	);
+
 	return (
 		<div className={classes.card}>
 			<Card className={classes.dockMenu}>
@@ -345,16 +353,7 @@ function MapGridCard(props) {
 											<RelatedContactsTable contactId={props.contactData._id} />
 										)}
 										{searchTapValue.value === 'relatedAgreements' && (
-											<ContactRelatedAgreementTable
-												dense
-												moduleId={props.contactData._id}
-												setDrawer={props.setDrawer}
-												setCounter={() => {}}
-												esFilters={[{ field: 'contact._id', value: props.contactData._id }]}
-												targetLabel="Shape"
-												setESFilters={() => {}}
-												onTractCount={() => {}}
-											/>
+											<MRTTable name="ContactDetailAgreementsTable" overrideMeta={RelatedAgreementOverrideMeta} />
 										)}
 									</div>
 								</Grid>

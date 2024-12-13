@@ -13,7 +13,6 @@ import RelatedContactsTable from 'components/Table/Contact/RelatedContactTable';
 import ContactWellInterestTable from 'components/Table/Contact/ContactWellInterestTable';
 import ContactParcelInterestTable from 'components/Table/Contact/ContactParcelInterestTable';
 import ContactTaxRollInterestTable from 'components/Table/Contact/ContactTaxRollInterestTable';
-import ContactRelatedAgreementTable from 'components/Table/Contact/ContactRelatedAgreementTable';
 import UnitInterestsTable from 'components/Table/Unit/UnitInterestsTable';
 import ContactDealsProvider from 'components/DealsDetailCard/ContactDealsProvider';
 import ContactDocumentsProvider from 'components/ViewDocuments/ContactDocumentsProvider';
@@ -377,19 +376,6 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
 										{searchTapValue.value === 'relatedContacts' && (
 											<RelatedContactsTable contactId={rest.contactData._id} />
 										)}
-										{searchTapValue.value === 'relatedAgreements' && (
-											<ContactRelatedAgreementTable
-												dense
-												moduleId={rest.contactData._id}
-												setDrawer={rest.setDrawer}
-												setCounter={() => {}}
-												esFilters={[{ field: 'contact._id', value: rest.contactData._id }]}
-												targetLabel="Shape"
-												setESFilters={() => {}}
-												onTractCount={() => {}}
-											/>
-										)}
-
 										{searchTapValue.value === 'payees' && (
 											<MRTTable name={'RelatedPayeesTable'} overrideMeta={overrideMetaRelatedPayees} />
 										)}
