@@ -630,7 +630,7 @@ export const checkFormRequireField = (data, formSchema) => {
 	let error = false;
 
 	formSchema.forEach(field => {
-		if (field.required && field?.name && (!data[field.name])) {
+		if (field.required && field?.name && !data[field.name]) {
 			error = true;
 		}
 		if (field.renderField === 'startEndDate' && field.required && (!data['startDate'] || !data['endDate'])) {
@@ -639,4 +639,36 @@ export const checkFormRequireField = (data, formSchema) => {
 	});
 
 	return error;
+};
+
+export const getFilters = appliedFilters => {
+	if (Array.isArray(appliedFilters)) return appliedFilters;
+
+	let filters = [];
+	if (appliedFilters) {
+		let range = [];
+		range = getRangeFilters(
+			{
+				createdAt: {
+					from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+					to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+				},
+			},
+			'simple'
+		);
+		if (range.length > 0) filters = [...filters, ...range];
+		if (appliedFilters.status) {
+			filters.push({
+				field: 'status.keyword',
+				value: appliedFilters.status,
+			});
+		}
+		if (appliedFilters.owner) {
+			filters.push({
+				field: 'owner.name.keyword',
+				value: appliedFilters.owner,
+			});
+		}
+	}
+	return filters;
 };
