@@ -841,12 +841,13 @@ const SortableComponent = ({ setItems, items }) => {
 
 	const handleAddNewOption = (index) => {
 		const newItems = JSON.parse(JSON.stringify(items));
-		newItems.push({ palleteId: colorPallete[0].id });
+		// Add the new element at the desired index
+		newItems.splice(index, 0, { palleteId: colorPallete[0].id });
 		// Update the state with the newly added item.
 		setItems(newItems);
 		// Use a timeout to ensure the DOM updates before focusing on the next input.
     	// This prevents errors when trying to focus on an element that hasn't been rendered yet.
-		setTimeout(() => focusOnInput(index), 100);
+		setTimeout(() => focusOnInput((index - 1)), 100);
 	};
 
 	return (
@@ -1049,7 +1050,7 @@ const SortableItem = SortableElement(({ item, removeIndex, itemIndex, updateInde
 										// Check if the caret is at the last position of the input
 										if (caretPosition === currentValue.length) {
 											// If at the last position, allow adding a new option
-											handleAddNewOption(itemIndex);
+											handleAddNewOption((itemIndex + 1));
 										}
 									}
 								}}
