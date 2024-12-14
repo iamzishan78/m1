@@ -830,9 +830,29 @@ const SortableComponent = ({ setItems, items }) => {
 		setItems(arrayMoveImmutable(items, oldIndex, newIndex));
 	};
 
+	const focusOnInput = index => {
+		const input = document.getElementById(`option-input-${(index + 1)}`);
+		// Check if the input field with the specified id exists.
+		if (input) {
+			 // Focus on the found input field to ensure a smooth user experience.
+			input.focus();
+		}
+	};
+
+	const handleAddNewOption = (index) => {
+		const newItems = JSON.parse(JSON.stringify(items));
+		// Add the new element at the desired index
+		newItems.splice(index, 0, { palleteId: colorPallete[0].id });
+		// Update the state with the newly added item.
+		setItems(newItems);
+		// Use a timeout to ensure the DOM updates before focusing on the next input.
+    	// This prevents errors when trying to focus on an element that hasn't been rendered yet.
+		setTimeout(() => focusOnInput((index - 1)), 100);
+	};
+
 	return (
 		<>
-			<SortableList setItems={setItems} items={items} onSortEnd={onSortEnd} useDragHandle />
+			<SortableList setItems={setItems} items={items} onSortEnd={onSortEnd} useDragHandle handleAddNewOption={handleAddNewOption}/>
 			<div
 				style={{
 					color: '#929292',
@@ -842,9 +862,7 @@ const SortableComponent = ({ setItems, items }) => {
 					cursor: 'pointer',
 				}}
 				onClick={() => {
-					const newItems = JSON.parse(JSON.stringify(items));
-					newItems.push({ palleteId: colorPallete[0].id });
-					setItems(newItems);
+					handleAddNewOption(items?.length)
 				}}
 			>
 				<AddIcon
@@ -859,7 +877,7 @@ const SortableComponent = ({ setItems, items }) => {
 	);
 };
 
-const SortableList = SortableContainer(({ items, setItems }) => {
+const SortableList = SortableContainer(({ items, setItems, handleAddNewOption }) => {
 	const removeIndex = index => {
 		const newItems = JSON.parse(JSON.stringify(items));
 		newItems.splice(index, 1);
@@ -876,12 +894,13 @@ const SortableList = SortableContainer(({ items, setItems }) => {
 		<List style={{ margin: 0, padding: 0 }} component="div">
 			{items?.map((item, index) => (
 				<SortableItem
-					key={`item-${item.value}`}
+					key={`item-${item.value}-${index}`}
 					index={index}
 					item={item}
 					removeIndex={removeIndex}
 					updateIndex={updateIndex}
 					itemIndex={index}
+					handleAddNewOption={handleAddNewOption}
 				/>
 			))}
 		</List>
@@ -892,7 +911,7 @@ const DragHandle = sortableHandle(({ display }) => (
 	<DragIndicatorIcon style={{ fontSize: 18, visibility: display ? 'visible' : 'hidden' }} />
 ));
 
-const SortableItem = SortableElement(({ item, removeIndex, itemIndex, updateIndex }) => {
+const SortableItem = SortableElement(({ item, removeIndex, itemIndex, updateIndex, handleAddNewOption }) => {
 	const classes = useSortableStyles();
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [showDrag, setShowDrag] = useState(false);
@@ -1012,6 +1031,7 @@ const SortableItem = SortableElement(({ item, removeIndex, itemIndex, updateInde
 							}
 						>
 							<TextField
+								id={`option-input-${itemIndex}`} // Unique id based on itemIndex
 								type="text"
 								variant="standard"
 								placeholder="Enter option"
@@ -1020,7 +1040,23 @@ const SortableItem = SortableElement(({ item, removeIndex, itemIndex, updateInde
 								onChange={e => {
 									setItemValue(e.target.value);
 								}}
-								onBlur={() => updateIndex(itemIndex, { ...item, value: itemValue })}
+								onKeyDown={e => {
+									if (e.key === 'Enter') {
+										e.preventDefault(); // Prevent default Enter behavior
+										// Get the caret (cursor) position in the input field
+										const caretPosition = e.target.selectionStart;
+										// Get the current value of the input field
+										const currentValue = e.target.value;
+										// Check if the caret is at the last position of the input
+										if (caretPosition === currentValue.length) {
+											// If at the last position, allow adding a new option
+											handleAddNewOption((itemIndex + 1));
+										}
+									}
+								}}
+								onBlur={() => {
+										updateIndex(itemIndex, { ...item, value: itemValue })
+								}}
 								InputProps={{
 									disableUnderline: true,
 								}}
