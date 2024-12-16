@@ -212,12 +212,13 @@ function Map({
 		onCompleted: data => {
 			const mapViews = data?.getMapViews?.mapViews;
 			const currentMapView = mapViews?.find(view => view.isCurrent);
-
-			globalStateController.updateState({
-				mapView: {
-					selectedMapView: currentMapView,
-				},
-			});
+			if (!globalStateController.getValue('mapView')?.selectedMapView) {
+				globalStateController.updateState({
+					mapView: {
+						selectedMapView: currentMapView,
+					},
+				});
+			}
 		},
 	});
 

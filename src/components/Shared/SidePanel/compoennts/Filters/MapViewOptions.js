@@ -92,7 +92,7 @@ const viewOptions = [
 	},
 ];
 
-function MapViewOptions({ handleDefaultView, tableKey, allMapViews, defaultView, fetchMapViews }) {
+function MapViewOptions({ tableKey, allMapViews, defaultView }) {
 	const mapViewState = globalStateController.useState(['filters', 'mapView']);
 	const mapViewStateValues = mapViewState.stateValues;
 	const classes = useStyles();
@@ -201,6 +201,31 @@ function MapViewOptions({ handleDefaultView, tableKey, allMapViews, defaultView,
 							</div>
 						))}
 					</div>
+
+					<Accordion defaultExpanded style={{ marginTop: 20 }}>
+						<AccordionSummary
+							expandIcon={<KeyboardArrowDownIcon />}
+							aria-controls="panel1a-content"
+							id="panel1a-header"
+							className={classes.summary}
+						>
+							Standard
+						</AccordionSummary>
+						<AccordionDetails className={classes.details}>
+							<View
+								view={defaultView}
+								// setEditGridView={setEditGridView}
+								setViewName={setViewName}
+								// updateGridView={updateGridView}
+								userId={getUser?._id}
+								// updateFavouriteGridView={updateFavouriteGridView}
+								onClick={handleClick}
+								tableKey={tableKey}
+								defaultView={defaultView}
+								module={module}
+							/>
+						</AccordionDetails>
+					</Accordion>
 				</div>
 
 				<div style={{ flex: '1 1 auto', overflow: 'auto' }}>
@@ -286,6 +311,7 @@ function InputField({ editMapViewId, viewName, setViewName, upsertMapView, setEd
 			onKeyDown={event => {
 				event.stopPropagation();
 				if (event.key === 'Enter') {
+					const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView || {};
 					event.preventDefault();
 					if (editMapViewId) {
 						upsertMapView({
@@ -300,21 +326,21 @@ function InputField({ editMapViewId, viewName, setViewName, upsertMapView, setEd
 							tableGlobalController.reInitialized();
 						});
 					} else {
-						const { filters } = globalStateController.getValue('mapView')?.selectedMapView || {};
+						selectedMapView.name = viewName;
 						upsertMapView({
 							variables: {
 								mapView: {
 									name: viewName,
 									type: 'Custom',
 									userId: globalStateController.getValue('user').mongoId,
-									filters,
+									filters: selectedMapView.filters,
 								},
 							},
 							refetchQueries: ['getMapViews'],
 						});
 					}
 					globalStateController.updateState({
-						mapView: { ...mapViewStateValues.mapView, showViewModal: false, selectedMapView: defaultView },
+						mapView: { ...mapViewStateValues.mapView, showViewModal: false, selectedMapView: selectedMapView },
 						viewChanged: true,
 					});
 				}
@@ -450,7 +476,10 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 							}).then(res => {
 								tableGlobalController.reInitialized();
 							});
-							globalStateController.updateState({ mapView: { ...mapViewStateValues.mapView, showViewModal: false } });
+							globalStateController.updateState({
+								mapView: { selectedMapView: { ...view, isCurrent: !view?.isCurrent } },
+								viewChanged: true,
+							});
 						}}
 					>
 						{view?.isCurrent ? 'Remove as default view' : 'Set as default view'}
