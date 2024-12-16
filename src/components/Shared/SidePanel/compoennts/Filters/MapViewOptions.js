@@ -398,7 +398,7 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 									mapView: {
 										_id: view._id,
 										userId,
-										isFavourite: !view.isFavourite,
+										isFavourite: false,
 									},
 								},
 								refetchQueries: ['getMapViews'],
@@ -408,7 +408,7 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 						}}
 					/>
 				)}
-				{!!view?.defaultDisplayBy?.includes(userId) && (
+				{view.isCurrent && (
 					<BookmarkIcon
 						style={{ marginTop: '5px' }}
 						onClick={() => {
@@ -416,10 +416,14 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 								variables: {
 									_id: view._id,
 									userId,
-									operation: 'REMOVE',
+									isCurrent: false,
 								},
+								refetchQueries: ['getMapViews'],
 							}).then(res => {
 								tableGlobalController.reInitialized();
+							});
+							globalStateController.updateState({
+								mapView: { selectedMapView: { ...view, isFavourite: !view?.isFavourite } },
 							});
 						}}
 					/>
@@ -473,6 +477,7 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 										isCurrent: !view?.isCurrent,
 									},
 								},
+								refetchQueries: ['getMapViews'],
 							}).then(res => {
 								tableGlobalController.reInitialized();
 							});
@@ -489,7 +494,6 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 				<MenuItem
 					style={{ width: '250px' }}
 					onClick={() => {
-						handleClose();
 						upsertMapView({
 							variables: {
 								mapView: {
@@ -498,10 +502,13 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 									isFavourite: !view.isFavourite,
 								},
 							},
+							refetchQueries: ['getMapViews'],
 						}).then(res => {
 							tableGlobalController.reInitialized();
 						});
-						globalStateController.updateState({ mapView: { ...mapViewStateValues.mapView, showViewModal: false } });
+						globalStateController.updateState({
+							mapView: { selectedMapView: { ...view, isFavourite: !view?.isFavourite } },
+						});
 					}}
 				>
 					{view.isFavourite ? 'Remove as favorite' : 'Set as favorite'}
