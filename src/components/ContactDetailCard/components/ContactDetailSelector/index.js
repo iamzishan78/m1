@@ -9,7 +9,6 @@ import { setMapGridCardState } from 'actions';
 import OwnersSummaryCard from 'components/OwnersSummaryCard/OwnersSummaryCard';
 import { TabPanel } from 'components/Shared/TabPanels';
 import ContactDetailedInfo from 'components/ContactDetailedInfo/ContactDetailedInfo';
-import RelatedContactsTable from 'components/Table/Contact/RelatedContactTable';
 import ContactTaxRollInterestTable from 'components/Table/Contact/ContactTaxRollInterestTable';
 import ContactDealsProvider from 'components/DealsDetailCard/ContactDealsProvider';
 import ContactDocumentsProvider from 'components/ViewDocuments/ContactDocumentsProvider';
@@ -127,9 +126,10 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-function MapGridCard(props) {
+function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 	// contexts
 	const [stateApp, setStateApp] = useContext(AppContext);
+	const maxTableHeight = 'calc(50vh - 100px)';
 
 	const [getContactSummary, { data: contactSummaryData }] = useLazyQuery(CONTACT_SUMMARY);
 
@@ -149,13 +149,15 @@ function MapGridCard(props) {
 	const [sortedPurchaseData, setSortedPurchaseData] = useState([]);
 
 	useEffect(() => {
-		if (props.contactData._id)
+		if (contactData._id) {
 			getContactSummary({
 				variables: {
-					contactId: props.contactData._id,
+					contactId: contactData._id,
 				},
 			});
-	}, [getContactSummary, props.contactData]);
+		}
+		SearchTapValue(contactDetailInitialData[0]);
+	}, [getContactSummary, contactData]);
 
 	const setSearchTapValue = state => {
 		if (searchTapValue !== state) {
@@ -181,12 +183,12 @@ function MapGridCard(props) {
 	};
 
 	useEffect(() => {
-		if (props.purchaseData.length > 0) {
+		if (purchaseData.length > 0) {
 			// Sort the purchase data by the system date time in descending order (latest first)
-			const sortedPurchaseData = sortBy(props.purchaseData, item => moment(item.sysDateTime).valueOf()).reverse();
+			const sortedPurchaseData = sortBy(purchaseData, item => moment(item.sysDateTime).valueOf()).reverse();
 			setSortedPurchaseData(sortedPurchaseData); // Update the state with the sorted purchase data
 		}
-	}, [props.purchaseData]);
+	}, [purchaseData]);
 
 	// If the ducument component is loading as Associated data, isExpanded should be false
 	useEffect(() => {
@@ -197,54 +199,54 @@ function MapGridCard(props) {
 
 	const contactWellInterestOverride = useMemo(
 		() => ({
-			defaultFilters: [{ field: 'contact._id', value: props.contactData._id || '' }],
+			defaultFilters: [{ field: 'contact._id', value: contactData._id || '' }],
 			customProps: {
-				contactId: props.contactData._id,
+				contactId: contactData._id,
 			},
 			refetchQueries: ['getContactSummary'],
 		}),
-		[props.contactData._id]
+		[contactData._id]
 	);
 
 	const contactlUnitInterestOverride = useMemo(
 		() => ({
 			defaultFilters: [
 				{ field: 'shape.layer.keyword', value: 'unit' },
-				{ field: 'contact._id', value: props.contactData._id || '' },
+				{ field: 'contact._id', value: contactData._id || '' },
 			],
 			refetchQueries: ['getContactSummary'],
 		}),
-		[props.contactData._id]
+		[contactData._id]
 	);
 
 	const contactTractInterestOverride = useMemo(
 		() => ({
 			defaultFilters: [
 				{ field: 'shape.layer.keyword', value: 'parcel' },
-				{ field: 'contact._id', value: props.contactData._id || '' },
+				{ field: 'contact._id', value: contactData._id || '' },
 			],
 			customProps: {
-				contactId: props.contactData._id,
+				contactId: contactData._id,
 			},
 			refetchQueries: ['getContactSummary'],
 		}),
-		[props.contactData._id]
+		[contactData._id]
 	);
 
 	const RelatedAgreementOverrideMeta = useMemo(
 		() => ({
-			defaultFilters: [{ field: 'relatedParties.contactId', value: props.contactData._id }],
+			defaultFilters: [{ field: 'relatedParties.contactId', value: contactData._id }],
 			deletedKeys: {
 				mainRecord: { key: '_id' },
 				parentRecord: {
 					key: 'relatedParties',
-					func: relatedParties => relatedParties.find(rp => rp.contactId === props.contactData._id)?._id,
+					func: relatedParties => relatedParties.find(rp => rp.contactId === contactData._id)?._id,
 				},
 			},
-			customValue: { campaign: props.contactData._id },
+			customValue: { campaign: contactData._id },
 			refetchQueries: ['getContactSummary'],
 		}),
-		[props.contactData._id]
+		[contactData._id]
 	);
 
 	const ContactDetailActivitiesOverrideMeta = useMemo(
@@ -252,21 +254,36 @@ function MapGridCard(props) {
 			defaultFilters: [
 				{
 					field: ['contactId', 'relatedContacts._id'],
-					value: props.contactData?._id,
+					value: contactData?._id,
 					oRFilter: true,
 				},
 			],
 			deletedKeys: {
 				mainRecord: { key: '_id' },
-				parentRecord: { value: props.contactData?._id },
+				parentRecord: { value: contactData?._id },
 			},
-			customValue: { parentRecord: props.contactData?._id },
-			maxTableHeight: 'calc(50vh - 100px)',
+			customValue: { parentRecord: contactData?._id },
+			maxTableHeight,
 			CustomToolBar: ActivitiesToolbar,
 			refetchQueries: ['getContactSummary'],
 			isDeleteDisabled: true,
 		}),
-		[props.contactData?._id]
+		[contactData?._id]
+	);
+
+	const ContactDetailContactsOverrideMeta = useMemo(
+		() => ({
+			defaultFilters: [{ field: 'relatedContacts.relatedObject', value: contactData?._id }],
+			maxTableHeight,
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: contactData?._id },
+			},
+			customProps: { contactId: contactData?._id },
+			customValue: { parentRecord: contactData?._id },
+			refetchQueries: ['getContactSummary'],
+		}),
+		[contactData?._id]
 	);
 
 	return (
@@ -321,8 +338,8 @@ function MapGridCard(props) {
 											<ContactDetailedInfo
 												user={stateApp.user}
 												purchaseData={sortedPurchaseData}
-												contactData={props.contactData}
-												handleQuickActionActivity={props.handleQuickActionActivity}
+												contactData={contactData}
+												handleQuickActionActivity={handleQuickActionActivity}
 											/>
 										)}
 										{searchTapValue.value === 'activities' && (
@@ -337,7 +354,7 @@ function MapGridCard(props) {
 												id="taxInterestsTable"
 												header={'Tax Roll Interests'}
 												targetLabel="well"
-												contactId={props.contactData._id}
+												contactId={contactData._id}
 												showTracks
 											/>
 										)}
@@ -351,11 +368,9 @@ function MapGridCard(props) {
 											<MRTTable name="ContactDetailTractInterestTable" overrideMeta={contactTractInterestOverride} />
 										)}
 										{searchTapValue.value === 'deals' && <ContactDealsProvider />}
-										{searchTapValue.value === 'documents' && (
-											<ContactDocumentsProvider contactId={props.contactData._id} />
-										)}
+										{searchTapValue.value === 'documents' && <ContactDocumentsProvider contactId={contactData._id} />}
 										{searchTapValue.value === 'relatedContacts' && (
-											<RelatedContactsTable contactId={props.contactData._id} />
+											<MRTTable name="ContactDetailContactsTable" overrideMeta={ContactDetailContactsOverrideMeta} />
 										)}
 										{searchTapValue.value === 'relatedAgreements' && (
 											<MRTTable name="ContactDetailAgreementsTable" overrideMeta={RelatedAgreementOverrideMeta} />

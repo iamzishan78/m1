@@ -8,7 +8,6 @@ import { setMapGridCardState } from 'actions';
 import OwnersSummaryCard from 'components/OwnersSummaryCard/OwnersSummaryCard';
 import { TabPanel } from 'components/Shared/TabPanels';
 import ContactDetailedInfo from 'components/ContactDetailedInfo/ContactDetailedInfo';
-import RelatedContactsTable from 'components/Table/Contact/RelatedContactTable';
 import ContactWellInterestTable from 'components/Table/Contact/ContactWellInterestTable';
 import ContactParcelInterestTable from 'components/Table/Contact/ContactParcelInterestTable';
 import ContactTaxRollInterestTable from 'components/Table/Contact/ContactTaxRollInterestTable';
@@ -350,9 +349,6 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
 										{searchTapValue.value === 'deals' && <ContactDealsProvider />}
 										{searchTapValue.value === 'documents' && (
 											<ContactDocumentsProvider contactId={rest.contactData._id} />
-										)}
-										{searchTapValue.value === 'relatedContacts' && (
-											<RelatedContactsTable contactId={rest.contactData._id} />
 										)}
 										{searchTapValue.value === 'payees' && (
 											<MRTTable name={'RelatedPayeesTable'} overrideMeta={overrideMetaRelatedPayees} />
