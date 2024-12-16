@@ -111,6 +111,7 @@ const RelatedDocumets = props => {
 									id="relatedDocumentsTable"
 									moduleId={uniObj?._id}
 									overrideMeta={RelatedDocumentsOverrideMeta}
+									relatedObjectType="Shape"
 								/>
 							</Grid>
 						)}

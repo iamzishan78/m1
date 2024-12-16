@@ -9,8 +9,7 @@ import Taps from 'components/Shared/Taps';
 import TabPanels from 'components/Shared/TabPanels';
 import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
-import RelatedDetailsDocumentTable from 'components/Table/Documents/RelatedDetailsDocumentTable';
-import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
 import TabButtons from 'components/Shared/TabPanels/TabButtons';
 import AgreementSummary from './AgreementSummary';
 import ProvisionsTab from './ProvisionsTab';
@@ -64,6 +63,7 @@ export default function AgreementDetailCard(props) {
 				history.goBack();
 			}
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [history, uniObj]);
 
 	useEffect(() => {
@@ -72,12 +72,14 @@ export default function AgreementDetailCard(props) {
 			getCustomLayer({ variables: { id: props.id } });
 			getAgreementProvisions({ variables: { agreementId: props.id } });
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.id]);
 
 	useEffect(() => {
 		if (selectedTab === 0 || selectedTab === 1) {
 			getAgreementProvisions({ variables: { agreementId: props.id } });
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedTab]);
 
 	useEffect(() => {
@@ -103,6 +105,7 @@ export default function AgreementDetailCard(props) {
 			}
 			setProperties(shape.properties);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dataCustomLayer?.customLayer]);
 
 	useEffect(() => {
@@ -124,6 +127,7 @@ export default function AgreementDetailCard(props) {
 				dispatch(showErrorMessage('Failed to update unit'));
 			}
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [updatedUnit]);
 
 	const updateProperties = (e, field, value) => {
@@ -276,15 +280,20 @@ export default function AgreementDetailCard(props) {
 		[uniObj]
 	);
 
-	const DocumentHeader = () => {
-		const classes = detailCardStyles();
-		return (
-			<div className={classes.documentHeader}>
-				<DescriptionOutlinedIcon />
-				<span>Documents</span>
-			</div>
-		);
-	};
+	const RelatedDocumentsOverrideMeta = useMemo(
+		() => ({
+			maxTableHeight: 'calc(50vh - 100px)',
+			defaultFilters: [{ field: 'shapeObj._id', value: uniObj?._id }],
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: uniObj?._id },
+			},
+			customValue: { parentRecord: uniObj?._id },
+			columnReordering: false,
+		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[uniObj?._id]
+	);
 
 	const WellHeader = ({ selectedWellTab, setWellSelectedTab }) => (
 		<TabButtons
@@ -433,14 +442,11 @@ export default function AgreementDetailCard(props) {
 								/>
 							</div>,
 							<div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
-								<RelatedDetailsDocumentTable
-									customLayer={uniObj}
+								<RelatedDocumentsTable
+									id="relatedDocumentsTable"
+									moduleId={uniObj?._id}
+									overrideMeta={RelatedDocumentsOverrideMeta}
 									relatedObjectType="Shape"
-									name="Agreement"
-									header={<DocumentHeader />}
-									addAble={{ type: 'AgreementDocument' }}
-									dense
-									targetLabel="documents"
 								/>
 							</div>,
 						]}

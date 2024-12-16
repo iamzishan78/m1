@@ -9,7 +9,7 @@ import { AppContext } from 'AppContext';
 import { DrawerContext } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
 
 function RelatedDocumentsTable(props) {
-	const { moduleId } = props;
+	const { moduleId, relatedObjectType } = props;
 	const classes = usetableStyles();
 
 	const [, setStateApp] = useContext(AppContext);
@@ -62,7 +62,11 @@ function RelatedDocumentsTable(props) {
 			<MRTTable name="RelatedDocumentTable" overrideMeta={RelatedDocumentsOverrideMeta} />
 
 			{drawer === 'dcmnt' && (
-				<RelatedFile relatedObjectType="Shape" relatedObjectId={moduleId} setShowDocumentSlider={setDrawer} />
+				<RelatedFile
+					relatedObjectType={relatedObjectType}
+					relatedObjectId={moduleId}
+					setShowDocumentSlider={setDrawer}
+				/>
 			)}
 		</Container>
 	);
