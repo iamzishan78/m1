@@ -641,3 +641,35 @@ export const checkFormRequireField = (data, formSchema) => {
 
 	return error;
 };
+
+export const getFilters = appliedFilters => {
+	if (Array.isArray(appliedFilters)) return appliedFilters;
+
+	let filters = [];
+	if (appliedFilters) {
+		let range = [];
+		range = getRangeFilters(
+			{
+				createdAt: {
+					from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+					to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+				},
+			},
+			'simple'
+		);
+		if (range.length > 0) filters = [...filters, ...range];
+		if (appliedFilters.status) {
+			filters.push({
+				field: 'status.keyword',
+				value: appliedFilters.status,
+			});
+		}
+		if (appliedFilters.owner) {
+			filters.push({
+				field: 'owner.name.keyword',
+				value: appliedFilters.owner,
+			});
+		}
+	}
+	return filters;
+};

@@ -7,10 +7,9 @@ import moment from 'moment';
 import get from 'lodash/get';
 
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import { getFilters } from 'components/Table/Contact/CampaignsTable';
 import { AppContext } from 'AppContext';
 import { CUSTOM_DATES } from 'utils/data';
-import { copy, handleCustomDateTypeChange } from 'utils/helper';
+import { copy, getFilters, handleCustomDateTypeChange } from 'utils/helper';
 
 const useStyles = makeStyles(theme => ({
 	actionBar: {
