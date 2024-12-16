@@ -630,7 +630,7 @@ export const checkFormRequireField = (data, formSchema) => {
 	let error = false;
 
 	formSchema.forEach(field => {
-		if (field.required && field?.name && (!data[field.name])) {
+		if (field.required && field?.name && !data[field.name]) {
 			error = true;
 		}
 		if (field.renderField === 'startEndDate' && field.required && (!data['startDate'] || !data['endDate'])) {
@@ -639,4 +639,68 @@ export const checkFormRequireField = (data, formSchema) => {
 	});
 
 	return error;
+};
+
+export const getFilters = appliedFilters => {
+	let filters = [];
+	if (appliedFilters) {
+		let range = [];
+		if (appliedFilters.filter !== 'audit') {
+			range = getRangeFilters(
+				{
+					dateTime: {
+						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+					},
+				},
+				'simple'
+			);
+			if (range.length > 0) filters = [...filters, ...range];
+			range = getRangeFilters(
+				{
+					endDateTime: {
+						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+					},
+				},
+				'simple'
+			);
+		} else {
+			range = getRangeFilters(
+				{
+					lastUpdateAt: {
+						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+					},
+				},
+				'simple'
+			);
+			if (range.length > 0) filters = [...filters, ...range];
+			range = getRangeFilters(
+				{
+					lastUpdateAt: {
+						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+					},
+				},
+				'simple'
+			);
+		}
+
+		if (range.length > 0) filters = [...filters, ...range];
+		if (appliedFilters.campaignName) {
+			filters.push({
+				field: 'contact.campaignName.keyword',
+				value: appliedFilters.campaignName,
+			});
+		}
+		if (appliedFilters.qualifier) {
+			filters.push({
+				field: appliedFilters.filter === 'audit' ? 'lastUpdateBy.name.keyword' : 'ownerName.keyword',
+				value: appliedFilters.qualifier,
+			});
+		}
+		if (!filters.length && appliedFilters.length) filters = appliedFilters;
+	}
+	return filters;
 };

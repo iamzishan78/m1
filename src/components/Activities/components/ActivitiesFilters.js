@@ -8,11 +8,10 @@ import moment from 'moment';
 import get from 'lodash/get';
 
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import { getFilters } from 'components/Table/Activities/ActivitiesTable';
 import { AppContext } from 'AppContext';
 import { CUSTOM_DATES } from 'utils/data';
 import { useSelector } from 'react-redux';
-import { handleCustomDateTypeChange } from 'utils/helper';
+import { getFilters, handleCustomDateTypeChange } from 'utils/helper';
 import { esIndexFilterKeyMap } from 'utils/data';
 import { getActivityFilters } from './ActivitiesDashboard';
 
