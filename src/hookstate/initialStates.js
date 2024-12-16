@@ -62,7 +62,6 @@ export const tableGlobalState = hookstate({
 export const simpleTableState = {};
 export const simpleTableGlobalState = hookstate({
 	refetch: false,
-	refetchAdditionalQueries: false,
 	tabKey: 0,
 });
 

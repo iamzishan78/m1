@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useState, useEffect } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { useMutation, useLazyQuery, useQuery } from '@apollo/client';
@@ -28,7 +29,7 @@ import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
 import { COMMENTSBYOBJECTSIDS } from 'graphQL/useQueryCommentsByObjectsIds';
 import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
 import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+import { tableGlobalController } from 'hookstate/tableController';
 
 // import value formatters
 import capitalizeFirstLetter from 'components/Shared/valueformatters/capitalize-first-letter';
@@ -315,6 +316,7 @@ export default function Comments(props) {
 						if (line.trim() !== '.') {
 							return line.trim();
 						}
+						return null;
 					})
 					.join('\n')
 			: `${value
@@ -323,6 +325,7 @@ export default function Comments(props) {
 						if (line.trim() !== '.') {
 							return line.trim();
 						}
+						return null;
 					})
 					.join('\n')}.`;
 
@@ -351,7 +354,7 @@ export default function Comments(props) {
 			],
 			awaitRefetchQueries: true,
 		});
-		simpleTableGlobalController.refetchAdditionalQueries();
+		tableGlobalController.refetchAdditionalQueries();
 		setLoading(false);
 	};
 
@@ -412,7 +415,7 @@ export default function Comments(props) {
 				});
 			}
 		}
-		simpleTableGlobalController.refetchAdditionalQueries();
+		tableGlobalController.refetchAdditionalQueries();
 		setLoading(false);
 	};
 

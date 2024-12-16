@@ -3,7 +3,7 @@ import { useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { simpleTableController } from 'hookstate/simpleTableController';
 import useHandleQuery from './useHandleQuery';
-import useHandleAdditionalQueries from './useHandleAdditionalQueries';
+import useHandleAdditionalQueries from 'components/Common/MRTable/Hooks/useHandleAdditionalQueries';
 import ToolbarActions from '../Common/ToolbarActions';
 import { tableSimpleFilterModeOtions } from '../utils/data';
 
@@ -22,6 +22,7 @@ const useMRSimpleTable = tableKey => {
 	});
 
 	useHandleAdditionalQueries({
+		Controller,
 		tableKey,
 		tableState,
 		tableStateValues,
@@ -201,9 +202,9 @@ const useMRSimpleTable = tableKey => {
 
 							const result = [];
 							newFilters.forEach(item => {
-								const column = tableStateValues.TableSchema.find(
-									column => column.id === item.id || column.accessorKey === item.id
-								);
+								// const column = tableStateValues.TableSchema.find(
+								// 	column => column.id === item.id || column.accessorKey === item.id
+								// );
 								const idArray = item?.id?.split(',');
 								idArray.forEach(idValue => {
 									const newItem = {

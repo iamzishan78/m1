@@ -5,13 +5,7 @@ import ESAutoCompleteFilter from 'components/MRSimpleTable/Common/ESAutoComplete
 import { hookStateController } from 'hookstate/hookStateController';
 import { stringFilterOptions, numberFilterOptions, dateFilterOptions } from 'components/MRSimpleTable/utils/data';
 import filterModeMenu from 'components/MRSimpleTable/utils/filterModeMenu';
-
-export const simpleTableState = {};
-export const simpleTableGlobalState = hookstate({
-	refetch: false,
-	refetchAdditionalQueries: false,
-	tabKey: 0,
-});
+import { simpleTableGlobalState, simpleTableState } from './initialStates';
 
 const handleVisiblityMenu = () => {
 	const interval2 = setInterval(() => {
@@ -451,9 +445,6 @@ export const simpleTableController = TableKey => {
 const simpleTableGlobalControllerHandler = state => ({
 	refetch: () => {
 		state.refetch.set(!state.refetch.get({ noproxy: true }));
-	},
-	refetchAdditionalQueries: () => {
-		state.refetchAdditionalQueries.set(!state.refetchAdditionalQueries.get({ noproxy: true }));
 	},
 	setSelectedTab: tab => {
 		if (tab !== state.tabKey.get()) state.tabKey.set(tab);
