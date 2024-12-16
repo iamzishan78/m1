@@ -37,7 +37,7 @@ function WellClick() {
 		const { data: tenantWell } = await client.query({
 			query: TENANTWELL,
 			variables: {
-				globalWellId: well.getESPaginatedList.hits?.[0]?.id,
+				globalWellId: well.getESSimpleSearch.hits[0]?.id,
 			},
 		});
 		return {

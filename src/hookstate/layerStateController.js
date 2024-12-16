@@ -303,6 +303,7 @@ const layerStateControllerHandler = state => {
 			if (isOutside && bboxIntersects && show) {
 				if (previousBounds) {
 					newPolygon = difference(newPolygon, previousBounds);
+					if (!newPolygon) console.log('New Polygon not found', newPolygon);
 				}
 				if (show) {
 					if (previousBounds) previousBounds = union(previousBounds, newPolygon);
@@ -325,6 +326,7 @@ const layerStateControllerHandler = state => {
 
 			return boundingState;
 		} catch (err) {
+			debugger;
 			if (polygonFilter) showError('Invalid Shape');
 			console.log('🚀 ~ file: layerStateController.js:285 ~ handleBounds ~ err:', err.message);
 			return boundingStateVal;

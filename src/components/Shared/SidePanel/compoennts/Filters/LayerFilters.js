@@ -190,7 +190,6 @@ const LayerFilters = () => {
 
 	useEffect(() => {
 		const selectedMapView = mapStateValues?.mapView?.selectedMapView;
-
 		if (selectedMapView) {
 			resetForm({
 				mapViews: selectedMapView?.filters || [],
