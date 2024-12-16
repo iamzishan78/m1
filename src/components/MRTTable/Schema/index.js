@@ -96,4 +96,5 @@ export const SCHEMA = {
 	RelatedAgreementTable: ContactDetailRelatedAgreementMeta,
 	ContactDetailAgreementsTable: ContactDetailRelatedAgreementMeta,
 	PropertyRelatedAgreementTable: ContactDetailRelatedAgreementMeta,
+	ContactDetailActivitiesTable: ActivitiesMeta,
 };

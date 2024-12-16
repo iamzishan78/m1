@@ -9,7 +9,6 @@ import { setMapGridCardState } from 'actions';
 import OwnersSummaryCard from 'components/OwnersSummaryCard/OwnersSummaryCard';
 import { TabPanel } from 'components/Shared/TabPanels';
 import ContactDetailedInfo from 'components/ContactDetailedInfo/ContactDetailedInfo';
-import ActivitiesTable from 'components/Table/Activities/ActivitiesTable';
 import RelatedContactsTable from 'components/Table/Contact/RelatedContactTable';
 import ContactTaxRollInterestTable from 'components/Table/Contact/ContactTaxRollInterestTable';
 import ContactDealsProvider from 'components/DealsDetailCard/ContactDealsProvider';
@@ -23,6 +22,7 @@ import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import moment from 'moment';
 import sortBy from 'lodash/sortBy';
 import MRTTable from 'components/MRTTable';
+import ActivitiesToolbar from 'components/MRTTable/TablesOverride/ContactDetailActivities/ActivitiesToolbar';
 
 const useStyles = makeStyles(theme => ({
 	card: {
@@ -247,6 +247,28 @@ function MapGridCard(props) {
 		[props.contactData._id]
 	);
 
+	const ContactDetailActivitiesOverrideMeta = useMemo(
+		() => ({
+			defaultFilters: [
+				{
+					field: ['contactId', 'relatedContacts._id'],
+					value: props.contactData?._id,
+					oRFilter: true,
+				},
+			],
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: props.contactData?._id },
+			},
+			customValue: { parentRecord: props.contactData?._id },
+			maxTableHeight: 'calc(50vh - 100px)',
+			CustomToolBar: ActivitiesToolbar,
+			refetchQueries: ['getContactSummary'],
+			isDeleteDisabled: true,
+		}),
+		[props.contactData?._id]
+	);
+
 	return (
 		<div className={classes.card}>
 			<Card className={classes.dockMenu}>
@@ -304,26 +326,9 @@ function MapGridCard(props) {
 											/>
 										)}
 										{searchTapValue.value === 'activities' && (
-											<ActivitiesTable
-												esIndex={'activities_flat'}
-												id="activitiesInterestsTable"
-												searchFields={['name', '_all']}
-												filtersChange={() => {}}
-												appliedFilters={[
-													{
-														field: ['contactId', 'relatedContacts._id'],
-														value: props.contactData?._id,
-														oRFilter: true,
-													},
-												]}
-												filterToggle={() => {}}
-												targetLabel={'activitiesDashboard'}
-												header="Activities"
-												parent="assocTaxRollInterests"
-												addAble={{ type: 'contactActivity' }}
-												onAddActivity={props.onAddActivity}
-												dialogType="activitySideDialog"
-												applyCustomClasses
+											<MRTTable
+												name="ContactDetailActivitiesTable"
+												overrideMeta={ContactDetailActivitiesOverrideMeta}
 											/>
 										)}
 										{searchTapValue.value === 'taxRollInterests' && (

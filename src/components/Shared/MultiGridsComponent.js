@@ -8,7 +8,6 @@ import { setMapGridCardState } from 'actions';
 import OwnersSummaryCard from 'components/OwnersSummaryCard/OwnersSummaryCard';
 import { TabPanel } from 'components/Shared/TabPanels';
 import ContactDetailedInfo from 'components/ContactDetailedInfo/ContactDetailedInfo';
-import ActivitiesTable from 'components/Table/Activities/ActivitiesTable';
 import RelatedContactsTable from 'components/Table/Contact/RelatedContactTable';
 import ContactWellInterestTable from 'components/Table/Contact/ContactWellInterestTable';
 import ContactParcelInterestTable from 'components/Table/Contact/ContactParcelInterestTable';
@@ -304,27 +303,6 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
 												user={stateApp.user}
 												purchaseData={rest.purchaseData}
 												contactData={rest.contactData}
-											/>
-										)}
-										{searchTapValue.value === 'activities' && (
-											<ActivitiesTable
-												esIndex={'activities_flat'}
-												id="activitiesInterestsTable"
-												searchFields={['name', '_all']}
-												filtersChange={() => {}}
-												appliedFilters={[
-													{
-														field: 'contactName.keyword',
-														value: rest.contactData?.name,
-													},
-												]}
-												filterToggle={() => {}}
-												targetLabel={'activitiesDashboard'}
-												header="Activities"
-												addAble={{ type: 'contactActivity' }}
-												onAddActivity={rest.onAddActivity}
-												dialogType="activitySideDialog"
-												applyCustomClasses
 											/>
 										)}
 										{searchTapValue.value === 'taxRollInterests' && (
