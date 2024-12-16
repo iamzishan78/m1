@@ -49,6 +49,7 @@ const CustomAutocomplete = ({
 	// Default Autocomplete behavior with multiselect support
 	return (
 		<Autocomplete
+			{...field}
 			multiple={multiple} // Enable multiple selection if true
 			options={options} // The options to show in the dropdown
 			onChange={(e, v, r) => {

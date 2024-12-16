@@ -3,6 +3,7 @@ import { hookStateController } from 'hookstate/hookStateController';
 import { globalStateController } from './globalStateController';
 import { layerController } from './layerStateController';
 import { layerFilterInitialState, layerFilters } from './initialStates';
+import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 const layerFiltersControllerHandler = state => ({
 	setVariables: (layerType, variables) => {
@@ -113,6 +114,22 @@ const layerFiltersControllerHandler = state => ({
 		setTimeout(() => {
 			state.polygonsFilter.set(polygons);
 		}, 100);
+	},
+
+	updateLayerFiltersFromMapViews: (dataSourceName, mapViewFilters) => {
+		const layerShapeName = globalStateController
+			.getValue('layers')
+			?.find(layer => layer?.layerId === dataSourceName)?.layerShapeName;
+		const state = layerFiltersController.getValue([layerShapeName || dataSourceName]); // Get layer filters from hookstate
+		const initialFilters = state?.variables?.filters || []; // Get initial filters
+		let filters = initialFilters.filter(filter => !filter.isMapViewFilter); // Remove existing filter
+		filters = [
+			...filters,
+			...mapViewFilters.map(mapView =>
+				getFormattedFilterBasedOnType(mapView.filterType, mapView.fieldName, mapView.filterValues)
+			),
+		];
+		layerFiltersController.setVariables(dataSourceName, { filters });
 	},
 });
 

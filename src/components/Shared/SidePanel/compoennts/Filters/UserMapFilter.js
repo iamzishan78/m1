@@ -100,6 +100,8 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 	const filterValues = watch(`mapViews.${index}.filterValues`);
 	const filterType = watch(`mapViews.${index}.filterType`);
 
+	const mapViews = watch(`mapViews`);
+
 	const [debouncedFilterValues, setDebouncedFilterValues] = useState(filterValues); // New state for debounced filter values
 
 	// Debounce the filter values
@@ -121,6 +123,20 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 			},
 		});
 	}, [dataSourceName, getShapeFileSchema]);
+
+	const getMapViewFilters = () => {
+		return mapViews?.map(mapView => ({
+			dataSourceName: mapView?.dataSourceName?.value,
+			filterType: mapView?.filterType?.value || filterType,
+			fieldName: mapView?.fieldName?.value,
+			filterValues:
+				mapView.filterType?.value === 'multiselect'
+					? mapView.filterValues
+						? [mapView.filterValues]
+						: []
+					: mapView.filterValues,
+		}));
+	};
 
 	const getLayerTypeAndFilters = dataSourceName => {
 		let esIndex,
@@ -176,59 +192,23 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 	// Effect to log filter values when they change
 	useEffect(() => {
 		if (dataSourceName) {
-			const layerShapeName = globalStateController
-				.getValue('layers')
-				?.find(layer => layer?.layerId === dataSourceName)?.layerShapeName;
-			const state = layerFiltersController.getValue([layerShapeName || dataSourceName]); // Get layer filters from hookstate
-			const initialFilters = state?.variables?.filters || []; // Get initial filters
-			let filters = initialFilters.filter(filter => filter.field !== (fieldName?.value || fieldName)); // Remove existing filter
 			const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView;
-			let globalFilters = selectedMapView?.filters || [];
+			const canUpdateMapView = dataSourceName && fieldName?.value && filterType;
 
-			const canUpdateMapView =
-				dataSourceName &&
-				fieldName?.value &&
-				filterType &&
-				(['empty', 'notEmpty'].includes(filterType?.value || filterType) || filterValues);
-
+			const mapViewFilters = getMapViewFilters();
 			// Upsert the map view data to the GraphQL API
 			if (canUpdateMapView) {
-				globalFilters = globalFilters.filter(
-					filter =>
-						(filter.fieldName !== (fieldName?.value || fieldName) &&
-							filter.fieldName !== (fieldName?.value || fieldName).replace('.keyword', '')) ||
-						filter.dataSourceName !== dataSourceName
-				);
 				globalStateController.updateState({
 					mapView: {
 						selectedMapView: {
 							...selectedMapView,
-							filters: [
-								...globalFilters.filter(filter => filter?.fieldName),
-								{
-									dataSourceName: dataSourceName,
-									filterType: filterType?.value || filterType,
-									fieldName: fieldName?.value || fieldName,
-									filterValues:
-										typeof debouncedFilterValues === 'string' ? [debouncedFilterValues] : debouncedFilterValues,
-								},
-							],
+							filters: mapViewFilters,
 						},
 					},
 				});
 				tableGlobalController.reInitialized();
+				layerFiltersController.updateLayerFiltersFromMapViews(dataSourceName, mapViewFilters);
 			}
-
-			// Update layer filters with the new filter values
-			if (
-				(debouncedFilterValues || ['empty', 'notEmpty'].includes(filterType?.value || filterType)) &&
-				fieldName?.value
-			) {
-				filters = [...filters, getFormattedFilterBasedOnType(filterType, fieldName, debouncedFilterValues)];
-			}
-
-			// Set the updated filters in the layer filters
-			layerFiltersController.setVariables(dataSourceName, { filters });
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [debouncedFilterValues, filterType, fieldName, dataSourceName]); // Dependencies trigger re-run when they change
@@ -245,7 +225,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 	// Memoized calculation of autocomplete fields to optimize rendering
 	const autocompleteFields = useMemo(() => {
 		const filterValueHits = filtersData?.getESSimpleFilter?.hits || []; // Get filter options from query results
-		const filterValuesOptions = filterValueHits.map(hit => hit.key).filter(key => key.trim()); // Clean options
+		const filterValuesOptions = filterValueHits.map(hit => hit.key).filter(key => (key?.trim ? key.trim() : key)); // Clean options
 
 		// Map filter type options to autocomplete options
 		const filterTypeOptions = stringFilterOptions.map(option => {
@@ -302,28 +282,22 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 
 	// Function to clear the filter when the clear button is clicked
 	const clearFilter = () => {
-		const layerShapeName = globalStateController
-			.getValue('layers')
-			?.find(layer => layer?.layerId === dataSourceName)?.layerShapeName;
-		const filterAccessor = layerShapeName || dataSourceName;
-		const state = layerFiltersController.getValue([filterAccessor]); // Get layer filters from hookstate
-		const initialFilters = state?.variables?.filters || []; // Get initial filters
-		const filters = initialFilters.filter(filter => filter.field !== fieldName.value); // Remove existing filter
-		layerFiltersController.setVariables(filterAccessor, { filters }); // Clear filter from layer filters
 		const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView;
-		let globalFilters = selectedMapView?.filters || [];
+		let mapViewFilters = getMapViewFilters();
 
-		globalFilters = globalFilters.filter((_, i) => i !== index);
+		mapViewFilters = mapViewFilters.filter((_, i) => i !== index);
+
 		remove(index); // Set the filter cleared state to true
 
 		globalStateController.updateState({
 			mapView: {
 				selectedMapView: {
 					...selectedMapView,
-					filters: [...globalFilters.filter(filter => filter?.fieldName)],
+					filters: mapViewFilters,
 				},
 			},
 		});
+		layerFiltersController.updateLayerFiltersFromMapViews(dataSourceName, mapViewFilters);
 		tableGlobalController.reInitialized();
 	};
 
