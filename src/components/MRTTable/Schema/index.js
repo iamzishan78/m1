@@ -95,4 +95,5 @@ export const SCHEMA = {
 	ContactDetailTractInterestTable: ContactDetailTractInterestMeta,
 	RelatedAgreementTable: ContactDetailRelatedAgreementMeta,
 	ContactDetailAgreementsTable: ContactDetailRelatedAgreementMeta,
+	PropertyRelatedAgreementTable: ContactDetailRelatedAgreementMeta,
 };

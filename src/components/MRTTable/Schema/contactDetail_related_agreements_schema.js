@@ -3,6 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
 import { formatDate } from 'components/Shared/functions';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 
 const esIndex = 'shapes_flat';
 
@@ -184,6 +185,13 @@ const ContactDetailRelatedAgreementMeta = {
 						targetLabel={'agreement'}
 					/>
 				);
+			},
+		},
+		{
+			...CommonSchema.COMMENTS,
+			Cell: ({ renderedCellValue, row }) => {
+				const id = row.getValue('_id');
+				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'agreement'} />;
 			},
 		},
 	],

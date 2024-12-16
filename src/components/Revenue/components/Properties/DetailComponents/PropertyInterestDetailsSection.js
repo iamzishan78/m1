@@ -1,10 +1,27 @@
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import PropertyInterestDetailsTable from 'components/Table/Revenue/PropertyInterestDetailsTable';
 import PropertyRevenueDetailsTable from 'components/Table/Revenue/PropertyRevenueDetailsTable';
 // import PropertyWellProductionTable from "components/Table/Revenue/PropertyWellProductionTable";
 import TabButtons from 'components/Shared/TabPanels/TabButtons';
-import RelatedAgreementsTable from 'components/Land/components/Agreements/detailComponents/relatedAgreements/RelatedAgreementsTable';
+import PropertyRevenueDetailToolBar from 'components/MRTTable/TablesOverride/PropertyRelatedAgreementTable/PropertyRelatedAgreementToolBar';
+import MRTTable from 'components/MRTTable';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+import TabPanels from 'components/Shared/TabPanels';
+
+const onClickedRow = selectedRow => {
+	const Controller = tableController('PropertyRelatedAgreementTable');
+	const { propertyId } = Controller.getValue('customProps');
+
+	tableGlobalController.updateState({
+		propertyRevenueDetailDialog: {
+			type: 'addRelatedAgreement',
+			customLayerId: propertyId,
+			relatedAgreement: selectedRow,
+		},
+	});
+};
 
 const useStyles = makeStyles(() => ({
 	sectionCard: {
@@ -25,24 +42,16 @@ const useStyles = makeStyles(() => ({
 	},
 }));
 
-const PropertyInterestDetailsSection = ({
-	propertyId,
-	onClickAdd,
-	showInterestDetails,
-	setSelectedInterest,
-	setNewAgmtState,
-}) => {
+const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDetails, setSelectedInterest }) => {
 	const classes = useStyles();
-	const [selectedTab, setSelectedTab] = useState(0);
+	const setSelectedTab = simpleTableGlobalController.setSelectedTab;
+	const {
+		stateValues: { tabKey: selectedTab },
+	} = simpleTableGlobalController.useState(['tabKey']);
 
 	const Header = () => (
 		<TabButtons
-			labels={[
-				'Interest Details',
-				'Revenue Details',
-				'Related Agreements',
-				// "Well Production"
-			]}
+			labels={['Interest Details', 'Revenue Details', 'Related Agreements']}
 			value={selectedTab}
 			setValue={n => {
 				setSelectedTab(n);
@@ -50,49 +59,48 @@ const PropertyInterestDetailsSection = ({
 		/>
 	);
 
+	const RelatedAgreementOverrideMeta = useMemo(
+		() => ({
+			defaultFilters: [{ field: 'relatedAgreements._id', value: propertyId }],
+			onClickedRow,
+			CustomToolBar: PropertyRevenueDetailToolBar,
+			tabLabels: ['Interest Details', 'Revenue Details', 'Related Agreements'],
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: propertyId },
+			},
+			customValue: { parentRecord: propertyId },
+		}),
+		[propertyId]
+	);
+
 	return (
-		<div className={`${classes.sectionCard} flex column justifyStart alignStart w-100`}>
-			{selectedTab === 0 && (
-				<PropertyInterestDetailsTable
-					onClickAdd={onClickAdd}
-					setSelectedInterest={setSelectedInterest}
-					showInterestDetails={showInterestDetails}
-					targetLabel="propertyInterest"
-					parent="PropertyInterestTable"
-					header={<Header />}
-					propertyId={propertyId}
-				/>
-			)}
-			{selectedTab === 1 && (
-				<PropertyRevenueDetailsTable
-					onClickAdd={onClickAdd}
-					setSelectedInterest={setSelectedInterest}
-					showInterestDetails={showInterestDetails}
-					targetLabel="propertyInterest"
-					parent="PropertyInterestTable"
-					header={<Header />}
-					propertyId={propertyId}
-				/>
-			)}
-			{selectedTab === 2 && (
-				<RelatedAgreementsTable
-					header={<Header />}
-					moduleId={propertyId}
-					dense
-					setDrawer={value => setNewAgmtState(value === 'agrmt')}
-				/>
-			)}
-			{/* {selectedTab === 2 && (
-        <PropertyWellProductionTable
-          onClickAdd={onClickAdd}
-          setSelectedInterest={setSelectedInterest}
-          showInterestDetails={showInterestDetails}
-          targetLabel="propertyInterest"
-          parent="PropertyInterestTable"
-          header={<Header />}
-          propertyId={propertyId}
-        />
-      )} */}
+		<div className={`${classes.sectionCard}`}>
+			<TabPanels
+				value={selectedTab}
+				panels={[
+					<PropertyInterestDetailsTable
+						onClickAdd={onClickAdd}
+						setSelectedInterest={setSelectedInterest}
+						showInterestDetails={showInterestDetails}
+						targetLabel="propertyInterest"
+						parent="PropertyInterestTable"
+						header={<Header />}
+						propertyId={propertyId}
+					/>,
+
+					<PropertyRevenueDetailsTable
+						onClickAdd={onClickAdd}
+						setSelectedInterest={setSelectedInterest}
+						showInterestDetails={showInterestDetails}
+						targetLabel="propertyInterest"
+						parent="PropertyInterestTable"
+						header={<Header />}
+						propertyId={propertyId}
+					/>,
+					<MRTTable name="PropertyRelatedAgreementTable" overrideMeta={RelatedAgreementOverrideMeta} />,
+				]}
+			/>
 		</div>
 	);
 };
