@@ -156,7 +156,6 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 				},
 			});
 		}
-		SearchTapValue(contactDetailInitialData[0]);
 	}, [getContactSummary, contactData]);
 
 	const setSearchTapValue = state => {
