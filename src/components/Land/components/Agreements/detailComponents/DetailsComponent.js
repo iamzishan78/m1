@@ -51,7 +51,6 @@ import MapImgViewIcon from 'components/Shared/svgIcons/MapImgViewIcon';
 import MapProvider from 'components/Map/MapProvider';
 import { DrawerContext } from './DrawerContext';
 import RelatedDocumets from './relatedDocuments';
-import RelatedFile from 'components/Document/components/RelatedFile';
 import { jobController } from 'hookstate/jobStateController';
 import RelatedPayments from './relatedPayments';
 import { detailCardController } from 'hookstate/detailCardController';
@@ -731,14 +730,6 @@ export function DetailComponents(props) {
 							customLayerId={get(dataCustomLayer, 'customLayer._id')}
 							setDrawer={setDrawer}
 							parentType="Agreement"
-						/>
-					)}
-
-					{drawer === 'dcmnt' && (
-						<RelatedFile
-							relatedObjectType="Shape"
-							relatedObjectId={get(dataCustomLayer, 'customLayer._id')}
-							setShowDocumentSlider={setDrawer}
 						/>
 					)}
 				</div>
