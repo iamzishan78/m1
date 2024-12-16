@@ -11,7 +11,6 @@ import { TabPanel } from 'components/Shared/TabPanels';
 import ContactDetailedInfo from 'components/ContactDetailedInfo/ContactDetailedInfo';
 import ContactTaxRollInterestTable from 'components/Table/Contact/ContactTaxRollInterestTable';
 import ContactDealsProvider from 'components/DealsDetailCard/ContactDealsProvider';
-import ContactDocumentsProvider from 'components/ViewDocuments/ContactDocumentsProvider';
 
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 import { contactDetailInitialData } from './data';
@@ -22,6 +21,8 @@ import moment from 'moment';
 import sortBy from 'lodash/sortBy';
 import MRTTable from 'components/MRTTable';
 import ActivitiesToolbar from 'components/MRTTable/TablesOverride/ContactDetailActivities/ActivitiesToolbar';
+import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
+import { DrawerContextProvider } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
 
 const useStyles = makeStyles(theme => ({
 	card: {
@@ -285,6 +286,21 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 		[contactData?._id]
 	);
 
+	const RelatedDocumentsOverrideMeta = useMemo(
+		() => ({
+			maxTableHeight: 'calc(50vh - 100px)',
+			defaultFilters: [{ field: 'contacts._id', value: contactData?._id }],
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: contactData?._id },
+			},
+			customValue: { parentRecord: contactData?._id },
+			columnReordering: false,
+		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[contactData?._id]
+	);
+
 	return (
 		<div className={classes.card}>
 			<Card className={classes.dockMenu}>
@@ -367,7 +383,16 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 											<MRTTable name="ContactDetailTractInterestTable" overrideMeta={contactTractInterestOverride} />
 										)}
 										{searchTapValue.value === 'deals' && <ContactDealsProvider />}
-										{searchTapValue.value === 'documents' && <ContactDocumentsProvider contactId={contactData._id} />}
+										{searchTapValue.value === 'documents' && (
+											<DrawerContextProvider>
+												<RelatedDocumentsTable
+													id="relatedDocumentsTable"
+													moduleId={contactData?._id}
+													overrideMeta={RelatedDocumentsOverrideMeta}
+													relatedObjectType="Contact"
+												/>
+											</DrawerContextProvider>
+										)}
 										{searchTapValue.value === 'relatedContacts' && (
 											<MRTTable name="ContactDetailContactsTable" overrideMeta={ContactDetailContactsOverrideMeta} />
 										)}
