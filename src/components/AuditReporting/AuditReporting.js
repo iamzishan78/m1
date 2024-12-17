@@ -11,26 +11,6 @@ import MRTTable from 'components/MRTTable';
 const useStyles = makeStyles(theme => ({
 	root: {
 		marginTop: '90px',
-		'& div': {
-			'&>.MuiPaper-root': {
-				'&>:nth-child(3)': {
-					maxHeight: '53vh',
-					minHeight: '53vh',
-					'@media (max-height:900px)': {
-						maxHeight: '47vh',
-						minHeight: '47vh',
-					},
-					'@media (max-height:800px)': {
-						maxHeight: '45vh',
-						minHeight: '45vh',
-					},
-					'@media (max-height:768px)': {
-						maxHeight: '45vh',
-						minHeight: '45vh',
-					},
-				},
-			},
-		},
 	},
 }));
 
