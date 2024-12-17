@@ -1,9 +1,13 @@
 import { hookstate } from '@hookstate/core';
 import { isEqual } from 'lodash';
 import { hookStateController } from 'hookstate/hookStateController';
-import { stringFilterOptions, numberFilterOptions, dateFilterOptions } from 'components/MRSimpleTable/utils/data';
-import filterModeMenu from 'components/MRSimpleTable/utils/filterModeMenu';
+import {
+	simpleDateFilterOptions,
+	simpleNumberFilterOptions,
+	simpleStringFilterOptions,
+} from 'components/MRTTable/utils/data';
 import { simpleTableState } from './initialStates';
+import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
 
 const handleVisiblityMenu = () => {
 	const interval2 = setInterval(() => {
@@ -153,11 +157,11 @@ const simpleTableStateControllerHandler = state => ({
 			if (schemaColumn.filter) {
 				let options;
 				if (schemaColumn.type === 'string') {
-					options = stringFilterOptions;
+					options = simpleStringFilterOptions;
 				} else if (schemaColumn.type === 'number') {
-					options = numberFilterOptions;
+					options = simpleNumberFilterOptions;
 				} else if (schemaColumn.type === 'date') {
-					options = dateFilterOptions;
+					options = simpleDateFilterOptions;
 				}
 				if (schemaColumn.isComposite) options = options.filter(option => option !== 'multiselect');
 
@@ -166,6 +170,7 @@ const simpleTableStateControllerHandler = state => ({
 					options,
 					tableKey,
 					name: schemaColumn.accessorKey || schemaColumn.id,
+					controller: simpleTableController,
 				});
 			}
 

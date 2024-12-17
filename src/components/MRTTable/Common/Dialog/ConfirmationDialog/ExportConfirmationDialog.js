@@ -13,12 +13,14 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { Modals } from '../../../../../styles/Modal';
 import { excludeFilters } from 'components/MRTTable/Common/CommonToolBarActions';
 
-export default function ExportConfirmationDialog({ table, tableKey, header, onClose, children, Controller }) {
+export default function ExportConfirmationDialog({ table, tableKey, header, onClose, children, controller }) {
 	const dispatch = useDispatch();
 	const client = useApolloClient();
 	const modalClass = Modals();
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user.get({ noproxy: true });
+
+	const Controller = controller(tableKey);
 
 	const tableState = Controller.useCompleteState();
 	const tableStateValues = tableState?.get({ noproxy: true });

@@ -182,6 +182,7 @@ export const handleMRTSchema = ({
 				options,
 				tableKey,
 				name: schemaColumn.accessorKey || schemaColumn.id,
+				controller: tableController,
 			});
 		}
 

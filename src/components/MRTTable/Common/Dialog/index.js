@@ -19,9 +19,7 @@ import { GRID_GENERIC_REMOVE } from 'graphQL/useMutationCommonGridRemove';
 function AllDialogs(props) {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
 	const { type, ...rest } = stateValues.dialog || {};
-	const tableKey = rest?.tableKey;
-
-	const Controller = tableController(tableKey);
+	const tableKey = rest?.tableKey || props.tableKey;
 
 	const {
 		stateValues: { refetchQueries },
@@ -89,12 +87,12 @@ function AllDialogs(props) {
 		<>
 			{type === 'tags' && (
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={false}>
-					<TagDialog {...rest} refetch={tableGlobalController.refetch} />
+					<TagDialog {...rest} refetch={props.refetch} />
 				</Dialog>
 			)}
 			{type === 'comments' && (
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
-					<CommentDialog {...rest} refetch={tableGlobalController.refetch} />
+					<CommentDialog {...rest} refetch={props.refetch} />
 				</Dialog>
 			)}
 
@@ -144,7 +142,7 @@ function AllDialogs(props) {
 					tableKey={tableKey}
 					header={rest.header}
 					onClose={handleCloseDialog}
-					Controller={Controller}
+					controller={props.controller}
 				>
 					{`Do you want to Export ${rest.isSomeRowsSelected ? 'Selected Row (s)' : ' Complete Grid'} ?`}
 				</ExportConfirmationDialog>
@@ -161,6 +159,17 @@ function AllDialogs(props) {
 						{`Do you want to delete the selected row ${rest?.Ids?.length > 1 ? 's' : ''}?`}
 					</DeleteConfirmationDialog>
 				</Dialog>
+			)}
+
+			{type === 'multipleOwnerToContact' && (
+				<MultipleOwnerToContactDrawerContainer
+					jobType={rest?.jobType}
+					jobName={rest?.jobName}
+					onClose={handleCloseDialog}
+					rows={rest?.rows}
+					onSuccess={() => {}}
+					setRows={() => {}}
+				/>
 			)}
 		</>
 	);

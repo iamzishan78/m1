@@ -1,8 +1,9 @@
 import React, { memo, useEffect } from 'react';
 import { MaterialReactTable } from 'material-react-table';
 import useMRSimpleTable from 'components/MRSimpleTable/Hooks/useMRSimpleTable';
-import AllDialogs from 'components/MRSimpleTable/Common/Dialog';
+import AllDialogs from 'components/MRTTable/Common/Dialog';
 import { simpleTableController } from 'hookstate/simpleTableController';
+import { tableGlobalController } from 'hookstate/tableController';
 import { SCHEMA } from './Schema';
 
 function MRSimpleTable({ tableKey, name, overrideMeta = {} }) {
@@ -17,6 +18,7 @@ function MRSimpleTable({ tableKey, name, overrideMeta = {} }) {
 		return () => {
 			Controller.reset();
 		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	if (!initialized) return null;
@@ -29,7 +31,11 @@ function MRSimpleTable({ tableKey, name, overrideMeta = {} }) {
 					...tablePropsState,
 				}}
 			/>
-			<AllDialogs />
+			<AllDialogs
+				tableKey={tableKey}
+				controller={simpleTableController}
+				refetch={tableGlobalController.refetchAdditionalQueries}
+			/>
 		</div>
 	);
 }

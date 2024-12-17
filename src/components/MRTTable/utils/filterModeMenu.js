@@ -3,7 +3,7 @@ import FilterModeMenuItems from '../Common/FilterModeMenuItems';
 import { globalStateController } from 'hookstate/globalStateController';
 
 const filterModeMenu =
-	({ options, tableKey, name }) =>
+	({ options, tableKey, name, controller }) =>
 	({ onSelectFilterMode }) => {
 		const filterModes = globalStateController.getValue('columnFilterModesFnRefs') || {};
 
@@ -26,6 +26,7 @@ const filterModeMenu =
 				tableKey={tableKey}
 				name={name}
 				onSelectFilterMode={onSelectFilterMode}
+				controller={controller}
 			/>
 		));
 	};
