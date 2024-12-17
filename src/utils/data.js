@@ -723,7 +723,19 @@ export const esIndexFilterKeyMap = {
 export const baseTenantsMaps = () => {
 	const tenantId = window.sessionStorage?.getItem('tenantName').toLowerCase();
 	const defaultStyles = ['Satellite', 'Basic', 'Light', 'Outdoors']; // Default for most clients
-	const testNewStyles = [...defaultStyles, 'Dark', 'Real Estate','Bubble'];
+	const testNewStyles = [...defaultStyles, 
+							'Dark', 
+							'Real Estate',
+							'Bubble',
+							'Standard Oil',
+							'Overcast',
+							'Mission Control',
+							'Sketch',
+							'Terminal',
+							'Blueprint',
+							'Pencil',
+							'Unicorn',
+							];
 
 	const tenantSpecificStyles = {
 		m1demo: testNewStyles,
