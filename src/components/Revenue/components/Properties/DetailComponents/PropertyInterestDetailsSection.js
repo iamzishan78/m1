@@ -1,8 +1,5 @@
 import React, { useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import PropertyRevenueDetailsTable from 'components/Table/Revenue/PropertyRevenueDetailsTable';
-// import PropertyWellProductionTable from "components/Table/Revenue/PropertyWellProductionTable";
-import TabButtons from 'components/Shared/TabPanels/TabButtons';
 import PropertyRevenueDetailToolBar from 'components/MRTTable/TablesOverride/PropertyRelatedAgreementTable/PropertyRelatedAgreementToolBar';
 import MRTTable from 'components/MRTTable';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
@@ -43,20 +40,9 @@ const useStyles = makeStyles(() => ({
 
 const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDetails, setSelectedInterest }) => {
 	const classes = useStyles();
-	const setSelectedTab = simpleTableGlobalController.setSelectedTab;
 	const {
 		stateValues: { tabKey: selectedTab },
 	} = simpleTableGlobalController.useState(['tabKey']);
-
-	const Header = () => (
-		<TabButtons
-			labels={['Interest Details', 'Revenue Details', 'Related Agreements']}
-			value={selectedTab}
-			setValue={n => {
-				setSelectedTab(n);
-			}}
-		/>
-	);
 
 	const RelatedAgreementOverrideMeta = useMemo(
 		() => ({
@@ -81,21 +67,22 @@ const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDe
 		[propertyId]
 	);
 
+	const RevenueOverrideMeta = useMemo(
+		() => ({
+			defaultFilters: [{ field: 'property._id', value: propertyId }],
+			customProps: { propertyId },
+			tabLabels: ['Interest Details', 'Revenue Details', 'Related Agreements'],
+		}),
+		[propertyId]
+	);
+
 	return (
 		<div className={`${classes.sectionCard}`}>
 			<TabPanels
 				value={selectedTab}
 				panels={[
 					<MRTTable name="PropertyInterestDetailTable" overrideMeta={InterestDetailoverrideMeta} />,
-					<PropertyRevenueDetailsTable
-						onClickAdd={onClickAdd}
-						setSelectedInterest={setSelectedInterest}
-						showInterestDetails={showInterestDetails}
-						targetLabel="propertyInterest"
-						parent="PropertyInterestTable"
-						header={<Header />}
-						propertyId={propertyId}
-					/>,
+					<MRTTable name="PropertyRevenueDetailTable" overrideMeta={RevenueOverrideMeta} />,
 					<MRTTable name="PropertyRelatedAgreementTable" overrideMeta={RelatedAgreementOverrideMeta} />,
 				]}
 			/>
