@@ -256,6 +256,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 			return { label: tableESSimpleFilterModes[option].label, value: tableESSimpleFilterModes[option].option };
 		});
 
+		// making datasets fields in the below code block
 		let datasets = globalStateController.getValue('datasets');
 		datasets = datasets.filter(dataset => dataset.sourceName !== 'M1 Platform');
 
@@ -267,6 +268,12 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 		);
 
 		const m1LayersOptions = Object.keys(customLayersFieldAccessors).map(layer => ({ label: layer, value: layer }));
+
+		const shapeFileOptions = filterTypeOptions.filter(option => ['singleselect', 'multiselect'].includes(option.value));
+
+		// Making filter options based on selected dataset
+		const requiredFilterOptions =
+			dataSourceName && customLayersFieldAccessors[dataSourceName] ? filterTypeOptions : shapeFileOptions;
 
 		return [
 			{
@@ -295,7 +302,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 			{
 				name: `mapViews.${index}.filterType`,
 				label: 'Filter Type',
-				options: filterTypeOptions, // Static options for filter types
+				options: requiredFilterOptions,
 				defaultValue: filterTypeOptions.find(filterTypeOption => filterTypeOption.value === mapView?.filterType), // Set default value if mapView is provided
 			},
 			...(!['empty', 'notEmpty'].includes(filterType?.value || filterType)
