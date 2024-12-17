@@ -1,7 +1,5 @@
-import React from 'react';
 import { hookstate } from '@hookstate/core';
 import { isEqual } from 'lodash';
-import ESAutoCompleteFilter from 'components/MRSimpleTable/Common/ESAutoCompleteFilter';
 import { hookStateController } from 'hookstate/hookStateController';
 import { stringFilterOptions, numberFilterOptions, dateFilterOptions } from 'components/MRSimpleTable/utils/data';
 import filterModeMenu from 'components/MRSimpleTable/utils/filterModeMenu';
@@ -152,71 +150,6 @@ const simpleTableStateControllerHandler = state => ({
 			{}
 		);
 		const _TableSchema = TableSchema.map(schemaColumn => {
-			if (schemaColumn.filter && !schemaColumn.Filter) {
-				schemaColumn.SingleSelect = function Comp({ column }) {
-					return (
-						<div>
-							<ESAutoCompleteFilter
-								tableKey={tableKey}
-								// esIndex={esIndex}
-								column={{
-									field: column.columnDef.name,
-									isComposite: column.columnDef.isComposite,
-									label: column.columnDef.header,
-									type: column.columnDef.type,
-									setFilterValue: column.setFilterValue,
-									filterSelectOptions: column.columnDef.filterSelectOptions,
-									filterValue: column?.getFilterValue() || '',
-								}}
-								multiple={false}
-							/>
-							<span
-								style={{
-									fontSize: '0.7rem',
-									color: 'rgba(0, 0, 0, 0.6)',
-									fontWeight: 400,
-								}}
-							>
-								Filter Mode: Single Select
-							</span>
-						</div>
-					);
-				};
-
-				schemaColumn.MultiSelect = function Comp({ column }) {
-					return (
-						<div>
-							<ESAutoCompleteFilter
-								tableKey={tableKey}
-								// esIndex={esIndex}
-								column={{
-									field: column.columnDef.name,
-									label: column.columnDef.header,
-									type: column.columnDef.type,
-									setFilterValue: column.setFilterValue,
-									filterValue: column?.getFilterValue() || [],
-								}}
-								multiple
-							/>
-							<span
-								style={{
-									fontSize: '0.7rem',
-									color: 'rgba(0, 0, 0, 0.6)',
-									fontWeight: 400,
-								}}
-							>
-								{' '}
-								Filter Mode: Multi Select
-							</span>
-						</div>
-					);
-				};
-
-				// schemaColumn.Filter =
-				// 	defaultFlterMode === 'multiselect'
-				// 		? schemaColumn.MultiSelect
-				// 		: schemaColumn.SingleSelect;
-			}
 			if (schemaColumn.filter) {
 				let options;
 				if (schemaColumn.type === 'string') {
@@ -309,118 +242,6 @@ const simpleTableStateControllerHandler = state => ({
 	},
 	setIsAllRowsSelected: value => {
 		if (!isEqual(value, state.isAllRowsSelected.get())) state.isAllRowsSelected.set(value);
-	},
-
-	setColumnVisibility: visibility => {
-		if (!isEqual(state.columnVisibility?.get({ noproxy: true }), visibility)) state.columnVisibility?.set(visibility);
-	},
-
-	setColumnPinning: (columnPinning, oldPinning, TableSchema) => {
-		if (!isEqual(state.columnPinning?.get({ noproxy: true }), columnPinning)) {
-			let size = 0;
-			columnPinning.left.forEach(pin => {
-				if (pin === 'mrt-row-select' || pin === 'mrt-row-numbers') size += 60;
-				else {
-					size += state.TableSchema.get({ noproxy: true }).find(
-						column => column.id === pin || column.accessorKey === pin
-					).size;
-				}
-			});
-			const tableCss = {
-				...state.tableCss?.get({ noproxy: true }),
-				'& .MuiTableRow-root>:nth-child(2)': { marginLeft: `-${size}px !important` },
-			};
-			state.columnPinning?.set(columnPinning);
-
-			let changeTableSchema = false;
-			columnPinning.left.forEach(col => {
-				if (oldPinning.left.find(l => l === col)) return;
-				TableSchema.forEach(column => {
-					if (column.id === col) {
-						column.enableResizing = false;
-						column.enableColumnDragging = false;
-						column.enableColumnOrdering = false;
-						column.enableHiding = false;
-						changeTableSchema = true;
-					}
-				});
-			});
-
-			oldPinning.left.forEach(col => {
-				if (columnPinning.left.find(l => l === col)) return;
-				TableSchema.forEach(column => {
-					if (column.id === col) {
-						column.enableResizing = true;
-						column.enableColumnDragging = true;
-						column.enableColumnOrdering = true;
-						column.enableHiding = true;
-						changeTableSchema = true;
-					}
-				});
-			});
-			if (changeTableSchema) state.TableSchema.set(TableSchema);
-			state.tableCss?.set(tableCss);
-		}
-		handleVisiblityMenu();
-	},
-
-	setPagination: pagination =>
-		!isEqual(state.pagination?.get({ noproxy: true }), pagination) && state.pagination?.set(pagination),
-
-	setGlobalFilter: globalFilter =>
-		!isEqual(state.globalFilter?.get({ noproxy: true }), globalFilter) && state.globalFilter?.set(globalFilter),
-
-	getGlobalFilter: () => state.globalFilter?.get({ noproxy: true }),
-
-	setFilter: filter => {
-		const filtersState = state.filters?.get({ noproxy: true });
-
-		if (
-			isEqual(
-				filtersState.find(({ field }) => field === filter.field),
-				filter
-			)
-		)
-			return;
-
-		state.filters?.set([...filtersState.filter(({ field }) => field !== filter.field), filter]);
-	},
-
-	getExternalFilter: () => {
-		const filtersState = state.filters?.get({ noproxy: true });
-		const requiredFields = state.ExternalFilter?.get({ noproxy: true });
-		const esFilters = (filtersState || [])?.filter(filter => requiredFields.includes(filter.field));
-		return esFilters;
-	},
-
-	clearFilter: field => {
-		const filtersState = state.filters?.get({ noproxy: true });
-
-		if (!filtersState.find(filter => filter.field === field)) return;
-
-		state.filters?.set(filtersState.filter(filter => filter.field !== field));
-	},
-
-	clearFilters: () => {
-		const filtersState = state.filters?.get({ noproxy: true });
-
-		if (!filtersState?.length === 0) return;
-
-		state.filters?.set([]);
-	},
-
-	syncFilters: filters => {
-		const filtersState = state.filters?.get({ noproxy: true });
-
-		if (filtersState.length <= filters.length) return;
-
-		const filterKeys = filters.map(filter => filter.id);
-
-		const keysToClear = filtersState
-			.filter(filter => !filterKeys.includes(filter.field.replace(/.keyword/, 'g', '')))
-			.map(filter => filter.field);
-
-		state.filters?.set(filtersState.filter(filter => !keysToClear.includes(filter.field)));
 	},
 
 	updateCustomProps: customProps => {
