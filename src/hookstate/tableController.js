@@ -227,8 +227,6 @@ const tableESStateControllerHandler = state => ({
 		const { filters } = mapView?.selectedMapView || {};
 		const selectedMapViewFilters = filters || [];
 
-		console.log(layerIdentifier);
-		console.log(selectedMapViewFilters);
 		const dataSourceViews = selectedMapViewFilters?.filter(view => layerIdentifier === view.dataSourceName);
 		const mapViewFilters =
 			dataSourceViews?.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)) ||
@@ -530,7 +528,9 @@ const tableESStateControllerHandler = state => ({
 								...mapView?.selectedMapView,
 								filters: [
 									...mapViewsFitlers.filter(
-										({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') !== filter.field
+										({ fieldName, dataSourceName }) =>
+											(fieldName?.value || fieldName).replace('.keyword', '') !== filter.field ||
+											dataSourceName !== tableState?.layerIdentifier
 									),
 									{
 										dataSourceName: tableState?.layerIdentifier,
