@@ -32,7 +32,12 @@ function RelatedTractsTable(props) {
 			onClickedRow: onClickedRow,
 			CustomToolBar: () => {
 				return (
-					<ButtonGroup variant="contained" style={{ height: '30px' }} color="primary" aria-label="split button">
+					<ButtonGroup
+						variant="contained"
+						style={{ height: '30px', marginBottom: '8px' }}
+						color="primary"
+						aria-label="split button"
+					>
 						<Button
 							id="addRelatedDocumentButton"
 							size="small"
