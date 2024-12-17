@@ -22,9 +22,6 @@ const ContactDetailRelatedContactMeta = {
 	isInFiniteScroll: true,
 	columnVirtualization: true,
 	isSelectAllAllowed: true,
-	search: {
-		fields: ['name^4', '_all'],
-	},
 	showAddContactButton: true,
 	TableSchema: [
 		{
