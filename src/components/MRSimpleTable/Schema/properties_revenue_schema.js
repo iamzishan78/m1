@@ -1,9 +1,11 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { Grid } from '@material-ui/core';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
-import { GET_PROPERTIES_REVENUE } from 'graphQL/useQueryGetPropertiesRevenue';
-import PropertiesRevenueToolbar from '../TablesOverride/PropertiesRevenue/PropertiesRevenueToolbar';
 import { Sparklines, SparklinesLine } from 'react-sparklines';
+
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import PropertiesRevenueToolbar from '../TablesOverride/PropertiesRevenue/PropertiesRevenueToolbar';
+
+import { GET_PROPERTIES_REVENUE } from 'graphQL/useQueryGetPropertiesRevenue';
 
 export const propertiesRevenueTableKey = 'PropertiesRevenue';
 

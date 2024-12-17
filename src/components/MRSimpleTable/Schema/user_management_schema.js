@@ -1,9 +1,11 @@
-import UserManagementToolbar from 'components/MRSimpleTable/TablesOverride/UserManagementTable/UserManagementToolbar';
 import moment from 'moment';
+
+import UserManagementToolbar from 'components/MRSimpleTable/TablesOverride/UserManagementTable/UserManagementToolbar';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import { GET_ALL_USERS } from 'graphQL/userManagement';
+
 import { tableGlobalController } from 'hookstate/tableController';
 import { UserRole, RolePrivilege } from 'utils/data';
+import { GET_ALL_USERS } from 'graphQL/userManagement';
 
 export const userManagementTableKey = 'UserManagement';
 

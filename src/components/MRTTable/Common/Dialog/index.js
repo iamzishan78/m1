@@ -1,23 +1,27 @@
 import React, { memo } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { useMutation } from '@apollo/client';
-import ExportContactsPurchaseAndOwners from 'components/MRTTable/Common/Dialog/ExportContactsPurchaseAndOwners';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import Loader from 'components/Loaders';
 import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import BuyContactsInfoDialogContent from 'components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
-import DeleteConfirmationDialogContent from './ConfirmationDialog/DeleteConfirmationDialog';
-import { GRID_GENERIC_REMOVE } from 'graphQL/useMutationCommonGridRemove';
-import Loader from 'components/Loaders';
+import ExportContactsPurchaseAndOwners from 'components/MRTTable/Common/Dialog/ExportContactsPurchaseAndOwners';
 import CommentDialog from './CommentDialog';
 import TagDialog from './TagDialog';
-import ExportConfirmationDialog from './ConfirmationDialog/ExportConfirmation';
+import DeleteConfirmationDialog from './ConfirmationDialog/DeleteConfirmationDialog';
+import ExportConfirmationDialog from './ConfirmationDialog/ExportConfirmationDialog';
+
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 import { globalStateController } from 'hookstate/globalStateController';
+import { GRID_GENERIC_REMOVE } from 'graphQL/useMutationCommonGridRemove';
 
 function AllDialogs(props) {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
 	const { type, ...rest } = stateValues.dialog || {};
 	const tableKey = rest?.tableKey;
+
+	const Controller = tableController(tableKey);
 
 	const {
 		stateValues: { refetchQueries },
@@ -85,12 +89,12 @@ function AllDialogs(props) {
 		<>
 			{type === 'tags' && (
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={false}>
-					<TagDialog {...rest} />
+					<TagDialog {...rest} refetch={tableGlobalController.refetch} />
 				</Dialog>
 			)}
 			{type === 'comments' && (
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
-					<CommentDialog {...rest} />
+					<CommentDialog {...rest} refetch={tableGlobalController.refetch} />
 				</Dialog>
 			)}
 
@@ -140,6 +144,7 @@ function AllDialogs(props) {
 					tableKey={tableKey}
 					header={rest.header}
 					onClose={handleCloseDialog}
+					Controller={Controller}
 				>
 					{`Do you want to Export ${rest.isSomeRowsSelected ? 'Selected Row (s)' : ' Complete Grid'} ?`}
 				</ExportConfirmationDialog>
@@ -147,14 +152,14 @@ function AllDialogs(props) {
 
 			{type === 'deleteGrid' && (
 				<Dialog open onClose={handleCloseDialog} maxWidth="xs">
-					<DeleteConfirmationDialogContent
+					<DeleteConfirmationDialog
 						header="Delete row (s)"
 						onClose={handleCloseDialog}
 						deleteFunc={deleteFunc}
 						deletedData={rest?.deletedData}
 					>
 						{`Do you want to delete the selected row ${rest?.Ids?.length > 1 ? 's' : ''}?`}
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 			)}
 		</>

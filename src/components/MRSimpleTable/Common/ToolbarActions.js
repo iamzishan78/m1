@@ -2,11 +2,13 @@ import React from 'react';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { IconButton, Tooltip } from '@mui/material';
 import DeleteIcon from '@material-ui/icons/Delete';
+import _ from 'lodash';
+
+import TabHeader from 'components/Common/MRTable/TabHeader';
+
 import { simpleTableController } from 'hookstate/simpleTableController';
 import { tableGlobalController } from 'hookstate/tableController';
 import { globalStateController } from 'hookstate/globalStateController';
-import _ from 'lodash';
-import TabHeader from 'components/Common/MRTable/TabHeader';
 
 function ToolbarActions({ table, tableKey, children }) {
 	const isAllRowsSelected = table.getIsAllRowsSelected();

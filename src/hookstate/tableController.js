@@ -19,6 +19,7 @@ import { validateUrl } from 'utils/helper';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 import { extractUniqueFilters } from 'components/Map/DeckGL/helpers/common';
 import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
+import { tableESState, tableGlobalState, tableInitialState } from './initialStates';
 
 function isDateFormat(inputString) {
 	// Regular expression for MM/DD/YYYY format
@@ -28,33 +29,6 @@ function isDateFormat(inputString) {
 	// Check if the inputString matches the date format
 	return mmddyyy.test(inputString) || mmddyy.test(inputString);
 }
-
-const initialState = {
-	defaultFilters: [],
-	customProps: [],
-	filters: [],
-	sorting: [],
-	searchFields: [],
-	groupedField: {},
-	grouping: [],
-	footerProps: [],
-	ExternalFilter: [],
-	defaultSort: {},
-	columnOrdering: [],
-	columnPinning: {
-		left: [],
-	},
-	isIncludeInactive: false,
-	gridView: {},
-	showTypes: false,
-};
-
-export const tableESState = {};
-export const tableGlobalState = hookstate({
-	refetch: false,
-	reInitialized: false,
-	tabKey: 0,
-});
 
 async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyChange, tableKey) {
 	const _user = globalStateController.getValue('user');
@@ -779,16 +753,19 @@ const tableESStateControllerHandler = state => ({
 });
 
 export const tableController = TableKey => {
-	if (!tableESState[TableKey]) tableESState[TableKey] = hookstate(copy(initialState));
+	if (!tableESState[TableKey]) tableESState[TableKey] = hookstate(copy(tableInitialState));
 	return {
 		...tableESStateControllerHandler(tableESState[TableKey]),
-		...hookStateController(tableESState[TableKey], copy(initialState)),
+		...hookStateController(tableESState[TableKey], copy(tableInitialState)),
 	};
 };
 
 const tableGlobalControllerHandler = state => ({
 	refetch: () => {
 		state.refetch.set(!state.refetch.get({ noproxy: true }));
+	},
+	refetchAdditionalQueries: () => {
+		state.refetchAdditionalQueries.set(!state.refetchAdditionalQueries.get({ noproxy: true }));
 	},
 	reInitialized: () => {
 		state.reInitialized.set(!state.reInitialized.get({ noproxy: true }));

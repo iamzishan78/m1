@@ -1,11 +1,13 @@
-import CommentCell from 'components/MRSimpleTable/Common/TableCells/Comment';
-import TagCell from 'components/MRSimpleTable/Common/TableCells/Tag';
-import IsContactCell from 'components/MRSimpleTable/Common/TableCells/isContactIcone';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import IsContactCell from 'components/MRTTable/Common/TableCells/isContactIcone';
 import PotentialOwnersToolbar from 'components/MRSimpleTable/TablesOverride/PotentialOwnersTable/PotentialOwnersToolbar';
-import { globalStateController } from 'hookstate/globalStateController';
-import { getPolygonString } from 'components/Shared/functions';
-import { SHAPE_WELL_OWNERS } from 'graphQL/useQueryPaginatedShapeWellOwners';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import { getPolygonString } from 'components/Shared/functions';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { simpleTableController } from 'hookstate/simpleTableController';
+import { SHAPE_WELL_OWNERS } from 'graphQL/useQueryPaginatedShapeWellOwners';
 
 export const potentialOwnerTableKey = 'PotentialOwners';
 
@@ -150,14 +152,15 @@ const PotentialOwnersMeta = {
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const id = row.getValue('id');
+				let tags = row?.original?.tags;
+
+				const Controller = simpleTableController(potentialOwnerTableKey);
+				const { stateValues } = Controller.useState(['tagsList']);
+
+				tags = stateValues.tagsList?.find(tag => tag._id === id)?.tags || tags;
+
 				return (
-					<TagCell
-						id={id}
-						targetSourceId={id}
-						tags={row?.original?.tags}
-						targetLabel={'well'}
-						tableKey={potentialOwnerTableKey}
-					/>
+					<TagCell id={id} targetSourceId={id} tags={tags} targetLabel={'well'} tableKey={potentialOwnerTableKey} />
 				);
 			},
 		},
@@ -173,14 +176,15 @@ const PotentialOwnersMeta = {
 			...CommonSchema.COMMENTS,
 			Cell: ({ renderedCellValue, row }) => {
 				const id = row.getValue('id');
-				return (
-					<CommentCell
-						id={id}
-						value={renderedCellValue?.length || 0}
-						targetLabel={'well'}
-						tableKey={potentialOwnerTableKey}
-					/>
-				);
+
+				let value = renderedCellValue?.length || 0;
+
+				const Controller = simpleTableController(potentialOwnerTableKey);
+				const { stateValues } = Controller.useState(['commentsCounter']);
+
+				value = stateValues.commentsCounter?.find(counter => counter._id === id)?.total || value;
+
+				return <CommentCell id={id} value={value} targetLabel={'well'} tableKey={potentialOwnerTableKey} />;
 			},
 		},
 	],
