@@ -265,9 +265,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 								<DonutChart
 									height={240}
 									marginTop={-15}
-									options={{
-										legend: { display: false, labels: { display: false } },
-									}}
+									islegendEnabled={false}
 									data={[
 										{
 											title: '',
