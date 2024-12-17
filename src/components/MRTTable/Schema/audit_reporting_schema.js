@@ -29,9 +29,6 @@ const AuditReportingMeta = {
 	},
 	isInFiniteScroll: true,
 	columnVirtualization: true,
-	search: {
-		fields: ['name^4', '_all'],
-	},
 	title: 'Editable Example',
 	TableSchema: [
 		{
@@ -71,7 +68,7 @@ const AuditReportingMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			accessorKey: 'entityType',
+			accessorKey: 'entityType.keyword',
 			header: 'Entity Type',
 			Cell: ({ renderedCellValue, row }) => {
 				renderedCellValue = 'contacts';

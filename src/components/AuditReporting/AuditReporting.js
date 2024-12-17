@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext  } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useLazyQuery } from '@apollo/client';
 
@@ -7,6 +7,8 @@ import ActivityAnalytics from 'components/Activities/components/ActivityAnalytic
 import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
 import { Box } from '@material-ui/core';
 import MRTTable from 'components/MRTTable';
+import { AppContext } from 'AppContext';
+import { tableController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -18,6 +20,7 @@ const ActivitiesDashboard = () => {
 	const classes = useStyles();
 	const esIndex = 'contacts_flat';
 	const searchFields = ['name', '_all'];
+	const [stateApp] = useContext(AppContext);
 	const [filterToggle, setFilterToggle] = useState(false);
 	const [appliedFilters, setAppliedFilters] = useState({
 		toDate: null,
@@ -44,6 +47,10 @@ const ActivitiesDashboard = () => {
 			},
 		});
 	}, [getDbMinValue]);
+
+	useEffect(() => {
+		tableController("AuditReportingTable").setGlobalFilter(stateApp.landAnalyticsSearchQuery) // set value in searchquery for audit reporting
+	  }, [stateApp.landAnalyticsSearchQuery])
 
 	return (
 		<div className={classes.root}>
