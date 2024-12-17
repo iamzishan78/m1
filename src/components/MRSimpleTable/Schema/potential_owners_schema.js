@@ -5,7 +5,7 @@ import PotentialOwnersToolbar from 'components/MRSimpleTable/TablesOverride/Pote
 import { globalStateController } from 'hookstate/globalStateController';
 import { getPolygonString } from 'components/Shared/functions';
 import { SHAPE_WELL_OWNERS } from 'graphQL/useQueryPaginatedShapeWellOwners';
-import { CommonSchema } from './common_schema';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
 export const potentialOwnerTableKey = 'PotentialOwners';
 

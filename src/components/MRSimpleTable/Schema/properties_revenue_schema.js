@@ -1,4 +1,4 @@
-import { CommonSchema } from './common_schema';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { Grid } from '@material-ui/core';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import { GET_PROPERTIES_REVENUE } from 'graphQL/useQueryGetPropertiesRevenue';
