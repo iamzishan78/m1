@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { useLazyQuery, useQuery } from '@apollo/client';
-import { Box, CardHeader, CircularProgress, Grid, Typography } from '@mui/material';
+import { Box, CardHeader, CircularProgress, Grid, Typography, List } from '@mui/material';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { makeStyles } from '@material-ui/styles';
 import Avatar from 'react-avatar';
@@ -56,7 +56,7 @@ const People = () => {
 					container
 					spacing={1}
 					rowSpacing={2}
-					sx={{ marginLeft: '8px', marginRight: '8px', maxHeight: 'calc(100% - 70px)', overflow: 'auto' }}
+					sx={{ paddingLeft: { sm: 0, md: 6 }, flexDirection: { xs: 'column', sm: 'row' } }}
 				>
 					{!usersData.length ? (
 						<Grid item xs={12} md={12} sm={12}>
@@ -97,15 +97,14 @@ const People = () => {
 
 	return (
 		<>
-			<CardHeader
-				className={classes.headerTitle}
-				title={
-					<Typography variant="h5" margin={'8px'}>
-						People
-					</Typography>
-				}
-			/>
-			{loading ? <CircularProgress disableShrink size={80} /> : <PeopleCardContainer />}
+			<CardHeader className={classes.headerTitle} title={`People`} />
+			{loading ? (
+				<CircularProgress disableShrink size={80} />
+			) : (
+				<List id="people-list" style={{ maxHeight: 'calc(100% - 70px)', overflow: 'auto' }}>
+					<PeopleCardContainer />
+				</List>
+			)}
 		</>
 	);
 };
