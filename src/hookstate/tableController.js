@@ -18,7 +18,6 @@ import { handleMRTSchema, handleVisiblityMenu } from './helpers';
 import { validateUrl } from 'utils/helper';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 import { extractUniqueFilters } from 'components/Map/DeckGL/helpers/common';
-import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 
 function isDateFormat(inputString) {
 	// Regular expression for MM/DD/YYYY format
@@ -228,7 +227,9 @@ const tableESStateControllerHandler = state => ({
 		const { filters } = mapView?.selectedMapView || {};
 		const selectedMapViewFilters = filters || [];
 
-		const dataSourceViews = selectedMapViewFilters?.filter(view => view.dataSourceName === layerIdentifier);
+		console.log(layerIdentifier);
+		console.log(selectedMapViewFilters);
+		const dataSourceViews = selectedMapViewFilters?.filter(view => layerIdentifier === view.dataSourceName);
 		const mapViewFilters =
 			dataSourceViews?.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)) ||
 			[];
@@ -503,11 +504,11 @@ const tableESStateControllerHandler = state => ({
 		});
 
 		if (tableState?.layerIdentifier) {
-			const currentIdentifier = customLayersFieldAccessors[tableState?.layerIdentifier];
-
 			if (
-				currentIdentifier &&
-				currentIdentifier.keys?.find(key => key.value.replace('.keyword', '') === filter.field.replace('.keyword', ''))
+				true
+				// code to check if there any filter value outside the values given in map views need to handle this
+				// currentIdentifier &&
+				// currentIdentifier.keys?.find(key => key.value.replace('.keyword', '') === filter.field.replace('.keyword', ''))
 			) {
 				const existingFilter = mapViewsFitlers.find(
 					({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') === filter.field

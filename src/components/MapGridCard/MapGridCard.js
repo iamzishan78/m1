@@ -27,7 +27,6 @@ import { mapControlsController } from 'hookstate/mapControlsController';
 import { tableGlobalController } from 'hookstate/tableController';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
-import { globalStateController } from 'hookstate/globalStateController';
 
 const useStyles = makeStyles(theme => {
 	return {
@@ -272,14 +271,12 @@ function MapGridCard(props) {
 		// generic generateFileFilters used for files so that it remain consistent in all places.
 		if (mapControlsStateValues?.selectedLayer?.layerShapeName) {
 			const fileQuery = generateFileFilters({ fileLayer: mapControlsStateValues.selectedLayer });
+			const fileId = mapControlsStateValues.selectedLayer?.file;
+			const layerShapeName = mapControlsStateValues?.selectedLayer?.layerShapeName;
+			const layerIdentifier = `${fileId}_${layerShapeName}`;
 			tableGlobalController.reInitialized();
-			const layers = globalStateController.getValue('layers') || [];
-			const selectedLayer = layers?.find(
-				layer => layer?.layerShapeName === mapControlsStateValues?.selectedLayer?.layerShapeName
-			);
 			return {
-				filterLayerType: mapControlsStateValues.selectedLayer?.layerShapeName,
-				layerIdentifier: selectedLayer?.layerId,
+				filterLayerType: layerIdentifier,
 				maxTableHeight: '40vh',
 				toolbarInternalActions: {
 					onClose,
@@ -289,6 +286,7 @@ function MapGridCard(props) {
 				},
 				defaultFilters: fileQuery.variables.filters,
 				advanceSearch: fileQuery.variables.search.advanceSearch,
+				layerIdentifier,
 			};
 		} else {
 			return {};
@@ -494,6 +492,7 @@ function MapGridCard(props) {
 														},
 														maxTableHeight: '45vh',
 														filterLayerType: 'Wells',
+														layerIdentifier: 'Wells',
 													}}
 												/>
 											)}
