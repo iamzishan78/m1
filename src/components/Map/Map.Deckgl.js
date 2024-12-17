@@ -271,7 +271,7 @@ function Map({
 		const { signal } = abortController;
 
 		let styleTypes = baseTenantsMaps();
-		let recurseLimit = 5;
+		let recurseLimit = 16;
 
 		try {
 			const styles = await styleTypes.reduce(async (stylesPromise, styleType) => {
