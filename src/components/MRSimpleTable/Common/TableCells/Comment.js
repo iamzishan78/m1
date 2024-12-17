@@ -2,7 +2,8 @@ import React, { memo } from 'react';
 import Tooltip from '@material-ui/core/Tooltip';
 import Button from '@material-ui/core/Button';
 import ChatIcon from '@material-ui/icons/Chat';
-import { simpleTableController, simpleTableGlobalController } from 'hookstate/simpleTableController';
+import { simpleTableController } from 'hookstate/simpleTableController';
+import { tableGlobalController } from 'hookstate/tableController';
 
 function CommentCell({ value, id, targetLabel, tableKey }) {
 	const Controller = simpleTableController(tableKey);
@@ -18,7 +19,7 @@ function CommentCell({ value, id, targetLabel, tableKey }) {
 				startIcon={<ChatIcon />}
 				onClick={e => {
 					e.stopPropagation();
-					simpleTableGlobalController.updateState({
+					tableGlobalController.updateState({
 						dialog: {
 							type: 'comments',
 							value,

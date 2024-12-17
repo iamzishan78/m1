@@ -5,7 +5,7 @@ import { IconButton, Tooltip } from '@mui/material';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import GridView from 'components/MRTTable/Common/GridView';
-import TabHeader from 'components/MRSimpleTable/Common/TabHeader';
+import TabHeader from 'components/Common/MRTable/TabHeader';
 import { globalStateController } from 'hookstate/globalStateController';
 import { excludeFilters } from './CommonToolBarActions';
 import _ from 'lodash';

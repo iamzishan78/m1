@@ -26,7 +26,6 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 import { detailCardStyles } from '../style';
 import { DrawerContextProvider } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
 import ParcelAgreementTable from 'components/Table/Parcel/ParcelAgreementTable';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
 import { jobController } from 'hookstate/jobStateController';
 import MRSimpleTable from 'components/MRSimpleTable';
 import { layerController } from 'hookstate/layerStateController';
@@ -34,7 +33,7 @@ import { potentialOwnerTableKey } from 'components/MRSimpleTable/Schema/potentia
 import { getShapeSubtitle } from '../helper';
 import { mapControlsController } from 'hookstate/mapControlsController';
 
-const setSelectedTab = simpleTableGlobalController.setSelectedTab;
+const setSelectedTab = tableGlobalController.setSelectedTab;
 
 export default function UnitDetailCard(props) {
 	const dispatch = useDispatch();
@@ -51,7 +50,7 @@ export default function UnitDetailCard(props) {
 
 	const {
 		stateValues: { tabKey: selectedTab },
-	} = simpleTableGlobalController.useState(['tabKey']);
+	} = tableGlobalController.useState(['tabKey']);
 
 	const classes = detailCardStyles();
 	const showSummary = true;

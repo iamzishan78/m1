@@ -1,13 +1,13 @@
 import { useApolloClient } from '@apollo/client';
-import { debounce } from 'lodash';
-import { useCallback, useEffect } from 'react';
-import { simpleTableController, simpleTableGlobalController } from 'hookstate/simpleTableController';
+import { useEffect } from 'react';
+import { simpleTableController } from 'hookstate/simpleTableController';
+import { tableGlobalController } from 'hookstate/tableController';
 
 const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) => {
 	const Controller = simpleTableController(tableKey);
 	const client = useApolloClient();
 
-	const { refetch } = simpleTableGlobalController.useState(['refetch']);
+	const { refetch } = tableGlobalController.useState(['refetch']);
 
 	const callQuery = async () => {
 		const tableMeta = tableState.get({ noproxy: true });
@@ -40,34 +40,10 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		if (!tableState.query.get()) return;
 
 		callQuery();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState.query, tableState.customProps, refetch]);
 
-	const fetchMoreOnBottomReached = useCallback(
-		debounce(containerRefElement => {
-			if (!tableState?.isInFiniteScroll?.get()) return;
-
-			if (!containerRefElement) return;
-
-			if (tableState?.isFetching?.get()) return;
-
-			const data = tableState?.data?.get({ noproxy: true });
-
-			if (data?.rows?.length >= data?.total) return;
-
-			const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
-			// once the user has scrolled within 400px of the bottom of the table, fetch more data if we can
-			if (scrollHeight - scrollTop - clientHeight < 200) {
-				const tableMeta = tableState.get({ noproxy: true });
-
-				if (!tableMeta) return;
-
-				callQuery();
-			}
-		}, 10),
-		[tableState?.isInFiniteScroll, tableState?.isFetching]
-	);
-
-	return { fetchMoreOnBottomReached };
+	return {};
 };
 
 export default useHandleQuery;

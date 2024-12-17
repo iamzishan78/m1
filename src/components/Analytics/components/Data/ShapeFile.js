@@ -3,7 +3,6 @@ import MRTTable from 'components/MRTTable';
 import React, { useMemo, useState } from 'react';
 import DatasetsAutoCompleteFilter from './DatasetsAutoCompleteFilter';
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
 import { tableGlobalController } from 'hookstate/tableController';
 
 const ShapeFile = () => {
@@ -11,12 +10,12 @@ const ShapeFile = () => {
 
 	const {
 		stateValues: { tabKey },
-	} = simpleTableGlobalController.useState(['tabKey']);
+	} = tableGlobalController.useState(['tabKey']);
 
 	const subFiles = useMemo(() => {
 		if (!dataset) return null;
 
-		simpleTableGlobalController.setSelectedTab(0);
+		tableGlobalController.setSelectedTab(0);
 
 		const ds = {
 			_id: dataset._id,

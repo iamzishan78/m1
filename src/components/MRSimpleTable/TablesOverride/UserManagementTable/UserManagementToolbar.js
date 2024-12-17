@@ -1,6 +1,6 @@
 import React from 'react';
 import ToolbarButton from 'components/Shared/ui/ToolbarButton';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+import { tableGlobalController } from 'hookstate/tableController';
 import UserManagementTableDialogs from 'components/MRSimpleTable/TablesOverride/UserManagementTable/RightDialogs';
 
 const UserManagementToolbar = ({ table, tableKey }) => {
@@ -15,7 +15,7 @@ const UserManagementToolbar = ({ table, tableKey }) => {
 					<ToolbarButton
 						label="+ ADD USER"
 						onClick={() => {
-							simpleTableGlobalController.updateState({
+							tableGlobalController.updateState({
 								dialog: {
 									type: 'inviteUser',
 								},

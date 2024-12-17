@@ -2,13 +2,14 @@ import UserManagementToolbar from 'components/MRSimpleTable/TablesOverride/UserM
 import moment from 'moment';
 import { CommonSchema } from './common_schema';
 import { GET_ALL_USERS } from 'graphQL/userManagement';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+import { tableGlobalController } from 'hookstate/tableController';
 import { UserRole, RolePrivilege } from 'utils/data';
+
 export const userManagementTableKey = 'UserManagement';
 
 const onClickedRow = selectedRow => {
 	if (selectedRow?._id) {
-		simpleTableGlobalController.updateState({
+		tableGlobalController.updateState({
 			dialog: {
 				type: 'inviteUser',
 				activeUser: selectedRow,

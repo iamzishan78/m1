@@ -6,7 +6,7 @@ import { IconButton } from '@material-ui/core';
 import ContactCard from 'components/Shared/svgIcons/contact_card';
 import { Link } from 'react-router-dom';
 import ConvertContact from 'components/Shared/svgIcons/convert_contact';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+import { tableGlobalController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(() => ({
 	icons: {
@@ -47,7 +47,7 @@ function IsContactCell({ contactId, rows }) {
 					color="primary"
 					className={`${classes.icons} ${classes.noCommentsIcon}`}
 					onClick={e => {
-						simpleTableGlobalController.updateState({
+						tableGlobalController.updateState({
 							dialog: {
 								type: 'multipleOwnerToContact',
 								rows,

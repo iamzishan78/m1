@@ -3,7 +3,7 @@ import { isEqual } from 'lodash';
 import { hookStateController } from 'hookstate/hookStateController';
 import { stringFilterOptions, numberFilterOptions, dateFilterOptions } from 'components/MRSimpleTable/utils/data';
 import filterModeMenu from 'components/MRSimpleTable/utils/filterModeMenu';
-import { simpleTableGlobalState, simpleTableState } from './initialStates';
+import { simpleTableState } from './initialStates';
 
 const handleVisiblityMenu = () => {
 	const interval2 = setInterval(() => {
@@ -261,18 +261,4 @@ export const simpleTableController = TableKey => {
 		...simpleTableStateControllerHandler(simpleTableState[TableKey]),
 		...hookStateController(simpleTableState[TableKey], {}),
 	};
-};
-
-const simpleTableGlobalControllerHandler = state => ({
-	refetch: () => {
-		state.refetch.set(!state.refetch.get({ noproxy: true }));
-	},
-	setSelectedTab: tab => {
-		if (tab !== state.tabKey.get()) state.tabKey.set(tab);
-	},
-});
-
-export const simpleTableGlobalController = {
-	...simpleTableGlobalControllerHandler(simpleTableGlobalState),
-	...hookStateController(simpleTableGlobalState, {}),
 };

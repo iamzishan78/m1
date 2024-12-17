@@ -53,6 +53,7 @@ export const tableESState = {};
 export const tableGlobalState = hookstate({
 	refetch: false,
 	reInitialized: false,
+	tabKey: 0,
 });
 
 async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyChange, tableKey) {
@@ -791,6 +792,9 @@ const tableGlobalControllerHandler = state => ({
 	},
 	reInitialized: () => {
 		state.reInitialized.set(!state.reInitialized.get({ noproxy: true }));
+	},
+	setSelectedTab: tab => {
+		if (tab !== state.tabKey.get()) state.tabKey.set(tab);
 	},
 });
 

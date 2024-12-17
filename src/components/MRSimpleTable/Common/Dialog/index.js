@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+import { tableGlobalController } from 'hookstate/tableController';
 import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import BuyContactsInfoDialogContent from 'components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
@@ -11,22 +11,21 @@ import TagDialog from './TagDialog';
 import ExportConfirmationDialog from './ConfirmationDialog/ExportConfirmation';
 import { useMutation } from '@apollo/client';
 import { REMOVE_USERS } from 'graphQL/userManagement';
-import { globalStateController } from 'hookstate/globalStateController';
 
 function AllDialogs() {
-	const { stateValues } = simpleTableGlobalController.useState(['dialog']);
+	const { stateValues } = tableGlobalController.useState(['dialog']);
 	const { type, ...rest } = stateValues.dialog || {};
 	const tableKey = rest?.tableKey;
 	const [removeUsers] = useMutation(REMOVE_USERS);
 
 	const handleCloseDialog = () => {
-		simpleTableGlobalController.updateState({
+		tableGlobalController.updateState({
 			dialog: {},
 		});
 	};
 
 	const updateRows = rows => {
-		simpleTableGlobalController.updateState({
+		tableGlobalController.updateState({
 			dialog: {
 				type,
 				selectedRows: rows,
@@ -49,12 +48,12 @@ function AllDialogs() {
 				res => {
 					if (res?.data?.removeUsers) {
 						Loader.successToast('deletion');
-						simpleTableGlobalController.refetch();
+						tableGlobalController.refetch();
 					}
 				},
 				() => {
 					Loader.errorToast('deletion', 'Failed to delete row (s)');
-					simpleTableGlobalController.refetch();
+					tableGlobalController.refetch();
 				}
 			);
 		}

@@ -13,7 +13,8 @@ const useMRSimpleTable = tableKey => {
 	const Controller = simpleTableController(tableKey);
 	const tableState = Controller.useCompleteState();
 	const tableStateValues = tableState?.get({ noproxy: true });
-	const { fetchMoreOnBottomReached } = useHandleQuery({
+
+	useHandleQuery({
 		tableRef: tableStateValues?.isInFiniteScroll ? rowVirtualizerInstanceRef : tableRef,
 		tableKey,
 		tableState,
@@ -134,7 +135,6 @@ const useMRSimpleTable = tableKey => {
 					minHeight: tableStateValues?.maxTableHeight,
 					height: tableStateValues?.height,
 				},
-				onScroll: e => fetchMoreOnBottomReached(e.target),
 			},
 			localization: localizationOptions,
 			muiTableProps: {
