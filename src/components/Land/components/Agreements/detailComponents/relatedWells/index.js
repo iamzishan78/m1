@@ -1,23 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import _ from 'underscore';
-import { useForm } from 'react-hook-form';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import {
-	Typography,
-	Accordion,
-	AccordionSummary,
-	AccordionDetails,
-	Grid,
-	Chip,
-	IconButton,
-	TextField,
-} from '@material-ui/core';
+import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import { useStyles as customStyles } from '../style';
-
-import { copy } from 'components/Shared/functions';
 import TabButtons from 'components/Shared/TabPanels/TabButtons';
-import AgreementOwnersTractsTable from 'components/Table/Agreement/AgreementOwnersTractsTable';
 import ShapeWellInterestTable from 'components/Table/Shape/ShapeWellInterestTable';
 import AssociatedWellsShapeTable from 'components/Table/Wells/AssociatedWellsShapeTable';
 

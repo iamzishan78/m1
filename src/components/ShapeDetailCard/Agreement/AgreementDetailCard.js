@@ -10,12 +10,12 @@ import TabPanels from 'components/Shared/TabPanels';
 import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
+import RelatedTractsTable from 'components/Common/RelatedTables/Tracts';
 import TabButtons from 'components/Shared/TabPanels/TabButtons';
 import AgreementSummary from './AgreementSummary';
 import ProvisionsTab from './ProvisionsTab';
 import ShapeWellInterestTable from 'components/Table/Shape/ShapeWellInterestTable';
 import AssociatedWellsShapeTable from 'components/Table/Wells/AssociatedWellsShapeTable';
-import AgreementOwnersTractsTable from 'components/Table/Agreement/AgreementOwnersTractsTable';
 import AssociatedTractsShapeTable from 'components/Table/Wells/AssociatedTractsShapeTable';
 import Tags from 'components/Shared/Tagger';
 import { showSuccessMessage, showErrorMessage, showInfoMessage } from 'actions';
@@ -32,6 +32,7 @@ import { jobController } from 'hookstate/jobStateController';
 import { layerController } from 'hookstate/layerStateController';
 import MRTTable from 'components/MRTTable';
 import AgreementRelatedUnitsToolbar from 'components/MRTTable/TablesOverride/AgreementRelatedUnitsTable/AgreementRelatedUnitsToolbar';
+import { tableController } from 'hookstate/tableController';
 
 export default function AgreementDetailCard(props) {
 	const dispatch = useDispatch();
@@ -39,8 +40,8 @@ export default function AgreementDetailCard(props) {
 	const [selectedWellTab, setWellSelectedTab] = useState(0);
 	const [selectedTractTab, setTractSelectedTab] = useState(0);
 	const [uniObj, setUniObj] = useState();
-	const [tractOwners, setTractOwners] = useState();
 	const [properties, setProperties] = useState();
+	const relatedTractsTableState = tableController('RelatedTractsTable').useState(['data']).stateValues;
 	const [updateCustomLayer, { data: updatedUnit }] = useMutation(UPDATECUSTOMLAYER);
 
 	const classes = detailCardStyles();
@@ -295,6 +296,23 @@ export default function AgreementDetailCard(props) {
 		[uniObj?._id]
 	);
 
+	const RelatedTractsOverrideMeta = useMemo(
+		() => ({
+			maxTableHeight: 'calc(50vh - 100px)',
+			tabLabels: ['Related Tracts', 'Potential Tracts'],
+			defaultFilters: [{ field: 'shape._id', value: uniObj?._id }],
+			customProps: { customLayer: uniObj, shapeType: 'Agreement' },
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: uniObj?._id },
+			},
+			customValue: { parentRecord: uniObj?._id },
+			columnReordering: false,
+		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[uniObj?._id]
+	);
+
 	const WellHeader = ({ selectedWellTab, setWellSelectedTab }) => (
 		<TabButtons
 			labels={['Agreement Wells', 'Potential Wells']}
@@ -358,7 +376,7 @@ export default function AgreementDetailCard(props) {
 								>
 									<Grid item xs={12} style={{ padding: '15px 5px 25px 0px' }}>
 										<AgreementLegalDescriptionFields
-											tractOwners={tractOwners}
+											tractOwners={relatedTractsTableState?.data?.rows}
 											agreementDetails={uniObj?.shape?.properties}
 											updateAgreement={updateCustomProperties}
 										/>
@@ -369,19 +387,11 @@ export default function AgreementDetailCard(props) {
 												value={selectedTractTab}
 												panels={[
 													<div className={showSummary ? classes.agreementSubContent : classes.subContent2}>
-														<AgreementOwnersTractsTable
-															setRecord={setTractOwners}
-															customLayer={uniObj}
+														<RelatedTractsTable
+															id="relatedTractsTable"
+															overrideMeta={RelatedTractsOverrideMeta}
 															shapeType="Agreement"
-															header={
-																<TractHeader
-																	selectedTractTab={selectedTractTab}
-																	setTractSelectedTab={setTractSelectedTab}
-																/>
-															}
-															dense
-															commentType="Ownership"
-															targetLabel="Tract"
+															customLayer={uniObj}
 														/>
 													</div>,
 													<div className={showSummary ? classes.subContent : classes.subContent2}>
