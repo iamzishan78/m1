@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import PropertyInterestDetailsTable from 'components/Table/Revenue/PropertyInterestDetailsTable';
 import PropertyRevenueDetailsTable from 'components/Table/Revenue/PropertyRevenueDetailsTable';
 // import PropertyWellProductionTable from "components/Table/Revenue/PropertyWellProductionTable";
 import TabButtons from 'components/Shared/TabPanels/TabButtons';
@@ -74,21 +73,20 @@ const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDe
 		[propertyId]
 	);
 
+	const InterestDetailoverrideMeta = useMemo(
+		() => ({
+			defaultFilters: [{ field: 'property._id', value: propertyId }],
+			tabLabels: ['Interest Details', 'Revenue Details', 'Related Agreements'],
+		}),
+		[propertyId]
+	);
+
 	return (
 		<div className={`${classes.sectionCard}`}>
 			<TabPanels
 				value={selectedTab}
 				panels={[
-					<PropertyInterestDetailsTable
-						onClickAdd={onClickAdd}
-						setSelectedInterest={setSelectedInterest}
-						showInterestDetails={showInterestDetails}
-						targetLabel="propertyInterest"
-						parent="PropertyInterestTable"
-						header={<Header />}
-						propertyId={propertyId}
-					/>,
-
+					<MRTTable name="PropertyInterestDetailTable" overrideMeta={InterestDetailoverrideMeta} />,
 					<PropertyRevenueDetailsTable
 						onClickAdd={onClickAdd}
 						setSelectedInterest={setSelectedInterest}
