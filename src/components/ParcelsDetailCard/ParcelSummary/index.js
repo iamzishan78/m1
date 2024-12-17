@@ -290,7 +290,7 @@ export default function ParcelSummary(props) {
 				},
 			});
 		}
-	}, [props.customLayer]);
+	}, [getShapeWellsCount, props.customLayer]);
 
 	const tableData = React.useMemo(() => {
 		// rounding interest values
@@ -408,6 +408,7 @@ export default function ParcelSummary(props) {
 								updating={props.updating}
 								customLayer={props.customLayer}
 								shapeType={'Tract'}
+								id={props.id}
 							/>
 						</Grid>
 						<Grid item>
