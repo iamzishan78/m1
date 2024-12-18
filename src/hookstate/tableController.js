@@ -272,40 +272,45 @@ const tableESStateControllerHandler = state => ({
 			? [...formatedGridView.filters, ...formattedmapViewsFilters]
 			: [...formattedmapViewsFilters];
 
+		let stateToUpdate = {
+			...rest,
+			initialized: true,
+			tableKey,
+			pageSize,
+			isClientSide,
+			data: { rows: [], total: 0 },
+			isLoading: false,
+			isFetching: false,
+			isError: false,
+			customProps: isEmpty(state?.customProps?.get({ noproxy: true }))
+				? customProps
+				: state?.customProps?.get({ noproxy: true }),
+			rowSelection: {},
+			searchFields,
+			isInFiniteScroll,
+			columnVirtualization,
+			TableSchema: _TableSchema,
+			tableCss,
+			groupedField,
+			grouping: groupedField ? [groupedField] : [],
+			footerProps: [],
+			ExternalFilter,
+			defaultSort,
+			filterModes,
+			commentsCounter: [],
+			tagsList: [],
+		};
+
 		if (isClientSide) {
-			state.merge({
-				...rest,
-				initialized: true,
-				tableKey,
-				pageSize,
+			stateToUpdate = {
+				...stateToUpdate,
 				isSelectAllAllowed: isSelectAllAllowed || false,
 				isAllRowsSelected: isAllRowsSelected || false,
-				isClientSide,
 				showColumnFilters: false,
-				data: { rows: [], total: 0 },
-				isLoading: false,
-				isFetching: false,
-				isError: false,
 				defaultFilters: state?.defaultFilters?.get({ noproxy: true }) || defaultFilters || [],
-				customProps: isEmpty(state?.customProps?.get({ noproxy: true }))
-					? customProps
-					: state?.customProps?.get({ noproxy: true }),
 				filters: [],
 				sorting: [],
-				searchFields,
-				isInFiniteScroll,
-				columnVirtualization,
-				TableSchema: _TableSchema,
-				tableCss,
-				groupedField,
-				grouping: groupedField ? [groupedField] : [],
-				footerProps: [],
-				ExternalFilter,
 				columnVisibility,
-				defaultSort,
-				filterModes,
-				commentsCounter: [],
-				tagsList: [],
 				columnPinning: {
 					left: [
 						...(pinnedFields.length > 0
@@ -313,58 +318,36 @@ const tableESStateControllerHandler = state => ({
 							: ['mrt-row-select', 'mrt-row-numbers']),
 					],
 				},
-				rowSelection: {},
-			});
+			};
 		} else {
-			state.merge({
-				...rest,
+			stateToUpdate = {
+				...stateToUpdate,
 				refetchQueries,
 				defaultFlterMode,
 				search,
-				initialized: true,
-				tableKey,
 				esIndex,
 				fetchMetaData,
 				gridViewSettings,
 				gridView,
-				pageSize,
 				isSelectall: false,
 				isSelectAllAllowed,
 				isAllRowsSelected,
-				isClientSide,
 				showColumnFilters: formatedGridView?.filters ? true : false,
-				data: { rows: [], total: 0 },
-				isLoading: false,
-				isFetching: false,
-				isError: false,
 				defaultFilters: defaultFilters || state?.defaultFilters?.get({ noproxy: true }) || [],
-				customProps: isEmpty(state?.customProps?.get({ noproxy: true }))
-					? customProps
-					: state?.customProps?.get({ noproxy: true }),
 				filters: extractUniqueFilters(combinedFilters),
 				layerIdentifier,
 				sorting: formatedGridView?.sorting ? formatedGridView.sorting : [],
-				rowSelection: {},
-				searchFields,
-				isInFiniteScroll,
-				columnVirtualization,
-				TableSchema: _TableSchema,
-				tableCss,
-				groupedField,
-				grouping: groupedField ? [groupedField] : [],
-				footerProps: [],
-				ExternalFilter,
 				columnVisibility: formatedGridView?.columnVisibility ? formatedGridView.columnVisibility : columnVisibility,
-				defaultSort,
 				isIncludeInactive,
-				filterModes,
 				density,
 				advanceSearch,
 				enableHiding,
 				columnOrdering: formatedGridView?.columnOrdering ? formatedGridView.columnOrdering : defaultColumnsOrdering,
 				columnPinning: formatedGridView?.columnPinning ? formatedGridView.columnPinning : defaultColumnsPinning,
-			});
+			};
 		}
+
+		state.merge(stateToUpdate);
 
 		if (mapViewFilters.length > 0) tableController(tableKey).setShowColumnFilters(true);
 		mapViewFilters?.forEach(filter => {
