@@ -72,4 +72,16 @@ export const customLayersFieldAccessors = {
 		],
 		layerKey: 'wells',
 	},
+	Wells: {
+		keys: [
+			{ label: 'Operator', value: 'operator.keyword' },
+			{ label: 'Well Type', value: 'wellType.keyword' },
+			{ label: 'Well Profile', value: 'wellBoreProfile.keyword' },
+			{ label: 'Well Status', value: 'wellStatus.keyword' },
+			{ label: 'Formation', value: 'primaryFormation.keyword' },
+			{ label: 'Play', value: 'play.keyword' },
+			{ label: 'Field', value: 'field.keyword' },
+		],
+		layerKey: 'platformData:wells',
+	},
 };

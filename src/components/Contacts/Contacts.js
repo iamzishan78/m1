@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Switch, Route, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
-// import { toggleQuickActionsPanel, setActiveModule } from "store/actions/contactActions";
 import { setActiveModule, toggleQuickActionsPanel } from 'store/actions/commonActions';
 import { AppContext } from 'AppContext';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';

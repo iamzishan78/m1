@@ -224,9 +224,9 @@ const tableData = [
 		// dependencyArray: filterConsts.mapStatus.dependencyArray,
 	},
 	{
-		label: 'Campaign Name',
+		label: 'Campaigns',
 		type: 'custom',
-		key: 'campaignName',
+		key: 'campaigns',
 	},
 	{
 		label: 'Basin',

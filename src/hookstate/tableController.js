@@ -228,7 +228,7 @@ const tableESStateControllerHandler = state => ({
 		const { filters } = mapView?.selectedMapView || {};
 		const selectedMapViewFilters = filters || [];
 
-		const dataSourceViews = selectedMapViewFilters?.filter(view => view.dataSourceName === layerIdentifier);
+		const dataSourceViews = selectedMapViewFilters?.filter(view => layerIdentifier === view.dataSourceName);
 		const mapViewFilters =
 			dataSourceViews?.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)) ||
 			[];
@@ -265,6 +265,7 @@ const tableESStateControllerHandler = state => ({
 			search,
 			columnVirtualization,
 			globalFilter,
+			layerIdentifier,
 		});
 
 		// Set default pinning and ordering
@@ -344,9 +345,10 @@ const tableESStateControllerHandler = state => ({
 		});
 
 		if (mapViewFilters.length > 0) tableController(tableKey).setShowColumnFilters(true);
-		mapViewFilters?.forEach(filter => {
-			tableController(tableKey).setFilterMode(filter?.field.replace('.keyword', ''), filter.searchType);
-		});
+		if (customLayersFieldAccessors[layerIdentifier])
+			mapViewFilters?.forEach(filter => {
+				tableController(tableKey).setFilterMode(filter?.field.replace('.keyword', ''), filter.searchType);
+			});
 	},
 
 	setFilterMode: (column, mode) => {
@@ -380,6 +382,31 @@ const tableESStateControllerHandler = state => ({
 		const columnFilterModesFnRefs = globalStateController.getValue('columnFilterModesFnRefs');
 
 		columnFilterModesFnRefs?.[state.tableKey.get({ noproxy: true })]?.[column]?.(mode);
+	},
+	setInitialFilterMode: (columnSchema, mode, column) => {
+		let updatedColumnnSchmes = null;
+
+		if (mode === 'singleselect') {
+			updatedColumnnSchmes = {
+				Filter: columnSchema?.SingleSelect,
+			};
+		} else if (mode === 'multiselect') {
+			updatedColumnnSchmes = {
+				Filter: columnSchema?.MultiSelect,
+			};
+		} else if (columnSchema?.Filter) {
+			updatedColumnnSchmes = { Filter: null };
+		}
+
+		if (!columnSchema?.name) return;
+		state.filterModes?.merge({
+			[column]: {
+				mode,
+				isKeyword: columnSchema.name.includes('.keyword'),
+			},
+		});
+
+		return updatedColumnnSchmes;
 	},
 	setSelectAll: value => {
 		state.isSelectall.set(value);
@@ -503,11 +530,11 @@ const tableESStateControllerHandler = state => ({
 		});
 
 		if (tableState?.layerIdentifier) {
-			const currentIdentifier = customLayersFieldAccessors[tableState?.layerIdentifier];
-
 			if (
-				currentIdentifier &&
-				currentIdentifier.keys?.find(key => key.value.replace('.keyword', '') === filter.field.replace('.keyword', ''))
+				true
+				// code to check if there any filter value outside the values given in map views need to handle this
+				// currentIdentifier &&
+				// currentIdentifier.keys?.find(key => key.value.replace('.keyword', '') === filter.field.replace('.keyword', ''))
 			) {
 				const existingFilter = mapViewsFitlers.find(
 					({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') === filter.field
@@ -520,6 +547,20 @@ const tableESStateControllerHandler = state => ({
 				const isNonValuesFilter = ['empty', 'notEmpty'].includes(filter.searchType);
 
 				if (!(isValuesEqual || isNonValuesFilter)) {
+					const newFilter = {
+						dataSourceName: tableState?.layerIdentifier,
+						filterType: tableState?.filterModes[filter.field.replace('.keyword', '')]?.mode
+							? tableState.filterModes[filter.field.replace('.keyword', '')]?.mode
+							: existingFilter?.filterType
+								? existingFilter.filterType
+								: tableState?.esIndex === 'shapefile_flat'
+									? 'multiselect'
+									: 'singleselect',
+
+						fieldName: filter.field,
+						filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
+					};
+
 					globalStateController.updateState({
 						viewChanged: true,
 						mapView: {
@@ -529,19 +570,11 @@ const tableESStateControllerHandler = state => ({
 								...mapView?.selectedMapView,
 								filters: [
 									...mapViewsFitlers.filter(
-										({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') !== filter.field
+										({ fieldName, dataSourceName }) =>
+											(fieldName?.value || fieldName).replace('.keyword', '') !== filter.field ||
+											dataSourceName !== tableState?.layerIdentifier
 									),
-									{
-										dataSourceName: tableState?.layerIdentifier,
-										filterType:
-											tableState?.filterModes[filter.field.replace('.keyword', '')]?.mode ||
-											existingFilter?.filterType ||
-											tableState?.esIndex === 'shapefile_flat'
-												? 'multiselect'
-												: 'singleselect',
-										fieldName: filter.field,
-										filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
-									},
+									newFilter,
 								],
 							},
 						},
@@ -736,6 +769,7 @@ const tableESStateControllerHandler = state => ({
 			defaultFlterMode,
 			search,
 			columnVirtualization,
+			layerIdentifier,
 		} = state.get({
 			noproxy: true,
 		});
@@ -761,6 +795,7 @@ const tableESStateControllerHandler = state => ({
 			defaultFlterMode,
 			search,
 			columnVirtualization,
+			layerIdentifier,
 		});
 
 		genericState.TableSchema = _TableSchema;

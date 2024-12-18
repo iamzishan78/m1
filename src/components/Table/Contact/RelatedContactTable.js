@@ -4,8 +4,7 @@ import get from 'lodash/get';
 import { Container, Dialog, IconButton, ButtonGroup, Button, Tooltip } from '@material-ui/core';
 import Table from 'components/Shared/M1nTable/components/Table';
 import TableESHOC from 'components/Table/TableESHOC';
-import { useMutation, useApolloClient } from '@apollo/client';
-import { useDispatch } from 'react-redux';
+import { useMutation } from '@apollo/client';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import { AppContext } from 'AppContext';
@@ -47,12 +46,6 @@ export const getFilters = appliedFilters => {
 			'simple'
 		);
 		if (range.length > 0) filters = [...filters, ...range];
-		if (appliedFilters.campaignName) {
-			filters.push({
-				field: 'contact.campaignName.keyword',
-				value: appliedFilters.campaignName,
-			});
-		}
 		if (appliedFilters.qualifier) {
 			filters.push({
 				field: 'ownerName.keyword',
@@ -76,7 +69,7 @@ const CustomFilterList = props => {
 function RelatedContactsTable(props) {
 	const classes = usetableStyles();
 	const [isDeletePopup, setDeletePopup] = useState(false);
-	const [selectedRow, selectRow] = useState([]);
+	const [, selectRow] = useState([]);
 	const [stateApp, setStateApp] = useContext(AppContext);
 	const { clickedRow, applyCustomClasses } = props;
 	const [resetSelectedRow, setResetSelectedRow] = useState(false);
@@ -117,11 +110,12 @@ function RelatedContactsTable(props) {
 			setStateApp(() => ({ ...stateApp, selectedActivity: activity }));
 			onModalOpen(props.dialogType);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [clickedRow]);
 
 	const formatHits = hits => {
 		return hits.map(hit => {
-			const relationshipType = hit.relatedContacts.find(rc => rc.relatedObject == props.contactId);
+			const relationshipType = hit.relatedContacts.find(rc => rc.relatedObject === props.contactId);
 			if (relationshipType) {
 				hit.relationshipType = relationshipType.relationshipType;
 			}

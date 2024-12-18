@@ -131,7 +131,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
 			name: 'orri',
 			type: 'number',
 			onBlur: value => {
-				const { mineral_interest, royalty_interest, nra, orri } = getValues() || {};
+				const { mineral_interest, royalty_interest } = getValues() || {};
 				setValue('orri', safeParseFloat(value).toFixed(8));
 
 				if (!sideDialogController('tractInterestDialog').getValue('showNraRecalculate')) {
@@ -208,7 +208,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
 								onClick={() => {
 									const selectedParcel = popupController.getValue('selectedParcel');
 									const workspaceSettings = sideDialogController('tractInterestDialog').getValue('workspaceSettings');
-									const { mineral_interest, nra, royalty_interest, orri } = getValues() || {};
+									const { mineral_interest, royalty_interest, orri } = getValues() || {};
 									const netAcres = calculateNetAcres(mineral_interest);
 									setValue('net_acres', netAcres);
 									if (!sideDialogController('tractInterestDialog').getValue('showNraRecalculate')) {
@@ -696,9 +696,9 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
 			},
 		},
 		{
-			label: 'Campaign Names',
-			name: 'campaignName',
-			renderField: 'campaignName',
+			label: 'Campaigns',
+			name: 'campaigns',
+			renderField: 'campaigns',
 		},
 		{
 			label: 'Campaign Priority',

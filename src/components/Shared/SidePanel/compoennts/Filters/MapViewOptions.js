@@ -24,6 +24,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 import StarIcon from '@material-ui/icons/Star';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { copy } from 'components/Shared/functions';
 
 const useStyles = makeStyles(() => ({
 	container: {
@@ -104,19 +105,19 @@ function MapViewOptions({ tableKey, allMapViews, defaultView }) {
 	const [search, setSearch] = useState('');
 	const [editMapView, setEditMapView] = useState(null);
 	const [viewName, setViewName] = useState(`${mapViewStateValues?.mapView?.selectedMapView?.name || 'view'}-copy`);
-	const [upsertMapView] = useMutation(UPSERT_MAP_VIEW, {
-		onCompleted: data => {
-			// fetchMapViews();
-			const mapView = globalStateController.getValue('mapView');
-			globalStateController.updateState({
-				mapView: {
-					...mapView,
-					showViewModal: false,
-					showSaveAsNew: false,
-				},
-			});
-		},
-	});
+	const [upsertMapView] = useMutation(UPSERT_MAP_VIEW, {});
+
+	const handleMapViewChange = mapView => {
+		upsertMapView({
+			variables: {
+				mapView: { ...mapView, userId: getUser?._id },
+			},
+		}).then(res => {
+			tableGlobalController.reInitialized();
+		});
+
+		handleClick(mapView);
+	};
 
 	useEffect(() => {
 		if (selectedTab === 'views') {
@@ -151,8 +152,25 @@ function MapViewOptions({ tableKey, allMapViews, defaultView }) {
 		prevMapView?.selectedMapView?.filters?.forEach(filter => {
 			layerFiltersController.resetVariables(filter?.dataSourceName);
 		});
+
+		const mapViewIndex = allMapViews.findIndex(v => v._id === view._id);
+		let _allMapViews = copy(allMapViews);
+		if (mapViewIndex === -1) {
+			_allMapViews.push(view);
+		} else {
+			if (data.isDeleted) _allMapViews = _allMapViews.filter(v => v._id !== data._id);
+			else _allMapViews[mapViewIndex] = view;
+		}
+
+		let mapView = { ...data };
+		if (data.isDeleted === true && prevMapView?.selectedMapView?._id === data._id) {
+			mapView = _allMapViews.find(view => view.isCurrent) || defaultView;
+		} else if (data.isDeleted === true && prevMapView?.selectedMapView?._id !== data._id)
+			mapView = prevMapView?.selectedMapView;
+
 		globalStateController.updateState({
-			mapView: { ...mapViewStateValues.mapView, selectedMapView: data, showViewModal: false },
+			allMapViews: _allMapViews,
+			mapView: { ...mapViewStateValues.mapView, selectedMapView: mapView, showViewModal: false },
 			viewChanged: true,
 		});
 	};
@@ -272,6 +290,7 @@ function MapViewOptions({ tableKey, allMapViews, defaultView }) {
 											userId={getUser?._id}
 											onClick={handleClick}
 											upsertMapView={upsertMapView}
+											handleMapViewChange={handleMapViewChange}
 											tableKey={tableKey}
 											defaultView={defaultView}
 										/>
@@ -312,6 +331,7 @@ function InputField({ editMapViewId, viewName, setViewName, upsertMapView, setEd
 				event.stopPropagation();
 				if (event.key === 'Enter') {
 					const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView || {};
+					selectedMapView.name = viewName;
 					event.preventDefault();
 					if (editMapViewId) {
 						upsertMapView({
@@ -326,7 +346,6 @@ function InputField({ editMapViewId, viewName, setViewName, upsertMapView, setEd
 							tableGlobalController.reInitialized();
 						});
 					} else {
-						selectedMapView.name = viewName;
 						upsertMapView({
 							variables: {
 								mapView: {
@@ -363,12 +382,10 @@ function InputField({ editMapViewId, viewName, setViewName, upsertMapView, setEd
 	);
 }
 
-function View({ onClick, view, setEditMapView, setViewName, userId, defaultView, upsertMapView }) {
+function View({ onClick, view, setEditMapView, setViewName, userId, defaultView, upsertMapView, handleMapViewChange }) {
 	const classes = useStyles();
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [showActions, setShowActions] = useState(false);
-	const mapViewState = globalStateController.useState(['mapView']);
-	const mapViewStateValues = mapViewState.stateValues;
 
 	const handleClick = event => {
 		setAnchorEl(event.currentTarget);
@@ -393,18 +410,7 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 					<StarIcon
 						style={{ marginTop: '5px' }}
 						onClick={() => {
-							upsertMapView({
-								variables: {
-									mapView: {
-										_id: view._id,
-										userId,
-										isFavourite: false,
-									},
-								},
-								refetchQueries: ['getMapViews'],
-							}).then(res => {
-								tableGlobalController.reInitialized();
-							});
+							handleMapViewChange({ ...view, isFavourite: false, userId });
 						}}
 					/>
 				)}
@@ -412,19 +418,7 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 					<BookmarkIcon
 						style={{ marginTop: '5px' }}
 						onClick={() => {
-							upsertMapView({
-								variables: {
-									_id: view._id,
-									userId,
-									isCurrent: false,
-								},
-								refetchQueries: ['getMapViews'],
-							}).then(res => {
-								tableGlobalController.reInitialized();
-							});
-							globalStateController.updateState({
-								mapView: { selectedMapView: { ...view, isFavourite: !view?.isFavourite } },
-							});
+							handleMapViewChange({ ...view, isCurrent: false, userId });
 						}}
 					/>
 				)}
@@ -468,22 +462,10 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 						style={{ width: '250px' }}
 						onClick={() => {
 							handleClose();
-							upsertMapView({
-								variables: {
-									mapView: {
-										_id: view._id,
-										userId,
-										operation: view?.defaultDisplayBy?.includes(userId) ? 'REMOVE' : 'ADD',
-										isCurrent: !view?.isCurrent,
-									},
-								},
-								refetchQueries: ['getMapViews'],
-							}).then(res => {
-								tableGlobalController.reInitialized();
-							});
-							globalStateController.updateState({
-								mapView: { selectedMapView: { ...view, isCurrent: !view?.isCurrent } },
-								viewChanged: true,
+							handleMapViewChange({
+								...view,
+								operation: view?.defaultDisplayBy?.includes(userId) ? 'REMOVE' : 'ADD',
+								isCurrent: !view?.isCurrent,
 							});
 						}}
 					>
@@ -494,20 +476,9 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 				<MenuItem
 					style={{ width: '250px' }}
 					onClick={() => {
-						upsertMapView({
-							variables: {
-								mapView: {
-									_id: view._id,
-									userId,
-									isFavourite: !view.isFavourite,
-								},
-							},
-							refetchQueries: ['getMapViews'],
-						}).then(res => {
-							tableGlobalController.reInitialized();
-						});
-						globalStateController.updateState({
-							mapView: { selectedMapView: { ...view, isFavourite: !view?.isFavourite } },
+						handleMapViewChange({
+							...view,
+							isFavourite: !view.isFavourite,
 						});
 					}}
 				>
@@ -518,28 +489,33 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 						style={{ width: '250px' }}
 						onClick={() => {
 							handleClose();
-							upsertMapView({
-								variables: {
-									mapView: {
-										_id: view._id,
-										isDeleted: true,
-									},
-								},
-								refetchQueries: ['getMapViews'],
-							}).then(res => {
-								tableGlobalController.reInitialized();
+
+							handleMapViewChange({
+								...view,
+								isDeleted: true,
 							});
-							if (view?._id === mapViewStateValues?.mapView?.selectedMapView?._id) {
-								globalStateController.updateState({
-									mapView: { ...mapViewStateValues.mapView, showViewModal: false, selectedMapView: defaultView },
-									viewChanged: true,
-								});
-							} else {
-								globalStateController.updateState({
-									mapView: { ...mapViewStateValues.mapView, showViewModal: false, selectedMapView: defaultView },
-									viewChanged: true,
-								});
-							}
+							// upsertMapView({
+							// 	variables: {
+							// 		mapView: {
+							// 			_id: view._id,
+							// 			isDeleted: true,
+							// 		},
+							// 	},
+							// 	refetchQueries: ['getMapViews'],
+							// }).then(res => {
+							// 	tableGlobalController.reInitialized();
+							// });
+							// if (view?._id === mapViewStateValues?.mapView?.selectedMapView?._id) {
+							// 	globalStateController.updateState({
+							// 		mapView: { ...mapViewStateValues.mapView, showViewModal: false, selectedMapView: defaultView },
+							// 		viewChanged: true,
+							// 	});
+							// } else {
+							// 	globalStateController.updateState({
+							// 		mapView: { ...mapViewStateValues.mapView, showViewModal: false, selectedMapView: defaultView },
+							// 		viewChanged: true,
+							// 	});
+							// }
 						}}
 					>
 						Delete view
