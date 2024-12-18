@@ -22,8 +22,8 @@ function AllDialogs(props) {
 	const tableKey = rest?.tableKey || props.tableKey;
 
 	const {
-		stateValues: { refetchQueries },
-	} = tableController(props.tableKey).useState(['refetchQueries']);
+		stateValues: { refetchQueries, isClientSide },
+	} = tableController(props.tableKey).useState(['refetchQueries', 'isClientSide']);
 
 	const [gridGenericRemove] = useMutation(GRID_GENERIC_REMOVE, {
 		awaitRefetchQueries: true,
@@ -87,12 +87,18 @@ function AllDialogs(props) {
 		<>
 			{type === 'tags' && (
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={false}>
-					<TagDialog {...rest} refetch={props.refetch} />
+					<TagDialog
+						{...rest}
+						refetch={isClientSide ? tableGlobalController.refetchAdditionalQueries : tableGlobalController.refetch}
+					/>
 				</Dialog>
 			)}
 			{type === 'comments' && (
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
-					<CommentDialog {...rest} refetch={props.refetch} />
+					<CommentDialog
+						{...rest}
+						refetch={isClientSide ? tableGlobalController.refetchAdditionalQueries : tableGlobalController.refetch}
+					/>
 				</Dialog>
 			)}
 
