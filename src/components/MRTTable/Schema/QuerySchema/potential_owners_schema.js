@@ -6,7 +6,7 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { getPolygonString } from 'components/Shared/functions';
 
 import { globalStateController } from 'hookstate/globalStateController';
-import { simpleTableController } from 'hookstate/simpleTableController';
+import { tableController } from 'hookstate/tableController';
 import { SHAPE_WELL_OWNERS } from 'graphQL/useQueryPaginatedShapeWellOwners';
 
 export const potentialOwnerTableKey = 'PotentialOwners';
@@ -155,7 +155,7 @@ const PotentialOwnersMeta = {
 				const id = row.getValue('id');
 				let tags = row?.original?.tags;
 
-				const Controller = simpleTableController(potentialOwnerTableKey);
+				const Controller = tableController(potentialOwnerTableKey);
 				const { stateValues } = Controller.useState(['tagsList']);
 
 				tags = stateValues.tagsList?.find(tag => tag._id === id)?.tags || tags;
@@ -180,7 +180,7 @@ const PotentialOwnersMeta = {
 
 				let value = renderedCellValue?.length || 0;
 
-				const Controller = simpleTableController(potentialOwnerTableKey);
+				const Controller = tableController(potentialOwnerTableKey);
 				const { stateValues } = Controller.useState(['commentsCounter']);
 
 				value = stateValues.commentsCounter?.find(counter => counter._id === id)?.total || value;

@@ -3,14 +3,13 @@ import { debounce } from 'lodash';
 import SelectFilter from 'components/Shared/ui/SelectFilter';
 import ToggleSwitch from 'components/Shared/ui/ToggleSwitch';
 import ToolbarButton from 'components/Shared/ui/ToolbarButton';
-import { simpleTableController } from 'hookstate/simpleTableController';
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 import { calculateStandardNraForUnit } from 'utils/calculatedNraHelper';
 import { addTrailingZeros } from 'components/Shared/functions';
 import { useSelector } from 'react-redux';
 
 const PotentialOwnersToolbar = ({ table, tableKey }) => {
-	const Controller = simpleTableController(tableKey);
+	const Controller = tableController(tableKey);
 	const { tableStateValues } = Controller.useState(['customProps'], 'tableStateValues');
 	const isSomeRowsSelected = table.getIsSomeRowsSelected();
 	const isAllRowsSelected = table.getIsAllRowsSelected();
