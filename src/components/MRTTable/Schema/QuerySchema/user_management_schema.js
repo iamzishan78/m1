@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import UserManagementToolbar from 'components/MRSimpleTable/TablesOverride/UserManagementTable/UserManagementToolbar';
+import UserManagementToolbar from 'components/MRTTable/TablesOverride/UserManagementTable/UserManagementToolbar';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
 import { tableGlobalController } from 'hookstate/tableController';

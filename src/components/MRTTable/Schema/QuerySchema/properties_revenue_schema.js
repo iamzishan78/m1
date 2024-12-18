@@ -3,7 +3,7 @@ import { Sparklines, SparklinesLine } from 'react-sparklines';
 
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
-import PropertiesRevenueToolbar from '../TablesOverride/PropertiesRevenue/PropertiesRevenueToolbar';
+import PropertiesRevenueToolbar from 'components/MRTTable/TablesOverride/PropertiesRevenue/PropertiesRevenueToolbar';
 
 import { GET_PROPERTIES_REVENUE } from 'graphQL/useQueryGetPropertiesRevenue';
 
