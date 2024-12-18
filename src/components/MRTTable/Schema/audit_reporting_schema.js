@@ -23,6 +23,7 @@ const AuditReportingMeta = {
 		const classes = useStyles();
 		return <div className={classes.title}>Audit Reporting</div>;
 	},
+	isDeleteDisabled: true,
 	pagination: {
 		pageIndex: 0,
 		pageSize: 25,
