@@ -8,6 +8,9 @@ import {
 	customFilterOptions,
 	dateFilterOptions,
 	numberFilterOptions,
+	simpleDateFilterOptions,
+	simpleNumberFilterOptions,
+	simpleStringFilterOptions,
 	stringFilterOptions,
 } from 'components/MRTTable/utils/data';
 
@@ -86,10 +89,35 @@ export const handleMRTSchema = ({
 	search,
 	columnVirtualization,
 	globalFilter,
+	isClientSide,
 }) => {
 	_Schema = _.uniqBy(_Schema, item => item.accessorKey || item.id);
 
 	const _TableSchema = _Schema.map(schemaColumn => {
+		if (isClientSide) {
+			if (schemaColumn.filter) {
+				let options;
+				if (schemaColumn.type === 'string') {
+					options = simpleStringFilterOptions;
+				} else if (schemaColumn.type === 'number') {
+					options = simpleNumberFilterOptions;
+				} else if (schemaColumn.type === 'date') {
+					options = simpleDateFilterOptions;
+				}
+				if (schemaColumn.isComposite) options = options.filter(option => option !== 'multiselect');
+
+				schemaColumn.columnFilterModeOptions = options;
+				schemaColumn.renderColumnFilterModeMenuItems = filterModeMenu({
+					options,
+					tableKey,
+					name: schemaColumn.accessorKey || schemaColumn.id,
+					controller: tableController,
+				});
+			}
+
+			return schemaColumn;
+		}
+
 		if (schemaColumn.filter && !schemaColumn.Filter) {
 			schemaColumn.SingleSelect = function Comp({ column, isCustom, _value, textFieldProps }) {
 				return (
@@ -255,6 +283,7 @@ export const handleMRTSchema = ({
 
 	if (pinnedColumns.length > 0 && columnVirtualization) {
 		let size = 60;
+		// let size = 120;
 		pinnedColumns.forEach(column => {
 			size += column.size;
 		});

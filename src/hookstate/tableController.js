@@ -14,13 +14,7 @@ import { gridViewStateController } from 'components/MRTTable/Common/GridView/Gri
 import { formatGridViewToMRT } from 'components/MRTTable/utils/helper';
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
 import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
-import {
-	simpleDateFilterOptions,
-	simpleNumberFilterOptions,
-	simpleStringFilterOptions,
-} from 'components/MRTTable/utils/data';
-import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
-import { handleColumnMenuClick, handleMRTSchema, handleVisiblityMenu, handleVisiblityMenuClick } from './helpers';
+import { handleMRTSchema, handleVisiblityMenu } from './helpers';
 import { validateUrl } from 'utils/helper';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 import { extractUniqueFilters } from 'components/Map/DeckGL/helpers/common';
@@ -160,6 +154,7 @@ const tableESStateControllerHandler = state => ({
 			customProps = {},
 			isClientSide = false,
 			isSelectAllAllowed = true,
+			isAllRowsSelected,
 			isSelectall,
 			search,
 			fetchMetaData,
@@ -173,12 +168,6 @@ const tableESStateControllerHandler = state => ({
 			globalFilter,
 			...rest
 		} = props;
-
-		if (isClientSide) {
-			tableController(tableKey).initializeClientSide(tableKey, props);
-
-			return;
-		}
 
 		if (state.TableSchema.get()) return;
 
@@ -251,6 +240,7 @@ const tableESStateControllerHandler = state => ({
 			search,
 			columnVirtualization,
 			globalFilter,
+			isClientSide,
 		});
 
 		// Set default pinning and ordering
@@ -282,203 +272,103 @@ const tableESStateControllerHandler = state => ({
 			? [...formatedGridView.filters, ...formattedmapViewsFilters]
 			: [...formattedmapViewsFilters];
 
-		state.merge({
-			...rest,
-			refetchQueries,
-			defaultFlterMode,
-			search,
-			initialized: true,
-			tableKey,
-			esIndex,
-			fetchMetaData,
-			gridViewSettings,
-			gridView,
-			pageSize,
-			isSelectall: false,
-			isSelectAllAllowed,
-			isClientSide,
-			showColumnFilters: formatedGridView?.filters ? true : false,
-			data: { rows: [], total: 0 },
-			isLoading: false,
-			isFetching: false,
-			isError: false,
-			defaultFilters: defaultFilters || state?.defaultFilters?.get({ noproxy: true }) || [],
-			customProps: isEmpty(state?.customProps?.get({ noproxy: true }))
-				? customProps
-				: state?.customProps?.get({ noproxy: true }),
-			filters: extractUniqueFilters(combinedFilters),
-			layerIdentifier,
-			sorting: formatedGridView?.sorting ? formatedGridView.sorting : [],
-			rowSelection: {},
-			searchFields,
-			isInFiniteScroll,
-			columnVirtualization,
-			TableSchema: _TableSchema,
-			tableCss,
-			groupedField,
-			grouping: groupedField ? [groupedField] : [],
-			footerProps: [],
-			ExternalFilter,
-			columnVisibility: formatedGridView?.columnVisibility ? formatedGridView.columnVisibility : columnVisibility,
-			defaultSort,
-			isIncludeInactive,
-			filterModes,
-			density,
-			advanceSearch,
-			enableHiding,
-			columnOrdering: formatedGridView?.columnOrdering ? formatedGridView.columnOrdering : defaultColumnsOrdering,
-			columnPinning: formatedGridView?.columnPinning ? formatedGridView.columnPinning : defaultColumnsPinning,
-		});
+		if (isClientSide) {
+			state.merge({
+				...rest,
+				initialized: true,
+				tableKey,
+				pageSize,
+				isSelectAllAllowed: isSelectAllAllowed || false,
+				isAllRowsSelected: isAllRowsSelected || false,
+				isClientSide,
+				showColumnFilters: false,
+				data: { rows: [], total: 0 },
+				isLoading: false,
+				isFetching: false,
+				isError: false,
+				defaultFilters: state?.defaultFilters?.get({ noproxy: true }) || defaultFilters || [],
+				customProps: isEmpty(state?.customProps?.get({ noproxy: true }))
+					? customProps
+					: state?.customProps?.get({ noproxy: true }),
+				filters: [],
+				sorting: [],
+				searchFields,
+				isInFiniteScroll,
+				columnVirtualization,
+				TableSchema: _TableSchema,
+				tableCss,
+				groupedField,
+				grouping: groupedField ? [groupedField] : [],
+				footerProps: [],
+				ExternalFilter,
+				columnVisibility,
+				defaultSort,
+				filterModes,
+				commentsCounter: [],
+				tagsList: [],
+				columnPinning: {
+					left: [
+						...(pinnedFields.length > 0
+							? ['mrt-row-select', 'mrt-row-numbers', ...pinnedFields]
+							: ['mrt-row-select', 'mrt-row-numbers']),
+					],
+				},
+				rowSelection: {},
+			});
+		} else {
+			state.merge({
+				...rest,
+				refetchQueries,
+				defaultFlterMode,
+				search,
+				initialized: true,
+				tableKey,
+				esIndex,
+				fetchMetaData,
+				gridViewSettings,
+				gridView,
+				pageSize,
+				isSelectall: false,
+				isSelectAllAllowed,
+				isAllRowsSelected,
+				isClientSide,
+				showColumnFilters: formatedGridView?.filters ? true : false,
+				data: { rows: [], total: 0 },
+				isLoading: false,
+				isFetching: false,
+				isError: false,
+				defaultFilters: defaultFilters || state?.defaultFilters?.get({ noproxy: true }) || [],
+				customProps: isEmpty(state?.customProps?.get({ noproxy: true }))
+					? customProps
+					: state?.customProps?.get({ noproxy: true }),
+				filters: extractUniqueFilters(combinedFilters),
+				layerIdentifier,
+				sorting: formatedGridView?.sorting ? formatedGridView.sorting : [],
+				rowSelection: {},
+				searchFields,
+				isInFiniteScroll,
+				columnVirtualization,
+				TableSchema: _TableSchema,
+				tableCss,
+				groupedField,
+				grouping: groupedField ? [groupedField] : [],
+				footerProps: [],
+				ExternalFilter,
+				columnVisibility: formatedGridView?.columnVisibility ? formatedGridView.columnVisibility : columnVisibility,
+				defaultSort,
+				isIncludeInactive,
+				filterModes,
+				density,
+				advanceSearch,
+				enableHiding,
+				columnOrdering: formatedGridView?.columnOrdering ? formatedGridView.columnOrdering : defaultColumnsOrdering,
+				columnPinning: formatedGridView?.columnPinning ? formatedGridView.columnPinning : defaultColumnsPinning,
+			});
+		}
 
 		if (mapViewFilters.length > 0) tableController(tableKey).setShowColumnFilters(true);
 		mapViewFilters?.forEach(filter => {
 			tableController(tableKey).setFilterMode(filter?.field.replace('.keyword', ''), filter.searchType);
-		});
-	},
-
-	initializeClientSide: (
-		tableKey,
-		{
-			pageSize,
-			defaultSort,
-			isInFiniteScroll,
-			columnVirtualization,
-			TableSchema,
-			defaultFlterMode,
-			defaultFilters,
-			isSelectAllAllowed,
-			isAllRowsSelected,
-			search,
-			customProps = {},
-			...rest
-		}
-	) => {
-		if (state.TableSchema.get()) return;
-		const searchFields = search
-			? search?.fields
-			: TableSchema.filter(column => column.isSearchField !== false).map(column => column.id || column.accessorKey);
-
-		const ExternalFilter = TableSchema.filter(column => column.isExternalFilter === true).map(column => column.name);
-
-		const pinnedColumns = TableSchema.filter(column => column.isPinned);
-		const pinnedFields = pinnedColumns.map(column => {
-			column.enableResizing = false;
-			column.enableColumnDragging = false;
-			column.enableColumnOrdering = false;
-			return column.id || column.accessorKey;
-		});
-		const tableCss = {
-			'& .MuiDialog-root': {
-				zIndex: '99999',
-			},
-			'& .MuiToolbar-root': {
-				backgroundColor: '#F2F2F2',
-				borderBottom: '1px solid rgba(224, 224, 224, 1)',
-			},
-			'& th.MuiToolbar-root, .MuiTableRow-head, th.MuiTableCell-head': {
-				backgroundColor: '#F2F2F2',
-			},
-			'& .Mui-TableHeadCell-Content-Labels': {
-				width: '100%',
-			},
-			'& .Mui-selected': {
-				'&:hover': {
-					'& td': {
-						backgroundColor: '##cdd4de !important',
-					},
-				},
-				'& td': {
-					backgroundColor: '#e6ecf5 !important',
-				},
-			},
-		};
-		handleVisiblityMenuClick();
-		handleColumnMenuClick();
-
-		if (pinnedColumns.length > 0 && columnVirtualization) {
-			let size = 120;
-			pinnedColumns.forEach(column => {
-				size += column.size;
-			});
-			tableCss['& .MuiTableRow-root>:nth-child(2)'] = {
-				marginLeft: `-${size}px !important`,
-			};
-		}
-		const groupedField =
-			TableSchema.find(column => column.isGrouped)?.accessorKey || TableSchema.find(column => column.isGrouped)?.id;
-
-		const columnVisibility = TableSchema.reduce(
-			(acc, cur) => ({ ...acc, [cur.accessorKey || cur.id]: !cur?.hidden }),
-			{}
-		);
-		const filterModes = TableSchema.filter(column => column.filter).reduce(
-			(acc, cur) => ({ ...acc, [cur.accessorKey || cur.id]: 'custom' }),
-			{}
-		);
-		const _TableSchema = TableSchema.map(schemaColumn => {
-			if (schemaColumn.filter) {
-				let options;
-				if (schemaColumn.type === 'string') {
-					options = simpleStringFilterOptions;
-				} else if (schemaColumn.type === 'number') {
-					options = simpleNumberFilterOptions;
-				} else if (schemaColumn.type === 'date') {
-					options = simpleDateFilterOptions;
-				}
-				if (schemaColumn.isComposite) options = options.filter(option => option !== 'multiselect');
-
-				schemaColumn.columnFilterModeOptions = options;
-				schemaColumn.renderColumnFilterModeMenuItems = filterModeMenu({
-					options,
-					tableKey,
-					name: schemaColumn.accessorKey || schemaColumn.id,
-					controller: tableController,
-				});
-			}
-
-			return schemaColumn;
-		});
-
-		state.merge({
-			...rest,
-			initialized: true,
-			tableKey,
-			pageSize,
-			isSelectAllAllowed: isSelectAllAllowed || false,
-			isAllRowsSelected: isAllRowsSelected || false,
-			showColumnFilters: false,
-			data: { rows: [], total: 0 },
-			isLoading: false,
-			isFetching: false,
-			isError: false,
-			defaultFilters: state?.defaultFilters?.get({ noproxy: true }) || defaultFilters || [],
-			customProps: isEmpty(state?.customProps?.get({ noproxy: true }))
-				? customProps
-				: state?.customProps?.get({ noproxy: true }),
-			filters: [],
-			sorting: [],
-			searchFields,
-			isInFiniteScroll,
-			columnVirtualization,
-			TableSchema: _TableSchema,
-			tableCss,
-			groupedField,
-			grouping: groupedField ? [groupedField] : [],
-			footerProps: [],
-			ExternalFilter,
-			columnVisibility,
-			defaultSort,
-			filterModes,
-			commentsCounter: [],
-			tagsList: [],
-			columnPinning: {
-				left: [
-					...(pinnedFields.length > 0
-						? ['mrt-row-select', 'mrt-row-numbers', ...pinnedFields]
-						: ['mrt-row-select', 'mrt-row-numbers']),
-				],
-			},
-			rowSelection: {},
 		});
 	},
 
