@@ -7,8 +7,6 @@ import PropertiesRevenueToolbar from 'components/MRTTable/TablesOverride/Propert
 
 import { GET_PROPERTIES_REVENUE } from 'graphQL/useQueryGetPropertiesRevenue';
 
-export const propertiesRevenueTableKey = 'PropertiesRevenue';
-
 const PropertiesRevenueMeta = {
 	query: GET_PROPERTIES_REVENUE,
 	maxTableHeight: 'calc(100vh - 340px)',

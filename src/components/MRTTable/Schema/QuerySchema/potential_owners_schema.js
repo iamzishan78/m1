@@ -9,8 +9,6 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { tableController } from 'hookstate/tableController';
 import { SHAPE_WELL_OWNERS } from 'graphQL/useQueryPaginatedShapeWellOwners';
 
-export const potentialOwnerTableKey = 'PotentialOwners';
-
 const PotentialOwnersMeta = {
 	query: SHAPE_WELL_OWNERS,
 	additionalQueries: ['comments', 'tags'],
@@ -155,13 +153,13 @@ const PotentialOwnersMeta = {
 				const id = row.getValue('id');
 				let tags = row?.original?.tags;
 
-				const Controller = tableController(potentialOwnerTableKey);
+				const Controller = tableController('PotentialOwnersTable');
 				const { stateValues } = Controller.useState(['tagsList']);
 
 				tags = stateValues.tagsList?.find(tag => tag._id === id)?.tags || tags;
 
 				return (
-					<TagCell id={id} targetSourceId={id} tags={tags} targetLabel={'well'} tableKey={potentialOwnerTableKey} />
+					<TagCell id={id} targetSourceId={id} tags={tags} targetLabel={'well'} tableKey={'PotentialOwnersTable'} />
 				);
 			},
 		},
@@ -180,12 +178,12 @@ const PotentialOwnersMeta = {
 
 				let value = renderedCellValue?.length || 0;
 
-				const Controller = tableController(potentialOwnerTableKey);
+				const Controller = tableController('PotentialOwnersTable');
 				const { stateValues } = Controller.useState(['commentsCounter']);
 
 				value = stateValues.commentsCounter?.find(counter => counter._id === id)?.total || value;
 
-				return <CommentCell id={id} value={value} targetLabel={'well'} tableKey={potentialOwnerTableKey} />;
+				return <CommentCell id={id} value={value} targetLabel={'well'} tableKey={'PotentialOwnersTable'} />;
 			},
 		},
 	],

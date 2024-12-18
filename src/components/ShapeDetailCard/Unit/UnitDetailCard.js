@@ -28,7 +28,6 @@ import { DrawerContextProvider } from 'components/Land/components/Agreements/det
 import ParcelAgreementTable from 'components/Table/Parcel/ParcelAgreementTable';
 import { jobController } from 'hookstate/jobStateController';
 import { layerController } from 'hookstate/layerStateController';
-import { potentialOwnerTableKey } from 'components/MRTTable/Schema';
 import { getShapeSubtitle } from '../helper';
 import { mapControlsController } from 'hookstate/mapControlsController';
 
@@ -302,7 +301,7 @@ export default function UnitDetailCard(props) {
 								</div>,
 								<div>
 									<MRTTable
-										name={potentialOwnerTableKey}
+										name="PotentialOwnersTable"
 										overrideMeta={{
 											tabLabels: ['Unit Ownership', 'Potential Ownership'],
 											customProps: {

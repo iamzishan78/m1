@@ -7,8 +7,6 @@ import { tableGlobalController } from 'hookstate/tableController';
 import { UserRole, RolePrivilege } from 'utils/data';
 import { GET_ALL_USERS } from 'graphQL/userManagement';
 
-export const userManagementTableKey = 'UserManagement';
-
 const onClickedRow = selectedRow => {
 	if (selectedRow?._id) {
 		tableGlobalController.updateState({

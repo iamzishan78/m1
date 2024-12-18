@@ -6,7 +6,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 import MRTTable from 'components/MRTTable';
-import { userManagementTableKey } from 'components/MRTTable/Schema';
 import { NavigationContext } from '../Navigation/NavigationContext';
 import { Modals } from '../../styles/Modal';
 
@@ -54,7 +53,7 @@ export default function UserManagementContainer() {
 					<HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={handleClose} />
 				</DialogTitle>
 				<DialogContent style={{ height: windowsHeight }}>
-					<MRTTable name={userManagementTableKey} />
+					<MRTTable name="UserManagementTable" />
 				</DialogContent>
 			</Dialog>
 		</Fragment>

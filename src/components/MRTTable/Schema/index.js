@@ -40,9 +40,9 @@ import ExhibitAMeta from './exhibit_a_schema';
 import AcreageDetilsMeta from './acreage_details_schema';
 import ContactDetailUnitInterestMeta from './contactDetail_unit_interests_schema';
 import ContactDetailTractInterestMeta from './contactDetail_tract_interest_schema';
-import PotentialOwnersMeta, { potentialOwnerTableKey } from './QuerySchema/potential_owners_schema';
-import UserManagementMeta, { userManagementTableKey } from './QuerySchema/user_management_schema';
-import PropertiesRevenueMeta, { propertiesRevenueTableKey } from './QuerySchema/properties_revenue_schema';
+import PotentialOwnersMeta from './QuerySchema/potential_owners_schema';
+import UserManagementMeta from './QuerySchema/user_management_schema';
+import PropertiesRevenueMeta from './QuerySchema/properties_revenue_schema';
 
 export const SCHEMA = {
 	ActivityTable: ActivityMeta,
@@ -95,9 +95,7 @@ export const SCHEMA = {
 	TractInterestsTable: TractInterestsMeta, // Tracts Interest schema
 	ContactDetailUnitInterestTable: ContactDetailUnitInterestMeta,
 	ContactDetailTractInterestTable: ContactDetailTractInterestMeta,
-	[potentialOwnerTableKey]: PotentialOwnersMeta,
-	[userManagementTableKey]: UserManagementMeta,
-	[propertiesRevenueTableKey]: PropertiesRevenueMeta, // analytics > revenue > revenue  by month
+	PotentialOwnersTable: PotentialOwnersMeta,
+	UserManagementTable: UserManagementMeta,
+	PropertiesRevenueTable: PropertiesRevenueMeta, // analytics > revenue > revenue  by month
 };
-
-export { potentialOwnerTableKey, userManagementTableKey, propertiesRevenueTableKey };
