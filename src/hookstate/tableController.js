@@ -367,6 +367,40 @@ const tableESStateControllerHandler = state => ({
 		if (!isEqual(currentState, updatedState)) state.customProps.set(updatedState);
 	},
 
+	setInitialFilterMode: (columnSchema, mode, column) => {
+		const isClientSide = state.isClientSide.get();
+
+		const updatedColumnnSchema = {};
+
+		switch (mode) {
+			case 'singleselect':
+				if (isClientSide) updatedColumnnSchema.filterVariant = 'select';
+				else updatedColumnnSchema.Filter = columnSchema?.SingleSelect;
+				break;
+
+			case 'multiselect':
+				if (isClientSide)
+					updatedColumnnSchema.filterVariant = 'text'; // 'multi-select'
+				else updatedColumnnSchema.Filter = columnSchema?.MultiSelect;
+				break;
+
+			default:
+				if (isClientSide) updatedColumnnSchema.filterVariant = 'text';
+				else updatedColumnnSchema.Filter = null;
+				break;
+		}
+
+		if (!columnSchema?.name) return updatedColumnnSchema;
+
+		state.filterModes?.merge({
+			[column]: {
+				mode,
+				isKeyword: columnSchema.name.includes('.keyword'),
+			},
+		});
+
+		return updatedColumnnSchema;
+	},
 	setFilterMode: (column, mode) => {
 		const index = state.TableSchema?.get({ noproxy: true })?.findIndex(
 			element => element.accessorKey === column || element.id === column
@@ -374,68 +408,17 @@ const tableESStateControllerHandler = state => ({
 		const columnSchema = state.TableSchema?.[index]?.get({
 			noproxy: true,
 		});
-		const isClientSide = state.isClientSide.get();
+		const tableKey = state.tableKey.get();
 
-		const stateToUpdate = {};
+		const updatedColumnnSchema = tableController(tableKey).setInitialFilterMode(columnSchema, mode, column);
 
-		switch (mode) {
-			case 'singleselect':
-				if (isClientSide) stateToUpdate.filterVariant = 'select';
-				else stateToUpdate.Filter = columnSchema?.SingleSelect;
-				break;
-
-			case 'multiselect':
-				if (isClientSide)
-					stateToUpdate.filterVariant = 'text'; // 'multi-select'
-				else stateToUpdate.Filter = columnSchema?.MultiSelect;
-				break;
-
-			default:
-				if (isClientSide) stateToUpdate.filterVariant = 'text';
-				else stateToUpdate.Filter = null;
-				break;
-		}
-
-		state.TableSchema?.[index]?.merge(stateToUpdate);
-
-		if (!columnSchema?.name) return;
-
-		state.filterModes?.merge({
-			[column]: {
-				mode,
-				isKeyword: columnSchema.name.includes('.keyword'),
-			},
-		});
+		state.TableSchema?.[index]?.merge(updatedColumnnSchema);
 
 		const columnFilterModesFnRefs = globalStateController.getValue('columnFilterModesFnRefs');
 
 		columnFilterModesFnRefs?.[state.tableKey.get({ noproxy: true })]?.[column]?.(mode);
 	},
-	setInitialFilterMode: (columnSchema, mode, column) => {
-		let updatedColumnnSchmes = null;
 
-		if (mode === 'singleselect') {
-			updatedColumnnSchmes = {
-				Filter: columnSchema?.SingleSelect,
-			};
-		} else if (mode === 'multiselect') {
-			updatedColumnnSchmes = {
-				Filter: columnSchema?.MultiSelect,
-			};
-		} else if (columnSchema?.Filter) {
-			updatedColumnnSchmes = { Filter: null };
-		}
-
-		if (!columnSchema?.name) return;
-		state.filterModes?.merge({
-			[column]: {
-				mode,
-				isKeyword: columnSchema.name.includes('.keyword'),
-			},
-		});
-
-		return updatedColumnnSchmes;
-	},
 	setSelectAll: value => {
 		state.isSelectall.set(value);
 	},
