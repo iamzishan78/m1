@@ -3,7 +3,6 @@ import { useRef, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { tableController } from 'hookstate/tableController';
 import useHandleQuery from './useHandleQuery';
-import useHandleSimpleQuery from './useHandleSimpleQuery';
 import useHandleAdditionalQueries from 'components/Common/MRTable/Hooks/useHandleAdditionalQueries';
 import ToolbarActions from '../Common/ToolbarActions';
 import ToolbarInternalActions from '../Common/ToolbarInternalActions';
@@ -20,27 +19,12 @@ const useTableESSimple = tableKey => {
 
 	const { isClientSide } = tableStateValues;
 
-	let res;
-
-	if (!isClientSide) {
-		// eslint-disable-next-line react-hooks/rules-of-hooks
-		res = useHandleQuery({
-			tableRef: tableStateValues?.isInFiniteScroll ? rowVirtualizerInstanceRef : tableRef,
-			tableKey,
-			tableState,
-			tableStateValues,
-		});
-	} else {
-		// eslint-disable-next-line react-hooks/rules-of-hooks
-		res = useHandleSimpleQuery({
-			tableRef: tableStateValues?.isInFiniteScroll ? rowVirtualizerInstanceRef : tableRef,
-			tableKey,
-			tableState,
-			tableStateValues,
-		});
-	}
-
-	const { fetchMoreOnBottomReached } = res || {};
+	const { fetchMoreOnBottomReached } = useHandleQuery({
+		tableRef: tableStateValues?.isInFiniteScroll ? rowVirtualizerInstanceRef : tableRef,
+		tableKey,
+		tableState,
+		tableStateValues,
+	});
 
 	const [rowId, setRowId] = useState(null);
 

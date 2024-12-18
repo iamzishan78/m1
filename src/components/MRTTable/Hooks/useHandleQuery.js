@@ -18,7 +18,38 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	const columnsType = useRef({}); // use to reset pagination in case of infinite scroll
 	const client = useApolloClient();
 
+	const { isClientSide } = tableStateValues;
+
 	const callQuery = async _pagination => {
+		if (isClientSide) {
+			const tableMeta = tableState.get({ noproxy: true });
+
+			Controller.updateState({
+				isLoading: true,
+				isFetching: true,
+				isError: false,
+			});
+
+			const res = await client.query({
+				variables: tableMeta.getVariables(tableMeta),
+				query: tableMeta.query,
+			});
+
+			const rows = tableMeta.getDataFromRes(res);
+
+			Controller.updateState({
+				data: {
+					rows: JSON.parse(JSON.stringify(rows).replaceAll(' \\u0000', '').replaceAll('\\u0000', '')),
+					total: rows.length,
+				},
+				isLoading: false,
+				isFetching: false,
+				isError: false,
+			});
+
+			return;
+		}
+
 		const resetPaginationVal = resetPagination.current;
 
 		const tableMeta = tableState.get({ noproxy: true });
@@ -176,6 +207,8 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	}
 
 	useEffect(() => {
+		if (isClientSide) return;
+
 		if (!tableStateValues.geoKey) return;
 
 		if (!drawStateValues.selectedPolygonString) return Controller.clearFilter(tableStateValues.geoKey);
@@ -191,17 +224,32 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	}, [drawStateValues.selectedPolygonString]);
 
 	useEffect(() => {
+		if (isClientSide) return;
+
 		fetchFooterAggregationData();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [refetch, tableState.filters]);
 
 	useEffect(() => {
+		if (isClientSide) return;
+
 		resetPagination.current = true;
 		if (tableStateValues?.data?.rows?.length > 0) tableRef?.current?.scrollToIndex?.(0);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState.filters, tableState.sorting, tableState.grouping, tableState.globalFilter, refetch]);
 
 	useEffect(() => {
+		if (!isClientSide) return;
+
+		if (!tableState.query.get()) return;
+
+		callQuery();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [tableState.query, tableState.customProps, refetch]);
+
+	useEffect(() => {
+		if (isClientSide) return;
+
 		if (tableStateValues?.isInFiniteScroll) return;
 		if (tableStateValues?.data?.rows?.length > 0) {
 			tableRef?.current?.scrollToIndex?.(0);
@@ -228,6 +276,8 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	}, [tableState.pagination]);
 
 	useEffect(() => {
+		if (isClientSide) return;
+
 		const tableMeta = tableState.get({ noproxy: true });
 
 		if (!tableMeta) return;
@@ -254,6 +304,8 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const fetchMoreOnBottomReached = useCallback(
 		debounce(containerRefElement => {
+			if (isClientSide) return;
+
 			if (!tableState?.isInFiniteScroll?.get()) return;
 
 			if (!containerRefElement) return;
