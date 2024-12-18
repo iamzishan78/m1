@@ -11,10 +11,10 @@ import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import RelatedDetailsDocumentTable from 'components/Table/Documents/RelatedDetailsDocumentTable';
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
 import TabButtons from 'components/Shared/TabPanels/TabButtons';
 import AgreementSummary from './AgreementSummary';
 import ProvisionsTab from './ProvisionsTab';
-import ShapeWellInterestTable from 'components/Table/Shape/ShapeWellInterestTable';
 import AssociatedWellsShapeTable from 'components/Table/Wells/AssociatedWellsShapeTable';
 import AgreementOwnersTractsTable from 'components/Table/Agreement/AgreementOwnersTractsTable';
 import AssociatedTractsShapeTable from 'components/Table/Wells/AssociatedTractsShapeTable';
@@ -64,6 +64,7 @@ export default function AgreementDetailCard(props) {
 				history.goBack();
 			}
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [history, uniObj]);
 
 	useEffect(() => {
@@ -72,12 +73,14 @@ export default function AgreementDetailCard(props) {
 			getCustomLayer({ variables: { id: props.id } });
 			getAgreementProvisions({ variables: { agreementId: props.id } });
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.id]);
 
 	useEffect(() => {
 		if (selectedTab === 0 || selectedTab === 1) {
 			getAgreementProvisions({ variables: { agreementId: props.id } });
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedTab]);
 
 	useEffect(() => {
@@ -103,6 +106,7 @@ export default function AgreementDetailCard(props) {
 			}
 			setProperties(shape.properties);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dataCustomLayer?.customLayer]);
 
 	useEffect(() => {
@@ -124,6 +128,7 @@ export default function AgreementDetailCard(props) {
 				dispatch(showErrorMessage('Failed to update unit'));
 			}
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [updatedUnit]);
 
 	const updateProperties = (e, field, value) => {
@@ -286,6 +291,23 @@ export default function AgreementDetailCard(props) {
 		);
 	};
 
+	const RelatedWellsOverrideMeta = useMemo(
+		() => ({
+			maxTableHeight: 'calc(50vh - 100px)',
+			tabLabels: ['Agreement Wells', 'Potential Wells'],
+			defaultFilters: [{ field: 'shape._id', value: uniObj?._id }],
+			customProps: { customLayer: uniObj, shapeType: 'Agreement' },
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: uniObj?._id },
+			},
+			customValue: { parentRecord: uniObj?._id },
+			columnReordering: false,
+		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[uniObj?._id]
+	);
+
 	const WellHeader = ({ selectedWellTab, setWellSelectedTab }) => (
 		<TabButtons
 			labels={['Agreement Wells', 'Potential Wells']}
@@ -403,16 +425,11 @@ export default function AgreementDetailCard(props) {
 									value={selectedWellTab}
 									panels={[
 										<div className={showSummary ? classes.subContent : classes.subContent2}>
-											<ShapeWellInterestTable
-												customLayer={uniObj}
+											<RelatedWellsTable
+												id="relatedWellsTable"
+												overrideMeta={RelatedWellsOverrideMeta}
 												shapeType="Agreement"
-												parent="associatedWellsPerUnits"
-												targetLabel="well"
-												header={
-													<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />
-												}
-												showTracks
-												dense
+												customLayer={uniObj}
 											/>
 										</div>,
 										<div className={showSummary ? classes.subContent : classes.subContent2}>

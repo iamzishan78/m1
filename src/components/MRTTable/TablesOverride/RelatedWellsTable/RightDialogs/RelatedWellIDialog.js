@@ -274,11 +274,14 @@ function RelatedWellsDialog(props) {
 						</MenuItem>
 					</Menu>
 				</div>
+			</Grid>
+			<Grid item xs={12} style={{ minHeight: '35px' }}>
 				<h4
 					style={{
 						margin: '0 0 15px 0',
 						float: 'left',
 						fontSize: '1.1rem',
+						width: '100%',
 					}}
 				>
 					Select a system well to associate to {props.shapeType?.toLowerCase() || 'unit'}
