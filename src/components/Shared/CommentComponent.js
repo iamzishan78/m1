@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, Fragment, useRef, useCallback } from 'react';
 import { get } from 'lodash';
 import Avatar from 'react-avatar';
@@ -11,7 +12,7 @@ import {
 	ThumbUpAltOutlined as ThumbUpAltOutlinedIcon,
 	ExpandMore as ExpandMoreIcon,
 } from '@material-ui/icons';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { updatePinComments } from 'store/actions/commonActions';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
@@ -278,7 +279,6 @@ export default function CommentComponent(props) {
 		isFileDetail: props.targetLabel === 'file' || false,
 	});
 	const dispatch = useDispatch();
-	const { pinComment } = useSelector(state => state.pin);
 
 	const {
 		stateValues: { user },
@@ -297,12 +297,11 @@ export default function CommentComponent(props) {
 	const [showCommentActionId, setShowCommentActionId] = useState(null);
 	const [loadingComments, setLoadingComments] = useState(true);
 	const [scrollIntoView, setScrollIntoView] = useState(false);
-	const [pinComments, setPinComments] = useState({ isPinned: false });
 	const commentContainerRef = useRef(null);
 
 	const [removeComment] = useMutation(REMOVECOMMENT);
 	const [upsertComment, { data: newlyAddedComment }] = useMutation(UPSERTCOMMENT);
-	const [toggleCommentReaction, { data: resultToggleCommentReaction }] = useMutation(TOGGLECOMMENTREACTION, {
+	const [toggleCommentReaction] = useMutation(TOGGLECOMMENTREACTION, {
 		refetchQueries: ['getCommentsByObjectId', 'getCommentsByObjectsIds'],
 	});
 	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
@@ -353,12 +352,15 @@ export default function CommentComponent(props) {
 			if (props.activityLog && props.activityLog.length > 0) {
 				let activityData = [];
 				props.activityLog.forEach(element => {
+					const timestamp = element?.createAt
+						? new Date(new Date(element.createAt).toUTCString()).getTime()
+						: new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime();
 					activityData.push({
 						user: { name: element.ownerName, email: element.ownerName },
 						activityData: element,
 						comment: element.notes,
 						outcome: element.outcome,
-						ts: new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime(),
+						ts: timestamp,
 						isActivity: true,
 						isEdited: false,
 						public: true,
@@ -436,6 +438,7 @@ export default function CommentComponent(props) {
 						if (line.trim() !== '.') {
 							return line.trim();
 						}
+						return '';
 					})
 					.join('\n')
 			: `${value
@@ -444,6 +447,7 @@ export default function CommentComponent(props) {
 						if (line.trim() !== '.') {
 							return line.trim();
 						}
+						return '';
 					})
 					.join('\n')}`;
 
@@ -487,8 +491,6 @@ export default function CommentComponent(props) {
 		setEditCommentId('');
 	};
 	const pinToTop = eachComment => {
-		const x = Object.values(pinComments);
-
 		const newCommentList = commentsArray.map(c => {
 			if (c._id === eachComment) {
 				return {
@@ -1001,7 +1003,6 @@ const ActionMenu = ({
 	setIsEdit,
 }) => {
 	const [anchorEl, setAnchorEl] = useState(null);
-	const { pinComment } = useSelector(state => state.pin);
 
 	const handleClick = event => {
 		setAnchorEl(event.currentTarget);

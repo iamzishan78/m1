@@ -303,6 +303,7 @@ const layerStateControllerHandler = state => {
 			if (isOutside && bboxIntersects && show) {
 				if (previousBounds) {
 					newPolygon = difference(newPolygon, previousBounds);
+					if (!newPolygon) console.log('New Polygon not found', newPolygon);
 				}
 				if (show) {
 					if (previousBounds) previousBounds = union(previousBounds, newPolygon);
@@ -602,7 +603,10 @@ const layerStateControllerHandler = state => {
 				? dbLayer.layerShapeName
 				: dbLayer.identifier;
 
-		const filterKey = getLayerKey(filterIdentifier, layerFilters);
+		const filterKey = isFileLayer
+			? `${dbLayer.file}_${dbLayer.layerShapeName}`
+			: getLayerKey(filterIdentifier, layerFilters);
+
 		let {
 			[filterKey]: filters,
 			polygonFilter,
@@ -720,7 +724,7 @@ const layerStateControllerHandler = state => {
 				// Find layer by layerShapeName
 				const requiredLayer = globalStateController
 					.getValue('layers')
-					.find(layer => layer.layerShapeName === identifier);
+					.find(layer => `${layer.file}_${layer.layerShapeName}` === identifier);
 
 				// If layer is not found, then return
 				if (!(requiredLayer && requiredLayer?.layerType === 'file layer')) return;
@@ -773,11 +777,8 @@ const layerStateControllerHandler = state => {
 			drawController.reset();
 			layerFiltersController.reset();
 			const mapViewFilters = globalStateController.getValue('mapView')?.selectedMapView?.filters || [];
-			const layers = globalStateController.getValue('layers') || [];
 			mapViewFilters.forEach(filter => {
-				// Check if its a UD layer or a shape file layer
-				const shapeFileLayer = layers.find(layer => layer.layerId === filter.dataSourceName);
-				const dataSource = shapeFileLayer?.layerShapeName || filter?.dataSourceName;
+				const dataSource = filter?.dataSourceName;
 
 				const initialFilters = layerFiltersController.getValue([dataSource])?.variables?.filters || [];
 

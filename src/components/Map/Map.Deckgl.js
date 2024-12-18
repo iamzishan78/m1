@@ -212,12 +212,13 @@ function Map({
 		onCompleted: data => {
 			const mapViews = data?.getMapViews?.mapViews;
 			const currentMapView = mapViews?.find(view => view.isCurrent);
-
-			globalStateController.updateState({
-				mapView: {
-					selectedMapView: currentMapView,
-				},
-			});
+			if (!globalStateController.getValue('mapView')?.selectedMapView) {
+				globalStateController.updateState({
+					mapView: {
+						selectedMapView: currentMapView,
+					},
+				});
+			}
 		},
 	});
 
@@ -270,7 +271,7 @@ function Map({
 		const { signal } = abortController;
 
 		let styleTypes = baseTenantsMaps();
-		let recurseLimit = 5;
+		let recurseLimit = 16;
 
 		try {
 			const styles = await styleTypes.reduce(async (stylesPromise, styleType) => {
@@ -494,10 +495,7 @@ function Map({
 			const mapViewFilters = globalStateController.getValue('mapView')?.selectedMapView?.filters || [];
 			// for of loop on mapViewFilters
 			for (const filter of mapViewFilters) {
-				// Identifying layer data source shapeFile/geojson
-				const shapeFileLayer = layers.find(layer => layer?.layerId === filter?.dataSourceName);
-				const dataSource = shapeFileLayer ? shapeFileLayer?.layerShapeName : filter?.dataSourceName;
-
+				const dataSource = filter?.dataSourceName;
 				// Get initial filters and merge with the latest ones
 				const state = layerFiltersController.getValue([dataSource]);
 				const initialFilters = state?.variables?.filters || []; // Get initial filters
