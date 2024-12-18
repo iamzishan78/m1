@@ -129,7 +129,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 			getAuditReportingAnalytics({
 				variables: {
 					search: {
-						fields: ['name^4', '_all'],
+						fields: ['name', '_all'],
 						query: stateApp.landAnalyticsSearchQuery,
 					},
 					filters: getAllFilters(),

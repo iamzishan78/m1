@@ -28,9 +28,6 @@ const AuditReportingMeta = {
 		pageIndex: 0,
 		pageSize: 25,
 	},
-	search: {
-		fields: ['name', '_all'],
-	},
 	isInFiniteScroll: true,
 	columnVirtualization: true,
 	TableSchema: [
