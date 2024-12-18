@@ -18,7 +18,7 @@ const AuditReportingMeta = {
 	esIndex,
 	pageSize: 25,
 	defaultSort: { field: 'lastUpdateAt', order: 'desc', unmapped_type: 'date' },
-	maxTableHeight: 'calc(100vh - 610px)',
+	maxTableHeight: 'calc(100vh - 640px)',
 	CustomToolBar: () => {
 		const classes = useStyles();
 		return <div className={classes.title}>Audit Reporting</div>;
