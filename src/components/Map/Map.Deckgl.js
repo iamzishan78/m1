@@ -212,12 +212,13 @@ function Map({
 		onCompleted: data => {
 			const mapViews = data?.getMapViews?.mapViews;
 			const currentMapView = mapViews?.find(view => view.isCurrent);
-
-			globalStateController.updateState({
-				mapView: {
-					selectedMapView: currentMapView,
-				},
-			});
+			if (!globalStateController.getValue('mapView')?.selectedMapView) {
+				globalStateController.updateState({
+					mapView: {
+						selectedMapView: currentMapView,
+					},
+				});
+			}
 		},
 	});
 
@@ -270,7 +271,7 @@ function Map({
 		const { signal } = abortController;
 
 		let styleTypes = baseTenantsMaps();
-		let recurseLimit = 5;
+		let recurseLimit = 16;
 
 		try {
 			const styles = await styleTypes.reduce(async (stylesPromise, styleType) => {

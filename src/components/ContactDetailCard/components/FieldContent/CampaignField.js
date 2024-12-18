@@ -100,7 +100,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-export default function CampaignNameField(props) {
+export default function CampaignField(props) {
 	const [options, setOptions] = useState([]);
 	const [inputValue, setInputValue] = useState([]);
 	const [tFActive, setTFActive] = useState(false);
@@ -112,19 +112,16 @@ export default function CampaignNameField(props) {
 
 	useEffect(() => {
 		if (campaignfiltersData?.getDbFilters?.hits) {
-			const allFiltersData = campaignfiltersData.getDbFilters.hits.map(hit => hit.key);
+			const allFiltersData = campaignfiltersData.getDbFilters.hits.map(hit => ({
+				_id: hit.original[0]._id,
+				name: hit.key,
+			}));
 			setOptions(allFiltersData.filter(d => d));
 		}
 	}, [campaignfiltersData]);
 
 	useEffect(() => {
-		const campaignName = props.value
-			? typeof props.value === 'string'
-				? [props.value]
-				: props.value.filter(item => item && item?.trim() !== '')
-			: [];
-
-		setInputValue(campaignName);
+		setInputValue(props.value || []);
 	}, [props.value]);
 
 	useEffect(() => {
@@ -155,16 +152,14 @@ export default function CampaignNameField(props) {
 			};
 
 		if (reason === 'select-option') {
-			campaign = campaignfiltersData.getDbFilters.hits.find(hit => hit.key === values[values.length - 1]);
+			campaign = values[values.length - 1];
 			if (campaign) {
-				payload.descriptorObject = campaign.original[0]?._id;
+				payload.descriptorObject = campaign._id;
 			}
 		} else {
-			const deletedCampaign = campaignfiltersData.getDbFilters.hits.find(
-				hit => hit.key === inputValue.find(v => !values.includes(v))
-			);
+			const deletedCampaign = inputValue.find(iv => !values.some(val => val._id === iv._id));
 			if (deletedCampaign) {
-				payload.descriptorObject = deletedCampaign.original[0]?._id;
+				payload.descriptorObject = deletedCampaign._id;
 			}
 			payload.isDeleted = true;
 		}
@@ -190,15 +185,17 @@ export default function CampaignNameField(props) {
 						data-testid="campaign-name-autocomplete"
 						onChange={(e, newValue, reason) => handleChange(newValue, reason)}
 						options={options}
+						getOptionLabel={op => op?.name || ''}
+						getOptionSelected={(op, value) => op?.name === value?.name}
 						value={inputValue}
 						freeSolo
 						disabled={props.disabled}
 						renderTags={(value, getTagProps) => {
 							return value.map((tag, index) => (
 								<Chip
-									key={index}
-									id={tag}
-									label={tag}
+									key={tag._id}
+									id={index}
+									label={tag.name}
 									{...getTagProps({ index })}
 									deleteIcon={!props.disabled ? <ClearIcon /> : <></>}
 									data-testid="campaign-name-chip"
