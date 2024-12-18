@@ -1,10 +1,10 @@
-import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
+import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import WellsToolbar from "components/MRTTable/TablesOverride/MyWellsTable/WellsToolbar";
+import WellsToolbar from 'components/MRTTable/TablesOverride/MyWellsTable/WellsToolbar';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import { formatDate } from "components/Shared/functions";
-import { tableController, tableGlobalController } from "hookstate/tableController";
-import { globalStateController } from "hookstate/globalStateController";
+import { formatDate } from 'components/Shared/functions';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'hookstate/globalStateController';
 
 const esIndex = 'mywells_flat';
 

@@ -3,6 +3,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
 import MoreVertOutlinedIcon from '@material-ui/icons/MoreVertOutlined';
 import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
+import ContactPageOutlinedIcon from '@mui/icons-material/ContactPageOutlined';
+import { Link } from 'react-router-dom';
 import Divider from '@material-ui/core/Divider';
 import TextSMS from '@material-ui/icons/TextsmsOutlined';
 import EmailIcon from '@material-ui/icons/Mail';
@@ -27,6 +29,13 @@ const useStyles = makeStyles(() => ({
 	},
 	menuIcons: {
 		marginRight: '8px',
+	},
+	link: {
+		textDecoration: 'none',
+		color: 'inherit',
+		display: 'flex',
+		alignItems: 'center',
+		width: '100%',
 	},
 }));
 
@@ -53,9 +62,9 @@ function ContactActionMenu({ id, name, esIndex, dialogType }) {
 				contactId: [id],
 				userId: stateApp.user.mongoId,
 				deletedData: {
-					mainRecord: [id]
+					mainRecord: [id],
 				},
-				tableKey: "ContactTable",
+				tableKey: 'ContactTable',
 				esIndex,
 			},
 		});
@@ -88,6 +97,15 @@ function ContactActionMenu({ id, name, esIndex, dialogType }) {
 					open
 					onClose={closeMenu}
 				>
+					<MenuItem className={classes.actionMenuItem}>
+						<Link
+							to={`/contact/details/${id}/?tenant=${window.sessionStorage.getItem('tenantName')}`}
+							className={classes.link}
+						>
+							<ContactPageOutlinedIcon className={classes.menuIcons} />
+							Contact Details
+						</Link>
+					</MenuItem>
 					<MenuItem className={classes.actionMenuItem} onClick={() => handleActivity('call')}>
 						<CallOutlinedIcon className={classes.menuIcons} />
 						Add call log

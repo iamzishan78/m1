@@ -3,11 +3,7 @@ import { hookstate } from '@hookstate/core';
 import { isEqual } from 'lodash';
 import ESAutoCompleteFilter from 'components/MRSimpleTable/Common/ESAutoCompleteFilter';
 import { hookStateController } from 'hookstate/hookStateController';
-import {
-	stringFilterOptions,
-	numberFilterOptions,
-	dateFilterOptions,
-} from 'components/MRSimpleTable/utils/data';
+import { stringFilterOptions, numberFilterOptions, dateFilterOptions } from 'components/MRSimpleTable/utils/data';
 import filterModeMenu from 'components/MRSimpleTable/utils/filterModeMenu';
 
 export const simpleTableState = {};
@@ -19,16 +15,11 @@ export const simpleTableGlobalState = hookstate({
 
 const handleVisiblityMenu = () => {
 	const interval2 = setInterval(() => {
-		const elements = document.querySelectorAll(
-			'ul[role="menu"] .MuiFormControlLabel-label'
-		);
+		const elements = document.querySelectorAll('ul[role="menu"] .MuiFormControlLabel-label');
 		// || element?.className.includes('Mui-disabled')
 		if (elements) {
 			elements.forEach(element => {
-				if (
-					['Select', 'Row Numbers'].includes(element.outerText) ||
-					element.outerText === ''
-				)
+				if (['Select', 'Row Numbers'].includes(element.outerText) || element.outerText === '')
 					while (element !== null) {
 						if (element.tagName === 'LI') {
 							element.style.display = 'none';
@@ -61,9 +52,7 @@ const handleColumnMenuClick = () => {
 			elements.forEach(element => {
 				const clickListner = () => {
 					const interval2 = setInterval(() => {
-						const ulElement = document.querySelector(
-							'.MuiPaper-elevation1 ul[role="menu"]'
-						); // Replace "your-ul-id" with the actual ID of your <ul> element
+						const ulElement = document.querySelector('.MuiPaper-elevation1 ul[role="menu"]'); // Replace "your-ul-id" with the actual ID of your <ul> element
 						if (ulElement) {
 							const liElements = ulElement.getElementsByTagName('li');
 							for (let i = 0; i < liElements.length; i++) {
@@ -109,13 +98,9 @@ const simpleTableStateControllerHandler = state => ({
 		if (state.TableSchema.get()) return;
 		const searchFields = search
 			? search?.fields
-			: TableSchema.filter(column => column.isSearchField !== false).map(
-				column => column.id || column.accessorKey
-			);
+			: TableSchema.filter(column => column.isSearchField !== false).map(column => column.id || column.accessorKey);
 
-		const ExternalFilter = TableSchema.filter(
-			column => column.isExternalFilter === true
-		).map(column => column.name);
+		const ExternalFilter = TableSchema.filter(column => column.isExternalFilter === true).map(column => column.name);
 
 		const pinnedColumns = TableSchema.filter(column => column.isPinned);
 		const pinnedFields = pinnedColumns.map(column => {
@@ -162,8 +147,7 @@ const simpleTableStateControllerHandler = state => ({
 			};
 		}
 		const groupedField =
-			TableSchema.find(column => column.isGrouped)?.accessorKey ||
-			TableSchema.find(column => column.isGrouped)?.id;
+			TableSchema.find(column => column.isGrouped)?.accessorKey || TableSchema.find(column => column.isGrouped)?.id;
 
 		const columnVisibility = TableSchema.reduce(
 			(acc, cur) => ({ ...acc, [cur.accessorKey || cur.id]: !cur?.hidden }),
@@ -248,8 +232,7 @@ const simpleTableStateControllerHandler = state => ({
 				} else if (schemaColumn.type === 'date') {
 					options = dateFilterOptions;
 				}
-				if (schemaColumn.isComposite)
-					options = options.filter(option => option !== 'multiselect');
+				if (schemaColumn.isComposite) options = options.filter(option => option !== 'multiselect');
 
 				schemaColumn.columnFilterModeOptions = options;
 				schemaColumn.renderColumnFilterModeMenuItems = filterModeMenu({
@@ -274,8 +257,7 @@ const simpleTableStateControllerHandler = state => ({
 			isLoading: false,
 			isFetching: false,
 			isError: false,
-			defaultFilters:
-				state?.defaultFilters?.get({ noproxy: true }) || defaultFilters || [],
+			defaultFilters: state?.defaultFilters?.get({ noproxy: true }) || defaultFilters || [],
 			customProps: state?.customProps?.get({ noproxy: true }) || rest.customProps || {},
 			filters: [],
 			sorting: [],
@@ -332,13 +314,11 @@ const simpleTableStateControllerHandler = state => ({
 		});
 	},
 	setIsAllRowsSelected: value => {
-		if (!isEqual(value, state.isAllRowsSelected.get()))
-			state.isAllRowsSelected.set(value);
+		if (!isEqual(value, state.isAllRowsSelected.get())) state.isAllRowsSelected.set(value);
 	},
 
 	setColumnVisibility: visibility => {
-		if (!isEqual(state.columnVisibility?.get({ noproxy: true }), visibility))
-			state.columnVisibility?.set(visibility);
+		if (!isEqual(state.columnVisibility?.get({ noproxy: true }), visibility)) state.columnVisibility?.set(visibility);
 	},
 
 	setColumnPinning: (columnPinning, oldPinning, TableSchema) => {
@@ -391,12 +371,12 @@ const simpleTableStateControllerHandler = state => ({
 	},
 
 	setPagination: pagination =>
-		!isEqual(state.pagination?.get({ noproxy: true }), pagination) &&
-		state.pagination?.set(pagination),
+		!isEqual(state.pagination?.get({ noproxy: true }), pagination) && state.pagination?.set(pagination),
 
 	setGlobalFilter: globalFilter =>
-		!isEqual(state.globalFilter?.get({ noproxy: true }), globalFilter) &&
-		state.globalFilter?.set(globalFilter),
+		!isEqual(state.globalFilter?.get({ noproxy: true }), globalFilter) && state.globalFilter?.set(globalFilter),
+
+	getGlobalFilter: () => state.globalFilter?.get({ noproxy: true }),
 
 	setFilter: filter => {
 		const filtersState = state.filters?.get({ noproxy: true });
@@ -409,18 +389,13 @@ const simpleTableStateControllerHandler = state => ({
 		)
 			return;
 
-		state.filters?.set([
-			...filtersState.filter(({ field }) => field !== filter.field),
-			filter,
-		]);
+		state.filters?.set([...filtersState.filter(({ field }) => field !== filter.field), filter]);
 	},
 
 	getExternalFilter: () => {
 		const filtersState = state.filters?.get({ noproxy: true });
 		const requiredFields = state.ExternalFilter?.get({ noproxy: true });
-		const esFilters = (filtersState || [])?.filter(filter =>
-			requiredFields.includes(filter.field)
-		);
+		const esFilters = (filtersState || [])?.filter(filter => requiredFields.includes(filter.field));
 		return esFilters;
 	},
 
@@ -451,9 +426,7 @@ const simpleTableStateControllerHandler = state => ({
 			.filter(filter => !filterKeys.includes(filter.field.replace(/.keyword/, 'g', '')))
 			.map(filter => filter.field);
 
-		state.filters?.set(
-			filtersState.filter(filter => !keysToClear.includes(filter.field))
-		);
+		state.filters?.set(filtersState.filter(filter => !keysToClear.includes(filter.field)));
 	},
 
 	updateCustomProps: customProps => {

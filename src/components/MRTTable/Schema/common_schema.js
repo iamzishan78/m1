@@ -1,4 +1,8 @@
-import { formatDate } from 'components/Shared/functions';
+import { Box } from '@mui/material';
+import { addTrailingZeros, formatDate } from 'components/Shared/functions';
+import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+import { tableController } from 'hookstate/tableController';
+import { get } from 'lodash';
 
 export const CommonSchema = {
 	COMMENTS: {
@@ -35,14 +39,15 @@ export const CommonSchema = {
 		enableColumnOrdering: false,
 		enableResizing: false,
 		showInLast: true,
-		isExport: "tags",
+		isExport: 'tags',
 		handleArrayExport: {
-			esType: "collection",
-			actualKey: "tag"
+			esType: 'collection',
+			actualKey: 'tag',
 		},
 	},
 	HIDDEN: {
 		header: ' ',
+		isAlwaysHidden: true,
 		isSearchField: false,
 		hidden: true,
 		enablePinning: false,
@@ -62,6 +67,7 @@ export const CommonSchema = {
 		enableSorting: false,
 		size: 250,
 		isHiddenFieldExport: true,
+		type: 'mongoID',
 	},
 	INITAIL_PINNED: {
 		isPinned: true,
@@ -88,7 +94,7 @@ export const CommonSchema = {
 		hidden: false,
 		filter: true,
 		isSearchField: false,
-		enableSorting: true,
+		enableSorting: false,
 		enableColumnActions: false,
 		enableHiding: false,
 		type: 'string',
@@ -124,7 +130,7 @@ export const CommonSchema = {
 		isSearchField: false,
 		type: 'string',
 		Cell: ({ row }) => {
-			return <>{row.original?.createBy?.name}</>
+			return <>{row.original?.createBy?.name}</>;
 		},
 	},
 	CREATED_DATE: {
@@ -136,7 +142,7 @@ export const CommonSchema = {
 		isSearchField: false,
 		type: 'date',
 		Cell: ({ row }) => {
-			return <>{formatDate(row.original?.createAt)}</>
+			return <>{formatDate(row.original?.createAt)}</>;
 		},
 	},
 	LAST_UPDATED_BY: {
@@ -148,7 +154,7 @@ export const CommonSchema = {
 		isSearchField: false,
 		type: 'string',
 		Cell: ({ row }) => {
-			return <>{row.original?.lastUpdateBy?.name}</>
+			return <>{row.original?.lastUpdateBy?.name}</>;
 		},
 	},
 	LAST_UPDATED_DATE: {
@@ -160,7 +166,72 @@ export const CommonSchema = {
 		isSearchField: false,
 		type: 'date',
 		Cell: ({ row }) => {
-			return <>{formatDate(row.original?.lastUpdateAt)}</>
+			return <>{formatDate(row.original?.lastUpdateAt)}</>;
+		},
+	},
+	AGGREGATED_FIELD: (name, aggregationFn = 'sum', sx = {}) => ({
+		aggregationFn,
+		AggregatedCell: ({ cell, table }) => (
+			<>
+				{name} by {table.getColumn(cell.row.groupingColumnId ?? '').columnDef.header}:
+				<Box
+					sx={{
+						color: 'info.main',
+						display: 'inline',
+						fontWeight: 'bold',
+						paddingLeft: '0.3rem',
+						...sx,
+					}}
+				>
+					{parseFloat(cell.getValue().toFixed(3))}
+				</Box>
+			</>
+		),
+	}),
+	AGGREGATED_FOOTER: (field, tableKey) => ({
+		Aggregation: {
+			[`sum_${field}`]: {
+				sum: { field },
+			},
+		},
+		Footer: () => {
+			const Controller = tableController(tableKey);
+			const footerProps = Controller.getValue('footerProps') || {};
+
+			const mongoKey = `sum_${field}`.replace(/\./g, '_');
+			const value = get(footerProps, `${mongoKey}[0].${mongoKey}`);
+
+			return <div>{value ? addTrailingZeros(parseFloat(value).toFixed(8)) : 0}</div>;
+		},
+	}),
+	INTEREST_COLUMN: {
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: true,
+		isSearchField: false,
+		enableSorting: true,
+		type: 'number',
+		Cell: ({ renderedCellValue }) => {
+			const value = renderedCellValue?.props?.['aria-label'] ?? renderedCellValue;
+			if (value || value === 0) {
+				return <>{!value ? value : addTrailingZeros(parseFloat(value).toFixed(8))}</>;
+			}
+		},
+	},
+	CURRENCY_COLUMN: {
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: true,
+		isSearchField: false,
+		enableSorting: true,
+		type: 'number',
+		Cell: ({ renderedCellValue }) => {
+			const value = renderedCellValue?.props?.['aria-label'] ?? renderedCellValue;
+			if (value || value === 0) {
+				return <>{!value ? `$${value}` : vf_currency_to_fixed(value, 2)}</>;
+			}
 		},
 	},
 };

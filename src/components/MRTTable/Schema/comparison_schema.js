@@ -144,7 +144,7 @@ const ComparisonMeta = {
 			header: 'Effective Date',
 			type: 'date',
 			Cell: ({ row }) => {
-				return <>{formatDate(row?.original?.property?.interest?.effectiveDate)}</>
+				return <>{formatDate(row?.original?.property?.interest?.effectiveDate)}</>;
 			},
 		},
 
@@ -156,7 +156,7 @@ const ComparisonMeta = {
 			header: 'End Date',
 			type: 'date',
 			Cell: ({ row }) => {
-				return <>{formatDate(row?.original?.property?.interest?.endDate)}</>
+				return <>{formatDate(row?.original?.property?.interest?.endDate)}</>;
 			},
 		},
 
@@ -184,7 +184,7 @@ const ComparisonMeta = {
 			header: 'Well API',
 			Cell: ({ row }) => {
 				const apiNumbers = row?.original?.wells?.map(item => item.apiNumber) || [];
-				return (apiNumbers?.length && apiNumbers?.length > 1) ? "Multiple" : apiNumbers[0];
+				return apiNumbers?.length && apiNumbers?.length > 1 ? 'Multiple' : apiNumbers[0];
 			},
 		},
 
@@ -196,7 +196,7 @@ const ComparisonMeta = {
 			header: 'Well Name',
 			Cell: ({ row }) => {
 				const wellName = row?.original?.wells?.map(item => item.wellName) || [];
-				return (wellName?.length && wellName?.length > 1) ? "Multiple" : wellName[0];
+				return wellName?.length && wellName?.length > 1 ? 'Multiple' : wellName[0];
 			},
 		},
 
@@ -207,8 +207,9 @@ const ComparisonMeta = {
 			id: 'check.checkDate',
 			header: 'Check Date',
 			type: 'date',
+			isExternalFilter: true,
 			Cell: ({ row }) => {
-				return <>{formatDate(row?.original?.check?.checkDate)}</>
+				return <>{formatDate(row?.original?.check?.checkDate)}</>;
 			},
 		},
 
@@ -236,7 +237,7 @@ const ComparisonMeta = {
 			header: 'Deposit Date',
 			type: 'date',
 			Cell: ({ row }) => {
-				return <>{formatDate(row?.original?.check?.depositDate)}</>
+				return <>{formatDate(row?.original?.check?.depositDate)}</>;
 			},
 		},
 
@@ -295,9 +296,8 @@ const ComparisonMeta = {
 			accessorKey: 'date',
 			header: 'Sales Date',
 			type: 'date',
-			isExternalFilter: true,
 			Cell: ({ row }) => {
-				return <>{formatDate(row?.original?.date)}</>
+				return <>{formatDate(row?.original?.date)}</>;
 			},
 		},
 

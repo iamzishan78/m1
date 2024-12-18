@@ -1,7 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const PERMITDETAILQUERY = gql`
-  query getRecentPermitDetail($id: String) {
-    recentPermitDetail(permitId: $id)
-  }
+	query getRecentPermitDetail($id: String) {
+		recentPermitDetail(permitId: $id)
+	}
 `;

@@ -1,22 +1,5 @@
-import { hookstate } from '@hookstate/core';
-import { copy } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
-
-const initialState = {
-	activeStepNumber: 0,
-	csvDataToSend: [],
-	mappedHeadersFromCSV: [],
-	m1neralHeaders: [],
-	csvDataList: [],
-	transferData: null,
-	uploaderFormValues: {},
-	selectedShapeLayerOption: null,
-	bulkUpload: false,
-	jobType: null,
-	job: null,
-};
-
-export const jobState = hookstate(copy(initialState));
+import { jobInitialState, jobState } from './initialStates';
 
 const jobStateControllerHandler = () => ({
 	toggleBulkUpload: () => {
@@ -32,34 +15,58 @@ const jobStateControllerHandler = () => ({
 	},
 
 	onRowAdd: newData => {
-		jobState.csvDataToSend.set({
-			csvDataToSend: [...jobController.getValue('csvDataToSend'), newData],
+		return new Promise((resolve, reject) => {
+			try {
+				jobState.csvDataToSend.set([...jobController.getValue('csvDataToSend'), newData]);
+				resolve();
+			} catch (error) {
+				reject(error);
+			}
 		});
 	},
 
 	onRowUpdate: (newData, oldData) => {
-		if (!oldData) return;
+		return new Promise((resolve, reject) => {
+			try {
+				if (!oldData) throw new Error('Old data not provided');
 
-		const csvDataToSend = jobController.getValue('csvDataToSend');
-		csvDataToSend[csvDataToSend.indexOf(oldData)] = newData;
+				const csvDataToSend = jobController.getValue('csvDataToSend');
+				const index = csvDataToSend.indexOf(oldData);
 
-		jobState.csvDataToSend.set({
-			csvDataToSend,
+				if (index === -1) throw new Error('Old data not found in csvDataToSend');
+
+				delete newData.reason;
+				delete newData.invalidKey;
+
+				csvDataToSend[index] = newData;
+
+				jobState.csvDataToSend.set(csvDataToSend);
+
+				resolve();
+			} catch (error) {
+				reject(error);
+			}
 		});
 	},
 
 	onRowDelete: oldData => {
-		const csvDataToSend = jobController.getValue('csvDataToSend');
+		return new Promise((resolve, reject) => {
+			try {
+				const csvDataToSend = jobController.getValue('csvDataToSend');
 
-		csvDataToSend.splice(csvDataToSend.indexOf(oldData), 1);
+				csvDataToSend.splice(csvDataToSend.indexOf(oldData), 1);
 
-		jobState.csvDataToSend.set({
-			csvDataToSend,
+				jobState.csvDataToSend.set(csvDataToSend);
+
+				resolve();
+			} catch (error) {
+				reject(error);
+			}
 		});
 	},
 });
 
 export const jobController = {
 	...jobStateControllerHandler(jobState),
-	...hookStateController(jobState, initialState),
+	...hookStateController(jobState, jobInitialState),
 };

@@ -7,7 +7,6 @@ import CampaignNameField from 'components/ContactDetailCard/components/FieldCont
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActionMenu';
 import IsContactCell from 'components/MRTTable/Common/TableCells/isContactIcone';
-import NameCell from 'components/MRTTable/TablesOverride/OwnersPerUnit/TableCell/NameCell';
 import OwnersPerUnitToolBar from 'components/MRTTable/TablesOverride/OwnersPerUnit/OwnersPerUnitToolBar';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import ListChips from 'components/Common/ListChips';
@@ -31,10 +30,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 		Loaders.createToast(loaderId, 'Updation in Progress');
 
 		const customData = copy(row?.custom_data) ?? {};
-		const filteredCustomData = pickBy(
-			customData,
-			value => value !== '' && !isEmpty(value)
-		);
+		const filteredCustomData = pickBy(customData, value => value !== '' && !isEmpty(value));
 
 		const shapeOwners = {
 			_id: row._id,
@@ -48,9 +44,10 @@ const onCustomKeyChange = async (client, row, value, item) => {
 			variables: {
 				shapeOwners,
 				shapeType: 'Unit',
-				userId: user._id
+				userId: user._id,
 			},
 			mutation: UPDATE_SHAPE_OWNERS,
+			refetchQueries: ['getESSimpleFilter'],
 		});
 
 		Loaders.successToast(loaderId, 'Updation Complete');
@@ -59,7 +56,6 @@ const onCustomKeyChange = async (client, row, value, item) => {
 		Loaders.errorToast(loaderId, 'Failed to Update');
 	}
 };
-
 
 const onClickedRow = selectedRow => {
 	const Controller = tableController('OwnersPerUnitTable');
@@ -116,9 +112,10 @@ const OwnersPerUnitMeta = {
 	columnVirtualization: true,
 	deletedKeys: {
 		mainRecord: { key: '_id' },
-		parentRecord: { key: 'shape._id' }
+		parentRecord: { key: 'shape._id' },
 	},
 	defaultFlterMode: 'multiselect',
+	isShowActionMenuFirst: true,
 	TableSchema: [
 		{
 			...CommonSchema.MONGO_ID,
@@ -170,16 +167,15 @@ const OwnersPerUnitMeta = {
 										data-testid="monetization-icon"
 										style={{
 											marginLeft: '10px',
-											color: "gray"
+											color: 'gray',
 										}}
-
 									/>
 								</FeatureFlag>
 							)}
 						</p>
 					</div>
-				)
-			}
+				);
+			},
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -247,8 +243,6 @@ const OwnersPerUnitMeta = {
 			header: 'Entity Type',
 		},
 
-
-
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'working_interest',
@@ -256,26 +250,13 @@ const OwnersPerUnitMeta = {
 			header: 'Working Interest',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumWorkingInterest: {
-					sum: { field: 'working_interest' },
-				},
-			},
 			enableSorting: true,
 			Cell: ({ renderedCellValue }) => {
 				if (renderedCellValue) {
 					return <>{addTrailingZeros(parseFloat(renderedCellValue).toFixed(8))}</>;
 				}
 			},
-			Footer: () => {
-				const Controller = tableController('OwnersPerUnitTable');
-				const { sumWorkingInterest } = Controller.getValue('footerProps') || {};
-				return (
-					<div>
-						{sumWorkingInterest?.value ? addTrailingZeros(parseFloat(sumWorkingInterest?.value).toFixed(8)) : 0}
-					</div>
-				);
-			},
+			...CommonSchema.AGGREGATED_FOOTER('working_interest', 'OwnersPerUnitTable'),
 		},
 
 		{
@@ -285,25 +266,12 @@ const OwnersPerUnitMeta = {
 			header: 'Royalty Interest',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumRoyaltyInterest: {
-					sum: { field: 'royalty_interest' },
-				},
-			},
 			Cell: ({ renderedCellValue }) => {
 				if (renderedCellValue) {
 					return <>{addTrailingZeros(parseFloat(renderedCellValue).toFixed(8))}</>;
 				}
 			},
-			Footer: () => {
-				const Controller = tableController('OwnersPerUnitTable');
-				const { sumRoyaltyInterest } = Controller.getValue('footerProps') || {};
-				return (
-					<div>
-						{sumRoyaltyInterest?.value ? addTrailingZeros(parseFloat(sumRoyaltyInterest?.value).toFixed(8)) : 0}
-					</div>
-				);
-			},
+			...CommonSchema.AGGREGATED_FOOTER('royalty_interest', 'OwnersPerUnitTable'),
 		},
 
 		{
@@ -313,22 +281,12 @@ const OwnersPerUnitMeta = {
 			header: 'ORRI',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumOrri: {
-					sum: { field: 'orri' },
-				},
-			},
 			Cell: ({ renderedCellValue }) => {
 				if (renderedCellValue) {
 					return <>{addTrailingZeros(parseFloat(renderedCellValue).toFixed(8))}</>;
 				}
 			},
-			Footer: () => {
-				const Controller = tableController('OwnersPerUnitTable');
-				const { sumOrri } = Controller.getValue('footerProps') || {};
-
-				return <div>{sumOrri?.value ? addTrailingZeros(parseFloat(sumOrri?.value).toFixed(8)) : 0}</div>;
-			},
+			...CommonSchema.AGGREGATED_FOOTER('orri', 'OwnersPerUnitTable'),
 		},
 
 		{
@@ -338,21 +296,12 @@ const OwnersPerUnitMeta = {
 			header: 'NRI',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumNri: {
-					sum: { field: 'nri' },
-				},
-			},
 			Cell: ({ row }) => {
 				if (row?.original?.nri) {
 					return <>{addTrailingZeros(parseFloat(row?.original?.nri).toFixed(8))}</>;
 				}
 			},
-			Footer: () => {
-				const Controller = tableController('OwnersPerUnitTable');
-				const { sumNri } = Controller.getValue('footerProps') || {};
-				return <div>{sumNri?.value ? addTrailingZeros(parseFloat(sumNri?.value).toFixed(8)) : 0}</div>;
-			},
+			...CommonSchema.AGGREGATED_FOOTER('nri', 'OwnersPerUnitTable'),
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -361,23 +310,13 @@ const OwnersPerUnitMeta = {
 			header: 'Net Acres',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumNetAcres: {
-					sum: { field: 'net_acres' },
-				},
-			},
 			Cell: ({ row }) => {
 				if (row?.original?.net_acres) {
 					return <>{addTrailingZeros(parseFloat(row?.original?.net_acres).toFixed(8))}</>;
 				}
 			},
-			Footer: () => {
-				const Controller = tableController('OwnersPerUnitTable');
-				const { sumNetAcres } = Controller.getValue('footerProps') || {};
-				return <div>{sumNetAcres?.value ? addTrailingZeros(parseFloat(sumNetAcres?.value).toFixed(8)) : 0}</div>;
-			},
+			...CommonSchema.AGGREGATED_FOOTER('net_acres', 'OwnersPerUnitTable'),
 		},
-
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -386,21 +325,12 @@ const OwnersPerUnitMeta = {
 			header: 'NRA',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumNRA: {
-					sum: { field: 'nra' },
-				},
-			},
 			Cell: ({ row }) => {
 				if (row?.original?.nra) {
 					return <>{addTrailingZeros(parseFloat(row?.original?.nra).toFixed(8))}</>;
 				}
 			},
-			Footer: () => {
-				const Controller = tableController('OwnersPerUnitTable');
-				const { sumNRA } = Controller.getValue('footerProps') || {};
-				return <div>{sumNRA?.value ? addTrailingZeros(parseFloat(sumNRA?.value).toFixed(8)) : 0}</div>;
-			},
+			...CommonSchema.AGGREGATED_FOOTER('nra', 'OwnersPerUnitTable'),
 		},
 
 		{
@@ -417,21 +347,12 @@ const OwnersPerUnitMeta = {
 			header: 'Unit Tract Acres',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumUnitTractAcres: {
-					sum: { field: 'tractAcres' },
-				},
-			},
 			Cell: ({ row }) => {
 				if (row?.original?.tractAcres) {
 					return <>{addTrailingZeros(parseFloat(row?.original?.tractAcres).toFixed(8))}</>;
 				}
 			},
-			Footer: () => {
-				const Controller = tableController('OwnersPerUnitTable');
-				const { sumUnitTractAcres } = Controller.getValue('footerProps') || {};
-				return <div>{sumUnitTractAcres?.value ? addTrailingZeros(parseFloat(sumUnitTractAcres?.value).toFixed(8)) : 0}</div>;
-			},
+			...CommonSchema.AGGREGATED_FOOTER('tractAcres', 'OwnersPerUnitTable'),
 		},
 
 		{
@@ -545,8 +466,8 @@ const OwnersPerUnitMeta = {
 			accessorKey: 'contactOwners',
 			header: 'Contact Owner',
 			Cell: ({ row }) => {
-				return <div>{row?.original?.contactOwners[0]}</div>
-			}
+				return <div>{row?.original?.contactOwners[0]}</div>;
+			},
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -594,7 +515,7 @@ const OwnersPerUnitMeta = {
 			accessorFn: row => row?.taxYear,
 			id: 'taxYear',
 			header: 'Tax Year',
-			isSearchField: false
+			isSearchField: false,
 		},
 
 		{
@@ -604,14 +525,14 @@ const OwnersPerUnitMeta = {
 			id: 'deals.name',
 			header: 'Associated Deals',
 			handleArrayExport: {
-				esType: "collection",
-				actualKey: "name"
+				esType: 'collection',
+				actualKey: 'name',
 			},
 			isSearchField: false,
 			Cell: ({ row }) => {
 				return (
 					<div>
-						{(row?.original?.deals && Array.isArray(row?.original?.deals)) ? (
+						{row?.original?.deals && Array.isArray(row?.original?.deals) ? (
 							<div
 								style={{
 									display: 'flex',
@@ -642,14 +563,21 @@ const OwnersPerUnitMeta = {
 				const isPurchased = [true, 'true', 'True'].includes(row.getValue('contact.isPurchased'));
 				return <>{isPurchased ? 'Yes' : 'No'}</>;
 			},
-			isSearchField: false
+			isSearchField: false,
 		},
 
 		{
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const targetSourceId = row.getValue('ownerEntity');
-				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'Unit Ownership'} />;
+				return (
+					<TagCell
+						id={targetSourceId}
+						targetSourceId={targetSourceId}
+						tags={row?.original?.tags}
+						targetLabel={'Unit Ownership'}
+					/>
+				);
 			},
 		},
 
@@ -665,21 +593,31 @@ const OwnersPerUnitMeta = {
 
 		{
 			...CommonSchema.COMMENTS,
-			Cell: ({ renderedCellValue, row }) => {
+			Cell: ({ row }) => {
 				const id = row.getValue('ownerEntity');
-				return <CommentCell id={id} value={row?.original?.commentsCount} targetLabel={'Unit Ownership'} />;
+				return (
+					<CommentCell
+						id={id}
+						value={row?.original?.commentsCount}
+						targetLabel={'Unit Ownership'}
+						hideShareCommentsToggle
+					/>
+				);
 			},
 		},
 
 		{
 			...CommonSchema.ACTION_COLUMN,
+			isPinned: true, // pin action column so it can be moved at first position
+			showInLast: false,
+			size: 80,
 			name: 'actionMenu',
 			accessorKey: 'actionMenu',
 			Cell: ({ row }) => {
-				const id = row.getValue('_id');
 				const name = row.getValue('name');
+				const contactId = row.getValue('ownerEntity');
 
-				return <ContactActionMenu id={id} name={name} esIndex={esIndex} dialogType="dialog" />;
+				return <ContactActionMenu id={contactId} name={name} esIndex={esIndex} dialogType="dialog" />;
 			},
 		},
 	],

@@ -1,12 +1,13 @@
 import { useApolloClient } from '@apollo/client';
-import { debounce, set, get } from 'lodash';
+import { debounce, set, get, isNumber } from 'lodash';
 import { useCallback, useEffect, useRef } from 'react';
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { GET_ES_AGGS_LIST } from 'graphQL/useQueryESAggsList';
 import { copy } from 'utils/helper';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { drawController } from 'hookstate/drawStateController';
+import { GET_DB_AGGS, GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
+import { mergeArrays } from 'components/Shared/functions';
 
 const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) => {
 	const Controller = tableController(tableKey);
@@ -21,63 +22,51 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		const tableMeta = tableState.get({ noproxy: true });
 		const pagination = _pagination || tableMeta.pagination;
 		const { TableSchema } = tableMeta;
-		if (!TableSchema) return
+		const isElasticIndex = tableStateValues.esIndex.includes('platformData:');
+		if (!TableSchema) return;
 
 		Controller.updateState({
 			isLoading: true,
 			isFetching: true,
 			isError: false,
 		});
-		let metaField = {}
+		let metaField = {};
 		if (tableStateValues.sorting.length) {
 			metaField = TableSchema?.find(item => (item.accessorKey || item.id) === tableStateValues.sorting[0]?.id);
 		}
 
 		let sort = tableStateValues.sorting[0]
 			? {
-				field: (() => {
-					const sortingId = tableStateValues.sorting[0].id;
-					const matchingSchema = TableSchema.find(
-						val => (val.accessorKey || val.id) === sortingId
-					);
+					field: (() => {
+						if (tableStateValues.sorting[0].field) return tableStateValues.sorting[0].field;
 
-					if (matchingSchema?.isComposite) {
-						return matchingSchema.name.split(',')[0];
-					}
+						const sortingId = tableStateValues.sorting[0].id;
+						const matchingSchema = TableSchema.find(val => (val.accessorKey || val.id) === sortingId);
 
-					return matchingSchema?.name;
-				})(),
-				order: tableStateValues.sorting[0].desc ? 'desc' : 'asc',
-			}
+						if (matchingSchema?.isComposite) {
+							return matchingSchema.name.split(',')[0];
+						}
+
+						return matchingSchema?.name;
+					})(),
+					order: tableStateValues.sorting[0].desc ? 'desc' : 'asc',
+				}
 			: tableState?.defaultSort?.get({ noproxy: true });
 		if (metaField?.isCustom) {
-			sort.unmapped_type = "keyword"
+			sort.unmapped_type = 'keyword';
 		}
 
-		const filters = [...tableMeta?.defaultFilters || [], ...tableMeta?.filters || []];
-
-		if (
-			tableStateValues.geoKey &&
-			drawStateValues.selectedPolygonString &&
-			drawStateValues.currentFeature
-		) {
-			filters.push({
-				type: 'geo_intersects',
-				field: tableStateValues.geoKey,
-				value: drawStateValues.currentFeature.geometry,
-			});
-		}
+		const filters = [...(tableMeta?.defaultFilters || []), ...(tableMeta?.filters || [])];
 
 		let globalFilter = tableStateValues.globalFilter;
 
-		if (tableStateValues.isGeneric && !tableStateValues.globalSearch)
-			globalFilter = null;
+		if (tableStateValues.isGeneric && !tableStateValues.globalSearch) globalFilter = null;
 
 		const variables = {
 			index: tableStateValues.esIndex,
 			pagination: { ...pagination, pageIndex: undefined, pageSize: undefined },
 			search: {
-				query: globalFilter ? `*${globalFilter}*` : '*',
+				query: globalFilter ? `${globalFilter}` : '',
 				fields: tableMeta.searchFields,
 				advanceSearch: tableStateValues.advanceSearch,
 			},
@@ -85,9 +74,29 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			filters,
 		};
 
-
 		if (tableStateValues.filterLayerType)
 			layerFiltersController.setVariables(tableStateValues.filterLayerType, variables);
+
+		let total = tableStateValues?.data?.total;
+		if (pagination.pageIndex === 0 && !isElasticIndex) {
+			(async () => {
+				const dbDataTotal = await client.query({
+					variables,
+					query: GET_DB_DATA_TOTAL,
+				});
+
+				if (isNumber(dbDataTotal?.data?.getDbDataTotal?.data)) {
+					total = dbDataTotal.data.getDbDataTotal.data;
+
+					Controller.updateState({
+						data: {
+							...Controller.getValue('data'),
+							total,
+						},
+					});
+				}
+			})();
+		}
 
 		const allSelectedRows = await client.query({
 			variables,
@@ -95,6 +104,9 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		});
 
 		const data = allSelectedRows?.data?.getESSimpleSearch;
+		if (isElasticIndex) {
+			total = data.total;
+		}
 		let rows = copy(data.hits) || [];
 
 		rows.forEach(row => {
@@ -107,20 +119,21 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				const defaultValue =
 					!columnsType.current[accessorKey] || columnsType.current[accessorKey] === 'number' ? undefined : '';
 				let value = get(row, accessorKey);
-				if (value !== undefined && value !== null && !Array.isArray(value) && typeof value !== 'object') value = defaultValue === '' ? `${value}` : value;
-				set(row, accessorKey, value || defaultValue, defaultValue);
+				if (value !== undefined && value !== null && !Array.isArray(value) && typeof value !== 'object')
+					value = defaultValue === '' ? `${value}` : value;
+				set(row, accessorKey, value, defaultValue);
 			});
 		});
 		if (tableState?.isInFiniteScroll?.get() && !resetPagination.current) {
 			const prevData = tableState?.data?.get({ noproxy: true }).rows || [];
-			rows = [...prevData, ...rows];
+			rows = mergeArrays(prevData, rows, '_id');
 		}
 		resetPagination.current = false;
 		previousPagination.current = pagination;
 		Controller.updateState({
 			data: {
 				rows,
-				total: data.total,
+				total: total ?? data.total,
 				pit: data.pit,
 			},
 			pagination,
@@ -134,7 +147,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	async function fetchFooterAggregationData() {
 		const tableMeta = tableState.get({ noproxy: true });
 		const { TableSchema, defaultFilters, esIndex, filters } = tableMeta;
-		if (!TableSchema) return
+		if (!TableSchema) return;
 
 		const aggregationColumns = TableSchema?.filter(column => column.Aggregation)?.map(column => column.Aggregation);
 
@@ -147,26 +160,43 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		if (aggregationColumns?.length) {
 			const result = await client.query({
 				variables: {
-					esIndex,
+					index: esIndex,
 					filters: [...filters, ...defaultFilters],
 					aggs: Object.assign({}, ...aggregationColumns),
 				},
-				query: GET_ES_AGGS_LIST,
+				query: GET_DB_AGGS,
 			});
 
 			Controller.updateState({
-				footerProps: result?.data?.getESAggsList?.aggregations,
+				footerProps: result?.data?.getDbAggs?.aggregations,
 			});
 		}
 	}
 
 	useEffect(() => {
+		if (!tableStateValues.geoKey) return;
+
+		if (!drawStateValues.selectedPolygonString) return Controller.clearFilter(tableStateValues.geoKey);
+
+		if (drawStateValues.selectedPolygonString && drawStateValues.currentFeature) {
+			Controller.setFilter({
+				type: 'geo_intersects',
+				field: tableStateValues.geoKey,
+				value: drawStateValues.currentFeature.geometry,
+			});
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [drawStateValues.selectedPolygonString]);
+
+	useEffect(() => {
 		fetchFooterAggregationData();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [refetch, tableState.filters]);
 
 	useEffect(() => {
 		resetPagination.current = true;
 		if (tableStateValues?.data?.rows?.length > 0) tableRef?.current?.scrollToIndex?.(0);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState.filters, tableState.sorting, tableState.grouping, tableState.globalFilter, refetch]);
 
 	useEffect(() => {
@@ -192,17 +222,20 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				callQuery(pagination);
 			}
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState.pagination]);
 
 	useEffect(() => {
 		const tableMeta = tableState.get({ noproxy: true });
 
-		if (!tableMeta || tableMeta.isFetching) return;
+		if (!tableMeta) return;
+
 		callQuery({
 			pageIndex: 0,
 			first: tableStateValues?.pageSize || 50,
 			after: null,
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		tableState.filters,
 		tableState.searchFields,
@@ -214,6 +247,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		refetch,
 	]);
 
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const fetchMoreOnBottomReached = useCallback(
 		debounce(containerRefElement => {
 			if (!tableState?.isInFiniteScroll?.get()) return;
@@ -257,12 +291,12 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				}
 
 				if (tableStateValues.onScrollCheck) {
-					const startIndex = Object.keys(tableStateValues.rowSelection).length
-					const newstate = tableStateValues.rowSelection
+					const startIndex = Object.keys(tableStateValues.rowSelection).length;
+					const newstate = tableStateValues.rowSelection;
 					for (let i = startIndex; i < startIndex + 50; i++) {
-						newstate[i] = true
+						newstate[i] = true;
 					}
-					Controller.setColumnCheck(newstate)
+					Controller.setColumnCheck(newstate);
 				}
 
 				callQuery(pagination);

@@ -94,6 +94,7 @@ const useStyles = makeStyles(theme => ({
 		'& .MuiChip-root': {
 			backgroundColor: '#ECEDED',
 			color: '#606060',
+			borderRadius: '4px',
 		},
 	},
 	input: {
@@ -107,7 +108,7 @@ const useStyles = makeStyles(theme => ({
 			fontSize: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '25px'),
 			margin: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '3px'),
 			padding: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '0px !important'),
-			borderRadius: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '50%'),
+			borderRadius: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '5px'),
 			textAlign: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : 'center'),
 			cursor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : 'pointer'),
 			'&:hover': {
@@ -115,8 +116,7 @@ const useStyles = makeStyles(theme => ({
 					!showPlusAddIcon
 						? ''
 						: '0px 2px 2px -1px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.12), 0px 1px 10px 0px rgba(0,0,0,0.1)',
-				backgroundColor: ({ showPlusAddIcon }) =>
-					!showPlusAddIcon ? '' : 'rgba(0, 0, 0, 0.08)',
+				backgroundColor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : 'rgba(0, 0, 0, 0.08)'),
 			},
 			transition: ({ showPlusAddIcon }) =>
 				!showPlusAddIcon
@@ -146,20 +146,13 @@ export default function Tags(props) {
 	const [getTagsByObjectId, { data: dataTags }] = useLazyQuery(TAGSBYOBJECTIDQUERY, {
 		fetchPolicy: 'cache-and-network',
 	});
-	const [getTagsByObjectsIds, { data: dataTagsMultiIds }] = useLazyQuery(
-		TAGSBYOBJECTSIDS,
-		{
-			fetchPolicy: 'cache-and-network',
-		}
-	);
-	const [getUserAvailableTags, { data: dataUserAvailableTags }] = useLazyQuery(
-		USERAVAILABLETAGSQUERY,
-		{
-			fetchPolicy: 'cache-and-network',
-		}
-	);
-	const [upsertTag, { data: upsertedTag, loading: upsertLoading }] =
-		useMutation(UPSERTTAG);
+	const [getTagsByObjectsIds, { data: dataTagsMultiIds }] = useLazyQuery(TAGSBYOBJECTSIDS, {
+		fetchPolicy: 'cache-and-network',
+	});
+	const [getUserAvailableTags, { data: dataUserAvailableTags }] = useLazyQuery(USERAVAILABLETAGSQUERY, {
+		fetchPolicy: 'cache-and-network',
+	});
+	const [upsertTag, { data: upsertedTag, loading: upsertLoading }] = useMutation(UPSERTTAG);
 	const [removeTag, { loading: removeLoading }] = useMutation(REMOVETAG);
 
 	/// ////////////////// START FETCHING TAGS DATA ////////////////////////////////////////////
@@ -219,9 +212,7 @@ export default function Tags(props) {
 				) {
 					tags.push({
 						...element,
-						user: checkIfUserMatch(element.user)
-							? checkIfUserMatch(element.user)
-							: { name: '', email: '' },
+						user: checkIfUserMatch(element.user) ? checkIfUserMatch(element.user) : { name: '', email: '' },
 						public: publicTag,
 					});
 				}
@@ -254,15 +245,10 @@ export default function Tags(props) {
 						found = true;
 					}
 				});
-				return (
-					found || dataUserAvailableTags.userAvailableTags.indexOf(defaultTag) === -1
-				);
+				return found || dataUserAvailableTags.userAvailableTags.indexOf(defaultTag) === -1;
 			});
 
-			setUserAvailableTagsArray([
-				...defaultTags,
-				...dataUserAvailableTags.userAvailableTags,
-			]);
+			setUserAvailableTagsArray([...defaultTags, ...dataUserAvailableTags.userAvailableTags]);
 		}
 	}, [dataUserAvailableTags, tagsArray]);
 
@@ -474,13 +460,12 @@ export default function Tags(props) {
 	function ToggleSharedButton() {
 		return (
 			<FormGroup style={{ display: 'block' }}>
-				{!props.publicLeftBottom && (
-					<h3 style={{ width: 'fit-content', margin: '0 13px', float: 'left' }}>Tags</h3>
-				)}
+				{!props.publicLeftBottom && <h3 style={{ width: 'fit-content', margin: '0 13px', float: 'left' }}>Tags</h3>}
 				{props.shareable && (
 					<FormControlLabel
-						className={`${classes.switchButtom} ${props.publicLeftBottom ? classes.publicLeftBottom : ''
-							} ${!publicTag ? classes.switchTextDeselected : ''}`}
+						className={`${classes.switchButtom} ${
+							props.publicLeftBottom ? classes.publicLeftBottom : ''
+						} ${!publicTag ? classes.switchTextDeselected : ''}`}
 						control={
 							<>
 								{props.publicLeftBottom && <h4 className="h4Before">Tags</h4>}
@@ -527,10 +512,7 @@ export default function Tags(props) {
 								value
 									.filter(
 										tag =>
-											(publicTag && tag.public) ||
-											(!publicTag &&
-												!tag.public &&
-												stateApp.user.email === tag.user.email)
+											(publicTag && tag.public) || (!publicTag && !tag.public && stateApp.user.email === tag.user.email)
 									)
 									.map((tag, index) => (
 										<Chip
@@ -563,12 +545,7 @@ export default function Tags(props) {
 									}}
 									InputProps={{
 										...params.InputProps,
-										endAdornment:
-											upsertLoading || removeLoading ? (
-												<CircularProgress color="secondary" />
-											) : (
-												<></>
-											),
+										endAdornment: upsertLoading || removeLoading ? <CircularProgress color="secondary" /> : <></>,
 									}}
 								/>
 							)}

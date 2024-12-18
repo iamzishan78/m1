@@ -1,7 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const TENANTWELL = gql`
-  query getTenantWell($globalWellId: String) {
-    tenantWell(globalWellId: $globalWellId)
-  }
+	query getTenantWell($globalWellId: String) {
+		tenantWell(globalWellId: $globalWellId)
+	}
 `;

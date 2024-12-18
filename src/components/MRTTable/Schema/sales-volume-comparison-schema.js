@@ -3,18 +3,18 @@ import { formatDate } from 'components/Shared/functions';
 
 const esIndex = 'checkdetailsinterestscomparison_flat';
 
-
-const OwnersPerUnitMeta = {
+const SalesVolumeComparisonMeta = {
 	esIndex,
 	pageSize: 25,
 	pagination: {
 		pageIndex: 0,
 		pageSize: 25,
 	},
-	maxTableHeight: 'calc(100vh - 710px)',
+	maxTableHeight: 'calc(100vh - 540px)',
 	height: '767px',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
+	isDeleteDisabled: true, // Disable delete functionality
 	TableSchema: [
 		// MongoDB ID column
 		{
@@ -25,9 +25,9 @@ const OwnersPerUnitMeta = {
 		// Property Name column
 		{
 			...CommonSchema.INITAIL_PINNED,
-			name: "property.name.keyword",
+			name: 'property.name.keyword',
 			accessorKey: 'property.name',
-			header: "Property Name",
+			header: 'Property Name',
 		},
 		// Property Number column
 		{
@@ -46,7 +46,7 @@ const OwnersPerUnitMeta = {
 			header: 'Well API',
 			Cell: ({ row }) => {
 				const apiNumbers = row?.original?.wells?.map(item => item.apiNumber) || [];
-				return (apiNumbers?.length && apiNumbers?.length > 1) ? "Multiple" : apiNumbers[0];
+				return apiNumbers?.length && apiNumbers?.length > 1 ? 'Multiple' : apiNumbers[0];
 			},
 		},
 		// Well Name column with custom cell rendering
@@ -58,7 +58,7 @@ const OwnersPerUnitMeta = {
 			header: 'Well Name',
 			Cell: ({ row }) => {
 				const wellName = row?.original?.wells?.map(item => item.wellName) || [];
-				return (wellName?.length && wellName?.length > 1) ? "Multiple" : wellName[0];
+				return wellName?.length && wellName?.length > 1 ? 'Multiple' : wellName[0];
 			},
 		},
 		// Sales Date column with custom cell rendering to format the date
@@ -71,7 +71,7 @@ const OwnersPerUnitMeta = {
 			type: 'date',
 			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.date)}</>;
-			}
+			},
 		},
 		// Product column
 		{
@@ -85,7 +85,7 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'reportedVolume',
-			accessorKey: "reportedVolume",
+			accessorKey: 'reportedVolume',
 			header: 'Reported Volume',
 			isHiddenFieldExport: true,
 		},
@@ -133,7 +133,7 @@ const OwnersPerUnitMeta = {
 					<p
 						style={{
 							fontWeight: 600,
-							color: renderedCellValue > 0 ? "#177B1E" : "#F4273D",
+							color: renderedCellValue > 0 ? '#177B1E' : '#F4273D',
 						}}
 					>
 						{renderedCellValue > 0 ? renderedCellValue : renderedCellValue * -1}
@@ -156,7 +156,7 @@ const OwnersPerUnitMeta = {
 					<p
 						style={{
 							fontWeight: 600,
-							color: overShort > 0 ? "#177B1E" : "#F4273D",
+							color: overShort > 0 ? '#177B1E' : '#F4273D',
 						}}
 					>
 						{renderedCellValue?.replace('-', '')}
@@ -165,12 +165,13 @@ const OwnersPerUnitMeta = {
 			},
 		},
 		{
-			...CommonSchema.HIDDEN,
+			...CommonSchema.COMMON_COLUMN,
 			name: 'check.checkNumber.keyword',
 			accessorFn: row => row?.check?.checkNumber,
+			header: 'Check Number',
 			isExternalFilter: true,
-		}
+		},
 	],
 };
 
-export default OwnersPerUnitMeta;
+export default SalesVolumeComparisonMeta;

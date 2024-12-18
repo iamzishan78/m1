@@ -21,24 +21,8 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user.get({ noproxy: true });
 
-	const tableState = tableController(tableKey).useState([
-		'TableSchema',
-		'esIndex',
-		'datasets',
-		'globalFilter',
-		'searchFields',
-		'defaultSort',
-		'data',
-		'gridViewSettings',
-		'sorting',
-		'columnVisibility',
-		'filters',
-		'defaultFilters',
-		'isAllRowsSelected',
-		'isSubSetSelect',
-		'customProps'
-	]);
-	const tableStateValues = tableState.stateValues;
+	const tableState = tableController(tableKey).useCompleteState();
+	const tableStateValues = tableState?.get({ noproxy: true });
 
 	const handleExport = () => {
 		const rows = table.getSelectedRowModel().flatRows.map(row => row.original);
@@ -46,34 +30,38 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 		let excludedIds = [];
 		let total = tableStateValues?.data.total;
 		let customProps = tableStateValues.customProps;
-		if (rows.length !== 0 && !(!!tableStateValues?.isAllRowsSelected) && !(tableStateValues?.isSubSetSelect)) {
+		if (rows.length !== 0 && !!!tableStateValues?.isAllRowsSelected && !tableStateValues?.isSubSetSelect) {
 			isSelectAll = false;
 		} else if (!!tableStateValues?.isAllRowsSelected || tableStateValues?.isSubSetSelect) {
-			excludedIds = excludeFilters(tableKey, tableStateValues?.isSubSetSelect?.total)
-			total = tableStateValues?.isSubSetSelect?.total ? tableStateValues?.isSubSetSelect?.total : total
-			total = total - excludedIds.length
+			excludedIds = excludeFilters(tableKey, tableStateValues?.isSubSetSelect?.total);
+			total = tableStateValues?.isSubSetSelect?.total ? tableStateValues?.isSubSetSelect?.total : total;
+			total = total - excludedIds.length;
 		}
 		const filteredColumns = _.pickBy(tableStateValues.columnVisibility, _.identity);
 
 		let filteredTableSchema = tableStateValues?.TableSchema.filter(obj => {
 			const accessorKey = obj?.accessorKey || obj?.id;
-			return (filteredColumns[accessorKey] === true && !obj.hasOwnProperty('enableColumnFilter')) || obj?.isHiddenFieldExport;
+			return (
+				(filteredColumns[accessorKey] === true && !obj.hasOwnProperty('enableColumnFilter')) || obj?.isHiddenFieldExport
+			);
 		});
 
-		filteredTableSchema = filteredTableSchema?.map(({ name, header, accessorKey, id, isExport, type, handleArrayExport = {} }) => {
-			const { esType, referenceKey, referenceValueKey, actualKey } = handleArrayExport;
-			return {
-				name,
-				label: header,
-				esKey: isExport || accessorKey || id,
-				type,
-				accessorKey: accessorKey || id,
-				esType,
-				referenceKey,
-				referenceValue: customProps[referenceValueKey],
-				actualKey,
+		filteredTableSchema = filteredTableSchema?.map(
+			({ name, header, accessorKey, id, isExport, type, handleArrayExport = {} }) => {
+				const { esType, referenceKey, referenceValueKey, actualKey } = handleArrayExport;
+				return {
+					name,
+					label: header,
+					esKey: isExport || accessorKey || id,
+					type,
+					accessorKey: accessorKey || id,
+					esType,
+					referenceKey,
+					referenceValue: customProps[referenceValueKey],
+					actualKey,
+				};
 			}
-		})
+		);
 
 		let sortOrder = {};
 		if (tableStateValues.sorting.length > 0) {
@@ -82,16 +70,18 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 			sortOrder = { field: fieldName, order: tableStateValues.sorting[0]?.desc ? 'desc' : 'asc' };
 		}
 
-		filteredTableSchema = filteredTableSchema?.map(({ name, label, esKey, type, esType, referenceKey, referenceValue, actualKey }) => ({
-			name,
-			label,
-			esKey,
-			type,
-			esType,
-			referenceKey,
-			referenceValue,
-			actualKey
-		}));
+		filteredTableSchema = filteredTableSchema?.map(
+			({ name, label, esKey, type, esType, referenceKey, referenceValue, actualKey }) => ({
+				name,
+				label,
+				esKey,
+				type,
+				esType,
+				referenceKey,
+				referenceValue,
+				actualKey,
+			})
+		);
 
 		const query = tableStateValues?.globalFilter ? `*${tableStateValues?.globalFilter}*` : '*';
 		const search = { fields: tableStateValues?.searchFields, query };
@@ -124,6 +114,9 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 		);
 
 		table.resetRowSelection();
+		tableController(tableKey).updateState({
+			isSubSetSelect: null,
+		});
 		onClose();
 	};
 

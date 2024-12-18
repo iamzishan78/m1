@@ -49,22 +49,22 @@ const useMRSimpleTable = tableKey => {
 			showProgressBars: tableStateValues?.isFetching,
 			...(tableStateValues.isServerSide
 				? {
-					columnFilters: (tableStateValues?.filters || []).map(filter => ({
-						...filter,
-						id: filter.field,
-					})),
-					columnPinning: tableStateValues?.columnPinning,
-					globalFilter: tableStateValues?.globalFilter || '',
-					columnVisibility: tableStateValues?.columnVisibility,
-					showColumnFilters: tableStateValues?.showColumnFilters,
-					sorting: tableStateValues.sorting,
-					...(!tableStateValues?.isInFiniteScroll && {
-						pagination: tableStateValues.pagination,
-					}),
-					...(tableState?.groupedField?.get() && {
-						grouping: tableStateValues.grouping,
-					}),
-				}
+						columnFilters: (tableStateValues?.filters || []).map(filter => ({
+							...filter,
+							id: filter.field,
+						})),
+						columnPinning: tableStateValues?.columnPinning,
+						globalFilter: tableStateValues?.globalFilter || '',
+						columnVisibility: tableStateValues?.columnVisibility,
+						showColumnFilters: tableStateValues?.showColumnFilters,
+						sorting: tableStateValues.sorting,
+						...(!tableStateValues?.isInFiniteScroll && {
+							pagination: tableStateValues.pagination,
+						}),
+						...(tableState?.groupedField?.get() && {
+							grouping: tableStateValues.grouping,
+						}),
+					}
 				: {}),
 		},
 		tableProps: {
@@ -142,9 +142,9 @@ const useMRSimpleTable = tableKey => {
 			enableRowNumbers: true,
 			muiToolbarAlertBannerProps: tableStateValues?.isError
 				? {
-					color: 'error',
-					children: 'Error loading data',
-				}
+						color: 'error',
+						children: 'Error loading data',
+					}
 				: undefined,
 			muiTableContainerProps: {
 				ref: tableContainerRef, // get access to the table container element
@@ -170,103 +170,95 @@ const useMRSimpleTable = tableKey => {
 
 			...(tableStateValues.isServerSide
 				? {
-					rowCount: tableStateValues?.data.total,
-					...(!tableStateValues?.isInFiniteScroll && {
-						manualPagination: true,
-						onPaginationChange: paginationFunc => {
-							const newPagination = paginationFunc(tableStateValues.pagination);
-							tableState.pagination.set(newPagination);
-							return newPagination;
+						rowCount: tableStateValues?.data.total,
+						...(!tableStateValues?.isInFiniteScroll && {
+							manualPagination: true,
+							onPaginationChange: paginationFunc => {
+								const newPagination = paginationFunc(tableStateValues.pagination);
+								tableState.pagination.set(newPagination);
+								return newPagination;
+							},
+						}),
+
+						manualSorting: true,
+						manualFiltering: true,
+						onGlobalFilterChange: globalFilter => {
+							Controller.setGlobalFilter(globalFilter);
 						},
-					}),
+						onColumnPinningChange: pinningFunc => {
+							const newPinning =
+								pinningFunc.left || pinningFunc.right ? pinningFunc : pinningFunc(tableStateValues?.columnPinning);
 
-					manualSorting: true,
-					manualFiltering: true,
-					onGlobalFilterChange: globalFilter => {
-						Controller.setGlobalFilter(globalFilter);
-					},
-					onColumnPinningChange: pinningFunc => {
-						const newPinning =
-							pinningFunc.left || pinningFunc.right
-								? pinningFunc
-								: pinningFunc(tableStateValues?.columnPinning);
-
-						Controller.setColumnPinning(
-							newPinning,
-							tableStateValues?.columnPinning,
-							tableStateValues.TableSchema
-						);
-					},
-					onColumnFiltersChange: filtersFunc => {
-						const newFilters = filtersFunc(
-							(tableStateValues?.filters || []).map(filter => ({
-								...filter,
-								id: filter.field,
-							}))
-						);
-
-						const result = [];
-						newFilters.forEach(item => {
-							const column = tableStateValues.TableSchema.find(
-								column => column.id === item.id || column.accessorKey === item.id
+							Controller.setColumnPinning(newPinning, tableStateValues?.columnPinning, tableStateValues.TableSchema);
+						},
+						onColumnFiltersChange: filtersFunc => {
+							const newFilters = filtersFunc(
+								(tableStateValues?.filters || []).map(filter => ({
+									...filter,
+									id: filter.field,
+								}))
 							);
-							const idArray = item?.id?.split(',');
-							idArray.forEach(idValue => {
-								const newItem = {
-									id: idValue,
-									value: item.value,
-									type: item?.type,
-								};
-								result.push(newItem);
+
+							const result = [];
+							newFilters.forEach(item => {
+								const column = tableStateValues.TableSchema.find(
+									column => column.id === item.id || column.accessorKey === item.id
+								);
+								const idArray = item?.id?.split(',');
+								idArray.forEach(idValue => {
+									const newItem = {
+										id: idValue,
+										value: item.value,
+										type: item?.type,
+									};
+									result.push(newItem);
+								});
 							});
-						});
 
-						Controller.syncFilters(result);
+							Controller.syncFilters(result);
 
-						result.forEach(filter => {
-							const { mode, isKeyword } =
-								tableState?.filterModes?.get({ noproxy: true })?.[filter.id] || {};
+							result.forEach(filter => {
+								const { mode, isKeyword } = tableState?.filterModes?.get({ noproxy: true })?.[filter.id] || {};
 
-							let { value } = filter;
-							const { type } = filter;
-							const { oRFilter } = filter;
-							if (mode && typeof filter.value === 'string')
-								value = isKeyword ? filter.value : +filter.value || 0;
-							if (mode && tableSimpleFilterModeOtions.inclusive.includes(mode))
-								value = filter.value.map(value => +value || 0);
+								let { value } = filter;
+								const { type } = filter;
+								const { oRFilter } = filter;
+								if (mode && typeof filter.value === 'string') value = isKeyword ? filter.value : +filter.value || 0;
+								if (mode && tableSimpleFilterModeOtions.inclusive.includes(mode))
+									value = filter.value.map(value => +value || 0);
 
-							Controller.setFilter({
-								field: filter.id,
-								value,
-								type,
-								oRFilter,
-								...(mode &&
-									!['multiselect', 'singleselect'].includes(mode) && {
-									type: 'advanced',
-									searchType: mode,
-									isKeyword,
-								}),
+								Controller.setFilter({
+									field: filter.id,
+									value,
+									type,
+									oRFilter,
+									...(mode &&
+										!['multiselect', 'singleselect'].includes(mode) && {
+											type: 'advanced',
+											searchType: mode,
+											isKeyword,
+										}),
+								});
 							});
-						});
-					},
-					onColumnVisibilityChange: visibilityFunc => {
-						let showColumns;
-						if (typeof visibilityFunc === 'function') {
-							showColumns = visibilityFunc(tableStateValues?.columnVisibility);
-						} else if (typeof visibilityFunc === 'object') {
-							showColumns = visibilityFunc;
-						}
-						Controller.setColumnVisibility(showColumns);
-					},
-					onShowColumnFiltersChange: showColumnFilterFunc => {
-						tableState.showColumnFilters.set(showColumnFilterFunc);
-					},
-					onSortingChange: sortingFunc => {
-						const newSorting = sortingFunc(tableStateValues.sorting);
-						tableState.sorting.set(newSorting);
-						return newSorting;
-					},
-				}
+						},
+						onColumnVisibilityChange: visibilityFunc => {
+							let showColumns;
+							if (typeof visibilityFunc === 'function') {
+								showColumns = visibilityFunc(tableStateValues?.columnVisibility);
+							} else if (typeof visibilityFunc === 'object') {
+								showColumns = visibilityFunc;
+							}
+							Controller.setColumnVisibility(showColumns);
+						},
+						onShowColumnFiltersChange: showColumnFilterFunc => {
+							tableState.showColumnFilters.set(showColumnFilterFunc);
+						},
+						onSortingChange: sortingFunc => {
+							const newSorting = sortingFunc(tableStateValues.sorting);
+							tableState.sorting.set(newSorting);
+							return newSorting;
+						},
+					}
 				: {}),
 		},
 	};

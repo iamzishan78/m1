@@ -1,846 +1,859 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
-import clsx from "clsx";
-import { makeStyles } from "@material-ui/core/styles";
-import { Grid } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import moment from "moment";
-import get from "lodash/get";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { useLazyQuery, useMutation } from "@apollo/client";
-import { useHistory } from "react-router-dom";
+import React, { useContext, useState, useEffect, useRef } from 'react';
+import clsx from 'clsx';
+import { makeStyles } from '@material-ui/core/styles';
+import { Grid } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import moment from 'moment';
+import get from 'lodash/get';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { useHistory } from 'react-router-dom';
 
-import { AppContext } from "../../../AppContext";
-import Dialog from "@material-ui/core/Dialog";
-import ExpandableCardProvider from "../../ExpandableCard/ExpandableCardProvider";
+import { AppContext } from '../../../AppContext';
+import { CircularProgress, Dialog, DialogTitle } from '@material-ui/core';
+import ExpandableCardProvider from '../../ExpandableCard/ExpandableCardProvider';
 
-import CallIcon from "@material-ui/icons/Call";
-import MeetingIcon from "@material-ui/icons/Group";
-import TaskIcon from "@material-ui/icons/WatchLater";
-import DeadlineIcon from "@material-ui/icons/Flag";
-import EmailIcon from "@material-ui/icons/Email";
-import ContactMailIcon from "@material-ui/icons/ContactMail";
-import TextMsgIcon from "@material-ui/icons/Textsms";
+import CallIcon from '@material-ui/icons/Call';
+import MeetingIcon from '@material-ui/icons/Group';
+import TaskIcon from '@material-ui/icons/WatchLater';
+import DeadlineIcon from '@material-ui/icons/Flag';
+import EmailIcon from '@material-ui/icons/Email';
+import ContactMailIcon from '@material-ui/icons/ContactMail';
+import TextMsgIcon from '@material-ui/icons/Textsms';
 
-import DocumentIcon from "@material-ui/icons/DescriptionOutlined";
-import PersonIcon from "@material-ui/icons/Person";
-import RecentActorsIcon from "@material-ui/icons/RecentActors";
-import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
+import DocumentIcon from '@material-ui/icons/DescriptionOutlined';
+import PersonIcon from '@material-ui/icons/Person';
+import RecentActorsIcon from '@material-ui/icons/RecentActors';
+import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 // import Checkbox from "@material-ui/core/Checkbox";
 // import FormControlLabel from "@material-ui/core/FormControlLabel";
-import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
-import { setStateIfDeepEqual } from "../../Shared/functions";
-import { Calendar, momentLocalizer } from "react-big-calendar";
-import ActivitiesEvent from "./ActivitiesEvent";
-import { PAGINATEDCONTACTSQUERY } from "../../../graphQL/useQueryPaginatedContacts";
-import { ADDCONTACT } from "../../../graphQL/useMutationAddContact";
-import { OPENDEALS } from "../../../graphQL/useQueryOpenDeals";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import { GETMONGOUSERS } from "../../../graphQL/useQueryGetUsers";
-import Typography from "@material-ui/core/Typography";
-import { ADDACTIVITY, DELETEACTIVITY, UPDATEACTIVITY } from "../../../graphQL/useMutationActivity";
-import { workspaceTenantName } from "components/Shared/functions";
-import AutoCompleteAddNewField from "components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField";
-import { outcomeOptions } from "components/ContactDetailCard/components/FieldContent/helper";
+import AutocompEntityNamesVirtualizeList from '../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
+import { setStateIfDeepEqual } from '../../Shared/functions';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import ActivitiesEvent from './ActivitiesEvent';
+import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
+import { ADDCONTACT } from '../../../graphQL/useMutationAddContact';
+import { OPENDEALS } from '../../../graphQL/useQueryOpenDeals';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { GETMONGOUSERS } from '../../../graphQL/useQueryGetUsers';
+import Typography from '@material-ui/core/Typography';
+import { ADDACTIVITY, DELETEACTIVITY, UPDATEACTIVITY } from '../../../graphQL/useMutationActivity';
+import { workspaceTenantName } from 'components/Shared/functions';
+import AutoCompleteAddNewField from 'components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField';
+import { outcomeOptions } from 'components/ContactDetailCard/components/FieldContent/helper';
+import { tableGlobalController } from 'hookstate/tableController';
 
-const useStyles = makeStyles((theme) => ({
-  dialogExpCard: {
-    "& .MuiDialog-paperScrollPaper": {
-      height: "100%",
-    },
-    "& *": {
-      margin: 0,
-    },
-  },
-  addAct: {
-    width: "100%",
-    backgroundColor: "#fff",
-    minHeight: "100%",
-    display: "flex",
-  },
-  left: {
-    width: "50%",
-    borderRight: "2px solid #d9d9d9",
-    padding: "20px 0",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flexstart",
-    justifyContent: "flexstart",
-  },
-  row: {
-    display: "flex",
-    alignItems: "flexstart",
-    justifyContent: "flexstart",
-    marginBottom: 16,
-  },
-  rowIcon: {
-    minWidth: 120,
-    color: "#B9C5D1",
-    display: "flex",
-    alignItems: "flex-start",
-    justifyContent: "center",
-    paddingTop: 16,
-  },
-  typeDisplay: {
-    border: "1px solid #d9d9d9",
-    borderRadius: 3,
-    display: "flex",
-    alignItems: "center",
-  },
-  filterDisplay: {
-    color: "#999",
-    backgroundColor: "#f9f9f9",
-    display: "flex",
-    alignItems: "center",
-    padding: "0px 8px",
-    border: "1px solid #fff",
-    borderRadius: 3,
-    cursor: "pointer",
-    userSelect: "none",
-    height: 40,
-    fontSize: 14,
+const useStyles = makeStyles(theme => ({
+	dialogExpCard: {
+		'& .MuiDialog-paperScrollPaper': {
+			height: '100%',
+		},
+		'& *': {
+			margin: 0,
+		},
+	},
+	addAct: {
+		width: '100%',
+		backgroundColor: '#fff',
+		minHeight: '100%',
+		display: 'flex',
+	},
+	left: {
+		width: '50%',
+		borderRight: '2px solid #d9d9d9',
+		padding: '20px 0',
+		display: 'flex',
+		flexDirection: 'column',
+		alignItems: 'flexstart',
+		justifyContent: 'flexstart',
+	},
+	row: {
+		display: 'flex',
+		alignItems: 'flexstart',
+		justifyContent: 'flexstart',
+		marginBottom: 16,
+	},
+	rowIcon: {
+		minWidth: 120,
+		color: '#B9C5D1',
+		display: 'flex',
+		alignItems: 'flex-start',
+		justifyContent: 'center',
+		paddingTop: 16,
+	},
+	typeDisplay: {
+		border: '1px solid #d9d9d9',
+		borderRadius: 3,
+		display: 'flex',
+		alignItems: 'center',
+	},
+	filterDisplay: {
+		color: '#999',
+		backgroundColor: '#f9f9f9',
+		display: 'flex',
+		alignItems: 'center',
+		padding: '0px 8px',
+		border: '1px solid #fff',
+		borderRadius: 3,
+		cursor: 'pointer',
+		userSelect: 'none',
+		height: 40,
+		fontSize: 14,
 
-    "& .MuiSvgIcon-root": {
-      fontSize: 16,
-    },
+		'& .MuiSvgIcon-root': {
+			fontSize: 16,
+		},
 
-    "& span": {
-      marginLeft: 8,
-    },
-  },
-  dateTimeRow: {
-    display: "flex",
-    alignItems: "center",
-    flexWrap: "wrap",
-  },
-  dateTimeField: {
-    height: 41,
-    width: 172,
-    marginBottom: 8,
+		'& span': {
+			marginLeft: 8,
+		},
+	},
+	dateTimeRow: {
+		display: 'flex',
+		alignItems: 'center',
+		flexWrap: 'wrap',
+	},
+	dateTimeField: {
+		height: 41,
+		width: 172,
+		marginBottom: 8,
 
-    "& .MuiInputBase-root": {
-      height: "100%",
-    },
-  },
-  marginLeft: {
-    marginLeft: 6,
-  },
-  marginBottom: {
-    marginBottom: 20,
-  },
-  line: {
-    height: 2,
-    width: 16,
-    margin: "0 8px",
-    backgroundColor: "#B9C5D1",
-  },
-  notes: {
-    backgroundColor: "#FFFCDC",
-    display: "block",
-    width: "100%",
+		'& .MuiInputBase-root': {
+			height: '100%',
+		},
+	},
+	marginLeft: {
+		marginLeft: 6,
+	},
+	marginBottom: {
+		marginBottom: 20,
+	},
+	line: {
+		height: 2,
+		width: 16,
+		margin: '0 8px',
+		backgroundColor: '#B9C5D1',
+	},
+	notes: {
+		backgroundColor: '#FFFCDC',
+		display: 'block',
+		width: '100%',
 
-    "& .MuiOutlinedInput-root": {
-      width: "100%",
-    },
-  },
-  fieldWidth: {
-    width: "100%",
-    maxWidth: 400,
-  },
-  inputField: {
-    height: 41,
+		'& .MuiOutlinedInput-root': {
+			width: '100%',
+		},
+	},
+	fieldWidth: {
+		width: '100%',
+		maxWidth: 400,
+	},
+	inputField: {
+		height: 41,
 
-    "& .MuiOutlinedInput-root": {
-      height: 41,
-    },
-  },
-  btnGroup: {
-    width: 400,
-    display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-  active: {
-    backgroundColor: "#D0F1FC",
-    color: "#259AED !important",
-  },
-  right: {
-    width: "40%",
-  },
-  error: {
-    border: "2px solid red !important",
-  },
+		'& .MuiOutlinedInput-root': {
+			height: 41,
+		},
+	},
+	btnGroup: {
+		width: 400,
+		display: 'flex',
+		justifyContent: 'flex-end',
+		alignItems: 'center',
+	},
+	active: {
+		backgroundColor: '#D0F1FC',
+		color: '#259AED !important',
+	},
+	right: {
+		width: '40%',
+	},
+	error: {
+		border: '2px solid red !important',
+	},
 }));
 
 const getCurrentDate = () => {
-  const d = new Date().toISOString();
-  return d.slice(0, d.indexOf("T"));
-};
-
-const getDateFromString = (d) => {
-  return d.slice(0, d.indexOf("T"));
+	const d = new Date().toISOString();
+	return d.slice(0, d.indexOf('T'));
 };
 
 const mergeDateAndTime = (d, t) => {
-  return `${d}T${t}`;
+	return `${d}T${t}`;
 };
 
 const initialErrors = {
-  activityType: false,
-  activityName: false,
-  startDate: false,
-  startTime: false,
-  endDate: false,
-  endTime: false,
-  owner: false,
+	activityType: false,
+	activityName: false,
+	startDate: false,
+	startTime: false,
+	endDate: false,
+	endTime: false,
+	owner: false,
 };
 
 const localizer = momentLocalizer(moment);
 const activityStatusOptions = [
-  { label: 'Open', value: false },
-  { label: 'Complete', value: true }
+	{ label: 'Open', value: false },
+	{ label: 'Complete', value: true },
 ];
 
 export default function ActivitiesModal({ events, setSelectedActivityId }) {
-  const outcomeFieldRef = useRef();
-  const classes = useStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const history = useHistory();
-  const [addNew, setAddNew] = useState(true);
-  const [activityType, setActivityType] = useState("");
-  const [activityName, setActivityName] = useState("");
-  const [outcome, setOutcome] = useState("");
-  const [closed, setClosed] = useState(false);
-  const [startDate, setStartDate] = useState(getCurrentDate());
-  const [endDate, setEndDate] = useState(getCurrentDate());
-  const [calenderDate, setCalenderDate] = useState(new Date());
-  const [startTime, setStartTime] = useState("08:00");
-  const [endTime, setEndTime] = useState("08:00");
-  const [notes, setNotes] = useState("");
-  const [owner, setOwner] = useState({ name: "", id: null });
-  const [dealId, setDealId] = useState(null);
-  const [errors, setErrors] = useState({ ...initialErrors });
-  const [users, setUsers] = useState([]);
-  const { selectedActivity } = stateApp;
+	const outcomeFieldRef = useRef();
+	const classes = useStyles();
+	const [stateApp, setStateApp] = useContext(AppContext);
+	const history = useHistory();
+	const [addNew, setAddNew] = useState(true);
+	const [activityType, setActivityType] = useState('');
+	const [activityName, setActivityName] = useState('');
+	const [outcome, setOutcome] = useState('');
+	const [closed, setClosed] = useState(false);
+	const [startDate, setStartDate] = useState(getCurrentDate());
+	const [endDate, setEndDate] = useState(getCurrentDate());
+	const [calenderDate, setCalenderDate] = useState(new Date());
+	const [startTime, setStartTime] = useState('08:00');
+	const [endTime, setEndTime] = useState('08:00');
+	const [notes, setNotes] = useState('');
+	const [owner, setOwner] = useState({ name: '', id: null });
+	const [dealId, setDealId] = useState(null);
+	const [errors, setErrors] = useState({ ...initialErrors });
+	const [users, setUsers] = useState([]);
+	const { selectedActivity } = stateApp;
 
-  const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
-    fetchPolicy: "cache-and-network",
-  });
+	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
+		fetchPolicy: 'cache-and-network',
+	});
 
-  useEffect(() => {
-    getAllMongoUsers();
-  }, []);
+	useEffect(() => {
+		getAllMongoUsers();
+	}, []);
 
-  useEffect(() => {
-    if (userLists && userLists.allMongoUsers) {
-      setUsers(
-        userLists.allMongoUsers.map((user) => ({
-          value: user._id,
-          text: user.name,
-        }))
-      );
-    }
-  }, [userLists]);
+	useEffect(() => {
+		if (userLists && userLists.allMongoUsers) {
+			setUsers(
+				userLists.allMongoUsers.map(user => ({
+					value: user._id,
+					text: user.name,
+				}))
+			);
+		}
+	}, [userLists]);
 
-  const [addActivityMutation, { loading: addLoading }] = useMutation(ADDACTIVITY, {
-    onCompleted: () => {
-      onModalClose();
-    },
-    refetchQueries: ["getAllActivities", "getESSimpleSearch"],
-    awaitRefetchQueries: true,
-  });
+	const [addActivityMutation, { loading: addLoading }] = useMutation(ADDACTIVITY, {
+		onCompleted: () => {
+			onModalClose();
+			tableGlobalController.refetch(); // refech mrttable rows
+		},
+		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
+		awaitRefetchQueries: true,
+	});
 
-  const [updateActivityMutation, { loading: updateLoading }] = useMutation(UPDATEACTIVITY, {
-    onCompleted: () => {
-      onModalClose();
-    },
-    refetchQueries: ["getAllActivities", "getESSimpleSearch"],
-    awaitRefetchQueries: true,
-  });
+	const [updateActivityMutation, { loading: updateLoading }] = useMutation(UPDATEACTIVITY, {
+		onCompleted: () => {
+			onModalClose();
+			tableGlobalController.refetch(); // refech mrttable rows
+		},
+		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
+		awaitRefetchQueries: true,
+	});
 
-  const [deleteActivityMutation] = useMutation(DELETEACTIVITY, {
-    onCompleted: () => {
-      onModalClose();
-    },
-    refetchQueries: ["getAllActivities", "getESSimpleSearch"],
-    awaitRefetchQueries: true,
-  });
+	const [deleteActivityMutation] = useMutation(DELETEACTIVITY, {
+		onCompleted: () => {
+			onModalClose();
+			tableGlobalController.refetch(); // refech mrttable rows
+		},
+		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
+		awaitRefetchQueries: true,
+	});
 
-  const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
-    fetchPolicy: "cache-and-network",
-    nextFetchPolicy: "cache-first",
-  });
-  const [addContact, { data: addContactData }] = useMutation(ADDCONTACT);
+	const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(
+		PAGINATEDCONTACTSQUERY,
+		{
+			fetchPolicy: 'cache-and-network',
+			nextFetchPolicy: 'cache-first',
+		}
+	);
+	const [addContact, { data: addContactData }] = useMutation(ADDCONTACT);
 
-  const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
-  const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
-  const [nameAutInputValue, NameAutInputValue] = useState("");
-  const setNameAutInputValue = (newState) => {
-    setStateIfDeepEqual(NameAutInputValue, newState);
-  };
-  const [hasNextPage, setHasNextPage] = useState(true);
-  const [isNextPageLoading, setIsNextPageLoading] = useState(false);
+	const [nameAutValue, setNameAutValue] = useState({ name: '', _id: null });
+	const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
+	const [nameAutInputValue, NameAutInputValue] = useState('');
+	const setNameAutInputValue = newState => {
+		setStateIfDeepEqual(NameAutInputValue, newState);
+	};
+	const [hasNextPage, setHasNextPage] = useState(true);
+	const [isNextPageLoading, setIsNextPageLoading] = useState(false);
 
-  useEffect(() => {
-    //will also run during initial mount
-    setIsNextPageLoading(true);
-    getPaginatedContacts({
-      variables: {
-        search: nameAutInputValue,
-      },
-    });
-  }, [nameAutInputValue]);
+	useEffect(() => {
+		//will also run during initial mount
+		setIsNextPageLoading(true);
+		getPaginatedContacts({
+			variables: {
+				search: nameAutInputValue,
+			},
+		});
+	}, [nameAutInputValue]);
 
-  useEffect(() => {
-    if (get(addContactData, "addContact.contact")) {
-      setNameAutValue({ name: addContactData.addContact.contact.name, _id: addContactData.addContact.contact._id });
-    }
-  }, [addContactData]);
+	useEffect(() => {
+		if (get(addContactData, 'addContact.contact')) {
+			setNameAutValue({ name: addContactData.addContact.contact.name, _id: addContactData.addContact.contact._id });
+		}
+	}, [addContactData]);
 
-  const loadNextPage = async (pageVariables) => {
-    setIsNextPageLoading(true);
-    fetchMorePaginatedContacts(pageVariables);
-    return null;
-  };
+	const loadNextPage = async pageVariables => {
+		setIsNextPageLoading(true);
+		fetchMorePaginatedContacts(pageVariables);
+		return null;
+	};
 
-  useEffect(() => {
-    if (allContacts?.paginatedContacts) {
-      setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map((el) => el.node)]);
-      setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
-    }
-    setIsNextPageLoading(false);
-  }, [allContacts]);
+	useEffect(() => {
+		if (allContacts?.paginatedContacts) {
+			setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map(el => el.node)]);
+			setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
+		}
+		setIsNextPageLoading(false);
+	}, [allContacts]);
 
-  useEffect(() => {
-    const date = mergeDateAndTime(startDate, startTime);
-    setCalenderDate(new Date(date));
-  }, [startDate, startTime]);
+	useEffect(() => {
+		const date = mergeDateAndTime(startDate, startTime);
+		setCalenderDate(new Date(date));
+	}, [startDate, startTime]);
 
-  useEffect(() => {
-    if (selectedActivity) {
-      setAddNew(false);
-      setNotes(selectedActivity.notes);
-      setOwner({
-        name: selectedActivity.ownerName,
-        id: selectedActivity.ownerId,
-      });
-      setDealId(selectedActivity.dealId);
-      setActivityType(selectedActivity.type);
-      setActivityName(selectedActivity.name);
-      setClosed(selectedActivity.isClosed);
-      setNameAutValue({
-        name: selectedActivity.contactName,
-        _id: selectedActivity.contactId,
-      });
-      setOutcome(selectedActivity.outcome)
-      outcomeFieldRef.current?.updateDefaultValue(selectedActivity.outcome);
-      setStartDate(moment.parseZone(selectedActivity.start).format("yyyy-MM-DD"));
-      setStartTime(moment.parseZone(selectedActivity.start).format("HH:mm"));
-      setCalenderDate(selectedActivity.start);
+	useEffect(() => {
+		if (selectedActivity) {
+			setAddNew(false);
+			setNotes(selectedActivity.notes);
+			setOwner({
+				name: selectedActivity.ownerName,
+				id: selectedActivity.ownerId,
+			});
+			setDealId(selectedActivity.dealId);
+			setActivityType(selectedActivity.type);
+			setActivityName(selectedActivity.name);
+			setClosed(selectedActivity.isClosed);
+			setNameAutValue({
+				name: selectedActivity.contactName,
+				_id: selectedActivity.contactId,
+			});
+			setOutcome(selectedActivity.outcome);
+			outcomeFieldRef.current?.updateDefaultValue(selectedActivity.outcome);
+			setStartDate(moment.parseZone(selectedActivity.start).format('yyyy-MM-DD'));
+			setStartTime(moment.parseZone(selectedActivity.start).format('HH:mm'));
+			setCalenderDate(selectedActivity.start);
 
-      setEndDate(moment.parseZone(selectedActivity.end).format("yyyy-MM-DD"));
-      setEndTime(moment.parseZone(selectedActivity.end).format("HH:mm"));
-    } else {
-      setAddNew(true);
-      setNameAutValue({ name: "", _id: null });
-      setClosed(false);
-      setNotes("");
-      setOwner({
-        name: stateApp.user.fullname || stateApp.user.email,
-        id: stateApp.user.mongoId,
-      });
-      setDealId(null);
-      setActivityType("");
-      setActivityName("");
-      setStartDate(getCurrentDate());
-      setCalenderDate(new Date());
-      setEndDate(getCurrentDate());
-      setStartTime("08:00");
-      setEndTime("08:00");
-    }
-  }, [selectedActivity]);
+			setEndDate(moment.parseZone(selectedActivity.end).format('yyyy-MM-DD'));
+			setEndTime(moment.parseZone(selectedActivity.end).format('HH:mm'));
+		} else {
+			setAddNew(true);
+			setNameAutValue({ name: '', _id: null });
+			setClosed(false);
+			setNotes('');
+			setOwner({
+				name: stateApp.user.fullname || stateApp.user.email,
+				id: stateApp.user.mongoId,
+			});
+			setDealId(null);
+			setActivityType('');
+			setActivityName('');
+			setStartDate(getCurrentDate());
+			setCalenderDate(new Date());
+			setEndDate(getCurrentDate());
+			setStartTime('08:00');
+			setEndTime('08:00');
+		}
+	}, [selectedActivity]);
 
-  const [openDeals, setOpenDeals] = useState([]);
-  const [getOpenDeals, { data: dealsData }] = useLazyQuery(OPENDEALS, {
-    fetchPolicy: "cache-and-network",
-  });
+	const [openDeals, setOpenDeals] = useState([]);
+	const [getOpenDeals, { data: dealsData }] = useLazyQuery(OPENDEALS, {
+		fetchPolicy: 'cache-and-network',
+	});
 
-  useEffect(() => {
-    if (stateApp.user && stateApp.user.mongoId) {
-      getOpenDeals();
-    }
-  }, [stateApp.user]);
+	useEffect(() => {
+		if (stateApp.user && stateApp.user.mongoId) {
+			getOpenDeals();
+		}
+	}, [stateApp.user]);
 
-  useEffect(() => {
-    if (dealsData) {
-      setOpenDeals(dealsData?.openDeals?.deals);
-    }
-  }, [dealsData]);
+	useEffect(() => {
+		if (dealsData) {
+			setOpenDeals(dealsData?.openDeals?.deals);
+		}
+	}, [dealsData]);
 
-  const onModalClose = () => {
-    if (history.location.pathname !== "/contacts/activityDashboard") {
-      window.history.pushState("", "", `/calendar/activities`);
-    }
+	const onModalClose = () => {
+		if (history.location.pathname !== '/contacts/activityDashboard') {
+			window.history.pushState('', '', `/calendar/activities`);
+		}
 
-    clearFields();
-    setSelectedActivityId(null);
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      activityDialog: false,
-      selectedActivity: null,
-    }));
-  };
+		clearFields();
+		setSelectedActivityId(null);
+		setStateApp(stateApp => ({
+			...stateApp,
+			activityDialog: false,
+			selectedActivity: null,
+		}));
+	};
 
-  const clearFields = () => {
-    setAddNew(true);
-    setNotes("");
-    setOwner({
-      name: stateApp.user.fullname || stateApp.user.email,
-      id: stateApp.user.mongoId,
-    });
-    setNameAutValue({ name: "", _id: null });
-    setDealId(null);
-    setActivityType("");
-    setActivityName("");
-    setClosed(false);
-    setStartDate(getCurrentDate());
-    setCalenderDate(new Date());
-    setEndDate(getCurrentDate());
-    setStartTime("08:00");
-    setEndTime("08:00");
-    setNameAutInputValue("");
-  };
+	const clearFields = () => {
+		setAddNew(true);
+		setNotes('');
+		setOwner({
+			name: stateApp.user.fullname || stateApp.user.email,
+			id: stateApp.user.mongoId,
+		});
+		setNameAutValue({ name: '', _id: null });
+		setDealId(null);
+		setActivityType('');
+		setActivityName('');
+		setClosed(false);
+		setStartDate(getCurrentDate());
+		setCalenderDate(new Date());
+		setEndDate(getCurrentDate());
+		setStartTime('08:00');
+		setEndTime('08:00');
+		setNameAutInputValue('');
+	};
 
-  const updateErrors = () => {
-    let activityTypeErr = false;
-    let activityNameErr = false;
-    let startDataErr = false;
-    let startTimeErr = false;
-    let endDateErr = false;
-    let endTimeErr = false;
-    let ownerErr = false;
+	const updateErrors = () => {
+		let activityTypeErr = false;
+		let activityNameErr = false;
+		let startDataErr = false;
+		let startTimeErr = false;
+		let endDateErr = false;
+		let endTimeErr = false;
+		let ownerErr = false;
 
-    if (!activityType || activityType.length === 0) activityTypeErr = true;
-    if (!activityName || activityName.length === 0) activityNameErr = true;
-    if (!startDate) startDataErr = true;
-    if (!startTime) startTimeErr = true;
-    if (!endDate) endDateErr = true;
-    if (!endTime) endTimeErr = true;
-    if (!owner.id) ownerErr = true;
+		if (!activityType || activityType.length === 0) activityTypeErr = true;
+		if (!activityName || activityName.length === 0) activityNameErr = true;
+		if (!startDate) startDataErr = true;
+		if (!startTime) startTimeErr = true;
+		if (!endDate) endDateErr = true;
+		if (!endTime) endTimeErr = true;
+		if (!owner.id) ownerErr = true;
 
-    const dateTime = mergeDateAndTime(startDate, startTime);
-    const endDateTime = mergeDateAndTime(endDate, endTime);
+		const dateTime = mergeDateAndTime(startDate, startTime);
+		const endDateTime = mergeDateAndTime(endDate, endTime);
 
-    if (moment(endDateTime).isBefore(dateTime)) {
-      startDataErr = true;
-      startTimeErr = true;
-      endDateErr = true;
-      endTimeErr = true;
-    }
+		if (moment(endDateTime).isBefore(dateTime)) {
+			startDataErr = true;
+			startTimeErr = true;
+			endDateErr = true;
+			endTimeErr = true;
+		}
 
-    setErrors({
-      activityType: activityTypeErr,
-      activityName: activityNameErr,
-      startDate: startDataErr,
-      startTime: startTimeErr,
-      endDate: endDateErr,
-      endTime: endTimeErr,
-      owner: ownerErr,
-    });
+		setErrors({
+			activityType: activityTypeErr,
+			activityName: activityNameErr,
+			startDate: startDataErr,
+			startTime: startTimeErr,
+			endDate: endDateErr,
+			endTime: endTimeErr,
+			owner: ownerErr,
+		});
 
-    return activityNameErr || activityTypeErr || startDataErr || startTimeErr || endDateErr || endTimeErr || ownerErr;
-  };
+		return activityNameErr || activityTypeErr || startDataErr || startTimeErr || endDateErr || endTimeErr || ownerErr;
+	};
 
-  const addActivity = async () => {
-    if (updateErrors()) return;
+	const addActivity = async () => {
+		if (updateErrors()) return;
 
-    const dateTime = mergeDateAndTime(startDate, startTime);
-    const endDateTime = mergeDateAndTime(endDate, endTime);
+		const dateTime = mergeDateAndTime(startDate, startTime);
+		const endDateTime = mergeDateAndTime(endDate, endTime);
 
-    await addActivityMutation({
-      variables: {
-        activity: {
-          type: activityType,
-          name: activityName,
-          notes,
-          outcome,
-          ownerId: owner?.id,
-          ownerName: owner?.name,
-          contactId: nameAutValue._id,
-          contactName: nameAutValue.name,
-          dealId,
-          dateTime: new Date(dateTime).toUTCString(),
-          endDateTime: new Date(endDateTime).toUTCString(),
-          isClosed: closed,
-          user: stateApp.user._id,
-          createdBy: stateApp?.user?._id,
-          tenant: window.sessionStorage.getItem("tenantName")
-        },
-      },
-    });
-  };
+		await addActivityMutation({
+			variables: {
+				activity: {
+					type: activityType,
+					name: activityName,
+					notes,
+					outcome,
+					ownerId: owner?.id,
+					ownerName: owner?.name,
+					contactId: nameAutValue._id,
+					contactName: nameAutValue.name,
+					dealId,
+					dateTime: new Date(dateTime).toUTCString(),
+					endDateTime: new Date(endDateTime).toUTCString(),
+					isClosed: closed,
+					user: stateApp.user._id,
+					createdBy: stateApp?.user?._id,
+					tenant: window.sessionStorage.getItem('tenantName'),
+				},
+			},
+		});
+	};
 
-  const updateActivity = async () => {
-    if (updateErrors()) return;
+	const updateActivity = async () => {
+		if (updateErrors()) return;
 
-    const dateTime = mergeDateAndTime(startDate, startTime);
-    const endDateTime = mergeDateAndTime(endDate, endTime);
+		const dateTime = mergeDateAndTime(startDate, startTime);
+		const endDateTime = mergeDateAndTime(endDate, endTime);
 
-    await updateActivityMutation({
-      variables: {
-        activity: {
-          _id: selectedActivity._id,
-          type: activityType,
-          name: activityName,
-          dateTime: new Date(dateTime).toUTCString(),
-          endDateTime: new Date(endDateTime).toUTCString(),
-          notes,
-          outcome,
-          ownerId: owner.id,
-          ownerName: owner.name,
-          contactId: nameAutValue?._id,
-          contactName: nameAutValue?.name,
-          dealId,
-          isClosed: closed,
-          user: stateApp.user._id
-        },
-      },
-    });
-  };
+		await updateActivityMutation({
+			variables: {
+				activity: {
+					_id: selectedActivity._id,
+					type: activityType,
+					name: activityName,
+					dateTime: new Date(dateTime).toUTCString(),
+					endDateTime: new Date(endDateTime).toUTCString(),
+					notes,
+					outcome,
+					ownerId: owner.id,
+					ownerName: owner.name,
+					contactId: nameAutValue?._id,
+					contactName: nameAutValue?.name,
+					dealId,
+					isClosed: closed,
+					user: stateApp.user._id,
+				},
+			},
+		});
+	};
 
-  const deleteActivity = async () => {
-    await deleteActivityMutation({
-      variables: {
-        id: selectedActivity._id,
-      },
-    });
-  };
+	const deleteActivity = async () => {
+		await deleteActivityMutation({
+			variables: {
+				id: selectedActivity._id,
+			},
+		});
+	};
 
-  const handleOnDealClick = () => {
-    const { _id: stageId, pipeline } = dealValue.stage;
-    const dealId = dealValue._id;
-    return `/flow/${pipeline}/lane/${stageId}/card/${dealId}?tenant=${workspaceTenantName()}`;
-  };
+	const handleOnDealClick = () => {
+		const { _id: stageId, pipeline } = dealValue.stage;
+		const dealId = dealValue._id;
+		return `/flow/${pipeline}/lane/${stageId}/card/${dealId}?tenant=${workspaceTenantName()}`;
+	};
 
-  const handleOnContactView = () => `/contact/details/${nameAutValue._id}?tenant=${workspaceTenantName()}`;
+	const handleOnContactView = () => `/contact/details/${nameAutValue._id}?tenant=${workspaceTenantName()}`;
 
-  const dealValue = openDeals.find((deal) => deal._id === dealId) || null;
-  return (
-    <Dialog
-      className={classes.dialogExpCard}
-      fullWidth
-      maxWidth="xl"
-      open={!!stateApp.activityDialog}
-      onClose={
-        addLoading && updateLoading
-          ? () => { }
-          : () => {
-            onModalClose();
-          }
-      }
-    >
-      <ExpandableCardProvider
-        expanded={true}
-        handleCloseExpandableCard={
-          addLoading && updateLoading
-            ? () => { }
-            : () => {
-              onModalClose();
-            }
-        }
-        title={addNew ? "Add Activity" : "Activity Details"}
-        subTitle={""}
-        parent="calendar"
-        mouseX={0}
-        mouseY={0}
-        position="relative"
-        cardLeft={"0"}
-        cardTop={"0"}
-        zIndex={1201}
-        cardWidthExpanded="100%"
-        cardHeightExpanded="100%"
-        targetSourceId=""
-        targetLabel={"activity"}
-        noTrackAvailable={true}
-        handleDelete={deleteActivity}
-        component={
-          <div className={classes.addAct}>
-            <div className={classes.left}>
-              <div className={classes.row}>
-                <span className={classes.rowIcon}></span>
-                <TextField
-                  className={clsx(
-                    // classes.fieldWidth,
-                    classes.inputField,
-                    activityName === "" && errors.activityName && classes.error
-                  )}
-                  type="text"
-                  variant="outlined"
-                  placeholder="Enter activity name"
-                  style={{ width: "76%", marginRight: 24 }}
-                  value={activityName}
-                  onChange={(e) => setActivityName(e.target.value)}
-                />
-              </div>
-              <div className={classes.row}>
-                <span className={classes.rowIcon}></span>
-                <div className={clsx(classes.typeDisplay, activityType === "" && errors.activityType && classes.error)}>
-                  <span
-                    className={clsx(classes.filterDisplay, activityType === "call" && classes.active)}
-                    onClick={() => setActivityType("call")}
-                  >
-                    <CallIcon id="callIcon" /> <span>Call</span>
-                  </span>
-                  <span
-                    className={clsx(classes.filterDisplay, activityType === "text_message" && classes.active)}
-                    onClick={() => setActivityType("text_message")}
-                  >
-                    <TextMsgIcon /> <span>Text Message</span>
-                  </span>
-                  <span
-                    className={clsx(classes.filterDisplay, activityType === "email" && classes.active)}
-                    onClick={() => setActivityType("email")}
-                  >
-                    <EmailIcon /> <span>Email</span>
-                  </span>
-                  <span
-                    className={clsx(
-                      classes.filterDisplay,
+	const dealValue = openDeals.find(deal => deal._id === dealId) || null;
+	return (
+		<Dialog
+			className={classes.dialogExpCard}
+			fullWidth
+			maxWidth="xl"
+			open={!!stateApp.activityDialog}
+			onClose={
+				addLoading && updateLoading
+					? () => {}
+					: () => {
+							onModalClose();
+						}
+			}
+		>
+			<ExpandableCardProvider
+				expanded={true}
+				handleCloseExpandableCard={
+					addLoading && updateLoading
+						? () => {}
+						: () => {
+								onModalClose();
+							}
+				}
+				title={addNew ? 'Add Activity' : 'Activity Details'}
+				subTitle={''}
+				parent="calendar"
+				mouseX={0}
+				mouseY={0}
+				position="relative"
+				cardLeft={'0'}
+				cardTop={'0'}
+				zIndex={1201}
+				cardWidthExpanded="100%"
+				cardHeightExpanded="100%"
+				targetSourceId=""
+				targetLabel={'activity'}
+				noTrackAvailable={true}
+				handleDelete={deleteActivity}
+				component={
+					<div className={classes.addAct}>
+						<div className={classes.left}>
+							<div className={classes.row}>
+								<span className={classes.rowIcon}></span>
+								<TextField
+									className={clsx(
+										// classes.fieldWidth,
+										classes.inputField,
+										activityName === '' && errors.activityName && classes.error
+									)}
+									type="text"
+									variant="outlined"
+									placeholder="Enter activity name"
+									style={{ width: '76%', marginRight: 24 }}
+									value={activityName}
+									onChange={e => setActivityName(e.target.value)}
+								/>
+							</div>
+							<div className={classes.row}>
+								<span className={classes.rowIcon}></span>
+								<div className={clsx(classes.typeDisplay, activityType === '' && errors.activityType && classes.error)}>
+									<span
+										className={clsx(classes.filterDisplay, activityType === 'call' && classes.active)}
+										onClick={() => setActivityType('call')}
+									>
+										<CallIcon id="callIcon" /> <span>Call</span>
+									</span>
+									<span
+										className={clsx(classes.filterDisplay, activityType === 'text_message' && classes.active)}
+										onClick={() => setActivityType('text_message')}
+									>
+										<TextMsgIcon /> <span>Text Message</span>
+									</span>
+									<span
+										className={clsx(classes.filterDisplay, activityType === 'email' && classes.active)}
+										onClick={() => setActivityType('email')}
+									>
+										<EmailIcon /> <span>Email</span>
+									</span>
+									<span
+										className={clsx(
+											classes.filterDisplay,
 
-                      activityType === "meeting" && classes.active
-                    )}
-                    onClick={() => setActivityType("meeting")}
-                  >
-                    <MeetingIcon /> <span>Meeting</span>
-                  </span>
-                  <span
-                    className={clsx(classes.filterDisplay, activityType === "task" && classes.active)}
-                    onClick={() => setActivityType("task")}
-                  >
-                    <TaskIcon /> <span>Task</span>
-                  </span>
-                  <span
-                    className={clsx(classes.filterDisplay, activityType === "deadline" && classes.active)}
-                    onClick={() => setActivityType("deadline")}
-                  >
-                    <DeadlineIcon /> <span>Deadline</span>
-                  </span>
-                  <span
-                    className={clsx(classes.filterDisplay, activityType === "mailer" && classes.active)}
-                    onClick={() => setActivityType("mailer")}
-                  >
-                    <ContactMailIcon /> <span>Mailer</span>
-                  </span>
-                </div>
-              </div>
-              <div className={classes.row}>
-                <span className={classes.rowIcon}></span>
-                <AutoCompleteAddNewField
-                  ref={outcomeFieldRef}
-                  queryParams={{
-                    esIndex: "contacts_flat",
-                    filterKey: "outcome.keyword",
-                    size: 50,
-                  }}
-                  onChange={(data) => {
-                    setOutcome(data.name)
-                  }}
-                  defaultOptions={outcomeOptions}
-                  value={outcome}
-                  style={{ width: "76%", marginRight: 24 }}
-                  inputProps={{ variant: "outlined", size: "small", label: "Outcome" }}
-                />
-              </div>
-              <div className={classes.row}>
-                <span className={classes.rowIcon}>
-                  <TaskIcon />
-                </span>
-                <div className={classes.dateTimeRow}>
-                  <TextField
-                    className={clsx(classes.dateTimeField, !startDate && errors.startDate && classes.error)}
-                    value={startDate}
-                    type="date"
-                    variant="outlined"
-                    onChange={(e) => {
-                      if (e.target.value && e.target.value.length > 0) {
-                        setStartDate(e.target.value);
-                        setEndDate(e.target.value);
-                      }
-                    }}
-                  />
-                  <TextField
-                    className={clsx(classes.dateTimeField, classes.marginLeft, !startTime && errors.startTime && classes.error)}
-                    value={startTime}
-                    type="time"
-                    variant="outlined"
-                    onChange={(e) => {
-                      if (e.target.value && e.target.value.length > 0) {
-                        setStartTime(e.target.value);
-                        setEndTime(e.target.value);
-                      }
-                    }}
-                  />
-                  <span className={classes.line} />
+											activityType === 'meeting' && classes.active
+										)}
+										onClick={() => setActivityType('meeting')}
+									>
+										<MeetingIcon /> <span>Meeting</span>
+									</span>
+									<span
+										className={clsx(classes.filterDisplay, activityType === 'task' && classes.active)}
+										onClick={() => setActivityType('task')}
+									>
+										<TaskIcon /> <span>Task</span>
+									</span>
+									<span
+										className={clsx(classes.filterDisplay, activityType === 'deadline' && classes.active)}
+										onClick={() => setActivityType('deadline')}
+									>
+										<DeadlineIcon /> <span>Deadline</span>
+									</span>
+									<span
+										className={clsx(classes.filterDisplay, activityType === 'mailer' && classes.active)}
+										onClick={() => setActivityType('mailer')}
+									>
+										<ContactMailIcon /> <span>Mailer</span>
+									</span>
+								</div>
+							</div>
+							<div className={classes.row}>
+								<span className={classes.rowIcon}></span>
+								<AutoCompleteAddNewField
+									ref={outcomeFieldRef}
+									queryParams={{
+										esIndex: 'activities_flat', // Set the correct index to get outcome options
+										filterKey: 'outcome.keyword',
+										size: 50,
+									}}
+									onChange={data => {
+										setOutcome(data.name);
+									}}
+									defaultOptions={outcomeOptions}
+									value={outcome}
+									style={{ width: '76%', marginRight: 24 }}
+									inputProps={{ variant: 'outlined', size: 'small', label: 'Outcome' }}
+								/>
+							</div>
+							<div className={classes.row}>
+								<span className={classes.rowIcon}>
+									<TaskIcon />
+								</span>
+								<div className={classes.dateTimeRow}>
+									<TextField
+										className={clsx(classes.dateTimeField, !startDate && errors.startDate && classes.error)}
+										value={startDate}
+										type="date"
+										variant="outlined"
+										onChange={e => {
+											if (e.target.value && e.target.value.length > 0) {
+												setStartDate(e.target.value);
+												setEndDate(e.target.value);
+											}
+										}}
+									/>
+									<TextField
+										className={clsx(
+											classes.dateTimeField,
+											classes.marginLeft,
+											!startTime && errors.startTime && classes.error
+										)}
+										value={startTime}
+										type="time"
+										variant="outlined"
+										onChange={e => {
+											if (e.target.value && e.target.value.length > 0) {
+												setStartTime(e.target.value);
+												setEndTime(e.target.value);
+											}
+										}}
+									/>
+									<span className={classes.line} />
 
-                  <TextField
-                    className={clsx(classes.dateTimeField, !endDate && errors.endDate && classes.error)}
-                    value={endDate}
-                    type="date"
-                    variant="outlined"
-                    onChange={(e) => {
-                      if (e.target.value && e.target.value.length > 0) {
-                        setEndDate(e.target.value);
-                      }
-                    }}
-                  />
-                  <TextField
-                    className={clsx(classes.dateTimeField, classes.marginLeft, !endTime && errors.endTime && classes.error)}
-                    value={endTime}
-                    type="time"
-                    variant="outlined"
-                    onChange={(e) => {
-                      if (e.target.value && e.target.value.length > 0) {
-                        setEndTime(e.target.value);
-                      }
-                    }}
-                  />
-                </div>
-              </div>
-              <div className={classes.row}>
-                <span className={classes.rowIcon}>
-                  <DocumentIcon />
-                </span>
-                <div style={{ width: "76%", marginRight: 24 }}>
-                  <TextField
-                    multiline
-                    rows={8}
-                    variant="outlined"
-                    placeholder="Enter activity notes here"
-                    value={notes}
-                    className={clsx(classes.notes)}
-                    onChange={(e) => {
-                      setNotes(e.target.value);
-                    }}
-                  />
-                </div>
-              </div>
+									<TextField
+										className={clsx(classes.dateTimeField, !endDate && errors.endDate && classes.error)}
+										value={endDate}
+										type="date"
+										variant="outlined"
+										onChange={e => {
+											if (e.target.value && e.target.value.length > 0) {
+												setEndDate(e.target.value);
+											}
+										}}
+									/>
+									<TextField
+										className={clsx(
+											classes.dateTimeField,
+											classes.marginLeft,
+											!endTime && errors.endTime && classes.error
+										)}
+										value={endTime}
+										type="time"
+										variant="outlined"
+										onChange={e => {
+											if (e.target.value && e.target.value.length > 0) {
+												setEndTime(e.target.value);
+											}
+										}}
+									/>
+								</div>
+							</div>
+							<div className={classes.row}>
+								<span className={classes.rowIcon}>
+									<DocumentIcon />
+								</span>
+								<div style={{ width: '76%', marginRight: 24 }}>
+									<TextField
+										multiline
+										rows={8}
+										variant="outlined"
+										placeholder="Enter activity notes here"
+										value={notes}
+										className={clsx(classes.notes)}
+										onChange={e => {
+											setNotes(e.target.value);
+										}}
+									/>
+								</div>
+							</div>
 
-              <div className={classes.row}>
-                <span className={classes.rowIcon}>
-                  {dealValue ? (
-                    <a href={handleOnDealClick()} className={classes.rowIcon}>
-                      <MonetizationOnIcon color="secondary" />
-                    </a>
-                  ) : (
-                    <MonetizationOnIcon color="disabled" />
-                  )}
-                </span>
-                <div style={{ width: "76%", marginRight: 24 }}>
-                  <Autocomplete
-                    className={classes.fieldWidth}
-                    options={openDeals}
-                    onChange={(e, deal) => {
-                      setDealId(deal?._id);
-                    }}
-                    value={dealValue}
-                    getOptionSelected={(option) => option.id === dealId}
-                    getOptionLabel={(option) => option.name}
-                    renderOption={(option) => {
-                      return (
-                        <Grid container spacing={0}>
-                          <Grid container item xs={12} alignItems="center">
-                            <Grid item xs>
-                              <span style={{ fontWeight: 400 }}>{option.name}</span>
+							<div className={classes.row}>
+								<span className={classes.rowIcon}>
+									{dealValue ? (
+										<a href={handleOnDealClick()} className={classes.rowIcon}>
+											<MonetizationOnIcon color="secondary" />
+										</a>
+									) : (
+										<MonetizationOnIcon color="disabled" />
+									)}
+								</span>
+								<div style={{ width: '76%', marginRight: 24 }}>
+									<Autocomplete
+										className={classes.fieldWidth}
+										options={openDeals}
+										onChange={(e, deal) => {
+											setDealId(deal?._id);
+										}}
+										value={dealValue}
+										getOptionSelected={option => option.id === dealId}
+										getOptionLabel={option => option.name}
+										renderOption={option => {
+											return (
+												<Grid container spacing={0}>
+													<Grid container item xs={12} alignItems="center">
+														<Grid item xs>
+															<span style={{ fontWeight: 400 }}>{option.name}</span>
 
-                              <Typography variant="body2" color="textSecondary">
-                                {option.label}
-                              </Typography>
-                            </Grid>
-                          </Grid>
-                        </Grid>
-                      );
-                    }}
-                    renderInput={(params) => <TextField margin="dense" {...params} label="Associated Deal" variant="outlined" />}
-                  />
-                </div>
-              </div>
-              <div className={classes.row}>
-                <span className={classes.rowIcon}>
-                  {nameAutValue?._id ? (
-                    <a href={handleOnContactView()} >
-                      <RecentActorsIcon color="secondary" />
-                    </a>
-                  ) : (
-                    <RecentActorsIcon color="disabled" />
-                  )}
-                </span>
-                <div className={classes.fieldWidth}>
-                  <AutocompEntityNamesVirtualizeList
-                    mongoEntitiesArray={mongoEntitiesArray}
-                    setMongoEntitiesArray={setMongoEntitiesArray}
-                    nameAutValue={nameAutValue}
-                    setNameAutValue={setNameAutValue}
-                    nameAutInputValue={nameAutInputValue}
-                    setNameAutInputValue={setNameAutInputValue}
-                    variant="outlined"
-                    label="Associated Contact or Lead"
-                    hasNextPage={hasNextPage}
-                    isNextPageLoading={isNextPageLoading}
-                    loadNextPage={loadNextPage}
-                    addNew={true}
-                    addNewOnClick={(value) => {
-                      const contact = { name: value };
-                      addContact({
-                        variables: {
-                          contact: {
-                            ...contact,
-                            createBy: stateApp.user.mongoId,
-                            lastUpdateBy: stateApp.user.mongoId,
-                          },
-                        },
-                        refetchQueries: ["getPaginatedContacts", "getContact"],
-                        awaitRefetchQueries: true,
-                      });
-                    }}
-                  />
-                </div>
-              </div>
+															<Typography variant="body2" color="textSecondary">
+																{option.label}
+															</Typography>
+														</Grid>
+													</Grid>
+												</Grid>
+											);
+										}}
+										renderInput={params => (
+											<TextField margin="dense" {...params} label="Associated Deal" variant="outlined" />
+										)}
+									/>
+								</div>
+							</div>
+							<div className={classes.row}>
+								<span className={classes.rowIcon}>
+									{nameAutValue?._id ? (
+										<a href={handleOnContactView()}>
+											<RecentActorsIcon color="secondary" />
+										</a>
+									) : (
+										<RecentActorsIcon color="disabled" />
+									)}
+								</span>
+								<div className={classes.fieldWidth}>
+									<AutocompEntityNamesVirtualizeList
+										mongoEntitiesArray={mongoEntitiesArray}
+										setMongoEntitiesArray={setMongoEntitiesArray}
+										nameAutValue={nameAutValue}
+										setNameAutValue={setNameAutValue}
+										nameAutInputValue={nameAutInputValue}
+										setNameAutInputValue={setNameAutInputValue}
+										variant="outlined"
+										label="Associated Contact or Lead"
+										hasNextPage={hasNextPage}
+										isNextPageLoading={isNextPageLoading}
+										loadNextPage={loadNextPage}
+										addNew={true}
+										addNewOnClick={value => {
+											const contact = { name: value };
+											addContact({
+												variables: {
+													contact: {
+														...contact,
+														createBy: stateApp.user.mongoId,
+														lastUpdateBy: stateApp.user.mongoId,
+													},
+												},
+												refetchQueries: ['getPaginatedContacts', 'getContact'],
+												awaitRefetchQueries: true,
+											});
+										}}
+									/>
+								</div>
+							</div>
 
-              <div className={classes.row}>
-                <span className={classes.rowIcon}>
-                  <PersonIcon />
-                </span>
-                <div style={{ width: "76%", margin: "7.5px 0", marginRight: 24 }}>
-                  <Autocomplete
-                    className={clsx(classes.fieldWidth, !owner.id && errors.owner && classes.error)}
-                    options={users.filter((u) => u.text)}
-                    onChange={(e, user) => {
-                      setOwner({ name: user?.text, id: user?.value });
-                    }}
-                    value={users.find((user) => user.value === owner.id) || null}
-                    getOptionLabel={(option) => option.text}
-                    getOptionSelected={(option) => option.value === owner.id}
-                    renderInput={(params) => <TextField margin="dense" {...params} variant="outlined" label="Activity Owner" />}
-                  />
+							<div className={classes.row}>
+								<span className={classes.rowIcon}>
+									<PersonIcon />
+								</span>
+								<div style={{ width: '76%', margin: '7.5px 0', marginRight: 24 }}>
+									<Autocomplete
+										className={clsx(classes.fieldWidth, !owner.id && errors.owner && classes.error)}
+										options={users.filter(u => u.text)}
+										onChange={(e, user) => {
+											setOwner({ name: user?.text, id: user?.value });
+										}}
+										value={users.find(user => user.value === owner.id) || null}
+										getOptionLabel={option => option.text}
+										getOptionSelected={option => option.value === owner.id}
+										renderInput={params => (
+											<TextField margin="dense" {...params} variant="outlined" label="Activity Owner" />
+										)}
+									/>
 
-                  {!addNew &&
-                    <div
-                      style={{ width: "76%", marginTop: "22.5px" }}
-                    >
-                      <TextField
-                        label="Activity Created By"
-                        disabled
-                        className={classes.fieldWidth}
-                        InputProps={{ readOnly: true }}
-                        value={selectedActivity?.creator?.name}
-                        margin="dense" variant="outlined"
-                      />
-                    </div>
-                  }
-                </div>
-              </div>
+									{!addNew && (
+										<div style={{ width: '76%', marginTop: '22.5px' }}>
+											<TextField
+												label="Activity Created By"
+												disabled
+												className={classes.fieldWidth}
+												InputProps={{ readOnly: true }}
+												value={selectedActivity?.creator?.name}
+												margin="dense"
+												variant="outlined"
+											/>
+										</div>
+									)}
+								</div>
+							</div>
 
-              {/* <div className={classes.row}>
+							{/* <div className={classes.row}>
                 <span className={classes.rowIcon}></span>
                 <div style={{ width: "76%", marginRight: 24 }}>
                   <TextField
@@ -852,80 +865,87 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                 </div>
               </div> */}
 
-              <div className={classes.row}>
-                <span className={classes.rowIcon}></span>
-                <div
-                  style={{ width: "76%", margin: "0px 24px 7.5px 0px", marginRight: 24 }}
-                >
-                  <Autocomplete
-                    id="activity-status"
-                    disableClearable
-                    className={classes.fieldWidth}
-                    options={activityStatusOptions}
-                    onChange={(event, option) => setClosed(option.value)}
-                    value={activityStatusOptions.find((option) => option.value === closed)}
-                    getOptionLabel={(option) => option.label}
-                    renderInput={(params) => <TextField {...params} margin="dense" variant="outlined" label="Activity Status" />}
-                  />
-                </div>
-              </div>
-              <div className={classes.row}>
-                <span className={classes.rowIcon}></span>
-                <div className={classes.btnGroup} style={{ width: "76%", marginRight: 24 }}>
-                  {/* <FormControlLabel
+							<div className={classes.row}>
+								<span className={classes.rowIcon}></span>
+								<div style={{ width: '76%', margin: '0px 24px 7.5px 0px', marginRight: 24 }}>
+									<Autocomplete
+										id="activity-status"
+										disableClearable
+										className={classes.fieldWidth}
+										options={activityStatusOptions}
+										onChange={(event, option) => setClosed(option.value)}
+										value={activityStatusOptions.find(option => option.value === closed)}
+										getOptionLabel={option => option.label}
+										renderInput={params => (
+											<TextField {...params} margin="dense" variant="outlined" label="Activity Status" />
+										)}
+									/>
+								</div>
+							</div>
+							<div className={classes.row}>
+								<span className={classes.rowIcon}></span>
+								<div className={classes.btnGroup} style={{ width: '76%', marginRight: 24 }}>
+									{/* <FormControlLabel
                     enabled
                     control={<Checkbox id="markAsDone" checked={closed} onChange={(e) => setClosed(e.target.checked)} color="primary" />}
                     label="Mark as done"
                   /> */}
-                  <Button
-                    className={classes.marginLeft}
-                    variant="contained"
-                    onClick={() => {
-                      onModalClose();
-                    }}
-                    disabled={addLoading || updateLoading}
-                  >
-                    Cancel
-                  </Button>
+									<Button
+										className={classes.marginLeft}
+										variant="contained"
+										onClick={() => {
+											onModalClose();
+										}}
+										disabled={addLoading || updateLoading}
+									>
+										Cancel
+									</Button>
 
-                  <Button
-                    disabled={addLoading || updateLoading}
-                    className={classes.marginLeft}
-                    id="addSaveButton"
-                    color="primary"
-                    variant="contained"
-                    onClick={() => {
-                      if (addNew) addActivity();
-                      else updateActivity();
-                    }}
-                  >
-                    {(addLoading || updateLoading) && <CircularProgress style={{ marginRight: 8 }} color="#fff" size={20} />}
-                    {addNew ? "Add" : "Save"}
-                  </Button>
-                </div>
-              </div>
-            </div>
-            <div className={classes.right}>
-              <Calendar
-                drilldownView="week"
-                popup={true}
-                localizer={localizer}
-                events={events}
-                startAccessor="start"
-                endAccessor="end"
-                defaultView={"day"}
-                defaultDate={calenderDate}
-                date={calenderDate}
-                step={60}
-                components={{
-                  event: ActivitiesEvent,
-                }}
-                toolbar={false}
-              />
-            </div>
-          </div>
-        }
-      />
-    </Dialog>
-  );
+									<Button
+										disabled={addLoading || updateLoading}
+										className={classes.marginLeft}
+										id="addSaveButton"
+										color="primary"
+										variant="contained"
+										onClick={() => {
+											if (addNew) addActivity();
+											else updateActivity();
+										}}
+									>
+										{(addLoading || updateLoading) && (
+											<CircularProgress style={{ marginRight: 8 }} color="#fff" size={20} />
+										)}
+										{addNew ? 'Add' : 'Save'}
+									</Button>
+								</div>
+							</div>
+						</div>
+						<div className={classes.right}>
+							<Calendar
+								drilldownView="week"
+								popup={true}
+								localizer={localizer}
+								events={events}
+								startAccessor="start"
+								endAccessor="end"
+								defaultView={'day'}
+								defaultDate={calenderDate}
+								date={calenderDate}
+								step={60}
+								components={{
+									event: ActivitiesEvent,
+								}}
+								toolbar={false}
+							/>
+						</div>
+					</div>
+				}
+			/>
+			<Dialog open={addLoading || updateLoading} style={{ zIndex: 99999999999 }}>
+				<DialogTitle id="alert-dialog-title">
+					<CircularProgress />
+				</DialogTitle>
+			</Dialog>
+		</Dialog>
+	);
 }

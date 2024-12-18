@@ -1,88 +1,66 @@
-import React, { useState, useEffect, useContext } from "react";
-import {
-  FormControl,
-  Grid,
-  InputLabel,
-  Select,
-  MenuItem,
-  makeStyles,
-} from "@material-ui/core";
-import { useSelector } from "react-redux";
-import { AppContext } from "AppContext";
+import React, { useState, useEffect, useContext } from 'react';
+import { makeStyles } from '@material-ui/core';
+import { useSelector } from 'react-redux';
+import { AppContext } from 'AppContext';
 
 import { setStateIfDeepEqual } from "components/Shared/functions";
 import MRTTable from 'components/MRTTable';
 import { tableController } from "hookstate/tableController";
 import Wells from 'components/Shared/svgIcons/well';
 
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    width: "100%",
-  },
-  select: {
-    height: 40,
-  },
-  actionsGrid: {
-    width: "100%",
-  },
-  actionBar: {
-    backgroundColor: "#f7f7f7",
-    width: "100%",
-    minHeight: "65px",
-    marginBottom: 30,
+const useStyles = makeStyles(theme => ({
+	formControl: {
+		width: '100%',
+	},
+	select: {
+		height: 40,
+	},
+	actionsGrid: {
+		width: '100%',
+	},
+	actionBar: {
+		backgroundColor: '#f7f7f7',
+		width: '100%',
+		minHeight: '65px',
+		marginBottom: 30,
 
-    "& .MuiSelect-select:focus, & .MuiOutlinedInput-root": {
-      backgroundColor: "#ffff",
-    },
-    "& .MuiButtonGroup-groupedContainedSecondary:not(:last-child)": {
-      borderColor: "#ffff",
-    },
-  },
+		'& .MuiSelect-select:focus, & .MuiOutlinedInput-root': {
+			backgroundColor: '#ffff',
+		},
+		'& .MuiButtonGroup-groupedContainedSecondary:not(:last-child)': {
+			borderColor: '#ffff',
+		},
+	},
 }));
 
 export default function ExhibitATabPanel() {
-  const classes = useStyles();
-  const [stateApp] = useContext(AppContext);
-  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 144px)" } // set table height for well master
-  const propertiesReportGroup = useSelector(
-    ({ Revenue }) => Revenue.propertiesReportGroup
-  );
+	const classes = useStyles();
+	const [stateApp] = useContext(AppContext);
+	const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 144px)' }; // set table height for well master
+	const propertiesReportGroup = useSelector(({ Revenue }) => Revenue.propertiesReportGroup);
 
-  const [externalFilters, setExtFilters] = useState({
-    internalCompany: "All",
-    wellClassification: "All",
-    payStatus: "All",
-    reportingGroup: "All",
-  });
-  const [esFilters, ESFilters] = useState([]);
+	const [externalFilters, setExtFilters] = useState({
+		internalCompany: 'All',
+		wellClassification: 'All',
+		payStatus: 'All',
+		reportingGroup: 'All',
+	});
+	const [esFilters, ESFilters] = useState([]);
 
-  useEffect(() => {
-    const newESFilters = [];
+	useEffect(() => {
+		const newESFilters = [];
 
-    // Add available values to filters
-    [
-      "internalCompany",
-      "wellClassification",
-      "payStatus",
-      "reportingGroup",
-    ].map((field) => {
-      if (externalFilters[field] !== "All")
-        newESFilters.push({
-          field: `${field}.keyword`,
-          value: externalFilters[field],
-        });
-    });
+		// Add available values to filters
+		['internalCompany', 'wellClassification', 'payStatus', 'reportingGroup'].map(field => {
+			if (externalFilters[field] !== 'All')
+				newESFilters.push({
+					field: `${field}.keyword`,
+					value: externalFilters[field],
+				});
+		});
 
-    ESFilters(newESFilters);
-  }, [externalFilters]);
-
-  const setESFilters = (newState) => {
-    setStateIfDeepEqual(ESFilters, newState);
-  };
-
-  const handleFilterChange = (field, newValue) => {
-    setExtFilters({ ...externalFilters, [field]: newValue || "All" });
-  };
+		ESFilters(newESFilters);
+	}, [externalFilters]);
 
   useEffect(() => {
     tableController("MyWellsTable")?.setGlobalFilter(stateApp.landAnalyticsSearchQuery === "*" ? "" : stateApp.landAnalyticsSearchQuery);

@@ -3,7 +3,6 @@ import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagCompon
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
-import NameCell from 'components/MRTTable/TablesOverride/OwnersPerUnit/TableCell/NameCell';
 import ListChips from 'components/Common/ListChips';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import IsContactCell from 'components/MRTTable/Common/TableCells/isContactIcone';
@@ -116,16 +115,28 @@ const TractPerUnitMeta = {
 									<MonetizationOnIcon
 										style={{
 											marginLeft: '10px',
-											color: "gray"
+											color: 'gray',
 										}}
-
 									/>
 								</FeatureFlag>
 							)}
+							{/* check if agreement record is present and not deleted */}
+							{/* functionality not working properly commenting this code until further notice */}
+							{/* {!row?.original?.agreement?.IsDeleted && row?.original?.agreement?._id && (
+								<div
+									style={{ marginLeft: '15px', cursor: 'pointer', position: 'absolute', right: 0, marginRight: '15px' }}
+									onClick={e => {
+										e.stopPropagation();
+										history.push(`/land/agreement/details/${row?.original?.agreement?._id}`);
+									}}
+								>
+									<AgreementIcon color={'#17aadd'} />
+								</div>
+							)} */}
 						</p>
 					</div>
-				)
-			}
+				);
+			},
 		},
 
 		{
@@ -142,26 +153,13 @@ const TractPerUnitMeta = {
 			header: 'Surface Interest',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumSurfaceInterest: {
-					sum: { field: 'surface_interest' },
-				},
-			},
 			Cell: ({ row }) => {
 				const surfaceInterest = row.getValue('surface_interest');
 				if (surfaceInterest) {
 					return <>{addTrailingZeros(parseFloat(surfaceInterest).toFixed(8))}</>;
 				}
 			},
-			Footer: () => {
-				const Controller = tableController('TractPerUnitTable');
-				const { sumSurfaceInterest } = Controller.getValue('footerProps') || {};
-				return (
-					<div>
-						{sumSurfaceInterest?.value ? addTrailingZeros(parseFloat(sumSurfaceInterest?.value).toFixed(8)) : 0}
-					</div>
-				);
-			},
+			...CommonSchema.AGGREGATED_FOOTER('surface_interest', 'TractPerUnitTable'),
 		},
 
 		{
@@ -171,34 +169,21 @@ const TractPerUnitMeta = {
 			header: 'Mineral Interest',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumMineralInterest: {
-					sum: { field: 'mineral_interest' },
-				},
-			},
 			Cell: ({ row }) => {
 				const mineralInterest = row.getValue('mineral_interest');
 				if (mineralInterest) {
 					return <>{addTrailingZeros(parseFloat(mineralInterest).toFixed(8))}</>;
 				}
 			},
-			Footer: () => {
-				const Controller = tableController('TractPerUnitTable');
-				const { sumMineralInterest } = Controller.getValue('footerProps') || {};
-				return (
-					<div>
-						{sumMineralInterest?.value ? addTrailingZeros(parseFloat(sumMineralInterest?.value).toFixed(8)) : 0}
-					</div>
-				);
-			},
+			...CommonSchema.AGGREGATED_FOOTER('mineral_interest', 'TractPerUnitTable'),
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: "nonExecRightsOnly.keyword",
+			name: 'nonExecRightsOnly.keyword',
 			accessorKey: 'nonExecRightsOnly',
 			header: 'Non-Exec Rights Only',
-			id: "nonExecRightsOnly",
+			id: 'nonExecRightsOnly',
 			size: 200,
 		},
 
@@ -210,26 +195,13 @@ const TractPerUnitMeta = {
 			isSearchField: false,
 			type: 'number',
 			size: 275,
-			// Aggregation: {
-			// 	sumRoyaltyInterest: {
-			// 		sum: { field: 'royalty_interest' },
-			// 	},
-			// },
 			// Cell: ({ row }) => {
 			// 	const royaltyInterest = row.getValue('royalty_interest');
 			// 	if (royaltyInterest) {
 			// 		return <>{addTrailingZeros(parseFloat(royaltyInterest).toFixed(8))}</>;
 			// 	}
 			// },
-			// Footer: () => {
-			// 	const Controller = tableController('TractPerUnitTable');
-			// 	const { sumRoyaltyInterest } = Controller.getValue('footerProps') || {};
-			// 	return (
-			// 		<div>
-			// 			{sumRoyaltyInterest?.value ? addTrailingZeros(parseFloat(sumRoyaltyInterest?.value).toFixed(8)) : 0}
-			// 		</div>
-			// 	);
-			// },
+			...CommonSchema.AGGREGATED_FOOTER('royalty_interest', 'TractPerUnitTable'),
 		},
 
 		{
@@ -240,22 +212,13 @@ const TractPerUnitMeta = {
 			size: 230,
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumORRI: {
-					sum: { field: 'orri' },
-				},
-			},
 			Cell: ({ row }) => {
 				const orri = row.getValue('orri');
 				if (orri) {
 					return <>{addTrailingZeros(parseFloat(orri).toFixed(8))}</>;
 				}
 			},
-			Footer: () => {
-				const Controller = tableController('TractPerUnitTable');
-				const { sumORRI } = Controller.getValue('footerProps') || {};
-				return <div>{sumORRI?.value ? addTrailingZeros(parseFloat(sumORRI?.value).toFixed(8)) : 0}</div>;
-			},
+			...CommonSchema.AGGREGATED_FOOTER('orri', 'TractPerUnitTable'),
 		},
 
 		// {
@@ -280,22 +243,13 @@ const TractPerUnitMeta = {
 			header: 'Working Interest',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumWKI: {
-					sum: { field: 'operating_rights' },
-				},
-			},
 			Cell: ({ row }) => {
 				const operatingRights = row.getValue('operating_rights');
 				if (operatingRights) {
 					return <>{addTrailingZeros(parseFloat(operatingRights).toFixed(8))}</>;
 				}
 			},
-			Footer: () => {
-				const Controller = tableController('TractPerUnitTable');
-				const { sumWKI } = Controller.getValue('footerProps') || {};
-				return <div>{sumWKI?.value ? addTrailingZeros(parseFloat(sumWKI?.value).toFixed(8)) : 0}</div>;
-			},
+			...CommonSchema.AGGREGATED_FOOTER('operating_rights', 'TractPerUnitTable'),
 		},
 
 		// {
@@ -320,23 +274,13 @@ const TractPerUnitMeta = {
 			header: 'Net Acres',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumNetAcres: {
-					sum: { field: 'net_acres' },
-				},
-			},
-
 			Cell: ({ row }) => {
 				const netAcres = row.getValue('net_acres');
 				if (netAcres) {
 					return <>{addTrailingZeros(parseFloat(netAcres).toFixed(8))}</>;
 				}
 			},
-			Footer: () => {
-				const Controller = tableController('TractPerUnitTable');
-				const { sumNetAcres } = Controller.getValue('footerProps') || {};
-				return <div>{sumNetAcres?.value ? addTrailingZeros(parseFloat(sumNetAcres?.value).toFixed(8)) : 0}</div>;
-			},
+			...CommonSchema.AGGREGATED_FOOTER('net_acres', 'TractPerUnitTable'),
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -345,22 +289,13 @@ const TractPerUnitMeta = {
 			header: 'Co Net Acres',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumCoNetAcres: {
-					sum: { field: 'company_net_acres' },
-				},
-			},
 			Cell: ({ row }) => {
 				const company_net_acres = row.getValue('company_net_acres');
 				if (company_net_acres) {
 					return <>{addTrailingZeros(parseFloat(company_net_acres).toFixed(8))}</>;
 				}
 			},
-			Footer: () => {
-				const Controller = tableController('TractPerUnitTable');
-				const { sumCoNetAcres } = Controller.getValue('footerProps') || {};
-				return <div>{sumCoNetAcres?.value ? addTrailingZeros(parseFloat(sumCoNetAcres?.value).toFixed(8)) : 0}</div>;
-			},
+			...CommonSchema.AGGREGATED_FOOTER('company_net_acres', 'TractPerUnitTable'),
 		},
 
 		{
@@ -370,22 +305,13 @@ const TractPerUnitMeta = {
 			header: 'NRA',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumNRA: {
-					sum: { field: 'nra' },
-				},
-			},
 			Cell: ({ row }) => {
 				const nra = row.getValue('nra');
 				if (nra) {
 					return <>{addTrailingZeros(parseFloat(nra).toFixed(8))}</>;
 				}
 			},
-			Footer: () => {
-				const Controller = tableController('TractPerUnitTable');
-				const { sumNRA } = Controller.getValue('footerProps') || {};
-				return <div>{sumNRA?.value ? addTrailingZeros(parseFloat(sumNRA?.value).toFixed(8)) : 0}</div>;
-			},
+			...CommonSchema.AGGREGATED_FOOTER('nra', 'TractPerUnitTable'),
 		},
 
 		{
@@ -408,7 +334,6 @@ const TractPerUnitMeta = {
 			Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price_nma)}</>,
 		},
 
-
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'offer_price',
@@ -428,7 +353,7 @@ const TractPerUnitMeta = {
 			type: 'number',
 			Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price)}</>,
 		},
-    	// Bonus payment column
+		// Bonus payment column
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'bonus_payment',
@@ -459,7 +384,6 @@ const TractPerUnitMeta = {
 			size: 300,
 			Cell: ({ row }) => <>{vf_currency(row?.original?.competitor_offer_price)}</>,
 		},
-
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -492,8 +416,8 @@ const TractPerUnitMeta = {
 			accessorKey: 'contactOwners',
 			header: 'Contact Owner',
 			Cell: ({ row }) => {
-				return <div>{row?.original?.contactOwners[0]}</div>
-			}
+				return <div>{row?.original?.contactOwners[0]}</div>;
+			},
 		},
 
 		{
@@ -534,14 +458,14 @@ const TractPerUnitMeta = {
 			isExport: 'dealsName',
 			header: 'Associated Deals',
 			handleArrayExport: {
-				esType: "collection",
-				actualKey: "name"
+				esType: 'collection',
+				actualKey: 'name',
 			},
 			isSearchField: true,
 			Cell: ({ row }) => {
 				return (
 					<div>
-						{(row?.original?.deals && Array.isArray(row?.original?.deals)) ? (
+						{row?.original?.deals && Array.isArray(row?.original?.deals) ? (
 							<div
 								style={{
 									display: 'flex',
@@ -585,14 +509,21 @@ const TractPerUnitMeta = {
 				const isPurchased = [true, 'true', 'True'].includes(row.getValue('contact.isPurchased'));
 				return <>{isPurchased ? 'Yes' : 'No'}</>;
 			},
-			isSearchField: false
+			isSearchField: false,
 		},
 
 		{
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const targetSourceId = row.getValue('ownerEntity');
-				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'Parcel Ownership'} />;
+				return (
+					<TagCell
+						id={targetSourceId}
+						targetSourceId={targetSourceId}
+						tags={row?.original?.tags}
+						targetLabel={'Parcel Ownership'}
+					/>
+				);
 			},
 		},
 
@@ -610,7 +541,14 @@ const TractPerUnitMeta = {
 			...CommonSchema.COMMENTS,
 			Cell: ({ renderedCellValue, row }) => {
 				const id = row.getValue('ownerEntity');
-				return <CommentCell id={id} value={row?.original?.commentsCount} targetLabel={'Parcel Ownership'} />;
+				return (
+					<CommentCell
+						id={id}
+						value={row?.original?.commentsCount}
+						targetLabel={'Parcel Ownership'}
+						hideShareCommentsToggle
+					/>
+				);
 			},
 		},
 

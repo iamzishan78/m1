@@ -9,11 +9,24 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+parameters:
+  - name: pipeline_run_mode
+    displayName: Pipeline Run Mode
+    type: string
+    default: normal
+    values:
+      - normal
+      - failed_only
+      - passed_only
+      - reset
+
 variables:
   NODE_OPTIONS: --max_old_space_size=32768
   SOURCE_BRANCH: $(Build.SourceBranch)
   BUILD_ID: $(Build.BuildId)
   AZURE_ACCESS_TOKEN: $(System.AccessToken)
+  PIPELINE_TRIGGER_MODE: $(Build.Reason)
+  PIPELINE_RUN_MODE: ${{ parameters.pipeline_run_mode }}
 steps:
   - task: NodeTool@0
     inputs:
@@ -50,28 +63,28 @@ steps:
   ## Copy the client to the staging directory
   - task: CopyFiles@2
     inputs:
-      sourceFolder: "cypress"
+      sourceFolder: 'cypress'
       contents: |
         screenshots/**/*
         videos/**/*
-      targetFolder: "$(Build.ArtifactStagingDirectory)"
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
       cleanTargetFolder: true
     displayName: 'Copy Screenshots and Videos'
-    condition: eq(variables.SCREENSHOTS_NOT_EMPTY, 'true')  # Only run if the Screenshots folder is not empty
+    condition: eq(variables.SCREENSHOTS_NOT_EMPTY, 'true') # Only run if the Screenshots folder is not empty
 
   ## Archive the files into a zip file for publishing
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: $(Build.ArtifactStagingDirectory)
-      archiveType: "zip"
-      archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
       includeRootFolder: false
     displayName: 'Archive Files'
-    condition: eq(variables.SCREENSHOTS_NOT_EMPTY, 'true')  # Only run if the Screenshots folder is not empty
+    condition: eq(variables.SCREENSHOTS_NOT_EMPTY, 'true') # Only run if the Screenshots folder is not empty
 
   ## Publish the zip file
   - task: PublishBuildArtifacts@1
     inputs:
-      pathtoPublish: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     displayName: 'Publish Artifacts'
-    condition: eq(variables.SCREENSHOTS_NOT_EMPTY, 'true')  # Only run if the Screenshots folder is not empty
+    condition: eq(variables.SCREENSHOTS_NOT_EMPTY, 'true') # Only run if the Screenshots folder is not empty

@@ -4,7 +4,7 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { popupController } from 'hookstate/popupStateController';
 import { drawBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
-const onClickedRow = selectedRow => { };
+const onClickedRow = selectedRow => {};
 
 const ShapesFilesGenericMeta = {
 	pageSize: 25,
@@ -43,10 +43,10 @@ const ShapesFilesGenericMeta = {
 					Cell: ({ row }) => {
 						const id = row.getValue('_id');
 						const Action = () => {
-							drawBoundary(row.original)
-							popupController.updateState({ selectedShapeFile: row.original })
-						}
-						return <FlyToMap id={id} Action={Action} type='shapefile' />;
+							drawBoundary(row.original);
+							popupController.updateState({ selectedShapeFile: row.original });
+						};
+						return <FlyToMap id={id} Action={Action} type="shapefile" />;
 					},
 				};
 

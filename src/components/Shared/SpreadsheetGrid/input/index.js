@@ -1,59 +1,67 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from 'react';
 // import PropTypes from "prop-types";
-import keys from "./../kit/keymap";
+import keys from './../kit/keymap';
 
-import styles from "./styles.css";
+import styles from './styles.css';
 
-const SpreadsheetGridInput = (props) => {
-  const input = useRef(null);
-  const [value, setValue] = useState('');
+const SpreadsheetGridInput = props => {
+	const input = useRef(null);
+	const [value, setValue] = useState('');
 
-  useEffect(() => {
-    setValue(props.value)
-  },[props.value]);
+	useEffect(() => {
+		setValue(props.value);
+	}, [props.value]);
 
-  useEffect(() => {
-    prepareFocus(props.focus);
-  }, [props.focus]);
+	useEffect(() => {
+		prepareFocus(props.focus);
+	}, [props.focus]);
 
-  const onKeyDown = (e) => {
-    if (e.keyCode === keys.ENTER || e.keyCode === keys.TAB) {
-      e.preventDefault();
-      input.current.blur();
-    }
-  };
+	const onKeyDown = e => {
+		if (e.keyCode === keys.TAB) {
+			e.preventDefault();
+			input.current.blur();
+		}
+	};
 
-  const onChange = (e) => {
-    const value = e.target.value;
-    setValue(value);
-  };
+	const onChange = e => {
+		const value = e.target.value;
+		setValue(value);
+	};
 
-  const onBlur = () => {
-    if (props.onChange) {
-      props.onChange(value);
-    }
-  };
+	const onBlur = () => {
+		if (props.onChange) {
+			props.onChange(value);
+		}
+	};
 
-  const prepareFocus = (focus) => {
-    if (focus) {
-      input.current.focus();
-      input.current.selectionStart = value?.toString()?.length;
-    } else if (input.current === document.activeElement) {
-      input.current.blur();
-    }
-  };
+	const prepareFocus = focus => {
+		if (focus) {
+			input.current.focus();
+			input.current.selectionStart = value?.toString()?.length;
+		} else if (input.current === document.activeElement) {
+			input.current.blur();
+		}
+	};
 
-  return (
-    <input
-      className="SpreadsheetGridInput"
-      value={value}
-      placeholder={props.placeholder}
-      ref={input}
-      onKeyDown={onKeyDown}
-      onChange={onChange}
-      onBlur={onBlur}
-    />
-  );
+	const onKeyPress = e => {
+		// moving on to new row
+		if (e.key === 'Enter') {
+			props.addNewRow(null, props.gridRef);
+		}
+	};
+
+	return (
+		<input
+			className="SpreadsheetGridInput"
+			value={value}
+			placeholder={props.placeholder}
+			ref={input}
+			onKeyDown={onKeyDown}
+			onKeyPress={onKeyPress}
+			onChange={onChange}
+			onBlur={onBlur}
+		/>
+	);
 };
 
 export default SpreadsheetGridInput;
