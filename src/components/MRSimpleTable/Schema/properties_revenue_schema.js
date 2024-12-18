@@ -26,6 +26,7 @@ const PropertiesRevenueMeta = {
 	getDataFromRes: res => res?.data?.getPropertiesRevenue || [],
 	getIdsFromRows: rows => rows?.map(row => row.node?.propertyId) || [],
 	CustomToolBar: PropertiesRevenueToolbar,
+	isClientSide: true,
 	isSelectAllAllowed: false,
 	isDeleteAllowed: false,
 	isExportAllowed: false,

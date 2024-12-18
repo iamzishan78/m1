@@ -40,6 +40,11 @@ import ExhibitAMeta from './exhibit_a_schema';
 import AcreageDetilsMeta from './acreage_details_schema';
 import ContactDetailUnitInterestMeta from './contactDetail_unit_interests_schema';
 import ContactDetailTractInterestMeta from './contactDetail_tract_interest_schema';
+import PotentialOwnersMeta, { potentialOwnerTableKey } from 'components/MRSimpleTable/Schema/potential_owners_schema';
+import UserManagementMeta, { userManagementTableKey } from 'components/MRSimpleTable/Schema/user_management_schema';
+import PropertiesRevenueMeta, {
+	propertiesRevenueTableKey,
+} from 'components/MRSimpleTable/Schema/properties_revenue_schema';
 
 export const SCHEMA = {
 	ActivityTable: ActivityMeta,
@@ -92,4 +97,7 @@ export const SCHEMA = {
 	TractInterestsTable: TractInterestsMeta, // Tracts Interest schema
 	ContactDetailUnitInterestTable: ContactDetailUnitInterestMeta,
 	ContactDetailTractInterestTable: ContactDetailTractInterestMeta,
+	[potentialOwnerTableKey]: PotentialOwnersMeta,
+	[userManagementTableKey]: UserManagementMeta,
+	[propertiesRevenueTableKey]: PropertiesRevenueMeta, // analytics > revenue > revenue  by month
 };

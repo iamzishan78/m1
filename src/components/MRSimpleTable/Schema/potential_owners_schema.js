@@ -40,6 +40,7 @@ const PotentialOwnersMeta = {
 	getDataFromRes: res => res?.data?.paginatedShapeWellOwners?.edges || [],
 	getIdsFromRows: rows => rows?.map(row => row.node?.id) || [],
 	CustomToolBar: PotentialOwnersToolbar,
+	isClientSide: true,
 	isSelectAllAllowed: true,
 	isDeleteAllowed: false,
 	isExportAllowed: false,

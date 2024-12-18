@@ -31,6 +31,7 @@ const UserManagementMeta = {
 	isInFiniteScroll: true, // added infinite scroll
 	CustomToolBar: UserManagementToolbar,
 	onClickedRow,
+	isClientSide: true,
 	isSelectAllAllowed: true,
 	isDeleteAllowed: true,
 	isExportAllowed: false,
