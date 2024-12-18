@@ -67,7 +67,7 @@ export const UPDATECONTACT = gql`
 				notes
 				website
 				industryType
-				campaignName
+				campaigns
 				outcome
 			}
 		}

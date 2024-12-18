@@ -14,7 +14,6 @@ import TabPanels, { TabPanel } from 'components/Shared/TabPanels';
 import DockMenu from './DockMenu';
 import ShapeGridWellsTable from 'components/Table/Wells/ShapeGridWellsTable';
 import ShapeGridTaxOwnersTable from 'components/Table/TaxOwners/ShapeGridTaxOwnersTable';
-import MapGridContactTable from 'components/Table/Contact/MapGridContactTable';
 
 import SearchPanel from './components/SearchPanel';
 import { platformDataInitialData, platformDataWellsInitialData, snapGridSideBarData } from './components/data';
@@ -522,22 +521,7 @@ function MapGridCard(props) {
 											{searchTapValue.value === 'layer' && (
 												<MRTTable name="ShapesFilesGenericTable" overrideMeta={shapeFileTableOverride} />
 											)}
-											{searchTapValue.value === 'contacts' && (
-												<MapGridContactTable
-													dense
-													parent="search"
-													customOptions={options}
-													targetLabel={searchTapValue.value}
-													header={
-														<SearchPanel
-															isShapeGridOnly={drawStateValues.selectedPolygonString}
-															handleChange={handleSearchPanelChange}
-															value={searchTapValue}
-															ativateSearchPanel={ativateSearchPanel}
-														/>
-													}
-												/>
-											)}
+											{searchTapValue.value === 'contacts' && <MRTTable name="ContactTable" />}
 											{searchTapValue.value === 'unit' && (
 												<MRTTable
 													name="UnitTable"

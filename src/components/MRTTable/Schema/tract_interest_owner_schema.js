@@ -12,7 +12,7 @@ import { addTrailingZeros } from 'components/Shared/functions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TractIcon from 'components/Shared/svgIcons/tract';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
 
 const esIndex = 'shapeowners_flat';
@@ -422,11 +422,14 @@ const TractPerUnitMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'campaignName.keyword',
-			accessorFn: row => row?.campaignName,
-			id: 'campaignName',
-			header: 'Campaign Name',
-			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
+			type: 'array',
+			name: 'campaigns',
+			accessorFn: row => row?.campaigns,
+			id: 'campaigns',
+			header: 'Campaigns',
+			Cell: ({ row }) => {
+				return <CampaignField value={row?.original?.campaigns} fullWidth disabled />;
+			},
 		},
 
 		{
