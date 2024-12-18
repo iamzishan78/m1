@@ -8,6 +8,7 @@ export const GET_ES_SIMPLE_SEARCH = gql`
 		$sort: esSortInput
 		$pagination: esPaginationInput
 		$project: JSON
+		$parent: String
 	) {
 		getESSimpleSearch(
 			index: $index
@@ -16,6 +17,7 @@ export const GET_ES_SIMPLE_SEARCH = gql`
 			sort: $sort
 			pagination: $pagination
 			project: $project
+			parent: $parent
 		)
 	}
 `;

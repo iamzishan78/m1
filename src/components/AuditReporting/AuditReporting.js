@@ -1,34 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useLazyQuery } from '@apollo/client';
 
 import ActivitiesDashboardFilter from 'components/Activities/components/ActivitiesDashboardFilter';
 import ActivityAnalytics from 'components/Activities/components/ActivityAnalytics';
 import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
-
+import { Box } from '@material-ui/core';
+import MRTTable from 'components/MRTTable';
+import { AppContext } from 'AppContext';
+import { tableController } from 'hookstate/tableController';
+import { getFilters } from 'components/Table/Activities/ActivitiesTable';
 const useStyles = makeStyles(theme => ({
 	root: {
 		marginTop: '90px',
-		'& div': {
-			'&>.MuiPaper-root': {
-				'&>:nth-child(3)': {
-					maxHeight: '53vh',
-					minHeight: '53vh',
-					'@media (max-height:900px)': {
-						maxHeight: '47vh',
-						minHeight: '47vh',
-					},
-					'@media (max-height:800px)': {
-						maxHeight: '45vh',
-						minHeight: '45vh',
-					},
-					'@media (max-height:768px)': {
-						maxHeight: '45vh',
-						minHeight: '45vh',
-					},
-				},
-			},
-		},
 	},
 }));
 
@@ -36,6 +20,9 @@ const ActivitiesDashboard = () => {
 	const classes = useStyles();
 	const esIndex = 'contacts_flat';
 	const searchFields = ['name', '_all'];
+	const tableKey = 'AuditReportingTable';
+	const [stateApp] = useContext(AppContext);
+	const auditReportingTableState = tableController(tableKey).useState(['filters', 'data', 'globalFilter']).stateValues;
 	const [filterToggle, setFilterToggle] = useState(false);
 	const [appliedFilters, setAppliedFilters] = useState({
 		toDate: null,
@@ -63,6 +50,14 @@ const ActivitiesDashboard = () => {
 		});
 	}, [getDbMinValue]);
 
+	useEffect(() => {
+		tableController(tableKey).setGlobalFilter(stateApp.landAnalyticsSearchQuery); // set value in searchquery for audit reporting
+	}, [stateApp.landAnalyticsSearchQuery]);
+
+	useEffect(() => {
+		tableController(tableKey).setFilters(getFilters(appliedFilters));
+	}, [appliedFilters]);
+
 	return (
 		<div className={classes.root}>
 			{
@@ -71,7 +66,7 @@ const ActivitiesDashboard = () => {
 					searchFields={searchFields}
 					setFilterToggle={setFilterToggle}
 					filterToggle={filterToggle}
-					tableFilters={[]}
+					tableFilters={[...auditReportingTableState.filters]}
 					appliedFilters={appliedFilters}
 					minDate={minDate}
 					setAppliedFilters={setAppliedFilters}
@@ -82,11 +77,14 @@ const ActivitiesDashboard = () => {
 				<ActivityAnalytics
 					esIndex={esIndex}
 					filterToggle={filterToggle}
-					tableFilters={[]}
+					tableFilters={[...auditReportingTableState.filters]}
 					appliedFilters={appliedFilters}
 					setAppliedFilters={setAppliedFilters}
 				/>
 			}
+			<Box sx={{ padding: '1em', marginLeft: '1em' }}>
+				<MRTTable name={tableKey} />
+			</Box>
 		</div>
 	);
 };

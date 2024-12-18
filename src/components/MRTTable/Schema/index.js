@@ -40,6 +40,7 @@ import ExhibitAMeta from './exhibit_a_schema';
 import AcreageDetilsMeta from './acreage_details_schema';
 import ContactDetailUnitInterestMeta from './contactDetail_unit_interests_schema';
 import ContactDetailTractInterestMeta from './contactDetail_tract_interest_schema';
+import AuditReportingMeta from './audit_reporting_schema';
 import PotentialOwnersMeta from './QuerySchema/potential_owners_schema';
 import UserManagementMeta from './QuerySchema/user_management_schema';
 import PropertiesRevenueMeta from './QuerySchema/properties_revenue_schema';
@@ -95,6 +96,7 @@ export const SCHEMA = {
 	TractInterestsTable: TractInterestsMeta, // Tracts Interest schema
 	ContactDetailUnitInterestTable: ContactDetailUnitInterestMeta,
 	ContactDetailTractInterestTable: ContactDetailTractInterestMeta,
+	AuditReportingTable: AuditReportingMeta, // Revenue Statement grid => revenue/statements
 	PotentialOwnersTable: PotentialOwnersMeta,
 	UserManagementTable: UserManagementMeta,
 	PropertiesRevenueTable: PropertiesRevenueMeta, // analytics > revenue > revenue  by month
