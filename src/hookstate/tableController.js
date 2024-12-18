@@ -18,6 +18,7 @@ import { handleMRTSchema, handleVisiblityMenu } from './helpers';
 import { validateUrl } from 'utils/helper';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 import { extractUniqueFilters } from 'components/Map/DeckGL/helpers/common';
+import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 
 function isDateFormat(inputString) {
 	// Regular expression for MM/DD/YYYY format
@@ -264,6 +265,7 @@ const tableESStateControllerHandler = state => ({
 			search,
 			columnVirtualization,
 			globalFilter,
+			layerIdentifier,
 		});
 
 		// Set default pinning and ordering
@@ -343,9 +345,10 @@ const tableESStateControllerHandler = state => ({
 		});
 
 		if (mapViewFilters.length > 0) tableController(tableKey).setShowColumnFilters(true);
-		mapViewFilters?.forEach(filter => {
-			tableController(tableKey).setFilterMode(filter?.field.replace('.keyword', ''), filter.searchType);
-		});
+		if (customLayersFieldAccessors[layerIdentifier])
+			mapViewFilters?.forEach(filter => {
+				tableController(tableKey).setFilterMode(filter?.field.replace('.keyword', ''), filter.searchType);
+			});
 	},
 
 	setFilterMode: (column, mode) => {
@@ -379,6 +382,31 @@ const tableESStateControllerHandler = state => ({
 		const columnFilterModesFnRefs = globalStateController.getValue('columnFilterModesFnRefs');
 
 		columnFilterModesFnRefs?.[state.tableKey.get({ noproxy: true })]?.[column]?.(mode);
+	},
+	setInitialFilterMode: (columnSchema, mode, column) => {
+		let updatedColumnnSchmes = null;
+
+		if (mode === 'singleselect') {
+			updatedColumnnSchmes = {
+				Filter: columnSchema?.SingleSelect,
+			};
+		} else if (mode === 'multiselect') {
+			updatedColumnnSchmes = {
+				Filter: columnSchema?.MultiSelect,
+			};
+		} else if (columnSchema?.Filter) {
+			updatedColumnnSchmes = { Filter: null };
+		}
+
+		if (!columnSchema?.name) return;
+		state.filterModes?.merge({
+			[column]: {
+				mode,
+				isKeyword: columnSchema.name.includes('.keyword'),
+			},
+		});
+
+		return updatedColumnnSchmes;
 	},
 	setSelectAll: value => {
 		state.isSelectall.set(value);
@@ -519,6 +547,20 @@ const tableESStateControllerHandler = state => ({
 				const isNonValuesFilter = ['empty', 'notEmpty'].includes(filter.searchType);
 
 				if (!(isValuesEqual || isNonValuesFilter)) {
+					const newFilter = {
+						dataSourceName: tableState?.layerIdentifier,
+						filterType: tableState?.filterModes[filter.field.replace('.keyword', '')]?.mode
+							? tableState.filterModes[filter.field.replace('.keyword', '')]?.mode
+							: existingFilter?.filterType
+								? existingFilter.filterType
+								: tableState?.esIndex === 'shapefile_flat'
+									? 'multiselect'
+									: 'singleselect',
+
+						fieldName: filter.field,
+						filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
+					};
+
 					globalStateController.updateState({
 						viewChanged: true,
 						mapView: {
@@ -532,17 +574,7 @@ const tableESStateControllerHandler = state => ({
 											(fieldName?.value || fieldName).replace('.keyword', '') !== filter.field ||
 											dataSourceName !== tableState?.layerIdentifier
 									),
-									{
-										dataSourceName: tableState?.layerIdentifier,
-										filterType:
-											tableState?.filterModes[filter.field.replace('.keyword', '')]?.mode ||
-											existingFilter?.filterType ||
-											tableState?.esIndex === 'shapefile_flat'
-												? 'multiselect'
-												: 'singleselect',
-										fieldName: filter.field,
-										filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
-									},
+									newFilter,
 								],
 							},
 						},
@@ -737,6 +769,7 @@ const tableESStateControllerHandler = state => ({
 			defaultFlterMode,
 			search,
 			columnVirtualization,
+			layerIdentifier,
 		} = state.get({
 			noproxy: true,
 		});
@@ -762,6 +795,7 @@ const tableESStateControllerHandler = state => ({
 			defaultFlterMode,
 			search,
 			columnVirtualization,
+			layerIdentifier,
 		});
 
 		genericState.TableSchema = _TableSchema;
