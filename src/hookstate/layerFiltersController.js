@@ -117,10 +117,8 @@ const layerFiltersControllerHandler = state => ({
 	},
 
 	updateLayerFiltersFromMapViews: (dataSourceName, mapViewFilters) => {
-		const layerShapeName = globalStateController
-			.getValue('layers')
-			?.find(layer => layer?.layerId === dataSourceName)?.layerShapeName;
-		const state = layerFiltersController.getValue([layerShapeName || dataSourceName]); // Get layer filters from hookstate
+		mapViewFilters = mapViewFilters.filter(filter => filter.dataSourceName === dataSourceName);
+		const state = layerFiltersController.getValue([dataSourceName]); // Get layer filters from hookstate
 		const initialFilters = state?.variables?.filters || []; // Get initial filters
 		let filters = initialFilters.filter(filter => !filter.isMapViewFilter); // Remove existing filter
 		filters = [

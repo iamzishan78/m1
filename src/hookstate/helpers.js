@@ -13,6 +13,8 @@ import {
 	simpleStringFilterOptions,
 	stringFilterOptions,
 } from 'components/MRTTable/utils/data';
+import { globalStateController } from './globalStateController';
+import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 export const handleVisiblityMenu = () => {
 	const interval2 = setInterval(() => {
@@ -89,10 +91,19 @@ export const handleMRTSchema = ({
 	search,
 	columnVirtualization,
 	globalFilter,
+	layerIdentifier,
 	isClientSide,
 }) => {
 	_Schema = _.uniqBy(_Schema, item => item.accessorKey || item.id);
 
+	// Syncing map views with generic grids
+	const mapView = globalStateController.getValue('mapView');
+	const selectedMapViewFilters = mapView?.selectedMapView?.filters || [];
+
+	const dataSourceViews = selectedMapViewFilters?.filter(view => layerIdentifier === view.dataSourceName);
+	const mapViewFilters =
+		dataSourceViews?.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)) ||
+		[];
 	const _TableSchema = _Schema.map(schemaColumn => {
 		if (schemaColumn.header && !schemaColumn.showInLast) {
 			schemaColumn.Header = () => {
@@ -224,7 +235,19 @@ export const handleMRTSchema = ({
 			});
 		}
 
-		return schemaColumn;
+		// setting filtermodes based on map views
+		const columnMapView = mapViewFilters.find(
+			filter => filter?.field?.replace('.keyword', '') === schemaColumn?.name?.replace('.keyword', '')
+		);
+		if (!columnMapView) return schemaColumn;
+
+		const updatedFilterModes = tableController(tableKey).setInitialFilterMode(
+			schemaColumn,
+			columnMapView.searchType,
+			columnMapView.field?.replace('.keyword', '')
+		);
+
+		return { ...schemaColumn, ...updatedFilterModes };
 	});
 
 	const searchFields = search
