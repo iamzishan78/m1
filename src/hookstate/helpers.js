@@ -94,6 +94,16 @@ export const handleMRTSchema = ({
 	_Schema = _.uniqBy(_Schema, item => item.accessorKey || item.id);
 
 	const _TableSchema = _Schema.map(schemaColumn => {
+		if (schemaColumn.header && !schemaColumn.showInLast) {
+			schemaColumn.Header = () => {
+				const { header, type } = schemaColumn;
+				const {
+					stateValues: { showTypes },
+				} = tableController(tableKey).useState(['showTypes']);
+				return <DataType title={header} type={type || 'unknown'} showType={showTypes} />;
+			};
+		}
+
 		if (isClientSide) {
 			if (schemaColumn.filter) {
 				let options;
@@ -212,16 +222,6 @@ export const handleMRTSchema = ({
 				name: schemaColumn.accessorKey || schemaColumn.id,
 				controller: tableController,
 			});
-		}
-
-		if (schemaColumn.header && !schemaColumn.showInLast) {
-			schemaColumn.Header = () => {
-				const { header, type } = schemaColumn;
-				const {
-					stateValues: { showTypes },
-				} = tableController(tableKey).useState(['showTypes']);
-				return <DataType title={header} type={type || 'unknown'} showType={showTypes} />;
-			};
 		}
 
 		return schemaColumn;
