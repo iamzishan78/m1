@@ -38,10 +38,10 @@ export const getActivityFilters = appliedFilters => {
 			},
 		});
 		if (range.length > 0) filters = [...filters, ...range];
-		if (appliedFilters.campaignName) {
+		if (appliedFilters.campaigns) {
 			filters.push({
-				field: 'contact.campaignName.keyword',
-				value: appliedFilters.campaignName,
+				field: 'contact.campaigns',
+				value: appliedFilters.campaigns,
 			});
 		}
 		if (appliedFilters.qualifier) {

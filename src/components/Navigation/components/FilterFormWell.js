@@ -3,22 +3,15 @@ import FilterDatePickerPermit from './FilterDatePickerPermit';
 import FilterDatePickerCompletetion from './FilterDatePickerCompletetion';
 import FilterDatePickerSpud from './FilterDatePickerSpud';
 import FilterDatePickerFirstProd from './FilterDatePickerFirstProd';
-import FilterWellTypeJ from './FilterWellTypeJ';
 import FilterTVD from './FilterTVD';
 import FilterLateralLength from './FilterLateralLength';
 import FilterMeasuredDistance from './FilterMeasuredDistance';
-import FilterWellProfileJ from './FilterWellProfileJ';
-import FilterWellStatusJ from './FilterWellStatusJ';
-import FilterPlay from './FilterGeoPlay';
-import FilterPrimaryFormation from './FilterGeoPrimaryFormation';
-import FilterField from './FilterGeoField';
-import OperatorsFilter from './OperatorFilterJ';
 import Grid from '@material-ui/core/Grid';
 
 export default function FilterFormWell() {
 	return (
 		<Grid container item spacing={2} style={{ padding: '8px', width: '100%', margin: '0' }}>
-			<Grid item sm={12}>
+			{/* <Grid item sm={12}>
 				<OperatorsFilter />
 			</Grid>
 			<Grid item sm={12}>
@@ -38,7 +31,7 @@ export default function FilterFormWell() {
 			</Grid>
 			<Grid item sm={12}>
 				<FilterField />
-			</Grid>
+			</Grid> */}
 			<Grid item sm={12}>
 				<FilterTVD />
 			</Grid>

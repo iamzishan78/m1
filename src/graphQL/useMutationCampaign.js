@@ -11,9 +11,9 @@ export const UPSERT_CAMPAIGN_DESCRIPTORS = gql`
 		upsertCampaignDescriptors(descriptors: $descriptors)
 	}
 `;
-export const UPSERT_CONTACT_CAMPAIGNS = gql`
-	mutation upsertContactCampaigns($campaigns: [JSON], $contactIds: [String]) {
-		upsertContactCampaigns(campaigns: $campaigns, contactIds: $contactIds)
+export const UPSERT_ENTITY_CAMPAIGNS = gql`
+	mutation upsertEntityCampaigns($campaigns: [JSON], $entityIds: [String], $entityType: String) {
+		upsertEntityCampaigns(campaigns: $campaigns, entityIds: $entityIds, entityType: $entityType)
 	}
 `;
 

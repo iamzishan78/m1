@@ -49,7 +49,6 @@ import AddWellInterestDialog from '../../ContactDetailCard/components/ContactsWe
 import { setMapGridCardState } from '../../../actions';
 
 // Header Schemas
-import ContactsHeadCells from '../constants/contacts-header-schema.js';
 import DocumentsHeadCells from '../constants/documents-header-schema';
 import WellsHeadCells from '../constants/well-header-schema.js';
 import TrackedOwnersHeadCells from '../constants/track-owners-header-schema.js';
@@ -1021,37 +1020,6 @@ function M1nTable(props) {
 
 		if (
 			props.parent &&
-			props.parent === 'Contacts' // for parent of contact screen
-		) {
-			setLoading(true);
-			setTargetLabel('contact');
-			setHeader('Contacts');
-			setOrderByTracks(false);
-			setAddAble({ parent: false, type: 'contact' });
-			getPaginatedContacts({ variables: { search: stateGrid.gridSearchTarget } });
-			getContactsFilterOptions();
-			updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
-			setUploadIcon(true);
-			setStartPaginationAt(25);
-			setColumnsBase(ContactsHeadCells);
-		} else if (
-			props.parent &&
-			props.parent === 'search' &&
-			props.targetLabel === 'contacts' // for parent of contact screen
-		) {
-			setLoading(true);
-			setTargetLabel('contact');
-			setHeader('Contacts');
-			setOrderByTracks(false);
-			setAddAble({ parent: false, type: 'contact' });
-			getPaginatedContacts({ variables: { search: stateGrid.gridSearchTarget } });
-			getContactsFilterOptions();
-			updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
-			setUploadIcon(false);
-			setStartPaginationAt(25);
-			setColumnsBase(ContactsHeadCells);
-		} else if (
-			props.parent &&
 			props.parent === 'Documents' // for parent of contact screen
 		) {
 			setLoading(true);
@@ -1067,22 +1035,6 @@ function M1nTable(props) {
 			setColumnsBase(DocumentsHeadCells);
 		}
 	}, [props.parent, stateGrid.gridSearchTarget]);
-
-	useEffect(() => {
-		if (props.parent && props.parent === 'detail-well-card-contact-ties') {
-			setLoading(true);
-			setTargetLabel('contact');
-			setHeader('Contacts');
-			setOrderByTracks(false);
-			setAddAble({ parent: false, type: 'contact' });
-			// getPaginatedContacts({variables: { search: "jacob" }});
-			// getContactsFilterOptions();
-			// updateMailerStatuses({ variables: { userId: stateApp.user.mongoId } });
-			// setUploadIcon(false);
-			setStartPaginationAt(25);
-			setColumnsBase(ContactsHeadCells);
-		}
-	}, [props.selectedWell, selectedYear]);
 
 	useEffect(() => {
 		if (

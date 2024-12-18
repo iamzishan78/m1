@@ -146,6 +146,7 @@ export const formatTaxOwners = (owners, formData) => {
 			taxYear: owners[i].year,
 			dataSource: 'M1neral',
 			contactOwner: formData.contactOwner,
+			// TODO: remove this
 			campaignName: formData.campaigns?.map(campaign => campaign.name),
 			campaigns: formData.campaigns,
 			tags: formData.tags,

@@ -49,9 +49,7 @@ import RoomIcon from '@material-ui/icons/Room';
 import { useDispatch } from 'react-redux';
 import { setMapGridCardState } from 'actions';
 import { deepEqualObjects, setStateIfDeepEqual } from '../../functions';
-import InviteUserDialog from './SubComponents/InviteUserDialog';
 import ReinviteUserDialog from './SubComponents/ReinviteUserDialog';
-import AddParcelOwnerDialogContent from './SubComponents/AddParcelOwnerDialogContent';
 import MoreVertOutlinedIcon from '@material-ui/icons/MoreVertOutlined';
 import AddParcelToEntityDialogContent from './SubComponents/AddParcelToEntityDialogContent/AddParcelToEntityDialogContent';
 import Convert_contact from '../../svgIcons/convert_contact';
@@ -120,7 +118,6 @@ import PostAddIcon from '@material-ui/icons/PostAdd';
 import FilterIcon from '../../svgIcons/filter';
 import ViewColumnIcon from '../../svgIcons/view_column';
 import CheckIcon from '@material-ui/icons/Check';
-import AddUnitOwnerDialogContent from './SubComponents/AddUnitOwnerDialogContent';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 // import Link from "@material-ui/core/Link";
 import AddActivityDialog from 'components/ContactDetailCard/components/AddActivityDialog';
@@ -5000,34 +4997,6 @@ function SubTable(props) {
 							setSelectedRow={setSelectedRow}
 						/>
 					</RightDialog>
-				)}
-				{openDialog && openDialog === 'addOwnerToParcel' && (
-					<AddParcelOwnerDialogContent
-						onClose={() => {
-							setSelectedRow(null);
-							handleCloseDialog();
-						}}
-						handleExpandClick={handleExpandClick}
-						setM1nSelectedRowsIds={setM1nSelectedRowsIds}
-						customLayerId={props.addAble?.customLayerId}
-						customLayer={props.addAble?.customLayer}
-						selectedRow={selectedRow}
-						setSelectedRow={setSelectedRow}
-					/>
-				)}
-				{openDialog && openDialog === 'addOwnerToUnit' && (
-					<AddUnitOwnerDialogContent
-						onClose={() => {
-							setSelectedRow(null);
-							handleCloseDialog();
-						}}
-						handleExpandClick={handleExpandClick}
-						setM1nSelectedRowsIds={setM1nSelectedRowsIds}
-						customLayerId={props.addAble?.customLayerId}
-						customLayer={props.addAble?.customLayer}
-						selectedRow={selectedRow}
-						setSelectedRow={setSelectedRow}
-					/>
 				)}
 				{/*
         // the dialog box listed below controls

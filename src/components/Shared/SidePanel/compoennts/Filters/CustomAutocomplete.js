@@ -23,6 +23,8 @@ const CustomAutocomplete = ({
 	className,
 	onChange,
 	isTextFieldOnly = false, // New prop to toggle behavior
+	searchText,
+	handleChange,
 	multiple = false, // New prop to enable multiselect
 }) => {
 	// Using the useController hook to bind the input to react-hook-form's control
@@ -62,7 +64,11 @@ const CustomAutocomplete = ({
 					{...params}
 					label={label} // Display the label provided in props
 					className={className} // Apply custom styles to the input field
+					value={searchText}
 					variant="standard" // MUI TextField variant
+					onChange={e => {
+						handleChange(e);
+					}}
 				/>
 			)}
 			renderTags={(value, getTagProps) =>

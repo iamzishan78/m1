@@ -213,13 +213,6 @@ export const getBasicInfoExpContent = (contactData, metafields = []) => {
 		}
 	}
 
-	let campaignName;
-	if (typeof contactData?.campaignName === 'string') {
-		campaignName = contactData?.campaignName;
-	} else if (Array.isArray(contactData?.campaignName)) {
-		campaignName = contactData.campaignName;
-	}
-
 	const formFields = {
 		'Mobile Phone 3': {
 			data: { mobilephone3: contactData?.mobilephone3 },
@@ -300,8 +293,8 @@ export const getBasicInfoExpContent = (contactData, metafields = []) => {
 			data: { outcome: contactData?.outcome },
 			linkType: LinkTypes.None,
 		},
-		'Campaign Name': {
-			data: { campaignName },
+		Campaigns: {
+			data: { campaigns: contactData?.campaigns || [] },
 			linkType: LinkTypes.None,
 		},
 		'Lead Source': {

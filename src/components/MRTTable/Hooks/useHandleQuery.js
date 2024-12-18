@@ -19,6 +19,8 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	const client = useApolloClient();
 
 	const callQuery = async _pagination => {
+		const resetPaginationVal = resetPagination.current;
+
 		const tableMeta = tableState.get({ noproxy: true });
 		const pagination = _pagination || tableMeta.pagination;
 		const { TableSchema } = tableMeta;
@@ -125,7 +127,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				set(row, accessorKey, value, defaultValue);
 			});
 		});
-		if (tableState?.isInFiniteScroll?.get() && !resetPagination.current) {
+		if (tableState?.isInFiniteScroll?.get() && !resetPaginationVal) {
 			const prevData = tableState?.data?.get({ noproxy: true }).rows || [];
 			rows = mergeArrays(prevData, rows, '_id');
 		}
@@ -230,6 +232,8 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		const tableMeta = tableState.get({ noproxy: true });
 
 		if (!tableMeta) return;
+
+		resetPagination.current = true;
 
 		callQuery({
 			pageIndex: 0,

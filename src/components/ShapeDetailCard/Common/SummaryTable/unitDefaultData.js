@@ -197,9 +197,9 @@ const tableData = [
 		key: 'reviewer',
 	},
 	{
-		label: 'Campaign Name',
+		label: 'Campaigns',
 		type: 'custom',
-		key: 'campaignName',
+		key: 'campaigns',
 	},
 	{
 		label: 'Owner',

@@ -30,7 +30,7 @@ export const getFilters = appliedFilters => {
 	let filters = [];
 	if (appliedFilters) {
 		let range = [];
-		if (appliedFilters.filter != 'audit') {
+		if (appliedFilters.filter !== 'audit') {
 			range = getRangeFilters(
 				{
 					dateTime: {
@@ -73,15 +73,9 @@ export const getFilters = appliedFilters => {
 		}
 
 		if (range.length > 0) filters = [...filters, ...range];
-		if (appliedFilters.campaignName) {
-			filters.push({
-				field: 'contact.campaignName.keyword',
-				value: appliedFilters.campaignName,
-			});
-		}
 		if (appliedFilters.qualifier) {
 			filters.push({
-				field: appliedFilters.filter == 'audit' ? 'lastUpdateBy.name.keyword' : 'ownerName.keyword',
+				field: appliedFilters.filter === 'audit' ? 'lastUpdateBy.name.keyword' : 'ownerName.keyword',
 				value: appliedFilters.qualifier,
 			});
 		}
@@ -104,7 +98,7 @@ function ActivitiesTable(props) {
 	const dispatch = useDispatch();
 	const client = useApolloClient();
 	const [stateApp, setStateApp] = useContext(AppContext);
-	const { appliedFilters, esIndex, searchFields, clickedRow, applyCustomClasses } = props;
+	const { appliedFilters, esIndex, searchFields, clickedRow } = props;
 
 	const [events, setEvents] = useState([]);
 
@@ -199,14 +193,8 @@ function ActivitiesTable(props) {
 		}
 
 		props.setTableMeta({
-			filters: [
-				...getFilters(appliedFilters),
-				{ field: 'category.keyword', value: 'CRM', includeEmpty: true },
-				{ field: 'type.keyword', value: 'Expiration', notInclude: true },
-				{ field: 'type.keyword', value: 'Option to Extend', notInclude: true },
-			],
-			extendSearchQuery: stateApp.activitySearchQuery,
 			filters,
+			extendSearchQuery: stateApp.activitySearchQuery,
 			searchFields,
 			TableHeader: copy(TableHeader),
 			esIndex,
@@ -239,6 +227,7 @@ function ActivitiesTable(props) {
 			setStateApp(() => ({ ...stateApp, selectedActivity: activity }));
 			onModalOpen(props.dialogType);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [clickedRow]);
 
 	const deleteFunc = ids => {
