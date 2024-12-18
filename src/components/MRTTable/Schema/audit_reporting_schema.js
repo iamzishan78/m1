@@ -29,7 +29,7 @@ const AuditReportingMeta = {
 		pageSize: 25,
 	},
 	search: {
-		fields: ['name^4', '_all'],
+		fields: ['name', '_all'],
 	},
 	isInFiniteScroll: true,
 	columnVirtualization: true,
