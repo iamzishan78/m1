@@ -372,20 +372,32 @@ const tableESStateControllerHandler = state => ({
 		const columnSchema = state.TableSchema?.[index]?.get({
 			noproxy: true,
 		});
+		const isClientSide = state.isClientSide.get();
 
-		if (mode === 'singleselect') {
-			state.TableSchema?.[index]?.merge({
-				Filter: columnSchema?.SingleSelect,
-			});
-		} else if (mode === 'multiselect') {
-			state.TableSchema?.[index]?.merge({
-				Filter: columnSchema?.MultiSelect,
-			});
-		} else if (columnSchema?.Filter) {
-			state.TableSchema?.[index]?.merge({ Filter: null });
+		const stateToUpdate = {};
+
+		switch (mode) {
+			case 'singleselect':
+				if (isClientSide) stateToUpdate.filterVariant = 'select';
+				else stateToUpdate.Filter = columnSchema?.SingleSelect;
+				break;
+
+			case 'multiselect':
+				if (isClientSide)
+					stateToUpdate.filterVariant = 'text'; // 'multi-select'
+				else stateToUpdate.Filter = columnSchema?.MultiSelect;
+				break;
+
+			default:
+				if (isClientSide) stateToUpdate.filterVariant = 'text';
+				else stateToUpdate.Filter = null;
+				break;
 		}
 
+		state.TableSchema?.[index]?.merge(stateToUpdate);
+
 		if (!columnSchema?.name) return;
+
 		state.filterModes?.merge({
 			[column]: {
 				mode,
