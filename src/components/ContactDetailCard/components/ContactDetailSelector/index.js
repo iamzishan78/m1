@@ -273,7 +273,7 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 
 	const ContactDetailContactsOverrideMeta = useMemo(
 		() => ({
-			defaultFilters: [{ field: 'relatedContacts.relatedObject', value: contactData?._id }],
+			defaultFilters: [{ field: 'relatedContacts.relatedObject', value: contactData?._id, isArrayKey: true }],
 			maxTableHeight,
 			deletedKeys: {
 				mainRecord: { key: '_id' },

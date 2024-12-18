@@ -5,7 +5,6 @@ import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
 import ContactDettailRelatedContactsToolBar from 'components/MRTTable/TablesOverride/ContactDetailRelatedContactsTable/ContactDetailRelatedContactsToolbar';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import { tableController } from 'hookstate/tableController';
 
 const esIndex = 'contacts_flat';
 
@@ -127,6 +126,7 @@ const ContactDetailRelatedContactMeta = {
 			name: 'relatedContacts.relationshipType.keyword',
 			accessorKey: 'relatedContacts.relationshipType',
 			header: 'Relationship Type',
+			isArrayKey: true,
 			handleArrayExport: {
 				esType: 'array',
 				// field in data array that will be matched
@@ -135,14 +135,6 @@ const ContactDetailRelatedContactMeta = {
 				referenceValueKey: 'contactId',
 				// field that needs to be exported from matched object
 				actualKey: 'relationshipType',
-			},
-			Cell: ({ row }) => {
-				const Controller = tableController('ContactDetailContactsTable');
-				const { contactId } = Controller.getValue('customProps');
-				const relationStatus = row?.original?.relatedContacts?.find(
-					relatedContact => relatedContact?.relatedObject === contactId
-				)?.relationshipType;
-				return <p>{relationStatus}</p>;
 			},
 		},
 	],

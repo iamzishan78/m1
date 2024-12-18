@@ -178,14 +178,32 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
 	}, [getAgreementPaymentData, rest.paymentId]);
 
 	useEffect(() => {
-		tableController('RelatedPayeesTable').setFilter({ field: 'payments.paymentId', value: rest.paymentId });
-		tableController('RelatedBillingPartiesTable').setFilter({
-			field: 'billingParties.paymentId',
-			value: rest.paymentId,
+		tableController('RelatedPayeesTable').updateState({
+			defaultFilters: [
+				{
+					field: 'payments.paymentId',
+					value: rest.paymentId,
+					isArrayKey: true,
+				},
+			],
 		});
-		tableController('RelatedCostAllocationsTable').setFilter({
-			field: 'costAllocations.paymentId',
-			value: rest.paymentId,
+		tableController('RelatedBillingPartiesTable').updateState({
+			defaultFilters: [
+				{
+					field: 'billingParties.paymentId',
+					value: rest.paymentId,
+					isArrayKey: true,
+				},
+			],
+		});
+		tableController('RelatedCostAllocationsTable').updateState({
+			defaultFilters: [
+				{
+					field: 'costAllocations.paymentId',
+					value: rest.paymentId,
+					isArrayKey: true,
+				},
+			],
 		});
 	}, [rest.paymentId, searchTapValue.value]);
 
