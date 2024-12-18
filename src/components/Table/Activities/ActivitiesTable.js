@@ -22,7 +22,7 @@ import ActivitiesModal from 'components/Activities/components/ActivitiesModal';
 import { usetableStyles } from '../Styles';
 import { UPDATE_PROPERTY_INTEREST } from 'graphQL/useMutationUpdatepropertyInterest';
 import { activityTypes } from 'utils/data';
-import { getRangeFilters } from 'utils/helper';
+import { getRangeFilters, getDateFilters } from 'utils/helper';
 import Chip from '@material-ui/core/Chip';
 import { TableFilterList } from 'mui-datatables';
 
@@ -51,7 +51,7 @@ export const getFilters = appliedFilters => {
 				'simple'
 			);
 		} else {
-			range = getRangeFilters(
+			range = getDateFilters(
 				{
 					lastUpdateAt: {
 						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
@@ -61,7 +61,7 @@ export const getFilters = appliedFilters => {
 				'simple'
 			);
 			if (range.length > 0) filters = [...filters, ...range];
-			range = getRangeFilters(
+			range = getDateFilters(
 				{
 					lastUpdateAt: {
 						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,

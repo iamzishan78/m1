@@ -305,7 +305,7 @@ const CampaignFilter = ({
 			inputValue={search?.toString()}
 			options={get(filtersData, 'getESSimpleFilter.hits', []).filter(d => d.key)}
 			getOptionSelected={(option, value) => option.key === value}
-			getOptionLabel={option => option?.key?.toString().replace(/^,|,$/gm, '')}
+			getOptionLabel={option => option?.key?.toString().replace(/^,|,$/gm, '') || ""}
 			renderInput={params => (
 				<TextField
 					{...params}
@@ -404,7 +404,7 @@ const QualifierFilter = ({
 			inputValue={search?.toString()}
 			options={get(filtersData, 'getESSimpleFilter.hits', [])}
 			getOptionSelected={(option, value) => option.key === value}
-			getOptionLabel={option => option?.key?.toString().replace(/^,|,$/gm, '')}
+			getOptionLabel={option => option?.key?.toString().replace(/^,|,$/gm, '') || ""}
 			renderInput={params => (
 				<TextField
 					{...params}

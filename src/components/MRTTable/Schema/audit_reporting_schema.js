@@ -18,7 +18,7 @@ const AuditReportingMeta = {
 	esIndex,
 	pageSize: 25,
 	defaultSort: { field: 'lastUpdateAt', order: 'desc', unmapped_type: 'date' },
-	maxTableHeight: 'calc(100vh - 560px)',
+	maxTableHeight: 'calc(100vh - 610px)',
 	CustomToolBar: () => {
 		const classes = useStyles();
 		return <div className={classes.title}>Audit Reporting</div>;
@@ -27,9 +27,11 @@ const AuditReportingMeta = {
 		pageIndex: 0,
 		pageSize: 25,
 	},
+	search: {
+		fields: ['name^4', '_all'],
+	},
 	isInFiniteScroll: true,
 	columnVirtualization: true,
-	title: 'Editable Example',
 	TableSchema: [
 		{
 			...CommonSchema.MONGO_ID,

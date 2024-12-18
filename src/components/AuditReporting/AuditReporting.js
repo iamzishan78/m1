@@ -9,7 +9,7 @@ import { Box } from '@material-ui/core';
 import MRTTable from 'components/MRTTable';
 import { AppContext } from 'AppContext';
 import { tableController } from 'hookstate/tableController';
-
+import { getFilters } from 'components/Table/Activities/ActivitiesTable';
 const useStyles = makeStyles(theme => ({
 	root: {
 		marginTop: '90px',
@@ -20,7 +20,9 @@ const ActivitiesDashboard = () => {
 	const classes = useStyles();
 	const esIndex = 'contacts_flat';
 	const searchFields = ['name', '_all'];
+	const tableKey = 'AuditReportingTable';
 	const [stateApp] = useContext(AppContext);
+	const auditReportingTableState = tableController(tableKey).useState(['filters', 'data', 'globalFilter']).stateValues;
 	const [filterToggle, setFilterToggle] = useState(false);
 	const [appliedFilters, setAppliedFilters] = useState({
 		toDate: null,
@@ -49,8 +51,14 @@ const ActivitiesDashboard = () => {
 	}, [getDbMinValue]);
 
 	useEffect(() => {
-		tableController("AuditReportingTable").setGlobalFilter(stateApp.landAnalyticsSearchQuery) // set value in searchquery for audit reporting
+		tableController(tableKey).setGlobalFilter(stateApp.landAnalyticsSearchQuery) // set value in searchquery for audit reporting
 	  }, [stateApp.landAnalyticsSearchQuery])
+
+	useEffect(() => {
+		tableController(tableKey).setFilters(getFilters(appliedFilters));
+	}, [appliedFilters]);
+
+
 
 	return (
 		<div className={classes.root}>
@@ -60,7 +68,9 @@ const ActivitiesDashboard = () => {
 					searchFields={searchFields}
 					setFilterToggle={setFilterToggle}
 					filterToggle={filterToggle}
-					tableFilters={[]}
+					tableFilters={[
+						...auditReportingTableState.filters,
+					]}
 					appliedFilters={appliedFilters}
 					minDate={minDate}
 					setAppliedFilters={setAppliedFilters}
@@ -71,13 +81,15 @@ const ActivitiesDashboard = () => {
 				<ActivityAnalytics
 					esIndex={esIndex}
 					filterToggle={filterToggle}
-					tableFilters={[]}
+					tableFilters={[
+						...auditReportingTableState.filters
+					]}
 					appliedFilters={appliedFilters}
 					setAppliedFilters={setAppliedFilters}
 				/>
 			}
 			<Box sx={{ padding: '1em', marginLeft: '1em' }}>
-				<MRTTable name="AuditReportingTable" />
+				<MRTTable name={tableKey} />
 			</Box>
 		</div>
 	);
