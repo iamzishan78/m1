@@ -28,7 +28,6 @@ import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
 import { COMMENTSBYOBJECTSIDS } from 'graphQL/useQueryCommentsByObjectsIds';
 import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
 import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
-import { tableGlobalController } from 'hookstate/tableController';
 
 // import value formatters
 import capitalizeFirstLetter from 'components/Shared/valueformatters/capitalize-first-letter';
@@ -356,7 +355,7 @@ export default function Comments(props) {
 			],
 			awaitRefetchQueries: true,
 		});
-		tableGlobalController.refetch();
+		props.refetch?.();
 		setLoading(false);
 	};
 
@@ -417,7 +416,7 @@ export default function Comments(props) {
 				});
 			}
 		}
-		tableGlobalController.refetch();
+		props.refetch?.();
 		setLoading(false);
 	};
 

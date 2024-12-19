@@ -1,14 +1,14 @@
 import React, { memo } from 'react';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+import { tableGlobalController } from 'hookstate/tableController';
 import Dialog from '@material-ui/core/Dialog';
 import InviteUserDialog from 'components/Shared/M1nTable/components/SubComponents/InviteUserDialog';
 
 function UserManagementTableDialogs() {
-	const { stateValues } = simpleTableGlobalController.useState(['dialog']);
+	const { stateValues } = tableGlobalController.useState(['dialog']);
 	const { type, ...rest } = stateValues.dialog || {};
 
 	const handleCloseDialog = () => {
-		simpleTableGlobalController.updateState({
+		tableGlobalController.updateState({
 			dialog: {},
 		});
 	};

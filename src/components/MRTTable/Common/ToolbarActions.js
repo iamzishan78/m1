@@ -3,13 +3,15 @@ import { ToggleButton } from '@mui/material';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { IconButton, Tooltip } from '@mui/material';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import GridView from 'components/MRTTable/Common/GridView';
-import TabHeader from 'components/MRSimpleTable/Common/TabHeader';
-import { globalStateController } from 'hookstate/globalStateController';
-import { excludeFilters } from './CommonToolBarActions';
 import _ from 'lodash';
 import { Typography } from '@material-ui/core';
+
+import GridView from 'components/MRTTable/Common/GridView';
+import TabHeader from 'components/Common/MRTable/TabHeader';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { excludeFilters } from './CommonToolBarActions';
 
 function ToolbarActions({ table, tableKey, children }) {
 	const tableState = tableController(tableKey).useCompleteState();

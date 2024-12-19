@@ -64,8 +64,8 @@ function TagCell({ id, targetSourceId, tags, targetLabel }) {
 				>
 					{tags?.length > 0 ? (
 						<>
-							<p className="first">{tags.map(cell => cell.tag).join(', ')}</p>
-							<p className="two">...</p>
+							<p className="first">{tags.map(cell => cell?.tag || cell).join(', ')}</p>
+							{tags?.length > 1 && <p className="two">...</p>}
 						</>
 					) : (
 						<p className="three">No Tags</p>

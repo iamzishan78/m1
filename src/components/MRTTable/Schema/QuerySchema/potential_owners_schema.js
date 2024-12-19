@@ -1,13 +1,13 @@
-import CommentCell from 'components/MRSimpleTable/Common/TableCells/Comment';
-import TagCell from 'components/MRSimpleTable/Common/TableCells/Tag';
-import IsContactCell from 'components/MRSimpleTable/Common/TableCells/isContactIcone';
-import PotentialOwnersToolbar from 'components/MRSimpleTable/TablesOverride/PotentialOwnersTable/PotentialOwnersToolbar';
-import { globalStateController } from 'hookstate/globalStateController';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import IsContactCell from 'components/MRTTable/Common/TableCells/isContactIcone';
+import PotentialOwnersToolbar from 'components/MRTTable/TablesOverride/PotentialOwnersTable/PotentialOwnersToolbar';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { getPolygonString } from 'components/Shared/functions';
-import { SHAPE_WELL_OWNERS } from 'graphQL/useQueryPaginatedShapeWellOwners';
-import { CommonSchema } from './common_schema';
 
-export const potentialOwnerTableKey = 'PotentialOwners';
+import { globalStateController } from 'hookstate/globalStateController';
+import { tableController } from 'hookstate/tableController';
+import { SHAPE_WELL_OWNERS } from 'graphQL/useQueryPaginatedShapeWellOwners';
 
 const PotentialOwnersMeta = {
 	query: SHAPE_WELL_OWNERS,
@@ -38,6 +38,7 @@ const PotentialOwnersMeta = {
 	getDataFromRes: res => res?.data?.paginatedShapeWellOwners?.edges || [],
 	getIdsFromRows: rows => rows?.map(row => row.node?.id) || [],
 	CustomToolBar: PotentialOwnersToolbar,
+	isClientSide: true,
 	isSelectAllAllowed: true,
 	isDeleteAllowed: false,
 	isExportAllowed: false,
@@ -150,14 +151,15 @@ const PotentialOwnersMeta = {
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const id = row.getValue('id');
+				let tags = row?.original?.tags;
+
+				const Controller = tableController('PotentialOwnersTable');
+				const { stateValues } = Controller.useState(['tagsList']);
+
+				tags = stateValues.tagsList?.find(tag => tag._id === id)?.tags || tags;
+
 				return (
-					<TagCell
-						id={id}
-						targetSourceId={id}
-						tags={row?.original?.tags}
-						targetLabel={'well'}
-						tableKey={potentialOwnerTableKey}
-					/>
+					<TagCell id={id} targetSourceId={id} tags={tags} targetLabel={'well'} tableKey={'PotentialOwnersTable'} />
 				);
 			},
 		},
@@ -173,14 +175,15 @@ const PotentialOwnersMeta = {
 			...CommonSchema.COMMENTS,
 			Cell: ({ renderedCellValue, row }) => {
 				const id = row.getValue('id');
-				return (
-					<CommentCell
-						id={id}
-						value={renderedCellValue?.length || 0}
-						targetLabel={'well'}
-						tableKey={potentialOwnerTableKey}
-					/>
-				);
+
+				let value = renderedCellValue?.length || 0;
+
+				const Controller = tableController('PotentialOwnersTable');
+				const { stateValues } = Controller.useState(['commentsCounter']);
+
+				value = stateValues.commentsCounter?.find(counter => counter._id === id)?.total || value;
+
+				return <CommentCell id={id} value={value} targetLabel={'well'} tableKey={'PotentialOwnersTable'} />;
 			},
 		},
 	],

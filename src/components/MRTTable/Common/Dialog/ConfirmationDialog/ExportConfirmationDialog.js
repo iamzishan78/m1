@@ -8,20 +8,21 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import _ from 'lodash';
 import { useDispatch } from 'react-redux';
 import { useApolloClient } from '@apollo/client';
-import { tableController } from 'hookstate/tableController';
 import { execCommonAsyncExportJobAction } from 'store/actions/commonActions';
 import { globalStateController } from 'hookstate/globalStateController';
 import { Modals } from '../../../../../styles/Modal';
 import { excludeFilters } from 'components/MRTTable/Common/CommonToolBarActions';
 
-export default function ExportConfirmationDialog({ table, tableKey, header, onClose, children }) {
+export default function ExportConfirmationDialog({ table, tableKey, header, onClose, children, controller }) {
 	const dispatch = useDispatch();
 	const client = useApolloClient();
 	const modalClass = Modals();
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user.get({ noproxy: true });
 
-	const tableState = tableController(tableKey).useCompleteState();
+	const Controller = controller(tableKey);
+
+	const tableState = Controller.useCompleteState();
 	const tableStateValues = tableState?.get({ noproxy: true });
 
 	const handleExport = () => {
@@ -114,7 +115,7 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 		);
 
 		table.resetRowSelection();
-		tableController(tableKey).updateState({
+		Controller.updateState({
 			isSubSetSelect: null,
 		});
 		onClose();

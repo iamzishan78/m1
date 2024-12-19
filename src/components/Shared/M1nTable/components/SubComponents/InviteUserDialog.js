@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -10,31 +10,27 @@ import { ADD_USER, UPDATE_USER } from 'graphQL/userManagement';
 import { Select, FormControl, MenuItem, TextField, Grid } from '@material-ui/core';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+import { tableGlobalController } from 'hookstate/tableController';
 import { RolePrivilege, UserRole } from 'utils/data';
 
 export default function InviteUserDialog(props) {
 	const modalClass = Modals();
-	const { stateValues } = simpleTableGlobalController.useState(['dialog']);
+	const { stateValues } = tableGlobalController.useState(['dialog']);
 	const { activeUser } = stateValues?.dialog || {};
-	const [loading, setLoading] = useState(false);
 	const [displayName, setName] = useState('');
 	const [emails, setEmailAddress] = useState('');
 	const [role, setUserRole] = useState('USER');
 	const [rolePrivileges, setRolePrivileges] = useState('ADD_OR_EDIT');
-	const [lastLogin, setLastLogin] = useState();
 	const [addUser] = useMutation(ADD_USER, {
 		onCompleted: () => {
-			setLoading(false);
 			handleClose();
-			simpleTableGlobalController.refetch();
+			tableGlobalController.refetch();
 		},
 	});
 	const [updateUser] = useMutation(UPDATE_USER, {
 		onCompleted: () => {
-			setLoading(false);
 			handleClose();
-			simpleTableGlobalController.refetch();
+			tableGlobalController.refetch();
 		},
 	});
 
@@ -43,13 +39,11 @@ export default function InviteUserDialog(props) {
 			setName(activeUser.displayName);
 			setEmailAddress(activeUser.email);
 			setUserRole(activeUser.role?.toUpperCase());
-			setLastLogin(activeUser.lastLogin);
 			setRolePrivileges(activeUser.rolePrivileges);
 		}
 	}, [activeUser]);
 
 	const submitAddUser = () => {
-		setLoading(true);
 		// const rowData = props.rows;
 		// let temp_last_ts = new Date();
 		// setLastLogin(temp_last_ts.toString());
@@ -80,7 +74,6 @@ export default function InviteUserDialog(props) {
 	};
 
 	const submitUpdateUser = () => {
-		setLoading(true);
 		// const rowData = props.rows;
 		// let temp_last_ts = new Date();
 		// setLastLogin(temp_last_ts.toString());
@@ -115,9 +108,8 @@ export default function InviteUserDialog(props) {
 		setName('');
 		setEmailAddress('');
 		setUserRole('USER');
-		setLastLogin(null);
 
-		simpleTableGlobalController.updateState({
+		tableGlobalController.updateState({
 			dialog: {},
 		});
 

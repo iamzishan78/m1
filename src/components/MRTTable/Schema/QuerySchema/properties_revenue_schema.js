@@ -1,11 +1,11 @@
-import { CommonSchema } from './common_schema';
 import { Grid } from '@material-ui/core';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
-import { GET_PROPERTIES_REVENUE } from 'graphQL/useQueryGetPropertiesRevenue';
-import PropertiesRevenueToolbar from '../TablesOverride/PropertiesRevenue/PropertiesRevenueToolbar';
 import { Sparklines, SparklinesLine } from 'react-sparklines';
 
-export const propertiesRevenueTableKey = 'PropertiesRevenue';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import PropertiesRevenueToolbar from 'components/MRTTable/TablesOverride/PropertiesRevenue/PropertiesRevenueToolbar';
+
+import { GET_PROPERTIES_REVENUE } from 'graphQL/useQueryGetPropertiesRevenue';
 
 const PropertiesRevenueMeta = {
 	query: GET_PROPERTIES_REVENUE,
@@ -24,6 +24,7 @@ const PropertiesRevenueMeta = {
 	getDataFromRes: res => res?.data?.getPropertiesRevenue || [],
 	getIdsFromRows: rows => rows?.map(row => row.node?.propertyId) || [],
 	CustomToolBar: PropertiesRevenueToolbar,
+	isClientSide: true,
 	isSelectAllAllowed: false,
 	isDeleteAllowed: false,
 	isExportAllowed: false,
