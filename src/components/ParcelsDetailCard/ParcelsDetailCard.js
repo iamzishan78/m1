@@ -4,15 +4,14 @@ import { set } from 'lodash';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import GavelIcon from '@material-ui/icons/Gavel';
-import LocationIcon from '@material-ui/icons/Place';
 import Grid from '@material-ui/core/Grid';
 import { useDispatch, useSelector } from 'react-redux';
 import TabPanels from 'components/Shared/TabPanels';
 import TabButtons from 'components/Shared/TabPanels/TabButtons';
 import Tags from 'components/Shared/Tagger';
 import SuggestedTaxOwnersTable from 'components/Table/TaxOwners/SuggestedTaxOwnersTable';
-import AssociatedWellsParcelTable from 'components/Table/Wells/AssociatedWellsParcelTable';
 import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
+import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
 import Taps from '../Shared/Taps';
 import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
 import { UPDATECUSTOMLAYER } from '../../graphQL/useMutationUpdateCustomLayer';
@@ -349,6 +348,23 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 		[parcelObj]
 	);
 
+	const RelatedWellsOverrideMeta = useMemo(
+		() => ({
+			maxTableHeight: 'calc(50vh - 100px)',
+			tabLabels: ['Tract Wells', 'Potential Wells'],
+			defaultFilters: [{ field: 'shape._id', value: parcelObj?._id }],
+			customProps: { customLayer: parcelObj, shapeType: 'Parcel' },
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: parcelObj?._id },
+			},
+			customValue: { parentRecord: parcelObj?._id },
+			columnReordering: false,
+		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[parcelObj?._id]
+	);
+
 	useEffect(() => {
 		if (updatedParcel) {
 			if (updatedParcel.updateCustomLayer?.success) {
@@ -469,15 +485,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 		);
 	}
 
-	function WellHeader() {
-		return (
-			<div className={classes.documentHeader}>
-				<LocationIcon />
-				<span>ASSOCIATED WELLS</span>
-			</div>
-		);
-	}
-
 	return parcelObj ? (
 		<DrawerContextProvider>
 			<Grid item sm={12} container className={classes.gridWidthScroll}>
@@ -534,13 +541,11 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 								/>
 							</div>,
 							<div className={classes.subContent}>
-								<AssociatedWellsParcelTable
+								<RelatedWellsTable
+									id="relatedWellsTable"
+									overrideMeta={RelatedWellsOverrideMeta}
+									shapeType="Parcel"
 									customLayer={copy(parcelObj)}
-									parent="associatedWellsPerParcel"
-									targetLabel="well"
-									header={<WellHeader />}
-									isCheckboxSticky={true}
-									showTracks
 								/>
 							</div>,
 							<TabPanels

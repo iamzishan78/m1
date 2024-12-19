@@ -10,9 +10,9 @@ import TabPanels from 'components/Shared/TabPanels';
 import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
+import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
 import TabButtons from 'components/Shared/TabPanels/TabButtons';
 import UnitSummary from './UnitSummary';
-import ShapeWellInterestTable from 'components/Table/Shape/ShapeWellInterestTable';
 import AssociatedWellsShapeTable from 'components/Table/Wells/AssociatedWellsShapeTable';
 import AssociatedTractsShapeTable from 'components/Table/Wells/AssociatedTractsShapeTable';
 import Tags from 'components/Shared/Tagger';
@@ -238,6 +238,23 @@ export default function UnitDetailCard(props) {
 		[uniObj?._id]
 	);
 
+	const RelatedWellsOverrideMeta = useMemo(
+		() => ({
+			maxTableHeight: 'calc(50vh - 100px)',
+			tabLabels: ['Unit Wells', 'Potential Wells'],
+			defaultFilters: [{ field: 'shape._id', value: uniObj?._id }],
+			customProps: { customLayer: uniObj, shapeType: 'Unit' },
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: uniObj?._id },
+			},
+			customValue: { parentRecord: uniObj?._id },
+			columnReordering: false,
+		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[uniObj?._id]
+	);
+
 	function RunsheetHeader() {
 		const classes = detailCardStyles();
 		return (
@@ -337,14 +354,11 @@ export default function UnitDetailCard(props) {
 								value={selectedWellTab}
 								panels={[
 									<div className={showSummary ? classes.subContent : classes.subContent2}>
-										<ShapeWellInterestTable
-											customLayer={uniObj}
+										<RelatedWellsTable
+											id="relatedWellsTable"
+											overrideMeta={RelatedWellsOverrideMeta}
 											shapeType="Unit"
-											parent="associatedWellsPerUnits"
-											targetLabel="well"
-											header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
-											showTracks
-											dense
+											customLayer={uniObj}
 										/>
 									</div>,
 									<div className={showSummary ? classes.subContent : classes.subContent2}>
