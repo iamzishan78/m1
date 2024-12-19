@@ -2,15 +2,15 @@ import React, { useMemo } from 'react';
 
 import TabButtons from 'components/Shared/TabPanels/TabButtons';
 import AssociatedWellsProductionTable from 'components/Table/Revenue/AssociatedWellsProductionTable';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+import { tableGlobalController } from 'hookstate/tableController';
 import TabPanels from 'components/Shared/TabPanels';
 import MRTTable from 'components/MRTTable';
 
 const ValidationGrids = ({ associatedWellIds, propertyId }) => {
-	const setSelectedTab = simpleTableGlobalController.setSelectedTab;
+	const setSelectedTab = tableGlobalController.setSelectedTab;
 	const {
 		stateValues: { tabKey: selectedTab },
-	} = simpleTableGlobalController.useState(['tabKey']);
+	} = tableGlobalController.useState(['tabKey']);
 
 	const Header = () => (
 		<TabButtons

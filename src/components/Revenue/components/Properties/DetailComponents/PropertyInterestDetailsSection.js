@@ -3,7 +3,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import PropertyRevenueDetailToolBar from 'components/MRTTable/TablesOverride/PropertyRelatedAgreementTable/PropertyRelatedAgreementToolBar';
 import MRTTable from 'components/MRTTable';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
 import TabPanels from 'components/Shared/TabPanels';
 
 const onClickedRow = selectedRow => {
@@ -42,7 +41,7 @@ const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDe
 	const classes = useStyles();
 	const {
 		stateValues: { tabKey: selectedTab },
-	} = simpleTableGlobalController.useState(['tabKey']);
+	} = tableGlobalController.useState(['tabKey']);
 
 	const RelatedAgreementOverrideMeta = useMemo(
 		() => ({
