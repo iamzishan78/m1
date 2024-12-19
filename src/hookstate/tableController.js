@@ -287,11 +287,13 @@ const tableESStateControllerHandler = state => ({
 			defaultColumnsOrdering?.unshift('actionMenu');
 			defaultColumnsPinning?.left?.unshift('actionMenu');
 		}
-		const formattedmapViewsFilters = mapViewFilters.map(filter => ({
-			...filter,
-			field: filter.field.replace('.keyword', ''),
-			value: filter.value,
-		}));
+		const formattedmapViewsFilters = mapViewFilters
+			.map(filter => ({
+				...filter,
+				field: filter.field.replace('.keyword', ''),
+				value: filter.value,
+			}))
+			.filter(filter => filter.value);
 
 		const combinedFilters = formatedGridView?.filters
 			? [...formatedGridView.filters, ...formattedmapViewsFilters]
@@ -596,11 +598,14 @@ const tableESStateControllerHandler = state => ({
 		return esFilters;
 	},
 
-	clearFilter: field => {
+	clearFilter: (field, updateMapView = true) => {
 		const filtersState = state.filters?.get({ noproxy: true });
 		const mapView = globalStateController.getValue('mapView');
 		const mapViewsFitlers = mapView?.selectedMapView?.filters || [];
-		if (mapViewsFitlers.find(({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') === field)) {
+		if (
+			mapViewsFitlers.find(({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') === field) &&
+			updateMapView
+		) {
 			const tableState = state.get({
 				noproxy: true,
 			});

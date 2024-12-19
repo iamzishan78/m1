@@ -12,7 +12,7 @@ import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } fr
 import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableESState, tableGlobalController } from 'hookstate/tableController';
 import _ from 'lodash';
 
 // Define custom styles using Material-UI's makeStyles hook
@@ -304,6 +304,12 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 				label: 'Filter Type',
 				options: requiredFilterOptions,
 				defaultValue: filterTypeOptions.find(filterTypeOption => filterTypeOption.value === mapView?.filterType), // Set default value if mapView is provided
+				onChange: () => {
+					Object.keys(tableESState).map(tableKey =>
+						tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false)
+					);
+					setValue(`mapViews.${index}.filterValues`, null);
+				}, // Reset other fields on change
 			},
 			...(!['empty', 'notEmpty'].includes(filterType?.value || filterType)
 				? [
