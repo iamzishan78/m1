@@ -6,7 +6,7 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 
 const esIndex = 'shapeowners_flat';
 
-const ContactDetailTractInterestMeta = {
+const RelatedTractInterestMeta = {
 	esIndex,
 	pageSize: 50,
 	pagination: {
@@ -18,13 +18,20 @@ const ContactDetailTractInterestMeta = {
 	columnVirtualization: true,
 	TableSchema: [
 		{
-			...CommonSchema.HIDDEN,
+			...CommonSchema.MONGO_ID,
 			name: '_id',
 			accessorKey: '_id',
 		},
 		{
 			...CommonSchema.HIDDEN,
+			name: 'customLayerId.keyword',
+			header: 'Custom Layer ID',
+			accessorKey: 'customLayerId',
+		},
+		{
+			...CommonSchema.HIDDEN,
 			name: 'ownerEntity',
+			header: 'Owner Entity',
 			accessorKey: 'ownerEntity',
 		},
 		{
@@ -128,6 +135,13 @@ const ContactDetailTractInterestMeta = {
 		},
 		{
 			...CommonSchema.INTEREST_COLUMN,
+			name: 'surface_interest',
+			header: 'Surface Interest',
+			accessorFn: row => row?.surface_interest,
+			id: 'surface_interest',
+		},
+		{
+			...CommonSchema.INTEREST_COLUMN,
 			name: 'mineral_interest',
 			header: 'Mineral Interest',
 			accessorFn: row => row?.mineral_interest,
@@ -146,6 +160,13 @@ const ContactDetailTractInterestMeta = {
 			header: 'ORRI',
 			accessorFn: row => row?.orri,
 			id: 'orri',
+		},
+		{
+			...CommonSchema.INTEREST_COLUMN,
+			name: 'working_interest',
+			accessorFn: row => row?.working_interest,
+			id: 'working_interest',
+			header: 'Working Interest',
 		},
 		{
 			...CommonSchema.INTEREST_COLUMN,
@@ -217,4 +238,4 @@ const ContactDetailTractInterestMeta = {
 	],
 };
 
-export default ContactDetailTractInterestMeta;
+export default RelatedTractInterestMeta;

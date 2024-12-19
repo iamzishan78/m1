@@ -24,6 +24,7 @@ import ActivitiesToolbar from 'components/MRTTable/TablesOverride/ContactDetailA
 import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
 import { DrawerContextProvider } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
 import RelatedUnitInterestTable from 'components/Common/RelatedTables/Units/unitInterests';
+import RelatedTractInterestTable from 'components/Common/RelatedTables/Tracts/tractInterests';
 
 const useStyles = makeStyles(theme => ({
 	card: {
@@ -221,8 +222,9 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 		[contactData._id]
 	);
 
-	const contactTractInterestOverride = useMemo(
+	const relatedTractInterestOverride = useMemo(
 		() => ({
+			maxTableHeight: 'calc(50vh - 120px)',
 			defaultFilters: [
 				{ field: 'shape.layer.keyword', value: 'parcel' },
 				{ field: 'contact._id', value: contactData._id || '' },
@@ -385,7 +387,10 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 											/>
 										)}
 										{searchTapValue.value === 'tractInterests' && (
-											<MRTTable name="ContactDetailTractInterestTable" overrideMeta={contactTractInterestOverride} />
+											<RelatedTractInterestTable
+												id="relatedTractInterestsTable"
+												overrideMeta={relatedTractInterestOverride}
+											/>
 										)}
 										{searchTapValue.value === 'deals' && <ContactDealsProvider />}
 										{searchTapValue.value === 'documents' && (

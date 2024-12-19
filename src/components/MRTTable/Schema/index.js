@@ -39,7 +39,7 @@ import AcreageSummaryMeta from './acreage_summary_schema';
 import ExhibitAMeta from './exhibit_a_schema';
 import AcreageDetilsMeta from './acreage_details_schema';
 import RelatedlUnitInterestMeta from './related_unit_interests_schema';
-import ContactDetailTractInterestMeta from './contactDetail_tract_interest_schema';
+import RelatedTractInterestMeta from './related_tract_interest_schema';
 import ContactDetailRelatedAgreementMeta from './contactDetail_related_agreements_schema';
 import ContactDetailRelatedContactMeta from './contactDetail_related_contacts_schema';
 import PropertyInterestDetailMeta from './property-interest-details-schema';
@@ -98,7 +98,7 @@ export const SCHEMA = {
 	UnitRelatedAgreementTable: UnitRelatedAgreementMeta,
 	TractInterestsTable: TractInterestsMeta, // Tracts Interest schema
 	RelatedUnitInterestTable: RelatedlUnitInterestMeta,
-	ContactDetailTractInterestTable: ContactDetailTractInterestMeta,
+	RelatedTractInterestTable: RelatedTractInterestMeta,
 	RelatedAgreementTable: ContactDetailRelatedAgreementMeta,
 	ContactDetailAgreementsTable: ContactDetailRelatedAgreementMeta,
 	PropertyRelatedAgreementTable: ContactDetailRelatedAgreementMeta, //property detail =>  related agreement grid

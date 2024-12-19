@@ -7,12 +7,12 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { setMapGridCardState } from 'actions';
 import OwnersSummaryCard from 'components/OwnersSummaryCard/OwnersSummaryCard';
 import { TabPanel } from 'components/Shared/TabPanels';
-import ContactParcelInterestTable from 'components/Table/Contact/ContactParcelInterestTable';
 
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 import { contactDetailInitialData } from './data';
 import { mapControlsController } from 'hookstate/mapControlsController';
 import RelatedUnitInterestTable from 'components/Common/RelatedTables/Units/unitInterests';
+import RelatedTractInterestTable from 'components/Common/RelatedTables/Tracts/tractInterests';
 
 const useStyles = makeStyles(theme => ({
 	card: {
@@ -161,6 +161,20 @@ function AssociatedFlowDetails(props) {
 		[props.contacts, props.deal]
 	);
 
+	const relatedTractInterestOverride = useMemo(
+		() => ({
+			tableHeading: 'Tract Interests',
+			maxTableHeight: 'calc(50vh - 100px)',
+			defaultFilters: [
+				{ field: 'contact._id', value: props.contacts },
+				{ field: 'deals._id', value: props.deal },
+				{ field: 'shape.layer.keyword', value: 'parcel' },
+			],
+			refetchQueries: ['flowDealSummary'],
+		}),
+		[props.contacts, props.deal]
+	);
+
 	const handleSearchPanelChange = value => {
 		setSearchTapValue(value);
 		if (searchTapValue.index !== value.index) {
@@ -220,14 +234,9 @@ function AssociatedFlowDetails(props) {
 											/>
 										)}
 										{searchTapValue.value === 'parcelInterests' && (
-											<ContactParcelInterestTable
-												parent="contactAssocTaxRollInterests"
-												header={'Tract Interests'}
-												id="tractInterestTable"
-												targetLabel="parcel"
-												contactId={props.contacts}
-												dealId={props.deal}
-												showTracks
+											<RelatedTractInterestTable
+												id="relatedTractInterestsTable"
+												overrideMeta={relatedTractInterestOverride}
 											/>
 										)}
 									</div>

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import ContactWellInterestTable from 'components/Table/Contact/ContactWellInterestTable';
-import ContactParcelInterestTable from 'components/Table/Contact/ContactParcelInterestTable';
 import ContactTaxRollInterestTable from 'components/Table/Contact/ContactTaxRollInterestTable';
 import TabPanels from 'components/Shared/TabPanels';
 import TabButtons from 'components/Shared/TabPanels/TabButtons';
@@ -65,13 +64,6 @@ function ContactsWellInterestsParcelInterests(props) {
 							parent="assocTaxRollInterests"
 							header={<Header />}
 							targetLabel="well"
-							contactId={props.contactData._id}
-							showTracks
-						/>,
-						<ContactParcelInterestTable
-							parent="assocTaxRollInterests"
-							header={<Header />}
-							targetLabel="parcel"
 							contactId={props.contactData._id}
 							showTracks
 						/>,
