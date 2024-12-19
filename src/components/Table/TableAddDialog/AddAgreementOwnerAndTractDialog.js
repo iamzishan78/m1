@@ -45,17 +45,17 @@ import TractForm from 'components/Table/TableAddDialog/Common/TractForm';
 import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
 import AutoCompleteWithNewOption from 'components/Shared/Forms/Fields/AutoCompleteWithNewOption';
 import { addTrailingZeros } from 'components/Shared/functions';
-import { showErrorMessage } from 'actions';
 import { GET_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetAutoCompleteList';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
 import AutoCompleteParcelOwners from 'components/Shared/Forms/Fields/AutoCompleteParcelOwners';
 import Loaders from 'components/Loaders';
 import { GET_TRACT_ABSTRACT_SHAPE } from 'graphQL/useQueryGetTractAbstractShape';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import _ from 'lodash';
 import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
+import { tableGlobalController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(theme => ({
 	dialogFooter: {
@@ -111,7 +111,6 @@ const qtrOptions = ['E2', 'NE', 'NW', 'N2', 'SE', 'SW', 'S2', 'W2'];
 function AddAgreementOwnerAndTractDialog(props) {
 	const classes = useStyles();
 	const client = useApolloClient();
-	const dispatch = useDispatch();
 	const { control, reset, register, getValues, watch, setValue } = useForm();
 	const [isNraOverridden, setIsNRAOverridden] = useState(false);
 	const [isAcquisitionCostOverridden, setIsAcquisitionCostOverridden] = useState(false);
@@ -160,15 +159,18 @@ function AddAgreementOwnerAndTractDialog(props) {
 			form.tract = { tractName: form.tract?.tractName, state };
 			reset(form);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [state]);
 
 	useEffect(() => {
 		register('tract.qtrQtrSelection');
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tract]);
 
 	useEffect(() => {
 		if (!isAcquisitionCostOverridden)
 			setValue('acquisition_cost', calculateAcquisitionCost(nra, getValues().acquisition_nra));
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [nra]);
 
 	useEffect(() => {
@@ -201,6 +203,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 		} catch (error) {
 			console.log('%c Fetch track with newState', 'color:red', error);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		tract.state,
 		tract.county,
@@ -218,6 +221,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 	const [addOwnerToAShape] = useMutation(ADD_OWNER_TOA_SHAPE, {
 		onCompleted: data => {
 			setLoading(false);
+			tableGlobalController.refetch();
 			if (data.addOwnerToAShape.success) {
 				Loaders.successToast('ageement-tract-creation', 'Agreement tract created Successfully');
 			} else {
@@ -231,6 +235,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 	const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS, {
 		onCompleted: () => {
 			setLoading(false);
+			tableGlobalController.refetch();
 			Loaders.successToast('ageement-tract-creation', 'Agreement tract updated Successfully');
 		},
 		refetchQueries: ['getESSimpleSearch', 'getESFilterList'],
@@ -292,6 +297,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 		} else {
 			reset({ countAcres: 'Yes' });
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.seletedOwner]);
 
 	const handleMenuClick = event => {
@@ -304,6 +310,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 
 	useEffect(() => {
 		getautoCompleteList({ variables: { type: 'AgreementShapeOwner', data: { key: 'tractStatus' } } });
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -343,6 +350,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 				reset({ ...getValues(), tract: {} });
 			}
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedShapeLayer]);
 
 	const handleClose = () => {
@@ -471,6 +479,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 		if (nameAutValue?._id && nameAutValue?.name) {
 			reset({ ...getValues(), tract, ownerEntity: nameAutValue._id, ownerName: nameAutValue.name });
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [nameAutValue]);
 
 	const setExistingOwner = (e, value) => {
@@ -578,12 +587,13 @@ function AddAgreementOwnerAndTractDialog(props) {
 			</Grid>
 
 			<div>
-				<List>
+				<List style={{ padding: 0 }}>
 					<ListItem
 						style={{
 							flexDirection: 'column',
 							justifyContent: 'start',
 							alignItems: 'start',
+							padding: '5px',
 						}}
 					>
 						<ListItemText>
@@ -765,12 +775,13 @@ function AddAgreementOwnerAndTractDialog(props) {
 				/>
 			</div>
 			<div>
-				<List>
+				<List style={{ padding: 0 }}>
 					<ListItem
 						style={{
 							flexDirection: 'column',
 							justifyContent: 'start',
 							alignItems: 'start',
+							padding: '5px',
 						}}
 					>
 						<ListItemText>

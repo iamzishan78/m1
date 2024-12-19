@@ -8,12 +8,9 @@ import { setMapGridCardState } from 'actions';
 import OwnersSummaryCard from 'components/OwnersSummaryCard/OwnersSummaryCard';
 import { TabPanel } from 'components/Shared/TabPanels';
 import ContactDetailedInfo from 'components/ContactDetailedInfo/ContactDetailedInfo';
-import ActivitiesTable from 'components/Table/Activities/ActivitiesTable';
-import RelatedContactsTable from 'components/Table/Contact/RelatedContactTable';
 import ContactWellInterestTable from 'components/Table/Contact/ContactWellInterestTable';
 import ContactParcelInterestTable from 'components/Table/Contact/ContactParcelInterestTable';
 import ContactTaxRollInterestTable from 'components/Table/Contact/ContactTaxRollInterestTable';
-import ContactRelatedAgreementTable from 'components/Table/Contact/ContactRelatedAgreementTable';
 import UnitInterestsTable from 'components/Table/Unit/UnitInterestsTable';
 import ContactDealsProvider from 'components/DealsDetailCard/ContactDealsProvider';
 import ContactDocumentsProvider from 'components/ViewDocuments/ContactDocumentsProvider';
@@ -181,14 +178,32 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
 	}, [getAgreementPaymentData, rest.paymentId]);
 
 	useEffect(() => {
-		tableController('RelatedPayeesTable').setFilter({ field: 'payments.paymentId', value: rest.paymentId });
-		tableController('RelatedBillingPartiesTable').setFilter({
-			field: 'billingParties.paymentId',
-			value: rest.paymentId,
+		tableController('RelatedPayeesTable').updateState({
+			defaultFilters: [
+				{
+					field: 'payments.paymentId',
+					value: rest.paymentId,
+					isArrayKey: true,
+				},
+			],
 		});
-		tableController('RelatedCostAllocationsTable').setFilter({
-			field: 'costAllocations.paymentId',
-			value: rest.paymentId,
+		tableController('RelatedBillingPartiesTable').updateState({
+			defaultFilters: [
+				{
+					field: 'billingParties.paymentId',
+					value: rest.paymentId,
+					isArrayKey: true,
+				},
+			],
+		});
+		tableController('RelatedCostAllocationsTable').updateState({
+			defaultFilters: [
+				{
+					field: 'costAllocations.paymentId',
+					value: rest.paymentId,
+					isArrayKey: true,
+				},
+			],
 		});
 	}, [rest.paymentId, searchTapValue.value]);
 
@@ -307,27 +322,6 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
 												contactData={rest.contactData}
 											/>
 										)}
-										{searchTapValue.value === 'activities' && (
-											<ActivitiesTable
-												esIndex={'activities_flat'}
-												id="activitiesInterestsTable"
-												searchFields={['name', '_all']}
-												filtersChange={() => {}}
-												appliedFilters={[
-													{
-														field: 'contactName.keyword',
-														value: rest.contactData?.name,
-													},
-												]}
-												filterToggle={() => {}}
-												targetLabel={'activitiesDashboard'}
-												header="Activities"
-												addAble={{ type: 'contactActivity' }}
-												onAddActivity={rest.onAddActivity}
-												dialogType="activitySideDialog"
-												applyCustomClasses
-											/>
-										)}
 										{searchTapValue.value === 'taxRollInterests' && (
 											<ContactTaxRollInterestTable
 												parent="assocTaxRollInterests"
@@ -374,22 +368,6 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
 										{searchTapValue.value === 'documents' && (
 											<ContactDocumentsProvider contactId={rest.contactData._id} />
 										)}
-										{searchTapValue.value === 'relatedContacts' && (
-											<RelatedContactsTable contactId={rest.contactData._id} />
-										)}
-										{searchTapValue.value === 'relatedAgreements' && (
-											<ContactRelatedAgreementTable
-												dense
-												moduleId={rest.contactData._id}
-												setDrawer={rest.setDrawer}
-												setCounter={() => {}}
-												esFilters={[{ field: 'contact._id', value: rest.contactData._id }]}
-												targetLabel="Shape"
-												setESFilters={() => {}}
-												onTractCount={() => {}}
-											/>
-										)}
-
 										{searchTapValue.value === 'payees' && (
 											<MRTTable name={'RelatedPayeesTable'} overrideMeta={overrideMetaRelatedPayees} />
 										)}

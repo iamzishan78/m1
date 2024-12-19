@@ -8,11 +8,10 @@ import moment from 'moment';
 import get from 'lodash/get';
 
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import { getFilters } from 'components/Table/Activities/ActivitiesTable';
 import { AppContext } from 'AppContext';
 import { CUSTOM_DATES } from 'utils/data';
 import { useSelector } from 'react-redux';
-import { handleCustomDateTypeChange } from 'utils/helper';
+import { getActivityAnalyticsFilters, handleCustomDateTypeChange } from 'utils/helper';
 import { esIndexFilterKeyMap } from 'utils/data';
 import { getActivityFilters } from './ActivitiesDashboard';
 
@@ -256,7 +255,7 @@ const CampaignFilter = ({
 	const getAllFilters = () => {
 		let rangeFilters = [];
 		if (!tableFilters.find(filter => filter.type === 'range')) {
-			rangeFilters = getFilters(appliedFilters);
+			rangeFilters = getActivityAnalyticsFilters(appliedFilters);
 			if (esIndex === 'activities_flat') {
 				rangeFilters = getActivityFilters(appliedFilters);
 			}
@@ -352,7 +351,7 @@ const QualifierFilter = ({
 			if (esIndex === 'contacts_flat') {
 				appliedFilters.filter = 'audit';
 			}
-			rangeFilters = getFilters(appliedFilters);
+			rangeFilters = getActivityAnalyticsFilters(appliedFilters);
 			if (esIndex === 'activities_flat') {
 				rangeFilters = getActivityFilters(appliedFilters);
 			}

@@ -501,6 +501,7 @@ const tableESStateControllerHandler = state => ({
 		const TableSchema = state.TableSchema.get({ noproxy: true }) || [];
 		const filter = copy(_filter);
 		const column = TableSchema?.find(column => column.id === filter.field || column.accessorKey === filter.field);
+		if (column?.isArrayKey) filter.isArrayKey = true;
 		if (column?.type === 'date') {
 			filter.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 			if (filter.type !== 'advanced' || (filter.type === 'advanced' && !filter.searchType)) {

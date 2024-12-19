@@ -4,6 +4,7 @@ import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { IconButton, Tooltip } from '@mui/material';
 import DeleteIcon from '@material-ui/icons/Delete';
 import _ from 'lodash';
+import { Typography } from '@material-ui/core';
 
 import GridView from 'components/MRTTable/Common/GridView';
 import TabHeader from 'components/Common/MRTable/TabHeader';
@@ -133,6 +134,9 @@ function ToolbarActions({ table, tableKey, children }) {
 					alignItems: 'center',
 				}}
 			>
+				<Typography variant="h5" style={{ fontWeight: 'bold', marginRight: '5px' }}>
+					{tableStateValues.tableHeading}
+				</Typography>
 				<TabHeader labels={tableStateValues.tabLabels} />
 				{tableStateValues.gridViewSettings && !isSomethingSelected && (
 					<GridView tableKey={tableKey} {...tableStateValues.gridViewSettings} />

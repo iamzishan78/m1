@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 
 import TabButtons from 'components/Shared/TabPanels/TabButtons';
 import AssociatedWellsProductionTable from 'components/Table/Revenue/AssociatedWellsProductionTable';
-import SalesProductionVolume from 'components/Table/Revenue/SalesProductionVolume';
+import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+import TabPanels from 'components/Shared/TabPanels';
+import MRTTable from 'components/MRTTable';
 
 const ValidationGrids = ({ associatedWellIds, propertyId }) => {
-	const [selectedTab, setSelectedTab] = useState(1);
+	const setSelectedTab = simpleTableGlobalController.setSelectedTab;
+	const {
+		stateValues: { tabKey: selectedTab },
+	} = simpleTableGlobalController.useState(['tabKey']);
 
 	const Header = () => (
 		<TabButtons
@@ -17,24 +22,28 @@ const ValidationGrids = ({ associatedWellIds, propertyId }) => {
 		/>
 	);
 
+	const SalesVolumeOverrideMeta = useMemo(
+		() => ({
+			defaultFilters: [{ field: 'property._id', value: propertyId }],
+			tabLabels: ['Well Production', 'Sales vs Production Volumes'],
+		}),
+		[propertyId]
+	);
+
 	return (
-		<div className={`flex column justifyStart alignStart w-100`}>
-			{selectedTab === 0 && (
-				<AssociatedWellsProductionTable
-					targetLabel="propertyInterest"
-					parent="PropertyAssociatedWell"
-					header={<Header />}
-					associatedWellIds={associatedWellIds}
-				/>
-			)}
-			{selectedTab === 1 && (
-				<SalesProductionVolume
-					targetLabel="propertyInterest"
-					parent="PropertyAssociatedWell"
-					header={<Header />}
-					propertyId={propertyId}
-				/>
-			)}
+		<div>
+			<TabPanels
+				value={selectedTab}
+				panels={[
+					<AssociatedWellsProductionTable
+						targetLabel="propertyInterest"
+						parent="PropertyAssociatedWell"
+						header={<Header />}
+						associatedWellIds={associatedWellIds}
+					/>,
+					<MRTTable name="SalesVolumeComparisonTable" overrideMeta={SalesVolumeOverrideMeta} />,
+				]}
+			/>
 		</div>
 	);
 };
