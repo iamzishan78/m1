@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import CheckDetailsTable from 'components/Table/Revenue/CheckDetailsTable';
+import MRTTable from 'components/MRTTable';
 
 const useStyles = makeStyles(() => ({
 	sectionCard: {
@@ -11,21 +11,24 @@ const useStyles = makeStyles(() => ({
 		borderBottonLeftRadius: 8,
 		borderBottomRightRadius: 8,
 	},
-	titleField: {
-		padding: 10,
-	},
-	titleText: {
-		textTransform: 'uppercase',
-		margin: '5px 16px 10px',
-		fontWeight: 'bold',
-	},
 }));
 
 const CheckDetailsSection = ({ checkId }) => {
 	const classes = useStyles();
 	return (
-		<div className={`${classes.sectionCard} flex column justifyStart alignStart w-100`}>
-			<CheckDetailsTable parent="CheckDetailsTable" header="Check Details" checkId={checkId} />
+		<div className={`${classes.sectionCard}`}>
+			{/* Check details table */}
+			<MRTTable
+				name={'CheckDetailsTable'}
+				overrideMeta={{
+					defaultFilters: [
+						{
+							field: 'check._id.keyword',
+							value: checkId,
+						},
+					],
+				}}
+			/>
 		</div>
 	);
 };
