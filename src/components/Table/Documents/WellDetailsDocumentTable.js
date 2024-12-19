@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, ButtonGroup, Container } from '@material-ui/core';
-import TableHOC from 'components/Table/TableHOC';
 import PostAddIcon from '@material-ui/icons/PostAdd';
 import { tableGlobalController } from 'hookstate/tableController';
 
@@ -9,8 +8,6 @@ import { tableGlobalController } from 'hookstate/tableController';
 import { useLazyQuery } from '@apollo/client';
 import { GET_PARCELS_FILES } from 'graphQL/useQueryGetParcelFiles';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
-
-import { deepEqualObjects } from 'components/Shared/functions';
 import WellFile from 'components/Document/components/WellFile';
 
 import { AppContext } from 'AppContext';
@@ -139,4 +136,4 @@ function WellDetailsDocumentTable(props) {
 	);
 }
 
-export default React.memo(TableHOC(WellDetailsDocumentTable), deepEqualObjects);
+export default React.memo(WellDetailsDocumentTable);

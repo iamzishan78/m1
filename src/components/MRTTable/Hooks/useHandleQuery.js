@@ -74,7 +74,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			},
 			sort,
 			filters,
-			parent: tableStateValues.tableKey
+			parent: tableStateValues.tableKey,
 		};
 
 		if (tableStateValues.filterLayerType)

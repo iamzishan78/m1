@@ -40,8 +40,14 @@ import ExhibitAMeta from './exhibit_a_schema';
 import AcreageDetilsMeta from './acreage_details_schema';
 import ContactDetailUnitInterestMeta from './contactDetail_unit_interests_schema';
 import ContactDetailTractInterestMeta from './contactDetail_tract_interest_schema';
-import CheckDetailsMeta from './check_details_schema';
+import ContactDetailRelatedAgreementMeta from './contactDetail_related_agreements_schema';
+import ContactDetailRelatedContactMeta from './contactDetail_related_contacts_schema';
+import PropertyInterestDetailMeta from './property-interest-details-schema';
+import PropertyRevenueDetailMeta from './property-revenue-details-schema';
+import RelatedTractsMeta from './related_tracts_schema';
+import RelatedWellsMeta from './related_wells_schema';
 import AuditReportingMeta from './audit_reporting_schema';
+import CheckDetailsMeta from './check_details_schema';
 
 export const SCHEMA = {
 	ActivityTable: ActivityMeta,
@@ -94,6 +100,15 @@ export const SCHEMA = {
 	TractInterestsTable: TractInterestsMeta, // Tracts Interest schema
 	ContactDetailUnitInterestTable: ContactDetailUnitInterestMeta,
 	ContactDetailTractInterestTable: ContactDetailTractInterestMeta,
-	CheckDetailsTable: CheckDetailsMeta, // revenue > statement > checkDetails
+	RelatedAgreementTable: ContactDetailRelatedAgreementMeta,
+	ContactDetailAgreementsTable: ContactDetailRelatedAgreementMeta,
+	PropertyRelatedAgreementTable: ContactDetailRelatedAgreementMeta, //property detail =>  related agreement grid
+	ContactDetailActivitiesTable: ActivitiesMeta,
+	ContactDetailContactsTable: ContactDetailRelatedContactMeta,
+	PropertyInterestDetailTable: PropertyInterestDetailMeta, //property detail =>  interest detail grid
+	PropertyRevenueDetailTable: PropertyRevenueDetailMeta, //property detail =>  revenue detail grid
+	RelatedTractsTable: RelatedTractsMeta,
+	RelatedWellsTable: RelatedWellsMeta,
 	AuditReportingTable: AuditReportingMeta, // Revenue Statement grid => revenue/statements
+	CheckDetailsTable: CheckDetailsMeta, // revenue > statement > checkDetails
 };

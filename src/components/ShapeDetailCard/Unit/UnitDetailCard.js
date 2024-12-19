@@ -9,11 +9,10 @@ import Taps from 'components/Shared/Taps';
 import TabPanels from 'components/Shared/TabPanels';
 import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
-import RelatedDetailsDocumentTable from 'components/Table/Documents/RelatedDetailsDocumentTable';
-import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
+import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
 import TabButtons from 'components/Shared/TabPanels/TabButtons';
 import UnitSummary from './UnitSummary';
-import ShapeWellInterestTable from 'components/Table/Shape/ShapeWellInterestTable';
 import AssociatedWellsShapeTable from 'components/Table/Wells/AssociatedWellsShapeTable';
 import AssociatedTractsShapeTable from 'components/Table/Wells/AssociatedTractsShapeTable';
 import Tags from 'components/Shared/Tagger';
@@ -224,15 +223,37 @@ export default function UnitDetailCard(props) {
 		});
 	};
 
-	function DocumentHeader() {
-		const classes = detailCardStyles();
-		return (
-			<div className={classes.documentHeader}>
-				<DescriptionOutlinedIcon />
-				<span>Documents</span>
-			</div>
-		);
-	}
+	const RelatedDocumentsOverrideMeta = useMemo(
+		() => ({
+			maxTableHeight: 'calc(50vh - 100px)',
+			defaultFilters: [{ field: 'shapeObj._id', value: uniObj?._id }],
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: uniObj?._id },
+			},
+			customValue: { parentRecord: uniObj?._id },
+			columnReordering: false,
+		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[uniObj?._id]
+	);
+
+	const RelatedWellsOverrideMeta = useMemo(
+		() => ({
+			maxTableHeight: 'calc(50vh - 100px)',
+			tabLabels: ['Unit Wells', 'Potential Wells'],
+			defaultFilters: [{ field: 'shape._id', value: uniObj?._id }],
+			customProps: { customLayer: uniObj, shapeType: 'Unit' },
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: uniObj?._id },
+			},
+			customValue: { parentRecord: uniObj?._id },
+			columnReordering: false,
+		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[uniObj?._id]
+	);
 
 	function RunsheetHeader() {
 		const classes = detailCardStyles();
@@ -269,137 +290,131 @@ export default function UnitDetailCard(props) {
 	}
 
 	return uniObj ? (
-		<Grid item sm={12} container className={classes.gridWidthScroll}>
-			<Grid item xs={12} style={{ padding: '10px 15px 0px 15px' }} className={classes.border}>
-				<div className={classes.tags}>
-					<Tags width="100%" targetSourceId={props.id} targetLabel="unit" publicLeftBottom hideCheckBox />
-				</div>
-			</Grid>
-			<Grid item sm={12}>
-				<Taps
-					tabLabels={['Summary', 'Interest Owners', 'Runsheet', 'Wells', 'Tracts', 'Agreements', 'Documents']}
-					openTabIdex={selectedTab}
-					tabPanels={[
-						<div
-							style={{
-								height: 'calc(100vh - 285px)',
-								overflow: 'overlay',
-							}}
-						>
-							<UnitSummary
-								properties={properties}
-								setProperties={setProperties}
-								updateProperties={updateProperties}
-								updateCustomProperties={updateCustomProperties}
-								id={props.id}
-								customLayer={uniObj}
-								updating={updatingLayer}
-							/>
-						</div>,
-						<TabPanels
-							value={selectedTab}
-							panels={[
-								<div>
-									<MRTTable name="OwnersPerUnitTable" overrideMeta={overrideMeta} />
-								</div>,
-								<div>
-									<MRSimpleTable
-										name={potentialOwnerTableKey}
-										overrideMeta={{
-											tabLabels: ['Unit Ownership', 'Potential Ownership'],
-											customProps: {
-												customLayer: uniObj,
-												year: 2023,
-												filterByWells: false,
-											},
-										}}
-									/>
-								</div>,
-							]}
-						/>,
-						<div className={showSummary ? classes.subContent : classes.subContent2}>
-							<ParcelAgreementTable
-								esIndex="runsheetinstrument_flat"
-								parent="associatedRunsheetPerParcel"
-								targetLabel="parcelRunsheet"
-								customLayer={copy(uniObj)}
-								dense
-								header={<RunsheetHeader />}
-								isCheckboxSticky={true}
-							/>
-						</div>,
-						<TabPanels
-							value={selectedWellTab}
-							panels={[
-								<div className={showSummary ? classes.subContent : classes.subContent2}>
-									<DrawerContextProvider>
-										<ShapeWellInterestTable
+		<DrawerContextProvider>
+			<Grid item sm={12} container className={classes.gridWidthScroll}>
+				<Grid item xs={12} style={{ padding: '10px 15px 0px 15px' }} className={classes.border}>
+					<div className={classes.tags}>
+						<Tags width="100%" targetSourceId={props.id} targetLabel="unit" publicLeftBottom hideCheckBox />
+					</div>
+				</Grid>
+				<Grid item sm={12}>
+					<Taps
+						tabLabels={['Summary', 'Interest Owners', 'Runsheet', 'Wells', 'Tracts', 'Agreements', 'Documents']}
+						openTabIdex={selectedTab}
+						tabPanels={[
+							<div
+								style={{
+									height: 'calc(100vh - 285px)',
+									overflow: 'overlay',
+								}}
+							>
+								<UnitSummary
+									properties={properties}
+									setProperties={setProperties}
+									updateProperties={updateProperties}
+									updateCustomProperties={updateCustomProperties}
+									id={props.id}
+									customLayer={uniObj}
+									updating={updatingLayer}
+								/>
+							</div>,
+							<TabPanels
+								value={selectedTab}
+								panels={[
+									<div>
+										<MRTTable name="OwnersPerUnitTable" overrideMeta={overrideMeta} />
+									</div>,
+									<div>
+										<MRSimpleTable
+											name={potentialOwnerTableKey}
+											overrideMeta={{
+												tabLabels: ['Unit Ownership', 'Potential Ownership'],
+												customProps: {
+													customLayer: uniObj,
+													year: 2023,
+													filterByWells: false,
+												},
+											}}
+										/>
+									</div>,
+								]}
+							/>,
+							<div className={showSummary ? classes.subContent : classes.subContent2}>
+								<ParcelAgreementTable
+									esIndex="runsheetinstrument_flat"
+									parent="associatedRunsheetPerParcel"
+									targetLabel="parcelRunsheet"
+									customLayer={copy(uniObj)}
+									dense
+									header={<RunsheetHeader />}
+									isCheckboxSticky={true}
+								/>
+							</div>,
+							<TabPanels
+								value={selectedWellTab}
+								panels={[
+									<div className={showSummary ? classes.subContent : classes.subContent2}>
+										<RelatedWellsTable
+											id="relatedWellsTable"
+											overrideMeta={RelatedWellsOverrideMeta}
+											shapeType="Unit"
+											customLayer={uniObj}
+										/>
+									</div>,
+									<div className={showSummary ? classes.subContent : classes.subContent2}>
+										<AssociatedWellsShapeTable
 											customLayer={uniObj}
 											shapeType="Unit"
 											parent="associatedWellsPerUnits"
 											targetLabel="well"
 											header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
 											showTracks
+											setSelectedTab={setWellSelectedTab}
 											dense
 										/>
-									</DrawerContextProvider>
-								</div>,
-								<div className={showSummary ? classes.subContent : classes.subContent2}>
-									<AssociatedWellsShapeTable
-										customLayer={uniObj}
-										shapeType="Unit"
-										parent="associatedWellsPerUnits"
-										targetLabel="well"
-										header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
-										showTracks
-										setSelectedTab={setWellSelectedTab}
-										dense
-									/>
-								</div>,
-							]}
-						/>,
-						<TabPanels
-							value={selectedTab}
-							panels={[
-								<MRTTable
-									name="UnitTractTable"
-									overrideMeta={{
-										tabLabels: ['Unit Tracts', 'Potential Tracts'],
-										defaultFilters: [{ field: 'shape._id', value: dataCustomLayer?.customLayer?._id }],
-										customProps: {
-											customLayer: uniObj,
-										},
-									}}
-								/>,
-								<div>
-									<AssociatedTractsShapeTable
-										customLayer={uniObj}
-										shapeType="Unit"
-										header={<TractHeader selectedTractTab={selectedTab} setTractSelectedTab={setSelectedTab} />}
-										setSelectedTab={setTractSelectedTab}
-										dense
-									/>
-								</div>,
-							]}
-						/>,
-						<div>
-							<MRTTable name="UnitRelatedAgreementTable" overrideMeta={RelatedAgreementOverrideMeta} />
-						</div>,
-						<div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
-							<RelatedDetailsDocumentTable
-								customLayer={uniObj}
-								relatedObjectType="Shape"
-								name="Unit"
-								header={<DocumentHeader />}
-								addAble={{ type: 'UnitDocument' }}
-								dense
-								targetLabel="documents"
-							/>
-						</div>,
-					]}
-				/>
+									</div>,
+								]}
+							/>,
+							<TabPanels
+								value={selectedTab}
+								panels={[
+									<MRTTable
+										name="UnitTractTable"
+										overrideMeta={{
+											tabLabels: ['Unit Tracts', 'Potential Tracts'],
+											defaultFilters: [{ field: 'shape._id', value: dataCustomLayer?.customLayer?._id }],
+											customProps: {
+												customLayer: uniObj,
+											},
+										}}
+									/>,
+									<div>
+										<AssociatedTractsShapeTable
+											customLayer={uniObj}
+											shapeType="Unit"
+											header={<TractHeader selectedTractTab={selectedTab} setTractSelectedTab={setSelectedTab} />}
+											setSelectedTab={setTractSelectedTab}
+											dense
+										/>
+									</div>,
+								]}
+							/>,
+							<div>
+								<MRTTable name="UnitRelatedAgreementTable" overrideMeta={RelatedAgreementOverrideMeta} />
+							</div>,
+							<div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
+								<RelatedDocumentsTable
+									id="relatedDocumentsTable"
+									moduleId={uniObj?._id}
+									overrideMeta={RelatedDocumentsOverrideMeta}
+									relatedObjectType="Shape"
+								/>
+							</div>,
+						]}
+					/>
+				</Grid>
 			</Grid>
-		</Grid>
+		</DrawerContextProvider>
 	) : (
 		<div style={{ padding: '20px', position: 'absolute', height: '100%', width: '100%' }}>
 			<CircularProgress size={80} disableShrink color="secondary" />
