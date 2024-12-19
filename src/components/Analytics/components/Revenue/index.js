@@ -11,7 +11,6 @@ import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from 'graphQL/useQueryGetPortfoli
 import CustomDates from 'components/Revenue/components/Common/CustomDates';
 import DetailTabsSection from 'components/Analytics/components/Revenue/DetailTabsSection';
 import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
-import CheckDetailsSection from './CheckDetailsSection';
 import AnalyticsCards from './Analytics';
 import LastCheckDateFilter from 'components/Revenue/components/Common/LastCheckDateFilter';
 
@@ -44,14 +43,6 @@ const useStyles = makeStyles(theme => ({
 	divider: {
 		height: '10px',
 		backgroundColor: '#f3f3f3',
-	},
-
-	sectionCard: {
-		'& div': {
-			'&>.MuiPaper-root': {
-				'&>:nth-child(3)': { minHeight: 'calc(100vh - 265px) !important', maxHeight: '35vh' },
-			},
-		},
 	},
 
 	revenueTableInfContainer: {
@@ -436,8 +427,8 @@ export default function RevenueAnalytics(props) {
 			)}
 
 			{tabs[tab] === 'Check Details' && (
-				<div className={`${classes.sectionCard}`}>
-					<CheckDetailsSection header="Check Details" loadMore={loadMore} />
+				<div>
+					<MRTTable name={'RevenueCheckDetailTable'} />
 				</div>
 			)}
 
