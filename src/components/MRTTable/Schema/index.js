@@ -46,6 +46,7 @@ import PropertyInterestDetailMeta from './property-interest-details-schema';
 import PropertyRevenueDetailMeta from './property-revenue-details-schema';
 import RelatedTractsMeta from './related_tracts_schema';
 import RelatedWellsMeta from './related_wells_schema';
+import AuditReportingMeta from './audit_reporting_schema';
 
 export const SCHEMA = {
 	ActivityTable: ActivityMeta,
@@ -107,4 +108,5 @@ export const SCHEMA = {
 	PropertyRevenueDetailTable: PropertyRevenueDetailMeta, //property detail =>  revenue detail grid
 	RelatedTractsTable: RelatedTractsMeta,
 	RelatedWellsTable: RelatedWellsMeta,
+	AuditReportingTable: AuditReportingMeta, // Revenue Statement grid => revenue/statements
 };

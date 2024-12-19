@@ -130,7 +130,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 				variables: {
 					search: {
 						fields: ['name', '_all'],
-						query: stateApp.activitySearchQuery,
+						query: stateApp.landAnalyticsSearchQuery,
 					},
 					filters: getAllFilters(),
 				},
@@ -263,11 +263,9 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 							)}
 							{activeModule.title === 'Audit Reporting' && (
 								<DonutChart
-									height={240}
-									marginTop={-15}
-									options={{
-										legend: { display: false, labels: { display: false } },
-									}}
+									height={220}
+									marginTop={-20}
+									islegendEnabled={false}
 									data={[
 										{
 											title: '',

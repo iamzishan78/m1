@@ -2,7 +2,7 @@ import React from 'react';
 
 import ReactApexChart from 'react-apexcharts';
 
-const DonutChart = ({ data, height, marginTop }) => {
+const DonutChart = ({ data, height, marginTop, islegendEnabled = true }) => {
 	const series = data.map(r => r.value);
 	const options = {
 		labels: data.map(r => r.title),
@@ -22,6 +22,7 @@ const DonutChart = ({ data, height, marginTop }) => {
 		},
 		legend: {
 			position: 'bottom',
+			show: islegendEnabled,
 		},
 	};
 
