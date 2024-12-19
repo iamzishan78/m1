@@ -238,7 +238,7 @@ export default function Navigation(props) {
 								)) && <ContactSearch />}
 							{location.pathname.includes('/contact/details') && <ContactBreadcrumbs />}
 
-							{['/analytics/revenues', '/analytics', '/analytics/land'].includes(location.pathname) && (
+							{['/analytics/revenues', '/analytics', '/analytics/land', "/analytics/audit"].includes(location.pathname) && (
 								<AnalyticsSearch classes={classes} user={stateApp.user} />
 							)}
 							{/* <Typography

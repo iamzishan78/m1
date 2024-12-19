@@ -419,7 +419,11 @@ function MapGridCard(props) {
 											M1 Platform
 										</Typography>
 
-										<List component="nav" aria-label="main mailbox folders">
+										<List
+											component="nav"
+											aria-label="main mailbox folders"
+											style={{ height: 'calc(50vh - 29px)', overflowY: 'auto' }}
+										>
 											{[...platformDataWellsInitialData, ...snapGridSideBarData].map(row => {
 												const Icon = row.Icon;
 												return (
@@ -452,7 +456,11 @@ function MapGridCard(props) {
 												{mapControlsStateValues.selectedDataset?.name}
 											</Typography>
 
-											<List component="nav" aria-label="main mailbox folders">
+											<List
+												component="nav"
+												aria-label="main mailbox folders"
+												style={{ height: 'calc(50vh - 29px)', overflowY: 'auto' }}
+											>
 												{mapControlsStateValues.selectedDataset?.categories.map(row => {
 													const Icon = mapControlsStateValues.selectedDataset?.Icon;
 													return (

@@ -41,6 +41,7 @@ import AcreageDetilsMeta from './acreage_details_schema';
 import ContactDetailUnitInterestMeta from './contactDetail_unit_interests_schema';
 import ContactDetailTractInterestMeta from './contactDetail_tract_interest_schema';
 import CheckDetailsMeta from './check_details_schema';
+import AuditReportingMeta from './audit_reporting_schema';
 
 export const SCHEMA = {
 	ActivityTable: ActivityMeta,
@@ -94,4 +95,5 @@ export const SCHEMA = {
 	ContactDetailUnitInterestTable: ContactDetailUnitInterestMeta,
 	ContactDetailTractInterestTable: ContactDetailTractInterestMeta,
 	CheckDetailsTable: CheckDetailsMeta, // revenue > statement > checkDetails
+	AuditReportingTable: AuditReportingMeta, // Revenue Statement grid => revenue/statements
 };
