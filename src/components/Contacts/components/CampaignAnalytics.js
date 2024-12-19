@@ -7,7 +7,7 @@ import vf_number from 'components/Shared/valueformatters/vf_number';
 
 // Queries
 import { GET_CAMPAIGN_ANALYTICS } from 'graphQL/useQueryCampaignAnalytics';
-import { getFilters } from 'utils/helper';
+import { getActivityAnalyticsFilters } from 'utils/helper';
 
 const useStyles = makeStyles(() => ({
 	card: { borderRadius: '8px' },
@@ -69,7 +69,7 @@ export default function CampaignAnalytics({ appliedFilters, contactSearchQuery }
 					fields: ['name.keyword', 'status.keyword', 'owner.name.keyword', 'tags.tag.keyword'],
 					query,
 				},
-				filters: getFilters(appliedFilters),
+				filters: getActivityAnalyticsFilters(appliedFilters),
 			},
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps

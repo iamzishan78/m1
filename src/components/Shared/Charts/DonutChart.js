@@ -22,7 +22,7 @@ const DonutChart = ({ data, height, marginTop, islegendEnabled = true }) => {
 		},
 		legend: {
 			position: 'bottom',
-			show: islegendEnabled
+			show: islegendEnabled,
 		},
 	};
 

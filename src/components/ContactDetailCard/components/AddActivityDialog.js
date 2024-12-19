@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useContext } from 'react';
 import clsx from 'clsx';
 import { useLazyQuery, useMutation } from '@apollo/client';
@@ -17,8 +18,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import Select from '@material-ui/core/Select';
 import Grid from '@material-ui/core/Grid';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { AppContext } from 'AppContext';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
@@ -30,6 +29,7 @@ import DeleteConfirmationDialogContent from '../../Shared/M1nTable/components/Su
 import { DELETEACTIVITY } from 'graphQL/useMutationActivity';
 import { outcomeOptions } from './FieldContent/helper';
 import AutoCompleteAddNewField from './FieldContent/AutoCompleteAddNewField';
+import { tableGlobalController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -43,9 +43,6 @@ const useStyles = makeStyles(theme => ({
 	},
 	dialogContentText: {
 		textAlign: 'center',
-	},
-	inputField: {
-		marginBottom: '30px',
 	},
 	inputFieldDateRoot: {
 		'& .MuiDialog-root': {
@@ -200,8 +197,7 @@ function AddActivityDialog(props) {
 	});
 
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-	const [isDeleting, setIsDeleting] = useState(false);
-	const [deleteActivityMutation, { loading: deleteLoading }] = useMutation(DELETEACTIVITY, {
+	const [deleteActivityMutation] = useMutation(DELETEACTIVITY, {
 		refetchQueries: ['getContact', 'getAllActivities', 'getContactSummary'],
 		awaitRefetchQueries: true,
 	});
@@ -233,7 +229,7 @@ function AddActivityDialog(props) {
 	}, [userLists]);
 
 	const [openDeals, setOpenDeals] = useState([]);
-	const [getOpenDeals, { loading: tloading, data: dealsData }] = useLazyQuery(OPENDEALS, {
+	const [getOpenDeals, { data: dealsData }] = useLazyQuery(OPENDEALS, {
 		fetchPolicy: 'network-only',
 	});
 
@@ -250,8 +246,11 @@ function AddActivityDialog(props) {
 	}, [dealsData]);
 
 	const [addActivityMutation, { loading: addLoading }] = useMutation(ADDACTIVITY, {
-		refetchQueries: ['getContact', 'getAllActivities', 'getMelissaRecordsCountForContactIds'],
+		refetchQueries: ['getContact', 'getAllActivities', 'getMelissaRecordsCountForContactIds', 'getESSimpleSearch'],
 		awaitRefetchQueries: true,
+		onCompleted: () => {
+			tableGlobalController.refetch();
+		},
 	});
 
 	const [updateActivityMutation, { loading: updateLoading }] = useMutation(UPDATEACTIVITY, {
@@ -405,25 +404,19 @@ function AddActivityDialog(props) {
 	};
 
 	const deleteFunc = async () => {
-		try {
-			setIsDeleting(true);
-			await deleteActivityMutation({
-				variables: {
-					id: selectedActivity._id,
-				},
-			}).then(result => {
-				const {
-					data: { deleteActivity },
-				} = result;
-				if (deleteActivity?.success === true) {
-					dispatch(showSuccessMessage('The Activity was successfully deleted.'));
-					onModalClose();
-				} else dispatch(showErrorMessage('An error occurred.'));
-			});
-			setIsDeleting(false);
-		} catch {
-			setIsDeleting(false);
-		}
+		await deleteActivityMutation({
+			variables: {
+				id: selectedActivity._id,
+			},
+		}).then(result => {
+			const {
+				data: { deleteActivity },
+			} = result;
+			if (deleteActivity?.success === true) {
+				dispatch(showSuccessMessage('The Activity was successfully deleted.'));
+				onModalClose();
+			} else dispatch(showErrorMessage('An error occurred.'));
+		});
 	};
 
 	const handleMenuClick = event => {

@@ -51,7 +51,6 @@ import MapImgViewIcon from 'components/Shared/svgIcons/MapImgViewIcon';
 import MapProvider from 'components/Map/MapProvider';
 import { DrawerContext } from './DrawerContext';
 import RelatedDocumets from './relatedDocuments';
-import RelatedFile from 'components/Document/components/RelatedFile';
 import { jobController } from 'hookstate/jobStateController';
 import RelatedPayments from './relatedPayments';
 import { detailCardController } from 'hookstate/detailCardController';
@@ -185,7 +184,7 @@ const useStyles = makeStyles(theme => ({
 	},
 	tabsDetailContainer: ({ drawer }) => ({
 		padding: 20,
-		width: !!drawer ? 'calc(100% - 644px)' : '100%',
+		width: '100%',
 	}),
 	menuIcon: {
 		marginLeft: 10,
@@ -697,51 +696,31 @@ export function DetailComponents(props) {
 					{stateApp.viewDoc && <DocViewer divCondition={true} DocStyle={{ height: 'calc(100vh - 280px)' }} />}
 				</div>
 
-				<div
-					style={{
-						marginTop: 20,
-						marginRight: 24,
-						height: 'calc(100vh - 270px)',
-						overflow: 'auto',
-						width: !!drawer ? 620 : 0,
-						background: 'white',
-					}}
-					id={'agreementDetailsDrawer'}
-				>
-					{drawer === 'meta' && (
-						<MetadataDrawer
-							setCollapse={value => setDrawer(!value)}
-							targetSourceId={agreementId}
-							data={agreementDetails}
-							targetLabel="Shape"
-							showDescription={false}
-							descriptionKey="description"
-							ownerPlaceHolder="Assign Approver"
-							ownerTitle="Approver"
-							onUpdate={data => Object.keys(data).forEach(key => updateAgreement(key, data[key]))}
-							isSource={false}
-							shapeType="Agreement"
-							shapeData={activeAgreement}
-							isApproval
-							showCommentType
-						/>
-					)}
-					{drawer === 'agrmt' && (
-						<AddNewRelatedAgreementDialog
-							customLayerId={get(dataCustomLayer, 'customLayer._id')}
-							setDrawer={setDrawer}
-							parentType="Agreement"
-						/>
-					)}
-
-					{drawer === 'dcmnt' && (
-						<RelatedFile
-							relatedObjectType="Shape"
-							relatedObjectId={get(dataCustomLayer, 'customLayer._id')}
-							setShowDocumentSlider={setDrawer}
-						/>
-					)}
-				</div>
+				{drawer === 'meta' && (
+					<MetadataDrawer
+						setCollapse={value => setDrawer(!value)}
+						targetSourceId={agreementId}
+						data={agreementDetails}
+						targetLabel="Shape"
+						showDescription={false}
+						descriptionKey="description"
+						ownerPlaceHolder="Assign Approver"
+						ownerTitle="Approver"
+						onUpdate={data => Object.keys(data).forEach(key => updateAgreement(key, data[key]))}
+						isSource={false}
+						shapeType="Agreement"
+						shapeData={activeAgreement}
+						isApproval
+						showCommentType
+					/>
+				)}
+				{drawer === 'agrmt' && (
+					<AddNewRelatedAgreementDialog
+						customLayerId={get(dataCustomLayer, 'customLayer._id')}
+						setDrawer={setDrawer}
+						parentType="Agreement"
+					/>
+				)}
 			</div>
 
 			{/**
