@@ -20,7 +20,6 @@ import ContactDetailsProvider from './components/ContactDetailCard/ContactDetail
 import ContactParcelsInterestProvider from './components/ParcelsDetailCard/ContactParcelsInterestProvider';
 import ContactParcelsInterestDetailsProvider from './components/ParcelsDetailCard/ContactParcelsInterestDetailsProvider';
 import ContactUnitsInterestDetailsProvider from './components/ShapeDetailCard/Unit/ContactUnitsInterestDetailsProvider';
-import ContactWellInterestProvider from './components/ContactDetailCard/components/ContactsWellInterestsParcelInterests/ContactWellInterestProvider';
 import ContactDocumentsProvider from './components/ViewDocuments/ContactDocumentsProvider';
 import ContactDetailedInfoProvider from './components/ContactDetailedInfo/ContactDetailedInfoProvider';
 import ContactRecentActivitiesProvider from './components/RecentActivities/ContactRecentActivitiesProvider';
@@ -114,7 +113,6 @@ function App() {
 							/>
 							<PrivateRoute exact path="/contact/details/:contactId/documents" component={ContactDocumentsProvider} />
 							<PrivateRoute title="Analytics" path="/analytics" component={AnalyticsProvider} />
-							<PrivateRoute exact path="/contact/details/:contactId/wells" component={ContactWellInterestProvider} />
 							<PrivateRoute
 								exact
 								path="/contact/details/:contactId/parcels"

@@ -3,7 +3,6 @@ import { useHistory } from 'react-router-dom';
 import ContactWellInterestTable from 'components/Table/Contact/ContactWellInterestTable';
 import ContactParcelInterestTable from 'components/Table/Contact/ContactParcelInterestTable';
 import ContactTaxRollInterestTable from 'components/Table/Contact/ContactTaxRollInterestTable';
-import UnitInterestsTable from '../../../Table/Unit/UnitInterestsTable';
 import TabPanels from 'components/Shared/TabPanels';
 import TabButtons from 'components/Shared/TabPanels/TabButtons';
 import { makeStyles } from '@material-ui/core/styles';
@@ -75,15 +74,6 @@ function ContactsWellInterestsParcelInterests(props) {
 							targetLabel="parcel"
 							contactId={props.contactData._id}
 							showTracks
-						/>,
-						<UnitInterestsTable
-							parent="assocTaxRollInterests"
-							header={<Header />}
-							targetLabel="unit"
-							esFilters={[{ field: 'contact._id.keyword', value: props.contactData._id }]}
-							esIndex="shapeowners_flat"
-							setESFilters={() => {}}
-							onTractCount={() => {}}
 						/>,
 					]}
 				/>

@@ -7,13 +7,6 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { setMapGridCardState } from 'actions';
 import OwnersSummaryCard from 'components/OwnersSummaryCard/OwnersSummaryCard';
 import { TabPanel } from 'components/Shared/TabPanels';
-import ContactDetailedInfo from 'components/ContactDetailedInfo/ContactDetailedInfo';
-import ContactWellInterestTable from 'components/Table/Contact/ContactWellInterestTable';
-import ContactParcelInterestTable from 'components/Table/Contact/ContactParcelInterestTable';
-import ContactTaxRollInterestTable from 'components/Table/Contact/ContactTaxRollInterestTable';
-import UnitInterestsTable from 'components/Table/Unit/UnitInterestsTable';
-import ContactDealsProvider from 'components/DealsDetailCard/ContactDealsProvider';
-import ContactDocumentsProvider from 'components/ViewDocuments/ContactDocumentsProvider';
 
 import { CircularProgress, Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 
@@ -315,59 +308,6 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
 
 								<Grid item md={10} style={{ padding: '0px' }}>
 									<div style={{ position: 'relative' }} classes={classes.gridTables}>
-										{searchTapValue.value === 'contactInformation' && (
-											<ContactDetailedInfo
-												user={stateApp.user}
-												purchaseData={rest.purchaseData}
-												contactData={rest.contactData}
-											/>
-										)}
-										{searchTapValue.value === 'taxRollInterests' && (
-											<ContactTaxRollInterestTable
-												parent="assocTaxRollInterests"
-												id="taxInterestsTable"
-												header={'Tax Roll Interests'}
-												targetLabel="well"
-												contactId={rest.contactData._id}
-												showTracks
-											/>
-										)}
-										{searchTapValue.value === 'wellInterests' && (
-											<ContactWellInterestTable
-												parent="assocTaxRollInterests"
-												header={'Well Interests'}
-												targetLabel="well"
-												contactId={rest.contactData._id}
-												id="wellInterestsTable"
-												showTracks
-											/>
-										)}
-										{searchTapValue.value === 'unitInterests' && (
-											<UnitInterestsTable
-												parent="assocTaxRollInterests"
-												header={'Unit Interests'}
-												targetLabel="contactUnits"
-												id="unitInterestTable"
-												esFilters={[{ field: 'contact._id', value: rest.contactData._id }]}
-												esIndex="shapeowners_flat"
-												setESFilters={() => {}}
-												onTractCount={() => {}}
-											/>
-										)}
-										{searchTapValue.value === 'tractInterests' && (
-											<ContactParcelInterestTable
-												parent="contactAssocTaxRollInterests"
-												header={'Tract Interests'}
-												id="tractInterestTable"
-												targetLabel="parcel"
-												contactId={rest.contactData._id}
-												showTracks
-											/>
-										)}
-										{searchTapValue.value === 'deals' && <ContactDealsProvider />}
-										{searchTapValue.value === 'documents' && (
-											<ContactDocumentsProvider contactId={rest.contactData._id} />
-										)}
 										{searchTapValue.value === 'payees' && (
 											<MRTTable name={'RelatedPayeesTable'} overrideMeta={overrideMetaRelatedPayees} />
 										)}

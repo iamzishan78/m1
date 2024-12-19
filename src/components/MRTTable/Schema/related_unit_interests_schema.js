@@ -7,7 +7,7 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 
 const esIndex = 'shapeowners_flat';
 
-const ContactDetailUnitInterestMeta = {
+const RelatedlUnitInterestMeta = {
 	esIndex,
 	pageSize: 50,
 	pagination: {
@@ -19,14 +19,28 @@ const ContactDetailUnitInterestMeta = {
 	columnVirtualization: true,
 	TableSchema: [
 		{
-			...CommonSchema.HIDDEN,
+			...CommonSchema.MONGO_ID,
 			name: '_id',
 			accessorKey: '_id',
 		},
 
 		{
 			...CommonSchema.HIDDEN,
+			name: 'contact._id.keyword',
+			header: 'Contact ID',
+			accessorKey: 'contact._id',
+		},
+		{
+			...CommonSchema.HIDDEN,
+			name: 'customLayerId.keyword',
+			header: 'Custom Layer ID',
+			accessorKey: 'customLayerId',
+		},
+
+		{
+			...CommonSchema.HIDDEN,
 			name: 'ownerEntity',
+			header: 'Owner Entity',
 			accessorKey: 'ownerEntity',
 		},
 
@@ -117,6 +131,12 @@ const ContactDetailUnitInterestMeta = {
 			header: 'Tax Year',
 		},
 		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'dataSource.keyword',
+			accessorKey: 'dataSource',
+			header: 'Data Source',
+		},
+		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'working_interest',
 			accessorFn: row => row?.working_interest,
@@ -150,6 +170,19 @@ const ContactDetailUnitInterestMeta = {
 			accessorFn: row => row?.nra,
 			id: 'nra',
 			header: 'NRA',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'unitTractId.keyword',
+			accessorKey: 'unitTractId',
+			header: 'Unit Tract ID',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'tractAcres',
+			accessorKey: 'tractAcres',
+			header: 'Unit Tract Acres',
+			isSearchField: false,
 		},
 		{
 			...CommonSchema.CURRENCY_COLUMN,
@@ -195,6 +228,14 @@ const ContactDetailUnitInterestMeta = {
 			accessorFn: row => row?.campaignPriority,
 			id: 'campaignPriority',
 			header: 'Campaign Priority',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contact.ownerType.keyword',
+			accessorKey: 'contact.ownerType',
+			header: 'Owner Type',
+			isHiddenFieldExport: true,
+			hidden: true,
 		},
 
 		{
@@ -247,4 +288,4 @@ const ContactDetailUnitInterestMeta = {
 	],
 };
 
-export default ContactDetailUnitInterestMeta;
+export default RelatedlUnitInterestMeta;

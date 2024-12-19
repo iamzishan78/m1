@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { AppContext } from 'AppContext';
 import { get } from 'lodash';
@@ -8,11 +8,11 @@ import { setMapGridCardState } from 'actions';
 import OwnersSummaryCard from 'components/OwnersSummaryCard/OwnersSummaryCard';
 import { TabPanel } from 'components/Shared/TabPanels';
 import ContactParcelInterestTable from 'components/Table/Contact/ContactParcelInterestTable';
-import UnitInterestsTable from 'components/Table/Unit/UnitInterestsTable';
 
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 import { contactDetailInitialData } from './data';
 import { mapControlsController } from 'hookstate/mapControlsController';
+import RelatedUnitInterestTable from 'components/Common/RelatedTables/Units/unitInterests';
 
 const useStyles = makeStyles(theme => ({
 	card: {
@@ -147,6 +147,20 @@ function AssociatedFlowDetails(props) {
 		// screenSizes
 	});
 
+	const relatedUnitInterestOverride = useMemo(
+		() => ({
+			tableHeading: 'Unit Interests',
+			maxTableHeight: 'calc(50vh - 100px)',
+			defaultFilters: [
+				{ field: 'contact._id', value: props.contacts },
+				{ field: 'deals._id', value: props.deal },
+				{ field: 'shape.layer.keyword', value: 'unit' },
+			],
+			refetchQueries: ['flowDealSummary'],
+		}),
+		[props.contacts, props.deal]
+	);
+
 	const handleSearchPanelChange = value => {
 		setSearchTapValue(value);
 		if (searchTapValue.index !== value.index) {
@@ -200,18 +214,9 @@ function AssociatedFlowDetails(props) {
 								<Grid item md={10} style={{ padding: '0px' }}>
 									<div style={{ position: 'relative' }} classes={classes.gridTables}>
 										{searchTapValue.value === 'unitInterests' && (
-											<UnitInterestsTable
-												parent="assocTaxRollInterests"
-												header={'Unit Interests'}
-												targetLabel="contactUnits"
-												id="unitInterestTable"
-												esFilters={[
-													{ field: 'contact._id', value: props.contacts },
-													{ field: 'deals._id', value: props.deal },
-												]}
-												esIndex="shapeowners_flat"
-												setESFilters={() => {}}
-												onTractCount={() => {}}
+											<RelatedUnitInterestTable
+												id="relatedUnitInterestsTable"
+												overrideMeta={relatedUnitInterestOverride}
 											/>
 										)}
 										{searchTapValue.value === 'parcelInterests' && (

@@ -13,7 +13,6 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { UPDATEWELLINTEREST } from 'graphQL/useMutationUpdateWellInterest';
 
 import { deepEqualObjects, setStateIfDeepEqual } from 'components/Shared/functions';
-// import AddWellInterestDialog from "components/ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog";
 
 // Header Schemas
 import TableHeader from 'components/Shared/constants/contact-tax-roll-header-schema.js';
@@ -46,7 +45,7 @@ function ContactTaxRollInterestTable(props) {
 	const classes = useStyles();
 
 	// contexts
-	const [stateApp, setStateApp] = useContext(AppContext);
+	const [stateApp] = useContext(AppContext);
 	const dispatch = useDispatch();
 
 	// function states
@@ -56,7 +55,6 @@ function ContactTaxRollInterestTable(props) {
 	const setColumns = newState => {
 		setStateIfDeepEqual(Columns, newState);
 	};
-	const [selectedYear, setSelectedYear] = useState(2023); // production selected year state
 
 	// queries
 	const [addMultiWellInterestToContact] = useMutation(ADD_MULTI_WELLINTEREST_TO_CONTACT);
@@ -91,6 +89,7 @@ function ContactTaxRollInterestTable(props) {
 				},
 			});
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.parent]);
 
 	useEffect(() => {
@@ -111,6 +110,7 @@ function ContactTaxRollInterestTable(props) {
 			props.setRows([]);
 			props.setLoading(false);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableData, props.dependencyUpdate]);
 
 	////////////Contact Wells end///////////////////////////////////////////////
@@ -172,11 +172,6 @@ function ContactTaxRollInterestTable(props) {
 		},
 	};
 
-	////////////-----Add your code section here-----///////////////////////
-	const getWellOwnersByYear = selectedYear => {
-		setSelectedYear(selectedYear);
-	};
-
 	const deleteFunc = ids => {
 		for (let i = 0; i < ids.length; i++) {
 			updateWellInterest({
@@ -228,7 +223,6 @@ function ContactTaxRollInterestTable(props) {
 				options={options}
 				parent={props.parent}
 				setColumnsBase={[]}
-				getWellOwnersByYear={getWellOwnersByYear}
 			/>
 		</Container>
 	);
