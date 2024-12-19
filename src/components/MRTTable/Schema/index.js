@@ -51,6 +51,7 @@ import PotentialOwnersMeta from './QuerySchema/potential_owners_schema';
 import UserManagementMeta from './QuerySchema/user_management_schema';
 import PropertiesRevenueMeta from './QuerySchema/properties_revenue_schema';
 
+
 export const SCHEMA = {
 	ActivityTable: ActivityMeta,
 	ContactTable: ContactMeta,
