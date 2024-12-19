@@ -15,6 +15,7 @@ import {
 } from 'components/MRTTable/utils/data';
 import { globalStateController } from './globalStateController';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
+import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 
 export const handleVisiblityMenu = () => {
 	const interval2 = setInterval(() => {
@@ -239,7 +240,7 @@ export const handleMRTSchema = ({
 		const columnMapView = mapViewFilters.find(
 			filter => filter?.field?.replace('.keyword', '') === schemaColumn?.name?.replace('.keyword', '')
 		);
-		if (!columnMapView) return schemaColumn;
+		if (!columnMapView || customLayersFieldAccessors[layerIdentifier]) return schemaColumn;
 
 		const updatedFilterModes = tableController(tableKey).setInitialFilterMode(
 			schemaColumn,

@@ -288,11 +288,23 @@ const useTableESSimple = tableKey => {
 							Controller.setColumnCheck(newstate);
 						},
 						onColumnFiltersChange: filtersFunc => {
-							const newFilters = filtersFunc(
-								(tableStateValues?.filters || []).map(filter => ({
-									...filter,
-									id: filter.field,
-								}))
+							const columnFilters = tableState.filters.get({ noproxy: true });
+
+							const formattedColumnFilters = (columnFilters || []).map(filter => ({
+								...filter,
+								id: filter.field,
+							}));
+
+							const _newFilters = filtersFunc(formattedColumnFilters);
+
+							const newFilters = _.values(
+								_.merge(
+									_.keyBy(
+										formattedColumnFilters.filter(filter => filter.isMapViewFilter),
+										'id'
+									),
+									_.keyBy(_newFilters, 'id')
+								)
 							);
 
 							const result = [];
