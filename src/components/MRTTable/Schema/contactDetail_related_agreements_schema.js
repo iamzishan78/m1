@@ -30,7 +30,7 @@ const ContactDetailRelatedAgreementMeta = {
 			...CommonSchema.INITAIL_PINNED,
 			name: 'shapeJson.properties.agreementNumber.keyword',
 			accessorKey: 'shapeJson.properties.agreementNumber',
-			header: 'Agreement',
+			header: 'Agreement Number',
 			Cell: ({ row }) => {
 				let value = row?.original?.shapeJson.properties.agreementNumber;
 				value = value?.toString();
@@ -86,7 +86,12 @@ const ContactDetailRelatedAgreementMeta = {
 				);
 			},
 		},
-
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.agreementName.keyword',
+			accessorKey: 'shapeJson.properties.agreementName',
+			header: 'Agreement Name',
+		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.agreementType.keyword',
