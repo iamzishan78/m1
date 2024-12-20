@@ -166,6 +166,7 @@ const tableESStateControllerHandler = state => ({
 			enableHiding = true,
 			refetchQueries = [],
 			globalFilter,
+			excludeFields,
 			...rest
 		} = props;
 
@@ -242,6 +243,7 @@ const tableESStateControllerHandler = state => ({
 			globalFilter,
 			layerIdentifier,
 			isClientSide,
+			excludeFields,
 		});
 
 		// Set default pinning and ordering

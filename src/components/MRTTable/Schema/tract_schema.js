@@ -175,6 +175,14 @@ const TractMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.originalProperties.Grantee',
+			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.Grantee,
+			id: 'shapeJson.properties.originalProperties.Grantee',
+			header: 'Alt Survey',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.sdGrossAcres',
 			accessorFn: row => row?.shapeJson?.properties?.sdGrossAcres,
 			id: 'shapeJson.properties.sdGrossAcres',
@@ -279,6 +287,15 @@ const TractMeta = {
 			id: 'shapeJson.properties.ownerName',
 			header: 'Owner',
 		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.legalDescription',
+			accessorFn: row => row?.shapeJson?.properties?.legalDescription,
+			id: 'shapeJson.properties.legalDescription',
+			header: 'Full Legal Description',
+		},
+
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'createBy.name.keyword',

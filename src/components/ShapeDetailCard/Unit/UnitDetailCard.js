@@ -14,7 +14,6 @@ import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
 import TabButtons from 'components/Shared/TabPanels/TabButtons';
 import UnitSummary from './UnitSummary';
 import AssociatedWellsShapeTable from 'components/Table/Wells/AssociatedWellsShapeTable';
-import AssociatedTractsShapeTable from 'components/Table/Wells/AssociatedTractsShapeTable';
 import Tags from 'components/Shared/Tagger';
 import { showSuccessMessage, showErrorMessage } from 'actions';
 import { AppContext } from 'AppContext';
@@ -29,13 +28,13 @@ import { jobController } from 'hookstate/jobStateController';
 import { layerController } from 'hookstate/layerStateController';
 import { getShapeSubtitle } from '../helper';
 import { mapControlsController } from 'hookstate/mapControlsController';
+import PotentialShapeTractToolbar from 'components/MRTTable/TablesOverride/PotentialShapeTract/PotentialShapeTractToolbar';
 
 const setSelectedTab = tableGlobalController.setSelectedTab;
 
 export default function UnitDetailCard(props) {
 	const dispatch = useDispatch();
 	const [selectedWellTab, setWellSelectedTab] = useState(0);
-	const [, setTractSelectedTab] = useState(0);
 	const [uniObj, setUniObj] = useState();
 	const [properties, setProperties] = useState();
 	const [stateApp, setStateApp] = useContext(AppContext);
@@ -252,6 +251,29 @@ export default function UnitDetailCard(props) {
 		[uniObj?._id]
 	);
 
+	const PotentialTractsOverrideMeta = useMemo(
+		() => ({
+			tabLabels: ['Unit Tracts', 'Potential Tracts'],
+			defaultFilters: [
+				{
+					type: 'geo_intersects',
+					field: 'shapeJson.geometry',
+					value: uniObj?.shapeJson?.geometry,
+				},
+				{ field: 'layer.keyword', value: 'parcel' },
+			],
+			customProps: { customLayer: uniObj },
+			excludeFields: ['tags.tag', 'comments'],
+			gridViewSettings: null,
+			fetchMetaData: null,
+			CustomToolBar: PotentialShapeTractToolbar,
+			isDeleteDisabled: true,
+			isExportDisabled: true,
+		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[uniObj?._id]
+	);
+
 	function RunsheetHeader() {
 		const classes = detailCardStyles();
 		return (
@@ -269,18 +291,6 @@ export default function UnitDetailCard(props) {
 				value={selectedWellTab}
 				setValue={n => {
 					setWellSelectedTab(n);
-				}}
-			/>
-		);
-	}
-
-	function TractHeader({ selectedTractTab, setTractSelectedTab }) {
-		return (
-			<TabButtons
-				labels={['Unit Tracts', 'Potential Tracts']}
-				value={selectedTractTab}
-				setValue={n => {
-					setTractSelectedTab(n);
 				}}
 			/>
 		);
@@ -386,13 +396,7 @@ export default function UnitDetailCard(props) {
 										}}
 									/>,
 									<div>
-										<AssociatedTractsShapeTable
-											customLayer={uniObj}
-											shapeType="Unit"
-											header={<TractHeader selectedTractTab={selectedTab} setTractSelectedTab={setSelectedTab} />}
-											setSelectedTab={setTractSelectedTab}
-											dense
-										/>
+										<MRTTable name="TractsTable" overrideMeta={PotentialTractsOverrideMeta} />
 									</div>,
 								]}
 							/>,
