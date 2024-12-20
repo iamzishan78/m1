@@ -5,10 +5,10 @@ import { useHistory } from 'react-router-dom';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import WellIcon from '../../../components/Shared/svgIcons/well.js';
-import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink.js';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
-import { LocalAtm as CurrencyIcon } from '@material-ui/icons';
+
 // Elasticsearch index for properties
 const esIndex = 'properties_flat';
 

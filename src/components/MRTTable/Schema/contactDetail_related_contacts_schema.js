@@ -1,6 +1,6 @@
 import Avatar from 'react-avatar';
 import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
 import ContactDettailRelatedContactsToolBar from 'components/MRTTable/TablesOverride/ContactDetailRelatedContactsTable/ContactDetailRelatedContactsToolbar';

@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { tableController } from 'hookstate/tableController';
 import useHandleQuery from './useHandleQuery';
-import useHandleAdditionalQueries from 'components/Common/MRTable/Hooks/useHandleAdditionalQueries';
+import useHandleAdditionalQueries from 'components/MRTTable/Hooks/useHandleAdditionalQueries';
 import ToolbarActions from '../Common/ToolbarActions';
 import ToolbarInternalActions from '../Common/ToolbarInternalActions';
 import { tableESSimpleFilterModeOtions } from '../utils/data';

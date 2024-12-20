@@ -2,7 +2,7 @@ import { Grid } from '@material-ui/core';
 import { Sparklines, SparklinesLine } from 'react-sparklines';
 
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import PropertiesRevenueToolbar from 'components/MRTTable/TablesOverride/PropertiesRevenue/PropertiesRevenueToolbar';
 
 import { GET_PROPERTIES_REVENUE } from 'graphQL/useQueryGetPropertiesRevenue';

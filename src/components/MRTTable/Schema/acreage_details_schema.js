@@ -1,6 +1,6 @@
 import { Grid } from '@mui/material';
 import { CommonSchema } from './common_schema';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { AgreementTypes } from './agreement_schema';
 import { Summarize } from '@mui/icons-material';
 import ExhibitAToolbar from '../TablesOverride/ExhibitATable/ExhibitAToolbar';
