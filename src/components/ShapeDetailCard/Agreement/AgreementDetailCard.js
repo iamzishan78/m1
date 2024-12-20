@@ -403,7 +403,7 @@ export default function AgreementDetailCard(props) {
 											<TabPanels
 												value={selectedTractTab}
 												panels={[
-													<div className={showSummary ? classes.agreementSubContent : classes.subContent2}>
+													<div>
 														<RelatedTractsTable
 															id="relatedTractsTable"
 															overrideMeta={RelatedTractsOverrideMeta}
@@ -411,7 +411,7 @@ export default function AgreementDetailCard(props) {
 															customLayer={uniObj}
 														/>
 													</div>,
-													<div className={showSummary ? classes.subContent : classes.subContent2}>
+													<div>
 														<AssociatedTractsShapeTable
 															customLayer={uniObj}
 															shapeType="Agreement"
