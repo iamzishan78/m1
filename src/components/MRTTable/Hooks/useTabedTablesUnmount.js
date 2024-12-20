@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+import { tableGlobalController } from 'hookstate/tableController';
 
 const useTabedTablesUnmount = ignoreUnmount => {
 	useEffect(() => {
 		if (ignoreUnmount) return;
 
 		return () => {
-			simpleTableGlobalController.setSelectedTab(0);
+			tableGlobalController.setSelectedTab(0);
 		};
 	}, [ignoreUnmount]);
 };

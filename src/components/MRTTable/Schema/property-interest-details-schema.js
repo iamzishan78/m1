@@ -30,9 +30,6 @@ const PropertyInterestDetailMeta = {
 	maxTableHeight: 'calc(60vh - 200px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
-	search: {
-		fields: ['owner.entityDetail.name', '_all'],
-	},
 	CustomToolBar: PropertyInterestDetailTableTolBar,
 	onClickedRow,
 	TableSchema: [

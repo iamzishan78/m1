@@ -47,6 +47,9 @@ import PropertyRevenueDetailMeta from './property-revenue-details-schema';
 import RelatedTractsMeta from './related_tracts_schema';
 import RelatedWellsMeta from './related_wells_schema';
 import AuditReportingMeta from './audit_reporting_schema';
+import PotentialOwnersMeta from './QuerySchema/potential_owners_schema';
+import UserManagementMeta from './QuerySchema/user_management_schema';
+import PropertiesRevenueMeta from './QuerySchema/properties_revenue_schema';
 
 export const SCHEMA = {
 	ActivityTable: ActivityMeta,
@@ -109,4 +112,7 @@ export const SCHEMA = {
 	RelatedTractsTable: RelatedTractsMeta,
 	RelatedWellsTable: RelatedWellsMeta,
 	AuditReportingTable: AuditReportingMeta, // Revenue Statement grid => revenue/statements
+	PotentialOwnersTable: PotentialOwnersMeta,
+	UserManagementTable: UserManagementMeta,
+	PropertiesRevenueTable: PropertiesRevenueMeta, // analytics > revenue > revenue  by month
 };

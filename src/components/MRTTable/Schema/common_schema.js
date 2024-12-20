@@ -35,6 +35,7 @@ export const CommonSchema = {
 		isSearchField: true,
 		enableSorting: true,
 		type: 'string',
+		enableColumnFilter: false,
 		enableColumnActions: false,
 		enableColumnOrdering: false,
 		enableResizing: false,
@@ -233,5 +234,24 @@ export const CommonSchema = {
 				return <>{!value ? `$${value}` : vf_currency_to_fixed(value, 2)}</>;
 			}
 		},
+	},
+	STRING_COLUMN: {
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: true,
+		isSearchField: true,
+		enableSorting: true,
+		type: 'string',
+		filterVariant: 'select',
+	},
+	NUMBER_COLUMN: {
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: true,
+		isSearchField: true,
+		enableSorting: true,
+		type: 'number',
 	},
 };

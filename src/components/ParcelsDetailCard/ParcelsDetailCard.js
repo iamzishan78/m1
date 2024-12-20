@@ -23,7 +23,6 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 import ParcelAgreementTable from 'components/Table/Parcel/ParcelAgreementTable';
 import { showSuccessMessage, showErrorMessage } from 'actions';
 import { jobController } from 'hookstate/jobStateController';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
@@ -211,7 +210,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const setSelectedTab = simpleTableGlobalController.setSelectedTab;
+const setSelectedTab = tableGlobalController.setSelectedTab;
 
 export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	const classes = useStyles();
@@ -224,7 +223,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	const tractPotentialUnitsState = tableController('TractPotentialUnitsTable').useState(['data']).stateValues;
 	const {
 		stateValues: { tabKey: selectedTab },
-	} = simpleTableGlobalController.useState(['tabKey']);
+	} = tableGlobalController.useState(['tabKey']);
 
 	const contactsAdded = useSelector(state => state?.common?.contactsAdded);
 	const [updateCustomLayer, { data: updatedParcel, loading: updatingParcel }] = useMutation(UPDATECUSTOMLAYER);

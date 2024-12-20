@@ -1,6 +1,6 @@
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import RelatedPayeesToolbar from '../TablesOverride/RelatedPayeesTable/RelatedPayeesToolbar';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 
 const esIndex = 'contacts_flat';

@@ -1,14 +1,15 @@
-import UserManagementToolbar from 'components/MRSimpleTable/TablesOverride/UserManagementTable/UserManagementToolbar';
 import moment from 'moment';
-import { CommonSchema } from './common_schema';
-import { GET_ALL_USERS } from 'graphQL/userManagement';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+
+import UserManagementToolbar from 'components/MRTTable/TablesOverride/UserManagementTable/UserManagementToolbar';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+
+import { tableGlobalController } from 'hookstate/tableController';
 import { UserRole, RolePrivilege } from 'utils/data';
-export const userManagementTableKey = 'UserManagement';
+import { GET_ALL_USERS } from 'graphQL/userManagement';
 
 const onClickedRow = selectedRow => {
 	if (selectedRow?._id) {
-		simpleTableGlobalController.updateState({
+		tableGlobalController.updateState({
 			dialog: {
 				type: 'inviteUser',
 				activeUser: selectedRow,
@@ -28,6 +29,7 @@ const UserManagementMeta = {
 	isInFiniteScroll: true, // added infinite scroll
 	CustomToolBar: UserManagementToolbar,
 	onClickedRow,
+	isClientSide: true,
 	isSelectAllAllowed: true,
 	isDeleteAllowed: true,
 	isExportAllowed: false,

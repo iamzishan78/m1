@@ -1,6 +1,6 @@
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import RelatedCostAllocationsToolbar from '../TablesOverride/RelatedCostAllocationsTable/RelatedCostAllocationsToolbar';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 
 const esIndex = 'properties_flat';
 

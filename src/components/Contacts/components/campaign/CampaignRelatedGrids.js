@@ -9,7 +9,7 @@ import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@m
 import { campaignInitialData } from './data';
 import MRTTable from 'components/MRTTable';
 import moment from 'moment';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+import { tableGlobalController } from 'hookstate/tableController';
 import TractInterestsIcon from '@material-ui/icons/ListAlt';
 import TractIcon from 'components/Shared/svgIcons/tract';
 
@@ -56,10 +56,10 @@ const useStyles = makeStyles(theme => ({
 
 function CamapignRelatedGrids({ campaign }) {
 	const classes = useStyles();
-	const globalSelectedTabKey = simpleTableGlobalController.useState(['tabKey'])?.stateValues;
+	const globalSelectedTabKey = tableGlobalController.useState(['tabKey'])?.stateValues;
 
 	const setSearchTapValue = state => {
-		simpleTableGlobalController.setSelectedTab(state?.index);
+		tableGlobalController.setSelectedTab(state?.index);
 	};
 
 	const campaignUnitInterestoverrideMeta = useMemo(
@@ -102,7 +102,7 @@ function CamapignRelatedGrids({ campaign }) {
 			maxTableHeight: '35vh',
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[campaign?.name]
+		[campaign?._id]
 	);
 
 	const campaignUnitoverrideMeta = useMemo(
@@ -155,7 +155,7 @@ function CamapignRelatedGrids({ campaign }) {
 			maxTableHeight: '35vh',
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[campaign?.name]
+		[campaign?._id]
 	);
 
 	const campaignContactoverrideMeta = useMemo(
@@ -203,7 +203,7 @@ function CamapignRelatedGrids({ campaign }) {
 			maxTableHeight: '35vh',
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[campaign?.name]
+		[campaign?._id]
 	);
 
 	const campaignTractOverrideMeta = useMemo(
@@ -256,7 +256,7 @@ function CamapignRelatedGrids({ campaign }) {
 			},
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[campaign?.name]
+		[campaign?._id]
 	);
 
 	const campaignTractInterestOverrideMeta = useMemo(

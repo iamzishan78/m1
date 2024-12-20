@@ -12,8 +12,9 @@ import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } fr
 import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 import _ from 'lodash';
+import { tableESState } from 'hookstate/initialStates';
 
 // Define custom styles using Material-UI's makeStyles hook
 const useStyles = makeStyles(theme => ({
@@ -304,6 +305,12 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 				label: 'Filter Type',
 				options: requiredFilterOptions,
 				defaultValue: filterTypeOptions.find(filterTypeOption => filterTypeOption.value === mapView?.filterType), // Set default value if mapView is provided
+				onChange: () => {
+					Object.keys(tableESState).map(tableKey =>
+						tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false)
+					);
+					setValue(`mapViews.${index}.filterValues`, null);
+				}, // Reset other fields on change
 			},
 			...(!['empty', 'notEmpty'].includes(filterType?.value || filterType)
 				? [
@@ -316,6 +323,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 					]
 				: []),
 		];
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dataSourceName, filtersData, filterType, index, mapView, getSelectedField, setValue, shapeFileSchema]); // Dependencies for recalculating when data changes
 
 	// Function to clear the filter when the clear button is clicked
