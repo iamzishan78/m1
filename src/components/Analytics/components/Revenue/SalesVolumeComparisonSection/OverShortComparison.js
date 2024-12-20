@@ -133,7 +133,7 @@ const ApexChart = ({ esFilters, checkData }) => {
 				const { label, data } = obj;
 				const monthYear = label?.slice(0, 7);
 
-				if (!labels?.includes(monthYear)) {
+				if (!labels?.includes(monthYear) && monthYear) {
 					sumByLabel[monthYear] = (sumByLabel[monthYear] || 0) + data;
 					labels.push(monthYear);
 				} else {
