@@ -1,5 +1,6 @@
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 
 const esIndex = 'shapeowners_flat';
 
@@ -240,6 +241,14 @@ const RelatedTractsMeta = {
 			accessorFn: row => row?.countAcres,
 			id: 'countAcres',
 			header: 'Count Acres',
+		},
+		{
+			...CommonSchema.COMMENTS,
+			Cell: ({ renderedCellValue, row }) => {
+				const id = row.getValue('_id');
+				const targetLabel = 'parcel';
+				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={targetLabel} />;
+			},
 		},
 	],
 };
