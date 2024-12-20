@@ -722,19 +722,27 @@ const layerStateControllerHandler = state => {
 			// If layerId is not found, then find layerId by layerShapeName
 			if (!layerId) {
 				// Find layer by layerShapeName
-				const requiredLayer = globalStateController
+				const requiredLayers = globalStateController
 					.getValue('layers')
-					.find(layer => `${layer.file}_${layer.layerShapeName}` === identifier);
+					.filter(layer => `${layer.file}_${layer.layerShapeName}` === identifier);
 
-				// If layer is not found, then return
-				if (!(requiredLayer && requiredLayer?.layerType === 'file layer')) return;
-
-				// Updating identifier with requiredLayer identifier
-				identifier = requiredLayer.identifier;
-				layerId = Object.keys(boundingStates || {}).find(
-					key => key && key.toLowerCase().startsWith(identifier.toLowerCase())
-				);
-				if (!layerId) return;
+				requiredLayers.forEach(requiredLayer => {
+					// If layer is not found, then return
+					if (requiredLayer?.layerType === 'file layer') {
+						// Updating identifier with requiredLayer identifier
+						identifier = requiredLayer.identifier;
+						layerId = Object.keys(boundingStates || {}).find(
+							key => key && key.toLowerCase().startsWith(identifier.toLowerCase())
+						);
+						if (layerId) {
+							const showableLayers = getShowableLayers();
+							showableLayers.forEach(dbLayer => {
+								if (dbLayer.identifier.toLowerCase().startsWith(identifier.toLowerCase())) removeLayer(dbLayer, true);
+							});
+						}
+					}
+				});
+				return;
 			}
 
 			const showableLayers = getShowableLayers();

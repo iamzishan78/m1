@@ -143,6 +143,7 @@ const tableESStateControllerHandler = state => ({
 		const {
 			esIndex,
 			layerIdentifier,
+			layerSchema,
 			pageSize,
 			defaultSort,
 			isIncludeInactive,
@@ -341,6 +342,7 @@ const tableESStateControllerHandler = state => ({
 				defaultFilters: defaultFilters || state?.defaultFilters?.get({ noproxy: true }) || [],
 				filters: extractUniqueFilters(combinedFilters),
 				layerIdentifier,
+				layerSchema,
 				sorting: formatedGridView?.sorting ? formatedGridView.sorting : [],
 				columnVisibility: formatedGridView?.columnVisibility ? formatedGridView.columnVisibility : columnVisibility,
 				isIncludeInactive,
@@ -544,13 +546,12 @@ const tableESStateControllerHandler = state => ({
 		const tableState = state.get({
 			noproxy: true,
 		});
-
 		if (tableState?.layerIdentifier) {
+			const identifierMapViewSchema =
+				customLayersFieldAccessors[tableState?.layerIdentifier]?.keys || tableState?.layerSchema;
 			if (
-				true
-				// code to check if there any filter value outside the values given in map views need to handle this
-				// currentIdentifier &&
-				// currentIdentifier.keys?.find(key => key.value.replace('.keyword', '') === filter.field.replace('.keyword', ''))
+				identifierMapViewSchema &&
+				identifierMapViewSchema?.find(key => key.value.replace('.keyword', '') === filter.field.replace('.keyword', ''))
 			) {
 				const existingFilter = mapViewsFitlers.find(
 					({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') === filter.field
