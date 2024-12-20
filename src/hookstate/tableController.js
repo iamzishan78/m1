@@ -314,13 +314,8 @@ const tableESStateControllerHandler = state => ({
 				filters: [],
 				sorting: [],
 				columnVisibility,
-				columnPinning: {
-					left: [
-						...(pinnedFields.length > 0
-							? ['mrt-row-select', 'mrt-row-numbers', ...pinnedFields]
-							: ['mrt-row-select', 'mrt-row-numbers']),
-					],
-				},
+				columnOrdering: defaultColumnsOrdering,
+				columnPinning: defaultColumnsPinning,
 			};
 		} else {
 			stateToUpdate = {

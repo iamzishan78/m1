@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import ContactWellInterestTable from 'components/Table/Contact/ContactWellInterestTable';
-import ContactTaxRollInterestTable from 'components/Table/Contact/ContactTaxRollInterestTable';
 import TabPanels from 'components/Shared/TabPanels';
 import TabButtons from 'components/Shared/TabPanels/TabButtons';
 import { makeStyles } from '@material-ui/core/styles';
@@ -53,13 +52,6 @@ function ContactsWellInterestsParcelInterests(props) {
 				<TabPanels
 					value={selectedTab}
 					panels={[
-						<ContactTaxRollInterestTable
-							parent="assocTaxRollInterests"
-							header={<Header />}
-							targetLabel="well"
-							contactId={props.contactData._id}
-							showTracks
-						/>,
 						<ContactWellInterestTable
 							parent="assocTaxRollInterests"
 							header={<Header />}

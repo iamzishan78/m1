@@ -9,7 +9,6 @@ import { setMapGridCardState } from 'actions';
 import OwnersSummaryCard from 'components/OwnersSummaryCard/OwnersSummaryCard';
 import { TabPanel } from 'components/Shared/TabPanels';
 import ContactDetailedInfo from 'components/ContactDetailedInfo/ContactDetailedInfo';
-import ContactTaxRollInterestTable from 'components/Table/Contact/ContactTaxRollInterestTable';
 import ContactDealsProvider from 'components/DealsDetailCard/ContactDealsProvider';
 
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
@@ -305,6 +304,17 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 		[contactData?._id]
 	);
 
+	const TaxRollInterestsOverrideMeta = useMemo(
+		() => ({
+			customProps: {
+				contactId: contactData?._id,
+			},
+			refetchQueries: ['getContactSummary'],
+		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[contactData?._id]
+	);
+
 	return (
 		<div className={classes.card}>
 			<Card className={classes.dockMenu}>
@@ -368,14 +378,7 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 											/>
 										)}
 										{searchTapValue.value === 'taxRollInterests' && (
-											<ContactTaxRollInterestTable
-												parent="assocTaxRollInterests"
-												id="taxInterestsTable"
-												header={'Tax Roll Interests'}
-												targetLabel="well"
-												contactId={contactData._id}
-												showTracks
-											/>
+											<MRTTable name="TaxRollInterestsTable" overrideMeta={TaxRollInterestsOverrideMeta} />
 										)}
 										{searchTapValue.value === 'wellInterests' && (
 											<MRTTable name="ContactWellInterestTable" overrideMeta={contactWellInterestOverride} />
