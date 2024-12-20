@@ -262,7 +262,7 @@ export default function UnitDetailCard(props) {
 				},
 				{ field: 'layer.keyword', value: 'parcel' },
 			],
-			customProps: { customLayer: uniObj },
+			customProps: { customLayer: uniObj, shapeType: 'Unit' },
 			excludeFields: ['tags.tag', 'comments'],
 			gridViewSettings: null,
 			fetchMetaData: null,

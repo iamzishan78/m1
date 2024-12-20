@@ -26,7 +26,7 @@ function PotentialShapeTractToolbar({ tableKey, table }) {
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
 
-	const shapeType = tableStateValues.customProps?.customLayer?.layer;
+	const shapeType = tableStateValues.customProps?.shapeType;
 
 	const addTractsToShape = () => {
 		const customLayer = tableStateValues.customProps?.customLayer;
