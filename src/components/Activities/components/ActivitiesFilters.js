@@ -8,11 +8,10 @@ import moment from 'moment';
 import get from 'lodash/get';
 
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import { getFilters } from 'components/Table/Activities/ActivitiesTable';
 import { AppContext } from 'AppContext';
 import { CUSTOM_DATES } from 'utils/data';
 import { useSelector } from 'react-redux';
-import { handleCustomDateTypeChange } from 'utils/helper';
+import { getActivityAnalyticsFilters, handleCustomDateTypeChange } from 'utils/helper';
 import { esIndexFilterKeyMap } from 'utils/data';
 import { getActivityFilters } from './ActivitiesDashboard';
 
@@ -63,8 +62,8 @@ export default function CustomDatesActivities({
 	toDate,
 	setToDate,
 	minDate,
-	campaignName,
-	setCampaignName,
+	campaigns,
+	setCampaigns,
 	qualifier,
 	setQualifier,
 	esIndex,
@@ -201,8 +200,8 @@ export default function CustomDatesActivities({
 				{activeModule.value === 'CRM' && (
 					<Grid item xs={2} md={2} lg={2} xl={2} style={{ marginTop: '4px' }}>
 						<CampaignFilter
-							value={campaignName}
-							setValue={setCampaignName}
+							value={campaigns}
+							setValue={setCampaigns}
 							esIndex={esIndex}
 							searchFields={searchFields}
 							tableFilters={tableFilters}
@@ -256,13 +255,13 @@ const CampaignFilter = ({
 	const getAllFilters = () => {
 		let rangeFilters = [];
 		if (!tableFilters.find(filter => filter.type === 'range')) {
-			rangeFilters = getFilters(appliedFilters);
+			rangeFilters = getActivityAnalyticsFilters(appliedFilters);
 			if (esIndex === 'activities_flat') {
 				rangeFilters = getActivityFilters(appliedFilters);
 			}
 		}
 		const filters = [...rangeFilters, ...tableFilters];
-		const index = filters.findIndex(f => f.field === 'contact.campaignName.keyword');
+		const index = filters.findIndex(f => f.field === 'contact.campaigns');
 		if (index > -1) {
 			filters.splice(index, 1);
 		}
@@ -270,7 +269,7 @@ const CampaignFilter = ({
 	};
 
 	useEffect(() => {
-		const filterKey = 'contact.campaignName.keyword';
+		const filterKey = 'contact.campaigns';
 		getCampaign({
 			variables: {
 				esIndex,
@@ -283,6 +282,8 @@ const CampaignFilter = ({
 					query: search,
 					field: filterKey,
 					size: 50,
+					fieldType: 'array',
+					searchFields: ['contact.campaigns.name'],
 				},
 			},
 		});
@@ -293,19 +294,21 @@ const CampaignFilter = ({
 		<Autocomplete
 			size="small"
 			onChange={(e, selectedValue, reason) => {
-				if (reason === 'clear' || !selectedValue?.key) {
+				if (reason === 'clear' || !selectedValue) {
 					setSearch('');
 					setValue('');
 				} else {
-					setSearch(selectedValue.key);
-					setValue(selectedValue.key);
+					setSearch(selectedValue.name);
+					setValue(selectedValue);
 				}
 			}}
 			value={value}
 			inputValue={search?.toString()}
-			options={get(filtersData, 'getESSimpleFilter.hits', []).filter(d => d.key)}
-			getOptionSelected={(option, value) => option.key === value}
-			getOptionLabel={option => option?.key?.toString().replace(/^,|,$/gm, '')}
+			options={get(filtersData, 'getESSimpleFilter.hits', [])
+				.map(d => d.key)
+				.filter(Boolean)}
+			getOptionLabel={op => op?.name || ''}
+			getOptionSelected={(op, value) => op?.name === value?.name || ''}
 			renderInput={params => (
 				<TextField
 					{...params}
@@ -348,7 +351,7 @@ const QualifierFilter = ({
 			if (esIndex === 'contacts_flat') {
 				appliedFilters.filter = 'audit';
 			}
-			rangeFilters = getFilters(appliedFilters);
+			rangeFilters = getActivityAnalyticsFilters(appliedFilters);
 			if (esIndex === 'activities_flat') {
 				rangeFilters = getActivityFilters(appliedFilters);
 			}
@@ -404,7 +407,7 @@ const QualifierFilter = ({
 			inputValue={search?.toString()}
 			options={get(filtersData, 'getESSimpleFilter.hits', [])}
 			getOptionSelected={(option, value) => option.key === value}
-			getOptionLabel={option => option?.key?.toString().replace(/^,|,$/gm, '')}
+			getOptionLabel={option => option?.key?.toString().replace(/^,|,$/gm, '') || ''}
 			renderInput={params => (
 				<TextField
 					{...params}

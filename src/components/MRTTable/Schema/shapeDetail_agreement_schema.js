@@ -1,7 +1,7 @@
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import Grid from '@material-ui/core/Grid';
-import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { formatDate } from 'components/Shared/functions';
 
 // Schema for units/tracts Related agreements

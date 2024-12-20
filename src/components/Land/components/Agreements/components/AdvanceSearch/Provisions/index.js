@@ -97,7 +97,8 @@ export default function ProvisionsFilters(props) {
 		if (stateApp.landSearchFilters?.provisions?.length === 0 && filterList.find(fl => fl.length !== 0)) {
 			setFilterList([[], [], [], []]);
 		}
-	}, [stateApp.landSearchFilters?.provisions, filterList]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [stateApp.landSearchFilters?.provisions]);
 
 	const changeLandProvisions = React.useMemo(
 		() =>

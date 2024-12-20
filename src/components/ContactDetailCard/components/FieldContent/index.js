@@ -28,7 +28,7 @@ import loadashFilter from 'lodash/filter';
 import { get } from 'lodash';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import EntityType from './EntityType';
-import CampaignNameField from './CampaignNameField';
+import CampaignField from './CampaignField';
 import ContactStatus from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
 import AutoCompleteAddNewField from './AutoCompleteAddNewField';
 import Link from '@material-ui/core/Link';
@@ -61,22 +61,6 @@ export default function FieldContent({
 	metafields,
 	...props
 }) {
-	//////////// id - brings the contact id /////////////////////////////////////////////////////////////////////////
-	//////////// entity - brings the entity id tide to the contact //////////////////////////////////////////////////
-	//////////// melissaRecordId - brings the melissa record id tide to the contact /////////////////////////////////
-	//////////// melissaAddressRecordId - brings the melissa address record id tide to the contact //////////////////
-	//////////// content - brings an object with fielNames and values ///////////////////////////////////////////////
-	//////////// childrenLeft - will move the chilren components to the left side of the field values//optional//////
-	////////////              - default childrens to rigth///////////////////////////////////////////////////////////
-	//////////// onlyChildren - will show only the children components, no field values  //optional//////////////////
-	//////////// name - will be part of the Not Available text, better use in compound fiels  //optional/////////////
-	//////////// noMargin - no p tag margin  //optional//////////////////////////////////////////////////////////////
-	//////////// noInputFooter //optional////////////////////////////////////////////////////////////////////////////
-	//////////// linkType - LinkTypes value //optional///////////////////////////////////////////////////////////////
-	//////////// fieldType - FieldTypes value //default value = Contact /////////////////////////////////////////////
-	//////////// isEdited - if value previously edited, show corresponding icon //default value = false /////////////
-	//////////// isMerged - if contact is created by merge or not ///////////////////////////////////////////////////
-
 	const [stateApp, setStateApp] = React.useContext(AppContext);
 	const [edit, setEdit] = useState(null);
 	const [editContent, setEditContent] = useState({ content });
@@ -90,14 +74,10 @@ export default function FieldContent({
 	const [updateMelissaAddress] = useMutation(UPDATEMELISSAADDRESS);
 	const classes = useStyles({ noMargin, loading: loading || loadingPurchaseData, fieldsCount });
 
-	// contactOwnerId field used in autocomplete of contact owner
-	const ignorableFieldsInCount = ['contactOwnerId'];
-
 	const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
 	// const [getCampaignFilters, { data: campaignfiltersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
 	const [statusOptions, setStatusOptions] = useState([]);
-	const entityTypeOptions = ['INDIVIDUAL', 'CORPORATION', 'NON-PROFIT', 'TRUST'];
 
 	useEffect(() => {
 		getFilters({
@@ -107,7 +87,7 @@ export default function FieldContent({
 				size: 50,
 			},
 		});
-	}, []);
+	}, [getFilters]);
 
 	useEffect(() => {
 		if (filtersData?.getESFilterList?.hits) {
@@ -129,6 +109,8 @@ export default function FieldContent({
 	}, [filtersData]);
 
 	useEffect(() => {
+		const ignorableFieldsInCount = ['contactOwnerId'];
+
 		if (content) {
 			setEditContent({ ...content });
 			setShowContent({ ...content });
@@ -145,6 +127,7 @@ export default function FieldContent({
 
 	useEffect(() => {
 		editContent.ownerType && handleUpdating();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [editContent.ownerType]);
 
 	useEffect(() => {
@@ -157,6 +140,7 @@ export default function FieldContent({
 			if (document.getElementById('fieldContentInput' + fieldName))
 				document.getElementById('fieldContentInput' + fieldName).focus();
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [edit]);
 
 	const getOrganizedContent = () => {
@@ -245,7 +229,7 @@ export default function FieldContent({
 			editContent.custom_data = customData;
 		}
 
-		if (fieldType == FieldTypes.Contact) {
+		if (fieldType === FieldTypes.Contact) {
 			let trimmedEditContent = {
 				_id: id,
 				lastUpdateBy: stateApp.user.mongoId,
@@ -317,7 +301,7 @@ export default function FieldContent({
 				setShowContent({ ...content });
 				setEditContent({ ...content });
 			});
-		} else if (fieldType == FieldTypes.MelissaAddressRecord) {
+		} else if (fieldType === FieldTypes.MelissaAddressRecord) {
 			let entries = Object.entries(editContent)[0];
 			let key = entries[0];
 			let updatedValue = entries[1];
@@ -553,22 +537,22 @@ export default function FieldContent({
 
 	let textArray = getOrganizedContent();
 
-	const renderOutput = Object.keys(content).includes('campaignName') ? (
-		<CampaignNameField
+	const renderOutput = Object.keys(content).includes('campaigns') ? (
+		<CampaignField
 			className={classes.maxWidth}
 			onChange={value => {
 				setEditContent(editContent => ({
 					...editContent,
-					campaignName: value,
+					campaigns: value,
 				}));
 				handleUpdating(value);
 			}}
-			value={get(editContent, 'campaignName', [])}
+			value={get(editContent, 'campaigns', [])}
 			fullWidth
 			targetLabel="Contact"
 			targetLabelId={id}
-			onKeyDown={event => keyDownHandler(event, ['campaignName'])}
-			onBlur={() => onBlurHandler(['campaignName'])}
+			onKeyDown={event => keyDownHandler(event, ['campaigns'])}
+			onBlur={() => onBlurHandler(['campaigns'])}
 		/>
 	) : (
 		<span>

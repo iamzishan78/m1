@@ -112,6 +112,7 @@ function UnitInterestsTable(props) {
 				filters: esStaticFilters,
 			},
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.parent, esSearch, esStaticFilters]);
 
 	useEffect(() => {
@@ -121,6 +122,7 @@ function UnitInterestsTable(props) {
 			props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
 			//   props.ifAreContacts(globalOwnerIds);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableData]);
 
 	useEffect(() => {
@@ -131,7 +133,6 @@ function UnitInterestsTable(props) {
 						?.filter(el => el)
 						?.map((qtr, i) => `${qtr}/${i + 1}`)
 						?.join();
-					hit.unitCampaign = hit.contact.campaignName;
 					hit.block = hit?.shape?.shapeJson?.properties?.originalProperties?.Block;
 					hit.township = hit?.shape?.shapeJson?.properties?.originalProperties?.Township;
 					hit.description = hit?.shape?.shapeJson?.properties?.description;
@@ -162,6 +163,7 @@ function UnitInterestsTable(props) {
 
 			props.onTractCount(count);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableData, props.dependencyUpdate]);
 
 	const onTableChange = (action, tableState, rows, meta) => {

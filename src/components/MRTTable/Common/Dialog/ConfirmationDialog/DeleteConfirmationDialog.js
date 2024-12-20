@@ -5,10 +5,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import Button from '@material-ui/core/Button';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import _ from 'lodash';
 import { Modals } from '../../../../../styles/Modal';
 
-export default function DeleteConfirmationDialogContent({ header, children, onClose, deleteFunc, deletedData }) {
+export default function DeleteConfirmationDialog({ header, children, onClose, deleteFunc, deletedData }) {
 	const modalClass = Modals();
 	return (
 		<Dialog style={{ zIndex: 9999999999 }} open={true}>

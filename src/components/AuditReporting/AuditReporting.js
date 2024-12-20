@@ -1,41 +1,87 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useLazyQuery } from '@apollo/client';
 
 import ActivitiesDashboardFilter from 'components/Activities/components/ActivitiesDashboardFilter';
 import ActivityAnalytics from 'components/Activities/components/ActivityAnalytics';
 import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
+import { Box } from '@material-ui/core';
+import MRTTable from 'components/MRTTable';
+import { AppContext } from 'AppContext';
+import { tableController } from 'hookstate/tableController';
+import { getRangeFilters, getDateFilters } from 'utils/helper';
 
 const useStyles = makeStyles(theme => ({
 	root: {
 		marginTop: '90px',
-		'& div': {
-			'&>.MuiPaper-root': {
-				'&>:nth-child(3)': {
-					maxHeight: '53vh',
-					minHeight: '53vh',
-					'@media (max-height:900px)': {
-						maxHeight: '47vh',
-						minHeight: '47vh',
-					},
-					'@media (max-height:800px)': {
-						maxHeight: '45vh',
-						minHeight: '45vh',
-					},
-					'@media (max-height:768px)': {
-						maxHeight: '45vh',
-						minHeight: '45vh',
-					},
-				},
-			},
-		},
 	},
 }));
+
+const getFilters = appliedFilters => {
+	let filters = [];
+	if (appliedFilters) {
+		let range = [];
+		if (appliedFilters.filter !== 'audit') {
+			range = getRangeFilters(
+				{
+					dateTime: {
+						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+					},
+				},
+				'simple'
+			);
+			if (range.length > 0) filters = [...filters, ...range];
+			range = getRangeFilters(
+				{
+					endDateTime: {
+						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+					},
+				},
+				'simple'
+			);
+		} else {
+			range = getDateFilters(
+				{
+					lastUpdateAt: {
+						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+					},
+				},
+				'simple'
+			);
+			if (range.length > 0) filters = [...filters, ...range];
+			range = getDateFilters(
+				{
+					lastUpdateAt: {
+						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+					},
+				},
+				'simple'
+			);
+		}
+
+		if (range.length > 0) filters = [...filters, ...range];
+		if (appliedFilters.qualifier) {
+			filters.push({
+				field: appliedFilters.filter === 'audit' ? 'lastUpdateBy.name.keyword' : 'ownerName.keyword',
+				value: appliedFilters.qualifier,
+			});
+		}
+		if (!filters.length && appliedFilters.length) filters = appliedFilters;
+	}
+	return filters;
+};
 
 const ActivitiesDashboard = () => {
 	const classes = useStyles();
 	const esIndex = 'contacts_flat';
 	const searchFields = ['name', '_all'];
+	const tableKey = 'AuditReportingTable';
+	const [stateApp] = useContext(AppContext);
+	const auditReportingTableState = tableController(tableKey).useState(['filters', 'data', 'globalFilter']).stateValues;
 	const [filterToggle, setFilterToggle] = useState(false);
 	const [appliedFilters, setAppliedFilters] = useState({
 		toDate: null,
@@ -63,6 +109,14 @@ const ActivitiesDashboard = () => {
 		});
 	}, [getDbMinValue]);
 
+	useEffect(() => {
+		tableController(tableKey).setGlobalFilter(stateApp.landAnalyticsSearchQuery); // set value in searchquery for audit reporting
+	}, [stateApp.landAnalyticsSearchQuery]);
+
+	useEffect(() => {
+		tableController(tableKey).setFilters(getFilters(appliedFilters));
+	}, [appliedFilters]);
+
 	return (
 		<div className={classes.root}>
 			{
@@ -71,7 +125,7 @@ const ActivitiesDashboard = () => {
 					searchFields={searchFields}
 					setFilterToggle={setFilterToggle}
 					filterToggle={filterToggle}
-					tableFilters={[]}
+					tableFilters={[...auditReportingTableState.filters]}
 					appliedFilters={appliedFilters}
 					minDate={minDate}
 					setAppliedFilters={setAppliedFilters}
@@ -82,11 +136,14 @@ const ActivitiesDashboard = () => {
 				<ActivityAnalytics
 					esIndex={esIndex}
 					filterToggle={filterToggle}
-					tableFilters={[]}
+					tableFilters={[...auditReportingTableState.filters]}
 					appliedFilters={appliedFilters}
 					setAppliedFilters={setAppliedFilters}
 				/>
 			}
+			<Box sx={{ padding: '1em', marginLeft: '1em' }}>
+				<MRTTable name={tableKey} />
+			</Box>
 		</div>
 	);
 };

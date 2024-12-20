@@ -10,6 +10,7 @@ import MRTFallback from 'components/MRTTable/MRTFallBack';
 // Importing a fallback component to render when an error occurs.
 import { MaterialReactTable } from 'material-react-table';
 // Importing the MaterialReactTable component to render the table.
+import { tableController } from 'hookstate/tableController';
 
 function Table({ tableKey }) {
 	// Functional component Table accepts tableKey as props.
@@ -32,7 +33,7 @@ function Table({ tableKey }) {
 						// Spreading the state properties specific to the table into the state prop.
 					}}
 				/>
-				<AllDialogs tableKey={tableKey} />
+				<AllDialogs tableKey={tableKey} controller={tableController} />
 				{/* Rendering AllDialogs component. */}
 			</div>
 		</ErrorBoundary>

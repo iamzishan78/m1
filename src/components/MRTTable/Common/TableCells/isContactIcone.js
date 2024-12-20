@@ -3,8 +3,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import Tooltip from '@material-ui/core/Tooltip';
 import { IconButton } from '@material-ui/core';
-import Contact_card from 'components/Shared/svgIcons/contact_card';
+import ContactCard from 'components/Shared/svgIcons/contact_card';
 import { Link } from 'react-router-dom';
+import ConvertContact from 'components/Shared/svgIcons/convert_contact';
+import { tableGlobalController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(() => ({
 	icons: {
@@ -19,7 +21,7 @@ const useStyles = makeStyles(() => ({
 	},
 }));
 
-function IsContactCell({ contactId }) {
+function IsContactCell({ contactId, rows }) {
 	const classes = useStyles();
 	let history = useHistory();
 
@@ -36,6 +38,28 @@ function IsContactCell({ contactId }) {
 			</p>
 		);
 	}
+
+	if (contactId === 'false')
+		return (
+			<Tooltip title="Convert To Contact" placement="top">
+				<IconButton
+					size={'medium'}
+					color="primary"
+					className={`${classes.icons} ${classes.noCommentsIcon}`}
+					onClick={e => {
+						tableGlobalController.updateState({
+							dialog: {
+								type: 'multipleOwnerToContact',
+								rows,
+							},
+						});
+					}}
+					aria-label="create contact"
+				>
+					<ConvertContact style={{ margin: '4px' }} />
+				</IconButton>
+			</Tooltip>
+		);
 
 	return (
 		<Tooltip title={!contactId ? 'Convert To Contact' : 'Contact Details'} placement="top">
@@ -54,7 +78,7 @@ function IsContactCell({ contactId }) {
 					to={`/contact/details/${contactId}/?tenant=${window.sessionStorage.getItem('tenantName')}`}
 					onClick={e => e.preventDefault()}
 				>
-					<Contact_card style={{ margin: '4px' }} />
+					<ContactCard style={{ margin: '4px' }} />
 				</Link>
 			</IconButton>
 		</Tooltip>

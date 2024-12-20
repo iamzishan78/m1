@@ -1,15 +1,15 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useContext } from 'react';
 import { Grid, Card, CardContent } from '@material-ui/core';
 import { useLazyQuery } from '@apollo/client';
 import get from 'lodash/get';
-import { copy } from 'utils/helper';
+import { copy, getFilters } from 'utils/helper';
 
 import { AppContext } from 'AppContext';
 import { GET_ACTIVITY_ANALYTICS } from 'graphQL/useQueryActivityAnalytics';
 import { GET_CONTACT_ANALYTICS } from 'graphQL/useQueryContactDetail';
 import DonutChart from 'components/Shared/Charts/DonutChart';
 import StackedBarChart from 'components/Shared/Charts/StackedBarChart';
-import { getFilters } from 'components/Table/Activities/ActivitiesTable';
 import { useSelector } from 'react-redux';
 import { getActivityFilters } from './ActivitiesDashboard';
 
@@ -130,7 +130,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 				variables: {
 					search: {
 						fields: ['name', '_all'],
-						query: stateApp.activitySearchQuery,
+						query: stateApp.landAnalyticsSearchQuery,
 					},
 					filters: getAllFilters(),
 				},
@@ -263,11 +263,9 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 							)}
 							{activeModule.title === 'Audit Reporting' && (
 								<DonutChart
-									height={240}
-									marginTop={-15}
-									options={{
-										legend: { display: false, labels: { display: false } },
-									}}
+									height={220}
+									marginTop={-20}
+									islegendEnabled={false}
 									data={[
 										{
 											title: '',

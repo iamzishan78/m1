@@ -1,7 +1,7 @@
 import React from 'react';
 import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/TextField';
 import AutoCompleteComponent from 'components/Shared/FormsFieldsData/Fields/AutoComplete';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import AssociatedDealField from 'components/ContactDetailCard/components/FieldContent/AssociatedDealField';
 import RadioGroup from 'components/Shared/FormsFieldsData/Fields/RadioGroup';
 import { sideDialogController } from 'hookstate/sideDialogController';
@@ -18,7 +18,7 @@ function CommonForm({ formSchema, control, watch, dialogKey, error }) {
 				<React.Fragment key={item.name}>
 					{item.renderField === 'autoComplete' ? (
 						<AutoCompleteComponent item={item} control={control} watch={watch} error={error} />
-					) : item.renderField === 'campaignName' ? (
+					) : item.renderField === 'campaigns' ? (
 						<Grid item xs={12}>
 							<h3>{item.label}</h3>
 
@@ -26,10 +26,10 @@ function CommonForm({ formSchema, control, watch, dialogKey, error }) {
 								control={control}
 								name={item.name}
 								render={props => (
-									<CampaignNameField
+									<CampaignField
 										{...props}
 										value={props?.value}
-										onChange={(values, id) => {
+										onChange={values => {
 											sideDialogController(dialogKey).updateState({ [item.name]: values });
 											props.onChange(values);
 										}}
@@ -69,9 +69,9 @@ function CommonForm({ formSchema, control, watch, dialogKey, error }) {
 					) : item.renderField === 'datePicker' ? (
 						<DatePicker item={item} control={control} />
 					) : item.renderField === 'startEndDate' ? (
-						<StartEndDate item={item} control={control} watch={watch} error={error}/>
+						<StartEndDate item={item} control={control} watch={watch} error={error} />
 					) : (
-						<TextFieldComponent key={index} item={item} control={control} watch={watch} error={error}/>
+						<TextFieldComponent key={index} item={item} control={control} watch={watch} error={error} />
 					)}
 				</React.Fragment>
 			))}

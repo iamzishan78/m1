@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect, useContext, useMemo } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import { debounce, get } from 'lodash';
+import { get } from 'lodash';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { makeStyles, withStyles } from '@material-ui/styles';
@@ -44,6 +45,8 @@ import DocViewer from 'components/Shared/DocViewer';
 import AddNewRelatedAgreementDialog from 'components/Land/components/Agreements/detailComponents/relatedAgreements/AddNewRelatedAgreementDialog';
 import Validation from 'components/Revenue/components/Properties/DetailComponents/Validation';
 import { getIdFromPath } from 'utils/helper';
+import { detailCardController } from 'hookstate/detailCardController';
+import { copy } from 'components/Shared/functions';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -224,6 +227,9 @@ export default function DetailComponents(props) {
 	const history = useHistory();
 	const [stateApp, setStateApp] = useContext(AppContext);
 
+	const { stateValues } = detailCardController.useState(['summaryData']);
+	const propertyData = stateValues.summaryData;
+
 	const propertyId = getIdFromPath(history.location.pathname);
 	const [propertyOwnerContact, setPropertyOwnerContacts] = useState([]);
 	const [showInterestDetails, setShowInterestDetails] = useState(false);
@@ -235,7 +241,6 @@ export default function DetailComponents(props) {
 	const selectedTabRef = useRef(null);
 	const [collapse, setCollapse] = useState(true);
 	const [anchorEl, setAnchorEl] = useState();
-	const [isButtonScroll, setButtonScroll] = useState(false);
 	const [propertyDetails, setProperty] = useState(null);
 	const [entityToConvert, setEntityToConvert] = useState(null);
 	const [isNewAgmt, setNewAgmtState] = useState(false);
@@ -260,7 +265,22 @@ export default function DetailComponents(props) {
 	}, [getProperty, propertyId]);
 
 	useEffect(() => {
-		if (getPropertyResult) setProperty(getPropertyResult?.getProperty.property);
+		if (getPropertyResult) {
+			setProperty(getPropertyResult?.getProperty.property);
+			const propertyData = getPropertyResult?.getProperty.property;
+
+			detailCardController.updateState({
+				summaryData: copy({ ...propertyData, systemId: propertyData?._id }),
+			});
+
+			const idsArray = [];
+			if (propertyData?.owner) idsArray.push(propertyData.owner?._id);
+			if (propertyData?.operator) idsArray.push(propertyData?.operator?._id);
+			if (idsArray.length > 0)
+				checkIfOwnersAreContacts({
+					variables: { idsArray },
+				});
+		}
 		setStateApp(state => ({
 			...state,
 			selectedRevenueProperty: getPropertyResult?.getProperty.property,
@@ -295,17 +315,21 @@ export default function DetailComponents(props) {
 					entityId: c._id,
 				}))
 			);
+			const owner = checkIfOwnersAreContactsData?.ifAreContacts.map(c => ({
+				contactId: c.isContact,
+				name: c.name,
+				_id: c._id,
+			}));
+			const updatePropertyData = {
+				...propertyData,
+				owner: owner[0],
+			};
+
+			detailCardController.updateState({
+				summaryData: updatePropertyData,
+			});
 		}
 	}, [checkIfOwnersAreContactsData]);
-
-	const handleScroll = e => {
-		if (!isButtonScroll) {
-			const { scrollTop } = e.target;
-			if (scrollTop <= 150 && tab !== 0) setTab(0);
-			else if (scrollTop > 150 && tab !== 1) setTab(1);
-		}
-		handleEndScroll();
-	};
 
 	const deleteFunc = ids => {
 		if (ids.length > 0) {
@@ -323,8 +347,6 @@ export default function DetailComponents(props) {
 			}
 		}
 	};
-
-	const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
 
 	const onUpdateMetaData = data => {
 		if (data.owner)

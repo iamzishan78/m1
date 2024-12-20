@@ -1,7 +1,7 @@
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 
 // Schema for agreement related units grid
 
@@ -153,12 +153,17 @@ const UnitMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'relatedShape.shapeJson.properties.campaignName.keyword',
-			accessorFn: row => row?.relatedShape?.shapeJson?.properties?.campaignName,
-			id: 'relatedShape.shapeJson.properties.campaignName',
-			header: 'Campaign Name',
+			type: 'array',
+			name: 'relatedShape.shapeJson.properties.campaigns.keyword',
+			accessorFn: row => row?.relatedShape?.shapeJson?.properties?.campaigns,
+			id: 'relatedShape.shapeJson.properties.campaigns',
+			header: 'Campaigns',
 			size: 270,
-			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
+			Cell: ({ row }) => {
+				return (
+					<CampaignField value={row?.original?.relatedShape?.shapeJson?.properties?.campaigns} fullWidth disabled />
+				);
+			},
 		},
 
 		{

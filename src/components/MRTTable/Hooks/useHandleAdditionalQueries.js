@@ -1,13 +1,13 @@
 import { useApolloClient } from '@apollo/client';
 import { useEffect } from 'react';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'hookstate/tableController';
 import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
 import { globalStateController } from 'hookstate/globalStateController';
 import { COMMENTSCOUNTER } from 'graphQL/useQueryCommentsCounter';
 import { isEqual } from 'lodash';
+import { TAGSAMPLES } from 'graphQL/useQueryTagSamples';
 
-const useHandleAdditionalQueries = ({ tableKey, tableState, tableStateValues }) => {
-	const Controller = tableController(tableKey);
+const useHandleAdditionalQueries = ({ Controller, tableKey, tableState, tableStateValues }) => {
 	const { stateValues } = Controller.useState(['alreadyCheckedOwnersLength']);
 	const { stateValues: ownersStateValues } = Controller.useState(['ownersWhoAreContact']);
 	const client = useApolloClient();
@@ -77,6 +77,27 @@ const useHandleAdditionalQueries = ({ tableKey, tableState, tableStateValues }) 
 			});
 	};
 
+	const callTagsQuery = async () => {
+		const user = globalStateController.getValue('user');
+		const tagsListState = Controller.getValue('tagsList');
+
+		const ids = tableStateValues.getIdsFromRows?.(tableStateValues.data.rows);
+
+		if (!ids || ids.length === 0) return;
+
+		const res = await client.query({
+			variables: {
+				objectsIdsArray: ids,
+				userId: user.mongoId,
+			},
+			query: TAGSAMPLES,
+		});
+
+		const tagsList = res?.data.tagSamples;
+
+		if (!isEqual(tagsListState, tagsList)) Controller.updateState({ tagsList });
+	};
+
 	useEffect(() => {
 		const { additionalQueries } = tableStateValues;
 
@@ -84,6 +105,8 @@ const useHandleAdditionalQueries = ({ tableKey, tableState, tableStateValues }) 
 
 		if (additionalQueries.includes('isContact')) callIfOwnersAreContactsQuery();
 		if (additionalQueries.includes('comments')) callCommentsQuery();
+		if (additionalQueries.includes('tags')) callTagsQuery();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState.data, tableState.additionalQueries, refetchAdditionalQueries]);
 };
 

@@ -1,4 +1,4 @@
-import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import WellsToolbar from 'components/MRTTable/TablesOverride/MyWellsTable/WellsToolbar';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
@@ -37,6 +37,13 @@ const MyWellsMeta = {
 			accessorKey: '_id',
 		},
 		{
+			...CommonSchema.HIDDEN, // Added to allow search with this field too
+			name: 'wellData.wellName',
+			accessorKey: 'wellData?.WellName',
+			hidden: true,
+			isSearchField: true,
+		},
+		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'wellData.wellName.keyword',
 			accessorKey: 'wellData.wellName',
@@ -50,9 +57,9 @@ const MyWellsMeta = {
 				>
 					<ColumnWithLink
 						value={row?.original?.wellData?.wellName}
-						link={`/land/well/details/${row?.original?.wellData?._id}?mongoWellId=${row?.original?._id}`} // // Modified to use `_id` fields for wellData
+						link={`/land/well/details/${row?.original?.wellData?.Id}?mongoWellId=${row?.original?._id}`}
 						onClickForTestCase={() => {
-							globalStateController.handleMyWellTestCase(row?.original?.wellData?._id, row?.original?._id);
+							globalStateController.handleMyWellTestCase(row?.original?.wellData?.Id, row?.original?._id);
 							tableGlobalController.updateState({
 								addWellDialog: {
 									type: 'addWell',

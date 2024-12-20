@@ -244,7 +244,7 @@ describe('Contact Table', () => {
 			.invoke('text')
 			.then(campaignName => {
 				// Intercept and wait for the 'getESSimpleSearch' API call again after clicking the action button to submit the update
-				cy.interceptAndWait(['upsertContactCampaigns'], () => {
+				cy.interceptAndWait(['upsertEntityCampaigns'], () => {
 					cy.get('[data-testid="action-button"]', { timeout: 5000 }).click();
 				});
 				cy.wait(10000);

@@ -503,9 +503,9 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 			},
 		},
 		{
-			label: 'Campaign Names',
-			name: 'campaignName',
-			renderField: 'campaignName',
+			label: 'Campaigns',
+			name: 'campaigns',
+			renderField: 'campaigns',
 		},
 		{
 			label: 'Campaign Priority',

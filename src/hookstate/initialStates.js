@@ -48,21 +48,15 @@ export const tableInitialState = {
 	columnPinning: {
 		left: [],
 	},
+	isIncludeInactive: false,
+	gridView: {},
+	showTypes: false,
 };
 export const tableESState = {};
 export const tableGlobalState = hookstate({
 	refetch: false,
-	reInitialized: false,
-});
-
-/* -------------------------------------------------------------------------- */
-/*                           Simple Table Controller                          */
-/* -------------------------------------------------------------------------- */
-
-export const simpleTableState = {};
-export const simpleTableGlobalState = hookstate({
-	refetch: false,
 	refetchAdditionalQueries: false,
+	reInitialized: false,
 	tabKey: 0,
 });
 
@@ -179,7 +173,6 @@ export const layerFilterInitialState = {
 					'shapeJson.properties.uStatus',
 					'shapeJson.properties.uPrimaryOperator',
 					'shapeJson.properties.uUnitPricing',
-					'shapeJson.properties.campaignName',
 					'shapeJson.properties.qualifier.name',
 					'shapeJson.properties.reviewer.name',
 					'tags.tag',
