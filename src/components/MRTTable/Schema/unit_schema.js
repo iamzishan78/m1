@@ -4,7 +4,7 @@ import UnitIcon from 'components/Shared/svgIcons/unit';
 import _ from 'lodash';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import vf_currency from 'components/Shared/valueformatters/vf_currency.js';
 import vf_number from 'components/Shared/valueformatters/vf_number';
