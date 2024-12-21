@@ -38,6 +38,12 @@ const defaultSeriesActivities = [
 		color: '#F5B296',
 		data: [],
 	},
+	{
+		key: 'others',
+		name: 'Others',
+		color: '#D2B48C',
+		data: [],
+	},
 ];
 
 const defaultSeriesDeals = [
@@ -98,6 +104,36 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 		},
 	});
 	const { activeModule } = useSelector(({ common }) => common);
+
+	const countOthersData = (series, data, indexKey) => {
+		// Create an array of keys present in the series
+		const seriesKeys = series.map(s => s.key);
+		// Initialize total count
+		let othersTotal = 0;
+		// Loop through the keys of data
+		for (let key in data) {
+			// Skip 'name' or keys that exist in seriesKeys array
+			if (key !== 'name' && !seriesKeys.includes(key) && indexKey === 'others') {
+				othersTotal += data[key]; // Add value to total if the key is not in seriesKeys
+			}
+		}
+		return othersTotal;
+	};
+
+	const countOthersForDonut = (analyticsData, series) => {
+		// Initialize total count
+		let total = 0;
+		const seriesKeys = series.map(s => s.key);
+		// Loop through the keys of activitiesCount
+		for (let key in analyticsData) {
+			// Check if the key is not in seriesKeys
+			if (key !== 'name' && !seriesKeys.includes(key)) {
+				total += analyticsData[key]; // Add the value to total
+			}
+		}
+		return total;
+	};
+
 	const getAllFilters = () => {
 		let rangeFilters = [];
 		if (!tableFilters.find(filter => filter.type === 'range')) {
@@ -161,7 +197,9 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 				}
 				for (let i = 0; i < chartData.series.length; i++) {
 					if (data[1]) {
-						const count = data[1][chartData.series[i].key] ? data[1][chartData.series[i].key] : 0;
+						const count = data[1][chartData.series[i].key]
+							? data[1][chartData.series[i].key]
+							: countOthersData(chartData.series, data[1], chartData.series[i].key);
 						chartData.series[i].data.push(count);
 					} else {
 						chartData.series[i].data.push(0);
@@ -257,6 +295,11 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 											title: 'Mailers',
 											value: get(analyticsData, 'activitiesCount.mailer', 0),
 											color: '#F5B296',
+										},
+										{
+											title: 'Others',
+											value: countOthersForDonut(analyticsData.activitiesCount, defaultSeriesActivities),
+											color: '#D2B48C',
 										},
 									]}
 								/>
