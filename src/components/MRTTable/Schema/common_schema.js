@@ -139,6 +139,18 @@ export const CommonSchema = {
 		enableResizing: false,
 		size: 80,
 	},
+	USER: {
+		name: 'user.name',
+		accessorKey: 'user.name',
+		header: 'User',
+		size: 250,
+		filter: true,
+		isSearchField: false,
+		type: 'string',
+		Cell: ({ row }) => {
+			return <>{row.original?.user?.name}</>;
+		},
+	},
 	CREATED_BY: {
 		name: 'createBy.name',
 		accessorKey: 'createBy.name',
