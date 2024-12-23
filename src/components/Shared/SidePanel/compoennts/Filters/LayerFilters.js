@@ -156,7 +156,7 @@ const ownershipFiltersParams = [
 const tagFiltersParams = ['selectedTags'];
 const filterTypes = {
 	Geography: { component: 'GeographyFilter', countKey: 'geographyFilterCount' },
-	Wells: { component: 'WellFilter', countKey: 'wellFilterCount' },
+	// Wells: { component: 'WellFilter', countKey: 'wellFilterCount' },
 	// Production: { component: "ProductionFilter", countKey: "productionFilterCount" },
 	// Ownership: { component: "OwnershipFilter", countKey: "ownershipFilterCount" },
 	// Tags: { component: "TagsFilter", countKey: "tagFilterCount" },
@@ -314,7 +314,14 @@ const LayerFilters = () => {
 								<Button
 									type="button"
 									id="managerButton"
-									onClick={() => append({})}
+									onClick={() =>
+										append({
+											dataSourceName: null,
+											fieldName: null,
+											filterType: null,
+											filterValues: null,
+										})
+									}
 									color="secondary"
 									variant="outlined"
 								>
