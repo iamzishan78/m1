@@ -12,10 +12,8 @@ import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
 import RelatedTractsTable from 'components/Common/RelatedTables/Tracts';
 import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
-import TabButtons from 'components/Shared/TabPanels/TabButtons';
 import AgreementSummary from './AgreementSummary';
 import ProvisionsTab from './ProvisionsTab';
-import AssociatedWellsShapeTable from 'components/Table/Wells/AssociatedWellsShapeTable';
 import Tags from 'components/Shared/Tagger';
 import { showSuccessMessage, showErrorMessage, showInfoMessage } from 'actions';
 import AgreementLegalDescriptionFields from 'components/Land/components/Agreements/detailComponents/legalDescription/FieldsSection';
@@ -37,7 +35,6 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 export default function AgreementDetailCard(props) {
 	const dispatch = useDispatch();
 	const [selectedTab, setSelectedTab] = useState(0);
-	const [selectedWellTab, setWellSelectedTab] = useState(0);
 
 	const [uniObj, setUniObj] = useState();
 	const [properties, setProperties] = useState();
@@ -334,16 +331,6 @@ export default function AgreementDetailCard(props) {
 		[uniObj?._id]
 	);
 
-	const WellHeader = ({ selectedWellTab, setWellSelectedTab }) => (
-		<TabButtons
-			labels={['Agreement Wells', 'Potential Wells']}
-			value={selectedWellTab}
-			setValue={n => {
-				setWellSelectedTab(n);
-			}}
-		/>
-	);
-
 	const PotentialTractsOverrideMeta = useMemo(
 		() => ({
 			tabLabels: ['Related Tracts', 'Potential Tracts'],
@@ -442,7 +429,7 @@ export default function AgreementDetailCard(props) {
 							</div>,
 							<div style={{ overflow: 'overlay', maxHeight: 'calc(100vh - 285px)' }}>
 								<TabPanels
-									value={selectedWellTab}
+									value={selectedTableTab}
 									panels={[
 										<div className={showSummary ? classes.subContent : classes.subContent2}>
 											<RelatedWellsTable
@@ -453,17 +440,15 @@ export default function AgreementDetailCard(props) {
 											/>
 										</div>,
 										<div className={showSummary ? classes.subContent : classes.subContent2}>
-											<AssociatedWellsShapeTable
-												customLayer={uniObj}
-												shapeType="Agreement"
-												parent="associatedWellsPerUnits"
-												targetLabel="well"
-												header={
-													<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />
-												}
-												showTracks
-												setSelectedTab={setWellSelectedTab}
-												dense
+											<MRTTable
+												name="PotentialWellsTable"
+												overrideMeta={{
+													tabLabels: ['Agreement Wells', 'Potential Wells'],
+													customProps: {
+														customLayer: uniObj,
+														shapeType: 'Agreement',
+													},
+												}}
 											/>
 										</div>,
 									]}

@@ -305,6 +305,7 @@ const tableESStateControllerHandler = state => ({
 			filterModes,
 			commentsCounter: [],
 			tagsList: [],
+			isTrackedList: [],
 		};
 
 		if (isClientSide) {

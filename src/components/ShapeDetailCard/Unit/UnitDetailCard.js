@@ -11,9 +11,7 @@ import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
 import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
-import TabButtons from 'components/Shared/TabPanels/TabButtons';
 import UnitSummary from './UnitSummary';
-import AssociatedWellsShapeTable from 'components/Table/Wells/AssociatedWellsShapeTable';
 import Tags from 'components/Shared/Tagger';
 import { showSuccessMessage, showErrorMessage } from 'actions';
 import { AppContext } from 'AppContext';
@@ -34,7 +32,6 @@ const setSelectedTab = tableGlobalController.setSelectedTab;
 
 export default function UnitDetailCard(props) {
 	const dispatch = useDispatch();
-	const [selectedWellTab, setWellSelectedTab] = useState(0);
 	const [uniObj, setUniObj] = useState();
 	const [properties, setProperties] = useState();
 	const [stateApp, setStateApp] = useContext(AppContext);
@@ -284,18 +281,6 @@ export default function UnitDetailCard(props) {
 		);
 	}
 
-	function WellHeader({ selectedWellTab, setWellSelectedTab }) {
-		return (
-			<TabButtons
-				labels={['Unit Wells', 'Potential Wells']}
-				value={selectedWellTab}
-				setValue={n => {
-					setWellSelectedTab(n);
-				}}
-			/>
-		);
-	}
-
 	return uniObj ? (
 		<DrawerContextProvider>
 			<Grid item sm={12} container className={classes.gridWidthScroll}>
@@ -358,7 +343,7 @@ export default function UnitDetailCard(props) {
 								/>
 							</div>,
 							<TabPanels
-								value={selectedWellTab}
+								value={selectedTab}
 								panels={[
 									<div className={showSummary ? classes.subContent : classes.subContent2}>
 										<RelatedWellsTable
@@ -369,15 +354,15 @@ export default function UnitDetailCard(props) {
 										/>
 									</div>,
 									<div className={showSummary ? classes.subContent : classes.subContent2}>
-										<AssociatedWellsShapeTable
-											customLayer={uniObj}
-											shapeType="Unit"
-											parent="associatedWellsPerUnits"
-											targetLabel="well"
-											header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
-											showTracks
-											setSelectedTab={setWellSelectedTab}
-											dense
+										<MRTTable
+											name="PotentialWellsTable"
+											overrideMeta={{
+												tabLabels: ['Unit Wells', 'Potential Wells'],
+												customProps: {
+													customLayer: uniObj,
+													shapeType: 'Unit',
+												},
+											}}
 										/>
 									</div>,
 								]}

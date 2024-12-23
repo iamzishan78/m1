@@ -6,6 +6,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { COMMENTSCOUNTER } from 'graphQL/useQueryCommentsCounter';
 import { isEqual } from 'lodash';
 import { TAGSAMPLES } from 'graphQL/useQueryTagSamples';
+import { IS_TRACKED_BY_IDS } from 'graphQL/useQueryTrackByObjectId';
 
 const useHandleAdditionalQueries = ({ Controller, tableKey, tableState, tableStateValues }) => {
 	const { stateValues } = Controller.useState(['alreadyCheckedOwnersLength']);
@@ -98,6 +99,27 @@ const useHandleAdditionalQueries = ({ Controller, tableKey, tableState, tableSta
 		if (!isEqual(tagsListState, tagsList)) Controller.updateState({ tagsList });
 	};
 
+	const callIsTrackedQuery = async () => {
+		const user = globalStateController.getValue('user');
+		const isTrackedListState = Controller.getValue('isTrackedList');
+
+		const ids = tableStateValues.getIdsFromRows?.(tableStateValues.data.rows);
+
+		if (!ids || ids.length === 0) return;
+
+		const res = await client.query({
+			variables: {
+				ids,
+				userId: user.mongoId,
+			},
+			query: IS_TRACKED_BY_IDS,
+		});
+
+		const isTrackedList = res?.data?.isTrackedByIds?.data;
+
+		if (!isEqual(isTrackedListState, isTrackedList)) Controller.updateState({ isTrackedList });
+	};
+
 	useEffect(() => {
 		const { additionalQueries } = tableStateValues;
 
@@ -106,6 +128,7 @@ const useHandleAdditionalQueries = ({ Controller, tableKey, tableState, tableSta
 		if (additionalQueries.includes('isContact')) callIfOwnersAreContactsQuery();
 		if (additionalQueries.includes('comments')) callCommentsQuery();
 		if (additionalQueries.includes('tags')) callTagsQuery();
+		if (additionalQueries.includes('isTracked')) callIsTrackedQuery();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState.data, tableState.additionalQueries, refetchAdditionalQueries]);
 };

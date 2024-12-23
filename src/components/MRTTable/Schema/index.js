@@ -51,6 +51,7 @@ import PotentialOwnersMeta from './QuerySchema/potential_owners_schema';
 import UserManagementMeta from './QuerySchema/user_management_schema';
 import PropertiesRevenueMeta from './QuerySchema/properties_revenue_schema';
 import TaxRollInterestsMeta from './QuerySchema/tax_roll_interests_schema';
+import PotentialWellsMeta from './QuerySchema/potential_wells_schema';
 
 export const SCHEMA = {
 	ActivityTable: ActivityMeta,
@@ -113,8 +114,11 @@ export const SCHEMA = {
 	RelatedTractsTable: RelatedTractsMeta,
 	RelatedWellsTable: RelatedWellsMeta,
 	AuditReportingTable: AuditReportingMeta, // Revenue Statement grid => revenue/statements
+
+	// Query Tables
 	PotentialOwnersTable: PotentialOwnersMeta,
 	UserManagementTable: UserManagementMeta,
 	PropertiesRevenueTable: PropertiesRevenueMeta, // analytics > revenue > revenue  by month
 	TaxRollInterestsTable: TaxRollInterestsMeta,
+	PotentialWellsTable: PotentialWellsMeta,
 };

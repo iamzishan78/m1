@@ -41,7 +41,6 @@ import { deepEqualObjects, setStateIfDeepEqual } from '../functions';
 
 // Header Schemas
 import DocumentsHeadCells from '../constants/documents-header-schema';
-import WellsHeadCells from '../constants/well-header-schema.js';
 import OwnersPerWellHeadCells from '../constants/ownersperwell-header-schema.js';
 import OwnersPerParcelHeadCells from '../constants/ownersperparcel-header-schema.js';
 import DealsHeadCells from '../constants/deals-header-schema.js';
@@ -693,40 +692,10 @@ function M1nTable(props) {
 				dataTagSamples.tagSamples.forEach(sample => {
 					availableTags = [...availableTags, ...sample.tags];
 				});
-				const cleanAvailableTags = [...new Set(availableTags)];
 
 				setRows(dataWells.wells.results);
 
-				setColumns(
-					cleanAvailableTags.length > 0
-						? WellsHeadCells.map(column => {
-								if (column.name === 'tags') {
-									return {
-										...column,
-										options: {
-											...column.options,
-											filterOptions: {
-												...column.options.filterOptions,
-												names: cleanAvailableTags,
-											},
-										},
-									};
-								}
-								return column;
-							})
-						: WellsHeadCells.map(column => {
-								if (column.name === 'tags') {
-									return {
-										...column,
-										options: {
-											...column.options,
-											filter: false,
-										},
-									};
-								}
-								return column;
-							})
-				);
+				setColumns([]);
 
 				setStateApp(state => ({
 					...state,
