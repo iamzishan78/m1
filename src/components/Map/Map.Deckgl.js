@@ -71,6 +71,7 @@ import { baseTenantsMaps } from 'utils/data';
 import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
+import { mapControlsController } from 'hookstate/mapControlsController';
 
 const useStyles = makeStyles(() => ({
 	mapWrapper: {
@@ -157,8 +158,11 @@ function Map({
 	});
 
 	const dispatch = useDispatch();
-	const { searchInputValue } = useSelector(({ MapGridCard }) => MapGridCard);
 	const removeLayerFromMap = useSelector(({ MainMap }) => MainMap.removeLayerFromMap);
+
+	const {
+		stateValues: { searchValue },
+	} = mapControlsController.useState(['searchValue']);
 
 	const [mapStyles, MapStyles] = useState([]);
 	const setMapStyles = state => {
@@ -315,7 +319,7 @@ function Map({
 			});
 
 		popupController.updateState({
-			popupOpen: !!(popupController.getValue('wellSelectedCoordinates')?.length > 0 && searchInputValue),
+			popupOpen: !!(popupController.getValue('wellSelectedCoordinates')?.length > 0 && searchValue),
 			expandedCard: false,
 		});
 

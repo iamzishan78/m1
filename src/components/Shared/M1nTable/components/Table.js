@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-lone-blocks */
 import React, { useState, useContext, useEffect, Fragment } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -47,7 +48,6 @@ import CellContentEdition from './SubComponents/CellContentEdition';
 import Avatar from 'react-avatar';
 import RoomIcon from '@material-ui/icons/Room';
 import { useDispatch } from 'react-redux';
-import { setMapGridCardState } from 'actions';
 import { deepEqualObjects, setStateIfDeepEqual } from '../../functions';
 import ReinviteUserDialog from './SubComponents/ReinviteUserDialog';
 import MoreVertOutlinedIcon from '@material-ui/icons/MoreVertOutlined';
@@ -679,8 +679,6 @@ function SubTable(props) {
 			let a = document.createElement('a');
 			a.href = viewFileResult.viewFile.uri;
 			a.download = viewFileResult.viewFile.name;
-			// selectors
-			// const { searchloading } = useSelector(({ MapGridCard }) => MapGridCard);
 
 			// if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
 			// a.target = "_blank";
@@ -1631,17 +1629,6 @@ function SubTable(props) {
 																setTitle(selectedWell.wellName ? selectedWell.wellName : selectedWell.WellName);
 																setSubTitle(selectedWell.api ? selectedWell.api : selectedWell.api);
 																handleOpenExpandableCard();
-															} else if (props.targetLabel === 'owner') {
-																if (props.parent === 'OwnersPerWell') {
-																	selectedWell.id = selectedWell.globalOwnerId;
-																	delete selectedWell.globalOwnerId;
-																}
-
-																dispatch(
-																	setMapGridCardState({
-																		selectedOwner: selectedWell,
-																	})
-																);
 															}
 														}
 													}

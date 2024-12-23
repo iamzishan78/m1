@@ -3,10 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { AppContext } from 'AppContext';
 import { useLazyQuery } from '@apollo/client';
 import Card from '@material-ui/core/Card';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { setMapGridCardState } from 'actions';
-import OwnersSummaryCard from 'components/OwnersSummaryCard/OwnersSummaryCard';
-import { TabPanel } from 'components/Shared/TabPanels';
+import { useSelector } from 'react-redux';
 
 import { CircularProgress, Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 
@@ -134,14 +131,10 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
 	// function state
 	const [searchTapValue, SearchTapValue] = useState(multiGridInitialData[0]);
 
-	// selectorsW
-	const { mapGridCardActiveTap, selectedOwner } = useSelector(({ MapGridCard }) => MapGridCard, shallowEqual);
 	const mapLayersPanelExtended = useSelector(({ MainMap }) => MainMap.mapLayersPanelExtended);
 	const userGridViewFilters = useSelector(({ session }) => session.userGridViewSettings?.filters);
 
 	const { mapControlsStateValues } = mapControlsController.useState(['mapGridCardActivated'], 'mapControlsStateValues');
-
-	const dispatch = useDispatch();
 
 	const setSearchTapValue = state => {
 		if (searchTapValue !== state) {
@@ -153,7 +146,6 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
 	const classes = useStyles({
 		mapLayersPanelExtended,
 		mapGridCardActivated: mapControlsStateValues.mapGridCardActivated,
-		mapGridCardActiveTap,
 		viewportWells: stateApp.viewportWells,
 		userGridViewFilters,
 		// screenSizes
@@ -250,82 +242,64 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
 
 	const handleSearchPanelChange = value => {
 		setSearchTapValue(value);
-		if (searchTapValue.index !== value.index) {
-			dispatch(setMapGridCardState({ searchResultData: [], searchloading: true }));
-		}
 	};
 
 	return (
 		<div className={classes.card}>
 			<Card className={classes.dockMenu}>
-				{selectedOwner ? (
-					<OwnersSummaryCard />
-				) : (
-					<div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`} style={{ position: 'relative' }}>
-						{/* //// search panel //// */}
-						<TabPanel
-							value={mapGridCardActiveTap}
-							index={0}
-							className={classes.tapsPanelsPadding}
-							style={{ width: '100%', height: '100%' }}
-						>
-							<Grid container direction="row" style={{ height: '100%', marginBottom: '20px' }}>
-								<Grid item md={2} className={classes.selectorOptions}>
-									<Typography variant="h6" component="h1" style={{ fontWeight: 'bold', padding: '10px 0px 0px 20px' }}>
-										{title}
-									</Typography>
+				<div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`} style={{ position: 'relative' }}>
+					<Grid container direction="row" style={{ height: '100%', marginBottom: '20px' }}>
+						<Grid item md={2} className={classes.selectorOptions}>
+							<Typography variant="h6" component="h1" style={{ fontWeight: 'bold', padding: '10px 0px 0px 20px' }}>
+								{title}
+							</Typography>
 
-									<List component="nav" aria-label="main mailbox folders">
-										{multiGridInitialData.map(row => {
-											const Icon = row?.Icon;
-											return (
-												<FeatureFlag feature={row.feature} noCheck={!row.feature}>
-													<ListItem
-														button
-														selected={row.value === searchTapValue.value}
-														onClick={() => handleSearchPanelChange(row)}
-													>
-														{Icon && (
-															<ListItemIcon style={{ minWidth: '40px' }}>
-																<Icon />
-															</ListItemIcon>
-														)}
+							<List component="nav" aria-label="main mailbox folders">
+								{multiGridInitialData.map(row => {
+									const Icon = row?.Icon;
+									return (
+										<FeatureFlag feature={row.feature} noCheck={!row.feature}>
+											<ListItem
+												button
+												selected={row.value === searchTapValue.value}
+												onClick={() => handleSearchPanelChange(row)}
+											>
+												{Icon && (
+													<ListItemIcon style={{ minWidth: '40px' }}>
+														<Icon />
+													</ListItemIcon>
+												)}
 
-														<ListItemText id={row.label}>
-															{row.label}
-															{isLoading ? (
-																<CircularProgress size="1rem" />
-															) : (
-																`(${row.showCounts && getCounts ? getCounts(row.value) : ''})`
-															)}
-														</ListItemText>
-													</ListItem>
-												</FeatureFlag>
-											);
-										})}
-									</List>
-								</Grid>
+												<ListItemText id={row.label}>
+													{row.label}
+													{isLoading ? (
+														<CircularProgress size="1rem" />
+													) : (
+														`(${row.showCounts && getCounts ? getCounts(row.value) : ''})`
+													)}
+												</ListItemText>
+											</ListItem>
+										</FeatureFlag>
+									);
+								})}
+							</List>
+						</Grid>
 
-								<Grid item md={10} style={{ padding: '0px' }}>
-									<div style={{ position: 'relative' }} classes={classes.gridTables}>
-										{searchTapValue.value === 'payees' && (
-											<MRTTable name={'RelatedPayeesTable'} overrideMeta={overrideMetaRelatedPayees} />
-										)}
-										{searchTapValue.value === 'billingParties' && (
-											<MRTTable name={'RelatedBillingPartiesTable'} overrideMeta={overrideMetaRelatedBillingParties} />
-										)}
-										{searchTapValue.value === 'costAllocations' && (
-											<MRTTable
-												name={'RelatedCostAllocationsTable'}
-												overrideMeta={overrideMetaRelatedCostAllocations}
-											/>
-										)}
-									</div>
-								</Grid>
-							</Grid>
-						</TabPanel>
-					</div>
-				)}
+						<Grid item md={10} style={{ padding: '0px' }}>
+							<div style={{ position: 'relative' }} classes={classes.gridTables}>
+								{searchTapValue.value === 'payees' && (
+									<MRTTable name={'RelatedPayeesTable'} overrideMeta={overrideMetaRelatedPayees} />
+								)}
+								{searchTapValue.value === 'billingParties' && (
+									<MRTTable name={'RelatedBillingPartiesTable'} overrideMeta={overrideMetaRelatedBillingParties} />
+								)}
+								{searchTapValue.value === 'costAllocations' && (
+									<MRTTable name={'RelatedCostAllocationsTable'} overrideMeta={overrideMetaRelatedCostAllocations} />
+								)}
+							</div>
+						</Grid>
+					</Grid>
+				</div>
 			</Card>
 		</div>
 	);

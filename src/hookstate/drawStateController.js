@@ -6,7 +6,6 @@ import * as turf from '@turf/turf';
 import { layerRefs } from 'hookstate';
 import { showErrorMessage } from 'actions';
 import { hookStateController } from 'hookstate/hookStateController';
-import { setMapGridCardState, toggleMapGridCardAtived } from 'actions';
 import { copy, getPolygonString } from 'components/Shared/functions';
 import {
 	addCustomShapeProperties,
@@ -158,12 +157,6 @@ const drawStateControllerHandler = state => {
 			shapeGridOwnersCount: 0,
 			...additionalProps,
 		}));
-
-		dispatch(
-			setMapGridCardState({
-				mapGridCardActiveTap: 0,
-			})
-		);
 	};
 
 	/* ------------------------- DrawShapes Actions End ------------------------- */
@@ -455,7 +448,6 @@ const drawStateControllerHandler = state => {
 			selectedPolygonString: getPolygonString(selectedFeature),
 		});
 
-		dispatch(toggleMapGridCardAtived());
 		mapControlsController.toggleMapGridCardAtived();
 
 		closeDrawTool();

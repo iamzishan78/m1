@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useContext, useState } from 'react';
 import { Container, Dialog } from '@material-ui/core';
 import Table from 'components/Shared/M1nTable/components/Table';
@@ -33,6 +34,7 @@ import convert_date from 'components/Shared/valueformatters/convert_date.js';
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import { REMOVE_AGREEMENTS } from 'graphQL/useMutationRemoveAgreements';
 import { jobController } from 'hookstate/jobStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
 
 function AgreementsTable(props) {
 	const defaultView = {
@@ -65,7 +67,10 @@ function AgreementsTable(props) {
 
 	const { Agreements: AgreementsGridView } = useSelector(({ session }) => session.userGridViewSettings);
 
-	const searchInput = useSelector(state => state.MapGridCard.searchInputValue);
+	const {
+		stateValues: { searchValue },
+	} = mapControlsController.useState(['searchValue']);
+
 	const { setESFilters } = props;
 
 	const esFilters = props.esFilters ? props.esFilters : [];
@@ -110,7 +115,7 @@ function AgreementsTable(props) {
 		const formatedFilter = esFilters ? copy(esFilters) : [];
 		props.setInitialFilters(formatedFilter);
 		setTableMeta({
-			extendSearchQuery: esExtentedSearch(props.landSearchQuery, searchInput),
+			extendSearchQuery: esExtentedSearch(props.landSearchQuery, searchValue),
 			selectedGridView: GridViewModule || defaultView,
 			customDataESKey: 'shapeJson.properties.custom_data',
 			// searchFields: ["*"],

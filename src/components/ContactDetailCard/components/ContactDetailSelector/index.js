@@ -4,10 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { AppContext } from 'AppContext';
 import { useLazyQuery } from '@apollo/client';
 import Card from '@material-ui/core/Card';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { setMapGridCardState } from 'actions';
-import OwnersSummaryCard from 'components/OwnersSummaryCard/OwnersSummaryCard';
-import { TabPanel } from 'components/Shared/TabPanels';
+import { useSelector } from 'react-redux';
 import ContactDetailedInfo from 'components/ContactDetailedInfo/ContactDetailedInfo';
 import ContactDealsProvider from 'components/DealsDetailCard/ContactDealsProvider';
 
@@ -33,12 +30,10 @@ const useStyles = makeStyles(theme => ({
 		},
 	},
 	rootList: {
-		width: ({ mapGridCardActivated }) =>
-			mapGridCardActivated === 'min' ? '57vw' : mapGridCardActivated === 'exp' ? '96vw' : '57vw',
-		height: ({ mapGridCardActivated }) =>
-			mapGridCardActivated === 'min' ? '60vh' : mapGridCardActivated === 'exp' ? '91vh' : '60vh',
-		left: ({ mapGridCardActivated, expandGrid }) => (mapGridCardActivated === 'exp' ? '2vw' : '2vw'),
-		top: ({ mapGridCardActivated }) => (mapGridCardActivated === 'exp' ? '5vh' : '12vh'),
+		width: '57vw',
+		height: '60vh',
+		left: '2vw',
+		top: '12vh',
 		zIndex: '1300',
 		position: 'fixed',
 	},
@@ -138,15 +133,9 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 	// function state
 	const [searchTapValue, SearchTapValue] = useState(contactDetailInitialData[0]);
 
-	// selectorsW
-	const { mapGridCardActivated, mapGridCardActiveTap, selectedOwner } = useSelector(
-		({ MapGridCard }) => MapGridCard,
-		shallowEqual
-	);
 	const mapLayersPanelExtended = useSelector(({ MainMap }) => MainMap.mapLayersPanelExtended);
 	const userGridViewFilters = useSelector(({ session }) => session.userGridViewSettings?.filters);
 
-	const dispatch = useDispatch();
 	// Initialize state to hold sorted purchase data
 	const [sortedPurchaseData, setSortedPurchaseData] = useState([]);
 
@@ -169,8 +158,6 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 	// styles
 	const classes = useStyles({
 		mapLayersPanelExtended,
-		mapGridCardActivated,
-		mapGridCardActiveTap,
 		viewportWells: stateApp.viewportWells,
 		userGridViewFilters,
 		// screenSizes
@@ -178,9 +165,6 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 
 	const handleSearchPanelChange = value => {
 		setSearchTapValue(value);
-		if (searchTapValue.index !== value.index) {
-			dispatch(setMapGridCardState({ searchResultData: [], searchloading: true }));
-		}
 	};
 
 	useEffect(() => {
@@ -318,106 +302,88 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 	return (
 		<div className={classes.card}>
 			<Card className={classes.dockMenu}>
-				{selectedOwner ? (
-					<OwnersSummaryCard />
-				) : (
-					<div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`} style={{ position: 'relative' }}>
-						{/* //// search panel //// */}
-						<TabPanel
-							value={mapGridCardActiveTap}
-							index={0}
-							className={classes.tapsPanelsPadding}
-							style={{ width: '100%', height: '100%' }}
-						>
-							<Grid container direction="row" style={{ height: '100%', marginBottom: '20px' }}>
-								<Grid item md={2} className={classes.selectorOptions}>
-									<Typography variant="h6" component="h1" style={{ fontWeight: 'bold', padding: '10px 0px 0px 20px' }}>
-										Associated Data
-									</Typography>
+				<div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`} style={{ position: 'relative' }}>
+					<Grid container direction="row" style={{ height: '100%', marginBottom: '20px' }}>
+						<Grid item md={2} className={classes.selectorOptions}>
+							<Typography variant="h6" component="h1" style={{ fontWeight: 'bold', padding: '10px 0px 0px 20px' }}>
+								Associated Data
+							</Typography>
 
-									<List component="nav" aria-label="main mailbox folders">
-										{contactDetailInitialData.map(row => {
-											const Icon = row.Icon;
-											return (
-												<FeatureFlag feature={row.feature} noCheck={!row.feature}>
-													<ListItem
-														button
-														selected={row.value === searchTapValue.value}
-														onClick={() => handleSearchPanelChange(row)}
-													>
-														<ListItemIcon style={{ minWidth: '40px' }}>
-															<Icon />
-														</ListItemIcon>
-														<ListItemText
-															id={row.label}
-															primary={`${row.label} ${
-																row.showCounts ? `(${get(contactSummaryData, `contactSummary.${row.value}`, 0)})` : ''
-															}`}
-														/>
-													</ListItem>
-												</FeatureFlag>
-											);
-										})}
-									</List>
-								</Grid>
-
-								<Grid item md={10} style={{ padding: '0px' }}>
-									<div style={{ position: 'relative' }} classes={classes.gridTables}>
-										{searchTapValue.value === 'contactInformation' && (
-											<ContactDetailedInfo
-												user={stateApp.user}
-												purchaseData={sortedPurchaseData}
-												contactData={contactData}
-												handleQuickActionActivity={handleQuickActionActivity}
-											/>
-										)}
-										{searchTapValue.value === 'activities' && (
-											<MRTTable
-												name="ContactDetailActivitiesTable"
-												overrideMeta={ContactDetailActivitiesOverrideMeta}
-											/>
-										)}
-										{searchTapValue.value === 'taxRollInterests' && (
-											<MRTTable name="TaxRollInterestsTable" overrideMeta={TaxRollInterestsOverrideMeta} />
-										)}
-										{searchTapValue.value === 'wellInterests' && (
-											<MRTTable name="ContactWellInterestTable" overrideMeta={contactWellInterestOverride} />
-										)}
-										{searchTapValue.value === 'unitInterests' && (
-											<RelatedUnitInterestTable
-												id="relatedUnitInterestsTable"
-												overrideMeta={relatedUnitInterestOverride}
-											/>
-										)}
-										{searchTapValue.value === 'tractInterests' && (
-											<RelatedTractInterestTable
-												id="relatedTractInterestsTable"
-												overrideMeta={relatedTractInterestOverride}
-											/>
-										)}
-										{searchTapValue.value === 'deals' && <ContactDealsProvider />}
-										{searchTapValue.value === 'documents' && (
-											<DrawerContextProvider>
-												<RelatedDocumentsTable
-													id="relatedDocumentsTable"
-													moduleId={contactData?._id}
-													overrideMeta={RelatedDocumentsOverrideMeta}
-													relatedObjectType="Contact"
+							<List component="nav" aria-label="main mailbox folders">
+								{contactDetailInitialData.map(row => {
+									const Icon = row.Icon;
+									return (
+										<FeatureFlag feature={row.feature} noCheck={!row.feature}>
+											<ListItem
+												button
+												selected={row.value === searchTapValue.value}
+												onClick={() => handleSearchPanelChange(row)}
+											>
+												<ListItemIcon style={{ minWidth: '40px' }}>
+													<Icon />
+												</ListItemIcon>
+												<ListItemText
+													id={row.label}
+													primary={`${row.label} ${
+														row.showCounts ? `(${get(contactSummaryData, `contactSummary.${row.value}`, 0)})` : ''
+													}`}
 												/>
-											</DrawerContextProvider>
-										)}
-										{searchTapValue.value === 'relatedContacts' && (
-											<MRTTable name="ContactDetailContactsTable" overrideMeta={ContactDetailContactsOverrideMeta} />
-										)}
-										{searchTapValue.value === 'relatedAgreements' && (
-											<MRTTable name="ContactDetailAgreementsTable" overrideMeta={RelatedAgreementOverrideMeta} />
-										)}
-									</div>
-								</Grid>
-							</Grid>
-						</TabPanel>
-					</div>
-				)}
+											</ListItem>
+										</FeatureFlag>
+									);
+								})}
+							</List>
+						</Grid>
+
+						<Grid item md={10} style={{ padding: '0px' }}>
+							<div style={{ position: 'relative' }} classes={classes.gridTables}>
+								{searchTapValue.value === 'contactInformation' && (
+									<ContactDetailedInfo
+										user={stateApp.user}
+										purchaseData={sortedPurchaseData}
+										contactData={contactData}
+										handleQuickActionActivity={handleQuickActionActivity}
+									/>
+								)}
+								{searchTapValue.value === 'activities' && (
+									<MRTTable name="ContactDetailActivitiesTable" overrideMeta={ContactDetailActivitiesOverrideMeta} />
+								)}
+								{searchTapValue.value === 'taxRollInterests' && (
+									<MRTTable name="TaxRollInterestsTable" overrideMeta={TaxRollInterestsOverrideMeta} />
+								)}
+								{searchTapValue.value === 'wellInterests' && (
+									<MRTTable name="ContactWellInterestTable" overrideMeta={contactWellInterestOverride} />
+								)}
+								{searchTapValue.value === 'unitInterests' && (
+									<RelatedUnitInterestTable id="relatedUnitInterestsTable" overrideMeta={relatedUnitInterestOverride} />
+								)}
+								{searchTapValue.value === 'tractInterests' && (
+									<RelatedTractInterestTable
+										id="relatedTractInterestsTable"
+										overrideMeta={relatedTractInterestOverride}
+									/>
+								)}
+								{searchTapValue.value === 'deals' && <ContactDealsProvider />}
+								{searchTapValue.value === 'documents' && (
+									<DrawerContextProvider>
+										<RelatedDocumentsTable
+											id="relatedDocumentsTable"
+											moduleId={contactData?._id}
+											overrideMeta={RelatedDocumentsOverrideMeta}
+											relatedObjectType="Contact"
+										/>
+									</DrawerContextProvider>
+								)}
+								{searchTapValue.value === 'relatedContacts' && (
+									<MRTTable name="ContactDetailContactsTable" overrideMeta={ContactDetailContactsOverrideMeta} />
+								)}
+								{searchTapValue.value === 'relatedAgreements' && (
+									<MRTTable name="ContactDetailAgreementsTable" overrideMeta={RelatedAgreementOverrideMeta} />
+								)}
+							</div>
+						</Grid>
+					</Grid>
+				</div>
 			</Card>
 		</div>
 	);

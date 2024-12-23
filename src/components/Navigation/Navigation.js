@@ -34,7 +34,6 @@ import DealSearch from './components/DealSearch';
 import SearchBarWithToggleButton from './components/SearchBarWithToggleButton';
 
 import ContactFormModal from './components/ContactFormModal';
-import { useSelector } from 'react-redux';
 
 import Add from '@material-ui/icons/Add';
 
@@ -79,8 +78,6 @@ TabPanel.propTypes = {
 };
 
 export default function Navigation(props) {
-	const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
-
 	// contexts
 	const [stateApp, setStateApp] = useContext(AppContext);
 	const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -97,7 +94,6 @@ export default function Navigation(props) {
 	let history = useHistory();
 	let location = useLocation();
 	const classes = useStyles({
-		mapGridCardActivated,
 		user: stateApp.user,
 		// Determine if the component is rendered on the map page based on location pathname and props
 		isMap: location.pathname === '/' || location.pathname.startsWith('/map/') || props.isMap,
