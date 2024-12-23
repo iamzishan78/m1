@@ -51,6 +51,7 @@ import PotentialOwnersMeta from './QuerySchema/potential_owners_schema';
 import UserManagementMeta from './QuerySchema/user_management_schema';
 import PropertiesRevenueMeta from './QuerySchema/properties_revenue_schema';
 import TaxRollInterestsMeta from './QuerySchema/tax_roll_interests_schema';
+import BulkDataEditingMeta from './bulk_data_editing_schema';
 
 export const SCHEMA = {
 	ActivityTable: ActivityMeta,
@@ -117,4 +118,5 @@ export const SCHEMA = {
 	UserManagementTable: UserManagementMeta,
 	PropertiesRevenueTable: PropertiesRevenueMeta, // analytics > revenue > revenue  by month
 	TaxRollInterestsTable: TaxRollInterestsMeta,
+	BulkDataEditingTable: BulkDataEditingMeta,
 };
