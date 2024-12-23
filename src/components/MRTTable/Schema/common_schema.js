@@ -25,7 +25,7 @@ export const CommonSchema = {
 		showInLast: true,
 	},
 	TAGS: {
-		name: 'tags.tag.keyword',
+		name: 'tags.tag',
 		accessorKey: 'tags.tag',
 		header: 'Tags',
 		size: 250,
@@ -123,7 +123,7 @@ export const CommonSchema = {
 		size: 80,
 	},
 	CREATED_BY: {
-		name: 'createBy.name.keyword',
+		name: 'createBy.name',
 		accessorKey: 'createBy.name',
 		header: 'Created By',
 		size: 250,
@@ -147,7 +147,7 @@ export const CommonSchema = {
 		},
 	},
 	LAST_UPDATED_BY: {
-		name: 'lastUpdateBy.name.keyword',
+		name: 'lastUpdateBy.name',
 		accessorKey: 'lastUpdateBy.name',
 		header: 'Last Updated By',
 		size: 250,

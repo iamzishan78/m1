@@ -277,6 +277,7 @@ function MapGridCard(props) {
 			return {
 				filterLayerType: layerIdentifier,
 				maxTableHeight: '40vh',
+				layerSchema: mapControlsStateValues?.selectedLayer?.layerSchema,
 				toolbarInternalActions: {
 					onClose,
 					style: {
