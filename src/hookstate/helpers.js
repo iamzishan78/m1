@@ -94,8 +94,13 @@ export const handleMRTSchema = ({
 	globalFilter,
 	layerIdentifier,
 	isClientSide,
+	excludeFields,
 }) => {
 	_Schema = _.uniqBy(_Schema, item => item.accessorKey || item.id);
+
+	if (excludeFields) {
+		_Schema = _Schema.filter(item => !excludeFields.includes(item.accessorKey || item.id));
+	}
 
 	// Syncing map views with generic grids
 	const mapView = globalStateController.getValue('mapView');
