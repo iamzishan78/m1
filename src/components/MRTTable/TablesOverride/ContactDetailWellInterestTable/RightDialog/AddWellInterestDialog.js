@@ -23,7 +23,7 @@ import {
 } from '@material-ui/core';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import RightDialog from '../../RightDialog';
+import RightDialog from '../../../../ContactDetailCard/components/RightDialog';
 import parse from 'autosuggest-highlight/parse';
 import PropTypes from 'prop-types';
 import NumberFormat from 'react-number-format';

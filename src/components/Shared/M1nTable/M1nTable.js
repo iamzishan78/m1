@@ -45,7 +45,6 @@ import vf_currency from 'components/Shared/valueformatters/vf_currency';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { deepEqualObjects, setStateIfDeepEqual } from '../functions';
-import AddWellInterestDialog from '../../ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog';
 import { setMapGridCardState } from '../../../actions';
 
 // Header Schemas
@@ -62,7 +61,6 @@ import ActivitiesHeadCells from '../constants/activities-header-schema.js';
 import ParcelInterestsPerContactHeadCells from '../constants/parcel-interests-per-contact-header-schema.js';
 import WellInterests from '../constants/well-interests-schema.js';
 import ProductionDetailsHeaders from '../constants/production-detail-header-schema.js';
-import ContactWellHeadCells from '../constants/contactperwell-header-schema.js';
 
 // import value formatters
 import { addTrailingZeros } from 'components/Shared/functions';
@@ -649,37 +647,7 @@ function M1nTable(props) {
 			setRows(wells);
 
 			const cleanAvailableTags = []; // get from backend
-			setColumns([
-				...(cleanAvailableTags.length > 0
-					? ContactWellHeadCells.map(column => {
-							if (column.name === 'tags') {
-								return {
-									...column,
-									options: {
-										...column.options,
-										filterOptions: {
-											...column.options.filterOptions,
-											names: cleanAvailableTags,
-										},
-									},
-								};
-							}
-							return column;
-						})
-					: ContactWellHeadCells.map(column => {
-							if (column.name === 'tags') {
-								return {
-									...column,
-									options: {
-										...column.options,
-										filter: false,
-									},
-								};
-							}
-							return column;
-						})),
-				//flyToColumn,
-			]);
+			setColumns([]);
 			setLoading(false);
 		}
 	}, [dataContactWells]);
@@ -2702,20 +2670,6 @@ function M1nTable(props) {
 
 	return (
 		<Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
-			{props.parent && props.parent === 'assocTaxRollInterests' && (
-				<AddWellInterestDialog
-					open={stateApp.wellInterestDialog ? true : false}
-					width="450px"
-					onClose={() =>
-						setStateApp(stateApp => ({
-							...stateApp,
-							wellInterestDialog: false,
-						}))
-					}
-					contactId={props.contactId}
-				/>
-			)}
-
 			<Table
 				style={{ backgroundColor: '#fff' }}
 				header={header}
