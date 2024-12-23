@@ -167,7 +167,7 @@ function AddWellInterestDialog(props) {
 		refetchQueries: [
 			'getContactWells',
 			'getContactWellCardDetail',
-			'getPaginatedContactWellInterests',
+			'getESSimpleSearch',
 			'getContactWellInterestsFilterOptions',
 		],
 		awaitRefetchQueries: true,
@@ -178,7 +178,7 @@ function AddWellInterestDialog(props) {
 			setLoading(false);
 			handleClose();
 		},
-		refetchQueries: ['getContactWells', 'getPaginatedContactWellInterests', 'getContactWellInterestsFilterOptions'],
+		refetchQueries: ['getContactWells', 'getESSimpleSearch', 'getContactWellInterestsFilterOptions'],
 		awaitRefetchQueries: true,
 	});
 
@@ -313,7 +313,7 @@ function AddWellInterestDialog(props) {
 				},
 				refetchQueries: [
 					'getContactWells',
-					'getPaginatedContactWellInterests',
+					'getESSimpleSearch',
 					'getContactWellInterestsFilterOptions',
 					'getContactSummary',
 				],
@@ -340,7 +340,7 @@ function AddWellInterestDialog(props) {
 				refetchQueries: [
 					'getContactWells',
 					'getContactWellCardDetail',
-					'getPaginatedContactWellInterests',
+					'getESSimpleSearch',
 					'getContactWellInterestsFilterOptions',
 					'getContactSummary',
 				],
@@ -369,7 +369,7 @@ function AddWellInterestDialog(props) {
 						isDeleted: true,
 					},
 				},
-				refetchQueries: ['getContactWells', 'getPaginatedContactWellInterests', 'getContactWellInterestsFilterOptions'],
+				refetchQueries: ['getContactWells', 'getESSimpleSearch', 'getContactWellInterestsFilterOptions'],
 				awaitRefetchQueries: true,
 			});
 		} catch {
