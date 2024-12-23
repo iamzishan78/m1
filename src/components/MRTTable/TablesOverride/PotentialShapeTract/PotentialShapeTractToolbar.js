@@ -33,6 +33,8 @@ function PotentialShapeTractToolbar({ tableKey, table }) {
 
 		const shapeTracts = selectedRows.map(row => {
 			return {
+				...row?.shapeJson?.properties,
+				...row?.shapeJson?.originalProperties,
 				name: row?.name,
 				state: row?.shapeJson?.properties?.originalProperties?.State,
 				county: row?.shapeJson?.properties?.originalProperties?.County,
