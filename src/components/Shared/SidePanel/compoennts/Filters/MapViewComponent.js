@@ -137,7 +137,12 @@ function MapViewComponent({ Icon, label, fetchMapViews, defaultView }) {
 							onClick={() => {
 								handleClose();
 								globalStateController.updateState({
-									mapView: { ...mapViewStateValues.mapView, showViewModal: true, showSaveAsNew: true },
+									mapView: {
+										...mapViewStateValues.mapView,
+										selectedMapView: { ...mapViewStateValues.mapView.selectedMapView, type: 'Custom' },
+										showViewModal: true,
+										showSaveAsNew: true,
+									},
 								});
 							}}
 						>
