@@ -363,6 +363,14 @@ const tableESStateControllerHandler = state => ({
 			};
 		}
 
+		// Set default state referneces
+		stateToUpdate = {
+			...stateToUpdate,
+			defaultTableSchema: _TableSchema,
+			defaultColumnsOrdering: defaultColumnsOrdering,
+			defaultColumnPinning: defaultColumnsPinning,
+		};
+
 		state.merge(stateToUpdate);
 
 		if (mapViewFilters.length > 0) {
