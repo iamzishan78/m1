@@ -1,6 +1,10 @@
-import { GeoJsonLayer, ScatterplotLayer, LineLayer, PolygonLayer, TextLayer } from '@deck.gl/layers';
+import { ScatterplotLayer, LineLayer, PolygonLayer, TextLayer } from '@deck.gl/layers';
 import { MapboxLayer } from '@deck.gl/mapbox';
 import { isEqual } from 'lodash';
+
+import M1neralGeojsonLayer from './M1neralGeojsonLayer';
+
+const MAX = 255;
 
 const Layers = {
 	ScatterplotLayer: {
@@ -9,7 +13,7 @@ const Layers = {
 			radiusMinPixels: 4,
 			lineWidthMinPixels: 0.5,
 			radiusMaxPixels: 40,
-			getLineColor: [0, 0, 255],
+			getLineColor: [0, 0, MAX],
 			stroked: true,
 			parameters: { depthTest: false },
 		},
@@ -39,7 +43,7 @@ const Layers = {
 		},
 	},
 	GeoJsonLayer: {
-		component: GeoJsonLayer,
+		component: M1neralGeojsonLayer,
 		defaultProps: {
 			parameters: { depthTest: false },
 		},
