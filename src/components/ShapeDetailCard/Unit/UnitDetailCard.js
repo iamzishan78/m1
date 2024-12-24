@@ -318,7 +318,7 @@ export default function UnitDetailCard(props) {
 									</div>,
 									<div>
 										<MRTTable
-											name="PotentialOwnersTable"
+											name="PotentialWellOwnersTable"
 											overrideMeta={{
 												tabLabels: ['Unit Ownership', 'Potential Ownership'],
 												customProps: {

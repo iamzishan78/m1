@@ -1,7 +1,7 @@
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import IsContactCell from 'components/MRTTable/Common/TableCells/isContactIcone';
-import PotentialOwnersToolbar from 'components/MRTTable/TablesOverride/PotentialOwnersTable/PotentialOwnersToolbar';
+import PotentialWellOwnersToolbar from 'components/MRTTable/TablesOverride/PotentialWellOwnersTable/PotentialWellOwnersToolbar';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { getPolygonString } from 'components/Shared/functions';
 
@@ -9,9 +9,9 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { tableController } from 'hookstate/tableController';
 import { SHAPE_WELL_OWNERS } from 'graphQL/useQueryPaginatedShapeWellOwners';
 
-const PotentialOwnersMeta = {
+const PotentialWellOwnersMeta = {
 	query: SHAPE_WELL_OWNERS,
-	additionalQueries: ['comments', 'tags'],
+	additionalQueries: ['comments', 'tags', 'isContact'],
 	maxTableHeight: 'calc(100vh - 440px)',
 	getVariables: tableMeta => {
 		const { customLayer, year, filterByWells } = tableMeta?.customProps || {};
@@ -37,7 +37,7 @@ const PotentialOwnersMeta = {
 	},
 	getDataFromRes: res => res?.data?.paginatedShapeWellOwners?.edges || [],
 	getIdsFromRows: rows => rows?.map(row => row.node?.id) || [],
-	CustomToolBar: PotentialOwnersToolbar,
+	CustomToolBar: PotentialWellOwnersToolbar,
 	isClientSide: true,
 	isSelectAllAllowed: true,
 	isDeleteAllowed: false,
@@ -153,13 +153,13 @@ const PotentialOwnersMeta = {
 				const id = row.getValue('id');
 				let tags = row?.original?.tags;
 
-				const Controller = tableController('PotentialOwnersTable');
+				const Controller = tableController('PotentialWellOwnersTable');
 				const { stateValues } = Controller.useState(['tagsList']);
 
 				tags = stateValues.tagsList?.find(tag => tag._id === id)?.tags || tags;
 
 				return (
-					<TagCell id={id} targetSourceId={id} tags={tags} targetLabel={'well'} tableKey={'PotentialOwnersTable'} />
+					<TagCell id={id} targetSourceId={id} tags={tags} targetLabel={'well'} tableKey={'PotentialWellOwnersTable'} />
 				);
 			},
 		},
@@ -178,15 +178,15 @@ const PotentialOwnersMeta = {
 
 				let value = renderedCellValue?.length || 0;
 
-				const Controller = tableController('PotentialOwnersTable');
+				const Controller = tableController('PotentialWellOwnersTable');
 				const { stateValues } = Controller.useState(['commentsCounter']);
 
 				value = stateValues.commentsCounter?.find(counter => counter._id === id)?.total || value;
 
-				return <CommentCell id={id} value={value} targetLabel={'well'} tableKey={'PotentialOwnersTable'} />;
+				return <CommentCell id={id} value={value} targetLabel={'well'} tableKey={'PotentialWellOwnersTable'} />;
 			},
 		},
 	],
 };
 
-export default PotentialOwnersMeta;
+export default PotentialWellOwnersMeta;

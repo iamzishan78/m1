@@ -49,11 +49,12 @@ import RelatedWellsMeta from './related_wells_schema';
 import AuditReportingMeta from './audit_reporting_schema';
 import BulkDataEditingMeta from './bulk_data_editing_schema';
 
-import PotentialOwnersMeta from './QuerySchema/potential_owners_schema';
+import PotentialWellOwnersMeta from './QuerySchema/potential_well_owners_schema';
 import UserManagementMeta from './QuerySchema/user_management_schema';
 import PropertiesRevenueMeta from './QuerySchema/properties_revenue_schema';
 import TaxRollInterestsMeta from './QuerySchema/tax_roll_interests_schema';
 import PotentialWellsMeta from './QuerySchema/potential_wells_schema';
+import PotentialShapeOwnersMeta from './QuerySchema/potential_shape_owners_schema';
 
 export const SCHEMA = {
 	ActivityTable: ActivityMeta,
@@ -119,9 +120,10 @@ export const SCHEMA = {
 	BulkDataEditingTable: BulkDataEditingMeta,
 
 	// Query Tables
-	PotentialOwnersTable: PotentialOwnersMeta,
+	PotentialWellOwnersTable: PotentialWellOwnersMeta,
 	UserManagementTable: UserManagementMeta,
 	PropertiesRevenueTable: PropertiesRevenueMeta, // analytics > revenue > revenue  by month
 	TaxRollInterestsTable: TaxRollInterestsMeta,
 	PotentialWellsTable: PotentialWellsMeta,
+	PotentialShapeOwnersTable: PotentialShapeOwnersMeta,
 };

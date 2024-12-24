@@ -20,15 +20,18 @@ const useHandleAdditionalQueries = ({ Controller, tableKey, tableState, tableSta
 		const alreadyFetchedLength = stateValues?.alreadyCheckedOwnersLength ?? 0;
 		if (!tableStateValues?.data?.rows?.length && alreadyFetchedLength <= tableStateValues?.data?.rows?.length) return;
 
+		const rows = tableStateValues?.data?.rows.slice(stateValues?.alreadyCheckedOwnersLength ?? 0);
+
+		const idsArray = rows.map(row => row.id);
+
+		if (!idsArray || idsArray.length === 0) return;
+
 		Controller.updateState({
 			isLoading: true,
 			isFetching: true,
 			isError: false,
 		});
 
-		const rows = tableStateValues?.data?.rows.slice(stateValues?.alreadyCheckedOwnersLength ?? 0);
-
-		const idsArray = rows.map(row => row.id);
 		const res = await client.query({
 			variables: { idsArray },
 			query: IFARECONTACTS,

@@ -189,7 +189,6 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 				// If word contains {{username}} syntax, process it separately
 				if (word.includes('{{') && word.includes('}}')) {
 					const splittedWord = word.split(/\r?\n/);
-					console.log('splittedWord', splittedWord);
 
 					if (splittedWord.length) {
 						return (

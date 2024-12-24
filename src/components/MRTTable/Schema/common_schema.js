@@ -25,8 +25,8 @@ export const CommonSchema = {
 		showInLast: true,
 	},
 	TAGS: {
-		name: 'tags.tag',
-		accessorKey: 'tags.tag',
+		name: 'tags',
+		accessorKey: 'tags',
 		header: 'Tags',
 		size: 250,
 		isPinned: false,

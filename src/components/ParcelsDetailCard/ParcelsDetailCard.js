@@ -7,9 +7,7 @@ import GavelIcon from '@material-ui/icons/Gavel';
 import Grid from '@material-ui/core/Grid';
 import { useDispatch, useSelector } from 'react-redux';
 import TabPanels from 'components/Shared/TabPanels';
-import TabButtons from 'components/Shared/TabPanels/TabButtons';
 import Tags from 'components/Shared/Tagger';
-import SuggestedTaxOwnersTable from 'components/Table/TaxOwners/SuggestedTaxOwnersTable';
 import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
 import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
 import Taps from '../Shared/Taps';
@@ -305,6 +303,14 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 		[parcelObj]
 	);
 
+	const potentialShapeOwnersOverrideMeta = useMemo(
+		() => ({
+			tabLabels: ['Tract Ownership', 'Potential Ownership'],
+			customProps: { customLayer: parcelObj },
+		}),
+		[parcelObj]
+	);
+
 	const overrideMetaTractUnits = useMemo(
 		() => ({
 			tabLabels: ['Related Units', 'Potential Units'],
@@ -448,18 +454,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 		});
 	};
 
-	function Header() {
-		return (
-			<TabButtons
-				labels={['Tract Ownership', 'Potential Ownership']}
-				value={selectedTab}
-				setValue={n => {
-					setSelectedTab(n);
-				}}
-			/>
-		);
-	}
-
 	const RelatedDocumentsOverrideMeta = useMemo(
 		() => ({
 			maxTableHeight: 'calc(50vh - 100px)',
@@ -514,17 +508,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 									<div>
 										<MRTTable name="TractPerUnitTable" overrideMeta={overrideMeta} />
 									</div>,
-									<div className={classes.subContent}>
-										<SuggestedTaxOwnersTable
-											jobType="PARCELINTERESTS"
-											jobName="Converting potential owner to parcel owner"
-											customLayer={copy(parcelObj)}
-											parent="potentialOwnersPerParcel"
-											targetLabel="well"
-											header={<Header />}
-											setSelectedTab={setSelectedTab}
-											dense
-										/>
+									<div>
+										<MRTTable name="PotentialShapeOwnersTable" overrideMeta={potentialShapeOwnersOverrideMeta} />
 									</div>,
 								]}
 							/>,
