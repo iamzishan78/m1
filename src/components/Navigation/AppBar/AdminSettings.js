@@ -1,7 +1,6 @@
+import { Grid, Typography } from '@material-ui/core';
 import React from 'react';
 import { useSelector } from 'react-redux';
-
-import { Grid, Typography } from '@material-ui/core';
 
 export default function LandAppBar() {
 	const { activeModule, quickActionsPanelState } = useSelector(({ common }) => common);

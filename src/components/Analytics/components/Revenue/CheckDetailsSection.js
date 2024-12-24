@@ -1,14 +1,14 @@
-import React, { useEffect } from 'react';
 import { Container } from '@material-ui/core';
-import TableESHOC from 'components/Table/TableESHOC';
-import Table from 'components/Shared/M1nTable/components/Table';
+import { makeStyles } from '@material-ui/styles';
+import React, { useEffect } from 'react';
+
 import { deepEqualObjects, copy } from 'components/Shared/functions';
+import Table from 'components/Shared/M1nTable/components/Table';
+import convert_date from 'components/Shared/valueformatters/convert_date.js';
 import TableHeader from 'components/Table/constants/check-details-section-header-schema';
 
 // value formatters
-import convert_date from 'components/Shared/valueformatters/convert_date.js';
-
-import { makeStyles } from '@material-ui/styles';
+import TableESHOC from 'components/Table/TableESHOC';
 
 const useStyles = makeStyles(theme => ({
 	container: {

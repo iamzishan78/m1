@@ -1,31 +1,35 @@
-import React, { useContext, useState, useEffect } from 'react';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { Container, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import isEmpty from 'lodash/isEmpty';
+import React, { useContext, useState, useEffect } from 'react';
 
 // context
-import { AppContext } from 'AppContext';
+import { useDispatch } from 'react-redux';
 
-import { Container, Button } from '@material-ui/core';
+import { showErrorMessage, showSuccessMessage } from 'actions/Notifications.js';
+
+import { deepEqualObjects, setStateIfDeepEqual } from 'components/Shared/functions';
+import { getPolygonString } from 'components/Shared/functions';
 import Table from 'components/Shared/M1nTable/components/Table';
 import TableHOC from 'components/Table/TableHOC';
 
-// QUERIES
-import { useLazyQuery, useMutation } from '@apollo/client';
 import { SHAPEWELLS } from 'graphQL/useQueryPaginatedShapeWells';
+import { AppContext } from 'AppContext';
 
-import { deepEqualObjects, setStateIfDeepEqual } from 'components/Shared/functions';
+// QUERIES
 
 // Header Schemas
 import TableHeader from 'components/Table/constants/well-header-schema.js';
 
 // Utilities
-import isEmpty from 'lodash/isEmpty';
+
 import ticksToDateString from '../../Shared/valueformatters/ticks-to-string.js';
-import { getPolygonString } from 'components/Shared/functions';
 import { handleTagColumn } from '../helpers/index.js';
+
 import { SHAPEWELLSCOUNT } from 'graphQL/useQueryShapeWellsCount.js';
 import { ADD_MULTI_WELLINTEREST_TO_SHAPE } from 'graphQL/useMutationAddMultiWellInterestToShape.js';
-import { useDispatch } from 'react-redux';
-import { showErrorMessage, showSuccessMessage } from 'actions/Notifications.js';
+
 import { usetableStyles } from '../Styles/index.js';
 
 function AssociatedWellsShapeTable(props) {
@@ -113,18 +117,25 @@ function AssociatedWellsShapeTable(props) {
 				let well = { ...w };
 				well.wellId = w.id;
 				//// temporary to fix the ticks dates fields comming from the rest api
-				if (well.permitApprovedDate && well.permitApprovedDate != 'null')
+				if (well.permitApprovedDate && well.permitApprovedDate != 'null') {
 					well.permitApprovedDate = ticksToDateString(well.permitApprovedDate);
-				if (well.spudDate && well.spudDate != 'null') well.spudDate = ticksToDateString(well.spudDate);
-				if (well.completionDate && well.completionDate != 'null')
+				}
+				if (well.spudDate && well.spudDate != 'null') {
+					well.spudDate = ticksToDateString(well.spudDate);
+				}
+				if (well.completionDate && well.completionDate != 'null') {
 					well.completionDate = ticksToDateString(well.completionDate);
-				if (well.firstProductionDate && well.firstProductionDate != 'null')
+				}
+				if (well.firstProductionDate && well.firstProductionDate != 'null') {
 					well.firstProductionDate = ticksToDateString(well.firstProductionDate);
+				}
 				//// temporary end
 
 				well.coordinates = {};
 				well.coordinates.wellId = well.wellId;
-				if (well.longitude && well.latitude) well.coordinates.center = [well.longitude, well.latitude];
+				if (well.longitude && well.latitude) {
+					well.coordinates.center = [well.longitude, well.latitude];
+				}
 
 				well.detailCard = well.id;
 

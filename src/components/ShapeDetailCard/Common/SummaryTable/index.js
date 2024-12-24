@@ -1,35 +1,42 @@
+import { hookstate, useHookstate } from '@hookstate/core';
+import { IconButton, Grid, Table, TableCell, TableBody, FormControl, CircularProgress } from '@material-ui/core';
+import TableRow from '@material-ui/core/TableRow';
+import TextField from '@material-ui/core/TextField';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import AutorenewIcon from '@material-ui/icons/Autorenew';
+import CreateTwoToneIcon from '@material-ui/icons/CreateTwoTone';
+import { set, get, upperFirst, capitalize } from 'lodash';
+import moment from 'moment';
 import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { set, get, upperFirst, capitalize } from 'lodash';
-import TextField from '@material-ui/core/TextField';
-import moment from 'moment';
-import { IconButton, Grid, Table, TableCell, TableBody, FormControl, CircularProgress } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
 
-import AutorenewIcon from '@material-ui/icons/Autorenew';
-import TableRow from '@material-ui/core/TableRow';
-import Tooltip from '@material-ui/core/Tooltip';
-import { showErrorMessage, showInfoMessage } from 'actions';
-import CreateTwoToneIcon from '@material-ui/icons/CreateTwoTone';
-import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
-import { summaryTableStyles } from 'components/ShapeDetailCard/style';
-import UserList from 'components/Shared/UserList';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';
+import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
+import { summaryTableStyles } from 'components/ShapeDetailCard/style';
+import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
+import NumberField from 'components/Shared/components/Fields/NumberField';
+import { AutoCompleteLandgrid } from 'components/Shared/Forms/Fields/AutoCompleteLandgrid';
+import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
+import { showErrorMessage, showInfoMessage } from 'actions';
+import UserList from 'components/Shared/UserList';
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
-import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
+
 import { getRoundedNra, validateUrl } from 'utils/helper';
+
 import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
 import { copy } from 'components/Shared/functions';
+
 import { AppContext } from 'AppContext';
-import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
-import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';
-import { AutoCompleteLandgrid } from 'components/Shared/Forms/Fields/AutoCompleteLandgrid';
+
 import { US_STATES_CODES } from 'utils/data';
+
 import filterConsts from 'components/Table/TableAddDialog/Common/filterConsts';
-import { hookstate, useHookstate } from '@hookstate/core';
+
 import { globalStateController } from 'hookstate/globalStateController';
-import NumberField from 'components/Shared/components/Fields/NumberField';
+
 import DateField from 'components/Shared/components/Fields/DateField';
 import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import ShapeOwnerInput from 'components/Shared/ShapeOwnerInput';
@@ -39,7 +46,9 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
 	const classes = summaryTableStyles();
 	// match unit nra value with system generated nra
 	const getNraClass = () => {
-		if (value.unitNra === value.calculatedNra) return '';
+		if (value.unitNra === value.calculatedNra) {
+			return '';
+		}
 		return classes.baseValueChanged;
 	};
 
@@ -59,10 +68,12 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
 				onKeyDown={e => {
 					if (e.keyCode === 13) {
 						e.stopPropagation();
-						if (['uName', 'shapeLabel'].includes(data.key) && !e.target.value?.trim())
+						if (['uName', 'shapeLabel'].includes(data.key) && !e.target.value?.trim()) {
 							// validate after trimming the value
 							dispatch(showInfoMessage('Name field cannot be empty'));
-						else onKeyDown(e, data, type);
+						} else {
+							onKeyDown(e, data, type);
+						}
 					}
 				}}
 				onWheel={onWheel ? onWheel : () => {}}
@@ -136,18 +147,23 @@ export default function SummaryTableInfo({
 	const [filteredTableData, setFilteredTableData] = useState(tableData);
 
 	// Data fix for tract
-	if (properties?.originalProperties?.StateAbbreviation)
+	if (properties?.originalProperties?.StateAbbreviation) {
 		properties.originalProperties.State = properties?.State || properties?.originalProperties?.StateAbbreviation;
-	if (properties?.originalProperties?.ShortName)
+	}
+	if (properties?.originalProperties?.ShortName) {
 		properties.originalProperties.Section = properties?.Section || properties?.originalProperties?.ShortName;
-	if (properties?.originalProperties?.PrincipalMeridian)
+	}
+	if (properties?.originalProperties?.PrincipalMeridian) {
 		properties.originalProperties.Meridian = properties?.Meridian || properties?.originalProperties?.PrincipalMeridian;
+	}
 	// Data fix for tract
 	const [tableTempProperties, setTableTempProperties] = useState(properties);
 
 	useEffect(() => {
 		const customMetaData = getCustomMetaFields(properties, metaData);
-		if (customMetaData.length === 0) return;
+		if (customMetaData.length === 0) {
+			return;
+		}
 		let filteredKeys = tableData.concat(customMetaData);
 		customMetaData.forEach(md => {
 			if (!md.isCustomData) {
@@ -225,7 +241,9 @@ export default function SummaryTableInfo({
 			const key = getKey(data, type, e);
 			set(obj, key, e.target.value);
 			setTableTempProperties(obj);
-			if (type === 'key') setTableDataState({ [key]: true });
+			if (type === 'key') {
+				setTableDataState({ [key]: true });
+			}
 		}
 	};
 
@@ -270,7 +288,9 @@ export default function SummaryTableInfo({
 		setTableDataState({});
 		if (type === 'value') {
 			setTableTempProperties({ ...tableTempProperties, [data.key]: data.isCustom ? data.value : properties[data.key] });
-		} else setTableTempProperties({ ...tableTempProperties, [`${data.key}key`]: data.key });
+		} else {
+			setTableTempProperties({ ...tableTempProperties, [`${data.key}key`]: data.key });
+		}
 	};
 
 	const checkFieldChange = (e, data, type, func) => {
@@ -279,7 +299,9 @@ export default function SummaryTableInfo({
 
 	// match unit nra value with system generated nra
 	const isNraMatched = () => {
-		if (properties?.netRoyalityAcres?.unitNra === properties?.netRoyalityAcres?.calculatedNra) return true;
+		if (properties?.netRoyalityAcres?.unitNra === properties?.netRoyalityAcres?.calculatedNra) {
+			return true;
+		}
 		return false;
 	};
 
@@ -304,7 +326,9 @@ export default function SummaryTableInfo({
 			};
 			const dependencies = [];
 			deps?.forEach(dep => {
-				if (dependency[dep].value) dependencies.push(dependency[dep]);
+				if (dependency[dep].value) {
+					dependencies.push(dependency[dep]);
+				}
 			});
 
 			return dependencies;
@@ -563,7 +587,9 @@ export default function SummaryTableInfo({
 													}}
 													onChange={(e, value) => {
 														e.keyCode = 13;
-														if (value?.name) updateProperties(e, data.key, value.name);
+														if (value?.name) {
+															updateProperties(e, data.key, value.name);
+														}
 													}}
 												/>
 											</>
@@ -580,7 +606,9 @@ export default function SummaryTableInfo({
 												}}
 												onChange={(e, value) => {
 													e.keyCode = 13;
-													if (value?.key && e.keyCode === 13) updateProperties(e, data.key, value.key);
+													if (value?.key && e.keyCode === 13) {
+														updateProperties(e, data.key, value.key);
+													}
 												}}
 												autoFocus={false}
 												newOptions={data.newOptions !== false}

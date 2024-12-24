@@ -1,8 +1,4 @@
-import React, { useEffect, useState, Fragment, useContext } from 'react';
-import { get } from 'lodash';
-import uniqBy from 'lodash/uniqBy';
 import { useLazyQuery } from '@apollo/client';
-import { Controller } from 'react-hook-form';
 import {
 	Grid,
 	TextField,
@@ -14,22 +10,14 @@ import {
 	makeStyles,
 	InputAdornment,
 } from '@material-ui/core';
-import AutorenewIcon from '@material-ui/icons/Autorenew';
-import { useStyles as summaryStyles } from '../style';
 import AddIcon from '@material-ui/icons/Add';
+import AutorenewIcon from '@material-ui/icons/Autorenew';
 import CreateTwoToneIcon from '@material-ui/icons/CreateTwoTone';
-import fieldsData from './data';
 import EditIcon from '@material-ui/icons/Edit';
-
-import keys from 'components/Shared/SpreadsheetGrid/kit/keymap';
-import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
-import MetaField from 'components/Table/helpers/MetaField';
-import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
-import { copy } from 'utils/helper';
-
-import { AppContext } from 'AppContext';
-import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
-import NumberField from 'components/Shared/components/Fields/NumberField';
+import { get } from 'lodash';
+import uniqBy from 'lodash/uniqBy';
+import React, { useEffect, useState, Fragment, useContext } from 'react';
+import { Controller } from 'react-hook-form';
 
 import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -37,9 +25,24 @@ import { showInfoMessage } from 'actions';
 import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
 import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';
+import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
 import { popupController } from 'hookstate/popupStateController';
+
 import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import DateField from 'components/Shared/components/Fields/DateField';
+import NumberField from 'components/Shared/components/Fields/NumberField';
+import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
+import keys from 'components/Shared/SpreadsheetGrid/kit/keymap';
+import MetaField from 'components/Table/helpers/MetaField';
+
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+
+import { copy } from 'utils/helper';
+
+import { AppContext } from 'AppContext';
+
+import { useStyles as summaryStyles } from '../style';
+import fieldsData from './data';
 
 const useStyles = makeStyles(theme => ({
 	valueOveridden: {
@@ -81,8 +84,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 	}, []);
 
 	useEffect(() => {
-		if (agreementDetails?._id && !agreementDetails?.agreementNumber)
+		if (agreementDetails?._id && !agreementDetails?.agreementNumber) {
 			dispatch(showInfoMessage('Agreement Number is required'));
+		}
 	}, [agreementDetails?._id, agreementDetails?.agreementNumber, dispatch]);
 
 	useEffect(() => {
@@ -129,7 +133,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 				if (!document.getElementById(`field-${Number(id.split('-')[1]) - 1}`)) {
 					e.preventDefault();
 					return;
-				} else document.getElementById(`field-${Number(id.split('-')[1])}`).focus();
+				} else {
+					document.getElementById(`field-${Number(id.split('-')[1])}`).focus();
+				}
 			}
 		}
 	};
@@ -137,7 +143,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 	const addAgreementCustomData = data => {
 		const customData = copy(agreementDetails.custom_data) ?? {};
 		data.forEach(d => {
-			if (!customData[d.name]) customData[d.name] = null;
+			if (!customData[d.name]) {
+				customData[d.name] = null;
+			}
 		});
 		updateAgreement('custom_data', customData);
 	};

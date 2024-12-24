@@ -1,14 +1,15 @@
-import WellIcon from 'components/Shared/svgIcons/well';
-import UnitIcon from 'components/Shared/svgIcons/unit';
 import TaxOwnerIcon from '@material-ui/icons/AccountBalance';
 import DocumentsIcon from '@material-ui/icons/DescriptionOutlined';
+import ActivitiesIcon from '@material-ui/icons/Event';
 import DealsIcon from '@material-ui/icons/MonetizationOn';
 import PeopleAltOutlinedIcon from '@material-ui/icons/PeopleAltOutlined';
-import ActivitiesIcon from '@material-ui/icons/Event';
-import ContactInformationIcon from 'components/Shared/svgIcons/ContactPhone';
-import ParcelIcon from 'components/Shared/svgIcons/tract';
-import HistoryEduBlackIcon from 'components/Shared/svgIcons/history_edu_black';
+
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import ContactInformationIcon from 'components/Shared/svgIcons/ContactPhone';
+import HistoryEduBlackIcon from 'components/Shared/svgIcons/history_edu_black';
+import ParcelIcon from 'components/Shared/svgIcons/tract';
+import UnitIcon from 'components/Shared/svgIcons/unit';
+import WellIcon from 'components/Shared/svgIcons/well';
 
 // Icon: Prefixed Icon
 // showCounts: show count of records

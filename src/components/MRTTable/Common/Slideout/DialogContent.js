@@ -1,5 +1,6 @@
-import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
+
 import { slidoutStateController } from 'hookstate/slidoutStateController';
 
 const useStyles = makeStyles(theme => ({

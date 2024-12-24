@@ -1,20 +1,23 @@
-import React, { memo, useState, useContext } from 'react';
-import Tooltip from '@material-ui/core/Tooltip';
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
-import MoreVertOutlinedIcon from '@material-ui/icons/MoreVertOutlined';
-import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
-import ContactPageOutlinedIcon from '@mui/icons-material/ContactPageOutlined';
-import { Link } from 'react-router-dom';
 import Divider from '@material-ui/core/Divider';
-import TextSMS from '@material-ui/icons/TextsmsOutlined';
-import EmailIcon from '@material-ui/icons/Mail';
-import EventOutlinedIcon from '@material-ui/icons/EventOutlined';
-import AssignmentTurnedInOutlinedIcon from '@material-ui/icons/AssignmentTurnedInOutlined';
-import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 import { makeStyles } from '@material-ui/core/styles';
-import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import Tooltip from '@material-ui/core/Tooltip';
+import AssignmentTurnedInOutlinedIcon from '@material-ui/icons/AssignmentTurnedInOutlined';
+import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
+import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
+import EventOutlinedIcon from '@material-ui/icons/EventOutlined';
+import EmailIcon from '@material-ui/icons/Mail';
+import MoreVertOutlinedIcon from '@material-ui/icons/MoreVertOutlined';
+import TextSMS from '@material-ui/icons/TextsmsOutlined';
+import ContactPageOutlinedIcon from '@mui/icons-material/ContactPageOutlined';
+import React, { memo, useState, useContext } from 'react';
+import { Link } from 'react-router-dom';
+
 import AddActivityDialog from 'components/ContactDetailCard/components/AddActivityDialog';
+import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+
 import { tableGlobalController } from 'hookstate/tableController';
+
 import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(() => ({

@@ -1,29 +1,35 @@
+import { useLazyQuery } from '@apollo/client';
+import { Button } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import InputBase from '@material-ui/core/InputBase';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import AddIcon from '@material-ui/icons/Add';
+import GavelIcon from '@material-ui/icons/Gavel';
+import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
+import PersonIcon from '@material-ui/icons/Person';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { copy } from 'utils/helper';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
 
+import parcelDefaultData from './parcelDefaultData';
+import QtrQtrSelectorNew from '../../ShapeDetailCard/Common/QtrQtrSelectorNew';
+import { addTrailingZeros, getPolygonString } from '../../Shared/functions';
 import WellIcon from '../../Shared/svgIcons/well';
-import PersonIcon from '@material-ui/icons/Person';
-import GavelIcon from '@material-ui/icons/Gavel';
-import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
+
 import CommentComponent from 'components/Shared/CommentComponent';
 import SummaryTable from 'components/ShapeDetailCard/Common/SummaryTable';
-import InputBase from '@material-ui/core/InputBase';
-import AddIcon from '@material-ui/icons/Add';
+
 import SearchIcon from '@material-ui/icons/Search';
-import { Button } from '@material-ui/core';
-import { useLazyQuery } from '@apollo/client';
+
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
 import { SHAPEWELLSCOUNT } from 'graphQL/useQueryShapeWellsCount';
-import { addTrailingZeros, getPolygonString } from '../../Shared/functions';
+
 import { getParcelOriginalProperties } from '../utils/GetParcelOriginalProps';
-import QtrQtrSelectorNew from '../../ShapeDetailCard/Common/QtrQtrSelectorNew';
+
 import MetaField from 'components/Table/helpers/MetaField';
-import parcelDefaultData from './parcelDefaultData';
+
 import { globalStateController } from 'hookstate/globalStateController';
 
 const useStyles = makeStyles(theme => ({
@@ -329,7 +335,9 @@ export default function ParcelSummary(props) {
 	const addAgreementCustomData = data => {
 		const customData = copy(props.properties.custom_data) ?? {};
 		data.forEach(d => {
-			if (!customData[d.name]) customData[d.name] = null;
+			if (!customData[d.name]) {
+				customData[d.name] = null;
+			}
 		});
 		props.updateProperties(null, 'custom_data', customData);
 	};
@@ -444,8 +452,9 @@ export default function ParcelSummary(props) {
 									setProperties({ ...parcelProperties, legalDescription: e.target.value });
 								}}
 								onKeyDown={e => {
-									if (e.keyCode === 13 && !e.shiftKey)
+									if (e.keyCode === 13 && !e.shiftKey) {
 										props.updateProperties(e, 'legalDescription', parcelProperties.legalDescription);
+									}
 								}}
 								onFocus={() => {
 									setTableDataState({ legalDescription: true });

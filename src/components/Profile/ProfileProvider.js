@@ -1,8 +1,9 @@
-import React from 'react';
-import { ProfileContextProvider } from './ProfileContext';
 import { makeStyles } from '@material-ui/core/styles';
-import Profile from './Profile';
+import React from 'react';
+
 import InitializeProfile from './InitializeProfileContext';
+import Profile from './Profile';
+import { ProfileContextProvider } from './ProfileContext';
 
 const useStyles = makeStyles(theme => ({
 	trackWrapper: {

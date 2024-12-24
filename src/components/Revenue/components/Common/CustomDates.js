@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
 import { Grid, TextField } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import { makeStyles } from '@material-ui/styles';
 import moment from 'moment';
+import React, { useEffect, useState } from 'react';
 
 import { CUSTOM_DATES } from 'utils/data';
 import { handleCustomDateTypeChange } from 'utils/helper';
@@ -69,7 +69,9 @@ export default function Portfolio({
 	const classes = useStyles();
 	const [value, setValue] = useState(defaultRange ? defaultRange : CUSTOM_DATES.ALL_DATES);
 	useEffect(() => {
-		if (!defaultRange) handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+		if (!defaultRange) {
+			handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+		}
 
 		delete CUSTOM_DATES.THIS_WEEK;
 		delete CUSTOM_DATES.LAST_WEEK;
@@ -77,7 +79,9 @@ export default function Portfolio({
 	}, []);
 
 	useEffect(() => {
-		if (onChangeDates) onChangeDates(fromDate, toDate);
+		if (onChangeDates) {
+			onChangeDates(fromDate, toDate);
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [fromDate, toDate]);
 
@@ -93,7 +97,9 @@ export default function Portfolio({
 	// }
 
 	useEffect(() => {
-		if (lastCheckMinDate && !defaultRange) handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+		if (lastCheckMinDate && !defaultRange) {
+			handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [lastCheckMinDate]);
 
@@ -126,8 +132,11 @@ export default function Portfolio({
 						setValue(newVal);
 					}}
 					options={Object.values(CUSTOM_DATES).filter(value => {
-						if (!isProperties && value === 'All Dates') return false;
-						else return true;
+						if (!isProperties && value === 'All Dates') {
+							return false;
+						} else {
+							return true;
+						}
 					})}
 					renderInput={params => (
 						<TextField

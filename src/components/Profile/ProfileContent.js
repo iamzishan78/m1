@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Skeleton from '@material-ui/lab/Skeleton';
 import React, { useContext } from 'react';
+
 import { ProfileContext } from './ProfileContext';
 
 const useStyles = makeStyles(theme => ({

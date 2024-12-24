@@ -1,7 +1,9 @@
-import React, { memo } from 'react';
 import { Button, ButtonGroup } from '@material-ui/core';
-import { tableGlobalController } from 'hookstate/tableController';
+import React, { memo } from 'react';
+
 import { detailCardController } from 'hookstate/detailCardController';
+import { tableGlobalController } from 'hookstate/tableController';
+
 import RelatedAgreementTableDialogs from './RightDialogs';
 
 function RelatedDocumentToolbar({ table, tableKey }) {

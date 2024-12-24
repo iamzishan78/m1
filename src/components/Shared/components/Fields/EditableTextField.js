@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-
-import { makeStyles } from '@material-ui/core/styles';
 import { TextField, Grid } from '@material-ui/core';
-import EditIcon from '@material-ui/icons/Edit';
+import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import EditIcon from '@material-ui/icons/Edit';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
+import React, { useEffect, useState } from 'react';
+
 import { truncate } from 'components/Shared/functions';
 
 const useStyles = makeStyles(theme => ({

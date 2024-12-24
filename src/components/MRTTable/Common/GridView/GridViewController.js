@@ -1,7 +1,8 @@
 import { hookstate, useHookstate } from '@hookstate/core';
+import _ from 'lodash';
+
 import { hookStateController } from 'hookstate/hookStateController';
 import { tableController } from 'hookstate/tableController';
-import _ from 'lodash';
 
 export const gridViewStates = hookstate({});
 
@@ -16,7 +17,9 @@ const gridViewStatesControllerHandler = state => ({
 	},
 
 	gridViewApply: selectedGridView => {
-		if (!!!selectedGridView) return;
+		if (!selectedGridView) {
+			return;
+		}
 		const TableKey = state.tableKey?.get({ noproxy: true });
 		const Controller = tableController(TableKey);
 

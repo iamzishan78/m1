@@ -1,14 +1,17 @@
-import React, { useState, createContext, useEffect } from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { MSALObj, tenantsCredentials } from './components/AzureLogin/AADAuthConfig';
-import { MSALB2CObj, B2CTenantCredentials } from './components/AzureLogin/AADB2CAuthConfig';
+import queryString from 'query-string';
+import React, { useState, createContext, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { setMapGridCardState } from './actions';
-import { heatLayers, baseMapLayers } from './LayerConfig';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { popupController } from 'hookstate/popupStateController';
-import queryString from 'query-string';
+
 import { apolloClientEndpointDev, isDev } from 'utils/helper';
+
+import { setMapGridCardState } from './actions';
+import { MSALObj, tenantsCredentials } from './components/AzureLogin/AADAuthConfig';
+import { MSALB2CObj, B2CTenantCredentials } from './components/AzureLogin/AADB2CAuthConfig';
+import { heatLayers, baseMapLayers } from './LayerConfig';
 
 const AppContext = createContext([{}, () => {}]);
 
@@ -152,7 +155,9 @@ const AppProvider = props => {
 						const currentLayers = [...stateApp.layers];
 						const index = currentLayers.findIndex(l => l.identifier === identifier);
 
-						if (index === -1) return stateApp;
+						if (index === -1) {
+							return stateApp;
+						}
 
 						const updatedLayer = {
 							...currentLayers[index],
@@ -191,7 +196,9 @@ const AppProvider = props => {
 
 			let tenantName = window.sessionStorage.getItem('tenantName');
 
-			if (query.tenant && globalStateController.isBypassTenant(query.tenant)) tenantName = query.tenant || tenantName;
+			if (query.tenant && globalStateController.isBypassTenant(query.tenant)) {
+				tenantName = query.tenant || tenantName;
+			}
 
 			let tenant = tenantsCredentials(tenantName);
 			if (tenant) {
@@ -306,10 +313,16 @@ const AppProvider = props => {
 };
 
 const setApolloHeaders = (config, authToken, idToken) => {
-	if (!config) config = {};
-	if (!config.headers) config.headers = {};
+	if (!config) {
+		config = {};
+	}
+	if (!config.headers) {
+		config.headers = {};
+	}
 	config.headers['X-ZUMO-AUTH'] = authToken;
-	if (isDev || globalStateController.getValue('bypassLogin')) config.headers['X-MS-TOKEN-AAD-ID-TOKEN'] = idToken;
+	if (isDev || globalStateController.getValue('bypassLogin')) {
+		config.headers['X-MS-TOKEN-AAD-ID-TOKEN'] = idToken;
+	}
 	return config;
 };
 

@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { useLazyQuery } from '@apollo/client';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
-import { OWNERSUMMARY } from '../../../graphQL/useQueryOwnerSummary';
-import { useLazyQuery } from '@apollo/client';
 import Paper from '@material-ui/core/Paper';
-import WellIcon from '../../Shared/svgIcons/well';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { setMapGridCardState } from '../../../actions';
+import { OWNERSUMMARY } from '../../../graphQL/useQueryOwnerSummary';
+import WellIcon from '../../Shared/svgIcons/well';
 
 // import value formatters
-import vf_currency from '../../Shared/valueformatters/vf_currency.js';
 import joinAddress from '../../Shared/valueformatters/join-address.js';
+import vf_currency from '../../Shared/valueformatters/vf_currency.js';
 
 const useStyles = makeStyles(theme => ({
 	Paper: {
@@ -43,21 +44,23 @@ export default function WellInterestsTopSumary(props) {
 
 	const [getOwnerSummary, { data }] = useLazyQuery(OWNERSUMMARY);
 	useEffect(() => {
-		if (props.id)
+		if (props.id) {
 			getOwnerSummary({
 				variables: {
 					id: props.id,
 				},
 			});
+		}
 	}, [props.id]);
 
 	useEffect(() => {
-		if (data)
+		if (data) {
 			dispatch(
 				setMapGridCardState({
 					selectedOwnerWellIntsSummary: data.ownerSummary,
 				})
 			);
+		}
 	}, [data]);
 
 	return selectedOwnerWellIntsSummary ? (

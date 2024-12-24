@@ -1,5 +1,6 @@
-import GlobalSettings from 'GlobalSettings';
 import { formatDate } from 'components/Shared/functions';
+
+import GlobalSettings from 'GlobalSettings';
 import { GlobalStickyStyles } from 'GlobalSettings';
 
 const ActivitiesHeadCells = [

@@ -1,41 +1,43 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
-import clsx from 'clsx';
 import { useLazyQuery } from '@apollo/client';
-
 import { IconButton, List, ListItem, ListItemIcon, ListItemText, Tooltip, Badge } from '@material-ui/core';
-import { useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import PersonIcon from '@material-ui/icons/Person';
-import DescriptionIcon from '@material-ui/icons/Description';
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import MenuIcon from '@material-ui/icons/Menu';
+import { useTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import FlowIcon from '@material-ui/icons/Repeat';
 import ActivityIcon from '@material-ui/icons/Event';
 import MapIcon from '@material-ui/icons/Map';
 import BarChartIcon from '@material-ui/icons/BarChart';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import DashboardIcon from '@material-ui/icons/Dashboard';
+import DescriptionIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
+import MenuIcon from '@material-ui/icons/Menu';
+import PersonIcon from '@material-ui/icons/Person';
+import clsx from 'clsx';
+import React, { useContext, useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import styled from 'styled-components';
+
+import WorkspaceEditModal from 'components/Navigation/components/WorkSpaceEditModal';
+import { FEATURES, ROUTES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+import { workspaceTenantName } from 'components/Shared/functions';
+import Analytics from 'components/Shared/svgIcons/analytics';
 import LandScapeIcon from 'components/Shared/svgIcons/LandscapeBlackIcon';
 
-import { AppContext } from 'AppContext';
-import { M1neralLogoNavNoAuth, useStyles } from './Common';
 import { GET_NOTIFICATIONS } from 'graphQL/useQueryGetNotifications';
-import { GET_WORKSPACE_SETTINGS } from 'graphQL/useQueryWorkspaceSettings';
 import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
+import { GET_WORKSPACE_SETTINGS } from 'graphQL/useQueryWorkspaceSettings';
 
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import { FEATURES, ROUTES } from 'components/Shared/FeatureFlag/common';
-import WorkspaceEditModal from 'components/Navigation/components/WorkSpaceEditModal';
-import Analytics from 'components/Shared/svgIcons/analytics';
-import AdminIcon from '.././Shared/svgIcons/admin-setting';
-import { workspaceTenantName } from 'components/Shared/functions';
-import { navController } from 'hookstate/navStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
+import { navController } from 'hookstate/navStateController';
+
+import { AppContext } from 'AppContext';
+
+import { M1neralLogoNavNoAuth, useStyles } from './Common';
+import AdminIcon from '.././Shared/svgIcons/admin-setting';
 
 const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
 	width: 260px;

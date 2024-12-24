@@ -1,10 +1,13 @@
-import React, { memo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import React, { memo } from 'react';
+
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+
 import 'components/Transact/components/DealDialog/dialog.css';
+import { tableGlobalController } from 'hookstate/tableController';
+
 import Dialog from './Dialog';
 import DialogHeader from './DialogHeader';
-import { tableGlobalController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(theme => ({
 	dealDetailRoot: {
@@ -28,7 +31,9 @@ function Slideout({ show, deleteFunc }) {
 		});
 	};
 
-	if (!show) return null;
+	if (!show) {
+		return null;
+	}
 
 	return (
 		<>

@@ -1,22 +1,12 @@
-import React, { useContext, useState, useEffect, Fragment, useCallback, useMemo, memo } from 'react';
-import update from 'immutability-helper';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
-import { AppContext } from 'AppContext';
-import { Typography, Divider, MenuItem, Popper, ClickAwayListener, MenuList, Paper, Grow } from '@material-ui/core';
-import Dialog from '@material-ui/core/Dialog';
-import Checkbox from '@material-ui/core/Checkbox';
-import { Collapse } from '@material-ui/core';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import { copy, deepEqual, deepEqualObjects } from 'components/Shared/functions';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 import { useMutation } from '@apollo/client';
-import { DropzoneAreaBase } from 'material-ui-dropzone';
+import { Collapse } from '@material-ui/core';
+import { Typography, Divider, MenuItem, Popper, ClickAwayListener, MenuList, Paper, Grow } from '@material-ui/core';
 import { IconButton } from '@material-ui/core';
-import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
@@ -29,19 +19,33 @@ import UploadIcon from 'components/Shared/svgIcons/uploadIcon';
 import EditableTextField from 'components/Shared/components/Fields/EditableTextField';
 import { truncate } from 'components/Shared/functions';
 import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
+import Dialog from '@material-ui/core/Dialog';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
 
 // cra webpack hack to call this a png to get included in bundle
-import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
-import { useHistory } from 'react-router-dom';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
-import { UPDATE_DATASET } from 'graphQL/useMutationDataset';
 
 import { Close as ClearButton } from '@material-ui/icons';
+import update from 'immutability-helper';
+import { DropzoneAreaBase } from 'material-ui-dropzone';
+import React, { useContext, useState, useEffect, Fragment, useCallback, useMemo, memo } from 'react';
+import { useHistory } from 'react-router-dom';
+
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+import { UPDATE_DATASET } from 'graphQL/useMutationDataset';
+
+import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
+import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
+
 import { globalStateController } from 'hookstate/globalStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
 import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	subHeaderItem: {
@@ -289,7 +293,9 @@ function SourceManager(props) {
 		if (M1Layers.length) {
 			for (let index = 0; index < M1Layers.length; index++) {
 				if (M1Layers[index].type === 'group') {
-					if (M1Layers[index].layers.find(layer => layer.layerSettings.showable === false)) check = false;
+					if (M1Layers[index].layers.find(layer => layer.layerSettings.showable === false)) {
+						check = false;
+					}
 				} else if (M1Layers[index].layerSettings.showable === false) {
 					check = false;
 				}
@@ -411,7 +417,9 @@ function SourceManager(props) {
 	};
 
 	async function handleFileInput(fileObj) {
-		if (!fileObj?.[0]?.file) return;
+		if (!fileObj?.[0]?.file) {
+			return;
+		}
 
 		const fileData = fileObj[0].file;
 		const fileName = fileObj[0].file.name;
@@ -425,7 +433,9 @@ function SourceManager(props) {
 	}
 
 	const checkIfDeleteAllow = layer => {
-		if (layer.name === 'Agreements' || layer.groupName === 'Agreements') return false;
+		if (layer.name === 'Agreements' || layer.groupName === 'Agreements') {
+			return false;
+		}
 		return true;
 	};
 
@@ -546,8 +556,11 @@ function SourceManager(props) {
 																style={{ paddingLeft: 0, marginTop: 0, marginBottom: 0 }}
 																onClick={() => {
 																	const _index = openUDLayers.findIndex(l => l === index);
-																	if (_index === -1) setUDLayersStates([...openUDLayers, index]);
-																	else setUDLayersStates(openUDLayers?.filter(l => l !== index));
+																	if (_index === -1) {
+																		setUDLayersStates([...openUDLayers, index]);
+																	} else {
+																		setUDLayersStates(openUDLayers?.filter(l => l !== index));
+																	}
 																}}
 															>
 																<Checkbox
@@ -648,7 +661,7 @@ function SourceManager(props) {
 																		edge="end"
 																		size="small"
 																		onClick={() => {
-																			history.push(`/bulkupload/units`);
+																			history.push('/bulkupload/units');
 																		}}
 																	>
 																		<UploadIcon opacity="1.0" small />
@@ -664,7 +677,7 @@ function SourceManager(props) {
 																		edge="end"
 																		size="small"
 																		onClick={() => {
-																			history.push(`/bulkupload/tracts`);
+																			history.push('/bulkupload/tracts');
 																		}}
 																	>
 																		<UploadIcon opacity="1.0" small />

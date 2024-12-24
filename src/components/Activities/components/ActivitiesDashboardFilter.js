@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
 import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import moment from 'moment';
+import React, { useEffect, useState } from 'react';
 
 import ActivitiesFilters from './ActivitiesFilters';
 
@@ -54,7 +54,9 @@ const ActivitiesDashboardFilter = ({
 		setFromDate(`${moment(minDate).startOf('month').format('yyyy-MM-DD')}`);
 	}, [minDate]);
 	useEffect(() => {
-		if (fromDate === 'Invalid date' || toDate === 'Invalid date') return;
+		if (fromDate === 'Invalid date' || toDate === 'Invalid date') {
+			return;
+		}
 		setAppliedFilters({ fromDate, toDate, campaigns, qualifier });
 		setFilterToggle(prev => !prev);
 		// eslint-disable-next-line react-hooks/exhaustive-deps

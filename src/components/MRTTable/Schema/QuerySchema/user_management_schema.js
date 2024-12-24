@@ -1,11 +1,13 @@
 import moment from 'moment';
 
-import UserManagementToolbar from 'components/MRTTable/TablesOverride/UserManagementTable/UserManagementToolbar';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import UserManagementToolbar from 'components/MRTTable/TablesOverride/UserManagementTable/UserManagementToolbar';
+
+import { GET_ALL_USERS } from 'graphQL/userManagement';
 
 import { tableGlobalController } from 'hookstate/tableController';
+
 import { UserRole, RolePrivilege } from 'utils/data';
-import { GET_ALL_USERS } from 'graphQL/userManagement';
 
 const onClickedRow = selectedRow => {
 	if (selectedRow?._id) {

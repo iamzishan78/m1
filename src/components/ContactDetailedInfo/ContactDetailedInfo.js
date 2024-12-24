@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import FieldContent from '../ContactDetailCard/components/FieldContent';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import Button from '@material-ui/core/Button';
-import AddIcon from '@material-ui/icons/Add';
 import { useHistory } from 'react-router-dom';
 import { useLazyQuery } from '@apollo/client';
 import { Grid, Box, FormControlLabel, FormGroup, Switch, InputAdornment, IconButton } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import moment from 'moment';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import {
 	getBasicInfoContent,
@@ -22,8 +21,12 @@ import {
 	featureFlagChanges,
 } from 'components/ContactDetailedInfo/helper';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
-import { globalStateController } from 'hookstate/globalStateController';
+
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+
+import { globalStateController } from 'hookstate/globalStateController';
+
+import FieldContent from '../ContactDetailCard/components/FieldContent';
 
 const AntSwitch = withStyles(theme => ({
 	root: {
@@ -268,7 +271,9 @@ export default function DetailInfo(props) {
 	}, []);
 
 	useEffect(() => {
-		if (!metaDataRes?.getMetaData?.metaData) return;
+		if (!metaDataRes?.getMetaData?.metaData) {
+			return;
+		}
 
 		setMetaFields(metaDataRes?.getMetaData?.metaData);
 	}, [metaDataRes]);
@@ -396,7 +401,7 @@ export default function DetailInfo(props) {
 									if (
 										row.data[objName] !== undefined &&
 										row.data[objName] !== null &&
-										row.data[objName] !== `""` &&
+										row.data[objName] !== '""' &&
 										row.data[objName] !== '' &&
 										row.data[objName] !== '' &&
 										row.data[objName].length !== 0 &&
@@ -487,7 +492,7 @@ export default function DetailInfo(props) {
 										if (
 											row.data[objName] &&
 											row.data[objName] !== undefined &&
-											row.data[objName] !== `""` &&
+											row.data[objName] !== '""' &&
 											row.data[objName] !== '' &&
 											row.data[objName] !== '' &&
 											row.data[objName].length &&
@@ -605,7 +610,7 @@ export default function DetailInfo(props) {
 									let objName = Object.keys(row.data)[0];
 									if (
 										row.data[objName] != undefined &&
-										row.data[objName] != `""` &&
+										row.data[objName] != '""' &&
 										row.data[objName] != '' &&
 										row.data[objName] != '' &&
 										row.data[objName].length != 0 &&
@@ -668,7 +673,7 @@ export default function DetailInfo(props) {
 
 										if (
 											row.data[objName] != undefined &&
-											row.data[objName] != `""` &&
+											row.data[objName] != '""' &&
 											row.data[objName] != '' &&
 											row.data[objName] != '' &&
 											row.data[objName].length != 0 &&

@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+
 import Comments from './Comment';
 
 const CommentDialog = props => {

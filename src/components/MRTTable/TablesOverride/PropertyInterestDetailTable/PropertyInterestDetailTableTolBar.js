@@ -1,8 +1,10 @@
-import React, { memo } from 'react';
 import { Button, ButtonGroup } from '@material-ui/core';
-import { tableGlobalController } from 'hookstate/tableController';
+import React, { memo } from 'react';
+
 import PropertyInterestDetaillDialog from 'components/MRTTable/TablesOverride/PropertyInterestDetailTable/RightDialogs';
+
 import { detailCardController } from 'hookstate/detailCardController';
+import { tableGlobalController } from 'hookstate/tableController';
 
 function PropertyInterestDetailTable({ table, tableKey }) {
 	const { stateValues } = detailCardController.useState(['summaryData']);

@@ -1,4 +1,4 @@
-import React from 'react';
+import { Grid, IconButton, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -7,11 +7,11 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
-import { Grid, IconButton, Tooltip } from '@material-ui/core';
+import React from 'react';
 import CSVDownloader from 'react-csv-downloader';
 
-import vf_number from 'components/Shared/valueformatters/vf_number';
 import { convertAnalyticsDataToCSV } from 'components/Shared/M1nTable/components/MUIDataTable/utils';
+import vf_number from 'components/Shared/valueformatters/vf_number';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -82,9 +82,12 @@ export default function AcccessibleTable({ monthsInterval, items }) {
 	const classes = useStyles();
 
 	const formatRow = (item, value) => {
-		if (item.name === 'Adjustments') return `${vf_number(value.toFixed(2))}`;
-		if (item.name === 'Net Revenue')
+		if (item.name === 'Adjustments') {
+			return `${vf_number(value.toFixed(2))}`;
+		}
+		if (item.name === 'Net Revenue') {
 			return <span style={{ fontSize: '16px', fontWeight: '700' }}>{vf_number(value.toFixed(2))}</span>;
+		}
 		return vf_number(value.toFixed(2));
 	};
 
@@ -106,7 +109,7 @@ export default function AcccessibleTable({ monthsInterval, items }) {
 									<TableCell style={{ paddingLeft: 0 }}>
 										<CSVDownloader
 											datas={convertAnalyticsDataToCSV(items, monthsInterval)}
-											filename={`Revenue`}
+											filename={'Revenue'}
 											type="link"
 										>
 											<IconButton style={{ display: 'flex', padding: '0 0 0 15px' }}>

@@ -1,24 +1,25 @@
-import React, { useState, useEffect, useContext } from 'react';
 import { useQuery } from '@apollo/client';
-import moment from 'moment';
 import { useMutation } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import CallIcon from '@material-ui/icons/Call';
+import ChatIcon from '@material-ui/icons/Chat';
+import ContactMailIcon from '@material-ui/icons/ContactMail';
+import EmailIcon from '@material-ui/icons/Email';
+import DefaultIcon from '@material-ui/icons/Event';
+import EventNoteIcon from '@material-ui/icons/EventNote';
+import DeadlineIcon from '@material-ui/icons/Flag';
+import MeetingIcon from '@material-ui/icons/Group';
 import Timeline from '@material-ui/lab/Timeline';
 import TimelineItem from '@material-ui/lab/TimelineItem';
 import TimelineSeparator from '@material-ui/lab/TimelineSeparator';
 import TimelineConnector from '@material-ui/lab/TimelineConnector';
 import TimelineContent from '@material-ui/lab/TimelineContent';
 import TimelineDot from '@material-ui/lab/TimelineDot';
-import ChatIcon from '@material-ui/icons/Chat';
-import EventNoteIcon from '@material-ui/icons/EventNote';
-import ContactMailIcon from '@material-ui/icons/ContactMail';
-import CallIcon from '@material-ui/icons/Call';
-import DefaultIcon from '@material-ui/icons/Event';
-import MeetingIcon from '@material-ui/icons/Group';
 import TaskIcon from '@material-ui/icons/WatchLater';
-import DeadlineIcon from '@material-ui/icons/Flag';
-import EmailIcon from '@material-ui/icons/Email';
+import moment from 'moment';
+import React, { useState, useEffect, useContext } from 'react';
+
 import { DELETEACTIVITY } from '../../../graphQL/useMutationActivity';
 
 const useStyles = makeStyles(theme => ({

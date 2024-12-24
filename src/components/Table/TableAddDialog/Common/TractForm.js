@@ -1,14 +1,17 @@
-import React, { useEffect, useCallback, useState, useMemo } from 'react';
-
-import TextField from '@material-ui/core/TextField';
-import { Controller } from 'react-hook-form';
-import { US_STATES_CODES } from 'utils/data';
-import AutoCompleteShapeLayer from 'components/Shared/Forms/Fields/AutoCompleteShapeLayer';
-import { AutoCompleteLandgrid } from 'components/Shared/Forms/Fields/AutoCompleteLandgrid';
-import { upperFirst } from 'lodash';
-import { GET_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetAutoCompleteList';
 import { useLazyQuery } from '@apollo/client';
+import TextField from '@material-ui/core/TextField';
+import { upperFirst } from 'lodash';
+import React, { useEffect, useCallback, useState, useMemo } from 'react';
+import { Controller } from 'react-hook-form';
+
+import { AutoCompleteLandgrid } from 'components/Shared/Forms/Fields/AutoCompleteLandgrid';
+import AutoCompleteShapeLayer from 'components/Shared/Forms/Fields/AutoCompleteShapeLayer';
 import AutoCompleteWithNewOption from 'components/Shared/Forms/Fields/AutoCompleteWithNewOption';
+
+import { GET_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetAutoCompleteList';
+
+import { US_STATES_CODES } from 'utils/data';
+
 import filterConsts from './filterConsts';
 
 function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, control, prefix = '' }) {
@@ -32,7 +35,9 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 	);
 
 	useEffect(() => {
-		if (tract.state && tract.state !== stateName) setStateName(tract.state);
+		if (tract.state && tract.state !== stateName) {
+			setStateName(tract.state);
+		}
 	}, [tract.state]);
 
 	const getDependencies = useCallback(
@@ -57,7 +62,9 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 			};
 			const dependencies = [];
 			deps?.forEach(dep => {
-				if (dependency[dep].value) dependencies.push(dependency[dep]);
+				if (dependency[dep].value) {
+					dependencies.push(dependency[dep]);
+				}
 			});
 			return dependencies;
 		},

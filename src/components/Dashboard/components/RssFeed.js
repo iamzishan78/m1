@@ -10,6 +10,7 @@ import DragIndicatorOutlinedIcon from '@material-ui/icons/DragIndicatorOutlined'
 import moment from 'moment';
 import React, { Fragment, useEffect, useState } from 'react';
 import { sortableHandle } from 'react-sortable-hoc';
+
 import M1neralIconSvg from '../../Shared/m1neralIconSvg';
 // import cnbc from "./RSSFeedIcons/cnbc1.svg";
 // import feedimage from "./RSSFeedIcons/feedburner.png";
@@ -19,13 +20,13 @@ import M1neralIconSvg from '../../Shared/m1neralIconSvg';
 // import rigzone from "./RSSFeedIcons/rigzone.svg";
 // import smag from "./RSSFeedIcons/smag.webp";
 // News logos
+import CNBC_logo_horizontal from './RSSFeedIcons/Medialogos/CNBC_logo_horizontal.png';
+import NGI from './RSSFeedIcons/Medialogos/NGI.png';
+import oil_gasjournal from './RSSFeedIcons/Medialogos/o_gjournal.png';
 import OG360_3 from './RSSFeedIcons/Medialogos/OG360.png';
 import pboil_gas from './RSSFeedIcons/Medialogos/pb_oilandgas.jpg';
 import rigzonepng from './RSSFeedIcons/Medialogos/Rigzone.png';
-import NGI from './RSSFeedIcons/Medialogos/NGI.png';
 import shale_magazine from './RSSFeedIcons/Medialogos/shale_magazine.png';
-import CNBC_logo_horizontal from './RSSFeedIcons/Medialogos/CNBC_logo_horizontal.png';
-import oil_gasjournal from './RSSFeedIcons/Medialogos/o_gjournal.png';
 
 const useStyles = makeStyles(theme => ({
 	header: {
@@ -171,7 +172,9 @@ const RssFeed = () => {
 		sen
 			.split('')
 			.map((c, i) => {
-				if (i == 0) return c.toUpperCase();
+				if (i == 0) {
+					return c.toUpperCase();
+				}
 				return c;
 			})
 			.join('');
@@ -181,7 +184,7 @@ const RssFeed = () => {
 			<CardHeader
 				// action={<DragHandle />}
 				style={{ margin: '8px' }}
-				title={`In The News`}
+				title={'In The News'}
 				className={classes.header}
 			/>
 
@@ -227,7 +230,7 @@ const RssFeed = () => {
 									</Typography>
 								</Grid>
 								<Grid item xs={3} style={{ textAlign: '-webkit-center' }}>
-									{!!mainImage ? (
+									{mainImage ? (
 										<CardMedia className={classes.image} component={'img'} image={mainImage} title="Image" />
 									) : (
 										<M1neralIconSvg />

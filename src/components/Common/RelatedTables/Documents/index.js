@@ -1,12 +1,13 @@
-import React, { useContext, useMemo } from 'react';
 import { Container, Button, ButtonGroup } from '@material-ui/core';
-import { usetableStyles } from './style';
+import React, { useContext, useMemo } from 'react';
 
-import MRTTable from 'components/MRTTable';
 import RelatedFile from 'components/Document/components/RelatedFile';
+import { DrawerContext } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
+import MRTTable from 'components/MRTTable';
 
 import { AppContext } from 'AppContext';
-import { DrawerContext } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
+
+import { usetableStyles } from './style';
 
 function RelatedDocumentsTable(props) {
 	const { moduleId, relatedObjectType } = props;

@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
 import { useLazyQuery } from '@apollo/client';
 import { Grid } from '@material-ui/core';
 import { IconButton, Typography } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Tooltip from '@material-ui/core/Tooltip';
 import MergeTypeIcon from '@material-ui/icons/MergeType';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import EditionPopover from '../EditionPopover';
+import React, { useState, useEffect } from 'react';
+
 import useStyles from 'components/ContactDetailCard/components/FieldContent/style';
+
 import { GET_CONTACT_MERGE_HISTORY } from 'graphQL/useQueryContactMergeHistory';
+
+import EditionPopover from '../EditionPopover';
 
 function MergeHistory({ contactId, content }) {
 	const classes = useStyles();

@@ -1,17 +1,21 @@
-import React, { memo, useEffect, useMemo, useState } from 'react';
-import DetailsPanel from './Detail';
-import AssociatedWells from './AssociatedWells';
-import Information from './Information';
 import { useLazyQuery } from '@apollo/client';
-import { GETWELLSFROMDOCUMENTS } from 'graphQL/useQueryGetWellsFromDocument';
-import { tableGlobalController } from 'hookstate/tableController';
 import Badge from '@material-ui/core/Badge';
 import HomeIcon from '@material-ui/icons/HomeOutlined';
 import InfoOutlined from '@material-ui/icons/InfoOutlined';
-import WellIcon from 'components/Shared/svgIcons/well';
+import React, { memo, useEffect, useMemo, useState } from 'react';
+
 import Slideout from 'components/MRTTable/Common/Slideout';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
+import WellIcon from 'components/Shared/svgIcons/well';
+
+import { GETWELLSFROMDOCUMENTS } from 'graphQL/useQueryGetWellsFromDocument';
+
 import { globalStateController } from 'hookstate/globalStateController';
+import { slidoutStateController } from 'hookstate/slidoutStateController';
+import { tableGlobalController } from 'hookstate/tableController';
+
+import AssociatedWells from './AssociatedWells';
+import DetailsPanel from './Detail';
+import Information from './Information';
 
 function CreateAndViewComponent({ selectedDocument, tableKey }) {
 	const [wellsCount, setWellsCount] = useState(0);
@@ -32,12 +36,13 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 	}, [wellsFromDocument]);
 
 	useEffect(() => {
-		if (selectedDocument)
+		if (selectedDocument) {
 			getWellsFromDocument({
 				variables: {
 					descriptorObject: selectedDocument?._id,
 				},
 			});
+		}
 	}, [selectedDocument?._id]);
 
 	const handleClose = () => {

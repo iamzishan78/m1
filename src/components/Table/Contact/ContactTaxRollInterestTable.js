@@ -1,29 +1,31 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { Button, Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import React, { useContext, useState, useEffect, useRef } from 'react';
 
 // context
-import { AppContext } from 'AppContext';
+import { useDispatch } from 'react-redux';
 
-import { Button, Container } from '@material-ui/core';
+import TableHeader from 'components/Shared/constants/contact-tax-roll-header-schema.js';
+import { deepEqualObjects, setStateIfDeepEqual } from 'components/Shared/functions';
 import Table from 'components/Shared/M1nTable/components/Table';
 import TableHOC from 'components/Table/TableHOC';
 
 // QUERIES
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { UPDATEWELLINTEREST } from 'graphQL/useMutationUpdateWellInterest';
 
-import { deepEqualObjects, setStateIfDeepEqual } from 'components/Shared/functions';
 // import AddWellInterestDialog from "components/ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog";
 
 // Header Schemas
-import TableHeader from 'components/Shared/constants/contact-tax-roll-header-schema.js';
-import { handleTagColumn } from '../helpers';
 
 // Utilities
-import { GET_CONTACT_TAX_ROLL_INTERESTS_QUERY } from 'graphQL/useQueryGetContactTaxRollInterests';
 import { ADD_MULTI_WELLINTEREST_TO_CONTACT } from 'graphQL/useMutationAddMultiWellInterestToContact';
-import { useDispatch } from 'react-redux';
+import { UPDATEWELLINTEREST } from 'graphQL/useMutationUpdateWellInterest';
+import { GET_CONTACT_TAX_ROLL_INTERESTS_QUERY } from 'graphQL/useQueryGetContactTaxRollInterests';
+
 import { showErrorMessage, showSuccessMessage } from 'actions';
+import { AppContext } from 'AppContext';
+
+import { handleTagColumn } from '../helpers';
 
 const useStyles = makeStyles(theme => ({
 	container: {

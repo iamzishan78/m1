@@ -1,22 +1,22 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useLazyQuery } from '@apollo/client';
 import { Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useHistory } from 'react-router-dom';
+
+import { setStateIfDeepEqual, deepEqualObjects } from 'components/Shared/functions';
 import Table from 'components/Shared/M1nTable/components/Table';
+import TableHeader from 'components/Table/constants/unit-interests-header-schema';
+import { setColumnsData } from 'components/Table/helpers';
 import TableHOC from 'components/Table/TableHOC';
 
 // QUERIES
-import { useLazyQuery } from '@apollo/client';
-
-import { setStateIfDeepEqual, deepEqualObjects } from 'components/Shared/functions';
 
 // Header Schemas
-import TableHeader from 'components/Table/constants/unit-interests-header-schema';
 
 // Utilities
-import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
-import { setColumnsData } from 'components/Table/helpers';
+import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
 
 const useStyles = makeStyles(theme => ({
 	tractInterestTable: {

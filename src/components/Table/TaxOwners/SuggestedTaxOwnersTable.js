@@ -1,29 +1,31 @@
+import { useLazyQuery, useMutation, useApolloClient } from '@apollo/client';
+import { Container, Button } from '@material-ui/core';
+import isEmpty from 'lodash/isEmpty';
 import React, { useContext, useState, useEffect, useRef } from 'react';
 
 // context
-import { AppContext } from 'AppContext';
-
-import { Container, Button } from '@material-ui/core';
+import { deepEqualObjects, setStateIfDeepEqual } from 'components/Shared/functions';
+import { getPolygonString } from 'components/Shared/functions';
 import Table from 'components/Shared/M1nTable/components/Table';
+import TableHeader from 'components/Table/constants/potential-parcel-owners-header-schema';
 import TableHOC from 'components/Table/TableHOC';
 
-// QUERIES
-import { useLazyQuery, useMutation, useApolloClient } from '@apollo/client';
-import { SHAPE_OWNERS } from 'graphQL/useQueryPaginatedShapeOwners';
-import { SHAPEOWNERSCOUNT } from 'graphQL/useQueryShapeOwnersCount';
 import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
+import { SHAPE_OWNERS } from 'graphQL/useQueryPaginatedShapeOwners';
+import { AppContext } from 'AppContext';
+
+// QUERIES
+
+import { SHAPEOWNERSCOUNT } from 'graphQL/useQueryShapeOwnersCount';
 import { ADDOWNERTOAPARCEL } from 'graphQL/useMutationAddOwnerToAParcel';
 import { CONVERT_MULTITPLE_OWNER_TO_CONTACT } from 'graphQL/useMutationConvertMultitpleOwnerToContact';
 
-import { deepEqualObjects, setStateIfDeepEqual } from 'components/Shared/functions';
-
 // Header Schemas
-import TableHeader from 'components/Table/constants/potential-parcel-owners-header-schema';
+
 import { handleTagColumn } from '../helpers';
 
 // Utilities
-import isEmpty from 'lodash/isEmpty';
-import { getPolygonString } from 'components/Shared/functions';
+
 import { usetableStyles } from '../Styles';
 
 import { MultipleOwnerToContactDrawerContainer } from 'store/containers';

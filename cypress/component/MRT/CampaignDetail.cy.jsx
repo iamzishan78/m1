@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import CampaignDetail from 'components/Contacts/components/campaign/CampaignDetail';
+
 import { basic_timeouts } from '../../cypressUtils/data';
 
 describe('Campaign Detail Page', () => {

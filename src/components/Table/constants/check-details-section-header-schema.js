@@ -1,6 +1,7 @@
 import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
+
 import { GlobalStickyStyles } from 'GlobalSettings';
 
 const RevenueStatementHeadCells = [

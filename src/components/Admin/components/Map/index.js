@@ -1,14 +1,14 @@
+import { useMutation } from '@apollo/client';
+import { Tabs, Tab, RadioGroup, Radio, FormControlLabel, TextField } from '@material-ui/core';
+import { makeStyles, withStyles } from '@material-ui/styles';
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
-import { useMutation } from '@apollo/client';
-import { makeStyles, withStyles } from '@material-ui/styles';
-import { Tabs, Tab, RadioGroup, Radio, FormControlLabel, TextField } from '@material-ui/core';
+import { workspaceTenantName } from 'components/Shared/functions';
 
 import { UPSERT_WORKSPACE_SETTINGS } from 'graphQL/useMutationWorksapceSettings';
 
 import Filters from './Filters';
-import { workspaceTenantName } from 'components/Shared/functions';
 
 const useStyles = makeStyles(theme => ({
 	contenContainer: {

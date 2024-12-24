@@ -2,7 +2,9 @@
 
 export default function formatBOE(value) {
 	const valueFormatter = boe => {
-		if (!boe || isNaN(boe)) return '--';
+		if (!boe || isNaN(boe)) {
+			return '--';
+		}
 
 		return Math.round(boe).toLocaleString();
 	};

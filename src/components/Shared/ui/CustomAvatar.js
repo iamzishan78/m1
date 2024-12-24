@@ -1,7 +1,6 @@
-import React, { useContext } from 'react';
-import { get } from 'lodash';
-
 import { makeStyles } from '@material-ui/core/styles';
+import { get } from 'lodash';
+import React, { useContext } from 'react';
 
 import { getRandomColor } from 'components/Shared/functions/ui.js';
 import { TransactContext } from 'components/Transact/TransactContext';
@@ -33,12 +32,18 @@ const CustomAvatar = React.memo(({ text = '', email = '', diglog }) => {
 	const [stateTransact] = useContext(TransactContext);
 
 	const getInitials = name => {
-		if (!name || name.length === 0) return '--';
+		if (!name || name.length === 0) {
+			return '--';
+		}
 		const split = name ? name.split(' ') : [''];
 		let initials = '';
 		split.forEach(s => {
-			if (s[0]) initials += s[0];
-			if (initials.length === 2) return;
+			if (s[0]) {
+				initials += s[0];
+			}
+			if (initials.length === 2) {
+				return;
+			}
 		});
 		return initials.toUpperCase();
 	};

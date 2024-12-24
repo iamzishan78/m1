@@ -1,9 +1,11 @@
 import React, { memo } from 'react';
+
+import { mapControlsController } from 'hookstate/mapControlsController';
+
 import DrawShapes from './components/DrawShapes/DrawShapes';
 import SidePanel from '../Shared/SidePanel/SidePanel';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import FileUploadDialog from './components/SourceLayerManager/FileUploadDialog';
 import CreateLayerDialog from './components/SourceLayerManager/CreateLayerDialog';
+import FileUploadDialog from './components/SourceLayerManager/FileUploadDialog';
 
 const MapControls = () => {
 	const { mapControlsStateValues } = mapControlsController.useState(

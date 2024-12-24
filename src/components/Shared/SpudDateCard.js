@@ -1,8 +1,9 @@
-import React, { useContext, useState, useEffect } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import RigIcon from './components/svgIcons/RigIcon';
 import moment from 'moment';
+import React, { useContext, useState, useEffect } from 'react';
+
+import RigIcon from './components/svgIcons/RigIcon';
 
 // value formatters
 import convert_date from '../Shared/valueformatters/convert_date.js';

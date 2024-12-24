@@ -1,11 +1,11 @@
-import React from 'react';
 import { Typography, Grid } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/styles';
+import React from 'react';
 
+import AdjustmentTable from './AdjustmentTable';
 import DonutChart from '../RevenueSection/DonutChart';
 import StackedChart from '../RevenueSection/StackedChart';
-import AdjustmentTable from './AdjustmentTable';
 
 const useStyles = makeStyles(theme => ({
 	sectionTitle: {

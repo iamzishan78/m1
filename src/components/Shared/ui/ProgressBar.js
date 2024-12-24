@@ -1,7 +1,7 @@
-import React from 'react';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
+import React from 'react';
 
 const BorderLinearProgress = withStyles(theme => ({
 	root: props => ({

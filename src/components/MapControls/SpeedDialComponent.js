@@ -1,24 +1,28 @@
-import React, { useEffect, useContext, useState, memo } from 'react';
-import { AppContext } from '../../AppContext';
-import SpeedDial from '@material-ui/lab/SpeedDial';
-import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
-import LayersIcon from '@material-ui/icons/Layers';
-import LanguageIcon from '@material-ui/icons/Language';
-import EditIcon from '@material-ui/icons/Edit';
-import MenuIcon from '@material-ui/icons/Menu';
-import CancelIcon from '@material-ui/icons/Cancel';
 import { makeStyles } from '@material-ui/core/styles';
-import { default as Cube3d } from '../Shared/svgIcons/cube-3d';
+
 import AspectRatioOutlinedIcon from '@material-ui/icons/AspectRatioOutlined';
 import { useDispatch } from 'react-redux';
 import { toggleMapGridCardAtived } from '../../actions';
 import { clearMapAndCloseShapeActionsPopup } from './commonHelper';
 import { fade } from '@material-ui/core/styles';
-import { popupController } from 'hookstate/popupStateController';
+import CancelIcon from '@material-ui/icons/Cancel';
+import EditIcon from '@material-ui/icons/Edit';
+import LanguageIcon from '@material-ui/icons/Language';
+import LayersIcon from '@material-ui/icons/Layers';
+import MenuIcon from '@material-ui/icons/Menu';
+import SpeedDial from '@material-ui/lab/SpeedDial';
+import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
+import React, { useEffect, useContext, useState, memo } from 'react';
+
 import { drawController } from 'hookstate/drawStateController';
-import { layerRefs } from 'hookstate';
 import { mapControlsController } from 'hookstate/mapControlsController';
 import { mapStateController } from 'hookstate/mapStateController';
+import { popupController } from 'hookstate/popupStateController';
+
+import { layerRefs } from 'hookstate';
+
+import { AppContext } from '../../AppContext';
+import { default as Cube3d } from '../Shared/svgIcons/cube-3d';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -156,7 +160,9 @@ export function SpeedDialComponent(props) {
 
 		const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
 
-		if (!sourceId) return;
+		if (!sourceId) {
+			return;
+		}
 
 		// unselecting the grids
 		const featuresList = window.mapRef?.getSource(sourceId)?._data?.features || [];
@@ -310,7 +316,9 @@ export function SpeedDialComponent(props) {
 							icon={action.icon}
 							tooltipTitle={action.name}
 							onClick={e => {
-								if (action.action === 'threed') setToggle3d(prevState => !prevState);
+								if (action.action === 'threed') {
+									setToggle3d(prevState => !prevState);
+								}
 								handleFabClick(e, action.action);
 							}}
 						/>

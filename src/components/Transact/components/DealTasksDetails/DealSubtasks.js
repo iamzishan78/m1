@@ -1,10 +1,4 @@
-import React, { useState, useEffect } from 'react';
 import { useMutation } from '@apollo/client';
-
-import { ContextProvider } from 'react-sortly';
-import Sortly, { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
-import { Flipper, Flipped } from 'react-flip-toolkit';
-import { makeStyles } from '@material-ui/core/styles';
 import {
 	Grid,
 	IconButton,
@@ -17,6 +11,9 @@ import {
 	Typography,
 	TextField,
 } from '@material-ui/core';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { makeStyles } from '@material-ui/core/styles';
 import {
 	DragIndicator,
 	AccountCircle,
@@ -24,11 +21,15 @@ import {
 	Close as CloseIcon,
 	Edit as EditIcon,
 } from '@material-ui/icons';
-import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import { KeyboardDatePicker } from '@material-ui/pickers';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+import React, { useState, useEffect } from 'react';
+import { Flipper, Flipped } from 'react-flip-toolkit';
+import { ContextProvider } from 'react-sortly';
+import Sortly, { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
+
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';
-import Checkbox from '@material-ui/core/Checkbox';
+
 import { UPDATE_DEAL_SUBTASK } from 'graphQL/useMutationDealSubtask';
 
 const useStyles = makeStyles(theme => ({
@@ -124,7 +125,9 @@ export const SubtaskItem = ({
 	const [timeframe, setTimeframe] = useState();
 
 	useEffect(() => {
-		if (!showTaskActions) setDatePopup(false);
+		if (!showTaskActions) {
+			setDatePopup(false);
+		}
 	}, [showTaskActions]);
 
 	return (

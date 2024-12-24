@@ -1,19 +1,9 @@
 // react core
-import React, { useContext, useState, useEffect } from 'react';
 // mui styling
-import { makeStyles, withStyles } from '@material-ui/core/styles';
 
 // mui core components
-import { Grid, IconButton, Tabs, Tab, Menu, MenuItem, Badge, CircularProgress } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import AddIcCallIcon from '@material-ui/icons/AddIcCall';
-import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
-import { useHistory } from 'react-router-dom';
 
 // internal components
-import Comments from '../Shared/Comments';
-import Tags from '../Shared/Tagger';
 import Avatar from 'react-avatar';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import TwitterIcon from '@material-ui/icons/Twitter';
@@ -26,8 +16,8 @@ import { CONTACT_PURCHASE_DATA } from 'graphQL/useQueryContactPurchaseData';
 import { TRANSACTIONDATA } from 'graphQL/useQueryTransactionData';
 import { LASTMELISSARECORD } from 'graphQL/useQueryGetMelissaRecords';
 import { useLazyQuery, useMutation } from '@apollo/client';
+import { Grid, IconButton, Tabs, Tab, Menu, MenuItem, Badge, CircularProgress } from '@material-ui/core';
 import ConfirmationDialog from './components/ConfirmationDialog';
-import BuyContactsInfoDialogContent from '../Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
 import AddDealDialog from 'components/Transact/components/DealDialog/AddDealDialog';
 import RightDialog from './components/RightDialog';
 import Dialog from '@material-ui/core/Dialog';
@@ -46,19 +36,33 @@ import MetaField from 'components/Table/helpers/MetaField';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import Link from '@material-ui/core/Link';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Button from '@material-ui/core/Button';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import AddIcCallIcon from '@material-ui/icons/AddIcCall';
+import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import { get } from 'lodash';
+import React, { useContext, useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 
 // contexts
-import { AppContext } from 'AppContext';
-import { NavigationContext } from '../Navigation/NavigationContext';
 import { toggleRightColumn } from 'actions/ContactDetailCard';
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+import OpenCorporatesIcon from 'components/Shared/svgIcons/OpenCorporatesIcon';
+
+import { globalStateController } from 'hookstate/globalStateController';
+
 import { OWNERTYPE } from 'utils/data';
 import { getOpenCorporatesUrl } from 'utils/helper';
-import OpenCorporatesIcon from 'components/Shared/svgIcons/OpenCorporatesIcon';
-import { globalStateController } from 'hookstate/globalStateController';
+
+import { AppContext } from 'AppContext';
+import Tags from '../Shared/Tagger';
+import Comments from '../Shared/Comments';
+import { NavigationContext } from '../Navigation/NavigationContext';
+import BuyContactsInfoDialogContent from '../Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
 
 const useStyles = makeStyles(theme => ({
 	Contacts: {

@@ -1,19 +1,21 @@
-import React, { useState, useEffect, useContext } from 'react';
-import moment from 'moment';
-import { useHistory } from 'react-router-dom';
-import { makeStyles } from '@material-ui/styles';
-import { Typography, TextField, Grid, FormControl, Select, MenuItem } from '@material-ui/core';
 import { useLazyQuery } from '@apollo/client';
-import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
-import { GETRECENTCONTACTFILES } from 'graphQL/useQueryGetContactFiles';
-import { AppContext } from 'AppContext';
+import { Typography, TextField, Grid, FormControl, Select, MenuItem } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+import moment from 'moment';
+import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useHistory } from 'react-router-dom';
 
-import ArrowForwardIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
-import CommentComponent from 'components/Shared/CommentComponent';
 import AddDialogeUploadZone from 'components/ContactDetailCard/components/AddDialogUploadZone';
-import UsersListWithIcon from 'components/Shared/UsersListWithIcon';
+import CommentComponent from 'components/Shared/CommentComponent';
 import ShapeOwnerInput from 'components/Shared/ShapeOwnerInput';
+import ArrowForwardIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+import UsersListWithIcon from 'components/Shared/UsersListWithIcon';
+
+import { GETRECENTCONTACTFILES } from 'graphQL/useQueryGetContactFiles';
+import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	titleText: {
@@ -160,13 +162,14 @@ export default function MetadataDrawer(props) {
 		onCompleted: ({ getFileDescriptors }) => {
 			let allActive = true;
 
-			if (getFileDescriptors)
+			if (getFileDescriptors) {
 				for (let i = 0; i < getFileDescriptors.length; i++) {
 					if (getFileDescriptors[i].fileState !== 'active') {
 						allActive = false;
 						break;
 					}
 				}
+			}
 
 			if (!allActive) {
 				if (fileRequestCounter <= 40) {
@@ -183,7 +186,9 @@ export default function MetadataDrawer(props) {
 				} else {
 					setFileRequestCounter(1);
 				}
-			} else setFileRequestCounter(1);
+			} else {
+				setFileRequestCounter(1);
+			}
 		},
 	});
 
@@ -228,8 +233,9 @@ export default function MetadataDrawer(props) {
 						...descriptor,
 						dateTime: moment(descriptor.dateTime, 'MM/DD/YYYY HH:mm Z'),
 					};
-					if (index === 0) recentFile = descriptor;
-					else {
+					if (index === 0) {
+						recentFile = descriptor;
+					} else {
 						if (recentFile.dateTime < descriptor.dateTime) {
 							recentFile = descriptor;
 						}
@@ -296,11 +302,12 @@ export default function MetadataDrawer(props) {
 										selectedUserId={ownerId}
 										onChangeUser={user => {
 											setOwnerId(user?.value);
-											if (props.onUpdate)
+											if (props.onUpdate) {
 												props.onUpdate({
 													owner: user?.value,
 													ownerName: user?.text,
 												});
+											}
 										}}
 									/>
 								)}
@@ -380,10 +387,11 @@ export default function MetadataDrawer(props) {
 								onFocus={() => setFocusSate(true)}
 								onBlur={({ target }) => {
 									setFocusSate(false);
-									if (props.onUpdate)
+									if (props.onUpdate) {
 										props.onUpdate({
 											[props.descriptionKey]: target.value,
 										});
+									}
 								}}
 							/>
 						</Grid>

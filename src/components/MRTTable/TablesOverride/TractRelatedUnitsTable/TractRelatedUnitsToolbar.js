@@ -1,7 +1,9 @@
-import React, { memo } from 'react';
 import { Button } from '@material-ui/core';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import React, { memo } from 'react';
+
 import TractRelatedUnitsTableDialogs from 'components/MRTTable/TablesOverride/TractRelatedUnitsTable/RightDialogs';
+
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 function TractRelatedUnitsToolBar({ table, tableKey }) {
 	const Controller = tableController(tableKey);

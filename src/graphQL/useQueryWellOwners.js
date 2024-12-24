@@ -1,5 +1,5 @@
-import React from 'react';
 import gql from 'graphql-tag';
+import React from 'react';
 
 export const WELLOWNERSQUERY = gql`
 	query getWellOwners($id: String, $selectedYear: String) {

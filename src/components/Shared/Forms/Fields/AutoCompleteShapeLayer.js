@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import SearchIcon from '@material-ui/icons/Search';
-import { Grid, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import { useLazyQuery } from '@apollo/client';
-import { SHAPE_LAYER_SEARCH } from 'graphQL/useQueryShapeTypeSearch';
+import { Grid, Typography } from '@material-ui/core';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import SearchIcon from '@material-ui/icons/Search';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import React, { useEffect, useState } from 'react';
+
 import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
+import { SHAPE_LAYER_SEARCH } from 'graphQL/useQueryShapeTypeSearch';
 
 const useStyles = makeStyles({
 	inputRoot: {
@@ -44,7 +45,9 @@ const AutoCompleteShapeLayer = ({ value, shapeType, setSelectedShapeLayer }) => 
 	}, [search]);
 
 	useEffect(() => {
-		if (layersDate && layersDate[Object.keys(layersDate)[0]]) setLayerList(layersDate[Object.keys(layersDate)[0]]);
+		if (layersDate && layersDate[Object.keys(layersDate)[0]]) {
+			setLayerList(layersDate[Object.keys(layersDate)[0]]);
+		}
 	}, [layersDate]);
 
 	const onInputChange = e => {
@@ -54,11 +57,13 @@ const AutoCompleteShapeLayer = ({ value, shapeType, setSelectedShapeLayer }) => 
 	};
 
 	const onChange = value => {
-		if (value?._id)
+		if (value?._id) {
 			getCustomLayer({
 				variables: { id: value._id },
 			});
-		else setSelectedShapeLayer(value ? value : { clear: true });
+		} else {
+			setSelectedShapeLayer(value ? value : { clear: true });
+		}
 	};
 	const classes = useStyles();
 
@@ -80,8 +85,11 @@ const AutoCompleteShapeLayer = ({ value, shapeType, setSelectedShapeLayer }) => 
 					return option.name;
 				}
 
-				if (option?.name) return option.name;
-				else return '';
+				if (option?.name) {
+					return option.name;
+				} else {
+					return '';
+				}
 			}}
 			getOptionSelected={(option, value) => {
 				return option?._id === value?._id;

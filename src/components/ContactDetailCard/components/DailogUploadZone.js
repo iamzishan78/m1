@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
 import { useMutation } from '@apollo/client';
-import { DropzoneAreaBase } from 'material-ui-dropzone';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { useDispatch } from 'react-redux';
-import { CircularProgress } from '@material-ui/core';
-import { showErrorMessage, showWarningMessage } from '../../../actions';
-import { ADDDESCRIPTORFILE } from 'graphQL/useMutationAddDescriptorFile';
 import { BlockBlobClient } from '@azure/storage-blob';
+import { CircularProgress } from '@material-ui/core';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { DropzoneAreaBase } from 'material-ui-dropzone';
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+
+import { ADDDESCRIPTORFILE } from 'graphQL/useMutationAddDescriptorFile';
+
+import { showErrorMessage, showWarningMessage } from '../../../actions';
 
 const useStyles = makeStyles(theme => ({
 	dropzoneClass: {
@@ -68,7 +70,9 @@ export default function UploadZone(props) {
 								if (!props.relatedObjectId && props.setUploadedFileData) {
 									props.setUploadedFileData(addFileData);
 								}
-							} else dispatch(showErrorMessage('Upload failed'));
+							} else {
+								dispatch(showErrorMessage('Upload failed'));
+							}
 						})
 						.catch(err => console.log(err));
 				}

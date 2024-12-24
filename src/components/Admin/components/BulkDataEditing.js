@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { Menu, MenuItem } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { NavigationContext } from 'components/Navigation/NavigationContext';
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import { rawJobs } from 'components/BulkUpload/BulkUpload';
+import { NavigationContext } from 'components/Navigation/NavigationContext';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import BulkDataTable from 'components/Table/Jobs/BulkDataTable';
 
 const useStyles = makeStyles(theme => ({

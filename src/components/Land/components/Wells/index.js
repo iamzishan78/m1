@@ -1,11 +1,14 @@
+import { makeStyles } from '@material-ui/core/styles';
 import React, { useContext, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
+
 import WellsFilters from 'components/Land/components/Wells/WellsFilters';
 import MRTTable from 'components/MRTTable';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { AppContext } from 'AppContext';
+
 import { globalStateController } from 'hookstate/globalStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	root: {

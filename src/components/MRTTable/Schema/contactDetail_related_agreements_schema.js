@@ -1,9 +1,10 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import Grid from '@material-ui/core/Grid';
+
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
-import { formatDate } from 'components/Shared/functions';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import { formatDate } from 'components/Shared/functions';
 
 const esIndex = 'shapes_flat';
 

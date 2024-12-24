@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import clsx from 'clsx';
-import { useHistory, useLocation } from 'react-router-dom';
 import { IconButton } from '@material-ui/core';
-import ListItemText from '@material-ui/core/ListItemText';
 import { Divider, Grid, Typography, Drawer } from '@material-ui/core';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ListItemText from '@material-ui/core/ListItemText';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import MenuIcon from '@material-ui/icons/Menu';
+import clsx from 'clsx';
+import React, { useEffect, useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 
-import { useStyles, StyledMenu, StyledMenuItem } from 'components/Land/style';
-
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import AdvanceSearch from 'components/Land/components/AdvanceSearch';
+import { useStyles, StyledMenu, StyledMenuItem } from 'components/Land/style';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
 export default function QuickActionsPanel({
 	children,

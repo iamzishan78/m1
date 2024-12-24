@@ -1,7 +1,3 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-
-import { TransactContext } from 'components/Transact/TransactContext';
-import { makeStyles } from '@material-ui/core/styles';
 import {
 	// Menu,
 	// MenuItem,
@@ -9,9 +5,14 @@ import {
 	CardContent,
 	Grid,
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useState, useEffect, useRef, useContext } from 'react';
+
+import DealStageDetail from 'components/Transact/components/DealTasksDetails/DealStageDetail';
+import { TransactContext } from 'components/Transact/TransactContext';
+
 // import ArrowDown from "@material-ui/icons/ArrowDropDown";
 import ProgressBar from '../../../Shared/ui/ProgressBar';
-import DealStageDetail from 'components/Transact/components/DealTasksDetails/DealStageDetail';
 
 const useStyles = makeStyles(theme => ({
 	root: {},
@@ -81,7 +82,9 @@ function DealTasksDetails({ users, activeDeal, dealSettings, user, ...rest }) {
 			completedSubtasks += setting.tasks.filter(t => t.isCompleted).length;
 			totalSubtasks += setting.tasks.length;
 		});
-		if (totalSubtasks === 0) return 0;
+		if (totalSubtasks === 0) {
+			return 0;
+		}
 		let overallProgress = (completedSubtasks / totalSubtasks) * 100;
 		overallProgress = Number.isInteger(overallProgress) ? overallProgress : overallProgress.toFixed(2);
 		return overallProgress;

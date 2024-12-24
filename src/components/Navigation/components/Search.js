@@ -1,13 +1,3 @@
-import React, { useCallback, useContext, useEffect, useMemo } from 'react';
-import { useHistory } from 'react-router-dom';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import parse from 'autosuggest-highlight/parse';
-import debounce from 'lodash/debounce';
 import Button from '@material-ui/core/Button';
 import PersonIcon from '@material-ui/icons/Person';
 import HistoryIcon from '@material-ui/icons/History';
@@ -47,15 +37,26 @@ import Popover from '@material-ui/core/Popover';
 import Tooltip from '@material-ui/core/Tooltip';
 import Box from '@material-ui/core/Box';
 import { CircularProgress } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import ClearIcon from '@material-ui/icons/Clear';
-
+import LocationOnIcon from '@material-ui/icons/LocationOn';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import parse from 'autosuggest-highlight/parse';
+import debounce from 'lodash/debounce';
+import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
-import capitalizeFirstLetter from 'components/Shared/valueformatters/capitalize-first-letter';
+
 import { SHAPE_TYPE } from 'components/Navigation/components/Utils/consts';
-import { popupController } from 'hookstate/popupStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
+import capitalizeFirstLetter from 'components/Shared/valueformatters/capitalize-first-letter';
+
 import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+import { popupController } from 'hookstate/popupStateController';
 
 const landGridIndexName = 'landgrid-index';
 const leaseIndexName = 'lease-index-m1corev3';
@@ -68,16 +69,24 @@ const maxMinScore = options => {
 	let max = 0;
 	let min = 1000000;
 	for (let i = 0; i < options.length; i++) {
-		if (options[i].Score > max) max = options[i].Score;
-		if (options[i].Score < min) min = options[i].Score;
+		if (options[i].Score > max) {
+			max = options[i].Score;
+		}
+		if (options[i].Score < min) {
+			min = options[i].Score;
+		}
 	}
 
 	return [max, min];
 };
 
 const calcScoreOpacity = (maxMin, score) => {
-	if (maxMin[0] === maxMin[1]) return 0;
-	if (score === maxMin[1]) return 1;
+	if (maxMin[0] === maxMin[1]) {
+		return 0;
+	}
+	if (score === maxMin[1]) {
+		return 1;
+	}
 
 	return 1 - (score - maxMin[1]) / (maxMin[0] - maxMin[1]);
 };
@@ -591,7 +600,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
 	useEffect(() => {
 		if (dataOwnerWells && dataOwnerWells.ownerLatsLonsArray) {
 			if (dataOwnerWells.ownerLatsLonsArray.length !== 0) {
-				if (dataOwnerWells.ownerLatsLonsArray.length === 1)
+				if (dataOwnerWells.ownerLatsLonsArray.length === 1) {
 					popupController.setState({
 						selectedWellId: dataOwnerWells.ownerLatsLonsArray[0].id.toLowerCase(),
 						wellSelectedCoordinates: [
@@ -600,6 +609,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
 						],
 						selectedPlaces: null,
 					});
+				}
 				setStateApp(stateApp => ({
 					...stateApp,
 					fitBounds: null,
@@ -623,7 +633,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
 	useEffect(() => {
 		if (dataOperatorWells && dataOperatorWells.operatorLatsLonsArray) {
 			if (dataOperatorWells.operatorLatsLonsArray.length !== 0) {
-				if (dataOperatorWells.operatorLatsLonsArray.length === 1)
+				if (dataOperatorWells.operatorLatsLonsArray.length === 1) {
 					popupController.setState({
 						selectedWellId: dataOperatorWells.operatorLatsLonsArray[0].id.toLowerCase(),
 						wellSelectedCoordinates: [
@@ -632,6 +642,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
 						],
 						selectedPlaces: null,
 					});
+				}
 				setStateApp(stateApp => ({
 					...stateApp,
 					fitBounds: null,
@@ -655,7 +666,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
 	useEffect(() => {
 		if (dataLeaseWells && dataLeaseWells.leaseLatsLonsArray) {
 			if (dataLeaseWells.leaseLatsLonsArray.length !== 0) {
-				if (dataLeaseWells.leaseLatsLonsArray.length === 1)
+				if (dataLeaseWells.leaseLatsLonsArray.length === 1) {
 					popupController.setState({
 						selectedWellId: dataLeaseWells.leaseLatsLonsArray[0].id.toLowerCase(),
 						wellSelectedCoordinates: [
@@ -664,6 +675,7 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
 						],
 						selectedPlaces: null,
 					});
+				}
 				setStateApp(stateApp => ({
 					...stateApp,
 					fitBounds: null,
@@ -901,7 +913,9 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
 			//// if mapboxSearch
 			if (newValue && newValue.center && newValue.Source === 'mapboxSearch') {
 				let minLong, maxLong, minLat, maxLat;
-				if (newValue.bbox) [minLong, minLat, maxLong, maxLat] = newValue.bbox;
+				if (newValue.bbox) {
+					[minLong, minLat, maxLong, maxLat] = newValue.bbox;
+				}
 
 				popupController.updateState({
 					selectedWell: null,
@@ -927,7 +941,9 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
 
 			if (newValue && newValue.center && newValue.Source === 'places') {
 				let minLong, maxLong, minLat, maxLat;
-				if (newValue.bbox) [minLong, minLat, maxLong, maxLat] = newValue.bbox;
+				if (newValue.bbox) {
+					[minLong, minLat, maxLong, maxLat] = newValue.bbox;
+				}
 
 				popupController.updateState({
 					selectedWell: null,
@@ -982,7 +998,9 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
 				id="cognitive-search-autocomplete"
 				getOptionLabel={(option, value) => {
 					// On Places search we need to show address in bar
-					if (option?.Source === 'places') return option?.Secondary || option?.Primary || searchInputValue;
+					if (option?.Source === 'places') {
+						return option?.Secondary || option?.Primary || searchInputValue;
+					}
 					return option.Primary || searchInputValue;
 				}}
 				forcePopupIcon
@@ -990,25 +1008,52 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
 				options={optionsWithHeader}
 				debug
 				groupBy={option => {
-					if (option?.shapeJson?.properties?.type === 'agreement') return 'Agreements';
-					if (option.Source === ownerCogIndexName) return 'Tax Owners';
-					if (option.Source === wellCogIndexName) return 'Platform Wells';
-					if (option.Source === operatorIndexName) return 'Operators';
-					if (option.Source === leaseIndexName) return 'Leases';
-					if (option.Source === landGridIndexName) return 'Land Grid';
-					if (option.Source === contactIndexName) return 'Contacts';
-					if (option.Source === 'mapboxSearch') return 'Locations';
-					if (option.Source === 'places') return 'Places';
-					if (option.Source === 'mywells_flat') return 'My Wells';
-					if (option.layer === 'unit') return 'Units';
-					if (option.layer === 'parcel') return 'Tracts';
-					if (option.Source === 'loader') return 'loader';
+					if (option?.shapeJson?.properties?.type === 'agreement') {
+						return 'Agreements';
+					}
+					if (option.Source === ownerCogIndexName) {
+						return 'Tax Owners';
+					}
+					if (option.Source === wellCogIndexName) {
+						return 'Platform Wells';
+					}
+					if (option.Source === operatorIndexName) {
+						return 'Operators';
+					}
+					if (option.Source === leaseIndexName) {
+						return 'Leases';
+					}
+					if (option.Source === landGridIndexName) {
+						return 'Land Grid';
+					}
+					if (option.Source === contactIndexName) {
+						return 'Contacts';
+					}
+					if (option.Source === 'mapboxSearch') {
+						return 'Locations';
+					}
+					if (option.Source === 'places') {
+						return 'Places';
+					}
+					if (option.Source === 'mywells_flat') {
+						return 'My Wells';
+					}
+					if (option.layer === 'unit') {
+						return 'Units';
+					}
+					if (option.layer === 'parcel') {
+						return 'Tracts';
+					}
+					if (option.Source === 'loader') {
+						return 'loader';
+					}
 					return 'header';
 				}}
 				// leftIconButton={<SearchIcon />}
 				renderGroup={option => {
-					if (option.group === 'loader')
+					if (option.group === 'loader') {
 						return <CircularProgress key="loader" style={{ margin: '10px 0 0 48%' }} size={28} color="secondary" />;
+					}
 
 					return option.group === 'header' && !isDocument ? (
 						<div></div>
@@ -1056,8 +1101,11 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
 				value={value}
 				// handle change also acts like onClick here
 				onChange={(event, newValue) => {
-					if (event.key === 'Enter') handleChange(options[0]);
-					else handleChange(newValue);
+					if (event.key === 'Enter') {
+						handleChange(options[0]);
+					} else {
+						handleChange(newValue);
+					}
 				}}
 				onInputChange={(event, newInputValue, reason) => {
 					if (reason === 'input') {
@@ -1290,7 +1338,9 @@ function Search({ stateApp, setStateApp, MapGridCard, isDocument }) {
 					</div>
 				)}
 				renderOption={(option, index) => {
-					if (option.Source === 'header' || option.group === 'loader') return null;
+					if (option.Source === 'header' || option.group === 'loader') {
+						return null;
+					}
 					const parts = parse(option.Primary, Array());
 
 					return (

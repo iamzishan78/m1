@@ -1,12 +1,13 @@
-import React, { memo, useEffect } from 'react';
-import { MaterialReactTable } from 'material-react-table';
-
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { SCHEMA } from './Schema';
 import { useApolloClient } from '@apollo/client';
+import { MaterialReactTable } from 'material-react-table';
+import React, { memo, useEffect } from 'react';
+
 import { globalStateController } from 'hookstate/globalStateController';
-import { copy } from '../Shared/functions/index';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { SCHEMA } from './Schema';
 import Table from './Table';
+import { copy } from '../Shared/functions/index';
 
 function MRTTable({ tableKey, name, overrideMeta = {} }) {
 	const client = useApolloClient();
@@ -33,7 +34,7 @@ function MRTTable({ tableKey, name, overrideMeta = {} }) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [reInitialized]);
 
-	if (!stateValues.initialized)
+	if (!stateValues.initialized) {
 		return (
 			<MaterialReactTable
 				columns={extendedMeta.TableSchema.filter(column => !column.hidden).map(column => ({
@@ -51,6 +52,7 @@ function MRTTable({ tableKey, name, overrideMeta = {} }) {
 				enableFullScreenToggle={false}
 			/>
 		);
+	}
 
 	return <Table tableKey={tableKey} />;
 }

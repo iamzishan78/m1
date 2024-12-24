@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
 import { useLazyQuery } from '@apollo/client';
 import { Grid } from '@material-ui/core';
 import sortBy from 'lodash/sortBy';
+import React, { useState, useEffect } from 'react';
 
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
-import ValidationFilter from 'components/Revenue/components/Properties/DetailComponents/Validation/ValidationFilter';
-import OverShortComparison from 'components/Revenue/components/Properties/DetailComponents/Validation/OverShortComparison';
-import MonthlyProductionChart from 'components/Revenue/components/Properties/DetailComponents/Validation/MonthlyProductionChart';
 import Grids from 'components/Revenue/components/Properties/DetailComponents/Validation/Grids';
+import MonthlyProductionChart from 'components/Revenue/components/Properties/DetailComponents/Validation/MonthlyProductionChart';
+import OverShortComparison from 'components/Revenue/components/Properties/DetailComponents/Validation/OverShortComparison';
+import ValidationFilter from 'components/Revenue/components/Properties/DetailComponents/Validation/ValidationFilter';
 import { WellCardContextProvider } from 'components/WellCard/WellCardContext';
 import { WellProdChartContextProvider } from 'components/WellProdChart/WellProdChartContext';
+
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 
 const Validation = ({ propertyId }) => {
 	const [esFilters, setESFilters] = useState([]);

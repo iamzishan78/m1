@@ -1,4 +1,5 @@
 import { InputAdornment } from '@material-ui/core';
+
 import { CurrencyFormatCustomWithoutPrefix } from 'components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix';
 
 export const agreementTypes = [

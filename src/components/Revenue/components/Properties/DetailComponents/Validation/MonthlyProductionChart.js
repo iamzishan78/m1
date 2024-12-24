@@ -1,12 +1,13 @@
-import React, { useContext, useEffect } from 'react';
 import { useLazyQuery } from '@apollo/client';
-import moment from 'moment';
 import get from 'lodash/get';
 import orderBy from 'lodash/orderBy';
+import moment from 'moment';
+import React, { useContext, useEffect } from 'react';
 
-import WellProdChart from 'components/WellProdChart/WellProdChart';
 import { WellCardContext } from 'components/WellCard/WellCardContext';
+import WellProdChart from 'components/WellProdChart/WellProdChart';
 import { WellProdChartContext } from 'components/WellProdChart/WellProdChartContext';
+
 import { GET_ASSOCIATED_WELL_PRODUCTION_DATA } from 'graphQL/useQueryAssociatedWellProductionData';
 
 const ValidationChart = ({ filter, propertyId, wellProductionData, setWellProductionData, propertiesIds }) => {

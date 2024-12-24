@@ -1,30 +1,35 @@
-import React, { Fragment, useState, useContext, useMemo, useCallback } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { AppContext } from '../../AppContext';
-import Card from '@material-ui/core/Card';
-import CloseIcon from '@material-ui/icons/Close';
-import IconButton from '@material-ui/core/IconButton';
-import M1nTable from '../Shared/M1nTable/M1nTable';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import { setMapGridCardState } from '../../actions';
-import OwnersSummaryCard from '../OwnersSummaryCard/OwnersSummaryCard';
+import Card from '@material-ui/core/Card';
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles } from '@material-ui/core/styles';
+import CloseIcon from '@material-ui/icons/Close';
+import React, { Fragment, useState, useContext, useMemo, useCallback } from 'react';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+
+import MRTTable from 'components/MRTTable';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import TabPanels, { TabPanel } from 'components/Shared/TabPanels';
+import { AppContext } from '../../AppContext';
+
+import OwnersSummaryCard from '../OwnersSummaryCard/OwnersSummaryCard';
+import { platformDataInitialData, platformDataWellsInitialData, snapGridSideBarData } from './components/data';
+import SearchPanel from './components/SearchPanel';
+import { setMapGridCardState } from '../../actions';
+import M1nTable from '../Shared/M1nTable/M1nTable';
 
 import DockMenu from './DockMenu';
+
 import ShapeGridWellsTable from 'components/Table/Wells/ShapeGridWellsTable';
 import ShapeGridTaxOwnersTable from 'components/Table/TaxOwners/ShapeGridTaxOwnersTable';
-
-import SearchPanel from './components/SearchPanel';
-import { platformDataInitialData, platformDataWellsInitialData, snapGridSideBarData } from './components/data';
-import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+
 import { drawController } from 'hookstate/drawStateController';
-import MRTTable from 'components/MRTTable';
+
 import { mapControlsController } from 'hookstate/mapControlsController';
 import { tableGlobalController } from 'hookstate/tableController';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
+
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 
 const useStyles = makeStyles(theme => {
@@ -143,18 +148,24 @@ const useStyles = makeStyles(theme => {
 									: 'calc(58.75vh - 183px)',
 						'@media (max-height:930px)': {
 							maxHeight: ({ dockMenu }) => {
-								if (dockMenu === 'bottom' || dockMenu === 'top') return 'calc(50vh - 590px)';
-								else if (dockMenu === 'left' || dockMenu === 'right') return 'calc(100vh - 204px)';
-								else if (dockMenu === 'full') return 'calc(100vh - 153px)';
+								if (dockMenu === 'bottom' || dockMenu === 'top') {
+									return 'calc(50vh - 590px)';
+								} else if (dockMenu === 'left' || dockMenu === 'right') {
+									return 'calc(100vh - 204px)';
+								} else if (dockMenu === 'full') {
+									return 'calc(100vh - 153px)';
+								}
 							},
 						},
 						'@media (max-height:1600px)': {
 							maxHeight: ({ dockMenu, userGridViewFilters }) => {
-								if (dockMenu === 'bottom' || dockMenu === 'top') return 'calc(50vh - 135px)';
-								else if (dockMenu === 'left' || dockMenu === 'right')
+								if (dockMenu === 'bottom' || dockMenu === 'top') {
+									return 'calc(50vh - 135px)';
+								} else if (dockMenu === 'left' || dockMenu === 'right') {
 									return userGridViewFilters?.length > 0 ? 'calc(100vh - 235px)' : 'calc(100vh - 200px)';
-								else if (dockMenu === 'full')
+								} else if (dockMenu === 'full') {
 									return userGridViewFilters?.length ? 'calc(100vh - 275px)' : 'calc(100vh - 183px)';
+								}
 							},
 						},
 					},
@@ -353,7 +364,9 @@ function MapGridCard(props) {
 	};
 
 	const ativateSearchPanel = () => {
-		if (mapGridCardActiveTap !== 0) handleMainTapChange(null, 0);
+		if (mapGridCardActiveTap !== 0) {
+			handleMainTapChange(null, 0);
+		}
 		if (mapControlsStateValues.mapGridCardActivated === 'min') {
 			mapControlsController.updateState({ mapGridCardActivated: true });
 		}

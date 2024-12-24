@@ -1,16 +1,16 @@
-import React, { useContext, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-
+import { useMutation } from '@apollo/client';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { useMutation } from '@apollo/client';
-import { UPDATECONTACT } from '../../../graphQL/useMutationUpdateContact';
-import { AppContext } from '../../../AppContext';
+import React, { useContext, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+
 import { showSuccessMessage, showErrorMessage } from '../../../actions';
+import { AppContext } from '../../../AppContext';
+import { UPDATECONTACT } from '../../../graphQL/useMutationUpdateContact';
 
 export default function ConfirmationDialog(props) {
 	const dispatch = useDispatch();

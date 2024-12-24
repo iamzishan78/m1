@@ -1,15 +1,16 @@
-import React, { useContext, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-
-import AgreementDetailCard from './AgreementDetailCard';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useContext, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 // contexts
 import { ExpandableCardContext } from 'components/ExpandableCard/ExpandableCardContext';
-import { popupController } from 'hookstate/popupStateController';
+
 import { mapControlsController } from 'hookstate/mapControlsController';
+import { popupController } from 'hookstate/popupStateController';
+
+import AgreementDetailCard from './AgreementDetailCard';
 
 const useStyles = makeStyles(theme => ({
 	card: {

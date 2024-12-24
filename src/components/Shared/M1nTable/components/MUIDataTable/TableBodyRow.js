@@ -1,9 +1,9 @@
+import { withStyles } from '@material-ui/core/styles';
+import TableRow from '@material-ui/core/TableRow';
+import clsx from 'clsx';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { useInView } from 'react-intersection-observer';
-import PropTypes from 'prop-types';
-import clsx from 'clsx';
-import TableRow from '@material-ui/core/TableRow';
-import { withStyles } from '@material-ui/core/styles';
 
 const defaultBodyRowStyles = theme => ({
 	root: {

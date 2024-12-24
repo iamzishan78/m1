@@ -1,7 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import {
 	Avatar,
 	Box,
@@ -20,28 +17,43 @@ import {
 	ListItemIcon,
 	ListItemText,
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import DrawPoly from '@material-ui/icons/EditLocationOutlined';
 import FolderIcon from '@material-ui/icons/Folder';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { useLazyQuery, useMutation } from '@apollo/client';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import $ from 'jquery';
+import React, { useEffect, useContext, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+
 import 'material-icons/iconfont/material-icons.css';
 // Components
-import ExpandIcon from './components/svgIcons/ExpandIcon';
-import ShrinkIcon from './components/svgIcons/ShrinkIcon';
+import { agreementTypes } from 'components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData';
+import { modifyExandableCardStyle } from 'components/Shared/functions/shapeLayer';
+
+import { drawController } from 'hookstate/drawStateController';
+import { globalStateController } from 'hookstate/globalStateController';
+import { popupController } from 'hookstate/popupStateController';
+
+import { showInfoMessage } from 'actions';
+import { layerRefs } from 'hookstate';
+
 import ReportBugModal from './components/ReportBugModal';
 import TaggerWithIcon from '../Shared/TaggerWithIcon';
+import ExpandIcon from './components/svgIcons/ExpandIcon';
+import ShrinkIcon from './components/svgIcons/ShrinkIcon';
 import CommentsWithIcon from '../Shared/CommentsWithIcon';
+
 //import { default as DrawPoly } from "components/Shared/svgIcons/polygon";
-import DrawPoly from '@material-ui/icons/EditLocationOutlined';
+
 import TrackToggleButton from '../Shared/TrackToggleButton';
 import LinkWithIcon from '../Shared/LinkWithIcon';
 import DeleteConfirmationDialogContent from '../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import ContactSearch from './components/ContactSearch';
-import { modifyExandableCardStyle } from 'components/Shared/functions/shapeLayer';
-import { agreementTypes } from 'components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData';
+
 // Mutations
 import { UPDATECUSTOMLAYER } from '../../graphQL/useMutationUpdateCustomLayer';
 // Queries
@@ -49,11 +61,6 @@ import { TRACKBYOBJECTID } from '../../graphQL/useQueryTrackByObjectId';
 // contexts
 import { AppContext } from '../../AppContext';
 import { ExpandableCardContext } from './ExpandableCardContext';
-import { showInfoMessage } from 'actions';
-import { popupController } from 'hookstate/popupStateController';
-import { drawController } from 'hookstate/drawStateController';
-import { layerRefs } from 'hookstate';
-import { globalStateController } from 'hookstate/globalStateController';
 
 function ExpandableCard(props) {
 	// initials
@@ -295,8 +302,11 @@ function ExpandableCard(props) {
 		const searchParams = new URLSearchParams(window.location.search?.replace('?', ''));
 		const paramBreadCrumbs = searchParams.get('breadcrumbs');
 
-		if (paramBreadCrumbs === 'Documents') setBreadcrumbs([{ title: 'Documents', url: '/documents' }]);
-		else if (history.location?.state?.showWellBreadcrumb) setBreadcrumbs(history.location?.state?.breadcrumbs);
+		if (paramBreadCrumbs === 'Documents') {
+			setBreadcrumbs([{ title: 'Documents', url: '/documents' }]);
+		} else if (history.location?.state?.showWellBreadcrumb) {
+			setBreadcrumbs(history.location?.state?.breadcrumbs);
+		}
 	}, [history.location?.state?.breadcrumbs, history?.location?.state?.showWellBreadcrumb]);
 
 	useEffect(() => {
@@ -312,7 +322,9 @@ function ExpandableCard(props) {
 	}, [stateApp.user.mongoId, targetSourceId]);
 
 	useEffect(() => {
-		if (dataTrack) setTarget({ isTracked: dataTrack.trackByObjectId ? true : false });
+		if (dataTrack) {
+			setTarget({ isTracked: dataTrack.trackByObjectId ? true : false });
+		}
 	}, [dataTrack]);
 
 	// useEffect(() => { setZidx(props.zIndex); }, [props.zIndex]);
@@ -320,8 +332,11 @@ function ExpandableCard(props) {
 	useEffect(() => {
 		setWidth(cardWidth);
 		setHeight(cardHeight);
-		if (props.expanded) handleExpand();
-		else handleShrink();
+		if (props.expanded) {
+			handleExpand();
+		} else {
+			handleShrink();
+		}
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.expanded]);
@@ -329,15 +344,19 @@ function ExpandableCard(props) {
 	useEffect(() => {
 		///Set body style overflow hidden when card is fully expanded
 		const disableBodyScrollBarIfExpanded = () => {
-			if (width === '100%') document.body.style.overflow = 'hidden';
+			if (width === '100%') {
+				document.body.style.overflow = 'hidden';
+			}
 		};
 
 		disableBodyScrollBarIfExpanded();
-		if (document.getElementById('side-panel-pullout-btn'))
-			document.getElementById('side-panel-pullout-btn').style.display = 'none'; // hide pullout button from the sidebar when details card is opened
+		if (document.getElementById('side-panel-pullout-btn')) {
+			document.getElementById('side-panel-pullout-btn').style.display = 'none';
+		} // hide pullout button from the sidebar when details card is opened
 		return () => {
-			if (document.getElementById('side-panel-pullout-btn'))
-				document.getElementById('side-panel-pullout-btn').style.display = 'flex'; // Show pullout button from the sidebar when details card get closed
+			if (document.getElementById('side-panel-pullout-btn')) {
+				document.getElementById('side-panel-pullout-btn').style.display = 'flex';
+			} // Show pullout button from the sidebar when details card get closed
 			document.body.style.overflow = 'auto';
 		};
 	}, [openDialog, props.targetLabel, isExpanded, width]);
@@ -351,8 +370,11 @@ function ExpandableCard(props) {
 		} else {
 			setToggleExpand(false);
 			setExpanded(true);
-			if (parent === 'table' && targetLabel === 'well') setWidth('50vw');
-			else setWidth('100%');
+			if (parent === 'table' && targetLabel === 'well') {
+				setWidth('50vw');
+			} else {
+				setWidth('100%');
+			}
 		}
 		setHeight(cardHeightExpanded);
 
@@ -407,10 +429,14 @@ function ExpandableCard(props) {
 
 			if ($('#tempPopupHolder').length) {
 				let popUps = document.getElementsByClassName('mapboxgl-popup');
-				if (popUps[0]) popUps[0].remove();
+				if (popUps[0]) {
+					popUps[0].remove();
+				}
 			}
 
-			if (reset !== 'noreset') popupController.reset();
+			if (reset !== 'noreset') {
+				popupController.reset();
+			}
 
 			setStateApp(state => ({
 				...state,
@@ -523,14 +549,18 @@ function ExpandableCard(props) {
 
 			// For clearing out selected abstract land grids
 			let popUps = document.getElementsByClassName('mapboxgl-popup');
-			if (popUps[0]) popUps[0].remove();
+			if (popUps[0]) {
+				popUps[0].remove();
+			}
 
 			const selectedAbstracts = drawController.getValue('selectedAbstracts');
 
 			for (let i = 0; i < selectedAbstracts.length; i++) {
 				const id = selectedAbstracts[i].properties.Id;
 				const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
-				if (sourceId) window.mapRef?.setFeatureState({ source: sourceId, id }, { click: false });
+				if (sourceId) {
+					window.mapRef?.setFeatureState({ source: sourceId, id }, { click: false });
+				}
 			}
 
 			drawController.updateState({
@@ -707,7 +737,7 @@ function ExpandableCard(props) {
 					action={
 						<div className={classes.headerIcons}>
 							{(targetLabel === 'parcel' || selectedShape) && (
-								<Tooltip title={`Edit shape boundary`} data-testid="edit-shape-boundary" placement="top">
+								<Tooltip title={'Edit shape boundary'} data-testid="edit-shape-boundary" placement="top">
 									<IconButton
 										// size="small"
 										onClick={() => {

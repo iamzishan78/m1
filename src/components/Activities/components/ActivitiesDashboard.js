@@ -1,18 +1,23 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { useLazyQuery } from '@apollo/client';
-
-import ActivityAnalytics from './ActivityAnalytics';
-import ActivitiesDashboardFilter from './ActivitiesDashboardFilter';
-import MRTTable from 'components/MRTTable';
-import { tableController } from 'hookstate/tableController';
 import { useHookstate } from '@hookstate/core';
-import { slidoutState } from 'hookstate/initialStates';
-import ActivitiesSlideout from './ActivitiesSlideout';
-import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
-import { AppContext } from 'AppContext';
-import { getDateFilters } from 'utils/helper';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useContext, useEffect, useState } from 'react';
+
+import MRTTable from 'components/MRTTable';
+
 import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
+import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
+
+import { slidoutState } from 'hookstate/initialStates';
+import { tableController } from 'hookstate/tableController';
+
+import { getDateFilters } from 'utils/helper';
+
+import { AppContext } from 'AppContext';
+
+import ActivitiesDashboardFilter from './ActivitiesDashboardFilter';
+import ActivitiesSlideout from './ActivitiesSlideout';
+import ActivityAnalytics from './ActivityAnalytics';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -30,14 +35,18 @@ export const getActivityFilters = appliedFilters => {
 				to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
 			},
 		});
-		if (range.length > 0) filters = [...filters, ...range];
+		if (range.length > 0) {
+			filters = [...filters, ...range];
+		}
 		range = getDateFilters({
 			endDateTime: {
 				from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
 				to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
 			},
 		});
-		if (range.length > 0) filters = [...filters, ...range];
+		if (range.length > 0) {
+			filters = [...filters, ...range];
+		}
 		if (appliedFilters.campaigns) {
 			filters.push({
 				field: 'contact.campaigns',
@@ -50,7 +59,9 @@ export const getActivityFilters = appliedFilters => {
 				value: appliedFilters.qualifier,
 			});
 		}
-		if (!filters.length && appliedFilters.length) filters = appliedFilters;
+		if (!filters.length && appliedFilters.length) {
+			filters = appliedFilters;
+		}
 	}
 	return filters;
 };

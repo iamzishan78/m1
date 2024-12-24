@@ -1,8 +1,10 @@
 /* eslint-disable no-undef */
+import _ from 'lodash';
+
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { GET_PROPERTY } from 'graphQL/useQueryGetProperty';
+
 import ldata from '../../fixtures/ldata.json';
-import _ from 'lodash';
 
 const headers = {
 	'Content-Type': 'application/json',

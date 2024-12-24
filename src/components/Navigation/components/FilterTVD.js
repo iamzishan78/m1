@@ -1,13 +1,14 @@
-import React, { useState, useContext, useCallback, useEffect } from 'react';
+import { FormLabel } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import NumberFormat from 'react-number-format';
-import Grid from '@material-ui/core/Grid';
-import { FormLabel } from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
 import CancelIcon from '@material-ui/icons/Cancel';
+import React, { useState, useContext, useCallback, useEffect } from 'react';
+import NumberFormat from 'react-number-format';
 
 import { navController } from 'hookstate/navStateController';
+
 import { NavigationContext } from '../NavigationContext';
 
 const useStyles = makeStyles({
@@ -66,8 +67,12 @@ export default function FilterTVD() {
 
 		const value = { min, max };
 
-		if (!min && min !== 0) delete value.min;
-		if (!max && max !== 0) delete value.max;
+		if (!min && min !== 0) {
+			delete value.min;
+		}
+		if (!max && max !== 0) {
+			delete value.max;
+		}
 
 		const type = 'range';
 		navController.handleWellsFilters({ field: 'trueVerticalDepth', value, type });
@@ -105,7 +110,9 @@ export default function FilterTVD() {
 	}, [setFilter, stateNav.tvdWell]);
 
 	useEffect(() => {
-		if (!valueMinDisplay || !valueMaxDisplay) return;
+		if (!valueMinDisplay || !valueMaxDisplay) {
+			return;
+		}
 
 		if (valueMinDisplay > valueMaxDisplay) {
 			setError(true);

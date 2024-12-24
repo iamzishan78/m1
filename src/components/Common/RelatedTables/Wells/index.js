@@ -1,9 +1,11 @@
-import React, { useContext, useMemo } from 'react';
 import { Container, Button, ButtonGroup } from '@material-ui/core';
-import { AppContext } from 'AppContext';
-import MRTTable from 'components/MRTTable';
+import React, { useContext, useMemo } from 'react';
+
 import { DrawerContext } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
+import MRTTable from 'components/MRTTable';
 import WellDialog from 'components/MRTTable/TablesOverride/RelatedWellsTable/RightDialogs/RelatedWellIDialog';
+
+import { AppContext } from 'AppContext';
 
 function RelatedWellsTable(props) {
 	const [stateApp, setStateApp] = useContext(AppContext);

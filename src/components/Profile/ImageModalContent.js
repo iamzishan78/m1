@@ -9,9 +9,10 @@ import Typography from '@material-ui/core/Typography';
 import Skeleton from '@material-ui/lab/Skeleton';
 import React, { Fragment, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import ReactCrop from 'react-image-crop';
+
 import 'react-image-crop/dist/ReactCrop.css';
-import { ProfileContext } from './ProfileContext';
 import ProfileActions from './ProfileActions';
+import { ProfileContext } from './ProfileContext';
 
 const useStyles = makeStyles(theme => ({
 	root: {

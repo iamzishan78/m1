@@ -1,21 +1,25 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Grid, IconButton } from '@material-ui/core';
-import { Close as ClearButton } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
 import { useLazyQuery } from '@apollo/client';
-import CustomAutocomplete from './CustomAutocomplete';
-import { customLayersFieldAccessors } from './consts';
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { globalStateController } from 'hookstate/globalStateController';
-import { useFormContext } from 'react-hook-form';
-import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } from 'components/MRTTable/utils/data';
-import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
-import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import { Box, Grid, IconButton } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { Close as ClearButton } from '@material-ui/icons';
+
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import _ from 'lodash';
-import { tableESState } from 'hookstate/initialStates';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
+import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
+import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } from 'components/MRTTable/utils/data';
 import { formatDate } from 'components/Shared/functions';
+import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+
+import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { tableESState } from 'hookstate/initialStates';
+import { layerFiltersController } from 'hookstate/layerFiltersController';
+
+import { customLayersFieldAccessors } from './consts';
+import CustomAutocomplete from './CustomAutocomplete';
 
 // Define custom styles using Material-UI's makeStyles hook
 const useStyles = makeStyles(theme => ({
@@ -131,7 +135,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 	const filterValues = watch(`mapViews.${index}.filterValues`);
 	const filterType = watch(`mapViews.${index}.filterType`);
 
-	const mapViews = watch(`mapViews`);
+	const mapViews = watch('mapViews');
 
 	const [debouncedFilterValues, setDebouncedFilterValues] = useState(filterValues); // New state for debounced filter values
 
@@ -148,7 +152,9 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 	}, [filterValues]);
 
 	useEffect(() => {
-		if (!dataSourceName || customLayersFieldAccessors[dataSourceName]) return;
+		if (!dataSourceName || customLayersFieldAccessors[dataSourceName]) {
+			return;
+		}
 		const fileId = dataSourceName.substring(0, dataSourceName.indexOf('_'));
 		const layerShapeName = dataSourceName.substring(dataSourceName.indexOf('_') + 1);
 		getShapeFileSchema({
@@ -218,7 +224,9 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 
 	// Effect to trigger data fetching based on the selected data source and field name
 	useEffect(() => {
-		if (!(dataSourceName && fieldName)) return;
+		if (!(dataSourceName && fieldName)) {
+			return;
+		}
 
 		const { esIndex, filters, search } = getLayerTypeAndFilters(dataSourceName);
 
@@ -306,8 +314,9 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 		const requiredFilterOptions =
 			dataSourceName && customLayersFieldAccessors[dataSourceName] ? filterTypeOptions : shapeFileOptions;
 
-		if (dataSourceName && !(customLayersFieldAccessors[dataSourceName]?.keys || shapeFileSchema?.getShapeFileSchema))
+		if (dataSourceName && !(customLayersFieldAccessors[dataSourceName]?.keys || shapeFileSchema?.getShapeFileSchema)) {
 			return [];
+		}
 
 		const fields = [
 			{

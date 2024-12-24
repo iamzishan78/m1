@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useContext } from 'react';
 import { makeStyles } from '@material-ui/core';
+import React, { useState, useEffect, useContext } from 'react';
 import { useSelector } from 'react-redux';
-import { AppContext } from 'AppContext';
 
-import { setStateIfDeepEqual } from "components/Shared/functions";
 import MRTTable from 'components/MRTTable';
-import { tableController } from "hookstate/tableController";
+import { setStateIfDeepEqual } from 'components/Shared/functions';
 import Wells from 'components/Shared/svgIcons/well';
+
+import { tableController } from 'hookstate/tableController';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	formControl: {
@@ -52,23 +54,26 @@ export default function ExhibitATabPanel() {
 
 		// Add available values to filters
 		['internalCompany', 'wellClassification', 'payStatus', 'reportingGroup'].map(field => {
-			if (externalFilters[field] !== 'All')
+			if (externalFilters[field] !== 'All') {
 				newESFilters.push({
 					field: `${field}.keyword`,
 					value: externalFilters[field],
 				});
+			}
 		});
 
 		ESFilters(newESFilters);
 	}, [externalFilters]);
 
-  useEffect(() => {
-    tableController("MyWellsTable")?.setGlobalFilter(stateApp.landAnalyticsSearchQuery === "*" ? "" : stateApp.landAnalyticsSearchQuery);
-  }, [stateApp.landAnalyticsSearchQuery]);
+	useEffect(() => {
+		tableController('MyWellsTable')?.setGlobalFilter(
+			stateApp.landAnalyticsSearchQuery === '*' ? '' : stateApp.landAnalyticsSearchQuery
+		);
+	}, [stateApp.landAnalyticsSearchQuery]);
 
-  return (
-    <>
-      {/* <div className={classes.actionBar}>
+	return (
+		<>
+			{/* <div className={classes.actionBar}>
         <Grid
           container
           direction="row"
@@ -150,19 +155,22 @@ export default function ExhibitATabPanel() {
           </Grid>
         </Grid>
       </div> */}
-      {/* Display well master table using MRT Grid */}
-      <MRTTable name="MyWellsTable" overrideMeta={{
-        isDeleteDisabled: true, // Disable delete functionality
-        gridViewSettings: {
-          label: 'Well Master', // Label for grid view
-          Icon: Wells, // Icon for grid view
-          cssOverride: {
-              top: '138px', // CSS overrides for positioning
-              left: '40px',
-              marginLeft: '-9px',
-          },
-      },
-      }} /> 
-    </>
-  );
+			{/* Display well master table using MRT Grid */}
+			<MRTTable
+				name="MyWellsTable"
+				overrideMeta={{
+					isDeleteDisabled: true, // Disable delete functionality
+					gridViewSettings: {
+						label: 'Well Master', // Label for grid view
+						Icon: Wells, // Icon for grid view
+						cssOverride: {
+							top: '138px', // CSS overrides for positioning
+							left: '40px',
+							marginLeft: '-9px',
+						},
+					},
+				}}
+			/>
+		</>
+	);
 }

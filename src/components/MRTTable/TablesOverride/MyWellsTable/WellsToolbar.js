@@ -1,8 +1,10 @@
-import React, { memo } from 'react';
 import { Button } from '@material-ui/core';
-import { tableGlobalController } from 'hookstate/tableController';
-import { globalStateController } from 'hookstate/globalStateController';
+import React, { memo } from 'react';
+
 import MyWellDialog from 'components/Land/components/Wells/MyWellDialog';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { tableGlobalController } from 'hookstate/tableController';
 
 function WellsToolBar() {
 	const { stateValues } = tableGlobalController.useState(['addWellDialog']);

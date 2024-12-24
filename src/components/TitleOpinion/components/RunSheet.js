@@ -1,6 +1,7 @@
-import React, { useContext } from 'react';
-import { TitleOpinionContext } from '../TitleOpinionContext';
 import { makeStyles } from '@material-ui/core/styles';
+import React, { useContext } from 'react';
+
+import { TitleOpinionContext } from '../TitleOpinionContext';
 import Section from './Section';
 import SectionTable from './SectionTable';
 

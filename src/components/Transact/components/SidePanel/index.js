@@ -1,12 +1,3 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { get } from 'lodash';
-import moment from 'moment';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import { TouchBackend } from 'react-dnd-touch-backend';
-import { isMobile } from 'react-device-detect';
-import { ContextProvider } from 'react-sortly';
 import { useMutation, useLazyQuery } from '@apollo/client';
 import {
 	Drawer,
@@ -20,24 +11,36 @@ import {
 	ListItem,
 	ListItemText,
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import AddIcon from '@material-ui/icons/Add';
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
 import DeleteIcon from '@material-ui/icons/Delete';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 import SearchIcon from '@material-ui/icons/Search';
-import AddIcon from '@material-ui/icons/Add';
+import { get } from 'lodash';
+import React, { useEffect, useState, useContext } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import moment from 'moment';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { TouchBackend } from 'react-dnd-touch-backend';
+import { isMobile } from 'react-device-detect';
+import { ContextProvider } from 'react-sortly';
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircleOutline';
-import { makeStyles } from '@material-ui/core/styles';
-import { UPDATE_PIPELINES_POSITIONS } from 'graphQL/useMutationUpdatePipelinesPositions';
-import { UPDATEPIPELINES } from 'graphQL/useMutationUpdatePipelines';
+
+import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import PipelinesList from 'components/Transact/components/SidePanel/PipelinesList';
+import { TransactContext } from 'components/Transact/TransactContext';
+
 import { DUPLICATE_PIPELINES } from 'graphQL/useMutationDuplicatePipelines';
 import { CREATE_PIPELINE_DESCRIPTORS } from 'graphQL/useMutationPipelineDescriptors';
-import { setFlowState, showWarningMessage } from 'actions';
-import PipelinesList from 'components/Transact/components/SidePanel/PipelinesList';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import { UPDATEPIPELINES } from 'graphQL/useMutationUpdatePipelines';
+import { UPDATE_PIPELINES_POSITIONS } from 'graphQL/useMutationUpdatePipelinesPositions';
 import { DEALSCOUNTINAPIPE } from 'graphQL/useQueryNonDeletedDealsCountInAPipeline';
+
+import { setFlowState, showWarningMessage } from 'actions';
 import { AppContext } from 'AppContext';
-import { TransactContext } from 'components/Transact/TransactContext';
 
 const dnd = isMobile ? TouchBackend : HTML5Backend;
 const useStyles = makeStyles(theme => ({
@@ -166,9 +169,11 @@ const SidePanel = () => {
 
 	useEffect(() => {
 		if (dataDealsCountByPipeline?.nonDeletedDealsCountInAPipeline) {
-			if (dataDealsCountByPipeline.nonDeletedDealsCountInAPipeline.dealsCount > 0)
+			if (dataDealsCountByPipeline.nonDeletedDealsCountInAPipeline.dealsCount > 0) {
 				dispatch(showWarningMessage('There are deals associated to the pipelines, please remove them first.'));
-			else setModal(true);
+			} else {
+				setModal(true);
+			}
 		}
 	}, [dataDealsCountByPipeline, dispatch]);
 
@@ -233,7 +238,9 @@ const SidePanel = () => {
 		let isProjectPipelineSelected = false;
 		for (let i = 0; i < selectedPipelines.length; i += 1) {
 			isProjectPipelineSelected = !!filteredPipelines.find(p => p.id === selectedPipelines[i] && p.projectId);
-			if (isProjectPipelineSelected) break;
+			if (isProjectPipelineSelected) {
+				break;
+			}
 		}
 		return [
 			{
@@ -437,7 +444,7 @@ const SidePanel = () => {
 				maxWidth="sm"
 			>
 				<DeleteConfirmationDialogContent
-					header={selectedPipelines.length > 1 ? `Delete Flowline` : `Delete Flowlines`}
+					header={selectedPipelines.length > 1 ? 'Delete Flowline' : 'Delete Flowlines'}
 					onClose={() => setModal(false)}
 					deleteFunc={handleDelete}
 					m1nSelectedRowsIds={null}

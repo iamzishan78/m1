@@ -1,32 +1,37 @@
-import React, { useState, useEffect, useMemo } from 'react';
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { set } from 'lodash';
-import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import GavelIcon from '@material-ui/icons/Gavel';
 import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import GavelIcon from '@material-ui/icons/Gavel';
+import { set } from 'lodash';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
+import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
+import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
+import { DrawerContextProvider } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
+import MRTTable from 'components/MRTTable';
 import TabPanels from 'components/Shared/TabPanels';
 import TabButtons from 'components/Shared/TabPanels/TabButtons';
 import Tags from 'components/Shared/Tagger';
-import SuggestedTaxOwnersTable from 'components/Table/TaxOwners/SuggestedTaxOwnersTable';
-import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
-import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
-import Taps from '../Shared/Taps';
-import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
-import { UPDATECUSTOMLAYER } from '../../graphQL/useMutationUpdateCustomLayer';
-import ParcelSummary from './ParcelSummary';
-import { copy } from 'utils/helper';
-import { popupController } from 'hookstate/popupStateController';
-import MRTTable from 'components/MRTTable';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
 import ParcelAgreementTable from 'components/Table/Parcel/ParcelAgreementTable';
-import { showSuccessMessage, showErrorMessage } from 'actions';
-import { jobController } from 'hookstate/jobStateController';
+import SuggestedTaxOwnersTable from 'components/Table/TaxOwners/SuggestedTaxOwnersTable';
+
 import { globalStateController } from 'hookstate/globalStateController';
+import { jobController } from 'hookstate/jobStateController';
+import { popupController } from 'hookstate/popupStateController';
+import { copy } from 'utils/helper';
+import ParcelSummary from './ParcelSummary';
+import { UPDATECUSTOMLAYER } from '../../graphQL/useMutationUpdateCustomLayer';
+import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
+import Taps from '../Shared/Taps';
+
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { showSuccessMessage, showErrorMessage } from 'actions';
+
 import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
-import { DrawerContextProvider } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
 
 const useStyles = makeStyles(theme => ({
 	grid: {
@@ -240,7 +245,9 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	}, []);
 
 	useEffect(() => {
-		if (contactsAdded) setSelectedTab(0);
+		if (contactsAdded) {
+			setSelectedTab(0);
+		}
 	}, [contactsAdded]);
 
 	useEffect(() => {

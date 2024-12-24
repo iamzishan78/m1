@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { makeStyles } from '@material-ui/styles';
 import { Grid, Button } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import PdfViewer from 'components/Revenue/components/Statements/DetailComponents/LineItem/PdfViewer';
+
 import CheckDetailsEditableTable from './CheckDetailsEditableTable';
 
 const useStyles = makeStyles(theme => ({

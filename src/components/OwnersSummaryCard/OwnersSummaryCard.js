@@ -1,15 +1,17 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+
 import { setMapGridCardState } from '../../actions';
 import WellInterestsTopSumary from './components/WellInterestsTopSumary';
 import M1nTable from '../Shared/M1nTable/M1nTable';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { layerController } from 'hookstate/layerStateController';
 
 const useStyles = makeStyles(theme => ({
 	gridWidthScroll: {

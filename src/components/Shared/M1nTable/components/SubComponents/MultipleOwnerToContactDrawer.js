@@ -1,9 +1,4 @@
-import React, { useState, useEffect } from 'react';
 import { useLazyQuery } from '@apollo/client';
-
-import { AppContext } from 'AppContext';
-import { Controller, useForm } from 'react-hook-form';
-
 import {
 	CircularProgress,
 	Tab,
@@ -18,26 +13,29 @@ import {
 	FormControl,
 	Radio,
 } from '@material-ui/core';
-import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import CloseSharp from '@material-ui/icons/CloseSharp';
-import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import DoneSharpIcon from '@material-ui/icons/DoneSharp';
+import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import RemoveSharpIcon from '@material-ui/icons/RemoveSharp';
+import React, { useState, useEffect } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 
-import Tags from 'components/Shared/Tagger';
-import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
+import { copy, setStateIfDeepEqual } from 'components/Shared/functions';
+import Tags from 'components/Shared/Tagger';
+
+import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
+
+import { AppContext } from 'AppContext';
 
 import AutocompEntityNamesVirtualizeList from './AutocompEntityNamesVirtualizeList';
 import RightDialog from '../../../../ContactDetailCard/components/RightDialog';
-import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
-
-import { copy, setStateIfDeepEqual } from 'components/Shared/functions';
-
-import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
 
 const styles = () => ({
 	topHeading: { fontWeight: 'bold' },

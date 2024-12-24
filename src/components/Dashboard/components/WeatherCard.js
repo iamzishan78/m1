@@ -3,9 +3,10 @@ import Avatar from '@material-ui/core/Avatar';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import WbSunnyOutlinedIcon from '@material-ui/icons/WbSunnyOutlined';
-import { ProfileContext } from 'components/Profile/ProfileContext';
 import moment from 'moment';
 import React, { Fragment, useEffect, useState, useContext } from 'react';
+
+import { ProfileContext } from 'components/Profile/ProfileContext';
 
 const useStyles = makeStyles(() => ({
 	root: {

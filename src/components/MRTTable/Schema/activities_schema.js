@@ -1,10 +1,13 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import { formatDate } from 'components/Shared/functions';
 import CheckIcon from '@material-ui/icons/Check';
-import { getTruncateText } from '../utils/helper';
+
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { activityType } from 'components/MRTTable/utils/enums';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
+import { formatDate } from 'components/Shared/functions';
+
 import { slidoutState } from 'hookstate/initialStates';
+import { slidoutStateController } from 'hookstate/slidoutStateController';
+
+import { getTruncateText } from '../utils/helper';
 
 const esIndex = 'activities_flat';
 

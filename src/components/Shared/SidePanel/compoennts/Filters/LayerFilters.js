@@ -1,6 +1,3 @@
-import React, { useCallback, useContext, useEffect } from 'react';
-
-import { makeStyles } from '@material-ui/core/styles';
 import {
 	Typography,
 	Accordion,
@@ -12,18 +9,23 @@ import {
 	ListItemText,
 	Button,
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { ExpandMore as ExpandMoreIcon, Close as ClearButton } from '@material-ui/icons';
+import React, { useCallback, useContext, useEffect } from 'react';
 
 // Contexts
+import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
+
 import { NavigationContext } from 'components/Navigation/NavigationContext';
 //Components
 import * as LayerFiltersComponents from 'components/Shared/SidePanel/compoennts/Filters';
+
+import { globalStateController } from 'hookstate/globalStateController';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { navController } from 'hookstate/navStateController';
+
 import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
 import UserMapFilter from './UserMapFilter';
-import { globalStateController } from 'hookstate/globalStateController';
-import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -200,7 +202,9 @@ const LayerFilters = () => {
 
 	useEffect(() => {
 		const selectedMapView = mapStateValues?.mapView?.selectedMapView;
-		if (mapStateValues?.viewChanged === false) return;
+		if (mapStateValues?.viewChanged === false) {
+			return;
+		}
 
 		if (selectedMapView) {
 			resetForm({
@@ -216,8 +220,9 @@ const LayerFilters = () => {
 	const resetFilters = (params, additionalParamsToReset = {}) => {
 		const geoFiltersToReset = {};
 		params.forEach(param => {
-			if (!Array.isArray(stateNav[param]) && stateNav[param]) geoFiltersToReset[param] = null;
-			else if (Array.isArray(stateNav[param]) && stateNav[param].length > 0) {
+			if (!Array.isArray(stateNav[param]) && stateNav[param]) {
+				geoFiltersToReset[param] = null;
+			} else if (Array.isArray(stateNav[param]) && stateNav[param].length > 0) {
 				geoFiltersToReset[param] = [];
 			}
 		});

@@ -1,10 +1,11 @@
 import { FormControl, Input, InputAdornment } from '@material-ui/core';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
-import { v4 as uuid } from 'uuid';
-import { copy } from 'components/Shared/functions';
 import _, { set } from 'lodash';
-import { useState, useEffect } from 'react';
 import { ColorBox } from 'material-ui-color';
+import { useState, useEffect } from 'react';
+import { v4 as uuid } from 'uuid';
+
+import { copy } from 'components/Shared/functions';
 
 function trim(str) {
 	return str.replace(/^\s+|\s+$/gm, '');
@@ -26,7 +27,7 @@ export function RGBAToHexA(rgba) {
 	];
 
 	// Pad single-digit output values
-	outParts.forEach(function (part, i) {
+	outParts.forEach((part, i) => {
 		if (part.length === 1) {
 			outParts[i] = '0' + part;
 		}
@@ -36,8 +37,11 @@ export function RGBAToHexA(rgba) {
 }
 
 export const ifRgbaConvt = color => {
-	if (color?.slice(0, 4) === 'rgba') return RGBAToHexA(color);
-	else return color;
+	if (color?.slice(0, 4) === 'rgba') {
+		return RGBAToHexA(color);
+	} else {
+		return color;
+	}
 };
 
 export const ColorPickerStyledBox = withStyles(theme => ({
@@ -104,8 +108,12 @@ export const WidthPicker = ({ width, setWidth, layerType }) => {
 				value={width}
 				onChange={e => {
 					if (e.target.value) {
-						if (e.target.value >= 0 && e.target.value <= 50) setWidth(e.target.value);
-					} else setWidth(null);
+						if (e.target.value >= 0 && e.target.value <= 50) {
+							setWidth(e.target.value);
+						}
+					} else {
+						setWidth(null);
+					}
 				}}
 				endAdornment={<InputAdornment position="end">Px</InputAdornment>}
 				type="number"
@@ -141,14 +149,16 @@ export const useLayerStyle = layer => {
 				: ifRgbaConvt(layer.layerPaintProps[0]?.paintProps['circle-stroke-color']);
 
 	let initialWidth;
-	if (layerType === 'circle')
+	if (layerType === 'circle') {
 		initialWidth = layer.layerPaintProps[0]?.paintProps['circle-stroke-width']
 			? layer.layerPaintProps[0]?.paintProps['circle-stroke-width']
 			: 0;
-	if (layerType === 'line')
+	}
+	if (layerType === 'line') {
 		initialWidth = layer.layerPaintProps[0]?.paintProps['line-width']
 			? layer.layerPaintProps[0]?.paintProps['line-width']
 			: 1;
+	}
 
 	const [width, setWidth] = useState(initialWidth);
 	const [layerName, setLayerName] = useState();
@@ -202,16 +212,22 @@ export const useLayerStyle = layer => {
 			let sColor;
 			let sColorOp;
 
-			if (fillColor && fillColor.rgb)
+			if (fillColor && fillColor.rgb) {
 				fColor =
 					fillColor.rgb.length === 3 ? 'rgb(' + fillColor.rgb.join() + ')' : 'rgba(' + fillColor.rgb.join() + ')';
+			}
 
-			if (fillColor && (fillColor.alpha || fillColor.alpha === 0)) fColorOp = fillColor.alpha;
-			if (strokeColor && (strokeColor.alpha || strokeColor.alpha === 0)) sColorOp = strokeColor.alpha;
+			if (fillColor && (fillColor.alpha || fillColor.alpha === 0)) {
+				fColorOp = fillColor.alpha;
+			}
+			if (strokeColor && (strokeColor.alpha || strokeColor.alpha === 0)) {
+				sColorOp = strokeColor.alpha;
+			}
 
-			if (strokeColor && strokeColor.rgb)
+			if (strokeColor && strokeColor.rgb) {
 				sColor =
 					strokeColor.rgb.length === 3 ? 'rgb(' + strokeColor.rgb.join() + ')' : 'rgba(' + strokeColor.rgb.join() + ')';
+			}
 			const layerSettings = copy(currentLayer.layerSettings);
 			layerSettings.interaction.interactionDetail.click = layerClickability;
 
@@ -241,9 +257,12 @@ export const useLayerStyle = layer => {
 					// if layers have identifier use that
 					if (currentLayer.identifier) {
 						layerPaintProps[i].sourceProps = currentLayer.identifier.toLowerCase() + '_source';
-					} else layerPaintProps[i].sourceProps = layerName || '' + uuid() + '_source';
-					if (layerPaintProps[i]?.labelProps?.symbolProps?.visibility)
+					} else {
+						layerPaintProps[i].sourceProps = layerName || '' + uuid() + '_source';
+					}
+					if (layerPaintProps[i]?.labelProps?.symbolProps?.visibility) {
 						delete layerPaintProps[i].labelProps.symbolProps.visibility;
+					}
 
 					if (currentLayer.layerSettings?.colorable) {
 						set(layerPaintProps, `[${i}]labelProps.visibility`, layerLabelVisibility);

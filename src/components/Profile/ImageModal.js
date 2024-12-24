@@ -1,6 +1,7 @@
 import Dialog from '@material-ui/core/Dialog';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useContext } from 'react';
+
 import ImageModalContent from './ImageModalContent';
 import ImageModalTitle from './ImageModalTitle';
 import { ProfileContext } from './ProfileContext';

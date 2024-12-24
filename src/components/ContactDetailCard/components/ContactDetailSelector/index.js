@@ -1,28 +1,32 @@
-import React, { useState, useContext, useEffect, useMemo } from 'react';
-import { get } from 'lodash';
-import { makeStyles } from '@material-ui/core/styles';
-import { AppContext } from 'AppContext';
 import { useLazyQuery } from '@apollo/client';
-import Card from '@material-ui/core/Card';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { setMapGridCardState } from 'actions';
-import OwnersSummaryCard from 'components/OwnersSummaryCard/OwnersSummaryCard';
-import { TabPanel } from 'components/Shared/TabPanels';
-import ContactDetailedInfo from 'components/ContactDetailedInfo/ContactDetailedInfo';
+
 import ContactTaxRollInterestTable from 'components/Table/Contact/ContactTaxRollInterestTable';
 import ContactDealsProvider from 'components/DealsDetailCard/ContactDealsProvider';
 
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
-import { contactDetailInitialData } from './data';
+import Card from '@material-ui/core/Card';
+import { makeStyles } from '@material-ui/core/styles';
+import { get } from 'lodash';
 
-import { CONTACT_SUMMARY } from 'graphQL/useQueryContactSummary';
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import moment from 'moment';
 import sortBy from 'lodash/sortBy';
+import React, { useState, useContext, useEffect, useMemo } from 'react';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import MRTTable from 'components/MRTTable';
-import ActivitiesToolbar from 'components/MRTTable/TablesOverride/ContactDetailActivities/ActivitiesToolbar';
 import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
+import ContactDetailedInfo from 'components/ContactDetailedInfo/ContactDetailedInfo';
 import { DrawerContextProvider } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
+import ActivitiesToolbar from 'components/MRTTable/TablesOverride/ContactDetailActivities/ActivitiesToolbar';
+import OwnersSummaryCard from 'components/OwnersSummaryCard/OwnersSummaryCard';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+import { TabPanel } from 'components/Shared/TabPanels';
+
+import { CONTACT_SUMMARY } from 'graphQL/useQueryContactSummary';
+
+import { setMapGridCardState } from 'actions';
+import { AppContext } from 'AppContext';
+
+import { contactDetailInitialData } from './data';
 
 const useStyles = makeStyles(theme => ({
 	card: {

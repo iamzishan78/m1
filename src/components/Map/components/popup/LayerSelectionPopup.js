@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import {
 	Grid,
 	Card,
@@ -14,16 +12,18 @@ import {
 	Tooltip,
 	IconButton,
 } from '@material-ui/core';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
+import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 import _ from 'lodash';
+import React, { useState } from 'react';
+
+import onFeatureClick from 'components/Map/DeckGL/helpers/onFeatureClick';
+import ExpandableSearch from 'components/Shared/Forms/Fields/ExpandableSearch';
 import LayerSelectionIcon from 'components/Shared/svgIcons/layerSelection';
 
 // contexts
-import ExpandableSearch from 'components/Shared/Forms/Fields/ExpandableSearch';
 import capitalizeFirstLetter from 'components/Shared/valueformatters/capitalize-first-letter';
-import onFeatureClick from 'components/Map/DeckGL/helpers/onFeatureClick';
 
 const useStyles = makeStyles(theme => ({
 	root: {},
@@ -195,7 +195,7 @@ function LayerSelectionPopup(props) {
 		}
 	});
 
-	if (search)
+	if (search) {
 		selectionLayers = selectionLayers.filter(selectionLayer => {
 			const properties = selectionLayer?.object?.properties;
 			if (selectionLayer.sourceKey === 'Wells') {
@@ -206,8 +206,11 @@ function LayerSelectionPopup(props) {
 				return includes(search, [properties.uNumber, properties.shapeLabel]);
 			} else if (selectionLayer.sourceKey === 'Recent Submitted Permits') {
 				return includes(search, [properties.PermitId]);
-			} else return includes(search, [properties.agreementNumber, properties.agreementName]);
+			} else {
+				return includes(search, [properties.agreementNumber, properties.agreementName]);
+			}
 		});
+	}
 	const groupFeatures = _.groupBy(selectionLayers, 'sourceKey');
 
 	const handleLocationClick = () => {

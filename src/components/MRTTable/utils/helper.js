@@ -26,8 +26,12 @@ export const formatGridViewToMRT = selectedGridView => {
 
 // Helper for extracting values
 export const extractValueRecursively = obj => {
-	if (obj === null || obj === undefined) return undefined;
-	if (obj === 'NaN') return null;
+	if (obj === null || obj === undefined) {
+		return undefined;
+	}
+	if (obj === 'NaN') {
+		return null;
+	}
 
 	if (typeof obj === 'object' && !Array.isArray(obj)) {
 		return Object.keys(obj).reduce((acc, key) => {

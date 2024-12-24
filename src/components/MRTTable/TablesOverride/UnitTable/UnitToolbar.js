@@ -1,8 +1,10 @@
-import React, { memo } from 'react';
 import { useApolloClient } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
-import { tableController } from 'hookstate/tableController';
+import React, { memo } from 'react';
+
 import { BulkUpdate } from 'components/MRTTable/Common/CommonToolBarActions';
+
+import { tableController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(() => ({
 	disabledTopBarButtons: {

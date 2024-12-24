@@ -1,27 +1,27 @@
-import React, { useContext, useState, useEffect } from 'react';
+import { useLazyQuery } from '@apollo/client';
+import { Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import isEmpty from 'lodash/isEmpty';
+import React, { useContext, useState, useEffect } from 'react';
 
 // context
-import { AppContext } from 'AppContext';
-
-import { Container } from '@material-ui/core';
+import { deepEqualObjects, setStateIfDeepEqual } from 'components/Shared/functions';
 import Table from 'components/Shared/M1nTable/components/Table';
+import TableHeader from 'components/Table/constants/well-header-schema.js';
 import TableHOC from 'components/Table/TableHOC';
 
-// QUERIES
-import { useLazyQuery } from '@apollo/client';
 import { SHAPEWELLS } from 'graphQL/useQueryPaginatedShapeWells';
 import { SHAPEWELLSCOUNT } from 'graphQL/useQueryShapeWellsCount.js';
 
-import { deepEqualObjects, setStateIfDeepEqual } from 'components/Shared/functions';
+import { AppContext } from 'AppContext';
+
+// QUERIES
 
 // Header Schemas
-import TableHeader from 'components/Table/constants/well-header-schema.js';
 
 // Utilities
 import ticksToDateString from '../../Shared/valueformatters/ticks-to-string.js';
 import { handleTagColumn } from '../helpers/index.js';
-import isEmpty from 'lodash/isEmpty';
 
 const useStyles = makeStyles(theme => ({
 	container: {
@@ -105,18 +105,25 @@ function ShapeGridWellsTable(props) {
 				let well = { ...w };
 				well.wellId = w.id;
 				//// temporary to fix the ticks dates fields comming from the rest api
-				if (well.permitApprovedDate && well.permitApprovedDate != 'null')
+				if (well.permitApprovedDate && well.permitApprovedDate != 'null') {
 					well.permitApprovedDate = ticksToDateString(well.permitApprovedDate);
-				if (well.spudDate && well.spudDate != 'null') well.spudDate = ticksToDateString(well.spudDate);
-				if (well.completionDate && well.completionDate != 'null')
+				}
+				if (well.spudDate && well.spudDate != 'null') {
+					well.spudDate = ticksToDateString(well.spudDate);
+				}
+				if (well.completionDate && well.completionDate != 'null') {
 					well.completionDate = ticksToDateString(well.completionDate);
-				if (well.firstProductionDate && well.firstProductionDate != 'null')
+				}
+				if (well.firstProductionDate && well.firstProductionDate != 'null') {
 					well.firstProductionDate = ticksToDateString(well.firstProductionDate);
+				}
 				//// temporary end
 
 				well.coordinates = {};
 				well.coordinates.wellId = well.wellId;
-				if (well.longitude && well.latitude) well.coordinates.center = [well.longitude, well.latitude];
+				if (well.longitude && well.latitude) {
+					well.coordinates.center = [well.longitude, well.latitude];
+				}
 
 				well.detailCard = well.id;
 

@@ -1,14 +1,14 @@
-import React, { useMemo } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { Tooltip, FormControlLabel, Switch } from '@material-ui/core';
-import { deepEqualObjects } from '../../../functions';
-
 import { Grid } from '@material-ui/core';
-import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
-
 import { IconButton } from '@material-ui/core';
-import { mapControlsController } from 'hookstate/mapControlsController.js';
+import { makeStyles } from '@material-ui/core/styles';
+import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
+import React, { useMemo } from 'react';
+
 import { layerController } from 'hookstate/layerStateController.js';
+import { mapControlsController } from 'hookstate/mapControlsController.js';
+
+import { deepEqualObjects } from '../../../functions';
 import { ifLayerHaveData } from '../common';
 
 const useStyles = makeStyles(() => ({

@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { RevenueContextProvider } from './RevenueContext';
 import Revenue from './Revenue';
+import { RevenueContextProvider } from './RevenueContext';
 
 export default function ContactDetailsProvider(props) {
 	return (

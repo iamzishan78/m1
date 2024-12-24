@@ -76,7 +76,9 @@ describe('Related Wells Uploader Spec', () => {
 
 								const cypressAgreement = hits.find(hit => hit.agreementName === agreementName);
 
-								if (!cypressAgreement) throw new Error('Agreement added by cypress Uploader not found');
+								if (!cypressAgreement) {
+									throw new Error('Agreement added by cypress Uploader not found');
+								}
 
 								const indexOfcypressAgreement = hits.findIndex(hit => hit._id === cypressAgreement._id) + 1;
 
@@ -106,10 +108,11 @@ describe('Related Wells Uploader Spec', () => {
 
 											console.log('wellApiNumberByUploader final: ', wellApiNumberByUploader);
 
-											if (wellApiNumberByUploader.length > 0)
+											if (wellApiNumberByUploader.length > 0) {
 												wellApiNumberByUploader.forEach(apiNumber => {
 													expect(wellApiNumbers).to.include(apiNumber);
 												});
+											}
 										});
 									});
 								});

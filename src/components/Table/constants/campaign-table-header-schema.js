@@ -1,6 +1,7 @@
 import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
-import { history } from 'store';
 import vf_number from 'components/Shared/valueformatters/vf_number';
+
+import { history } from 'store';
 
 const CampaignsHeadCells = [
 	{

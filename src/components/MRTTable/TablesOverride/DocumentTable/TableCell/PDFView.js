@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Modal from '@material-ui/core/Modal';
 import { Document, Page } from 'react-pdf';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import Grid from '@material-ui/core/Grid';
 import { CircularProgress } from '@material-ui/core';
-import { pdfjs } from 'react-pdf';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import Modal from '@material-ui/core/Modal';
+import { makeStyles } from '@material-ui/core/styles';
+import CloseIcon from '@material-ui/icons/Close';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import 'components/Shared/ViewDocStyle.css';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
+import { pdfjs } from 'react-pdf';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -66,7 +66,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const DocViewer = ({
-	DocStyle = { transform: `translate(0%, -100%)` },
+	DocStyle = { transform: 'translate(0%, -100%)' },
 	divCondition = false,
 	width,
 	onCloseHandler = null,

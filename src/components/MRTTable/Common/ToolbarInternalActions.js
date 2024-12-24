@@ -1,4 +1,3 @@
-import React from 'react';
 import { IconButton, Tooltip } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 import {
@@ -6,9 +5,12 @@ import {
 	MRT_ToggleFiltersButton as MRTToggleFiltersButton,
 	MRT_ToggleGlobalFilterButton as MRTToggleGlobalFilterButton,
 } from 'material-react-table';
+import React from 'react';
 
 const ToolbarInternalActions = ({ table, toolbarInternalActions, enableHiding }) => {
-	if (!table || !toolbarInternalActions) return null;
+	if (!table || !toolbarInternalActions) {
+		return null;
+	}
 
 	return (
 		<div style={toolbarInternalActions.style}>

@@ -1,13 +1,15 @@
+import { makeStyles } from '@material-ui/core/styles';
+import _ from 'lodash';
 import { useRef, useState } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import { tableController } from 'hookstate/tableController';
-import useHandleQuery from './useHandleQuery';
 import useHandleAdditionalQueries from 'components/MRTTable/Hooks/useHandleAdditionalQueries';
+
+import { tableController } from 'hookstate/tableController';
+
+import useHandleQuery from './useHandleQuery';
 import ToolbarActions from '../Common/ToolbarActions';
 import ToolbarInternalActions from '../Common/ToolbarInternalActions';
 import { tableESSimpleFilterModeOtions } from '../utils/data';
-import _ from 'lodash';
 
 const useTableESSimple = tableKey => {
 	const tableContainerRef = useRef(null); // access the MUI TableContainer element
@@ -42,8 +44,9 @@ const useTableESSimple = tableKey => {
 		}),
 	};
 
-	if (tableStateValues.asyncRowSelection && !tableStateValues.isSubSetSelect && !isClientSide)
+	if (tableStateValues.asyncRowSelection && !tableStateValues.isSubSetSelect && !isClientSide) {
 		localizationOptions.selectedCountOfRowCountRowsSelected = `${tableStateValues?.data.total} of ${tableStateValues?.data.total} row(s) selected`;
+	}
 
 	const { CustomToolBar } = tableStateValues;
 
@@ -125,8 +128,11 @@ const useTableESSimple = tableKey => {
 						tableStateValues?.onClickedRow(row?.row?.original);
 
 						// set rowId to apply styling based on row selection
-						if (rowId && rowId === row?.row?.original._id) setRowId(null);
-						else tableStateValues?.enableRowSelected && setRowId(row?.row?.original._id);
+						if (rowId && rowId === row?.row?.original._id) {
+							setRowId(null);
+						} else {
+							tableStateValues?.enableRowSelected && setRowId(row?.row?.original._id);
+						}
 					}
 				},
 				sx: {
@@ -178,15 +184,18 @@ const useTableESSimple = tableKey => {
 								const newGrouping = groupingFunc(tableStateValues.grouping);
 								tableState.grouping.set(newGrouping);
 
-								if (newGrouping.length === 1)
+								if (newGrouping.length === 1) {
 									return tableState.sorting.set([
 										{
 											id: newGrouping[0],
 											desc: false,
 										},
 									]);
+								}
 
-								if (newGrouping.length > 0) tableState.sorting.set([]);
+								if (newGrouping.length > 0) {
+									tableState.sorting.set([]);
+								}
 								return newGrouping;
 							},
 						}),
@@ -203,15 +212,18 @@ const useTableESSimple = tableKey => {
 							const newGrouping = groupingFunc(tableStateValues.grouping);
 							tableState.grouping.set(newGrouping);
 
-							if (newGrouping.length === 1)
+							if (newGrouping.length === 1) {
 								return tableState.sorting.set([
 									{
 										id: newGrouping[0],
 										desc: false,
 									},
 								]);
+							}
 
-							if (newGrouping.length > 0) tableState.sorting.set([]);
+							if (newGrouping.length > 0) {
+								tableState.sorting.set([]);
+							}
 							return newGrouping;
 						},
 						...(tableStateValues?.isInFiniteScroll && { enablePagination: false }),
@@ -267,7 +279,7 @@ const useTableESSimple = tableKey => {
 							let unselectAll = true;
 
 							for (let i = 0; i < tableStateValues?.data?.rows?.length; i++) {
-								if (!!newstate[i]) {
+								if (newstate[i]) {
 									unselectAll = false;
 									break;
 								}
@@ -333,11 +345,15 @@ const useTableESSimple = tableKey => {
 
 								let { value } = filter;
 								const { type, oRFilter, columnType, searchType } = filter;
-								if (mode && typeof filter.value === 'string' && columnType !== 'date')
+								if (mode && typeof filter.value === 'string' && columnType !== 'date') {
 									value = isKeyword ? filter.value : +filter.value || 0;
-								if (mode && tableESSimpleFilterModeOtions.inclusive.includes(mode))
+								}
+								if (mode && tableESSimpleFilterModeOtions.inclusive.includes(mode)) {
 									value = filter.value.map(value => +value || 0);
-								if (columnType === 'date') value = filter.value;
+								}
+								if (columnType === 'date') {
+									value = filter.value;
+								}
 								Controller.setFilter({
 									field: filter.id,
 									columnType,

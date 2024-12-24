@@ -1,8 +1,10 @@
 import { Box } from '@mui/material';
+import { get } from 'lodash';
+
 import { addTrailingZeros, formatDate } from 'components/Shared/functions';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+
 import { tableController } from 'hookstate/tableController';
-import { get } from 'lodash';
 
 export const CommonSchema = {
 	COMMENTS: {

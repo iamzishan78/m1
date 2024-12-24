@@ -1,16 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Switch, Route, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { Switch, Route, useLocation } from 'react-router-dom';
+
+import * as Components from 'components/Contacts/components';
+import QuickActionPanel from 'components/Land/components/QuickActionPanel';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
 import { setActiveModule, toggleQuickActionsPanel } from 'store/actions/commonActions';
-import { AppContext } from 'AppContext';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
-
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import QuickActionPanel from 'components/Land/components/QuickActionPanel';
-import * as Components from 'components/Contacts/components';
 
 import { contactManagementRoutes } from 'utils/data';
+
+import { AppContext } from 'AppContext';
 
 export default function Contacts() {
 	const location = useLocation();
@@ -27,7 +28,9 @@ export default function Contacts() {
 			}
 		});
 		if (option) {
-			if (contactManagementRoutes[option.parent]) option.parent = contactManagementRoutes[option.parent];
+			if (contactManagementRoutes[option.parent]) {
+				option.parent = contactManagementRoutes[option.parent];
+			}
 			dispatch(setActiveModule(option));
 		}
 	}, [dispatch, location.pathname]);

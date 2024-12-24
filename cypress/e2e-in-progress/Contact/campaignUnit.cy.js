@@ -36,7 +36,9 @@ describe('Campaign Unit Grid Spec', () => {
 				.invoke('text')
 				.then(unitCount => {
 					cy.log('==== STEP: MATCHING UNITS COUNT ====');
-					if (parseInt(unitCount) !== totalUnits) throw new Error(`Total Unit Count is not showing correctly`);
+					if (parseInt(unitCount) !== totalUnits) {
+						throw new Error('Total Unit Count is not showing correctly');
+					}
 				});
 		});
 		cy.wait(1000);

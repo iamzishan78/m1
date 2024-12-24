@@ -1,18 +1,21 @@
-import React, { useEffect, useState, Fragment } from 'react';
-import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
-
+import { useMutation } from '@apollo/client';
 import { List } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { useMutation } from '@apollo/client';
-import { Flipper } from 'react-flip-toolkit';
-import { deepEqual } from 'components/Shared/functions';
 import update from 'immutability-helper';
+import React, { useEffect, useState, Fragment } from 'react';
+import { Flipper } from 'react-flip-toolkit';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import Sortly, { findDescendants, findParent } from 'react-sortly';
-import PipelineProject from './PipelineProject';
-import PipelineCard from './PipelineCard';
-import { setFlowState } from 'actions';
+
+import { deepEqual } from 'components/Shared/functions';
+
 import { UPDATE_PIPELINES_POSITIONS } from 'graphQL/useMutationUpdatePipelinesPositions';
+
+import { setFlowState } from 'actions';
+
+import PipelineCard from './PipelineCard';
+import PipelineProject from './PipelineProject';
 
 const useStyles = makeStyles(() => ({
 	flowlinesList: {
@@ -78,12 +81,16 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
 	}, [selectedPipe, setMultiSelection]);
 
 	const isCtrlKeyPressed = () => {
-		if (window.event.ctrlKey || window.event.metaKey) return true;
+		if (window.event.ctrlKey || window.event.metaKey) {
+			return true;
+		}
 		return false;
 	};
 
 	const isShiftKeyPressed = () => {
-		if (window.event.shiftKey) return true;
+		if (window.event.shiftKey) {
+			return true;
+		}
 		return false;
 	};
 
@@ -155,7 +162,9 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
 		let parentIndex = items.findIndex(item => item.id === parent?.id);
 		let isPassed = false;
 		items.forEach((item, index) => {
-			if (item.id === newItem.id) isPassed = true;
+			if (item.id === newItem.id) {
+				isPassed = true;
+			}
 			if (!isPassed) {
 				if (newItem.depth === 0 && (item.type === 'Project' || (item.type === 'Pipeline' && !item.projectId))) {
 					parent = item;
@@ -191,8 +200,9 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
 		}
 		// we have parent and we have current item
 		if (newItem.depth === 1) {
-			if (newItem.type === 'Pipeline' && (!parent || parent.type === 'Pipeline')) newItem.depth = 0;
-			else if (newItem.type === 'Project' && parent.type === 'Pipeline') {
+			if (newItem.type === 'Pipeline' && (!parent || parent.type === 'Pipeline')) {
+				newItem.depth = 0;
+			} else if (newItem.type === 'Project' && parent.type === 'Pipeline') {
 				revert();
 				return;
 			} else if (newItem.type === 'Project' && parent.type === 'Project') {
@@ -274,7 +284,9 @@ function PipelinesList({ filteredPipelines, selectedPipe, selectedPipelines, set
 										handleDragEnd={handleDragEnd}
 									/>
 								);
-							} else return <></>;
+							} else {
+								return <></>;
+							}
 						}}
 					</Sortly>
 				</Flipper>

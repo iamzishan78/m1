@@ -1,36 +1,33 @@
+import { useMutation } from '@apollo/client';
+import { Container, Button, Tooltip, IconButton } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
+import Grid from '@material-ui/core/Grid';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import CloseIcon from '@material-ui/icons/Close';
+import DeleteIcon from '@material-ui/icons/Delete';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
 // context
 import { useHistory } from 'react-router-dom';
-import { Container, Button, Tooltip, IconButton } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import Toolbar from '@material-ui/core/Toolbar';
-import DeleteIcon from '@material-ui/icons/Delete';
-import CloseIcon from '@material-ui/icons/Close';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import Dialog from '@material-ui/core/Dialog';
-
-import { useMutation } from '@apollo/client';
-
-import { AppContext } from 'AppContext';
-import TableESHOC from 'components/Table/TableESHOC';
-import Table from 'components/Shared/M1nTable/components/Table';
-
-import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
 
 import { NavigationContext } from 'components/Navigation/NavigationContext';
-
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-
-import TableHeader from 'components/Table/constants/parcel-agreement-header-schema';
-
-import { deepEqualObjects, copy } from 'components/Shared/functions';
-import { usetableStyles } from '../Styles';
-import { DELETE_PARCEL_RUNSHEET } from 'graphQL/useMutationDeleteParcelAgreement';
 import ParcelInstrument from 'components/ParcelsDetailCard/ParcelInstrument';
 import PdfWithZoom from 'components/Shared/components/common/PdfWithZoom';
+import { deepEqualObjects, copy } from 'components/Shared/functions';
+import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
+import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import Table from 'components/Shared/M1nTable/components/Table';
+import TableHeader from 'components/Table/constants/parcel-agreement-header-schema';
+import TableESHOC from 'components/Table/TableESHOC';
+import { AppContext } from 'AppContext';
+
+import { usetableStyles } from '../Styles';
+
+import { DELETE_PARCEL_RUNSHEET } from 'graphQL/useMutationDeleteParcelAgreement';
+
 import { downloadPdfsFile } from 'utils/helper';
-import moment from 'moment';
 
 const genericDataActions = ['comments', 'tracks', 'ifAreContacts'];
 const interestKeys = [
@@ -80,8 +77,12 @@ function ParcelAgreementTable(props) {
 			hit.commentsCounter = hit.comments ? hit.comments.length : 0;
 			if (hit?.tags?.length > 0) {
 				const tags = hit.tags.map(tag => tag.tag);
-				if (tags[0]) hit.tags = [[tags], hit.tags.length];
-			} else hit.tags = [[], 0];
+				if (tags[0]) {
+					hit.tags = [[tags], hit.tags.length];
+				}
+			} else {
+				hit.tags = [[], 0];
+			}
 
 			return hit;
 		});

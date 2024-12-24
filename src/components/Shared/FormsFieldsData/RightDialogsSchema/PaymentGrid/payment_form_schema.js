@@ -1,10 +1,13 @@
 import { InputAdornment } from '@material-ui/core';
-import { GET_PAYMENT_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetPaymentAutoCompleteList';
-import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import moment from 'moment';
 
+import { GET_PAYMENT_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetPaymentAutoCompleteList';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+
 const getNextPaymentDate = (value, startDate, endDate) => {
-	if (!value || !startDate || !endDate) return startDate;
+	if (!value || !startDate || !endDate) {
+		return startDate;
+	}
 
 	const start = new Date(startDate);
 	const end = new Date(endDate);

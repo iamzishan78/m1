@@ -1,9 +1,11 @@
-import React, { memo, useEffect } from 'react';
 import { Button, Typography } from '@material-ui/core';
-import { detailCardController } from 'hookstate/detailCardController';
-import { PaymentRightDialog } from './RightDialog';
-import { tableGlobalController } from 'hookstate/tableController';
 import EditIcon from '@material-ui/icons/Edit';
+import React, { memo, useEffect } from 'react';
+
+import { detailCardController } from 'hookstate/detailCardController';
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { PaymentRightDialog } from './RightDialog';
 
 // This component is used in the RelatedPaymentsTable component for the toolbar
 function RelatedPaymentsToolbar({ table, tableKey }) {

@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, useLocation, Redirect } from 'react-router-dom';
-import RevenueActionsPanel from './QuickActionsPanel';
-import * as Components from 'components/Revenue/components';
 
+import * as Components from 'components/Revenue/components';
 import { replaceLinkId } from 'components/Shared/functions';
+
 import { setActiveModule, toggleQuickActionsPanel } from 'store/actions/commonActions';
+
+import RevenueActionsPanel from './QuickActionsPanel';
 
 export const SIDE_PANEL_MENU_ITEMS_LIST = {
 	PROPERTIES: {
@@ -93,7 +95,7 @@ export default function Revenue() {
 						/>
 					);
 				})}
-				<Redirect to={`/revenue/statements`} />
+				<Redirect to={'/revenue/statements'} />
 			</Switch>
 		</RevenueActionsPanel>
 	);

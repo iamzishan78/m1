@@ -1,21 +1,22 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import RootRef from '@material-ui/core/RootRef';
-import { Droppable, Draggable } from 'react-beautiful-dnd';
 import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import DragIndicator from '@material-ui/icons/DragIndicator';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
 import { AppContext } from 'AppContext';
 import List from '@material-ui/core/List';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import Paper from '@material-ui/core/Paper';
+import RootRef from '@material-ui/core/RootRef';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { createTheme } from '@material-ui/core/styles';
-import { deepEqualObjects } from '../../../functions';
+import Typography from '@material-ui/core/Typography';
+import DragIndicator from '@material-ui/icons/DragIndicator';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import React, { useContext, useState, useEffect } from 'react';
+import { Droppable, Draggable } from 'react-beautiful-dnd';
+
 import LayerItem from './LayerItem';
+import { deepEqualObjects } from '../../../functions';
 
 const theme = createTheme({
 	overrides: {

@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import React, { useContext } from 'react';
+
 import { ProfileContext } from './ProfileContext';
 
 const useStyles = makeStyles(theme => ({

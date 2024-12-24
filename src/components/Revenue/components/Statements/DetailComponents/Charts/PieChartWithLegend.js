@@ -1,10 +1,11 @@
+import * as am4charts from '@amcharts/amcharts4/charts';
+import * as am4core from '@amcharts/amcharts4/core';
 import React, { useEffect, useState } from 'react';
 
-import * as am4core from '@amcharts/amcharts4/core';
-import * as am4charts from '@amcharts/amcharts4/charts';
-import { copy } from 'utils/helper';
-import vf_number from 'components/Shared/valueformatters/vf_number';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+import vf_number from 'components/Shared/valueformatters/vf_number';
+
+import { copy } from 'utils/helper';
 
 // Revenue Chart
 export default function PieChart({ chartData = [], type = '' }) {
@@ -32,7 +33,9 @@ export default function PieChart({ chartData = [], type = '' }) {
 	}, [chartData, type]);
 
 	useEffect(() => {
-		if (data.length === 0) return;
+		if (data.length === 0) {
+			return;
+		}
 		var chart = am4core.create('pie-chart', am4charts.PieChart);
 
 		// setting data
@@ -71,7 +74,7 @@ export default function PieChart({ chartData = [], type = '' }) {
 		};
 
 		// Set Tooltip with currency formatter
-		pieSeries.slices.template.adapter.add('tooltipText', function (text, target) {
+		pieSeries.slices.template.adapter.add('tooltipText', (text, target) => {
 			const rawValue = target.dataItem.values.value.value || 0;
 			const value = rawValue === 0 ? '0' : vf_currency_to_fixed(rawValue, 2);
 			const percent = roundToTwoDecimalPlaces(target.dataItem.values.value.percent);
@@ -89,7 +92,7 @@ export default function PieChart({ chartData = [], type = '' }) {
 		chart.legend.scrollable = true;
 
 		// Set legend label with currency formatter
-		chart.legend.labels.template.adapter.add('textOutput', function (text, target) {
+		chart.legend.labels.template.adapter.add('textOutput', (text, target) => {
 			if (target.dataItem && target.dataItem.dataContext) {
 				const rawValue = target.dataItem.values.value.value || 0;
 				const value = rawValue === 0 ? '0' : vf_currency_to_fixed(rawValue, 2);

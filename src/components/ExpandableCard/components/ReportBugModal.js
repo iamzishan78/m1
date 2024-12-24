@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from 'react';
 import { useMutation, useLazyQuery } from '@apollo/client';
-import styled from 'styled-components';
-import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import MenuItem from '@material-ui/core/MenuItem';
-import Typography from '@material-ui/core/Typography';
 import Select from '@material-ui/core/Select';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+
 import { SENDEMAILBUG } from '../../../graphQL/useMutationSendEmailBug';
 
 const useStyles = makeStyles(theme => ({
@@ -67,8 +68,12 @@ function ReportBugModal(props) {
 	const updateErrors = () => {
 		let issueErr = false;
 		let descriptionErr = false;
-		if (!issue || issue.length === 0) issueErr = true;
-		if (!description || description.length === 0) descriptionErr = true;
+		if (!issue || issue.length === 0) {
+			issueErr = true;
+		}
+		if (!description || description.length === 0) {
+			descriptionErr = true;
+		}
 		setErrors({
 			issue: issueErr,
 			description: descriptionErr,
@@ -77,7 +82,9 @@ function ReportBugModal(props) {
 	};
 
 	const sendMail = async () => {
-		if (updateErrors()) return;
+		if (updateErrors()) {
+			return;
+		}
 
 		sendEmailBug({
 			variables: {

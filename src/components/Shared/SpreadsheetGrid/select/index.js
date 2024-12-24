@@ -1,8 +1,9 @@
-import React from 'react';
+import find from 'lodash.find';
 import PropTypes from 'prop-types';
+import React from 'react';
+
 import Dropdown from './../dropdown';
 import keys from './../kit/keymap';
-import find from 'lodash.find';
 
 class SpreadsheetGridSelect extends React.PureComponent {
 	constructor(props) {

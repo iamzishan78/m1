@@ -1,15 +1,18 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
-import FileDownload from 'components/MRTTable/TablesOverride/DocumentTable/TableCell/FileDownload';
-import FileView from 'components/MRTTable/TablesOverride/DocumentTable/TableCell/FileView';
-import FileName from 'components/MRTTable/TablesOverride/DocumentTable/TableCell/FileName';
-import { formatDate } from 'components/Shared/functions';
-import DocumentToolBar from 'components/MRTTable/TablesOverride/DocumentTable/DocumentToolbar';
-import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
-import { tableGlobalController } from 'hookstate/tableController';
 import moment from 'moment';
+
 import Loaders from 'components/Loaders';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import DocumentToolBar from 'components/MRTTable/TablesOverride/DocumentTable/DocumentToolbar';
+import FileDownload from 'components/MRTTable/TablesOverride/DocumentTable/TableCell/FileDownload';
+import FileName from 'components/MRTTable/TablesOverride/DocumentTable/TableCell/FileName';
+import FileView from 'components/MRTTable/TablesOverride/DocumentTable/TableCell/FileView';
+import { formatDate } from 'components/Shared/functions';
+
+import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
+
 import { slidoutStateController } from 'hookstate/slidoutStateController';
+import { tableGlobalController } from 'hookstate/tableController';
 
 const esIndex = 'documents_flat';
 

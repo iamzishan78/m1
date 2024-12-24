@@ -1,11 +1,14 @@
-import React, { useContext, useEffect, useState } from 'react';
-import UsersListWithIcon from './UsersListWithIcon';
-import { useDispatch } from 'react-redux';
-import { showErrorMessage, showInfoMessage, showSuccessMessage } from 'actions';
 import { useMutation } from '@apollo/client';
-import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { set } from 'lodash';
+import React, { useContext, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+
+import { showErrorMessage, showInfoMessage, showSuccessMessage } from 'actions';
 import { AppContext } from 'AppContext';
+
+import UsersListWithIcon from './UsersListWithIcon';
 
 function ShapeOwnerInput({ data, shapeType, shapeData, onBlur, label = '' }) {
 	const dispatch = useDispatch();
@@ -15,8 +18,11 @@ function ShapeOwnerInput({ data, shapeType, shapeData, onBlur, label = '' }) {
 
 	const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER, {
 		onCompleted: ({ updateCustomLayer }) => {
-			if (updateCustomLayer.success) dispatch(showSuccessMessage(`${shapeType} updated successfully`));
-			else dispatch(showErrorMessage('Error while updating'));
+			if (updateCustomLayer.success) {
+				dispatch(showSuccessMessage(`${shapeType} updated successfully`));
+			} else {
+				dispatch(showErrorMessage('Error while updating'));
+			}
 		},
 	});
 

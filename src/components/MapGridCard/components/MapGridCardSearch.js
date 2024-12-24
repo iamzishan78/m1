@@ -1,16 +1,16 @@
-import React, { useContext, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-
 // context
-import { AppContext } from '../../../AppContext';
-import { MapGridContext } from '../../../components/MapGridCard/MapGridContext.js';
 
-import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';
 import debounce from 'lodash/debounce';
+import React, { useContext, useEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+
 import { setMapGridCardState } from '../../../actions';
+import { AppContext } from '../../../AppContext';
+import { MapGridContext } from '../../../components/MapGridCard/MapGridContext.js';
 
 const useStyles = makeStyles(theme => ({
 	root: {

@@ -1,17 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { set } from 'lodash';
-import { useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
-import { useDispatch } from 'react-redux';
-import Taps from 'components/Shared/Taps';
-import TabPanels from 'components/Shared/TabPanels';
-import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
-import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
-import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
-import RelatedTractsTable from 'components/Common/RelatedTables/Tracts';
-import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
+import { set } from 'lodash';
+
 import TabButtons from 'components/Shared/TabPanels/TabButtons';
 import AgreementSummary from './AgreementSummary';
 import ProvisionsTab from './ProvisionsTab';
@@ -26,12 +17,25 @@ import { detailCardStyles } from '../style';
 import { GET_AGREEMENT_PROVISIONS } from 'graphQL/useQueryGetAgreementProvisions';
 import { GET_STANDARD_PROVISIONS } from 'graphQL/useQueryGetStandardProvisions';
 import moment from 'moment';
-import { popupController } from 'hookstate/popupStateController';
-import { jobController } from 'hookstate/jobStateController';
-import { layerController } from 'hookstate/layerStateController';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
+import RelatedTractsTable from 'components/Common/RelatedTables/Tracts';
+import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
+
 import MRTTable from 'components/MRTTable';
 import AgreementRelatedUnitsToolbar from 'components/MRTTable/TablesOverride/AgreementRelatedUnitsTable/AgreementRelatedUnitsToolbar';
 import PotentialShapeTractToolbar from 'components/MRTTable/TablesOverride/PotentialShapeTract/PotentialShapeTractToolbar';
+import TabPanels from 'components/Shared/TabPanels';
+import Taps from 'components/Shared/Taps';
+
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
+
+import { jobController } from 'hookstate/jobStateController';
+import { layerController } from 'hookstate/layerStateController';
+import { popupController } from 'hookstate/popupStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 export default function AgreementDetailCard(props) {
@@ -90,7 +94,9 @@ export default function AgreementDetailCard(props) {
 	useEffect(() => {
 		if (dataCustomLayer && dataCustomLayer.customLayer) {
 			let shape = JSON.parse(dataCustomLayer.customLayer.shape);
-			if (dataCustomLayer.customLayer.shapeJson) shape = copy(dataCustomLayer.customLayer.shapeJson);
+			if (dataCustomLayer.customLayer.shapeJson) {
+				shape = copy(dataCustomLayer.customLayer.shapeJson);
+			}
 			setUniObj({
 				...dataCustomLayer.customLayer,
 				shape,
@@ -146,11 +152,13 @@ export default function AgreementDetailCard(props) {
 
 		const customLayer = {};
 		let shapeLabel = shape.properties.shapeLabel;
-		if (field === 'agreementNumber')
+		if (field === 'agreementNumber') {
 			shapeLabel = `${value}${shape.properties.agreementName ? `-${shape.properties.agreementName}` : ''}`;
+		}
 
-		if (field === 'agreementName')
+		if (field === 'agreementName') {
 			shapeLabel = `${shape.properties.agreementNumber ? `${shape.properties.agreementNumber}-` : ''}${value}`;
+		}
 
 		if (field === 'agreementType') {
 			customLayer.layer = value;

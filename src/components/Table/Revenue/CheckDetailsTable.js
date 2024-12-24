@@ -1,23 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import { usetableStyles } from '../Styles';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { Tooltip, Grid, IconButton, Button, Dialog, Container, TextField } from '@material-ui/core';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import TableESHOC from 'components/Table/TableESHOC';
-import Table from 'components/Shared/M1nTable/components/Table';
-import { deepEqualObjects, copy } from 'components/Shared/functions';
-import TableHeader from 'components/Table/constants/check-details-header-schema';
-import { history } from 'store';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import { UPSERT_CHECK_PROPERTY } from 'graphQL/useMutationCheckPropertyUpdate';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import React, { useEffect, useState } from 'react';
+
 import Loader from 'components/Loaders';
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import { deepEqualObjects, copy } from 'components/Shared/functions';
+import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import Table from 'components/Shared/M1nTable/components/Table';
+import TableHeader from 'components/Table/constants/check-details-header-schema';
+import TableESHOC from 'components/Table/TableESHOC';
+
+import { UPSERT_CHECK_PROPERTY } from 'graphQL/useMutationCheckPropertyUpdate';
+import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { history } from 'store';
 
 // value formatters
 import convert_date from 'components/Shared/valueformatters/convert_date.js';
+
+import { usetableStyles } from '../Styles';
 
 function CheckDetailsTable(props) {
 	const classes = usetableStyles();
@@ -115,8 +119,11 @@ function CheckDetailsTable(props) {
 		let checkId;
 		const { pathname } = window.location;
 
-		if (pathname.slice(-1) === '/') checkId = pathname.split('/')[pathname.split('/').length - 2];
-		else checkId = pathname.split('/')[pathname.split('/').length - 1];
+		if (pathname.slice(-1) === '/') {
+			checkId = pathname.split('/')[pathname.split('/').length - 2];
+		} else {
+			checkId = pathname.split('/')[pathname.split('/').length - 1];
+		}
 
 		history.push(`/revenue/statement/details/${checkId}/line-item/`);
 	};

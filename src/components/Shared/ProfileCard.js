@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import Avatar from '@material-ui/core/Avatar';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Avatar from '@material-ui/core/Avatar';
+import React, { useState, useEffect } from 'react';
 
 const useStyles = makeStyles(theme => ({
 	iconContainer: {

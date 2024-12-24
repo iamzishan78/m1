@@ -1,12 +1,4 @@
-import React, { useEffect, useState, useMemo, useContext } from 'react';
-import { v4 as uuid } from 'uuid';
 import { useLazyQuery, useMutation } from '@apollo/client';
-// components
-import SearchIcon from '@material-ui/icons/Search';
-import DeleteIcon from '@material-ui/icons/Delete';
-import CreateIcon from '@material-ui/icons/Create';
-
-import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
 import {
 	IconButton,
 	makeStyles,
@@ -21,11 +13,21 @@ import {
 	Grid,
 	ClickAwayListener,
 } from '@material-ui/core';
+import CreateIcon from '@material-ui/icons/Create';
+import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
+import DeleteIcon from '@material-ui/icons/Delete';
+import SearchIcon from '@material-ui/icons/Search';
+import React, { useEffect, useState, useMemo, useContext } from 'react';
+import { v4 as uuid } from 'uuid';
+// components
+
 // graphql enpoints
-import { ADD_LAYER_GROUP, REMOVE_LAYER_GROUP, UPDATE_LAYER_GROUP } from 'graphQL/useMutationLayerGroup';
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-import { AppContext } from 'AppContext';
+
+import { ADD_LAYER_GROUP, REMOVE_LAYER_GROUP, UPDATE_LAYER_GROUP } from 'graphQL/useMutationLayerGroup';
 import { GET_LAYER_GROUPS } from 'graphQL/useQueryLayerGroup';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	popover: props => ({
@@ -192,7 +194,9 @@ export default function AddGroup({ userId, above }) {
 
 	const filterSearchedGroups = useMemo(() => {
 		const groups = layerGroups.filter(layerGroup => layerGroup.name !== 'Agreements');
-		if (!searchValue) return groups;
+		if (!searchValue) {
+			return groups;
+		}
 		const regexp = new RegExp(searchValue.trim(), 'ig');
 
 		return groups.filter(group => group.name.search(regexp) > -1);
@@ -349,7 +353,7 @@ const LayerGroupItem = ({ layerGroup }) => {
 			</Grid>
 			{openDialog && (
 				<DeleteConfirmationDialogContent
-					header={`Delete Layer Group`}
+					header={'Delete Layer Group'}
 					onClose={() => setOpenDialog(false)}
 					deleteFunc={deleteGroup}
 					m1nSelectedRowsIds={null}

@@ -1,10 +1,11 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import BarChartIcon from '@material-ui/icons/BarChart';
-import WellIcon from 'components/Shared/svgIcons/well';
-import Agreements from 'components/Shared/svgIcons/agreements';
-import Tooltip from '@material-ui/core/Tooltip';
 import Badge from '@material-ui/core/Badge';
+import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import BarChartIcon from '@material-ui/icons/BarChart';
+import React from 'react';
+
+import Agreements from 'components/Shared/svgIcons/agreements';
+import WellIcon from 'components/Shared/svgIcons/well';
 
 const useStyles = makeStyles(theme => ({
 	root: {

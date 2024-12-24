@@ -8,24 +8,30 @@ import {
 	lineString,
 	bbox,
 } from '@turf/turf';
-import { convertBBoxToPolygon } from 'components/Shared/Hooks/useOnMouseMoveWells';
-import { popupController } from 'hookstate/popupStateController';
-import { copy } from 'utils/helper';
-import udLayerClickHandler from './udLayerClickHandler';
-import pointClickHandler from './pointClickHandler';
+
+import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+import { colorBasedAttributes } from 'components/MapControls/components/Layer/LayerAttributes/ColorBasedAttributes';
 import {
 	deckGlLandGridIdentifiers,
 	ifDeckGlDataLayerIdentifiers,
 	ifDeckGlLayerIdentifiers,
 } from 'components/Shared/functions/shapeLayer';
+import { convertBBoxToPolygon } from 'components/Shared/Hooks/useOnMouseMoveWells';
+
 import { globalStateController } from 'hookstate/globalStateController';
-import landgridLayerClickHandler from './landgridLayerClickHandler';
-import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
-import { colorBasedAttributes } from 'components/MapControls/components/Layer/LayerAttributes/ColorBasedAttributes';
 import { getLayerKey } from 'hookstate/helpers';
+import { popupController } from 'hookstate/popupStateController';
+
+import { copy } from 'utils/helper';
+
+import landgridLayerClickHandler from './landgridLayerClickHandler';
+import pointClickHandler from './pointClickHandler';
+import udLayerClickHandler from './udLayerClickHandler';
 
 const onWellClick = (object, layerId) => {
-	if (!object) return;
+	if (!object) {
+		return;
+	}
 
 	const feature = copy(object);
 
@@ -65,7 +71,9 @@ const onWellClick = (object, layerId) => {
 };
 
 const onDataLayerClick = (object, layerId, layer) => {
-	if (!object || !layer) return;
+	if (!object || !layer) {
+		return;
+	}
 
 	const feature = copy(object);
 
@@ -79,12 +87,15 @@ const onDataLayerClick = (object, layerId, layer) => {
 };
 
 const onPointClick = (object, layerId, layer) => {
-	if (!object || !layer) return;
+	if (!object || !layer) {
+		return;
+	}
 
 	const feature = copy(object);
 
-	if (feature.geometry.geometries)
+	if (feature.geometry.geometries) {
 		feature.geometry = feature.geometry.geometries.find(geometry => geometry.type === 'Point');
+	}
 
 	feature.layer = {
 		id: layerId,
@@ -96,7 +107,9 @@ const onPointClick = (object, layerId, layer) => {
 };
 
 const onFileLayerClick = (object, layerId, layer) => {
-	if (!object || !layer) return;
+	if (!object || !layer) {
+		return;
+	}
 
 	const feature = copy(object);
 
@@ -152,7 +165,9 @@ const onFileLayerClick = (object, layerId, layer) => {
 };
 
 const onLandGridClick = (object, layerId, layer) => {
-	if (!object || !layer) return;
+	if (!object || !layer) {
+		return;
+	}
 
 	const feature = copy(object);
 

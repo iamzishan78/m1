@@ -1,27 +1,28 @@
+import { makeStyles } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Drawer from '@material-ui/core/Drawer';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import Switch from '@material-ui/core/Switch';
 import React, { useEffect, useContext, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Drawer from '@material-ui/core/Drawer';
-import Button from '@material-ui/core/Button';
-import Switch from '@material-ui/core/Switch';
-import Select from '@material-ui/core/Select';
-import { makeStyles } from '@material-ui/core';
-import MenuItem from '@material-ui/core/MenuItem';
-import IconButton from '@material-ui/core/IconButton';
-import CircularProgress from '@material-ui/core/CircularProgress';
-
-import { AppContext } from 'AppContext';
-import Tags from 'components/Shared/Tagger';
-import { getMapFilters } from 'utils/helper';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import { NavigationContext } from 'components/Navigation/NavigationContext';
 import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
 import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
-import { NavigationContext } from 'components/Navigation/NavigationContext';
-import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import Tags from 'components/Shared/Tagger';
 
-import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import { drawController } from 'hookstate/drawStateController';
+
+import { getMapFilters } from 'utils/helper';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -92,7 +93,6 @@ const ConvertTaxOwnerToContact = ({
 				userId: user.mongoId,
 			});
 		}
-		// eslint-disable-next-line
 	}, [includeFilter]);
 
 	useEffect(() => {
@@ -105,7 +105,6 @@ const ConvertTaxOwnerToContact = ({
 				search,
 			});
 		}
-		// eslint-disable-next-line
 	}, [
 		includeFilter,
 		stateNav.operatorName,

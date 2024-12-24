@@ -1,9 +1,9 @@
-import React from 'react';
-import { Autocomplete, TextField, Chip, IconButton } from '@mui/material';
-import { useController } from 'react-hook-form';
-import CloseIcon from '@mui/icons-material/Close';
 import { makeStyles } from '@material-ui/core/styles';
+import CloseIcon from '@mui/icons-material/Close';
+import { Autocomplete, TextField, Chip, IconButton } from '@mui/material';
 import moment from 'moment';
+import React from 'react';
+import { useController } from 'react-hook-form';
 
 /**
  * CustomAutocomplete component integrates MUI Autocomplete with react-hook-form using useController.
@@ -87,7 +87,7 @@ const CustomAutocomplete = ({
 			<div style={{ display: 'flex', gap: '4em' }}>
 				<TextField
 					type="date"
-					label={`Date From`}
+					label={'Date From'}
 					value={field.value?.[0] || ''}
 					onChange={e => handleDateChange(0, e.target.value)}
 					InputLabelProps={{ shrink: true }}
@@ -109,7 +109,7 @@ const CustomAutocomplete = ({
 				/>
 				<TextField
 					type="date"
-					label={`Date To`}
+					label={'Date To'}
 					value={field.value?.[1] || ''}
 					onChange={e => handleDateChange(1, e.target.value)}
 					InputLabelProps={{ shrink: true }}
@@ -146,7 +146,7 @@ const CustomAutocomplete = ({
 			<div style={{ display: 'flex', gap: '4em' }}>
 				<TextField
 					type="number"
-					label={`Min`}
+					label={'Min'}
 					value={field.value?.[0] || ''}
 					onChange={e => handleNumberChange(0, e.target.value)}
 					InputLabelProps={{ shrink: true }}
@@ -160,7 +160,7 @@ const CustomAutocomplete = ({
 				/>
 				<TextField
 					type="number"
-					label={`Max`}
+					label={'Max'}
 					value={field.value?.[1] || ''}
 					onChange={e => handleNumberChange(1, e.target.value)}
 					InputLabelProps={{ shrink: true }}
