@@ -128,7 +128,7 @@ export default [
 
 			// Enforce the consistent use of either backticks, double, or single quotes.
 			// Risk: Inconsistent quote usage can lead to confusion.
-			quotes: ['error', 'single'], // Example: enforcing single quotes
+			quotes: ['error', 'single', { avoidEscape: true }], // Example: enforcing single quotes
 
 			// Disallow reassigning class members.
 			// Risk: Reassigning class members can lead to unexpected behavior.
@@ -158,7 +158,7 @@ export default [
 			'no-magic-numbers': [
 				'error',
 				{
-					ignore: [0, 1], // Allow these numbers if needed
+					ignore: [0, 1, 10, 100, 1000], // Allow these numbers if needed
 				},
 			],
 
