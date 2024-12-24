@@ -5,34 +5,29 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-
-import { Modals } from '../../../../../../styles/Modal';
-import { makeStyles } from '@material-ui/core/styles';
-import { useDispatch } from 'react-redux';
-
-import { showErrorMessage, showSuccessMessage, setAddParcelInterestState } from '../../../../../../actions';
-
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-
-import AutocompEntityNamesVirtualizeList from '../AutocompEntityNamesVirtualizeList';
-import { ALLENTITYNAMESFORPARCEL } from '../../../../../../graphQL/useQueryAllEntityNamesToAddAsParcelOwner';
-
-import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
 import StepContent from '@material-ui/core/StepContent';
+import StepLabel from '@material-ui/core/StepLabel';
+import Stepper from '@material-ui/core/Stepper';
+import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useContext, useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 import InterestStep from './InterestStep';
 import ParcelStep from './ParcelStep/ParcelStep';
+import { showErrorMessage, showSuccessMessage, setAddParcelInterestState } from '../../../../../../actions';
 import { AppContext } from '../../../../../../AppContext';
 import { ADDOWNERTOAPARCEL } from '../../../../../../graphQL/useMutationAddOwnerToAParcel';
+import { ALLENTITYNAMESFORPARCEL } from '../../../../../../graphQL/useQueryAllEntityNamesToAddAsParcelOwner';
+import { Modals } from '../../../../../../styles/Modal';
+import AutocompEntityNamesVirtualizeList from '../AutocompEntityNamesVirtualizeList';
 
 const useStyles = makeStyles(theme => ({
 	root: {

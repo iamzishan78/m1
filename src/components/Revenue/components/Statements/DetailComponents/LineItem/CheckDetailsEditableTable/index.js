@@ -12,7 +12,10 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 
 import AutoCompleteESField from 'components/Shared/Forms/Fields/AutoCompleteESField';
 import { deepEqualObjects, copy } from 'components/Shared/functions';
+import { Grid as TableGrid, Input, Date } from 'components/Shared/SpreadsheetGrid';
+import { AutoCompleteFilter } from 'components/Table/AutoCompleteFilter';
 import TableHeader from 'components/Table/constants/check-details-header-schema';
+import { usetableStyles } from 'components/Table/Styles';
 import TableHOC from 'components/Table/TableHOC';
 
 // QUERIES
@@ -22,20 +25,13 @@ import TableHOC from 'components/Table/TableHOC';
 // Utilities
 import { ADD_PROPERTY } from 'graphQL/useMutationAddProperty';
 import { UPDATE_CHECK_DETAIL } from 'graphQL/useMutationUpdateCheckDetail';
+import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
 
-import { usetableStyles } from 'components/Table/Styles';
-import { AutoCompleteFilter } from 'components/Table/AutoCompleteFilter';
-
-import { Grid as TableGrid, Input, Date } from 'components/Shared/SpreadsheetGrid';
-
 import { ActionCell } from './ActionCell';
-
 import { RevenueStatementHeadCells } from './data';
 import { PopoverProperty } from './PopoverProperty';
-
-import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles({
 	root: {

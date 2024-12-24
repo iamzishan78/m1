@@ -10,7 +10,6 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import React, { useEffect, useContext, useState } from 'react';
 
 import { WellProdChartContext } from './WellProdChartContext';
-
 import { AppContext } from '../../AppContext';
 import useQueryWellProdHistory from '../../graphQL/useQueryProdHistory';
 import { WellCardContext } from '../WellCard/WellCardContext';

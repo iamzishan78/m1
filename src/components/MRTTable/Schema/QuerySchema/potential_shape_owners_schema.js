@@ -1,13 +1,14 @@
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import IsContactCell from 'components/MRTTable/Common/TableCells/isContactIcone';
-import PotentialShapeOwnersToolbar from 'components/MRTTable/TablesOverride/PotentialShapeOwnersTable/PotentialShapeOwnersToolbar';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import PotentialShapeOwnersToolbar from 'components/MRTTable/TablesOverride/PotentialShapeOwnersTable/PotentialShapeOwnersToolbar';
 import { getPolygonString } from 'components/Shared/functions';
+
+import { SHAPE_OWNERS } from 'graphQL/useQueryPaginatedShapeOwners';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableController } from 'hookstate/tableController';
-import { SHAPE_OWNERS } from 'graphQL/useQueryPaginatedShapeOwners';
 
 const PotentialShapeOwnersMeta = {
 	query: SHAPE_OWNERS,
@@ -16,7 +17,9 @@ const PotentialShapeOwnersMeta = {
 	getVariables: tableMeta => {
 		const { customLayer } = tableMeta?.customProps || {};
 
-		if (!customLayer) return;
+		if (!customLayer) {
+			return;
+		}
 
 		const polygon = getPolygonString(customLayer?.shape);
 		const user = globalStateController.getValue('user');

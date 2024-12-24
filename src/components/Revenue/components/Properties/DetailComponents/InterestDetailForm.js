@@ -14,8 +14,8 @@ import { getDateWithoutTime } from 'components/Shared/functions';
 import ArrowForwardIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
 import { ADD_PROPERTY_INTEREST } from 'graphQL/useMutationAddpropertyInterest';
-
 import { UPDATE_PROPERTY_INTEREST } from 'graphQL/useMutationUpdatepropertyInterest';
+
 import GlobalStyles from 'GlobalStyles.js';
 
 const interestTypeOptions = ['Royalty Interest', 'Overriding Royalty', 'Working Interest'];

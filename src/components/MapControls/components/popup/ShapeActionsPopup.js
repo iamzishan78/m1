@@ -17,38 +17,33 @@ import { isEmpty } from 'lodash';
 import get from 'lodash/get';
 import React, { useEffect, useState, Fragment, useRef, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-
 import { useHistory } from 'react-router-dom';
+
 import LimitExceedPopUp from 'components/MapControls/components/popup/LimitExceedPopup';
+import ShapeEditActions from 'components/MapControls/components/popup/ShapeEditActions';
+import DeleteConfirmationDialogContent from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+import { getPolygonString } from 'components/Shared/functions';
 import { shapeTypeLayers, calculateLandArea } from 'components/Shared/functions/shapeLayer';
 import ConvertContact from 'components/Shared/svgIcons/convert_contact';
 
-import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
+import { ABSTRACTGEOQUERY } from 'graphQL/useQueryAbstractGeo';
 
 import { drawController } from 'hookstate/drawStateController';
+import { globalStateController } from 'hookstate/globalStateController';
+import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+
 import { resetShapeOwnerAction } from 'store/actions/ownerActions';
 import { ConvertTaxOwnerToContactContainer, ExportWellsOwnersContainer } from 'store/containers';
-
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
-import { getPolygonString } from 'components/Shared/functions';
-import ShapeEditActions from 'components/MapControls/components/popup/ShapeEditActions';
-
-import { globalStateController } from 'hookstate/globalStateController';
-
-import { ABSTRACTGEOQUERY } from 'graphQL/useQueryAbstractGeo';
 
 import ShapeTypeMenu from './ShapeTypeMenu';
 import CheckCircle from '../../../Shared/svgIcons/check-circle';
 import FilterAltIcon from '../../../Shared/svgIcons/FilterAltIcon';
 import { drawBoundary, clearSelectedAbstracts } from '../DrawShapes/drawShapesHelpers';
-
-import { mapControlsController } from 'hookstate/mapControlsController';
-
-import DeleteConfirmationDialogContent from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
-
-import { layerController } from 'hookstate/layerStateController';
 
 const ShapeActionsPopup = props => {
 	const dispatch = useDispatch();

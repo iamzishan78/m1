@@ -1,57 +1,42 @@
-// react core
-// mui styling
-
-// mui core components
-
-// internal components
-import Avatar from 'react-avatar';
-import FacebookIcon from '@material-ui/icons/Facebook';
-import TwitterIcon from '@material-ui/icons/Twitter';
-import LinkedInIcon from '@material-ui/icons/LinkedIn';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import RequestPageIcon from 'components/Shared/svgIcons/request_page';
-import FieldContent from './components/FieldContent';
-import { CONTACT } from '../../graphQL/useQueryContact';
-import { CONTACT_PURCHASE_DATA } from 'graphQL/useQueryContactPurchaseData';
-import { TRANSACTIONDATA } from 'graphQL/useQueryTransactionData';
-import { LASTMELISSARECORD } from 'graphQL/useQueryGetMelissaRecords';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { Grid, IconButton, Tabs, Tab, Menu, MenuItem, Badge, CircularProgress } from '@material-ui/core';
-import ConfirmationDialog from './components/ConfirmationDialog';
-import AddDealDialog from 'components/Transact/components/DealDialog/AddDealDialog';
-import RightDialog from './components/RightDialog';
-import Dialog from '@material-ui/core/Dialog';
-import Toolbar from '@material-ui/core/Toolbar';
-import { useSelector, useDispatch } from 'react-redux';
-import ContactDataMissingDialog from './components/ContactDataMissingDialog';
-import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
-import DocViewer from 'components/Shared/DocViewer';
-import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
-import AddActivityDialog from '../ContactDetailCard/components/AddActivityDialog';
-import SummaryFields from '../ContactDetailedInfo/components/SummaryFields';
-import ContactDetailedSelector from './components/ContactDetailSelector';
-import PipelinesFetchHoc from 'components/Transact/components/Common/PipelinesFetchHoc';
-import MetaField from 'components/Table/helpers/MetaField';
-
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import Link from '@material-ui/core/Link';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import Link from '@material-ui/core/Link';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import AddIcCallIcon from '@material-ui/icons/AddIcCall';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import FacebookIcon from '@material-ui/icons/Facebook';
+import LinkedInIcon from '@material-ui/icons/LinkedIn';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import TwitterIcon from '@material-ui/icons/Twitter';
 import { get } from 'lodash';
 import React, { useContext, useState, useEffect } from 'react';
+import Avatar from 'react-avatar';
+import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-// contexts
 import { toggleRightColumn } from 'actions/ContactDetailCard';
 
+import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
+import DocViewer from 'components/Shared/DocViewer';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import OpenCorporatesIcon from 'components/Shared/svgIcons/OpenCorporatesIcon';
+import RequestPageIcon from 'components/Shared/svgIcons/request_page';
+import MetaField from 'components/Table/helpers/MetaField';
+import PipelinesFetchHoc from 'components/Transact/components/Common/PipelinesFetchHoc';
+import AddDealDialog from 'components/Transact/components/DealDialog/AddDealDialog';
+
+import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
+import { CONTACT_PURCHASE_DATA } from 'graphQL/useQueryContactPurchaseData';
+import { LASTMELISSARECORD } from 'graphQL/useQueryGetMelissaRecords';
+import { TRANSACTIONDATA } from 'graphQL/useQueryTransactionData';
 
 import { globalStateController } from 'hookstate/globalStateController';
 
@@ -59,10 +44,19 @@ import { OWNERTYPE } from 'utils/data';
 import { getOpenCorporatesUrl } from 'utils/helper';
 
 import { AppContext } from 'AppContext';
-import Tags from '../Shared/Tagger';
-import Comments from '../Shared/Comments';
+
+import ConfirmationDialog from './components/ConfirmationDialog';
+import ContactDataMissingDialog from './components/ContactDataMissingDialog';
+import ContactDetailedSelector from './components/ContactDetailSelector';
+import FieldContent from './components/FieldContent';
+import RightDialog from './components/RightDialog';
+import { CONTACT } from '../../graphQL/useQueryContact';
+import AddActivityDialog from '../ContactDetailCard/components/AddActivityDialog';
+import SummaryFields from '../ContactDetailedInfo/components/SummaryFields';
 import { NavigationContext } from '../Navigation/NavigationContext';
+import Comments from '../Shared/Comments';
 import BuyContactsInfoDialogContent from '../Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
+import Tags from '../Shared/Tagger';
 
 const useStyles = makeStyles(theme => ({
 	Contacts: {

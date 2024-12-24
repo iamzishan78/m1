@@ -18,27 +18,27 @@ import { get } from 'lodash';
 import uniqBy from 'lodash/uniqBy';
 import React, { useEffect, useState, Fragment, useContext } from 'react';
 import { Controller } from 'react-hook-form';
-
-import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { showInfoMessage } from 'actions';
-import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
-import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
-import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';
-import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
-import { popupController } from 'hookstate/popupStateController';
+import { useHistory } from 'react-router-dom';
 
+import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';
+import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
+import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
 import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import DateField from 'components/Shared/components/Fields/DateField';
 import NumberField from 'components/Shared/components/Fields/NumberField';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
+import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
 import keys from 'components/Shared/SpreadsheetGrid/kit/keymap';
 import MetaField from 'components/Table/helpers/MetaField';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
+import { popupController } from 'hookstate/popupStateController';
+
 import { copy } from 'utils/helper';
 
+import { showInfoMessage } from 'actions';
 import { AppContext } from 'AppContext';
 
 import { useStyles as summaryStyles } from '../style';

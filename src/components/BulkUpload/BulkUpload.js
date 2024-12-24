@@ -10,16 +10,17 @@ import isEmpty from 'lodash/isEmpty';
 import React, { useCallback, useEffect, useState } from 'react';
 import { matchRoutes } from 'react-router-config';
 import { useHistory } from 'react-router-dom';
-import { NavigationContext } from '../Navigation/NavigationContext';
-import Stepper from './components/stepper';
-import M1neral_headers, { getCustomFieldHeaders } from './jobHeaders';
 
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
 import { jobController } from 'hookstate/jobStateController';
 
-import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+import { NavigationContext } from '../Navigation/NavigationContext';
+import Stepper from './components/stepper';
+import M1neral_headers, { getCustomFieldHeaders } from './jobHeaders';
 
 const useStyles = makeStyles(theme => ({
 	root: {

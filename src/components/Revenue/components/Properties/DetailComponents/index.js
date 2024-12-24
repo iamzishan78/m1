@@ -37,18 +37,19 @@ import { UPSERT_USER_DESCRIPTOR } from 'graphQL/useMutationUserDescriptor';
 import { GET_PROPERTY } from 'graphQL/useQueryGetProperty';
 import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
 
+import { detailCardController } from 'hookstate/detailCardController';
+
 import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
 import { ConvertOwnerToContactContainer } from 'store/containers/entity';
-import { AppContext } from 'AppContext';
-
-// Components
-import PropertyInterestDetailsSection from './PropertyInterestDetailsSection';
-import InterestDetailForm from './InterestDetailForm';
-import HeaderSection from './HeaderSection';
 
 import { getIdFromPath } from 'utils/helper';
 
-import { detailCardController } from 'hookstate/detailCardController';
+import { AppContext } from 'AppContext';
+
+// Components
+import HeaderSection from './HeaderSection';
+import InterestDetailForm from './InterestDetailForm';
+import PropertyInterestDetailsSection from './PropertyInterestDetailsSection';
 
 const useStyles = makeStyles(theme => ({
 	root: {

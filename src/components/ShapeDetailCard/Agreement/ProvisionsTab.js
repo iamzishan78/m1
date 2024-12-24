@@ -16,45 +16,38 @@ import {
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
+import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import Checkbox from '@material-ui/core/Checkbox';
 import {
 	DeleteOutline as DeleteIcon,
 	MoreVert as MoreVertIcon,
 	Add as AddIcon,
 	ExpandMore as ExpandMoreIcon,
 } from '@material-ui/icons';
-import { KeyboardDatePicker } from '@material-ui/pickers';
-import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
-
-import React, { useContext, useEffect, useState } from 'react';
-import Loader from 'components/Loaders';
-import CommentsWithIcon from 'components/Shared/CommentsWithIcon';
-
-import { CREATE_AGREEMENT_PROVISION } from 'graphQL/useMutationCreateAgreementProvision';
-
-import debounce from 'lodash/debounce';
-
-import AutoCompleteWithNewOption from 'components/Shared/Forms/Fields/AutoCompleteWithNewOption';
-
-import { GET_PROVISION_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetProvisionAutoCompleteList';
-
-import { copy } from 'components/Shared/functions';
-
-import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-import { detailCardController } from 'hookstate/detailCardController';
-
-import ResponsibleParty from './ResponsibleParty';
-
 import { Autocomplete } from '@material-ui/lab';
+import { KeyboardDatePicker } from '@material-ui/pickers';
+import debounce from 'lodash/debounce';
+import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+import React, { useContext, useEffect, useState } from 'react';
 import { Controller, useForm, useFieldArray } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 
+import Loader from 'components/Loaders';
 import { NavigationContext } from 'components/Navigation/NavigationContext';
+import CommentsWithIcon from 'components/Shared/CommentsWithIcon';
+import AutoCompleteWithNewOption from 'components/Shared/Forms/Fields/AutoCompleteWithNewOption';
+import { copy } from 'components/Shared/functions';
 
+import { CREATE_AGREEMENT_PROVISION } from 'graphQL/useMutationCreateAgreementProvision';
+import { GET_PROVISION_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetProvisionAutoCompleteList';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+
+import { detailCardController } from 'hookstate/detailCardController';
+
+import ResponsibleParty from './ResponsibleParty';
 import { AppContext } from '../../../AppContext';
 
 const styles = makeStyles(() => ({

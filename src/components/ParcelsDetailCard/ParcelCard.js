@@ -1,17 +1,8 @@
-import TableRow from '@material-ui/core/TableRow';
-import LayerIcon from '@material-ui/icons/Layers';
-import Button from '@material-ui/core/Button';
-
-import WellIcon from '../WellCard/components/svgIcons/WellIcon';
-import OwnershipIcon from '../WellCard/components/svgIcons/OwnershipIcon';
-import DescriptionIcon from '../WellCard/components/svgIcons/DescriptionIcon';
 // import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
-
-import ParcelsDetailCard from './ParcelsDetailCard';
-import { getParcelOriginalProperties } from './utils/GetParcelOriginalProps';
 
 // QUERIES
 import { useLazyQuery } from '@apollo/client';
+import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
@@ -20,7 +11,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
+import LayerIcon from '@material-ui/icons/Layers';
 import React, { useState, useContext, useEffect, useRef } from 'react';
 
 // contexts
@@ -32,8 +25,13 @@ import { SHAPEWELLSCOUNT } from 'graphQL/useQueryShapeWellsCount';
 import { globalStateController } from 'hookstate/globalStateController';
 import { popupController } from 'hookstate/popupStateController';
 
+import ParcelsDetailCard from './ParcelsDetailCard';
+import { getParcelOriginalProperties } from './utils/GetParcelOriginalProps';
 import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
 import { ExpandableCardContext } from '../ExpandableCard/ExpandableCardContext';
+import DescriptionIcon from '../WellCard/components/svgIcons/DescriptionIcon';
+import OwnershipIcon from '../WellCard/components/svgIcons/OwnershipIcon';
+import WellIcon from '../WellCard/components/svgIcons/WellIcon';
 
 const useStyles = makeStyles(theme => ({
 	card: {

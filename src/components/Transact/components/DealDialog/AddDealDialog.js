@@ -7,19 +7,11 @@ import { AppContext } from 'AppContext';
 import { TransactContext } from 'components/Transact/TransactContext';
 
 import { Dialog, Avatar, CircularProgress } from '@material-ui/core';
-
-import moment from 'moment';
-
-import DealTasksProgressZone from 'components/ContactDetailCard/components/DealTasksProgressZone';
-import DealComments from 'components/Transact/components/DealComments';
-import DealTasksDetails from '../DealTasksDetails';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-import { useDispatch, useSelector } from 'react-redux';
-import { ADDDEAL, CREATE_DEAL_DEFAULT_SETTINGS } from 'graphQL/useMutationAddDeal';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { makeStyles } from '@material-ui/core/styles';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { get } from 'lodash';
+import moment from 'moment';
 
 import { UPDATEDEAL } from 'graphQL/useMutationUpdateDeal';
 import { UPSERTDEALDESCRIPTOR } from 'graphQL/useMutationUpsertDealDescriptor';
@@ -45,25 +37,33 @@ import Contacts from 'components/FlowDrawer/Contacts';
 import './dialog.css';
 
 import { createPortal } from 'react-dom/cjs/react-dom.production.min';
+import { useDispatch, useSelector } from 'react-redux';
+
+import DealTasksProgressZone from 'components/ContactDetailCard/components/DealTasksProgressZone';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import MapProvider from 'components/Map/MapProvider';
-
-import { mapStateController } from 'hookstate/mapStateController';
-import { GET_DEAL_SHAPES } from 'graphQL/useQueryDealShapes';
-import { globalStateController } from 'hookstate/globalStateController';
 import { findBoundsMap } from 'components/MapControls/commonHelper';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { drawBoundaries } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 import { getRandomColor } from 'components/Shared/functions/ui';
+import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';
+import DealComments from 'components/Transact/components/DealComments';
 import DealDialogHeader from 'components/Transact/components/DealDialog/DealDialogHeader';
 import Drawer from 'components/Transact/components/Drawer';
+
 import { ADDCONTACT } from 'graphQL/useMutationAddContact';
+import { ADDDEAL, CREATE_DEAL_DEFAULT_SETTINGS } from 'graphQL/useMutationAddDeal';
 import { CONTACT } from 'graphQL/useQueryContact';
+import { GET_DEAL_SHAPES } from 'graphQL/useQueryDealShapes';
 import { GET_FLOW_ASSOCIATED_SUMMARY } from 'graphQL/useQueryFlowAssociatedData';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
+import { globalStateController } from 'hookstate/globalStateController';
+import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+import { mapStateController } from 'hookstate/mapStateController';
+
+import DealTasksDetails from '../DealTasksDetails';
 import ExistingDeal from './ExistingDeal';
 import AssociatedFlowDealDetails from '../AssociatedFlowDealDetails';
 

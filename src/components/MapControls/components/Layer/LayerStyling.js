@@ -2,28 +2,30 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { Grid, IconButton, Divider, FormControlLabel, Switch, Tooltip, ClickAwayListener } from '@material-ui/core';
 import { Close as CloseIcon } from '@material-ui/icons';
 import GridOnIcon from '@material-ui/icons/GridOn';
-
 import { Typography } from '@mui/material';
 import { Slider, TextField, Box } from '@mui/material';
-import { colorBasedAttributes } from './LayerAttributes/ColorBasedAttributes';
-import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
-import { AppContext } from 'AppContext';
-import AttrsAutocomplete from './LayerAttributes/AttrsAutocomplete';
-import AttrsValuesDropdown from './LayerAttributes/AttrsValuesDropdown';
-import { getLayerKey } from 'hookstate/helpers';
 import _ from 'lodash';
 import React, { useState, useEffect, useContext, useMemo } from 'react';
+
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent.js';
 import { getLayerColor } from 'components/Shared/SidePanel/compoennts/common';
 
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
 import { LAYERS_FEATURES_COUNT } from 'graphQL/useQueryLayerFeaturesCount';
+
 import { globalStateController } from 'hookstate/globalStateController';
+import { getLayerKey } from 'hookstate/helpers';
 import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 
+import { AppContext } from 'AppContext';
+
 import { useLayerStyle, useStyles, WidthPicker } from './Common';
+import AttrsAutocomplete from './LayerAttributes/AttrsAutocomplete';
+import AttrsValuesDropdown from './LayerAttributes/AttrsValuesDropdown';
+import { colorBasedAttributes } from './LayerAttributes/ColorBasedAttributes';
 import { UPDATELAYERSETTINGS } from '../../../../graphQL/useMutationUpdateLayerSettings';
 
 function LayerStyling() {

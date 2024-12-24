@@ -7,6 +7,7 @@ import PotentialWellToolbar from 'components/MRTTable/TablesOverride/PotentialWe
 import { getPolygonString } from 'components/Shared/functions';
 
 import { SHAPEWELLS } from 'graphQL/useQueryPaginatedShapeWells';
+
 import { tableController } from 'hookstate/tableController';
 
 const PotentialWellsMeta = {
@@ -16,7 +17,9 @@ const PotentialWellsMeta = {
 	getVariables: tableMeta => {
 		const { customLayer } = tableMeta?.customProps || {};
 
-		if (!customLayer) return;
+		if (!customLayer) {
+			return;
+		}
 
 		const polygon = getPolygonString(customLayer?.shape);
 

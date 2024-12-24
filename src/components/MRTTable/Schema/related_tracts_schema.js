@@ -1,6 +1,6 @@
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
 const esIndex = 'shapeowners_flat';
 

@@ -1,8 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
-
-import AspectRatioOutlinedIcon from '@material-ui/icons/AspectRatioOutlined';
-import { clearMapAndCloseShapeActionsPopup } from './commonHelper';
 import { fade } from '@material-ui/core/styles';
+import AspectRatioOutlinedIcon from '@material-ui/icons/AspectRatioOutlined';
 import CancelIcon from '@material-ui/icons/Cancel';
 import EditIcon from '@material-ui/icons/Edit';
 import LanguageIcon from '@material-ui/icons/Language';
@@ -19,6 +17,7 @@ import { popupController } from 'hookstate/popupStateController';
 
 import { layerRefs } from 'hookstate';
 
+import { clearMapAndCloseShapeActionsPopup } from './commonHelper';
 import { AppContext } from '../../AppContext';
 import { default as Cube3d } from '../Shared/svgIcons/cube-3d';
 

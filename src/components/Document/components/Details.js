@@ -1,10 +1,3 @@
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import UploadZone from '../../Shared/UploadZone';
-import Tooltip from '@material-ui/core/Tooltip';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import DeleteIcon from '@material-ui/icons/Delete';
-import joinAddress from 'components/Shared/valueformatters/join-address.js';
-import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
 import { useLazyQuery } from '@apollo/client';
 import { IconButton, TextField, withStyles } from '@material-ui/core';
 import { Typography, Grid } from '@material-ui/core';
@@ -12,6 +5,10 @@ import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import DeleteIcon from '@material-ui/icons/Delete';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import loadashFilter from 'lodash/filter';
 import get from 'lodash/get';
 import React, { useEffect, useState, Fragment } from 'react';
@@ -21,11 +18,15 @@ import GenericDateField from 'components/Shared/components/Fields/GenericDateFIe
 // functions
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
 import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
+import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
 import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
 
 import { AppContext } from 'AppContext';
+
+import UploadZone from '../../Shared/UploadZone';
 
 const filter = createFilterOptions();
 

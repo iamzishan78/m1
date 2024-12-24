@@ -17,18 +17,17 @@ import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoComple
 import ContactCardIcon from 'components/Shared/svgIcons/contact_card';
 import AssociatedWellsList from 'components/Shared/Wells/AssociatedWells';
 
-import StateField from './State';
-
-import { CONTACT_ENTITY } from 'graphQL/useQueryContactEntity';
 import { UPDATE_PROPERTY } from 'graphQL/useMutationUpdateProperty';
+import { CONTACT_ENTITY } from 'graphQL/useQueryContactEntity';
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { GET_AUTOCOMPLETE_PROPERTY_LIST } from 'graphQL/useQueryGetProperty';
+import { SHAPE_AUTOCOMPLETE_LIST } from 'graphQL/useQueryShapeAutoCompleteList';
 
 import { showInfoMessage } from 'actions';
-
-import { SHAPE_AUTOCOMPLETE_LIST } from 'graphQL/useQueryShapeAutoCompleteList';
 import { AppContext } from 'AppContext';
+
 import CountyField from './County';
+import StateField from './State';
 
 const useStyles = makeStyles(theme => ({
 	titleText: {

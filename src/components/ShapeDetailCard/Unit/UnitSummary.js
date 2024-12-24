@@ -15,12 +15,11 @@ import unitDefaultData from 'components/ShapeDetailCard/Common/SummaryTable/unit
 import { summaryStyles } from 'components/ShapeDetailCard/style';
 import CommentComponent from 'components/Shared/CommentComponent';
 import ExpandableSearch from 'components/Shared/Forms/Fields/ExpandableSearch';
+import WellIcon from 'components/Shared/svgIcons/well';
 import MetaField from 'components/Table/helpers/MetaField';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
-
-import WellIcon from 'components/Shared/svgIcons/well';
 
 import { globalStateController } from 'hookstate/globalStateController';
 

@@ -9,25 +9,26 @@ import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import Tooltip from '@material-ui/core/Tooltip';
 import { LocalAtm } from '@material-ui/icons';
+import { DescriptionOutlined } from '@material-ui/icons';
 import ClearIcon from '@material-ui/icons/Clear';
-import SearchIcon from '@material-ui/icons/Search';
-import React, { Fragment, useEffect, useState, useContext } from 'react';
-
-import { useHistory } from 'react-router-dom';
-import ArchiveIcon from 'components/Shared/svgIcons/archive';
-import MarkUnreadIcon from 'components/Shared/svgIcons/mark-unread';
-import Avatar from 'react-avatar';
-import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-
-import TractIcon from 'components/Shared/svgIcons/tract';
-import UnitIcon from 'components/Shared/svgIcons/unit';
-
-import NotificationsIcon from '@material-ui/icons/Notifications';
 import FolderIcon from '@material-ui/icons/Folder';
 import ContactIcon from '@material-ui/icons/Group';
+import NotificationsIcon from '@material-ui/icons/Notifications';
 import FlowIcon from '@material-ui/icons/Repeat';
-import { DescriptionOutlined } from '@material-ui/icons';
+import SearchIcon from '@material-ui/icons/Search';
+import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import React, { Fragment, useEffect, useState, useContext } from 'react';
+import Avatar from 'react-avatar';
+import { useHistory } from 'react-router-dom';
+import ReactTimeAgo from 'react-time-ago';
+
+import Loader from 'components/Loaders';
+import { CommonCommentText } from 'components/Shared/CommentComponent';
+import ArchiveIcon from 'components/Shared/svgIcons/archive';
+import MarkUnreadIcon from 'components/Shared/svgIcons/mark-unread';
+import TractIcon from 'components/Shared/svgIcons/tract';
+import UnitIcon from 'components/Shared/svgIcons/unit';
 
 import { ARCHIVE_ALL_MUTATIONS } from 'graphQL/useMutationArchiverAllMentions';
 import { UPDATE_NOTIFICATION_STATUS } from 'graphQL/useMutationUpdateNotificationStatus';
@@ -40,11 +41,6 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { dateIsValid } from 'utils/helper';
 
 import { AppContext } from 'AppContext';
-
-import ReactTimeAgo from 'react-time-ago';
-
-import { CommonCommentText } from 'components/Shared/CommentComponent';
-import Loader from 'components/Loaders';
 
 const useStyles = makeStyles(theme => ({
 	header: {

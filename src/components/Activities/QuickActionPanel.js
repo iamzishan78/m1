@@ -7,22 +7,20 @@ import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import MenuIcon from '@material-ui/icons/Menu';
-import clsx from 'clsx';
-import React, { useContext, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import clsx from 'clsx';
+import moment from 'moment';
+import React, { useContext, useState } from 'react';
+import DatePicker from 'react-datepicker';
+import { useHistory } from 'react-router-dom';
 
 import { useStyles, StyledMenu, StyledMenuItem } from 'components/Land/style';
-
-import moment from 'moment';
-
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
 import { ActivitiesContext } from './ActivitiesContext';
 
-import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 const useToolbarStyles = makeStyles(theme => ({
 	root: {

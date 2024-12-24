@@ -1,6 +1,7 @@
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import contactTaxRollInterestToolbar from 'components/MRTTable/TablesOverride/TaxRollInterest/contactTaxRollInterestToolbar';
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
+
 import { GET_CONTACT_TAX_ROLL_INTERESTS_QUERY } from 'graphQL/useQueryGetContactTaxRollInterests';
 
 const TaxRollInterestsMeta = {
@@ -9,7 +10,9 @@ const TaxRollInterestsMeta = {
 	getVariables: tableMeta => {
 		const { contactId } = tableMeta?.customProps || {};
 
-		if (!contactId) return;
+		if (!contactId) {
+			return;
+		}
 
 		return {
 			contactId,

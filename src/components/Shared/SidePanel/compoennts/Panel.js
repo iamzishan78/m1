@@ -1,26 +1,19 @@
 import { useLazyQuery, useMutation } from '@apollo/client';
-import ListItemText from '@material-ui/core/ListItemText';
-import Button from '@material-ui/core/Button';
-import { AppContext } from '../../../../AppContext';
-import List from '@material-ui/core/List';
-import LayersIcon from '@material-ui/icons/Layers';
-import Collapse from '@material-ui/core/Collapse';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import BasemapIcon from '@material-ui/icons/Language';
-import FilterAltIcon from 'components/Shared/svgIcons/FilterAltIcon';
-import SecondaryPanel from 'components/Shared/SecondaryPanel';
-import Datasets from 'components/Shared/SidePanel/compoennts/Datasets';
-import LayerFilters from 'components/Shared/SidePanel/compoennts/Filters/LayerFilters';
-import MapPositions from 'components/Shared/SidePanel/compoennts/MapPositions';
-import { showErrorMessage, showSuccessMessage } from 'actions';
-import MapIcon from '@material-ui/icons/Map';
 import { useApolloClient } from '@apollo/client';
 import { Tab, Tabs, Chip, CircularProgress, Backdrop } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Collapse from '@material-ui/core/Collapse';
+import Grid from '@material-ui/core/Grid';
+import List from '@material-ui/core/List';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 import RootRef from '@material-ui/core/RootRef';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import BasemapIcon from '@material-ui/icons/Language';
+import LayersIcon from '@material-ui/icons/Layers';
+import MapIcon from '@material-ui/icons/Map';
 import { get } from 'lodash';
 import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
@@ -29,11 +22,17 @@ import { TransitionGroup } from 'react-transition-group';
 
 import { toggleLayersFiltersPanel } from 'actions/MainMap';
 
+import SecondaryPanel from 'components/Shared/SecondaryPanel';
+import Datasets from 'components/Shared/SidePanel/compoennts/Datasets';
+import LayerFilters from 'components/Shared/SidePanel/compoennts/Filters/LayerFilters';
+import MapPositions from 'components/Shared/SidePanel/compoennts/MapPositions';
+import FilterAltIcon from 'components/Shared/svgIcons/FilterAltIcon';
+
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
 
 // Contexts
-import MapViewOptions from './Filters/MapViewOptions';
 import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
@@ -43,8 +42,11 @@ import { navController } from 'hookstate/navStateController';
 // actions
 import { setActiveModule } from 'store/actions/commonActions';
 
+import { showErrorMessage, showSuccessMessage } from 'actions';
+
 import AddGroup from './AddGroup';
 import MapViewComponent from './Filters/MapViewComponent';
+import MapViewOptions from './Filters/MapViewOptions';
 import Layer from './Layer';
 import SortableLayer from './SortableLayer';
 import {
@@ -57,6 +59,7 @@ import {
 	StyledMenuHActionHeader,
 	StyledMenuSecondaryHeaderItem,
 } from './style';
+import { AppContext } from '../../../../AppContext';
 import { deepEqualObjects } from '../../functions';
 
 const layerIcons = [

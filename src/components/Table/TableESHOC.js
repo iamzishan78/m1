@@ -7,35 +7,36 @@ import { isEmpty, isEqual, isNumber, uniqWith } from 'lodash';
 
 // import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
-import { AutoCompleteFilter } from './AutoCompleteFilter';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import TableHeader from 'components/Table/constants/agreements-header-schema';
-
 import { get } from 'lodash';
-
-import { usetableStyles } from './Styles';
-import { updateUserGridViewSettingAction } from 'store/actions/sessionActions';
-import { handleSelectedGridChange, setColumnDisplayAndFilter } from './helpers';
-import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
-import { formattingGridView, sortColumns } from 'utils/helper';
 import moment from 'moment';
 import React, { useContext, useState, useEffect, useCallback, useRef, useMemo, memo } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { copy, deepEqual, getSearchFields, setStateIfDeepEqual } from 'components/Shared/functions';
-import { COMMENTSCOUNTER } from 'graphQL/useQueryCommentsCounter';
 
+import { copy, deepEqual, getSearchFields, setStateIfDeepEqual } from 'components/Shared/functions';
+import TableHeader from 'components/Table/constants/agreements-header-schema';
+
+import { COMMENTSCOUNTER } from 'graphQL/useQueryCommentsCounter';
 import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
+import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
 import { TAGSAMPLES } from 'graphQL/useQueryTagSamples';
 import { TRACKSBYOBJECTTYPE } from 'graphQL/useQueryTracksByObjectType';
 
 import { execCommonAsyncExportJobAction } from 'store/actions/commonActions';
+import { updateUserGridViewSettingAction } from 'store/actions/sessionActions';
+
+import { formattingGridView, sortColumns } from 'utils/helper';
 
 import { AppContext } from 'AppContext';
 import GlobalSettings from 'GlobalSettings.js';
 import { useResetESTableToggle } from 'hookstate';
+
+import { AutoCompleteFilter } from './AutoCompleteFilter';
+import { handleSelectedGridChange, setColumnDisplayAndFilter } from './helpers';
+import { usetableStyles } from './Styles';
 
 export const TableESHOC = Component => {
 	const HocWithDefaultProps = function HOC(props) {

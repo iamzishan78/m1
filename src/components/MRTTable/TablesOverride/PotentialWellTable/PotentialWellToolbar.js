@@ -1,9 +1,11 @@
-import React, { memo } from 'react';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { Button, ButtonGroup } from '@material-ui/core';
 import { useMutation } from '@apollo/client';
-import { globalStateController } from 'hookstate/globalStateController';
+import { Button, ButtonGroup } from '@material-ui/core';
+import React, { memo } from 'react';
+
 import { ADD_MULTI_WELLINTEREST_TO_SHAPE } from 'graphQL/useMutationAddMultiWellInterestToShape';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 function PotentialWellToolbar({ tableKey, table }) {
 	const [addMultiWellInterestToShape] = useMutation(ADD_MULTI_WELLINTEREST_TO_SHAPE, {

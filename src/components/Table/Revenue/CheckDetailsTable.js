@@ -9,17 +9,17 @@ import Loader from 'components/Loaders';
 import { deepEqualObjects, copy } from 'components/Shared/functions';
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import Table from 'components/Shared/M1nTable/components/Table';
+import convert_date from 'components/Shared/valueformatters/convert_date.js';
 import TableHeader from 'components/Table/constants/check-details-header-schema';
 import TableESHOC from 'components/Table/TableESHOC';
 
 import { UPSERT_CHECK_PROPERTY } from 'graphQL/useMutationCheckPropertyUpdate';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+
 import { history } from 'store';
 
 // value formatters
-import convert_date from 'components/Shared/valueformatters/convert_date.js';
 
 import { usetableStyles } from '../Styles';
 

@@ -16,17 +16,17 @@ import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import CloseIcon from '@material-ui/icons/Close';
-
-import PersonIcon from '@material-ui/icons/Person';
 import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import KeyboardTabSharpIcon from '@material-ui/icons/KeyboardTabSharp';
 import LinkIcon from '@material-ui/icons/Link';
+import PersonIcon from '@material-ui/icons/Person';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import SearchIcon from '@material-ui/icons/Search';
 import _ from 'lodash';
 import React, { useContext, useEffect, useState, useMemo, useRef } from 'react';
 
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 
 import { AppContext } from 'AppContext';

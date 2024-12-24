@@ -15,20 +15,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import { extractValueRecursively } from 'components/MRTTable/utils/helper';
 import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
-
+import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
+import unitInterestOwnerForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/UnitDetailInterestOwner/unit_interest_owner_form_schema';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+
 import { ADD_OWNER_TOA_SHAPE } from 'graphQL/useMutationAddOwnerToAShape';
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
-
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
-
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { sideDialogController, unitInterestOwnerState } from 'hookstate/sideDialogController';
 import { tableGlobalController } from 'hookstate/tableController';
+
 import { showErrorMessage, showSuccessMessage } from 'actions';
-import unitInterestOwnerForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/UnitDetailInterestOwner/unit_interest_owner_form_schema';
-import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 
 const useStyles = makeStyles(theme => ({
 	maxWidth: {
