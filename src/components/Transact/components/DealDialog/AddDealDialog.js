@@ -571,6 +571,7 @@ function AddDealDialog(props) {
 						variables: {
 							stageDealDescriptors,
 							dealId: deal._id,
+							stageId,
 						},
 					}).then(result => {
 						setStateApp(stateApp => ({

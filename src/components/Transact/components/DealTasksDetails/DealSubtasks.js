@@ -1,3 +1,4 @@
+import React, { useState, useEffect, useContext } from 'react';
 import { useMutation } from '@apollo/client';
 import {
 	Grid,
@@ -23,7 +24,6 @@ import {
 } from '@material-ui/icons';
 import { KeyboardDatePicker } from '@material-ui/pickers';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
-import React, { useState, useEffect } from 'react';
 import { Flipper, Flipped } from 'react-flip-toolkit';
 import { ContextProvider } from 'react-sortly';
 import Sortly, { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
@@ -31,6 +31,7 @@ import Sortly, { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';
 
 import { UPDATE_DEAL_SUBTASK } from 'graphQL/useMutationDealSubtask';
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	subTaskRoot: props => ({
@@ -106,7 +107,6 @@ export const SubtaskItem = ({
 	const [showTaskActions, setShow] = useState(false);
 	const [isDatePopup, setDatePopup] = useState(false);
 	const [isEdit, setEdit] = useState({ index: -1, isEditing: false, showIcon: false });
-	const truncate = (str, n) => (str?.length > n ? str.substr(0, n - 1) + '...' : str);
 	const onHoverTask = state => setShow(state);
 
 	const [{ isDragging }, drag, preview] = useDrag({
@@ -383,10 +383,11 @@ export const SubtaskItem = ({
 };
 
 const DealSubtasks = props => {
-	const { tasks, users, canDrag, isTemplate } = props;
+	const { tasks, users, canDrag, isTemplate, currentStage } = props;
 	const [items, setItems] = useState([]);
 
 	const [updateSubtask] = useMutation(UPDATE_DEAL_SUBTASK);
+	const [stateApp] = useContext(AppContext);
 
 	useEffect(() => {
 		setItems(tasks.map((t, index) => ({ ...t, id: `${index + 1}`, index, depth: 0 })));
@@ -395,7 +396,7 @@ const DealSubtasks = props => {
 	const handleUpdateSubtask = task => {
 		updateSubtask({
 			variables: {
-				task,
+				task: { ...task, notifySubtask: stateApp?.activeDeal?.laneId === currentStage },
 			},
 			refetchQueries: ['dealSettings', 'getTaskTemplate'],
 			awaitRefetchQueries: true,
