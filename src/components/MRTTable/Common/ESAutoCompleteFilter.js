@@ -286,7 +286,7 @@ function ESAutoCompleteFilter({
 			getOptionLabel={op => {
 				if (typeof op !== 'object') return op;
 
-				return op?.label || op?.name || '';
+				return op?.label ?? op?.name ?? '';
 			}}
 			loading={loading}
 			filterOptions={searchMapping[searchMode].filterOptions}
