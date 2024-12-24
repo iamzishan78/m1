@@ -228,7 +228,7 @@ function DealStageDetail({
 							/>
 						</Grid>
 						<Grid item xl={12} sm={12} style={{ margin: '10px 0px 10px 0px' }}>
-							<DealSubtasks tasks={settings.tasks} users={users} />
+							<DealSubtasks tasks={settings.tasks} users={users} currentStage={settings._id} />
 						</Grid>
 						<NewSubtask index={index} activeDeal={activeDeal} relatedObject={settings._id} />
 					</Grid>
