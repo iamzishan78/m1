@@ -139,8 +139,9 @@ async function fetchGridViews(client, module, tableKey, gridViewOverride) {
 }
 
 const tableESStateControllerHandler = state => ({
-	initialize: async (tableKey, props, client) => {
-		const {
+	initialize: async (
+		tableKey,
+		{
 			esIndex,
 			layerIdentifier,
 			layerSchema,
@@ -169,12 +170,13 @@ const tableESStateControllerHandler = state => ({
 			globalFilter,
 			excludeFields,
 			...rest
-		} = props;
-
+		},
+		client
+	) => {
 		if (state.TableSchema.get()) return;
 
 		let _Schema = TableSchema;
-		if (!rest.isGeneric)
+		if (!rest.isGeneric && !isClientSide)
 			_Schema.unshift({
 				...CommonSchema.SELECT_SOME,
 				Header: () => <TableHeaderMoreOptions tableKey={tableKey} />,
