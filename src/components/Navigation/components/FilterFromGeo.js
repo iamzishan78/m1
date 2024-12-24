@@ -6,11 +6,9 @@ import FilterStateName from './FilterStateName';
 import FilterCountyName from './FilterCountyName';
 import Grid from '@material-ui/core/Grid';
 import FilterGrid from './FilterGrid12345';
-import FilterBasin from './FilterBasin';
 
 import { useLazyQuery } from '@apollo/client';
 import { WELLSMINMAXLATLONG } from '../../../graphQL/useQueryWellsMinMaxLatLong';
-import ShapeFilter from './ShapeFilter';
 import { navController } from 'hookstate/navStateController';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 
@@ -67,6 +65,7 @@ export default function FilterFromGeo() {
 				filterGeography: null,
 			}));
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		stateNav.stateName,
 		stateNav.countyName,
@@ -116,6 +115,7 @@ export default function FilterFromGeo() {
 				fitBounds: null,
 			}));
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		stateNav.stateName,
 		stateNav.countyName,
@@ -148,6 +148,7 @@ export default function FilterFromGeo() {
 				}));
 			}
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [data]);
 
 	// For Geography count
@@ -196,15 +197,6 @@ export default function FilterFromGeo() {
 
 	return (
 		<Grid container item spacing={2} style={{ padding: '8px', width: '100%', margin: '0' }}>
-			<Grid item sm={12} className={classes.gridItem}>
-				<ShapeFilter label="Area of Interest" filterType={'interest'} />
-			</Grid>
-			<Grid item sm={12} className={classes.gridItem}>
-				<ShapeFilter label="Parcel" filterType={'parcel'} />
-			</Grid>
-			<Grid item sm={12} className={classes.gridItem}>
-				<FilterBasin />
-			</Grid>
 			<Grid item sm={12} className={classes.gridItem}>
 				<FilterStateName style={{ margin: 0 }} />
 			</Grid>
