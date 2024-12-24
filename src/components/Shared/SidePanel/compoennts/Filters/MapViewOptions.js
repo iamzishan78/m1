@@ -104,7 +104,9 @@ function MapViewOptions({ tableKey, allMapViews, defaultView }) {
 	const [filterMapView, setFilterMapView] = useState(allMapViews);
 	const [search, setSearch] = useState('');
 	const [editMapView, setEditMapView] = useState(null);
-	const [viewName, setViewName] = useState(`${mapViewStateValues?.mapView?.selectedMapView?.name || 'view'}-copy`);
+	const [viewName, setViewName] = useState(
+		`${mapViewStateValues?.mapView?.selectedMapView?.name || defaultView?.name}-copy`
+	);
 	const [upsertMapView] = useMutation(UPSERT_MAP_VIEW, {});
 
 	const handleMapViewChange = mapView => {

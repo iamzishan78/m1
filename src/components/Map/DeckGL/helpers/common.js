@@ -459,10 +459,10 @@ export const generateFileFilters = ({
 		variables: {
 			index: 'shapefile_flat',
 			pagination,
-			search: {
+			...extendFilters.variables,
+			search: extendFilters.variables.search || {
 				advanceSearch,
 			},
-			...extendFilters.variables,
 			filters: extractUniqueFilters([...filters, ...(extendFilters.variables?.filters || [])]),
 		},
 	};

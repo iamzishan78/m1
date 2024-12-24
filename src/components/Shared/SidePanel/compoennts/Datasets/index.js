@@ -175,7 +175,11 @@ function Datasets({ headerButton, search, stateApp }) {
 			stateToUpdate.layerGridCard = false;
 			stateToUpdate.mapGridCardActivated = true;
 		} else {
-			stateToUpdate.selectedLayer = { ...dataset.categories[0] };
+			const layers = globalStateController.getValue('layers');
+			const layer = layers.find(
+				l => l.file === dataset.categories[0]?.file && l.layerShapeName === dataset.categories[0]?.layerShapeName
+			);
+			stateToUpdate.selectedLayer = { ...dataset.categories[0], layerSchema: layer?.layerSchema };
 			stateToUpdate.layerGridCard = true;
 			stateToUpdate.mapGridCardActivated = true;
 		}

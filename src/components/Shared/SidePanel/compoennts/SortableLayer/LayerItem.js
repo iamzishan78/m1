@@ -118,7 +118,16 @@ const LayerItem = React.memo(props => {
 
 	const layerFilters = mapView?.selectedMapView?.filters.filter(filter => {
 		const { dataSourceName } = filter || {};
-		return [data?.identifier, data?.layerName, data?.name].includes(dataSourceName);
+
+		// In case of shape files
+		const fileId = dataSourceName.substring(0, dataSourceName.indexOf('_'));
+		const layerShapeName = dataSourceName.substring(dataSourceName.indexOf('_') + 1);
+		if (fileId === data?.file && layerShapeName === data?.layerShapeName) return true;
+
+		return (
+			[data?.identifier, data?.layerName, data?.name].includes(dataSourceName) ||
+			data?.identifier?.startsWith(dataSourceName)
+		);
 	});
 
 	return (
