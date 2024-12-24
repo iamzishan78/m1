@@ -1,13 +1,14 @@
-import React from 'react';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListSubheader from '@material-ui/core/ListSubheader';
 import ListItemText from '@material-ui/core/ListItemText';
-
+import ListSubheader from '@material-ui/core/ListSubheader';
 import { styled } from '@material-ui/core/styles';
 import moment from 'moment';
-import CommentComponent from './Comment';
+import React from 'react';
+
 import { getDocumentType, getDocumentSizeInKBs } from 'components/MRTTable/utils/helper';
+
+import CommentComponent from './Comment';
 
 const ListContainer = styled('div')({
 	flexGrow: 1,

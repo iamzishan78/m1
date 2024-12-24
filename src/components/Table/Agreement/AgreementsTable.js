@@ -1,44 +1,37 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useContext, useState } from 'react';
+import { useMutation } from '@apollo/client';
 import { Container, Dialog } from '@material-ui/core';
-import Table from 'components/Shared/M1nTable/components/Table';
-import TableESHOC from 'components/Table/TableESHOC';
-import Agreements from 'components/Shared/svgIcons/agreements';
 import _ from 'lodash';
-
-import { deepEqualObjects, copy, esExtentedSearch } from 'components/Shared/functions';
-import { HeaderComponent } from 'components/Table/helpers';
-
-// Header Schemas
-import TableHeader from 'components/Table/constants/agreements-header-schema';
-
-// Utilities
-import { agreementTypes } from 'components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData';
-
+import debounce from 'lodash/debounce';
+import React, { useEffect, useContext, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { useMutation } from '@apollo/client';
+import { agreementTypes } from 'components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData';
+import { deepEqualObjects, copy, esExtentedSearch } from 'components/Shared/functions';
+import GridView from 'components/Shared/GridView';
+import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import Table from 'components/Shared/M1nTable/components/Table';
+import Agreements from 'components/Shared/svgIcons/agreements';
+import convert_date from 'components/Shared/valueformatters/convert_date.js';
+import TableHeader from 'components/Table/constants/agreements-header-schema';
+import { HeaderComponent } from 'components/Table/helpers';
+import TableESHOC from 'components/Table/TableESHOC';
 
-import debounce from 'lodash/debounce';
-import { AppContext } from 'AppContext';
-
-import { usetableStyles } from '../Styles';
-import CustomerViewCol from '../helpers/CustomerView';
-import MetaField from '../helpers/MetaField';
+import { REMOVE_AGREEMENTS } from 'graphQL/useMutationRemoveAgreements';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { UPDATE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
-import GridView from 'components/Shared/GridView';
 
-// value formatters
-import convert_date from 'components/Shared/valueformatters/convert_date.js';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-import { REMOVE_AGREEMENTS } from 'graphQL/useMutationRemoveAgreements';
 import { jobController } from 'hookstate/jobStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 
+import { AppContext } from 'AppContext';
+
+import CustomerViewCol from '../helpers/CustomerView';
+import MetaField from '../helpers/MetaField';
+import { usetableStyles } from '../Styles';
+
 function AgreementsTable(props) {
 	const defaultView = {
-		name: `All Agreements`,
+		name: 'All Agreements',
 		type: 'Default',
 	};
 
@@ -60,7 +53,7 @@ function AgreementsTable(props) {
 	const classes = usetableStyles({ isFullHeight: true, isAgreementsTable: true });
 	const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
 
-	let GridViewModule = userGridViewSettings[`Agreements`] || {};
+	let GridViewModule = userGridViewSettings['Agreements'] || {};
 	GridViewModule.columns = _.get(GridViewModule, 'columns', []).map(obj =>
 		excludeFromViewColumns.includes(obj.name) ? { ...obj, viewColumns: false } : obj
 	);
@@ -104,7 +97,9 @@ function AgreementsTable(props) {
 	};
 
 	useEffect(() => {
-		if (props.landSearchQuery) setStateApp(stateApp => ({ ...stateApp, landSearchQuery: '' }));
+		if (props.landSearchQuery) {
+			setStateApp(stateApp => ({ ...stateApp, landSearchQuery: '' }));
+		}
 	}, []);
 
 	useEffect(() => {
@@ -232,7 +227,7 @@ function AgreementsTable(props) {
 			>
 				{props.openDialog === 'delete' && (
 					<DeleteConfirmationDialogContent
-						header={`Delete Agreement(s)`}
+						header={'Delete Agreement(s)'}
 						onClose={() => props.setOpenDialog(null)}
 						deleteFunc={deleteFunc}
 						m1nSelectedRowsIds={props.selectedRows.map(sR => props.rows[sR.dataIndex]?._id)}

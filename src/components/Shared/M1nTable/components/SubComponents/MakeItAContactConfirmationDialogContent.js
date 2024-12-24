@@ -1,15 +1,16 @@
-import React, { useContext, useEffect } from 'react';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import Button from '@material-ui/core/Button';
-import { Modals } from '../../../../../styles/Modal';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { ADDCONTACT } from '../../../../../graphQL/useMutationAddContact';
 import { useMutation } from '@apollo/client';
-import { AppContext } from '../../../../../AppContext';
+import Button from '@material-ui/core/Button';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import React, { useContext, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+
 import { showErrorMessage, showSuccessMessage } from '../../../../../actions';
+import { AppContext } from '../../../../../AppContext';
+import { ADDCONTACT } from '../../../../../graphQL/useMutationAddContact';
+import { Modals } from '../../../../../styles/Modal';
 
 export default function MakeItAContactConfirmationDialogContent(props) {
 	const dispatch = useDispatch();
@@ -74,7 +75,7 @@ export default function MakeItAContactConfirmationDialogContent(props) {
 									refetchQueries: ['getPaginatedContacts', 'checkIfOwnersAreContacts'],
 									awaitRefetchQueries: true,
 								});
-							} else
+							} else {
 								addContact({
 									variables: {
 										contact: {
@@ -86,6 +87,7 @@ export default function MakeItAContactConfirmationDialogContent(props) {
 									refetchQueries: ['getPaginatedContacts', 'checkIfOwnersAreContacts'],
 									awaitRefetchQueries: true,
 								});
+							}
 						}
 					}}
 					color="primary"

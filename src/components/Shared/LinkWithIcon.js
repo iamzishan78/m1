@@ -1,12 +1,4 @@
-import React, { useContext, useEffect, useState, useMemo, useRef } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import Dialog from '@material-ui/core/Dialog';
 import { useLazyQuery, useMutation } from '@apollo/client';
-import _ from 'lodash';
-import Tooltip from '@material-ui/core/Tooltip';
-import LinkIcon from '@material-ui/icons/Link';
-import CloseIcon from '@material-ui/icons/Close';
 import {
 	Grid,
 	Container,
@@ -19,20 +11,32 @@ import {
 	CircularProgress,
 	ClickAwayListener,
 } from '@material-ui/core';
-import RightDialog from '../ContactDetailCard/components/RightDialog';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import Dialog from '@material-ui/core/Dialog';
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import CloseIcon from '@material-ui/icons/Close';
+
+import PersonIcon from '@material-ui/icons/Person';
+import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import KeyboardTabSharpIcon from '@material-ui/icons/KeyboardTabSharp';
-import SearchIcon from '@material-ui/icons/Search';
+import LinkIcon from '@material-ui/icons/Link';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
+import SearchIcon from '@material-ui/icons/Search';
+import _ from 'lodash';
+import React, { useContext, useEffect, useState, useMemo, useRef } from 'react';
+
+import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+
+import { AppContext } from 'AppContext';
+
 import {
 	LINKED_GLOBAL_OWNERS,
 	UNLINK_GLOBAL_OWNER,
 	LINK_PLATFORM_OWNER,
 } from '../../graphQL/useQueryLinkedGlobalOwners';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
-import PersonIcon from '@material-ui/icons/Person';
-import ControlPointIcon from '@material-ui/icons/ControlPoint';
-import { AppContext } from 'AppContext';
+import RightDialog from '../ContactDetailCard/components/RightDialog';
 
 export default function LinkWithIcon(props) {
 	const [openDialog, setOpenDialog] = useState(false);
@@ -73,7 +77,9 @@ export default function LinkWithIcon(props) {
 	}, [openDialog]);
 
 	useEffect(() => {
-		if (inputSearchValue) debouncedSearch(inputSearchValue, showAll);
+		if (inputSearchValue) {
+			debouncedSearch(inputSearchValue, showAll);
+		}
 	}, [inputSearchValue, showAll]);
 
 	const useStyles = makeStyles(theme => ({
@@ -177,8 +183,11 @@ export default function LinkWithIcon(props) {
 	const handleProcessingOwners = (value, action = 'add') => {
 		const set = new Set(processingPlatformOwners);
 
-		if (action === 'add') set.add(value);
-		else set.delete(value);
+		if (action === 'add') {
+			set.add(value);
+		} else {
+			set.delete(value);
+		}
 
 		setProcessingOwners(Array.from(set));
 	};

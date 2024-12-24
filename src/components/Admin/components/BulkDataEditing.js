@@ -1,7 +1,8 @@
-import React, { useMemo } from 'react';
-import MRTTable from 'components/MRTTable';
-import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core';
+import React, { useMemo } from 'react';
+import { useHistory } from 'react-router-dom';
+
+import MRTTable from 'components/MRTTable';
 
 const useStyles = makeStyles(theme => ({
 	root: {

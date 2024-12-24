@@ -1,16 +1,17 @@
-import React, { useContext, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { NavigationContext } from '../NavigationContext';
-import { AppContext } from '../../../AppContext';
-import FilterStateName from './FilterStateName';
-import FilterCountyName from './FilterCountyName';
-import Grid from '@material-ui/core/Grid';
-import FilterGrid from './FilterGrid12345';
-
 import { useLazyQuery } from '@apollo/client';
-import { WELLSMINMAXLATLONG } from '../../../graphQL/useQueryWellsMinMaxLatLong';
-import { navController } from 'hookstate/navStateController';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useContext, useEffect } from 'react';
+
 import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { navController } from 'hookstate/navStateController';
+
+import { AppContext } from '../../../AppContext';
+import { NavigationContext } from '../NavigationContext';
+import FilterCountyName from './FilterCountyName';
+import FilterGrid from './FilterGrid12345';
+import FilterStateName from './FilterStateName';
+import { WELLSMINMAXLATLONG } from '../../../graphQL/useQueryWellsMinMaxLatLong';
 
 const useStyles = makeStyles(theme => ({
 	gridItem: {
@@ -40,20 +41,33 @@ export default function FilterFromGeo() {
 		) {
 			let filter = ['all'];
 
-			if (stateNav.stateName?.length !== 0) filter.push(['match', ['get', 'state'], stateNav.stateName, true, false]);
+			if (stateNav.stateName?.length !== 0) {
+				filter.push(['match', ['get', 'state'], stateNav.stateName, true, false]);
+			}
 
-			if (stateNav.countyName?.length !== 0)
+			if (stateNav.countyName?.length !== 0) {
 				filter.push(['match', ['get', 'county'], stateNav.countyName, true, false]);
+			}
 
-			if (stateNav.GrId1) filter.push(['match', ['get', 'grid1'], stateNav.GrId1, true, false]);
+			if (stateNav.GrId1) {
+				filter.push(['match', ['get', 'grid1'], stateNav.GrId1, true, false]);
+			}
 
-			if (stateNav.GrId2) filter.push(['match', ['get', 'grid2'], stateNav.GrId2, true, false]);
+			if (stateNav.GrId2) {
+				filter.push(['match', ['get', 'grid2'], stateNav.GrId2, true, false]);
+			}
 
-			if (stateNav.GrId3) filter.push(['match', ['get', 'grid3'], stateNav.GrId3, true, false]);
+			if (stateNav.GrId3) {
+				filter.push(['match', ['get', 'grid3'], stateNav.GrId3, true, false]);
+			}
 
-			if (stateNav.GrId4) filter.push(['match', ['get', 'grid4'], stateNav.GrId4, true, false]);
+			if (stateNav.GrId4) {
+				filter.push(['match', ['get', 'grid4'], stateNav.GrId4, true, false]);
+			}
 
-			if (stateNav.GrId5) filter.push(['match', ['get', 'grid5'], stateNav.GrId5, true, false]);
+			if (stateNav.GrId5) {
+				filter.push(['match', ['get', 'grid5'], stateNav.GrId5, true, false]);
+			}
 
 			setStateNav(stateNav => ({
 				...stateNav,
@@ -89,19 +103,33 @@ export default function FilterFromGeo() {
 		) {
 			let whereFields = {};
 
-			if (stateNav.stateName) whereFields.State = stateNav.stateName;
+			if (stateNav.stateName) {
+				whereFields.State = stateNav.stateName;
+			}
 
-			if (stateNav.countyName) whereFields.County = stateNav.countyName;
+			if (stateNav.countyName) {
+				whereFields.County = stateNav.countyName;
+			}
 
-			if (stateNav.GrId1) whereFields.GrId1 = stateNav.GrId1;
+			if (stateNav.GrId1) {
+				whereFields.GrId1 = stateNav.GrId1;
+			}
 
-			if (stateNav.GrId2) whereFields.GrId2 = stateNav.GrId2;
+			if (stateNav.GrId2) {
+				whereFields.GrId2 = stateNav.GrId2;
+			}
 
-			if (stateNav.GrId3) whereFields.GrId3 = stateNav.GrId3;
+			if (stateNav.GrId3) {
+				whereFields.GrId3 = stateNav.GrId3;
+			}
 
-			if (stateNav.GrId4) whereFields.GrId4 = stateNav.GrId4;
+			if (stateNav.GrId4) {
+				whereFields.GrId4 = stateNav.GrId4;
+			}
 
-			if (stateNav.GrId5) whereFields.GrId5 = stateNav.GrId5;
+			if (stateNav.GrId5) {
+				whereFields.GrId5 = stateNav.GrId5;
+			}
 
 			///////////Getting Geo Filters Bounds//////////
 			getWellsMinMaxLatLong({

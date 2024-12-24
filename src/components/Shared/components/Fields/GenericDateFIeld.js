@@ -1,9 +1,10 @@
-import React from 'react';
-import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
 import Clear from '@material-ui/icons/Clear';
 import moment from 'moment';
-import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
+
 import { parseDate } from 'utils/helper';
 
 const useStyles = makeStyles({

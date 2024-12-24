@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
 import ClearIcon from '@material-ui/icons/Clear';
-import { useLazyQuery, useMutation } from '@apollo/client';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import React, { useState, useEffect } from 'react';
 
-import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 import { UPSERT_CAMPAIGN_DESCRIPTORS } from 'graphQL/useMutationCampaign';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 import 'components/Shared/Tagger.css';
 
 const useStyles = makeStyles(theme => ({
@@ -138,7 +138,9 @@ export default function CampaignField(props) {
 	}, [getCampaignFilters]);
 
 	const showPlusAddIcon = () => {
-		if (tFActive || props.disabled || props.simpleChips) return false;
+		if (tFActive || props.disabled || props.simpleChips) {
+			return false;
+		}
 		return true;
 	};
 	const classes = useStyles({ ...props, showPlusAddIcon: showPlusAddIcon() });
@@ -165,12 +167,13 @@ export default function CampaignField(props) {
 		}
 
 		props.onChange(values, payload.descriptorObject);
-		if (payload.relatedObject)
+		if (payload.relatedObject) {
 			upsertCampaignDescriptors({
 				variables: {
 					descriptors: [payload],
 				},
 			});
+		}
 		setInputValue(values);
 	};
 

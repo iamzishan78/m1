@@ -1,12 +1,14 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
+import { useLazyQuery } from '@apollo/client';
 import { Typography, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { useLazyQuery } from '@apollo/client';
-import joinAddress from '../../valueformatters/join-address.js';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import pick from 'lodash/pick';
+import React, { useEffect, useState, useMemo } from 'react';
+
 import { PARCELOWNERSQUERY } from 'graphQL/useQueryParcelOwners.js';
+
+import joinAddress from '../../valueformatters/join-address.js';
 
 const useStyles = makeStyles({
 	inputRoot: {
@@ -30,10 +32,11 @@ const AutoCompleteParcelOwners = ({ onChange, value, parcel, onBlur, ...other })
 	});
 
 	useEffect(() => {
-		if (parcel?._id || parcel?.tractId)
+		if (parcel?._id || parcel?.tractId) {
 			getParcelOwners({
 				variables: { customLayerId: parcel._id || parcel.tractId, qtr: parcel.qtrQtr || {} },
 			});
+		}
 	}, [parcel]);
 
 	useEffect(() => {
@@ -41,14 +44,16 @@ const AutoCompleteParcelOwners = ({ onChange, value, parcel, onBlur, ...other })
 			const data = elasticData[Object.keys(elasticData)[0]];
 			setEsData(data);
 
-			if (other?.setTotalOwners) other?.setTotalOwners(data.length);
+			if (other?.setTotalOwners) {
+				other?.setTotalOwners(data.length);
+			}
 		}
 	}, [elasticData]);
 
 	const classes = useStyles();
 
 	const options = useMemo(() => {
-		if (esData?.length > 0)
+		if (esData?.length > 0) {
 			return esData.map(data => ({
 				_id: data.ownerEntity,
 				...data?.relatedObject?.entityDetail,
@@ -66,6 +71,7 @@ const AutoCompleteParcelOwners = ({ onChange, value, parcel, onBlur, ...other })
 					working_interest: data.operating_rights,
 				},
 			}));
+		}
 
 		return [];
 	}, [esData]);
@@ -88,8 +94,11 @@ const AutoCompleteParcelOwners = ({ onChange, value, parcel, onBlur, ...other })
 					return option.name;
 				}
 
-				if (option?.name) return option.name;
-				else return '';
+				if (option?.name) {
+					return option.name;
+				} else {
+					return '';
+				}
 			}}
 			getOptionSelected={(option, value) => {
 				return option?._id === value?._id;

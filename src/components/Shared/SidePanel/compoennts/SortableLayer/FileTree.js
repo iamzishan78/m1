@@ -1,19 +1,22 @@
-import React, { memo, useCallback, useEffect, useMemo } from 'react';
-import { Flipper } from 'react-flip-toolkit';
+import { useMutation } from '@apollo/client';
 import { Box, Paper } from '@material-ui/core';
 import update from 'immutability-helper';
-
+import React, { memo, useCallback, useEffect, useMemo } from 'react';
+import { Flipper } from 'react-flip-toolkit';
 import Sortly, { findDescendants, findParent } from 'react-sortly';
-import LayerItem from './LayerItem';
+
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+
 import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
-import { useMutation } from '@apollo/client';
-import { useStyles } from '../style';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
+
+import { useStyles } from '../style';
+import LayerItem from './LayerItem';
 
 const FileTree = ({ layerMap, panelItems }) => {
 	const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
@@ -73,7 +76,9 @@ const FileTree = ({ layerMap, panelItems }) => {
 				}
 			});
 			setItems(update(previousLayers, updateFn));
-		} else setItems(currentLayers);
+		} else {
+			setItems(currentLayers);
+		}
 	};
 
 	useEffect(() => {

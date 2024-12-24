@@ -1,13 +1,16 @@
-import React, { useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Button, DialogActions, IconButton, Box, Grid, Typography } from '@material-ui/core';
-import { CloseSharp } from '@material-ui/icons';
 import { useMutation } from '@apollo/client';
-import { RESET_OWNERS_CALCULATED_VALUES } from 'graphQL/useMutationResetOwnersCalculatedValues';
+import { Button, DialogActions, IconButton, Box, Grid, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { CloseSharp } from '@material-ui/icons';
+import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { hookStateApp } from 'hookstate';
-import { tableGlobalController } from 'hookstate/tableController';
+
+import { RESET_OWNERS_CALCULATED_VALUES } from 'graphQL/useMutationResetOwnersCalculatedValues';
+
 import { globalStateController } from 'hookstate/globalStateController';
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { hookStateApp } from 'hookstate';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -68,7 +71,9 @@ function DialogContent({ rows, setRows, onClose }) {
 	};
 
 	useEffect(() => {
-		if (!mutationData) return;
+		if (!mutationData) {
+			return;
+		}
 
 		tableGlobalController.refetch();
 		globalStateController.updateState({ universalLoader: false });

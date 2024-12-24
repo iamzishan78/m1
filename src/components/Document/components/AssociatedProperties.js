@@ -1,14 +1,15 @@
+import { useMutation } from '@apollo/client';
 import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 
 //Contexts
+import { ADD_PROPERTY_TO_FILE_DESCRIPTOR } from 'graphQL/useMutationAddPropertyToFileDescriptor';
+import { DELETE_PROPERTY_FROM_FILE_DESCRIPTOR } from 'graphQL/useMutationDeletePropertyFromFileDescriptor';
+
 import { AppContext } from 'AppContext';
 
 import DocumentAssociation from './DocumentAssociation';
 import { DocumentContext } from '../DocumentContext';
-import { useMutation } from '@apollo/client';
-import { ADD_PROPERTY_TO_FILE_DESCRIPTOR } from 'graphQL/useMutationAddPropertyToFileDescriptor';
-import { DELETE_PROPERTY_FROM_FILE_DESCRIPTOR } from 'graphQL/useMutationDeletePropertyFromFileDescriptor';
 
 export default function AssociatedProperties() {
 	// Initials
@@ -127,7 +128,7 @@ export default function AssociatedProperties() {
 				field: 'name.keyword',
 				order: 'asc',
 			}}
-			href={`/revenue/property/details/{ID}?tenant={TENANT}`}
+			href={'/revenue/property/details/{ID}?tenant={TENANT}'}
 		/>
 	);
 }

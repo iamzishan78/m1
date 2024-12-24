@@ -1,10 +1,12 @@
-import React, { useState, memo } from 'react';
-import { Breadcrumbs, Typography, IconButton, Menu, MenuItem } from '@material-ui/core';
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { useMutation } from '@apollo/client';
-import { UPSERT_MAP_VIEW } from 'graphQL/useMutationUpsertMapView';
+import { Breadcrumbs, Typography, IconButton, Menu, MenuItem } from '@material-ui/core';
 import { CircularProgress } from '@material-ui/core';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import React, { useState, memo } from 'react';
+
+import { UPSERT_MAP_VIEW } from 'graphQL/useMutationUpsertMapView';
+
 import { globalStateController } from 'hookstate/globalStateController';
 
 function MapViewComponent({ Icon, label, fetchMapViews, defaultView }) {

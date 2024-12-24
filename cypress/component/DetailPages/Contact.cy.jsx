@@ -1,9 +1,12 @@
 /* eslint-disable no-undef */
 import React from 'react';
+
 import ContactDetailCard from 'components/ContactDetailCard/ContactDetailCard';
-import { basic_timeouts } from '../../cypressUtils/data';
+
 import { UPDATE_META_DATA } from 'graphQL/useMutationUpdateMetaData.js';
+
 import { headers } from '../../cypressUtils/cypressHeaders';
+import { basic_timeouts } from '../../cypressUtils/data';
 import ldata from '../../fixtures/ldata.json';
 
 const addresses = [

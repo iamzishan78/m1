@@ -1,42 +1,42 @@
+import { useApolloClient } from '@apollo/client';
+import { useAuth0 } from '@auth0/auth0-react';
+import { ConnectedRouter } from 'connected-react-router';
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { Switch, Route } from 'react-router-dom';
-//components
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useSelector } from 'react-redux';
+import { Switch, Route } from 'react-router-dom';
+
+import AdminProvider from 'components/Admin/AdminProvider';
+import AnalyticsProvider from 'components/Analytics/AnalyticsProvider';
+import Land from 'components/Land';
+import RevenueProvider from 'components/Revenue/RevenueProvider';
+
+import { globalStateController } from 'hookstate/globalStateController';
+
+import Providers from 'Providers';
+
+import ActivitiesProvider from './components/Activities/ActivitiesProvider';
+import AlertsProvider from './components/Alerts/AlertsProvider';
 import Auth0Login from './components/Auth0Login';
 import AzureLogin from './components/AzureLogin';
-import SignUpCard from './components/AzureLogin/SignUpCard';
 import ForgotPassword from './components/AzureLogin/ForgotPassword';
-import NavigationProvider from './components/Navigation/NavigationProvider';
+import SignUpCard from './components/AzureLogin/SignUpCard';
+import BulkUpload from './components/BulkUpload/BulkUpload';
+import ContactDetailsProvider from './components/ContactDetailCard/ContactDetailsProvider';
+import ContactDetailedInfoProvider from './components/ContactDetailedInfo/ContactDetailedInfoProvider';
+import ContactsProvider from './components/Contacts/ContactsProvider';
+import DashboardProvider from './components/Dashboard/DashboardProvider';
+import DocumentProvider from './components/Document/DocumentProvider';
+import AgreementProvider from './components/Land/components/Agreements/AgreementProvider';
 import MapProvider from './components/Map/MapProvider';
+import NavigationProvider from './components/Navigation/NavigationProvider';
+import StudioProvider from './components/Studio/StudioProvider';
+import TitleOpinionProvider from './components/TitleOpinion/TitleOpinionProvider';
 import TrackProvider from './components/Track/TrackProvider';
 import TransactProvider from './components/Transact/TransactProvider';
-import DocumentProvider from './components/Document/DocumentProvider';
-import TitleOpinionProvider from './components/TitleOpinion/TitleOpinionProvider';
-import ContactsProvider from './components/Contacts/ContactsProvider';
-import ContactDetailsProvider from './components/ContactDetailCard/ContactDetailsProvider';
 import ContactDocumentsProvider from './components/ViewDocuments/ContactDocumentsProvider';
-import ContactDetailedInfoProvider from './components/ContactDetailedInfo/ContactDetailedInfoProvider';
-import AlertsProvider from './components/Alerts/AlertsProvider';
-import DashboardProvider from './components/Dashboard/DashboardProvider';
-import StudioProvider from './components/Studio/StudioProvider';
-import BulkUpload from './components/BulkUpload/BulkUpload';
-import ActivitiesProvider from './components/Activities/ActivitiesProvider';
-import RevenueProvider from 'components/Revenue/RevenueProvider';
-import Land from 'components/Land';
-import AgreementProvider from './components/Land/components/Agreements/AgreementProvider';
-// pick a date util library
-
-//graphQL - queries in ./graphQL example usage in ./components/Maps.js
-import { useApolloClient } from '@apollo/client';
-import { ConnectedRouter } from 'connected-react-router';
 import { history } from './store';
-import AnalyticsProvider from 'components/Analytics/AnalyticsProvider';
-import AdminProvider from 'components/Admin/AdminProvider';
-import { globalStateController } from 'hookstate/globalStateController';
-import Providers from 'Providers';
-import { useAuth0 } from '@auth0/auth0-react';
 
 const PrivateRoute = ({ component, ...options }) => {
 	const user = globalStateController.getValue('user');

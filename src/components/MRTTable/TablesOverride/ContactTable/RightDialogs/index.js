@@ -1,11 +1,13 @@
 import React, { memo } from 'react';
+
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
-import { tableGlobalController } from 'hookstate/tableController';
 import AddContactDialogContent from 'components/MRTTable/TablesOverride/ContactTable/RightDialogs/addContact';
 import MergeContactDrawer from 'components/Shared/M1nTable/components/SubComponents/MergeContactDrawer';
 import SendMailersDialogContent from 'components/Shared/M1nTable/components/SubComponents/SendMailersDialogContent';
-import { globalStateController } from 'hookstate/globalStateController';
 import MetaField from 'components/Table/helpers/MetaField';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { tableGlobalController } from 'hookstate/tableController';
 
 function ContactTableDialogs({ tableKey }) {
 	const { stateValues } = tableGlobalController.useState(['dialog']);

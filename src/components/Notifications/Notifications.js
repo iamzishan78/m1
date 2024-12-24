@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { hideInfoMessage, hideSuccessMessage, hideWarningMessage, hideErrorMessage } from '../../actions';
+
 import 'react-notifications/lib/notifications.css';
 import { makeStyles } from '@material-ui/core/styles';
 

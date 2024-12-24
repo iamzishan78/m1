@@ -1,59 +1,53 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useContext, useState, useEffect } from 'react';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import findIndex from 'lodash/findIndex';
+import React, { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-// context
-import { AppContext } from '../../../AppContext';
-import { MapGridContext } from '../../../components/MapGridCard/MapGridContext.js';
 
-import { Container } from '@material-ui/core';
-import Table from './components/Table';
-
-// QUERIES
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { WELLOWNERSQUERY } from '../../../graphQL/useQueryWellOwners';
-import { OWNERSQUERY } from '../../../graphQL/useQueryOwners';
-import { WELLSQUERY } from '../../../graphQL/useQueryWells';
-import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
-import { CONTACTSFILTEROPTIONS } from '../../../graphQL/useQueryContactsFilterOptions';
-import { UPDATEMAILERSTATUSES } from '../../../graphQL/useMutationUpdateMailerStatuses';
-import { TRACKSBYOBJECTTYPE } from '../../../graphQL/useQueryTracksByObjectType';
-import { TAGSAMPLES } from '../../../graphQL/useQueryTagSamples';
-import { COMMENTSCOUNTER } from '../../../graphQL/useQueryCommentsCounter';
-import { GET_ES_DOCUMENTS } from 'graphQL/useQueryESDocuments';
-import { REMOVE_CONTACTS } from '../../../graphQL/useMutationRemoveContact';
-import { UPDATETRANSACTION } from '../../../graphQL/useMutationUpdateTransaction';
-import { PARCELOWNERSQUERY } from '../../../graphQL/useQueryParcelOwners';
-import { UPDATEPARCELOWNER } from '../../../graphQL/useMutationUpdateParcelOwner';
-import { MELISSARECORDSCOUNTBYIDS } from '../../../graphQL/useQueryGetMelissaRecords';
-import { CONTACTDEALS } from '../../../graphQL/useQueryContactDeals';
-import { CONTACTPARCELINTERESTS } from '../../../graphQL/useQueryContactParcelInterests';
-import { IFARECONTACTS } from '../../../graphQL/useQueryIfOwnersAreContacts';
-import { PAGINATEDWELLINTERESTSQUERY } from '../../../graphQL/useQueryPaginatedWellInterests.js';
-import { SHAPEWELLS } from '../../../graphQL/useQueryPaginatedShapeWells';
-import { CONTACTWELLS } from '../../../graphQL/useQueryContactWells';
-import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
-import { GET_CHECK_PURCHASE_DATA } from 'graphQL/useQueryCheckPurchaseData';
+import Loader from 'components/Loaders';
+import { addTrailingZeros } from 'components/Shared/functions';
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
 
-import { deepEqualObjects, setStateIfDeepEqual } from '../functions';
+import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
+import { GET_CHECK_PURCHASE_DATA } from 'graphQL/useQueryCheckPurchaseData';
+import { GET_ES_DOCUMENTS } from 'graphQL/useQueryESDocuments';
 
-// Header Schemas
-import DocumentsHeadCells from '../constants/documents-header-schema';
-import OwnersPerWellHeadCells from '../constants/ownersperwell-header-schema.js';
-import OwnersPerParcelHeadCells from '../constants/ownersperparcel-header-schema.js';
-import DealsHeadCells from '../constants/deals-header-schema.js';
-import TransactDealsHeadCells from '../constants/transact-header-schema.js';
-import ActivitiesHeadCells from '../constants/activities-header-schema.js';
-import ParcelInterestsPerContactHeadCells from '../constants/parcel-interests-per-contact-header-schema.js';
-import WellInterests from '../constants/well-interests-schema.js';
-import ProductionDetailsHeaders from '../constants/production-detail-header-schema.js';
-
-// import value formatters
-import { addTrailingZeros } from 'components/Shared/functions';
-import Loader from 'components/Loaders';
 import { getContactsAddress, getAddressUrl } from 'utils/helper';
+
+import Table from './components/Table';
+import { AppContext } from '../../../AppContext';
+import { MapGridContext } from '../../../components/MapGridCard/MapGridContext.js';
+import { REMOVE_CONTACTS } from '../../../graphQL/useMutationRemoveContact';
+import { UPDATEMAILERSTATUSES } from '../../../graphQL/useMutationUpdateMailerStatuses';
+import { UPDATEPARCELOWNER } from '../../../graphQL/useMutationUpdateParcelOwner';
+import { UPDATETRANSACTION } from '../../../graphQL/useMutationUpdateTransaction';
+import { COMMENTSCOUNTER } from '../../../graphQL/useQueryCommentsCounter';
+import { CONTACTDEALS } from '../../../graphQL/useQueryContactDeals';
+import { CONTACTPARCELINTERESTS } from '../../../graphQL/useQueryContactParcelInterests';
+import { CONTACTSFILTEROPTIONS } from '../../../graphQL/useQueryContactsFilterOptions';
+import { CONTACTWELLS } from '../../../graphQL/useQueryContactWells';
+import { MELISSARECORDSCOUNTBYIDS } from '../../../graphQL/useQueryGetMelissaRecords';
+import { IFARECONTACTS } from '../../../graphQL/useQueryIfOwnersAreContacts';
+import { OWNERSQUERY } from '../../../graphQL/useQueryOwners';
+import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
+import { SHAPEWELLS } from '../../../graphQL/useQueryPaginatedShapeWells';
+import { PAGINATEDWELLINTERESTSQUERY } from '../../../graphQL/useQueryPaginatedWellInterests.js';
+import { PARCELOWNERSQUERY } from '../../../graphQL/useQueryParcelOwners';
+import { TAGSAMPLES } from '../../../graphQL/useQueryTagSamples';
+import { TRACKSBYOBJECTTYPE } from '../../../graphQL/useQueryTracksByObjectType';
+import { WELLOWNERSQUERY } from '../../../graphQL/useQueryWellOwners';
+import { WELLSQUERY } from '../../../graphQL/useQueryWells';
+import ActivitiesHeadCells from '../constants/activities-header-schema.js';
+import DealsHeadCells from '../constants/deals-header-schema.js';
+import DocumentsHeadCells from '../constants/documents-header-schema';
+import OwnersPerParcelHeadCells from '../constants/ownersperparcel-header-schema.js';
+import OwnersPerWellHeadCells from '../constants/ownersperwell-header-schema.js';
+import ParcelInterestsPerContactHeadCells from '../constants/parcel-interests-per-contact-header-schema.js';
+import ProductionDetailsHeaders from '../constants/production-detail-header-schema.js';
+import TransactDealsHeadCells from '../constants/transact-header-schema.js';
+import WellInterests from '../constants/well-interests-schema.js';
+import { deepEqualObjects, setStateIfDeepEqual } from '../functions';
 
 const useStyles = makeStyles(theme => ({
 	container: {
@@ -1145,9 +1139,14 @@ function M1nTable(props) {
 					res => {
 						if (res.data && res.data.removeContact) {
 							const { success, message } = res.data.removeContact;
-							if (success) Loader.successToast('contact-deletion', message);
-							else Loader.errorToast('contact-deletion', message);
-						} else Loader.errorToast('contact-deletion', 'Failed to convert to contact');
+							if (success) {
+								Loader.successToast('contact-deletion', message);
+							} else {
+								Loader.errorToast('contact-deletion', message);
+							}
+						} else {
+							Loader.errorToast('contact-deletion', 'Failed to convert to contact');
+						}
 					},
 					err => {
 						Loader.errorToast('contact-deletion', 'Failed to convert to contact');
@@ -1302,8 +1301,9 @@ function M1nTable(props) {
 
 				Object.keys(o).forEach(key => {
 					if (interestKeys.includes(key)) {
-						if (typeof parcelOwner[key] === 'number') parcelOwner[key] = addTrailingZeros(parcelOwner[key]);
-						else if (parcelOwner[key]?.['$numberDecimal']) {
+						if (typeof parcelOwner[key] === 'number') {
+							parcelOwner[key] = addTrailingZeros(parcelOwner[key]);
+						} else if (parcelOwner[key]?.['$numberDecimal']) {
 							parcelOwner[key] = addTrailingZeros(Number(parcelOwner[key]['$numberDecimal']));
 						}
 					}
@@ -1649,12 +1649,16 @@ function M1nTable(props) {
 					let lanes = new Array(dataDeals?.transactionData?.allData?.lanes)[0];
 					lanes = lanes.map(lane => {
 						let cardsNew = [];
-						if (lane.cards && lane.cards.length > 0) cardsNew = [...lane.cards];
+						if (lane.cards && lane.cards.length > 0) {
+							cardsNew = [...lane.cards];
+						}
 						cardsNew = cardsNew.map(card => {
 							const foundIndex = idsToDelete.findIndex(id => id === card.id);
 							if (foundIndex > -1) {
 								return { ...card, isDeleted: true };
-							} else return card;
+							} else {
+								return card;
+							}
 						});
 						return { ...lane, cards: cardsNew };
 					});
@@ -1990,7 +1994,9 @@ function M1nTable(props) {
 					well.detailCard = well.wellId;
 
 					well.coordinates = {};
-					if (well.longitude && well.latitude) well.coordinates.center = [well.longitude, well.latitude];
+					if (well.longitude && well.latitude) {
+						well.coordinates.center = [well.longitude, well.latitude];
+					}
 
 					for (let i = 0; i < dataTracks.length; i++) {
 						if (well.wellId === dataTracks[i]) {

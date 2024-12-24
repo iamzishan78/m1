@@ -1,15 +1,18 @@
-import React, { useState, useContext, useMemo } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { AppContext } from 'AppContext';
-import { get } from 'lodash';
+import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
+import { makeStyles } from '@material-ui/core/styles';
+import { get } from 'lodash';
+import React, { useState, useContext, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
-import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
-import { contactDetailInitialData } from './data';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import RelatedUnitInterestTable from 'components/Common/RelatedTables/Units/unitInterests';
 import RelatedTractInterestTable from 'components/Common/RelatedTables/Tracts/tractInterests';
+import RelatedUnitInterestTable from 'components/Common/RelatedTables/Units/unitInterests';
+
+import { mapControlsController } from 'hookstate/mapControlsController';
+
+import { AppContext } from 'AppContext';
+
+import { contactDetailInitialData } from './data';
 
 const useStyles = makeStyles(theme => ({
 	card: {

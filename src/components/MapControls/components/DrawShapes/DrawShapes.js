@@ -1,22 +1,23 @@
-import React, { useEffect, useRef } from 'react';
 import { useMutation } from '@apollo/client';
-import { get } from 'lodash';
-
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { makeStyles } from '@material-ui/core';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import CloseIcon from '@material-ui/icons/Close';
+import { get } from 'lodash';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
-import { globalStateController } from 'hookstate/globalStateController';
-import { popupController } from 'hookstate/popupStateController';
+
 import { drawController } from 'hookstate/drawStateController';
-import ShapeAOIPopup from '../popup/ShapeAOIPopup';
+import { globalStateController } from 'hookstate/globalStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+import { popupController } from 'hookstate/popupStateController';
+
 import DrawShapePopup from '../popup/DrawShapesPopup';
 import ShapeActionsPopup from '../popup/ShapeActionsPopup';
-import { mapControlsController } from 'hookstate/mapControlsController';
+import ShapeAOIPopup from '../popup/ShapeAOIPopup';
 
 const useStyles = makeStyles(theme => ({
 	mapOverlay: {
@@ -276,7 +277,9 @@ export default function DrawShapes() {
 	useEffect(() => {
 		const customLayer = get(customLayerInsertedData, 'upsertCustomLayer.customLayer');
 
-		if (!customLayer) return;
+		if (!customLayer) {
+			return;
+		}
 
 		drawController.updateState({
 			selectedAoi: customLayer,
@@ -287,7 +290,9 @@ export default function DrawShapes() {
 		const { showShapeActionsPopup } = drawStateValues;
 		const { selectedUserDefinedLayer, selectedParcel, selectedShape } = popupState.stateValues;
 
-		if (!selectedUserDefinedLayer) return;
+		if (!selectedUserDefinedLayer) {
+			return;
+		}
 
 		const isAOI = selectedUserDefinedLayer?.properties?.sdType === 'interest';
 
@@ -296,13 +301,19 @@ export default function DrawShapes() {
 			selectedAoi: isAOI ? selectedUserDefinedLayer : null,
 		});
 
-		if (isAOI && showShapeActionsPopup && !selectedParcel && !selectedShape) drawController.setShowDataCard(true);
+		if (isAOI && showShapeActionsPopup && !selectedParcel && !selectedShape) {
+			drawController.setShowDataCard(true);
+		}
 	}, [popupState.selectedUserDefinedLayer]);
 
 	useEffect(() => {
-		if (!globalStateValues.mapReady) return;
+		if (!globalStateValues.mapReady) {
+			return;
+		}
 
-		if (eventsConfiguredRef.current) return;
+		if (eventsConfiguredRef.current) {
+			return;
+		}
 
 		/* ------------------------------ Run Only Once ----------------------------- */
 
@@ -333,9 +344,11 @@ export default function DrawShapes() {
 		!currentFeature.id?.includes('draw_rectangle') &&
 		!currentFeature.id?.includes('edit_polygon');
 
-	if (!globalStateValues.mapReady) return null;
+	if (!globalStateValues.mapReady) {
+		return null;
+	}
 
-	if (showDrawShapePopup)
+	if (showDrawShapePopup) {
 		return (
 			<ClickAwayListener onClickAway={handleClose}>
 				<div className={classes.mapOverlay}>
@@ -355,9 +368,11 @@ export default function DrawShapes() {
 				</div>
 			</ClickAwayListener>
 		);
+	}
 
-	if (showAddAndEditShapePopup || drawStateValues.showAddShapePopup)
+	if (showAddAndEditShapePopup || drawStateValues.showAddShapePopup) {
 		return <AddShapePopup onlyAddShape={!!drawStateValues.showAddShapePopup} upsertCustomLayer={upsertCustomLayer} />;
+	}
 
 	return null;
 

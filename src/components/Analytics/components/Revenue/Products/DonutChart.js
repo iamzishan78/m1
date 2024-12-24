@@ -1,8 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import * as am4core from '@amcharts/amcharts4/core';
 import * as am4charts from '@amcharts/amcharts4/charts';
-
+import * as am4core from '@amcharts/amcharts4/core';
 import {
 	Button,
 	ButtonGroup,
@@ -14,6 +11,9 @@ import {
 	TableCell,
 	TableBody,
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useState, useEffect } from 'react';
+
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
 const useStyles = makeStyles(() => ({
@@ -76,7 +76,9 @@ const DonutChart = ({ productDetails, getUnit }) => {
 	}, [productDetails]);
 
 	useEffect(() => {
-		if (!data?.revenue?.length) return;
+		if (!data?.revenue?.length) {
+			return;
+		}
 		var chart = am4core.create('product-donut', am4charts.PieChart);
 
 		// setting data
@@ -133,7 +135,9 @@ const DonutChart = ({ productDetails, getUnit }) => {
 	}, [data, mode]);
 
 	useEffect(() => {
-		if (!data?.production?.items) return;
+		if (!data?.production?.items) {
+			return;
+		}
 		var chart = am4core.create('bar-chart', am4charts.XYChart);
 
 		// Add data

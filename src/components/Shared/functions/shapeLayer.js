@@ -1,8 +1,10 @@
 import { area, convertArea, length } from '@turf/turf';
+import * as turf from '@turf/turf';
+
+import { calculateShapeCenter } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+
 import { drawController } from 'hookstate/drawStateController';
 import { popupController } from 'hookstate/popupStateController';
-import * as turf from '@turf/turf';
-import { calculateShapeCenter } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
 export const showIfUserDefinedLayer = () => {
 	const currentFeature = drawController.getValue('currentFeature');

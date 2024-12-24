@@ -1,5 +1,6 @@
-import { CommonSchema } from './common_schema';
 import { Summarize } from '@mui/icons-material';
+
+import { CommonSchema } from './common_schema';
 
 const esIndex = 'shapetracts_flat';
 

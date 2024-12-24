@@ -1,16 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useContext } from 'react';
-import { Grid, Card, CardContent } from '@material-ui/core';
 import { useLazyQuery } from '@apollo/client';
+import { Grid, Card, CardContent } from '@material-ui/core';
 import get from 'lodash/get';
+import React, { useState, useEffect, useContext } from 'react';
+import { useSelector } from 'react-redux';
+
+import DonutChart from 'components/Shared/Charts/DonutChart';
+import StackedBarChart from 'components/Shared/Charts/StackedBarChart';
+
+import { GET_ACTIVITY_ANALYTICS } from 'graphQL/useQueryActivityAnalytics';
+import { GET_CONTACT_ANALYTICS } from 'graphQL/useQueryContactDetail';
+
 import { copy, getFilters } from 'utils/helper';
 
 import { AppContext } from 'AppContext';
-import { GET_ACTIVITY_ANALYTICS } from 'graphQL/useQueryActivityAnalytics';
-import { GET_CONTACT_ANALYTICS } from 'graphQL/useQueryContactDetail';
-import DonutChart from 'components/Shared/Charts/DonutChart';
-import StackedBarChart from 'components/Shared/Charts/StackedBarChart';
-import { useSelector } from 'react-redux';
+
 import { getActivityFilters } from './ActivitiesDashboard';
 
 const defaultSeriesActivities = [

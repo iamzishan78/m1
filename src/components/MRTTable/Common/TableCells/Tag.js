@@ -1,7 +1,8 @@
-import React, { memo } from 'react';
 import Badge from '@material-ui/core/Badge';
-import Tooltip from '@material-ui/core/Tooltip';
 import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import React, { memo } from 'react';
+
 import { tableGlobalController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(() => ({

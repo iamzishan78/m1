@@ -1,13 +1,3 @@
-import React, { useState, useContext, useEffect, Fragment } from 'react';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
-import { AppContext } from '../../../AppContext';
-import { Grid, Typography, Divider, Button } from '@material-ui/core';
-import { Close as CloseButton } from '@material-ui/icons';
-import Checkbox from '@material-ui/core/Checkbox';
-import { Collapse } from '@material-ui/core';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import { deepEqual } from '../../Shared/functions';
@@ -17,12 +7,26 @@ import { truncate } from 'components/Shared/functions';
 import { snapGridSideBarData } from 'components/MapGridCard/components/data';
 import { history } from 'store';
 import { useApolloClient, useLazyQuery } from '@apollo/client';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { Collapse } from '@material-ui/core';
+import { Grid, Typography, Divider, Button } from '@material-ui/core';
+import Checkbox from '@material-ui/core/Checkbox';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
+import { Close as CloseButton } from '@material-ui/icons';
+import React, { useState, useContext, useEffect, Fragment } from 'react';
+
 import M1neral_headers, { getCustomFieldHeaders } from 'components/BulkUpload/jobHeaders';
+import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
+
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+
 import { jobController } from 'hookstate/jobStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
-import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
-import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+
+import { AppContext } from '../../../AppContext';
 
 const useStyles = makeStyles(theme => ({
 	list: {
@@ -127,7 +131,9 @@ export default function TransferDataManager(props) {
 		let columns = [];
 		sourceData.data.getESSimpleSearch.hits.forEach(hit => {
 			const currentColumns = Object.keys(hit.properties);
-			if (currentColumns.length > columns.length) columns = currentColumns;
+			if (currentColumns.length > columns.length) {
+				columns = currentColumns;
+			}
 		});
 		selectedSourceCategory.columns = columns;
 
@@ -165,7 +171,7 @@ export default function TransferDataManager(props) {
 			transferData: { selectedSourceCategory, selectedPlatformCategory },
 		});
 
-		history.push(`/bulkupload/shape_to_m1_layer`);
+		history.push('/bulkupload/shape_to_m1_layer');
 	};
 
 	const dataset = mapControlsStateValues.selectedDataset;

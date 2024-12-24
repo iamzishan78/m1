@@ -1,45 +1,44 @@
+import { useLazyQuery } from '@apollo/client';
+import { Box, IconButton } from '@material-ui/core';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
+import Switch from '@material-ui/core/Switch';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import moment from 'moment';
 import React, { useContext, useState, useEffect } from 'react';
 
 // contexts
 import { WellCardContext } from './WellCardContext';
 
 // styling
-import { makeStyles } from '@material-ui/core/styles';
-import { withStyles } from '@material-ui/core/styles';
 
 //material-ui components
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
 
 //custom components
+import { PRODUCTIONDETAILQUERY } from '../../graphQL/useQueryProductionDetail';
 import Taps from '../Shared/Taps';
 import TableSummary from './components/TableSummary';
-
 import QuadProvider from '../Quad/QuadProvider';
-import M1nTable from '../Shared/M1nTable/M1nTable';
-import WellProdChartProvider from '../WellProdChart/WellProdChartProvider';
-import WellStatusCard from '../Shared/WellStatusCard';
 import CompletionDateCard from '../Shared/CompletionDateCard';
 import FirstProdDateCard from '../Shared/FirstProdDateCard';
+import M1nTable from '../Shared/M1nTable/M1nTable';
+import WellStatusCard from '../Shared/WellStatusCard';
+import WellProdChartProvider from '../WellProdChart/WellProdChartProvider';
 import OwnerNumCard from '../Shared/OwnerNumCard';
 import PermitDateCard from '../Shared/PermitDateCard';
 import ProfileCard from '../Shared/ProfileCard';
 import WellTypeCard from '../Shared/WellTypeCard';
 import SpudDateCard from '../Shared/SpudDateCard';
 import PlugDateCard from '../Shared/PlugDateCard';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
 
 import WellDetailsDocumentTable from 'components/Table/Documents/WellDetailsDocumentTable';
 
-import { useLazyQuery } from '@apollo/client';
-import { PRODUCTIONDETAILQUERY } from '../../graphQL/useQueryProductionDetail';
-import moment from 'moment';
-import { Box, IconButton } from '@material-ui/core';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+
 import { popupController } from 'hookstate/popupStateController';
 
 const useStyles = makeStyles(theme => ({

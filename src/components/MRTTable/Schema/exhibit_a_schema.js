@@ -1,9 +1,11 @@
-import { Grid } from '@mui/material';
-import { CommonSchema } from './common_schema';
-import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
-import { AgreementTypes } from './agreement_schema';
-import { formatDate } from 'components/Shared/functions';
 import { Summarize } from '@mui/icons-material';
+import { Grid } from '@mui/material';
+
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import { formatDate } from 'components/Shared/functions';
+
+import { AgreementTypes } from './agreement_schema';
+import { CommonSchema } from './common_schema';
 import ExhibitAToolbar from '../TablesOverride/ExhibitATable/ExhibitAToolbar';
 
 const esIndex = 'shapetracts_flat';
@@ -82,8 +84,11 @@ const ExhibitAMeta = {
 				value = value?.toString();
 				const splitNumber = value?.split('_');
 				let link = '';
-				if (window.location.pathname.includes('/land/')) link = `/land/agreement/details/${row?.original?.shape?._id}`;
-				else link = `/map/${layer}s/${row?.original?.shape?._id}`;
+				if (window.location.pathname.includes('/land/')) {
+					link = `/land/agreement/details/${row?.original?.shape?._id}`;
+				} else {
+					link = `/map/${layer}s/${row?.original?.shape?._id}`;
+				}
 				return (
 					<div
 						style={{

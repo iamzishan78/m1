@@ -1,20 +1,23 @@
-import React, { memo, useCallback, useContext, useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import Checkbox from '@material-ui/core/Checkbox';
-import AddIcon from '@material-ui/icons/Add';
-import EditIcon from '@material-ui/icons/Edit';
-import { AppContext } from 'AppContext';
-
 import { useMutation } from '@apollo/client';
-import { UPDATE_META_DATA } from 'graphQL/useMutationUpdateMetaData';
+import Checkbox from '@material-ui/core/Checkbox';
+import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+import { makeStyles } from '@material-ui/core/styles';
+import AddIcon from '@material-ui/icons/Add';
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
-import { SortableContainer, SortableElement, sortableHandle } from 'react-sortable-hoc';
-import { findInFunction } from 'utils/helper';
+import EditIcon from '@material-ui/icons/Edit';
 import { arrayMoveImmutable } from 'array-move';
+import React, { memo, useCallback, useContext, useEffect, useState } from 'react';
+import { SortableContainer, SortableElement, sortableHandle } from 'react-sortable-hoc';
+
 import { setStateIfDeepEqual } from 'components/Shared/functions';
+
+import { UPDATE_META_DATA } from 'graphQL/useMutationUpdateMetaData';
+
+import { findInFunction } from 'utils/helper';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	container: {

@@ -1,18 +1,20 @@
-import React, { Fragment, useState, useContext, useMemo, useCallback } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { AppContext } from '../../AppContext';
+import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { Fragment, useState, useContext, useMemo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 
-import { platformDataInitialData, platformDataWellsInitialData, snapGridSideBarData } from './components/data';
-import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
+import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
+import MRTTable from 'components/MRTTable';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import MRTTable from 'components/MRTTable';
+
+import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 import { tableGlobalController } from 'hookstate/tableController';
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
+
+import { AppContext } from '../../AppContext';
+import { platformDataInitialData, platformDataWellsInitialData, snapGridSideBarData } from './components/data';
 
 const useStyles = makeStyles(theme => {
 	return {
@@ -130,18 +132,24 @@ const useStyles = makeStyles(theme => {
 									: 'calc(58.75vh - 183px)',
 						'@media (max-height:930px)': {
 							maxHeight: ({ dockMenu }) => {
-								if (dockMenu === 'bottom' || dockMenu === 'top') return 'calc(50vh - 590px)';
-								else if (dockMenu === 'left' || dockMenu === 'right') return 'calc(100vh - 204px)';
-								else if (dockMenu === 'full') return 'calc(100vh - 153px)';
+								if (dockMenu === 'bottom' || dockMenu === 'top') {
+									return 'calc(50vh - 590px)';
+								} else if (dockMenu === 'left' || dockMenu === 'right') {
+									return 'calc(100vh - 204px)';
+								} else if (dockMenu === 'full') {
+									return 'calc(100vh - 153px)';
+								}
 							},
 						},
 						'@media (max-height:1600px)': {
 							maxHeight: ({ dockMenu, userGridViewFilters }) => {
-								if (dockMenu === 'bottom' || dockMenu === 'top') return 'calc(50vh - 135px)';
-								else if (dockMenu === 'left' || dockMenu === 'right')
+								if (dockMenu === 'bottom' || dockMenu === 'top') {
+									return 'calc(50vh - 135px)';
+								} else if (dockMenu === 'left' || dockMenu === 'right') {
 									return userGridViewFilters?.length > 0 ? 'calc(100vh - 235px)' : 'calc(100vh - 200px)';
-								else if (dockMenu === 'full')
+								} else if (dockMenu === 'full') {
 									return userGridViewFilters?.length ? 'calc(100vh - 275px)' : 'calc(100vh - 183px)';
+								}
 							},
 						},
 					},

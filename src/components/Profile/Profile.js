@@ -1,17 +1,21 @@
-import React, { useContext, useRef, useEffect } from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import { Tabs, Tab } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { NavigationContext } from '../Navigation/NavigationContext';
-import { ProfileContext } from './ProfileContext';
-import ImageModal from './ImageModal';
-import ProfileContent from './ProfileContent';
-import ProfileTitle from './ProfileTitle';
-import NotificationSettings from './NotificationSettings';
-import { globalStateController } from 'hookstate/globalStateController';
 import { useMutation } from '@apollo/client';
-import { UPSERTPROFILE } from 'graphQL/useMutationUpsertProfile';
+import { Tabs, Tab } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useContext, useRef, useEffect } from 'react';
+
 import { deepEqual } from 'components/Shared/functions';
+
+import { UPSERTPROFILE } from 'graphQL/useMutationUpsertProfile';
+
+import { globalStateController } from 'hookstate/globalStateController';
+
+import ImageModal from './ImageModal';
+import NotificationSettings from './NotificationSettings';
+import ProfileContent from './ProfileContent';
+import { ProfileContext } from './ProfileContext';
+import ProfileTitle from './ProfileTitle';
+import { NavigationContext } from '../Navigation/NavigationContext';
 
 const useStyles = makeStyles(theme => ({
 	paper: {

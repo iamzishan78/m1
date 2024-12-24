@@ -1,13 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Autocomplete, TextField } from '@mui/material';
 import { useLazyQuery } from '@apollo/client';
+import { Autocomplete, TextField } from '@mui/material';
 import _, { debounce } from 'lodash';
+import React, { useEffect, useRef, useState } from 'react';
 
-import { tableController } from 'hookstate/tableController';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
 import vf_currency, { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
+
+import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+
+import { tableController } from 'hookstate/tableController';
 
 // format value to show filter value & option with $ sign as prefix
 const formatValue = (value, field) => {
@@ -17,7 +19,9 @@ const formatValue = (value, field) => {
 	) {
 		value = vf_currency(value);
 	}
-	if (Array.isArray(value)) value = value.map(value => value || value === 0);
+	if (Array.isArray(value)) {
+		value = value.map(value => value || value === 0);
+	}
 	return value;
 };
 
@@ -40,7 +44,9 @@ function ESAutoCompleteFilter({
 	textFieldProps = {},
 	_value,
 }) {
-	if (isComposite) field = field.split(',');
+	if (isComposite) {
+		field = field.split(',');
+	}
 	const searchMode = type === 'date' ? 'FE' : 'BE';
 	const searchMapping = {
 		FE: {
@@ -64,7 +70,9 @@ function ESAutoCompleteFilter({
 	const filtersRef = useRef(null);
 
 	const getFiltersAction = debounce(({ afterKey } = {}) => {
-		if (filtersData && multiple && filterValue?.length !== 0) return;
+		if (filtersData && multiple && filterValue?.length !== 0) {
+			return;
+		}
 
 		const { searchFields, filters, defaultFilters, advanceSearch, sorting, defaultSort, TableSchema } = tableController(
 			tableKey
@@ -81,7 +89,9 @@ function ESAutoCompleteFilter({
 		let sort = sorting[0]
 			? {
 					field: (() => {
-						if (sorting[0].field) return sorting[0].field;
+						if (sorting[0].field) {
+							return sorting[0].field;
+						}
 
 						const sortingId = sorting[0].id;
 						const matchingSchema = TableSchema.find(val => (val.accessorKey || val.id) === sortingId);
@@ -105,7 +115,9 @@ function ESAutoCompleteFilter({
 		};
 		if (!_.isEqual(currentFilterRef, filtersRef.current)) {
 			let search = '';
-			if (searchText.current) search = type === 'number' ? searchText.current : `*${searchText.current}*`;
+			if (searchText.current) {
+				search = type === 'number' ? searchText.current : `*${searchText.current}*`;
+			}
 			filtersRef.current = currentFilterRef;
 			getFilters({
 				variables: {
@@ -139,14 +151,20 @@ function ESAutoCompleteFilter({
 	useEffect(() => {
 		const hits = filtersData?.getESSimpleFilter?.hits;
 
-		if (!hits) return;
+		if (!hits) {
+			return;
+		}
 
 		let options = hits.map(({ key }) => {
 			let label = key;
 
-			if (Array.isArray(key)) label = key.join(' ');
+			if (Array.isArray(key)) {
+				label = key.join(' ');
+			}
 
-			if (typeof label === 'object') label = label.name || '';
+			if (typeof label === 'object') {
+				label = label.name || '';
+			}
 
 			return {
 				label,
@@ -195,7 +213,9 @@ function ESAutoCompleteFilter({
 		if (appendOptions.current) {
 			appendOptions.current = false;
 			setOptions(prevOptions => [...prevOptions, ...options]);
-		} else setStateIfDeepEqual(setOptions, filterSelectOptions || options);
+		} else {
+			setStateIfDeepEqual(setOptions, filterSelectOptions || options);
+		}
 	}, [filtersData, filterValue, type, filterSelectOptions, field]);
 
 	const { filters } = tableController(tableKey).getValues(['filters']);
@@ -211,7 +231,9 @@ function ESAutoCompleteFilter({
 
 	if (!filterValue || filterValue?.length === 0) {
 		const filter = filters.find(filter => filter?.field.includes(field));
-		if (filter) filterValue = filter?.value;
+		if (filter) {
+			filterValue = filter?.value;
+		}
 	}
 
 	// Handle Filter Value is changed from Single Select to Multi Select and vice versa
@@ -284,7 +306,9 @@ function ESAutoCompleteFilter({
 			id={`${id}-filter-autocomplete`}
 			options={requiredOptions}
 			getOptionLabel={op => {
-				if (typeof op !== 'object') return op;
+				if (typeof op !== 'object') {
+					return op;
+				}
 
 				return op?.label ?? op?.name ?? '';
 			}}

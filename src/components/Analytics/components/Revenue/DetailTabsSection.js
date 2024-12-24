@@ -1,12 +1,11 @@
+import { Tabs, Tab } from '@material-ui/core';
+import { makeStyles, withStyles } from '@material-ui/styles';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 
-import { makeStyles, withStyles } from '@material-ui/styles';
-import { Tabs, Tab } from '@material-ui/core';
-
 // Components
-import RevenueSection from './RevenueSection';
 import AdjustmentSection from './AdjustmentSection';
 import ProductsSection from './Products';
+import RevenueSection from './RevenueSection';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -141,12 +140,16 @@ export default function DetailTabsSection({ monthsInterval, portfolioSummary, ..
 
 		// Observe all sections
 		sectionsRef.current.forEach(section => {
-			if (section) observer.current.observe(section);
+			if (section) {
+				observer.current.observe(section);
+			}
 		});
 
 		// Cleanup observer on unmount
 		return () => {
-			if (observer.current) observer.current.disconnect();
+			if (observer.current) {
+				observer.current.disconnect();
+			}
 		};
 	}, [rest.loading]);
 

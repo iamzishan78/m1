@@ -1,8 +1,10 @@
-import React from 'react';
-import { AlertsContextProvider } from './AlertsContext';
 import { makeStyles } from '@material-ui/core/styles';
-import Alerts from './Alerts';
 import { createTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import React from 'react';
+
+import Alerts from './Alerts';
+import { AlertsContextProvider } from './AlertsContext';
+
 const useStyles = makeStyles(theme => ({
 	alertsWrapper: {
 		width: '100%',

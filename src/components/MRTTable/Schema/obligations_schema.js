@@ -1,9 +1,12 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CheckIcon from '@material-ui/icons/LocalAtm';
+
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
-import { getTruncateText } from '../utils/helper';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
+
 import { slidoutState } from 'hookstate/initialStates';
+import { slidoutStateController } from 'hookstate/slidoutStateController';
+
+import { getTruncateText } from '../utils/helper';
 
 const esIndex = 'activities_flat';
 

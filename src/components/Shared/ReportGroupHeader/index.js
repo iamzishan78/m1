@@ -1,14 +1,18 @@
-import React, { useState, useContext, useEffect, useCallback } from 'react';
-import { AppContext } from 'AppContext';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { Grid, Button, Select, MenuItem, TextField, Dialog, FormControl, InputLabel } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useState, useContext, useEffect, useCallback } from 'react';
+
 // actions
-import { ADD_GRID_VIEW } from 'graphQL/useMutationAddGridView';
-import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
-import { UPDATE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
 import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+
+import { ADD_GRID_VIEW } from 'graphQL/useMutationAddGridView';
+import { UPDATE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
+import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
+
+import { AppContext } from 'AppContext';
+
 import { copy } from '../functions';
 
 const useStyles = makeStyles(theme => ({
@@ -269,7 +273,7 @@ export default function ReportGroupHeader({
 					maxWidth="sm"
 				>
 					<DeleteConfirmationDialogContent
-						header={`Delete Report Group`}
+						header={'Delete Report Group'}
 						onClose={setDeleteDialogOpen}
 						deleteFunc={() => handleAddUpdateDelete({ type: 'delete', name: reportingGroup })}
 						m1nSelectedRowsIds={null}

@@ -1,8 +1,9 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
+import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
+
 import AddPopover from './AddPopover';
 import { TitleOpinionContext } from '../TitleOpinionContext';
 

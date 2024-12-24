@@ -1,8 +1,9 @@
-import TractRelatedUnitsToolbar from 'components/MRTTable/TablesOverride/TractRelatedUnitsTable/TractRelatedUnitsToolbar';
-import { CommonSchema } from './common_schema';
-import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import TractRelatedUnitsToolbar from 'components/MRTTable/TablesOverride/TractRelatedUnitsTable/TractRelatedUnitsToolbar';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+
+import { CommonSchema } from './common_schema';
 
 const esIndex = 'shapetracts_flat';
 

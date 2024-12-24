@@ -1,23 +1,25 @@
-import React, { useState } from 'react';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
+import { useMutation } from '@apollo/client';
+import { Tooltip, FormControlLabel, Switch } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Checkbox from '@material-ui/core/Checkbox';
+import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import Checkbox from '@material-ui/core/Checkbox';
-import DragIndicator from '@material-ui/icons/DragIndicator';
-
-import ListItem from '@material-ui/core/ListItem';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined';
+import DragIndicator from '@material-ui/icons/DragIndicator';
+import React, { useState } from 'react';
+
+import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
+
+import { layerController } from 'hookstate/layerStateController.js';
+import { mapControlsController } from 'hookstate/mapControlsController.js';
+
+import { deepEqualObjects } from '../../../functions';
+import ColorControl from '../../../svgIcons/color-control.js';
 import ClickIcon from '../../../svgIcons/cursor-click.js';
 import UserDefined from '../../../svgIcons/user-defined.js';
-import ColorControl from '../../../svgIcons/color-control.js';
-import { Tooltip, FormControlLabel, Switch } from '@material-ui/core';
-import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
-import { useMutation } from '@apollo/client';
-import Box from '@material-ui/core/Box';
-import { deepEqualObjects } from '../../../functions';
-import { mapControlsController } from 'hookstate/mapControlsController.js';
 import { ifLayerHaveData } from '../common.js';
-import { layerController } from 'hookstate/layerStateController.js';
 
 const useStyles = makeStyles(theme => ({
 	list: {
@@ -97,7 +99,9 @@ function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateA
 		if (type === 'marketplace') {
 			return layer.layerName;
 		}
-		if (type !== 'layer') return layer.name;
+		if (type !== 'layer') {
+			return layer.name;
+		}
 
 		if (layer.layerCategory == 'M1 Layer') {
 			return layer.layerName;

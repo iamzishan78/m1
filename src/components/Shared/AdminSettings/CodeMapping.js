@@ -1,20 +1,20 @@
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { Grid, FormControl, TextField, Switch, FormControlLabel } from '@material-ui/core';
+import EditIcon from '@material-ui/icons/Edit';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { makeStyles } from '@material-ui/styles';
 import React, { useState, useContext, useEffect } from 'react';
 
-import { useLazyQuery, useMutation } from '@apollo/client';
-import EditIcon from '@material-ui/icons/Edit';
-import { makeStyles } from '@material-ui/styles';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { Grid, FormControl, TextField, Switch, FormControlLabel } from '@material-ui/core';
-
-import LongIcon from 'components/Shared/svgIcons/LongIcon';
-
-import { AppContext } from 'AppContext';
-import MetaField from 'components/Table/helpers/MetaField';
-import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
-import { UPDATE_META_DATA } from 'graphQL/useMutationUpdateMetaData';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 import CustomFieldSelect from 'components/Shared/M1nTable/components/SubComponents/CustomFieldSelect';
 import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
+import LongIcon from 'components/Shared/svgIcons/LongIcon';
+import MetaField from 'components/Table/helpers/MetaField';
+
+import { UPDATE_META_DATA } from 'graphQL/useMutationUpdateMetaData';
+import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	actionBar: ({ isBackground }) => ({
@@ -195,7 +195,9 @@ const CodeMapping = ({ settingsFor }) => {
 		}
 		setMetaData(metaData =>
 			metaData.map(meta => {
-				if (meta._id !== selectedMeta._id) return meta;
+				if (meta._id !== selectedMeta._id) {
+					return meta;
+				}
 
 				return { ...meta, mapping };
 			})

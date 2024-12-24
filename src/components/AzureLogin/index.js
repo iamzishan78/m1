@@ -1,28 +1,29 @@
-import React, { useState, useContext, useEffect, useLayoutEffect } from 'react';
-import { AppContext, setApolloHeaders } from '../../AppContext';
-import { makeStyles } from '@material-ui/core/styles';
-import { useDispatch } from 'react-redux';
-import { NavigationContext } from '../Navigation/NavigationContext';
-import SignInCard from './SignInCard';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import queryString from 'query-string';
-
-import { tenantsCredentials, b2cPolicies, msalConfig, loginRequest, authGraphQLRequest } from './AADAuthConfig';
 import * as msal from '@azure/msal-browser';
-import { GET_LOGGED_IN_USER } from 'graphQL/useMutationLoggedInUser';
-import { USER_MAP_SETTINGS } from 'graphQL/useQueryUserMapSettings';
-import { setUserAction } from 'store/actions/appActions';
-import { currentUserGridViewSettingsAction } from 'store/actions/sessionActions';
-import { saveUserSession } from 'utils/user';
-import Api from 'api';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
+import queryString from 'query-string';
+import React, { useState, useContext, useEffect, useLayoutEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 import BypassSignInCard from './BypassSignInCard';
 import { SIMPLE_BYPASS_LOGIN_MUTATION } from 'graphQL/useMutationBypassLogin';
-import { apolloClientEndpointDev, isDev } from 'utils/helper';
+import { GET_LOGGED_IN_USER } from 'graphQL/useMutationLoggedInUser';
+import { USER_MAP_SETTINGS } from 'graphQL/useQueryUserMapSettings';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { mapStateController } from 'hookstate/mapStateController';
+import { setUserAction } from 'store/actions/appActions';
+import { currentUserGridViewSettingsAction } from 'store/actions/sessionActions';
+
 import { simpleAuthBypass } from 'utils/data';
+import { apolloClientEndpointDev, isDev } from 'utils/helper';
+import { saveUserSession } from 'utils/user';
+import Api from 'api';
+import { tenantsCredentials, b2cPolicies, msalConfig, loginRequest, authGraphQLRequest } from './AADAuthConfig';
 import HexocetCanvas from './hexoCatCanvas';
+import SignInCard from './SignInCard';
+import { AppContext, setApolloHeaders } from '../../AppContext';
+import { NavigationContext } from '../Navigation/NavigationContext';
 
 const localStyles = makeStyles(theme => ({
 	myRoot: {
@@ -129,9 +130,11 @@ const Login = props => {
 		}
 
 		let authTokenExpires;
-		if (globalStateValues.bypassLogin) authTokenExpires = sessionData.authenticationToken.expiresOn;
-		else if (authGraphQLToken?.expiresOn)
+		if (globalStateValues.bypassLogin) {
+			authTokenExpires = sessionData.authenticationToken.expiresOn;
+		} else if (authGraphQLToken?.expiresOn) {
 			authTokenExpires = new Date(authGraphQLToken.expiresOn.setDate(authGraphQLToken.expiresOn.getDate() + 14));
+		}
 
 		const user = {
 			...mongoUser,
@@ -301,7 +304,9 @@ const Login = props => {
 					setLoading(false);
 				});
 		} else {
-			if (stateApp.myMSALObj === false) setLoading(false);
+			if (stateApp.myMSALObj === false) {
+				setLoading(false);
+			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [stateApp.myMSALObj, signingIn]);
@@ -389,7 +394,9 @@ const Login = props => {
 	const handleBypassAADSignIn = async (tenantName, updateTenantFlags, email) => {
 		let tenant = tenantsCredentials(tenantName);
 
-		if (!tenant) return updateTenantFlags('Not a valid workspace or email');
+		if (!tenant) {
+			return updateTenantFlags('Not a valid workspace or email');
+		}
 
 		setSigningIn(true);
 		setLoadingSigInButton(true);
@@ -601,7 +608,7 @@ const Login = props => {
 	}
 
 	async function signInPopup(request) {
-		const loginResponse = await stateApp.myMSALObj.loginPopup(request).catch(function (error) {
+		const loginResponse = await stateApp.myMSALObj.loginPopup(request).catch(error => {
 			console.log(error);
 		});
 		if (stateApp.myMSALObj.getAllAccounts()) {

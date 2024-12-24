@@ -1,6 +1,8 @@
 import React from 'react';
-import FilterModeMenuItems from '../Common/FilterModeMenuItems';
+
 import { globalStateController } from 'hookstate/globalStateController';
+
+import FilterModeMenuItems from '../Common/FilterModeMenuItems';
 
 const filterModeMenu =
 	({ options, tableKey, name, controller }) =>

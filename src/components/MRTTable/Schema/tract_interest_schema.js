@@ -1,12 +1,13 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
-import vf_currency from 'components/Shared/valueformatters/vf_currency';
 import ListChips from 'components/Common/ListChips';
-import ContactNameLink from '../Common/TableCells/ContactNameLink';
-import TractIcon from 'components/Shared/svgIcons/tract';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { addTrailingZeros } from 'components/Shared/functions';
+import TractIcon from 'components/Shared/svgIcons/tract';
+import vf_currency from 'components/Shared/valueformatters/vf_currency';
+
+import ContactNameLink from '../Common/TableCells/ContactNameLink';
 
 const esIndex = 'shapeowners_flat';
 

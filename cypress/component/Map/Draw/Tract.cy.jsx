@@ -1,7 +1,8 @@
 /* eslint-disable no-undef */
 import MapProvider from 'components/Map/MapProvider';
-import { basic_timeouts } from '../../../cypressUtils/data';
+
 import { drawAreaGeometry, qtrCircle } from './data';
+import { basic_timeouts } from '../../../cypressUtils/data';
 
 let newCustomLayer = {};
 

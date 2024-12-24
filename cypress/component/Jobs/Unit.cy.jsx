@@ -1,9 +1,11 @@
 /* eslint-disable no-undef */
 import BulkUpload from 'components/BulkUpload/BulkUpload';
-import ldata from '../../fixtures/ldata.json';
-import { headers } from '../../cypressUtils/cypressHeaders';
+
 import { VERIFY_SHAPE_UPLOAD_JOB } from 'graphQL/useMutationCypressVerifyShapeUploadJob';
+
+import { headers } from '../../cypressUtils/cypressHeaders';
 import { basic_timeouts } from '../../cypressUtils/data';
+import ldata from '../../fixtures/ldata.json';
 
 // Define the filename for the CSV file
 const fileName = 'TEST_UNITS_Upload.csv';

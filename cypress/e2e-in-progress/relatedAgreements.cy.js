@@ -58,7 +58,9 @@ describe('Related Agreements Spec', () => {
 
 							const indexOfRelatedAgreement = hits.findIndex(hit => hit?._id === relatedAgreementID);
 
-							if (indexOfRelatedAgreement < 0) throw new Error('Related Agreement not found');
+							if (indexOfRelatedAgreement < 0) {
+								throw new Error('Related Agreement not found');
+							}
 
 							cy.log('==== STEP: CLICK ON CHECKBOX OF AGREEMENT ====');
 							cy.get("[id='related-agrmt-div']")
@@ -78,8 +80,9 @@ describe('Related Agreements Spec', () => {
 							cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: longTimeout }).then(response => {
 								const hits = response.response.body.data.getESSimpleSearch.hits;
 
-								if (hits && hits.length && hits.some(hit => hit?._id === relatedAgreementID))
+								if (hits && hits.length && hits.some(hit => hit?._id === relatedAgreementID)) {
 									throw new Error('Related Agreement still exist after delete');
+								}
 							});
 							cy.wait(5000);
 						});

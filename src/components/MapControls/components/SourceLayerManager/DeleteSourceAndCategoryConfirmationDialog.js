@@ -1,19 +1,23 @@
-import React, { useContext, useEffect } from 'react';
+import { useMutation } from '@apollo/client';
+import { DialogContent } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { useMutation } from '@apollo/client';
-import { AppContext } from 'AppContext';
+import React, { useContext, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { setMainMapState, showErrorMessage, showSuccessMessage } from 'actions';
-import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
+
 import { UPDATE_DATASET } from 'graphQL/useMutationDataset';
-import { Modals } from 'styles/Modal';
-import { DialogContent } from '@material-ui/core';
 import { REMOVE_LAYER_GROUP } from 'graphQL/useMutationLayerGroup';
+import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
+
 import { layerController } from 'hookstate/layerStateController';
+
+import { Modals } from 'styles/Modal';
+
+import { setMainMapState, showErrorMessage, showSuccessMessage } from 'actions';
+import { AppContext } from 'AppContext';
 
 export default function DeleteSourceAndCategoryConfirmationDialog(props) {
 	const dispatch = useDispatch();

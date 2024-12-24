@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
 import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import CustomDates from 'components/Revenue/components/Common/CustomDates';
 import moment from 'moment';
+import React, { useState, useEffect } from 'react';
+
+import CustomDates from 'components/Revenue/components/Common/CustomDates';
 
 const useStyles = makeStyles(theme => ({
 	actionBar: {

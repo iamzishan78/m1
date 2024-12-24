@@ -1,21 +1,24 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Grid, IconButton } from '@material-ui/core';
-import { Close as ClearButton } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
 import { useLazyQuery } from '@apollo/client';
-import CustomAutocomplete from './CustomAutocomplete';
-import { customLayersFieldAccessors } from './consts';
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { globalStateController } from 'hookstate/globalStateController';
-import { useFormContext } from 'react-hook-form';
-import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } from 'components/MRTTable/utils/data';
-import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
-import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { Box, Grid, IconButton } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { Close as ClearButton } from '@material-ui/icons';
 import _ from 'lodash';
-import { tableESState } from 'hookstate/initialStates';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
+
+import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
+import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } from 'components/MRTTable/utils/data';
 import { formatDate } from 'components/Shared/functions';
+
+import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { tableESState } from 'hookstate/initialStates';
+import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { customLayersFieldAccessors } from './consts';
+import CustomAutocomplete from './CustomAutocomplete';
 
 // Define custom styles using Material-UI's makeStyles hook
 const useStyles = makeStyles(theme => ({
@@ -122,7 +125,6 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 	};
 	// Lazy query to fetch filter list from the GraphQL API when required
 	const [getFiltersList, { data: filtersData }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
-	const [getShapeFileSchema, { data: shapeFileSchema }] = useLazyQuery(GET_SHAPE_FILE_SCHEMA);
 
 	// Watch form fields to dynamically react to their values
 	const dataSourceNameField = watch(`mapViews.${index}.dataSourceName`);
@@ -131,7 +133,9 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 	const filterValues = watch(`mapViews.${index}.filterValues`);
 	const filterType = watch(`mapViews.${index}.filterType`);
 
-	const mapViews = watch(`mapViews`);
+	const mapViews = watch('mapViews');
+
+	const layers = globalStateController.getValue('layers');
 
 	const [debouncedFilterValues, setDebouncedFilterValues] = useState(filterValues); // New state for debounced filter values
 
@@ -146,18 +150,6 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 			clearTimeout(handler);
 		};
 	}, [filterValues]);
-
-	useEffect(() => {
-		if (!dataSourceName || customLayersFieldAccessors[dataSourceName]) return;
-		const fileId = dataSourceName.substring(0, dataSourceName.indexOf('_'));
-		const layerShapeName = dataSourceName.substring(dataSourceName.indexOf('_') + 1);
-		getShapeFileSchema({
-			variables: {
-				file: fileId,
-				layerShapeName,
-			},
-		});
-	}, [dataSourceName, getShapeFileSchema]);
 
 	const getMapViewFilters = () => {
 		return mapViews?.map(mapView => {
@@ -204,8 +196,8 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 			esIndex = 'platformData:wells';
 		} else {
 			esIndex = 'shapefile_flat';
-			const fileId = dataSourceName.substring(0, dataSourceName.indexOf('_'));
-			const layerShapeName = dataSourceName.substring(dataSourceName.indexOf('_') + 1);
+			const fileId = dataSourceName?.substring(0, dataSourceName.indexOf('_'));
+			const layerShapeName = dataSourceName?.substring(dataSourceName.indexOf('_') + 1);
 			const selectedLayer = globalStateController
 				.getValue('layers')
 				?.find(layer => layer?.layerShapeName === layerShapeName && layer?.file === fileId);
@@ -218,7 +210,9 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 
 	// Effect to trigger data fetching based on the selected data source and field name
 	useEffect(() => {
-		if (!(dataSourceName && fieldName)) return;
+		if (!(dataSourceName && fieldName)) {
+			return;
+		}
 
 		const { esIndex, filters, search } = getLayerTypeAndFilters(dataSourceName);
 
@@ -269,9 +263,11 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 	}, [debouncedFilterValues, filterType, fieldName, dataSourceName]); // Dependencies trigger re-run when they change
 
 	const getSelectedField = (fieldName, _dataSource) => {
+		const fileId = dataSourceName?.substring(0, dataSourceName.indexOf('_'));
+		const layerShapeName = dataSourceName?.substring(dataSourceName.indexOf('_') + 1);
+		const layer = layers.find(l => l.file === fileId && l.layerShapeName === layerShapeName);
 		return (
-			customLayersFieldAccessors[_dataSource || mapView?.dataSourceName || dataSourceName]?.keys ||
-			shapeFileSchema?.getShapeFileSchema
+			customLayersFieldAccessors[_dataSource || mapView?.dataSourceName || dataSourceName]?.keys || layer?.layerSchema
 		)?.find(key => key.value.replace('.keyword', '') === fieldName || key?.value === fieldName);
 	};
 
@@ -306,8 +302,13 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 		const requiredFilterOptions =
 			dataSourceName && customLayersFieldAccessors[dataSourceName] ? filterTypeOptions : shapeFileOptions;
 
-		if (dataSourceName && !(customLayersFieldAccessors[dataSourceName]?.keys || shapeFileSchema?.getShapeFileSchema))
+		const fileId = dataSourceName?.substring(0, dataSourceName.indexOf('_'));
+		const layerShapeName = dataSourceName?.substring(dataSourceName.indexOf('_') + 1);
+		const layer = layers.find(l => l.file === fileId && l.layerShapeName === layerShapeName);
+
+		if (dataSourceName && !(customLayersFieldAccessors[dataSourceName]?.keys || layer?.layerSchema)) {
 			return [];
+		}
 
 		const fields = [
 			{
@@ -326,7 +327,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 			{
 				name: `mapViews.${index}.fieldName`,
 				label: 'Field Name',
-				options: customLayersFieldAccessors[dataSourceName]?.keys || shapeFileSchema?.getShapeFileSchema || [], // Dynamic based on data source
+				options: customLayersFieldAccessors[dataSourceName]?.keys || layer?.layerSchema || [], // Dynamic based on data source
 				defaultValue: mapView?.dataSourceName ? getSelectedField(mapView?.fieldName) || mapView?.fieldName : null, // Set default value if mapView is provided
 				onChange: () => {
 					setValue(`mapViews.${index}.filterType`, null);
@@ -364,17 +365,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 		}
 		return fields;
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [
-		dataSourceName,
-		filtersData,
-		filterType,
-		fieldName,
-		index,
-		mapView,
-		getSelectedField,
-		setValue,
-		shapeFileSchema?.getShapeFileSchema,
-	]); // Dependencies for recalculating when data changes
+	}, [dataSourceName, filtersData, filterType, fieldName, index, mapView, getSelectedField, setValue]); // Dependencies for recalculating when data changes
 
 	// Function to clear the filter when the clear button is clicked
 	const clearFilter = () => {

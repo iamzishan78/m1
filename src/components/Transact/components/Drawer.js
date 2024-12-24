@@ -1,14 +1,15 @@
-import React, { useContext } from 'react';
+import Badge from '@material-ui/core/Badge';
 import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import DescriptionIcon from '@material-ui/icons/DescriptionSharp';
 import GridOnIcon from '@material-ui/icons/GridOn';
 import HomeIcon from '@material-ui/icons/HomeOutlined';
-import IdentityIcon from '@material-ui/icons/PermIdentity';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import PanoramaIcon from '@material-ui/icons/Panorama';
+import IdentityIcon from '@material-ui/icons/PermIdentity';
 import { get } from 'lodash';
-import Tooltip from '@material-ui/core/Tooltip';
-import Badge from '@material-ui/core/Badge';
+import React, { useContext } from 'react';
+
 import { AppContext } from '../../../AppContext';
 
 const useStyles = makeStyles(theme => ({
@@ -60,15 +61,17 @@ export default function Drawer(props) {
 	const { dealSettingsNumber } = props;
 
 	const onClick = key => {
-		if (key === 'Grid')
+		if (key === 'Grid') {
 			setStateApp(stateApp => ({
 				...stateApp,
 				transactBarShowGrid: !stateApp.transactBarShowGrid,
 			}));
-		else if (key === 'Map')
+		} else if (key === 'Map') {
 			// Toggle map
 			setStateApp(stateApp => ({ ...stateApp, transactBarView: stateApp?.transactBarView === 'Map' ? 'Deal' : 'Map' }));
-		else setStateApp(stateApp => ({ ...stateApp, transactBarView: key }));
+		} else {
+			setStateApp(stateApp => ({ ...stateApp, transactBarView: key }));
+		}
 	};
 
 	const getClass = (classes, key) => {

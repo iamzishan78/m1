@@ -1,14 +1,16 @@
-import React, { useEffect, useMemo } from 'react';
-import _ from 'underscore';
-import { useForm } from 'react-hook-form';
-import { makeStyles } from '@material-ui/styles';
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
-import { useStyles as customStyles } from '../style';
+import { makeStyles } from '@material-ui/styles';
+import React, { useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import _ from 'underscore';
 
-import AgreementLegalDescriptionFields from 'components/Land/components/Agreements/detailComponents/legalDescription/FieldsSection';
 import RelatedTractsTable from 'components/Common/RelatedTables/Tracts';
+import AgreementLegalDescriptionFields from 'components/Land/components/Agreements/detailComponents/legalDescription/FieldsSection';
+
 import { tableController } from 'hookstate/tableController';
+
+import { useStyles as customStyles } from '../style';
 
 // Components
 const useStyles = makeStyles(theme => ({
@@ -68,7 +70,9 @@ export default function LagalDescription({ agreementDetails, agreementId, uniObj
 	const tableState = tableController('RelatedTractsTable').useState(['data']).stateValues;
 
 	useEffect(() => {
-		if (!_.isEmpty(agreementDetails)) reset(agreementDetails);
+		if (!_.isEmpty(agreementDetails)) {
+			reset(agreementDetails);
+		}
 	}, [reset, agreementDetails]);
 
 	const RelatedTractsOverrideMeta = useMemo(

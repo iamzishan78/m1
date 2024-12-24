@@ -1,6 +1,7 @@
 import React from 'react';
-import { NavigationContextProvider } from './NavigationContext';
+
 import Navigation from './Navigation';
+import { NavigationContextProvider } from './NavigationContext';
 
 export default function NavigationProvider(props) {
 	const routes = props.children.map?.(child => child.props);

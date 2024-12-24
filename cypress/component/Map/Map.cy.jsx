@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 import MapProvider from 'components/Map/MapProvider'; // Importing the MapProvider component for testing
 import NavigationProvider from 'components/Navigation/NavigationProvider';
+
 import { basic_timeouts } from '../../cypressUtils/data'; // Importing basic timeouts from the data file for test waits
 
 // Test suite for the Map Component

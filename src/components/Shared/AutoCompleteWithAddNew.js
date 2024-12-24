@@ -1,12 +1,10 @@
-import React from 'react';
-
-import loadashFilter from 'lodash/filter';
-
-import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import loadashFilter from 'lodash/filter';
+import React from 'react';
 
 const filter = createFilterOptions();
 
@@ -28,7 +26,9 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant, t
 
 	const onInputChange = (event, value) => {
 		const _value = event?.target?.value ?? value;
-		if (onSearch) onSearch(_value);
+		if (onSearch) {
+			onSearch(_value);
+		}
 	};
 	return (
 		<Autocomplete
@@ -42,15 +42,19 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant, t
 				if (typeof option === 'string') {
 					return option;
 				}
-				if (option?.name) return option.name;
-				else return '';
+				if (option?.name) {
+					return option.name;
+				} else {
+					return '';
+				}
 			}}
 			getOptionSelected={(option, value) => {
 				return option?.name === value;
 			}}
 			renderOption={option => {
-				if (option._id === 'newEntity')
+				if (option._id === 'newEntity') {
 					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+				}
 
 				return (
 					<Grid container spacing={0}>
@@ -87,9 +91,14 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant, t
 			}}
 			onChange={(event, newValue) => {
 				if (newValue && newValue._id) {
-					if (newValue._id !== 'newEntity') setValue(newValue);
-					else setValue({ _id: 'newEntity', name: newValue.name });
-				} else setValue('');
+					if (newValue._id !== 'newEntity') {
+						setValue(newValue);
+					} else {
+						setValue({ _id: 'newEntity', name: newValue.name });
+					}
+				} else {
+					setValue('');
+				}
 			}}
 			renderInput={params => (
 				<TextField

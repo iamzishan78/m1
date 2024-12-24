@@ -1,17 +1,20 @@
-import React, { useEffect, useRef, useMemo } from 'react';
 import { useQuery, useApolloClient } from '@apollo/client';
 import { useMutation } from '@apollo/client';
+import { debounce } from 'lodash';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
+import Loader from 'components/Loaders/serverLoader';
+import useRefetchHelper from 'components/Shared/Hooks/useRefetchHelper';
 
 import { UPDATE_JOB } from 'graphQL/useMutationUpdateJob';
 import { GET_JOBS_STATUS } from 'graphQL/useQueryGetJobStatus';
-import Loader from 'components/Loaders/serverLoader';
-import { setReduxKey } from 'store/actions/commonActions';
-import useRefetchHelper from 'components/Shared/Hooks/useRefetchHelper';
-import { jobController } from 'hookstate/jobStateController';
-import { debounce } from 'lodash';
-import { tableGlobalController } from 'hookstate/tableController';
+
 import { globalStateController } from 'hookstate/globalStateController';
+import { jobController } from 'hookstate/jobStateController';
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { setReduxKey } from 'store/actions/commonActions';
 
 const ContactBulkProgress = () => {
 	const bulkUpload = useSelector(state => state.common.bulkUpload);
@@ -159,10 +162,14 @@ const ContactBulkProgress = () => {
 			if (status === 'Started' || status === 'Pending') {
 				message = lastMessage; // Use last message for started or pending status
 			} else if (status === 'Completed' && requestPayload?.async) {
-				if (requestPayload.refetch) refetchHelperDebounced(requestPayload.refetch); // Debounced refetch if async operation is completed
+				if (requestPayload.refetch) {
+					refetchHelperDebounced(requestPayload.refetch);
+				} // Debounced refetch if async operation is completed
 				message = lastMessage; // Use last message for completed async operation
 			} else {
-				if (status === 'Completed') dispatch(setReduxKey('contactsAdded', true)); // Dispatch action if status is completed
+				if (status === 'Completed') {
+					dispatch(setReduxKey('contactsAdded', true));
+				} // Dispatch action if status is completed
 				const type = dataJobs.getJobsStatus.jobs[i].type; // Extract job type
 
 				// Determine message for different job types
@@ -197,10 +204,13 @@ const ContactBulkProgress = () => {
 					}
 
 					// Additional action for specific job type and status
-					if (type === 'SHAPEOWNER' && (status === 'Completed' || status.includes('Completed')))
+					if (type === 'SHAPEOWNER' && (status === 'Completed' || status.includes('Completed'))) {
 						refetchHelper(['getCustomLayer']);
+					}
 				}
-				if (status === 'Completed with errors') message = status; // Update message for completed with errors status
+				if (status === 'Completed with errors') {
+					message = status;
+				} // Update message for completed with errors status
 			}
 
 			// Create or update toast based on state
@@ -212,7 +222,9 @@ const ContactBulkProgress = () => {
 				if (status === 'Completed' || status === 'Completed with errors') {
 					Loader.successToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast);
 					downloadResults(dataJobs.getJobsStatus.jobs[i], onCloseToast);
-					if (dataJobs.getJobsStatus.jobs[i].type === 'contacts') refetchQueryByName('checkIfOwnersAreContacts');
+					if (dataJobs.getJobsStatus.jobs[i].type === 'contacts') {
+						refetchQueryByName('checkIfOwnersAreContacts');
+					}
 					// Refetch when its the status is completed for the last job iteration
 					if (i === dataJobs.getJobsStatus.jobs.length - 1) {
 						const { progress: jobProgress, totalProgress } = dataJobs.getJobsStatus.jobs[i];

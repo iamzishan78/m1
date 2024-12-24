@@ -1,16 +1,18 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { get } from 'lodash';
 import { useMutation, useLazyQuery } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import { Grid, Typography, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { AccountCircle } from '@material-ui/icons';
-import { ADD_TASK, UPDATE_TASK } from 'graphQL/useMutationStageTask';
-import { STAGE_TASK_TEMPLATE } from 'graphQL/useQueryTask';
-import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { get } from 'lodash';
+import React, { useState, useEffect, useMemo } from 'react';
+
+import CustomAvatar from 'components/Shared/ui/CustomAvatar';
 import NewSubtask from 'components/Transact/components/Common/NewSubtask';
 import DealSubtasks from 'components/Transact/components/DealTasksDetails/DealSubtasks';
-import CustomAvatar from 'components/Shared/ui/CustomAvatar';
+
+import { ADD_TASK, UPDATE_TASK } from 'graphQL/useMutationStageTask';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+import { STAGE_TASK_TEMPLATE } from 'graphQL/useQueryTask';
 
 const useStyles = makeStyles(() => ({
 	root: {

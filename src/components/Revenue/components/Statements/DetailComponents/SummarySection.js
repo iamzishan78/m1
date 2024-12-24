@@ -1,17 +1,18 @@
-import { useState, useEffect } from 'react';
-import { set, get, uniqBy } from 'lodash';
+import { useLazyQuery } from '@apollo/client';
 import { Typography, Grid, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import vf_number from 'components/Shared/valueformatters/vf_number';
-import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+import { set, get, uniqBy } from 'lodash';
+import { useState, useEffect } from 'react';
 
-import { useLazyQuery } from '@apollo/client';
+import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+import vf_number from 'components/Shared/valueformatters/vf_number';
 
 // Components
+import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+
 import PieChartWithLegend from './Charts/PieChartWithLegend';
 import ProductChart from './Charts/ProductChart';
-import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
-import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
 
 export const TabButtons = ({ tab, actiiveId, setActive }) => {
 	return (

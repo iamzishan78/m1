@@ -1,9 +1,11 @@
 /* eslint-disable no-undef */
 import Wells from 'components/Land/components/Wells';
+
 import { REMOVE_WELLS } from 'graphQL/useMutationRemoveWells';
+
+import { headers } from '../../cypressUtils/cypressHeaders';
 import { basic_timeouts } from '../../cypressUtils/data';
 import ldata from '../../fixtures/ldata.json';
-import { headers } from '../../cypressUtils/cypressHeaders';
 
 let wellIds;
 let wellName;
@@ -26,7 +28,7 @@ describe('MyWells ESHOC Table', () => {
 				cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
 					addedWellId = response.response.body.data.getESSimpleSearch.hits[0]._id;
 				});
-				cy.get(`[data-testid='column-with-link']`, {
+				cy.get("[data-testid='column-with-link']", {
 					timeout: basic_timeouts.midTimeout,
 				})
 					.eq(0)
@@ -85,7 +87,7 @@ describe('MyWells ESHOC Table', () => {
 		const randomNumber = Math.floor(Math.random() * 1000) + 1;
 		wellName = `Testing well name ${randomNumber}`;
 
-		cy.get(`[data-testid='column-with-link']`, {
+		cy.get("[data-testid='column-with-link']", {
 			timeout: basic_timeouts.midTimeout,
 		})
 			.eq(0)
@@ -99,7 +101,7 @@ describe('MyWells ESHOC Table', () => {
 
 		cy.wait(15000);
 
-		cy.get(`[data-testid='column-with-link']`, {
+		cy.get("[data-testid='column-with-link']", {
 			timeout: basic_timeouts.midTimeout,
 		})
 			.eq(0)
@@ -115,7 +117,7 @@ describe('MyWells ESHOC Table', () => {
 			['gridGenericRemove'],
 			alias => {
 				// Selecting all rows for deletion
-				cy.get(`[data-testid="over-ride-select-all-div"] input`).click();
+				cy.get('[data-testid="over-ride-select-all-div"] input').click();
 				// Clicking on the delete icon button to delete selected rows
 				cy.get('.MuiButtonBase-root[data-testid="delete-icon-button"]').click();
 				// Confirming the deletion

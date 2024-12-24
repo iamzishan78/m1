@@ -1,9 +1,10 @@
-import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import ListChips from 'components/Common/ListChips';
-import { CommonSchema } from './common_schema';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+
+import { CommonSchema } from './common_schema';
 
 const esIndex = 'shapeowners_flat';
 

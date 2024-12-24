@@ -1,7 +1,7 @@
-import React from 'react';
-import loadashFilter from 'lodash/filter';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import { Typography, Grid, TextField } from '@material-ui/core';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import loadashFilter from 'lodash/filter';
+import React from 'react';
 
 export default function AutoCompleteComponent(props) {
 	const { classes, onChange, defaultValue, value, options, ...rest } = props;
@@ -24,15 +24,19 @@ export default function AutoCompleteComponent(props) {
 					return option.name;
 				}
 
-				if (option?.name) return option.name;
-				else return '';
+				if (option?.name) {
+					return option.name;
+				} else {
+					return '';
+				}
 			}}
 			getOptionSelected={(option, value) => {
 				return option?._id === value?._id;
 			}}
 			renderOption={option => {
-				if (option?.id === 'newEntity')
+				if (option?.id === 'newEntity') {
 					return <Typography style={{ color: 'midnightblue' }}>Add '{option.value}'</Typography>;
+				}
 
 				return (
 					<Grid container spacing={0}>
@@ -66,7 +70,9 @@ export default function AutoCompleteComponent(props) {
 				return filtered;
 			}}
 			onChange={(event, newValue) => {
-				if (onChange) onChange(newValue);
+				if (onChange) {
+					onChange(newValue);
+				}
 			}}
 			renderInput={params => (
 				<TextField

@@ -1,13 +1,18 @@
-import React, { useState, useEffect, useContext } from 'react';
 import { useMutation } from '@apollo/client';
 import AddLayerIcon from '@material-ui/icons/Queue';
-import { AppContext } from 'AppContext';
-import Panel from './compoennts/Panel';
+import React, { useState, useEffect, useContext } from 'react';
+
 import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
+
 import { globalStateController } from 'hookstate/globalStateController';
-import { copy } from 'utils/helper';
-import { mapControlsController } from 'hookstate/mapControlsController';
 import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+
+import { copy } from 'utils/helper';
+
+import { AppContext } from 'AppContext';
+
+import Panel from './compoennts/Panel';
 
 const reorder = (list, startIndex, endIndex) => {
 	const result = Array.from(list);
@@ -201,9 +206,15 @@ export default function SidePanel() {
 	//   for Layer Panel
 	useEffect(() => {
 		if (panelType === 'layer' || panelType === null) {
-			if (panelTitle !== 'Layers') setPanelTitle('Layers');
-			if (panelButton !== panelButtons[panelType]) setPanelButton(panelButtons[panelType]);
-			if (headerFilters !== null) setHeaderFilters(null);
+			if (panelTitle !== 'Layers') {
+				setPanelTitle('Layers');
+			}
+			if (panelButton !== panelButtons[panelType]) {
+				setPanelButton(panelButtons[panelType]);
+			}
+			if (headerFilters !== null) {
+				setHeaderFilters(null);
+			}
 		}
 	}, [panelType]);
 

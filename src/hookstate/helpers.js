@@ -1,8 +1,7 @@
-import React from 'react';
 import _ from 'lodash';
+import React from 'react';
+
 import DataType from 'components/Common/DataType';
-import { tableController } from 'hookstate/tableController';
-import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
 import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';
 import {
 	customFilterOptions,
@@ -13,9 +12,13 @@ import {
 	simpleStringFilterOptions,
 	stringFilterOptions,
 } from 'components/MRTTable/utils/data';
-import { globalStateController } from './globalStateController';
-import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
+import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
 import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
+import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
+
+import { tableController } from 'hookstate/tableController';
+
+import { globalStateController } from './globalStateController';
 
 export const handleVisiblityMenu = () => {
 	const interval2 = setInterval(() => {
@@ -23,7 +26,7 @@ export const handleVisiblityMenu = () => {
 		// || element?.className.includes('Mui-disabled')
 		if (elements) {
 			elements.forEach(element => {
-				if (['Select', 'Row Numbers'].includes(element.outerText) || element.outerText === '')
+				if (['Select', 'Row Numbers'].includes(element.outerText) || element.outerText === '') {
 					while (element !== null) {
 						if (element.tagName === 'LI') {
 							element.style.display = 'none';
@@ -31,6 +34,7 @@ export const handleVisiblityMenu = () => {
 						}
 						element = element.parentNode;
 					}
+				}
 			});
 			clearInterval(interval2);
 		}
@@ -131,7 +135,9 @@ export const handleMRTSchema = ({
 				} else if (schemaColumn.type === 'date') {
 					options = simpleDateFilterOptions;
 				}
-				if (schemaColumn.isComposite) options = options.filter(option => option !== 'multiselect');
+				if (schemaColumn.isComposite) {
+					options = options.filter(option => option !== 'multiselect');
+				}
 
 				schemaColumn.columnFilterModeOptions = options;
 				schemaColumn.renderColumnFilterModeMenuItems = filterModeMenu({
@@ -230,7 +236,9 @@ export const handleMRTSchema = ({
 					break;
 			}
 
-			if (schemaColumn.isComposite) options = options.filter(option => option !== 'multiselect');
+			if (schemaColumn.isComposite) {
+				options = options.filter(option => option !== 'multiselect');
+			}
 
 			schemaColumn.columnFilterModeOptions = options;
 			schemaColumn.renderColumnFilterModeMenuItems = filterModeMenu({
@@ -245,7 +253,9 @@ export const handleMRTSchema = ({
 		const columnMapView = mapViewFilters.find(
 			filter => filter?.field?.replace('.keyword', '') === schemaColumn?.name?.replace('.keyword', '')
 		);
-		if (!columnMapView || customLayersFieldAccessors[layerIdentifier]) return schemaColumn;
+		if (!columnMapView || customLayersFieldAccessors[layerIdentifier]) {
+			return schemaColumn;
+		}
 
 		const updatedFilterModes = tableController(tableKey).setInitialFilterMode(
 			schemaColumn,
@@ -274,7 +284,9 @@ export const handleMRTSchema = ({
 
 	const columnOrder = _TableSchema.map(column => {
 		let col = column.accessorKey || column.id;
-		if (Array.isArray(col)) col = col[0];
+		if (Array.isArray(col)) {
+			col = col[0];
+		}
 		return col;
 	});
 

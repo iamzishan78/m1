@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import { useLazyQuery } from '@apollo/client';
+import { TextField, Grid, Avatar, InputAdornment } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/styles';
-import { TextField, Grid, Avatar, InputAdornment } from '@material-ui/core';
-import { useLazyQuery } from '@apollo/client';
-import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-import CustomAvatar from 'components/Shared/ui/CustomAvatar';
+import React, { useState, useEffect } from 'react';
+
 import { getRandomColor } from 'components/Shared/functions/ui';
+import CustomAvatar from 'components/Shared/ui/CustomAvatar';
+
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
 const useStyles = makeStyles(theme => ({
 	gridStyle: {
@@ -104,7 +106,9 @@ const UsersListWithIcon = ({
 					id="userList"
 					options={users.filter(u => u.text)}
 					onBlur={() => {
-						if (onBlur) onBlur();
+						if (onBlur) {
+							onBlur();
+						}
 					}}
 					onChange={(e, user) => onChangeUser(user)}
 					value={users.find(user => user?.value === selectedUserId) || null}

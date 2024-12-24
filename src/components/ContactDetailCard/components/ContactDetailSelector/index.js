@@ -1,26 +1,28 @@
-import React, { useState, useContext, useEffect, useMemo } from 'react';
-import { get } from 'lodash';
-import { makeStyles } from '@material-ui/core/styles';
-import { AppContext } from 'AppContext';
 import { useLazyQuery } from '@apollo/client';
+import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
+import { makeStyles } from '@material-ui/core/styles';
+import { get } from 'lodash';
+import sortBy from 'lodash/sortBy';
+import moment from 'moment';
+import React, { useState, useContext, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
+
+import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
+import RelatedTractInterestTable from 'components/Common/RelatedTables/Tracts/tractInterests';
+import RelatedUnitInterestTable from 'components/Common/RelatedTables/Units/unitInterests';
 import ContactDetailedInfo from 'components/ContactDetailedInfo/ContactDetailedInfo';
 import ContactDealsProvider from 'components/DealsDetailCard/ContactDealsProvider';
-
-import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
-import { contactDetailInitialData } from './data';
-
-import { CONTACT_SUMMARY } from 'graphQL/useQueryContactSummary';
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import moment from 'moment';
-import sortBy from 'lodash/sortBy';
+import { DrawerContextProvider } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
 import MRTTable from 'components/MRTTable';
 import ActivitiesToolbar from 'components/MRTTable/TablesOverride/ContactDetailActivities/ActivitiesToolbar';
-import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
-import { DrawerContextProvider } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
-import RelatedUnitInterestTable from 'components/Common/RelatedTables/Units/unitInterests';
-import RelatedTractInterestTable from 'components/Common/RelatedTables/Tracts/tractInterests';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+
+import { CONTACT_SUMMARY } from 'graphQL/useQueryContactSummary';
+
+import { AppContext } from 'AppContext';
+
+import { contactDetailInitialData } from './data';
 
 const useStyles = makeStyles(theme => ({
 	card: {

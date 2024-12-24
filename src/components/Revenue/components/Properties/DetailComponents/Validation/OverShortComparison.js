@@ -1,7 +1,7 @@
+import Button from '@material-ui/core/Button';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
-import Button from '@material-ui/core/Button';
 
 const data = {
 	series: [
@@ -99,17 +99,23 @@ const ApexChart = ({ productionData, checkData }) => {
 				);
 				if (pData) {
 					let label = moment(activeCheckData[i].ReportDate).format('MMM yyyy');
-					if (!labels.find(l => l === label)) labels.push(label);
+					if (!labels.find(l => l === label)) {
+						labels.push(label);
+					}
 					const index = labels.findIndex(l => l === label);
 					let d =
 						activeCheckData[i][activeTab] - pData[`allocated${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`];
 					d = parseFloat(parseFloat(d).toFixed(2));
 					if (d > 0) {
-						if (max < d) max = d;
+						if (max < d) {
+							max = d;
+						}
 						chartData[0].data[index] = d;
 						chartData[1].data[index] = 0;
 					} else {
-						if (min > d) min = d;
+						if (min > d) {
+							min = d;
+						}
 						chartData[0].data[index] = 0;
 						chartData[1].data[index] = d;
 					}

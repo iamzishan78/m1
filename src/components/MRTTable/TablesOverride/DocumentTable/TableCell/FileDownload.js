@@ -1,8 +1,9 @@
-import React, { memo, useEffect } from 'react';
 import { useLazyQuery } from '@apollo/client';
-import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
 import { IconButton } from '@material-ui/core';
 import GetAppIcon from '@material-ui/icons/GetApp';
+import React, { memo, useEffect } from 'react';
+
+import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
 
 function FileDownload({ id }) {
 	const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {

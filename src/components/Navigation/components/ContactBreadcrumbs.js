@@ -1,25 +1,24 @@
 // react core
+import { useLazyQuery } from '@apollo/client';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Link from '@material-ui/core/Link';
+import Typography from '@material-ui/core/Typography';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import get from 'lodash/get';
 import React, { useContext, useState, useEffect, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import get from 'lodash/get';
-import { useLazyQuery } from '@apollo/client';
-import { useSelector } from 'react-redux';
-
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import Link from '@material-ui/core/Link';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Typography from '@material-ui/core/Typography';
-
 // internal components
+import { NavigationContext } from 'components/Navigation/NavigationContext';
 import { truncate } from 'components/Shared/functions';
+import LinkWithIcon from 'components/Shared/LinkWithIcon';
+
 import { CONTACT } from 'graphQL/useQueryContact';
 import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 
 // contexts
 import { AppContext } from 'AppContext';
-import { NavigationContext } from 'components/Navigation/NavigationContext';
-import LinkWithIcon from 'components/Shared/LinkWithIcon';
 
 const ContactBreadcrumbs = () => {
 	const history = useHistory();

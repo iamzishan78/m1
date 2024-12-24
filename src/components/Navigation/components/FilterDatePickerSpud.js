@@ -1,10 +1,11 @@
-import React, { useContext, useEffect } from 'react';
+import { IconButton, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Clear } from '@material-ui/icons';
-import { IconButton, TextField } from '@material-ui/core';
+import React, { useContext, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { navController } from 'hookstate/navStateController';
+
 import { NavigationContext } from '../NavigationContext';
 
 const useStyles = makeStyles(() => ({
@@ -50,12 +51,16 @@ export default function FilterDatePickerSpud({ labelDates }) {
 			max: spudDateTo && new Date(spudDateTo).toISOString(),
 		};
 
-		if (!spudDateFrom) delete value.min;
-		if (!spudDateTo) delete value.max;
+		if (!spudDateFrom) {
+			delete value.min;
+		}
+		if (!spudDateTo) {
+			delete value.max;
+		}
 
 		const type = 'date';
 
-		navController.handleWellsFilters({ field: `spudDate`, value, type });
+		navController.handleWellsFilters({ field: 'spudDate', value, type });
 	}, [stateNav.spudDateFrom, stateNav.spudDateTo, setStateNav]);
 
 	const handleStartDate = date => {

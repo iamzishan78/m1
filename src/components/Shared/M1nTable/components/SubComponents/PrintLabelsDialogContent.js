@@ -1,19 +1,20 @@
-import React, { useEffect } from 'react';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
-import { Modals } from '../../../../../styles/Modal';
-import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import Typography from '@material-ui/core/Typography';
+import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import FormLabel from '@material-ui/core/FormLabel';
+import IconButton from '@material-ui/core/IconButton';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import CloseIcon from '@material-ui/icons/Close';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import FormLabel from '@material-ui/core/FormLabel';
+import React, { useEffect } from 'react';
+
+import { Modals } from '../../../../../styles/Modal';
 
 // import value formatters
 import capitalizeFirstLetter from '../../../../Shared/valueformatters/capitalize-first-letter.js';
@@ -56,7 +57,9 @@ export default function PrintLabelsDialogContent(props) {
 	const [recipientValue, setRecipientValue] = React.useState(recipientData[0]);
 
 	useEffect(() => {
-		if (!props.rows || props.rows.length === 0) props.onClose();
+		if (!props.rows || props.rows.length === 0) {
+			props.onClose();
+		}
 	}, [props.rows]);
 
 	return (

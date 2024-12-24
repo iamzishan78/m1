@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useCallback } from 'react';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import {
 	Grid,
 	ListItemIcon,
@@ -14,26 +14,32 @@ import {
 	AccordionSummary,
 	AccordionDetails,
 } from '@material-ui/core';
-import get from 'lodash/get';
-import Avatar from 'react-avatar';
-import SearchIcon from '@material-ui/icons/Search';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import IconButton from '@material-ui/core/IconButton';
+import Link from '@material-ui/core/Link';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import AddIcon from '@material-ui/icons/Add';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import SearchIcon from '@material-ui/icons/Search';
+import get from 'lodash/get';
+import React, { useEffect, useState, useContext, useCallback } from 'react';
+import Avatar from 'react-avatar';
 import { useHistory } from 'react-router-dom';
 import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
 import PhoneIphoneIcon from '@material-ui/icons/PhoneIphone';
 import DomainOutlinedIcon from '@material-ui/icons/DomainOutlined';
+
 import AutocompEntityNamesVirtualizeList from 'components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
-import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
+
 import { ADDCONTACT } from 'graphQL/useMutationAddContact';
+import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
+
 import { AppContext } from '../../AppContext';
-import { useLazyQuery, useMutation } from '@apollo/client';
+
 import CloseIcon from '@material-ui/icons/Close';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import IconButton from '@material-ui/core/IconButton';
-import CircularProgress from '@material-ui/core/CircularProgress';
+
 import { REMOVEDEALDESCRIPTOR } from '../../graphQL/useMutationRemoveDealDescriptor';
-import Link from '@material-ui/core/Link';
+
 import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
 import './Contact.css';
 

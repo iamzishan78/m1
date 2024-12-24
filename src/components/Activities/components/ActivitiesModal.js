@@ -1,22 +1,10 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
-import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
-import { Grid } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import moment from 'moment';
-import get from 'lodash/get';
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { useHistory } from 'react-router-dom';
-
-import { AppContext } from '../../../AppContext';
+import { Grid } from '@material-ui/core';
 import { CircularProgress, Dialog, DialogTitle } from '@material-ui/core';
-import ExpandableCardProvider from '../../ExpandableCard/ExpandableCardProvider';
-
-import CallIcon from '@material-ui/icons/Call';
-import MeetingIcon from '@material-ui/icons/Group';
+import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
 import TaskIcon from '@material-ui/icons/WatchLater';
-import DeadlineIcon from '@material-ui/icons/Flag';
 import EmailIcon from '@material-ui/icons/Email';
 import ContactMailIcon from '@material-ui/icons/ContactMail';
 import TextMsgIcon from '@material-ui/icons/Textsms';
@@ -37,11 +25,24 @@ import { OPENDEALS } from '../../../graphQL/useQueryOpenDeals';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { GETMONGOUSERS } from '../../../graphQL/useQueryGetUsers';
 import Typography from '@material-ui/core/Typography';
-import { ADDACTIVITY, DELETEACTIVITY, UPDATEACTIVITY } from '../../../graphQL/useMutationActivity';
-import { workspaceTenantName } from 'components/Shared/functions';
+import CallIcon from '@material-ui/icons/Call';
+import DeadlineIcon from '@material-ui/icons/Flag';
+import MeetingIcon from '@material-ui/icons/Group';
+import clsx from 'clsx';
+import get from 'lodash/get';
+import moment from 'moment';
+import React, { useContext, useState, useEffect, useRef } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import AutoCompleteAddNewField from 'components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField';
 import { outcomeOptions } from 'components/ContactDetailCard/components/FieldContent/helper';
+import { workspaceTenantName } from 'components/Shared/functions';
+
 import { tableGlobalController } from 'hookstate/tableController';
+
+import { AppContext } from '../../../AppContext';
+import { ADDACTIVITY, DELETEACTIVITY, UPDATEACTIVITY } from '../../../graphQL/useMutationActivity';
+import ExpandableCardProvider from '../../ExpandableCard/ExpandableCardProvider';
 
 const useStyles = makeStyles(theme => ({
 	dialogExpCard: {
@@ -381,7 +382,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 
 	const onModalClose = () => {
 		if (history.location.pathname !== '/contacts/activityDashboard') {
-			window.history.pushState('', '', `/calendar/activities`);
+			window.history.pushState('', '', '/calendar/activities');
 		}
 
 		clearFields();
@@ -422,13 +423,27 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 		let endTimeErr = false;
 		let ownerErr = false;
 
-		if (!activityType || activityType.length === 0) activityTypeErr = true;
-		if (!activityName || activityName.length === 0) activityNameErr = true;
-		if (!startDate) startDataErr = true;
-		if (!startTime) startTimeErr = true;
-		if (!endDate) endDateErr = true;
-		if (!endTime) endTimeErr = true;
-		if (!owner.id) ownerErr = true;
+		if (!activityType || activityType.length === 0) {
+			activityTypeErr = true;
+		}
+		if (!activityName || activityName.length === 0) {
+			activityNameErr = true;
+		}
+		if (!startDate) {
+			startDataErr = true;
+		}
+		if (!startTime) {
+			startTimeErr = true;
+		}
+		if (!endDate) {
+			endDateErr = true;
+		}
+		if (!endTime) {
+			endTimeErr = true;
+		}
+		if (!owner.id) {
+			ownerErr = true;
+		}
 
 		const dateTime = mergeDateAndTime(startDate, startTime);
 		const endDateTime = mergeDateAndTime(endDate, endTime);
@@ -454,7 +469,9 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 	};
 
 	const addActivity = async () => {
-		if (updateErrors()) return;
+		if (updateErrors()) {
+			return;
+		}
 
 		const dateTime = mergeDateAndTime(startDate, startTime);
 		const endDateTime = mergeDateAndTime(endDate, endTime);
@@ -483,7 +500,9 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 	};
 
 	const updateActivity = async () => {
-		if (updateErrors()) return;
+		if (updateErrors()) {
+			return;
+		}
 
 		const dateTime = mergeDateAndTime(startDate, startTime);
 		const endDateTime = mergeDateAndTime(endDate, endTime);
@@ -908,8 +927,11 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 										color="primary"
 										variant="contained"
 										onClick={() => {
-											if (addNew) addActivity();
-											else updateActivity();
+											if (addNew) {
+												addActivity();
+											} else {
+												updateActivity();
+											}
 										}}
 									>
 										{(addLoading || updateLoading) && (

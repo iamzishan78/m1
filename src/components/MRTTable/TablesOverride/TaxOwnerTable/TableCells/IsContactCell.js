@@ -1,9 +1,11 @@
-import { Link } from 'react-router-dom';
-import { memo, useState, useEffect } from 'react';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
 import { IconButton, Tooltip } from '@material-ui/core';
-import Convert_contact from 'components/Shared/svgIcons/convert_contact';
+import { memo, useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+
 import Contact_card from 'components/Shared/svgIcons/contact_card';
+import Convert_contact from 'components/Shared/svgIcons/convert_contact';
+
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 function IsContactCell({ id: ownerId, selectedRow: singleRow }) {
 	const [selectedRows, setSelectedRows] = useState([]);
@@ -49,11 +51,15 @@ function IsContactCell({ id: ownerId, selectedRow: singleRow }) {
 						});
 
 						const ifAlreadyPresent = rows.find(row => row.id === singleRow.id);
-						if (!ifAlreadyPresent) rows = [...rows, singleRow];
+						if (!ifAlreadyPresent) {
+							rows = [...rows, singleRow];
+						}
 
 						rows = rows.filter(row => {
 							const notFound = !ownerContacts.find(contact => contact.globalOwner === row.id);
-							if (notFound) return true;
+							if (notFound) {
+								return true;
+							}
 							return false;
 						});
 

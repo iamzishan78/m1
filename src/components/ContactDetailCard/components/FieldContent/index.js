@@ -1,12 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import TextField from '@material-ui/core/TextField';
 import { useMutation } from '@apollo/client';
-import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
-import { UPDATE_CONTACT_PURCHASE_DATA } from 'graphQL/useMutationContactPurchaseData';
-import { UPDATEMELISSA, UPDATEMELISSAADDRESS } from 'graphQL/useMutationUpdateMelissaRecords';
+import { useLazyQuery } from '@apollo/client';
+import { Typography, Grid } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { AppContext } from 'AppContext';
+import Link from '@material-ui/core/Link';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import { get } from 'lodash';
+import loadashFilter from 'lodash/filter';
+import React, { useState, useEffect } from 'react';
+
 import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
+import { UPDATE_CONTACT_PURCHASE_DATA } from 'graphQL/useMutationContactPurchaseData';
+import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
+import { UPDATEMELISSA, UPDATEMELISSAADDRESS } from 'graphQL/useMutationUpdateMelissaRecords';
+
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+
+import { getAddressUrl, getZillowAddressUrl } from 'utils/helper';
+import { AppContext } from 'AppContext';
 import PencilEditIcon from 'components/ContactDetailCard/components/FieldContent/PencilEditIcon';
 import MergeHistory from 'components/ContactDetailCard/components/FieldContent/MergeHistory';
 import CopyPurchaseInfo from 'components/ContactDetailCard/components/FieldContent/CopyPurchaseInfo';
@@ -18,21 +30,16 @@ import {
 	outcomeOptions,
 } from 'components/ContactDetailCard/components/FieldContent/helper';
 import useStyles from 'components/ContactDetailCard/components/FieldContent/style';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
-import { timeZoneOptions } from './timeZoneList';
-import { useLazyQuery } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
-import { Typography, Grid } from '@material-ui/core';
-import loadashFilter from 'lodash/filter';
-import { get } from 'lodash';
-import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
-import EntityType from './EntityType';
+
 import CampaignField from './CampaignField';
+import EntityType from './EntityType';
+import { timeZoneOptions } from './timeZoneList';
+
+import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import ContactStatus from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
+
 import AutoCompleteAddNewField from './AutoCompleteAddNewField';
-import Link from '@material-ui/core/Link';
-import { getAddressUrl, getZillowAddressUrl } from 'utils/helper';
+
 import GoogleMapIcon from 'components/Shared/svgIcons/GoogleMapIcon';
 import ZillowIcon from 'components/Shared/svgIcons/ZillowIcon';
 import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
@@ -137,8 +144,9 @@ export default function FieldContent({
 				fieldName = key;
 				break;
 			}
-			if (document.getElementById('fieldContentInput' + fieldName))
+			if (document.getElementById('fieldContentInput' + fieldName)) {
 				document.getElementById('fieldContentInput' + fieldName).focus();
+			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [edit]);
@@ -162,8 +170,12 @@ export default function FieldContent({
 				} else if (key === 'jobTitle') {
 					textArray = [[textArray.join(', '), showContent[key]].join(' - ')];
 				} else if (key === 'contactOwner' || key === 'contactOwnerId') {
-					if (key === 'contactOwner') textArray.push(showContent[key] || '');
-				} else textArray.push(showContent[key]);
+					if (key === 'contactOwner') {
+						textArray.push(showContent[key] || '');
+					}
+				} else {
+					textArray.push(showContent[key]);
+				}
 			}
 		}
 
@@ -175,7 +187,9 @@ export default function FieldContent({
 		e.preventDefault();
 		if (isCopy) {
 			navigator.clipboard.writeText(getOrganizedContent() || '');
-		} else setEdit(!edit ? e.currentTarget : null);
+		} else {
+			setEdit(!edit ? e.currentTarget : null);
+		}
 	};
 
 	const keyDownHandler = (event, fieldNames) => {
@@ -199,7 +213,9 @@ export default function FieldContent({
 		fieldNames.forEach(field => (fields[field] = content[field]));
 		// Check if editContent exists and has more than one property, return if true
 		// if editContent has more than one property we don't need to close popup on blur
-		if (Object.keys(editContent || {})?.length > 1) return;
+		if (Object.keys(editContent || {})?.length > 1) {
+			return;
+		}
 
 		// Reset edit state and update editContent with field values
 		setEdit(null); // It closes popup on blur
@@ -235,7 +251,9 @@ export default function FieldContent({
 				lastUpdateBy: stateApp.user.mongoId,
 			};
 
-			if (entity) trimmedEditContent.entity = entity;
+			if (entity) {
+				trimmedEditContent.entity = entity;
+			}
 			let differences = false;
 			for (const field in editContent) {
 				const value = val ? val : editContent[field];
@@ -247,7 +265,9 @@ export default function FieldContent({
 					} else {
 						trimmedEditContent[field] = typeof value === 'string' ? value.trim() : value;
 					}
-					if (trimmedEditContent[field] !== content[field]) differences = true;
+					if (trimmedEditContent[field] !== content[field]) {
+						differences = true;
+					}
 				}
 			}
 
@@ -331,7 +351,7 @@ export default function FieldContent({
 	if (edit) {
 		for (const fieldName in editContent) {
 			if (fieldName === 'contactOwner' || fieldName === 'contactOwnerId') {
-				if (fieldName === 'contactOwner')
+				if (fieldName === 'contactOwner') {
 					inputsArray.push(
 						<ContactAutoComplete
 							value={editContent.contactOwnerId ? editContent.contactOwnerId : ''}
@@ -342,6 +362,7 @@ export default function FieldContent({
 							onBlur={() => onBlurHandler(['contactOwner', 'contactOwnerId'])}
 						/>
 					);
+				}
 			} else if (editContent.hasOwnProperty(fieldName)) {
 				const metaField = metafields ? metafields.find(meta => meta?.esKey === fieldName) : null;
 				inputsArray.push(
@@ -690,15 +711,19 @@ export const Status = ({ setDocumentType, value, options, ...other }) => {
 					return option.name;
 				}
 
-				if (option?.name) return option.name;
-				else return '';
+				if (option?.name) {
+					return option.name;
+				} else {
+					return '';
+				}
 			}}
 			getOptionSelected={(option, value) => {
 				return option?._id === search;
 			}}
 			renderOption={option => {
-				if (option._id === 'newEntity')
+				if (option._id === 'newEntity') {
 					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+				}
 
 				return (
 					<Grid container spacing={0}>
@@ -731,8 +756,11 @@ export const Status = ({ setDocumentType, value, options, ...other }) => {
 			}}
 			onChange={(event, newValue) => {
 				if (newValue && newValue._id) {
-					if (newValue._id !== 'newEntity') setDocumentType(newValue);
-					else setDocumentType({ _id: 'newEntity', name: newValue.name });
+					if (newValue._id !== 'newEntity') {
+						setDocumentType(newValue);
+					} else {
+						setDocumentType({ _id: 'newEntity', name: newValue.name });
+					}
 				} else {
 					setSearch('');
 					setDocumentType({ _id: '', name: '' });

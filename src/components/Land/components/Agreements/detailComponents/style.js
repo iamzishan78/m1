@@ -1,6 +1,6 @@
-import React from 'react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { FormControl, InputLabel, InputBase } from '@material-ui/core';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import React from 'react';
 
 export const useStyles = makeStyles(theme => ({
 	root: {
@@ -42,7 +42,7 @@ export const useStyles = makeStyles(theme => ({
 	fieldsSection: {
 		margin: '0px 0px',
 		'& .MuiOutlinedInput-root': {
-			height: `46px !important`,
+			height: '46px !important',
 			borderRadius: '6px !important',
 		},
 	},
@@ -107,7 +107,7 @@ export const useStyles = makeStyles(theme => ({
 	textArea: {
 		margin: '0px 0px',
 		'& .MuiOutlinedInput-root': {
-			height: `auto !important`,
+			height: 'auto !important',
 			borderRadius: '6px !important',
 		},
 	},

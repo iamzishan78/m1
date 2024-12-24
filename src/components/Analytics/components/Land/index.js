@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
 import { Divider, makeStyles, Tab, Tabs, withStyles } from '@material-ui/core';
-import WellMasterTabPanel from './WellMaster';
+import React, { useState } from 'react';
+
 import { globalStateController } from 'hookstate/globalStateController';
+
+import AcreageDetail from './AcreageDetail';
 import AcreageSummary from './AcreageSummary';
 import ExhibitA from './ExhibitA';
-import AcreageDetail from './AcreageDetail';
+import WellMasterTabPanel from './WellMaster';
 
 const useStyles = makeStyles(theme => ({
 	mainTabContainer: {

@@ -1,10 +1,12 @@
-import React, { memo, useState, useEffect } from 'react';
+import { useLazyQuery } from '@apollo/client';
 import { IconButton } from '@material-ui/core';
 import PageviewIcon from '@material-ui/icons/Pageview';
-import { useLazyQuery } from '@apollo/client';
-import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
-import PdfViewer from 'components/MRTTable/TablesOverride/DocumentTable/TableCell/PDFView';
+import React, { memo, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+
+import PdfViewer from 'components/MRTTable/TablesOverride/DocumentTable/TableCell/PDFView';
+
+import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
 
 function FileView({ docInfo }) {
 	const splittedStrings = docInfo?.fileName?.split('.');

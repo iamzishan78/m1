@@ -4,19 +4,20 @@ import { makeStyles } from '@material-ui/core/styles';
 import arrayMove from 'array-move';
 import React, { useContext, useState } from 'react';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
+
 import { DashboardContext } from '../DashboardContext';
-import ProdCard from './ProdCard';
 import CardWrapper from './CardTemplate';
+import Notepad from './Notepad';
+import Notifications from './Notifications';
+import People from './People';
+import PermitsCard from './PermitsCard';
+import ProdCard from './ProdCard';
 //import TwitterCard from "./TwitterCard";
-import StockCard from './StockCard';
 import RigsCard from './RigsCard';
 import RSSFeed from './RssFeed';
-import Notifications from './Notifications';
-import PermitsCard from './PermitsCard';
+import StockCard from './StockCard';
 import Tasks from './Tasks';
-import Notepad from './Notepad';
 import TrackTaskCard from './TrackTaskCard';
-import People from './People';
 
 const useStyles = makeStyles(() => ({
 	root: {

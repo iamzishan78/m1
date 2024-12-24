@@ -1,18 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState, useContext } from 'react';
-import { Grid, TextField } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
 import { useLazyQuery } from '@apollo/client';
+import { Grid, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import moment from 'moment';
+import { makeStyles } from '@material-ui/styles';
 import get from 'lodash/get';
+import moment from 'moment';
+import React, { useEffect, useState, useContext } from 'react';
+import { useSelector } from 'react-redux';
 
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import { AppContext } from 'AppContext';
+
 import { CUSTOM_DATES } from 'utils/data';
-import { useSelector } from 'react-redux';
-import { getActivityAnalyticsFilters, handleCustomDateTypeChange } from 'utils/helper';
 import { esIndexFilterKeyMap } from 'utils/data';
+import { getActivityAnalyticsFilters, handleCustomDateTypeChange } from 'utils/helper';
+
+import { AppContext } from 'AppContext';
+
 import { getActivityFilters } from './ActivitiesDashboard';
 
 const useStyles = makeStyles(theme => ({
@@ -78,7 +81,9 @@ export default function CustomDatesActivities({
 	const classes = useStyles();
 	const { activeModule } = useSelector(({ common }) => common);
 	useEffect(() => {
-		if (minDate) handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+		if (minDate) {
+			handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [minDate]);
 

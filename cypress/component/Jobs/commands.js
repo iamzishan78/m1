@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import { GET_JOBS_STATUS } from 'graphQL/useQueryGetJobStatus';
+
 import { headers } from '../../cypressUtils/cypressHeaders';
 import ldata from '../../fixtures/ldata.json';
 

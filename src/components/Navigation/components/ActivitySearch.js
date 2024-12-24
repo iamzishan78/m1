@@ -1,21 +1,22 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
-import { useSelector } from 'react-redux';
 import { useLazyQuery } from '@apollo/client';
 import { Grid, InputAdornment, TextField, Tooltip, IconButton } from '@material-ui/core';
-import { fade, makeStyles } from '@material-ui/core/styles';
-import debounce from 'lodash/debounce';
-
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import Typography from '@material-ui/core/Typography';
-import SearchIcon from '@material-ui/icons/Search';
-import ClearIcon from '@material-ui/icons/Clear';
-import List from '@material-ui/icons/List';
-import EventIcon from '@material-ui/icons/Event';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
+import { fade, makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import ClearIcon from '@material-ui/icons/Clear';
+import EventIcon from '@material-ui/icons/Event';
+import List from '@material-ui/icons/List';
+import SearchIcon from '@material-ui/icons/Search';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import debounce from 'lodash/debounce';
+import React, { useState, useEffect, useContext, useRef } from 'react';
+import { useSelector } from 'react-redux';
 
 import { GETALLACTIVITIES } from 'graphQL/useQueryGetAllActivities';
-import { AppContext } from 'AppContext';
+
 import { slidoutState } from 'hookstate/initialStates';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	barTitle: {
@@ -99,7 +100,7 @@ const ActivitySearch = () => {
 	const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
 
 	const [getAllActivitiesForSearch, { data: activitiesData, loading }] = useLazyQuery(GETALLACTIVITIES, {
-		fetchPolicy: `network-only`,
+		fetchPolicy: 'network-only',
 	});
 
 	const handleSelectActivity = id => {

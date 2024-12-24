@@ -1,6 +1,9 @@
 import { InputAdornment } from '@material-ui/core';
+
 import { calculatePercentage } from 'components/Shared/valueformatters/vf_currency';
+
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+
 import { tableGlobalController } from 'hookstate/tableController';
 
 const costAllocationForm = ({ setValue }) => {
@@ -21,7 +24,7 @@ const costAllocationForm = ({ setValue }) => {
 					keep_alive: '1micros',
 				},
 				search: {
-					query: `*`,
+					query: '*',
 					fields: ['number.keyword', 'name.keyword'],
 				},
 				filters: [],

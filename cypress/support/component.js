@@ -28,16 +28,18 @@ import '../component/Map/LayerManager/commands';
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
+import { ConnectedRouter } from 'connected-react-router';
 import { mount } from 'cypress/react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
-import Providers from 'Providers';
 import { globalStateController } from 'hookstate/globalStateController';
+
+import Providers from 'Providers';
+import { history } from 'store';
+
 import { userData } from '../data';
 import ldata from '../fixtures/ldata.json';
-import { ConnectedRouter } from 'connected-react-router';
-import { history } from 'store';
 
 // Adds a new command 'mount' to Cypress for mounting a React component with custom global state and providers.
 Cypress.Commands.add('mount', (component, { disableContactBulkProgress, testCase, spec, mrtOverrideMeta } = {}) => {

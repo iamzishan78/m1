@@ -1,9 +1,10 @@
-import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
 
-import Drawer from './Drawer';
-import DialogContent from './DialogContent';
 import { slidoutState } from 'hookstate/initialStates';
+
+import DialogContent from './DialogContent';
+import Drawer from './Drawer';
 
 const useStyles = makeStyles(theme => ({
 	contentRoot: ({ selectedActivity }) => ({

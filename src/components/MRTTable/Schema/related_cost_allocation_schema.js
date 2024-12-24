@@ -1,6 +1,7 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import RelatedCostAllocationsToolbar from '../TablesOverride/RelatedCostAllocationsTable/RelatedCostAllocationsToolbar';
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+
+import RelatedCostAllocationsToolbar from '../TablesOverride/RelatedCostAllocationsTable/RelatedCostAllocationsToolbar';
 
 const esIndex = 'properties_flat';
 
@@ -78,7 +79,7 @@ const RelatedCostAllocationsMeta = {
 			},
 			Cell: ({ row }) => {
 				const value = row.original?.costAllocations?.allocation;
-				return value ? `${Number(value).toFixed(2)}%` : value === 0 ? `0%` : '';
+				return value ? `${Number(value).toFixed(2)}%` : value === 0 ? '0%' : '';
 			},
 		},
 		{

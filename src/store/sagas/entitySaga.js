@@ -1,11 +1,13 @@
-import { call, takeLatest, put } from 'redux-saga/effects';
 import get from 'lodash/get';
+import { call, takeLatest, put } from 'redux-saga/effects';
 
-import Api from 'api';
 import { GET_ENTITY } from 'graphQL/useQueryGetEntity';
 import { OWNER_BY_ID_QUERY } from 'graphQL/useQueryOwners';
+
 import { getOwnerEntityDetailAction } from 'store/actions/entityActions';
 import { GET_OWNER_ENTITY_DETAILS } from 'store/type';
+
+import Api from 'api';
 
 function* getOwnerEntityDetail(action) {
 	try {

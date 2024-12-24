@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { DetailComponents } from './DetailsComponent';
 import { DrawerContextProvider } from './DrawerContext';
 

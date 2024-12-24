@@ -1,19 +1,22 @@
-import React, { Fragment, useState, useEffect, useRef, useCallback } from 'react';
-import CardHeader from '@material-ui/core/CardHeader';
+import * as am4charts from '@amcharts/amcharts4/charts';
+import * as am4core from '@amcharts/amcharts4/core';
+import { useLazyQuery } from '@apollo/client';
 import { Grid, TextField, CircularProgress, Box } from '@material-ui/core';
+import CardHeader from '@material-ui/core/CardHeader';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { CUSTOM_DATES } from 'utils/data';
 import { makeStyles } from '@material-ui/styles';
 import moment from 'moment';
-import { useLazyQuery } from '@apollo/client';
-import { GET_ACTIVITY_TASK_PER_USER } from 'graphQL/useQueryActivityTaskPerUser';
-import * as am4core from '@amcharts/amcharts4/core';
-import * as am4charts from '@amcharts/amcharts4/charts';
-import { getRangeFilters } from 'utils/helper';
-import CustomAvatar from 'components/Shared/ui/CustomAvatar';
+import React, { Fragment, useState, useEffect, useRef, useCallback } from 'react';
 import ReactDOMServer from 'react-dom/server';
-import { handleCustomDateTypeChange } from 'utils/helper';
+
+import CustomAvatar from 'components/Shared/ui/CustomAvatar';
+
+import { GET_ACTIVITY_TASK_PER_USER } from 'graphQL/useQueryActivityTaskPerUser';
 import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
+
+import { CUSTOM_DATES } from 'utils/data';
+import { getRangeFilters } from 'utils/helper';
+import { handleCustomDateTypeChange } from 'utils/helper';
 
 const useStyles = makeStyles(theme => ({
 	actionBar: {
@@ -158,10 +161,14 @@ export default function TrackTaskCard() {
 			}
 
 			// Add range filters if available
-			if (range.length > 0) filters = [...filters, ...range];
+			if (range.length > 0) {
+				filters = [...filters, ...range];
+			}
 
 			// If no filters were generated, fall back to the appliedFilters directly
-			if (!filters.length && appliedFilters.length) filters = appliedFilters;
+			if (!filters.length && appliedFilters.length) {
+				filters = appliedFilters;
+			}
 		}
 		return filters;
 	};
@@ -185,7 +192,9 @@ export default function TrackTaskCard() {
 	}, [getActivityAnalytics, getAllFilters]);
 
 	useEffect(() => {
-		if (!taskperUser) return;
+		if (!taskperUser) {
+			return;
+		}
 		// Create chart instance
 		var chart = am4core.create('bar-chart', am4charts.XYChart);
 
@@ -201,7 +210,7 @@ export default function TrackTaskCard() {
 		categoryAxis.renderer.labels.template.fontWeight = 'bold';
 
 		// Use adapter to modify the displayed label and include images
-		categoryAxis.renderer.labels.template.adapter.add('html', function (text, label) {
+		categoryAxis.renderer.labels.template.adapter.add('html', (text, label) => {
 			let name = '';
 			let profileImage = null; // Default to no profile image
 			const userEmail = label?._dataItem?.properties?.category;
@@ -248,7 +257,7 @@ export default function TrackTaskCard() {
 			labelBullet.label.fontWeight = 'bold';
 
 			// Add an adapter to hide the label when valueX is zero
-			labelBullet.label.adapter.add('text', function (text, target) {
+			labelBullet.label.adapter.add('text', (text, target) => {
 				if (target.dataItem && target.dataItem.valueX === 0) {
 					return ''; // Return empty string to hide the label
 				}
@@ -265,7 +274,7 @@ export default function TrackTaskCard() {
 		chart.legend.marginLeft = 20; // Optional: add some margin
 
 		// Adapter to update legend position
-		chart.legend.adapter.add('y', function (position, target) {
+		chart.legend.adapter.add('y', (position, target) => {
 			return 30;
 		}); // Optional: add some margin
 

@@ -1,5 +1,3 @@
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import {
 	Grid,
 	Typography,
@@ -10,20 +8,22 @@ import {
 	IconButton,
 	TextField,
 } from '@material-ui/core';
-import { useStyles as summaryStyles } from '../style';
-
+import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
-import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
-import WellIcon from 'components/Shared/svgIcons/well';
-import TractIcon from 'components/Shared/svgIcons/tract';
 import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 
-import FieldsSection from './fieldsSection';
-import Acreage from './Acreage';
-import RecodingInformation from './RecordingInfo';
 import AgreementIcon from 'components/Shared/svgIcons/agreements';
+import TractIcon from 'components/Shared/svgIcons/tract';
+import WellIcon from 'components/Shared/svgIcons/well';
+
+import { useStyles as summaryStyles } from '../style';
+import Acreage from './Acreage';
+import FieldsSection from './fieldsSection';
+import RecodingInformation from './RecordingInfo';
 
 export default function Summary({
 	flexDirection,

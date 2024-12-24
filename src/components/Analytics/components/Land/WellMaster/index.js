@@ -1,8 +1,11 @@
 import React, { useEffect, useContext } from 'react';
-import { AppContext } from 'AppContext';
+
 import MRTTable from 'components/MRTTable';
-import { tableController } from 'hookstate/tableController';
 import Wells from 'components/Shared/svgIcons/well';
+
+import { tableController } from 'hookstate/tableController';
+
+import { AppContext } from 'AppContext';
 
 const externalFilters = {
 	internalCompany: 'All',
@@ -19,11 +22,12 @@ export default function ExhibitATabPanel() {
 
 		// Add available values to filters
 		['internalCompany', 'wellClassification', 'payStatus', 'reportingGroup'].forEach(field => {
-			if (externalFilters[field] !== 'All')
+			if (externalFilters[field] !== 'All') {
 				newESFilters.push({
 					field: `${field}.keyword`,
 					value: externalFilters[field],
 				});
+			}
 		});
 	}, []);
 

@@ -1,13 +1,15 @@
-import React, { useContext, useEffect, useRef } from 'react';
-import { NavigationContext } from '../../Navigation/NavigationContext';
 import { Button, Grid } from '@material-ui/core';
-import { CSVReader } from 'react-papaparse';
-import CSVDownloader from 'react-csv-downloader';
-import { makeStyles } from '@material-ui/core/styles';
-import { useDispatch } from 'react-redux';
 import Select from '@material-ui/core/Select';
-import { showErrorMessage } from '../../../actions';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useContext, useEffect, useRef } from 'react';
+import CSVDownloader from 'react-csv-downloader';
+import { CSVReader } from 'react-papaparse';
+import { useDispatch } from 'react-redux';
+
 import { jobController } from 'hookstate/jobStateController';
+
+import { showErrorMessage } from '../../../actions';
+import { NavigationContext } from '../../Navigation/NavigationContext';
 
 const useStyles = makeStyles(() => ({
 	table: {
@@ -252,11 +254,15 @@ export default function CSVFileReader(props) {
 							onDrop={csvData => {
 								csvData.forEach(({ data }) => {
 									Object.entries(data).forEach(([key, value]) => {
-										if (typeof value !== 'string') return;
+										if (typeof value !== 'string') {
+											return;
+										}
 
 										data[key] = value.replace('@#$%:', '');
 
-										if (data[key].startsWith('string=')) data[key] = data[key].replace('string=', '');
+										if (data[key].startsWith('string=')) {
+											data[key] = data[key].replace('string=', '');
+										}
 									});
 								});
 

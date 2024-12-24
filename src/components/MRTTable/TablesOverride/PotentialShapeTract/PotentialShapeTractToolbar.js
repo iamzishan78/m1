@@ -1,8 +1,10 @@
-import React, { memo } from 'react';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { Button, ButtonGroup } from '@material-ui/core';
-import { ADD_TRACTS_TOA_SHAPE } from 'graphQL/useMutationAddTractsToAShape';
 import { useMutation } from '@apollo/client';
+import { Button, ButtonGroup } from '@material-ui/core';
+import React, { memo } from 'react';
+
+import { ADD_TRACTS_TOA_SHAPE } from 'graphQL/useMutationAddTractsToAShape';
+
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 function PotentialShapeTractToolbar({ tableKey, table }) {
 	const [addShapeTract] = useMutation(ADD_TRACTS_TOA_SHAPE, {

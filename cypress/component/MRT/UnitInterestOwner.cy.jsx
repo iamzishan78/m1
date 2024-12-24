@@ -1,7 +1,9 @@
 /* eslint-disable no-undef */
-import MRTTable from 'components/MRTTable';
-import { basic_timeouts } from '../../cypressUtils/data';
 import _ from 'lodash';
+
+import MRTTable from 'components/MRTTable';
+
+import { basic_timeouts } from '../../cypressUtils/data';
 
 let responseHits;
 describe('Unit Interest Owners Table', () => {
@@ -92,7 +94,7 @@ describe('Unit Interest Owners Table', () => {
 
 	it('should export contact and contact purchaser', () => {
 		cy.wait(1000);
-		cy.get(`[data-testid="over-ride-select-all-div"] input`).click();
+		cy.get('[data-testid="over-ride-select-all-div"] input').click();
 		cy.get('.MuiButtonBase-root[data-testid="export-contact-and-purchse-icon-button"]').click();
 
 		cy.interceptAndWait(
@@ -132,11 +134,11 @@ describe('Unit Interest Owners Table', () => {
 			purschasedContact?.contact?.entityDetail?.name ||
 			`${purschasedContact?.firstName} ${purschasedContact?.lastName}`;
 
-		cy.get(`[data-testid="MoreVertIcon"]`).first().click();
+		cy.get('[data-testid="MoreVertIcon"]').first().click();
 		cy.wait(basic_timeouts.shorTimeout);
 		cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
 		cy.wait(basic_timeouts.shorTimeout);
-		cy.get(`[data-testid="MoreVertIcon"]`).first().click();
+		cy.get('[data-testid="MoreVertIcon"]').first().click();
 		cy.wait(basic_timeouts.shorTimeout);
 		cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
 		cy.wait(basic_timeouts.shorTimeout);

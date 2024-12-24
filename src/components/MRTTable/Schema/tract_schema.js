@@ -1,16 +1,20 @@
-import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
-import vf_currency from 'components/Shared/valueformatters/vf_currency';
-import Loader from 'components/Loaders';
-import { globalStateController } from 'hookstate/globalStateController';
-import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
-import { tableGlobalController } from 'hookstate/tableController';
-import { copy } from 'utils/helper';
-import TractIcon from 'components/Shared/svgIcons/tract';
 import _ from 'lodash';
+
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import Loader from 'components/Loaders';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import TractIcon from 'components/Shared/svgIcons/tract';
+import vf_currency from 'components/Shared/valueformatters/vf_currency';
+
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { copy } from 'utils/helper';
 
 const esIndex = 'shapes_flat';
 

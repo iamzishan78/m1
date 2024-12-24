@@ -1,5 +1,7 @@
 import React, { memo, useEffect } from 'react';
+
 import { tableGlobalController } from 'hookstate/tableController';
+
 import AddWellInterestDialog from './AddWellInterestDialog';
 
 function CotactDetailWellInterestTableDialogs() {
@@ -13,11 +15,12 @@ function CotactDetailWellInterestTableDialogs() {
 	};
 
 	useEffect(() => {
-		if (activeWellInterest)
+		if (activeWellInterest) {
 			window.setStateApp(stateApp => ({
 				...stateApp,
 				activeWellInterest: activeWellInterest,
 			}));
+		}
 	}, [activeWellInterest]);
 	return (
 		<>

@@ -1,8 +1,8 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
 const esIndex = 'shapewellinterests_flat';
 

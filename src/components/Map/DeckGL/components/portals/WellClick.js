@@ -1,10 +1,11 @@
+import { useApolloClient } from '@apollo/client';
 import { memo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useApolloClient } from '@apollo/client';
 
-import { TENANTWELL } from 'graphQL/useQueryTenantWell';
-import { popupController } from 'hookstate/popupStateController';
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { TENANTWELL } from 'graphQL/useQueryTenantWell';
+
+import { popupController } from 'hookstate/popupStateController';
 
 function WellClick() {
 	const { paramId } = useParams();
@@ -50,7 +51,9 @@ function WellClick() {
 		(async () => {
 			const { selectedWellId: selectedWellIdVal, data } = popupController.getValues(['selectedWellId', 'data']);
 
-			if (!selectedWellIdVal) return;
+			if (!selectedWellIdVal) {
+				return;
+			}
 
 			const currentFeature = {};
 
@@ -61,7 +64,9 @@ function WellClick() {
 				currentFeature.properties = { ...(await getElasticWell(selectedWellIdVal)) };
 			}
 
-			if (currentFeature?.properties?.Id) currentFeature.properties.id = currentFeature.properties.Id;
+			if (currentFeature?.properties?.Id) {
+				currentFeature.properties.id = currentFeature.properties.Id;
+			}
 
 			if (currentFeature) {
 				popupController.createPopUp(currentFeature.properties, paramId);
@@ -74,11 +79,12 @@ function WellClick() {
 				if (data) {
 					currentFeature.properties = { ...(await getElasticWell(selectedWellIdVal)) };
 
-					if (popupController.getValue('data'))
+					if (popupController.getValue('data')) {
 						popupController.updateState({
 							selectedWell: currentFeature.properties,
 							data: undefined,
 						});
+					}
 				}
 			}
 		})();

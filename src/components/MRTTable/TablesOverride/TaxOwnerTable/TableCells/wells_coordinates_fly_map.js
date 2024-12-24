@@ -1,15 +1,17 @@
-import React, { useEffect } from 'react';
-import Tooltip from '@material-ui/core/Tooltip';
-import { IconButton } from '@material-ui/core';
-import RoomIcon from '@material-ui/icons/Room';
-import { makeStyles } from '@material-ui/core/styles';
 import { useLazyQuery } from '@apollo/client';
+import { IconButton } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import RoomIcon from '@material-ui/icons/Room';
+import React, { useEffect } from 'react';
+
+import { findBoundsMap } from 'components/MapControls/commonHelper';
 
 import { OWNERSLATSLONS } from 'graphQL/useQueryOwnerLatsLonsArray';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { layerController } from 'hookstate/layerStateController';
-import { findBoundsMap } from 'components/MapControls/commonHelper';
+
 import { globalStateController } from 'hookstate/globalStateController';
+import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
 
 const useStyles = makeStyles(() => ({
 	icons: {

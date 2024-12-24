@@ -1,4 +1,5 @@
 import { copy } from 'components/Shared/functions';
+
 import Agreement from './AGREEMENT_SHAPE';
 
 let agreementsColumns = copy(Agreement);

@@ -1,9 +1,12 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { AppContext } from 'AppContext';
 import { makeStyles } from '@material-ui/styles';
-import AgreementsTable from 'components/Table/Agreement/AgreementsTable';
+import React, { useState, useContext, useEffect } from 'react';
+
 import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
+import AgreementsTable from 'components/Table/Agreement/AgreementsTable';
+
 import { mapControlsController } from 'hookstate/mapControlsController';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	root: {

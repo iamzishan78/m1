@@ -1,17 +1,17 @@
 import * as Constants from '@mapbox/mapbox-gl-draw/src/constants';
-import doubleClickZoom from '@mapbox/mapbox-gl-draw/src/lib/double_click_zoom';
-import createSupplementaryPoints from '@mapbox/mapbox-gl-draw/src/lib/create_supplementary_points';
 import * as CommonSelectors from '@mapbox/mapbox-gl-draw/src/lib/common_selectors';
+import createSupplementaryPoints from '@mapbox/mapbox-gl-draw/src/lib/create_supplementary_points';
+import doubleClickZoom from '@mapbox/mapbox-gl-draw/src/lib/double_click_zoom';
 import moveFeatures from '@mapbox/mapbox-gl-draw/src/lib/move_features';
-
-import { lineString, point } from '@turf/helpers';
 import bearing from '@turf/bearing';
 import center from '@turf/center';
-import midpoint from '@turf/midpoint';
-import distance from '@turf/distance';
 import destination from '@turf/destination';
+import distance from '@turf/distance';
+import { lineString, point } from '@turf/helpers';
+import midpoint from '@turf/midpoint';
 import transformRotate from '@turf/transform-rotate';
 import transformScale from '@turf/transform-scale';
+
 import { copy } from 'components/Shared/functions';
 
 var rotate = require('./img/rotate.png');
@@ -376,13 +376,21 @@ export const SRStyle = [
 ];
 
 function parseSRCenter(value, defaultSRCenter = SRCenter.Center) {
-	if (value == undefined || value == null) return defaultSRCenter;
+	if (value == undefined || value == null) {
+		return defaultSRCenter;
+	}
 
-	if (value === SRCenter.Center || value === SRCenter.Opposite) return value;
+	if (value === SRCenter.Center || value === SRCenter.Opposite) {
+		return value;
+	}
 
-	if (value == 'center') return SRCenter.Center;
+	if (value == 'center') {
+		return SRCenter.Center;
+	}
 
-	if (value == 'opposite') return SRCenter.Opposite;
+	if (value == 'opposite') {
+		return SRCenter.Opposite;
+	}
 
 	throw Error('Invalid SRCenter: ' + value);
 }
@@ -473,12 +481,16 @@ SRMode.onSetup = function (opts) {
 	});
 
 	var _this = this;
-	this.map.loadImage(rotate.default, function (error, image) {
-		if (error) throw error;
+	this.map.loadImage(rotate.default, (error, image) => {
+		if (error) {
+			throw error;
+		}
 		_this.map.addImage('rotate', image);
 	});
-	this.map.loadImage(scale.default, function (error, image) {
-		if (error) throw error;
+	this.map.loadImage(scale.default, (error, image) => {
+		if (error) {
+			throw error;
+		}
 		_this.map.addImage('scale', image);
 	});
 
@@ -548,8 +560,12 @@ SRMode.computeBisectrix = function (points) {
 
 		var a = (a1 + a2) / 2.0;
 
-		if (a < 0.0) a += 360;
-		if (a > 360) a -= 360;
+		if (a < 0.0) {
+			a += 360;
+		}
+		if (a > 360) {
+			a -= 360;
+		}
 
 		points[i1].properties.heading = a;
 	}
@@ -627,9 +643,15 @@ const isRotatePoint = CommonSelectors.isOfMetaType(Constants.meta.MIDPOINT);
 const isVertex = CommonSelectors.isOfMetaType(Constants.meta.VERTEX);
 
 SRMode.onTouchStart = SRMode.onMouseDown = function (state, e) {
-	if (isVertex(e)) return this.onVertex(state, e);
-	if (isRotatePoint(e)) return this.onRotatePoint(state, e);
-	if (CommonSelectors.isActiveFeature(e)) return this.onFeature(state, e);
+	if (isVertex(e)) {
+		return this.onVertex(state, e);
+	}
+	if (isRotatePoint(e)) {
+		return this.onRotatePoint(state, e);
+	}
+	if (CommonSelectors.isActiveFeature(e)) {
+		return this.onFeature(state, e);
+	}
 	// if (isMidpoint(e)) return this.onMidpoint(state, e);
 };
 
@@ -685,12 +707,13 @@ SRMode.convertToPolygon = function (state, polygon) {
 	// console.log("convertToPolygon [12][0][2] ", coordinates[12][0][2][0], coordinates[12][0][2][1])
 
 	// console.log("convertToPolygon secondIndex ", state.secondIndex)
-	if (!state.secondIndex)
+	if (!state.secondIndex) {
 		if (coordinates[15][0][3][0] !== coordinates[12][0][2][0]) {
 			state.secondIndex = 2;
 		} else {
 			state.secondIndex = 3;
 		}
+	}
 	return coordinates[1]
 		? {
 				...polygon,
@@ -716,8 +739,9 @@ SRMode.computeAxes = function (state, polygon) {
 	const center0 = this.computeRotationCenter(state, polygon);
 	let corners;
 	let sCenters = {};
-	if (polygon.geometry.type === Constants.geojsonTypes.POLYGON) corners = polygon.geometry.coordinates[0].slice(0);
-	else if (polygon.geometry.type === Constants.geojsonTypes.MULTI_POLYGON) {
+	if (polygon.geometry.type === Constants.geojsonTypes.POLYGON) {
+		corners = polygon.geometry.coordinates[0].slice(0);
+	} else if (polygon.geometry.type === Constants.geojsonTypes.MULTI_POLYGON) {
 		let tempPolygon = this.convertToPolygon(state, polygon);
 		corners = tempPolygon.geometry.coordinates[0].slice(0);
 		sCenters = { '0.0.2': 0, '15.0.3': 1, '12.0.2': 2, '3.0.0': 3 };
@@ -737,8 +761,9 @@ SRMode.computeAxes = function (state, polygon) {
 		// temp.push(polygon.geometry.coordinates[0][0][2])
 
 		// corners = temp;
-	} else if (polygon.geometry.type === Constants.geojsonTypes.LINE_STRING) corners = polygon.geometry.coordinates;
-	else if (polygon.geometry.type === Constants.geojsonTypes.MULTI_LINE_STRING) {
+	} else if (polygon.geometry.type === Constants.geojsonTypes.LINE_STRING) {
+		corners = polygon.geometry.coordinates;
+	} else if (polygon.geometry.type === Constants.geojsonTypes.MULTI_LINE_STRING) {
 		let temp = [];
 		polygon.geometry.coordinates.forEach(c => {
 			c.forEach(c2 => {
@@ -756,7 +781,9 @@ SRMode.computeAxes = function (state, polygon) {
 
 	for (var i1 = 0; i1 < n; i1++) {
 		var i0 = i1 - 1;
-		if (i0 < 0) i0 += n;
+		if (i0 < 0) {
+			i0 += n;
+		}
 
 		const c0 = corners[i0];
 		const c1 = corners[i1];
@@ -766,7 +793,9 @@ SRMode.computeAxes = function (state, polygon) {
 		if (SRCenter.Opposite === state.rotatePivot) {
 			var i3 = (i1 + iHalf) % n; // opposite corner
 			var i2 = i3 - 1;
-			if (i2 < 0) i2 += n;
+			if (i2 < 0) {
+				i2 += n;
+			}
 
 			const c2 = corners[i2];
 			const c3 = corners[i3];
@@ -807,7 +836,9 @@ SRMode.computeAxes = function (state, polygon) {
 };
 
 SRMode.onDrag = function (state, e) {
-	if (state.canDragMove !== true) return;
+	if (state.canDragMove !== true) {
+		return;
+	}
 	state.dragMoving = true;
 	e.originalEvent.stopPropagation();
 
@@ -934,21 +965,30 @@ SRMode.clickActiveFeature = function (state) {
 };
 
 SRMode.onClick = function (state, e) {
-	if (CommonSelectors.noTarget(e)) return this.clickNoTarget(state, e);
-	if (CommonSelectors.isActiveFeature(e)) return this.clickActiveFeature(state, e);
-	if (CommonSelectors.isInactiveFeature(e)) return this.clickInactive(state, e);
+	if (CommonSelectors.noTarget(e)) {
+		return this.clickNoTarget(state, e);
+	}
+	if (CommonSelectors.isActiveFeature(e)) {
+		return this.clickActiveFeature(state, e);
+	}
+	if (CommonSelectors.isInactiveFeature(e)) {
+		return this.clickInactive(state, e);
+	}
 	this.stopDragging(state);
 };
 
 SRMode.clickNoTarget = function (state, e) {
-	if (state.canSelectFeatures) this.changeMode(Constants.modes.SIMPLE_SELECT);
+	if (state.canSelectFeatures) {
+		this.changeMode(Constants.modes.SIMPLE_SELECT);
+	}
 };
 
 SRMode.clickInactive = function (state, e) {
-	if (state.canSelectFeatures)
+	if (state.canSelectFeatures) {
 		this.changeMode(Constants.modes.SIMPLE_SELECT, {
 			featureIds: [e.featureTarget.properties.id],
 		});
+	}
 };
 
 SRMode.onTrash = function () {

@@ -1,14 +1,15 @@
 import * as turf from '@turf/turf';
 import hexRgb from 'hex-rgb';
-import mapboxgl from 'mapbox-gl';
 import _, { isEqual } from 'lodash';
+import mapboxgl from 'mapbox-gl';
 
+import { colorBasedAttributes } from 'components/MapControls/components/Layer/LayerAttributes/ColorBasedAttributes';
 import { copy, getPolygonString } from 'components/Shared/functions';
 import { deckGlLandGridIdentifiers, ifDefaultLayers } from 'components/Shared/functions/shapeLayer';
-import { popupController } from 'hookstate/popupStateController';
+
 import { globalStateController } from 'hookstate/globalStateController';
-import { colorBasedAttributes } from 'components/MapControls/components/Layer/LayerAttributes/ColorBasedAttributes';
 import { getLayerKey } from 'hookstate/helpers';
+import { popupController } from 'hookstate/popupStateController';
 
 export const random_hex_color_code = () => {
 	const n = (Math.random() * 0xfffff * 1000000).toString(16);
@@ -144,7 +145,7 @@ export const makeGeoJSON = (mdata, labelProps) => ({
 				if (feature._id) {
 					shape.id = feature._id;
 					shape.properties.id = feature._id;
-					if (labelProps)
+					if (labelProps) {
 						if (shape.geometry?.type === 'MultiPolygon') {
 							const shapesCoordinates = copy(shape.geometry.coordinates);
 							for (let i = 0; i < shapesCoordinates.length; i++) {
@@ -156,6 +157,7 @@ export const makeGeoJSON = (mdata, labelProps) => ({
 						} else {
 							labels.push(getShapeLabelProps(shape, labelProps));
 						}
+					}
 				}
 				return [shape, ...labels];
 			}
@@ -193,7 +195,9 @@ export const filterUniqueFeatures = features => {
 };
 
 export const pickDeckObjects = ({ x, y, radius, depth }) => {
-	if (!window.mapRef?.__deck) return;
+	if (!window.mapRef?.__deck) {
+		return;
+	}
 	let deckFeatures = window.mapRef?.__deck?.pickMultipleObjects({
 		x,
 		y,
@@ -226,9 +230,13 @@ export const hexToRGB = hex => {
 };
 
 export const getRGBA = (rgb, a) => {
-	if (!rgb) return [251, 152, 40, 255];
+	if (!rgb) {
+		return [251, 152, 40, 255];
+	}
 
-	if (rgb.includes('#')) rgb = hexToRGB(rgb);
+	if (rgb.includes('#')) {
+		rgb = hexToRGB(rgb);
+	}
 
 	// Determine alpha value
 	let alpha = typeof a === 'number' ? a : undefined;
@@ -251,7 +259,9 @@ export const getRGBA = (rgb, a) => {
 	}
 
 	// Convert alpha to 0-255 range if it's a fractional value
-	if (colorArray[3] < 1) colorArray[3] = Math.round((colorArray[3] || 1) * 255.0);
+	if (colorArray[3] < 1) {
+		colorArray[3] = Math.round((colorArray[3] || 1) * 255.0);
+	}
 
 	// Override alpha if explicitly provided
 	if (alpha !== undefined) {
@@ -259,14 +269,18 @@ export const getRGBA = (rgb, a) => {
 	}
 
 	// Default to full opacity if alpha is undefined
-	if (colorArray[3] === undefined) colorArray[3] = 255;
+	if (colorArray[3] === undefined) {
+		colorArray[3] = 255;
+	}
 
 	return colorArray;
 };
 
 export const divideBoundingBox = bbox => {
 	const isBBoxObj = bbox.top_left && bbox.bottom_right;
-	if (isBBoxObj) bbox = [bbox.top_left.lon, bbox.bottom_right.lat, bbox.bottom_right.lon, bbox.top_left.lat];
+	if (isBBoxObj) {
+		bbox = [bbox.top_left.lon, bbox.bottom_right.lat, bbox.bottom_right.lon, bbox.top_left.lat];
+	}
 
 	// Extract bbox coordinates
 	const [minX, minY, maxX, maxY] = bbox;
@@ -283,7 +297,7 @@ export const divideBoundingBox = bbox => {
 		[centerX, centerY, maxX, maxY], // Top-right box
 	];
 
-	if (isBBoxObj)
+	if (isBBoxObj) {
 		return boxes.map(bbox => ({
 			top_left: {
 				lat: bbox[3],
@@ -294,6 +308,7 @@ export const divideBoundingBox = bbox => {
 				lon: bbox[2],
 			},
 		}));
+	}
 
 	return boxes;
 };
@@ -361,7 +376,9 @@ export const getBeforeLayerId = (beforeLayer, layerFilters) =>
 
 export const getPolygonStringFromBBox = bbox => {
 	const isBBoxObj = bbox.top_left && bbox.bottom_right;
-	if (isBBoxObj) bbox = [bbox.top_left.lon, bbox.bottom_right.lat, bbox.bottom_right.lon, bbox.top_left.lat];
+	if (isBBoxObj) {
+		bbox = [bbox.top_left.lon, bbox.bottom_right.lat, bbox.bottom_right.lon, bbox.top_left.lat];
+	}
 
 	const bboxPolygon = turf.bboxPolygon(bbox);
 
@@ -404,7 +421,7 @@ export const createFilterPopup = filterFeature => {
 		new mapboxgl.Popup({ offset: 0, closeOnClick: false })
 			.setLngLat(popupCoordinate)
 			.setMaxWidth('none')
-			.setHTML(`<div id="filterPopupContainer"></div>`)
+			.setHTML('<div id="filterPopupContainer"></div>')
 			.addTo(window.mapRef);
 
 		popupController.updateState({
@@ -495,7 +512,9 @@ const getAttributeBasedColor = (attrFillColor, isColorEnabled) => {
 		let fColorOp = attrFillColor.alpha;
 		return isColorEnabled === false ? [0, 0, 0, 0] : getRGBA(fColor, fColorOp);
 	}
-	if (attrFillColor) return isColorEnabled === false ? [0, 0, 0, 0] : getRGBA(attrFillColor, 1);
+	if (attrFillColor) {
+		return isColorEnabled === false ? [0, 0, 0, 0] : getRGBA(attrFillColor, 1);
+	}
 };
 
 // Utility for getting layer stroke color
@@ -509,7 +528,9 @@ export const getLayerStrokeColor = (dbLayer, strokeColor) => {
 			let path = colorBasedAttributes[getLayerKey(dbLayer?.identifier, colorBasedAttributes)]?.keys.find(
 				key => key.label === selectAttr
 			);
-			if (!path) path = dbLayer.layerSettings?.selectedStrokeAttribute;
+			if (!path) {
+				path = dbLayer.layerSettings?.selectedStrokeAttribute;
+			}
 
 			let keys = path?.value.split('.').slice(1, -1);
 			let orKeys = keys.slice(0, -1);
@@ -544,7 +565,9 @@ export const getLayerFillColor = (dbLayer, fillColor, fillOpacity) => {
 			let path = colorBasedAttributes[getLayerKey(dbLayer?.identifier, colorBasedAttributes)]?.keys.find(
 				key => key.label === selectAttr
 			);
-			if (!path) path = dbLayer.layerSettings?.selectedAttribute;
+			if (!path) {
+				path = dbLayer.layerSettings?.selectedAttribute;
+			}
 
 			let keys = path?.value.split('.').slice(1, -1);
 			let orKeys = keys.slice(0, -1);
@@ -591,9 +614,13 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 					// Calculate area of the shape
 					const area = turf.area(feature);
 					// If area is less than 10 sq meters, return 0
-					if (area < 10) return 0;
+					if (area < 10) {
+						return 0;
+					}
 					// If area is less than 1000 sq meters, return 1
-					if (area < 1000) return 1;
+					if (area < 1000) {
+						return 1;
+					}
 					return strokeWidth || 20;
 				};
 
@@ -616,9 +643,13 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 					// Calculate area of the shape
 					const area = turf.area(feature);
 					// If area is less than 10 sq meters, return 0
-					if (area < 10) return 0;
+					if (area < 10) {
+						return 0;
+					}
 					// If area is less than 1000 sq meters, return 1
-					if (area < 1000) return 1;
+					if (area < 1000) {
+						return 1;
+					}
 					return pointWidth * 40;
 				};
 
@@ -635,11 +666,12 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 				props.getFillColor =
 					layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : props.getFillColor;
 				const getLineColor = getLayerFillColor(dbLayer, lineColor, lineOpaciity);
-				if (!props.getLineColor || !isEqual(getLineColor, props.getFillColor))
+				if (!props.getLineColor || !isEqual(getLineColor, props.getFillColor)) {
 					props.getLineColor =
 						layerInteraction.interactionDetail?.enableStrokeColor === false
 							? [0, 0, 0, 0]
 							: getLayerFillColor(dbLayer, lineColor, lineOpaciity);
+				}
 
 				break;
 
@@ -656,7 +688,7 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 		props.pointType = 'text';
 		props.textFontFamily = 'Poppins';
 		props.textSizeUnits = 'meters';
-	} else if (!!labelProps?.visibility) {
+	} else if (labelProps?.visibility) {
 		// Adhoc Fix
 		props.pointType = 'icon';
 	}
@@ -688,7 +720,9 @@ export const getClickedFeature = ({ x, y, depth = Infinity, getLandGrid = true }
 				}
 				return f.layer.id.startsWith(l.identifier);
 			});
-			if (clickedFeature) layer = l;
+			if (clickedFeature) {
+				layer = l;
+			}
 			return clickedFeature;
 		});
 

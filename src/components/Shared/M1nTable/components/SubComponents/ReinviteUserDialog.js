@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
+import { useMutation, useLazyQuery } from '@apollo/client';
+import { Select, InputLabel, FormControl, MenuItem, TextField, Grid } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
-import Button from '@material-ui/core/Button';
-import { useMutation, useLazyQuery } from '@apollo/client';
-import { Modals } from '../../../../../styles/Modal';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { REINVITEUSER } from '../../../../../graphQL/useMutationReinviteUser';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import FormLabel from '@material-ui/core/FormLabel';
-import { Select, InputLabel, FormControl, MenuItem, TextField, Grid } from '@material-ui/core';
-
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import gql from 'graphql-tag';
+import React, { useState } from 'react';
+
+import { REINVITEUSER } from '../../../../../graphQL/useMutationReinviteUser';
+import { Modals } from '../../../../../styles/Modal';
 
 export default function ReinviteUserDialog(props) {
 	const modalClass = Modals();

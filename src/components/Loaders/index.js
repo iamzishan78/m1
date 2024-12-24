@@ -1,9 +1,9 @@
-import React from 'react';
+import { Grid } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+import React from 'react';
 import { toast } from 'react-toastify';
-import { Grid } from '@material-ui/core';
 
 function CircularProgressWithLabel(props) {
 	const color = props.type === 'inprogress' ? '#7ca3c1' : props.type === 'success' ? '#04AA6D' : '#A52A20';
@@ -44,7 +44,9 @@ const toastMeta = {};
 const getOptions = (id, className) => {
 	return {
 		onClose: () => {
-			if (toastMeta[id]) toastMeta[id].isOpen = false;
+			if (toastMeta[id]) {
+				toastMeta[id].isOpen = false;
+			}
 		},
 		hideProgressBar: true,
 		pauseOnHover: true,
@@ -69,17 +71,20 @@ export const createToast = (id, message) => {
 		if (progress === 99) {
 			clearInterval(timer);
 		} else {
-			if (progress < 70) progress += 3;
-			else if (progress >= 70 && progress < 90) progress += 1;
-			else if (progress >= 90) {
+			if (progress < 70) {
+				progress += 3;
+			} else if (progress >= 70 && progress < 90) {
+				progress += 1;
+			} else if (progress >= 90) {
 				progress += 0.1;
 				progress = Math.round(progress * 10) / 10;
 			}
 			toastMeta[id] = { ...toastMeta[id], progress };
-			if (toastMeta[id].isOpen)
+			if (toastMeta[id].isOpen) {
 				toast.update(toastId, {
 					render: <CircularProgressWithLabel toastId={id} value={progress} type="inprogress" message={message} />,
 				});
+			}
 		}
 	}, 800);
 
@@ -93,12 +98,12 @@ export const successToast = (id, newMessage) => {
 		let { toastId } = toastMeta[id];
 		clearInterval(timer);
 
-		if (isOpen)
+		if (isOpen) {
 			toast.update(toastId, {
 				className: 'Toastify__toast_success',
 				render: <CircularProgressWithLabel toastId={id} value={100} type="success" message={newMessage || message} />,
 			});
-		else {
+		} else {
 			toastId = toast(
 				<CircularProgressWithLabel toastId={id} value={100} type="success" message={newMessage || message} />,
 				getOptions(id, 'Toastify__toast_success')
@@ -119,12 +124,12 @@ export const errorToast = (id, newMessage) => {
 		let { toastId } = toastMeta[id];
 		clearInterval(timer);
 
-		if (isOpen)
+		if (isOpen) {
 			toast.update(toastId, {
 				className: 'Toastify__toast_error',
 				render: <CircularProgressWithLabel toastId={id} value={100} type="error" message={newMessage || message} />,
 			});
-		else {
+		} else {
 			toastId = toast(
 				<CircularProgressWithLabel toastId={id} value={progress} type="error" message={newMessage || message} />,
 				getOptions(id, 'Toastify__toast_error')

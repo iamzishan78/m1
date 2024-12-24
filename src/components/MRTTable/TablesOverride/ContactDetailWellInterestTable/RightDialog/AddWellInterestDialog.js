@@ -1,15 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
-import AutorenewIcon from '@material-ui/icons/Autorenew';
-import Grid from '@material-ui/core/Grid';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
 	CircularProgress,
 	Dialog,
@@ -21,23 +10,38 @@ import {
 	ListItemIcon,
 	ListItemText,
 } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import InputLabel from '@material-ui/core/InputLabel';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import AutorenewIcon from '@material-ui/icons/Autorenew';
+import DeleteIcon from '@material-ui/icons/Delete';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import RightDialog from '../../../../ContactDetailCard/components/RightDialog';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import parse from 'autosuggest-highlight/parse';
 import PropTypes from 'prop-types';
+import React, { useState, useEffect, useContext } from 'react';
 import NumberFormat from 'react-number-format';
+
+import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+
+import { ADDWELLINTEREST } from 'graphQL/useMutationAddWellInterest';
+import { UPDATEWELLINTEREST } from 'graphQL/useMutationUpdateWellInterest';
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { INTERESTOWNERTYPESQUERY } from 'graphQL/useQueryInterestOwnerTypes';
 import { INTERESTTYPESQUERY } from 'graphQL/useQueryInterestTypes';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
-import { ADDWELLINTEREST } from 'graphQL/useMutationAddWellInterest';
-import { UPDATEWELLINTEREST } from 'graphQL/useMutationUpdateWellInterest';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 
 // contexts
-import { AppContext } from 'AppContext';
 import { tableGlobalController } from 'hookstate/tableController';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+
+import { AppContext } from 'AppContext';
+
+import RightDialog from '../../../../ContactDetailCard/components/RightDialog';
 
 function NumberFormatCustom(props) {
 	const { inputRef, onChange, name, ...other } = props;
@@ -185,7 +189,9 @@ function AddWellInterestDialog(props) {
 	const [getESSimpleSearch] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
 		fetchPolicy: 'no-cache',
 		onCompleted: wellsData => {
-			if (wellsData?.getESSimpleSearch?.hits) setFoundWells(wellsData.getESSimpleSearch.hits);
+			if (wellsData?.getESSimpleSearch?.hits) {
+				setFoundWells(wellsData.getESSimpleSearch.hits);
+			}
 		},
 	});
 
@@ -207,7 +213,9 @@ function AddWellInterestDialog(props) {
 	}, [dataInterestTypes]);
 
 	useEffect(() => {
-		if (!dataTenantWell?.tenantWell) return;
+		if (!dataTenantWell?.tenantWell) {
+			return;
+		}
 
 		const leaseToSet = dataTenantWell?.tenantWell?.lease || '';
 		const leaseAcresToSet = dataTenantWell?.tenantWell?.leaseAcres;
@@ -273,12 +281,16 @@ function AddWellInterestDialog(props) {
 
 	const formatRoyaltyAcres = royaltyAcres => {
 		const decimals = royaltyAcres.toString().split('.');
-		if (decimals[1] && decimals[1].length > 8) royaltyAcres = royaltyAcres.toFixed(8);
+		if (decimals[1] && decimals[1].length > 8) {
+			royaltyAcres = royaltyAcres.toFixed(8);
+		}
 		return Number(royaltyAcres);
 	};
 
 	const handleRecalcNRA = (leaseAcres, interest) => {
-		if (initializing || leaseAcres == null || interest == null) return;
+		if (initializing || leaseAcres == null || interest == null) {
+			return;
+		}
 		setFormRoyaltyAcres(formatRoyaltyAcres(leaseAcres * interest * 8));
 	};
 
@@ -392,7 +404,7 @@ function AddWellInterestDialog(props) {
 					maxWidth="sm"
 				>
 					<DeleteConfirmationDialogContent
-						header={`Delete Well Interest`}
+						header={'Delete Well Interest'}
 						onClose={handleCloseDialog}
 						deleteFunc={deleteFunc}
 						m1nSelectedRowsIds={null}

@@ -1,6 +1,4 @@
-import React, { useContext, useState, useMemo, useEffect } from 'react';
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { v4 as uuid } from 'uuid';
 import {
 	Typography,
 	Paper,
@@ -14,14 +12,20 @@ import {
 	TextField,
 } from '@material-ui/core';
 import { Close as CloseIcon } from '@material-ui/icons';
-import { getDefaultSettings } from '../SourceLayerManager/fileUploadHelper';
-import { ADDLAYER } from 'graphQL/useMutationAddLayer';
-import { AppContext } from 'AppContext';
-import { ColorPickerStyledBox, useLayerStyle, WidthPicker } from './Common';
 import { Autocomplete } from '@material-ui/lab';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { globalStateController } from 'hookstate/globalStateController';
+import React, { useContext, useState, useMemo, useEffect } from 'react';
+import { v4 as uuid } from 'uuid';
+
+import { ADDLAYER } from 'graphQL/useMutationAddLayer';
 import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+
+import { AppContext } from 'AppContext';
+
+import { ColorPickerStyledBox, useLayerStyle, WidthPicker } from './Common';
+import { getDefaultSettings } from '../SourceLayerManager/fileUploadHelper';
 
 function NewLayerManager(props) {
 	const [stateApp] = useContext(AppContext);
@@ -104,13 +108,14 @@ function NewLayerManager(props) {
 	};
 
 	useEffect(() => {
-		if (source && selectCategory)
+		if (source && selectCategory) {
 			getShapeFileSchema({
 				variables: {
 					file: source.file,
 					layerShapeName: selectCategory.layerShapeName,
 				},
 			});
+		}
 	}, [source, selectCategory, getShapeFileSchema]);
 
 	const _datasets = useMemo(() => {

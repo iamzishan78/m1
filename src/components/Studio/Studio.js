@@ -1,9 +1,10 @@
-import React, { useContext } from 'react';
-import { AppContext } from '../../AppContext';
-import { StudioContext } from './StudioContext';
 import { Container } from '@material-ui/core';
-import Iframe from 'react-iframe';
 import { makeStyles } from '@material-ui/core/styles';
+import React, { useContext } from 'react';
+import Iframe from 'react-iframe';
+
+import { StudioContext } from './StudioContext';
+import { AppContext } from '../../AppContext';
 
 const useStyles = makeStyles(theme => ({
 	iframe: {

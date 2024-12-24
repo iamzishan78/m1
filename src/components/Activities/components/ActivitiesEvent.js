@@ -1,13 +1,13 @@
-import React from 'react';
-import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CallIcon from '@material-ui/icons/Call';
-import MeetingIcon from '@material-ui/icons/Group';
-import TaskIcon from '@material-ui/icons/WatchLater';
-import DeadlineIcon from '@material-ui/icons/Flag';
+import ContactMailIcon from '@material-ui/icons/ContactMail';
 import EmailIcon from '@material-ui/icons/Email';
 import DefaultIcon from '@material-ui/icons/Event';
-import ContactMailIcon from '@material-ui/icons/ContactMail';
+import DeadlineIcon from '@material-ui/icons/Flag';
+import MeetingIcon from '@material-ui/icons/Group';
+import TaskIcon from '@material-ui/icons/WatchLater';
+import clsx from 'clsx';
+import React from 'react';
 
 const useStyles = makeStyles(theme => ({
 	root: {

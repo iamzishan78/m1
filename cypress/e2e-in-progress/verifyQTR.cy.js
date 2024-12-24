@@ -38,7 +38,9 @@ describe('Verify QTR Calls Spec', () => {
 			cy.get('#AgreementOwnersTractsTable').scrollIntoView().click();
 
 			cy.log(`==== STEP: ADD ${tractName} IF NOT EXIST ====`);
-			if (!tractToTest) cy.addTract(tractName);
+			if (!tractToTest) {
+				cy.addTract(tractName);
+			}
 
 			cy.log('==== STEP: MAKING IT WAIT ====');
 			cy.wait(15000);
@@ -61,7 +63,9 @@ describe('Verify QTR Calls Spec', () => {
 				const updatedSelectedQTR =
 					response.response.body.data.updateShapeOwners.data[0]?.tract.qtrQtrSelection?.selectedQtr;
 
-				if (isArraysEqual(selectedQTR, updatedSelectedQTR)) throw new Error(`QTR not saved successfully`);
+				if (isArraysEqual(selectedQTR, updatedSelectedQTR)) {
+					throw new Error('QTR not saved successfully');
+				}
 
 				cy.log('==== STEP: VISIT MAP PAGE  ====');
 				cy.interceptApi('getCustomLayer');
@@ -73,10 +77,12 @@ describe('Verify QTR Calls Spec', () => {
 				cy.verifyApiResponse('@getCustomLayerApi', { responseTimeout: longTimeout }).then(response => {
 					const customLayerQtr = response.response.body.data.customLayer.qtrQtrSelection?.selectedQtr;
 
-					cy.log(`==== STEP: MATCHING PREVIOUSLY ADDED QTR ====`);
-					if (!isArraysEqual(updatedSelectedQTR, customLayerQtr)) throw new Error(`Something is wrong with QTR `);
+					cy.log('==== STEP: MATCHING PREVIOUSLY ADDED QTR ====');
+					if (!isArraysEqual(updatedSelectedQTR, customLayerQtr)) {
+						throw new Error('Something is wrong with QTR ');
+					}
 
-					cy.log(`==== STEP: QTR VERIFIED ====`);
+					cy.log('==== STEP: QTR VERIFIED ====');
 				});
 			});
 		});

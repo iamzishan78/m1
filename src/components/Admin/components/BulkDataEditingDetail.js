@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Grid } from '@material-ui/core';
-import get from 'lodash/get';
-
-import { JOB_RESPONSE } from 'graphQL/useQueryJobResponse';
-
 import { useLazyQuery } from '@apollo/client';
+import { Grid } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import get from 'lodash/get';
+import moment from 'moment';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 
 import Table from 'components/Shared/M1nTable/components/Table';
-import { useParams } from 'react-router-dom';
-import moment from 'moment';
+
+import { JOB_RESPONSE } from 'graphQL/useQueryJobResponse';
 
 const useStyles = makeStyles(theme => ({
 	container: {

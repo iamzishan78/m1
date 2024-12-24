@@ -1,13 +1,3 @@
-import React, { useState, useContext, useEffect, useRef } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import Typography from '@material-ui/core/Typography';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import LayerIcon from '@material-ui/icons/Layers';
 import Button from '@material-ui/core/Button';
@@ -22,15 +12,28 @@ import { getParcelOriginalProperties } from './utils/GetParcelOriginalProps';
 
 // QUERIES
 import { useLazyQuery } from '@apollo/client';
-import { GET_PARCELS_FILES_COUNT } from 'graphQL/useQueryGetParcelFiles';
-import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import Typography from '@material-ui/core/Typography';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 
 // contexts
-import { ExpandableCardContext } from '../ExpandableCard/ExpandableCardContext';
-import { SHAPEWELLSCOUNT } from 'graphQL/useQueryShapeWellsCount';
 import { getPolygonString } from 'components/Shared/functions';
-import { popupController } from 'hookstate/popupStateController';
+
+import { GET_PARCELS_FILES_COUNT } from 'graphQL/useQueryGetParcelFiles';
+import { SHAPEWELLSCOUNT } from 'graphQL/useQueryShapeWellsCount';
+
 import { globalStateController } from 'hookstate/globalStateController';
+import { popupController } from 'hookstate/popupStateController';
+
+import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
+import { ExpandableCardContext } from '../ExpandableCard/ExpandableCardContext';
 
 const useStyles = makeStyles(theme => ({
 	card: {
@@ -161,13 +164,14 @@ export default function ParcelCard(props) {
 	}, [parcelObj]);
 
 	useEffect(() => {
-		if (parcelObj)
+		if (parcelObj) {
 			getParcelFilesCount({
 				variables: {
 					relatedObjectId: parcelObj?._id || globalStateController.getValue('user'),
 					relatedObjectType: 'Parcel',
 				},
 			});
+		}
 	}, [parcelObj]);
 
 	useEffect(() => {

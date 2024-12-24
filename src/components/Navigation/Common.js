@@ -1,6 +1,6 @@
-import React from 'react';
-import { fade, makeStyles } from '@material-ui/core/styles';
 import { green } from '@material-ui/core/colors';
+import { fade, makeStyles } from '@material-ui/core/styles';
+import React from 'react';
 
 const drawerWidth = 477;
 

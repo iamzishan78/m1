@@ -1,12 +1,12 @@
-import React, { useState, createContext, useEffect } from 'react';
 import { useLazyQuery } from '@apollo/client';
+import React, { useState, createContext, useEffect } from 'react';
 
 // Queries
-import { GETWELLSFROMDOCUMENTS } from 'graphQL/useQueryGetWellsFromDocument';
-import { GETCONTACTSFROMDOCUMENTS } from 'graphQL/useQueryGetContactsFromDocument';
 import { GET_AGREEMENTS_FROM_DOCUMENTS } from 'graphQL/useQueryGetAgreementsFromDocument';
 import { GET_CHECKS_FROM_DOCUMENT } from 'graphQL/useQueryGetChecksFromDocument';
+import { GETCONTACTSFROMDOCUMENTS } from 'graphQL/useQueryGetContactsFromDocument';
 import { GET_PROPERTIES_FROM_DOCUMENT } from 'graphQL/useQueryGetPropertiesFromDocument';
+import { GETWELLSFROMDOCUMENTS } from 'graphQL/useQueryGetWellsFromDocument';
 
 const DocumentContext = createContext([{}, () => {}]);
 

@@ -1,9 +1,9 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import * as am4core from '@amcharts/amcharts4/core';
 import * as am4charts from '@amcharts/amcharts4/charts';
-import { Button, ButtonGroup, Grid, Typography } from '@material-ui/core';
+import * as am4core from '@amcharts/amcharts4/core';
 import am4themes_animated from '@amcharts/amcharts4/themes/animated';
+import { Button, ButtonGroup, Grid, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
 
 const { useEffect, useState } = React;
 
@@ -40,13 +40,18 @@ const StackedAreaChart = ({ id = 'chartDiv3', items, monthsInterval }) => {
 				);
 				let value = ownerVolumne.data[month]?.total;
 				if (mode === 'production') {
-					if (item === 'GAS' && value) value = value / 6;
+					if (item === 'GAS' && value) {
+						value = value / 6;
+					}
 					if (item.includes('NGL') && value) {
 						value = value * 0.02381;
 					}
 				}
-				if (typeof ownerVolumne.data[month] === 'object') _data[index][item] = value || 0;
-				else _data[index][item] = ownerVolumne.data[month] || 0;
+				if (typeof ownerVolumne.data[month] === 'object') {
+					_data[index][item] = value || 0;
+				} else {
+					_data[index][item] = ownerVolumne.data[month] || 0;
+				}
 			});
 		});
 
@@ -62,8 +67,8 @@ const StackedAreaChart = ({ id = 'chartDiv3', items, monthsInterval }) => {
 		chart.data = data;
 
 		// Short the data based on the dates
-		chart.events.on('beforedatavalidated', function (ev) {
-			chart.data.sort(function (a, b) {
+		chart.events.on('beforedatavalidated', ev => {
+			chart.data.sort((a, b) => {
 				return new Date(a.month) - new Date(b.month);
 			});
 		});
@@ -94,8 +99,11 @@ const StackedAreaChart = ({ id = 'chartDiv3', items, monthsInterval }) => {
 			series.sequencedInterpolation = true;
 			series.calculatePercent = true;
 			series.calculateAggregates = true;
-			if (mode === 'production') series.tooltipText = '[#000 font-size:17px]{name} {valueY.value} BOE[/]';
-			else series.tooltipText = '[#000 font-size:17px]{name} {valueY.value}[/]';
+			if (mode === 'production') {
+				series.tooltipText = '[#000 font-size:17px]{name} {valueY.value} BOE[/]';
+			} else {
+				series.tooltipText = '[#000 font-size:17px]{name} {valueY.value}[/]';
+			}
 
 			series.tooltip.background.fill = am4core.color('#FFF');
 			series.tooltip.getStrokeFromObject = true;

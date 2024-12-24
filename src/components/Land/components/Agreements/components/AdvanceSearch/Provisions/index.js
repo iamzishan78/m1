@@ -1,11 +1,12 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
 import debounce from 'lodash/debounce';
-import { copy } from 'components/Shared/functions';
+import React, { useContext, useState, useEffect } from 'react';
 
+import { copy } from 'components/Shared/functions';
 import { AutoCompleteFilter } from 'components/Table/AutoCompleteFilter';
+
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 
 import { AppContext } from 'AppContext';
@@ -80,7 +81,9 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
 		extendSearchQuery: '',
 		custom: filter.custom,
 	};
-	if (filter.getOptionLabel) params['getOptionLabel'] = filter.getOptionLabel;
+	if (filter.getOptionLabel) {
+		params['getOptionLabel'] = filter.getOptionLabel;
+	}
 	return (
 		<FormControl variant="outlined" className={classes.formControl}>
 			<AutoCompleteFilter {...params} />
@@ -106,10 +109,13 @@ export default function ProvisionsFilters(props) {
 				const { filterKey, type } = callback;
 				const landProvisionsFilters = [...stateApp.landSearchFilters?.provisions];
 				const _index = landProvisionsFilters.findIndex(f => f.field === filterKey);
-				if (_index === -1 && request[0] !== null)
+				if (_index === -1 && request[0] !== null) {
 					landProvisionsFilters.push({ field: filterKey, value: request[0], type });
-				else if (request.length > 0 && request[0] !== null) landProvisionsFilters[_index].value = request[0];
-				else if (_index !== -1) landProvisionsFilters.splice(_index, 1);
+				} else if (request.length > 0 && request[0] !== null) {
+					landProvisionsFilters[_index].value = request[0];
+				} else if (_index !== -1) {
+					landProvisionsFilters.splice(_index, 1);
+				}
 
 				setStateApp(stateApp => ({
 					...stateApp,
@@ -125,7 +131,9 @@ export default function ProvisionsFilters(props) {
 		setFilterList(_filterList);
 
 		const _request = copy(request);
-		if (filter.customOnChange) _request[0] = filter.customOnChange(_request[0]);
+		if (filter.customOnChange) {
+			_request[0] = filter.customOnChange(_request[0]);
+		}
 		changeLandProvisions(_request, callback, index);
 	};
 

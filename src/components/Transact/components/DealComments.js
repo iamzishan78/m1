@@ -1,33 +1,33 @@
-import React, { useState, useEffect, useContext, Fragment, useCallback } from 'react';
-
-import Avatar from 'react-avatar';
+import { useMutation, useLazyQuery } from '@apollo/client';
 import { CircularProgress, Menu, MenuItem, Grid, Tooltip, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { useMutation, useLazyQuery } from '@apollo/client';
 import {
 	ThumbUp as ThumbUpIcon,
 	ThumbUpAltOutlined as ThumbUpAltOutlinedIcon,
 	ExpandMore as ExpandMoreIcon,
 } from '@material-ui/icons';
-import moment from 'moment';
-import ReactTimeAgo from 'react-time-ago';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 import ru from 'javascript-time-ago/locale/ru';
+import moment from 'moment';
+import React, { useState, useEffect, useContext, Fragment, useCallback } from 'react';
+import Avatar from 'react-avatar';
 import { useSelector, useDispatch } from 'react-redux';
+import ReactTimeAgo from 'react-time-ago';
 
-import { AppContext } from 'AppContext';
-import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-import { GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
-import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
-import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
-import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
-import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
+import { CommonCommentText } from 'components/Shared/CommentComponent';
 import CommentField from 'components/Shared/components/Fields/CommentField';
+import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
+import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
+import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
+import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
+import { GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+import { TOGGLECOMMENTREACTION } from 'graphQL/userMutationToggleCommentReaction';
 import { updatePinComments } from 'store/actions/commonActions';
 import { dateIsValid } from 'utils/helper';
-import { CommonCommentText } from 'components/Shared/CommentComponent';
-import { TOGGLECOMMENTREACTION } from 'graphQL/userMutationToggleCommentReaction';
+
+import { AppContext } from 'AppContext';
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
@@ -120,11 +120,16 @@ const useStyles = makeStyles(theme => ({
 export function getLikedPeoplesName(comment, myUserId) {
 	const { likedBy } = comment || {};
 	const names = (likedBy || []).map(user => {
-		if (user._id === myUserId) return <li>You</li>;
-		else return <li>{user.name || user.displayName}</li>;
+		if (user._id === myUserId) {
+			return <li>You</li>;
+		} else {
+			return <li>{user.name || user.displayName}</li>;
+		}
 	});
 
-	if (names.length < 1) return '';
+	if (names.length < 1) {
+		return '';
+	}
 	return <ul style={{ listStyle: 'none', paddingLeft: 0 }}>{names}</ul>;
 }
 
@@ -262,12 +267,18 @@ export default function DealComment(props) {
 
 	const sortArrayBasedOnTs = array => {
 		const compare = (a, b) => {
-			if (a.ts < b.ts) return -1;
-			if (b.ts < a.ts) return 1;
+			if (a.ts < b.ts) {
+				return -1;
+			}
+			if (b.ts < a.ts) {
+				return 1;
+			}
 
 			return 0;
 		};
-		if (!props.multipleIds) array.sort(compare);
+		if (!props.multipleIds) {
+			array.sort(compare);
+		}
 
 		return array;
 	};
@@ -469,7 +480,9 @@ export default function DealComment(props) {
 
 	const didILikedThisComment = useCallback(
 		comment => {
-			if (!stateApp?.user?._id) return false;
+			if (!stateApp?.user?._id) {
+				return false;
+			}
 
 			const likedBy = comment?.likedBy || [];
 			const find = likedBy.find(user => user._id === stateApp.user._id);

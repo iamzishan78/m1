@@ -1,15 +1,17 @@
-import React, { useEffect, useContext } from 'react';
-import { Grid, TextField } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
 import { useLazyQuery } from '@apollo/client';
+import { Grid, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import moment from 'moment';
+import { makeStyles } from '@material-ui/styles';
 import get from 'lodash/get';
+import moment from 'moment';
+import React, { useEffect, useContext } from 'react';
 
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import { AppContext } from 'AppContext';
+
 import { CUSTOM_DATES } from 'utils/data';
 import { copy, getFilters, handleCustomDateTypeChange } from 'utils/helper';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	actionBar: {
@@ -64,7 +66,9 @@ export default function CustomDatesActivities({
 }) {
 	const classes = useStyles();
 	useEffect(() => {
-		if (minDate) handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+		if (minDate) {
+			handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [minDate]);
 
@@ -243,7 +247,9 @@ const CampaignStatusFilter = ({ esIndex, tableFilters, appliedFilters, searchFie
 
 				filters = filters.filter(filter => filter.field !== 'status.keyword');
 
-				if (reason === 'clear' || !selectedValue?.key) return setAppliedFilters(filters);
+				if (reason === 'clear' || !selectedValue?.key) {
+					return setAppliedFilters(filters);
+				}
 
 				filters.push({ field: 'status.keyword', value: selectedValue.key });
 
@@ -319,7 +325,9 @@ const SupervisorFilter = ({ esIndex, tableFilters, appliedFilters, searchFields,
 
 				filters = filters.filter(filter => filter.field !== 'owner.name.keyword');
 
-				if (reason === 'clear' || !selectedValue?.key) return setAppliedFilters(filters);
+				if (reason === 'clear' || !selectedValue?.key) {
+					return setAppliedFilters(filters);
+				}
 
 				filters.push({ field: 'owner.name.keyword', value: selectedValue.key });
 

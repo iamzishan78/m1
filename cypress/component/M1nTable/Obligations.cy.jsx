@@ -1,9 +1,12 @@
 /* eslint-disable no-undef */
-import { GETALLACTIVITIES } from 'graphQL/useQueryGetAllActivities';
-import ldata from '../../fixtures/ldata.json';
-import M1nTable from 'components/Shared/M1nTable/M1nTable';
 import { uniqueId } from 'lodash';
+
+import M1nTable from 'components/Shared/M1nTable/M1nTable';
+
+import { GETALLACTIVITIES } from 'graphQL/useQueryGetAllActivities';
+
 import { headers } from '../../cypressUtils/cypressHeaders';
+import ldata from '../../fixtures/ldata.json';
 
 describe('Obligation M1nTable', () => {
 	it('checks created at/by and updated at/by fields in obligation grid', () => {

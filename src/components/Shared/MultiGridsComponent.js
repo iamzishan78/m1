@@ -1,18 +1,19 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { AppContext } from 'AppContext';
 import { useLazyQuery } from '@apollo/client';
+import { CircularProgress, Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useState, useContext, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
-import { CircularProgress, Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
-
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import { AGREEMENT_PAYMENT_SUMMARY } from 'graphQL/useQueryAgreementPaymentSummary';
-import { mapControlsController } from 'hookstate/mapControlsController';
 import MRTTable from 'components/MRTTable';
-import { useMemo } from 'react';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+
+import { AGREEMENT_PAYMENT_SUMMARY } from 'graphQL/useQueryAgreementPaymentSummary';
+
+import { mapControlsController } from 'hookstate/mapControlsController';
 import { tableController } from 'hookstate/tableController';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	card: {
@@ -238,7 +239,9 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
 		return agreementPaymentData ? agreementPaymentData.agreementPaymentSummary[value] : 0;
 	};
 
-	if (!getCounts) getCounts = getAgreementPaymentRelatedCount;
+	if (!getCounts) {
+		getCounts = getAgreementPaymentRelatedCount;
+	}
 
 	const handleSearchPanelChange = value => {
 		setSearchTapValue(value);

@@ -1,30 +1,32 @@
+import { useLazyQuery, useMutation } from '@apollo/client';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import DeleteIcon from '@material-ui/icons/Delete';
+import { CircularProgress, Dialog, ListItemIcon, ListItemText, Menu, MenuItem } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import CloseIcon from '@material-ui/icons/Close';
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import ReactDOM from 'react-dom';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import CloseIcon2 from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-
-import DeleteIcon from '@material-ui/icons/Delete';
-import Grid from '@material-ui/core/Grid';
-import { CircularProgress, Dialog, ListItemIcon, ListItemText, Menu, MenuItem } from '@material-ui/core';
-import RightDialog from '../../../../ContactDetailCard/components/RightDialog';
-import { WELL_INTEREST_SELECT_OPTIONS } from 'graphQL/useQueryWellInterestSelectOptions';
-import { ADD_SHAPE_WELL_INTEREST } from 'graphQL/useMutationAddShapeWellInterest';
-import { UPDATE_SHAPE_WELL_INTEREST } from 'graphQL/useMutationUpdateShapeWellInterest';
-import DeleteConfirmationDialogContent from './DeleteConfirmationDialogContent';
 import { useForm, Controller } from 'react-hook-form';
 
 // contexts
-import { AppContext } from 'AppContext';
-import WellSearchApiField from 'components/Shared/Forms/Fields/WellSearchApiField';
 import AutoCompleteFieldComponent from 'components/Shared/Forms/Fields/AutoCompleteField';
+import WellSearchApiField from 'components/Shared/Forms/Fields/WellSearchApiField';
 import { NumberFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
+import CloseIcon2 from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+
+import { ADD_SHAPE_WELL_INTEREST } from 'graphQL/useMutationAddShapeWellInterest';
+import { UPDATE_SHAPE_WELL_INTEREST } from 'graphQL/useMutationUpdateShapeWellInterest';
+import { WELL_INTEREST_SELECT_OPTIONS } from 'graphQL/useQueryWellInterestSelectOptions';
+
+import { AppContext } from 'AppContext';
+
+import DeleteConfirmationDialogContent from './DeleteConfirmationDialogContent';
+import RightDialog from '../../../../ContactDetailCard/components/RightDialog';
 
 const useStyles = makeStyles(theme => ({
 	dialogFooter: {
@@ -223,7 +225,9 @@ function AddUnitInterestDialog(props) {
 	};
 
 	const setTenantWell = well => {
-		if (well) reset(well);
+		if (well) {
+			reset(well);
+		}
 	};
 
 	const handleMenuClick = event => {
@@ -527,7 +531,7 @@ function AddUnitInterestDialog(props) {
 					maxWidth="sm"
 				>
 					<DeleteConfirmationDialogContent
-						header={`Delete Well`}
+						header={'Delete Well'}
 						onClose={handleCloseDialog}
 						deleteFunc={deleteFunc}
 						m1nSelectedRowsIds={null}

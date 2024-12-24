@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from 'react';
 import { useLazyQuery } from '@apollo/client';
+import { Typography } from '@material-ui/core';
+import FormControl from '@material-ui/core/FormControl';
+import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-
-import Grid from '@material-ui/core/Grid';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { Typography } from '@material-ui/core';
 import parse from 'autosuggest-highlight/parse';
+import React, { useState, useEffect } from 'react';
 
-import { TENANTWELL } from 'graphQL/useQueryTenantWell';
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { TENANTWELL } from 'graphQL/useQueryTenantWell';
 
 const useStyles = makeStyles(theme => ({}));
 
@@ -28,12 +27,16 @@ function WellSearchApiField(props) {
 	const [getESSimpleSearch] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
 		fetchPolicy: 'no-cache',
 		onCompleted: wellsData => {
-			if (wellsData?.getESSimpleSearch?.hits) setFoundWells(wellsData.getESSimpleSearch.hits);
+			if (wellsData?.getESSimpleSearch?.hits) {
+				setFoundWells(wellsData.getESSimpleSearch.hits);
+			}
 		},
 	});
 
 	useEffect(() => {
-		if (!dataTenantWell?.tenantWell) return;
+		if (!dataTenantWell?.tenantWell) {
+			return;
+		}
 
 		const leaseToSet = dataTenantWell?.tenantWell?.lease || '';
 		const leaseAcresToSet = dataTenantWell?.tenantWell?.leaseAcres;

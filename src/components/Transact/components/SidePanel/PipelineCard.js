@@ -1,9 +1,9 @@
-import React from 'react';
-import { get } from 'lodash';
-import { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
-import { Flipped } from 'react-flip-toolkit';
 import { ListItem, ListItemText } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { get } from 'lodash';
+import React from 'react';
+import { Flipped } from 'react-flip-toolkit';
+import { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
 
 const useStyles = makeStyles(theme => ({
 	root: props => ({

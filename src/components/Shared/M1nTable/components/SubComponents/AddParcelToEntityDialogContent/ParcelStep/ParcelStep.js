@@ -1,11 +1,12 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { AppContext } from '../../../../../../../AppContext';
-import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import QtrQtrSelector from './components/QtrQtrSelector';
+import React, { useContext, useState, useEffect } from 'react';
+
 import LeftTopSummary from './components/LeftTopSummary';
+import QtrQtrSelector from './components/QtrQtrSelector';
+import { AppContext } from '../../../../../../../AppContext';
 // import { useLazyQuery } from "@apollo/client";
 
 const useStyles = makeStyles(theme => ({

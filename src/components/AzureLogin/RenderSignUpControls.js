@@ -1,9 +1,10 @@
-import React, { useContext } from 'react';
-import { AppContext } from '../../AppContext';
-import { makeStyles } from '@material-ui/core/styles';
 import { Button, Typography } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
+
+import { AppContext } from '../../AppContext';
 
 const localStyles = makeStyles(theme => ({
 	headerWords: {
@@ -31,7 +32,7 @@ const localStyles = makeStyles(theme => ({
 		border: '1px solid #f0f4f5',
 		fontFamily: theme.typography.fontFamily,
 		'&:hover': {
-			border: `3px solid #f0cfb3`,
+			border: '3px solid #f0cfb3',
 		},
 	},
 	cardContainer: {

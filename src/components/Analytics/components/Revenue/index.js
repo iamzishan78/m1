@@ -1,28 +1,30 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import moment from 'moment';
-import { useSelector } from 'react-redux';
 import { useLazyQuery } from '@apollo/client';
-import { makeStyles, withStyles } from '@material-ui/styles';
 import { Grid, Divider, Tab, Tabs, TextField, Box } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import { makeStyles, withStyles } from '@material-ui/styles';
 import sortBy from 'lodash/sortBy';
+import moment from 'moment';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 
-import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from 'graphQL/useQueryGetPortfolioGrossRevenueSummary';
-import CustomDates from 'components/Revenue/components/Common/CustomDates';
 import DetailTabsSection from 'components/Analytics/components/Revenue/DetailTabsSection';
-import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
-import CheckDetailsSection from './CheckDetailsSection';
-import AnalyticsCards from './Analytics';
-import LastCheckDateFilter from 'components/Revenue/components/Common/LastCheckDateFilter';
-
-import SalesVolumeComparisonSection from './SalesVolumeComparisonSection';
 import MRTTable from 'components/MRTTable';
+import CustomDates from 'components/Revenue/components/Common/CustomDates';
+import LastCheckDateFilter from 'components/Revenue/components/Common/LastCheckDateFilter';
+import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
+
 import { GET_CHECK_DETAILS_DATA } from 'graphQL/useQueryCheckDetailsData';
-import { tableController } from 'hookstate/tableController';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import PurchasersDropdown from './PurchasersDropdown';
-import AcquisitionIdDropdown from './AcquisitionIdDropdown';
 import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
+import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from 'graphQL/useQueryGetPortfolioGrossRevenueSummary';
+
+import { tableController } from 'hookstate/tableController';
+
+import AcquisitionIdDropdown from './AcquisitionIdDropdown';
+import AnalyticsCards from './Analytics';
+import CheckDetailsSection from './CheckDetailsSection';
+import PurchasersDropdown from './PurchasersDropdown';
+import SalesVolumeComparisonSection from './SalesVolumeComparisonSection';
 
 const useStyles = makeStyles(theme => ({
 	mainTabContainer: {
@@ -203,8 +205,9 @@ export default function RevenueAnalytics(props) {
 		if (
 			(!comparisonTableState?.data?.total && comparisonReport === 'Check Detail Comparison') ||
 			(!salesVolumeComparisonTableState?.data?.total && comparisonReport === 'Sales Volume vs Reported Production')
-		)
+		) {
 			return;
+		}
 		(async () => {
 			const { propertiesOptions, checkOptions } = await getPropertyOptions();
 			setPropertyNumbers(propertiesOptions?.map(hit => hit.key) || []);
@@ -282,7 +285,9 @@ export default function RevenueAnalytics(props) {
 	}, [propertiesReportGroup]);
 
 	useEffect(() => {
-		if (!fromDate) return;
+		if (!fromDate) {
+			return;
+		}
 
 		getPortfolioSummary({
 			variables: {

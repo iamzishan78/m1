@@ -1,5 +1,5 @@
-import React from 'react';
 import { MenuItem, Box } from '@mui/material';
+import React from 'react';
 
 import { tableESSimpleFilterModes } from '../utils/data';
 let previousFilter = '';
@@ -23,7 +23,9 @@ function FilterModeMenuItems({ option, tableKey, name, onSelectFilterMode, contr
 					onSelectFilterMode(mode.option);
 				}
 
-				if (isSingleMulti) controller(tableKey).clearFilter(name);
+				if (isSingleMulti) {
+					controller(tableKey).clearFilter(name);
+				}
 
 				previousFilter = mode.option;
 			}}
