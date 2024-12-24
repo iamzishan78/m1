@@ -4,7 +4,6 @@ import { debounce, set, get } from 'lodash';
 import { useCallback, useEffect, useRef } from 'react';
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { GET_ES_AGGS_LIST } from 'graphQL/useQueryESAggsList';
 import { copy } from 'utils/helper';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { drawController } from 'hookstate/drawStateController';
@@ -67,6 +66,8 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		if (tableStateValues.isGeneric && !tableStateValues.globalSearch) globalFilter = null;
 
+		const aggregationColumns = TableSchema?.filter(column => column.Aggregation)?.map(column => column.Aggregation);
+
 		const variables = {
 			index: tableStateValues.esIndex,
 			pagination: { ...pagination, pageIndex: undefined, pageSize: undefined },
@@ -77,6 +78,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			},
 			sort,
 			filters,
+			...(aggregationColumns.length ? { aggs: Object.assign({}, ...aggregationColumns) } : {}),
 		};
 
 		if (tableStateValues.filterLayerType)
@@ -86,6 +88,12 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			variables,
 			query: GET_ES_SIMPLE_SEARCH,
 		});
+
+		if (allSelectedRows?.data?.getESSimpleSearch?.aggregations) {
+			Controller.updateState({
+				footerProps: allSelectedRows?.data?.getESSimpleSearch?.aggregations,
+			});
+		}
 
 		const data = allSelectedRows?.data?.getESSimpleSearch;
 		let rows = copy(data.hits) || [];
@@ -125,39 +133,41 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		});
 	};
 
-	async function fetchFooterAggregationData() {
-		const tableMeta = tableState.get({ noproxy: true });
-		const { TableSchema, defaultFilters, esIndex, filters } = tableMeta;
-		if (!TableSchema) return;
+	// commenting out this code as it is not working as expected on Elastic will be uncommented once conversion to mongo is complete.
 
-		const aggregationColumns = TableSchema?.filter(column => column.Aggregation)?.map(column => column.Aggregation);
+	// async function fetchFooterAggregationData() {
+	// 	const tableMeta = tableState.get({ noproxy: true });
+	// 	const { TableSchema, defaultFilters, esIndex, filters } = tableMeta;
+	// 	if (!TableSchema) return;
 
-		for (let i = 0; i < filters?.length; i++) {
-			if (Number.isInteger(filters[i].value)) {
-				filters[i].value = filters[i].value.toString();
-			}
-		}
+	// 	const aggregationColumns = TableSchema?.filter(column => column.Aggregation)?.map(column => column.Aggregation);
 
-		if (aggregationColumns?.length) {
-			const result = await client.query({
-				variables: {
-					esIndex,
-					filters: [...filters, ...defaultFilters],
-					aggs: Object.assign({}, ...aggregationColumns),
-					search: tableStateValues.globalFilter ? `*${tableStateValues.globalFilter}*` : '*',
-				},
-				query: GET_ES_AGGS_LIST,
-			});
+	// 	for (let i = 0; i < filters?.length; i++) {
+	// 		if (Number.isInteger(filters[i].value)) {
+	// 			filters[i].value = filters[i].value.toString();
+	// 		}
+	// 	}
 
-			Controller.updateState({
-				footerProps: result?.data?.getESAggsList?.aggregations,
-			});
-		}
-	}
+	// 	if (aggregationColumns?.length) {
+	// 		const result = await client.query({
+	// 			variables: {
+	// 				esIndex,
+	// 				filters: [...filters, ...defaultFilters],
+	// 				aggs: Object.assign({}, ...aggregationColumns),
+	// 				search: tableStateValues.globalFilter ? `*${tableStateValues.globalFilter}*` : '*',
+	// 			},
+	// 			query: GET_ES_AGGS_LIST,
+	// 		});
 
-	useEffect(() => {
-		fetchFooterAggregationData();
-	}, [refetch, tableState.filters, tableState.globalFilter]);
+	// 		Controller.updateState({
+	// 			footerProps: result?.data?.getESAggsList?.aggregations,
+	// 		});
+	// 	}
+	// }
+
+	// useEffect(() => {
+	// 	fetchFooterAggregationData();
+	// }, [refetch, tableState.filters, tableState.globalFilter]);
 
 	useEffect(() => {
 		resetPagination.current = true;
