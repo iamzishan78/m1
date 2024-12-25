@@ -442,7 +442,21 @@ export default function RevenueAnalytics(props) {
 
 			{tabs[tab] === 'Check Details' && (
 				<Box sx={{ padding: '1em', marginLeft: '1em' }}>
-					<MRTTable name="checkDetailsTable" />
+					<MRTTable name="PropertyRevenueDetailTable" overrideMeta={{
+						maxTableHeight: 'calc(100vh - 300px)',
+						isDeleteDisabled: true,
+						isNotBreadcrumbView: true, 
+						gridViewSettings: {
+							label: 'Check Details',
+							Icon: 'none',
+							cssOverride: {
+								top: '138px',
+								left: '40px',
+								marginLeft: '-25px',
+							},
+						},
+					}}
+					/>
 				</Box>
 			)}
 
