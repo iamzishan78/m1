@@ -81,8 +81,8 @@ const layerIcons = [
 const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle }) => {
 	const { mapStateValues } = mapStateController.useState(['reintializeMap'], 'mapStateValues');
 	return (
-		<>
-			<div style={{ position: 'relative' }}>
+		<div style={{}}>
+			<div style={{ position: 'relative', height: '250px', overflow: 'scroll' }}>
 				{mapStateValues.reintializeMap && (
 					<Backdrop style={{ zIndex: 999999, position: 'absolute', width: '100%' }} open={true} invisible={false}>
 						<CircularProgress size={80} disableShrink color="secondary" />{' '}
@@ -104,14 +104,19 @@ const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle
 						}}
 					>
 						<Grid container alignContent="center" alignItems="center">
-							<Grid item>
-								{style.name === 'Outdoors' && <Box component="img" src={'./icons/MapOutdoorIcon.jpeg'} />}
-								{style.name === 'Satellite' && <Box component="img" src={'./icons/MapSatelliteIcon.jpeg'} />}
-								{style.name === 'Light' && <Box component="img" src={'./icons/MapLightIcon.jpeg'} />}
-								{style.name === 'Dark' && <Box component="img" src={'./icons/MapDarkIcon.jpeg'} />}
-								{style.name === 'Basic' && <Box component="img" src={'./icons/MapBasicIcon.jpeg'} />}
-								{style.name === 'Real Estate' && <Box component="img" src={'./icons/MapDarkIcon.jpeg'} />}
-							</Grid>
+							<Box
+								component="img"
+								src={
+									{
+										Outdoors: './icons/MapOutdoorIcon.jpeg',
+										Satellite: './icons/MapSatelliteIcon.jpeg',
+										Light: './icons/MapLightIcon.jpeg',
+										Dark: './icons/MapDarkIcon.jpeg',
+										Basic: './icons/MapBasicIcon.jpeg',
+										'Real Estate': './icons/MapDarkIcon.jpeg',
+									}[style.name] || './icons/MapPlaceholderImage.jpg'
+								}
+							/>
 							<Grid item>
 								<ListItemText primary={style.name} style={{ paddingLeft: '25px' }} />
 							</Grid>
@@ -141,7 +146,7 @@ const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle
 				</ListItemIcon>
 				<ListItemText primary={`${title} Layers`} />
 			</StyledListItem2>
-		</>
+		</div>
 	);
 });
 
@@ -586,34 +591,34 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 
 						{/* base Stuff */}
 						{type === 'base' && (
-							<BasemapImageBox
-								mapStyles={mapStyles}
-								setBaseMap={setBaseMap}
-								currentStyle={mapStateValues.mapVars.styleId}
-								title={title}
-							/>
+							<>
+								<BasemapImageBox
+									mapStyles={mapStyles}
+									setBaseMap={setBaseMap}
+									currentStyle={mapStateValues.mapVars.styleId}
+									title={title}
+								/>
+								<Box overflow="hidden scroll">
+									<Collapse in={true} timeout="auto" unmountOnExit>
+										<DisplayList
+											onDragEnd={onDragEnd}
+											type={type}
+											classes={classes}
+											layerMap={layerMap}
+											handleToggle={handleToggle}
+										/>
+									</Collapse>
+									<MapPositions
+										setMapDefaultPosition={setMapDefaultPosition}
+										defaultMapVars={mapStateValues.defaultMapVars}
+										mapVars={mapStateValues.mapVars}
+									/>
+								</Box>
+							</>
 						)}
 
 						{type === 'layer' && mapControlsStateValues.expandedPanel && (
 							<SortableLayer search={search} mongoId={stateApp.user.mongoId} />
-						)}
-						{type === 'base' && (
-							<Box height="calc((100vh - 50px) - 605px)" overflow="hidden scroll">
-								<Collapse in={true} timeout="auto" unmountOnExit>
-									<DisplayList
-										onDragEnd={onDragEnd}
-										type={type}
-										classes={classes}
-										layerMap={layerMap}
-										handleToggle={handleToggle}
-									/>
-								</Collapse>
-								<MapPositions
-									setMapDefaultPosition={setMapDefaultPosition}
-									defaultMapVars={mapStateValues.defaultMapVars}
-									mapVars={mapStateValues.mapVars}
-								/>
-							</Box>
 						)}
 						{type === 'heatMaps' && (
 							<DisplayList
