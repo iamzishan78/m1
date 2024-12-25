@@ -81,55 +81,65 @@ const layerIcons = [
 const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle }) => {
 	const { mapStateValues } = mapStateController.useState(['reintializeMap'], 'mapStateValues');
 	return (
-		<div style={{}}>
-			<div style={{ position: 'relative', height: '250px', overflow: 'scroll' }}>
-				{mapStateValues.reintializeMap && (
-					<Backdrop style={{ zIndex: 999999, position: 'absolute', width: '100%' }} open={true} invisible={false}>
-						<CircularProgress size={80} disableShrink color="secondary" />{' '}
-					</Backdrop>
-				)}
-				{mapStyles.map(style => (
-					<StyledMenuItem
-						disableRipple
-						key={style.id}
-						role={undefined}
+		<Grid container direction="column" spacing={3}>
+			<Grid item>
+				<Grid container style={{ position: 'relative' }}>
+					{mapStateValues.reintializeMap && (
+						<Backdrop style={{ zIndex: 999999, position: 'absolute', width: '100%' }} open={true} invisible={false}>
+							<CircularProgress size={80} disableShrink color="secondary" />
+						</Backdrop>
+					)}
+					<Grid
+						item
 						style={{
-							background: currentStyle === style.name ? '#4B618F' : '',
-						}}
-						onClick={() => {
-							if (currentStyle === style.name) {
-								return;
-							}
-							setBaseMap(style, 'baseMap');
+							position: 'relative',
+							height: '250px',
+							width: '100%',
+							overflow: 'scroll',
 						}}
 					>
-						<Grid container alignContent="center" alignItems="center">
-							<Box
-								component="img"
-								src={
-									{
-										Outdoors: './icons/MapOutdoorIcon.jpeg',
-										Satellite: './icons/MapSatelliteIcon.jpeg',
-										Light: './icons/MapLightIcon.jpeg',
-										Dark: './icons/MapDarkIcon.jpeg',
-										Basic: './icons/MapBasicIcon.jpeg',
-										'Real Estate': './icons/MapDarkIcon.jpeg',
-									}[style.name] || './icons/MapPlaceholderImage.jpg'
-								}
-							/>
-							<Grid item>
-								<ListItemText primary={style.name} style={{ paddingLeft: '25px' }} />
-							</Grid>
-						</Grid>
-					</StyledMenuItem>
-				))}
-			</div>
-			<div
-				style={{
-					paddingLeft: '20px',
-					paddingRight: '20px',
-				}}
-			>
+						{mapStyles.map(style => (
+							<StyledMenuItem
+								disableRipple
+								key={style.id}
+								role={undefined}
+								style={{
+									background: currentStyle === style.name ? '#4B618F' : '',
+								}}
+								onClick={() => {
+									if (currentStyle === style.name) {
+										return;
+									}
+									setBaseMap(style, 'baseMap');
+								}}
+							>
+								<Grid container alignItems="center">
+									<Grid item>
+										<Box
+											component="img"
+											src={
+												{
+													Outdoors: './icons/MapOutdoorIcon.jpeg',
+													Satellite: './icons/MapSatelliteIcon.jpeg',
+													Light: './icons/MapLightIcon.jpeg',
+													Dark: './icons/MapDarkIcon.jpeg',
+													Basic: './icons/MapBasicIcon.jpeg',
+													'Real Estate': './icons/MapDarkIcon.jpeg',
+												}[style.name] || './icons/MapPlaceholderImage.jpg'
+											}
+										/>
+									</Grid>
+									<Grid item>
+										<ListItemText primary={style.name} style={{ paddingLeft: '25px' }} />
+									</Grid>
+								</Grid>
+							</StyledMenuItem>
+						))}
+					</Grid>
+				</Grid>
+			</Grid>
+
+			<Grid item>
 				<hr
 					style={{
 						border: '1px solid #263451',
@@ -138,7 +148,7 @@ const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle
 						marginBottom: '10px',
 					}}
 				/>
-			</div>
+			</Grid>
 
 			<StyledListItem2>
 				<ListItemIcon>
@@ -146,7 +156,7 @@ const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle
 				</ListItemIcon>
 				<ListItemText primary={`${title} Layers`} />
 			</StyledListItem2>
-		</div>
+		</Grid>
 	);
 });
 
