@@ -1,12 +1,15 @@
 /* eslint-disable no-undef */
-import MRTTable from 'components/MRTTable';
-import { basic_timeouts, retries } from '../../cypressUtils/data';
 import moment from 'moment';
-import ldata from '../../fixtures/ldata.json';
-import { headers } from '../../cypressUtils/cypressHeaders';
+
+import MRTTable from 'components/MRTTable';
+
+import { DELETEACTIVITY } from 'graphQL/useMutationActivity';
 import { REVERTCYPRESSDELETE } from 'graphQL/useMutationCommonCypressRevert';
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
-import { DELETEACTIVITY } from 'graphQL/useMutationActivity';
+
+import { headers } from '../../cypressUtils/cypressHeaders';
+import { basic_timeouts, retries } from '../../cypressUtils/data';
+import ldata from '../../fixtures/ldata.json';
 
 let responseHits = [];
 
@@ -258,11 +261,11 @@ describe('Contact Table', () => {
 	});
 
 	it('Filters by name and checks is primary address value is exporting', retries.fiveTries, () => {
-		cy.get(`[data-testid="MoreVertIcon"]`).first().click();
+		cy.get('[data-testid="MoreVertIcon"]').first().click();
 		cy.wait(basic_timeouts.shorTimeout);
 		cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
 		cy.wait(basic_timeouts.shorTimeout);
-		cy.get(`[data-testid="MoreVertIcon"]`).first().click();
+		cy.get('[data-testid="MoreVertIcon"]').first().click();
 		cy.wait(basic_timeouts.shorTimeout);
 		cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
 		cy.wait(basic_timeouts.shorTimeout);
@@ -324,7 +327,7 @@ describe('Contact Table', () => {
 			['gridGenericRemove'],
 			alias => {
 				// Selecting all rows for deletion
-				cy.get(`[data-testid="over-ride-select-all-div"] input`).click();
+				cy.get('[data-testid="over-ride-select-all-div"] input').click();
 				// Clicking on the delete icon button to delete selected rows
 				cy.get('.MuiButtonBase-root[data-testid="delete-icon-button"]').click();
 				// Confirming the deletion

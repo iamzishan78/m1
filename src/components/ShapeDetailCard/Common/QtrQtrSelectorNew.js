@@ -1,17 +1,3 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import { Box, FormControlLabel, Switch, Typography } from '@material-ui/core';
-import {
-	getQtrFilterData,
-	getQtrQtrFromQtr,
-	handleLayerChangeOnQtr,
-} from '../../ParcelsDetailCard/ParcelSummary/helper';
-import { copy } from 'utils/helper';
-import SmallTXQtr from 'components/Shared/M1nTable/components/SubComponents/AddParcelToEntityDialogContent/ParcelStep/components/SmallTXQtr';
 import {
 	changeModeToScaleRotate,
 	drawBoundary,
@@ -20,11 +6,29 @@ import {
 import { AppContext } from 'AppContext';
 import { drawShapeLayerToggle, findBoundsMap } from 'components/MapControls/commonHelper';
 import { useMutation } from '@apollo/client';
+import { Box, FormControlLabel, Switch, Typography } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import React, { useState, useEffect, useContext, useRef } from 'react';
+import SmallTXQtr from 'components/Shared/M1nTable/components/SubComponents/AddParcelToEntityDialogContent/ParcelStep/components/SmallTXQtr';
+
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+
 import { drawController } from 'hookstate/drawStateController';
 import { jobController } from 'hookstate/jobStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
 import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+
+import { copy } from 'utils/helper';
+
+import {
+	getQtrFilterData,
+	getQtrQtrFromQtr,
+	handleLayerChangeOnQtr,
+} from '../../ParcelsDetailCard/ParcelSummary/helper';
 
 const useStyles = makeStyles(theme => ({
 	mainDiv: {
@@ -92,7 +96,7 @@ const useStyles = makeStyles(theme => ({
 		color: '#fff !important',
 	},
 	backgrounSecondaryQrt2: {
-		backgroundColor: `#BFEBFB !important`,
+		backgroundColor: '#BFEBFB !important',
 		'& p': { color: `${theme.palette.primary.main} !important` },
 	},
 }));
@@ -124,7 +128,9 @@ export default function QtrQtrSelectorNew({ layerData }) {
 	useEffect(() => {
 		if (layerData?.qtrQtrSelection) {
 			setQtr(copy(layerData.qtrQtrSelection.selectedQtr));
-			if (layerData.qtrQtrSelection.qtrQtr) setQtrQtr(copy(layerData.qtrQtrSelection.qtrQtr));
+			if (layerData.qtrQtrSelection.qtrQtr) {
+				setQtrQtr(copy(layerData.qtrQtrSelection.qtrQtr));
+			}
 		}
 	}, [layerData?.qtrQtrSelection]);
 
@@ -311,7 +317,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
 						left: layerData.state !== 'TX' ? 'calc(50% - 20px)' : 'calc(50% - 19px)',
 					}}
 					onClick={() => {
-						if (layerData.state !== 'TXtemporaryRemovedtemporaryRemoved' && qtrQtr)
+						if (layerData.state !== 'TXtemporaryRemovedtemporaryRemoved' && qtrQtr) {
 							if (
 								Object.entries(qtrQtr).every(([key, value]) => {
 									return value;
@@ -355,6 +361,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
 									sese: true,
 								});
 							}
+						}
 					}}
 					data-testid="qtr-all"
 				>
@@ -377,7 +384,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
 						left: layerData.state !== 'TX' ? 'calc(25% - 24px)' : 'calc(25% - 14px)',
 					}}
 					onClick={() => {
-						if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr)
+						if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr) {
 							if (
 								Object.entries(qtrQtr).every(([key, value]) => {
 									return ['nwnw', 'nenw', 'swnw', 'senw'].indexOf(key) === -1 ? true : value;
@@ -399,6 +406,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
 									senw: true,
 								});
 							}
+						}
 					}}
 					data-testid="qtr-nw"
 				>
@@ -421,7 +429,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
 						right: layerData.state !== 'TX' ? 'calc(24% - 10px)' : 'calc(25% + 2px)',
 					}}
 					onClick={() => {
-						if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr)
+						if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr) {
 							if (
 								Object.entries(qtrQtr).every(([key, value]) => {
 									return ['nwne', 'nene', 'swne', 'sene'].indexOf(key) === -1 ? true : value;
@@ -443,6 +451,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
 									sene: true,
 								});
 							}
+						}
 					}}
 					data-testid="qtr-ne"
 				>
@@ -465,7 +474,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
 						left: layerData.state !== 'TX' ? 'calc(25% - 24px)' : 'calc(25% - 14px)',
 					}}
 					onClick={() => {
-						if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr)
+						if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr) {
 							if (
 								Object.entries(qtrQtr).every(([key, value]) => {
 									return ['nwsw', 'nesw', 'swsw', 'sesw'].indexOf(key) === -1 ? true : value;
@@ -487,6 +496,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
 									sesw: true,
 								});
 							}
+						}
 					}}
 					data-testid="qtr-sw"
 				>
@@ -509,7 +519,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
 						right: layerData.state !== 'TX' ? 'calc(24% - 10px)' : 'calc(25% + 2px)',
 					}}
 					onClick={() => {
-						if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr)
+						if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr) {
 							if (
 								Object.entries(qtrQtr).every(([key, value]) => {
 									return ['nwse', 'nese', 'swse', 'sese'].indexOf(key) === -1 ? true : value;
@@ -531,6 +541,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
 									sese: true,
 								});
 							}
+						}
 					}}
 					data-testid="qtr-se"
 				>
@@ -547,11 +558,12 @@ export default function QtrQtrSelectorNew({ layerData }) {
 								layerData.state !== 'TXtemporaryRemoved' && qtrQtr && qtrQtr.nwnw ? classes.backgrounSecondaryQrt2 : ''
 							}`}
 							onClick={() => {
-								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr)
+								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr) {
 									setQtrQtr({
 										...qtrQtr,
 										nwnw: qtrQtr.nwnw ? false : true,
 									});
+								}
 							}}
 							data-testid="qtr-nwnw"
 						>
@@ -564,11 +576,12 @@ export default function QtrQtrSelectorNew({ layerData }) {
 								layerData.state !== 'TXtemporaryRemoved' && qtrQtr && qtrQtr.nenw ? classes.backgrounSecondaryQrt2 : ''
 							}`}
 							onClick={() => {
-								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr)
+								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr) {
 									setQtrQtr({
 										...qtrQtr,
 										nenw: qtrQtr.nenw ? false : true,
 									});
+								}
 							}}
 							data-testid="qtr-nenw"
 						>
@@ -581,11 +594,12 @@ export default function QtrQtrSelectorNew({ layerData }) {
 								layerData.state !== 'TXtemporaryRemoved' && qtrQtr && qtrQtr.swnw ? classes.backgrounSecondaryQrt2 : ''
 							}`}
 							onClick={() => {
-								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr)
+								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr) {
 									setQtrQtr({
 										...qtrQtr,
 										swnw: qtrQtr.swnw ? false : true,
 									});
+								}
 							}}
 							data-testid="qtr-swnw"
 						>
@@ -598,11 +612,12 @@ export default function QtrQtrSelectorNew({ layerData }) {
 								layerData.state !== 'TXtemporaryRemoved' && qtrQtr && qtrQtr.senw ? classes.backgrounSecondaryQrt2 : ''
 							}`}
 							onClick={() => {
-								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr)
+								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr) {
 									setQtrQtr({
 										...qtrQtr,
 										senw: qtrQtr.senw ? false : true,
 									});
+								}
 							}}
 							data-testid="qtr-senw"
 						>
@@ -619,11 +634,12 @@ export default function QtrQtrSelectorNew({ layerData }) {
 								layerData.state !== 'TXtemporaryRemoved' && qtrQtr && qtrQtr.nwne ? classes.backgrounSecondaryQrt2 : ''
 							}`}
 							onClick={() => {
-								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr)
+								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr) {
 									setQtrQtr({
 										...qtrQtr,
 										nwne: qtrQtr.nwne ? false : true,
 									});
+								}
 							}}
 							data-testid="qtr-nwne"
 						>
@@ -636,11 +652,12 @@ export default function QtrQtrSelectorNew({ layerData }) {
 								layerData.state !== 'TXtemporaryRemoved' && qtrQtr && qtrQtr.nene ? classes.backgrounSecondaryQrt2 : ''
 							}`}
 							onClick={() => {
-								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr)
+								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr) {
 									setQtrQtr({
 										...qtrQtr,
 										nene: qtrQtr.nene ? false : true,
 									});
+								}
 							}}
 							data-testid="qtr-nene"
 						>
@@ -653,11 +670,12 @@ export default function QtrQtrSelectorNew({ layerData }) {
 								layerData.state !== 'TXtemporaryRemoved' && qtrQtr && qtrQtr.swne ? classes.backgrounSecondaryQrt2 : ''
 							}`}
 							onClick={() => {
-								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr)
+								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr) {
 									setQtrQtr({
 										...qtrQtr,
 										swne: qtrQtr.swne ? false : true,
 									});
+								}
 							}}
 							data-testid="qtr-swne"
 						>
@@ -670,11 +688,12 @@ export default function QtrQtrSelectorNew({ layerData }) {
 								layerData.state !== 'TXtemporaryRemoved' && qtrQtr && qtrQtr.sene ? classes.backgrounSecondaryQrt2 : ''
 							}`}
 							onClick={() => {
-								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr)
+								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr) {
 									setQtrQtr({
 										...qtrQtr,
 										sene: qtrQtr.sene ? false : true,
 									});
+								}
 							}}
 							data-testid="qtr-sene"
 						>
@@ -691,11 +710,12 @@ export default function QtrQtrSelectorNew({ layerData }) {
 								layerData.state !== 'TXtemporaryRemoved' && qtrQtr && qtrQtr.nwsw ? classes.backgrounSecondaryQrt2 : ''
 							}`}
 							onClick={() => {
-								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr)
+								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr) {
 									setQtrQtr({
 										...qtrQtr,
 										nwsw: qtrQtr.nwsw ? false : true,
 									});
+								}
 							}}
 							data-testid="qtr-nwsw"
 						>
@@ -708,11 +728,12 @@ export default function QtrQtrSelectorNew({ layerData }) {
 								layerData.state !== 'TXtemporaryRemoved' && qtrQtr && qtrQtr.nesw ? classes.backgrounSecondaryQrt2 : ''
 							}`}
 							onClick={() => {
-								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr)
+								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr) {
 									setQtrQtr({
 										...qtrQtr,
 										nesw: qtrQtr.nesw ? false : true,
 									});
+								}
 							}}
 							data-testid="qtr-nesw"
 						>
@@ -725,11 +746,12 @@ export default function QtrQtrSelectorNew({ layerData }) {
 								layerData.state !== 'TXtemporaryRemoved' && qtrQtr && qtrQtr.swsw ? classes.backgrounSecondaryQrt2 : ''
 							}`}
 							onClick={() => {
-								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr)
+								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr) {
 									setQtrQtr({
 										...qtrQtr,
 										swsw: qtrQtr.swsw ? false : true,
 									});
+								}
 							}}
 							data-testid="qtr-swsw"
 						>
@@ -742,11 +764,12 @@ export default function QtrQtrSelectorNew({ layerData }) {
 								layerData.state !== 'TXtemporaryRemoved' && qtrQtr && qtrQtr.sesw ? classes.backgrounSecondaryQrt2 : ''
 							}`}
 							onClick={() => {
-								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr)
+								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr) {
 									setQtrQtr({
 										...qtrQtr,
 										sesw: qtrQtr.sesw ? false : true,
 									});
+								}
 							}}
 							data-testid="qtr-sesw"
 						>
@@ -763,11 +786,12 @@ export default function QtrQtrSelectorNew({ layerData }) {
 								layerData.state !== 'TXtemporaryRemoved' && qtrQtr && qtrQtr.nwse ? classes.backgrounSecondaryQrt2 : ''
 							}`}
 							onClick={() => {
-								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr)
+								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr) {
 									setQtrQtr({
 										...qtrQtr,
 										nwse: qtrQtr.nwse ? false : true,
 									});
+								}
 							}}
 							data-testid="qtr-nwse"
 						>
@@ -780,11 +804,12 @@ export default function QtrQtrSelectorNew({ layerData }) {
 								layerData.state !== 'TXtemporaryRemoved' && qtrQtr && qtrQtr.nese ? classes.backgrounSecondaryQrt2 : ''
 							}`}
 							onClick={() => {
-								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr)
+								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr) {
 									setQtrQtr({
 										...qtrQtr,
 										nese: qtrQtr.nese ? false : true,
 									});
+								}
 							}}
 							data-testid="qtr-nese"
 						>
@@ -797,11 +822,12 @@ export default function QtrQtrSelectorNew({ layerData }) {
 								layerData.state !== 'TXtemporaryRemoved' && qtrQtr && qtrQtr.swse ? classes.backgrounSecondaryQrt2 : ''
 							}`}
 							onClick={() => {
-								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr)
+								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr) {
 									setQtrQtr({
 										...qtrQtr,
 										swse: qtrQtr.swse ? false : true,
 									});
+								}
 							}}
 							data-testid="qtr-swse"
 						>
@@ -814,11 +840,12 @@ export default function QtrQtrSelectorNew({ layerData }) {
 								layerData.state !== 'TXtemporaryRemoved' && qtrQtr && qtrQtr.sese ? classes.backgrounSecondaryQrt2 : ''
 							}`}
 							onClick={() => {
-								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr)
+								if (layerData.state !== 'TXtemporaryRemoved' && qtrQtr) {
 									setQtrQtr({
 										...qtrQtr,
 										sese: qtrQtr.sese ? false : true,
 									});
+								}
 							}}
 							data-testid="qtr-sese"
 						>

@@ -1,36 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import { useLazyQuery, useApolloClient, useMutation } from '@apollo/client';
 import { Grid, Paper, Button, TableContainer, CircularProgress, IconButton, TextField } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
+import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
+import SearchIcon from '@material-ui/icons/Search';
+import { makeStyles } from '@material-ui/styles';
+import get from 'lodash/get';
+import set from 'lodash/set';
+import moment from 'moment';
+import React, { useState, useEffect } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
+
+import AutoCompleteESField from 'components/Shared/Forms/Fields/AutoCompleteESField';
+import { deepEqualObjects, copy } from 'components/Shared/functions';
+import TableHeader from 'components/Table/constants/check-details-header-schema';
 import TableHOC from 'components/Table/TableHOC';
 
 // QUERIES
-import { useLazyQuery, useApolloClient, useMutation } from '@apollo/client';
-
-import { deepEqualObjects, copy } from 'components/Shared/functions';
 
 // Header Schemas
-import TableHeader from 'components/Table/constants/check-details-header-schema';
 
 // Utilities
-import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { ADD_PROPERTY } from 'graphQL/useMutationAddProperty';
+import { UPDATE_CHECK_DETAIL } from 'graphQL/useMutationUpdateCheckDetail';
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
+
 import { usetableStyles } from 'components/Table/Styles';
 import { AutoCompleteFilter } from 'components/Table/AutoCompleteFilter';
-import get from 'lodash/get';
-import set from 'lodash/set';
-import { Grid as TableGrid, Input, Date } from 'components/Shared/SpreadsheetGrid';
-import Typography from '@material-ui/core/Typography';
-import AutoCompleteESField from 'components/Shared/Forms/Fields/AutoCompleteESField';
-import { ActionCell } from './ActionCell';
-import { UPDATE_CHECK_DETAIL } from 'graphQL/useMutationUpdateCheckDetail';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import { makeStyles } from '@material-ui/styles';
-import moment from 'moment';
 
-import { PopoverProperty } from './PopoverProperty';
+import { Grid as TableGrid, Input, Date } from 'components/Shared/SpreadsheetGrid';
+
+import { ActionCell } from './ActionCell';
+
 import { RevenueStatementHeadCells } from './data';
+import { PopoverProperty } from './PopoverProperty';
+
 import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles({
@@ -179,14 +183,16 @@ function CheckDetailsEditableTable(props) {
 		setCurrentRowIndex(currentRow);
 		// let newPropertyAdded = false
 		let row = rows.find(r => r._id === rowId);
-		if (get(row, field) === value && type !== 'date') return;
+		if (get(row, field) === value && type !== 'date') {
+			return;
+		}
 
 		set(row, field, value);
 		// made check for purchaser prop instead of simple number to get name, state and county
 		if (field === 'property.purchaserNumber') {
-			set(row, `property.name`, '');
-			set(row, `property.state`, '');
-			set(row, `property.county`, '');
+			set(row, 'property.name', '');
+			set(row, 'property.state', '');
+			set(row, 'property.county', '');
 			let checkDetail;
 			const { data: result1 } = await client.query({
 				query: GET_ES_PAGINATED_LIST,
@@ -241,7 +247,9 @@ function CheckDetailsEditableTable(props) {
 		}
 		if (field === 'IsDeleted') {
 			setRows([].concat(rows.filter(r => r._id !== rowId)));
-		} else setRows([].concat(rows));
+		} else {
+			setRows([].concat(rows));
+		}
 
 		row.check = props.checkId;
 		updateCheckDetail({
@@ -250,7 +258,7 @@ function CheckDetailsEditableTable(props) {
 			awaitRefetchQueries: true,
 		}).then(resp => {
 			if (!row._id && resp?.data?.updateCheckDetail?.updatedCheckDetail?._id) {
-				set(row, `_id`, resp.data.updateCheckDetail.updatedCheckDetail._id);
+				set(row, '_id', resp.data.updateCheckDetail.updatedCheckDetail._id);
 				setResetAnchor(!resetAnchor);
 				// if(newPropertyAdded){
 				//     AnchorEl(document.getElementById(`${cRow}-0`));
@@ -392,7 +400,9 @@ function CheckDetailsEditableTable(props) {
 	}, [elasticData, props.dependencyUpdate]);
 
 	const addNewRow = (e, gridRef) => {
-		if (e) e.preventDefault();
+		if (e) {
+			e.preventDefault();
+		}
 		rows.push({});
 		setRows([].concat(rows));
 		gridRef.current?.focusCell({ x: rows.length - 1, y: 0 });

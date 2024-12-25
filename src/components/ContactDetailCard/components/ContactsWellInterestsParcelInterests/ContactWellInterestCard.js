@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
 import { useLazyQuery } from '@apollo/client';
-import { useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import ContactsWellInterestsParcelInterests from './ContactsWellInterestsParcelInterests';
+import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import { CONTACT } from 'graphQL/useQueryContact';
+
+import ContactsWellInterestsParcelInterests from './ContactsWellInterestsParcelInterests';
 
 export default function ContactDocumentsCard(props) {
 	let history = useHistory();

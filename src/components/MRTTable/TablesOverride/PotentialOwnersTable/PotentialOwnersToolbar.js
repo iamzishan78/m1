@@ -1,12 +1,15 @@
-import React from 'react';
 import { debounce } from 'lodash';
+import React from 'react';
+import { useSelector } from 'react-redux';
+
+import { addTrailingZeros } from 'components/Shared/functions';
 import SelectFilter from 'components/Shared/ui/SelectFilter';
 import ToggleSwitch from 'components/Shared/ui/ToggleSwitch';
 import ToolbarButton from 'components/Shared/ui/ToolbarButton';
+
 import { tableController, tableGlobalController } from 'hookstate/tableController';
+
 import { calculateStandardNraForUnit } from 'utils/calculatedNraHelper';
-import { addTrailingZeros } from 'components/Shared/functions';
-import { useSelector } from 'react-redux';
 
 const PotentialOwnersToolbar = ({ table, tableKey }) => {
 	const Controller = tableController(tableKey);
@@ -23,7 +26,9 @@ const PotentialOwnersToolbar = ({ table, tableKey }) => {
 	const formatInterestForImport = selectedRows => {
 		const { customLayer } = tableStateValues.customProps;
 
-		if (!customLayer) return selectedRows;
+		if (!customLayer) {
+			return selectedRows;
+		}
 
 		const uAcres = customLayer.shapeJson?.properties?.uAcres || 0;
 

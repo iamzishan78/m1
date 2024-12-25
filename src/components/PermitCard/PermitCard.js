@@ -1,36 +1,37 @@
+import { useLazyQuery } from '@apollo/client';
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Link from '@material-ui/core/Link';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import React, { useEffect, useState } from 'react';
 
 //material-ui components
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import Avatar from '@material-ui/core/Avatar';
-import Typography from '@material-ui/core/Typography';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
-import Button from '@material-ui/core/Button';
 
 //custom components
-import WellIcon from './components/svgIcons/WellIcon';
-import ProductionIcon from './components/svgIcons/ProductionIcon';
-import OwnershipIcon from './components/svgIcons/OwnershipIcon';
-import Link from '@material-ui/core/Link';
-import moment from 'moment';
+import { globalStateController } from 'hookstate/globalStateController';
+import { popupController } from 'hookstate/popupStateController';
 
 import OilGasIcon from './components/svgIcons/OilGasIcon';
+import OwnershipIcon from './components/svgIcons/OwnershipIcon';
+import ProductionIcon from './components/svgIcons/ProductionIcon';
+import WellIcon from './components/svgIcons/WellIcon';
+
+import moment from 'moment';
 
 // queries
-import { useLazyQuery } from '@apollo/client';
 
 // value formatters
-import formatBOE from '../Shared/valueformatters/format_boe.js';
 import convert_date from '../Shared/valueformatters/convert_date.js';
-import { popupController } from 'hookstate/popupStateController';
-import { globalStateController } from 'hookstate/globalStateController';
+import formatBOE from '../Shared/valueformatters/format_boe.js';
 
 const useStyles = makeStyles(theme => ({
 	card: {

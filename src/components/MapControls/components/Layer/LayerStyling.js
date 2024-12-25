@@ -1,17 +1,8 @@
-import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { Grid, IconButton, Divider, FormControlLabel, Switch, Tooltip, ClickAwayListener } from '@material-ui/core';
 import { Close as CloseIcon } from '@material-ui/icons';
-import { UPDATELAYERSETTINGS } from '../../../../graphQL/useMutationUpdateLayerSettings';
 import GridOnIcon from '@material-ui/icons/GridOn';
-import { getLayerColor } from 'components/Shared/SidePanel/compoennts/common';
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent.js';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
-import { LAYERS_FEATURES_COUNT } from 'graphQL/useQueryLayerFeaturesCount';
-import { useLayerStyle, useStyles, WidthPicker } from './Common';
-import { globalStateController } from 'hookstate/globalStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { layerController } from 'hookstate/layerStateController';
+
 import { Typography } from '@mui/material';
 import { Slider, TextField, Box } from '@mui/material';
 import { colorBasedAttributes } from './LayerAttributes/ColorBasedAttributes';
@@ -21,7 +12,19 @@ import AttrsAutocomplete from './LayerAttributes/AttrsAutocomplete';
 import AttrsValuesDropdown from './LayerAttributes/AttrsValuesDropdown';
 import { getLayerKey } from 'hookstate/helpers';
 import _ from 'lodash';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent.js';
+import { getLayerColor } from 'components/Shared/SidePanel/compoennts/common';
+
 import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
+import { LAYERS_FEATURES_COUNT } from 'graphQL/useQueryLayerFeaturesCount';
+import { globalStateController } from 'hookstate/globalStateController';
+import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+
+import { useLayerStyle, useStyles, WidthPicker } from './Common';
+import { UPDATELAYERSETTINGS } from '../../../../graphQL/useMutationUpdateLayerSettings';
 
 function LayerStyling() {
 	const classes = useStyles();
@@ -73,20 +76,22 @@ function LayerStyling() {
 
 	// Getting meta data for selected layer
 	useEffect(() => {
-		if (selectedLayer?._id)
+		if (selectedLayer?._id) {
 			getShapeFileSchema({
 				variables: {
 					layerId: selectedLayer?.layerId,
 				},
 			});
+		}
 
-		if (colorBasedAttributes[getLayerKey(selectedLayer?.identifier, colorBasedAttributes)]?.layerKey)
+		if (colorBasedAttributes[getLayerKey(selectedLayer?.identifier, colorBasedAttributes)]?.layerKey) {
 			getMetaData({
 				variables: {
 					user: stateApp.user?.mongoId,
 					category: colorBasedAttributes[getLayerKey(selectedLayer?.identifier, colorBasedAttributes)]?.layerKey,
 				},
 			});
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -379,8 +384,12 @@ function LayerStyling() {
 											type="number"
 											onChange={e => {
 												let width = e.target.value ? Number(parseInt(e.target.value)) : 0;
-												if (width > 100) width = 100;
-												if (width < 0) width = 0;
+												if (width > 100) {
+													width = 100;
+												}
+												if (width < 0) {
+													width = 0;
+												}
 												setStrokeWidth(width);
 											}}
 											size="small"

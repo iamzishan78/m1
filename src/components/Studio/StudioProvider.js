@@ -1,8 +1,10 @@
-import React from 'react';
-import { StudioContextProvider } from './StudioContext';
 import { makeStyles } from '@material-ui/core/styles';
-import Studio from './Studio';
 import { createTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import React from 'react';
+
+import Studio from './Studio';
+import { StudioContextProvider } from './StudioContext';
+
 const useStyles = makeStyles(theme => ({
 	studioWrapper: {
 		width: '100%',

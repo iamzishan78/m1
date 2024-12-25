@@ -1,7 +1,8 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import RelatedPayeesToolbar from '../TablesOverride/RelatedPayeesTable/RelatedPayeesToolbar';
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+
+import RelatedPayeesToolbar from '../TablesOverride/RelatedPayeesTable/RelatedPayeesToolbar';
 
 const esIndex = 'contacts_flat';
 
@@ -100,7 +101,7 @@ const RelatedPaymentsMeta = {
 			},
 			Cell: ({ row }) => {
 				const value = row.original?.payments?.paymentAllocation;
-				return value ? `${Number(value).toFixed(2)}%` : value === 0 ? `0%` : '';
+				return value ? `${Number(value).toFixed(2)}%` : value === 0 ? '0%' : '';
 			},
 		},
 		{

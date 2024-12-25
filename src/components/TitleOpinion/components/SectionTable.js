@@ -1,7 +1,8 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { TitleOpinionContext } from '../TitleOpinionContext';
-import ReactDataGrid from 'react-data-grid-m1n-version';
 import { range } from 'lodash';
+import React, { useContext, useState, useEffect } from 'react';
+import ReactDataGrid from 'react-data-grid-m1n-version';
+
+import { TitleOpinionContext } from '../TitleOpinionContext';
 import 'react-data-grid-m1n-version/dist/react-data-grid.css';
 
 const defaultParsePaste = str => str.split(/\r\n|\n|\r/).map(row => row.split('\t'));

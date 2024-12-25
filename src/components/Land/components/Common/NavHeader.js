@@ -1,13 +1,14 @@
-import React, { useContext } from 'react';
-import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { makeStyles } from '@material-ui/styles';
 import { Typography, Grid, Breadcrumbs } from '@material-ui/core';
-import { NavigateNext as NavigateNextIcon } from '@material-ui/icons';
 import Link from '@material-ui/core/Link';
+import { NavigateNext as NavigateNextIcon } from '@material-ui/icons';
+import { makeStyles } from '@material-ui/styles';
+import React, { useContext } from 'react';
+import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 // Components
 import ProfileMenu from 'components/Profile/ProfileMenu';
+
 import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
@@ -61,7 +62,9 @@ export default function DetailComponents(props) {
 							<Typography
 								className={classes.title}
 								onClick={() => {
-									if (onClickFunc) onClickFunc();
+									if (onClickFunc) {
+										onClickFunc();
+									}
 								}}
 							>
 								{title || '-'}

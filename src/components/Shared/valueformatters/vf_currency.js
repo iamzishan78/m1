@@ -1,6 +1,7 @@
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import vf_number from './vf_number';
 import { toNumber } from 'lodash';
+
+import vf_number from './vf_number';
 
 // this function is intended to convert a numeric string to currency
 
@@ -12,7 +13,9 @@ export default function vf_currency(value) {
 	});
 
 	const valueFormatter = v => {
-		if (v) return formatter.format(parseInt(v));
+		if (v) {
+			return formatter.format(parseInt(v));
+		}
 	};
 
 	return valueFormatter(value);
@@ -27,7 +30,9 @@ export function vf_currency_to_fixed(value, toFixed) {
 	});
 
 	const valueFormatter = v => {
-		if (v) return formatter.format(parseFloat(v).toFixed(toFixed));
+		if (v) {
+			return formatter.format(parseFloat(v).toFixed(toFixed));
+		}
 	};
 
 	return valueFormatter(value);

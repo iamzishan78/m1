@@ -16,7 +16,9 @@ describe('Portfolio Spec', () => {
 		cy.verifyApiResponse('@getPortfolioSummaryApi', { responseTimeout: shorTimeout }).then(response => {
 			const getPortfolioSummary = response.response.body.data.getPortfolioSummary;
 
-			if (typeof getPortfolioSummary === 'string') throw new Error(getPortfolioSummary);
+			if (typeof getPortfolioSummary === 'string') {
+				throw new Error(getPortfolioSummary);
+			}
 		});
 
 		cy.get('#portfilioActionBar', { timeout: longTimeout }).should('be.visible');

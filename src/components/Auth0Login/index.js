@@ -1,17 +1,23 @@
-import { useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { globalStateController } from 'hookstate/globalStateController';
-import { msalConfig, tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
 import * as msal from '@azure/msal-browser';
-import { USER_MAP_SETTINGS } from 'graphQL/useQueryUserMapSettings';
-import { setApolloHeaders } from 'AppContext';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+
+import { msalConfig, tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
+
 import { BYPASS_LOGIN_MUTATION } from 'graphQL/useMutationBypassLogin';
-import { apolloClientEndpointDev, isDev } from 'utils/helper';
+import { USER_MAP_SETTINGS } from 'graphQL/useQueryUserMapSettings';
+
+import { globalStateController } from 'hookstate/globalStateController';
 import { mapStateController } from 'hookstate/mapStateController';
+
 import { setUserAction } from 'store/actions/appActions';
 import { currentUserGridViewSettingsAction } from 'store/actions/sessionActions';
+
+import { apolloClientEndpointDev, isDev } from 'utils/helper';
 import { saveUserSession } from 'utils/user';
-import { useDispatch } from 'react-redux';
+
+import { setApolloHeaders } from 'AppContext';
 
 const Auth0Login = props => {
 	const dispatch = useDispatch();
@@ -44,9 +50,11 @@ const Auth0Login = props => {
 		const bypassLogin = globalStateController.getValue('bypassLogin');
 
 		let authTokenExpires;
-		if (bypassLogin) authTokenExpires = sessionData.authenticationToken.expiresOn;
-		else if (authGraphQLToken?.expiresOn)
+		if (bypassLogin) {
+			authTokenExpires = sessionData.authenticationToken.expiresOn;
+		} else if (authGraphQLToken?.expiresOn) {
 			authTokenExpires = new Date(authGraphQLToken.expiresOn.setDate(authGraphQLToken.expiresOn.getDate() + 14));
+		}
 
 		const user = {
 			...mongoUser,
@@ -133,7 +141,9 @@ const Auth0Login = props => {
 	}
 
 	useEffect(() => {
-		if (isLoading) return;
+		if (isLoading) {
+			return;
+		}
 
 		if (!isAuthenticated) {
 			const org_id = window.sessionStorage.getItem('tenantOrgId')

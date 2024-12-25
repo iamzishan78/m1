@@ -1,5 +1,6 @@
-import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
+
 import CheckDetailsTable from 'components/Table/Revenue/CheckDetailsTable';
 
 const useStyles = makeStyles(() => ({

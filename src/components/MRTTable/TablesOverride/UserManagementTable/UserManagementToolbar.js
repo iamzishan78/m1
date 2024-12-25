@@ -1,7 +1,9 @@
 import React from 'react';
-import ToolbarButton from 'components/Shared/ui/ToolbarButton';
-import { tableGlobalController } from 'hookstate/tableController';
+
 import UserManagementTableDialogs from 'components/MRTTable/TablesOverride/UserManagementTable/RightDialogs';
+import ToolbarButton from 'components/Shared/ui/ToolbarButton';
+
+import { tableGlobalController } from 'hookstate/tableController';
 
 const UserManagementToolbar = ({ table, tableKey }) => {
 	const isSomeRowsSelected = table.getIsSomeRowsSelected();

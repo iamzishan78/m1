@@ -1,15 +1,16 @@
-import React, { useState, useContext, useCallback, useEffect } from 'react';
-import { get } from 'lodash';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import NumberFormat from 'react-number-format';
-import Switch from '@material-ui/core/Switch';
-import { NavigationContext } from '../NavigationContext';
-import Grid from '@material-ui/core/Grid';
 import { FormLabel } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
-import OwnershipIcon from '../../Shared/svgIcons/ownership';
+import { makeStyles } from '@material-ui/core/styles';
+import Switch from '@material-ui/core/Switch';
+import TextField from '@material-ui/core/TextField';
 import CancelIcon from '@material-ui/icons/Cancel';
+import { get } from 'lodash';
+import React, { useState, useContext, useCallback, useEffect } from 'react';
+import NumberFormat from 'react-number-format';
+
+import OwnershipIcon from '../../Shared/svgIcons/ownership';
+import { NavigationContext } from '../NavigationContext';
 
 const useStyles = makeStyles({
 	divBordersMinMax: {
@@ -172,16 +173,17 @@ export default function FilterOwnerCount() {
 	};
 
 	const toggleOwners = () => {
-		if (stateNav.filterHasOwnerCount)
+		if (stateNav.filterHasOwnerCount) {
 			setStateNav(stateNav => ({
 				...stateNav,
 				filterHasOwnerCount: null,
 			}));
-		else
+		} else {
 			setStateNav(stateNav => ({
 				...stateNav,
 				filterHasOwnerCount: ['any', ['==', ['get', 'hasOwner'], true]],
 			}));
+		}
 	};
 
 	const clearFilters = () => {

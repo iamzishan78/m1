@@ -1,8 +1,10 @@
-import React, { memo } from 'react';
 import { Button } from '@material-ui/core';
+import React, { memo } from 'react';
+
 import { detailCardController } from 'hookstate/detailCardController';
-import { PayeeRightDialog } from './RightDialog';
 import { tableController } from 'hookstate/tableController';
+
+import { PayeeRightDialog } from './RightDialog';
 
 // This component is used in the RelatedPayeesTable component for the toolbar
 function RelatedPayeesToolbar({ table, tableKey }) {

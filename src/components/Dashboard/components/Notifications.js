@@ -1,41 +1,49 @@
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { Grid, Typography } from '@material-ui/core';
+import { CircularProgress, Menu, MenuItem, TextField, InputAdornment, IconButton } from '@material-ui/core';
 import CardHeader from '@material-ui/core/CardHeader';
 import List from '@material-ui/core/List';
 import Paper from '@material-ui/core/Paper';
-import { useLazyQuery, useMutation } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
-import MarkUnreadIcon from 'components/Shared/svgIcons/mark-unread';
-import ArchiveIcon from 'components/Shared/svgIcons/archive';
-import React, { Fragment, useEffect, useState, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
-import Avatar from 'react-avatar';
-import Tooltip from '@material-ui/core/Tooltip';
-import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { CircularProgress, Menu, MenuItem, TextField, InputAdornment, IconButton } from '@material-ui/core';
+import Tabs from '@material-ui/core/Tabs';
+import Tooltip from '@material-ui/core/Tooltip';
+import { LocalAtm } from '@material-ui/icons';
+import ClearIcon from '@material-ui/icons/Clear';
 import SearchIcon from '@material-ui/icons/Search';
+import React, { Fragment, useEffect, useState, useContext } from 'react';
+
+import { useHistory } from 'react-router-dom';
+import ArchiveIcon from 'components/Shared/svgIcons/archive';
+import MarkUnreadIcon from 'components/Shared/svgIcons/mark-unread';
+import Avatar from 'react-avatar';
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import ClearIcon from '@material-ui/icons/Clear';
+
 import TractIcon from 'components/Shared/svgIcons/tract';
 import UnitIcon from 'components/Shared/svgIcons/unit';
+
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import FolderIcon from '@material-ui/icons/Folder';
 import ContactIcon from '@material-ui/icons/Group';
 import FlowIcon from '@material-ui/icons/Repeat';
-import { LocalAtm } from '@material-ui/icons';
 import { DescriptionOutlined } from '@material-ui/icons';
+
+import { ARCHIVE_ALL_MUTATIONS } from 'graphQL/useMutationArchiverAllMentions';
 import { UPDATE_NOTIFICATION_STATUS } from 'graphQL/useMutationUpdateNotificationStatus';
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+
+import { globalStateController } from 'hookstate/globalStateController';
+
+import { dateIsValid } from 'utils/helper';
+
 import { AppContext } from 'AppContext';
 
 import ReactTimeAgo from 'react-time-ago';
-import { dateIsValid } from 'utils/helper';
+
 import { CommonCommentText } from 'components/Shared/CommentComponent';
-import { ARCHIVE_ALL_MUTATIONS } from 'graphQL/useMutationArchiverAllMentions';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
-import { globalStateController } from 'hookstate/globalStateController';
 import Loader from 'components/Loaders';
 
 const useStyles = makeStyles(theme => ({
@@ -484,7 +492,7 @@ const Notifications = () => {
 											} else if (parentType === 'CONTACT') {
 												history.push(`/contact/details/${parent._id}`);
 											} else if (parentType === 'FILE') {
-												history.push(`/documents`);
+												history.push('/documents');
 												setStateApp(state => ({
 													...state,
 													pdfView: null,

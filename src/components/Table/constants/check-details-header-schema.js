@@ -1,11 +1,13 @@
 import { Typography } from '@material-ui/core';
-import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
-import vf_number from 'components/Shared/valueformatters/vf_number';
-import { GlobalStickyStyles } from 'GlobalSettings';
-import DeleteIcon from '@material-ui/icons/Delete';
 import { makeStyles } from '@material-ui/core/styles';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { Tooltip } from '@mui/material';
+
+import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+import vf_number from 'components/Shared/valueformatters/vf_number';
+
+import { GlobalStickyStyles } from 'GlobalSettings';
 
 const getFormattedValue = (value, { currency = false, toFixed } = {}) => {
 	return (

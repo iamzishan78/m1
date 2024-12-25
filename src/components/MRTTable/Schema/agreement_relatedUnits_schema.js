@@ -1,7 +1,7 @@
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
-import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
-import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 
 // Schema for agreement related units grid
 

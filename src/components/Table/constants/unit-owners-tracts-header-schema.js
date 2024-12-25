@@ -1,4 +1,5 @@
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+
 import { GlobalStickyStyles } from 'GlobalSettings';
 
 const getHeaders = ({ interestMapping, layerType, isTestcase }) => {

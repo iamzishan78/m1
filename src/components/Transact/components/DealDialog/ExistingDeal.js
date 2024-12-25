@@ -1,20 +1,23 @@
-import React, { useContext, useEffect, useState } from 'react';
-import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { OPENDEALS } from 'graphQL/useQueryOpenDeals';
 import { Button, Grid, IconButton, InputAdornment, InputLabel, TextField, Typography } from '@material-ui/core';
-import CircularProgress from '@mui/material/CircularProgress';
-import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+import { makeStyles } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import CircularProgress from '@mui/material/CircularProgress';
+import clsx from 'clsx';
+import _ from 'lodash';
+import React, { useContext, useEffect, useState } from 'react';
+
+import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+
 import { DEAL_DESCRIPTOR } from 'graphQL/useMutationAddDeal';
-import { AppContext } from 'AppContext';
-import { GET_SHAPE_OWNERS_DATA } from 'graphQL/useQueryGetShapeOwnersData';
+import { UPDATEPARCELOWNER } from 'graphQL/useMutationUpdateParcelOwner';
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 import { GET_PARCEL_OWNERS_DATA } from 'graphQL/useQueryGetParcelOwnersData';
-import { UPDATEPARCELOWNER } from 'graphQL/useMutationUpdateParcelOwner';
-import _ from 'lodash';
+import { GET_SHAPE_OWNERS_DATA } from 'graphQL/useQueryGetShapeOwnersData';
+import { OPENDEALS } from 'graphQL/useQueryOpenDeals';
+
+import { AppContext } from 'AppContext';
 
 export default function ExistingDeal({ contactId, handleClickDialogClose }) {
 	const [stateApp] = useContext(AppContext);

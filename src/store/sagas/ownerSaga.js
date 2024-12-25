@@ -1,13 +1,17 @@
-import { call, takeLatest, put, select } from 'redux-saga/effects';
 import get from 'lodash/get';
+import { call, takeLatest, put, select } from 'redux-saga/effects';
 
-import Api from 'api';
+import { getPolygonString } from 'components/Shared/functions';
+
+import { CREATE_JOB } from 'graphQL/useMutationCreateJob';
+import { INITIALIZE_EXPORT_JOB } from 'graphQL/useMutationinitializeExportJob';
+import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
+import { OWNERS_BY_WELL_IDS } from 'graphQL/useQueryOwnersByWellIds';
 import { SHAPE_OWNERS } from 'graphQL/useQueryPaginatedShapeOwners';
 import { SHAPEOWNERSCOUNT, SHAPEOWNERSINTERESTCOUNT } from 'graphQL/useQueryShapeOwnersCount';
-import { OWNERS_BY_WELL_IDS } from 'graphQL/useQueryOwnersByWellIds';
-import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
-import { INITIALIZE_EXPORT_JOB } from 'graphQL/useMutationinitializeExportJob';
-import { CREATE_JOB } from 'graphQL/useMutationCreateJob';
+
+import { jobController } from 'hookstate/jobStateController';
+
 import {
 	getShapeOwnersAndCountAction,
 	getShapeOwnersAndWellsAction,
@@ -22,9 +26,9 @@ import {
 	GET_MAP_FILTER_SHAPE_OWNERS_AND_COUNT,
 	EXEC_ASYNC_EXPORT_JOB,
 } from 'store/type';
+
 import { showErrorMessage } from 'actions';
-import { getPolygonString } from 'components/Shared/functions';
-import { jobController } from 'hookstate/jobStateController';
+import Api from 'api';
 
 function* getShapeOwnersAndCount(action) {
 	try {

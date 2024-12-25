@@ -1,20 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import { Box } from '@material-ui/core';
-import { mapControlsController } from 'hookstate/mapControlsController';
 import { useMutation } from '@apollo/client';
-import { getDefaultSettings } from './fileUploadHelper';
-import { showErrorMessage } from 'actions';
+import { Box } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { CREATE_DATASET_LAYERS } from 'graphQL/useMutationDataset';
 import { v4 as uuid } from 'uuid';
+
+import { CREATE_DATASET_LAYERS } from 'graphQL/useMutationDataset';
+
 import { globalStateController } from 'hookstate/globalStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+
+import { showErrorMessage } from 'actions';
+
+import { getDefaultSettings } from './fileUploadHelper';
 
 const CreateLayerDialog = () => {
 	const dispatch = useDispatch();
@@ -76,7 +80,9 @@ const CreateLayerDialog = () => {
 	};
 
 	useEffect(() => {
-		if (!dataset?.categories) return;
+		if (!dataset?.categories) {
+			return;
+		}
 
 		setLayerNames(dataset.categories.map(c => c.name));
 	}, [dataset]);

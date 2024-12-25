@@ -1,9 +1,21 @@
+import { useApolloClient } from '@apollo/client';
+import { useAuth0 } from '@auth0/auth0-react';
+import { ConnectedRouter } from 'connected-react-router';
 import React from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useSelector } from 'react-redux';
 import { Switch, Route } from 'react-router-dom';
 //components
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+
+import AdminProvider from 'components/Admin/AdminProvider';
+import AnalyticsProvider from 'components/Analytics/AnalyticsProvider';
+import Land from 'components/Land';
+import RevenueProvider from 'components/Revenue/RevenueProvider';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import ActivitiesProvider from './components/Activities/ActivitiesProvider';
+import AlertsProvider from './components/Alerts/AlertsProvider';
 import Auth0Login from './components/Auth0Login';
 import AzureLogin from './components/AzureLogin';
 import SignUpCard from './components/AzureLogin/SignUpCard';
@@ -24,25 +36,18 @@ import ContactWellInterestProvider from './components/ContactDetailCard/componen
 import ContactDocumentsProvider from './components/ViewDocuments/ContactDocumentsProvider';
 import ContactDetailedInfoProvider from './components/ContactDetailedInfo/ContactDetailedInfoProvider';
 import ContactRecentActivitiesProvider from './components/RecentActivities/ContactRecentActivitiesProvider';
-import AlertsProvider from './components/Alerts/AlertsProvider';
 import DashboardProvider from './components/Dashboard/DashboardProvider';
 import StudioProvider from './components/Studio/StudioProvider';
 import BulkUpload from './components/BulkUpload/BulkUpload';
-import ActivitiesProvider from './components/Activities/ActivitiesProvider';
-import RevenueProvider from 'components/Revenue/RevenueProvider';
-import Land from 'components/Land';
+
 import AgreementProvider from './components/Land/components/Agreements/AgreementProvider';
 // pick a date util library
 
 //graphQL - queries in ./graphQL example usage in ./components/Maps.js
-import { useApolloClient } from '@apollo/client';
-import { ConnectedRouter } from 'connected-react-router';
+
 import { history } from './store';
-import AnalyticsProvider from 'components/Analytics/AnalyticsProvider';
-import AdminProvider from 'components/Admin/AdminProvider';
-import { globalStateController } from 'hookstate/globalStateController';
+
 import Providers from 'Providers';
-import { useAuth0 } from '@auth0/auth0-react';
 
 const PrivateRoute = ({ component, ...options }) => {
 	const user = globalStateController.getValue('user');

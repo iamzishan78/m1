@@ -1,7 +1,9 @@
-import React, { memo } from 'react';
 import { Button } from '@material-ui/core';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import React, { memo } from 'react';
+
 import AgreementRelatedUnitDialog from 'components/MRTTable/TablesOverride/AgreementRelatedUnitsTable/RightDialog';
+
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 // Overridden Tootlbar for AgreementRelatedUnitsToolbar
 function AgreementRelatedUnitsToolbar({ table, tableKey }) {

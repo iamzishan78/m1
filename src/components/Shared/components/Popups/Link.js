@@ -1,5 +1,5 @@
-import React from 'react';
 import { ClickAwayListener } from '@material-ui/core';
+import React from 'react';
 
 const LinkPopup = ({ id, url, onClickAway, onLinkClick, className, maxLength }) => {
 	return (

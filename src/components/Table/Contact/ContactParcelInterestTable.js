@@ -1,28 +1,29 @@
-import React, { useContext, useState, useEffect } from 'react';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { useHistory } from 'react-router-dom';
 import set from 'lodash/set';
+import React, { useContext, useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 
 // context
-import { AppContext } from 'AppContext';
-
-import { Container } from '@material-ui/core';
+import AddWellInterestDialog from 'components/ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog';
+import { getParcelOriginalProperties } from 'components/ParcelsDetailCard/utils/GetParcelOriginalProps';
+import TableHeader from 'components/Shared/constants/associate-contact-parcel-header-schema.js';
+import { deepEqualObjects, setStateIfDeepEqual, addTrailingZeros } from 'components/Shared/functions';
 import Table from 'components/Shared/M1nTable/components/Table';
+import vf_currency from 'components/Shared/valueformatters/vf_currency';
 import TableHOC from 'components/Table/TableHOC';
 
-// QUERIES
-import { getParcelOriginalProperties } from 'components/ParcelsDetailCard/utils/GetParcelOriginalProps';
-import { useLazyQuery, useMutation } from '@apollo/client';
 import { UPDATEWELLINTEREST } from 'graphQL/useMutationUpdateWellInterest';
+import { AppContext } from 'AppContext';
+
+// QUERIES
+
 import { CONTACT_PARCEL_INTERESTS } from 'graphQL/useQueryContactParcelInterest';
 
-import { deepEqualObjects, setStateIfDeepEqual, addTrailingZeros } from 'components/Shared/functions';
-import AddWellInterestDialog from 'components/ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog';
-
 // Header Schemas
-import TableHeader from 'components/Shared/constants/associate-contact-parcel-header-schema.js';
+
 import { handleTagColumn } from '../helpers';
-import vf_currency from 'components/Shared/valueformatters/vf_currency';
 
 const useStyles = makeStyles(theme => ({
 	container: {
@@ -135,8 +136,9 @@ function ContactParcelInterestTable(props) {
 
 				Object.keys(well).forEach(key => {
 					if (interestKeys.includes(key)) {
-						if (typeof well[key] === 'number') well[key] = addTrailingZeros(well[key]);
-						else if (well[key]?.['$numberDecimal']) {
+						if (typeof well[key] === 'number') {
+							well[key] = addTrailingZeros(well[key]);
+						} else if (well[key]?.['$numberDecimal']) {
 							well[key] = addTrailingZeros(Number(well[key]['$numberDecimal']));
 						}
 					}

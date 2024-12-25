@@ -1,9 +1,10 @@
+import ListChips from 'components/Common/ListChips';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import UnitIcon from 'components/Shared/svgIcons/unit';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
-import ListChips from 'components/Common/ListChips';
+
 import { CommonSchema } from './common_schema';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import ContactNameLink from '../Common/TableCells/ContactNameLink';
 
 const esIndex = 'shapeowners_flat';

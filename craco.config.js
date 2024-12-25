@@ -1,7 +1,7 @@
 const presetReact = require('@babel/preset-react').default;
-const path = require('path');
 const presetCRA = require('babel-preset-react-app');
 const CracoEsbuildPlugin = require('craco-esbuild');
+const path = require('path');
 const { ProvidePlugin } = require('webpack');
 
 module.exports = {

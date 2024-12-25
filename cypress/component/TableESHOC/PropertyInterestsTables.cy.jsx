@@ -1,5 +1,5 @@
-import PropertyInterestDetailsSection from 'components/Revenue/components/Properties/DetailComponents/PropertyInterestDetailsSection';
 import InterestDetailForm from 'components/Revenue/components/Properties/DetailComponents/InterestDetailForm';
+import PropertyInterestDetailsSection from 'components/Revenue/components/Properties/DetailComponents/PropertyInterestDetailsSection';
 
 describe('Property interest details ESHOC Table', () => {
 	beforeEach(() => {

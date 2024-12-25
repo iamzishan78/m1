@@ -1,11 +1,13 @@
 import { useApolloClient } from '@apollo/client';
-import { useEffect } from 'react';
-import { tableGlobalController } from 'hookstate/tableController';
-import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
-import { globalStateController } from 'hookstate/globalStateController';
-import { COMMENTSCOUNTER } from 'graphQL/useQueryCommentsCounter';
 import { isEqual } from 'lodash';
+import { useEffect } from 'react';
+
+import { COMMENTSCOUNTER } from 'graphQL/useQueryCommentsCounter';
+import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
 import { TAGSAMPLES } from 'graphQL/useQueryTagSamples';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { tableGlobalController } from 'hookstate/tableController';
 
 const useHandleAdditionalQueries = ({ Controller, tableKey, tableState, tableStateValues }) => {
 	const { stateValues } = Controller.useState(['alreadyCheckedOwnersLength']);
@@ -17,7 +19,9 @@ const useHandleAdditionalQueries = ({ Controller, tableKey, tableState, tableSta
 
 	const callIfOwnersAreContactsQuery = async () => {
 		const alreadyFetchedLength = stateValues?.alreadyCheckedOwnersLength ?? 0;
-		if (!tableStateValues?.data?.rows?.length && alreadyFetchedLength <= tableStateValues?.data?.rows?.length) return;
+		if (!tableStateValues?.data?.rows?.length && alreadyFetchedLength <= tableStateValues?.data?.rows?.length) {
+			return;
+		}
 
 		Controller.updateState({
 			isLoading: true,
@@ -57,7 +61,9 @@ const useHandleAdditionalQueries = ({ Controller, tableKey, tableState, tableSta
 
 		const ids = tableStateValues.getIdsFromRows?.(tableStateValues.data.rows);
 
-		if (!ids || ids.length === 0) return;
+		if (!ids || ids.length === 0) {
+			return;
+		}
 
 		const res = await client.query({
 			variables: {
@@ -68,13 +74,14 @@ const useHandleAdditionalQueries = ({ Controller, tableKey, tableState, tableSta
 		});
 
 		const commentsCounter = res?.data?.commentsCounter;
-		if (!isEqual(commentsCounterState, commentsCounter))
+		if (!isEqual(commentsCounterState, commentsCounter)) {
 			Controller.updateState({
 				commentsCounter,
 				isLoading: false,
 				isFetching: false,
 				isError: false,
 			});
+		}
 	};
 
 	const callTagsQuery = async () => {
@@ -83,7 +90,9 @@ const useHandleAdditionalQueries = ({ Controller, tableKey, tableState, tableSta
 
 		const ids = tableStateValues.getIdsFromRows?.(tableStateValues.data.rows);
 
-		if (!ids || ids.length === 0) return;
+		if (!ids || ids.length === 0) {
+			return;
+		}
 
 		const res = await client.query({
 			variables: {
@@ -95,17 +104,27 @@ const useHandleAdditionalQueries = ({ Controller, tableKey, tableState, tableSta
 
 		const tagsList = res?.data.tagSamples;
 
-		if (!isEqual(tagsListState, tagsList)) Controller.updateState({ tagsList });
+		if (!isEqual(tagsListState, tagsList)) {
+			Controller.updateState({ tagsList });
+		}
 	};
 
 	useEffect(() => {
 		const { additionalQueries } = tableStateValues;
 
-		if (!additionalQueries || additionalQueries.length === 0) return;
+		if (!additionalQueries || additionalQueries.length === 0) {
+			return;
+		}
 
-		if (additionalQueries.includes('isContact')) callIfOwnersAreContactsQuery();
-		if (additionalQueries.includes('comments')) callCommentsQuery();
-		if (additionalQueries.includes('tags')) callTagsQuery();
+		if (additionalQueries.includes('isContact')) {
+			callIfOwnersAreContactsQuery();
+		}
+		if (additionalQueries.includes('comments')) {
+			callCommentsQuery();
+		}
+		if (additionalQueries.includes('tags')) {
+			callTagsQuery();
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState.data, tableState.additionalQueries, refetchAdditionalQueries]);
 };

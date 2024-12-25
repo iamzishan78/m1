@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
+import { useLazyQuery } from '@apollo/client';
 import { Typography, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import loadashFilter from 'lodash/filter';
-import { useLazyQuery } from '@apollo/client';
+import React, { useEffect, useState } from 'react';
+
 import { SHAPE_AUTOCOMPLETE_LIST } from 'graphQL/useQueryShapeAutoCompleteList';
 
 const useStyles = makeStyles({
@@ -77,15 +78,19 @@ const AutoCompleteTypeComponent = ({
 					return option.name;
 				}
 
-				if (option?.name) return option.name;
-				else return '';
+				if (option?.name) {
+					return option.name;
+				} else {
+					return '';
+				}
 			}}
 			getOptionSelected={(option, value) => {
 				return option?._id === value?._id;
 			}}
 			renderOption={option => {
-				if (option._id === 'newEntity')
+				if (option._id === 'newEntity') {
 					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+				}
 
 				return (
 					<Grid container spacing={0}>

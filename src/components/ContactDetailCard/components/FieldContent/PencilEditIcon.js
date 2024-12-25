@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from 'react';
 import { Grid } from '@material-ui/core';
 import { IconButton } from '@material-ui/core';
-import Tooltip from '@material-ui/core/Tooltip';
-import CreateTwoToneIcon from '@material-ui/icons/CreateTwoTone';
-import EditionPopover from '../EditionPopover';
-import ClearSharpIcon from '@material-ui/icons/ClearSharp';
-import CheckSharpIcon from '@material-ui/icons/CheckSharp';
 import Button from '@material-ui/core/Button';
+import Tooltip from '@material-ui/core/Tooltip';
+import CheckSharpIcon from '@material-ui/icons/CheckSharp';
+import ClearSharpIcon from '@material-ui/icons/ClearSharp';
+import CreateTwoToneIcon from '@material-ui/icons/CreateTwoTone';
+import React, { useState, useEffect } from 'react';
+
 import useStyles from 'components/ContactDetailCard/components/FieldContent/style';
 import CopyIcon from 'components/Shared/svgIcons/CopyIcon';
 import TextSmsIcon from 'components/Shared/svgIcons/textsms';
 import VoiceMailIcon from 'components/Shared/svgIcons/voicemail';
+
+import EditionPopover from '../EditionPopover';
 
 function PencilEditIcon({
 	onClick,

@@ -1,9 +1,10 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import Grid from '@material-ui/core/Grid';
+
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
-import { formatDate } from 'components/Shared/functions';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import { formatDate } from 'components/Shared/functions';
 
 const esIndex = 'shapes_flat';
 
@@ -30,7 +31,7 @@ const ContactDetailRelatedAgreementMeta = {
 			...CommonSchema.INITAIL_PINNED,
 			name: 'shapeJson.properties.agreementNumber.keyword',
 			accessorKey: 'shapeJson.properties.agreementNumber',
-			header: 'Agreement',
+			header: 'Agreement Number',
 			Cell: ({ row }) => {
 				let value = row?.original?.shapeJson.properties.agreementNumber;
 				value = value?.toString();
@@ -86,7 +87,12 @@ const ContactDetailRelatedAgreementMeta = {
 				);
 			},
 		},
-
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.agreementName.keyword',
+			accessorKey: 'shapeJson.properties.agreementName',
+			header: 'Agreement Name',
+		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.agreementType.keyword',

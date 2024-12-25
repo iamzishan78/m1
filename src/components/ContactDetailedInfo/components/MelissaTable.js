@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import FieldContent from '../../ContactDetailCard/components/FieldContent';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import moment from 'moment';
-
-import Select from '@material-ui/core/Select';
-import Button from '@material-ui/core/Button';
-import MenuItem from '@material-ui/core/MenuItem';
-import { excludeList } from './ExcludeList';
 import { Grid } from '@material-ui/core';
 import { Box, FormControlLabel, FormGroup, Switch } from '@material-ui/core';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import Button from '@material-ui/core/Button';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import moment from 'moment';
+import React, { useState } from 'react';
+
+import { excludeList } from './ExcludeList';
+import FieldContent from '../../ContactDetailCard/components/FieldContent';
 
 const AntSwitch = withStyles(theme => ({
 	root: {
@@ -239,7 +239,7 @@ const MelissaTable = ({ ...props }) => {
 										let objName = Object.keys(value.data)[0];
 										if (
 											value.data[objName] != undefined &&
-											value.data[objName] != `""` &&
+											value.data[objName] != '""' &&
 											value.data[objName] != '' &&
 											value.data[objName] != '' &&
 											value.data[objName].length != 0 &&

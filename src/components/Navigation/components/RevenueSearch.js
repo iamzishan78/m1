@@ -1,11 +1,12 @@
-import React, { useContext, useState, useMemo, useEffect } from 'react';
 import { InputAdornment, TextField, IconButton, Tooltip } from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
-import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
+import SearchIcon from '@material-ui/icons/Search';
+import React, { useContext, useState, useMemo, useEffect } from 'react';
+
+import { SIDE_PANEL_MENU_ITEMS_LIST } from 'components/Revenue/Revenue';
 
 import { AppContext } from 'AppContext';
-import { SIDE_PANEL_MENU_ITEMS_LIST } from 'components/Revenue/Revenue';
 
 const useStyles = makeStyles(theme => ({
 	search: {
@@ -76,7 +77,9 @@ const LandSearch = ({ activeModule }) => {
 
 	useEffect(() => {
 		const newSearch = stateApp.revenueSearchQuery.replace('*', '');
-		if (newSearch !== search) setSearch(newSearch);
+		if (newSearch !== search) {
+			setSearch(newSearch);
+		}
 	}, [stateApp.revenueSearchQuery]);
 
 	useEffect(() => {

@@ -1,28 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
-import { Menu, MenuItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import Drawer from '@material-ui/core/Drawer';
-import RightActionsPanel from './RightActionsPanel';
-import { AppContext } from 'AppContext';
-import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
-
-import { CircularProgress, Dialog, DialogTitle, IconButton } from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 import { useLazyQuery, useMutation } from '@apollo/client';
+import { CircularProgress, Dialog, DialogTitle, IconButton } from '@material-ui/core';
+import { Menu, MenuItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import Drawer from '@material-ui/core/Drawer';
+import { makeStyles } from '@material-ui/core/styles';
+import DeleteIcon from '@material-ui/icons/Delete';
+import clsx from 'clsx';
+import React, { useEffect, useState } from 'react';
+
+import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+
 import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
 
+import { AppContext } from 'AppContext';
+
+import AssociatedAgreements from './AssociatedAgreements';
+import AssociatedChecks from './AssociatedChecks';
+import AssociatedContacts from './AssociatedContacts';
+import AssociatedProperties from './AssociatedProperties';
+import AssociatedWells from './AssociatedWells';
 import DetailsPanel from './Details';
 import Information from './Information';
-import AssociatedWells from './AssociatedWells';
-import AssociatedAgreements from './AssociatedAgreements';
-import AssociatedContacts from './AssociatedContacts';
+import RightActionsPanel from './RightActionsPanel';
 import { DocumentContext } from '../DocumentContext';
-import AssociatedChecks from './AssociatedChecks';
-import AssociatedProperties from './AssociatedProperties';
 
 const useStyles = makeStyles({
 	drawer: {

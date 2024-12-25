@@ -1,33 +1,22 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { NavigationContext } from './NavigationContext';
 // contexts
-import { AppContext } from 'AppContext';
-
-import { useHistory, useLocation } from 'react-router-dom';
-import clsx from 'clsx';
 
 //3rd party packages
-import PropTypes from 'prop-types';
 
 //@material-ui components
 import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Button from '@material-ui/core/Button';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import CardHeader from '@material-ui/core/CardHeader';
-import List from '@material-ui/core/List';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { contactManagementRoutes } from 'utils/data';
-import SupportCenterModal from './components/SupportCenter';
-import { useStyles } from './Common';
+import List from '@material-ui/core/List';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 
 //icons
-import HeadsetIcon from '@material-ui/icons/Headset';
 import DesktopWindowsIcon from '@material-ui/icons/DesktopWindows';
 
 import DealSearch from './components/DealSearch';
@@ -37,12 +26,12 @@ import ContactFormModal from './components/ContactFormModal';
 import { useSelector } from 'react-redux';
 
 import Add from '@material-ui/icons/Add';
+import HeadsetIcon from '@material-ui/icons/Headset';
+import clsx from 'clsx';
+import PropTypes from 'prop-types';
+import React, { useState, useContext, useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 
-import ActivitySearch from './components/ActivitySearch';
-import ActivityDashboardSearch from './components/ActivityDashboardSearch';
-import DocumentSearch from './components/DocumentSearch';
-import AnalyticsSearch from './components/AnalyticsSearch';
-import ContactSearch from './components/ContactSearch';
 import ContactBreadcrumbs from './components/ContactBreadcrumbs';
 import SideNavigation from './SideNavigation';
 import ProfileMenu from 'components/Profile/ProfileMenu';
@@ -54,6 +43,17 @@ import AdminSettingsAppBar from 'components/Navigation/AppBar/AdminSettings';
 import { ROUTES } from 'components/Shared/FeatureFlag/common';
 import { navController } from 'hookstate/navStateController';
 import { slidoutStateController } from 'hookstate/slidoutStateController';
+import { contactManagementRoutes } from 'utils/data';
+import { AppContext } from 'AppContext';
+import { useStyles } from './Common';
+
+import ActivityDashboardSearch from './components/ActivityDashboardSearch';
+import ActivitySearch from './components/ActivitySearch';
+import AnalyticsSearch from './components/AnalyticsSearch';
+import ContactSearch from './components/ContactSearch';
+import DocumentSearch from './components/DocumentSearch';
+import SupportCenterModal from './components/SupportCenter';
+import { NavigationContext } from './NavigationContext';
 
 const TabPanel = props => {
 	const { children, value, index, ...other } = props;

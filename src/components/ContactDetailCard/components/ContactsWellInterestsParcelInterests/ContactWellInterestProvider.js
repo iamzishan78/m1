@@ -1,8 +1,9 @@
+import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 
 import { ContactDetailsContextProvider } from 'components/ContactDetailCard/ContactDetailsContext';
+
 import ContactWellInterestCard from './ContactWellInterestCard';
-import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
 	ContactsWrapper: {

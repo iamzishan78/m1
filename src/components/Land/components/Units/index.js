@@ -1,8 +1,11 @@
 import React, { useContext, useEffect } from 'react';
-import TabPanels from 'components/Shared/TabPanels';
-import { AppContext } from 'AppContext';
+
 import MRTTable from 'components/MRTTable';
+import TabPanels from 'components/Shared/TabPanels';
+
 import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { AppContext } from 'AppContext';
 
 function Units() {
 	const [stateApp] = useContext(AppContext);

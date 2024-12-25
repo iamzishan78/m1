@@ -1,29 +1,31 @@
-import React, { useContext, useState, useEffect } from 'react';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import debounce from 'lodash/debounce';
+import isEmpty from 'lodash/isEmpty';
+import React, { useContext, useState, useEffect } from 'react';
 
 // context
-import { AppContext } from 'AppContext';
-
-import { Container } from '@material-ui/core';
+import AddWellInterestDialog from 'components/ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog';
+import TableHeader from 'components/Shared/constants/contactperwell-header-schema.js';
+import { deepEqualObjects, setStateIfDeepEqual, addTrailingZeros } from 'components/Shared/functions';
 import Table from 'components/Shared/M1nTable/components/Table';
 import TableHOC from 'components/Table/TableHOC';
 
 // QUERIES
-import { useLazyQuery, useMutation } from '@apollo/client';
+
 import { UPDATEWELLINTEREST } from 'graphQL/useMutationUpdateWellInterest';
 import { PAGINATED_CONTACT_WELLINTERESTS_QUERY } from 'graphQL/useQueryPaginatedContactWellInterests';
+
+import { AppContext } from 'AppContext';
+
 import { CONTACTWELLINTERESTSFILTEROPTIONS } from '../../../graphQL/useQueryContactWellInterestsFilterOptions';
 
-import { deepEqualObjects, setStateIfDeepEqual, addTrailingZeros } from 'components/Shared/functions';
-import AddWellInterestDialog from 'components/ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog';
-
 // Header Schemas
-import TableHeader from 'components/Shared/constants/contactperwell-header-schema.js';
+
 import { handleTagColumn, handleCustomFilterColumns } from '../helpers';
 
 // Utilities
-import debounce from 'lodash/debounce';
-import isEmpty from 'lodash/isEmpty';
 
 const useStyles = makeStyles(theme => ({
 	container: {

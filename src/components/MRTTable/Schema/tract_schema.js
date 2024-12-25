@@ -1,17 +1,20 @@
-import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
-import vf_currency from 'components/Shared/valueformatters/vf_currency';
-import Loader from 'components/Loaders';
-import { globalStateController } from 'hookstate/globalStateController';
-import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
-import { tableGlobalController } from 'hookstate/tableController';
-import { copy } from 'utils/helper';
-import TractIcon from 'components/Shared/svgIcons/tract';
-import { formatDate } from 'components/Shared/functions';
 import _ from 'lodash';
+
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import Loader from 'components/Loaders';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import TractIcon from 'components/Shared/svgIcons/tract';
+import vf_currency from 'components/Shared/valueformatters/vf_currency';
+
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { copy } from 'utils/helper';
 
 const esIndex = 'shapes_flat';
 
@@ -175,6 +178,14 @@ const TractMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.originalProperties.Grantee',
+			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.Grantee,
+			id: 'shapeJson.properties.originalProperties.Grantee',
+			header: 'Alt Survey',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.sdGrossAcres',
 			accessorFn: row => row?.shapeJson?.properties?.sdGrossAcres,
 			id: 'shapeJson.properties.sdGrossAcres',
@@ -279,34 +290,10 @@ const TractMeta = {
 			id: 'shapeJson.properties.ownerName',
 			header: 'Owner',
 		},
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'createBy.name.keyword',
-			accessorFn: row => row?.createBy?.name,
-			id: 'createBy.name',
-			header: 'Created By',
-		},
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'createAt.keyword',
-			id: 'createAt',
-			header: 'Created Date',
-			Cell: ({ row }) => <>{formatDate(row?.original?.createAt)}</>, // format date before showing
-		},
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'lastUpdateBy.name.keyword',
-			accessorFn: row => row?.lastUpdateBy?.name,
-			id: 'lastUpdateBy.name',
-			header: 'Last Updated By',
-		},
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'lastUpdateAt.keyword',
-			id: 'lastUpdateAt',
-			header: 'Last Updated Date',
-			Cell: ({ row }) => <>{formatDate(row?.original?.lastUpdateAt)}</>, // format date before showing
-		},
+		CommonSchema.CREATED_BY,
+		CommonSchema.CREATED_DATE,
+		CommonSchema.LAST_UPDATED_BY,
+		CommonSchema.LAST_UPDATED_DATE,
 		{
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {

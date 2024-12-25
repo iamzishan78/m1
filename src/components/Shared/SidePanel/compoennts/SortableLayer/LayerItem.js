@@ -1,25 +1,26 @@
-import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/styles';
 import { Box, Grid, ListItemIcon } from '@material-ui/core';
-
-import { Flipped } from 'react-flip-toolkit';
-import { useSelector } from 'react-redux';
-import { getLayerColor } from '../common';
-import { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
-import { DragIndicator } from '@material-ui/icons';
-import ZoomInIcon from '@material-ui/icons/ZoomIn';
-import { Badge, IconButton } from '@mui/material';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import LayerControls from './LayerControls';
 import { FormControlLabel } from '@material-ui/core';
 import { Switch } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
+import { DragIndicator } from '@material-ui/icons';
 
 // icons
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { mapStateController } from 'hookstate/mapStateController';
+import ZoomInIcon from '@material-ui/icons/ZoomIn';
+import { makeStyles } from '@material-ui/styles';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import { Badge, IconButton } from '@mui/material';
+import React, { useState } from 'react';
+import { Flipped } from 'react-flip-toolkit';
+import { useSelector } from 'react-redux';
+import { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
+
 import { globalStateController } from 'hookstate/globalStateController';
+import { mapStateController } from 'hookstate/mapStateController';
+
+import { getLayerColor } from '../common';
 
 const useStyles = makeStyles(theme => ({
 	root: props => ({
@@ -118,7 +119,18 @@ const LayerItem = React.memo(props => {
 
 	const layerFilters = mapView?.selectedMapView?.filters.filter(filter => {
 		const { dataSourceName } = filter || {};
-		return [data?.identifier, data?.layerName, data?.name].includes(dataSourceName);
+
+		// In case of shape files
+		const fileId = dataSourceName.substring(0, dataSourceName.indexOf('_'));
+		const layerShapeName = dataSourceName.substring(dataSourceName.indexOf('_') + 1);
+		if (fileId === data?.file && layerShapeName === data?.layerShapeName) {
+			return true;
+		}
+
+		return (
+			[data?.identifier, data?.layerName, data?.name].includes(dataSourceName) ||
+			data?.identifier?.startsWith(dataSourceName)
+		);
 	});
 
 	return (

@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useContext } from 'react';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import { Grid, InputAdornment, Paper, TextField } from '@material-ui/core';
-import CheckIcon from '@material-ui/icons/Check';
 import { makeStyles } from '@material-ui/core/styles';
-import ArrowDropDownIcon from '@material-ui/lab/es/internal/svg-icons/ArrowDropDown';
-import { colorPallete } from 'components/Table/helpers';
+import CheckIcon from '@material-ui/icons/Check';
 import EditIcon from '@material-ui/icons/Edit';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import ArrowDropDownIcon from '@material-ui/lab/es/internal/svg-icons/ArrowDropDown';
 import isEmpty from 'lodash/isEmpty';
+import React, { useState, useEffect, useContext } from 'react';
+
+import { colorPallete } from 'components/Table/helpers';
+
 import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
@@ -71,7 +73,9 @@ const CustomFieldSelect = ({
 		);
 		options.unshift(defaultValue);
 		options.unshift({ label: 'search', value: 'search' });
-		if (isOptionsEditable) options.push({ label: 'edit', value: 'editOption' });
+		if (isOptionsEditable) {
+			options.push({ label: 'edit', value: 'editOption' });
+		}
 		setOptions(options);
 		setSearch(search);
 	};
@@ -80,8 +84,9 @@ const CustomFieldSelect = ({
 		if (reason === 'clear') {
 			e.stopPropagation();
 		}
-		if (act?.value === 'search') e.stopPropagation();
-		else if (act?.value !== 'editOption') {
+		if (act?.value === 'search') {
+			e.stopPropagation();
+		} else if (act?.value !== 'editOption') {
 			onCustomKeyChange(act?.value !== defaultValue.value ? act?.value : null);
 		}
 	};
@@ -106,10 +111,10 @@ const CustomFieldSelect = ({
 						`<span class='colorText' style="background-color: ${pallete?.color}; color: ${pallete?.textColor}">${data}</span>`;
 				}
 			} else {
-				document.getElementById(`colorText_${index}_${column.name}`).innerHTML = `<span class='colorText'>--</span>`;
+				document.getElementById(`colorText_${index}_${column.name}`).innerHTML = "<span class='colorText'>--</span>";
 			}
 		} else {
-			document.getElementById(`colorText_${index}_${column.name}`).innerHTML = `<span class='colorText'>--</span>`;
+			document.getElementById(`colorText_${index}_${column.name}`).innerHTML = "<span class='colorText'>--</span>";
 		}
 	}, [index, value, dropdownOptions]);
 

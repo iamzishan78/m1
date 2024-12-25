@@ -13,7 +13,9 @@ function _stringAsciiPRNG(value, m) {
 	const c = charCodes.reduce((current, next) => current + next) % m;
 
 	let random = charCodes[0] % m;
-	for (let i = 0; i < len; i++) random = (a * random + c) % m;
+	for (let i = 0; i < len; i++) {
+		random = (a * random + c) % m;
+	}
 
 	return random;
 }
@@ -23,7 +25,9 @@ export function getRandomColor(value, colors = defaultColors) {
 	// a rerender would show a new color which would will
 	// give strange effects when an interface is loading
 	// and gets rerendered a few consequent times
-	if (!value) return 'transparent';
+	if (!value) {
+		return 'transparent';
+	}
 
 	// value based random color index
 	// the reason we don't just use a random number is to make sure that

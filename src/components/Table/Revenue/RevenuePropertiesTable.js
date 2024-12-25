@@ -1,19 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Dialog } from '@material-ui/core';
-import { useDispatch } from 'react-redux';
 import { useMutation } from '@apollo/client';
+import { Container, Dialog } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+
+import { deepEqualObjects, copy } from 'components/Shared/functions';
+import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import Table from 'components/Shared/M1nTable/components/Table';
 import TableHeader from 'components/Table/constants/revenue-properties-header-schema';
 
 // QUERIES
-import { deepEqualObjects, copy } from 'components/Shared/functions';
 // Utilities
+import { DELETE_REVENUE_PROPERTIES } from 'graphQL/useMutationDeletePropeties';
+
+import { setRevenuePropertyData } from 'actions';
+
 import { usetableStyles } from '../Styles';
 // actions
-import { setRevenuePropertyData } from 'actions';
 import TableESHOC from '../TableESHOC';
-import { DELETE_REVENUE_PROPERTIES } from 'graphQL/useMutationDeletePropeties';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 
 const genericDataActions = ['comments'];
 
@@ -123,7 +126,7 @@ function RevenuePropertiesTable(props) {
 			>
 				{props.openDialog === 'delete' && (
 					<DeleteConfirmationDialogContent
-						header={`Delete Properties`}
+						header={'Delete Properties'}
 						onClose={() => props.setOpenDialog(null)}
 						deleteFunc={deleteFunc}
 						m1nSelectedRowsIds={props.selectedRows.map(sR => props.rows[sR.dataIndex]?._id)}

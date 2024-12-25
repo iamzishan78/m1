@@ -1,14 +1,4 @@
-import React, { useContext, useState, useEffect, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { get } from 'lodash';
-import { TransitionGroup } from 'react-transition-group';
-import RootRef from '@material-ui/core/RootRef';
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import { Tab, Tabs, Chip, CircularProgress, Backdrop } from '@material-ui/core';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Button from '@material-ui/core/Button';
 import { AppContext } from '../../../../AppContext';
@@ -26,11 +16,37 @@ import MapPositions from 'components/Shared/SidePanel/compoennts/MapPositions';
 import { showErrorMessage, showSuccessMessage } from 'actions';
 import MapIcon from '@material-ui/icons/Map';
 import { useApolloClient } from '@apollo/client';
+import { Tab, Tabs, Chip, CircularProgress, Backdrop } from '@material-ui/core';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import RootRef from '@material-ui/core/RootRef';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import { get } from 'lodash';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { useDispatch } from 'react-redux';
+import { TransitionGroup } from 'react-transition-group';
 
-import { deepEqualObjects } from '../../functions';
-import Layer from './Layer';
 import { toggleLayersFiltersPanel } from 'actions/MainMap';
 
+import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
+
+// Contexts
+import MapViewOptions from './Filters/MapViewOptions';
+import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
+import { globalStateController } from 'hookstate/globalStateController';
+import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+import { mapStateController } from 'hookstate/mapStateController';
+import { navController } from 'hookstate/navStateController';
+
+// actions
+import { setActiveModule } from 'store/actions/commonActions';
+
+import AddGroup from './AddGroup';
+import MapViewComponent from './Filters/MapViewComponent';
+import Layer from './Layer';
+import SortableLayer from './SortableLayer';
 import {
 	useStyles,
 	StyledMenu,
@@ -41,21 +57,7 @@ import {
 	StyledMenuHActionHeader,
 	StyledMenuSecondaryHeaderItem,
 } from './style';
-import SortableLayer from './SortableLayer';
-import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
-// Contexts
-import AddGroup from './AddGroup';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { layerController } from 'hookstate/layerStateController';
-import { mapStateController } from 'hookstate/mapStateController';
-import { navController } from 'hookstate/navStateController';
-import MapViewComponent from './Filters/MapViewComponent';
-import MapViewOptions from './Filters/MapViewOptions';
-import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
-import { globalStateController } from 'hookstate/globalStateController';
-
-// actions
-import { setActiveModule } from 'store/actions/commonActions';
+import { deepEqualObjects } from '../../functions';
 
 const layerIcons = [
 	{
@@ -95,7 +97,9 @@ const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle
 							background: currentStyle === style.name ? '#4B618F' : '',
 						}}
 						onClick={() => {
-							if (currentStyle === style.name) return;
+							if (currentStyle === style.name) {
+								return;
+							}
 							setBaseMap(style, 'baseMap');
 						}}
 					>
@@ -178,7 +182,9 @@ const StyledSecondaryMenu = () => {
 			mapControlsStateValues.manageLayer
 		) {
 			return true;
-		} else return false;
+		} else {
+			return false;
+		}
 	}, [mapControlsStateValues]);
 
 	return (
@@ -263,7 +269,9 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 	}, [stateApp]);
 
 	useEffect(() => {
-		if (stateApp.mapStyles && stateApp.mapStyles.length > 0) setMapStyles([...stateApp.mapStyles]);
+		if (stateApp.mapStyles && stateApp.mapStyles.length > 0) {
+			setMapStyles([...stateApp.mapStyles]);
+		}
 	}, [stateApp.mapStyles]);
 
 	useEffect(() => {

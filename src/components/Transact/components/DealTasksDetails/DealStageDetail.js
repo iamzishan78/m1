@@ -1,8 +1,3 @@
-import React, { useContext } from 'react';
-import _ from 'underscore';
-import { get } from 'lodash';
-
-import { makeStyles } from '@material-ui/core/styles';
 import {
 	Grid,
 	Typography,
@@ -12,15 +7,20 @@ import {
 	AccordionSummary,
 	AccordionDetails,
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { ExpandMore } from '@material-ui/icons';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import ProgressBar from '../../../Shared/ui/ProgressBar';
-import CustomAvatar from 'components/Shared/ui/CustomAvatar';
-import DealSubtasks from 'components/Transact/components/DealTasksDetails/DealSubtasks';
-import NewSubtask from 'components/Transact/components/Common/NewSubtask';
+import { get } from 'lodash';
+import React, { useContext } from 'react';
+import _ from 'underscore';
 
+import CustomAvatar from 'components/Shared/ui/CustomAvatar';
+import NewSubtask from 'components/Transact/components/Common/NewSubtask';
+import DealSubtasks from 'components/Transact/components/DealTasksDetails/DealSubtasks';
 import { TransactContext } from 'components/Transact/TransactContext';
+
+import ProgressBar from '../../../Shared/ui/ProgressBar';
 
 const useStyles = makeStyles(() => ({
 	laneName: {
@@ -228,7 +228,7 @@ function DealStageDetail({
 							/>
 						</Grid>
 						<Grid item xl={12} sm={12} style={{ margin: '10px 0px 10px 0px' }}>
-							<DealSubtasks tasks={settings.tasks} users={users} />
+							<DealSubtasks tasks={settings.tasks} users={users} currentStage={settings._id} />
 						</Grid>
 						<NewSubtask index={index} activeDeal={activeDeal} relatedObject={settings._id} />
 					</Grid>

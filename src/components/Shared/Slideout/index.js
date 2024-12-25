@@ -1,15 +1,19 @@
-import React, { useState, memo } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { Dialog as MuiDialog } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useState, memo } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+
 import 'components/Transact/components/DealDialog/dialog.css';
+import { slidoutState } from 'hookstate/initialStates';
+import { slidoutStateController } from 'hookstate/slidoutStateController';
+
 import Dialog from './Dialog';
 import DialogHeader from './DialogHeader';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
+
 import { useHookstate } from '@hookstate/core';
-import { slidoutState } from 'hookstate/initialStates';
-import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
 	dealDetailRoot: {
@@ -37,7 +41,7 @@ function Slideout({ isTransactPage, show }) {
 	const handleClose = async () => {
 		if (view?.name !== 'Home') {
 			if (window.location.pathname.startsWith('/calendar/activities')) {
-				window.history.pushState('', '', `/calendar/activities`);
+				window.history.pushState('', '', '/calendar/activities');
 			}
 
 			slidoutState.selectedActivity.set(null);
@@ -52,7 +56,9 @@ function Slideout({ isTransactPage, show }) {
 		setDeleteDialogOpen(true);
 	};
 
-	if (!show) return null;
+	if (!show) {
+		return null;
+	}
 
 	return (
 		<>

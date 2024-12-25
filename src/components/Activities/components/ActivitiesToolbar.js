@@ -1,17 +1,18 @@
-import React, { useContext, useState } from 'react';
-import { Views } from 'react-big-calendar';
-import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
 import IconButton from '@material-ui/core/IconButton';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { AppContext } from 'AppContext';
 import moment from 'moment';
+import React, { useContext, useState } from 'react';
+import { Views } from 'react-big-calendar';
+
+import { AppContext } from 'AppContext';
 
 const useToolbarStyles = makeStyles(theme => ({
 	root: {

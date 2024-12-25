@@ -1,29 +1,38 @@
-import React, { useContext, useState, useEffect } from 'react';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import findIndex from 'lodash/findIndex';
+import React, { useContext, useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+
 // context
+import Loader from 'components/Loaders';
+import { addTrailingZeros } from 'components/Shared/functions';
+import vf_currency from 'components/Shared/valueformatters/vf_currency';
+
+import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
+import { GET_CHECK_PURCHASE_DATA } from 'graphQL/useQueryCheckPurchaseData';
+import { GET_ES_DOCUMENTS } from 'graphQL/useQueryESDocuments';
+import Table from './components/Table';
 import { AppContext } from '../../../AppContext';
 import { MapGridContext } from '../../../components/MapGridCard/MapGridContext.js';
 
-import { Container } from '@material-ui/core';
-import Table from './components/Table';
-
 // QUERIES
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { WELLOWNERSQUERY } from '../../../graphQL/useQueryWellOwners';
+
+import { UPDATEMAILERSTATUSES } from '../../../graphQL/useMutationUpdateMailerStatuses';
+import { CONTACTSFILTEROPTIONS } from '../../../graphQL/useQueryContactsFilterOptions';
 import { OWNERSQUERY } from '../../../graphQL/useQueryOwners';
+import { WELLOWNERSQUERY } from '../../../graphQL/useQueryWellOwners';
 import { WELLSQUERY } from '../../../graphQL/useQueryWells';
 import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
-import { CONTACTSFILTEROPTIONS } from '../../../graphQL/useQueryContactsFilterOptions';
-import { UPDATEMAILERSTATUSES } from '../../../graphQL/useMutationUpdateMailerStatuses';
 import { TRACKSBYOBJECTTYPE } from '../../../graphQL/useQueryTracksByObjectType';
 import { TRACKSWELL } from '../../../graphQL/useQueryTracksWell';
 import { TAGSAMPLES } from '../../../graphQL/useQueryTagSamples';
 import { COMMENTSCOUNTER } from '../../../graphQL/useQueryCommentsCounter';
 import { ABSTRACTWELLGEOQUERY } from '../../../graphQL/useQueryAbstractWellGeo';
 import { GET_ALL_USERS, REMOVE_USERS } from '../../../graphQL/userManagement';
-import { GET_ES_DOCUMENTS } from 'graphQL/useQueryESDocuments';
+
 import { CUSTOMLAYER } from '../../../graphQL/useQueryCustomLayer';
 import { REMOVE_CONTACTS } from '../../../graphQL/useMutationRemoveContact';
 import { UPDATECONTACT } from '../../../graphQL/useMutationUpdateContact';
@@ -39,34 +48,29 @@ import { WELLINTERESTSFILTEROPTIONS } from '../../../graphQL/useQueryWellInteres
 import { SHAPEWELLS } from '../../../graphQL/useQueryPaginatedShapeWells';
 import { SHAPEWELLSCOUNT } from '../../../graphQL/useQueryShapeWellsCount';
 import { CONTACTWELLS } from '../../../graphQL/useQueryContactWells';
-import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
-import { GET_CHECK_PURCHASE_DATA } from 'graphQL/useQueryCheckPurchaseData';
-import vf_currency from 'components/Shared/valueformatters/vf_currency';
 
-import { useDispatch, useSelector } from 'react-redux';
-import { deepEqualObjects, setStateIfDeepEqual } from '../functions';
 import AddWellInterestDialog from '../../ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog';
+import ActivitiesHeadCells from '../constants/activities-header-schema.js';
+import ContactWellHeadCells from '../constants/contactperwell-header-schema.js';
+import CustomWellsHeadCells from '../constants/custom-wells-header-schema.js';
+import DealsHeadCells from '../constants/deals-header-schema.js';
+import DocumentsHeadCells from '../constants/documents-header-schema';
+import WellsHeadCells from '../constants/well-header-schema.js';
+import { deepEqualObjects, setStateIfDeepEqual } from '../functions';
 import { setMapGridCardState } from '../../../actions';
 
 // Header Schemas
-import DocumentsHeadCells from '../constants/documents-header-schema';
-import WellsHeadCells from '../constants/well-header-schema.js';
 import TrackedOwnersHeadCells from '../constants/track-owners-header-schema.js';
-import CustomWellsHeadCells from '../constants/custom-wells-header-schema.js';
 import OwnersPerWellHeadCells from '../constants/ownersperwell-header-schema.js';
 import SearchsHeadCells from '../constants/search-header-schema.js';
 import OwnersPerParcelHeadCells from '../constants/ownersperparcel-header-schema.js';
-import DealsHeadCells from '../constants/deals-header-schema.js';
 import TransactDealsHeadCells from '../constants/transact-header-schema.js';
-import ActivitiesHeadCells from '../constants/activities-header-schema.js';
 import ParcelInterestsPerContactHeadCells from '../constants/parcel-interests-per-contact-header-schema.js';
 import WellInterests from '../constants/well-interests-schema.js';
 import ProductionDetailsHeaders from '../constants/production-detail-header-schema.js';
-import ContactWellHeadCells from '../constants/contactperwell-header-schema.js';
 
 // import value formatters
-import { addTrailingZeros } from 'components/Shared/functions';
-import Loader from 'components/Loaders';
+
 import { getContactsAddress, getAddressUrl } from 'utils/helper';
 
 const useStyles = makeStyles(theme => ({
@@ -1292,9 +1296,14 @@ function M1nTable(props) {
 					res => {
 						if (res.data && res.data.removeContact) {
 							const { success, message } = res.data.removeContact;
-							if (success) Loader.successToast('contact-deletion', message);
-							else Loader.errorToast('contact-deletion', message);
-						} else Loader.errorToast('contact-deletion', 'Failed to convert to contact');
+							if (success) {
+								Loader.successToast('contact-deletion', message);
+							} else {
+								Loader.errorToast('contact-deletion', message);
+							}
+						} else {
+							Loader.errorToast('contact-deletion', 'Failed to convert to contact');
+						}
 					},
 					err => {
 						Loader.errorToast('contact-deletion', 'Failed to convert to contact');
@@ -1353,19 +1362,24 @@ function M1nTable(props) {
 			if (!searchloading && searchResultData.length > 0) {
 				// setLoading(true);
 				const objectsIdsArray = searchResultData.map(result => result.Id);
-				if (props.showComments)
+				if (props.showComments) {
 					getCommentsCounter({
 						variables: { objectsIdsArray, userId: stateApp.user.mongoId },
 					});
-				if (props.showTags)
+				}
+				if (props.showTags) {
 					getTagSamples({
 						variables: { objectsIdsArray, userId: stateApp.user.mongoId },
 					});
-				if (props.showTracks) setShowTracks(true);
-				if (props.targetLabel == 'owner')
+				}
+				if (props.showTracks) {
+					setShowTracks(true);
+				}
+				if (props.targetLabel == 'owner') {
 					checkIfOwnersAreContacts({
 						variables: { idsArray: objectsIdsArray },
 					});
+				}
 			} else {
 				setShowTracks(false);
 				if (!searchloading) {
@@ -1404,8 +1418,12 @@ function M1nTable(props) {
 
 					// setting flyto coordinates for well
 					if (props.targetLabel && props.targetLabel == 'well') {
-						if (result.Longitude) result.longitude = result.Longitude;
-						if (result.Latitude) result.latitude = result.Latitude;
+						if (result.Longitude) {
+							result.longitude = result.Longitude;
+						}
+						if (result.Latitude) {
+							result.latitude = result.Latitude;
+						}
 
 						result.coordinates = {};
 						if (result.Longitude && result.Latitude) {
@@ -1418,8 +1436,12 @@ function M1nTable(props) {
 						// setting flyto coordinates for location
 					} else if (props.targetLabel && props.targetLabel === 'location') {
 						result.coordinates = {};
-						if (result.bbox) result.coordinates.bbox = result.bbox;
-						if (result.center) result.coordinates.center = result.center;
+						if (result.bbox) {
+							result.coordinates.bbox = result.bbox;
+						}
+						if (result.center) {
+							result.coordinates.center = result.center;
+						}
 					} else if (props.targetLabel && props.targetLabel === 'operator') {
 						result.coordinates = {
 							objToPopulateSearchLayer: {
@@ -1518,14 +1540,21 @@ function M1nTable(props) {
 					);
 				}
 
-				if (props.targetLabel && props.targetLabel === 'owner') buildingColumns.push(SearchsHeadCells[6]);
+				if (props.targetLabel && props.targetLabel === 'owner') {
+					buildingColumns.push(SearchsHeadCells[6]);
+				}
 
-				if (props.showComments) buildingColumns.push(SearchsHeadCells[2]);
+				if (props.showComments) {
+					buildingColumns.push(SearchsHeadCells[2]);
+				}
 
-				if (props.showTracks) buildingColumns.push(SearchsHeadCells[3]);
-				if (props.targetLabel && (props.targetLabel === 'well' || props.targetLabel === 'owner'))
+				if (props.showTracks) {
+					buildingColumns.push(SearchsHeadCells[3]);
+				}
+				if (props.targetLabel && (props.targetLabel === 'well' || props.targetLabel === 'owner')) {
 					//would only set the detail card icon for wells & owners
 					buildingColumns.push(SearchsHeadCells[5]);
+				}
 				if (
 					// this is the fly-to labeler for grid ...
 					// seems to be running really slow
@@ -1540,9 +1569,10 @@ function M1nTable(props) {
 						props.targetLabel == 'lease' ||
 						props.targetLabel == 'contact' ||
 						props.targetLabel == 'owner')
-				)
+				) {
 					//would only set flyto for wells, locations & owners
 					buildingColumns.push(SearchsHeadCells[4]);
+				}
 
 				setColumns([...buildingColumns]);
 				setRows([...searchResultData]);
@@ -1658,8 +1688,9 @@ function M1nTable(props) {
 
 				Object.keys(o).forEach(key => {
 					if (interestKeys.includes(key)) {
-						if (typeof parcelOwner[key] === 'number') parcelOwner[key] = addTrailingZeros(parcelOwner[key]);
-						else if (parcelOwner[key]?.['$numberDecimal']) {
+						if (typeof parcelOwner[key] === 'number') {
+							parcelOwner[key] = addTrailingZeros(parcelOwner[key]);
+						} else if (parcelOwner[key]?.['$numberDecimal']) {
 							parcelOwner[key] = addTrailingZeros(Number(parcelOwner[key]['$numberDecimal']));
 						}
 					}
@@ -2254,12 +2285,16 @@ function M1nTable(props) {
 					let lanes = new Array(dataDeals?.transactionData?.allData?.lanes)[0];
 					lanes = lanes.map(lane => {
 						let cardsNew = [];
-						if (lane.cards && lane.cards.length > 0) cardsNew = [...lane.cards];
+						if (lane.cards && lane.cards.length > 0) {
+							cardsNew = [...lane.cards];
+						}
 						cardsNew = cardsNew.map(card => {
 							const foundIndex = idsToDelete.findIndex(id => id === card.id);
 							if (foundIndex > -1) {
 								return { ...card, isDeleted: true };
-							} else return card;
+							} else {
+								return card;
+							}
 						});
 						return { ...lane, cards: cardsNew };
 					});
@@ -2605,7 +2640,9 @@ function M1nTable(props) {
 					well.detailCard = well.wellId;
 
 					well.coordinates = {};
-					if (well.longitude && well.latitude) well.coordinates.center = [well.longitude, well.latitude];
+					if (well.longitude && well.latitude) {
+						well.coordinates.center = [well.longitude, well.latitude];
+					}
 
 					for (let i = 0; i < dataTracks.length; i++) {
 						if (well.wellId === dataTracks[i]) {

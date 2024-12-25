@@ -5,7 +5,9 @@ const useStyles = makeStyles(theme => ({
 		visibility: ({ loading }) => (loading ? 'hidden' : 'visible'),
 		margin: ({ noMargin }) => (noMargin ? '0' : '5px 10px'),
 		width: ({ noMargin }) => {
-			if (noMargin) return 'fit-content';
+			if (noMargin) {
+				return 'fit-content';
+			}
 		},
 		borderRadius: '4px',
 		'& #contPencilIcon, & #mergeTypeIcon, & #copyIcon, & #voiceMailIcon, & #textSmsIcon': {

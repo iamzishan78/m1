@@ -1,7 +1,8 @@
-import React, { memo } from 'react';
-import Tooltip from '@material-ui/core/Tooltip';
 import Button from '@material-ui/core/Button';
+import Tooltip from '@material-ui/core/Tooltip';
 import ChatIcon from '@material-ui/icons/Chat';
+import React, { memo } from 'react';
+
 import { tableGlobalController } from 'hookstate/tableController';
 
 function CommentCell({ rowNumber, value, id, targetLabel, hideShareCommentsToggle }) {

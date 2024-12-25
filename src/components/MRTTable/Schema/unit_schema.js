@@ -1,19 +1,23 @@
-import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map';
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import UnitIcon from 'components/Shared/svgIcons/unit';
 import _ from 'lodash';
-import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import Loader from 'components/Loaders';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import UnitToolbar from 'components/MRTTable/TablesOverride/UnitTable/UnitToolbar';
+import UnitIcon from 'components/Shared/svgIcons/unit';
 import vf_currency from 'components/Shared/valueformatters/vf_currency.js';
 import vf_number from 'components/Shared/valueformatters/vf_number';
-import Loader from 'components/Loaders';
-import { globalStateController } from 'hookstate/globalStateController';
+
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+
+import { globalStateController } from 'hookstate/globalStateController';
 import { tableGlobalController } from 'hookstate/tableController';
+
 import { copy } from 'utils/helper';
-import UnitToolbar from 'components/MRTTable/TablesOverride/UnitTable/UnitToolbar';
 
 const esIndex = 'shapes_flat';
 

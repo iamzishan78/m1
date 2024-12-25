@@ -1,18 +1,21 @@
-import React, { useState, useContext } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { AppContext } from 'AppContext';
-import { get } from 'lodash';
+import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
+import { makeStyles } from '@material-ui/core/styles';
+import { get } from 'lodash';
+import React, { useState, useContext } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { setMapGridCardState } from 'actions';
+
 import OwnersSummaryCard from 'components/OwnersSummaryCard/OwnersSummaryCard';
 import { TabPanel } from 'components/Shared/TabPanels';
 import ContactParcelInterestTable from 'components/Table/Contact/ContactParcelInterestTable';
 import UnitInterestsTable from 'components/Table/Unit/UnitInterestsTable';
 
-import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
-import { contactDetailInitialData } from './data';
 import { mapControlsController } from 'hookstate/mapControlsController';
+
+import { setMapGridCardState } from 'actions';
+import { AppContext } from 'AppContext';
+
+import { contactDetailInitialData } from './data';
 
 const useStyles = makeStyles(theme => ({
 	card: {

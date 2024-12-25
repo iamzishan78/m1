@@ -1,10 +1,11 @@
-import React, { useState, useEffect, memo, useContext } from 'react';
 import { useMutation } from '@apollo/client';
-
-import { makeStyles } from '@material-ui/core/styles';
 import { Button, Grid, TextField } from '@material-ui/core';
-import { ADD_DEAL_SUBTASK } from 'graphQL/useMutationDealSubtask';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useState, useEffect, memo, useContext } from 'react';
+
 import { TransactContext } from 'components/Transact/TransactContext';
+
+import { ADD_DEAL_SUBTASK } from 'graphQL/useMutationDealSubtask';
 
 const useStyles = makeStyles(theme => ({
 	addSubTaskButton: {
@@ -41,18 +42,27 @@ const NewSubtask = memo(({ index, activeDeal = {}, relatedObject, pipeline, task
 			refetchQueries: ['dealSettings', 'getTaskTemplate'],
 			awaitRefetchQueries: true,
 		});
-		if (isTemplate) setNewSubtask(false);
-		else setNewSubtask({ index: -1, value: !isNewSubtask.value });
+		if (isTemplate) {
+			setNewSubtask(false);
+		} else {
+			setNewSubtask({ index: -1, value: !isNewSubtask.value });
+		}
 	};
 
 	const showFieldToAdd = () => {
-		if (!!taskTemplate) setNewSubtask(true);
-		else setNewSubtask({ index, value: !isNewSubtask.value });
+		if (taskTemplate) {
+			setNewSubtask(true);
+		} else {
+			setNewSubtask({ index, value: !isNewSubtask.value });
+		}
 	};
 
 	const hideFieldToAdd = () => {
-		if (!!taskTemplate) setNewSubtask(false);
-		else setNewSubtask({ index: -1, value: !isNewSubtask.value });
+		if (taskTemplate) {
+			setNewSubtask(false);
+		} else {
+			setNewSubtask({ index: -1, value: !isNewSubtask.value });
+		}
 	};
 
 	return (

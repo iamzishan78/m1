@@ -1,8 +1,9 @@
-import React, { useContext, useState, useRef, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import mapboxgl from 'mapbox-gl';
-import { TitleOpinionContext } from '../TitleOpinionContext';
+import React, { useContext, useState, useRef, useEffect } from 'react';
+
 import { AppContext } from '../../../AppContext';
+import { TitleOpinionContext } from '../TitleOpinionContext';
 
 const useStyles = makeStyles(theme => ({
 	MSWrapper: {
@@ -260,7 +261,7 @@ export default function MapShape() {
 
 				newMap.addControl(new mapboxgl.FullscreenControl(), 'bottom-right');
 
-				newMap.on('load', function () {
+				newMap.on('load', () => {
 					// Add a source for the polygons.
 					newMap.addSource('TOshape', {
 						type: 'geojson',
@@ -321,7 +322,7 @@ export default function MapShape() {
 					[coord.latMax + 0.001, coord.lonMax + 0.001],
 				]);
 
-				newMap.on('load', function (e) {
+				newMap.on('load', e => {
 					setMap(newMap);
 				});
 			};

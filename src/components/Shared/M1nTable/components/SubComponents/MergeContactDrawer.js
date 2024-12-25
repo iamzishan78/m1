@@ -1,24 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { useMutation } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
 import { Button, Grid, Box, CircularProgress } from '@material-ui/core';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import CloseSharp from '@material-ui/icons/CloseSharp';
 import DoneSharpIcon from '@material-ui/icons/DoneSharp';
-import RemoveSharpIcon from '@material-ui/icons/RemoveSharp';
-import Typography from '@material-ui/core/Typography';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
+import RemoveSharpIcon from '@material-ui/icons/RemoveSharp';
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { List } from 'react-virtualized';
-import { Modals } from 'styles/Modal';
+
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
-import { showSuccessMessage, showErrorMessage } from 'actions';
+
 import { MERGE_CONTACTS } from 'graphQL/useMutationMergeContact';
-import { tableGlobalController } from 'hookstate/tableController';
+
 import { globalStateController } from 'hookstate/globalStateController';
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { Modals } from 'styles/Modal';
+
+import { showSuccessMessage, showErrorMessage } from 'actions';
 
 const styles = () => ({
 	topHeading: { fontWeight: 'bold' },
@@ -79,7 +84,6 @@ export default function MergeContactDrawer({ onClose, rows, setRows }) {
 				setLoading(false);
 			},
 			err => {
-				// eslint-disable-next-line no-console
 				console.log(err);
 				setLoading(false);
 				dispatch(showErrorMessage('Failed to merge'));
@@ -95,7 +99,9 @@ export default function MergeContactDrawer({ onClose, rows, setRows }) {
 		if (!rows || rows.length === 0) {
 			setRowsLoading(true);
 		} else {
-			if (!primaryContact) setPrimaryContact(rows[0]);
+			if (!primaryContact) {
+				setPrimaryContact(rows[0]);
+			}
 			setRowsLoading(false);
 		}
 	}, [rows, primaryContact]);
@@ -136,7 +142,6 @@ export default function MergeContactDrawer({ onClose, rows, setRows }) {
 								height={750}
 								rowCount={rows.length}
 								rowHeight={60}
-								// eslint-disable-next-line react/no-unstable-nested-components
 								rowRenderer={({ index, style }) => {
 									const row = rows[index];
 									return (

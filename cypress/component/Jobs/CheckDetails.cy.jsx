@@ -1,10 +1,13 @@
 /* eslint-disable no-undef */
 import { v4 as uuid } from 'uuid';
+
 import BulkUpload from 'components/BulkUpload/BulkUpload';
+
 import { VERIFY_CHECK_DETAIL_JOB } from 'graphQL/useMutationCypressVerifyCheckDetailsJob';
-import ldata from '../../fixtures/ldata.json';
+
 import { headers } from '../../cypressUtils/cypressHeaders';
 import { basic_timeouts } from '../../cypressUtils/data';
+import ldata from '../../fixtures/ldata.json';
 
 // Generate a unique source ID using UUID v4
 const sourceId = uuid();

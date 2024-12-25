@@ -1,14 +1,5 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { AppContext } from 'AppContext';
 import { useLazyQuery } from '@apollo/client';
-import Card from '@material-ui/core/Card';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { setMapGridCardState } from 'actions';
-import OwnersSummaryCard from 'components/OwnersSummaryCard/OwnersSummaryCard';
-import { TabPanel } from 'components/Shared/TabPanels';
-import ContactDetailedInfo from 'components/ContactDetailedInfo/ContactDetailedInfo';
-import ContactWellInterestTable from 'components/Table/Contact/ContactWellInterestTable';
+
 import ContactParcelInterestTable from 'components/Table/Contact/ContactParcelInterestTable';
 import ContactTaxRollInterestTable from 'components/Table/Contact/ContactTaxRollInterestTable';
 import UnitInterestsTable from 'components/Table/Unit/UnitInterestsTable';
@@ -16,13 +7,26 @@ import ContactDealsProvider from 'components/DealsDetailCard/ContactDealsProvide
 import ContactDocumentsProvider from 'components/ViewDocuments/ContactDocumentsProvider';
 
 import { CircularProgress, Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useState, useContext, useEffect } from 'react';
 
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import { AGREEMENT_PAYMENT_SUMMARY } from 'graphQL/useQueryAgreementPaymentSummary';
-import { mapControlsController } from 'hookstate/mapControlsController';
 import MRTTable from 'components/MRTTable';
 import { useMemo } from 'react';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import ContactDetailedInfo from 'components/ContactDetailedInfo/ContactDetailedInfo';
+import OwnersSummaryCard from 'components/OwnersSummaryCard/OwnersSummaryCard';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+import { TabPanel } from 'components/Shared/TabPanels';
+import ContactWellInterestTable from 'components/Table/Contact/ContactWellInterestTable';
+
+import { AGREEMENT_PAYMENT_SUMMARY } from 'graphQL/useQueryAgreementPaymentSummary';
+
+import { mapControlsController } from 'hookstate/mapControlsController';
 import { tableController } from 'hookstate/tableController';
+
+import { setMapGridCardState } from 'actions';
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	card: {
@@ -253,7 +257,9 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
 		return agreementPaymentData ? agreementPaymentData.agreementPaymentSummary[value] : 0;
 	};
 
-	if (!getCounts) getCounts = getAgreementPaymentRelatedCount;
+	if (!getCounts) {
+		getCounts = getAgreementPaymentRelatedCount;
+	}
 
 	const handleSearchPanelChange = value => {
 		setSearchTapValue(value);

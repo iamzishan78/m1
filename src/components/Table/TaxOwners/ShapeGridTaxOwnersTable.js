@@ -1,26 +1,27 @@
-import React, { useContext, useState, useEffect } from 'react';
+import { useLazyQuery } from '@apollo/client';
+import { Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import isEmpty from 'lodash/isEmpty';
+import React, { useContext, useState, useEffect } from 'react';
 
 // context
-import { AppContext } from 'AppContext';
-
-import { Container } from '@material-ui/core';
+import { deepEqualObjects, setStateIfDeepEqual } from 'components/Shared/functions';
 import Table from 'components/Shared/M1nTable/components/Table';
+import TableHeader from 'components/Table/constants/track-owners-header-schema.js';
 import TableHOC from 'components/Table/TableHOC';
 
-// QUERIES
-import { useLazyQuery } from '@apollo/client';
 import { SHAPE_OWNERS } from 'graphQL/useQueryPaginatedShapeOwners';
 import { SHAPEOWNERSCOUNT } from 'graphQL/useQueryShapeOwnersCount';
 
-import { deepEqualObjects, setStateIfDeepEqual } from 'components/Shared/functions';
+import { AppContext } from 'AppContext';
+
+// QUERIES
 
 // Header Schemas
-import TableHeader from 'components/Table/constants/track-owners-header-schema.js';
+
 import { handleTagColumn } from '../helpers';
 
 // Utilities
-import isEmpty from 'lodash/isEmpty';
 
 const useStyles = makeStyles(theme => ({
 	container: {

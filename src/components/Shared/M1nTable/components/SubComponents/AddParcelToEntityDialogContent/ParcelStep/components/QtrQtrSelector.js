@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import SmallTXQtr from './SmallTXQtr';
-
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
 import { Box } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import React, { useState } from 'react';
+
+import SmallTXQtr from './SmallTXQtr';
 
 const useStyles = makeStyles(theme => ({
 	mainDiv: {
@@ -73,7 +73,7 @@ const useStyles = makeStyles(theme => ({
 		color: '#fff !important',
 	},
 	backgrounSecondaryQrt2: {
-		backgroundColor: `#BFEBFB !important`,
+		backgroundColor: '#BFEBFB !important',
 		'& p': { color: `${theme.palette.primary.main} !important` },
 	},
 }));
@@ -136,7 +136,7 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 						left: parcelData.state !== 'TX' ? 'calc(50% - 20px)' : 'calc(50% - 19px)',
 					}}
 					onClick={() => {
-						if (parcelData.state !== 'TXtemporaryRemovedtemporaryRemoved' && parcelData.qtrQtr)
+						if (parcelData.state !== 'TXtemporaryRemovedtemporaryRemoved' && parcelData.qtrQtr) {
 							if (
 								Object.entries(parcelData.qtrQtr).every(([key, value]) => {
 									return value;
@@ -180,6 +180,7 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 									sese: true,
 								});
 							}
+						}
 					}}
 				>
 					{parcelData.state !== 'TX' && <p> ALL</p>}
@@ -201,7 +202,7 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 						left: parcelData.state !== 'TX' ? 'calc(25% - 24px)' : 'calc(25% - 14px)',
 					}}
 					onClick={() => {
-						if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr)
+						if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr) {
 							if (
 								Object.entries(parcelData.qtrQtr).every(([key, value]) => {
 									return ['nwnw', 'nenw', 'swnw', 'senw'].indexOf(key) === -1 ? true : value;
@@ -223,6 +224,7 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 									senw: true,
 								});
 							}
+						}
 					}}
 				>
 					{parcelData.state !== 'TX' && <p> NW</p>}
@@ -244,7 +246,7 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 						right: parcelData.state !== 'TX' ? 'calc(24% - 10px)' : 'calc(25% + 2px)',
 					}}
 					onClick={() => {
-						if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr)
+						if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr) {
 							if (
 								Object.entries(parcelData.qtrQtr).every(([key, value]) => {
 									return ['nwne', 'nene', 'swne', 'sene'].indexOf(key) === -1 ? true : value;
@@ -266,6 +268,7 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 									sene: true,
 								});
 							}
+						}
 					}}
 				>
 					{parcelData.state !== 'TX' && <p> NE</p>}
@@ -287,7 +290,7 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 						left: parcelData.state !== 'TX' ? 'calc(25% - 24px)' : 'calc(25% - 14px)',
 					}}
 					onClick={() => {
-						if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr)
+						if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr) {
 							if (
 								Object.entries(parcelData.qtrQtr).every(([key, value]) => {
 									return ['nwsw', 'nesw', 'swsw', 'sesw'].indexOf(key) === -1 ? true : value;
@@ -309,6 +312,7 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 									sesw: true,
 								});
 							}
+						}
 					}}
 				>
 					{parcelData.state !== 'TX' && <p> SW</p>}
@@ -330,7 +334,7 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 						right: parcelData.state !== 'TX' ? 'calc(24% - 10px)' : 'calc(25% + 2px)',
 					}}
 					onClick={() => {
-						if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr)
+						if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr) {
 							if (
 								Object.entries(parcelData.qtrQtr).every(([key, value]) => {
 									return ['nwse', 'nese', 'swse', 'sese'].indexOf(key) === -1 ? true : value;
@@ -352,6 +356,7 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 									sese: true,
 								});
 							}
+						}
 					}}
 				>
 					{parcelData.state !== 'TX' && <p> SE</p>}
@@ -369,11 +374,12 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 									: ''
 							}`}
 							onClick={() => {
-								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr)
+								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr) {
 									setQtrQtr({
 										...parcelData.qtrQtr,
 										nwnw: parcelData.qtrQtr.nwnw ? false : true,
 									});
+								}
 							}}
 						>
 							{parcelData.state !== 'TX' ? <p> NWNW</p> : <SmallTXQtr />}
@@ -387,11 +393,12 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 									: ''
 							}`}
 							onClick={() => {
-								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr)
+								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr) {
 									setQtrQtr({
 										...parcelData.qtrQtr,
 										nenw: parcelData.qtrQtr.nenw ? false : true,
 									});
+								}
 							}}
 						>
 							{parcelData.state !== 'TX' ? <p> NENW</p> : <SmallTXQtr />}
@@ -405,11 +412,12 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 									: ''
 							}`}
 							onClick={() => {
-								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr)
+								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr) {
 									setQtrQtr({
 										...parcelData.qtrQtr,
 										swnw: parcelData.qtrQtr.swnw ? false : true,
 									});
+								}
 							}}
 						>
 							{parcelData.state !== 'TX' ? <p> SWNW</p> : <SmallTXQtr />}
@@ -423,11 +431,12 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 									: ''
 							}`}
 							onClick={() => {
-								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr)
+								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr) {
 									setQtrQtr({
 										...parcelData.qtrQtr,
 										senw: parcelData.qtrQtr.senw ? false : true,
 									});
+								}
 							}}
 						>
 							{parcelData.state !== 'TX' ? <p> SENW</p> : <SmallTXQtr />}
@@ -445,11 +454,12 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 									: ''
 							}`}
 							onClick={() => {
-								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr)
+								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr) {
 									setQtrQtr({
 										...parcelData.qtrQtr,
 										nwne: parcelData.qtrQtr.nwne ? false : true,
 									});
+								}
 							}}
 						>
 							{parcelData.state !== 'TX' ? <p> NWNE</p> : <SmallTXQtr />}
@@ -463,11 +473,12 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 									: ''
 							}`}
 							onClick={() => {
-								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr)
+								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr) {
 									setQtrQtr({
 										...parcelData.qtrQtr,
 										nene: parcelData.qtrQtr.nene ? false : true,
 									});
+								}
 							}}
 						>
 							{parcelData.state !== 'TX' ? <p> NENE</p> : <SmallTXQtr />}
@@ -481,11 +492,12 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 									: ''
 							}`}
 							onClick={() => {
-								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr)
+								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr) {
 									setQtrQtr({
 										...parcelData.qtrQtr,
 										swne: parcelData.qtrQtr.swne ? false : true,
 									});
+								}
 							}}
 						>
 							{parcelData.state !== 'TX' ? <p> SWNE</p> : <SmallTXQtr />}
@@ -499,11 +511,12 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 									: ''
 							}`}
 							onClick={() => {
-								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr)
+								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr) {
 									setQtrQtr({
 										...parcelData.qtrQtr,
 										sene: parcelData.qtrQtr.sene ? false : true,
 									});
+								}
 							}}
 						>
 							{parcelData.state !== 'TX' ? <p> SENE</p> : <SmallTXQtr />}
@@ -521,11 +534,12 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 									: ''
 							}`}
 							onClick={() => {
-								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr)
+								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr) {
 									setQtrQtr({
 										...parcelData.qtrQtr,
 										nwsw: parcelData.qtrQtr.nwsw ? false : true,
 									});
+								}
 							}}
 						>
 							{parcelData.state !== 'TX' ? <p> NWSW</p> : <SmallTXQtr />}
@@ -539,11 +553,12 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 									: ''
 							}`}
 							onClick={() => {
-								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr)
+								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr) {
 									setQtrQtr({
 										...parcelData.qtrQtr,
 										nesw: parcelData.qtrQtr.nesw ? false : true,
 									});
+								}
 							}}
 						>
 							{parcelData.state !== 'TX' ? <p> NESW</p> : <SmallTXQtr />}
@@ -557,11 +572,12 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 									: ''
 							}`}
 							onClick={() => {
-								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr)
+								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr) {
 									setQtrQtr({
 										...parcelData.qtrQtr,
 										swsw: parcelData.qtrQtr.swsw ? false : true,
 									});
+								}
 							}}
 						>
 							{parcelData.state !== 'TX' ? <p> SWSW</p> : <SmallTXQtr />}
@@ -575,11 +591,12 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 									: ''
 							}`}
 							onClick={() => {
-								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr)
+								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr) {
 									setQtrQtr({
 										...parcelData.qtrQtr,
 										sesw: parcelData.qtrQtr.sesw ? false : true,
 									});
+								}
 							}}
 						>
 							{parcelData.state !== 'TX' ? <p> SESW</p> : <SmallTXQtr />}
@@ -597,11 +614,12 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 									: ''
 							}`}
 							onClick={() => {
-								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr)
+								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr) {
 									setQtrQtr({
 										...parcelData.qtrQtr,
 										nwse: parcelData.qtrQtr.nwse ? false : true,
 									});
+								}
 							}}
 						>
 							{parcelData.state !== 'TX' ? <p> NWSE</p> : <SmallTXQtr />}
@@ -615,11 +633,12 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 									: ''
 							}`}
 							onClick={() => {
-								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr)
+								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr) {
 									setQtrQtr({
 										...parcelData.qtrQtr,
 										nese: parcelData.qtrQtr.nese ? false : true,
 									});
+								}
 							}}
 						>
 							{parcelData.state !== 'TX' ? <p> NESE</p> : <SmallTXQtr />}
@@ -633,11 +652,12 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 									: ''
 							}`}
 							onClick={() => {
-								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr)
+								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr) {
 									setQtrQtr({
 										...parcelData.qtrQtr,
 										swse: parcelData.qtrQtr.swse ? false : true,
 									});
+								}
 							}}
 						>
 							{parcelData.state !== 'TX' ? <p> SWSE</p> : <SmallTXQtr />}
@@ -651,11 +671,12 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 									: ''
 							}`}
 							onClick={() => {
-								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr)
+								if (parcelData.state !== 'TXtemporaryRemoved' && parcelData.qtrQtr) {
 									setQtrQtr({
 										...parcelData.qtrQtr,
 										sese: parcelData.qtrQtr.sese ? false : true,
 									});
+								}
 							}}
 						>
 							{parcelData.state !== 'TX' ? <p> SESE</p> : <SmallTXQtr />}

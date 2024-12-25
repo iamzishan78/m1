@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
 import { useLazyQuery } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import { Typography } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
+import FormControl from '@material-ui/core/FormControl';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import debounce from 'lodash/debounce';
+import React, { useState, useEffect } from 'react';
 
 // Queries
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { useLocation } from 'react-router-dom';
+
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 
 const useStyles = makeStyles(theme => ({
 	secondaryText: {

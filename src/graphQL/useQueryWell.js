@@ -1,5 +1,5 @@
-import React from 'react';
 import gql from 'graphql-tag';
+import React from 'react';
 
 export const WELLQUERY = gql`
 	query getWell($wellId: String) {

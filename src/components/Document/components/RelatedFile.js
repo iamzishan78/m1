@@ -1,37 +1,43 @@
-import React, { useEffect, useState } from 'react';
-import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { Typography, Grid } from '@material-ui/core';
+import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
+import { makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
+import React, { useEffect, useState } from 'react';
 import ListItemText from '@material-ui/core/ListItemText';
-import { AppContext } from 'AppContext';
-import { Typography, Grid } from '@material-ui/core';
-import loadashFilter from 'lodash/filter';
 
-import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from '@material-ui/core';
+import GenericDateField from 'components/Shared/components/Fields/GenericDateFIeld';
+import AutoCompleteDocumentList from 'components/Shared/Forms/Fields/AutoCompleteDocumentList';
+import get_file_icon from 'components/Shared/functions/get_file_icon.js';
+import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+import joinAddress from 'components/Shared/valueformatters/join-address.js';
+
+import { VIEWFILEQUERY, VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
+import { AppContext } from 'AppContext';
+import loadashFilter from 'lodash/filter';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
 import UploadZone from '../../Shared/UploadZone';
+
 import Tooltip from '@material-ui/core/Tooltip';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import DeleteIcon from '@material-ui/icons/Delete';
-import joinAddress from 'components/Shared/valueformatters/join-address.js';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-import { VIEWFILEQUERY, VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
-import { useLazyQuery, useMutation } from '@apollo/client';
+
 import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
 import { CREATEDESCRIPTORFILE } from 'graphQL/useMutationCreateDescriptorFile';
 import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
 import { GET_DOCUMENTS } from 'graphQL/useQueryDocuments';
-import AutoCompleteDocumentList from 'components/Shared/Forms/Fields/AutoCompleteDocumentList';
-import GenericDateField from 'components/Shared/components/Fields/GenericDateFIeld';
 
 // functions
-import get_file_icon from 'components/Shared/functions/get_file_icon.js';
+
 import { grey600, grey400 } from 'material-ui/styles/colors';
+
 import { tableGlobalController } from 'hookstate/tableController';
 
 const filter = createFilterOptions();
@@ -936,7 +942,9 @@ export default function RelatedFile(props) {
 										</LightTooltip>
 									</div>
 								);
-							} else return null;
+							} else {
+								return null;
+							}
 						})}
 						{/* <div style={{width:'150px',marginLeft:'20px'}}>
          <UploadZone
@@ -1009,7 +1017,9 @@ export default function RelatedFile(props) {
 										</LightTooltip>
 									</div>
 								);
-							} else return null;
+							} else {
+								return null;
+							}
 						})}
 					</div>
 				</ListItem>
@@ -1139,15 +1149,19 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 					return option.name;
 				}
 
-				if (option?.name) return option.name;
-				else return '';
+				if (option?.name) {
+					return option.name;
+				} else {
+					return '';
+				}
 			}}
 			getOptionSelected={(option, value) => {
 				return option?._id === value?._id;
 			}}
 			renderOption={option => {
-				if (option._id === 'newEntity')
+				if (option._id === 'newEntity') {
 					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+				}
 
 				return (
 					<Grid container spacing={0}>
@@ -1184,9 +1198,14 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 			}}
 			onChange={(event, newValue) => {
 				if (newValue && newValue._id) {
-					if (newValue._id !== 'newEntity') setDocumentType(newValue);
-					else setDocumentType({ _id: 'newEntity', name: newValue.name });
-				} else setDocumentType('');
+					if (newValue._id !== 'newEntity') {
+						setDocumentType(newValue);
+					} else {
+						setDocumentType({ _id: 'newEntity', name: newValue.name });
+					}
+				} else {
+					setDocumentType('');
+				}
 			}}
 			renderInput={params => (
 				<TextField

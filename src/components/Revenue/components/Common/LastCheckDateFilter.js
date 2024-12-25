@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useLazyQuery } from '@apollo/client';
 import { Grid, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/styles';
 import CustomDates from 'components/Revenue/components/Common/CustomDates';
-import { useLazyQuery } from '@apollo/client';
 import { useSelector } from 'react-redux';
 import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
 import { dateFilterToDate, getFirstDayOfMonth } from 'utils/helper';
@@ -11,6 +10,7 @@ import { copy, deepEqual } from 'components/Shared/functions';
 import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
 import { get } from 'lodash';
 import { tableController } from 'hookstate/tableController';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 const useStyles = makeStyles(theme => ({
 	actionBar: {

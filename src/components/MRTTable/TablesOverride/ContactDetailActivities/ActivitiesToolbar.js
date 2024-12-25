@@ -1,10 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { memo, useContext, useEffect } from 'react';
-import ActivitiesSlideout from 'components/Activities/components/ActivitiesSlideout';
-import { useHookstate } from '@hookstate/core';
-import { slidoutState } from 'hookstate/initialStates';
-import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
 import { useLazyQuery } from '@apollo/client';
+import { useHookstate } from '@hookstate/core';
+import React, { memo, useContext, useEffect } from 'react';
+
+import ActivitiesSlideout from 'components/Activities/components/ActivitiesSlideout';
+
+import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
+
+import { slidoutState } from 'hookstate/initialStates';
+
 import { AppContext } from 'AppContext';
 
 function ActivitiesToolbar() {

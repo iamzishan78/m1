@@ -82,7 +82,9 @@ describe('Comments Uploader Spec', () => {
 
 								const cypressAgreement = hits.find(hit => hit.agreementName === agreementName);
 
-								if (!cypressAgreement) throw new Error('Agreement added by cypress Uploader not found');
+								if (!cypressAgreement) {
+									throw new Error('Agreement added by cypress Uploader not found');
+								}
 
 								const indexOfcypressAgreement = hits.findIndex(hit => hit._id === cypressAgreement._id) + 1;
 

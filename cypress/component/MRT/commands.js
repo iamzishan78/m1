@@ -41,8 +41,11 @@ Cypress.Commands.add(
 
 					case 'date':
 						// Comparing dates based on sorting order
-						if (sorting === 'ascending') expect(new Date(firstText)).to.be.at.most(new Date(secondText));
-						else expect(new Date(firstText)).to.be.at.least(new Date(secondText));
+						if (sorting === 'ascending') {
+							expect(new Date(firstText)).to.be.at.most(new Date(secondText));
+						} else {
+							expect(new Date(firstText)).to.be.at.least(new Date(secondText));
+						}
 						break;
 
 					case 'number':
@@ -52,8 +55,11 @@ Cypress.Commands.add(
 						const lastNumber =
 							parseFloat(secondText.replace(/,/g, '')) || (sorting === 'ascending' ? Number.MAX_SAFE_INTEGER : 0);
 
-						if (sorting === 'ascending') cy.wrap(lastNumber).should('be.gte', firstNumber);
-						else cy.wrap(firstNumber).should('be.gte', lastNumber);
+						if (sorting === 'ascending') {
+							cy.wrap(lastNumber).should('be.gte', firstNumber);
+						} else {
+							cy.wrap(firstNumber).should('be.gte', lastNumber);
+						}
 						break;
 
 					default:
@@ -81,14 +87,18 @@ Cypress.Commands.add('mrtSort', ({ column, apiAlias = '@getESSimpleSearchApiByIn
 	cy.wait(100);
 
 	let ariaLabel = `Sort by ${column.name} ${sortOrder}`;
-	if (sorting === 'ascending') ariaLabel = `Sorted by ${column.name} ascending`;
-	if (sorting === 'descending') ariaLabel = `Sorted by ${column.name} descending`;
+	if (sorting === 'ascending') {
+		ariaLabel = `Sorted by ${column.name} ascending`;
+	}
+	if (sorting === 'descending') {
+		ariaLabel = `Sorted by ${column.name} descending`;
+	}
 
 	cy.get('table > thead > tr > th.MuiTableCell-root.MuiTableCell-head')
 		.contains(column.name)
 		.get(`[aria-label="${ariaLabel}"]`);
 
-	if (!!sorting)
+	if (sorting) {
 		cy.get('table > thead > tr > th.MuiTableCell-root.MuiTableCell-head')
 			.filter((index, element) => {
 				// Use a filter function to find the correct column header by text content
@@ -103,6 +113,7 @@ Cypress.Commands.add('mrtSort', ({ column, apiAlias = '@getESSimpleSearchApiByIn
 					responseHits,
 				});
 			});
+	}
 });
 
 Cypress.Commands.add('mrtNonEmptyFilterOnColumn', ({ column }) => {
@@ -317,14 +328,13 @@ Cypress.Commands.add('mrtMultiSelect', ({ column }) => {
 									});
 							})
 							.then(() => {
-								// eslint-disable-next-line no-unused-expressions
 								expect(optionFound).to.be.true;
 							});
 					});
 			});
 	}
 
-	cy.get(`[data-testid="MoreVertIcon"]`).first().click({ force: true });
+	cy.get('[data-testid="MoreVertIcon"]').first().click({ force: true });
 	cy.wait(basic_timeouts.shorTimeout);
 	cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click({ force: true });
 	cy.wait(basic_timeouts.shorTimeout);
@@ -381,8 +391,8 @@ Cypress.Commands.add('mrtPurchasedIconCheck', () => {
 	const contactName = 'CLARK (Cypress do not delete)';
 	cy.interceptAndWait(['getESSimpleFilter'], () => {
 		cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
-		cy.get(`[data-testid="single-filter-Contact Name"]`).as(`single-filter-Contact-Name`).click();
-		cy.get(`@single-filter-Contact-Name`).type(`${contactName}{enter}`);
+		cy.get('[data-testid="single-filter-Contact Name"]').as('single-filter-Contact-Name').click();
+		cy.get('@single-filter-Contact-Name').type(`${contactName}{enter}`);
 		cy.get('.MuiAutocomplete-option', {
 			timeout: basic_timeouts.midTimeout,
 		})

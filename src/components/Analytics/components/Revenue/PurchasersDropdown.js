@@ -1,7 +1,8 @@
 import { useApolloClient } from '@apollo/client';
 import { FormControl, Grid, InputLabel, MenuItem, Select, makeStyles } from '@material-ui/core';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 import React, { useEffect, useState } from 'react';
+
+import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 
 const useStyles = makeStyles(theme => ({
 	actionBar: ({ isBackground, noPadding }) => ({
@@ -79,8 +80,12 @@ const PurchasersDropdown = ({
 	}, [client, esFilters]);
 
 	useEffect(() => {
-		if (value === 'All Purchasers') return;
-		if (options.some(option => option.key === value)) return;
+		if (value === 'All Purchasers') {
+			return;
+		}
+		if (options.some(option => option.key === value)) {
+			return;
+		}
 
 		setValue('All Purchasers');
 		setESFilters(esFilters.filter(filter => !['purchaser.name.keyword'].includes(filter.field)));

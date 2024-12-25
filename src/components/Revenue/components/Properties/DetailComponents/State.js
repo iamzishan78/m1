@@ -1,8 +1,9 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
+import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import React from 'react';
+
 import { statesNames, statesAbbNames } from 'components/Navigation/components/Utils/USAStates&Abb';
 
 const useStyles = makeStyles(theme => ({

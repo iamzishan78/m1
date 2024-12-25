@@ -1,13 +1,14 @@
-import React, { useEffect } from 'react';
 import { Container } from '@material-ui/core';
-import Table from 'components/Shared/M1nTable/components/Table';
-import TableESHOC from '../TableESHOC';
-import TableHeader from 'components/Table/constants/bulk-data-header-schema';
 import moment from 'moment';
-
+import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+
 import { copy, deepEqualObjects } from 'components/Shared/functions';
+import Table from 'components/Shared/M1nTable/components/Table';
+import TableHeader from 'components/Table/constants/bulk-data-header-schema';
+
 import { usetableStyles } from '../Styles';
+import TableESHOC from '../TableESHOC';
 
 function BulkDataTable(props) {
 	// const classes = useStyles();
@@ -37,7 +38,6 @@ function BulkDataTable(props) {
 			defaultSort: { field: 'ts', order: 'desc' },
 			formatHits,
 		});
-		// eslint-disable-next-line
 	}, []);
 
 	useEffect(() => {

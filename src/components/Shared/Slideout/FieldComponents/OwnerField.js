@@ -1,10 +1,10 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { FormControl, Grid, InputAdornment, TextField, Avatar } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { Autocomplete } from '@material-ui/lab';
+import React from 'react';
 
-import CustomAvatar from 'components/Shared/ui/CustomAvatar';
 import { getRandomColor } from 'components/Shared/functions/ui';
+import CustomAvatar from 'components/Shared/ui/CustomAvatar';
 
 const useStyles = makeStyles(theme => ({
 	dealOwnerLabel: {

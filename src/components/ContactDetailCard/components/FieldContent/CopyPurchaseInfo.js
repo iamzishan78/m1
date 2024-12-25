@@ -1,10 +1,10 @@
-import React, { useState, Fragment } from 'react';
 import { IconButton, Menu, InputAdornment } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
+import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { makeStyles } from '@material-ui/core/styles';
+import SearchIcon from '@material-ui/icons/Search';
+import React, { useState, Fragment } from 'react';
 
 import { getBasicInfoContent, getBasicInfoExpContent } from 'components/ContactDetailedInfo/helper';
 

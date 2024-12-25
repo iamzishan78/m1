@@ -1,28 +1,29 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { useLazyQuery } from '@apollo/client';
+import { useAuth0 } from '@auth0/auth0-react';
+import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import CheckIcon from '@material-ui/icons/Check';
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import React, { useState, useContext, useEffect } from 'react';
+import Avatar from 'react-avatar';
+
 import { NavigationContext } from 'components/Navigation/NavigationContext';
 
-import { useAuth0 } from '@auth0/auth0-react';
-
 // contexts
-import { AppContext } from 'AppContext';
-//@material-ui components
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-
-//icons
 import ProfileProvider from 'components/Profile/ProfileProvider';
 import UserManagementProvider from 'components/UserManagement/UserManagementProvider';
 
-import Avatar from 'react-avatar';
 import { GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
-import { useLazyQuery } from '@apollo/client';
 
-import CheckIcon from '@material-ui/icons/Check';
-import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import { AppContext } from 'AppContext';
+
+//@material-ui components
+
+//icons
 
 export const useStyles = makeStyles(theme => ({
 	userMenu: {
@@ -108,12 +109,13 @@ export default function UserProfile() {
 			account: currentAccount,
 		};
 
-		if (isAuthenticated)
+		if (isAuthenticated) {
 			logout({
 				logoutParams: {
 					returnTo: window.location.origin + '/',
 				},
 			});
+		}
 
 		setAnchorEl(null);
 		sessionStorage.clear();

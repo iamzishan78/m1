@@ -98,7 +98,9 @@ describe('Add Contact Spec', () => {
 			console.log(hits);
 			console.log(recentlyAdded);
 
-			if (!recentlyAdded) throw new Error('SomeThing is wrong');
+			if (!recentlyAdded) {
+				throw new Error('SomeThing is wrong');
+			}
 
 			const indexOfRecentlyAdded = hits.findIndex(hit => hit._id === recentlyAdded._id) + 1;
 

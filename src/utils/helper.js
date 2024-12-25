@@ -1,9 +1,11 @@
 import moment from 'moment';
 
-import { getSession } from 'utils/user';
-import { wellsKeys } from 'utils/data';
 import { tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
+
 import { globalStateController } from 'hookstate/globalStateController';
+
+import { wellsKeys } from 'utils/data';
+import { getSession } from 'utils/user';
 
 export const apolloClientEndpointDev = 'http://localhost:7071/api/m1graph';
 export const isDev = process.env.REACT_APP_NODE_ENV === 'development';
@@ -59,7 +61,9 @@ export const dateIsValid = date => {
 };
 
 export const getIdFromPath = path => {
-	if (path.slice(-1) === '/') path = path.substring(0, path.length - 1);
+	if (path.slice(-1) === '/') {
+		path = path.substring(0, path.length - 1);
+	}
 
 	return path.split('/')[path.split('/').length - 1];
 };
@@ -260,10 +264,18 @@ export const getShapeFilter = polygon => {
 
 export const getContactsAddress = contact => {
 	let address = 'https://www.google.com/maps/search/';
-	if (contact.address1) address = `${address}${contact.address1.replace(/ /g, '+')}`;
-	if (contact.city) address = `${address},+${contact.city.replace(/ /g, '+')}`;
-	if (contact.state) address = `${address},+${contact.state}`;
-	if (contact.zip) address = `${address}+${contact.zip}`;
+	if (contact.address1) {
+		address = `${address}${contact.address1.replace(/ /g, '+')}`;
+	}
+	if (contact.city) {
+		address = `${address},+${contact.city.replace(/ /g, '+')}`;
+	}
+	if (contact.state) {
+		address = `${address},+${contact.state}`;
+	}
+	if (contact.zip) {
+		address = `${address}+${contact.zip}`;
+	}
 	return {
 		...contact,
 		fullContactAddress: address,
@@ -272,14 +284,30 @@ export const getContactsAddress = contact => {
 
 export const getAddressUrl = owner => {
 	let address = 'https://www.google.com/maps/search/';
-	if (owner.StreetAddress) address = `${address}${owner.StreetAddress.replace(/ /g, '+')}`;
-	if (owner.address1) address = `${address}${owner.address1.replace(/ /g, '+')}`;
-	if (owner.City) address = `${address},+${owner.City.replace(/ /g, '+')}`;
-	if (owner.city) address = `${address},+${owner.city.replace(/ /g, '+')}`;
-	if (owner.State) address = `${address},+${owner.State}`;
-	if (owner.state) address = `${address},+${owner.state}`;
-	if (owner.Zip) address = `${address}+${owner.Zip}`;
-	if (owner.zip) address = `${address},+${owner.zip}`;
+	if (owner.StreetAddress) {
+		address = `${address}${owner.StreetAddress.replace(/ /g, '+')}`;
+	}
+	if (owner.address1) {
+		address = `${address}${owner.address1.replace(/ /g, '+')}`;
+	}
+	if (owner.City) {
+		address = `${address},+${owner.City.replace(/ /g, '+')}`;
+	}
+	if (owner.city) {
+		address = `${address},+${owner.city.replace(/ /g, '+')}`;
+	}
+	if (owner.State) {
+		address = `${address},+${owner.State}`;
+	}
+	if (owner.state) {
+		address = `${address},+${owner.state}`;
+	}
+	if (owner.Zip) {
+		address = `${address}+${owner.Zip}`;
+	}
+	if (owner.zip) {
+		address = `${address},+${owner.zip}`;
+	}
 	return address;
 };
 
@@ -288,10 +316,18 @@ export const getZillowAddressUrl = owner => {
 	let address = 'https://www.zillow.com/homes/';
 	const { address1, city, state, zip } = owner;
 
-	if (address1) address += `${encodeURIComponent(address1)},`;
-	if (city) address += `${encodeURIComponent(city)},`;
-	if (state) address += `${encodeURIComponent(state)},`;
-	if (zip) address += `${encodeURIComponent(zip)}`;
+	if (address1) {
+		address += `${encodeURIComponent(address1)},`;
+	}
+	if (city) {
+		address += `${encodeURIComponent(city)},`;
+	}
+	if (state) {
+		address += `${encodeURIComponent(state)},`;
+	}
+	if (zip) {
+		address += `${encodeURIComponent(zip)}`;
+	}
 
 	// Adding '_rb' to the end of the Zillow link
 	address += '_rb/';
@@ -643,7 +679,9 @@ export const checkFormRequireField = (data, formSchema) => {
 };
 
 export const getFilters = appliedFilters => {
-	if (Array.isArray(appliedFilters)) return appliedFilters;
+	if (Array.isArray(appliedFilters)) {
+		return appliedFilters;
+	}
 
 	let filters = [];
 	if (appliedFilters) {
@@ -657,7 +695,9 @@ export const getFilters = appliedFilters => {
 			},
 			'simple'
 		);
-		if (range.length > 0) filters = [...filters, ...range];
+		if (range.length > 0) {
+			filters = [...filters, ...range];
+		}
 		if (appliedFilters.status) {
 			filters.push({
 				field: 'status.keyword',
@@ -688,7 +728,9 @@ export const getActivityAnalyticsFilters = appliedFilters => {
 				},
 				'simple'
 			);
-			if (range.length > 0) filters = [...filters, ...range];
+			if (range.length > 0) {
+				filters = [...filters, ...range];
+			}
 			range = getRangeFilters(
 				{
 					endDateTime: {
@@ -708,7 +750,9 @@ export const getActivityAnalyticsFilters = appliedFilters => {
 				},
 				'simple'
 			);
-			if (range.length > 0) filters = [...filters, ...range];
+			if (range.length > 0) {
+				filters = [...filters, ...range];
+			}
 			range = getRangeFilters(
 				{
 					lastUpdateAt: {
@@ -720,7 +764,9 @@ export const getActivityAnalyticsFilters = appliedFilters => {
 			);
 		}
 
-		if (range.length > 0) filters = [...filters, ...range];
+		if (range.length > 0) {
+			filters = [...filters, ...range];
+		}
 		if (appliedFilters.campaignName) {
 			filters.push({
 				field: 'contact.campaignName.keyword',
@@ -733,7 +779,9 @@ export const getActivityAnalyticsFilters = appliedFilters => {
 				value: appliedFilters.qualifier,
 			});
 		}
-		if (!filters.length && appliedFilters.length) filters = appliedFilters;
+		if (!filters.length && appliedFilters.length) {
+			filters = appliedFilters;
+		}
 	}
 	return filters;
 };

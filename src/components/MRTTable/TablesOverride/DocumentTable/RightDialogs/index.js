@@ -1,5 +1,7 @@
 import React, { memo } from 'react';
+
 import { tableGlobalController } from 'hookstate/tableController';
+
 import CreateAndViewComponent from './AddandEdit';
 
 function DocumentTableDialogs() {

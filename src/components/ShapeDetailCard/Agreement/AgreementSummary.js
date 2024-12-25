@@ -1,27 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { copy } from 'utils/helper';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-
-import WellIcon from 'components/Shared/svgIcons/well';
-import TractIcon from 'components/Shared/svgIcons/tract';
-import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
-import AddIcon from '@material-ui/icons/Add';
-import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 import { Box, Button, Typography } from '@material-ui/core';
 import { useLazyQuery } from '@apollo/client';
-import CommentComponent from 'components/Shared/CommentComponent';
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
+import AddIcon from '@material-ui/icons/Add';
+import CheckIcon from '@material-ui/icons/Check';
+import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+
+import Acreage from 'components/Land/components/Agreements/detailComponents/summary/Acreage';
 import SummaryTable from 'components/ShapeDetailCard/Common/SummaryTable';
 import agreementDefaultData from 'components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData';
-import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
-import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { summaryStyles } from 'components/ShapeDetailCard/style';
+import CommentComponent from 'components/Shared/CommentComponent';
 import ExpandableSearch from 'components/Shared/Forms/Fields/ExpandableSearch';
-import Acreage from 'components/Land/components/Agreements/detailComponents/summary/Acreage';
+import TractIcon from 'components/Shared/svgIcons/tract';
+import WellIcon from 'components/Shared/svgIcons/well';
 import MetaField from 'components/Table/helpers/MetaField';
+
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
+
 import { globalStateController } from 'hookstate/globalStateController';
+
+import { copy } from 'utils/helper';
 
 export default function AgreementSummary(props) {
 	const user = useSelector(({ app }) => app.user);
@@ -57,7 +60,9 @@ export default function AgreementSummary(props) {
 	const addAgreementCustomData = data => {
 		const customData = copy(props.properties.custom_data) ?? {};
 		data.forEach(d => {
-			if (!customData[d.name]) customData[d.name] = null;
+			if (!customData[d.name]) {
+				customData[d.name] = null;
+			}
 		});
 		props.updateProperties(null, 'custom_data', customData);
 	};
@@ -170,8 +175,9 @@ export default function AgreementSummary(props) {
 									setProperties({ ...unitProperties, metaDescription: e.target.value });
 								}}
 								onKeyDown={e => {
-									if (e.keyCode === 13 && !e.shiftKey)
+									if (e.keyCode === 13 && !e.shiftKey) {
 										props.updateProperties(e, 'metaDescription', unitProperties.metaDescription);
+									}
 								}}
 								onFocus={() => {
 									setTableDataState({ description: true });

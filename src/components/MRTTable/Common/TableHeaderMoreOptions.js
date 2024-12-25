@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Menu, MenuItem } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import MRT_SelectCheckbox_OverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
-import { tableController } from 'hookstate/tableController';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Tooltip from '@mui/material/Tooltip';
+import React, { useState } from 'react';
+
+import MRT_SelectCheckbox_OverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
+
+import { tableController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -75,7 +77,9 @@ function TableHeaderMoreOptions({ tableKey }) {
 		handleClose();
 	};
 
-	if (!tableStateValues?.mrtTableRef) return null;
+	if (!tableStateValues?.mrtTableRef) {
+		return null;
+	}
 
 	const menuItems = [
 		{ label: 'All', value: tableStateValues?.data?.total },

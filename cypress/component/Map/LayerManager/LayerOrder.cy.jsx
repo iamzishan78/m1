@@ -1,10 +1,12 @@
 /* eslint-disable no-undef */
 import MapProvider from 'components/Map/MapProvider';
+
+import { REVERTCYPRESSDELETE } from 'graphQL/useMutationCommonCypressRevert';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
+
 import { basic_timeouts } from '../../../cypressUtils/data';
 import ldata from '../../../fixtures/ldata.json';
 import { drawAreaGeometry } from '../Draw/data';
-import { REVERTCYPRESSDELETE } from 'graphQL/useMutationCommonCypressRevert';
 
 const headers = {
 	'Content-Type': 'application/json',

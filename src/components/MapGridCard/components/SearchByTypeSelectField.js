@@ -1,21 +1,22 @@
-import React, { useState, useMemo } from 'react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import MenuItem from '@material-ui/core/MenuItem';
+import { Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
+import Grid from '@material-ui/core/Grid';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import Grid from '@material-ui/core/Grid';
 import SearchIcon from '@material-ui/icons/Search';
+import React, { useState, useMemo } from 'react';
 
-import ExpandableSearch from 'components/Shared/Forms/Fields/ExpandableSearch';
-import { Typography } from '@material-ui/core';
-import { platformDataInitialData, userDefinedInitialData } from './data';
-
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+import ExpandableSearch from 'components/Shared/Forms/Fields/ExpandableSearch';
+
 import { mapControlsController } from 'hookstate/mapControlsController';
+
+import { platformDataInitialData, userDefinedInitialData } from './data';
 
 const StyledMenu = withStyles({
 	paper: {
@@ -108,11 +109,15 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, 
 			.filter(data => !search || data.label.toLocaleLowerCase().includes(search.toLocaleLowerCase()))
 			.filter(data => (isShapeGridOnly ? (data.shapeGrid ? true : false) : true));
 		return data.filter(data => {
-			if (!data.isLayer) return true;
+			if (!data.isLayer) {
+				return true;
+			}
 			if (data.isLayer && isLayerOnly) {
 				data.label = isLayerOnly.name;
 				return true;
-			} else return false;
+			} else {
+				return false;
+			}
 		});
 	}, [search, isLayerOnly]);
 
@@ -158,7 +163,9 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, 
 					</Grid>
 
 					{platformData.map(icon => {
-						if (mapControlsStateValues.mapGridCardActivated && !icon.shapeGrid) return false;
+						if (mapControlsStateValues.mapGridCardActivated && !icon.shapeGrid) {
+							return false;
+						}
 						const Icon = icon.Icon;
 						return (
 							<FeatureFlag feature={FEATURES[icon.featureFlag]} noCheck={!FEATURES[icon.featureFlag]}>
@@ -192,7 +199,9 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, 
 					</Grid>
 
 					{userDefinedData.map(icon => {
-						if (mapControlsStateValues.mapGridCardActivated && !icon.mapGrid) return false;
+						if (mapControlsStateValues.mapGridCardActivated && !icon.mapGrid) {
+							return false;
+						}
 						const Icon = icon.Icon;
 						return (
 							<FeatureFlag feature={FEATURES[icon.featureFlag]} noCheck={!FEATURES[icon.featureFlag]}>

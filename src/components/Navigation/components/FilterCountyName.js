@@ -1,14 +1,16 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import FormControl from '@material-ui/core/FormControl';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { NavigationContext } from '../NavigationContext';
 import { useLazyQuery } from '@apollo/client';
-import { COUNTIES } from '../../../graphQL/useQueryCountiesBySta';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import FormControl from '@material-ui/core/FormControl';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import React, { useState, useContext, useEffect } from 'react';
+
 import { navController } from 'hookstate/navStateController';
+
+import { COUNTIES } from '../../../graphQL/useQueryCountiesBySta';
+import { NavigationContext } from '../NavigationContext';
 
 const useStyles = makeStyles(theme => ({
 	formControl: {

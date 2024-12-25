@@ -1,8 +1,9 @@
-import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
 import ListChips from 'components/Common/ListChips';
-import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
-import { GlobalStickyStyles } from 'GlobalSettings';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
+import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+
+import { GlobalStickyStyles } from 'GlobalSettings';
 
 const UnitInterestsHeadCells = [
 	{

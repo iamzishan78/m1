@@ -1,13 +1,15 @@
-import React, { useMemo, Fragment } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
+import React, { useMemo, Fragment } from 'react';
+
 import { drawController } from 'hookstate/drawStateController';
+import { layerController } from 'hookstate/layerStateController';
+
+import CheckCircle from '../../../Shared/svgIcons/check-circle';
 import MouseClicked from '../../../Shared/svgIcons/MouseClicked';
 import DrawPoly from '../../../Shared/svgIcons/polygon';
 import Rect from '../../../Shared/svgIcons/rectangle';
-import CheckCircle from '../../../Shared/svgIcons/check-circle';
-import { layerController } from 'hookstate/layerStateController';
 
 const DrawShapesPopup = props => {
 	const { classes, children, handleClose } = props;

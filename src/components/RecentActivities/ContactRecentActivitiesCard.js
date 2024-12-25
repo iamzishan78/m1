@@ -1,15 +1,15 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Checkbox, Grid } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
 import { useLazyQuery } from '@apollo/client';
+import { Checkbox, Grid } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useState, useContext, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 
-import { AppContext } from '../../AppContext';
 import { CONTACT } from 'graphQL/useQueryContact';
 
+import { AppContext } from '../../AppContext';
 import ActivitiesList from './components/ActivitiesList';
-import RightDialog from '../ContactDetailCard/components/RightDialog';
 import AddActivityDialog from '../ContactDetailCard/components/AddActivityDialog';
+import RightDialog from '../ContactDetailCard/components/RightDialog';
 
 const useStyles = makeStyles(theme => ({
 	root: {

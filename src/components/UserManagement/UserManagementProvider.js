@@ -1,7 +1,8 @@
-import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { UserManagementContextProvider } from './UserManagementContext';
+import React from 'react';
+
 import UserManagementContainer from './Container';
+import { UserManagementContextProvider } from './UserManagementContext';
 
 const useStyles = makeStyles(theme => ({
 	trackWrapper: {

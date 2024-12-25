@@ -1,12 +1,13 @@
-import React, { useContext, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import moment from 'moment';
-import { Clear } from '@material-ui/icons';
 import { TextField, IconButton } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { Clear } from '@material-ui/icons';
+import moment from 'moment';
+import React, { useContext, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import { NavigationContext } from '../NavigationContext';
 import { navController } from 'hookstate/navStateController';
+
+import { NavigationContext } from '../NavigationContext';
 
 const useStyles = makeStyles(() => ({
 	datesRow: {
@@ -49,12 +50,16 @@ export default function FilterDatePickerPermit({ labelDates }) {
 			max: permitDateTo && new Date(permitDateTo).toISOString(),
 		};
 
-		if (!permitDateFrom) delete value.min;
-		if (!permitDateTo) delete value.max;
+		if (!permitDateFrom) {
+			delete value.min;
+		}
+		if (!permitDateTo) {
+			delete value.max;
+		}
 
 		const type = 'date';
 
-		navController.handleWellsFilters({ field: `permitApprovedDate`, value, type });
+		navController.handleWellsFilters({ field: 'permitApprovedDate', value, type });
 	}, [stateNav.permitDateFrom, stateNav.permitDateTo, setStateNav]);
 
 	const handleStartDate = date => {

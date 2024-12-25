@@ -1,5 +1,6 @@
-const { defineConfig } = require('cypress');
 const axios = require('axios');
+const { defineConfig } = require('cypress');
+
 const { RESTORE_SPEC_DATA } = require('./src/graphQL/useMutationCypress');
 
 let globalData = { agreementData: {}, relatedTractData: {} };
@@ -81,7 +82,9 @@ module.exports = defineConfig({
 					headers: headers,
 				});
 
-				if (response.data.data.restoreSpecData) console.log(response.data.data.restoreSpecData.message);
+				if (response.data.data.restoreSpecData) {
+					console.log(response.data.data.restoreSpecData.message);
+				}
 			});
 		},
 		devServer: {

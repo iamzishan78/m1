@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
-import { slidoutStateController, useSlideoutState } from 'hookstate/slidoutStateController';
+import React, { useState } from 'react';
+
 import { slidoutState } from 'hookstate/initialStates';
+import { slidoutStateController, useSlideoutState } from 'hookstate/slidoutStateController';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -53,8 +54,11 @@ export default function Drawer(props) {
 	const [, setActiveTabs] = useState({}); // State variable for active tabs or current view
 
 	const handleClick = view => {
-		if (view?.type === 'independent') slidoutStateController.updateActiveTabs(view.name);
-		else slidoutStateController.changeView(view);
+		if (view?.type === 'independent') {
+			slidoutStateController.updateActiveTabs(view.name);
+		} else {
+			slidoutStateController.changeView(view);
+		}
 
 		setActiveTabs({}); // Reset the active tabs state to trigger re-render
 	};
@@ -70,7 +74,9 @@ export default function Drawer(props) {
 		<div className={classes.root}>
 			{drawerIcons.map((view, index) => {
 				const { name, Icon, show } = view;
-				if (show === false) return null;
+				if (show === false) {
+					return null;
+				}
 				return (
 					<Tooltip key={index} title={name} placement="left">
 						<div className={`${classes.icon} ${getClass(name)}`} onClick={() => handleClick(view)}>

@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-
-import OilDropIcon from './components/svgIcons/OilDropIcon';
-import GasFlameIcon from './components/svgIcons/GasFlameIcon';
-import OilGasIcon from './components/svgIcons/OilGasIcon';
-import WaterDropIcon from './components/svgIcons/WaterDropIcon';
 import QuestionIcon from '@material-ui/icons/Help';
 import XIcon from '@material-ui/icons/HighlightOff';
+import React, { useState, useEffect } from 'react';
+
+import GasFlameIcon from './components/svgIcons/GasFlameIcon';
+import OilDropIcon from './components/svgIcons/OilDropIcon';
+import OilGasIcon from './components/svgIcons/OilGasIcon';
+import WaterDropIcon from './components/svgIcons/WaterDropIcon';
 
 const useStyles = makeStyles(theme => ({
 	iconContainer: {

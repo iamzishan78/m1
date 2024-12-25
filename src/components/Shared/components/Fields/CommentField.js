@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
 import { ClickAwayListener, Grid, TextField } from '@material-ui/core';
-import $ from 'jquery';
-
-import Avatar from 'react-avatar';
-import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import $ from 'jquery';
+import React, { useState, useEffect } from 'react';
+import Avatar from 'react-avatar';
+
 import CommentType from 'components/Shared/components/Comment/CommentType';
 
 const filter = createFilterOptions();
@@ -202,8 +202,9 @@ export default function DealComment({
 				let j = i + 1;
 				for (j; j <= comment.length; j += 1) {
 					i = j;
-					if (comment[j] !== ' ') isActive = true;
-					else {
+					if (comment[j] !== ' ') {
+						isActive = true;
+					} else {
 						isActive = false;
 						break;
 					}
@@ -253,9 +254,11 @@ export default function DealComment({
 			let updatedValue = JSON.parse(JSON.stringify(value));
 			for (let i = 0; i < users.length; i++) {
 				while (updatedValue.includes(users[i].name)) {
-					if (comment.includes(users[i]._id))
+					if (comment.includes(users[i]._id)) {
 						updatedValue = updatedValue.replace(`@${users[i].name}`, `{{${users[i]._id}}}`);
-					else break;
+					} else {
+						break;
+					}
 				}
 			}
 			const splittingArray = updatedValue.split('@');
@@ -278,8 +281,9 @@ export default function DealComment({
 		setShowOptions(false);
 		const splittedArray = comment.split('@');
 		let value = '';
-		for (let i = 0; i < splittedArray.length - 1; i += 1)
+		for (let i = 0; i < splittedArray.length - 1; i += 1) {
 			value += `${splittedArray[i]}${i !== splittedArray.length - 2 ? '@' : ''}`;
+		}
 		setComment(value + `{{${act._id}}}`);
 		setIsSelected(true);
 	};
@@ -290,7 +294,9 @@ export default function DealComment({
 	return (
 		<ClickAwayListener
 			onClickAway={e => {
-				if (!commentTypeDialogBox) setIsCollapsed(true);
+				if (!commentTypeDialogBox) {
+					setIsCollapsed(true);
+				}
 			}}
 		>
 			<div onClick={e => openDialogBox(e)}>
@@ -339,7 +345,7 @@ export default function DealComment({
 					}}
 					onInputChange={onInputChange}
 					onChange={onChange}
-					data-testid={`comment-auto-complete`}
+					data-testid={'comment-auto-complete'}
 					renderInput={params => (
 						<>
 							<TextField
@@ -358,7 +364,7 @@ export default function DealComment({
 								placeholder="Add a question or post an update"
 								variant="outlined"
 								size="small"
-								data-testid={`comment-text-field`}
+								data-testid={'comment-text-field'}
 							/>
 							<div
 								id="colorText"
@@ -391,7 +397,7 @@ export default function DealComment({
 									color="primary"
 									id="commentButton"
 									disabled={!comment || comment === ''}
-									data-testid={`comment-add-button`}
+									data-testid={'comment-add-button'}
 									onClick={e => {
 										e.stopPropagation();
 										if (!showCommentTypeDialog) {

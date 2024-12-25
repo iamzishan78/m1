@@ -1,8 +1,9 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import { formatDate } from 'components/Shared/functions';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import PropertyInterestDetailTableTolBar from 'components/MRTTable/TablesOverride/PropertyInterestDetailTable/PropertyInterestDetailTableTolBar';
+import { formatDate } from 'components/Shared/functions';
+
 import { detailCardController } from 'hookstate/detailCardController';
 import { tableGlobalController } from 'hookstate/tableController';
 

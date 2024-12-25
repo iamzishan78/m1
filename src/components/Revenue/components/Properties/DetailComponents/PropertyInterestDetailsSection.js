@@ -1,9 +1,11 @@
-import React, { useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import PropertyRevenueDetailToolBar from 'components/MRTTable/TablesOverride/PropertyRelatedAgreementTable/PropertyRelatedAgreementToolBar';
+import React, { useMemo } from 'react';
+
 import MRTTable from 'components/MRTTable';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import PropertyRevenueDetailToolBar from 'components/MRTTable/TablesOverride/PropertyRelatedAgreementTable/PropertyRelatedAgreementToolBar';
 import TabPanels from 'components/Shared/TabPanels';
+
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 const onClickedRow = selectedRow => {
 	const Controller = tableController('PropertyRelatedAgreementTable');

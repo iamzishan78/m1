@@ -1,4 +1,5 @@
 import { hookStateController } from 'hookstate/hookStateController';
+
 import { detailCardInitialState, detailCardState } from './initialStates';
 
 const detailCardControllerHandler = state => ({
@@ -22,10 +23,14 @@ const detailCardControllerHandler = state => ({
 	},
 
 	setBaseSelectedTab: tab => {
-		if (tab !== state.baseTabKey.get()) state.baseTabKey.set(tab);
+		if (tab !== state.baseTabKey.get()) {
+			state.baseTabKey.set(tab);
+		}
 	},
 	setBottomSelectedTab: tab => {
-		if (tab !== state.bottomTabKey.get()) state.bottomTabKey.set(tab);
+		if (tab !== state.bottomTabKey.get()) {
+			state.bottomTabKey.set(tab);
+		}
 	},
 });
 

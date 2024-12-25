@@ -1,9 +1,10 @@
-import React, { useRef, useContext, useEffect } from 'react';
+import { useLazyQuery } from '@apollo/client';
+import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
+import React, { useRef, useContext, useEffect } from 'react';
+
 import { NavigationContext } from '../NavigationContext';
 import FilterTags from './FilterTags';
-import Grid from '@material-ui/core/Grid';
-import { useLazyQuery } from '@apollo/client';
 import { AppContext } from '../../../AppContext';
 import { ALLTAGGEDWELLSQUERY } from '../../../graphQL/useQueryAllTaggedWells';
 

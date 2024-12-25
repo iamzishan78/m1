@@ -1,16 +1,6 @@
-import React, { useEffect, useContext, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { Backdrop, FormLabel } from '@material-ui/core';
 import { useLazyQuery, useMutation } from '@apollo/client';
+import { Backdrop, FormLabel } from '@material-ui/core';
 import { Grid } from '@material-ui/core';
-import { Modals } from '../../../../../styles/Modal';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
 import DialogContent from '@material-ui/core/DialogContent';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 
@@ -24,10 +14,22 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
 import ErrorIcon from '@material-ui/icons/Error';
 import { Tooltip } from '@material-ui/core';
-import { tableGlobalController } from 'hookstate/tableController';
-import { jobController } from 'hookstate/jobStateController';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import DialogActions from '@material-ui/core/DialogActions';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import React, { useEffect, useContext, useState } from 'react';
+import { useDispatch } from 'react-redux';
+
+import { jobController } from 'hookstate/jobStateController';
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { Modals } from '../../../../../styles/Modal';
 
 const styles = theme => ({
 	dialogTitle: {

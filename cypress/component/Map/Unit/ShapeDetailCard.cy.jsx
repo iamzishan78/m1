@@ -2,13 +2,17 @@
 
 import ExpandableCardProvider from 'components/ExpandableCard/ExpandableCardProvider';
 import ShapeDetailCard from 'components/ShapeDetailCard';
+import { copy } from 'components/Shared/functions';
+
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
+
 import { popupController } from 'hookstate/popupStateController';
+
+import { headers } from '../../../cypressUtils/cypressHeaders';
 import { basic_timeouts, retries } from '../../../cypressUtils/data';
 import ldata from '../../../fixtures/ldata.json';
-import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
-import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
-import { copy } from 'components/Shared/functions';
-import { headers } from '../../../cypressUtils/cypressHeaders';
+
 /* ---------------------------------- Data ---------------------------------- */
 let selectedShape = {
 	id: '667d6d179661ee87114c841c',
@@ -58,7 +62,9 @@ describe('ShapeDetailCard Component', () => {
 		}).then(response => {
 			selectedShape = response?.body?.data?.customLayer;
 			let jsonLayer;
-			if (selectedShape.shapeJson) jsonLayer = copy(selectedShape.shapeJson);
+			if (selectedShape.shapeJson) {
+				jsonLayer = copy(selectedShape.shapeJson);
+			}
 
 			jsonLayer.layer = { id: selectedShape.layer };
 			jsonLayer.id = selectedShape._id;

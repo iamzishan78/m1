@@ -1,6 +1,6 @@
+import Grid from '@material-ui/core/Grid';
 import React from 'react';
 
-import Grid from '@material-ui/core/Grid';
 import MapGridCardSearch from './MapGridCardSearch';
 // import SearchByTypeSelectField from "./SearchByTypeSelectField";
 

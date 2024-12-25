@@ -2,9 +2,9 @@ import CardHeader from '@material-ui/core/CardHeader';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import DragIndicatorOutlinedIcon from '@material-ui/icons/DragIndicatorOutlined';
-import { sortableHandle } from 'react-sortable-hoc';
 import React, { useContext, useState, useLayoutEffect, useRef, useEffect, useCallback } from 'react';
 import Iframe from 'react-iframe';
+import { sortableHandle } from 'react-sortable-hoc';
 
 const useStyles = makeStyles(theme => ({
 	header: {
@@ -178,12 +178,12 @@ const StockCard = ({ title }) => {
 			<CardHeader
 				//action={<DragHandle />}
 				style={{ margin: '8px' }}
-				title={`Market Pulse`}
+				title={'Market Pulse'}
 				className={classes.header}
 			/>
 
-			<div class="tradingview-widget-container">
-				<div class="tradingview-widget-container__widget" id="parentID"></div>
+			<div className="tradingview-widget-container">
+				<div className="tradingview-widget-container__widget" id="parentID"></div>
 				{/* <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
 
     </script> */}

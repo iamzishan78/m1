@@ -1,15 +1,15 @@
+import { useLazyQuery } from '@apollo/client';
+import { isEmpty } from 'lodash';
 import React, { useContext, useState, useEffect, useCallback } from 'react';
-
-import { AppContext } from 'AppContext';
 
 import { setStateIfDeepEqual } from 'components/Shared/functions';
 
-import { useLazyQuery } from '@apollo/client';
-import { TAGSAMPLES } from 'graphQL/useQueryTagSamples';
 import { COMMENTSCOUNTER } from 'graphQL/useQueryCommentsCounter';
 import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
+import { TAGSAMPLES } from 'graphQL/useQueryTagSamples';
 import { TRACKSBYOBJECTTYPE } from 'graphQL/useQueryTracksByObjectType';
-import { isEmpty } from 'lodash';
+
+import { AppContext } from 'AppContext';
 
 export const TableHOC = Component => {
 	return function HOC(props) {
@@ -187,16 +187,17 @@ export const TableHOC = Component => {
 				const ifAreContacs = checkIfOwnersAreContactsData?.ifAreContacts || [];
 				if (ifAreContacs.length > 0) {
 					let contact;
-					if (!data.contactId)
+					if (!data.contactId) {
 						contact = ifAreContacs.find(ifc => {
 							if (
 								ifc.globalOwner?.replace(/-/g, '') === data.id?.replace(/-/g, '') ||
 								ifc.globalOwner?.replace(/-/g, '') === data.globalOwnerId?.replace(/-/g, '')
-							)
+							) {
 								return true;
+							}
 							return false;
 						});
-					else {
+					} else {
 						contact = ifAreContacs.find(ifc => ifc._id === data.contactId);
 					}
 					if (contact) {
@@ -350,9 +351,11 @@ export const TableHOC = Component => {
 					setSearchedRows(searchRows.filter(row => row.isFiltered !== false));
 				},
 				extendSearchQuery: extraSearch => {
-					if (pageESVariables.variables.search)
+					if (pageESVariables.variables.search) {
 						pageESVariables.variables.search = `${pageESVariables.variables.search} AND ${extraSearch}`;
-					else pageESVariables.variables.search = `${extraSearch}`;
+					} else {
+						pageESVariables.variables.search = `${extraSearch}`;
+					}
 				},
 			};
 		};

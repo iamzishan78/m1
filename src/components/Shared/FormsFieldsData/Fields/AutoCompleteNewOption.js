@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Grid, TextField, CircularProgress } from '@mui/material';
-import { Controller } from 'react-hook-form';
 import { useApolloClient } from '@apollo/client';
-import { debounce } from 'lodash';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import loadashFilter from 'lodash/filter';
 import { Typography } from '@material-ui/core';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import { Grid, TextField, CircularProgress } from '@mui/material';
+import { debounce } from 'lodash';
+import loadashFilter from 'lodash/filter';
+import React, { useEffect, useState } from 'react';
+import { Controller } from 'react-hook-form';
 
 function AutoCompleteNewOption({ control, item }) {
 	const { name, label, defaultOptions = [], variables, query, getOptions, onChange, isESSearch } = item;
@@ -123,8 +123,9 @@ function AutoCompleteNewOption({ control, item }) {
 							return filtered;
 						}}
 						renderOption={option => {
-							if (option?._id === 'newEntity')
+							if (option?._id === 'newEntity') {
 								return <Typography style={{ color: 'midnightblue' }}>Add '{option.label}'</Typography>;
+							}
 
 							return (
 								<Grid container spacing={0}>

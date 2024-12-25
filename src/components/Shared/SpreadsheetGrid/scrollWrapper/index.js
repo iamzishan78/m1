@@ -1,10 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import Grid from '../grid';
-import slice from 'lodash/slice';
-import throttleWithRAF from './../kit/throttleWithRAF';
-import tablePropTypes from './../kit/tablePropTypes';
 import { Table, TableHead, TableRow, TableCell, TableBody, TableSortLabel } from '@material-ui/core';
+import slice from 'lodash/slice';
+import PropTypes from 'prop-types';
+import React from 'react';
+
+import Grid from '../grid';
+import tablePropTypes from './../kit/tablePropTypes';
+import throttleWithRAF from './../kit/throttleWithRAF';
 
 const visuallyHidden = {
 	border: 0,

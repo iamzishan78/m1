@@ -1,18 +1,21 @@
-import React, { memo } from 'react';
-import Button from '@material-ui/core/Button';
 import { useApolloClient } from '@apollo/client';
-import { useHistory } from 'react-router-dom';
-import MergeTypeIcon from '@material-ui/icons/MergeType';
-import EmailRoundedIcon from '@material-ui/icons/EmailRounded';
+import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
-import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import EmailRoundedIcon from '@material-ui/icons/EmailRounded';
+import MergeTypeIcon from '@material-ui/icons/MergeType';
+import React, { memo } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import {
 	BulkUpdate,
 	ExportData,
 	ViewContactData,
 	openSideDialog,
 } from 'components/MRTTable/Common/CommonToolBarActions';
+import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
+
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
 import ContactTableDialogs from './RightDialogs';
 
 const useStyles = makeStyles(() => ({

@@ -1,27 +1,18 @@
-import React, { useState, useEffect } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
 import { Button, Grid, Box, CircularProgress, InputAdornment, IconButton } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import SearchIcon from '@material-ui/icons/Search';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import { makeStyles } from '@material-ui/core/styles';
 
-import CloseSharp from '@material-ui/icons/CloseSharp';
-import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
-import Typography from '@material-ui/core/Typography';
-import RightDialog from '../../../../ContactDetailCard/components/RightDialog';
-import { ASSIGN_OWNER_TO_CONTACT } from 'graphQL/useMutationAssignOwnerToContact';
-import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
-import FieldBulkAutoComplete from 'components/Shared/FieldBulkAutoComplete';
 import Loader from 'components/Loaders';
 import TextField from '@material-ui/core/TextField';
-import { UPDATEBULKCONTACT } from 'graphQL/useMutationUpdateBulkContact';
-import { timeZoneOptions } from 'components/ContactDetailCard/components/FieldContent/timeZoneList';
-import { PUBLICTAGSQUERY } from 'graphQL/useQueryPublicTags';
-import { BULKUPSERTTAG } from 'graphQL/useMutationBulkUpsertTagOnContacts';
-import { UPSERT_ENTITY_CAMPAIGNS } from 'graphQL/useMutationCampaign';
+import Typography from '@material-ui/core/Typography';
+import CloseSharp from '@material-ui/icons/CloseSharp';
+import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
+import SearchIcon from '@material-ui/icons/Search';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 import { UPDATE_PARCEL_OWNERS } from 'graphQL/useMutationUpdateParcelOwners';
 import { UPDATE_SHAPES } from 'graphQL/useMutationUpdateShapes';
@@ -35,7 +26,19 @@ import RelatedContact from 'components/MRTTable/Common/Dialog/BulkUpdate/Related
 import { ADD_RELATED_CONTACTS } from 'graphQL/useMutationRelatedContact';
 import { copy } from 'components/Shared/functions';
 import set from 'lodash/set';
+import React, { useState, useEffect } from 'react';
+import { timeZoneOptions } from 'components/ContactDetailCard/components/FieldContent/timeZoneList';
+import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
+import FieldBulkAutoComplete from 'components/Shared/FieldBulkAutoComplete';
 import { CurrencyFormatCustomWithoutPrefix } from 'components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix';
+
+import { ASSIGN_OWNER_TO_CONTACT } from 'graphQL/useMutationAssignOwnerToContact';
+import { BULKUPSERTTAG } from 'graphQL/useMutationBulkUpsertTagOnContacts';
+import { UPSERT_ENTITY_CAMPAIGNS } from 'graphQL/useMutationCampaign';
+import { UPDATEBULKCONTACT } from 'graphQL/useMutationUpdateBulkContact';
+import { PUBLICTAGSQUERY } from 'graphQL/useQueryPublicTags';
+
+import RightDialog from '../../../../ContactDetailCard/components/RightDialog';
 
 const styles = () => ({
 	topHeading: { fontWeight: 'bold' },
@@ -333,11 +336,11 @@ export default function AssignOwnerToContactDrawer({
 	const fieldsToUpdate = rest.header === 'UnitTable' ? [...unitTableFields] : [...otherTableFields];
 
 	useEffect(() => {
-		if (!['Industry Type', 'Lead Source', 'Territory', 'Time Zone', 'Tags'].includes(field))
+		if (!['Industry Type', 'Lead Source', 'Territory', 'Time Zone', 'Tags'].includes(field)) {
 			getContactCampaignAction({
 				search: fieldKey ? `${fieldKey}*` : '*',
 			});
-		// eslint-disable-next-line
+		}
 	}, [fieldKey]);
 
 	useEffect(() => {
@@ -369,12 +372,18 @@ export default function AssignOwnerToContactDrawer({
 
 	const updateCampaign = (shape, field, value) => {
 		/* -------------------------------- Data Fix -------------------------------- */
-		if (field.includes('originalProperties.')) delete shape.properties[field];
-		if (field.includes('originalProperties.State'))
+		if (field.includes('originalProperties.')) {
+			delete shape.properties[field];
+		}
+		if (field.includes('originalProperties.State')) {
 			set(shape.properties, 'originalProperties.StateAbbreviation', value);
-		if (field.includes('originalProperties.Section')) set(shape.properties, 'originalProperties.ShortName', value);
-		if (field.includes('originalProperties.Meridian'))
+		}
+		if (field.includes('originalProperties.Section')) {
+			set(shape.properties, 'originalProperties.ShortName', value);
+		}
+		if (field.includes('originalProperties.Meridian')) {
 			set(shape.properties, 'originalProperties.PrincipalMeridian', value);
+		}
 		/* -------------------------------- Data Fix -------------------------------- */
 
 		set(shape.properties, field, value); // Set field and its value in shapeJson
@@ -412,7 +421,9 @@ export default function AssignOwnerToContactDrawer({
 						showSuccessMessage(`${field} Bulk Updated Successfully`);
 
 						// Call the onBulkUpdateComplete callback if it exists
-						if (rest.onBulkUpdateComplete) rest.onBulkUpdateComplete();
+						if (rest.onBulkUpdateComplete) {
+							rest.onBulkUpdateComplete();
+						}
 					} else {
 						// Show an error toast if the update was not successful
 						Loader.errorToast('contact-creation', 'Updated');
@@ -451,7 +462,9 @@ export default function AssignOwnerToContactDrawer({
 						if (success) {
 							Loader.successToast('contact-creation', message);
 							showSuccessMessage('Contacts Updated Successfuly');
-							if (rest.onBulkUpdateComplete) rest.onBulkUpdateComplete();
+							if (rest.onBulkUpdateComplete) {
+								rest.onBulkUpdateComplete();
+							}
 						} else {
 							Loader.errorToast('contact-creation', message);
 						}
@@ -460,7 +473,6 @@ export default function AssignOwnerToContactDrawer({
 					}
 				},
 				err => {
-					// eslint-disable-next-line no-console
 					console.log(err);
 					Loader.errorToast('contact-creation', errorMsg);
 				}
@@ -494,7 +506,6 @@ export default function AssignOwnerToContactDrawer({
 					}
 				},
 				err => {
-					// eslint-disable-next-line no-console
 					console.log(err);
 					Loader.errorToast('contact-creation', errorMsg);
 				}
@@ -525,7 +536,6 @@ export default function AssignOwnerToContactDrawer({
 					}
 				},
 				err => {
-					// eslint-disable-next-line no-console
 					console.log(err);
 					Loader.errorToast('contact-creation', errorMsg);
 				}
@@ -582,7 +592,9 @@ export default function AssignOwnerToContactDrawer({
 										if (success) {
 											Loader.successToast('contact-creation', 'Updated');
 											showSuccessMessage(`${field} Bulk Updated Successfully`);
-											if (rest.onBulkUpdateComplete) rest.onBulkUpdateComplete();
+											if (rest.onBulkUpdateComplete) {
+												rest.onBulkUpdateComplete();
+											}
 										} else {
 											Loader.errorToast('contact-creation', 'Updated');
 										}
@@ -622,7 +634,9 @@ export default function AssignOwnerToContactDrawer({
 									if (success) {
 										Loader.successToast('contact-creation', 'Updated');
 										showSuccessMessage(`${field} Bulk Updated Successfully`);
-										if (rest.onBulkUpdateComplete) rest.onBulkUpdateComplete();
+										if (rest.onBulkUpdateComplete) {
+											rest.onBulkUpdateComplete();
+										}
 									} else {
 										Loader.errorToast('contact-creation', 'Updated');
 									}
@@ -664,7 +678,9 @@ export default function AssignOwnerToContactDrawer({
 									if (success) {
 										Loader.successToast('contact-creation', 'Updated');
 										showSuccessMessage(`${field} Bulk Updated Successfully`);
-										if (rest.onBulkUpdateComplete) rest.onBulkUpdateComplete();
+										if (rest.onBulkUpdateComplete) {
+											rest.onBulkUpdateComplete();
+										}
 									} else {
 										Loader.errorToast('contact-creation', 'Updated');
 									}
@@ -683,7 +699,7 @@ export default function AssignOwnerToContactDrawer({
 
 				delete fieldToUpdate.campaigns;
 			} else {
-				if (Object.entries(fieldToUpdate).length > 0)
+				if (Object.entries(fieldToUpdate).length > 0) {
 					updateBulkContact({
 						variables: {
 							contactIds: contactIds,
@@ -701,7 +717,9 @@ export default function AssignOwnerToContactDrawer({
 								if (success) {
 									Loader.successToast('contact-creation', 'Updated');
 									showSuccessMessage(`${field} Bulk Updated Successfully`);
-									if (rest.onBulkUpdateComplete) rest.onBulkUpdateComplete();
+									if (rest.onBulkUpdateComplete) {
+										rest.onBulkUpdateComplete();
+									}
 								} else {
 									Loader.errorToast('contact-creation', 'Updated');
 								}
@@ -710,11 +728,11 @@ export default function AssignOwnerToContactDrawer({
 							}
 						},
 						err => {
-							// eslint-disable-next-line no-console
 							console.log(err);
 							Loader.errorToast('contact-creation', errorMsg);
 						}
 					);
+				}
 
 				delete fieldToUpdate.campaigns;
 			}

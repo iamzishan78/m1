@@ -1,15 +1,19 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { useLazyQuery } from '@apollo/client';
+import { Box } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useEffect, useState, useContext } from 'react';
 
 import ActivitiesDashboardFilter from 'components/Activities/components/ActivitiesDashboardFilter';
 import ActivityAnalytics from 'components/Activities/components/ActivityAnalytics';
-import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
-import { Box } from '@material-ui/core';
 import MRTTable from 'components/MRTTable';
-import { AppContext } from 'AppContext';
+
+import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
+
 import { tableController } from 'hookstate/tableController';
+
 import { getRangeFilters, getDateFilters } from 'utils/helper';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -31,7 +35,9 @@ const getFilters = appliedFilters => {
 				},
 				'simple'
 			);
-			if (range.length > 0) filters = [...filters, ...range];
+			if (range.length > 0) {
+				filters = [...filters, ...range];
+			}
 			range = getRangeFilters(
 				{
 					endDateTime: {
@@ -51,7 +57,9 @@ const getFilters = appliedFilters => {
 				},
 				'simple'
 			);
-			if (range.length > 0) filters = [...filters, ...range];
+			if (range.length > 0) {
+				filters = [...filters, ...range];
+			}
 			range = getDateFilters(
 				{
 					lastUpdateAt: {
@@ -63,14 +71,18 @@ const getFilters = appliedFilters => {
 			);
 		}
 
-		if (range.length > 0) filters = [...filters, ...range];
+		if (range.length > 0) {
+			filters = [...filters, ...range];
+		}
 		if (appliedFilters.qualifier) {
 			filters.push({
 				field: appliedFilters.filter === 'audit' ? 'lastUpdateBy.name.keyword' : 'ownerName.keyword',
 				value: appliedFilters.qualifier,
 			});
 		}
-		if (!filters.length && appliedFilters.length) filters = appliedFilters;
+		if (!filters.length && appliedFilters.length) {
+			filters = appliedFilters;
+		}
 	}
 	return filters;
 };
