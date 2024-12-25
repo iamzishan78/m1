@@ -22,6 +22,9 @@ export default function vf_currency(value) {
 }
 
 export function vf_currency_to_fixed(value, toFixed) {
+	// Ensure the value has the correct number of decimal places before formatting
+	const fixedValue = value.toFixed(toFixed);
+  
 	var formatter = new Intl.NumberFormat('en-US', {
 		style: 'currency',
 		currency: 'USD',
@@ -35,7 +38,7 @@ export function vf_currency_to_fixed(value, toFixed) {
 		}
 	};
 
-	return valueFormatter(value);
+	return valueFormatter(fixedValue);
 }
 
 export function vf_currency_dollar(value, toFixed) {

@@ -258,7 +258,7 @@ export const CommonSchema = {
 		filter: true,
 		isSearchField: false,
 		enableSorting: true,
-		type: 'number',
+		type: 'price',
 		Cell: ({ renderedCellValue }) => {
 			const value = renderedCellValue?.props?.['aria-label'] ?? renderedCellValue;
 			if (value || value === 0) {

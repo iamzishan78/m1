@@ -269,6 +269,9 @@ function ESAutoCompleteFilter({
 			// If there are default filters, use them
 			const requiredFilterValue = defaultFilterOptions?.find(option => option?.value === filterValue)?.label;
 			filterValue = vf_currency_to_fixed(requiredFilterValue, 2);
+		} else if (typeof filterValue === 'string' &&  filterValue !== '') {
+			const requiredFilterValue = Number(filterValue)
+			filterValue = vf_currency_to_fixed(requiredFilterValue, 2);
 		}
 	} else if (type === 'decimal' && filterValue !== '') {
 		if (typeof filterValue === 'number') {
