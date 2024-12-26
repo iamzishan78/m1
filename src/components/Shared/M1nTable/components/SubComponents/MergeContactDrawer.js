@@ -1,4 +1,7 @@
-import { useMutation } from '@apollo/client';
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { List } from 'react-virtualized';
+
 import { Button, Grid, Box, CircularProgress } from '@material-ui/core';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -10,9 +13,8 @@ import CloseSharp from '@material-ui/icons/CloseSharp';
 import DoneSharpIcon from '@material-ui/icons/DoneSharp';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import RemoveSharpIcon from '@material-ui/icons/RemoveSharp';
-import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { List } from 'react-virtualized';
+
+import { useMutation } from '@apollo/client';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 

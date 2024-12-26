@@ -1,71 +1,64 @@
+import React, { useState, useEffect, useContext, Fragment, useCallback } from 'react';
+import NumberFormat from 'react-number-format';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { TextField, FormControl, Grid } from '@material-ui/core';
 
-import { AppContext } from 'AppContext';
-
-import { TransactContext } from 'components/Transact/TransactContext';
-
-import { Dialog, Avatar, CircularProgress } from '@material-ui/core';
+import { TextField, FormControl, Grid, Dialog, Avatar, CircularProgress } from '@material-ui/core';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { makeStyles } from '@material-ui/core/styles';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { get } from 'lodash';
 import moment from 'moment';
-
-import { UPDATEDEAL } from 'graphQL/useMutationUpdateDeal';
-import { UPSERTDEALDESCRIPTOR } from 'graphQL/useMutationUpsertDealDescriptor';
-import { REMOVEDEALDESCRIPTOR } from 'graphQL/useMutationRemoveDealDescriptor';
-import { UPDATE_STAGE_DEAL_DESCRIPTOR } from 'graphQL/useMutationUpdateStageDealDescriptor';
-import { UPDATESTAGEDEALDESCRIPTORS } from 'graphQL/useMutationUpdateStageDealDescriptors';
-
-import { showErrorMessage, showSuccessMessage } from 'actions';
-
 import PropTypes from 'prop-types';
-import React, { useState, useEffect, useContext, Fragment, useCallback } from 'react';
-import NumberFormat from 'react-number-format';
-
-import Documents from 'components/Shared/Documents';
-import AddDialogeUploadZone from 'components/ContactDetailCard/components/AddDialogUploadZone';
-
-import { GETRECENTCONTACTFILES } from 'graphQL/useQueryGetContactFiles';
-import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
-import { GET_DEAL_SETTINGS } from 'graphQL/useQueryGetDealSettings';
-import { GETDEAL } from 'graphQL/useQueryDeal';
-
-import Contacts from 'components/FlowDrawer/Contacts';
-import './dialog.css';
-
 import { createPortal } from 'react-dom/cjs/react-dom.production.min';
-import { useDispatch, useSelector } from 'react-redux';
 
+import AddDialogeUploadZone from 'components/ContactDetailCard/components/AddDialogUploadZone';
 import DealTasksProgressZone from 'components/ContactDetailCard/components/DealTasksProgressZone';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import Contacts from 'components/FlowDrawer/Contacts';
 import MapProvider from 'components/Map/MapProvider';
 import { findBoundsMap } from 'components/MapControls/commonHelper';
 import { drawBoundaries } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+import Documents from 'components/Shared/Documents';
 import { getRandomColor } from 'components/Shared/functions/ui';
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';
 import DealComments from 'components/Transact/components/DealComments';
 import DealDialogHeader from 'components/Transact/components/DealDialog/DealDialogHeader';
 import Drawer from 'components/Transact/components/Drawer';
+import { TransactContext } from 'components/Transact/TransactContext';
 
 import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 import { ADDDEAL, CREATE_DEAL_DEFAULT_SETTINGS } from 'graphQL/useMutationAddDeal';
+import { REMOVEDEALDESCRIPTOR } from 'graphQL/useMutationRemoveDealDescriptor';
+import { UPDATEDEAL } from 'graphQL/useMutationUpdateDeal';
+import { UPDATE_STAGE_DEAL_DESCRIPTOR } from 'graphQL/useMutationUpdateStageDealDescriptor';
+import { UPDATESTAGEDEALDESCRIPTORS } from 'graphQL/useMutationUpdateStageDealDescriptors';
+import { UPSERTDEALDESCRIPTOR } from 'graphQL/useMutationUpsertDealDescriptor';
 import { CONTACT } from 'graphQL/useQueryContact';
+import { GETDEAL } from 'graphQL/useQueryDeal';
 import { GET_DEAL_SHAPES } from 'graphQL/useQueryDealShapes';
 import { GET_FLOW_ASSOCIATED_SUMMARY } from 'graphQL/useQueryFlowAssociatedData';
+import { GETRECENTCONTACTFILES } from 'graphQL/useQueryGetContactFiles';
+import { GET_DEAL_SETTINGS } from 'graphQL/useQueryGetDealSettings';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 import { mapStateController } from 'hookstate/mapStateController';
 
+import { showErrorMessage, showSuccessMessage } from 'actions';
+import { AppContext } from 'AppContext';
+
 import DealTasksDetails from '../DealTasksDetails';
 import ExistingDeal from './ExistingDeal';
 import AssociatedFlowDealDetails from '../AssociatedFlowDealDetails';
+
+import './dialog.css';
 
 function NumberFormatCustom(props) {
 	const { inputRef, onChange, ...other } = props;

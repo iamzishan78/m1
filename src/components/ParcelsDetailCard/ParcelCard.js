@@ -1,7 +1,8 @@
 // import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 
 // QUERIES
-import { useLazyQuery } from '@apollo/client';
+import React, { useState, useContext, useEffect, useRef } from 'react';
+
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -14,7 +15,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import LayerIcon from '@material-ui/icons/Layers';
-import React, { useState, useContext, useEffect, useRef } from 'react';
+
+import { useLazyQuery } from '@apollo/client';
 
 // contexts
 import { getPolygonString } from 'components/Shared/functions';

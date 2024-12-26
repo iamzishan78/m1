@@ -1,9 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useLazyQuery } from '@apollo/client';
-import { Grid, Card, CardContent } from '@material-ui/core';
-import get from 'lodash/get';
 import React, { useState, useEffect, useContext } from 'react';
 import { useSelector } from 'react-redux';
+
+import { Grid, Card, CardContent } from '@material-ui/core';
+
+import { useLazyQuery } from '@apollo/client';
+import get from 'lodash/get';
 
 import DonutChart from 'components/Shared/Charts/DonutChart';
 import StackedBarChart from 'components/Shared/Charts/StackedBarChart';

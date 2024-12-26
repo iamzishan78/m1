@@ -1,7 +1,9 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useState, useEffect } from 'react';
+
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useState, useEffect } from 'react';
+
+import { useLazyQuery } from '@apollo/client';
 
 import DealDisplay from './components/DealDisplay';
 import { CONTACTDEALS } from '../../graphQL/useQueryContactDeals';

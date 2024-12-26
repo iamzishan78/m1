@@ -1,5 +1,9 @@
-import { anyToDate } from '@amcharts/amcharts4/.internal/core/utils/Utils';
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useState, useContext, useEffect, Fragment } from 'react';
+import Avatar from 'react-avatar';
+import { DndProvider } from 'react-dnd';
+import { useDispatch } from 'react-redux';
+import { Link, useHistory } from 'react-router-dom';
+
 import { Box, ButtonGroup, IconButton, Menu, MenuItem, Select, Typography } from '@material-ui/core';
 import Badge from '@material-ui/core/Badge';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
@@ -38,15 +42,13 @@ import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import PostAddIcon from '@material-ui/icons/PostAdd';
 import RoomIcon from '@material-ui/icons/Room';
 import TextSMS from '@material-ui/icons/TextsmsOutlined';
+
+import { anyToDate } from '@amcharts/amcharts4/.internal/core/utils/Utils';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import debounce from 'lodash/debounce';
 import isEmpty from 'lodash/isEmpty';
 import moment from 'moment';
 import MUIDataTable, { TableViewCol } from 'mui-datatables';
-import React, { useState, useContext, useEffect, Fragment } from 'react';
-import Avatar from 'react-avatar';
-import { DndProvider } from 'react-dnd';
-import { useDispatch } from 'react-redux';
-import { Link, useHistory } from 'react-router-dom';
 
 import AddActivityDialog from 'components/ContactDetailCard/components/AddActivityDialog';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';

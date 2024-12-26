@@ -1,8 +1,9 @@
+import React, { Fragment, useState, useContext, useMemo, useCallback } from 'react';
+import { useSelector } from 'react-redux';
+
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { Fragment, useState, useContext, useMemo, useCallback } from 'react';
-import { useSelector } from 'react-redux';
 
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import MRTTable from 'components/MRTTable';

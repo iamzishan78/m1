@@ -1,6 +1,7 @@
+import React, { memo } from 'react';
+
 import { Button, ButtonGroup } from '@material-ui/core';
 import PostAddIcon from '@material-ui/icons/PostAdd';
-import React, { memo } from 'react';
 
 import MetaFieldList from 'components/MRTTable/Common/MetaData/MetaFieldList';
 import MetaField from 'components/Table/helpers/MetaField';

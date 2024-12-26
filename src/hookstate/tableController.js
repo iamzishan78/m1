@@ -1,6 +1,7 @@
+import React from 'react';
+
 import { hookstate } from '@hookstate/core';
 import _, { get, isEqual, isEmpty, pull } from 'lodash';
-import React from 'react';
 
 import { extractUniqueFilters } from 'components/Map/DeckGL/helpers/common';
 import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController';

@@ -1,4 +1,8 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useState, useContext, useEffect } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import Select from 'react-select';
+import { SortableContainer, SortableElement, sortableHandle } from 'react-sortable-hoc';
+
 import { Grid, Dialog, Menu, MenuItem, ListItemIcon, ListItemText, FormHelperText } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -13,13 +17,12 @@ import AddIcon from '@material-ui/icons/Add';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
+
 import ColorLensIcon from '@mui/icons-material/ColorLens';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { arrayMoveImmutable } from 'array-move';
 import omit from 'lodash/omit';
-import React, { useState, useContext, useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import Select from 'react-select';
-import { SortableContainer, SortableElement, sortableHandle } from 'react-sortable-hoc';
 
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import { colorPallete } from 'components/Table/helpers';

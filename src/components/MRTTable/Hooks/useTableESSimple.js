@@ -1,6 +1,8 @@
-import { makeStyles } from '@material-ui/core/styles';
-import _ from 'lodash';
 import { useRef, useState } from 'react';
+
+import { makeStyles } from '@material-ui/core/styles';
+
+import _ from 'lodash';
 
 import useHandleAdditionalQueries from 'components/MRTTable/Hooks/useHandleAdditionalQueries';
 

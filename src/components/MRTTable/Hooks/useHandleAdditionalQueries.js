@@ -1,6 +1,7 @@
+import { useEffect } from 'react';
+
 import { useApolloClient } from '@apollo/client';
 import { isEqual } from 'lodash';
-import { useEffect } from 'react';
 
 import { COMMENTSCOUNTER } from 'graphQL/useQueryCommentsCounter';
 import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';

@@ -1,7 +1,9 @@
-import { useLazyQuery } from '@apollo/client';
-import { Grid } from '@material-ui/core';
-import sortBy from 'lodash/sortBy';
 import React, { useState, useEffect } from 'react';
+
+import { Grid } from '@material-ui/core';
+
+import { useLazyQuery } from '@apollo/client';
+import sortBy from 'lodash/sortBy';
 
 import Grids from 'components/Revenue/components/Properties/DetailComponents/Validation/Grids';
 import MonthlyProductionChart from 'components/Revenue/components/Properties/DetailComponents/Validation/MonthlyProductionChart';

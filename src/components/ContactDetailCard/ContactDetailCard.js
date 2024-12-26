@@ -1,4 +1,8 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useContext, useState, useEffect } from 'react';
+import Avatar from 'react-avatar';
+import { useSelector, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+
 import { Grid, IconButton, Tabs, Tab, Menu, MenuItem, Badge, CircularProgress } from '@material-ui/core';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
@@ -15,11 +19,9 @@ import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import TwitterIcon from '@material-ui/icons/Twitter';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { get } from 'lodash';
-import React, { useContext, useState, useEffect } from 'react';
-import Avatar from 'react-avatar';
-import { useSelector, useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 import { toggleRightColumn } from 'actions/ContactDetailCard';
 

@@ -1,4 +1,5 @@
-import { useMutation, useLazyQuery } from '@apollo/client';
+import React, { useState, useEffect } from 'react';
+
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
@@ -11,7 +12,8 @@ import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import React, { useState, useEffect } from 'react';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
 import styled from 'styled-components';
 
 import { SENDEMAILBUG } from '../../../graphQL/useMutationSendEmailBug';

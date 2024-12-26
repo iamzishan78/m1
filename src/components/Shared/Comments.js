@@ -1,4 +1,6 @@
-import { useMutation, useLazyQuery, useQuery } from '@apollo/client';
+import React, { useContext, useState, useEffect } from 'react';
+import Avatar from 'react-avatar';
+
 import { CircularProgress } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -17,8 +19,8 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
-import React, { useContext, useState, useEffect } from 'react';
-import Avatar from 'react-avatar';
+
+import { useMutation, useLazyQuery, useQuery } from '@apollo/client';
 
 import { CommonCommentText } from 'components/Shared/CommentComponent';
 import CommentType from 'components/Shared/components/Comment/CommentType';

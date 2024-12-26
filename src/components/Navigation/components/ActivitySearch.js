@@ -1,4 +1,6 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useState, useEffect, useContext, useRef } from 'react';
+import { useSelector } from 'react-redux';
+
 import { Grid, InputAdornment, TextField, Tooltip, IconButton } from '@material-ui/core';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import { fade, makeStyles } from '@material-ui/core/styles';
@@ -8,9 +10,9 @@ import EventIcon from '@material-ui/icons/Event';
 import List from '@material-ui/icons/List';
 import SearchIcon from '@material-ui/icons/Search';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery } from '@apollo/client';
 import debounce from 'lodash/debounce';
-import React, { useState, useEffect, useContext, useRef } from 'react';
-import { useSelector } from 'react-redux';
 
 import { GETALLACTIVITIES } from 'graphQL/useQueryGetAllActivities';
 

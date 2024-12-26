@@ -1,3 +1,5 @@
+import React, { useContext } from 'react';
+
 import { Grid, Typography } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -6,7 +8,6 @@ import MuiDialogContent from '@material-ui/core/DialogContent';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Skeleton from '@material-ui/lab/Skeleton';
-import React, { useContext } from 'react';
 
 import { ProfileContext } from './ProfileContext';
 

@@ -1,5 +1,8 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { useApolloClient } from '@apollo/client';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { useDispatch } from 'react-redux';
+import { TransitionGroup } from 'react-transition-group';
+
 import { Tab, Tabs, Chip, CircularProgress, Backdrop } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -14,11 +17,10 @@ import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import BasemapIcon from '@material-ui/icons/Language';
 import LayersIcon from '@material-ui/icons/Layers';
 import MapIcon from '@material-ui/icons/Map';
+
+import { useApolloClient } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { get } from 'lodash';
-import React, { useContext, useState, useEffect, useCallback } from 'react';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import { useDispatch } from 'react-redux';
-import { TransitionGroup } from 'react-transition-group';
 
 import { toggleLayersFiltersPanel } from 'actions/MainMap';
 

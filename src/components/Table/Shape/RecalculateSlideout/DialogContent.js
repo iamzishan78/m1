@@ -1,9 +1,11 @@
-import { useMutation } from '@apollo/client';
+import React, { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+
 import { Button, DialogActions, IconButton, Box, Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { CloseSharp } from '@material-ui/icons';
-import React, { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+
+import { useMutation } from '@apollo/client';
 
 import { RESET_OWNERS_CALCULATED_VALUES } from 'graphQL/useMutationResetOwnersCalculatedValues';
 

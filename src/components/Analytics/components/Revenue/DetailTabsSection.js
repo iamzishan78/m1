@@ -1,6 +1,7 @@
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+
 import { Tabs, Tab } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/styles';
-import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 // Components
 import AdjustmentSection from './AdjustmentSection';

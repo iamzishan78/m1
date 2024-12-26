@@ -1,9 +1,11 @@
-import { useMutation } from '@apollo/client';
-import { Container, Dialog } from '@material-ui/core';
-import _ from 'lodash';
-import debounce from 'lodash/debounce';
 import React, { useEffect, useContext, useState } from 'react';
 import { useSelector } from 'react-redux';
+
+import { Container, Dialog } from '@material-ui/core';
+
+import { useMutation } from '@apollo/client';
+import _ from 'lodash';
+import debounce from 'lodash/debounce';
 
 import { agreementTypes } from 'components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData';
 import { deepEqualObjects, copy, esExtentedSearch } from 'components/Shared/functions';

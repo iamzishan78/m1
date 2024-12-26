@@ -1,9 +1,11 @@
+import React, { useContext, useState } from 'react';
+import { SortableContainer, SortableElement } from 'react-sortable-hoc';
+
 import { Grid } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
+
 import arrayMove from 'array-move';
-import React, { useContext, useState } from 'react';
-import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 
 import { DashboardContext } from '../DashboardContext';
 import CardWrapper from './CardTemplate';

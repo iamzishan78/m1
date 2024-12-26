@@ -1,8 +1,9 @@
+import React, { useContext, useEffect } from 'react';
+
 import { useLazyQuery } from '@apollo/client';
 import get from 'lodash/get';
 import orderBy from 'lodash/orderBy';
 import moment from 'moment';
-import React, { useContext, useEffect } from 'react';
 
 import { WellCardContext } from 'components/WellCard/WellCardContext';
 import WellProdChart from 'components/WellProdChart/WellProdChart';

@@ -1,4 +1,6 @@
-import { useMutation, useLazyQuery } from '@apollo/client';
+import React, { useEffect, useState, useContext, useMemo } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+
 import {
 	Grid,
 	ListItemText,
@@ -17,9 +19,9 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SearchIcon from '@material-ui/icons/Search';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
 import { get, isEmpty } from 'lodash';
-import React, { useEffect, useState, useContext, useMemo } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
 
 //Contexts
 import { DocumentContextProvider } from 'components/Document/DocumentContext';

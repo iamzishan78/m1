@@ -1,9 +1,11 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useContext, useState, useEffect, useMemo } from 'react';
+
 import { Grid, TextField } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery } from '@apollo/client';
 import _ from 'lodash';
-import React, { useContext, useState, useEffect, useMemo } from 'react';
 
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 

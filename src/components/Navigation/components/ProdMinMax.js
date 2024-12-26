@@ -1,10 +1,11 @@
+import React, { useState, useContext, useCallback, useEffect } from 'react';
+import NumberFormat from 'react-number-format';
+
 import { FormLabel } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import CancelIcon from '@material-ui/icons/Cancel';
-import React, { useState, useContext, useCallback, useEffect } from 'react';
-import NumberFormat from 'react-number-format';
 
 import { NavigationContext } from '../NavigationContext';
 

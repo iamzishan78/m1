@@ -1,4 +1,6 @@
-import { useMutation } from '@apollo/client';
+import React, { memo, useCallback, useContext, useEffect, useState } from 'react';
+import { SortableContainer, SortableElement, sortableHandle } from 'react-sortable-hoc';
+
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
@@ -7,9 +9,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 import EditIcon from '@material-ui/icons/Edit';
+
+import { useMutation } from '@apollo/client';
 import { arrayMoveImmutable } from 'array-move';
-import React, { memo, useCallback, useContext, useEffect, useState } from 'react';
-import { SortableContainer, SortableElement, sortableHandle } from 'react-sortable-hoc';
 
 import { setStateIfDeepEqual } from 'components/Shared/functions';
 

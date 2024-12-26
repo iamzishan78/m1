@@ -1,4 +1,6 @@
-import { useMutation } from '@apollo/client';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import {
 	Grid,
 	ListItemText,
@@ -19,8 +21,8 @@ import Link from '@material-ui/core/Link';
 import AddIcon from '@material-ui/icons/Add';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SearchIcon from '@material-ui/icons/Search';
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+
+import { useMutation } from '@apollo/client';
 
 //Components
 import { statusData } from 'components/Table/Revenue/RevenuePropertiesTable';

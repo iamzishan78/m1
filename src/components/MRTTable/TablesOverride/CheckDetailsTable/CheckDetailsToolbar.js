@@ -1,10 +1,14 @@
 import React, { memo } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
+
 import { tableController } from 'hookstate/tableController';
-import { useHistory } from 'react-router-dom';
-import UpdateProperty from './UpdateProperty';
+
 import { getIdFromPath } from 'utils/helper';
+
+import UpdateProperty from './UpdateProperty';
 
 // styles
 const useStyles = makeStyles(() => ({

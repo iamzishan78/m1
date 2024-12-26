@@ -1,8 +1,10 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useEffect, useState, memo } from 'react';
+
 import { Grid, Card, CardContent, Typography, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
+
+import { useLazyQuery } from '@apollo/client';
 import { get } from 'lodash';
-import React, { useEffect, useState, memo } from 'react';
 
 import FilterIcon from 'components/Common/SvgIcons/Filter';
 import { copy } from 'components/Shared/functions';

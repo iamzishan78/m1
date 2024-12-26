@@ -1,5 +1,6 @@
-import { Button } from '@material-ui/core';
 import React, { memo } from 'react';
+
+import { Button } from '@material-ui/core';
 
 import CotactDetailWellInterestTableDialogs from 'components/MRTTable/TablesOverride/ContactDetailWellInterestTable/RightDialog';
 

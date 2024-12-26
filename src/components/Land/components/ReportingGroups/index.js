@@ -1,5 +1,6 @@
-import { makeStyles } from '@material-ui/styles';
 import React, { useState, useContext, useEffect } from 'react';
+
+import { makeStyles } from '@material-ui/styles';
 
 import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
 import AgreementsTable from 'components/Table/Agreement/AgreementsTable';

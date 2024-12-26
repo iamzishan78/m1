@@ -1,4 +1,7 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useEffect, useState, useContext, useCallback } from 'react';
+import Avatar from 'react-avatar';
+import { useHistory } from 'react-router-dom';
+
 import {
 	Grid,
 	ListItemIcon,
@@ -26,10 +29,9 @@ import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import PhoneIphoneIcon from '@material-ui/icons/PhoneIphone';
 import SearchIcon from '@material-ui/icons/Search';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import get from 'lodash/get';
-import React, { useEffect, useState, useContext, useCallback } from 'react';
-import Avatar from 'react-avatar';
-import { useHistory } from 'react-router-dom';
 
 import AutocompEntityNamesVirtualizeList from 'components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
 

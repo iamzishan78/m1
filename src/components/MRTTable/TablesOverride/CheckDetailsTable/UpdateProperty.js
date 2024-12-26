@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
+
 import { Grid, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import { UPSERT_CHECK_PROPERTY } from 'graphQL/useMutationCheckPropertyUpdate';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+
 import Loader from 'components/Loaders';
+
+import { UPSERT_CHECK_PROPERTY } from 'graphQL/useMutationCheckPropertyUpdate';
+import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+
 import { tableGlobalController } from 'hookstate/tableController';
 
 function UpdateProperty(props) {
@@ -90,8 +95,11 @@ function UpdateProperty(props) {
 				},
 			}).then(res => {
 				const { success } = res;
-				if (success) Loader.successToast('checks-updation', 'Checks updated successfully');
-				else Loader.successToast('checks-updation', 'Checks update Failed');
+				if (success) {
+					Loader.successToast('checks-updation', 'Checks updated successfully');
+				} else {
+					Loader.successToast('checks-updation', 'Checks update Failed');
+				}
 
 				props.resetRows();
 				tableGlobalController.refetch();

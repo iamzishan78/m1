@@ -1,4 +1,8 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { Fragment, useEffect, useState, useContext } from 'react';
+import Avatar from 'react-avatar';
+import { useHistory } from 'react-router-dom';
+import ReactTimeAgo from 'react-time-ago';
+
 import { Grid, Typography } from '@material-ui/core';
 import { CircularProgress, Menu, MenuItem, TextField, InputAdornment, IconButton } from '@material-ui/core';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -16,12 +20,11 @@ import ContactIcon from '@material-ui/icons/Group';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import FlowIcon from '@material-ui/icons/Repeat';
 import SearchIcon from '@material-ui/icons/Search';
+
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import React, { Fragment, useEffect, useState, useContext } from 'react';
-import Avatar from 'react-avatar';
-import { useHistory } from 'react-router-dom';
-import ReactTimeAgo from 'react-time-ago';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 
 import Loader from 'components/Loaders';
 import { CommonCommentText } from 'components/Shared/CommentComponent';

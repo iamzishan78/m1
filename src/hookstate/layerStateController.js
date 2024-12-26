@@ -1,6 +1,7 @@
+import { NotificationManager } from 'react-notifications';
+
 import { booleanWithin, difference, union, booleanIntersects, bboxPolygon } from '@turf/turf';
 import { debounce } from 'lodash';
-import { NotificationManager } from 'react-notifications';
 import { v4 as uuid } from 'uuid';
 
 import getBoundsQuery from 'api/getBoundsQuery';

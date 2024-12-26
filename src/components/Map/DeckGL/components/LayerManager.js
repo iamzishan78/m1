@@ -1,7 +1,8 @@
-import { useApolloClient } from '@apollo/client';
-import { debounce } from 'lodash';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+
+import { useApolloClient } from '@apollo/client';
+import { debounce } from 'lodash';
 
 import { deepEqual } from 'components/Shared/functions';
 import { convertBBoxToPolygon } from 'components/Shared/Hooks/useOnMouseMoveWells';

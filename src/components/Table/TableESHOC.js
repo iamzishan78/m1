@@ -1,17 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useApolloClient, useLazyQuery } from '@apollo/client';
+import React, { useContext, useState, useEffect, useCallback, useRef, useMemo, memo } from 'react';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+
 import { Button, Tooltip, IconButton } from '@material-ui/core';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DeleteIcon from '@material-ui/icons/Delete';
+
+import { useApolloClient, useLazyQuery } from '@apollo/client';
 import { isEmpty, isEqual, isNumber, uniqWith } from 'lodash';
 
 // import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
 import { get } from 'lodash';
 import moment from 'moment';
-import React, { useContext, useState, useEffect, useCallback, useRef, useMemo, memo } from 'react';
-import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 import { copy, deepEqual, getSearchFields, setStateIfDeepEqual } from 'components/Shared/functions';
 import TableHeader from 'components/Table/constants/agreements-header-schema';

@@ -1,4 +1,6 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useCallback, useContext, useEffect, useMemo } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+
 import { CircularProgress } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -16,10 +18,10 @@ import HistoryIcon from '@material-ui/icons/History';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PersonIcon from '@material-ui/icons/Person';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import parse from 'autosuggest-highlight/parse';
 import debounce from 'lodash/debounce';
-import React, { useCallback, useContext, useEffect, useMemo } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
 
 import { platformDataInitialData } from 'components/MapGridCard/components/data';
 import SearchByTypeSelectField from 'components/MapGridCard/components/SearchByTypeSelectField';

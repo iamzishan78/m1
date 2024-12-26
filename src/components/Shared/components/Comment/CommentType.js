@@ -1,4 +1,6 @@
-import { useMutation, useQuery } from '@apollo/client';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+
 import { Grid, TextField, ClickAwayListener, Popover } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
@@ -6,9 +8,9 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
+
+import { useMutation, useQuery } from '@apollo/client';
 import _ from 'lodash';
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useDispatch } from 'react-redux';
 
 import EditNoteIcon from 'components/Shared/svgIcons/edit-note';
 

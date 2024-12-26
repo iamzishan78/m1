@@ -1,11 +1,13 @@
-import { useLazyQuery } from '@apollo/client';
-import { Box, CircularProgress } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { ContextProvider } from 'react-sortly';
+
+import { Box, CircularProgress } from '@material-ui/core';
+
+import { useLazyQuery } from '@apollo/client';
 
 import { deepEqual } from 'components/Shared/functions';
 

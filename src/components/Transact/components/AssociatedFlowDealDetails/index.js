@@ -1,9 +1,11 @@
+import React, { useState, useContext, useMemo } from 'react';
+import { useSelector } from 'react-redux';
+
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
+
 import { get } from 'lodash';
-import React, { useState, useContext, useMemo } from 'react';
-import { useSelector } from 'react-redux';
 
 import RelatedTractInterestTable from 'components/Common/RelatedTables/Tracts/tractInterests';
 import RelatedUnitInterestTable from 'components/Common/RelatedTables/Units/unitInterests';

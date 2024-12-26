@@ -1,8 +1,10 @@
+import React, { useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
-import React, { useEffect, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+
 import _ from 'underscore';
 
 import RelatedTractsTable from 'components/Common/RelatedTables/Tracts';

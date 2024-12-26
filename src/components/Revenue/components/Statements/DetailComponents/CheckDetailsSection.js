@@ -1,4 +1,5 @@
 import { makeStyles } from '@material-ui/core/styles';
+
 import MRTTable from 'components/MRTTable';
 
 const useStyles = makeStyles(() => ({

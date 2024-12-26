@@ -1,4 +1,7 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useState, useRef, useEffect, useContext } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useParams, useHistory } from 'react-router-dom';
+
 import {
 	Typography,
 	IconButton,
@@ -17,11 +20,10 @@ import {
 	MoreHoriz as MoreHorizIcon,
 } from '@material-ui/icons';
 import { makeStyles, withStyles } from '@material-ui/styles';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { get, set } from 'lodash';
 import moment from 'moment';
-import React, { useState, useRef, useEffect, useContext } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useParams, useHistory } from 'react-router-dom';
 
 import LegalDescription from 'components/Land/components/Agreements/detailComponents/legalDescription';
 import Provisions from 'components/Land/components/Agreements/detailComponents/provisions';

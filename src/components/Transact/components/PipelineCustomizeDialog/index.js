@@ -1,4 +1,8 @@
-import { useMutation, useLazyQuery } from '@apollo/client';
+import React, { useState, useContext, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+
 import {
 	Grid,
 	Typography,
@@ -19,10 +23,8 @@ import {
 	NavigateNext as NavigateNextIcon,
 	MoreHoriz as MoreHorizIcon,
 } from '@material-ui/icons/';
-import React, { useState, useContext, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import { deepEqualObjects } from 'components/Shared/functions';

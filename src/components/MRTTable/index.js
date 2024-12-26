@@ -1,6 +1,7 @@
+import React, { memo, useEffect } from 'react';
+
 import { useApolloClient } from '@apollo/client';
 import { MaterialReactTable } from 'material-react-table';
-import React, { memo, useEffect } from 'react';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';

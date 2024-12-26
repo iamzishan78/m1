@@ -1,3 +1,5 @@
+import React, { useState, useEffect, useContext } from 'react';
+
 import { Select, FormControl, Divider } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 
@@ -12,7 +14,6 @@ import Typography from '@material-ui/core/Typography';
 import Skeleton from '@material-ui/lab/Skeleton';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import React, { useState, useEffect, useContext } from 'react';
 
 import { popupController } from 'hookstate/popupStateController';
 

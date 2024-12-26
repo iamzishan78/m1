@@ -1,3 +1,6 @@
+import React, { useState, useEffect, useContext } from 'react';
+import { useSelector } from 'react-redux';
+
 import { Grid, InputAdornment, TextField, IconButton, Tooltip } from '@material-ui/core';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import { fade, makeStyles } from '@material-ui/core/styles';
@@ -7,8 +10,6 @@ import List from '@material-ui/icons/List';
 import SearchIcon from '@material-ui/icons/Search';
 import TableChartIcon from '@material-ui/icons/TableChart';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useState, useEffect, useContext } from 'react';
-import { useSelector } from 'react-redux';
 
 import { AppContext } from '../../../AppContext';
 

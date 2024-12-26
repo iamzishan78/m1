@@ -1,6 +1,8 @@
-import { useLazyQuery } from '@apollo/client';
-import { Autocomplete, TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+
+import { Autocomplete, TextField } from '@mui/material';
+
+import { useLazyQuery } from '@apollo/client';
 
 import { setStateIfDeepEqual } from 'components/Shared/functions';
 

@@ -1,6 +1,7 @@
+import React, { memo, useEffect } from 'react';
+
 import { Button, Typography } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
-import React, { memo, useEffect } from 'react';
 
 import { detailCardController } from 'hookstate/detailCardController';
 import { tableGlobalController } from 'hookstate/tableController';

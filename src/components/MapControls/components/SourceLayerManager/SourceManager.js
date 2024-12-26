@@ -1,4 +1,6 @@
-import { useMutation } from '@apollo/client';
+import React, { useContext, useState, useEffect, Fragment, useCallback, useMemo, memo } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import { Collapse } from '@material-ui/core';
 import { Typography, Divider, MenuItem, Popper, ClickAwayListener, MenuList, Paper, Grow } from '@material-ui/core';
 import { IconButton } from '@material-ui/core';
@@ -23,10 +25,10 @@ import EditIcon from '@material-ui/icons/Edit';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+
+import { useMutation } from '@apollo/client';
 import update from 'immutability-helper';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
-import React, { useContext, useState, useEffect, Fragment, useCallback, useMemo, memo } from 'react';
-import { useHistory } from 'react-router-dom';
 
 import EditableTextField from 'components/Shared/components/Fields/EditableTextField';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';

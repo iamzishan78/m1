@@ -1,6 +1,7 @@
+import React, { useState, useEffect, useContext } from 'react';
+
 import { useLazyQuery, useMutation } from '@apollo/client';
 import get from 'lodash/get';
-import React, { useState, useEffect, useContext } from 'react';
 
 import { setStateIfDeepEqual } from 'components/Shared/functions';
 import AutocompEntityNamesVirtualizeList from 'components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';

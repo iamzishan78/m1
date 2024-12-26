@@ -1,5 +1,6 @@
-import _ from 'lodash';
 import React from 'react';
+
+import _ from 'lodash';
 
 import DataType from 'components/Common/DataType';
 import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';

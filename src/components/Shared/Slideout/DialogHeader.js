@@ -1,4 +1,5 @@
-import { useHookstate } from '@hookstate/core';
+import React, { memo, useState } from 'react';
+
 import { Menu, MenuItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
@@ -8,7 +9,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import DeleteIcon from '@material-ui/icons/Delete';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import React, { memo, useState } from 'react';
+
+import { useHookstate } from '@hookstate/core';
 
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 

@@ -1,9 +1,11 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { Container } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import findIndex from 'lodash/findIndex';
 import React, { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+
+import { Container } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+import findIndex from 'lodash/findIndex';
 
 import Loader from 'components/Loaders';
 import { addTrailingZeros } from 'components/Shared/functions';

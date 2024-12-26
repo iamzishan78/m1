@@ -1,4 +1,7 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useEffect, useContext, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+
 import {
 	Avatar,
 	Box,
@@ -24,10 +27,9 @@ import DrawPoly from '@material-ui/icons/EditLocationOutlined';
 import FolderIcon from '@material-ui/icons/Folder';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import $ from 'jquery';
-import React, { useEffect, useContext, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 import 'material-icons/iconfont/material-icons.css';
 // Components

@@ -1,11 +1,13 @@
+import React, { useState, useEffect, useContext } from 'react';
+
 import { Grid, InputAdornment, Paper, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import CheckIcon from '@material-ui/icons/Check';
 import EditIcon from '@material-ui/icons/Edit';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import ArrowDropDownIcon from '@material-ui/lab/es/internal/svg-icons/ArrowDropDown';
+
 import isEmpty from 'lodash/isEmpty';
-import React, { useState, useEffect, useContext } from 'react';
 
 import { colorPallete } from 'components/Table/helpers';
 

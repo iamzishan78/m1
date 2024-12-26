@@ -1,4 +1,6 @@
-import { useMutation } from '@apollo/client';
+import React, { useContext, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import { Container, Button, Tooltip, IconButton } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
 import Grid from '@material-ui/core/Grid';
@@ -7,10 +9,11 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
 import GetAppIcon from '@material-ui/icons/GetApp';
+
+import { useMutation } from '@apollo/client';
 import moment from 'moment';
-import React, { useContext, useEffect, useState } from 'react';
+
 // context
-import { useHistory } from 'react-router-dom';
 
 import { NavigationContext } from 'components/Navigation/NavigationContext';
 import ParcelInstrument from 'components/ParcelsDetailCard/ParcelInstrument';

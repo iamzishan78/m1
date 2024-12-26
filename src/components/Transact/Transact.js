@@ -1,14 +1,17 @@
-import { useMutation, useLazyQuery } from '@apollo/client';
-import Backdrop from '@material-ui/core/Backdrop';
-import Chip from '@material-ui/core/Chip';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { makeStyles } from '@material-ui/core/styles';
-import { get } from 'lodash';
-import moment from 'moment';
 import React, { useContext, useState, useEffect, useRef, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Board from 'react-trello';
+
+import { Box } from '@material-ui/core';
+import Backdrop from '@material-ui/core/Backdrop';
+import Chip from '@material-ui/core/Chip';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
+import { get } from 'lodash';
+import moment from 'moment';
 
 import AddDealDialog from 'components/Transact/components/DealDialog/AddDealDialog';
 
@@ -40,8 +43,6 @@ import { GETPIPELINE } from 'graphQL/useQueryPipeline';
 import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
 
 import PipelinesFetchHoc from 'components/Transact/components/Common/PipelinesFetchHoc';
-
-import { Box } from '@material-ui/core';
 
 import { getOppositeHexColor } from 'utils/helper';
 

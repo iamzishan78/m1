@@ -1,6 +1,8 @@
-import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
-import { isEmpty, pickBy } from 'lodash';
 import Avatar from 'react-avatar';
+
+import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
+
+import { isEmpty, pickBy } from 'lodash';
 
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import Loaders from 'components/Loaders';

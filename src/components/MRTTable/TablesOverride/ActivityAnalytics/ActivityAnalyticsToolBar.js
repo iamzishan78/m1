@@ -1,5 +1,6 @@
-import get from 'lodash/get';
 import React, { memo, useState, useEffect } from 'react';
+
+import get from 'lodash/get';
 
 import ActivitiesModal from 'components/Activities/components/ActivitiesModal';
 

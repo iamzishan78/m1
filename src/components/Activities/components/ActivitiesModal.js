@@ -1,4 +1,7 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useContext, useState, useEffect, useRef } from 'react';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import { useHistory } from 'react-router-dom';
+
 import { Grid } from '@material-ui/core';
 import { CircularProgress, Dialog, DialogTitle } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
@@ -20,12 +23,11 @@ import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import TextMsgIcon from '@material-ui/icons/Textsms';
 import TaskIcon from '@material-ui/icons/WatchLater';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import clsx from 'clsx';
 import get from 'lodash/get';
 import moment from 'moment';
-import React, { useContext, useState, useEffect, useRef } from 'react';
-import { Calendar, momentLocalizer } from 'react-big-calendar';
-import { useHistory } from 'react-router-dom';
 
 import AutoCompleteAddNewField from 'components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField';
 import { outcomeOptions } from 'components/ContactDetailCard/components/FieldContent/helper';

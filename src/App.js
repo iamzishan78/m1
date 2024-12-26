@@ -1,11 +1,12 @@
-import { useApolloClient } from '@apollo/client';
-import { useAuth0 } from '@auth0/auth0-react';
-import { ConnectedRouter } from 'connected-react-router';
 import React from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useSelector } from 'react-redux';
 import { Switch, Route } from 'react-router-dom';
+
+import { useApolloClient } from '@apollo/client';
+import { useAuth0 } from '@auth0/auth0-react';
+import { ConnectedRouter } from 'connected-react-router';
 
 import AdminProvider from 'components/Admin/AdminProvider';
 import AnalyticsProvider from 'components/Analytics/AnalyticsProvider';

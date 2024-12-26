@@ -1,9 +1,11 @@
-import * as msal from '@azure/msal-browser';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { makeStyles } from '@material-ui/core/styles';
-import queryString from 'query-string';
 import React, { useState, useContext, useEffect, useLayoutEffect } from 'react';
 import { useDispatch } from 'react-redux';
+
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
+
+import * as msal from '@azure/msal-browser';
+import queryString from 'query-string';
 
 import { SIMPLE_BYPASS_LOGIN_MUTATION } from 'graphQL/useMutationBypassLogin';
 import { GET_LOGGED_IN_USER } from 'graphQL/useMutationLoggedInUser';

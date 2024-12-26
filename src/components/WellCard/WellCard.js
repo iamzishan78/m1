@@ -1,4 +1,5 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useEffect, useContext, useState } from 'react';
+
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
@@ -12,8 +13,9 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
+
+import { useLazyQuery } from '@apollo/client';
 import moment from 'moment';
-import React, { useEffect, useContext, useState } from 'react';
 
 import { GET_PARCELS_FILES_COUNT } from 'graphQL/useQueryGetParcelFiles';
 

@@ -1,10 +1,12 @@
-import { useLazyQuery } from '@apollo/client';
-import { Grid } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import get from 'lodash/get';
-import moment from 'moment';
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+
+import { Grid } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { useLazyQuery } from '@apollo/client';
+import get from 'lodash/get';
+import moment from 'moment';
 
 import Table from 'components/Shared/M1nTable/components/Table';
 

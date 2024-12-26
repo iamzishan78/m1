@@ -1,13 +1,15 @@
+import React, { useEffect, useContext, useState } from 'react';
+
+import { Typography } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
+import Skeleton from '@material-ui/lab/Skeleton';
+
 import * as am4charts from '@amcharts/amcharts4/charts';
 import * as am4core from '@amcharts/amcharts4/core';
 import * as am4plugins_annotation from '@amcharts/amcharts4/plugins/annotation';
 import am4themes_animated from '@amcharts/amcharts4/themes/animated';
 import am4themes_dark from '@amcharts/amcharts4/themes/dark';
-import { Typography } from '@material-ui/core';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { makeStyles } from '@material-ui/core/styles';
-import Skeleton from '@material-ui/lab/Skeleton';
-import React, { useEffect, useContext, useState } from 'react';
 
 import { WellProdChartContext } from './WellProdChartContext';
 import { AppContext } from '../../AppContext';
