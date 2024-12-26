@@ -315,11 +315,11 @@ const useTableESSimple = tableKey => {
 
 							const newFilters = _.values(
 								_.merge(
+									_.keyBy(_newFilters, 'id'),
 									_.keyBy(
 										formattedColumnFilters.filter(filter => filter.isMapViewFilter),
 										'id'
-									),
-									_.keyBy(_newFilters, 'id')
+									)
 								)
 							);
 
