@@ -10,7 +10,6 @@ import Typography from '@material-ui/core/Typography';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import React, { useContext } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
-
 import { useDispatch } from 'react-redux';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';

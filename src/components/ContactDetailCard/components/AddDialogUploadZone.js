@@ -12,15 +12,18 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import { get } from 'lodash';
 import React, { useMemo, useEffect, useState, memo } from 'react';
 import { pdfjs } from 'react-pdf';
+
 import DeleteDocumentConfirmation from 'components/Shared/DeleteDocumentConfirmation';
 
 // functions
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
+
 import { DELETEDESCRIPTORFILE } from 'graphQL/useMutationDeleteDescriptorFile';
 import { GETRECENTCONTACTFILES } from 'graphQL/useQueryGetContactFiles';
 import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
 
 import { AppContext } from 'AppContext';
+
 import UploadZone from './DailogUploadZone';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;

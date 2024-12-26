@@ -20,18 +20,18 @@ import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
 import { GET_DATASETS } from 'graphQL/useQueryDataset';
 import { USER_MAP_SETTINGS_QUERY } from 'graphQL/useQueryUserMapSettings';
 
-import { layerController } from 'hookstate/layerStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { scrollbarStyle } from 'styles/common';
-import { AppContext } from 'AppContext';
-import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
-
-import DatasetMenu from './Menu';
-
 import { globalStateController } from 'hookstate/globalStateController';
 import { globalState } from 'hookstate/initialStates';
+import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+
+import { scrollbarStyle } from 'styles/common';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
+import { AppContext } from 'AppContext';
+
+import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
+import DatasetMenu from './Menu';
 
 const useStyles = makeStyles(theme => ({
 	root: props => ({

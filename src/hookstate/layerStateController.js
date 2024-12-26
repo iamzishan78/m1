@@ -19,8 +19,8 @@ import {
 	staticMapBoxLayerIdentifiers,
 	isCustomLayerCopy,
 } from 'components/Shared/functions/shapeLayer';
-
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
+
 import { getLayerKey } from 'hookstate/helpers';
 import { hookStateController } from 'hookstate/hookStateController';
 
@@ -28,7 +28,6 @@ import { drawController } from './drawStateController';
 import { globalStateController } from './globalStateController';
 import { layerFilters, layerState, layerStateInitialState } from './initialStates';
 import { layerFiltersController } from './layerFiltersController';
-
 import { mapControlsController } from './mapControlsController';
 import { navController } from './navStateController';
 import { popupController } from './popupStateController';

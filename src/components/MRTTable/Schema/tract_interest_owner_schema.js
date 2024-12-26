@@ -144,7 +144,8 @@ const TractPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'contact.ownerType.keyword',
-			accessorKey: 'contact.ownerType',
+			id: 'contact.ownerType',
+			accessorFn: row => row?.contact?.ownerType,
 			header: 'Entity Type',
 		},
 
@@ -459,7 +460,8 @@ const TractPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'deals.name.keyword',
-			accessorKey: 'deals.name',
+			id: 'deals.name',
+			accessorFn: row => row?.deals?.name,
 			isExport: 'dealsName',
 			header: 'Associated Deals',
 			handleArrayExport: {

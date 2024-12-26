@@ -21,13 +21,14 @@ import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/componen
 import Table from 'components/Shared/M1nTable/components/Table';
 import TableHeader from 'components/Table/constants/parcel-agreement-header-schema';
 import TableESHOC from 'components/Table/TableESHOC';
-import { AppContext } from 'AppContext';
-
-import { usetableStyles } from '../Styles';
 
 import { DELETE_PARCEL_RUNSHEET } from 'graphQL/useMutationDeleteParcelAgreement';
 
 import { downloadPdfsFile } from 'utils/helper';
+
+import { AppContext } from 'AppContext';
+
+import { usetableStyles } from '../Styles';
 
 const genericDataActions = ['comments', 'tracks', 'ifAreContacts'];
 const interestKeys = [

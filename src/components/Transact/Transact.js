@@ -11,8 +11,10 @@ import { useHistory } from 'react-router-dom';
 import Board from 'react-trello';
 
 import AddDealDialog from 'components/Transact/components/DealDialog/AddDealDialog';
+
 import { UPDATE_STAGE_DEAL_DESCRIPTOR } from 'graphQL/useMutationUpdateStageDealDescriptor';
 import { UPDATESTAGEDEALDESCRIPTORS } from 'graphQL/useMutationUpdateStageDealDescriptors';
+
 import { TransactContext } from './TransactContext';
 import { AppContext } from '../../AppContext';
 

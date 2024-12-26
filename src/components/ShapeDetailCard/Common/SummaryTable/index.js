@@ -16,30 +16,26 @@ import CountyField from 'components/Revenue/components/Properties/DetailComponen
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
 import { summaryTableStyles } from 'components/ShapeDetailCard/style';
 import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
+import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
+import DateField from 'components/Shared/components/Fields/DateField';
 import NumberField from 'components/Shared/components/Fields/NumberField';
 import { AutoCompleteLandgrid } from 'components/Shared/Forms/Fields/AutoCompleteLandgrid';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
-import { showErrorMessage, showInfoMessage } from 'actions';
+import { copy } from 'components/Shared/functions';
+import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
+import ShapeOwnerInput from 'components/Shared/ShapeOwnerInput';
 import UserList from 'components/Shared/UserList';
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
-
-import { getRoundedNra, validateUrl } from 'utils/helper';
-
-import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
-import { copy } from 'components/Shared/functions';
-
-import { AppContext } from 'AppContext';
-
-import { US_STATES_CODES } from 'utils/data';
-
 import filterConsts from 'components/Table/TableAddDialog/Common/filterConsts';
 
 import { globalStateController } from 'hookstate/globalStateController';
 
-import DateField from 'components/Shared/components/Fields/DateField';
-import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
-import ShapeOwnerInput from 'components/Shared/ShapeOwnerInput';
+import { US_STATES_CODES } from 'utils/data';
+import { getRoundedNra, validateUrl } from 'utils/helper';
+
+import { showErrorMessage, showInfoMessage } from 'actions';
+import { AppContext } from 'AppContext';
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps, loading }) {
 	const dispatch = useDispatch();

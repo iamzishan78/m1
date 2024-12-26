@@ -22,16 +22,14 @@ import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { GET_SHAPE_FEATURE } from 'graphQL/useQueryGetShapeFeature';
 
 import { drawController } from 'hookstate/drawStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { popupController } from 'hookstate/popupStateController';
-import { layerRefs } from 'hookstate';
-
-import { mapStateController } from 'hookstate/mapStateController';
-
-import { history } from 'store';
-
 import { jobController } from 'hookstate/jobStateController';
 import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+import { mapStateController } from 'hookstate/mapStateController';
+import { popupController } from 'hookstate/popupStateController';
+
+import { layerRefs } from 'hookstate';
+import { history } from 'store';
 
 import { AppContext } from '../../AppContext';
 

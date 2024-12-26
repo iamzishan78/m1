@@ -7,6 +7,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import { isEmpty, isString } from 'lodash';
 import { grey600, grey400 } from 'material-ui/styles/colors';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -22,9 +23,6 @@ import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIco
 
 import { detailCardController } from 'hookstate/detailCardController';
 import { sideDialogController } from 'hookstate/sideDialogController';
-
-import { isEmpty, isString } from 'lodash';
-
 import { tableGlobalController } from 'hookstate/tableController';
 
 import { checkFormRequireField } from 'utils/helper';

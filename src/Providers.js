@@ -7,11 +7,16 @@ import { split } from 'apollo-link';
 import { BatchHttpLink } from 'apollo-link-batch-http';
 import { HttpLink } from 'apollo-link-http';
 import React, { useEffect, useState } from 'react';
+import { Provider as ReduxProvider } from 'react-redux';
 import { toast, ToastContainer } from 'react-toastify';
 
 import { globalStateController } from 'hookstate/globalStateController';
+
+import { getSession } from 'utils/user';
+
 import { AppProvider, setApolloHeaders } from './AppContext';
 import ContactBulkProgress from './components/BulkUpload/ContactBulkProgress';
+import Notifications from './components/Notifications/Notifications';
 import GlobalApolloClientProvider from './GlobalApolloClientProvider';
 //components
 // pick a date util library
@@ -21,14 +26,10 @@ import GlobalApolloClientProvider from './GlobalApolloClientProvider';
 import { relayStylePagination } from './graphQL/apolloPaginationSchemes.js';
 // import ProfileProvider from "./components/Profile/ProfileProvider";
 // import ProfileDetailsProvider from "./components/Profile/ProfileDetailsProvider";
-import Notifications from './components/Notifications/Notifications';
 
 //redux
-import { Provider as ReduxProvider } from 'react-redux';
 
 import configureStore from './store';
-
-import { getSession } from 'utils/user';
 
 // user management
 const store = configureStore(/ provide initial state if any /);

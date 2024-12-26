@@ -6,11 +6,17 @@ import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
+import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import moment from 'moment';
 import React, { useContext, useState, useEffect } from 'react';
 
 // contexts
+import WellDetailsDocumentTable from 'components/Table/Documents/WellDetailsDocumentTable';
+
+import { popupController } from 'hookstate/popupStateController';
+
 import { WellCardContext } from './WellCardContext';
 
 // styling
@@ -25,21 +31,14 @@ import QuadProvider from '../Quad/QuadProvider';
 import CompletionDateCard from '../Shared/CompletionDateCard';
 import FirstProdDateCard from '../Shared/FirstProdDateCard';
 import M1nTable from '../Shared/M1nTable/M1nTable';
-import WellStatusCard from '../Shared/WellStatusCard';
-import WellProdChartProvider from '../WellProdChart/WellProdChartProvider';
 import OwnerNumCard from '../Shared/OwnerNumCard';
 import PermitDateCard from '../Shared/PermitDateCard';
-import ProfileCard from '../Shared/ProfileCard';
-import WellTypeCard from '../Shared/WellTypeCard';
-import SpudDateCard from '../Shared/SpudDateCard';
 import PlugDateCard from '../Shared/PlugDateCard';
-
-import WellDetailsDocumentTable from 'components/Table/Documents/WellDetailsDocumentTable';
-
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
-
-import { popupController } from 'hookstate/popupStateController';
+import ProfileCard from '../Shared/ProfileCard';
+import SpudDateCard from '../Shared/SpudDateCard';
+import WellStatusCard from '../Shared/WellStatusCard';
+import WellTypeCard from '../Shared/WellTypeCard';
+import WellProdChartProvider from '../WellProdChart/WellProdChartProvider';
 
 const useStyles = makeStyles(theme => ({
 	grid: {

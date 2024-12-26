@@ -1,6 +1,3 @@
-import { globalStateController } from 'hookstate/globalStateController';
-import { getFileExtension, uploadFileData } from 'components/Shared/functions';
-import { ADDFILE } from 'graphQL/useMutationAddFile';
 import { useApolloClient, useMutation } from '@apollo/client';
 import { Box, Checkbox, FormControlLabel } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
@@ -15,8 +12,13 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { v4 as uuid } from 'uuid';
 
+import { getFileExtension, uploadFileData } from 'components/Shared/functions';
+
+import { ADDFILE } from 'graphQL/useMutationAddFile';
 import { CREATE_DATASET_LAYERS } from 'graphQL/useMutationDataset';
 import { GET_DATASET_UPLOAD_STATE } from 'graphQL/useQueryDataset';
+
+import { globalStateController } from 'hookstate/globalStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 
 import { showErrorMessage } from 'actions';

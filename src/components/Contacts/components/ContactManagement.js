@@ -10,9 +10,7 @@ import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(() => ({
 	root: {
-		// padding: "0px 30px 30px",
 		marginTop: '65px',
-		// marginLeft: '-10px',
 	},
 }));
 

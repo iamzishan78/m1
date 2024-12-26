@@ -6,12 +6,19 @@ import Drawer from '@material-ui/core/Drawer';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import { makeStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
-import React, { useEffect, useState } from 'react';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import CloseIcon from '@material-ui/icons/Close';
+import DeleteIcon from '@material-ui/icons/Delete';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import SearchIcon from '@material-ui/icons/Search';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import { KeyboardDatePicker } from '@material-ui/pickers';
+import clsx from 'clsx';
+import loadashFilter from 'lodash/filter';
+import React, { useEffect, useState } from 'react';
 
 import { setStateIfDeepEqual } from 'components/Shared/functions';
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
@@ -19,24 +26,16 @@ import AutocompEntityNamesVirtualizeList from 'components/Shared/M1nTable/compon
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
+import { CREATEDESCRIPTORFILE } from 'graphQL/useMutationCreateDescriptorFile';
+import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
+import { GET_DOCUMENTS } from 'graphQL/useQueryDocuments';
+import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
 import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
 import { VIEWFILEQUERY, VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
+
 import { AppContext } from 'AppContext';
-import CloseIcon from '@material-ui/icons/Close';
-import loadashFilter from 'lodash/filter';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import { KeyboardDatePicker } from '@material-ui/pickers';
 
 import UploadZone from '../../Shared/UploadZone';
-
-import Tooltip from '@material-ui/core/Tooltip';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import DeleteIcon from '@material-ui/icons/Delete';
-
-import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
-import { CREATEDESCRIPTORFILE } from 'graphQL/useMutationCreateDescriptorFile';
-import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
-import { GET_DOCUMENTS } from 'graphQL/useQueryDocuments';
 
 // functions
 

@@ -4,16 +4,16 @@ import { BlockBlobClient } from '@azure/storage-blob';
 import { Checkbox } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Step from '@material-ui/core/Step';
+import StepConnector from '@material-ui/core/StepConnector';
 import StepLabel from '@material-ui/core/StepLabel';
 import Stepper from '@material-ui/core/Stepper';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 import { set, get } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import clsx from 'clsx';
 import { useDispatch } from 'react-redux';
-import StepConnector from '@material-ui/core/StepConnector';
 import { matchRoutes } from 'react-router-config';
 import { useHistory } from 'react-router-dom';
 
@@ -22,17 +22,18 @@ import { getDateWithoutTime } from 'components/Shared/functions';
 import { CREATE_JOB } from 'graphQL/useMutationCreateJob';
 import { INITIALIZE_EXPORT_JOB } from 'graphQL/useMutationinitializeExportJob';
 import { UPDATE_JOB } from 'graphQL/useMutationUpdateJob';
-
 import { GET_JOB_UPLOAD_URI } from 'graphQL/useQueryGetJobUploadUri';
+
+import { jobController } from 'hookstate/jobStateController';
+
 import { showErrorMessage } from 'actions';
+
 import CSVFileReader from './CSVFileReader';
 import RevenueStatementInfoForm from './Fields/RevenueStatementInfoForm';
 import M1neralHeaders from './M1neralHeaders';
 import ReviewCSV from './ReviewCSV';
 import UploadStepperComponent from './UploadStepperComponent';
 import { AppContext } from '../../../AppContext';
-
-import { jobController } from 'hookstate/jobStateController';
 
 const QontoConnector = withStyles({
 	alternativeLabel: {

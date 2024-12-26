@@ -31,38 +31,36 @@ import RelatedParties from 'components/Land/components/Agreements/detailComponen
 import RelatedWells from 'components/Land/components/Agreements/detailComponents/relatedWells';
 import Summary from 'components/Land/components/Agreements/detailComponents/summary';
 import NavHeader from 'components/Land/components/Common/NavHeader';
+import MapProvider from 'components/Map/MapProvider';
+import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
+import DocViewer from 'components/Shared/DocViewer';
 import { copy } from 'components/Shared/functions';
+import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import MapImgViewIcon from 'components/Shared/svgIcons/MapImgViewIcon';
 import Tags from 'components/Shared/Tagger';
+
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
+import { GET_AGREEMENT_PROVISIONS } from 'graphQL/useQueryGetAgreementProvisions';
+import { GET_STANDARD_PROVISIONS } from 'graphQL/useQueryGetStandardProvisions';
+import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
+
+import { detailCardController } from 'hookstate/detailCardController';
+import { jobController } from 'hookstate/jobStateController';
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { PaymentFeatureTenants } from 'utils/data';
 
 import { setLandReduxKey } from 'actions';
 import { AppContext } from 'AppContext';
 
 // Components
-import DocViewer from 'components/Shared/DocViewer';
-import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
 
-import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
-import { GET_STANDARD_PROVISIONS } from 'graphQL/useQueryGetStandardProvisions';
-import { GET_AGREEMENT_PROVISIONS } from 'graphQL/useQueryGetAgreementProvisions';
-import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
-import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
-
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 // import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
-import MapImgViewIcon from 'components/Shared/svgIcons/MapImgViewIcon';
-import MapProvider from 'components/Map/MapProvider';
 
 import { DrawerContext } from './DrawerContext';
 import RelatedDocumets from './relatedDocuments';
-
-import { jobController } from 'hookstate/jobStateController';
-
 import RelatedPayments from './relatedPayments';
-
-import { detailCardController } from 'hookstate/detailCardController';
-import { tableGlobalController } from 'hookstate/tableController';
-
-import { PaymentFeatureTenants } from 'utils/data';
 
 const useStyles = makeStyles(theme => ({
 	mapProvider: {

@@ -12,6 +12,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import AutoCompleteFieldComponent from 'components/Shared/Forms/Fields/AutoCompleteField';
 import WellSearchApiField from 'components/Shared/Forms/Fields/WellSearchApiField';
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import CloseIcon2 from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
@@ -20,7 +21,6 @@ import { ADD_SHAPE_WELL_INTEREST } from 'graphQL/useMutationAddShapeWellInterest
 import { UPDATE_SHAPE_WELL_INTEREST } from 'graphQL/useMutationUpdateShapeWellInterest';
 
 // contexts
-import AutoCompleteFieldComponent from 'components/Shared/Forms/Fields/AutoCompleteField';
 
 import { WELL_INTEREST_SELECT_OPTIONS } from 'graphQL/useQueryWellInterestSelectOptions';
 

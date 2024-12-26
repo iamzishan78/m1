@@ -6,10 +6,16 @@ import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import { makeStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
-import React, { useEffect, useState } from 'react';
 import ListItemText from '@material-ui/core/ListItemText';
+import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import DeleteIcon from '@material-ui/icons/Delete';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import clsx from 'clsx';
+import loadashFilter from 'lodash/filter';
+import { grey600, grey400 } from 'material-ui/styles/colors';
+import React, { useEffect, useState } from 'react';
 
 import GenericDateField from 'components/Shared/components/Fields/GenericDateFIeld';
 import AutoCompleteDocumentList from 'components/Shared/Forms/Fields/AutoCompleteDocumentList';
@@ -18,27 +24,19 @@ import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/componen
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
+import { CREATEDESCRIPTORFILE } from 'graphQL/useMutationCreateDescriptorFile';
+import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
+import { GET_DOCUMENTS } from 'graphQL/useQueryDocuments';
+import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
 import { VIEWFILEQUERY, VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
+
+import { tableGlobalController } from 'hookstate/tableController';
+
 import { AppContext } from 'AppContext';
-import loadashFilter from 'lodash/filter';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 
 import UploadZone from '../../Shared/UploadZone';
 
-import Tooltip from '@material-ui/core/Tooltip';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import DeleteIcon from '@material-ui/icons/Delete';
-
-import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
-import { CREATEDESCRIPTORFILE } from 'graphQL/useMutationCreateDescriptorFile';
-import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
-import { GET_DOCUMENTS } from 'graphQL/useQueryDocuments';
-
 // functions
-
-import { grey600, grey400 } from 'material-ui/styles/colors';
-
-import { tableGlobalController } from 'hookstate/tableController';
 
 const filter = createFilterOptions();
 

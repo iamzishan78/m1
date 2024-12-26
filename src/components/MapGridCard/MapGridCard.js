@@ -1,36 +1,20 @@
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
-import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
 import React, { Fragment, useState, useContext, useMemo, useCallback } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-
-import MRTTable from 'components/MRTTable';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
-import TabPanels, { TabPanel } from 'components/Shared/TabPanels';
-import { AppContext } from '../../AppContext';
-
-import OwnersSummaryCard from '../OwnersSummaryCard/OwnersSummaryCard';
-import { platformDataInitialData, platformDataWellsInitialData, snapGridSideBarData } from './components/data';
-import SearchPanel from './components/SearchPanel';
-import { setMapGridCardState } from '../../actions';
-import M1nTable from '../Shared/M1nTable/M1nTable';
-
-import DockMenu from './DockMenu';
-
-import ShapeGridWellsTable from 'components/Table/Wells/ShapeGridWellsTable';
-import ShapeGridTaxOwnersTable from 'components/Table/TaxOwners/ShapeGridTaxOwnersTable';
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-
-import { drawController } from 'hookstate/drawStateController';
-
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { tableGlobalController } from 'hookstate/tableController';
-import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { useSelector } from 'react-redux';
 
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
+import MRTTable from 'components/MRTTable';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+
+import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { AppContext } from '../../AppContext';
+import { platformDataInitialData, platformDataWellsInitialData, snapGridSideBarData } from './components/data';
 
 const useStyles = makeStyles(theme => {
 	return {
@@ -212,35 +196,9 @@ const useStyles = makeStyles(theme => {
 	};
 });
 
-const TabLabels = ({ labels, value, setValue }) => {
-	const classes = useStyles();
-
-	return (
-		<>
-			{labels &&
-				labels.length &&
-				labels.map((label, i) => (
-					<Button
-						key={i}
-						size="small"
-						variant="contained"
-						className={value === i ? classes.tapsLabelsButtonsSelected : classes.tapsLabelsButtons}
-						onClick={() => {
-							setValue(i);
-						}}
-					>
-						{label}
-					</Button>
-				))}
-		</>
-	);
-};
-
 function MapGridCard(props) {
 	// contexts
 	const [stateApp] = useContext(AppContext);
-
-	const { drawStateValues } = drawController.useState(['selectedPolygonString'], 'drawStateValues');
 
 	const { layerGridCard, mapControlsStateValues } = mapControlsController.useState(
 		['selectedLayer', 'selectedDataset', 'layerGridCard', 'mapGridCardActivated'],
@@ -251,31 +209,16 @@ function MapGridCard(props) {
 	const [searchTapValue, SearchTapValue] = useState(
 		mapControlsStateValues.layerGridCard ? layerInitialData : platformDataInitialData[0]
 	);
-	const [viewportTapValue, ViewportTapValue] = useState(0);
-	const [dockMenu, SetDockMenu] = useState('bottom');
-	const [trackedTapValue, TrackedTapValue] = useState(0);
 
 	// selectors
-	const { mapGridCardActiveTap, selectedOwner } = useSelector(({ MapGridCard }) => MapGridCard, shallowEqual);
 	const mapLayersPanelExtended = useSelector(({ MainMap }) => MainMap.mapLayersPanelExtended);
 	const userGridViewFilters = useSelector(({ session }) => session.userGridViewSettings?.filters);
 
-	const dispatch = useDispatch();
-
-	const onClose = useCallback(
-		e => {
-			e.stopPropagation();
-			mapControlsController.updateState({ selectedDataset: null, mapGridCardActivated: false });
-			layerFiltersController.clearSnapGridFilters();
-			dispatch(
-				setMapGridCardState({
-					selectedOwner: null,
-					selectedOwnerWellIntsSummary: null,
-				})
-			);
-		},
-		[dispatch]
-	);
+	const onClose = useCallback(e => {
+		e.stopPropagation();
+		mapControlsController.updateState({ selectedDataset: null, mapGridCardActivated: false });
+		layerFiltersController.clearSnapGridFilters();
+	}, []);
 
 	const shapeFileTableOverride = useMemo(() => {
 		// generic generateFileFilters used for files so that it remain consistent in all places.
@@ -312,398 +255,210 @@ function MapGridCard(props) {
 		}
 	}, [layerGridCard, layerInitialData, mapControlsStateValues.layerGridCard]);
 
-	const setSelectedDockMenu = state => {
-		if (dockMenu !== state) {
-			SetDockMenu(state);
-		}
-	};
-
 	const setSearchTapValue = state => {
 		if (searchTapValue !== state) {
 			SearchTapValue(state);
 		}
 	};
 
-	const setTrackedTapValue = state => {
-		if (trackedTapValue !== state) {
-			TrackedTapValue(state);
-		}
-	};
-	const setViewportTapValue = state => {
-		if (viewportTapValue !== state) {
-			ViewportTapValue(state);
-		}
-	};
-
 	// styles
 	const classes = useStyles({
-		dockMenu,
+		dockMenu: 'bottom',
 		mapLayersPanelExtended,
 		mapGridCardActivated: mapControlsStateValues.mapGridCardActivated,
-		mapGridCardActiveTap,
 		viewportWells: stateApp.viewportWells,
 		userGridViewFilters,
 		// screenSizes
 	});
 
-	const handleMainTapChange = (event, newValue) => {
-		dispatch(
-			setMapGridCardState({
-				mapGridCardActiveTap: newValue,
-				selectedOwner: null,
-				selectedOwnerWellIntsSummary: null,
-			})
-		);
-	};
-
 	const handleSearchPanelChange = value => {
 		setSearchTapValue(value);
-		if (searchTapValue.index !== value.index) {
-			dispatch(setMapGridCardState({ searchInputValue: '', searchResultData: [], searchloading: true }));
-		}
-	};
-
-	const ativateSearchPanel = () => {
-		if (mapGridCardActiveTap !== 0) {
-			handleMainTapChange(null, 0);
-		}
-		if (mapControlsStateValues.mapGridCardActivated === 'min') {
-			mapControlsController.updateState({ mapGridCardActivated: true });
-		}
-	};
-
-	const options = {
-		toolbarActionMarginRight: '105px !important',
-		customToolbar: () => {
-			const dynamicLeftPos = mapGridCardActiveTap !== 2 ? 236 : 122;
-			return (
-				<div
-					style={{
-						display: 'flex',
-						float: 'left',
-						position: 'relative',
-						left: `${dynamicLeftPos}px`,
-						marginRight: '15px',
-					}}
-				>
-					<DockMenu setSelectedDockMenu={setSelectedDockMenu} />
-
-					<IconButton className="cancelDraggableEffect" onClick={onClose}>
-						<CloseIcon color="secondary" />
-					</IconButton>
-				</div>
-			);
-		},
-	};
-
-	const commonProps = {
-		isShapeGridOnly: drawStateValues.selectedPolygonString,
-		isLayerOnly: mapControlsStateValues.selectedLayer,
-		handleChange: handleSearchPanelChange,
-		value: searchTapValue,
-		ativateSearchPanel: ativateSearchPanel,
 	};
 
 	const CardReturn = () => {
 		return (
 			<Card className={`${mapControlsStateValues.mapGridCardActivated === 'exp' ? 'noDrag' : ''} ${classes.dockMenu}`}>
-				{selectedOwner ? (
-					<OwnersSummaryCard />
-				) : (
-					<div
-						id="snapGrid"
-						className={`cancelDraggableEffect ${classes.mainPanelsDiv}`}
-						style={{ position: 'relative' }}
-					>
-						{/* //// search panel //// */}
-						<TabPanel
-							value={mapGridCardActiveTap}
-							index={0}
-							className={classes.tapsPanelsPadding}
-							style={{ position: 'absolute', width: '100%' }}
-						>
-							<Grid container direction="row" style={{ height: '100%', marginBottom: '20px' }}>
-								{mapControlsStateValues?.selectedDataset?.name === 'M1 Platform' && (
-									<Grid item md={2} style={{ backgroundColor: '#F2F2F2' }}>
-										<Typography
-											variant="h6"
-											component="h1"
-											style={{ fontWeight: 'bold', padding: '10px 0px 0px 20px' }}
-										>
-											M1 Platform
-										</Typography>
+				<div
+					id="snapGrid"
+					className={`cancelDraggableEffect ${classes.mainPanelsDiv}`}
+					style={{ position: 'relative' }}
+				>
+					<Grid container direction="row" style={{ height: '100%', marginBottom: '20px' }}>
+						{mapControlsStateValues?.selectedDataset?.name === 'M1 Platform' && (
+							<Grid item md={2} style={{ backgroundColor: '#F2F2F2' }}>
+								<Typography variant="h6" component="h1" style={{ fontWeight: 'bold', padding: '10px 0px 0px 20px' }}>
+									M1 Platform
+								</Typography>
 
-										<List
-											component="nav"
-											aria-label="main mailbox folders"
-											style={{ height: 'calc(50vh - 29px)', overflowY: 'auto' }}
-										>
-											{[...platformDataWellsInitialData, ...snapGridSideBarData].map(row => {
-												const Icon = row.Icon;
-												return (
-													<FeatureFlag feature={FEATURES[row.featureFlag]} noCheck={!FEATURES[row.featureFlag]}>
-														<ListItem
-															button
-															selected={row.value === searchTapValue.value}
-															onClick={() => handleSearchPanelChange(row)}
-														>
-															<ListItemIcon>
-																<Icon />
-															</ListItemIcon>
-															<ListItemText primary={row.gridLabel || row.label} />
-														</ListItem>
-													</FeatureFlag>
-												);
-											})}
-										</List>
-									</Grid>
-								)}
+								<List
+									component="nav"
+									aria-label="main mailbox folders"
+									style={{ height: 'calc(50vh - 29px)', overflowY: 'auto' }}
+								>
+									{[...platformDataWellsInitialData, ...snapGridSideBarData].map(row => {
+										const Icon = row.Icon;
+										return (
+											<FeatureFlag feature={FEATURES[row.featureFlag]} noCheck={!FEATURES[row.featureFlag]}>
+												<ListItem
+													button
+													selected={row.value === searchTapValue.value}
+													onClick={() => handleSearchPanelChange(row)}
+												>
+													<ListItemIcon>
+														<Icon />
+													</ListItemIcon>
+													<ListItemText primary={row.gridLabel || row.label} />
+												</ListItem>
+											</FeatureFlag>
+										);
+									})}
+								</List>
+							</Grid>
+						)}
 
-								{mapControlsStateValues.selectedDataset &&
-									mapControlsStateValues.selectedDataset?.name !== 'M1 Platform' && (
-										<Grid item md={2} style={{ backgroundColor: '#F2F2F2' }}>
-											<Typography
-												variant="h6"
-												component="h1"
-												style={{ fontWeight: 'bold', padding: '10px 0px 0px 20px' }}
-											>
-												{mapControlsStateValues.selectedDataset?.name}
-											</Typography>
+						{mapControlsStateValues.selectedDataset &&
+							mapControlsStateValues.selectedDataset?.name !== 'M1 Platform' && (
+								<Grid item md={2} style={{ backgroundColor: '#F2F2F2' }}>
+									<Typography variant="h6" component="h1" style={{ fontWeight: 'bold', padding: '10px 0px 0px 20px' }}>
+										{mapControlsStateValues.selectedDataset?.name}
+									</Typography>
 
-											<List
-												component="nav"
-												aria-label="main mailbox folders"
-												style={{ height: 'calc(50vh - 29px)', overflowY: 'auto' }}
-											>
-												{mapControlsStateValues.selectedDataset?.categories.map(row => {
-													const Icon = mapControlsStateValues.selectedDataset?.Icon;
-													return (
-														<ListItem
-															key={row.name}
-															button
-															selected={row.name === mapControlsStateValues.selectedLayer?.name}
-															onClick={() => {
-																mapControlsController.updateState({ selectedLayer: { ...row } });
-																tableGlobalController.reInitialized();
-															}}
-														>
-															<ListItemIcon>
-																<Icon />
-															</ListItemIcon>
-															<ListItemText style={{ wordWrap: 'break-word' }} primary={row.name} />
-														</ListItem>
-													);
-												})}
-											</List>
-										</Grid>
+									<List
+										component="nav"
+										aria-label="main mailbox folders"
+										style={{ height: 'calc(50vh - 29px)', overflowY: 'auto' }}
+									>
+										{mapControlsStateValues.selectedDataset?.categories.map(row => {
+											const Icon = mapControlsStateValues.selectedDataset?.Icon;
+											return (
+												<ListItem
+													key={row.name}
+													button
+													selected={row.name === mapControlsStateValues.selectedLayer?.name}
+													onClick={() => {
+														mapControlsController.updateState({ selectedLayer: { ...row } });
+														tableGlobalController.reInitialized();
+													}}
+												>
+													<ListItemIcon>
+														<Icon />
+													</ListItemIcon>
+													<ListItemText style={{ wordWrap: 'break-word' }} primary={row.name} />
+												</ListItem>
+											);
+										})}
+									</List>
+								</Grid>
+							)}
+
+						<Grid item md={mapControlsStateValues.selectedDataset ? 10 : 12}>
+							<div style={{ position: 'relative' }} classes={classes.gridTables}>
+								<Fragment>
+									{searchTapValue.value === 'well' && (
+										<MRTTable
+											name="WellsTable"
+											overrideMeta={{
+												toolbarInternalActions: {
+													onClose,
+													style: {
+														marginRight: '0.5rem',
+													},
+												},
+												maxTableHeight: '45vh',
+												filterLayerType: 'Wells',
+												layerIdentifier: 'Wells',
+											}}
+										/>
+									)}
+									{searchTapValue.value ===
+										'owner'(
+											<MRTTable
+												name="TaxOwnerTable"
+												overrideMeta={{
+													toolbarInternalActions: {
+														onClose,
+														style: {
+															marginRight: '0.5rem',
+														},
+													},
+													maxTableHeight: '45vh',
+												}}
+											/>
+										)}
+									{searchTapValue.value === 'layer' && (
+										<MRTTable name="ShapesFilesGenericTable" overrideMeta={shapeFileTableOverride} />
+									)}
+									{searchTapValue.value === 'contacts' && <MRTTable name="ContactTable" />}
+									{searchTapValue.value === 'unit' && (
+										<MRTTable
+											name="UnitTable"
+											overrideMeta={{
+												toolbarInternalActions: {
+													onClose,
+													style: {
+														marginRight: '0.5rem',
+													},
+												},
+												maxTableHeight: '45vh',
+												filterLayerType: 'Units',
+												layerIdentifier: 'Units',
+											}}
+										/>
+									)}
+									{searchTapValue.value === 'agreement' && (
+										<MRTTable
+											name="AgreementTable"
+											overrideMeta={{
+												toolbarInternalActions: {
+													onClose,
+													style: {
+														marginRight: '0.5rem',
+													},
+												},
+												maxTableHeight: '45vh',
+												filterLayerType: 'Agreements',
+												layerIdentifier: 'Agreements',
+											}}
+										/>
 									)}
 
-								<Grid item md={mapControlsStateValues.selectedDataset ? 10 : 12}>
-									<div style={{ position: 'relative' }} classes={classes.gridTables}>
-										<Fragment>
-											{searchTapValue.value === 'well' && (
-												<MRTTable
-													name="WellsTable"
-													overrideMeta={{
-														toolbarInternalActions: {
-															onClose,
-															style: {
-																marginRight: '0.5rem',
-															},
-														},
-														maxTableHeight: '45vh',
-														filterLayerType: 'Wells',
-														layerIdentifier: 'Wells',
-													}}
-												/>
-											)}
-											{searchTapValue.value === 'owner' && drawStateValues.selectedPolygonString && (
-												<ShapeGridTaxOwnersTable
-													parent="boundary_grid_owners"
-													header={<SearchPanel {...commonProps} />}
-													customOptions={options}
-													targetLabel="owner"
-													showTracks
-												/>
-											)}
-											{searchTapValue.value === 'owner' && !drawStateValues.selectedPolygonString && (
-												<MRTTable
-													name="TaxOwnerTable"
-													overrideMeta={{
-														toolbarInternalActions: {
-															onClose,
-															style: {
-																marginRight: '0.5rem',
-															},
-														},
-														maxTableHeight: '45vh',
-													}}
-												/>
-											)}
-											{searchTapValue.value === 'layer' && (
-												<MRTTable name="ShapesFilesGenericTable" overrideMeta={shapeFileTableOverride} />
-											)}
-											{searchTapValue.value === 'contacts' && <MRTTable name="ContactTable" />}
-											{searchTapValue.value === 'unit' && (
-												<MRTTable
-													name="UnitTable"
-													overrideMeta={{
-														toolbarInternalActions: {
-															onClose,
-															style: {
-																marginRight: '0.5rem',
-															},
-														},
-														maxTableHeight: '45vh',
-														filterLayerType: 'Units',
-														layerIdentifier: 'Units',
-													}}
-												/>
-											)}
-											{searchTapValue.value === 'agreement' && (
-												<MRTTable
-													name="AgreementTable"
-													overrideMeta={{
-														toolbarInternalActions: {
-															onClose,
-															style: {
-																marginRight: '0.5rem',
-															},
-														},
-														maxTableHeight: '45vh',
-														filterLayerType: 'Agreements',
-														layerIdentifier: 'Agreements',
-													}}
-												/>
-											)}
-
-											{searchTapValue.value === 'tract' && (
-												<MRTTable
-													name="TractsTable"
-													overrideMeta={{
-														toolbarInternalActions: {
-															onClose,
-															style: {
-																marginRight: '0.5rem',
-															},
-														},
-														maxTableHeight: '45vh',
-														filterLayerType: 'Parcels',
-														layerIdentifier: 'Parcels',
-													}}
-												/>
-											)}
-											{searchTapValue.value === 'mywell' && (
-												<MRTTable
-													name="MyWellsTable"
-													overrideMeta={{
-														toolbarInternalActions: {
-															onClose,
-															style: {
-																marginRight: '0.5rem',
-															},
-														},
-														maxTableHeight: '45vh',
-														filterLayerType: 'My Wells',
-														layerIdentifier: 'My Wells',
-													}}
-												/>
-											)}
-										</Fragment>
-									</div>
-								</Grid>
-							</Grid>
-						</TabPanel>
-
-						{/* //// tracked panel //// */}
-						<TabPanel
-							value={mapGridCardActiveTap}
-							index={1}
-							className={classes.tapsPanelsPadding}
-							//
-							style={{ position: 'absolute', width: '100vw' }}
-							//
-						>
-							<div style={{ position: 'relative' }}>
-								<TabPanels
-									value={trackedTapValue}
-									panels={[
-										<M1nTable
-											dense
-											parent="trackWells"
-											header={
-												<TabLabels
-													labels={[`Tax Owners (${stateApp.owners ? stateApp.owners.length : 0})`]}
-													value={trackedTapValue}
-													setValue={setTrackedTapValue}
-												/>
-											}
-										/>,
-										<M1nTable
-											dense
-											parent="trackOwners"
-											header={
-												<TabLabels
-													labels={[`Tax Owners (${stateApp.owners ? stateApp.owners.length : 0})`]}
-													value={trackedTapValue}
-													setValue={setTrackedTapValue}
-												/>
-											}
-										/>,
-									]}
-								/>
+									{searchTapValue.value === 'tract' && (
+										<MRTTable
+											name="TractsTable"
+											overrideMeta={{
+												toolbarInternalActions: {
+													onClose,
+													style: {
+														marginRight: '0.5rem',
+													},
+												},
+												maxTableHeight: '45vh',
+												filterLayerType: 'Parcels',
+												layerIdentifier: 'Parcels',
+											}}
+										/>
+									)}
+									{searchTapValue.value === 'mywell' && (
+										<MRTTable
+											name="MyWellsTable"
+											overrideMeta={{
+												toolbarInternalActions: {
+													onClose,
+													style: {
+														marginRight: '0.5rem',
+													},
+												},
+												maxTableHeight: '45vh',
+												filterLayerType: 'My Wells',
+												layerIdentifier: 'My Wells',
+											}}
+										/>
+									)}
+								</Fragment>
 							</div>
-						</TabPanel>
-
-						{/* //// boundary panel //// */}
-						<TabPanel
-							value={mapGridCardActiveTap}
-							index={2}
-							className={classes.tapsPanelsPadding}
-							// style={{ position: "absolute", width: "100vw" }}
-						>
-							<div style={{ position: 'relative' }} classes={classes.gridTables}>
-								<TabPanels
-									value={viewportTapValue}
-									panels={[
-										<ShapeGridWellsTable
-											parent="boundary_grid_wells"
-											header={
-												<TabLabels
-													labels={[
-														`Wells (${stateApp.shapeGridWellsCount || 0})`,
-														`Tax Owners (${stateApp.shapeGridOwnersCount || 0})`,
-													]}
-													value={viewportTapValue}
-													setValue={setViewportTapValue}
-												/>
-											}
-											options={options}
-											targetLabel="well"
-											showTracks
-										/>,
-										<ShapeGridTaxOwnersTable
-											parent="boundary_grid_owners"
-											header={
-												<TabLabels
-													labels={[
-														`Wells (${stateApp.shapeGridWellsCount || 0})`,
-														`Tax Owners (${stateApp.shapeGridOwnersCount || 0})`,
-													]}
-													value={viewportTapValue}
-													setValue={setViewportTapValue}
-												/>
-											}
-											options={options}
-											targetLabel="owner"
-											showTracks
-										/>,
-									]}
-								/>
-							</div>
-						</TabPanel>
-					</div>
-				)}
+						</Grid>
+					</Grid>
+				</div>
 			</Card>
 		);
 	};

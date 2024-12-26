@@ -8,37 +8,35 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
 import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
-
-import { copy } from 'components/Shared/functions';
-import { popupController } from 'hookstate/popupStateController';
-import MRTTable from 'components/MRTTable';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { detailCardStyles } from '../style';
 import { DrawerContextProvider } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
-import ParcelAgreementTable from 'components/Table/Parcel/ParcelAgreementTable';
-import { jobController } from 'hookstate/jobStateController';
-import { layerController } from 'hookstate/layerStateController';
-import { getShapeSubtitle } from '../helper';
-import { mapControlsController } from 'hookstate/mapControlsController';
+import MRTTable from 'components/MRTTable';
 import PotentialShapeTractToolbar from 'components/MRTTable/TablesOverride/PotentialShapeTract/PotentialShapeTractToolbar';
+import { copy } from 'components/Shared/functions';
 import TabPanels from 'components/Shared/TabPanels';
-import TabButtons from 'components/Shared/TabPanels/TabButtons';
 import Tags from 'components/Shared/Tagger';
 import Taps from 'components/Shared/Taps';
-import AssociatedWellsShapeTable from 'components/Table/Wells/AssociatedWellsShapeTable';
+import ParcelAgreementTable from 'components/Table/Parcel/ParcelAgreementTable';
 
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
+
+import { jobController } from 'hookstate/jobStateController';
+import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+import { popupController } from 'hookstate/popupStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
 import { showSuccessMessage, showErrorMessage } from 'actions';
 import { AppContext } from 'AppContext';
 
+import { getShapeSubtitle } from '../helper';
+import { detailCardStyles } from '../style';
 import UnitSummary from './UnitSummary';
 
 const setSelectedTab = tableGlobalController.setSelectedTab;
 
 export default function UnitDetailCard(props) {
 	const dispatch = useDispatch();
-	const [selectedWellTab, setWellSelectedTab] = useState(0);
 	const [uniObj, setUniObj] = useState();
 	const [properties, setProperties] = useState();
 	const [stateApp, setStateApp] = useContext(AppContext);
@@ -301,18 +299,6 @@ export default function UnitDetailCard(props) {
 		);
 	}
 
-	function WellHeader({ selectedWellTab, setWellSelectedTab }) {
-		return (
-			<TabButtons
-				labels={['Unit Wells', 'Potential Wells']}
-				value={selectedWellTab}
-				setValue={n => {
-					setWellSelectedTab(n);
-				}}
-			/>
-		);
-	}
-
 	return uniObj ? (
 		<DrawerContextProvider>
 			<Grid item sm={12} container className={classes.gridWidthScroll}>
@@ -350,7 +336,7 @@ export default function UnitDetailCard(props) {
 									</div>,
 									<div>
 										<MRTTable
-											name="PotentialOwnersTable"
+											name="PotentialWellOwnersTable"
 											overrideMeta={{
 												tabLabels: ['Unit Ownership', 'Potential Ownership'],
 												customProps: {
@@ -375,7 +361,7 @@ export default function UnitDetailCard(props) {
 								/>
 							</div>,
 							<TabPanels
-								value={selectedWellTab}
+								value={selectedTab}
 								panels={[
 									<div className={showSummary ? classes.subContent : classes.subContent2}>
 										<RelatedWellsTable
@@ -386,15 +372,15 @@ export default function UnitDetailCard(props) {
 										/>
 									</div>,
 									<div className={showSummary ? classes.subContent : classes.subContent2}>
-										<AssociatedWellsShapeTable
-											customLayer={uniObj}
-											shapeType="Unit"
-											parent="associatedWellsPerUnits"
-											targetLabel="well"
-											header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
-											showTracks
-											setSelectedTab={setWellSelectedTab}
-											dense
+										<MRTTable
+											name="PotentialWellsTable"
+											overrideMeta={{
+												tabLabels: ['Unit Wells', 'Potential Wells'],
+												customProps: {
+													customLayer: uniObj,
+													shapeType: 'Unit',
+												},
+											}}
 										/>
 									</div>,
 								]}

@@ -25,49 +25,42 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import DeleteIcon from '@material-ui/icons/Delete';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import SearchIcon from '@material-ui/icons/Search';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import _ from 'lodash';
 import get from 'lodash/get';
 import React, { useState, useEffect, useMemo } from 'react';
 import ReactDOM from 'react-dom';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import { useForm, Controller } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 
 import Loaders from 'components/Loaders';
 import { getParcelOriginalProperties } from 'components/ParcelsDetailCard/utils/GetParcelOriginalProps';
 import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
+import AutoCompleteParcelOwners from 'components/Shared/Forms/Fields/AutoCompleteParcelOwners';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
 import AutoCompleteWithNewOption from 'components/Shared/Forms/Fields/AutoCompleteWithNewOption';
+import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
+import { addTrailingZeros } from 'components/Shared/functions';
 import CloseIcon2 from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
-import SearchIcon from '@material-ui/icons/Search';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-
 import TractForm from 'components/Table/TableAddDialog/Common/TractForm';
+
 import { ADD_OWNER_TOA_SHAPE } from 'graphQL/useMutationAddOwnerToAShape';
+import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 import { UPDATE_SHAPE_TRACTS } from 'graphQL/useMutationUpdateShapeTracts';
+import { GET_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetAutoCompleteList';
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+import { GET_TRACT_ABSTRACT_SHAPE } from 'graphQL/useQueryGetTractAbstractShape';
+
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
+
 import RightDialog from '../../ContactDetailCard/components/RightDialog';
 import DeleteConfirmationDialogContent from '../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 
 // contexts
-
-import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
-
-import { addTrailingZeros } from 'components/Shared/functions';
-
-import { GET_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetAutoCompleteList';
-
-import AutoCompleteParcelOwners from 'components/Shared/Forms/Fields/AutoCompleteParcelOwners';
-
-import { GET_TRACT_ABSTRACT_SHAPE } from 'graphQL/useQueryGetTractAbstractShape';
-
-import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
-
-import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
-
-import _ from 'lodash';
-
-import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
-
-import { tableGlobalController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(theme => ({
 	dialogFooter: {

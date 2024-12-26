@@ -1,5 +1,4 @@
 import { Box, Grid, ListItemIcon } from '@material-ui/core';
-import LayerControls from './LayerControls';
 import { FormControlLabel } from '@material-ui/core';
 import { Switch } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
@@ -20,6 +19,7 @@ import { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
 import { globalStateController } from 'hookstate/globalStateController';
 import { mapStateController } from 'hookstate/mapStateController';
 
+import LayerControls from './LayerControls';
 import { getLayerColor } from '../common';
 
 const useStyles = makeStyles(theme => ({

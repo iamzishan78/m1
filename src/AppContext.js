@@ -1,14 +1,12 @@
 import CircularProgress from '@material-ui/core/CircularProgress';
 import queryString from 'query-string';
 import React, { useState, createContext, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { popupController } from 'hookstate/popupStateController';
 
 import { apolloClientEndpointDev, isDev } from 'utils/helper';
 
-import { setMapGridCardState } from './actions';
 import { MSALObj, tenantsCredentials } from './components/AzureLogin/AADAuthConfig';
 import { MSALB2CObj, B2CTenantCredentials } from './components/AzureLogin/AADB2CAuthConfig';
 import { heatLayers, baseMapLayers } from './LayerConfig';
@@ -57,7 +55,6 @@ const AppProvider = props => {
 		openDrawShapesControl: false,
 
 		editLayer: true,
-		selectedOwner: null,
 		owners: null,
 		popupOpen: false, //map used in flyto
 		expandedCard: false, // probably need in a map card context
@@ -188,8 +185,6 @@ const AppProvider = props => {
 
 	window.setStateApp = setStateApp;
 
-	const dispatch = useDispatch();
-
 	useEffect(() => {
 		async function wait() {
 			const query = queryString.parse(window.location.search);
@@ -246,17 +241,6 @@ const AppProvider = props => {
 		}
 		wait();
 	}, []);
-
-	useEffect(() => {
-		dispatch(
-			setMapGridCardState({
-				trackedDataCount:
-					(!stateApp.owners || !stateApp.owners.length ? 0 : stateApp.owners.length) +
-					(!stateApp.trackedwells || !stateApp.trackedwells.length ? 0 : stateApp.trackedwells.length),
-			})
-		);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [stateApp.owners, stateApp.trackedwells]);
 
 	useEffect(() => {
 		globalStateController.updateState({ user: stateApp.user });

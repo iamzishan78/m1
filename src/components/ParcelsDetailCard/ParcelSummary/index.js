@@ -8,29 +8,27 @@ import AddIcon from '@material-ui/icons/Add';
 import GavelIcon from '@material-ui/icons/Gavel';
 import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
 import PersonIcon from '@material-ui/icons/Person';
+import SearchIcon from '@material-ui/icons/Search';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+
+import SummaryTable from 'components/ShapeDetailCard/Common/SummaryTable';
+import CommentComponent from 'components/Shared/CommentComponent';
+import MetaField from 'components/Table/helpers/MetaField';
+
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
+import { SHAPEWELLSCOUNT } from 'graphQL/useQueryShapeWellsCount';
+
+import { globalStateController } from 'hookstate/globalStateController';
+
 import { copy } from 'utils/helper';
 
 import parcelDefaultData from './parcelDefaultData';
 import QtrQtrSelectorNew from '../../ShapeDetailCard/Common/QtrQtrSelectorNew';
 import { addTrailingZeros, getPolygonString } from '../../Shared/functions';
 import WellIcon from '../../Shared/svgIcons/well';
-
-import CommentComponent from 'components/Shared/CommentComponent';
-import SummaryTable from 'components/ShapeDetailCard/Common/SummaryTable';
-
-import SearchIcon from '@material-ui/icons/Search';
-
-import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
-import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
-import { SHAPEWELLSCOUNT } from 'graphQL/useQueryShapeWellsCount';
-
 import { getParcelOriginalProperties } from '../utils/GetParcelOriginalProps';
-
-import MetaField from 'components/Table/helpers/MetaField';
-
-import { globalStateController } from 'hookstate/globalStateController';
 
 const useStyles = makeStyles(theme => ({
 	summaryCard: {

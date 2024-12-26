@@ -10,17 +10,7 @@ import { get } from 'lodash';
 import loadashFilter from 'lodash/filter';
 import React, { useState, useEffect } from 'react';
 
-import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
-import { UPDATE_CONTACT_PURCHASE_DATA } from 'graphQL/useMutationContactPurchaseData';
-import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
-import { UPDATEMELISSA, UPDATEMELISSAADDRESS } from 'graphQL/useMutationUpdateMelissaRecords';
-
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
-
-import { getAddressUrl, getZillowAddressUrl } from 'utils/helper';
-import { AppContext } from 'AppContext';
-import PencilEditIcon from 'components/ContactDetailCard/components/FieldContent/PencilEditIcon';
-import MergeHistory from 'components/ContactDetailCard/components/FieldContent/MergeHistory';
+import ContactStatus from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
 import CopyPurchaseInfo from 'components/ContactDetailCard/components/FieldContent/CopyPurchaseInfo';
 import {
 	textFieldLabels,
@@ -29,20 +19,28 @@ import {
 	FieldTypes,
 	outcomeOptions,
 } from 'components/ContactDetailCard/components/FieldContent/helper';
+import MergeHistory from 'components/ContactDetailCard/components/FieldContent/MergeHistory';
+import PencilEditIcon from 'components/ContactDetailCard/components/FieldContent/PencilEditIcon';
 import useStyles from 'components/ContactDetailCard/components/FieldContent/style';
+import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
+import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
+import GoogleMapIcon from 'components/Shared/svgIcons/GoogleMapIcon';
+import ZillowIcon from 'components/Shared/svgIcons/ZillowIcon';
 
+import { UPDATE_CONTACT_PURCHASE_DATA } from 'graphQL/useMutationContactPurchaseData';
+import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
+import { UPDATEMELISSA, UPDATEMELISSAADDRESS } from 'graphQL/useMutationUpdateMelissaRecords';
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+
+import { getAddressUrl, getZillowAddressUrl } from 'utils/helper';
+
+import { AppContext } from 'AppContext';
+
+import AutoCompleteAddNewField from './AutoCompleteAddNewField';
 import CampaignField from './CampaignField';
 import EntityType from './EntityType';
 import { timeZoneOptions } from './timeZoneList';
-
-import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
-import ContactStatus from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
-
-import AutoCompleteAddNewField from './AutoCompleteAddNewField';
-
-import GoogleMapIcon from 'components/Shared/svgIcons/GoogleMapIcon';
-import ZillowIcon from 'components/Shared/svgIcons/ZillowIcon';
-import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
 
 const filter = createFilterOptions();
 export default function FieldContent({

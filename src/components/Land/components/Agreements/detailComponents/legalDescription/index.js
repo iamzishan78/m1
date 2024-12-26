@@ -63,7 +63,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-export default function LagalDescription({ agreementDetails, uniObj, updateAgreement }) {
+export default function LagalDescription({ agreementDetails, agreementId, uniObj, updateAgreement }) {
 	const classes = useStyles();
 	const customClasses = customStyles();
 	const { reset } = useForm();
@@ -79,17 +79,17 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
 		() => ({
 			tableHeading: 'Related Tracts',
 			maxTableHeight: 'calc(50vh - 100px)',
-			defaultFilters: [{ field: 'shape._id', value: uniObj?._id }],
+			defaultFilters: [{ field: 'shape._id', value: agreementId }],
 			customProps: { customLayer: agreementDetails?.customLayer, shapeType: 'Agreement' },
 			deletedKeys: {
 				mainRecord: { key: '_id' },
-				parentRecord: { value: uniObj?._id },
+				parentRecord: { value: agreementId },
 			},
-			customValue: { parentRecord: uniObj?._id },
+			customValue: { parentRecord: agreementId },
 			columnReordering: false,
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[uniObj?._id]
+		[agreementId]
 	);
 
 	return (

@@ -12,11 +12,16 @@ import Tooltip from '@material-ui/core/Tooltip';
 import AddIcon from '@material-ui/icons/Add';
 import CallIcon from '@material-ui/icons/Call';
 import ClearIcon from '@material-ui/icons/Clear';
+import ContactMailIcon from '@material-ui/icons/ContactMail';
+import EmailIcon from '@material-ui/icons/Email';
+import DefaultIcon from '@material-ui/icons/Event';
 import DeadlineIcon from '@material-ui/icons/Flag';
 import MeetingIcon from '@material-ui/icons/Group';
 import SearchIcon from '@material-ui/icons/Search';
-import React, { Fragment, useContext, useEffect, useState } from 'react';
+import TaskIcon from '@material-ui/icons/WatchLater';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import moment from 'moment';
+import React, { Fragment, useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import CheckCircleIcon from 'components/Shared/svgIcons/CheckCircleIcon';
@@ -26,13 +31,6 @@ import { AppContext } from 'AppContext';
 
 import { UPDATEACTIVITY } from '../../../graphQL/useMutationActivity';
 import { GETALLACTIVITIES } from '../../../graphQL/useQueryGetAllActivities';
-
-import TaskIcon from '@material-ui/icons/WatchLater';
-import EmailIcon from '@material-ui/icons/Email';
-import ContactMailIcon from '@material-ui/icons/ContactMail';
-import DefaultIcon from '@material-ui/icons/Event';
-import moment from 'moment';
-
 import ActivitiesModal from '../../Activities/components/ActivitiesModal';
 
 const useStyles = makeStyles(theme => ({

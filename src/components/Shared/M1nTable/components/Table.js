@@ -1,164 +1,118 @@
 import { anyToDate } from '@amcharts/amcharts4/.internal/core/utils/Utils';
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { Box, ButtonGroup, IconButton, Menu, MenuItem, Select } from '@material-ui/core';
-import { Typography } from '@material-ui/core';
+import { Box, ButtonGroup, IconButton, Menu, MenuItem, Select, Typography } from '@material-ui/core';
 import Badge from '@material-ui/core/Badge';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
-import React, { useState, useContext, useEffect, Fragment } from 'react';
-import { useHistory } from 'react-router-dom';
-import ExpandableCardProvider from '../../../ExpandableCard/ExpandableCardProvider';
-import ParcelsDetailCard from '../../../ParcelsDetailCard/ParcelsDetailCard';
-import WellCardProvider from '../../../WellCard/WellCardProvider';
-import ContactDetailCard from '../../../ContactDetailCard/ContactDetailCard';
-import Tags from '../../Tagger';
-import Comments from '../../Comments';
+import Divider from '@material-ui/core/Divider';
+import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import MUIDataTable, { TableViewCol } from 'mui-datatables';
-import { DndProvider } from 'react-dnd';
-
-import TrackToggleButton from '../../TrackToggleButton';
-
 import Tooltip from '@material-ui/core/Tooltip';
-import ChatIcon from '@material-ui/icons/Chat';
-import CachedIcon from '@material-ui/icons/Cached';
-import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
-import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
+import { Warning as WarningIcon, CheckCircle } from '@material-ui/icons';
+import AssessmentIcon from '@material-ui/icons/Assessment';
 import AssignmentTurnedInOutlinedIcon from '@material-ui/icons/AssignmentTurnedInOutlined';
-import EventOutlinedIcon from '@material-ui/icons/EventOutlined';
+import CachedIcon from '@material-ui/icons/Cached';
+import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
+import ChatIcon from '@material-ui/icons/Chat';
+import CheckIcon from '@material-ui/icons/Check';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import DeleteIcon from '@material-ui/icons/Delete';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
-import TextSMS from '@material-ui/icons/TextsmsOutlined';
+import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+import EditIcon from '@material-ui/icons/Edit';
+import EmailRoundedIcon from '@material-ui/icons/EmailRounded';
+import EventOutlinedIcon from '@material-ui/icons/EventOutlined';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
 import EmailIcon from '@material-ui/icons/Mail';
-import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
-
-import ProductionTableStyle from '../customStyles/ProductionDetailsStyle';
-import M1nTable from '../M1nTable';
-import WellIcon from '../../svgIcons/well';
-import AddContactDialogContent from './SubComponents/AddContactDialogContent';
-import DeleteConfirmationDialogContent from './SubComponents/DeleteConfirmationDialogContent';
-import BuyContactsInfoDialogContent from './SubComponents/BuyContactsInfoDialogContent';
-import CellContentEdition from './SubComponents/CellContentEdition';
-import MakeItAContactConfirmationDialogContent from './SubComponents/MakeItAContactConfirmationDialogContent';
-import EmailRoundedIcon from '@material-ui/icons/EmailRounded';
-import EditIcon from '@material-ui/icons/Edit';
 import MergeTypeIcon from '@material-ui/icons/MergeType';
-
-import PrintLabelsDialogContent from './SubComponents/PrintLabelsDialogContent';
-import MergeContactDrawer from './SubComponents/MergeContactDrawer';
-import ReinviteUserDialog from './SubComponents/ReinviteUserDialog';
-import SendMailersDialogContent from './SubComponents/SendMailersDialogContent';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Divider from '@material-ui/core/Divider';
-import Avatar from 'react-avatar';
-import RoomIcon from '@material-ui/icons/Room';
-import { useDispatch } from 'react-redux';
-
-import { setMapGridCardState } from 'actions';
-
-import { deepEqualObjects, setStateIfDeepEqual } from '../../functions';
-
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import MoreVertOutlinedIcon from '@material-ui/icons/MoreVertOutlined';
-
-import AddParcelToEntityDialogContent from './SubComponents/AddParcelToEntityDialogContent/AddParcelToEntityDialogContent';
-import Convert_contact from '../../svgIcons/convert_contact';
-import Contact_card from '../../svgIcons/contact_card';
-import ParcelScreenIcon from '../../svgIcons/parcelScreen';
-
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import PageviewIcon from '@material-ui/icons/Pageview';
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import PostAddIcon from '@material-ui/icons/PostAdd';
+import RoomIcon from '@material-ui/icons/Room';
+import TextSMS from '@material-ui/icons/TextsmsOutlined';
 import debounce from 'lodash/debounce';
 import isEmpty from 'lodash/isEmpty';
-import AssessmentIcon from '@material-ui/icons/Assessment';
+import moment from 'moment';
+import MUIDataTable, { TableViewCol } from 'mui-datatables';
+import React, { useState, useContext, useEffect, Fragment } from 'react';
+import Avatar from 'react-avatar';
+import { DndProvider } from 'react-dnd';
+import { useDispatch } from 'react-redux';
+import { Link, useHistory } from 'react-router-dom';
 
+import AddActivityDialog from 'components/ContactDetailCard/components/AddActivityDialog';
+import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import StackedBarChart from 'components/Shared/Charts/StackedBarChart';
+import ExportContacts from 'components/Shared/ExportContacts';
+import { FEATURES, ROUTES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+import get_file_icon from 'components/Shared/functions/get_file_icon.js';
+import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
+import CustomFieldText from 'components/Shared/M1nTable/components/SubComponents/CustomFieldText';
+import RequestPageIcon from 'components/Shared/svgIcons/request_page';
+import capitalizeFirstLetter from 'components/Shared/valueformatters/capitalize-first-letter.js';
+import convert_date from 'components/Shared/valueformatters/convert_date.js';
+import ticksToDateString from 'components/Shared/valueformatters/ticks-to-string.js';
+import vf_currency from 'components/Shared/valueformatters/vf_currency';
+
+import { AUTO_CALCULATE_OFFER_PRICE } from 'graphQL/useMutationAutoCalculateOfferPrice';
+import { CONTACT } from 'graphQL/useQueryContact';
+import { GET_VIEW_TOKEN_URI } from 'graphQL/useQueryGetViewTokenUri';
+import { LEASELATSLONS } from 'graphQL/useQueryLeaseLatsLonsArray';
+import { OPERATORSLATSLONS } from 'graphQL/useQueryOperatorLatsLonsArray';
+import { OWNERSLATSLONS } from 'graphQL/useQueryOwnerLatsLonsArray';
+import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
 import { WELLQUERY } from 'graphQL/useQueryWell';
 
-import ParcelOwnershipStyles from '../customStyles/ParcelOwnership';
-import WellTableStyles from '../customStyles/WellTableStyle';
-
-import moment from 'moment';
+import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+import { navController } from 'hookstate/navStateController';
+import { popupController } from 'hookstate/popupStateController';
 
 import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
 
-import ExportContacts from 'components/Shared/ExportContacts';
-
-import Grid from '@material-ui/core/Grid';
-import { Warning as WarningIcon, CheckCircle } from '@material-ui/icons';
-
-import StackedBarChart from 'components/Shared/Charts/StackedBarChart';
-
-import ButtonDropDown from './ButtonGroup';
-// auto complete for well API#
-// import SearchWells from "components/Shared/Wells/WellsAutoCompleteFilter";
-
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-
-// contexts
 import { AppContext } from 'AppContext';
 
-// mui components
-
-// functions / value formatters
-import capitalizeFirstLetter from 'components/Shared/valueformatters/capitalize-first-letter.js';
-import vf_currency from 'components/Shared/valueformatters/vf_currency';
-import ticksToDateString from 'components/Shared/valueformatters/ticks-to-string.js';
-import convert_date from 'components/Shared/valueformatters/convert_date.js';
-import get_file_icon from 'components/Shared/functions/get_file_icon.js';
-import RightDialog from 'components/ContactDetailCard/components/RightDialog';
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import { FEATURES, ROUTES } from 'components/Shared/FeatureFlag/common';
-import CustomFieldText from 'components/Shared/M1nTable/components/SubComponents/CustomFieldText';
-// import CustomFieldSelectV2 from "./SubComponents/CustomFieldSelectV2";
-// import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
-
-// queries
-import { OWNERSLATSLONS } from 'graphQL/useQueryOwnerLatsLonsArray';
-import { OPERATORSLATSLONS } from 'graphQL/useQueryOperatorLatsLonsArray';
-import { LEASELATSLONS } from 'graphQL/useQueryLeaseLatsLonsArray';
-import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
-
-//icons
-import GetAppIcon from '@material-ui/icons/GetApp';
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
-
-// import LocationOnIcon from '@material-ui/icons/LocationOn';
-// import { ReactComponent as RequestPageIcon } from 'components/Shared/svgIcons/request_page_icon.svg';
-import RequestPageIcon from 'components/Shared/svgIcons/request_page';
-
-// import RequestPageIcon from 'components/Shared/svgIcons/request_page_icon';
-import PageviewIcon from '@material-ui/icons/Pageview';
-import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
-import PostAddIcon from '@material-ui/icons/PostAdd';
-
+import ButtonDropDown from './ButtonGroup';
+import M1nTable from '../M1nTable';
+import TableBody from './MUIDataTable/TableBody';
+import AddContactDialogContent from './SubComponents/AddContactDialogContent';
+import AddParcelToEntityDialogContent from './SubComponents/AddParcelToEntityDialogContent/AddParcelToEntityDialogContent';
+import BuyContactsInfoDialogContent from './SubComponents/BuyContactsInfoDialogContent';
+import CellContentEdition from './SubComponents/CellContentEdition';
+import DeleteConfirmationDialogContent from './SubComponents/DeleteConfirmationDialogContent';
+import MakeItAContactConfirmationDialogContent from './SubComponents/MakeItAContactConfirmationDialogContent';
+import MergeContactDrawer from './SubComponents/MergeContactDrawer';
+import PrintLabelsDialogContent from './SubComponents/PrintLabelsDialogContent';
+import ReactSelectField from './SubComponents/ReactSelectField';
+import SendMailersDialogContent from './SubComponents/SendMailersDialogContent';
+import ContactDetailCard from '../../../ContactDetailCard/ContactDetailCard';
+import ExpandableCardProvider from '../../../ExpandableCard/ExpandableCardProvider';
+import ParcelsDetailCard from '../../../ParcelsDetailCard/ParcelsDetailCard';
+import WellCardProvider from '../../../WellCard/WellCardProvider';
+import Comments from '../../Comments';
+import Contact_card from '../../svgIcons/contact_card';
 import FilterIcon from '../../svgIcons/filter';
 import ViewColumnIcon from '../../svgIcons/view_column';
-
-import CheckIcon from '@material-ui/icons/Check';
-
-import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
-// import Link from "@material-ui/core/Link";
-import AddActivityDialog from 'components/ContactDetailCard/components/AddActivityDialog';
-
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-
-import { CONTACT } from 'graphQL/useQueryContact';
-
-import ReactSelectField from './SubComponents/ReactSelectField';
-import TableBody from './MUIDataTable/TableBody';
-
-import { AUTO_CALCULATE_OFFER_PRICE } from 'graphQL/useMutationAutoCalculateOfferPrice';
-
-import { Link } from 'react-router-dom';
-
-import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
-
-import { GET_VIEW_TOKEN_URI } from 'graphQL/useQueryGetViewTokenUri';
-
-import { popupController } from 'hookstate/popupStateController';
-import { navController } from 'hookstate/navStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { layerController } from 'hookstate/layerStateController';
+import WellIcon from '../../svgIcons/well';
+import Tags from '../../Tagger';
+import TrackToggleButton from '../../TrackToggleButton';
+import ProductionTableStyle from '../customStyles/ProductionDetailsStyle';
+import ReinviteUserDialog from './SubComponents/ReinviteUserDialog';
+import { deepEqualObjects, setStateIfDeepEqual } from '../../functions';
+import Convert_contact from '../../svgIcons/convert_contact';
+import ParcelScreenIcon from '../../svgIcons/parcelScreen';
+import ParcelOwnershipStyles from '../customStyles/ParcelOwnership';
+import WellTableStyles from '../customStyles/WellTableStyle';
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
@@ -703,8 +657,6 @@ function SubTable(props) {
 			let a = document.createElement('a');
 			a.href = viewFileResult.viewFile.uri;
 			a.download = viewFileResult.viewFile.name;
-			// selectors
-			// const { searchloading } = useSelector(({ MapGridCard }) => MapGridCard);
 
 			// if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
 			// a.target = "_blank";
@@ -1710,17 +1662,6 @@ function SubTable(props) {
 																setTitle(selectedWell.wellName ? selectedWell.wellName : selectedWell.WellName);
 																setSubTitle(selectedWell.api ? selectedWell.api : selectedWell.api);
 																handleOpenExpandableCard();
-															} else if (props.targetLabel === 'owner') {
-																if (props.parent === 'OwnersPerWell') {
-																	selectedWell.id = selectedWell.globalOwnerId;
-																	delete selectedWell.globalOwnerId;
-																}
-
-																dispatch(
-																	setMapGridCardState({
-																		selectedOwner: selectedWell,
-																	})
-																);
 															}
 														}
 													}

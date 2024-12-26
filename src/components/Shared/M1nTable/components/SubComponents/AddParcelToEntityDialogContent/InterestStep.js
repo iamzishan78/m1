@@ -5,12 +5,14 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import React, { useContext, useState, useEffect } from 'react';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import React, { useContext, useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { showErrorMessage, showSuccessMessage } from '../../../../../../actions';
@@ -18,10 +20,6 @@ import { AppContext } from '../../../../../../AppContext';
 import { ADDOWNERTOAPARCEL } from '../../../../../../graphQL/useMutationAddOwnerToAParcel';
 import { ALLENTITYNAMESFORPARCEL } from '../../../../../../graphQL/useQueryAllEntityNamesToAddAsParcelOwner';
 import { Modals } from '../../../../../../styles/Modal';
-
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-
 import AutocompEntityNamesVirtualizeList from '../AutocompEntityNamesVirtualizeList';
 
 const entities = [

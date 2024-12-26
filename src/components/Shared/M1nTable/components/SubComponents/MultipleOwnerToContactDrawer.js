@@ -131,8 +131,8 @@ const MultipleOwnerToContactDrawer = ({
 		getContactCampaignAction({
 			search: '*',
 		});
-		// eslint-disable-next-line
-	}, [searchCampaign]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	useEffect(() => {
 		if (allContacts?.paginatedContacts) {

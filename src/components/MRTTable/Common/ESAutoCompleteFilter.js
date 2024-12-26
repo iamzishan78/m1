@@ -310,7 +310,7 @@ function ESAutoCompleteFilter({
 					return op;
 				}
 
-				return op?.label || op?.name || '';
+				return op?.label ?? op?.name ?? '';
 			}}
 			loading={loading}
 			filterOptions={searchMapping[searchMode].filterOptions}

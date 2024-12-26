@@ -9,22 +9,22 @@ import {
 	ThumbUpAltOutlined as ThumbUpAltOutlinedIcon,
 	ExpandMore as ExpandMoreIcon,
 } from '@material-ui/icons';
-
-import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
-import CommentField from 'components/Shared/components/Fields/CommentField';
-
-import ReactTimeAgo from 'react-time-ago';
+import DOMPurify from 'dompurify';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 import ru from 'javascript-time-ago/locale/ru';
-import moment from 'moment';
-import DOMPurify from 'dompurify';
 import { get } from 'lodash';
+import moment from 'moment';
 import React, { useState, useEffect, Fragment, useRef, useCallback } from 'react';
 import Avatar from 'react-avatar';
 import { useDispatch } from 'react-redux';
+import ReactTimeAgo from 'react-time-ago';
+
+import CommentField from 'components/Shared/components/Fields/CommentField';
+
 import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
 import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
+import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
 import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
 import { GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
@@ -197,7 +197,6 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 				// If word contains {{username}} syntax, process it separately
 				if (word.includes('{{') && word.includes('}}')) {
 					const splittedWord = word.split(/\r?\n/);
-					console.log('splittedWord', splittedWord);
 
 					if (splittedWord.length) {
 						return (
