@@ -1,5 +1,5 @@
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 import { formatDate } from 'components/Shared/functions';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
