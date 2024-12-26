@@ -157,6 +157,7 @@ const ActivitiesDashboard = () => {
 					appliedFilters={appliedFilters}
 					setAppliedFilters={setAppliedFilters}
 					searchFields={auditReportingTableState.searchFields}
+					globalFilter={auditReportingTableState.globalFilter}
 				/>
 			}
 			<Box sx={{ padding: '1em', marginLeft: '1em' }}>
