@@ -36,6 +36,7 @@ import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
 
 import { drawController } from 'hookstate/drawStateController';
 import { globalStateController } from 'hookstate/globalStateController';
+import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { layerController } from 'hookstate/layerStateController';
 import { mapStateController } from 'hookstate/mapStateController';
 import { navController } from 'hookstate/navStateController';
@@ -45,10 +46,19 @@ import { baseTenantsMaps } from 'utils/data';
 
 import { layerRefs } from 'hookstate';
 
+import HugeRequest from './components/HugeRequest';
 import DeckGL from './DeckGL';
+import onRightClick from './DeckGL/helpers/onRightClick';
 import DefaultFiltersTest from './filtersDefaultTest';
 import { setMainMapState } from '../../actions';
+import { SRMode } from './MapBoxDrawRotate/index';
+import { AppContext } from '../../AppContext';
+import { ALLLAYERSETTINGSBYUSER } from '../../graphQL/useQueryAllLayerSettingsByUser';
+import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
 import { copy } from '../Shared/functions';
+import ZoomFault from './components/ZoomFault';
+import { extractUniqueFilters, getClickedFeature } from './DeckGL/helpers/common';
+import onFeatureClick from './DeckGL/helpers/onFeatureClick';
 import MarkerIcon from './sprites/marker-icon.png';
 import MapGridCardProvider from '../MapGridCard/MapGridProvider';
 import {
@@ -56,27 +66,17 @@ import {
 	drawWellBoundary,
 	drawPlaceBoundary,
 } from '../MapControls/components/DrawShapes/drawShapesHelpers';
-import HugeRequest from './components/HugeRequest';
-import ZoomFault from './components/ZoomFault';
-import { SRMode } from './MapBoxDrawRotate/index';
 
 // queries
-import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
-import { ALLLAYERSETTINGSBYUSER } from '../../graphQL/useQueryAllLayerSettingsByUser';
 
 // contexts
-import { AppContext } from '../../AppContext';
-import onFeatureClick from './DeckGL/helpers/onFeatureClick';
-import { extractUniqueFilters, getClickedFeature } from './DeckGL/helpers/common';
 
 import MapControls from 'components/MapControls/MapControls';
 import SpeedDialComponent from 'components/MapControls/SpeedDialComponent';
 
 import DeckGlLayer from './DeckGL/helpers/DeckGlLayer';
-import onRightClick from './DeckGL/helpers/onRightClick';
 import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
 
-import { layerFiltersController } from 'hookstate/layerFiltersController';
 
 const useStyles = makeStyles(() => ({
 	mapWrapper: {
@@ -951,7 +951,7 @@ function Map({
 					newMap.addImage('marker-icon', image, { sdf: true });
 				});
 				setTimeout(() => {
-					new DeckGlLayer({
+					DeckGlLayer.addLayer({
 						layerId: 'top_deck_layer',
 						type: 'ScatterplotLayer',
 						props: {
@@ -959,7 +959,7 @@ function Map({
 						},
 					});
 
-					new DeckGlLayer({
+					DeckGlLayer.addLayer({
 						layerId: 'first_deck_layer',
 						type: 'ScatterplotLayer',
 						beforeLayer: 'top_deck_layer',

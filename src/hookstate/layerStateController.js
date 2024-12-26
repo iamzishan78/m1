@@ -410,13 +410,13 @@ const layerStateControllerHandler = state => {
 				return;
 			}
 
-			DeckGlLayer.updateLayer(updatedState, window.mapRef?.getLayer(layer.id)?.implementation);
+			DeckGlLayer.updateLayer(updatedState, layer.id);
 		});
 	};
 
 	const updateLayer = (layer, updatedState) => {
 		const layerId = `${layer?.identifier}_${layer._id}`;
-		DeckGlLayer.updateLayer(updatedState, window.mapRef?.getLayer(layerId)?.implementation);
+		DeckGlLayer.updateLayer(updatedState, layerId);
 	};
 
 	const removeLayer = (layer, recalculate = false) => {
@@ -439,7 +439,7 @@ const layerStateControllerHandler = state => {
 
 		setTimeout(() => {
 			if (recalculate) {
-				baseLayerController.recalculate();
+				// baseLayerController.recalculate();
 			}
 		}, 10);
 	};
@@ -599,14 +599,14 @@ const layerStateControllerHandler = state => {
 		}
 	};
 
-	const reinitializeLayer = ({ meta, layerId, beforeLayerId, labelProps, pickable, visible }) => {
+	const reinitializeLayer = ({ meta, layerId, beforeLayerId, labelProps, pickable, visible, position }) => {
 		if (!deckLayers[layerId]) {
 			deckLayers[layerId] = {
 				getData: generateDataFunc(),
 				beforeLayerId,
 			};
 			const metaLayer = meta.layer;
-			const deckLayer = new DeckGlLayer({
+			const deckLayer = DeckGlLayer.addLayer({
 				layerId: layerId,
 				type: metaLayer.type,
 				beforeLayer: beforeLayerId,
@@ -616,6 +616,7 @@ const layerStateControllerHandler = state => {
 					...(labelProps && { getText: d => d.properties?.label }),
 					pickable,
 					visible,
+					position,
 				},
 			});
 
@@ -704,7 +705,7 @@ const layerStateControllerHandler = state => {
 			};
 		}
 
-		reinitializeLayer({ meta, layerId, beforeLayerId, labelProps, pickable, visible });
+		reinitializeLayer({ meta, layerId, beforeLayerId, labelProps, pickable, visible, position: dbLayer.position });
 
 		if (isUpdateTrigger) {
 			const newId = uuid();

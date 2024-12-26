@@ -97,7 +97,7 @@ export const drawWellBoundary = coordinates => {
 	}
 
 	if (coordinates && coordinates.length > 0 && coordinates[0]) {
-		new DeckGlLayer({
+		DeckGlLayer.addLayer({
 			layerId,
 			type: 'GeoJsonLayer',
 			beforeLayer: 'top_deck_layer',
@@ -137,7 +137,7 @@ export const drawPlaceBoundary = coordinates => {
 	}
 
 	if (coordinates && coordinates.length > 0 && coordinates[0]) {
-		new DeckGlLayer({
+		DeckGlLayer.addLayer({
 			layerId,
 			type: 'GeoJsonLayer',
 			beforeLayer: 'top_deck_layer',
@@ -180,7 +180,7 @@ export const drawBoundary = (selectedUserDefinedLayer, layer_Id) => {
 
 	if (selectedUserDefinedLayer?.geometry) {
 		const type = selectedUserDefinedLayer.geometry.type;
-		new DeckGlLayer({
+		DeckGlLayer.addLayer({
 			layerId,
 			type: 'GeoJsonLayer',
 			beforeLayer: 'top_deck_layer',

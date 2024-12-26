@@ -1,3 +1,4 @@
+import { CollisionFilterExtension } from '@deck.gl/extensions';
 import * as turf from '@turf/turf';
 import hexRgb from 'hex-rgb';
 import _, { isEqual } from 'lodash';
@@ -682,12 +683,13 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 
 	if (labelProps && labelProps.visibility !== 'none') {
 		props.getTextSize = f => {
-			return f.properties.textSize;
+			return 20
 		};
-		props.textMaxWidth = 500;
+		// props.textMaxWidth = 5;
 		props.pointType = 'text';
+
 		props.textFontFamily = 'Poppins';
-		props.textSizeUnits = 'meters';
+		// props.textSizeUnits = 'meters';
 	} else if (labelProps?.visibility) {
 		// Adhoc Fix
 		props.pointType = 'icon';
