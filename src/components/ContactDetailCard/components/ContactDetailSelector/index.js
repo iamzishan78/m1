@@ -23,6 +23,7 @@ import { CONTACT_SUMMARY } from 'graphQL/useQueryContactSummary';
 import { AppContext } from 'AppContext';
 
 import { contactDetailInitialData } from './data';
+import { tableController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(theme => ({
 	card: {
@@ -147,6 +148,17 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 				variables: {
 					contactId: contactData._id,
 				},
+			});
+			tableController('ContactDetailContactsTable')?.updateState({
+				defaultFilters: [{ field: 'relatedContacts.relatedObject', value: contactData?._id, isArrayKey: true }],
+				maxTableHeight,
+				deletedKeys: {
+					mainRecord: { key: '_id' },
+					parentRecord: { value: contactData?._id },
+				},
+				customProps: { contactId: contactData?._id },
+				customValue: { parentRecord: contactData?._id },
+				refetchQueries: ['getContactSummary'],
 			});
 		}
 	}, [getContactSummary, contactData]);

@@ -8,6 +8,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 
 import DetailTabsSection from 'components/Analytics/components/Revenue/DetailTabsSection';
+
 import MRTTable from 'components/MRTTable';
 import CustomDates from 'components/Revenue/components/Common/CustomDates';
 import LastCheckDateFilter from 'components/Revenue/components/Common/LastCheckDateFilter';
@@ -22,7 +23,6 @@ import { tableController } from 'hookstate/tableController';
 
 import AcquisitionIdDropdown from './AcquisitionIdDropdown';
 import AnalyticsCards from './Analytics';
-import CheckDetailsSection from './CheckDetailsSection';
 import PurchasersDropdown from './PurchasersDropdown';
 import SalesVolumeComparisonSection from './SalesVolumeComparisonSection';
 
@@ -46,14 +46,6 @@ const useStyles = makeStyles(theme => ({
 	divider: {
 		height: '10px',
 		backgroundColor: '#f3f3f3',
-	},
-
-	sectionCard: {
-		'& div': {
-			'&>.MuiPaper-root': {
-				'&>:nth-child(3)': { minHeight: 'calc(100vh - 265px) !important', maxHeight: '35vh' },
-			},
-		},
 	},
 
 	revenueTableInfContainer: {
@@ -441,8 +433,8 @@ export default function RevenueAnalytics(props) {
 			)}
 
 			{tabs[tab] === 'Check Details' && (
-				<div className={`${classes.sectionCard}`}>
-					<CheckDetailsSection header="Check Details" loadMore={loadMore} />
+				<div>
+					<MRTTable name={'RevenueCheckDetailTable'} />
 				</div>
 			)}
 

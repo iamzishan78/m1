@@ -54,6 +54,7 @@ import UnitRelatedAgreementMeta from './unit_relatedAgreements_schema';
 import UnitMeta from './unit_schema';
 import UnitTractsMeta from './unit_tract_schema';
 import WellsMeta from './wells_schema';
+import CheckDetailsMeta from './check_details_schema';
 
 export const SCHEMA = {
 	ActivityTable: ActivityMeta,
@@ -117,6 +118,7 @@ export const SCHEMA = {
 	RelatedWellsTable: RelatedWellsMeta,
 	AuditReportingTable: AuditReportingMeta, // Revenue Statement grid => revenue/statements
 	BulkDataEditingTable: BulkDataEditingMeta,
+	CheckDetailsTable: CheckDetailsMeta, // revenue > statement > checkDetails
 
 	// Query Tables
 	PotentialWellOwnersTable: PotentialWellOwnersMeta,

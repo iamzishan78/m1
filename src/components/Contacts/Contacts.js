@@ -33,7 +33,8 @@ export default function Contacts() {
 			}
 			dispatch(setActiveModule(option));
 		}
-	}, [dispatch, location.pathname]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [location.pathname]);
 
 	const handlePanelStateChange = state => {
 		dispatch(toggleQuickActionsPanel(state));
