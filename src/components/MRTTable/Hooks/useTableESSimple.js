@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -104,7 +104,6 @@ const useTableESSimple = tableKey => {
 			enableRowVirtualization: !!tableStateValues?.isInFiniteScroll,
 			enableColumnVirtualization: !!tableStateValues?.columnVirtualization,
 			rowVirtualizerInstanceRef, // get access to the virtualizer instance
-			// rowVirtualizerProps: { overscan: 5 },
 			enableDensityToggle: false,
 			enableColumnFilterModes: true,
 			// enableColumnOrdering: true,
@@ -112,7 +111,7 @@ const useTableESSimple = tableKey => {
 				typeof tableStateValues?.columnReordering === 'boolean' ? tableStateValues?.columnReordering : true,
 			enableColumnResizing: true,
 			enableRowSelection: true,
-			enablePinning: true,
+			enableColumnPinning: true,
 			// enableMultiRowSelection: true,
 			// enableSelectAll: true,
 			enableStickyHeader: true,

@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import { Box } from '@mui/material';
 
 import { get } from 'lodash';
@@ -6,6 +9,8 @@ import { addTrailingZeros, formatDate } from 'components/Shared/functions';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 
 import { tableController } from 'hookstate/tableController';
+
+import { CURRENCY_TO_FIXED, TO_FIXED } from 'utils/consts';
 
 export const CommonSchema = {
 	COMMENTS: {
@@ -71,7 +76,7 @@ export const CommonSchema = {
 		isAlwaysHidden: true,
 		isSearchField: false,
 		hidden: true,
-		enablePinning: false,
+		enableColumnPinning: false,
 		enableHiding: false,
 		enableColumnActions: false,
 		enableColumnOrdering: false,
@@ -82,7 +87,7 @@ export const CommonSchema = {
 		isSearchField: false,
 		hidden: true,
 		enableColumnFilter: false,
-		enablePinning: false,
+		enableColumnPinning: false,
 		enableColumnActions: false,
 		enableColumnOrdering: false,
 		enableSorting: false,
@@ -216,7 +221,7 @@ export const CommonSchema = {
 						...sx,
 					}}
 				>
-					{parseFloat(cell.getValue().toFixed(3))}
+					{parseFloat(cell.getValue().toFixed(TO_FIXED))}
 				</Box>
 			</>
 		),
@@ -234,7 +239,7 @@ export const CommonSchema = {
 			const mongoKey = `sum_${field}`.replace(/\./g, '_');
 			const value = get(footerProps, `${mongoKey}[0].${mongoKey}`);
 
-			return <div>{value ? addTrailingZeros(parseFloat(value).toFixed(8)) : 0}</div>;
+			return <div>{value ? addTrailingZeros(parseFloat(value).toFixed(TO_FIXED)) : 0}</div>;
 		},
 	}),
 	INTEREST_COLUMN: {
@@ -247,9 +252,12 @@ export const CommonSchema = {
 		type: 'number',
 		Cell: ({ renderedCellValue }) => {
 			const value = renderedCellValue?.props?.['aria-label'] ?? renderedCellValue;
-			if (value || value === 0) {
-				return <>{!value ? value : addTrailingZeros(parseFloat(value).toFixed(8))}</>;
+
+			if (!value && value !== 0) {
+				return null;
 			}
+
+			return <>{!value ? value : addTrailingZeros(parseFloat(value).toFixed(TO_FIXED))}</>;
 		},
 	},
 	CURRENCY_COLUMN: {
@@ -262,9 +270,12 @@ export const CommonSchema = {
 		type: 'number',
 		Cell: ({ renderedCellValue }) => {
 			const value = renderedCellValue?.props?.['aria-label'] ?? renderedCellValue;
-			if (value || value === 0) {
-				return <>{!value ? `$${value}` : vf_currency_to_fixed(value, 2)}</>;
+
+			if (!value && value !== 0) {
+				return null;
 			}
+
+			return <>{!value ? `$${value}` : vf_currency_to_fixed(value, CURRENCY_TO_FIXED)}</>;
 		},
 	},
 	STRING_COLUMN: {
