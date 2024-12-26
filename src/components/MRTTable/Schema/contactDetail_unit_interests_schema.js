@@ -1,11 +1,9 @@
-import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
-import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import ListChips from 'components/Common/ListChips';
 import { CommonSchema } from './common_schema';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import { Typography } from '@material-ui/core';
 
 const esIndex = 'shapeowners_flat';
 
@@ -19,7 +17,6 @@ const ContactDetailUnitInterestMeta = {
 	defaultSort: { field: '_ts', order: 'desc' },
 	isInFiniteScroll: true,
 	columnVirtualization: true,
-	isElasticQuery: false,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
@@ -120,71 +117,60 @@ const ContactDetailUnitInterestMeta = {
 			header: 'Tax Year',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			name: 'working_interest',
 			accessorFn: row => row?.working_interest,
 			id: 'working_interest',
-			isSearchField: false,
 			header: 'Working Interest',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			name: 'royalty_interest',
 			accessorFn: row => row?.royalty_interest,
 			id: 'royalty_interest',
-			isSearchField: false,
 			header: 'Royalty Interest',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			name: 'orri',
 			accessorFn: row => row?.orri,
 			id: 'orri',
-			isSearchField: false,
 			header: 'ORRI',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			name: 'nri',
 			accessorFn: row => row?.nri,
 			id: 'nri',
-			isSearchField: false,
 			header: 'NRI',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			name: 'nra',
 			accessorFn: row => row?.nra,
 			id: 'nra',
-			isSearchField: false,
 			header: 'NRA',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'offer_price',
 			accessorFn: row => row?.offer_price,
 			id: 'offer_price',
 			header: 'Target Offer Price',
-			isSearchField: false,
-			Cell: ({ row }) => <Typography>{vf_currency_to_fixed(row?.original?.offer_price, 2)}</Typography>,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'max_offer_price',
 			accessorFn: row => row?.max_offer_price,
 			id: 'max_offer_price',
 			header: 'Max Offer Price',
-			isSearchField: false,
-			Cell: ({ row }) => <Typography>{vf_currency_to_fixed(row?.original?.max_offer_price, 2)}</Typography>,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'actual_offer_price',
 			accessorFn: row => row?.actual_offer_price,
 			id: 'actual_offer_price',
 			header: 'Actual Offer Price',
-			isSearchField: false,
-			Cell: ({ row }) => <Typography>{vf_currency_to_fixed(row?.original?.actual_offer_price, 2)}</Typography>,
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -194,11 +180,14 @@ const ContactDetailUnitInterestMeta = {
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'campaignName.keyword',
-			accessorFn: row => row?.campaignName,
-			id: 'campaignName',
-			header: 'Campaign',
-			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
+			type: 'array',
+			name: 'campaigns',
+			accessorFn: row => row?.campaigns,
+			id: 'campaigns',
+			header: 'Campaigns',
+			Cell: ({ row }) => {
+				return <CampaignField value={row?.original?.campaigns} fullWidth disabled />;
+			},
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,

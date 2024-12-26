@@ -15,7 +15,11 @@ const onClickedRow = selectedRow => {
 		});
 	} else if (selectedRow?._id) {
 		tableGlobalController.updateState({
-			paymentMultiGrid: { showMultiGrid: true, paymentId: selectedRow._id, paymentAmount: selectedRow?.amount },
+			paymentMultiGrid: {
+				showMultiGrid: true,
+				paymentId: selectedRow._id,
+				paymentAmount: selectedRow?.amount,
+			},
 		});
 	}
 };
@@ -23,7 +27,6 @@ const onClickedRow = selectedRow => {
 // Related Payments Meta
 const RelatedPaymentsMeta = {
 	esIndex,
-	isElasticQuery: false,
 	onClickedRow,
 	pageSize: 50,
 	pagination: {
@@ -35,7 +38,6 @@ const RelatedPaymentsMeta = {
 	isInFiniteScroll: true,
 	columnReordering: false,
 	enableRowSelected: true,
-	bypassSelectAll: true,
 	hasMultiGrids: true,
 	TableSchema: [
 		{
@@ -107,7 +109,7 @@ const RelatedPaymentsMeta = {
 			header: 'Amount',
 			Cell: ({ row }) => {
 				const value = row?.original?.amount;
-				return value ? vf_currency_to_fixed(parseFloat(value), 2) : '';
+				return value ? vf_currency_to_fixed(parseFloat(value), 2) : value === 0 ? `$0` : '';
 			},
 		},
 		{
@@ -119,7 +121,7 @@ const RelatedPaymentsMeta = {
 			type: 'number',
 			Cell: ({ row }) => {
 				const value = row?.original?.companyShare;
-				return value ? vf_currency_to_fixed(parseFloat(value), 2) : '';
+				return value ? vf_currency_to_fixed(parseFloat(value), 2) : value === 0 ? `$0` : '';
 			},
 		},
 		{

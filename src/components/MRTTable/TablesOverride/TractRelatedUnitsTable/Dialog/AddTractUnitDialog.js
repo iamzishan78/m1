@@ -49,7 +49,7 @@ function AddTractUnitDialog(props) {
 		{ name: 'uMaxUnitPricing', label: 'Max Unit Pricing (per NRA)' },
 		{ name: 'qualifier', label: 'Qualifier' },
 		{ name: 'reviewer', label: 'Reviewer' },
-		{ name: 'campaignNames', label: 'Campaign' },
+		{ name: 'campaigns', label: 'Campaigns' },
 	];
 	const [loading, setLoading] = useState(false);
 	const [selectedShapeLayer, setSelectedShapeLayer] = useState(null);
@@ -70,10 +70,10 @@ function AddTractUnitDialog(props) {
 				...selectedShapeLayer?.shapeJson?.properties,
 				qualifier: selectedShapeLayer?.shapeJson?.properties?.qualifier?.name,
 				reviewer: selectedShapeLayer?.shapeJson?.properties?.reviewer?.name,
-				campaignNames: selectedShapeLayer?.shapeJson?.properties?.campaignName?.join(', '),
+				campaigns: selectedShapeLayer?.shapeJson?.properties?.campaigns?.map(c => c.name)?.join(', '),
 			});
 		}
-	}, [selectedShapeLayer]);
+	}, [reset, selectedShapeLayer]);
 
 	const handleClose = () => {
 		setSelectedShapeLayer(null);

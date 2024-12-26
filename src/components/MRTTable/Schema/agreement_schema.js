@@ -2,7 +2,7 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import Agreements from 'components/Shared/svgIcons/agreements';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import Grid from '@material-ui/core/Grid';
-import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { formatDate } from 'components/Shared/functions';
 import { tableGlobalController } from 'hookstate/tableController';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
@@ -64,7 +64,6 @@ export const AgreementTypes = {
 
 const AgreementMeta = {
 	esIndex,
-	isElasticQuery: false,
 	pageSize: 50,
 	pagination: {
 		pageIndex: 0,

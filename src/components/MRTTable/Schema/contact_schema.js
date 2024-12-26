@@ -1,6 +1,5 @@
 import Avatar from 'react-avatar';
 import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
-import moment from 'moment';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
 import Contact from 'components/Shared/svgIcons/contact';
@@ -9,8 +8,8 @@ import ContactToolbar from 'components/MRTTable/TablesOverride/ContactTable/Cont
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import Loaders from 'components/Loaders';
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact.js';
 import { copy } from 'utils/helper';
@@ -59,7 +58,6 @@ const onCustomKeyChange = async (client, row, value, item) => {
 const ContactMeta = {
 	esIndex,
 	pageSize: 25,
-	isElasticQuery: false,
 	defaultSort: { field: 'lastUpdateAt', order: 'desc', unmapped_type: 'date' },
 	maxTableHeight: 'calc(100vh - 200px)',
 	CustomToolBar: ContactToolbar,
@@ -79,10 +77,7 @@ const ContactMeta = {
 			if (view?.name === 'My Contacts') {
 				view.filters[0].value = user.name;
 			}
-			if (view?.name === 'Recently Modified' || view.name === 'Recently Added') {
-				view.filters[0].value.range[view.filters[0].field].gte = moment().subtract(30, 'days').toISOString();
-				view.filters[0].value.range[view.filters[0].field].lte = moment().toISOString();
-			}
+
 			return view;
 		},
 		cssOverride: {
@@ -171,15 +166,6 @@ const ContactMeta = {
 					</div>
 				);
 			},
-		},
-
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'entity',
-			accessorKey: 'entity',
-			header: 'Entity',
-			hidden: true,
-			isSearchField: false,
 		},
 
 		{
@@ -591,13 +577,14 @@ const ContactMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'campaignName.keyword',
-			accessorKey: 'campaignName',
-			header: 'Campaign Name',
+			type: 'array',
+			name: 'campaigns',
+			accessorKey: 'campaigns',
+			header: 'Campaigns',
 			isHiddenFieldExport: true,
 			hidden: true,
 			Cell: ({ row }) => {
-				return <CampaignNameField value={row?.original?.campaignName?.[0]} fullWidth disabled />;
+				return <CampaignField value={row?.original?.campaigns} fullWidth disabled />;
 			},
 		},
 

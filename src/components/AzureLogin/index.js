@@ -22,6 +22,7 @@ import { apolloClientEndpointDev, isDev } from 'utils/helper';
 import { globalStateController } from 'hookstate/globalStateController';
 import { mapStateController } from 'hookstate/mapStateController';
 import { simpleAuthBypass } from 'utils/data';
+import HexocetCanvas from './hexoCatCanvas';
 
 const localStyles = makeStyles(theme => ({
 	myRoot: {
@@ -58,7 +59,6 @@ const localStyles = makeStyles(theme => ({
 		display: 'flex',
 		height: '100vh',
 		flexDirection: 'column',
-		backgroundColor: '#343d54',
 	},
 	cardContainer: {
 		display: 'flex',
@@ -303,6 +303,7 @@ const Login = props => {
 		} else {
 			if (stateApp.myMSALObj === false) setLoading(false);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [stateApp.myMSALObj, signingIn]);
 
 	const handleAADSignIn = async (tenantName, updateTenantFlags) => {
@@ -690,17 +691,24 @@ const Login = props => {
 			<CircularProgress size={80} disableShrink color="secondary" />
 		</div>
 	) : (
-		<div
-			className={width > 2050 ? `${localClass.height_100} ${localClass.myRoot}` : localClass.myRoot}
-			style={{ backgroundImage: `url(/icons/rock.jpg)` }}
-		>
+		<div className={width > 2050 ? `${localClass.height_100} ${localClass.myRoot}` : localClass.myRoot}>
+			<div
+				style={{
+					position: 'absolute',
+					top: 0,
+					left: 0,
+					right: 0,
+					bottom: 0,
+					zIndex: 1,
+				}}
+			>
+				<HexocetCanvas />
+			</div>
 			<div
 				className={localClass.rootNewUser}
 				style={{
-					backgroundImage: `url(/icons/rock.jpg)`,
-					backgroundPosition: 'center',
-					backgroundRepeat: 'no-repeat',
-					backgroundSize: 'cover',
+					position: 'relative',
+					zIndex: 2,
 				}}
 			>
 				{renderBody}

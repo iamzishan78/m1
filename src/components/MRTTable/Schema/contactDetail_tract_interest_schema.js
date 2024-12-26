@@ -1,4 +1,4 @@
-import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import ListChips from 'components/Common/ListChips';
 import { CommonSchema } from './common_schema';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
@@ -16,7 +16,6 @@ const ContactDetailTractInterestMeta = {
 	defaultSort: { field: '_ts', order: 'desc' },
 	isInFiniteScroll: true,
 	columnVirtualization: true,
-	isElasticQuery: false,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
@@ -128,43 +127,38 @@ const ContactDetailTractInterestMeta = {
 			id: 'contact.entityDetail.name',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			name: 'mineral_interest',
 			header: 'Mineral Interest',
-			isSearchField: false,
 			accessorFn: row => row?.mineral_interest,
 			id: 'mineral_interest',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			name: 'royalty_interest',
 			header: 'Royalty Interest',
-			isSearchField: false,
 			accessorFn: row => row?.royalty_interest,
 			id: 'royalty_interest',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			name: 'orri',
 			header: 'ORRI',
-			isSearchField: false,
 			accessorFn: row => row?.orri,
 			id: 'orri',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			name: 'net_acres',
 			header: 'Net Acres',
-			isSearchField: false,
 			accessorFn: row => row?.net_acres,
 			id: 'net_acres',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			name: 'nra',
 			header: 'NRA',
 			accessorFn: row => row?.nra,
-			isSearchField: false,
 			id: 'nra',
 		},
 		{

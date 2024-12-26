@@ -122,6 +122,9 @@ const LayerMeta = {
 					lineWidthMaxPixels: 8,
 					getPointRadius: 50,
 					getLineWidth: 20,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
 				};
 			},
 		},
@@ -141,6 +144,9 @@ const LayerMeta = {
 					data: deckLayers[layerId].getData([]),
 					pointRadiusMinPixels: 5,
 					pointRadiusMaxPixels: 15,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
 				};
 			},
 		},
@@ -159,6 +165,9 @@ const LayerMeta = {
 					lineWidthMinPixels: 2,
 					pointRadiusMaxPixels: 15,
 					lineWidthMaxPixels: 10,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
 				};
 			},
 		},
@@ -191,6 +200,9 @@ const LayerMeta = {
 					lineWidthMinPixels: 2,
 					pointRadiusMaxPixels: 15,
 					lineWidthMaxPixels: 10,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
 				};
 			},
 		},
@@ -210,6 +222,9 @@ const LayerMeta = {
 					lineWidthMaxPixels: 8,
 					highlightColor: [136, 136, 136, 77],
 					autoHighlight: true,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
 				};
 			},
 		},
@@ -229,6 +244,9 @@ const LayerMeta = {
 					lineWidthMaxPixels: 8,
 					highlightColor: [136, 136, 136, 77],
 					autoHighlight: true,
+					parameters: {
+						depthTest: false, // Disable depth testing to draw points on top
+					},
 				};
 			},
 		},
@@ -285,6 +303,7 @@ const layerStateControllerHandler = state => {
 			if (isOutside && bboxIntersects && show) {
 				if (previousBounds) {
 					newPolygon = difference(newPolygon, previousBounds);
+					if (!newPolygon) console.log('New Polygon not found', newPolygon);
 				}
 				if (show) {
 					if (previousBounds) previousBounds = union(previousBounds, newPolygon);
@@ -329,6 +348,8 @@ const layerStateControllerHandler = state => {
 	};
 
 	const removeLayer = (layer, recalculate = false) => {
+		if (!layer) return;
+
 		const layerId = `${layer?.identifier}_${layer._id}`;
 		DeckGlLayer.removeLayer(layerId);
 		delete deckLayers[layerId];
@@ -360,6 +381,14 @@ const layerStateControllerHandler = state => {
 
 	const recalculate = () => {
 		state.recalculate.set(!state.recalculate.get({ noproxy: true }));
+	};
+
+	const getLayerFromMongoId = layerId => {
+		const layers = getShowableLayers();
+
+		const layer = layers.find(layer => layer.layerId === layerId);
+
+		return layer;
 	};
 
 	const getShowableLayers = () => {
@@ -564,14 +593,20 @@ const layerStateControllerHandler = state => {
 		const beforeLayerId = getBeforeLayerId(dbLayer.identifier);
 
 		const isFileLayer = dbLayer.layerType === 'file layer';
-		const isAgreementLayer = agreementLayerIdentifiers.includes(dbLayer.identifier);
+
+		const isAgreementLayer = agreementLayerIdentifiers.some(layer =>
+			dbLayer?.identifier?.toLowerCase().includes(layer.toLowerCase())
+		);
 		const filterIdentifier = isAgreementLayer
 			? 'Agreements'
 			: isFileLayer
 				? dbLayer.layerShapeName
 				: dbLayer.identifier;
 
-		const filterKey = getLayerKey(filterIdentifier, layerFilters);
+		const filterKey = isFileLayer
+			? `${dbLayer.file}_${dbLayer.layerShapeName}`
+			: getLayerKey(filterIdentifier, layerFilters);
+
 		let {
 			[filterKey]: filters,
 			polygonFilter,
@@ -641,12 +676,13 @@ const layerStateControllerHandler = state => {
 			multiQuery: meta.multiQuery,
 			layerId,
 			identifier: dbLayer.identifier,
+			layerSettings: dbLayer.layerSettings,
 			boundingState,
 			geoField: meta.geoField,
+			isFileLayer,
 			polygonFilter,
 			polygonsFilter,
 			filters: isFileLayer ? generateFileFilters({ fileLayer: dbLayer, extendFilters: filters }) : filters,
-			isElasticQuery: isFileLayer ? false : true,
 			onData: data => {
 				if (!Array.isArray(data)) return;
 				let geoJson = { features: [] };
@@ -688,7 +724,7 @@ const layerStateControllerHandler = state => {
 				// Find layer by layerShapeName
 				const requiredLayer = globalStateController
 					.getValue('layers')
-					.find(layer => layer.layerShapeName === identifier);
+					.find(layer => `${layer.file}_${layer.layerShapeName}` === identifier);
 
 				// If layer is not found, then return
 				if (!(requiredLayer && requiredLayer?.layerType === 'file layer')) return;
@@ -711,10 +747,13 @@ const layerStateControllerHandler = state => {
 		recalculate,
 		handleDeckLayer,
 		handleMapBoxLayer,
+		getLayerFromMongoId,
+		removeLayer,
 		removeLayers,
 		toggleLayersActivity,
 		handleChange: () => {
 			const showableLayers = getShowableLayers();
+
 			showableLayers.forEach(dbLayer => {
 				handleDeckLayer(dbLayer);
 			});
@@ -732,16 +771,14 @@ const layerStateControllerHandler = state => {
 		},
 		resetMapStates: (mapReady = false) => {
 			const rigsData = layerController.getValue('rigsData');
+			const client = layerController.getValue('client');
 			removeLayers(false);
 			popupController.reset();
 			drawController.reset();
 			layerFiltersController.reset();
 			const mapViewFilters = globalStateController.getValue('mapView')?.selectedMapView?.filters || [];
-			const layers = globalStateController.getValue('layers') || [];
 			mapViewFilters.forEach(filter => {
-				// Check if its a UD layer or a shape file layer
-				const shapeFileLayer = layers.find(layer => layer.layerId === filter.dataSourceName);
-				const dataSource = shapeFileLayer?.layerShapeName || filter?.dataSourceName;
+				const dataSource = filter?.dataSourceName;
 
 				const initialFilters = layerFiltersController.getValue([dataSource])?.variables?.filters || [];
 
@@ -753,7 +790,7 @@ const layerStateControllerHandler = state => {
 				});
 			});
 
-			layerController.setState({ rigsData });
+			layerController.setState({ rigsData, client });
 			navController.reset();
 			mapControlsController.setState({
 				selectedControl: mapControlsController.getValue('selectedControl'),

@@ -5,7 +5,7 @@ import WellFlyToMap, {
 	useTaxOwnerWellFlyto,
 } from '../TablesOverride/TaxOwnerTable/TableCells/wells_coordinates_fly_map';
 import { tableController } from 'hookstate/tableController';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 
 const esIndex = 'platformData:globalowner';
 
@@ -17,6 +17,7 @@ const TaxOwnerMeta = {
 		pageSize: 50,
 	},
 	maxTableHeight: 'calc(100vh - 290px)',
+	isExportDisabled: true,
 	isInFiniteScroll: true,
 	isDeleteDisabled: true,
 	columnVirtualization: false, // Turned off virtualization

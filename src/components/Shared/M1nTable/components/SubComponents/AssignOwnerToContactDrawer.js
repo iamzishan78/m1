@@ -21,12 +21,12 @@ import { UPDATEBULKCONTACT } from 'graphQL/useMutationUpdateBulkContact';
 import { timeZoneOptions } from 'components/ContactDetailCard/components/FieldContent/timeZoneList';
 import { PUBLICTAGSQUERY } from 'graphQL/useQueryPublicTags';
 import { BULKUPSERTTAG } from 'graphQL/useMutationBulkUpsertTagOnContacts';
-import { UPSERT_CONTACT_CAMPAIGNS } from 'graphQL/useMutationCampaign';
+import { UPSERT_ENTITY_CAMPAIGNS } from 'graphQL/useMutationCampaign';
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 import { UPDATE_PARCEL_OWNERS } from 'graphQL/useMutationUpdateParcelOwners';
 import { UPDATE_SHAPES } from 'graphQL/useMutationUpdateShapes';
 import EntityType from 'components/ContactDetailCard/components/FieldContent/EntityType';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import { resetESTableToggle } from 'hookstate';
 import { Modals } from 'styles/Modal';
 import { tableGlobalController } from 'hookstate/tableController';
@@ -59,6 +59,7 @@ const styles = () => ({
 		'& .MuiChip-root': {
 			backgroundColor: '#ECEDED',
 			color: '#606060',
+			borderRadius: '4px',
 		},
 	},
 	input: {
@@ -130,15 +131,15 @@ function SelectedField({
 					}}
 				/>
 			);
-		case 'Campaign Name':
+		case 'Campaigns':
 			// Renders field for updating campaign name
 			// filterKey is not set for this case
 			return (
-				<CampaignNameField
+				<CampaignField
 					value={fieldKey}
-					onChange={(values, id) => {
+					onChange={values => {
 						setFieldKey(values); // Sets the field key value
-						setCampaigns([...campaigns, { _id: id, campaignName: values[values.length - 1] }]); // Updates campaigns array
+						setCampaigns(values); // Updates campaigns array
 					}}
 					fullWidth // Renders field with full width
 					targetLabel="Contact" // Sets target label to 'Contact'
@@ -218,7 +219,7 @@ function SelectedField({
 			return (
 				<EntityType
 					setDocumentType={value => {
-						setFieldKey(value._id); // Sets the field key value based on selected entity type
+						setFieldKey(value.name); // Sets the field key value based on selected entity type
 					}}
 					value={fieldKey} // Current selected entity type value
 				/>
@@ -294,14 +295,14 @@ export default function AssignOwnerToContactDrawer({
 	const [assignOwnerToContact] = useMutation(ASSIGN_OWNER_TO_CONTACT, options);
 	const [updateBulkContact] = useMutation(UPDATEBULKCONTACT, options);
 	const [updateBulkTags] = useMutation(BULKUPSERTTAG, options);
-	const [upsertContactCampaigns] = useMutation(UPSERT_CONTACT_CAMPAIGNS, {
+	const [upsertEntityCampaigns] = useMutation(UPSERT_ENTITY_CAMPAIGNS, {
 		onCompleted: () => {
 			tableGlobalController.refetch();
 		},
 	});
 
 	//add RelatedContacts Api
-	const [addRelatedContacts, { data: response, loading: isSubmitting }] = useMutation(ADD_RELATED_CONTACTS, {
+	const [addRelatedContacts] = useMutation(ADD_RELATED_CONTACTS, {
 		onCompleted: () => {
 			tableGlobalController.refetch();
 		},
@@ -309,14 +310,14 @@ export default function AssignOwnerToContactDrawer({
 
 	const unitTableFields = [
 		// Add unit grid fields for bulk update
-		{ title: 'Campaign Name', value: 'campaignName' },
+		{ title: 'Campaigns', value: 'campaigns' },
 		{ title: 'Max Pricing (Per NRA)', value: 'uMaxUnitPricing' },
 		{ title: 'Target Pricing (Per NRA)', value: 'uUnitPricing' },
 		{ title: 'Tags', value: 'contactStatus' },
 	];
 
 	const otherTableFields = [
-		{ title: 'Campaign Name', value: 'campaignName' },
+		{ title: 'Campaigns', value: 'campaigns' },
 		{ title: 'Contact Owner', value: 'contactOwner' },
 		{ title: 'Entity Type', value: 'ownerType' },
 		{ title: 'Industry Type', value: 'industryType' },
@@ -349,7 +350,7 @@ export default function AssignOwnerToContactDrawer({
 
 	useEffect(() => {
 		if (selectedCampaign) {
-			setCampaigns([{ _id: selectedCampaign?._id, campaignName: selectedCampaign?.name }]);
+			setCampaigns([selectedCampaign]);
 		}
 	}, [selectedCampaign]);
 
@@ -359,7 +360,7 @@ export default function AssignOwnerToContactDrawer({
 
 	const onFieldToUpdateChange = field => {
 		setField(field);
-		if (field === 'Campaign Name' && selectedCampaign) {
+		if (field === 'Campaigns' && selectedCampaign) {
 			setFieldKey(selectedCampaign.name);
 		} else {
 			setFieldKey('');
@@ -550,47 +551,58 @@ export default function AssignOwnerToContactDrawer({
 			bulkShapeUpdate(shapesToUpdate, errorMsg);
 		} else {
 			const fieldToUpdate = { [fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value]: fieldKey };
-			if (field === 'Campaign Name') {
+			if (field === 'Campaigns') {
 				switch (rest.header) {
 					case 'ContactTable':
 					case 'CampaignContactTable':
-						const variables = {
-							campaigns,
-							contactIds: rows.map(row => row._id),
-						};
+					case 'UnitTable':
+						{
+							let entityType = 'Contact';
+							let refetchQueries = ['getESContacts'];
 
-						upsertContactCampaigns({
-							variables,
-							refetchQueries: ['getESContacts'],
-						}).then(
-							res => {
-								if (res.data && res.data.upsertContactCampaigns) {
-									resetESTableToggle.set(!resetESTableToggle.get());
-									const success = res.data.upsertContactCampaigns.success;
-									if (success) {
-										Loader.successToast('contact-creation', 'Updated');
-										showSuccessMessage(`${field} Bulk Updated Successfully`);
-										if (rest.onBulkUpdateComplete) rest.onBulkUpdateComplete();
-									} else {
-										Loader.errorToast('contact-creation', 'Updated');
-									}
-								} else {
-									Loader.errorToast('contact-creation', 'Failed');
-								}
-							},
-							err => {
-								console.log(err);
-								Loader.errorToast('contact-creation', errorMsg);
+							if (rest.header === 'UnitTable') {
+								entityType = 'Shape';
+								refetchQueries = ['getESPaginatedList', 'getESFilterList', 'getCustomLayer'];
 							}
-						);
 
+							const variables = {
+								campaigns,
+								entityIds: rows.map(row => row._id),
+								entityType,
+							};
+
+							upsertEntityCampaigns({
+								variables,
+								refetchQueries,
+							}).then(
+								res => {
+									if (res.data && res.data.upsertEntityCampaigns) {
+										resetESTableToggle.set(!resetESTableToggle.get());
+										const success = res.data.upsertEntityCampaigns.success;
+										if (success) {
+											Loader.successToast('contact-creation', 'Updated');
+											showSuccessMessage(`${field} Bulk Updated Successfully`);
+											if (rest.onBulkUpdateComplete) rest.onBulkUpdateComplete();
+										} else {
+											Loader.errorToast('contact-creation', 'Updated');
+										}
+									} else {
+										Loader.errorToast('contact-creation', 'Failed');
+									}
+								},
+								err => {
+									console.log(err);
+									Loader.errorToast('contact-creation', errorMsg);
+								}
+							);
+						}
 						break;
 
 					case 'TractPerUnitTable':
 						const parcelOwnersToUpdate = rows.map(row => ({
 							_id: row._id,
 							shapeId: row.customLayerId,
-							campaignName: campaigns.map(campaign => campaign.campaignName),
+							campaigns,
 							relatedObject: row.ownerEntity,
 							createBy: getUser?._id,
 							lastUpdateBy: getUser?._id,
@@ -626,30 +638,11 @@ export default function AssignOwnerToContactDrawer({
 
 						break;
 
-					case 'UnitTable':
-						// Extract the campaign names from the campaigns array
-						const campaignName = campaigns.map(campaign => campaign.campaignName);
-
-						// Map through each row to create an array of shapes to update
-						const shapesToUpdate = rows.map(row => {
-							// Update the campaign with the new campaign names
-							const customlayer = updateCampaign(copy(row.shapeJson), 'campaignName', campaignName);
-							// Return an object with the updated custom layer information
-							return {
-								customLayer: customlayer,
-								customLayerId: row._id,
-								userId: getUser?._id,
-							};
-						});
-
-						bulkShapeUpdate(shapesToUpdate, errorMsg);
-						break;
-
 					default:
 						const shapeOwnersToUpdate = rows.map(row => ({
 							_id: row._id,
 							shapeId: row.customLayerId,
-							campaignName: campaigns.map(campaign => campaign.campaignName),
+							campaigns,
 							relatedObject: row.ownerEntity,
 							createBy: getUser?._id,
 							lastUpdateBy: getUser?._id,
@@ -688,7 +681,7 @@ export default function AssignOwnerToContactDrawer({
 						break;
 				}
 
-				delete fieldToUpdate.campaignName;
+				delete fieldToUpdate.campaigns;
 			} else {
 				if (Object.entries(fieldToUpdate).length > 0)
 					updateBulkContact({
@@ -723,7 +716,7 @@ export default function AssignOwnerToContactDrawer({
 						}
 					);
 
-				delete fieldToUpdate.campaignName;
+				delete fieldToUpdate.campaigns;
 			}
 		}
 

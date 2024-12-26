@@ -68,13 +68,9 @@ const Auth0Login = props => {
 				},
 			},
 		};
+		mapStateController.updateState({ mapVars, defaultMapVars });
 		globalStateController.updateState({ user });
-		window.setStateApp(state => ({
-			...state,
-			user,
-			mapVars,
-			defaultMapVars: defaultMapVars,
-		}));
+		window.setStateApp(state => ({ ...state, user }));
 		dispatch(setUserAction(user));
 		dispatch(currentUserGridViewSettingsAction.STARTED(user._id));
 		saveUserSession(user);
@@ -113,7 +109,7 @@ const Auth0Login = props => {
 			.catch(error => console.log(error));
 	}
 
-	async function userSettings(userId, token, type) {
+	async function userSettings(userId, authToken, idToken, type) {
 		var options = {
 			method: 'POST',
 			headers: {
@@ -125,7 +121,7 @@ const Auth0Login = props => {
 			}),
 		};
 		let endpoint = globalStateController.getValue('apolloClientEndpoint');
-		options = setApolloHeaders(options, token, token);
+		options = setApolloHeaders(options, authToken, idToken);
 		return await fetch(endpoint, options)
 			.then(response => response.json())
 			.then(response => {
@@ -187,11 +183,13 @@ const Auth0Login = props => {
 			const userMapSettings = await userSettings(
 				loginRes.user._id,
 				loginRes.sessionData.auth0Token || loginRes.sessionData.token,
-				id.__raw
+				id.__raw,
+				'baseMap'
 			);
 
 			handleLogin(loginRes, userMapSettings);
 		})();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isLoading, isAuthenticated]);
 
 	return null;

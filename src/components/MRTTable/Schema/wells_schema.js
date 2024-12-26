@@ -1,7 +1,7 @@
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import FlyToMap from '../Common/TableCells/coordinates_fly_map';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { tableController } from 'hookstate/tableController';
 
 const esIndex = 'platformData:wells';
@@ -14,6 +14,7 @@ const WellsMeta = {
 		pageSize: 50,
 	},
 	maxTableHeight: 'calc(100vh - 290px)',
+	isExportDisabled: true,
 	isInFiniteScroll: true,
 	isDeleteDisabled: true,
 	columnVirtualization: true,

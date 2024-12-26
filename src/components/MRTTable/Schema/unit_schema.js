@@ -4,8 +4,8 @@ import UnitIcon from 'components/Shared/svgIcons/unit';
 import _ from 'lodash';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import vf_currency from 'components/Shared/valueformatters/vf_currency.js';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 import Loader from 'components/Loaders';
@@ -89,7 +89,6 @@ const UnitMeta = {
 	maxTableHeight: 'calc(100vh - 215px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
-	isElasticQuery: false,
 	fetchMetaData: {
 		category: 'Unit', // enable to show custom field inside unit grid
 	},
@@ -248,12 +247,15 @@ const UnitMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'shapeJson.properties.campaignName.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.campaignName,
-			id: 'shapeJson.properties.campaignName',
-			header: 'Campaign Name',
+			type: 'array',
+			name: 'shapeJson.properties.campaigns.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.campaigns,
+			id: 'shapeJson.properties.campaigns',
+			header: 'Campaigns',
 			size: 270,
-			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
+			Cell: ({ row }) => {
+				return <CampaignField value={row?.original?.shapeJson?.properties?.campaigns} fullWidth disabled />;
+			},
 		},
 
 		{
@@ -303,7 +305,7 @@ const UnitMeta = {
 			...CommonSchema.COMMENTS,
 			Cell: ({ renderedCellValue, row }) => {
 				const id = row.getValue('_id');
-				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'unit'} />;
+				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'unit'} rowNumber={row?.index} />;
 			},
 		},
 

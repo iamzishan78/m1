@@ -95,11 +95,11 @@ export default function MergeContactDrawer({ onClose, rows, setRows }) {
 		if (!rows || rows.length === 0) {
 			setRowsLoading(true);
 		} else {
+			if (!primaryContact) setPrimaryContact(rows[0]);
 			setRowsLoading(false);
 		}
-	}, [rows]);
+	}, [rows, primaryContact]);
 
-	console.log('rows', rows);
 	return (
 		<RightDialog open width="700px">
 			{rowsLoading ? (

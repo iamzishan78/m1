@@ -127,6 +127,7 @@ export const tableESSimpleFilterModeOtions = {
 	comparison: ['greaterThan', 'greaterThanOrEqualTo', 'lessThan', 'lessThanOrEqualTo'],
 	vacancy: ['empty', 'notEmpty'],
 	custom: ['singleselect', 'multiselect'],
+	simpleCustom: ['singleselect'],
 };
 
 export const stringFilterOptions = [
@@ -135,6 +136,12 @@ export const stringFilterOptions = [
 	...tableESSimpleFilterModeOtions.vacancy,
 	...tableESSimpleFilterModeOtions.custom,
 ];
+export const simpleStringFilterOptions = [
+	...tableESSimpleFilterModeOtions.string,
+	...tableESSimpleFilterModeOtions.equation,
+	...tableESSimpleFilterModeOtions.vacancy,
+	...tableESSimpleFilterModeOtions.simpleCustom,
+];
 
 export const numberFilterOptions = [
 	...tableESSimpleFilterModeOtions.equation,
@@ -142,6 +149,12 @@ export const numberFilterOptions = [
 	...tableESSimpleFilterModeOtions.comparison,
 	...tableESSimpleFilterModeOtions.vacancy,
 	...tableESSimpleFilterModeOtions.custom,
+];
+export const simpleNumberFilterOptions = [
+	...tableESSimpleFilterModeOtions.equation,
+	...tableESSimpleFilterModeOtions.inclusive,
+	...tableESSimpleFilterModeOtions.comparison,
+	...tableESSimpleFilterModeOtions.vacancy,
 ];
 
 export const searchFilterOptions = [...tableESSimpleFilterModeOtions.string, ...tableESSimpleFilterModeOtions.equation];
@@ -154,6 +167,7 @@ export const dateFilterOptions = [
 	'lessThanOrEqualTo',
 	'singleselect',
 ];
+export const simpleDateFilterOptions = [...tableESSimpleFilterModeOtions.simpleCustom];
 
 // Curreny keys
 export const currencyKeys = [

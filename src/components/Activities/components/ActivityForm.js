@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useState, useEffect, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { FormControl, Grid } from '@material-ui/core';
@@ -5,7 +6,6 @@ import TextField from '@material-ui/core/TextField';
 import moment from 'moment';
 import get from 'lodash/get';
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { useHistory } from 'react-router-dom';
 
 import { AppContext } from '../../../AppContext';
 import AutocompEntityNamesVirtualizeList from '../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
@@ -241,7 +241,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 			slidoutStateController.updateEntityLoading(false);
 			tableGlobalController.refetch();
 		},
-		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
+		refetchQueries: ['getAllActivities', 'getESSimpleSearch', 'getContactSummary'],
 		awaitRefetchQueries: true,
 	});
 

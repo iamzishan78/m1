@@ -7,7 +7,8 @@ export const GET_ES_SIMPLE_SEARCH = gql`
 		$filters: [esFilterInput]
 		$sort: esSortInput
 		$pagination: esPaginationInput
-		$isElasticQuery: Boolean
+		$project: JSON
+		$parent: String
 	) {
 		getESSimpleSearch(
 			index: $index
@@ -15,7 +16,8 @@ export const GET_ES_SIMPLE_SEARCH = gql`
 			filters: $filters
 			sort: $sort
 			pagination: $pagination
-			isElasticQuery: $isElasticQuery
+			project: $project
+			parent: $parent
 		)
 	}
 `;

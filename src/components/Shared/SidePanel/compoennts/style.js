@@ -81,7 +81,7 @@ export const useStyles = makeStyles(theme => ({
 		color: 'white',
 		backgroundColor: '#0e111a',
 		padding: '10px 20px',
-		minHeight: '230px',
+		minHeight: '100%',
 		'& .MuiFormControl-root': {
 			width: '100%',
 		},

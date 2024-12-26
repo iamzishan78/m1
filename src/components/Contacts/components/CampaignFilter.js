@@ -7,10 +7,9 @@ import moment from 'moment';
 import get from 'lodash/get';
 
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import { getFilters } from 'components/Table/Contact/CampaignsTable';
 import { AppContext } from 'AppContext';
 import { CUSTOM_DATES } from 'utils/data';
-import { copy, handleCustomDateTypeChange } from 'utils/helper';
+import { copy, getFilters, handleCustomDateTypeChange } from 'utils/helper';
 
 const useStyles = makeStyles(theme => ({
 	actionBar: {
@@ -218,7 +217,6 @@ const CampaignStatusFilter = ({ esIndex, tableFilters, appliedFilters, searchFie
 					field: filterKey,
 					size: 50,
 				},
-				isElasticQuery: false,
 			},
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -295,7 +293,6 @@ const SupervisorFilter = ({ esIndex, tableFilters, appliedFilters, searchFields,
 					field: filterKey,
 					size: 50,
 				},
-				isElasticQuery: false,
 			},
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps

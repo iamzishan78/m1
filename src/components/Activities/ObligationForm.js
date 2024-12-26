@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useState, useEffect, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { FormControl, Grid } from '@material-ui/core';
@@ -293,6 +294,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
 		status.set(false);
 		startDate.set(getCurrentDate());
 		endDate.set(getCurrentDate());
+		applicable.set('');
 	};
 
 	const updateActivity = async () => {
@@ -325,7 +327,9 @@ export default function ObligationForm({ setSelectedActivityId }) {
 				</FormControl>
 
 				<SimpleTextField disabled title="Frequecy" value={frequency.get()} setValue={() => {}} />
-				<SimpleTextField disabled title="Applicable" value={applicable.get()} setValue={() => {}} />
+				{activityType.get() !== 'Payment' && (
+					<SimpleTextField disabled title="Applicable" value={applicable.get()} setValue={() => {}} />
+				)}
 				<SimpleTextField disabled title="Value" value={obligationValue.get()} setValue={() => {}} />
 				<SimpleTextField disabled title="Responsible Party" value={responsibleParty.get()} setValue={() => {}} />
 

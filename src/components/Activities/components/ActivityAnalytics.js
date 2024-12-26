@@ -1,15 +1,15 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useContext } from 'react';
 import { Grid, Card, CardContent } from '@material-ui/core';
 import { useLazyQuery } from '@apollo/client';
 import get from 'lodash/get';
-import { copy } from 'utils/helper';
+import { copy, getFilters } from 'utils/helper';
 
 import { AppContext } from 'AppContext';
 import { GET_ACTIVITY_ANALYTICS } from 'graphQL/useQueryActivityAnalytics';
 import { GET_CONTACT_ANALYTICS } from 'graphQL/useQueryContactDetail';
 import DonutChart from 'components/Shared/Charts/DonutChart';
 import StackedBarChart from 'components/Shared/Charts/StackedBarChart';
-import { getFilters } from 'components/Table/Activities/ActivitiesTable';
 import { useSelector } from 'react-redux';
 import { getActivityFilters } from './ActivitiesDashboard';
 
@@ -62,7 +62,7 @@ const defaultUpdateUsers = [
 		data: [],
 	},
 ];
-const ActivityAnalytics = ({ appliedFilters, tableFilters, module }) => {
+const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilters, tableData }) => {
 	const [stateApp] = useContext(AppContext);
 	const [analyticsData, setAnalyticsData] = useState([]);
 	const [contactData, setContactData] = useState([]);
@@ -101,7 +101,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module }) => {
 	const getAllFilters = () => {
 		let rangeFilters = [];
 		if (!tableFilters.find(filter => filter.type === 'range')) {
-			if (activeModule.title == 'Audit Reporting') {
+			if (activeModule.title === 'Audit Reporting') {
 				appliedFilters.filter = 'audit';
 			}
 			rangeFilters = getFilters(appliedFilters);
@@ -130,7 +130,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module }) => {
 				variables: {
 					search: {
 						fields: ['name', '_all'],
-						query: stateApp.activitySearchQuery,
+						query: stateApp.landAnalyticsSearchQuery,
 					},
 					filters: getAllFilters(),
 				},
@@ -140,13 +140,17 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module }) => {
 				variables: {
 					search: {
 						fields: ['name', '_all'],
-						query: stateApp.activitySearchQuery,
+						query: stateApp.activitySearchQuery || stateApp.landAnalyticsSearchQuery,
 					},
 					filters: getAllFilters(),
 				},
 			});
 		}
-	}, [stateApp.activitySearchQuery, appliedFilters, tableFilters]);
+	}, [stateApp.activitySearchQuery, appliedFilters, tableFilters, stateApp.landAnalyticsSearchQuery, tableData]);
+
+	useEffect(() => {
+		setTableFilters && setTableFilters(getActivityFilters(appliedFilters));
+	}, [appliedFilters]);
 
 	useEffect(() => {
 		if (analyticsData?.activitiesCountByTypePerOwner) {
@@ -216,10 +220,10 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module }) => {
 			style={{ padding: '30px' }}
 		>
 			{
-				<Grid item md={activeModule.value == 'CRM' ? 4 : 6} style={{ padding: '10px' }}>
+				<Grid item md={activeModule.value === 'CRM' ? 4 : 6} style={{ padding: '10px' }}>
 					<Card variant="outlined">
 						<CardContent style={{ height: '265px' }}>
-							<label>{activeModule.value == 'CRM' ? 'Total Activities' : 'Total Updates'}</label>
+							<label>{activeModule.value === 'CRM' ? 'Total Activities' : 'Total Updates'}</label>
 							<div
 								style={{
 									position: 'relative',
@@ -227,9 +231,9 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module }) => {
 									fontSize: 18,
 								}}
 							>
-								{activeModule.value == 'CRM' ? get(analyticsData, 'total', 0) : get(contactData, 'total', 0)}
+								{activeModule.value === 'CRM' ? get(analyticsData, 'total', 0) : get(contactData, 'total', 0)}
 							</div>
-							{activeModule.value == 'CRM' && (
+							{activeModule.value === 'CRM' && (
 								<DonutChart
 									height={240}
 									marginTop={-15}
@@ -257,13 +261,11 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module }) => {
 									]}
 								/>
 							)}
-							{activeModule.title == 'Audit Reporting' && (
+							{activeModule.title === 'Audit Reporting' && (
 								<DonutChart
-									height={240}
-									marginTop={-15}
-									options={{
-										legend: { display: false, labels: { display: false } },
-									}}
+									height={220}
+									marginTop={-20}
+									islegendEnabled={false}
 									data={[
 										{
 											title: '',
@@ -279,18 +281,18 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module }) => {
 			}
 
 			{
-				<Grid item md={activeModule.value == 'CRM' ? 4 : 6} style={{ padding: '10px' }}>
+				<Grid item md={activeModule.value === 'CRM' ? 4 : 6} style={{ padding: '10px' }}>
 					<Card variant="outlined">
 						<CardContent style={{ height: '265px', overflow: 'auto' }}>
-							<label>{activeModule.value == 'CRM' ? 'Activities Per Qualifier' : 'Updates Per User'}</label>
+							<label>{activeModule.value === 'CRM' ? 'Activities Per Qualifier' : 'Updates Per User'}</label>
 							{!loading && !auditloading && (
-								<StackedBarChart data={activeModule.value == 'CRM' ? activitiesPerQualifier : updatesPerUser} />
+								<StackedBarChart data={activeModule.value === 'CRM' ? activitiesPerQualifier : updatesPerUser} />
 							)}
 						</CardContent>
 					</Card>
 				</Grid>
 			}
-			{activeModule.value == 'CRM' && (
+			{activeModule.value === 'CRM' && (
 				<Grid item md={4} style={{ padding: '10px' }}>
 					<Card variant="outlined">
 						<CardContent style={{ height: '265px', overflow: 'auto' }}>

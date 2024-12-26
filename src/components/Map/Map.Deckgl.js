@@ -64,10 +64,10 @@ import DeckGlLayer from './DeckGL/helpers/DeckGlLayer';
 import onRightClick from './DeckGL/helpers/onRightClick';
 import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
 import { convertToTitleCase } from 'components/Shared/M1nTable/components/MUIDataTable/utils';
-import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { drawController } from 'hookstate/drawStateController';
 import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
-import { MapFeatureTenants } from 'utils/data';
+import { baseTenantsMaps } from 'utils/data';
 import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
@@ -126,6 +126,7 @@ function Map({
 	type,
 	paramId,
 	expandedPanel = true,
+	mapControls = true,
 	openSpeedDial = true,
 	width,
 	hideShape = false,
@@ -139,7 +140,7 @@ function Map({
 		'popupStateValues'
 	);
 	const { mapStateValues } = mapStateController.useState(
-		['mapVars', 'defaultMapVars', 'toggle3d', 'toggleZoomOut'],
+		['mapVars', 'defaultMapVars', 'toggle3d', 'toggleZoomOut', 'isDefaultViewAllowed', 'reintializeMap'],
 		'mapStateValues'
 	);
 	const { wellListFromSearch, layerStateValues } = layerController.useState(['wellListFromSearch'], 'layerStateValues');
@@ -200,7 +201,8 @@ function Map({
 	};
 
 	// queries
-	const [getAllLayerSettingsByUser, { data: layerStates }] = useLazyQuery(ALLLAYERSETTINGSBYUSER);
+	const [getAllLayerSettingsByUser, { data: layerStates, loading: layerSettingsLoading }] =
+		useLazyQuery(ALLLAYERSETTINGSBYUSER);
 
 	// Query to fetch map views from the GraphQL API
 	useQuery(GET_MAP_VIEWS, {
@@ -210,12 +212,13 @@ function Map({
 		onCompleted: data => {
 			const mapViews = data?.getMapViews?.mapViews;
 			const currentMapView = mapViews?.find(view => view.isCurrent);
-
-			globalStateController.updateState({
-				mapView: {
-					selectedMapView: currentMapView,
-				},
-			});
+			if (!globalStateController.getValue('mapView')?.selectedMapView) {
+				globalStateController.updateState({
+					mapView: {
+						selectedMapView: currentMapView,
+					},
+				});
+			}
 		},
 	});
 
@@ -267,15 +270,8 @@ function Map({
 
 		const { signal } = abortController;
 
-		let styleTypes = ['Satellite', 'Basic', 'Dark', 'Light', 'Outdoors'];
-		let isDarkMapAllowed = false;
-
-		// check MapFeatureTenants for dark Map
-		if (MapFeatureTenants.includes(window.sessionStorage?.getItem('tenantName').toLowerCase())) {
-			isDarkMapAllowed = stateApp?.user?.features?.find(f => f.name === 'DarkBaseMap');
-		}
-		if (!isDarkMapAllowed) styleTypes = styleTypes.filter(style => style !== 'Dark');
-		let recurseLimit = 5;
+		let styleTypes = baseTenantsMaps();
+		let recurseLimit = 16;
 
 		try {
 			const styles = await styleTypes.reduce(async (stylesPromise, styleType) => {
@@ -294,7 +290,6 @@ function Map({
 				}
 				return styles;
 			}, []);
-
 			return styles;
 		} catch (error) {
 			// Handle any errors here
@@ -343,19 +338,23 @@ function Map({
 
 	const getElasticWell = async paramId => {
 		const { data: well } = await client.query({
-			query: GET_ES_PAGINATED_LIST,
+			query: GET_ES_SIMPLE_SEARCH,
 			variables: {
-				esIndex: 'platformData:wells',
+				index: 'platformData:wells',
 				pagination: {
 					first: 1,
 					keep_alive: '1micros',
 				},
-				search: `_id:${paramId.toLowerCase()}`,
-				filters: [],
+				filters: [
+					{
+						field: '_id',
+						value: paramId.toLowerCase(),
+					},
+				],
 				sort: [],
 			},
 		});
-		const wellFeature = { ...well.getESPaginatedList.hits[0] };
+		const wellFeature = { ...well.getESSimpleSearch.hits[0] };
 		if (wellFeature?.Id) wellFeature.id = wellFeature.Id;
 		const interval = setInterval(() => {
 			if (window.mapRef) {
@@ -480,6 +479,10 @@ function Map({
 	}, [stateApp.user]);
 
 	useEffect(() => {
+		globalStateController.updateState({ layerSettingsLoading });
+	}, [layerSettingsLoading]);
+
+	useEffect(() => {
 		if (layerStates && layerStates.allLayerSettingsByUser) {
 			const layers = copy(layerStates.allLayerSettingsByUser);
 			setStateApp(state => ({
@@ -492,10 +495,7 @@ function Map({
 			const mapViewFilters = globalStateController.getValue('mapView')?.selectedMapView?.filters || [];
 			// for of loop on mapViewFilters
 			for (const filter of mapViewFilters) {
-				// Identifying layer data source shapeFile/geojson
-				const shapeFileLayer = layers.find(layer => layer?.layerId === filter?.dataSourceName);
-				const dataSource = shapeFileLayer ? shapeFileLayer?.layerShapeName : filter?.dataSourceName;
-
+				const dataSource = filter?.dataSourceName;
 				// Get initial filters and merge with the latest ones
 				const state = layerFiltersController.getValue([dataSource]);
 				const initialFilters = state?.variables?.filters || []; // Get initial filters
@@ -573,7 +573,7 @@ function Map({
 		const mapLayers = copy(stateApp.layers);
 		if (stateApp.baseMapLayers && stateApp.baseMapLayers.length > 0 && map) {
 			const landLayer = mapLayers?.find(layer => layer.identifier === 'Land Grid');
-			stateApp.baseMapLayers.forEach((l, index) => {
+			stateApp.baseMapLayers?.forEach((l, index) => {
 				if (l.name === 'Land Grid' && !stateApp.checkedBaseLayers.includes(index)) {
 					if (landLayer) {
 						landLayer.layerSettings.visiable = false;
@@ -660,30 +660,6 @@ function Map({
 		}
 	}, [map, stateApp.checkedHeats, stateApp.heatLayers]);
 
-	useEffect(() => {
-		// sets style of map when changed in Map Controls
-		if (stateApp.selectedLayerId && map) {
-			if (stateApp.selectedLayerId) {
-				map.setStyle(stateApp.selectedLayerId);
-			}
-		}
-	}, [map, stateApp.selectedLayerId]);
-
-	useEffect(() => {
-		if (map) {
-			mapStateController.updateState({
-				mapVars: {
-					...mapStateValues.mapVars,
-					zoom: map.getZoom(),
-					center: map.getCenter(),
-					pitch: map.getPitch(),
-					bearing: map.getBearing(),
-				},
-			});
-			setMap(null);
-		}
-	}, [mapStateValues.mapVars.styleId]);
-
 	function getIndex(value, arr, prop) {
 		for (let i = 0; i < arr.length; i++) {
 			if (arr[i][prop] === value) {
@@ -694,18 +670,8 @@ function Map({
 	}
 
 	useEffect(() => {
-		if (!map || !mapStyles) return;
-
-		let index = getIndex(mapStateValues.mapVars.styleId, mapStyles, 'name');
-		if (index === -1) {
-			index = 0;
-		}
-
-		map.setStyle(`mapbox://styles/m1neral/${mapStyles[index]?.id}`);
-	}, [mapStateValues.mapVars.styleId, mapStyles]);
-
-	useEffect(() => {
-		if (map) {
+		if (map && mapStateValues.isDefaultViewAllowed) {
+			// Add check to update mapVars if position is updated
 			mapStateController.updateState({ mapVars: mapStateValues.defaultMapVars });
 			map.jumpTo({
 				center: [mapStateValues.defaultMapVars.center.lng, mapStateValues.defaultMapVars.center.lat],
@@ -928,6 +894,8 @@ function Map({
 			}, 500);
 
 			newMap.on('load', () => {
+				window.mapRef = null; // Remove the existing map instance to avoid rendering multiple maps
+				window.drawRef = null; //  Remove the existing map instance to avoid rendering multiple maps
 				window.mapRef = newMap;
 				window.drawRef = Draw;
 				layerController.resetMapStates(true);
@@ -959,7 +927,7 @@ function Map({
 							data: [],
 						},
 					});
-				}, 0);
+				}, 250);
 
 				// FOR aoi_labels
 				newMap.addSource('aoi_label_source', {
@@ -973,13 +941,14 @@ function Map({
 				setDraw(Draw);
 				setMap(newMap);
 				setLoading(false);
+				mapStateController.updateState({ reintializeMap: false });
 			});
 		};
 
-		if (!map) {
+		if (!map || mapStateValues.reintializeMap) {
 			initializeMap({ setMap, mapEl, setStateApp, setDraw });
 		}
-	}, [map, mapStyles]);
+	}, [map, mapStyles, mapStateValues.mapVars.styleId]);
 
 	// Use effect for removing shape filter
 	useEffect(() => {
@@ -1318,8 +1287,9 @@ function Map({
 			</div>
 
 			<DeckGL hideShape={hideShape} />
-			<SpeedDialComponent expandedPanel={expandedPanel} openSpeedDial={openSpeedDial} />
-			<MapControls />
+			{openSpeedDial && <SpeedDialComponent expandedPanel={expandedPanel} openSpeedDial={openSpeedDial} />}
+
+			{mapControls && <MapControls />}
 			<ZoomFault zoomFaultStatus={stateApp.zoomFault} />
 			<HugeRequest />
 

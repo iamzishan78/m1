@@ -7,7 +7,8 @@ const CommentDialog = props => {
 			focus
 			targetSourceId={props.targetSourceId}
 			targetLabel={props.targetLabel}
-			hideSharedCommentCheck={props.hideSharedCommentCheck}
+			hideShareCommentsToggle={props.hideShareCommentsToggle}
+			refetch={props.refetch}
 		/>
 	);
 };

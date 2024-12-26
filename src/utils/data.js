@@ -226,13 +226,14 @@ export const analyticsManagementRoutes = {
 	},
 	AUDITING_REPORTING: {
 		featureFlag: 'CONTACTSUBMENU',
+		customTitle: 'Audit Reporting',
 		title: 'Audit Reporting',
 		link: '/analytics/audit',
 		component: 'AuditReporting',
 		value: 'Permits', // Need to change value
 		search: true,
 		isDefault: true,
-		hideSearch: true,
+		hideSearch: false,
 	},
 	PRODUCTION: {
 		featureFlag: 'CONTACTSUBMENU',
@@ -244,16 +245,16 @@ export const analyticsManagementRoutes = {
 		isDefault: true,
 		hideSearch: true,
 	},
-	ADVANCED_SEARCH: {
-		featureFlag: 'CONTACTSUBMENU',
-		title: 'Advanced Search',
-		link: '/analytics/advancedSearch',
-		component: 'AdvancedSearch',
-		value: 'AdvancedSearch',
-		search: true,
-		isDefault: true,
-		hideSearch: true,
-	},
+	// ADVANCED_SEARCH: {
+	// 	featureFlag: 'CONTACTSUBMENU',
+	// 	title: 'Advanced Search',
+	// 	link: '/analytics/advancedSearch',
+	// 	component: 'AdvancedSearch',
+	// 	value: 'AdvancedSearch',
+	// 	search: true,
+	// 	isDefault: true,
+	// 	hideSearch: true,
+	// },
 	Data: {
 		featureFlag: 'CONTACTSUBMENU',
 		title: 'Data',
@@ -720,5 +721,33 @@ export const esIndexFilterKeyMap = {
 	// Add other mappings as needed
 };
 
-export const MapFeatureTenants = ['m1dev', 'frontier', 'localhost'];
+export const baseTenantsMaps = () => {
+	const tenantId = window.sessionStorage?.getItem('tenantName').toLowerCase();
+	const defaultStyles = ['Satellite', 'Basic', 'Light', 'Outdoors']; // Default for most clients
+	const testNewStyles = [
+		...defaultStyles,
+		'Dark',
+		'Real Estate',
+		'Bubble',
+		'Standard Oil',
+		'Overcast',
+		'Mission Control',
+		'Sketch',
+		'Terminal',
+		'Blueprint',
+		'Pencil',
+		'Unicorn',
+		'Topography',
+	];
+
+	const tenantSpecificStyles = {
+		m1demo: testNewStyles,
+		m1dev: testNewStyles,
+		frontier: testNewStyles,
+		localhost: testNewStyles,
+	};
+
+	return tenantSpecificStyles[tenantId] || defaultStyles;
+};
+
 export const PaymentFeatureTenants = ['m1dev', 'frontier', 'localhost'];

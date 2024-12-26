@@ -27,7 +27,6 @@ import { ADD_GRID_VIEW } from 'graphQL/useMutationAddGridView';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 
 import { setCurrentUserGridViewAction } from 'store/actions/sessionActions';
-import { de } from 'date-fns/locale';
 
 const useStyles = makeStyles(theme => ({
 	container: {
@@ -101,6 +100,25 @@ const viewOptions = [
 	},
 ];
 
+export const defaultHandleDefaultView = view => {
+	switch (view?.name) {
+		case 'Recently Added':
+			view.filters = [];
+			view.sorting = [{ field: 'createAt', desc: true }];
+			break;
+
+		case 'Recently Modified':
+			view.filters = [];
+			view.sorting = [{ field: 'lastUpdateAt', desc: true }];
+			break;
+
+		default:
+			break;
+	}
+
+	return view;
+};
+
 function GridView({
 	selectedGridView,
 	setSelectedGridView,
@@ -127,7 +145,7 @@ function GridView({
 	const [addGridView, { data: newGridView }] = useMutation(ADD_GRID_VIEW);
 	const [getGridViews, { data: gridViews, loading }] = useLazyQuery(GET_GRID_VIEWS);
 	const [updateGridView, { data: updatedGridView }] = useMutation(UPDATE_GRID_VIEW);
-	const [updateFavouriteGridView, {}] = useMutation(UPDATE_FAVOURITE_GRID_VIEW);
+	const [updateFavouriteGridView] = useMutation(UPDATE_FAVOURITE_GRID_VIEW);
 
 	useEffect(() => {
 		if (selectedTab === 'views') {
@@ -138,6 +156,7 @@ function GridView({
 		} else {
 			setFilterGridView([]);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedTab]);
 
 	useEffect(() => {
@@ -147,7 +166,8 @@ function GridView({
 				userId: stateApp.user.mongoId,
 			},
 		});
-	}, [getGridViews]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [getGridViews, stateApp.user.mongoId]);
 
 	useEffect(() => {
 		if (newGridView?.addGridView?.success) {
@@ -166,6 +186,7 @@ function GridView({
 				};
 			});
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [newGridView]);
 
 	useEffect(() => {
@@ -180,6 +201,7 @@ function GridView({
 				};
 			});
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [updatedGridView]);
 
 	useEffect(() => {
@@ -204,11 +226,13 @@ function GridView({
 				setFilterGridView(allGridViews);
 			}
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [search]);
 
 	const handleClick = view => {
 		let data = JSON.parse(JSON.stringify(view));
 		if (data.type === 'Default') {
+			data = defaultHandleDefaultView(data, stateApp.user);
 			data = handleDefaultView(data, stateApp.user);
 		}
 		dispatch(

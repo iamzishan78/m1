@@ -2,8 +2,9 @@ import React from 'react';
 import Menu from '@material-ui/core/Menu';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { makeStyles, List, ListItem, ListItemText } from '@material-ui/core';
-import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined';
+import VisibilityOffOutlinedIcon from '@material-ui/icons/VisibilityOffOutlined';
 import ArrowForwardOutlinedIcon from '@material-ui/icons/ArrowForwardOutlined';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 const useStyles = makeStyles(theme => ({
 	popover: {
@@ -54,7 +55,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-export default function DatasetMenu({ dataset, handleRemove, handleTransfer }) {
+export default function DatasetMenu({ dataset, handleRemove, handleTransfer, handleAddLayer }) {
 	const classes = useStyles();
 
 	const [anchorEl, setAnchorEl] = React.useState(null);
@@ -95,8 +96,22 @@ export default function DatasetMenu({ dataset, handleRemove, handleTransfer }) {
 							}}
 						>
 							<ArrowForwardOutlinedIcon />
-							<ListItemText primary="Transfer" />
+							<ListItemText primary="Transfer" style={{ marginLeft: '5px' }} />
 						</ListItem>
+
+						{dataset?.categories?.length > 0 && (
+							<ListItem
+								button
+								onClick={e => {
+									handleClose(e);
+									handleAddLayer(dataset);
+								}}
+							>
+								<AddCircleIcon />
+								<ListItemText primary="Layers" style={{ marginLeft: '5px' }} />
+							</ListItem>
+						)}
+
 						<ListItem
 							id={'remove-source-' + dataset.sourceName}
 							button
@@ -105,8 +120,8 @@ export default function DatasetMenu({ dataset, handleRemove, handleTransfer }) {
 								handleRemove(dataset, false);
 							}}
 						>
-							<DeleteOutlineOutlinedIcon />
-							<ListItemText primary="Remove" />
+							<VisibilityOffOutlinedIcon />
+							<ListItemText primary="Hide" style={{ marginLeft: '5px' }} />
 						</ListItem>
 					</List>
 				</div>

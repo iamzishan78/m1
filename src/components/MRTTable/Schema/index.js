@@ -16,10 +16,10 @@ import ShapesFilesGenericMeta from './shapefiles_generic_schema';
 import PropertiesMeta from './properties_schema';
 import ReportingGroupsMeta from './property_group_schema';
 import RevenueStatementsMeta from './revenue_statements_schema';
-import ContactWellInterestMeta from "./contact_well_Interest_schema"
+import ContactWellInterestMeta from './contact_well_Interest_schema';
 import ActivityMeta from './activity_schema';
-import RevenueCheckDetailMeta from "./revenue_checkdetail_schema"
-import UnitTractsMeta from "./unit_tract_schema"
+import RevenueCheckDetailMeta from './revenue_checkdetail_schema';
+import UnitTractsMeta from './unit_tract_schema';
 import MyWellsMeta from './my_wells_schema';
 import WellsMeta from './wells_schema';
 import TaxOwnerMeta from './map-grid-tax-owner-schema';
@@ -40,6 +40,17 @@ import ExhibitAMeta from './exhibit_a_schema';
 import AcreageDetilsMeta from './acreage_details_schema';
 import ContactDetailUnitInterestMeta from './contactDetail_unit_interests_schema';
 import ContactDetailTractInterestMeta from './contactDetail_tract_interest_schema';
+import ContactDetailRelatedAgreementMeta from './contactDetail_related_agreements_schema';
+import ContactDetailRelatedContactMeta from './contactDetail_related_contacts_schema';
+import PropertyInterestDetailMeta from './property-interest-details-schema';
+import PropertyRevenueDetailMeta from './property-revenue-details-schema';
+import RelatedTractsMeta from './related_tracts_schema';
+import RelatedWellsMeta from './related_wells_schema';
+import AuditReportingMeta from './audit_reporting_schema';
+import PotentialOwnersMeta from './QuerySchema/potential_owners_schema';
+import UserManagementMeta from './QuerySchema/user_management_schema';
+import PropertiesRevenueMeta from './QuerySchema/properties_revenue_schema';
+
 
 export const SCHEMA = {
 	ActivityTable: ActivityMeta,
@@ -92,4 +103,17 @@ export const SCHEMA = {
 	TractInterestsTable: TractInterestsMeta, // Tracts Interest schema
 	ContactDetailUnitInterestTable: ContactDetailUnitInterestMeta,
 	ContactDetailTractInterestTable: ContactDetailTractInterestMeta,
+	RelatedAgreementTable: ContactDetailRelatedAgreementMeta,
+	ContactDetailAgreementsTable: ContactDetailRelatedAgreementMeta,
+	PropertyRelatedAgreementTable: ContactDetailRelatedAgreementMeta, //property detail =>  related agreement grid
+	ContactDetailActivitiesTable: ActivitiesMeta,
+	ContactDetailContactsTable: ContactDetailRelatedContactMeta,
+	PropertyInterestDetailTable: PropertyInterestDetailMeta, //property detail =>  interest detail grid
+	PropertyRevenueDetailTable: PropertyRevenueDetailMeta, //property detail =>  revenue detail grid
+	RelatedTractsTable: RelatedTractsMeta,
+	RelatedWellsTable: RelatedWellsMeta,
+	AuditReportingTable: AuditReportingMeta, // Revenue Statement grid => revenue/statements
+	PotentialOwnersTable: PotentialOwnersMeta,
+	UserManagementTable: UserManagementMeta,
+	PropertiesRevenueTable: PropertiesRevenueMeta, // analytics > revenue > revenue  by month
 };

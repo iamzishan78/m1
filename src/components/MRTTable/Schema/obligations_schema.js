@@ -1,6 +1,6 @@
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import CheckIcon from '@material-ui/icons/LocalAtm';
 import { formatDate } from 'components/Shared/functions';
-import CheckIcon from '@material-ui/icons/Check';
 import { getTruncateText } from '../utils/helper';
 import { slidoutStateController } from 'hookstate/slidoutStateController';
 import { slidoutState } from 'hookstate/initialStates';
@@ -31,7 +31,6 @@ const statusOptions = {
 const ObligationsMeta = {
 	esIndex,
 	onClickedRow,
-	isElasticQuery: false,
 	pageSize: 50,
 	pagination: {
 		pageIndex: 0,
@@ -145,9 +144,9 @@ const ObligationsMeta = {
 			id: 'isClosed',
 			header: 'Completed?',
 			type: 'boolean',
-			defaultFilterOptions: [
-				{ label: 'Y', value: true, type: 'term' },
-				{ label: 'N', value: false, type: 'term' },
+			filterSelectOptions: [
+				{ label: 'Yes', value: 'true' },
+				{ label: 'No', value: 'false' },
 			],
 			Cell: ({ renderedCellValue }) => {
 				return renderedCellValue === 'true' ? (

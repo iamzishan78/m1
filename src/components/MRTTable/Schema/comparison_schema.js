@@ -1,13 +1,12 @@
 import { ErrorOutline } from '@material-ui/icons';
 import { formatDate } from 'components/Shared/functions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 
 const esIndex = 'checkdetailsinterestscomparison_flat';
 
 const ComparisonMeta = {
 	esIndex,
-	isElasticQuery: false,
 	pageSize: 50,
 	pagination: {
 		pageIndex: 0,

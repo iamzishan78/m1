@@ -14,7 +14,6 @@ import TabPanels, { TabPanel } from 'components/Shared/TabPanels';
 import DockMenu from './DockMenu';
 import ShapeGridWellsTable from 'components/Table/Wells/ShapeGridWellsTable';
 import ShapeGridTaxOwnersTable from 'components/Table/TaxOwners/ShapeGridTaxOwnersTable';
-import MapGridContactTable from 'components/Table/Contact/MapGridContactTable';
 
 import SearchPanel from './components/SearchPanel';
 import { platformDataInitialData, platformDataWellsInitialData, snapGridSideBarData } from './components/data';
@@ -271,10 +270,12 @@ function MapGridCard(props) {
 		// generic generateFileFilters used for files so that it remain consistent in all places.
 		if (mapControlsStateValues?.selectedLayer?.layerShapeName) {
 			const fileQuery = generateFileFilters({ fileLayer: mapControlsStateValues.selectedLayer });
+			const fileId = mapControlsStateValues.selectedLayer?.file;
+			const layerShapeName = mapControlsStateValues?.selectedLayer?.layerShapeName;
+			const layerIdentifier = `${fileId}_${layerShapeName}`;
 			tableGlobalController.reInitialized();
 			return {
-				filterLayerType: mapControlsStateValues.selectedLayer?.layerShapeName,
-				layerIdentifier: mapControlsStateValues.selectedLayer?.layerShapeName,
+				filterLayerType: layerIdentifier,
 				maxTableHeight: '40vh',
 				toolbarInternalActions: {
 					onClose,
@@ -284,6 +285,7 @@ function MapGridCard(props) {
 				},
 				defaultFilters: fileQuery.variables.filters,
 				advanceSearch: fileQuery.variables.search.advanceSearch,
+				layerIdentifier,
 			};
 		} else {
 			return {};
@@ -417,7 +419,11 @@ function MapGridCard(props) {
 											M1 Platform
 										</Typography>
 
-										<List component="nav" aria-label="main mailbox folders">
+										<List
+											component="nav"
+											aria-label="main mailbox folders"
+											style={{ height: 'calc(50vh - 29px)', overflowY: 'auto' }}
+										>
 											{[...platformDataWellsInitialData, ...snapGridSideBarData].map(row => {
 												const Icon = row.Icon;
 												return (
@@ -450,7 +456,11 @@ function MapGridCard(props) {
 												{mapControlsStateValues.selectedDataset?.name}
 											</Typography>
 
-											<List component="nav" aria-label="main mailbox folders">
+											<List
+												component="nav"
+												aria-label="main mailbox folders"
+												style={{ height: 'calc(50vh - 29px)', overflowY: 'auto' }}
+											>
 												{mapControlsStateValues.selectedDataset?.categories.map(row => {
 													const Icon = mapControlsStateValues.selectedDataset?.Icon;
 													return (
@@ -489,6 +499,7 @@ function MapGridCard(props) {
 														},
 														maxTableHeight: '45vh',
 														filterLayerType: 'Wells',
+														layerIdentifier: 'Wells',
 													}}
 												/>
 											)}
@@ -518,22 +529,7 @@ function MapGridCard(props) {
 											{searchTapValue.value === 'layer' && (
 												<MRTTable name="ShapesFilesGenericTable" overrideMeta={shapeFileTableOverride} />
 											)}
-											{searchTapValue.value === 'contacts' && (
-												<MapGridContactTable
-													dense
-													parent="search"
-													customOptions={options}
-													targetLabel={searchTapValue.value}
-													header={
-														<SearchPanel
-															isShapeGridOnly={drawStateValues.selectedPolygonString}
-															handleChange={handleSearchPanelChange}
-															value={searchTapValue}
-															ativateSearchPanel={ativateSearchPanel}
-														/>
-													}
-												/>
-											)}
+											{searchTapValue.value === 'contacts' && <MRTTable name="ContactTable" />}
 											{searchTapValue.value === 'unit' && (
 												<MRTTable
 													name="UnitTable"

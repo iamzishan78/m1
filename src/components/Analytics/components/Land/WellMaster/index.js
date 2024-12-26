@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { FormControl, Grid, InputLabel, Select, MenuItem, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import { useSelector } from 'react-redux';
 import { AppContext } from 'AppContext';
 
-import WellMaster from './WellMaster';
-import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
-import { setStateIfDeepEqual } from 'components/Shared/functions';
-import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
+import { setStateIfDeepEqual } from "components/Shared/functions";
+import MRTTable from 'components/MRTTable';
+import { tableController } from "hookstate/tableController";
+import Wells from 'components/Shared/svgIcons/well';
 
 const useStyles = makeStyles(theme => ({
 	formControl: {
@@ -62,17 +62,13 @@ export default function ExhibitATabPanel() {
 		ESFilters(newESFilters);
 	}, [externalFilters]);
 
-	const setESFilters = newState => {
-		setStateIfDeepEqual(ESFilters, newState);
-	};
+  useEffect(() => {
+    tableController("MyWellsTable")?.setGlobalFilter(stateApp.landAnalyticsSearchQuery === "*" ? "" : stateApp.landAnalyticsSearchQuery);
+  }, [stateApp.landAnalyticsSearchQuery]);
 
-	const handleFilterChange = (field, newValue) => {
-		setExtFilters({ ...externalFilters, [field]: newValue || 'All' });
-	};
-
-	return (
-		<>
-			{/* <div className={classes.actionBar}>
+  return (
+    <>
+      {/* <div className={classes.actionBar}>
         <Grid
           container
           direction="row"
@@ -154,15 +150,19 @@ export default function ExhibitATabPanel() {
           </Grid>
         </Grid>
       </div> */}
-			<WellMaster
-				header="Well Master"
-				esFilters={esFilters}
-				targetLabel="acerage"
-				parent="AcerageDetail"
-				setESFilters={setESFilters}
-				landSearchQuery={stateApp.landAnalyticsSearchQuery}
-				loadMore={loadMore}
-			/>
-		</>
-	);
+      {/* Display well master table using MRT Grid */}
+      <MRTTable name="MyWellsTable" overrideMeta={{
+        isDeleteDisabled: true, // Disable delete functionality
+        gridViewSettings: {
+          label: 'Well Master', // Label for grid view
+          Icon: Wells, // Icon for grid view
+          cssOverride: {
+              top: '138px', // CSS overrides for positioning
+              left: '40px',
+              marginLeft: '-9px',
+          },
+      },
+      }} /> 
+    </>
+  );
 }

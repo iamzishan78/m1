@@ -9,12 +9,8 @@ import { setMapGridCardState } from 'actions';
 import OwnersSummaryCard from 'components/OwnersSummaryCard/OwnersSummaryCard';
 import { TabPanel } from 'components/Shared/TabPanels';
 import ContactDetailedInfo from 'components/ContactDetailedInfo/ContactDetailedInfo';
-import ActivitiesTable from 'components/Table/Activities/ActivitiesTable';
-import RelatedContactsTable from 'components/Table/Contact/RelatedContactTable';
 import ContactTaxRollInterestTable from 'components/Table/Contact/ContactTaxRollInterestTable';
-import ContactRelatedAgreementTable from 'components/Table/Contact/ContactRelatedAgreementTable';
 import ContactDealsProvider from 'components/DealsDetailCard/ContactDealsProvider';
-import ContactDocumentsProvider from 'components/ViewDocuments/ContactDocumentsProvider';
 
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 import { contactDetailInitialData } from './data';
@@ -24,6 +20,9 @@ import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import moment from 'moment';
 import sortBy from 'lodash/sortBy';
 import MRTTable from 'components/MRTTable';
+import ActivitiesToolbar from 'components/MRTTable/TablesOverride/ContactDetailActivities/ActivitiesToolbar';
+import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
+import { DrawerContextProvider } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
 
 const useStyles = makeStyles(theme => ({
 	card: {
@@ -69,7 +68,7 @@ const useStyles = makeStyles(theme => ({
 		'& .MuiBox-root': { padding: '0' },
 	},
 	tapsPanelsPadding: {
-		'& .MuiBox-root': { padding: '0', height: '100%' },
+		'& .MuiBox-root': { padding: '0' },
 	},
 	mainPanelsDiv: {
 		height: '100%',
@@ -82,13 +81,6 @@ const useStyles = makeStyles(theme => ({
 		'&::-webkit-scrollbar-thumb': {
 			backgroundColor: '#929292',
 			borderRadius: 10,
-		},
-		'& div': {
-			'&>.MuiPaper-root': {
-				'&>:nth-child(3)': {
-					height: 'calc(50vh - 128px) !important',
-				},
-			},
 		},
 	},
 	tapsLabelsButtons: {
@@ -135,9 +127,10 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-function MapGridCard(props) {
+function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 	// contexts
 	const [stateApp, setStateApp] = useContext(AppContext);
+	const maxTableHeight = 'calc(50vh - 100px)';
 
 	const [getContactSummary, { data: contactSummaryData }] = useLazyQuery(CONTACT_SUMMARY);
 
@@ -157,13 +150,14 @@ function MapGridCard(props) {
 	const [sortedPurchaseData, setSortedPurchaseData] = useState([]);
 
 	useEffect(() => {
-		if (props.contactData._id)
+		if (contactData._id) {
 			getContactSummary({
 				variables: {
-					contactId: props.contactData._id,
+					contactId: contactData._id,
 				},
 			});
-	}, [getContactSummary, props.contactData]);
+		}
+	}, [getContactSummary, contactData]);
 
 	const setSearchTapValue = state => {
 		if (searchTapValue !== state) {
@@ -189,12 +183,12 @@ function MapGridCard(props) {
 	};
 
 	useEffect(() => {
-		if (props.purchaseData.length > 0) {
+		if (purchaseData.length > 0) {
 			// Sort the purchase data by the system date time in descending order (latest first)
-			const sortedPurchaseData = sortBy(props.purchaseData, item => moment(item.sysDateTime).valueOf()).reverse();
+			const sortedPurchaseData = sortBy(purchaseData, item => moment(item.sysDateTime).valueOf()).reverse();
 			setSortedPurchaseData(sortedPurchaseData); // Update the state with the sorted purchase data
 		}
-	}, [props.purchaseData]);
+	}, [purchaseData]);
 
 	// If the ducument component is loading as Associated data, isExpanded should be false
 	useEffect(() => {
@@ -205,38 +199,106 @@ function MapGridCard(props) {
 
 	const contactWellInterestOverride = useMemo(
 		() => ({
-			defaultFilters: [{ field: 'contact._id', value: props.contactData._id || '' }],
+			defaultFilters: [{ field: 'contact._id', value: contactData._id || '' }],
 			customProps: {
-				contactId: props.contactData._id,
+				contactId: contactData._id,
 			},
 			refetchQueries: ['getContactSummary'],
 		}),
-		[props.contactData._id]
+		[contactData._id]
 	);
 
 	const contactlUnitInterestOverride = useMemo(
 		() => ({
 			defaultFilters: [
 				{ field: 'shape.layer.keyword', value: 'unit' },
-				{ field: 'contact._id', value: props.contactData._id || '' },
+				{ field: 'contact._id', value: contactData._id || '' },
 			],
 			refetchQueries: ['getContactSummary'],
 		}),
-		[props.contactData._id]
+		[contactData._id]
 	);
 
 	const contactTractInterestOverride = useMemo(
 		() => ({
 			defaultFilters: [
 				{ field: 'shape.layer.keyword', value: 'parcel' },
-				{ field: 'contact._id', value: props.contactData._id || '' },
+				{ field: 'contact._id', value: contactData._id || '' },
 			],
 			customProps: {
-				contactId: props.contactData._id,
+				contactId: contactData._id,
 			},
 			refetchQueries: ['getContactSummary'],
 		}),
-		[props.contactData._id]
+		[contactData._id]
+	);
+
+	const RelatedAgreementOverrideMeta = useMemo(
+		() => ({
+			defaultFilters: [{ field: 'relatedParties.contactId', value: contactData._id }],
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: {
+					key: 'relatedParties',
+					func: relatedParties => relatedParties.find(rp => rp.contactId === contactData._id)?._id,
+				},
+			},
+			customValue: { campaign: contactData._id },
+			refetchQueries: ['getContactSummary'],
+		}),
+		[contactData._id]
+	);
+
+	const ContactDetailActivitiesOverrideMeta = useMemo(
+		() => ({
+			defaultFilters: [
+				{
+					field: ['contactId', 'relatedContacts._id'],
+					value: contactData?._id,
+					oRFilter: true,
+				},
+			],
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: contactData?._id },
+			},
+			customValue: { parentRecord: contactData?._id },
+			maxTableHeight,
+			CustomToolBar: ActivitiesToolbar,
+			refetchQueries: ['getContactSummary'],
+			isDeleteDisabled: true,
+		}),
+		[contactData?._id]
+	);
+
+	const ContactDetailContactsOverrideMeta = useMemo(
+		() => ({
+			defaultFilters: [{ field: 'relatedContacts.relatedObject', value: contactData?._id, isArrayKey: true }],
+			maxTableHeight,
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: contactData?._id },
+			},
+			customProps: { contactId: contactData?._id },
+			customValue: { parentRecord: contactData?._id },
+			refetchQueries: ['getContactSummary'],
+		}),
+		[contactData?._id]
+	);
+
+	const RelatedDocumentsOverrideMeta = useMemo(
+		() => ({
+			maxTableHeight: 'calc(50vh - 100px)',
+			defaultFilters: [{ field: 'contacts._id', value: contactData?._id }],
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: contactData?._id },
+			},
+			customValue: { parentRecord: contactData?._id },
+			columnReordering: false,
+		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[contactData?._id]
 	);
 
 	return (
@@ -291,31 +353,14 @@ function MapGridCard(props) {
 											<ContactDetailedInfo
 												user={stateApp.user}
 												purchaseData={sortedPurchaseData}
-												contactData={props.contactData}
-												handleQuickActionActivity={props.handleQuickActionActivity}
+												contactData={contactData}
+												handleQuickActionActivity={handleQuickActionActivity}
 											/>
 										)}
 										{searchTapValue.value === 'activities' && (
-											<ActivitiesTable
-												esIndex={'activities_flat'}
-												id="activitiesInterestsTable"
-												searchFields={['name', '_all']}
-												filtersChange={() => {}}
-												appliedFilters={[
-													{
-														field: ['contactId', 'relatedContacts._id'],
-														value: props.contactData?._id,
-														oRFilter: true,
-													},
-												]}
-												filterToggle={() => {}}
-												targetLabel={'activitiesDashboard'}
-												header="Activities"
-												parent="assocTaxRollInterests"
-												addAble={{ type: 'contactActivity' }}
-												onAddActivity={props.onAddActivity}
-												dialogType="activitySideDialog"
-												applyCustomClasses
+											<MRTTable
+												name="ContactDetailActivitiesTable"
+												overrideMeta={ContactDetailActivitiesOverrideMeta}
 											/>
 										)}
 										{searchTapValue.value === 'taxRollInterests' && (
@@ -324,7 +369,7 @@ function MapGridCard(props) {
 												id="taxInterestsTable"
 												header={'Tax Roll Interests'}
 												targetLabel="well"
-												contactId={props.contactData._id}
+												contactId={contactData._id}
 												showTracks
 											/>
 										)}
@@ -339,22 +384,20 @@ function MapGridCard(props) {
 										)}
 										{searchTapValue.value === 'deals' && <ContactDealsProvider />}
 										{searchTapValue.value === 'documents' && (
-											<ContactDocumentsProvider contactId={props.contactData._id} />
+											<DrawerContextProvider>
+												<RelatedDocumentsTable
+													id="relatedDocumentsTable"
+													moduleId={contactData?._id}
+													overrideMeta={RelatedDocumentsOverrideMeta}
+													relatedObjectType="Contact"
+												/>
+											</DrawerContextProvider>
 										)}
 										{searchTapValue.value === 'relatedContacts' && (
-											<RelatedContactsTable contactId={props.contactData._id} />
+											<MRTTable name="ContactDetailContactsTable" overrideMeta={ContactDetailContactsOverrideMeta} />
 										)}
 										{searchTapValue.value === 'relatedAgreements' && (
-											<ContactRelatedAgreementTable
-												dense
-												moduleId={props.contactData._id}
-												setDrawer={props.setDrawer}
-												setCounter={() => {}}
-												esFilters={[{ field: 'contact._id', value: props.contactData._id }]}
-												targetLabel="Shape"
-												setESFilters={() => {}}
-												onTractCount={() => {}}
-											/>
+											<MRTTable name="ContactDetailAgreementsTable" overrideMeta={RelatedAgreementOverrideMeta} />
 										)}
 									</div>
 								</Grid>

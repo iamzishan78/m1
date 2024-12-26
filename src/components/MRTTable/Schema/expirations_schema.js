@@ -23,7 +23,6 @@ const onClickedRow = selectedRow => {
 const ExpirationsMeta = {
 	esIndex,
 	onClickedRow,
-	isElasticQuery: false,
 	pageSize: 50,
 	pagination: {
 		pageIndex: 0,
@@ -113,9 +112,9 @@ const ExpirationsMeta = {
 			id: 'isClosed',
 			header: 'Completed?',
 			type: 'boolean',
-			defaultFilterOptions: [
-				{ label: 'Y', value: true, type: 'term' },
-				{ label: 'N', value: false, type: 'term' },
+			filterSelectOptions: [
+				{ label: 'Yes', value: 'true' },
+				{ label: 'No', value: 'false' },
 			],
 			Cell: ({ renderedCellValue }) => {
 				return renderedCellValue === 'true' ? (

@@ -81,7 +81,6 @@ const AttrsValuesDropdown = ({
 	setAttributeBasedColors,
 }) => {
 	const classes = useStyles();
-	const [isOpen, setIsOpen] = useState(false);
 	const [displayColorPicker, setDisplayColorPicker] = useState(false);
 
 	// State for managing the clicked value and its color
@@ -131,8 +130,9 @@ const AttrsValuesDropdown = ({
 	// Making dropdown options with colors
 	const attroptions = useMemo(() => {
 		if (!filtersData?.getESSimpleFilter?.hits || !selectedValue?.label) return [];
-
-		const filterKeys = filtersData.getESSimpleFilter.hits.map(hit => hit.key).filter(key => key.trim());
+		const filterKeys = filtersData.getESSimpleFilter.hits
+			.map(hit => hit?.key)
+			.filter(key => key && key.toString().trim());
 
 		filterKeys.unshift('');
 
@@ -162,14 +162,11 @@ const AttrsValuesDropdown = ({
 		<>
 			{selectedValue ? (
 				<div className={classes.dropdownContainer}>
-					<div id="color-dropdown" className={classes.dropdown} onClick={() => setIsOpen(!isOpen)}>
+					<div id="color-dropdown" className={classes.dropdown}>
 						<span>{selectedValue ? selectedValue['label'] : ''}</span>
-						<span
-							className={classes.arrowIcon}
-							style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
-						></span>
+						<span className={classes.arrowIcon} style={{ transform: 'rotate(180deg)' }}></span>
 					</div>
-					{isOpen && (
+					{attroptions?.length > 0 && (
 						<ul className={classes.dropdownList}>
 							{attroptions.map((option, index) => (
 								<li

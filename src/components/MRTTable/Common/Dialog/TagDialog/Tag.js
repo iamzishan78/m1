@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useState, useEffect } from 'react';
 import { useMutation, useLazyQuery } from '@apollo/client';
 import { CircularProgress } from '@material-ui/core';
@@ -17,7 +18,6 @@ import { UPSERTTAG } from 'graphQL/useMutationUpsertTag';
 import { REMOVETAG } from 'graphQL/useMutationRemoveTag';
 import { AppContext } from 'AppContext';
 import 'components/Shared/Tagger.css';
-import { tableGlobalController } from 'hookstate/tableController';
 
 // import value formatters
 import capitalizeFirstLetter from 'components/Shared/valueformatters/capitalize-first-letter';
@@ -94,6 +94,7 @@ const useStyles = makeStyles(theme => ({
 		'& .MuiChip-root': {
 			backgroundColor: '#ECEDED',
 			color: '#606060',
+			borderRadius: '4px',
 		},
 	},
 	input: {
@@ -107,7 +108,7 @@ const useStyles = makeStyles(theme => ({
 			fontSize: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '25px'),
 			margin: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '3px'),
 			padding: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '0px !important'),
-			borderRadius: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '50%'),
+			borderRadius: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : '5px'),
 			textAlign: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : 'center'),
 			cursor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? '' : 'pointer'),
 			'&:hover': {
@@ -239,7 +240,7 @@ export default function Tags(props) {
 
 			defaultTags = defaultTags.filter(defaultTag => {
 				let found;
-				tagsArray.map(tag => {
+				tagsArray.forEach(tag => {
 					if (tag.tag === defaultTag) {
 						found = true;
 					}
@@ -268,7 +269,7 @@ export default function Tags(props) {
 		setTextValue('');
 
 		let found = false;
-		tagsArray.map(tag => {
+		tagsArray.forEach(tag => {
 			if (tag.tag === tagText) {
 				found = true;
 			}
@@ -331,7 +332,7 @@ export default function Tags(props) {
 				}
 			}
 		}
-		tableGlobalController.refetch();
+		props.refetch?.();
 	};
 
 	/// ////////////////// DELETING A TAG ///////////////////////////////////////////////
@@ -398,7 +399,7 @@ export default function Tags(props) {
 				});
 			}
 		}
-		tableGlobalController.refetch();
+		props.refetch?.();
 	};
 
 	/// /////////////////////////////////////////////////////////////////////////////////////

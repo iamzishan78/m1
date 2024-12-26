@@ -17,14 +17,18 @@ const classes = {
 	},
 };
 
-function StartEndDate({ control, item }) {
+function StartEndDate({ control, item, watch, error }) {
 	const {
 		// field props
 		onBlur,
 		onStartDateChange,
 		onEndDateChange,
 		disabled = false,
+		required = false,
 	} = item || {};
+
+	const watchStartDate = watch('startDate');
+	const watchEndDate = watch('endDate');
 
 	return (
 		<Grid container alignItems="center" spacing={2}>
@@ -51,6 +55,7 @@ function StartEndDate({ control, item }) {
 							}}
 							onBlur={onBlur}
 							KeyboardButtonProps={{ 'aria-label': 'change date' }}
+							error={required && !watchStartDate && error}
 						/>
 					)}
 				/>
@@ -78,6 +83,7 @@ function StartEndDate({ control, item }) {
 							}}
 							onBlur={onBlur}
 							KeyboardButtonProps={{ 'aria-label': 'change date' }}
+							error={required && !watchEndDate && error}
 						/>
 					)}
 				/>

@@ -11,7 +11,7 @@ const useStyles = makeStyles(() => ({
 	TagSample: {
 		backgroundColor: '#efefef',
 		color: 'rgb(1,17,51)',
-		borderRadius: '12px',
+		borderRadius: '4px',
 		width: '100%',
 		maxWidth: '180px',
 		minWidth: '120px',
@@ -64,8 +64,8 @@ function TagCell({ id, targetSourceId, tags, targetLabel }) {
 				>
 					{tags?.length > 0 ? (
 						<>
-							<p className="first">{tags.map(cell => cell.tag).join(', ')}</p>
-							<p className="two">...</p>
+							<p className="first">{tags.map(cell => cell?.tag || cell).join(', ')}</p>
+							{tags?.length > 1 && <p className="two">...</p>}
 						</>
 					) : (
 						<p className="three">No Tags</p>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -6,7 +6,9 @@ import SearchIcon from '@material-ui/icons/Search';
 import { Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useLazyQuery } from '@apollo/client';
-import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
+import debounce from 'lodash/debounce';
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+
 const useStyles = makeStyles({
 	inputRoot: {
 		// backgroundColor: "#ffffff",
@@ -19,35 +21,54 @@ const useStyles = makeStyles({
 		},
 	},
 });
+
+const debouncedSearch = debounce((getESSimpleSearch, searchTerm) => {
+	getESSimpleSearch({
+		variables: {
+			index: 'documents_flat',
+			pagination: {
+				first: 50,
+				keep_alive: '1micros',
+			},
+			search: {
+				query: searchTerm ? `${searchTerm}*` : '',
+				fields: ['name.keyword'],
+			},
+		},
+	});
+}, 300);
+
 const AutoCompleteDocumentList = ({ onSelect, search, setSearch }) => {
+	const classes = useStyles();
 	const [documents, setDocuments] = useState([]);
 	const [value, setValue] = useState({ name: '', _id: null });
-	const [getESPaginatedList, { data: documentData }] = useLazyQuery(GET_ES_PAGINATED_LIST);
+	const [getESSimpleSearch, { data: documentData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH);
+
+	const handleSearch = useCallback(searchTerm => debouncedSearch(getESSimpleSearch, searchTerm), [getESSimpleSearch]);
+
 	useEffect(() => {
-		getESPaginatedList({
-			variables: {
-				esIndex: 'documents_flat',
-				pagination: {
-					first: 50,
-					keep_alive: '1micros',
-				},
-				search: search ? `${search}*` : '',
-			},
-		});
-	}, [search]);
+		handleSearch(search);
+	}, [search, handleSearch]);
+
 	useEffect(() => {
-		if (documentData?.getESPaginatedList?.hits) {
-			setDocuments(documentData?.getESPaginatedList?.hits);
+		if (documentData?.getESSimpleSearch?.hits) {
+			setDocuments(documentData?.getESSimpleSearch?.hits);
 		}
 	}, [documentData]);
+
 	const onInputChange = e => {
 		setSearch(e.target.value);
 	};
+
+	const onBlur = () => {
+		setSearch('');
+	};
+
 	const onChange = value => {
 		setValue(value);
 		onSelect(value);
 	};
-	const classes = useStyles();
+
 	return (
 		<Autocomplete
 			id="searchDocumentList"
@@ -90,6 +111,7 @@ const AutoCompleteDocumentList = ({ onSelect, search, setSearch }) => {
 			onChange={(event, newValue) => {
 				onChange(newValue);
 			}}
+			onBlur={onBlur}
 			renderInput={params => (
 				<TextField
 					margin="dense"

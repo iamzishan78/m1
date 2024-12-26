@@ -146,6 +146,7 @@ export const formatTaxOwners = (owners, formData) => {
 			taxYear: owners[i].year,
 			dataSource: 'M1neral',
 			contactOwner: formData.contactOwner,
+			// TODO: remove this
 			campaignName: formData.campaigns?.map(campaign => campaign.name),
 			campaigns: formData.campaigns,
 			tags: formData.tags,
@@ -624,4 +625,115 @@ export const getDateFilters = filters => {
 		return true;
 	});
 	return customFilters;
+};
+
+export const checkFormRequireField = (data, formSchema) => {
+	let error = false;
+
+	formSchema.forEach(field => {
+		if (field.required && field?.name && !data[field.name]) {
+			error = true;
+		}
+		if (field.renderField === 'startEndDate' && field.required && (!data['startDate'] || !data['endDate'])) {
+			error = true;
+		}
+	});
+
+	return error;
+};
+
+export const getFilters = appliedFilters => {
+	if (Array.isArray(appliedFilters)) return appliedFilters;
+
+	let filters = [];
+	if (appliedFilters) {
+		let range = [];
+		range = getRangeFilters(
+			{
+				createdAt: {
+					from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+					to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+				},
+			},
+			'simple'
+		);
+		if (range.length > 0) filters = [...filters, ...range];
+		if (appliedFilters.status) {
+			filters.push({
+				field: 'status.keyword',
+				value: appliedFilters.status,
+			});
+		}
+		if (appliedFilters.owner) {
+			filters.push({
+				field: 'owner.name.keyword',
+				value: appliedFilters.owner,
+			});
+		}
+	}
+	return filters;
+};
+
+export const getActivityAnalyticsFilters = appliedFilters => {
+	let filters = [];
+	if (appliedFilters) {
+		let range = [];
+		if (appliedFilters.filter !== 'audit') {
+			range = getRangeFilters(
+				{
+					dateTime: {
+						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+					},
+				},
+				'simple'
+			);
+			if (range.length > 0) filters = [...filters, ...range];
+			range = getRangeFilters(
+				{
+					endDateTime: {
+						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+					},
+				},
+				'simple'
+			);
+		} else {
+			range = getRangeFilters(
+				{
+					lastUpdateAt: {
+						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+					},
+				},
+				'simple'
+			);
+			if (range.length > 0) filters = [...filters, ...range];
+			range = getRangeFilters(
+				{
+					lastUpdateAt: {
+						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+					},
+				},
+				'simple'
+			);
+		}
+
+		if (range.length > 0) filters = [...filters, ...range];
+		if (appliedFilters.campaignName) {
+			filters.push({
+				field: 'contact.campaignName.keyword',
+				value: appliedFilters.campaignName,
+			});
+		}
+		if (appliedFilters.qualifier) {
+			filters.push({
+				field: appliedFilters.filter === 'audit' ? 'lastUpdateBy.name.keyword' : 'ownerName.keyword',
+				value: appliedFilters.qualifier,
+			});
+		}
+		if (!filters.length && appliedFilters.length) filters = appliedFilters;
+	}
+	return filters;
 };

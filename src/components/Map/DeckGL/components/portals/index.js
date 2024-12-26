@@ -220,7 +220,7 @@ function Portals({ hideShape }) {
 								)}
 							</PortalD>
 						)}
-						{popupVals?.selectedUserDefinedLayer?.file && (
+						{popupVals?.selectedUserDefinedLayer?.fileId && (
 							<PortalD id="popupContainer">
 								<UdLayerCardProvider
 									parent="map"

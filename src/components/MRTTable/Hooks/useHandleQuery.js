@@ -3,25 +3,72 @@ import { debounce, set, get, isNumber } from 'lodash';
 import { useCallback, useEffect, useRef } from 'react';
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { GET_ES_AGGS_LIST } from 'graphQL/useQueryESAggsList';
 import { copy } from 'utils/helper';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { drawController } from 'hookstate/drawStateController';
-import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
+import { GET_DB_AGGS, GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
+import { mergeArrays } from 'components/Shared/functions';
 
+// Custom hook to handle queries for MRTTable
 const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) => {
+	// Get table controller instance
 	const Controller = tableController(tableKey);
+	// Get refetch function from global table controller
 	const { refetch } = tableGlobalController.useState(['refetch']);
+	// Get draw state values from draw controller
 	const { drawStateValues } = drawController.useState(['selectedPolygonString', 'currentFeature'], 'drawStateValues');
-	const resetPagination = useRef(false); // use to reset pagination in case of infinite scroll
-	const previousPagination = useRef(); // use to reset pagination in case of infinite scroll
-	const columnsType = useRef({}); // use to reset pagination in case of infinite scroll
+
+	// Refs to manage pagination state for infinite scroll
+	const resetPagination = useRef(false); // Flag to reset pagination
+	const previousPagination = useRef(); // Store previous pagination values
+	const columnsType = useRef({}); // Store column types
+
+	// Apollo client instance
 	const client = useApolloClient();
 
+	// Destructure table state values
+	const { isClientSide } = tableStateValues;
+
+	// Function to execute query based on client-side or server-side querying
 	const callQuery = async _pagination => {
+		// Handle client-side query
+		if (isClientSide) {
+			const tableMeta = tableState.get({ noproxy: true });
+
+			Controller.updateState({
+				isLoading: true,
+				isFetching: true,
+				isError: false,
+			});
+
+			const res = await client.query({
+				variables: tableMeta.getVariables(tableMeta),
+				query: tableMeta.query,
+			});
+
+			const rows = tableMeta.getDataFromRes(res);
+
+			Controller.updateState({
+				data: {
+					rows: JSON.parse(JSON.stringify(rows).replaceAll(' \\u0000', '').replaceAll('\\u0000', '')),
+					total: rows.length,
+				},
+				isLoading: false,
+				isFetching: false,
+				isError: false,
+			});
+
+			return;
+		}
+
+		// Handle server-side query
+		const resetPaginationVal = resetPagination.current;
+
 		const tableMeta = tableState.get({ noproxy: true });
 		const pagination = _pagination || tableMeta.pagination;
 		const { TableSchema } = tableMeta;
+		const isElasticIndex = tableStateValues.esIndex.includes('platformData:');
+
 		if (!TableSchema) return;
 
 		Controller.updateState({
@@ -29,6 +76,8 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			isFetching: true,
 			isError: false,
 		});
+
+		// Determine sort field and order
 		let metaField = {};
 		if (tableStateValues.sorting.length) {
 			metaField = TableSchema?.find(item => (item.accessorKey || item.id) === tableStateValues.sorting[0]?.id);
@@ -51,26 +100,19 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 					order: tableStateValues.sorting[0].desc ? 'desc' : 'asc',
 				}
 			: tableState?.defaultSort?.get({ noproxy: true });
+
 		if (metaField?.isCustom) {
 			sort.unmapped_type = 'keyword';
 		}
 
+		// Prepare filters
 		const filters = [...(tableMeta?.defaultFilters || []), ...(tableMeta?.filters || [])];
-
-		if (tableStateValues.geoKey && drawStateValues.selectedPolygonString && drawStateValues.currentFeature) {
-			filters.push({
-				type: 'geo_intersects',
-				field: tableStateValues.geoKey,
-				value: drawStateValues.currentFeature.geometry,
-			});
-		}
 
 		let globalFilter = tableStateValues.globalFilter;
 
 		if (tableStateValues.isGeneric && !tableStateValues.globalSearch) globalFilter = null;
 
-		const isMongo = tableStateValues.isElasticQuery === false;
-
+		// Prepare query variables
 		const variables = {
 			index: tableStateValues.esIndex,
 			pagination: { ...pagination, pageIndex: undefined, pageSize: undefined },
@@ -81,15 +123,16 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			},
 			sort,
 			filters,
-			...(isMongo && { isElasticQuery: false }),
+			parent: tableStateValues.tableKey,
 		};
 
+		// Update layer filters if filter layer type is defined
 		if (tableStateValues.filterLayerType)
 			layerFiltersController.setVariables(tableStateValues.filterLayerType, variables);
 
-		let total = isMongo ? tableStateValues?.data?.total : null;
-
-		if (pagination.pageIndex === 0 && isMongo) {
+		// Fetch total count for non-elastic indices
+		let total = tableStateValues?.data?.total;
+		if (pagination.pageIndex === 0 && !isElasticIndex) {
 			(async () => {
 				const dbDataTotal = await client.query({
 					variables,
@@ -109,33 +152,50 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			})();
 		}
 
+		// Fetch data using ES simple search query
 		const allSelectedRows = await client.query({
 			variables,
 			query: GET_ES_SIMPLE_SEARCH,
 		});
 
 		const data = allSelectedRows?.data?.getESSimpleSearch;
+		if (isElasticIndex) {
+			total = data.total;
+		}
+
 		let rows = copy(data.hits) || [];
 
+		// Process and format row data
 		rows.forEach(row => {
 			TableSchema?.forEach(column => {
 				const accessorKey = column.id || column.accessorKey;
+
+				// Determine column type
 				if (!columnsType.current[accessorKey]) {
 					const rowWithValue = rows.find(row => get(row, accessorKey) !== null && get(row, accessorKey) !== undefined);
 					if (rowWithValue) columnsType.current[accessorKey] = typeof get(rowWithValue, accessorKey);
 				}
+
+				// Set default value based on column type
 				const defaultValue =
 					!columnsType.current[accessorKey] || columnsType.current[accessorKey] === 'number' ? undefined : '';
 				let value = get(row, accessorKey);
+
+				// Convert value to string if not an object or array
 				if (value !== undefined && value !== null && !Array.isArray(value) && typeof value !== 'object')
 					value = defaultValue === '' ? `${value}` : value;
+
 				set(row, accessorKey, value, defaultValue);
 			});
 		});
-		if (tableState?.isInFiniteScroll?.get() && !resetPagination.current) {
+
+		// Merge rows for infinite scroll
+		if (tableState?.isInFiniteScroll?.get() && !resetPaginationVal) {
 			const prevData = tableState?.data?.get({ noproxy: true }).rows || [];
-			rows = [...prevData, ...rows];
+			rows = mergeArrays(prevData, rows, '_id');
 		}
+
+		// Update table state with fetched data and pagination
 		resetPagination.current = false;
 		previousPagination.current = pagination;
 		Controller.updateState({
@@ -152,13 +212,16 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		});
 	};
 
+	// Function to fetch footer aggregation data
 	async function fetchFooterAggregationData() {
 		const tableMeta = tableState.get({ noproxy: true });
 		const { TableSchema, defaultFilters, esIndex, filters } = tableMeta;
+
 		if (!TableSchema) return;
 
 		const aggregationColumns = TableSchema?.filter(column => column.Aggregation)?.map(column => column.Aggregation);
 
+		// Convert integer filter values to strings
 		for (let i = 0; i < filters?.length; i++) {
 			if (Number.isInteger(filters[i].value)) {
 				filters[i].value = filters[i].value.toString();
@@ -168,37 +231,77 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		if (aggregationColumns?.length) {
 			const result = await client.query({
 				variables: {
-					esIndex,
+					index: esIndex,
 					filters: [...filters, ...defaultFilters],
 					aggs: Object.assign({}, ...aggregationColumns),
-					isElasticQuery: tableStateValues.isElasticQuery,
 				},
-				query: GET_ES_AGGS_LIST,
+				query: GET_DB_AGGS,
 			});
 
 			Controller.updateState({
-				footerProps: result?.data?.getESAggsList?.aggregations,
+				footerProps: result?.data?.getDbAggs?.aggregations,
 			});
 		}
 	}
 
+	// Effect to handle geo filters based on draw state
 	useEffect(() => {
+		if (isClientSide) return;
+
+		if (!tableStateValues.geoKey) return;
+
+		if (!drawStateValues.selectedPolygonString) return Controller.clearFilter(tableStateValues.geoKey);
+
+		if (drawStateValues.selectedPolygonString && drawStateValues.currentFeature) {
+			Controller.setFilter({
+				type: 'geo_intersects',
+				field: tableStateValues.geoKey,
+				value: drawStateValues.currentFeature.geometry,
+			});
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [drawStateValues.selectedPolygonString]);
+
+	// Effect to fetch footer aggregation data and refetch data
+	useEffect(() => {
+		if (isClientSide) return;
+
 		fetchFooterAggregationData();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [refetch, tableState.filters]);
 
+	// Effect to reset pagination and scroll to top when filters, sorting, grouping, or global filter change
 	useEffect(() => {
+		if (isClientSide) return;
+
 		resetPagination.current = true;
 		if (tableStateValues?.data?.rows?.length > 0) tableRef?.current?.scrollToIndex?.(0);
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState.filters, tableState.sorting, tableState.grouping, tableState.globalFilter, refetch]);
 
+	// Effect to call query when client-side and query changes
 	useEffect(() => {
+		if (!isClientSide) return;
+
+		if (!tableState.query.get()) return;
+
+		callQuery();
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [tableState.query, tableState.customProps, refetch]);
+
+	// Effect to handle pagination changes for non-infinite scroll tables
+	useEffect(() => {
+		if (isClientSide) return;
+
 		if (tableStateValues?.isInFiniteScroll) return;
+
 		if (tableStateValues?.data?.rows?.length > 0) {
 			tableRef?.current?.scrollToIndex?.(0);
 
 			const tableMeta = tableState.get({ noproxy: true });
+
 			if (tableMeta.pagination?.pageIndex !== previousPagination.current?.pageIndex) {
 				const pagination = {
 					pit: tableMeta.data?.pit,
@@ -213,21 +316,29 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 							: null,
 					pageIndex: tableMeta.pagination?.pageIndex,
 				};
+
 				callQuery(pagination);
 			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState.pagination]);
 
+	// Effect to call query initially with default pagination
 	useEffect(() => {
+		if (isClientSide) return;
+
 		const tableMeta = tableState.get({ noproxy: true });
 
-		if (!tableMeta || tableMeta.isFetching) return;
+		if (!tableMeta) return;
+
+		resetPagination.current = true;
+
 		callQuery({
 			pageIndex: 0,
 			first: tableStateValues?.pageSize || 50,
 			after: null,
 		});
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		tableState.filters,
@@ -240,9 +351,12 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		refetch,
 	]);
 
+	// Callback function to fetch more data when scrolling near the bottom for infinite scroll
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const fetchMoreOnBottomReached = useCallback(
 		debounce(containerRefElement => {
+			if (isClientSide) return;
+
 			if (!tableState?.isInFiniteScroll?.get()) return;
 
 			if (!containerRefElement) return;
@@ -254,13 +368,14 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			if (data?.rows?.length >= data?.total) return;
 
 			const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
-			// once the user has scrolled within 400px of the bottom of the table, fetch more data if we can
+
 			if (scrollHeight - scrollTop - clientHeight < 200) {
 				const tableMeta = tableState.get({ noproxy: true });
 
 				if (!tableMeta) return;
 
 				let pagination = {};
+
 				if (!tableMeta?.pagination?.pageIndex)
 					pagination = {
 						pageIndex: 0,

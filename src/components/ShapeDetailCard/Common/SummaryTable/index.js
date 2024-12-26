@@ -14,7 +14,7 @@ import CreateTwoToneIcon from '@material-ui/icons/CreateTwoTone';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
 import { summaryTableStyles } from 'components/ShapeDetailCard/style';
 import UserList from 'components/Shared/UserList';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
@@ -698,8 +698,8 @@ export default function SummaryTableInfo({
 															</>
 														) ||
 															0)}
-													{data.key === 'campaignName' && (
-														<CampaignNameField
+													{data.key === 'campaigns' && (
+														<CampaignField
 															className={classes.maxWidth}
 															onChange={value => {
 																updateProperties(null, data.key, value);
@@ -712,7 +712,7 @@ export default function SummaryTableInfo({
 													)}
 												</Grid>
 											)}
-											{!data.nonEditable && data.key !== 'campaignName' && (
+											{!data.nonEditable && data.key !== 'campaigns' && (
 												<Grid item>
 													{
 														<EditIconComponent

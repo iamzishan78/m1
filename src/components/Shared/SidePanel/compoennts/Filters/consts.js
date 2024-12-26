@@ -49,6 +49,7 @@ export const customLayersFieldAccessors = {
 	},
 	'My Wells': {
 		keys: [
+			{ label: 'Well Name', value: 'wellData.wellName.keyword' },
 			{ label: 'Operator', value: 'wellData.operator.keyword' },
 			{ label: 'Well Type', value: 'wellData.wellType.keyword' },
 			{ label: 'Well Profile', value: 'wellData.wellBoreProfile.keyword' },
@@ -70,5 +71,17 @@ export const customLayersFieldAccessors = {
 			{ label: 'Internal Company', value: 'properties.internalCompany.keyword' },
 		],
 		layerKey: 'wells',
+	},
+	Wells: {
+		keys: [
+			{ label: 'Operator', value: 'operator.keyword' },
+			{ label: 'Well Type', value: 'wellType.keyword' },
+			{ label: 'Well Profile', value: 'wellBoreProfile.keyword' },
+			{ label: 'Well Status', value: 'wellStatus.keyword' },
+			{ label: 'Formation', value: 'primaryFormation.keyword' },
+			{ label: 'Play', value: 'play.keyword' },
+			{ label: 'Field', value: 'field.keyword' },
+		],
+		layerKey: 'platformData:wells',
 	},
 };

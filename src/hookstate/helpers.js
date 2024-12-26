@@ -1,13 +1,21 @@
+import React from 'react';
+import _ from 'lodash';
+import DataType from 'components/Common/DataType';
+import { tableController } from 'hookstate/tableController';
+import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
 import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';
 import {
 	customFilterOptions,
 	dateFilterOptions,
 	numberFilterOptions,
+	simpleDateFilterOptions,
+	simpleNumberFilterOptions,
+	simpleStringFilterOptions,
 	stringFilterOptions,
 } from 'components/MRTTable/utils/data';
-import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
-import _ from 'lodash';
-import React from 'react';
+import { globalStateController } from './globalStateController';
+import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
+import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 
 export const handleVisiblityMenu = () => {
 	const interval2 = setInterval(() => {
@@ -76,10 +84,62 @@ export const handleColumnMenuClick = () => {
 	}, 300);
 };
 
-export const handleMRTSchema = ({ _Schema, tableKey, esIndex, defaultFlterMode, search, columnVirtualization }) => {
+export const handleMRTSchema = ({
+	_Schema,
+	tableKey,
+	esIndex,
+	defaultFlterMode,
+	search,
+	columnVirtualization,
+	globalFilter,
+	layerIdentifier,
+	isClientSide,
+}) => {
 	_Schema = _.uniqBy(_Schema, item => item.accessorKey || item.id);
 
+	// Syncing map views with generic grids
+	const mapView = globalStateController.getValue('mapView');
+	const selectedMapViewFilters = mapView?.selectedMapView?.filters || [];
+
+	const dataSourceViews = selectedMapViewFilters?.filter(view => layerIdentifier === view.dataSourceName);
+	const mapViewFilters =
+		dataSourceViews?.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)) ||
+		[];
 	const _TableSchema = _Schema.map(schemaColumn => {
+		if (schemaColumn.header && !schemaColumn.showInLast) {
+			schemaColumn.Header = () => {
+				const { header, type } = schemaColumn;
+				const {
+					stateValues: { showTypes },
+				} = tableController(tableKey).useState(['showTypes']);
+				return <DataType title={header} type={type || 'unknown'} showType={showTypes} />;
+			};
+		}
+
+		if (isClientSide) {
+			if (schemaColumn.filter) {
+				let options;
+				if (schemaColumn.type === 'string') {
+					options = simpleStringFilterOptions;
+				} else if (schemaColumn.type === 'number') {
+					options = simpleNumberFilterOptions;
+				} else if (schemaColumn.type === 'date') {
+					options = simpleDateFilterOptions;
+				}
+				if (schemaColumn.isComposite) options = options.filter(option => option !== 'multiselect');
+
+				schemaColumn.columnFilterModeOptions = options;
+				schemaColumn.renderColumnFilterModeMenuItems = filterModeMenu({
+					options,
+					tableKey,
+					name: schemaColumn.accessorKey || schemaColumn.id,
+					controller: tableController,
+				});
+			}
+
+			return schemaColumn;
+		}
+
 		if (schemaColumn.filter && !schemaColumn.Filter) {
 			schemaColumn.SingleSelect = function Comp({ column, isCustom, _value, textFieldProps }) {
 				return (
@@ -97,6 +157,7 @@ export const handleMRTSchema = ({ _Schema, tableKey, esIndex, defaultFlterMode, 
 								filterSelectOptions: column.columnDef.filterSelectOptions,
 								filterValue: column?.getFilterValue() || '',
 							}}
+							extendSearchQuery={globalFilter}
 							multiple={false}
 							_value={_value}
 							textFieldProps={textFieldProps}
@@ -171,10 +232,23 @@ export const handleMRTSchema = ({ _Schema, tableKey, esIndex, defaultFlterMode, 
 				options,
 				tableKey,
 				name: schemaColumn.accessorKey || schemaColumn.id,
+				controller: tableController,
 			});
 		}
 
-		return schemaColumn;
+		// setting filtermodes based on map views
+		const columnMapView = mapViewFilters.find(
+			filter => filter?.field?.replace('.keyword', '') === schemaColumn?.name?.replace('.keyword', '')
+		);
+		if (!columnMapView || customLayersFieldAccessors[layerIdentifier]) return schemaColumn;
+
+		const updatedFilterModes = tableController(tableKey).setInitialFilterMode(
+			schemaColumn,
+			columnMapView.searchType,
+			columnMapView.field?.replace('.keyword', '')
+		);
+
+		return { ...schemaColumn, ...updatedFilterModes };
 	});
 
 	const searchFields = search
@@ -233,6 +307,7 @@ export const handleMRTSchema = ({ _Schema, tableKey, esIndex, defaultFlterMode, 
 
 	if (pinnedColumns.length > 0 && columnVirtualization) {
 		let size = 60;
+		// let size = 120;
 		pinnedColumns.forEach(column => {
 			size += column.size;
 		});

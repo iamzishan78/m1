@@ -23,9 +23,9 @@ import { sideDialogController, unitInterestOwnerState } from 'hookstate/sideDial
 import { globalStateController } from 'hookstate/globalStateController';
 import unitInterestOwnerForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/UnitDetailInterestOwner/unit_interest_owner_form_schema';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
-import AddIcon from '@material-ui/icons/Add';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { extractValueRecursively } from 'components/MRTTable/utils/helper';
+import _, { get, isString } from 'lodash';
 
 const useStyles = makeStyles(theme => ({
 	maxWidth: {
@@ -197,11 +197,7 @@ export default function AddUnitOwnerDialogContent({
 				selectedRow?.contactOwners?.[0] !== ownerToAdd?.contactOwners?.label) ||
 			((ownerToAdd.ownerType || selectedRow?.ownerType) && selectedRow?.ownerType !== ownerToAdd.ownerType) ||
 			((ownerToAdd.campaignPriority || selectedRow?.campaignPriority) &&
-				selectedRow?.campaignPriority !== ownerToAdd.campaignPriority) ||
-			((ownerToAdd.campaignName || selectedRow?.campaignName) &&
-				selectedRow?.campaignName !== ownerToAdd.campaignName) ||
-			ownerToAdd.campaignName ||
-			selectedRow?.campaignName !== ownerToAdd.campaignName
+				selectedRow?.campaignPriority !== ownerToAdd.campaignPriority)
 		) {
 			updateContact({
 				variables: {
@@ -209,8 +205,9 @@ export default function AddUnitOwnerDialogContent({
 						_id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
 						contactStatus: ownerToAdd.contactStatus && (ownerToAdd.contactStatus.value || ownerToAdd.contactStatus),
 						status: ownerToAdd.status && (ownerToAdd.status.value || ownerToAdd.status),
-						contactOwner: ownerToAdd.contactOwners && (ownerToAdd.contactOwners.label || ownerToAdd.contactOwners),
-						contactOwnerId: ownerToAdd.contactOwners && (ownerToAdd.contactOwners.value || ownerToAdd.contactOwners),
+						...(ownerToAdd?.contactOwners && isString(ownerToAdd?.contactOwners)
+							? { contactOwnerId: ownerToAdd.contactOwners }
+							: {}),
 						lastUpdateBy: getUser?._id,
 						ownerType: ownerToAdd.ownerType && (ownerToAdd.ownerType.value || ownerToAdd.ownerType),
 						campaignPriority:
@@ -280,7 +277,7 @@ export default function AddUnitOwnerDialogContent({
 				awaitRefetchQueries: true,
 			});
 		}
-		setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
+		window.setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
 	};
 
 	useEffect(() => {

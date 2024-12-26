@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import { formatDate } from 'components/Shared/functions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 
 const esIndex = 'propertyinterest_flat';
 

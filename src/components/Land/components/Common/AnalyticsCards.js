@@ -5,7 +5,8 @@ import { Grid, Card, CardContent, Typography } from '@material-ui/core';
 import { Warning as WarningIcon } from '@material-ui/icons';
 import { useLazyQuery } from '@apollo/client';
 
-import { GET_ES_AGGS_LIST } from 'graphQL/useQueryESAggsList';
+import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
+import { get } from 'lodash';
 
 export const useStyles = makeStyles(() => ({
 	root: {},
@@ -62,105 +63,34 @@ export default function AnalyticsCards({
 		);
 	};
 
-	const [getESAggsActiveCount] = useLazyQuery(GET_ES_AGGS_LIST, {
+	const [getAggsGrossAcresSum] = useLazyQuery(GET_DB_AGGS, {
 		context: { batch: true },
 		fetchPolicy: 'no-cache',
 		onCompleted: aggsData => {
-			if (aggsData?.getESAggsList?.aggregations?.activeCount) {
-				const count = aggsData.getESAggsList.aggregations.activeCount.value;
-				cards[1].points = count;
-				cards[2].points = totalCount - count;
-				setCards(cards);
-			}
-		},
-	});
-
-	const [getESAggsApprovedCount] = useLazyQuery(GET_ES_AGGS_LIST, {
-		context: { batch: true },
-		fetchPolicy: 'no-cache',
-		onCompleted: aggsData => {
-			if (aggsData?.getESAggsList?.aggregations?.approvedCount) {
-				const count = aggsData.getESAggsList.aggregations.approvedCount.value;
-				setCardPoint(totalCount - count, 3);
-			}
-		},
-	});
-
-	const [getESAggsGrossAcresSum] = useLazyQuery(GET_ES_AGGS_LIST, {
-		context: { batch: true },
-		fetchPolicy: 'no-cache',
-		onCompleted: aggsData => {
-			const grossAcresSum = formCardPointValue(aggsData.getESAggsList.aggregations.grossAcresSum);
+			const grossAcresSum = formCardPointValue(get(aggsData, 'getDbAggs.aggregations.grossAcresSum[0].grossAcresSum'));
 			setCardPoint(grossAcresSum, 1);
 		},
 	});
 
-	const [getESAggsNetAcresSum] = useLazyQuery(GET_ES_AGGS_LIST, {
+	const [getAggsNetAcresSum] = useLazyQuery(GET_DB_AGGS, {
 		context: { batch: true },
 		fetchPolicy: 'no-cache',
 		onCompleted: aggsData => {
-			const netAcresSum = formCardPointValue(aggsData.getESAggsList.aggregations.netAcresSum);
+			const netAcresSum = formCardPointValue(get(aggsData, 'getDbAggs.aggregations.netAcresSum[0].netAcresSum', 0));
 			setCardPoint(netAcresSum, 2);
 		},
 	});
 
-	const [getESAggsNetRoyaltyAcresSum] = useLazyQuery(GET_ES_AGGS_LIST, {
+	const [getAggsNetRoyaltyAcresSum] = useLazyQuery(GET_DB_AGGS, {
 		context: { batch: true },
 		fetchPolicy: 'no-cache',
 		onCompleted: aggsData => {
-			const netRoyaltyAcresSum = formCardPointValue(aggsData.getESAggsList.aggregations.netRoyaltyAcresSum);
+			const netRoyaltyAcresSum = formCardPointValue(
+				get(aggsData, 'getDbAggs.aggregations.netRoyaltyAcresSum[0].netRoyaltyAcresSum')
+			);
 			setCardPoint(netRoyaltyAcresSum, 3);
 		},
 	});
-
-	const agreementAnalytics = () => {
-		getESAggsActiveCount({
-			variables: {
-				esIndex,
-				isElasticQuery: false,
-				search: {
-					query: searchQuery,
-					fields: searchFields,
-					advanceSearch,
-				},
-				filters: [
-					...esFilters,
-					{
-						field: 'shapeJson.properties.agreementStatus',
-						value: 'ACTIVE',
-					},
-				],
-				aggs: {
-					activeCount: {
-						cardinality: { field: 'shapeJson.id.keyword' },
-					},
-				},
-			},
-		});
-		getESAggsApprovedCount({
-			variables: {
-				esIndex,
-				isElasticQuery: false,
-				search: {
-					query: searchQuery,
-					fields: searchFields,
-					advanceSearch,
-				},
-				filters: [
-					...esFilters,
-					{
-						field: 'shapeJson.properties.approvalStatus',
-						value: 'APPROVED',
-					},
-				],
-				aggs: {
-					approvedCount: {
-						cardinality: { field: 'shapeJson.id.keyword' },
-					},
-				},
-			},
-		});
-	};
 
 	const analyticsPayload = useMemo(() => {
 		let aggsFilters = esFilters || [];
@@ -226,10 +156,9 @@ export default function AnalyticsCards({
 	}, [esIndex, esFilters]);
 
 	const tractsAnalytics = () => {
-		getESAggsGrossAcresSum({
+		getAggsGrossAcresSum({
 			variables: {
-				esIndex: esIndex || 'shapeowners_flat',
-				isElasticQuery: false,
+				index: esIndex || 'shapeowners_flat',
 				search: {
 					query: searchQuery,
 					fields: searchFields,
@@ -242,10 +171,9 @@ export default function AnalyticsCards({
 				},
 			},
 		});
-		getESAggsNetAcresSum({
+		getAggsNetAcresSum({
 			variables: {
-				esIndex: esIndex || 'shapeowners_flat',
-				isElasticQuery: false,
+				index: esIndex || 'shapeowners_flat',
 				search: {
 					query: searchQuery,
 					fields: searchFields,
@@ -258,10 +186,9 @@ export default function AnalyticsCards({
 				},
 			},
 		});
-		getESAggsNetRoyaltyAcresSum({
+		getAggsNetRoyaltyAcresSum({
 			variables: {
-				esIndex: esIndex || 'shapeowners_flat',
-				isElasticQuery: false,
+				index: esIndex || 'shapeowners_flat',
 				search: {
 					query: searchQuery,
 					fields: searchFields,
@@ -282,9 +209,7 @@ export default function AnalyticsCards({
 
 	const getAggsCounts = () => {
 		if (totalCount > 0) {
-			if (parent === 'Agreements') {
-				agreementAnalytics();
-			} else if (parent === 'Tracts') {
+			if (parent === 'Tracts') {
 				// Get tract analytics data
 				tractsAnalytics();
 			}

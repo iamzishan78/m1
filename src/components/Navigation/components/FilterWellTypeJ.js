@@ -35,7 +35,7 @@ export default function FilterWellTypeJ() {
 				handleTypeChange(newValue);
 			}}
 			multiple
-			options={wellTypesList}
+			options={wellTypesList || []}
 			renderInput={params => <TextField {...params} variant="outlined" label="Well Type" placeholder="" fullWidth />}
 			disableListWrap
 			id="virtualize-well-types"

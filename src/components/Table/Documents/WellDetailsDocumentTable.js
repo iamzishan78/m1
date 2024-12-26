@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, ButtonGroup, Container } from '@material-ui/core';
-import TableHOC from 'components/Table/TableHOC';
 import PostAddIcon from '@material-ui/icons/PostAdd';
 import { tableGlobalController } from 'hookstate/tableController';
 
@@ -9,8 +8,6 @@ import { tableGlobalController } from 'hookstate/tableController';
 import { useLazyQuery } from '@apollo/client';
 import { GET_PARCELS_FILES } from 'graphQL/useQueryGetParcelFiles';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
-
-import { deepEqualObjects } from 'components/Shared/functions';
 import WellFile from 'components/Document/components/WellFile';
 
 import { AppContext } from 'AppContext';
@@ -39,13 +36,13 @@ const useStyles = makeStyles(theme => ({
 
 function WellDetailsDocumentTable(props) {
 	const classes = useStyles();
-	const [stateApp, setStateApp] = useContext(AppContext);
+	const [, setStateApp] = useContext(AppContext);
 
 	// function states
 	const [showDocumentSlider, setShowDocumentSlider] = useState(false);
 
 	// queries
-	const [getAllFiles, { data: dataParcelFiles, loading }] = useLazyQuery(GET_PARCELS_FILES, {
+	const [getAllFiles] = useLazyQuery(GET_PARCELS_FILES, {
 		onCompleted: () => {
 			tableGlobalController.refetch(); // reftech table data
 		},
@@ -69,7 +66,8 @@ function WellDetailsDocumentTable(props) {
 				relatedObjectType: 'Well',
 			},
 		});
-	}, [props.selectedWell.tenantWellId, showDocumentSlider]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [props.selectedWell.tenantWellId, showDocumentSlider, getAllFiles]);
 
 	const onClickAdd = () => {
 		setStateApp(state => ({
@@ -79,43 +77,48 @@ function WellDetailsDocumentTable(props) {
 		setShowDocumentSlider(true);
 	};
 
-	const relatedDocumentOverrideMeta = useMemo(() => ({
-		defaultFilters: [
-			{ field: 'wells.globalWell.keyword', value: props.selectedWell.id }, // Default filters
-		],
-		deletedKeys: {
-			// Overriden deletion Toolbar
-			mainRecord: { key: '_id' },
-			parentRecord: { value: props?.selectedWell?.tenantWellId },
-		},
-		customValue: { parentRecord: props?.selectedWell?.tenantWellId }, // Add aprent record in case of select all
-		CustomToolBar: () => {
-			// Customer Toolbar
-			return (
-				<ButtonGroup variant="contained" style={{ height: '40px' }} color="primary" aria-label="split button">
-					<Button
-						id="addDocument"
-						color="primary"
-						size="small"
-						aria-label="select merge strategy"
-						aria-haspopup="menu"
-						onClick={onClickAdd}
-					>
-						<PostAddIcon></PostAddIcon>
-						Add Document
-					</Button>
-				</ButtonGroup>
-			);
-		},
-		onClickedRow: selectedRow => {
-			// On row click action
-			setStateApp(state => ({
-				...state,
-				selectedDocument: selectedRow,
-			}));
-			setShowDocumentSlider(true);
-		},
-	}));
+	const relatedDocumentOverrideMeta = useMemo(
+		() => ({
+			maxTableHeight: 'calc(100vh - 800px)',
+			defaultFilters: [
+				{ field: 'wells.globalWell.keyword', value: props.selectedWell.id }, // Default filters
+			],
+			deletedKeys: {
+				// Overriden deletion Toolbar
+				mainRecord: { key: '_id' },
+				parentRecord: { value: props?.selectedWell?.tenantWellId },
+			},
+			customValue: { parentRecord: props?.selectedWell?.tenantWellId }, // Add aprent record in case of select all
+			CustomToolBar: () => {
+				// Customer Toolbar
+				return (
+					<ButtonGroup variant="contained" style={{ height: '40px' }} color="primary" aria-label="split button">
+						<Button
+							id="addDocument"
+							color="primary"
+							size="small"
+							aria-label="select merge strategy"
+							aria-haspopup="menu"
+							onClick={onClickAdd}
+						>
+							<PostAddIcon></PostAddIcon>
+							Add Document
+						</Button>
+					</ButtonGroup>
+				);
+			},
+			onClickedRow: selectedRow => {
+				// On row click action
+				setStateApp(state => ({
+					...state,
+					selectedDocument: selectedRow,
+				}));
+				setShowDocumentSlider(true);
+			},
+		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[props?.selectedWell?.tenantWellId, props?.selectedWell?.id]
+	);
 
 	return (
 		<Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
@@ -133,4 +136,4 @@ function WellDetailsDocumentTable(props) {
 	);
 }
 
-export default React.memo(TableHOC(WellDetailsDocumentTable), deepEqualObjects);
+export default React.memo(WellDetailsDocumentTable);

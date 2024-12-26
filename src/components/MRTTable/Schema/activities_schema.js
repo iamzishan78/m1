@@ -29,7 +29,6 @@ const ActivitiesMeta = {
 	esIndex,
 	onClickedRow,
 	pageSize: 50,
-	isElasticQuery: false,
 	pagination: {
 		pageIndex: 0,
 		pageSize: 50,
@@ -145,9 +144,9 @@ const ActivitiesMeta = {
 			id: 'isClosed',
 			header: 'Completed?',
 			type: 'boolean',
-			defaultFilterOptions: [
-				{ label: 'Y', value: true, type: 'term' },
-				{ label: 'N', value: false, type: 'term' },
+			filterSelectOptions: [
+				{ label: 'Yes', value: 'true' },
+				{ label: 'No', value: 'false' },
 			],
 			Cell: ({ renderedCellValue }) => {
 				return renderedCellValue === 'true' ? (

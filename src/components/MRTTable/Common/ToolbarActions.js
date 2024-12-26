@@ -1,22 +1,23 @@
 import React, { useEffect } from 'react';
+import { ToggleButton } from '@mui/material';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { IconButton, Tooltip } from '@mui/material';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import GridView from 'components/MRTTable/Common/GridView';
-import TabHeader from 'components/MRSimpleTable/Common/TabHeader';
-import { globalStateController } from 'hookstate/globalStateController';
-import { excludeFilters } from './CommonToolBarActions';
 import _ from 'lodash';
+import { Typography } from '@material-ui/core';
+
+import GridView from 'components/MRTTable/Common/GridView';
+import TabHeader from 'components/MRTTable/Common/TabHeader';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { excludeFilters } from './CommonToolBarActions';
 
 function ToolbarActions({ table, tableKey, children }) {
 	const tableState = tableController(tableKey).useCompleteState();
 	const tableStateValues = tableState?.get({ noproxy: true });
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user.get({ noproxy: true });
-
-	const globalState = tableGlobalController.useState(['cypress']);
-	const globalStateValues = globalState.stateValues;
 
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const isSomeRowsSelected =
@@ -33,6 +34,7 @@ function ToolbarActions({ table, tableKey, children }) {
 
 	useEffect(() => {
 		tableController(tableKey).setMrtTableRef(table);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const handleExport = () => {
@@ -132,15 +134,50 @@ function ToolbarActions({ table, tableKey, children }) {
 					alignItems: 'center',
 				}}
 			>
+				<Typography variant="h5" style={{ fontWeight: 'bold', marginRight: '5px' }}>
+					{tableStateValues.tableHeading}
+				</Typography>
 				<TabHeader labels={tableStateValues.tabLabels} />
 				{tableStateValues.gridViewSettings && !isSomethingSelected && (
 					<GridView tableKey={tableKey} {...tableStateValues.gridViewSettings} />
 				)}
 			</div>
 			<div style={{ display: 'flex', gap: '0.5rem', marginLeft: '0.5rem' }}>
-				{children || <div />}
+				<div
+					style={{
+						display: 'flex',
+						height: '75%',
+						gap: '0.5rem',
+						marginTop: 'auto',
+						marginBottom: 'auto',
+					}}
+				>
+					{children}
+				</div>
 
-				{!tableStateValues.isGeneric && (
+				<ToggleButton
+					style={{
+						padding: '0',
+						height: 'fit-content',
+						margin: 'auto 0',
+						color: tableStateValues.showTypes ? '#fff' : '#263451',
+						backgroundColor: tableStateValues.showTypes ? '#263451' : '#fff',
+						border: `1px solid ${tableStateValues.showTypes ? '#fff' : '#263451'}`,
+					}}
+					selected={tableStateValues.showTypes}
+					onChange={() => tableController(tableKey).updateState({ showTypes: !tableStateValues.showTypes })}
+				>
+					<small
+						style={{
+							padding: '5px',
+							fontWeight: 'normal',
+						}}
+					>
+						{'TYPES'}
+					</small>
+				</ToggleButton>
+
+				{!tableStateValues.isGeneric && tableStateValues.data?.total > 0 && !tableStateValues.isExportDisabled && (
 					<IconButton onClick={handleExport} data-testid="download-csv">
 						<Tooltip title="Download CSV" aria-label="add">
 							<CloudDownloadIcon />

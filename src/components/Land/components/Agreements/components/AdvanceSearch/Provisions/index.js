@@ -79,7 +79,6 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
 		filters: [{ field: 'shapeJson.properties.type.keyword', value: 'agreement' }, ...appliedFilters],
 		extendSearchQuery: '',
 		custom: filter.custom,
-		isElasticQuery: false,
 	};
 	if (filter.getOptionLabel) params['getOptionLabel'] = filter.getOptionLabel;
 	return (
@@ -98,7 +97,8 @@ export default function ProvisionsFilters(props) {
 		if (stateApp.landSearchFilters?.provisions?.length === 0 && filterList.find(fl => fl.length !== 0)) {
 			setFilterList([[], [], [], []]);
 		}
-	}, [stateApp.landSearchFilters?.provisions, filterList]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [stateApp.landSearchFilters?.provisions]);
 
 	const changeLandProvisions = React.useMemo(
 		() =>
