@@ -555,7 +555,7 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'isPurchased',
-			accessorFn: row => row?.contact?.isPurchased,
+			accessorFn: row => row?.isPurchased,
 			header: 'Purchased Data Exists',
 			id: 'isPurchased',
 			filterSelectOptions: [

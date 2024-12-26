@@ -134,8 +134,8 @@ const contactForm = ({ getValues, setValue }) => {
 			name: "isPurchased",
 			renderField: "autoComplete",
 			defaultOptions: [
-			  { label: 'Yes', value: true },
-			  { label: 'No', value: false },
+			  { label: 'Yes', value: "true" },
+			  { label: 'No', value: "false" },
 			]
 		},
 	];
