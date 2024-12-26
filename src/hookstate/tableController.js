@@ -103,6 +103,10 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 					);
 				}
 
+				if (item?.type === 'date') {
+					return <>{formatDate(value)}</>;
+				}
+
 				return <>{value}</>;
 			},
 		};

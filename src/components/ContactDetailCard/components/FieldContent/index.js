@@ -43,6 +43,7 @@ import AutoCompleteAddNewField from './AutoCompleteAddNewField';
 import GoogleMapIcon from 'components/Shared/svgIcons/GoogleMapIcon';
 import ZillowIcon from 'components/Shared/svgIcons/ZillowIcon';
 import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
+import { formatDate } from 'components/Shared/functions';
 
 const filter = createFilterOptions();
 export default function FieldContent({
@@ -347,6 +348,13 @@ export default function FieldContent({
 		setEdit(null);
 	};
 
+	const formatFieldValue = (val, metaField) => {
+		if (metaField?.type === 'date') {
+			return formatDate(val)
+		}
+		return val;
+	}
+
 	let inputsArray = [];
 	if (edit) {
 		for (const fieldName in editContent) {
@@ -602,64 +610,71 @@ export default function FieldContent({
 			onBlur={() => onBlurHandler(['campaigns'])}
 		/>
 	) : (
-		<span>
-			{childrenLeft && !onlyChildren && children ? children : ''}
-			{/* Wrap the contact details tab title inside span to fix it position */}
-			<span
-				style={{
-					marginTop: '4px',
-					display: 'inline-block',
-				}}
-			>
-				{textArray.length > 0
-					? onlyChildren
-						? children
-							? children
-							: ''
-						: textArray.join(', ')
-					: `${name ? name + ' ' : ''} Not Available`}{' '}
-			</span>
-			{!onlyChildren && !disabled && (
-				<PencilEditIcon
-					handleUpdating={handleUpdating}
-					anchorEl={edit}
-					setAnchorEl={setEdit}
-					content={inputsArray}
-					onClick={handleEditClick}
-					isCopy={true}
-					setEditContent={setEditContent}
-					editContent={content}
-					row={row}
-					handleQuickActionActivity={handleQuickActionActivity}
-				/>
-			)}
-			{fieldType === FieldTypes.Contact && isMerged && (
-				<MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />
-			)}
-			{isPurchased && (
-				<CopyPurchaseInfo
-					updateContact={updateContact}
-					userId={stateApp.user.mongoId}
-					content={content}
-					contactId={id}
-				/>
-			)}
-			{textArray.length > 0 && name === 'Address' ? ( // show google map and zillow icon when address exists
-				<>
-					<Link onClick={() => window.open(getAddressUrl(content), '_blank')}>
-						<GoogleMapIcon />
-					</Link>
-					<Link onClick={() => window.open(getZillowAddressUrl(content), '_blank')}>
-						<ZillowIcon />
-					</Link>
-				</>
-			) : (
-				''
-			)}
-			{!childrenLeft && !onlyChildren && children ? children : ''}
-			{isCurEdited ? ' (edited)' : ''}
-		</span>
-	);
+		(() => {
+			// Find the metafield object with an eskey matching a key in content
+			const metaField = metafields ? metafields.find((metafield) => {
+				return Object.keys(content).includes(metafield.esKey)
+			}) : null;
+
+			return (
+				<span>
+					{childrenLeft && !onlyChildren && children ? children : ''}
+					{/* Wrap the contact details tab title inside span to fix it position */}
+					<span
+						style={{
+							marginTop: '4px',
+							display: 'inline-block',
+						}}
+					>
+						{textArray.length > 0
+							? onlyChildren
+								? children
+									? children
+									: ''
+								: formatFieldValue(textArray.join(', '), metaField)
+							: `${name ? name + ' ' : ''} Not Available`}{' '}
+					</span>
+					{!onlyChildren && !disabled && (
+						<PencilEditIcon
+							handleUpdating={handleUpdating}
+							anchorEl={edit}
+							setAnchorEl={setEdit}
+							content={inputsArray}
+							onClick={handleEditClick}
+							isCopy={true}
+							setEditContent={setEditContent}
+							editContent={content}
+							row={row}
+							handleQuickActionActivity={handleQuickActionActivity}
+						/>
+					)}
+					{fieldType === FieldTypes.Contact && isMerged && (
+						<MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />
+					)}
+					{isPurchased && (
+						<CopyPurchaseInfo
+							updateContact={updateContact}
+							userId={stateApp.user.mongoId}
+							content={content}
+							contactId={id}
+						/>
+					)}
+					{textArray.length > 0 && name === 'Address' ? ( // show google map and zillow icon when address exists
+						<>
+							<Link onClick={() => window.open(getAddressUrl(content), '_blank')}>
+								<GoogleMapIcon />
+							</Link>
+							<Link onClick={() => window.open(getZillowAddressUrl(content), '_blank')}>
+								<ZillowIcon />
+							</Link>
+						</>
+					) : (
+						''
+					)}
+					{!childrenLeft && !onlyChildren && children ? children : ''}
+					{isCurEdited ? ' (edited)' : ''}
+				</span>)
+		})());
 
 	return (
 		<React.Fragment>
