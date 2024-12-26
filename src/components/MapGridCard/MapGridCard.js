@@ -371,21 +371,20 @@ function MapGridCard(props) {
 											}}
 										/>
 									)}
-									{searchTapValue.value ===
-										'owner'(
-											<MRTTable
-												name="TaxOwnerTable"
-												overrideMeta={{
-													toolbarInternalActions: {
-														onClose,
-														style: {
-															marginRight: '0.5rem',
-														},
+									{searchTapValue.value === 'owner' && (
+										<MRTTable
+											name="TaxOwnerTable"
+											overrideMeta={{
+												toolbarInternalActions: {
+													onClose,
+													style: {
+														marginRight: '0.5rem',
 													},
-													maxTableHeight: '45vh',
-												}}
-											/>
-										)}
+												},
+												maxTableHeight: '45vh',
+											}}
+										/>
+									)}
 									{searchTapValue.value === 'layer' && (
 										<MRTTable name="ShapesFilesGenericTable" overrideMeta={shapeFileTableOverride} />
 									)}
