@@ -21,7 +21,7 @@ import ActivitiesDashboardFilter from './ActivitiesDashboardFilter';
 import ActivitiesSlideout from './ActivitiesSlideout';
 import ActivityAnalytics from './ActivityAnalytics';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		marginTop: '90px',
 	},
@@ -81,7 +81,10 @@ const ActivitiesDashboard = () => {
 		fromDate: null,
 	});
 	const [minDate, setMinDate] = useState('');
-	const activitiesTableState = tableController(tableKey).useState(['filters', 'data', 'globalFilter']).stateValues;
+	const { activitiesTableState } = tableController(tableKey).useState(
+		['filters', 'data', 'globalFilter', 'searchFields'],
+		'activitiesTableState'
+	);
 	const [stateApp, setStateApp] = useContext(AppContext);
 
 	const [getDbMinValue] = useLazyQuery(GET_DB_MIN_VALUE, {
@@ -147,7 +150,7 @@ const ActivitiesDashboard = () => {
 				tableFilters={[
 					{ field: 'category.keyword', value: 'CRM' },
 					{ field: 'type.keyword', value: 'Expiration', type: 'advanced', searchType: 'notEquals' },
-					...activitiesTableState?.filters,
+					...activitiesTableState.filters,
 				]}
 				appliedFilters={appliedFilters}
 				minDate={minDate}
@@ -158,12 +161,13 @@ const ActivitiesDashboard = () => {
 				tableFilters={[
 					{ field: 'category.keyword', value: 'CRM' },
 					{ field: 'type.keyword', value: 'Expiration', type: 'advanced', searchType: 'notEquals' },
-					...activitiesTableState?.filters,
+					...activitiesTableState.filters,
 				]}
 				appliedFilters={appliedFilters}
 				setTableFilters={tableController(tableKey)?.setFilters}
 				tableData={activitiesTableState?.data}
 				module={'Activities'}
+				searchFields={activitiesTableState.searchFields}
 			/>
 			<MRTTable
 				name={tableKey}
