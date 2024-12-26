@@ -129,6 +129,15 @@ const contactForm = ({ getValues, setValue }) => {
 				return filterData;
 			},
 		},
+		{
+			label: "Purchased Data Exists",
+			name: "isPurchased",
+			renderField: "autoComplete",
+			defaultOptions: [
+			  { label: 'Yes', value: true },
+			  { label: 'No', value: false },
+			]
+		},
 	];
 
 	return formFields;
