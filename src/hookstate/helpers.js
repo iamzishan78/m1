@@ -299,11 +299,11 @@ export const handleMRTSchema = ({
 		'& .MuiDialog-root': {
 			zIndex: '99999',
 		},
-		'& .MuiToolbar-root': {
+		'& .Mui-ToolbarDropZone': {
 			backgroundColor: '#F2F2F2',
 			borderBottom: '1px solid rgba(224, 224, 224, 1)',
 		},
-		'& th.MuiToolbar-root, .MuiTableRow-head, th.MuiTableCell-head': {
+		'& th.MuiToolbar-root, .MuiTableRow-head, th.MuiTableCell-head,th.MuiTableCell-head::before': {
 			backgroundColor: '#F2F2F2',
 		},
 		'& .Mui-TableHeadCell-Content-Labels': {
