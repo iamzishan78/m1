@@ -1,3 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+import loadashFilter from 'lodash/filter';
+import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+
+import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import joinAddress from 'components/Shared/valueformatters/join-address.js';
+import { VIEWFILEQUERY, VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from '@material-ui/core';
 import { Typography, Grid } from '@material-ui/core';
@@ -13,18 +20,13 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import clsx from 'clsx';
-import loadashFilter from 'lodash/filter';
 
 // functions
-import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 
 import GenericDateField from 'components/Shared/components/Fields/GenericDateFIeld';
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 import UploadZone from 'components/Shared/UploadZone';
-import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
 import { ADD_PARCEL_AGREEMENT } from 'graphQL/useMutationAddParcelAgreement';
 import { DELETEDESCRIPTORRELATEDFILE } from 'graphQL/useMutationDeleteDescriptorFile';
@@ -33,11 +35,9 @@ import { UPDATE_PARCEL_AGREEMENT } from 'graphQL/useMutationUpdateParcelAgreemen
 import { GET_VIEW_TOKEN_URI } from 'graphQL/useQueryGetViewTokenUri';
 import { INSTRUMENT_TYPE } from 'graphQL/useQueryInstrumentType';
 import { RECORD_TYPE } from 'graphQL/useQueryRecordType';
-import { VIEWFILEQUERY, VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
-
-import { parseDate } from 'utils/helper';
 
 import { AppContext } from 'AppContext';
+import { tableGlobalController } from 'hookstate/tableController';
 
 const filter = createFilterOptions();
 
@@ -222,7 +222,7 @@ export default function ParcelInstrument(props) {
 	const [getInstrumentTypes, { data: instrumentTypes }] = useLazyQuery(INSTRUMENT_TYPE, {
 		fetchPolicy: 'no-cache',
 	});
-	const [getViewTokenUri, { data: viewTokenUri }] = useLazyQuery(GET_VIEW_TOKEN_URI, {
+	const [getViewTokenUri] = useLazyQuery(GET_VIEW_TOKEN_URI, {
 		fetchPolicy: 'no-cache',
 	});
 	const [getRecordTypes, { data: recordTypes }] = useLazyQuery(RECORD_TYPE, {
@@ -232,14 +232,32 @@ export default function ParcelInstrument(props) {
 	const [addParcelAgreement] = useMutation(ADD_PARCEL_AGREEMENT, {
 		refetchQueries: ['getESSimpleSearch'],
 		awaitRefetchQueries: true,
+		onCompleted: () => {
+			tableGlobalController.refetch();
+			tableGlobalController.updateState({
+				selectedInstrument: null,
+			});
+		},
 	});
 	const [updateParcelAgreement] = useMutation(UPDATE_PARCEL_AGREEMENT, {
 		refetchQueries: ['getESSimpleSearch'],
 		awaitRefetchQueries: true,
+		onCompleted: () => {
+			tableGlobalController.refetch();
+			tableGlobalController.updateState({
+				selectedInstrument: null,
+			});
+		},
 	});
 	const [deleteParcelRunsheet] = useMutation(DELETE_PARCEL_RUNSHEET, {
 		refetchQueries: ['getESSimpleSearch'],
 		awaitRefetchQueries: true,
+		onCompleted: () => {
+			tableGlobalController.refetch();
+			tableGlobalController.updateState({
+				selectedInstrument: null,
+			});
+		},
 	});
 
 	useEffect(() => {
@@ -392,6 +410,9 @@ export default function ParcelInstrument(props) {
 	const handleClose = () => {
 		props.setShowSlider(false);
 		setSelectedInstrument(null);
+		tableGlobalController.updateState({
+			selectedInstrument: null,
+		});
 		setStateApp(stateApp => ({
 			...stateApp,
 			selectedAgreement: null,
@@ -492,7 +513,7 @@ export default function ParcelInstrument(props) {
 						userId: stateApp.user.mongoId,
 						parcelId: props.parcelId,
 					},
-					refetchQueries: ['getParcelAgreement'],
+					refetchQueries: ['getParcelAgreement', 'getESSimpleSearch'],
 					awaitRefetchQueries: true,
 				},
 			}).then(() => {
@@ -866,6 +887,7 @@ export default function ParcelInstrument(props) {
 											</div>
 										);
 									}
+									return undefined;
 								})}
 							</div>
 						</ListItem>
