@@ -616,7 +616,8 @@ const tableESStateControllerHandler = state => ({
 				);
 				const isNonValuesFilter = ['empty', 'notEmpty'].includes(filter.searchType);
 
-				if (!(isValuesEqual || isNonValuesFilter)) {
+				const updateMapFilter = isNonValuesFilter && existingFilter?.filterType === filter?.searchType;
+				if (!(isValuesEqual || updateMapFilter)) {
 					const newFilter = {
 						dataSourceName: tableState?.layerIdentifier,
 						filterType: tableState?.filterModes[filter.field.replace('.keyword', '')]?.mode

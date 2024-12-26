@@ -304,10 +304,12 @@ const useTableESSimple = tableKey => {
 						onColumnFiltersChange: filtersFunc => {
 							const columnFilters = tableState.filters.get({ noproxy: true });
 
-							const formattedColumnFilters = (columnFilters || []).map(filter => ({
-								...filter,
-								id: filter.field,
-							}));
+							const formattedColumnFilters = (columnFilters || [])
+								.map(filter => ({
+									...filter,
+									id: filter.field,
+								}))
+								.filter(filter => !['empty', 'notEmpty'].includes(filter?.searchType));
 
 							const _newFilters = filtersFunc(formattedColumnFilters);
 
