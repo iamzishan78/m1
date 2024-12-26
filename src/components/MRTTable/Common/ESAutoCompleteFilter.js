@@ -1,7 +1,9 @@
-import { useLazyQuery } from '@apollo/client';
-import { Autocomplete, TextField } from '@mui/material';
-import _, { debounce } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
+
+import { Autocomplete, TextField } from '@mui/material';
+
+import { useLazyQuery } from '@apollo/client';
+import _, { debounce } from 'lodash';
 
 import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
 import vf_currency, { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
@@ -310,7 +312,7 @@ function ESAutoCompleteFilter({
 					return op;
 				}
 
-				return op?.label || op?.name || '';
+				return op?.label ?? op?.name ?? '';
 			}}
 			loading={loading}
 			filterOptions={searchMapping[searchMode].filterOptions}

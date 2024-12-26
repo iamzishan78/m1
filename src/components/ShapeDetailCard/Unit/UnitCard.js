@@ -1,7 +1,8 @@
+import React, { useContext } from 'react';
+
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useContext } from 'react';
 
 // contexts
 import { ExpandableCardContext } from 'components/ExpandableCard/ExpandableCardContext';

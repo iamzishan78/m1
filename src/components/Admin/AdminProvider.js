@@ -1,8 +1,10 @@
-import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
+
+import { makeStyles } from '@material-ui/core/styles';
 
 import Admin from './Admin';
 import { AdminsContextProvider } from './AdminContext';
+
 const useStyles = makeStyles(theme => ({
 	AdminWrapper: {
 		width: '100%',

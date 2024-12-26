@@ -1,3 +1,5 @@
+import React, { useContext } from 'react';
+
 import {
 	Grid,
 	Typography,
@@ -11,8 +13,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { ExpandMore } from '@material-ui/icons';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
 import { get } from 'lodash';
-import React, { useContext } from 'react';
 import _ from 'underscore';
 
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';

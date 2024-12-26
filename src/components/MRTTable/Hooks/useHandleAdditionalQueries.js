@@ -1,10 +1,12 @@
+import { useEffect } from 'react';
+
 import { useApolloClient } from '@apollo/client';
 import { isEqual } from 'lodash';
-import { useEffect } from 'react';
 
 import { COMMENTSCOUNTER } from 'graphQL/useQueryCommentsCounter';
 import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
 import { TAGSAMPLES } from 'graphQL/useQueryTagSamples';
+import { IS_TRACKED_BY_IDS } from 'graphQL/useQueryTrackByObjectId';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableGlobalController } from 'hookstate/tableController';
@@ -23,15 +25,20 @@ const useHandleAdditionalQueries = ({ Controller, tableKey, tableState, tableSta
 			return;
 		}
 
+		const rows = tableStateValues?.data?.rows.slice(stateValues?.alreadyCheckedOwnersLength ?? 0);
+
+		const idsArray = rows.map(row => row.id);
+
+		if (!idsArray || idsArray.length === 0) {
+			return;
+		}
+
 		Controller.updateState({
 			isLoading: true,
 			isFetching: true,
 			isError: false,
 		});
 
-		const rows = tableStateValues?.data?.rows.slice(stateValues?.alreadyCheckedOwnersLength ?? 0);
-
-		const idsArray = rows.map(row => row.id);
 		const res = await client.query({
 			variables: { idsArray },
 			query: IFARECONTACTS,
@@ -109,6 +116,31 @@ const useHandleAdditionalQueries = ({ Controller, tableKey, tableState, tableSta
 		}
 	};
 
+	const callIsTrackedQuery = async () => {
+		const user = globalStateController.getValue('user');
+		const isTrackedListState = Controller.getValue('isTrackedList');
+
+		const ids = tableStateValues.getIdsFromRows?.(tableStateValues.data.rows);
+
+		if (!ids || ids.length === 0) {
+			return;
+		}
+
+		const res = await client.query({
+			variables: {
+				ids,
+				userId: user.mongoId,
+			},
+			query: IS_TRACKED_BY_IDS,
+		});
+
+		const isTrackedList = res?.data?.isTrackedByIds?.data;
+
+		if (!isEqual(isTrackedListState, isTrackedList)) {
+			Controller.updateState({ isTrackedList });
+		}
+	};
+
 	useEffect(() => {
 		const { additionalQueries } = tableStateValues;
 
@@ -124,6 +156,9 @@ const useHandleAdditionalQueries = ({ Controller, tableKey, tableState, tableSta
 		}
 		if (additionalQueries.includes('tags')) {
 			callTagsQuery();
+		}
+		if (additionalQueries.includes('isTracked')) {
+			callIsTrackedQuery();
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState.data, tableState.additionalQueries, refetchAdditionalQueries]);

@@ -1,16 +1,17 @@
-import { useMutation, useLazyQuery } from '@apollo/client';
+import React, { useContext, useState, useEffect } from 'react';
+
 import { CircularProgress } from '@material-ui/core';
 import Chip from '@material-ui/core/Chip';
-
-import Grid from '@material-ui/core/Grid';
-import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import Grid from '@material-ui/core/Grid';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 import ClearIcon from '@material-ui/icons/Clear';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useContext, useState, useEffect } from 'react';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
 
 import { AppContext } from '../../AppContext';
 import { REMOVETAG } from '../../graphQL/useMutationRemoveTag';

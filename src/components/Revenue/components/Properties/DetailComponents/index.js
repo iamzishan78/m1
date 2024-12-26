@@ -1,5 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useState, useRef, useEffect, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import {
 	Typography,
 	IconButton,
@@ -19,9 +21,9 @@ import {
 	Delete as DeleteIcon,
 } from '@material-ui/icons';
 import { makeStyles, withStyles } from '@material-ui/styles';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { get } from 'lodash';
-import React, { useState, useRef, useEffect, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
 
 import AddNewRelatedAgreementDialog from 'components/Land/components/Agreements/detailComponents/relatedAgreements/AddNewRelatedAgreementDialog';
 import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
@@ -37,18 +39,19 @@ import { UPSERT_USER_DESCRIPTOR } from 'graphQL/useMutationUserDescriptor';
 import { GET_PROPERTY } from 'graphQL/useQueryGetProperty';
 import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
 
+import { detailCardController } from 'hookstate/detailCardController';
+
 import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
 import { ConvertOwnerToContactContainer } from 'store/containers/entity';
-import { AppContext } from 'AppContext';
-
-// Components
-import PropertyInterestDetailsSection from './PropertyInterestDetailsSection';
-import InterestDetailForm from './InterestDetailForm';
-import HeaderSection from './HeaderSection';
 
 import { getIdFromPath } from 'utils/helper';
 
-import { detailCardController } from 'hookstate/detailCardController';
+import { AppContext } from 'AppContext';
+
+// Components
+import HeaderSection from './HeaderSection';
+import InterestDetailForm from './InterestDetailForm';
+import PropertyInterestDetailsSection from './PropertyInterestDetailsSection';
 
 const useStyles = makeStyles(theme => ({
 	root: {

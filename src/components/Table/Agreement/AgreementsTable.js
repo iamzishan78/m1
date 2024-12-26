@@ -1,34 +1,29 @@
-// Header Schemas
-
-// Utilities
-
+import React, { useEffect, useContext, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { useMutation } from '@apollo/client';
 import { Container, Dialog } from '@material-ui/core';
-import _ from 'lodash';
 
+import { useMutation } from '@apollo/client';
+import _ from 'lodash';
 import debounce from 'lodash/debounce';
-import React, { useEffect, useContext, useState } from 'react';
+
 import { agreementTypes } from 'components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData';
 import { deepEqualObjects, copy, esExtentedSearch } from 'components/Shared/functions';
-
-import { UPDATE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
 import GridView from 'components/Shared/GridView';
-
-// value formatters
-import convert_date from 'components/Shared/valueformatters/convert_date.js';
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import Table from 'components/Shared/M1nTable/components/Table';
 import Agreements from 'components/Shared/svgIcons/agreements';
+import convert_date from 'components/Shared/valueformatters/convert_date.js';
 import TableHeader from 'components/Table/constants/agreements-header-schema';
 import { HeaderComponent } from 'components/Table/helpers';
 import TableESHOC from 'components/Table/TableESHOC';
 
 import { REMOVE_AGREEMENTS } from 'graphQL/useMutationRemoveAgreements';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+import { UPDATE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
 
 import { jobController } from 'hookstate/jobStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
 
 import { AppContext } from 'AppContext';
 
@@ -67,7 +62,10 @@ function AgreementsTable(props) {
 
 	const { Agreements: AgreementsGridView } = useSelector(({ session }) => session.userGridViewSettings);
 
-	const searchInput = useSelector(state => state.MapGridCard.searchInputValue);
+	const {
+		stateValues: { searchValue },
+	} = mapControlsController.useState(['searchValue']);
+
 	const { setESFilters } = props;
 
 	const esFilters = props.esFilters ? props.esFilters : [];
@@ -114,7 +112,7 @@ function AgreementsTable(props) {
 		const formatedFilter = esFilters ? copy(esFilters) : [];
 		props.setInitialFilters(formatedFilter);
 		setTableMeta({
-			extendSearchQuery: esExtentedSearch(props.landSearchQuery, searchInput),
+			extendSearchQuery: esExtentedSearch(props.landSearchQuery, searchValue),
 			selectedGridView: GridViewModule || defaultView,
 			customDataESKey: 'shapeJson.properties.custom_data',
 			// searchFields: ["*"],

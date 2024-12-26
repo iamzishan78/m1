@@ -1,10 +1,12 @@
-import { useMutation } from '@apollo/client';
-import { Grid, Popover, TextField, Typography, IconButton } from '@material-ui/core';
-import LaunchIcon from '@material-ui/icons/Launch';
-import { debounce } from 'lodash';
 import React, { useState } from 'react';
 import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+
+import { Grid, Popover, TextField, Typography, IconButton } from '@material-ui/core';
+import LaunchIcon from '@material-ui/icons/Launch';
+
+import { useMutation } from '@apollo/client';
+import { debounce } from 'lodash';
 
 import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';

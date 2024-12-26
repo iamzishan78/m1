@@ -1,5 +1,6 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+
+import PropTypes from 'prop-types';
 
 const SpreadsheetCell = props => {
 	const { y, id, className, onClick, onDoubleClick, children, width } = props;

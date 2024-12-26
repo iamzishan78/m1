@@ -1,5 +1,6 @@
-import { Divider, makeStyles, Tab, Tabs, withStyles } from '@material-ui/core';
 import React, { useState } from 'react';
+
+import { Divider, makeStyles, Tab, Tabs, withStyles } from '@material-ui/core';
 
 import { globalStateController } from 'hookstate/globalStateController';
 

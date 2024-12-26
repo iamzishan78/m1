@@ -1,4 +1,11 @@
-import { useMutation, useLazyQuery } from '@apollo/client';
+import React, { useEffect, useState, useContext } from 'react';
+import { isMobile } from 'react-device-detect';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { TouchBackend } from 'react-dnd-touch-backend';
+import { useSelector, useDispatch } from 'react-redux';
+import { ContextProvider } from 'react-sortly';
+
 import {
 	Drawer,
 	Typography,
@@ -17,17 +24,12 @@ import AddBoxIcon from '@material-ui/icons/AddBox';
 import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
-import SearchIcon from '@material-ui/icons/Search';
-import { get } from 'lodash';
-import React, { useEffect, useState, useContext } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import moment from 'moment';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import { TouchBackend } from 'react-dnd-touch-backend';
-import { isMobile } from 'react-device-detect';
-import { ContextProvider } from 'react-sortly';
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircleOutline';
+import SearchIcon from '@material-ui/icons/Search';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
+import { get } from 'lodash';
+import moment from 'moment';
 
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import PipelinesList from 'components/Transact/components/SidePanel/PipelinesList';

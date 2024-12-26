@@ -1,8 +1,11 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useEffect, useMemo, useState } from 'react';
+
 import { Paper } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+
 import { TextField } from '@mui/material';
-import React, { useEffect, useMemo, useState } from 'react';
+
+import { useLazyQuery } from '@apollo/client';
 
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import { generateRandomColor } from 'components/MapControls/commonHelper';

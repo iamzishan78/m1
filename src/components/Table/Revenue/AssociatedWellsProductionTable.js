@@ -1,6 +1,8 @@
-import { Container } from '@material-ui/core';
-import moment from 'moment';
 import React, { useEffect } from 'react';
+
+import { Container } from '@material-ui/core';
+
+import moment from 'moment';
 // context
 
 import { deepEqualObjects, copy } from 'components/Shared/functions';

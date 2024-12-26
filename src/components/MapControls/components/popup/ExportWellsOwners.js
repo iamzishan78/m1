@@ -1,4 +1,6 @@
-import { useApolloClient } from '@apollo/client';
+import React, { useEffect, useContext, useState } from 'react';
+import { Controller, useForm, useWatch } from 'react-hook-form';
+
 import { makeStyles } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -8,8 +10,8 @@ import Drawer from '@material-ui/core/Drawer';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import Switch from '@material-ui/core/Switch';
-import React, { useEffect, useContext, useState } from 'react';
-import { Controller, useForm, useWatch } from 'react-hook-form';
+
+import { useApolloClient } from '@apollo/client';
 
 import { NavigationContext } from 'components/Navigation/NavigationContext';
 import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';

@@ -1,8 +1,8 @@
-import { useMutation, useLazyQuery } from '@apollo/client';
+import React, { useMemo, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
-import DeleteIcon from '@material-ui/icons/Delete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
@@ -10,11 +10,13 @@ import IconButton from '@material-ui/core/IconButton';
 import InputBase from '@material-ui/core/InputBase';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import DeleteIcon from '@material-ui/icons/Delete';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import SearchIcon from '@material-ui/icons/Search';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
 import moment from 'moment';
-import React, { useMemo, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 
 import DeleteDocumentConfirmation from './DeleteDocumentConfirmation';
 import UploadZone from './UploadZone';

@@ -1,6 +1,7 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import DeleteIcon from '@material-ui/icons/Delete';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
+import ReactDOM from 'react-dom';
+import { useForm, Controller } from 'react-hook-form';
+
 import { CircularProgress, Dialog, ListItemIcon, ListItemText, Menu, MenuItem } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
@@ -9,9 +10,10 @@ import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import CloseIcon from '@material-ui/icons/Close';
-import React, { useState, useEffect, useContext, useCallback } from 'react';
-import ReactDOM from 'react-dom';
-import { useForm, Controller } from 'react-hook-form';
+import DeleteIcon from '@material-ui/icons/Delete';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 
 // contexts
 import AutoCompleteFieldComponent from 'components/Shared/Forms/Fields/AutoCompleteField';

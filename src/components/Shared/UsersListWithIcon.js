@@ -1,8 +1,10 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useState, useEffect } from 'react';
+
 import { TextField, Grid, Avatar, InputAdornment } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/styles';
-import React, { useState, useEffect } from 'react';
+
+import { useLazyQuery } from '@apollo/client';
 
 import { getRandomColor } from 'components/Shared/functions/ui';
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';

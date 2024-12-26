@@ -1,13 +1,15 @@
 // QUERIES
-import { useLazyQuery } from '@apollo/client';
+import React, { useState, useEffect, useContext } from 'react';
+import { VariableSizeList } from 'react-window';
+
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery } from '@apollo/client';
 import { isArray, isEqual } from 'lodash';
 import uniqBy from 'lodash/uniqBy';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import React, { useState, useEffect, useContext } from 'react';
-import { VariableSizeList } from 'react-window';
 
 import { capitalizeFirstLetter, customStartCaseString } from 'components/Shared/functions';
 

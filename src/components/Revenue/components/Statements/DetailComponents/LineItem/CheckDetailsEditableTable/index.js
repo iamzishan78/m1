@@ -1,18 +1,23 @@
-import { useLazyQuery, useApolloClient, useMutation } from '@apollo/client';
+import React, { useState, useEffect } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
+
 import { Grid, Paper, Button, TableContainer, CircularProgress, IconButton, TextField } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import SearchIcon from '@material-ui/icons/Search';
 import { makeStyles } from '@material-ui/styles';
+
+import { useLazyQuery, useApolloClient, useMutation } from '@apollo/client';
 import get from 'lodash/get';
 import set from 'lodash/set';
 import moment from 'moment';
-import React, { useState, useEffect } from 'react';
-import InfiniteScroll from 'react-infinite-scroll-component';
 
 import AutoCompleteESField from 'components/Shared/Forms/Fields/AutoCompleteESField';
 import { deepEqualObjects, copy } from 'components/Shared/functions';
+import { Grid as TableGrid, Input, Date } from 'components/Shared/SpreadsheetGrid';
+import { AutoCompleteFilter } from 'components/Table/AutoCompleteFilter';
 import TableHeader from 'components/Table/constants/check-details-header-schema';
+import { usetableStyles } from 'components/Table/Styles';
 import TableHOC from 'components/Table/TableHOC';
 
 // QUERIES
@@ -22,20 +27,13 @@ import TableHOC from 'components/Table/TableHOC';
 // Utilities
 import { ADD_PROPERTY } from 'graphQL/useMutationAddProperty';
 import { UPDATE_CHECK_DETAIL } from 'graphQL/useMutationUpdateCheckDetail';
+import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
 
-import { usetableStyles } from 'components/Table/Styles';
-import { AutoCompleteFilter } from 'components/Table/AutoCompleteFilter';
-
-import { Grid as TableGrid, Input, Date } from 'components/Shared/SpreadsheetGrid';
-
 import { ActionCell } from './ActionCell';
-
 import { RevenueStatementHeadCells } from './data';
 import { PopoverProperty } from './PopoverProperty';
-
-import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles({
 	root: {

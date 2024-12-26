@@ -1,7 +1,10 @@
-import { Dialog as MuiDialog } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import React, { useState, memo } from 'react';
 import { useHistory } from 'react-router-dom';
+
+import { Dialog as MuiDialog } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { useHookstate } from '@hookstate/core';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
@@ -12,8 +15,6 @@ import { slidoutStateController } from 'hookstate/slidoutStateController';
 
 import Dialog from './Dialog';
 import DialogHeader from './DialogHeader';
-
-import { useHookstate } from '@hookstate/core';
 
 const useStyles = makeStyles(theme => ({
 	dealDetailRoot: {

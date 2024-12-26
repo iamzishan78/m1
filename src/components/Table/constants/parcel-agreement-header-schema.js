@@ -6,6 +6,7 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { GlobalStickyStyles } from 'GlobalSettings';
 
 import GlobalSettings from '../../../GlobalSettings';
+
 const ParcelAgreementHeadCells = [
 	{
 		name: '_id',

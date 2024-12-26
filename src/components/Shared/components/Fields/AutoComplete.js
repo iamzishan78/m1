@@ -1,7 +1,9 @@
+import React from 'react';
+
 import { Typography, Grid, TextField } from '@material-ui/core';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
 import loadashFilter from 'lodash/filter';
-import React from 'react';
 
 export default function AutoCompleteComponent(props) {
 	const { classes, onChange, defaultValue, value, options, ...rest } = props;

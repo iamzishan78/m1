@@ -1,5 +1,6 @@
-import { makeStyles } from '@material-ui/core/styles';
 import React, { useMemo } from 'react';
+
+import { makeStyles } from '@material-ui/core/styles';
 
 import MRTTable from 'components/MRTTable';
 import PropertyRevenueDetailToolBar from 'components/MRTTable/TablesOverride/PropertyRelatedAgreementTable/PropertyRelatedAgreementToolBar';

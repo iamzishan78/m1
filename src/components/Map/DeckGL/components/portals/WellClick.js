@@ -1,6 +1,7 @@
-import { useApolloClient } from '@apollo/client';
 import { memo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+
+import { useApolloClient } from '@apollo/client';
 
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';

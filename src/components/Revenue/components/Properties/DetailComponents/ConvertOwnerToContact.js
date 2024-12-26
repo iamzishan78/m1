@@ -1,6 +1,7 @@
+import React, { useState, useEffect } from 'react';
+
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@material-ui/core';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import React, { useState, useEffect } from 'react';
 
 import { detailCardController } from 'hookstate/detailCardController';
 import { tableGlobalController } from 'hookstate/tableController';

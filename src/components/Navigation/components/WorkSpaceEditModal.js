@@ -1,5 +1,6 @@
-import { useMutation } from '@apollo/client';
-import { BlockBlobClient } from '@azure/storage-blob';
+import React, { useState, useEffect, useContext } from 'react';
+import { useDispatch } from 'react-redux';
+
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogActions from '@material-ui/core/DialogActions';
@@ -11,9 +12,10 @@ import { withStyles, makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
+
+import { useMutation } from '@apollo/client';
+import { BlockBlobClient } from '@azure/storage-blob';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
-import React, { useState, useEffect, useContext } from 'react';
-import { useDispatch } from 'react-redux';
 
 import { workspaceTenantName } from 'components/Shared/functions';
 

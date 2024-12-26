@@ -1,4 +1,6 @@
-import { useMutation } from '@apollo/client';
+import React, { useEffect, useContext, useState } from 'react';
+import { useDispatch } from 'react-redux';
+
 import { Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -12,8 +14,8 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
-import React, { useEffect, useContext, useState } from 'react';
-import { useDispatch } from 'react-redux';
+
+import { useMutation } from '@apollo/client';
 
 // import value formatters
 import joinAddress from 'components/Shared/valueformatters/join-address.js';

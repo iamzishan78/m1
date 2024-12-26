@@ -1,14 +1,16 @@
+import React from 'react';
+import { Waypoint } from 'react-waypoint';
+
 import { withStyles } from '@material-ui/core/styles';
 import MuiTableBody from '@material-ui/core/TableBody';
 import Typography from '@material-ui/core/Typography';
+
 import clsx from 'clsx';
 import cloneDeep from 'lodash.clonedeep';
 import { TableBodyCell } from 'mui-datatables';
 import PropTypes from 'prop-types';
-import React from 'react';
 
 // import TableBodyCell from './TableBodyCell';
-import { Waypoint } from 'react-waypoint';
 
 import GlobalStyles from 'GlobalStyles';
 

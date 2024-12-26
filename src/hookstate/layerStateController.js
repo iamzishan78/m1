@@ -1,6 +1,7 @@
+import { NotificationManager } from 'react-notifications';
+
 import { booleanWithin, difference, union, booleanIntersects, bboxPolygon } from '@turf/turf';
 import { debounce } from 'lodash';
-import { NotificationManager } from 'react-notifications';
 import { v4 as uuid } from 'uuid';
 
 import getBoundsQuery from 'api/getBoundsQuery';
@@ -19,8 +20,8 @@ import {
 	staticMapBoxLayerIdentifiers,
 	isCustomLayerCopy,
 } from 'components/Shared/functions/shapeLayer';
-
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
+
 import { getLayerKey } from 'hookstate/helpers';
 import { hookStateController } from 'hookstate/hookStateController';
 
@@ -28,7 +29,6 @@ import { drawController } from './drawStateController';
 import { globalStateController } from './globalStateController';
 import { layerFilters, layerState, layerStateInitialState } from './initialStates';
 import { layerFiltersController } from './layerFiltersController';
-
 import { mapControlsController } from './mapControlsController';
 import { navController } from './navStateController';
 import { popupController } from './popupStateController';

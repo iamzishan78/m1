@@ -1,7 +1,9 @@
-import { useMutation } from '@apollo/client';
-import { Container, Dialog } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+
+import { Container, Dialog } from '@material-ui/core';
+
+import { useMutation } from '@apollo/client';
 
 import { deepEqualObjects, copy } from 'components/Shared/functions';
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';

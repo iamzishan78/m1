@@ -1,9 +1,11 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { useHookstate } from '@hookstate/core';
+import React, { useContext, useState, useEffect, useMemo } from 'react';
+
 import Badge from '@material-ui/core/Badge';
 import HomeIcon from '@material-ui/icons/HomeOutlined';
 import IdentityIcon from '@material-ui/icons/PermIdentity';
-import React, { useContext, useState, useEffect, useMemo } from 'react';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { useHookstate } from '@hookstate/core';
 
 import Slideout from 'components/Shared/Slideout';
 

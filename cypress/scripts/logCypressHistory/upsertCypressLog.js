@@ -2,6 +2,7 @@ const axios = require('axios');
 
 const { getPipelineData } = require('./utils/helpers.js');
 const { UPSERT_CYPRESS_LOG } = require('../../../src/graphQL/useMutationCypress.js');
+
 const { BUILD_ID, SOURCE_BRANCH, PIPELINE_TRIGGER_MODE, PIPELINE_RUN_MODE } = getPipelineData();
 
 const UpsertCypressLog = async ({ pr, specs, buildId = BUILD_ID, isFailedRetry = false }) => {

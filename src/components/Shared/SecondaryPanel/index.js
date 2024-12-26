@@ -1,6 +1,8 @@
-import { makeStyles } from '@material-ui/core/styles';
-import { get } from 'lodash';
 import React, { useMemo } from 'react';
+
+import { makeStyles } from '@material-ui/core/styles';
+
+import { get } from 'lodash';
 
 import LayerStyling from 'components/MapControls/components/Layer/LayerStyling';
 import NewLayerManager from 'components/MapControls/components/Layer/NewLayerManager';

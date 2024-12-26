@@ -1,9 +1,11 @@
+import React, { useMemo } from 'react';
+
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
 import TractInterestsIcon from '@material-ui/icons/ListAlt';
+
 import moment from 'moment';
-import React, { useMemo } from 'react';
 
 import MRTTable from 'components/MRTTable';
 import Contact from 'components/Shared/svgIcons/contact';

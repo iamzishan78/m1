@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+
 import {
 	Grid,
 	ListItemText,
@@ -15,7 +17,6 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SearchIcon from '@material-ui/icons/Search';
-import React, { useState } from 'react';
 
 //Query
 import ESSearchField from 'components/Shared/Forms/Fields/ESSearchField';

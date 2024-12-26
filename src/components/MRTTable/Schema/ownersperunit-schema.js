@@ -1,4 +1,5 @@
 import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
+
 import { isEmpty, pickBy } from 'lodash';
 
 import ListChips from 'components/Common/ListChips';
@@ -10,18 +11,17 @@ import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActi
 import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
 import IsContactCell from 'components/MRTTable/Common/TableCells/isContactIcone';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import OwnersPerUnitToolBar from 'components/MRTTable/TablesOverride/OwnersPerUnit/OwnersPerUnitToolBar';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import { addTrailingZeros } from 'components/Shared/functions';
+import UnitIcon from 'components/Shared/svgIcons/unit';
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
 
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
-
-import { addTrailingZeros } from 'components/Shared/functions';
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import UnitIcon from 'components/Shared/svgIcons/unit';
 
 import { copy } from 'utils/helper';
 

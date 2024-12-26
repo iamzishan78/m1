@@ -1,9 +1,10 @@
+import React, { useState, useEffect } from 'react';
+import { VariableSizeList } from 'react-window';
+
 import { useTheme } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import React, { useState, useEffect } from 'react';
-import { VariableSizeList } from 'react-window';
 
 const filter = createFilterOptions();
 

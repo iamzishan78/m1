@@ -1,4 +1,7 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useEffect, useContext, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+
 import {
 	Avatar,
 	Box,
@@ -24,10 +27,9 @@ import DrawPoly from '@material-ui/icons/EditLocationOutlined';
 import FolderIcon from '@material-ui/icons/Folder';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import $ from 'jquery';
-import React, { useEffect, useContext, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 import 'material-icons/iconfont/material-icons.css';
 // Components
@@ -42,25 +44,24 @@ import { showInfoMessage } from 'actions';
 import { layerRefs } from 'hookstate';
 
 import ReportBugModal from './components/ReportBugModal';
+import { ExpandableCardContext } from './ExpandableCardContext';
+import { AppContext } from '../../AppContext';
+import { UPDATECUSTOMLAYER } from '../../graphQL/useMutationUpdateCustomLayer';
+import { TRACKBYOBJECTID } from '../../graphQL/useQueryTrackByObjectId';
+import CommentsWithIcon from '../Shared/CommentsWithIcon';
+import LinkWithIcon from '../Shared/LinkWithIcon';
+import DeleteConfirmationDialogContent from '../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import TaggerWithIcon from '../Shared/TaggerWithIcon';
+import TrackToggleButton from '../Shared/TrackToggleButton';
+import ContactSearch from './components/ContactSearch';
 import ExpandIcon from './components/svgIcons/ExpandIcon';
 import ShrinkIcon from './components/svgIcons/ShrinkIcon';
-import CommentsWithIcon from '../Shared/CommentsWithIcon';
 
 //import { default as DrawPoly } from "components/Shared/svgIcons/polygon";
 
-import TrackToggleButton from '../Shared/TrackToggleButton';
-import LinkWithIcon from '../Shared/LinkWithIcon';
-import DeleteConfirmationDialogContent from '../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-import ContactSearch from './components/ContactSearch';
-
 // Mutations
-import { UPDATECUSTOMLAYER } from '../../graphQL/useMutationUpdateCustomLayer';
 // Queries
-import { TRACKBYOBJECTID } from '../../graphQL/useQueryTrackByObjectId';
 // contexts
-import { AppContext } from '../../AppContext';
-import { ExpandableCardContext } from './ExpandableCardContext';
 
 function ExpandableCard(props) {
 	// initials

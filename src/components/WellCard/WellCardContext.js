@@ -1,4 +1,5 @@
 import React, { useState, createContext } from 'react';
+
 const WellCardContext = createContext([{}, () => {}]);
 
 const chartData = JSON.parse(

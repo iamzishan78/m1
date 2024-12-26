@@ -1,32 +1,25 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-// react imports
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-// custom components
-import './popup.css';
-import gjv from 'geojson-validation';
-
-// 3rd party packages
-import mapboxgl from 'mapbox-gl';
-import * as turf from '@turf/turf';
-import MapboxDraw from '@mapbox/mapbox-gl-draw';
-import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from 'mapbox-gl-draw-circle';
-import StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
-import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
-import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
-import { useLazyQuery, useApolloClient, useQuery } from '@apollo/client';
-
-// material-ui
 import { makeStyles } from '@material-ui/core/styles';
+
+import { useLazyQuery, useApolloClient, useQuery } from '@apollo/client';
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
+import * as turf from '@turf/turf';
+import gjv from 'geojson-validation';
 import _ from 'lodash';
+import mapboxgl from 'mapbox-gl';
+import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from 'mapbox-gl-draw-circle';
+import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import parseLinkHeader from 'parse-link-header';
 
 import { drawShapeStyles, findBoundsMap } from 'components/MapControls/commonHelper';
+import MapControls from 'components/MapControls/MapControls';
+import SpeedDialComponent from 'components/MapControls/SpeedDialComponent';
 import { layersWithSelectedShapeKey } from 'components/Shared/functions/shapeLayer';
-
-import './Map.css';
 import { convertToTitleCase } from 'components/Shared/M1nTable/components/MUIDataTable/utils';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
@@ -36,7 +29,9 @@ import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
 
 import { drawController } from 'hookstate/drawStateController';
 import { globalStateController } from 'hookstate/globalStateController';
+import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
 import { mapStateController } from 'hookstate/mapStateController';
 import { navController } from 'hookstate/navStateController';
 import { popupController } from 'hookstate/popupStateController';
@@ -45,38 +40,31 @@ import { baseTenantsMaps } from 'utils/data';
 
 import { layerRefs } from 'hookstate';
 
+import HugeRequest from './components/HugeRequest';
 import DeckGL from './DeckGL';
+import onRightClick from './DeckGL/helpers/onRightClick';
 import DefaultFiltersTest from './filtersDefaultTest';
 import { setMainMapState } from '../../actions';
+import { SRMode } from './MapBoxDrawRotate/index';
+import { AppContext } from '../../AppContext';
+import { ALLLAYERSETTINGSBYUSER } from '../../graphQL/useQueryAllLayerSettingsByUser';
+import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
 import { copy } from '../Shared/functions';
+import ZoomFault from './components/ZoomFault';
+import { extractUniqueFilters, getClickedFeature } from './DeckGL/helpers/common';
+import DeckGlLayer from './DeckGL/helpers/DeckGlLayer';
+import onFeatureClick from './DeckGL/helpers/onFeatureClick';
+import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
 import MarkerIcon from './sprites/marker-icon.png';
-import MapGridCardProvider from '../MapGridCard/MapGridProvider';
 import {
 	drawBoundary,
 	drawWellBoundary,
 	drawPlaceBoundary,
 } from '../MapControls/components/DrawShapes/drawShapesHelpers';
-import HugeRequest from './components/HugeRequest';
-import ZoomFault from './components/ZoomFault';
-import { SRMode } from './MapBoxDrawRotate/index';
+import MapGridCardProvider from '../MapGridCard/MapGridProvider';
 
-// queries
-import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
-import { ALLLAYERSETTINGSBYUSER } from '../../graphQL/useQueryAllLayerSettingsByUser';
-
-// contexts
-import { AppContext } from '../../AppContext';
-import onFeatureClick from './DeckGL/helpers/onFeatureClick';
-import { extractUniqueFilters, getClickedFeature } from './DeckGL/helpers/common';
-
-import MapControls from 'components/MapControls/MapControls';
-import SpeedDialComponent from 'components/MapControls/SpeedDialComponent';
-
-import DeckGlLayer from './DeckGL/helpers/DeckGlLayer';
-import onRightClick from './DeckGL/helpers/onRightClick';
-import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
-
-import { layerFiltersController } from 'hookstate/layerFiltersController';
+import './Map.css';
+import './popup.css';
 
 const useStyles = makeStyles(() => ({
 	mapWrapper: {
@@ -163,8 +151,11 @@ function Map({
 	});
 
 	const dispatch = useDispatch();
-	const { searchInputValue } = useSelector(({ MapGridCard }) => MapGridCard);
 	const removeLayerFromMap = useSelector(({ MainMap }) => MainMap.removeLayerFromMap);
+
+	const {
+		stateValues: { searchValue },
+	} = mapControlsController.useState(['searchValue']);
 
 	const [mapStyles, MapStyles] = useState([]);
 	const setMapStyles = state => {
@@ -321,7 +312,7 @@ function Map({
 			});
 
 		popupController.updateState({
-			popupOpen: !!(popupController.getValue('wellSelectedCoordinates')?.length > 0 && searchInputValue),
+			popupOpen: !!(popupController.getValue('wellSelectedCoordinates')?.length > 0 && searchValue),
 			expandedCard: false,
 		});
 

@@ -1,18 +1,20 @@
-import {
-	changeModeToScaleRotate,
-	drawBoundary,
-	getRotateAbleShapeFromSelectedQuarters,
-} from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
-import { AppContext } from 'AppContext';
-import { drawShapeLayerToggle, findBoundsMap } from 'components/MapControls/commonHelper';
-import { useMutation } from '@apollo/client';
+import React, { useState, useEffect, useContext, useRef } from 'react';
+
 import { Box, FormControlLabel, Switch, Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useState, useEffect, useContext, useRef } from 'react';
+
+import { useMutation } from '@apollo/client';
+
+import { drawShapeLayerToggle, findBoundsMap } from 'components/MapControls/commonHelper';
+import {
+	changeModeToScaleRotate,
+	drawBoundary,
+	getRotateAbleShapeFromSelectedQuarters,
+} from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 import SmallTXQtr from 'components/Shared/M1nTable/components/SubComponents/AddParcelToEntityDialogContent/ParcelStep/components/SmallTXQtr';
 
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
@@ -23,6 +25,8 @@ import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 
 import { copy } from 'utils/helper';
+
+import { AppContext } from 'AppContext';
 
 import {
 	getQtrFilterData,

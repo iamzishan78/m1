@@ -1,5 +1,6 @@
-import { Box } from '@mui/material';
 import React, { useMemo, useState } from 'react';
+
+import { Box } from '@mui/material';
 
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import MRTTable from 'components/MRTTable';

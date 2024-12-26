@@ -1,6 +1,7 @@
+import React from 'react';
+
 import { hookstate } from '@hookstate/core';
 import _, { get, isEqual, isEmpty, pull } from 'lodash';
-import React from 'react';
 
 import { extractUniqueFilters } from 'components/Map/DeckGL/helpers/common';
 import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController';
@@ -12,20 +13,18 @@ import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOp
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatGridViewToMRT } from 'components/MRTTable/utils/helper';
 import { copy, deepEqual, formatDate } from 'components/Shared/functions';
-
-import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
-import { hookStateController } from 'hookstate/hookStateController';
-import { globalStateController } from 'hookstate/globalStateController';
+import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
+import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { hookStateController } from 'hookstate/hookStateController';
 
 import { validateUrl } from 'utils/helper';
 
 import { handleMRTSchema, handleVisiblityMenu } from './helpers';
-
-import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
-import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
-
 import { tableESState, tableGlobalState, tableInitialState } from './initialStates';
 
 function isDateFormat(inputString) {
@@ -153,8 +152,9 @@ async function fetchGridViews(client, module, tableKey, gridViewOverride) {
 }
 
 const tableESStateControllerHandler = state => ({
-	initialize: async (tableKey, props, client) => {
-		const {
+	initialize: async (
+		tableKey,
+		{
 			esIndex,
 			layerIdentifier,
 			layerSchema,
@@ -183,14 +183,15 @@ const tableESStateControllerHandler = state => ({
 			globalFilter,
 			excludeFields,
 			...rest
-		} = props;
-
+		},
+		client
+	) => {
 		if (state.TableSchema.get()) {
 			return;
 		}
 
 		let _Schema = TableSchema;
-		if (!rest.isGeneric) {
+		if (!rest.isGeneric && !isClientSide) {
 			_Schema.unshift({
 				...CommonSchema.SELECT_SOME,
 				Header: () => <TableHeaderMoreOptions tableKey={tableKey} />,
@@ -322,6 +323,7 @@ const tableESStateControllerHandler = state => ({
 			filterModes,
 			commentsCounter: [],
 			tagsList: [],
+			isTrackedList: [],
 		};
 
 		if (isClientSide) {
@@ -334,13 +336,8 @@ const tableESStateControllerHandler = state => ({
 				filters: [],
 				sorting: [],
 				columnVisibility,
-				columnPinning: {
-					left: [
-						...(pinnedFields.length > 0
-							? ['mrt-row-select', 'mrt-row-numbers', ...pinnedFields]
-							: ['mrt-row-select', 'mrt-row-numbers']),
-					],
-				},
+				columnOrdering: defaultColumnsOrdering,
+				columnPinning: defaultColumnsPinning,
 			};
 		} else {
 			stateToUpdate = {
@@ -370,6 +367,14 @@ const tableESStateControllerHandler = state => ({
 				columnPinning: formatedGridView?.columnPinning ? formatedGridView.columnPinning : defaultColumnsPinning,
 			};
 		}
+
+		// Set default state referneces
+		stateToUpdate = {
+			...stateToUpdate,
+			defaultTableSchema: _TableSchema,
+			defaultColumnsOrdering: defaultColumnsOrdering,
+			defaultColumnPinning: defaultColumnsPinning,
+		};
 
 		state.merge(stateToUpdate);
 
@@ -615,7 +620,8 @@ const tableESStateControllerHandler = state => ({
 				);
 				const isNonValuesFilter = ['empty', 'notEmpty'].includes(filter.searchType);
 
-				if (!(isValuesEqual || isNonValuesFilter)) {
+				const updateMapFilter = isNonValuesFilter && existingFilter?.filterType === filter?.searchType;
+				if (!(isValuesEqual || updateMapFilter)) {
 					const newFilter = {
 						dataSourceName: tableState?.layerIdentifier,
 						filterType: tableState?.filterModes[filter.field.replace('.keyword', '')]?.mode

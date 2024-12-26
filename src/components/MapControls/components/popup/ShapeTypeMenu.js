@@ -1,7 +1,8 @@
+import React, { useState } from 'react';
+
 import { FormControl, InputLabel, ListItem, ListItemText, Menu, MenuItem, Select } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/styles';
-import React, { useState } from 'react';
 
 import { SHAPE_TYPE } from 'components/Navigation/components/Utils/consts';
 import AutoCompleteESShapeLayer from 'components/Shared/Forms/Fields/AutoCompleteESShapeLayer';

@@ -1,34 +1,37 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useEffect, useContext, useState } from 'react';
+import { useDispatch } from 'react-redux';
+
 import { Backdrop, FormLabel } from '@material-ui/core';
 import { Grid } from '@material-ui/core';
-import DialogContent from '@material-ui/core/DialogContent';
-import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
-
-import { AppContext } from '../../../../../AppContext';
-import { GET_IDICORE_DATA } from 'graphQL/useQueryGetIdiCoreData';
-import { GET_FEATURE_QUOTA } from 'graphQL/useQueryGetFeatureQuota';
-import { showSuccessMessage, showErrorMessage } from '../../../../../actions';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
-import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
-import ErrorIcon from '@material-ui/icons/Error';
 import { Tooltip } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
+import ErrorIcon from '@material-ui/icons/Error';
+import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
+import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useEffect, useContext, useState } from 'react';
-import { useDispatch } from 'react-redux';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+
+import { GET_FEATURE_QUOTA } from 'graphQL/useQueryGetFeatureQuota';
+import { GET_IDICORE_DATA } from 'graphQL/useQueryGetIdiCoreData';
 
 import { jobController } from 'hookstate/jobStateController';
 import { tableGlobalController } from 'hookstate/tableController';
 
+import { showSuccessMessage, showErrorMessage } from '../../../../../actions';
+import { AppContext } from '../../../../../AppContext';
 import { Modals } from '../../../../../styles/Modal';
 
 const styles = theme => ({

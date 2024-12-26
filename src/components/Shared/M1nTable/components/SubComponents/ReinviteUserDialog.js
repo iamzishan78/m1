@@ -1,4 +1,5 @@
-import { useMutation, useLazyQuery } from '@apollo/client';
+import React, { useState } from 'react';
+
 import { Select, InputLabel, FormControl, MenuItem, TextField, Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -8,8 +9,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import FormLabel from '@material-ui/core/FormLabel';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
 import gql from 'graphql-tag';
-import React, { useState } from 'react';
 
 import { REINVITEUSER } from '../../../../../graphQL/useMutationReinviteUser';
 import { Modals } from '../../../../../styles/Modal';

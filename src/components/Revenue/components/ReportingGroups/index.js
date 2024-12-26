@@ -1,5 +1,6 @@
-import { makeStyles } from '@material-ui/styles';
 import React, { useState, useContext, useEffect } from 'react';
+
+import { makeStyles } from '@material-ui/styles';
 
 import MRTTable from 'components/MRTTable';
 import ReportGroupHeader from 'components/Shared/ReportGroupHeader';

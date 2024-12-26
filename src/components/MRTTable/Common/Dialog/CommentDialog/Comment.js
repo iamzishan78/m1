@@ -1,27 +1,27 @@
-import { useMutation, useLazyQuery, useQuery } from '@apollo/client';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
+import Avatar from 'react-avatar';
+
 import { CircularProgress } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Avatar from 'react-avatar';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-
-import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Divider';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
-import React, { useContext, useState, useEffect, useCallback } from 'react';
+
+import { useMutation, useLazyQuery, useQuery } from '@apollo/client';
 
 import { CommonCommentText } from 'components/Shared/CommentComponent';
 import CommentType from 'components/Shared/components/Comment/CommentType';
@@ -33,6 +33,7 @@ import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
 import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
 import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
 import { COMMENTSBYOBJECTSIDS } from 'graphQL/useQueryCommentsByObjectsIds';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
 import { AppContext } from 'AppContext';
 

@@ -1,3 +1,6 @@
+import React from 'react';
+import CSVDownloader from 'react-csv-downloader';
+
 import { Grid, IconButton, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -7,8 +10,6 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
-import React from 'react';
-import CSVDownloader from 'react-csv-downloader';
 
 import { convertAnalyticsDataToCSV } from 'components/Shared/M1nTable/components/MUIDataTable/utils';
 import vf_number from 'components/Shared/valueformatters/vf_number';

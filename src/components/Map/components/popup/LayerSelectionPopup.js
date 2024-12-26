@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+
 import {
 	Grid,
 	Card,
@@ -14,9 +16,10 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+
 import _ from 'lodash';
-import React, { useState } from 'react';
 
 import onFeatureClick from 'components/Map/DeckGL/helpers/onFeatureClick';
 import ExpandableSearch from 'components/Shared/Forms/Fields/ExpandableSearch';

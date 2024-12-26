@@ -1,5 +1,6 @@
-import { useLazyQuery } from '@apollo/client';
 import React, { useState, useEffect } from 'react';
+
+import { useLazyQuery } from '@apollo/client';
 
 import MRTTable from 'components/MRTTable';
 

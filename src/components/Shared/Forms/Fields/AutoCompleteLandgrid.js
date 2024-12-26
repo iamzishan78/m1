@@ -1,11 +1,13 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useState, useEffect } from 'react';
+
 import { Grid, Typography } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery } from '@apollo/client';
 import { uniqBy } from 'lodash';
 import loadashFilter from 'lodash/filter';
-import React, { useState, useEffect } from 'react';
 
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 

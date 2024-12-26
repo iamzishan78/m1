@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+
 import { Grid } from '@material-ui/core';
 import { Box, FormControlLabel, FormGroup, Switch } from '@material-ui/core';
 import Accordion from '@material-ui/core/Accordion';
@@ -7,8 +9,8 @@ import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+
 import moment from 'moment';
-import React, { useState } from 'react';
 
 import { excludeList } from './ExcludeList';
 import FieldContent from '../../ContactDetailCard/components/FieldContent';

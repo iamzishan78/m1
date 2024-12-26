@@ -1,6 +1,7 @@
+import React from 'react';
+
 import { useMutation } from '@apollo/client';
 import { toNumber } from 'lodash';
-import React from 'react';
 
 import AddNewRelatedData from 'components/Land/components/Common/AddNewRelatedData';
 

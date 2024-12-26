@@ -1,5 +1,6 @@
-import { makeStyles } from '@material-ui/core/styles';
 import React, { memo } from 'react';
+
+import { makeStyles } from '@material-ui/core/styles';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 
