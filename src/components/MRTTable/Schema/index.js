@@ -1,12 +1,12 @@
 import AcreageDetilsMeta from './acreage_details_schema';
 import AcreageSummaryMeta from './acreage_summary_schema';
 import ActivitiesMeta from './activities_schema';
-import ActivityMeta from './activity_schema';
 import AgreementRelatedUnitsMeta from './agreement_relatedUnits_schema';
 import AgreementMeta from './agreement_schema';
 import AuditReportingMeta from './audit_reporting_schema';
 import BulkDataEditingMeta from './bulk_data_editing_schema';
 import CampaignMeta from './campaign_schema';
+import CheckDetailsMeta from './check_details_schema';
 import ComparisonMeta from './comparison_schema';
 import ContactMeta from './contact_schema';
 import ContactWellInterestMeta from './contact_well_Interest_schema';
@@ -54,10 +54,8 @@ import UnitRelatedAgreementMeta from './unit_relatedAgreements_schema';
 import UnitMeta from './unit_schema';
 import UnitTractsMeta from './unit_tract_schema';
 import WellsMeta from './wells_schema';
-import CheckDetailsMeta from './check_details_schema';
 
 export const SCHEMA = {
-	ActivityTable: ActivityMeta,
 	ContactTable: ContactMeta,
 	ContactWellInterestTable: ContactWellInterestMeta,
 	CampaignContactTable: ContactMeta,
