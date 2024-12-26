@@ -477,6 +477,32 @@ export default function FieldContent({
 								handleUpdating(value);
 							}}
 						/>
+					) : fieldName.startsWith('custom_data') && metaField?.type === 'date' ? (
+						<>
+							<TextField
+								key={'fieldContentInput' + fieldName}
+								id={'fieldContentInput' + fieldName}
+								data-testid={fieldName}
+								className={classes.editTextField}
+								variant="outlined"
+								size="small"
+								autoComplete="nope"
+								fullWidth
+								label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
+								multiline={false} // For date fields, multiline should be false
+								type="date" // Use date type for date picker
+								value={editContent[fieldName] === null ? '' : editContent[fieldName]}
+								onChange={e => {
+									e.persist();
+									setEditContent(editContent => ({
+										...editContent,
+										[fieldName]: e.target.value, // Ensure value is in YYYY-MM-DD format
+									}));
+								}}
+								onKeyDown={event => keyDownHandler(event, [fieldName])}
+								onBlur={() => onBlurHandler([fieldName])}
+							/>
+						</>
 					) : fieldName === 'ownerType' ? (
 						<EntityType
 							className={classes.maxWidth}
