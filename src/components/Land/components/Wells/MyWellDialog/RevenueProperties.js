@@ -23,9 +23,9 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 //Components
-import { statusData } from 'components/Table/Revenue/RevenuePropertiesTable';
-
 import { UPSERT_WELL_DESCRIPTOR } from 'graphQL/useMutationWellDescriptor';
+
+import { statusData } from 'utils/data';
 
 import SearchField from './SearchField';
 
@@ -230,7 +230,7 @@ const ReveueProperties = ({ platformWell, properties, propertyDescriptor }) => {
 											setSearchState(false);
 										}, 300)
 									}
-									onChange={evt => {}}
+									onChange={() => {}}
 								/>
 							</div>
 						</Grid>

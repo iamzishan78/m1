@@ -1,5 +1,5 @@
 import vf_number from 'components/Shared/valueformatters/vf_number';
-import { statusData } from 'components/Table/Revenue/RevenuePropertiesTable';
+import { statusData } from 'utils/data';
 
 const AcerageSummaryHeadCells = [
 	{
