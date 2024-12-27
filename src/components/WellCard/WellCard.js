@@ -1,4 +1,5 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useEffect, useContext, useState } from 'react';
+
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
@@ -7,17 +8,24 @@ import CardContent from '@material-ui/core/CardContent';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Link from '@material-ui/core/Link';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import React, { useEffect, useContext, useState } from 'react';
-import { AppContext } from '../../AppContext';
-import { WellCardContext } from './WellCardContext';
-import { ExpandableCardContext } from '../ExpandableCard/ExpandableCardContext';
-
-//material-ui components
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
+import Typography from '@material-ui/core/Typography';
+
+import { useLazyQuery } from '@apollo/client';
+import moment from 'moment';
+
+import { GET_PARCELS_FILES_COUNT } from 'graphQL/useQueryGetParcelFiles';
+
+import { popupController } from 'hookstate/popupStateController';
+
+import { WellCardContext } from './WellCardContext';
+import { AppContext } from '../../AppContext';
+import { ExpandableCardContext } from '../ExpandableCard/ExpandableCardContext';
+
+//material-ui components
 
 //custom components
 import OwnershipIcon from './components/svgIcons/OwnershipIcon';
@@ -30,15 +38,9 @@ import convert_date from '../Shared/valueformatters/convert_date.js';
 import formatBOE from '../Shared/valueformatters/format_boe.js';
 import DescriptionIcon from '../WellCard/components/svgIcons/DescriptionIcon';
 
-import moment from 'moment';
-
 // queries
 
-import { GET_PARCELS_FILES_COUNT } from 'graphQL/useQueryGetParcelFiles';
-
 // value formatters
-
-import { popupController } from 'hookstate/popupStateController';
 
 const useStyles = makeStyles(theme => ({
 	card: {

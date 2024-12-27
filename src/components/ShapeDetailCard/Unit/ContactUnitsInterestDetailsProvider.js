@@ -1,6 +1,7 @@
-import { useLazyQuery } from '@apollo/client';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+
+import { useLazyQuery } from '@apollo/client';
 
 import { ContactDetailsContextProvider } from 'components/ContactDetailCard/ContactDetailsContext';
 import { NavigationContext } from 'components/Navigation/NavigationContext';

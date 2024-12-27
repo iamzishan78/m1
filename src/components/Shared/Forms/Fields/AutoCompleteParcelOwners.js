@@ -1,10 +1,12 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useEffect, useState, useMemo } from 'react';
+
 import { Typography, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery } from '@apollo/client';
 import pick from 'lodash/pick';
-import React, { useEffect, useState, useMemo } from 'react';
 
 import { PARCELOWNERSQUERY } from 'graphQL/useQueryParcelOwners.js';
 

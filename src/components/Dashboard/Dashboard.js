@@ -1,6 +1,7 @@
+import React from 'react';
+
 import { Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
 
 import InitializeProfile from 'components/Profile/InitializeProfileContext';
 import { ProfileContextProvider } from 'components/Profile/ProfileContext';

@@ -1,6 +1,8 @@
-import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
-import { isEmpty, pickBy } from 'lodash';
 import Avatar from 'react-avatar';
+
+import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
+
+import { isEmpty, pickBy } from 'lodash';
 
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import Loaders from 'components/Loaders';
@@ -8,11 +10,11 @@ import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActionMenu';
 import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import ContactToolbar from 'components/MRTTable/TablesOverride/ContactTable/ContactToolbar';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import Contact from 'components/Shared/svgIcons/contact';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact.js';
 

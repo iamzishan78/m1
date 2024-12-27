@@ -1,11 +1,13 @@
-import { useLazyQuery } from '@apollo/client';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { makeStyles } from '@material-ui/core/styles';
-import { uniqueId } from 'lodash';
-import moment from 'moment';
 import React, { useState, useEffect, useContext } from 'react';
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
 import { useHistory } from 'react-router-dom';
+
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { useLazyQuery } from '@apollo/client';
+import { uniqueId } from 'lodash';
+import moment from 'moment';
 
 import MRTTable from 'components/MRTTable';
 

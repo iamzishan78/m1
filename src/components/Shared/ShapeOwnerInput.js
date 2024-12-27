@@ -1,7 +1,8 @@
-import { useMutation } from '@apollo/client';
-import { set } from 'lodash';
 import React, { useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+
+import { useMutation } from '@apollo/client';
+import { set } from 'lodash';
 
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 

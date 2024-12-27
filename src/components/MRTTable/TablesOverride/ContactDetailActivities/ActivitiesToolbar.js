@@ -1,7 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import React, { memo, useContext, useEffect } from 'react';
+
 import { useLazyQuery } from '@apollo/client';
 import { useHookstate } from '@hookstate/core';
-import React, { memo, useContext, useEffect } from 'react';
 
 import ActivitiesSlideout from 'components/Activities/components/ActivitiesSlideout';
 

@@ -1,7 +1,8 @@
-import { useLazyQuery } from '@apollo/client';
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+
+import { useLazyQuery } from '@apollo/client';
 
 import { GETPIPELINES } from 'graphQL/useQueryPipelines';
 

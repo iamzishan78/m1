@@ -1,4 +1,8 @@
-import { useMutation, useLazyQuery } from '@apollo/client';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
+import { useParams, useHistory } from 'react-router-dom';
+
 import {
 	Typography,
 	Button,
@@ -16,11 +20,9 @@ import {
 } from '@material-ui/core';
 import { InfoOutlined as InfoOutlinedIcon, MoreHoriz as MoreHorizIcon, Delete as DeleteIcon } from '@material-ui/icons';
 import { withStyles } from '@material-ui/styles';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
 import { debounce, get } from 'lodash';
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
-import { useParams, useHistory } from 'react-router-dom';
 import { isEmpty } from 'underscore';
 
 // Components

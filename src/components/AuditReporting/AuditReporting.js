@@ -1,7 +1,9 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useEffect, useState, useContext } from 'react';
+
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useEffect, useState, useContext } from 'react';
+
+import { useLazyQuery } from '@apollo/client';
 
 import ActivitiesDashboardFilter from 'components/Activities/components/ActivitiesDashboardFilter';
 import ActivityAnalytics from 'components/Activities/components/ActivityAnalytics';
@@ -15,7 +17,7 @@ import { getRangeFilters, getDateFilters } from 'utils/helper';
 
 import { AppContext } from 'AppContext';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		marginTop: '90px',
 	},
@@ -93,7 +95,10 @@ const ActivitiesDashboard = () => {
 	const searchFields = ['name', '_all'];
 	const tableKey = 'AuditReportingTable';
 	const [stateApp] = useContext(AppContext);
-	const auditReportingTableState = tableController(tableKey).useState(['filters', 'data', 'globalFilter']).stateValues;
+	const { auditReportingTableState } = tableController(tableKey).useState(
+		['filters', 'data', 'globalFilter', 'searchFields'],
+		'auditReportingTableState'
+	);
 	const [filterToggle, setFilterToggle] = useState(false);
 	const [appliedFilters, setAppliedFilters] = useState({
 		toDate: null,
@@ -151,6 +156,8 @@ const ActivitiesDashboard = () => {
 					tableFilters={[...auditReportingTableState.filters]}
 					appliedFilters={appliedFilters}
 					setAppliedFilters={setAppliedFilters}
+					searchFields={auditReportingTableState.searchFields}
+					globalFilter={auditReportingTableState.globalFilter}
 				/>
 			}
 			<Box sx={{ padding: '1em', marginLeft: '1em' }}>

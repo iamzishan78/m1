@@ -1,11 +1,13 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useSelector } from 'react-redux';
+
 import { Grid, Divider, Tab, Tabs, TextField, Box } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles, withStyles } from '@material-ui/styles';
+
+import { useLazyQuery } from '@apollo/client';
 import sortBy from 'lodash/sortBy';
 import moment from 'moment';
-import React, { useEffect, useState, useCallback } from 'react';
-import { useSelector } from 'react-redux';
 
 import DetailTabsSection from 'components/Analytics/components/Revenue/DetailTabsSection';
 import MRTTable from 'components/MRTTable';
@@ -23,7 +25,6 @@ import { tableController } from 'hookstate/tableController';
 
 import AcquisitionIdDropdown from './AcquisitionIdDropdown';
 import AnalyticsCards from './Analytics';
-import CheckDetailsSection from './CheckDetailsSection';
 import PurchasersDropdown from './PurchasersDropdown';
 import SalesVolumeComparisonSection from './SalesVolumeComparisonSection';
 
@@ -47,14 +48,6 @@ const useStyles = makeStyles(theme => ({
 	divider: {
 		height: '10px',
 		backgroundColor: '#f3f3f3',
-	},
-
-	sectionCard: {
-		'& div': {
-			'&>.MuiPaper-root': {
-				'&>:nth-child(3)': { minHeight: 'calc(100vh - 265px) !important', maxHeight: '35vh' },
-			},
-		},
 	},
 
 	revenueTableInfContainer: {
@@ -453,8 +446,8 @@ export default function RevenueAnalytics(props) {
 			)}
 
 			{tabs[tab] === 'Check Details' && (
-				<div className={`${classes.sectionCard}`}>
-					<CheckDetailsSection header="Check Details" loadMore={loadMore} />
+				<div>
+					<MRTTable name={'RevenueCheckDetailTable'} />
 				</div>
 			)}
 

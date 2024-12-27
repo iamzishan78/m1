@@ -1,8 +1,9 @@
-import { MaterialReactTable } from 'material-react-table';
 import React, { memo } from 'react';
 
 // Importing React and memo for component optimization by memoizing the Table component.
 import { ErrorBoundary } from 'react-error-boundary';
+
+import { MaterialReactTable } from 'material-react-table';
 
 import AllDialogs from 'components/MRTTable/Common/Dialog';
 import useTableESSimple from 'components/MRTTable/Hooks/useTableESSimple';

@@ -12,11 +12,12 @@ import ProdCard from 'components/Dashboard/components/ProdCard';
 import RigsCard from 'components/Dashboard/components/RigsCard';
 import AdvancedSearch from 'components/Land/components/AdvancedSearch';
 import QuickActionPanel from 'components/Land/components/QuickActionPanel';
-
 import { RevenuePropertyDetails } from 'components/Revenue/components';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+
 import { setActiveModule, toggleQuickActionsPanel } from 'store/actions/commonActions';
+
 import { analyticsManagementRoutes } from 'utils/data';
 
 import { AppContext } from 'AppContext';

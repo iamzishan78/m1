@@ -1,8 +1,10 @@
-import { useLazyQuery } from '@apollo/client';
-import TextField from '@material-ui/core/TextField';
-import { upperFirst } from 'lodash';
 import React, { useEffect, useCallback, useState, useMemo } from 'react';
 import { Controller } from 'react-hook-form';
+
+import TextField from '@material-ui/core/TextField';
+
+import { useLazyQuery } from '@apollo/client';
+import { upperFirst } from 'lodash';
 
 import { AutoCompleteLandgrid } from 'components/Shared/Forms/Fields/AutoCompleteLandgrid';
 import AutoCompleteShapeLayer from 'components/Shared/Forms/Fields/AutoCompleteShapeLayer';

@@ -1,7 +1,9 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useEffect, useRef, useState } from 'react';
+
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useEffect, useRef, useState } from 'react';
+
+import { useLazyQuery } from '@apollo/client';
 
 import { copy } from 'components/Shared/functions';
 

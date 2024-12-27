@@ -1,8 +1,10 @@
+import React from 'react';
+
 import { Grid, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/styles';
+
 import _ from 'lodash';
-import React from 'react';
 
 const useStyles = makeStyles(theme => ({
 	actionBar: {

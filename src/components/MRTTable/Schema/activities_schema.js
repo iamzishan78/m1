@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import CheckIcon from '@material-ui/icons/Check';
 
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
@@ -68,8 +71,8 @@ const ActivitiesMeta = {
 			id: 'type',
 			header: 'Type',
 			Cell: ({ row }) => {
-				const value = row?.original?.type;
-				return <>{activityType[value] || row?.original?.type}</>;
+				const value = row?.original?.type || null;
+				return activityType[value] || value;
 			},
 		},
 		{
@@ -81,8 +84,8 @@ const ActivitiesMeta = {
 			simple: true,
 			type: 'date',
 			isSearchField: false,
-			Cell: ({ renderedCellValue, row }) => {
-				return <>{formatDate(row?.original?.dateTime)}</>;
+			Cell: ({ row }) => {
+				return formatDate(row?.original?.dateTime);
 			},
 		},
 		{
@@ -94,8 +97,8 @@ const ActivitiesMeta = {
 			simple: true,
 			type: 'date',
 			isSearchField: false,
-			Cell: ({ renderedCellValue, row }) => {
-				return <>{formatDate(row?.original?.endDateTime)}</>;
+			Cell: ({ row }) => {
+				return formatDate(row?.original?.endDateTime);
 			},
 		},
 		{

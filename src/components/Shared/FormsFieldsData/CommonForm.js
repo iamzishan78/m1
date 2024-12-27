@@ -1,6 +1,7 @@
-import Grid from '@mui/material/Grid';
 import React from 'react';
 import { Controller } from 'react-hook-form';
+
+import Grid from '@mui/material/Grid';
 
 import AssociatedDealField from 'components/ContactDetailCard/components/FieldContent/AssociatedDealField';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';

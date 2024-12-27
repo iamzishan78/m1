@@ -1,6 +1,8 @@
-import { useMutation } from '@apollo/client';
-import AddLayerIcon from '@material-ui/icons/Queue';
 import React, { useState, useEffect, useContext } from 'react';
+
+import AddLayerIcon from '@material-ui/icons/Queue';
+
+import { useMutation } from '@apollo/client';
 
 import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
 

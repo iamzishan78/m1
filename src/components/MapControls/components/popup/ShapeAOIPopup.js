@@ -1,7 +1,9 @@
-import { useMutation } from '@apollo/client';
+import React, { useState } from 'react';
+
 import { makeStyles } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
-import React, { useState } from 'react';
+
+import { useMutation } from '@apollo/client';
 
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 

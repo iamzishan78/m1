@@ -1,9 +1,11 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useEffect } from 'react';
+
 import { IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import RoomIcon from '@material-ui/icons/Room';
-import React, { useEffect } from 'react';
+
+import { useLazyQuery } from '@apollo/client';
 
 import { findBoundsMap } from 'components/MapControls/commonHelper';
 

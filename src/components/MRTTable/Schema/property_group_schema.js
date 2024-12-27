@@ -1,7 +1,8 @@
 // Importing necessary dependencies and components
-import { ErrorOutline } from '@material-ui/icons';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+
+import { ErrorOutline } from '@material-ui/icons';
 
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';

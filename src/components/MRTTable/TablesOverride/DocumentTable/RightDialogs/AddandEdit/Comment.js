@@ -1,4 +1,8 @@
-import { useMutation, useLazyQuery } from '@apollo/client';
+import React, { useState, useEffect, Fragment, useRef, useCallback } from 'react';
+import Avatar from 'react-avatar';
+import { useDispatch } from 'react-redux';
+import ReactTimeAgo from 'react-time-ago';
+
 import { CircularProgress, Menu, MenuItem, Tooltip } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
@@ -9,19 +13,16 @@ import {
 	ExpandMore as ExpandMoreIcon,
 } from '@material-ui/icons';
 
-import CommentField from 'components/Shared/components/Fields/CommentField';
-
-import ReactTimeAgo from 'react-time-ago';
+import { useMutation, useLazyQuery } from '@apollo/client';
+import DOMPurify from 'dompurify';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 import ru from 'javascript-time-ago/locale/ru';
-import moment from 'moment';
-import DOMPurify from 'dompurify';
 import { get } from 'lodash';
-import React, { useState, useEffect, Fragment, useRef, useCallback } from 'react';
-import Avatar from 'react-avatar';
+import moment from 'moment';
 
-import { useDispatch } from 'react-redux';
+import CommentField from 'components/Shared/components/Fields/CommentField';
+
 import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
 import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
 import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';

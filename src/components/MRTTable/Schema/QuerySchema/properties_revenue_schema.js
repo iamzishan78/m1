@@ -1,5 +1,6 @@
-import { Grid } from '@material-ui/core';
 import { Sparklines, SparklinesLine } from 'react-sparklines';
+
+import { Grid } from '@material-ui/core';
 
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';

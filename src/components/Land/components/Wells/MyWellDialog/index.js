@@ -1,8 +1,8 @@
-import { IconButton } from '@material-ui/core';
 // import DeleteIcon from "@material-ui/icons/Delete";
-import { useApolloClient } from '@apollo/client';
-import DeleteIcon from '@material-ui/icons/Delete';
-import { useMutation } from '@apollo/client';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useParams, useHistory, useLocation } from 'react-router-dom';
+
+import { IconButton } from '@material-ui/core';
 import {
 	Menu,
 	MenuItem,
@@ -15,11 +15,13 @@ import {
 } from '@material-ui/core';
 import Drawer from '@material-ui/core/Drawer';
 import { makeStyles } from '@material-ui/core/styles';
+import DeleteIcon from '@material-ui/icons/Delete';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+
+import { useMutation } from '@apollo/client';
+import { useApolloClient } from '@apollo/client';
 import clsx from 'clsx';
 import get from 'lodash/get';
-import React, { useState, useEffect, useMemo } from 'react';
-import { useParams, useHistory, useLocation } from 'react-router-dom';
 
 // Components
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';

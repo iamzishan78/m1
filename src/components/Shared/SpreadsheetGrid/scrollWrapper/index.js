@@ -1,7 +1,9 @@
+import React from 'react';
+
 import { Table, TableHead, TableRow, TableCell, TableBody, TableSortLabel } from '@material-ui/core';
+
 import slice from 'lodash/slice';
 import PropTypes from 'prop-types';
-import React from 'react';
 
 import Grid from '../grid';
 import tablePropTypes from './../kit/tablePropTypes';

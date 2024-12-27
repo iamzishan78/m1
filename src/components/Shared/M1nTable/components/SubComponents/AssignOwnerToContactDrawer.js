@@ -1,11 +1,10 @@
-import { useMutation, useQuery } from '@apollo/client';
+import React, { useState, useEffect } from 'react';
+
 import { Button, Grid, Box, CircularProgress, InputAdornment, IconButton } from '@material-ui/core';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import { makeStyles } from '@material-ui/core/styles';
-
-import Loader from 'components/Loaders';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import CloseSharp from '@material-ui/icons/CloseSharp';
@@ -13,30 +12,35 @@ import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import SearchIcon from '@material-ui/icons/Search';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
-import { UPDATE_PARCEL_OWNERS } from 'graphQL/useMutationUpdateParcelOwners';
-import { UPDATE_SHAPES } from 'graphQL/useMutationUpdateShapes';
-import EntityType from 'components/ContactDetailCard/components/FieldContent/EntityType';
-import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
-import { resetESTableToggle } from 'hookstate';
-import { Modals } from 'styles/Modal';
-import { tableGlobalController } from 'hookstate/tableController';
-import { globalStateController } from 'hookstate/globalStateController';
-import RelatedContact from 'components/MRTTable/Common/Dialog/BulkUpdate/RelatedContact';
-import { ADD_RELATED_CONTACTS } from 'graphQL/useMutationRelatedContact';
-import { copy } from 'components/Shared/functions';
+import { useMutation, useQuery } from '@apollo/client';
 import set from 'lodash/set';
-import React, { useState, useEffect } from 'react';
+
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import EntityType from 'components/ContactDetailCard/components/FieldContent/EntityType';
 import { timeZoneOptions } from 'components/ContactDetailCard/components/FieldContent/timeZoneList';
+import Loader from 'components/Loaders';
+import RelatedContact from 'components/MRTTable/Common/Dialog/BulkUpdate/RelatedContact';
 import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
 import FieldBulkAutoComplete from 'components/Shared/FieldBulkAutoComplete';
 import { CurrencyFormatCustomWithoutPrefix } from 'components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix';
+import { copy } from 'components/Shared/functions';
 
 import { ASSIGN_OWNER_TO_CONTACT } from 'graphQL/useMutationAssignOwnerToContact';
 import { BULKUPSERTTAG } from 'graphQL/useMutationBulkUpsertTagOnContacts';
 import { UPSERT_ENTITY_CAMPAIGNS } from 'graphQL/useMutationCampaign';
+import { ADD_RELATED_CONTACTS } from 'graphQL/useMutationRelatedContact';
 import { UPDATEBULKCONTACT } from 'graphQL/useMutationUpdateBulkContact';
+import { UPDATE_PARCEL_OWNERS } from 'graphQL/useMutationUpdateParcelOwners';
+import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
+import { UPDATE_SHAPES } from 'graphQL/useMutationUpdateShapes';
 import { PUBLICTAGSQUERY } from 'graphQL/useQueryPublicTags';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { Modals } from 'styles/Modal';
+
+import { resetESTableToggle } from 'hookstate';
 
 import RightDialog from '../../../../ContactDetailCard/components/RightDialog';
 

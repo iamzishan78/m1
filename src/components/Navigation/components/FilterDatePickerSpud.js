@@ -1,8 +1,9 @@
+import React, { useContext, useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+
 import { IconButton, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Clear } from '@material-ui/icons';
-import React, { useContext, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
 
 import { navController } from 'hookstate/navStateController';
 

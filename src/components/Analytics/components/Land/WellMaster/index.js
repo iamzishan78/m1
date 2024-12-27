@@ -1,59 +1,27 @@
-import { makeStyles } from '@material-ui/core';
-import React, { useState, useEffect, useContext } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useContext } from 'react';
 
 import MRTTable from 'components/MRTTable';
-import { setStateIfDeepEqual } from 'components/Shared/functions';
 import Wells from 'components/Shared/svgIcons/well';
 
 import { tableController } from 'hookstate/tableController';
 
 import { AppContext } from 'AppContext';
 
-const useStyles = makeStyles(theme => ({
-	formControl: {
-		width: '100%',
-	},
-	select: {
-		height: 40,
-	},
-	actionsGrid: {
-		width: '100%',
-	},
-	actionBar: {
-		backgroundColor: '#f7f7f7',
-		width: '100%',
-		minHeight: '65px',
-		marginBottom: 30,
-
-		'& .MuiSelect-select:focus, & .MuiOutlinedInput-root': {
-			backgroundColor: '#ffff',
-		},
-		'& .MuiButtonGroup-groupedContainedSecondary:not(:last-child)': {
-			borderColor: '#ffff',
-		},
-	},
-}));
+const externalFilters = {
+	internalCompany: 'All',
+	wellClassification: 'All',
+	payStatus: 'All',
+	reportingGroup: 'All',
+};
 
 export default function ExhibitATabPanel() {
-	const classes = useStyles();
 	const [stateApp] = useContext(AppContext);
-	const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 144px)' }; // set table height for well master
-	const propertiesReportGroup = useSelector(({ Revenue }) => Revenue.propertiesReportGroup);
-
-	const [externalFilters, setExtFilters] = useState({
-		internalCompany: 'All',
-		wellClassification: 'All',
-		payStatus: 'All',
-		reportingGroup: 'All',
-	});
-	const [esFilters, ESFilters] = useState([]);
 
 	useEffect(() => {
 		const newESFilters = [];
 
 		// Add available values to filters
-		['internalCompany', 'wellClassification', 'payStatus', 'reportingGroup'].map(field => {
+		['internalCompany', 'wellClassification', 'payStatus', 'reportingGroup'].forEach(field => {
 			if (externalFilters[field] !== 'All') {
 				newESFilters.push({
 					field: `${field}.keyword`,
@@ -61,9 +29,7 @@ export default function ExhibitATabPanel() {
 				});
 			}
 		});
-
-		ESFilters(newESFilters);
-	}, [externalFilters]);
+	}, []);
 
 	useEffect(() => {
 		tableController('MyWellsTable')?.setGlobalFilter(

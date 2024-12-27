@@ -1,11 +1,13 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useState, useEffect } from 'react';
+
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import ClearIcon from '@material-ui/icons/Clear';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useState, useEffect } from 'react';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 
 import { UPSERT_CAMPAIGN_DESCRIPTORS } from 'graphQL/useMutationCampaign';
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';

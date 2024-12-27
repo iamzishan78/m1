@@ -1,8 +1,10 @@
-import { useMutation } from '@apollo/client';
-import { Grid, Typography } from '@material-ui/core';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+
+import { Grid, Typography } from '@material-ui/core';
+
+import { useMutation } from '@apollo/client';
 
 import RevenueSearch from 'components/Navigation/components/RevenueSearch';
 import { SIDE_PANEL_MENU_ITEMS_LIST } from 'components/Revenue/Revenue';

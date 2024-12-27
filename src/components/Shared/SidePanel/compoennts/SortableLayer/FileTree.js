@@ -1,9 +1,11 @@
-import { useMutation } from '@apollo/client';
-import { Box, Paper } from '@material-ui/core';
-import update from 'immutability-helper';
 import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { Flipper } from 'react-flip-toolkit';
 import Sortly, { findDescendants, findParent } from 'react-sortly';
+
+import { Box, Paper } from '@material-ui/core';
+
+import { useMutation } from '@apollo/client';
+import update from 'immutability-helper';
 
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';

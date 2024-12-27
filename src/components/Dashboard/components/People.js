@@ -1,6 +1,8 @@
-import { makeStyles } from '@material-ui/styles';
-import { CardHeader, Typography } from '@mui/material';
 import React from 'react';
+
+import { makeStyles } from '@material-ui/styles';
+
+import { CardHeader, Typography } from '@mui/material';
 
 const useStyles = makeStyles(theme => ({
 	headerTitle: {

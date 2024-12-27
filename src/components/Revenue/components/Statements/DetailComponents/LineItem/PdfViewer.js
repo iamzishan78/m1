@@ -1,12 +1,14 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useState, useEffect, useContext } from 'react';
+import { Document, Page } from 'react-pdf';
+import { useSelector } from 'react-redux';
+
 import { Grid, IconButton, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Close as CloseIcon, GetApp as GetAppIcon } from '@material-ui/icons';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
-import React, { useState, useEffect, useContext } from 'react';
-import { Document, Page } from 'react-pdf';
-import { useSelector } from 'react-redux';
+
+import { useLazyQuery } from '@apollo/client';
 import _ from 'underscore';
 
 import { GETRECENTCONTACTFILES } from 'graphQL/useQueryGetContactFiles';

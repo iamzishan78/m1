@@ -1,6 +1,7 @@
-import { ErrorOutline } from '@material-ui/icons';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+
+import { ErrorOutline } from '@material-ui/icons';
 
 import { formatDate } from 'components/Shared/functions';
 import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink.js';

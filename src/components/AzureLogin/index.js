@@ -1,25 +1,30 @@
-import * as msal from '@azure/msal-browser';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { makeStyles } from '@material-ui/core/styles';
-import queryString from 'query-string';
 import React, { useState, useContext, useEffect, useLayoutEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-import BypassSignInCard from './BypassSignInCard';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
+
+import * as msal from '@azure/msal-browser';
+import queryString from 'query-string';
+
 import { SIMPLE_BYPASS_LOGIN_MUTATION } from 'graphQL/useMutationBypassLogin';
 import { GET_LOGGED_IN_USER } from 'graphQL/useMutationLoggedInUser';
 import { USER_MAP_SETTINGS } from 'graphQL/useQueryUserMapSettings';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { mapStateController } from 'hookstate/mapStateController';
+
 import { setUserAction } from 'store/actions/appActions';
 import { currentUserGridViewSettingsAction } from 'store/actions/sessionActions';
 
 import { simpleAuthBypass } from 'utils/data';
 import { apolloClientEndpointDev, isDev } from 'utils/helper';
 import { saveUserSession } from 'utils/user';
+
 import Api from 'api';
+
 import { tenantsCredentials, b2cPolicies, msalConfig, loginRequest, authGraphQLRequest } from './AADAuthConfig';
+import BypassSignInCard from './BypassSignInCard';
 import HexocetCanvas from './hexoCatCanvas';
 import SignInCard from './SignInCard';
 import { AppContext, setApolloHeaders } from '../../AppContext';

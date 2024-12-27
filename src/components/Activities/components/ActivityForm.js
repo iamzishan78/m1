@@ -1,23 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { useHookstate } from '@hookstate/core';
+import React, { useContext, useState, useEffect, useRef } from 'react';
+
 import { FormControl, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-
-import { AppContext } from '../../../AppContext';
-import AutocompEntityNamesVirtualizeList from '../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
-import { setStateIfDeepEqual } from '../../Shared/functions';
-import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
-import { ADDCONTACT } from '../../../graphQL/useMutationAddContact';
-import { OPENDEALS } from '../../../graphQL/useQueryOpenDeals';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { useHookstate } from '@hookstate/core';
 import get from 'lodash/get';
 import moment from 'moment';
-import React, { useContext, useState, useEffect, useRef } from 'react';
+
 import AutoCompleteAddNewField from 'components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField';
 import { outcomeOptions } from 'components/ContactDetailCard/components/FieldContent/helper';
-
 import DateField from 'components/Shared/Slideout/FieldComponents/DateField';
 import DescriptionField from 'components/Shared/Slideout/FieldComponents/DescriptionField';
 import OwnerField from 'components/Shared/Slideout/FieldComponents/OwnerField';
@@ -31,8 +26,14 @@ import { slidoutStateController } from 'hookstate/slidoutStateController';
 import { tableGlobalController } from 'hookstate/tableController';
 
 import { activityFormState } from './activityFormStateController';
+import { AppContext } from '../../../AppContext';
 import { ADDACTIVITY, DELETEACTIVITY, UPDATEACTIVITY } from '../../../graphQL/useMutationActivity';
+import { ADDCONTACT } from '../../../graphQL/useMutationAddContact';
 import { GETMONGOUSERS } from '../../../graphQL/useQueryGetUsers';
+import { OPENDEALS } from '../../../graphQL/useQueryOpenDeals';
+import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
+import { setStateIfDeepEqual } from '../../Shared/functions';
+import AutocompEntityNamesVirtualizeList from '../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
 
 const useStyles = makeStyles(theme => ({
 	dialogExpCard: {

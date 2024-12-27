@@ -1,3 +1,6 @@
+import React, { useCallback, useContext, useEffect } from 'react';
+import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
+
 import {
 	Typography,
 	Accordion,
@@ -11,10 +14,8 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { ExpandMore as ExpandMoreIcon, Close as ClearButton } from '@material-ui/icons';
-import React, { useCallback, useContext, useEffect } from 'react';
 
 // Contexts
-import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 
 import { NavigationContext } from 'components/Navigation/NavigationContext';
 //Components

@@ -1,38 +1,33 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useContext, useState, useEffect, useRef } from 'react';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import { useHistory } from 'react-router-dom';
+
 import { Grid } from '@material-ui/core';
 import { CircularProgress, Dialog, DialogTitle } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import TaskIcon from '@material-ui/icons/WatchLater';
-import EmailIcon from '@material-ui/icons/Email';
-import ContactMailIcon from '@material-ui/icons/ContactMail';
-import TextMsgIcon from '@material-ui/icons/Textsms';
 
-import DocumentIcon from '@material-ui/icons/DescriptionOutlined';
-import PersonIcon from '@material-ui/icons/Person';
-import RecentActorsIcon from '@material-ui/icons/RecentActors';
-import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 // import Checkbox from "@material-ui/core/Checkbox";
 // import FormControlLabel from "@material-ui/core/FormControlLabel";
-import AutocompEntityNamesVirtualizeList from '../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
-import { setStateIfDeepEqual } from '../../Shared/functions';
-import { Calendar, momentLocalizer } from 'react-big-calendar';
-import ActivitiesEvent from './ActivitiesEvent';
-import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
-import { ADDCONTACT } from '../../../graphQL/useMutationAddContact';
-import { OPENDEALS } from '../../../graphQL/useQueryOpenDeals';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { GETMONGOUSERS } from '../../../graphQL/useQueryGetUsers';
 import Typography from '@material-ui/core/Typography';
 import CallIcon from '@material-ui/icons/Call';
+import ContactMailIcon from '@material-ui/icons/ContactMail';
+import DocumentIcon from '@material-ui/icons/DescriptionOutlined';
+import EmailIcon from '@material-ui/icons/Email';
 import DeadlineIcon from '@material-ui/icons/Flag';
 import MeetingIcon from '@material-ui/icons/Group';
+import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
+import PersonIcon from '@material-ui/icons/Person';
+import RecentActorsIcon from '@material-ui/icons/RecentActors';
+import TextMsgIcon from '@material-ui/icons/Textsms';
+import TaskIcon from '@material-ui/icons/WatchLater';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import clsx from 'clsx';
 import get from 'lodash/get';
 import moment from 'moment';
-import React, { useContext, useState, useEffect, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
 
 import AutoCompleteAddNewField from 'components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField';
 import { outcomeOptions } from 'components/ContactDetailCard/components/FieldContent/helper';
@@ -40,9 +35,16 @@ import { workspaceTenantName } from 'components/Shared/functions';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
+import ActivitiesEvent from './ActivitiesEvent';
 import { AppContext } from '../../../AppContext';
 import { ADDACTIVITY, DELETEACTIVITY, UPDATEACTIVITY } from '../../../graphQL/useMutationActivity';
+import { ADDCONTACT } from '../../../graphQL/useMutationAddContact';
+import { GETMONGOUSERS } from '../../../graphQL/useQueryGetUsers';
+import { OPENDEALS } from '../../../graphQL/useQueryOpenDeals';
+import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
 import ExpandableCardProvider from '../../ExpandableCard/ExpandableCardProvider';
+import { setStateIfDeepEqual } from '../../Shared/functions';
+import AutocompEntityNamesVirtualizeList from '../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
 
 const useStyles = makeStyles(theme => ({
 	dialogExpCard: {

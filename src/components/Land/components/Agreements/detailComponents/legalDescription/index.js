@@ -1,8 +1,10 @@
+import React, { useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
-import React, { useEffect, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+
 import _ from 'underscore';
 
 import RelatedTractsTable from 'components/Common/RelatedTables/Tracts';
@@ -63,7 +65,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-export default function LagalDescription({ agreementDetails, uniObj, updateAgreement }) {
+export default function LagalDescription({ agreementDetails, agreementId, uniObj, updateAgreement }) {
 	const classes = useStyles();
 	const customClasses = customStyles();
 	const { reset } = useForm();
@@ -79,17 +81,17 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
 		() => ({
 			tableHeading: 'Related Tracts',
 			maxTableHeight: 'calc(50vh - 100px)',
-			defaultFilters: [{ field: 'shape._id', value: uniObj?._id }],
+			defaultFilters: [{ field: 'shape._id', value: agreementId }],
 			customProps: { customLayer: agreementDetails?.customLayer, shapeType: 'Agreement' },
 			deletedKeys: {
 				mainRecord: { key: '_id' },
-				parentRecord: { value: uniObj?._id },
+				parentRecord: { value: agreementId },
 			},
-			customValue: { parentRecord: uniObj?._id },
+			customValue: { parentRecord: agreementId },
 			columnReordering: false,
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[uniObj?._id]
+		[agreementId]
 	);
 
 	return (

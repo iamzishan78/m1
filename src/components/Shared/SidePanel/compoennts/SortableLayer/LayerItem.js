@@ -1,5 +1,9 @@
+import React, { useState } from 'react';
+import { Flipped } from 'react-flip-toolkit';
+import { useSelector } from 'react-redux';
+import { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
+
 import { Box, Grid, ListItemIcon } from '@material-ui/core';
-import LayerControls from './LayerControls';
 import { FormControlLabel } from '@material-ui/core';
 import { Switch } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
@@ -10,16 +14,14 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import { makeStyles } from '@material-ui/styles';
+
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { Badge, IconButton } from '@mui/material';
-import React, { useState } from 'react';
-import { Flipped } from 'react-flip-toolkit';
-import { useSelector } from 'react-redux';
-import { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { mapStateController } from 'hookstate/mapStateController';
 
+import LayerControls from './LayerControls';
 import { getLayerColor } from '../common';
 
 const useStyles = makeStyles(theme => ({

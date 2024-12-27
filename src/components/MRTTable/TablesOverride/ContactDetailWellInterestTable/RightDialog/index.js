@@ -1,8 +1,8 @@
 import React, { memo, useEffect } from 'react';
 
-import AddWellInterestDialog from 'components/ContactDetailCard/components/ContactsWellInterestsParcelInterests/components/AddWellInterestDialog';
-
 import { tableGlobalController } from 'hookstate/tableController';
+
+import AddWellInterestDialog from './AddWellInterestDialog';
 
 function CotactDetailWellInterestTableDialogs() {
 	const { stateValues } = tableGlobalController.useState(['dialog']);

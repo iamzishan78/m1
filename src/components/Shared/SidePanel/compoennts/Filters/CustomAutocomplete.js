@@ -1,9 +1,12 @@
-import { makeStyles } from '@material-ui/core/styles';
-import CloseIcon from '@mui/icons-material/Close';
-import { Autocomplete, TextField, Chip, IconButton } from '@mui/material';
-import moment from 'moment';
 import React from 'react';
 import { useController } from 'react-hook-form';
+
+import { makeStyles } from '@material-ui/core/styles';
+
+import CloseIcon from '@mui/icons-material/Close';
+import { Autocomplete, TextField, Chip, IconButton } from '@mui/material';
+
+import moment from 'moment';
 
 /**
  * CustomAutocomplete component integrates MUI Autocomplete with react-hook-form using useController.

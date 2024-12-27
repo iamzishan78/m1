@@ -1,7 +1,9 @@
-import { useLazyQuery } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+
+import { makeStyles } from '@material-ui/core/styles';
+
+import { useLazyQuery } from '@apollo/client';
 
 import LinkWithIcon from 'components/Shared/LinkWithIcon';
 

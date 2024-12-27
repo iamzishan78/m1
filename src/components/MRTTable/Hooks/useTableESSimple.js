@@ -1,6 +1,8 @@
-import { makeStyles } from '@material-ui/core/styles';
-import _ from 'lodash';
 import { useRef, useState } from 'react';
+
+import { makeStyles } from '@material-ui/core/styles';
+
+import _ from 'lodash';
 
 import useHandleAdditionalQueries from 'components/MRTTable/Hooks/useHandleAdditionalQueries';
 
@@ -302,10 +304,12 @@ const useTableESSimple = tableKey => {
 						onColumnFiltersChange: filtersFunc => {
 							const columnFilters = tableState.filters.get({ noproxy: true });
 
-							const formattedColumnFilters = (columnFilters || []).map(filter => ({
-								...filter,
-								id: filter.field,
-							}));
+							const formattedColumnFilters = (columnFilters || [])
+								.map(filter => ({
+									...filter,
+									id: filter.field,
+								}))
+								.filter(filter => !['empty', 'notEmpty'].includes(filter?.searchType));
 
 							const _newFilters = filtersFunc(formattedColumnFilters);
 

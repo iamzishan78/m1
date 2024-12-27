@@ -1,6 +1,8 @@
-import { useLazyQuery } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
 import React, { useState, useEffect, useContext } from 'react';
+
+import { makeStyles } from '@material-ui/core/styles';
+
+import { useLazyQuery } from '@apollo/client';
 
 import MRTTable from 'components/MRTTable';
 import LastCheckDateFilter from 'components/Revenue/components/Common/LastCheckDateFilter';

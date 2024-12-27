@@ -1,4 +1,5 @@
 import { Box } from '@mui/material';
+
 import { get } from 'lodash';
 
 import { addTrailingZeros, formatDate } from 'components/Shared/functions';
@@ -27,8 +28,8 @@ export const CommonSchema = {
 		showInLast: true,
 	},
 	TAGS: {
-		name: 'tags.tag',
-		accessorKey: 'tags.tag',
+		name: 'tags',
+		accessorKey: 'tags',
 		header: 'Tags',
 		size: 250,
 		isPinned: false,
@@ -47,6 +48,23 @@ export const CommonSchema = {
 			esType: 'collection',
 			actualKey: 'tag',
 		},
+	},
+	IS_TRACKED: {
+		name: 'isTracked',
+		accessorKey: 'isTracked',
+		header: '',
+		size: 120,
+		isPinned: false,
+		hidden: false,
+		filter: true,
+		isSearchField: true,
+		enableSorting: true,
+		type: 'string',
+		enableColumnFilter: false,
+		enableColumnActions: false,
+		enableColumnOrdering: false,
+		enableResizing: false,
+		showInLast: true,
 	},
 	HIDDEN: {
 		header: ' ',
@@ -123,6 +141,18 @@ export const CommonSchema = {
 		isExport: false,
 		enableResizing: false,
 		size: 80,
+	},
+	USER: {
+		name: 'user.name',
+		accessorKey: 'user.name',
+		header: 'User',
+		size: 250,
+		filter: true,
+		isSearchField: false,
+		type: 'string',
+		Cell: ({ row }) => {
+			return <>{row.original?.user?.name}</>;
+		},
 	},
 	CREATED_BY: {
 		name: 'createBy.name',

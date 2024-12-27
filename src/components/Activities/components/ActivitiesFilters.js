@@ -1,12 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useLazyQuery } from '@apollo/client';
+import React, { useEffect, useState, useContext } from 'react';
+import { useSelector } from 'react-redux';
+
 import { Grid, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/styles';
+
+import { useLazyQuery } from '@apollo/client';
 import get from 'lodash/get';
 import moment from 'moment';
-import React, { useEffect, useState, useContext } from 'react';
-import { useSelector } from 'react-redux';
 
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 

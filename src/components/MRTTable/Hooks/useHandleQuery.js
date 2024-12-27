@@ -1,6 +1,7 @@
+import { useCallback, useEffect, useRef } from 'react';
+
 import { useApolloClient } from '@apollo/client';
 import { debounce, set, get, isNumber } from 'lodash';
-import { useCallback, useEffect, useRef } from 'react';
 
 import { mergeArrays } from 'components/Shared/functions';
 

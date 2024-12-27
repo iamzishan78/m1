@@ -1,9 +1,10 @@
+import React, { useContext, useEffect } from 'react';
+
 import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { KeyboardDatePicker } from '@material-ui/pickers';
-import React, { useContext, useEffect } from 'react';
 
 import useQueryCountiesByState from '../../../graphQL/useQueryCountiesByState';
 import stateNamesAb from '../../Navigation/components/Utils/USAStates';

@@ -1,8 +1,9 @@
 // Importing necessary dependencies and components
+import React from 'react';
+
 import { makeStyles } from '@material-ui/core/styles';
 import { Warning as WarningIcon, CheckCircle } from '@material-ui/icons';
 import { LocalAtm as CurrencyIcon } from '@material-ui/icons';
-import React from 'react';
 
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';

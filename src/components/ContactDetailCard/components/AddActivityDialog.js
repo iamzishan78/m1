@@ -1,24 +1,26 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useState, useEffect, useContext } from 'react';
+import { useDispatch } from 'react-redux';
+
 import { Menu, MenuItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import { Dialog, CircularProgress } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
-import Typography from '@material-ui/core/Typography';
-import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
-import Select from '@material-ui/core/Select';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import DeleteIcon from '@material-ui/icons/Delete';
+import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import clsx from 'clsx';
 import moment from 'moment';
-import React, { useState, useEffect, useContext } from 'react';
-import { useDispatch } from 'react-redux';
 
 import { ADDACTIVITY, UPDATEACTIVITY } from 'graphQL/useMutationActivity';
 import { DELETEACTIVITY } from 'graphQL/useMutationActivity';

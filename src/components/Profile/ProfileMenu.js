@@ -1,5 +1,6 @@
-import { useLazyQuery } from '@apollo/client';
-import { useAuth0 } from '@auth0/auth0-react';
+import React, { useState, useContext, useEffect } from 'react';
+import Avatar from 'react-avatar';
+
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
@@ -8,8 +9,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import CheckIcon from '@material-ui/icons/Check';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
-import React, { useState, useContext, useEffect } from 'react';
-import Avatar from 'react-avatar';
+
+import { useLazyQuery } from '@apollo/client';
+import { useAuth0 } from '@auth0/auth0-react';
 
 import { NavigationContext } from 'components/Navigation/NavigationContext';
 

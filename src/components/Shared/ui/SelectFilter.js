@@ -1,5 +1,6 @@
-import { Box, MenuItem, Select } from '@material-ui/core';
 import React, { useState } from 'react';
+
+import { Box, MenuItem, Select } from '@material-ui/core';
 
 const SelectFilter = props => {
 	const { options, initialValue, onValueChange, labelId, id } = props;

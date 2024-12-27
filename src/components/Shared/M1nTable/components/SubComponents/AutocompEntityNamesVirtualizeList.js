@@ -1,15 +1,17 @@
+import React from 'react';
+import { useHistory } from 'react-router-dom';
+import { VariableSizeList } from 'react-window';
+import InfiniteLoader from 'react-window-infinite-loader';
+
 import { IconButton, Typography } from '@material-ui/core';
 import { Grid } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
 import debounce from 'lodash/debounce';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { VariableSizeList } from 'react-window';
-import InfiniteLoader from 'react-window-infinite-loader';
 
 import ContactCardIcon from 'components/Shared/svgIcons/contact_card';
 import ContactCardDisabledIcon from 'components/Shared/svgIcons/contact_card_disabled';

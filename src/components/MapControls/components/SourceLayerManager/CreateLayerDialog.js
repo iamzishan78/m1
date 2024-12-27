@@ -1,4 +1,6 @@
-import { useMutation } from '@apollo/client';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+
 import { Box } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -7,8 +9,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+
+import { useMutation } from '@apollo/client';
 import { v4 as uuid } from 'uuid';
 
 import { CREATE_DATASET_LAYERS } from 'graphQL/useMutationDataset';

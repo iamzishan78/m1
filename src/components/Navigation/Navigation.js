@@ -3,57 +3,58 @@
 //3rd party packages
 
 //@material-ui components
+import React, { useState, useContext, useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import CardHeader from '@material-ui/core/CardHeader';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 
 //icons
-import DesktopWindowsIcon from '@material-ui/icons/DesktopWindows';
-
-import DealSearch from './components/DealSearch';
-import SearchBarWithToggleButton from './components/SearchBarWithToggleButton';
-
-import ContactFormModal from './components/ContactFormModal';
-import { useSelector } from 'react-redux';
 
 import Add from '@material-ui/icons/Add';
+import DesktopWindowsIcon from '@material-ui/icons/DesktopWindows';
 import HeadsetIcon from '@material-ui/icons/Headset';
+
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import React, { useState, useContext, useEffect } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
-
-import ContactBreadcrumbs from './components/ContactBreadcrumbs';
-import SideNavigation from './SideNavigation';
-import ProfileMenu from 'components/Profile/ProfileMenu';
 
 // App Bars
-import LandAppBar from './AppBar/Land';
-import RevenueAppBar from 'components/Navigation/AppBar/Revenue';
 import AdminSettingsAppBar from 'components/Navigation/AppBar/AdminSettings';
+import RevenueAppBar from 'components/Navigation/AppBar/Revenue';
+import ProfileMenu from 'components/Profile/ProfileMenu';
 import { ROUTES } from 'components/Shared/FeatureFlag/common';
+
 import { navController } from 'hookstate/navStateController';
 import { slidoutStateController } from 'hookstate/slidoutStateController';
-import { contactManagementRoutes } from 'utils/data';
-import { AppContext } from 'AppContext';
-import { useStyles } from './Common';
 
+import { contactManagementRoutes } from 'utils/data';
+
+import { AppContext } from 'AppContext';
+
+import LandAppBar from './AppBar/Land';
+import { useStyles } from './Common';
 import ActivityDashboardSearch from './components/ActivityDashboardSearch';
 import ActivitySearch from './components/ActivitySearch';
 import AnalyticsSearch from './components/AnalyticsSearch';
+import ContactBreadcrumbs from './components/ContactBreadcrumbs';
+import ContactFormModal from './components/ContactFormModal';
 import ContactSearch from './components/ContactSearch';
+import DealSearch from './components/DealSearch';
 import DocumentSearch from './components/DocumentSearch';
+import SearchBarWithToggleButton from './components/SearchBarWithToggleButton';
 import SupportCenterModal from './components/SupportCenter';
 import { NavigationContext } from './NavigationContext';
+import SideNavigation from './SideNavigation';
 
 const TabPanel = props => {
 	const { children, value, index, ...other } = props;
@@ -79,8 +80,6 @@ TabPanel.propTypes = {
 };
 
 export default function Navigation(props) {
-	const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
-
 	// contexts
 	const [stateApp, setStateApp] = useContext(AppContext);
 	const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -97,7 +96,6 @@ export default function Navigation(props) {
 	let history = useHistory();
 	let location = useLocation();
 	const classes = useStyles({
-		mapGridCardActivated,
 		user: stateApp.user,
 		// Determine if the component is rendered on the map page based on location pathname and props
 		isMap: location.pathname === '/' || location.pathname.startsWith('/map/') || props.isMap,

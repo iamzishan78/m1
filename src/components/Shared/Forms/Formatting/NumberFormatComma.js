@@ -1,6 +1,7 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import NumberFormat from 'react-number-format';
+
+import PropTypes from 'prop-types';
 
 export function NumberFormatComma(props) {
 	const { inputRef, onChange, name, prefix, ...other } = props;

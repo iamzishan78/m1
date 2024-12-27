@@ -1,6 +1,7 @@
+import React, { useState } from 'react';
+
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
-import React, { useState } from 'react';
 
 import { slidoutState } from 'hookstate/initialStates';
 import { slidoutStateController, useSlideoutState } from 'hookstate/slidoutStateController';

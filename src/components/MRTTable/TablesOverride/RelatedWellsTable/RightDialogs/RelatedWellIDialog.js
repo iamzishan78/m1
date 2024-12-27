@@ -1,4 +1,6 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+
 import { CircularProgress, Dialog, ListItemIcon, ListItemText, Menu, MenuItem } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
@@ -8,10 +10,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import DeleteIcon from '@material-ui/icons/Delete';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import React, { useState, useEffect, useCallback } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import AutoCompleteFieldComponent from 'components/Shared/Forms/Fields/AutoCompleteField';
 import WellSearchApiField from 'components/Shared/Forms/Fields/WellSearchApiField';
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import CloseIcon2 from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
@@ -20,7 +23,6 @@ import { ADD_SHAPE_WELL_INTEREST } from 'graphQL/useMutationAddShapeWellInterest
 import { UPDATE_SHAPE_WELL_INTEREST } from 'graphQL/useMutationUpdateShapeWellInterest';
 
 // contexts
-import AutoCompleteFieldComponent from 'components/Shared/Forms/Fields/AutoCompleteField';
 
 import { WELL_INTEREST_SELECT_OPTIONS } from 'graphQL/useQueryWellInterestSelectOptions';
 

@@ -1,6 +1,7 @@
-import { useApolloClient, useLazyQuery } from '@apollo/client';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+
+import { useApolloClient, useLazyQuery } from '@apollo/client';
 
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 

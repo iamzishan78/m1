@@ -1,10 +1,12 @@
-import { useLazyQuery } from '@apollo/client';
-import { Typography, TextField, Grid, FormControl, Select, MenuItem } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
-import moment from 'moment';
 import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
+
+import { Typography, TextField, Grid, FormControl, Select, MenuItem } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+
+import { useLazyQuery } from '@apollo/client';
+import moment from 'moment';
 
 import AddDialogeUploadZone from 'components/ContactDetailCard/components/AddDialogUploadZone';
 import CommentComponent from 'components/Shared/CommentComponent';

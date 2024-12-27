@@ -1,4 +1,7 @@
-import { useApolloClient } from '@apollo/client';
+import React, { useContext } from 'react';
+import { Controller, useForm, useWatch } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
+
 import { makeStyles } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -6,9 +9,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Drawer from '@material-ui/core/Drawer';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
-import React, { useContext } from 'react';
-import { Controller, useForm, useWatch } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+
+import { useApolloClient } from '@apollo/client';
 
 import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 

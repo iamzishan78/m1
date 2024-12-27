@@ -1,39 +1,40 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
-import ListItemText from '@material-ui/core/ListItemText';
-import Button from '@material-ui/core/Button';
-import { AppContext } from '../../../../AppContext';
-import List from '@material-ui/core/List';
-import LayersIcon from '@material-ui/icons/Layers';
-import Collapse from '@material-ui/core/Collapse';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import BasemapIcon from '@material-ui/icons/Language';
-import FilterAltIcon from 'components/Shared/svgIcons/FilterAltIcon';
-import SecondaryPanel from 'components/Shared/SecondaryPanel';
-import Datasets from 'components/Shared/SidePanel/compoennts/Datasets';
-import LayerFilters from 'components/Shared/SidePanel/compoennts/Filters/LayerFilters';
-import MapPositions from 'components/Shared/SidePanel/compoennts/MapPositions';
-import { showErrorMessage, showSuccessMessage } from 'actions';
-import MapIcon from '@material-ui/icons/Map';
-import { useApolloClient } from '@apollo/client';
-import { Tab, Tabs, Chip, CircularProgress, Backdrop } from '@material-ui/core';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import RootRef from '@material-ui/core/RootRef';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import { get } from 'lodash';
 import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import { useDispatch } from 'react-redux';
 import { TransitionGroup } from 'react-transition-group';
 
+import { Tab, Tabs, Chip, CircularProgress, Backdrop } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Collapse from '@material-ui/core/Collapse';
+import Grid from '@material-ui/core/Grid';
+import List from '@material-ui/core/List';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import RootRef from '@material-ui/core/RootRef';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import BasemapIcon from '@material-ui/icons/Language';
+import LayersIcon from '@material-ui/icons/Layers';
+import MapIcon from '@material-ui/icons/Map';
+
+import { useApolloClient } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { get } from 'lodash';
+
 import { toggleLayersFiltersPanel } from 'actions/MainMap';
+
+import SecondaryPanel from 'components/Shared/SecondaryPanel';
+import Datasets from 'components/Shared/SidePanel/compoennts/Datasets';
+import LayerFilters from 'components/Shared/SidePanel/compoennts/Filters/LayerFilters';
+import MapPositions from 'components/Shared/SidePanel/compoennts/MapPositions';
+import FilterAltIcon from 'components/Shared/svgIcons/FilterAltIcon';
 
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
 
 // Contexts
-import MapViewOptions from './Filters/MapViewOptions';
 import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
@@ -43,8 +44,11 @@ import { navController } from 'hookstate/navStateController';
 // actions
 import { setActiveModule } from 'store/actions/commonActions';
 
+import { showErrorMessage, showSuccessMessage } from 'actions';
+
 import AddGroup from './AddGroup';
 import MapViewComponent from './Filters/MapViewComponent';
+import MapViewOptions from './Filters/MapViewOptions';
 import Layer from './Layer';
 import SortableLayer from './SortableLayer';
 import {
@@ -57,6 +61,7 @@ import {
 	StyledMenuHActionHeader,
 	StyledMenuSecondaryHeaderItem,
 } from './style';
+import { AppContext } from '../../../../AppContext';
 import { deepEqualObjects } from '../../functions';
 
 const layerIcons = [
@@ -81,50 +86,65 @@ const layerIcons = [
 const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle }) => {
 	const { mapStateValues } = mapStateController.useState(['reintializeMap'], 'mapStateValues');
 	return (
-		<>
-			<div style={{ position: 'relative' }}>
-				{mapStateValues.reintializeMap && (
-					<Backdrop style={{ zIndex: 999999, position: 'absolute', width: '100%' }} open={true} invisible={false}>
-						<CircularProgress size={80} disableShrink color="secondary" />{' '}
-					</Backdrop>
-				)}
-				{mapStyles.map(style => (
-					<StyledMenuItem
-						disableRipple
-						key={style.id}
-						role={undefined}
+		<Grid container direction="column" spacing={3}>
+			<Grid item>
+				<Grid container style={{ position: 'relative' }}>
+					{mapStateValues.reintializeMap && (
+						<Backdrop style={{ zIndex: 999999, position: 'absolute', width: '100%' }} open={true} invisible={false}>
+							<CircularProgress size={80} disableShrink color="secondary" />
+						</Backdrop>
+					)}
+					<Grid
+						item
 						style={{
-							background: currentStyle === style.name ? '#4B618F' : '',
-						}}
-						onClick={() => {
-							if (currentStyle === style.name) {
-								return;
-							}
-							setBaseMap(style, 'baseMap');
+							position: 'relative',
+							height: '250px',
+							width: '100%',
+							overflow: 'scroll',
 						}}
 					>
-						<Grid container alignContent="center" alignItems="center">
-							<Grid item>
-								{style.name === 'Outdoors' && <Box component="img" src={'./icons/MapOutdoorIcon.jpeg'} />}
-								{style.name === 'Satellite' && <Box component="img" src={'./icons/MapSatelliteIcon.jpeg'} />}
-								{style.name === 'Light' && <Box component="img" src={'./icons/MapLightIcon.jpeg'} />}
-								{style.name === 'Dark' && <Box component="img" src={'./icons/MapDarkIcon.jpeg'} />}
-								{style.name === 'Basic' && <Box component="img" src={'./icons/MapBasicIcon.jpeg'} />}
-								{style.name === 'Real Estate' && <Box component="img" src={'./icons/MapDarkIcon.jpeg'} />}
-							</Grid>
-							<Grid item>
-								<ListItemText primary={style.name} style={{ paddingLeft: '25px' }} />
-							</Grid>
-						</Grid>
-					</StyledMenuItem>
-				))}
-			</div>
-			<div
-				style={{
-					paddingLeft: '20px',
-					paddingRight: '20px',
-				}}
-			>
+						{mapStyles.map(style => (
+							<StyledMenuItem
+								disableRipple
+								key={style.id}
+								role={undefined}
+								style={{
+									background: currentStyle === style.name ? '#4B618F' : '',
+								}}
+								onClick={() => {
+									if (currentStyle === style.name) {
+										return;
+									}
+									setBaseMap(style, 'baseMap');
+								}}
+							>
+								<Grid container alignItems="center">
+									<Grid item>
+										<Box
+											component="img"
+											src={
+												{
+													Outdoors: './icons/MapOutdoorIcon.jpeg',
+													Satellite: './icons/MapSatelliteIcon.jpeg',
+													Light: './icons/MapLightIcon.jpeg',
+													Dark: './icons/MapDarkIcon.jpeg',
+													Basic: './icons/MapBasicIcon.jpeg',
+													'Real Estate': './icons/MapDarkIcon.jpeg',
+												}[style.name] || './icons/MapPlaceholderImage.jpg'
+											}
+										/>
+									</Grid>
+									<Grid item>
+										<ListItemText primary={style.name} style={{ paddingLeft: '25px' }} />
+									</Grid>
+								</Grid>
+							</StyledMenuItem>
+						))}
+					</Grid>
+				</Grid>
+			</Grid>
+
+			<Grid item>
 				<hr
 					style={{
 						border: '1px solid #263451',
@@ -133,7 +153,7 @@ const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle
 						marginBottom: '10px',
 					}}
 				/>
-			</div>
+			</Grid>
 
 			<StyledListItem2>
 				<ListItemIcon>
@@ -141,7 +161,7 @@ const BasemapImageBox = React.memo(({ mapStyles, setBaseMap, title, currentStyle
 				</ListItemIcon>
 				<ListItemText primary={`${title} Layers`} />
 			</StyledListItem2>
-		</>
+		</Grid>
 	);
 });
 
@@ -586,34 +606,34 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 
 						{/* base Stuff */}
 						{type === 'base' && (
-							<BasemapImageBox
-								mapStyles={mapStyles}
-								setBaseMap={setBaseMap}
-								currentStyle={mapStateValues.mapVars.styleId}
-								title={title}
-							/>
+							<>
+								<BasemapImageBox
+									mapStyles={mapStyles}
+									setBaseMap={setBaseMap}
+									currentStyle={mapStateValues.mapVars.styleId}
+									title={title}
+								/>
+								<Box overflow="hidden scroll">
+									<Collapse in={true} timeout="auto" unmountOnExit>
+										<DisplayList
+											onDragEnd={onDragEnd}
+											type={type}
+											classes={classes}
+											layerMap={layerMap}
+											handleToggle={handleToggle}
+										/>
+									</Collapse>
+									<MapPositions
+										setMapDefaultPosition={setMapDefaultPosition}
+										defaultMapVars={mapStateValues.defaultMapVars}
+										mapVars={mapStateValues.mapVars}
+									/>
+								</Box>
+							</>
 						)}
 
 						{type === 'layer' && mapControlsStateValues.expandedPanel && (
 							<SortableLayer search={search} mongoId={stateApp.user.mongoId} />
-						)}
-						{type === 'base' && (
-							<Box height="calc((100vh - 50px) - 605px)" overflow="hidden scroll">
-								<Collapse in={true} timeout="auto" unmountOnExit>
-									<DisplayList
-										onDragEnd={onDragEnd}
-										type={type}
-										classes={classes}
-										layerMap={layerMap}
-										handleToggle={handleToggle}
-									/>
-								</Collapse>
-								<MapPositions
-									setMapDefaultPosition={setMapDefaultPosition}
-									defaultMapVars={mapStateValues.defaultMapVars}
-									mapVars={mapStateValues.mapVars}
-								/>
-							</Box>
 						)}
 						{type === 'heatMaps' && (
 							<DisplayList

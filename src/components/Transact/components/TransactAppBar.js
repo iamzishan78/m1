@@ -1,10 +1,11 @@
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+
 import { Typography, AppBar, Button, ButtonGroup, Tooltip, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Launch } from '@material-ui/icons';
 import Add from '@material-ui/icons/Add';
 import SettingsIcon from '@material-ui/icons/Settings';
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 
 import { setFlowState } from 'actions';
 

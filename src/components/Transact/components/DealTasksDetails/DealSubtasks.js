@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useMutation } from '@apollo/client';
+import { Flipper, Flipped } from 'react-flip-toolkit';
+import { ContextProvider } from 'react-sortly';
+import Sortly, { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
+
 import {
 	Grid,
 	IconButton,
@@ -23,14 +26,14 @@ import {
 	Edit as EditIcon,
 } from '@material-ui/icons';
 import { KeyboardDatePicker } from '@material-ui/pickers';
+
+import { useMutation } from '@apollo/client';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
-import { Flipper, Flipped } from 'react-flip-toolkit';
-import { ContextProvider } from 'react-sortly';
-import Sortly, { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
 
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';
 
 import { UPDATE_DEAL_SUBTASK } from 'graphQL/useMutationDealSubtask';
+
 import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
