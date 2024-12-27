@@ -12,7 +12,7 @@ import moment from 'moment';
 import CommonFieldList from 'components/Shared/Forms/Fields/CommonFieldList';
 import UsersListWithIcon from 'components/Shared/UsersListWithIcon';
 import vf_number from 'components/Shared/valueformatters/vf_number';
-import MetaField from 'components/Table/helpers/MetaField';
+import MetaField from 'utils/MetaField';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 

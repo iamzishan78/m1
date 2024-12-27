@@ -15,7 +15,7 @@ import { useLazyQuery } from '@apollo/client';
 import moment from 'moment';
 
 // contexts
-import WellDetailsDocumentTable from 'components/Table/Documents/WellDetailsDocumentTable';
+import WellDetailsDocumentTable from 'components/WellCard/components/WellDetailsDocumentTable';
 
 import { popupController } from 'hookstate/popupStateController';
 

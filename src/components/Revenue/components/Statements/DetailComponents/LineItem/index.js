@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/styles';
 
 import PdfViewer from 'components/Revenue/components/Statements/DetailComponents/LineItem/PdfViewer';
 
-import CheckDetailsEditableTable from './CheckDetailsEditableTable';
+// import CheckDetailsEditableTable from './CheckDetailsEditableTable';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -81,12 +81,12 @@ export default function LineItem(props) {
 				</div>
 			)}
 			<div className={classes.tableRoot}>
-				<CheckDetailsEditableTable
+				{/* <CheckDetailsEditableTable
 					parent="CheckDetailsTable"
 					header="Check Details"
 					showPdfSection={showPdfSection}
 					checkId={props.checkId}
-				/>
+				/> */}
 			</div>
 		</div>
 	);

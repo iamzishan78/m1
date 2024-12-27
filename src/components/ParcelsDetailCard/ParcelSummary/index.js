@@ -16,7 +16,7 @@ import { useLazyQuery } from '@apollo/client';
 
 import SummaryTable from 'components/ShapeDetailCard/Common/SummaryTable';
 import CommentComponent from 'components/Shared/CommentComponent';
-import MetaField from 'components/Table/helpers/MetaField';
+import MetaField from 'utils/MetaField';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';

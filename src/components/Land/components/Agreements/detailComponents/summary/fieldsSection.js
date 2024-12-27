@@ -32,7 +32,7 @@ import NumberField from 'components/Shared/components/Fields/NumberField';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
 import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
 import keys from 'components/Shared/SpreadsheetGrid/kit/keymap';
-import MetaField from 'components/Table/helpers/MetaField';
+import MetaField from 'utils/MetaField';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 

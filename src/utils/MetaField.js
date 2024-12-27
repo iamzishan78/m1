@@ -23,9 +23,9 @@ import ColorLensIcon from '@mui/icons-material/ColorLens';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { arrayMoveImmutable } from 'array-move';
 import omit from 'lodash/omit';
+import PropTypes from 'prop-types';
 
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-import { colorPallete } from 'components/Table/helpers';
 
 import { ADD_META_DATA } from 'graphQL/useMutationAddMetaData';
 import { UPDATE_META_DATA } from 'graphQL/useMutationUpdateMetaData';
@@ -34,11 +34,13 @@ import { GET_ALL_LIBRARY_META_DATA, CHECK_META_KEY_EXISTS } from 'graphQL/useQue
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
+import { colorPallete } from 'utils/consts';
+
 import { AppContext } from 'AppContext';
 
 import { getMetaCss } from './getMetaCss';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	header: {
 		display: 'flex',
 		justifyContent: 'space-between',
@@ -1083,5 +1085,15 @@ const SortableItem = SortableElement(({ item, removeIndex, itemIndex, updateInde
 		</>
 	);
 });
+
+MetaField.propTypes = {
+	category: PropTypes.string.isRequired,
+	columns: PropTypes.arrayOf(PropTypes.object).isRequired,
+	updateColumnSorting: PropTypes.func.isRequired,
+	esKey: PropTypes.string.isRequired,
+	customDataPrefix: PropTypes.string,
+	customDataPostfix: PropTypes.string,
+	tableKey: PropTypes.string.isRequired,
+};
 
 export default MetaField;
