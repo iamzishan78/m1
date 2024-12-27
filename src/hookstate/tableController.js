@@ -375,6 +375,10 @@ const tableESStateControllerHandler = state => ({
 			defaultColumnPinning: defaultColumnsPinning,
 		};
 
+		if (!isClientSide) {
+			stateToUpdate.columnVisibility['mrt-row-select'] = false;
+		}
+
 		state.merge(stateToUpdate);
 
 		if (mapViewFilters.length > 0) {
@@ -470,7 +474,13 @@ const tableESStateControllerHandler = state => ({
 	},
 
 	setColumnVisibility: visibility => {
+		const isClientSide = state.isClientSide.get();
+
 		if (!deepEqual(state.columnVisibility?.get({ noproxy: true }), visibility)) {
+			if (!isClientSide) {
+				visibility['mrt-row-select'] = false;
+			}
+
 			state.columnVisibility?.set(visibility);
 		}
 	},
