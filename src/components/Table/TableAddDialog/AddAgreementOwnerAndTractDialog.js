@@ -1,4 +1,8 @@
-import { useApolloClient, useLazyQuery, useMutation } from '@apollo/client';
+import React, { useState, useEffect, useMemo } from 'react';
+import ReactDOM from 'react-dom';
+import { useForm, Controller } from 'react-hook-form';
+import { useSelector } from 'react-redux';
+
 import {
 	Box,
 	CircularProgress,
@@ -28,12 +32,10 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import SearchIcon from '@material-ui/icons/Search';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useApolloClient, useLazyQuery, useMutation } from '@apollo/client';
 import _ from 'lodash';
 import get from 'lodash/get';
-import React, { useState, useEffect, useMemo } from 'react';
-import ReactDOM from 'react-dom';
-import { useForm, Controller } from 'react-hook-form';
-import { useSelector } from 'react-redux';
 
 import Loaders from 'components/Loaders';
 import { getParcelOriginalProperties } from 'components/ParcelsDetailCard/utils/GetParcelOriginalProps';

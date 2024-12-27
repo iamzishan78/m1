@@ -1,4 +1,6 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useState, useEffect, useContext } from 'react';
+import NumberFormat from 'react-number-format';
+
 import {
 	CircularProgress,
 	Dialog,
@@ -22,10 +24,10 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import parse from 'autosuggest-highlight/parse';
 import PropTypes from 'prop-types';
-import React, { useState, useEffect, useContext } from 'react';
-import NumberFormat from 'react-number-format';
 
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 

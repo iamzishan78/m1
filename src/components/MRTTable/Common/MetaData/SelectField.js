@@ -1,11 +1,12 @@
-import { Grid, Tooltip } from '@material-ui/core';
-import Checkbox from '@material-ui/core/Checkbox';
-import { makeStyles } from '@material-ui/core/styles';
-import EditIcon from '@material-ui/icons/Edit';
 import React, { useState, useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 import Select, { defaultTheme, components } from 'react-select';
 import { Waypoint } from 'react-waypoint';
+
+import { Grid, Tooltip } from '@material-ui/core';
+import Checkbox from '@material-ui/core/Checkbox';
+import { makeStyles } from '@material-ui/core/styles';
+import EditIcon from '@material-ui/icons/Edit';
 
 import { copy } from 'components/Shared/functions';
 import { BulletPointMeta } from 'components/Table/helpers/BulletPointMeta';

@@ -1,6 +1,8 @@
-import { TextField } from '@material-ui/core';
-import moment from 'moment';
 import React, { useEffect, useState } from 'react';
+
+import { TextField } from '@material-ui/core';
+
+import moment from 'moment';
 
 const DateField = ({ value, defaultValue, id, field, fieldKey, index, onChange, ...props }) => {
 	const [fieldValue, setFieldValue] = useState(value || defaultValue || '');

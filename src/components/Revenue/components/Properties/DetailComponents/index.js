@@ -1,5 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useState, useRef, useEffect, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import {
 	Typography,
 	IconButton,
@@ -19,9 +21,9 @@ import {
 	Delete as DeleteIcon,
 } from '@material-ui/icons';
 import { makeStyles, withStyles } from '@material-ui/styles';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { get } from 'lodash';
-import React, { useState, useRef, useEffect, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
 
 import AddNewRelatedAgreementDialog from 'components/Land/components/Agreements/detailComponents/relatedAgreements/AddNewRelatedAgreementDialog';
 import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';

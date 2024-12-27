@@ -1,5 +1,6 @@
-import { Button } from '@material-ui/core';
 import React, { memo, useContext } from 'react';
+
+import { Button } from '@material-ui/core';
 
 import AddRelatedContactModal from 'components/ContactDetailCard/components/AddRelatedContactModal';
 

@@ -1,4 +1,6 @@
-import { useMutation, useLazyQuery } from '@apollo/client';
+import React, { useMemo, useEffect, useState, memo } from 'react';
+import { pdfjs } from 'react-pdf';
+
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Grid from '@material-ui/core/Grid';
@@ -9,9 +11,9 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import GetAppIcon from '@material-ui/icons/GetApp';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
 import { get } from 'lodash';
-import React, { useMemo, useEffect, useState, memo } from 'react';
-import { pdfjs } from 'react-pdf';
 
 import DeleteDocumentConfirmation from 'components/Shared/DeleteDocumentConfirmation';
 

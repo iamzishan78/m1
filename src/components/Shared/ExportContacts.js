@@ -1,4 +1,7 @@
-import { useApolloClient } from '@apollo/client';
+import React, { useContext } from 'react';
+import { Controller, useForm, useWatch } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
+
 import { makeStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -8,9 +11,8 @@ import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
-import React, { useContext } from 'react';
-import { Controller, useForm, useWatch } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+
+import { useApolloClient } from '@apollo/client';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 

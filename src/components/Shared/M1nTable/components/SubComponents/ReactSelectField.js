@@ -1,8 +1,9 @@
+import React, { useState, useEffect, useRef } from 'react';
+
 import { Tooltip, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/lab/es/internal/svg-icons/ArrowDropDown';
-import React, { useState, useEffect, useRef } from 'react';
 
 import { BulletPointMeta } from 'components/Table/helpers/BulletPointMeta';
 import { ChipMeta } from 'components/Table/helpers/ChipMeta';

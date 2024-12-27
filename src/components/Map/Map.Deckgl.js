@@ -1,8 +1,13 @@
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
+import React, { useContext, useState, useRef, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+
+import { makeStyles } from '@material-ui/core/styles';
+
 import { useLazyQuery, useApolloClient, useQuery } from '@apollo/client';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
-import { makeStyles } from '@material-ui/core/styles';
 import * as turf from '@turf/turf';
 import gjv from 'geojson-validation';
 import _ from 'lodash';
@@ -10,9 +15,6 @@ import mapboxgl from 'mapbox-gl';
 import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from 'mapbox-gl-draw-circle';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import parseLinkHeader from 'parse-link-header';
-import React, { useContext, useState, useRef, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 import { drawShapeStyles, findBoundsMap } from 'components/MapControls/commonHelper';
 import MapControls from 'components/MapControls/MapControls';

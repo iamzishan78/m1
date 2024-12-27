@@ -1,3 +1,5 @@
+import React, { useState, useEffect, useRef, useContext } from 'react';
+
 import {
 	// Menu,
 	// MenuItem,
@@ -6,7 +8,6 @@ import {
 	Grid,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useState, useEffect, useRef, useContext } from 'react';
 
 import DealStageDetail from 'components/Transact/components/DealTasksDetails/DealStageDetail';
 import { TransactContext } from 'components/Transact/TransactContext';

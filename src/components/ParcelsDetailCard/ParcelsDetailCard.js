@@ -1,11 +1,13 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import GavelIcon from '@material-ui/icons/Gavel';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { set } from 'lodash';
-import React, { useState, useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
 import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
 import RelatedWellsTable from 'components/Common/RelatedTables/Wells';

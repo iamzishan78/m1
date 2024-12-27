@@ -1,11 +1,13 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Grid from '@material-ui/core/Grid';
-import { set } from 'lodash';
-import moment from 'moment';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Grid from '@material-ui/core/Grid';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { set } from 'lodash';
+import moment from 'moment';
 
 import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
 import RelatedTractsTable from 'components/Common/RelatedTables/Tracts';

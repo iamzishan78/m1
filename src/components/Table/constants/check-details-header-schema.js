@@ -1,6 +1,7 @@
 import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import DeleteIcon from '@material-ui/icons/Delete';
+
 import { Tooltip } from '@mui/material';
 
 import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';

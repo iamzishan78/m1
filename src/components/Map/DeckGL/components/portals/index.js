@@ -1,6 +1,8 @@
-import { useMutation } from '@apollo/client';
-import Portal from '@material-ui/core/Portal';
 import React, { memo, useEffect, useMemo, useRef } from 'react';
+
+import Portal from '@material-ui/core/Portal';
+
+import { useMutation } from '@apollo/client';
 
 import ExpandableCardProvider from 'components/ExpandableCard/ExpandableCardProvider';
 import LayerSelectionPopup from 'components/Map/components/popup/LayerSelectionPopup';

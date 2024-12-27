@@ -1,6 +1,7 @@
+import React, { useContext, useState, useEffect, useCallback } from 'react';
+
 import { useLazyQuery } from '@apollo/client';
 import { isEmpty } from 'lodash';
-import React, { useContext, useState, useEffect, useCallback } from 'react';
 
 import { setStateIfDeepEqual } from 'components/Shared/functions';
 

@@ -1,10 +1,12 @@
+import React from 'react';
+
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import { styled } from '@material-ui/core/styles';
+
 import moment from 'moment';
-import React from 'react';
 
 import CommentComponent from 'components/Shared/CommentComponent';
 

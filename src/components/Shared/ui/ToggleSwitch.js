@@ -1,5 +1,6 @@
-import { FormControlLabel, FormGroup, Switch, withStyles } from '@material-ui/core';
 import React, { useState } from 'react';
+
+import { FormControlLabel, FormGroup, Switch, withStyles } from '@material-ui/core';
 
 const AntSwitch = withStyles(theme => ({
 	root: {

@@ -1,7 +1,9 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useRef, useContext, useEffect } from 'react';
+
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useRef, useContext, useEffect } from 'react';
+
+import { useLazyQuery } from '@apollo/client';
 
 import { NavigationContext } from '../NavigationContext';
 import FilterTags from './FilterTags';

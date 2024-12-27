@@ -1,4 +1,6 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useContext, useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+
 import { IconButton, List, ListItem, ListItemIcon, ListItemText, Tooltip, Badge } from '@material-ui/core';
 import Drawer from '@material-ui/core/Drawer';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
@@ -15,9 +17,9 @@ import MapIcon from '@material-ui/icons/Map';
 import MenuIcon from '@material-ui/icons/Menu';
 import PersonIcon from '@material-ui/icons/Person';
 import FlowIcon from '@material-ui/icons/Repeat';
+
+import { useLazyQuery } from '@apollo/client';
 import clsx from 'clsx';
-import React, { useContext, useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import WorkspaceEditModal from 'components/Navigation/components/WorkSpaceEditModal';

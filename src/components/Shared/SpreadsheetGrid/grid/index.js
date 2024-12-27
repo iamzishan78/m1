@@ -1,9 +1,11 @@
+import React from 'react';
+
 import { TableRow } from '@material-ui/core';
+
 import isEmpty from 'lodash/isEmpty';
 import find from 'lodash.find';
 import isEqual from 'lodash.isequal';
 import PropTypes from 'prop-types';
-import React from 'react';
 
 import keys from './../kit/keymap';
 import tablePropTypes from './../kit/tablePropTypes';

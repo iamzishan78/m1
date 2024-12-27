@@ -16,6 +16,7 @@ const SHAPEOWNER = require('./SHAPEOWNER').default;
 const TRACT_COMMENTS = require('./TRACT_COMMENTS').default;
 const TRACT_SHAPE = require('./TRACT_SHAPE').default;
 const UNIT_SHAPE = require('./UNIT_SHAPE').default;
+
 const eportData = {
 	CONTACTS,
 	TRACTS,

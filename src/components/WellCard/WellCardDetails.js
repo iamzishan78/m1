@@ -1,4 +1,5 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useContext, useState, useEffect } from 'react';
+
 import { Box, IconButton } from '@material-ui/core';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
@@ -9,8 +10,9 @@ import Switch from '@material-ui/core/Switch';
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+
+import { useLazyQuery } from '@apollo/client';
 import moment from 'moment';
-import React, { useContext, useState, useEffect } from 'react';
 
 // contexts
 import WellDetailsDocumentTable from 'components/Table/Documents/WellDetailsDocumentTable';

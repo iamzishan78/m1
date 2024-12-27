@@ -1,8 +1,10 @@
-import { useLazyQuery } from '@apollo/client';
+import { useState, useEffect } from 'react';
+
 import { Typography, Grid, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
+
+import { useLazyQuery } from '@apollo/client';
 import { set, get, uniqBy } from 'lodash';
-import { useState, useEffect } from 'react';
 
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';

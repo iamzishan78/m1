@@ -1,6 +1,8 @@
-import { useMutation } from '@apollo/client';
-import Dialog from '@material-ui/core/Dialog';
 import React, { memo } from 'react';
+
+import Dialog from '@material-ui/core/Dialog';
+
+import { useMutation } from '@apollo/client';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import Loader from 'components/Loaders';

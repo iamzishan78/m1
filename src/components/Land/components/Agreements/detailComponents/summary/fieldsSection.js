@@ -1,4 +1,8 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useEffect, useState, Fragment, useContext } from 'react';
+import { Controller } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+
 import {
 	Grid,
 	TextField,
@@ -14,12 +18,10 @@ import AddIcon from '@material-ui/icons/Add';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import CreateTwoToneIcon from '@material-ui/icons/CreateTwoTone';
 import EditIcon from '@material-ui/icons/Edit';
+
+import { useLazyQuery } from '@apollo/client';
 import { get } from 'lodash';
 import uniqBy from 'lodash/uniqBy';
-import React, { useEffect, useState, Fragment, useContext } from 'react';
-import { Controller } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';

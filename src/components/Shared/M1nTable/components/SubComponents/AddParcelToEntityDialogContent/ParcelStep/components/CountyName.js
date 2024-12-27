@@ -1,12 +1,14 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useState, useContext, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
 import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useState, useContext, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+
+import { useLazyQuery } from '@apollo/client';
 
 import { setAddParcelInterestState } from '../../../../../../../../actions';
 import { COUNTIES } from '../../../../../../../../graphQL/useQueryCountiesBySta';

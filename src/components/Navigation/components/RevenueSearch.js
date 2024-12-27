@@ -1,8 +1,9 @@
+import React, { useContext, useState, useMemo, useEffect } from 'react';
+
 import { InputAdornment, TextField, IconButton, Tooltip } from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import ClearIcon from '@material-ui/icons/Clear';
 import SearchIcon from '@material-ui/icons/Search';
-import React, { useContext, useState, useMemo, useEffect } from 'react';
 
 import { SIDE_PANEL_MENU_ITEMS_LIST } from 'components/Revenue/Revenue';
 

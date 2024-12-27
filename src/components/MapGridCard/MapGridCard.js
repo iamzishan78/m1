@@ -1,8 +1,9 @@
+import React, { Fragment, useState, useContext, useMemo, useCallback } from 'react';
+import { useSelector } from 'react-redux';
+
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { Fragment, useState, useContext, useMemo, useCallback } from 'react';
-import { useSelector } from 'react-redux';
 
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import MRTTable from 'components/MRTTable';
@@ -142,7 +143,9 @@ const useStyles = makeStyles(theme => {
 									return 'calc(100vh - 204px)';
 								} else if (dockMenu === 'full') {
 									return 'calc(100vh - 153px)';
-								} else {return '';}
+								} else {
+									return '';
+								}
 							},
 						},
 						'@media (max-height:1600px)': {
@@ -153,7 +156,9 @@ const useStyles = makeStyles(theme => {
 									return userGridViewFilters?.length > 0 ? 'calc(100vh - 235px)' : 'calc(100vh - 200px)';
 								} else if (dockMenu === 'full') {
 									return userGridViewFilters?.length ? 'calc(100vh - 275px)' : 'calc(100vh - 183px)';
-								} else {return '';}
+								} else {
+									return '';
+								}
 							},
 						},
 					},

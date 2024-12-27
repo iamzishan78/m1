@@ -1,4 +1,5 @@
 import { Box } from '@mui/material';
+
 import { get } from 'lodash';
 
 import { addTrailingZeros, formatDate } from 'components/Shared/functions';

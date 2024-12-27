@@ -1,5 +1,6 @@
-import Dialog from '@material-ui/core/Dialog';
 import React, { memo } from 'react';
+
+import Dialog from '@material-ui/core/Dialog';
 
 import InviteUserDialog from 'components/Shared/M1nTable/components/SubComponents/InviteUserDialog';
 

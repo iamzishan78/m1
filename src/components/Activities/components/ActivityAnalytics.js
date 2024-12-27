@@ -1,9 +1,11 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useLazyQuery } from '@apollo/client';
-import { Grid, Card, CardContent } from '@material-ui/core';
-import get from 'lodash/get';
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+
+import { Grid, Card, CardContent } from '@material-ui/core';
+
+import { useLazyQuery } from '@apollo/client';
+import get from 'lodash/get';
+import PropTypes from 'prop-types';
 
 import DonutChart from 'components/Shared/Charts/DonutChart';
 import StackedBarChart from 'components/Shared/Charts/StackedBarChart';
@@ -13,9 +15,10 @@ import { GET_CONTACT_ANALYTICS } from 'graphQL/useQueryContactDetail';
 
 import { copy, getFilters } from 'utils/helper';
 
-import { AppContext } from 'AppContext';
-
 import { getActivityFilters } from './ActivitiesDashboard';
+
+const MD = 6;
+const CRM_MD = 6;
 
 const defaultSeriesActivities = [
 	{
@@ -66,8 +69,15 @@ const defaultUpdateUsers = [
 		data: [],
 	},
 ];
-const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilters, tableData }) => {
-	const [stateApp] = useContext(AppContext);
+const ActivityAnalytics = ({
+	appliedFilters,
+	tableFilters,
+	module,
+	setTableFilters,
+	tableData,
+	searchFields,
+	globalFilter,
+}) => {
 	const [analyticsData, setAnalyticsData] = useState([]);
 	const [contactData, setContactData] = useState([]);
 	const [activitiesPerQualifier, setActivitiesPerQualifier] = useState({
@@ -133,8 +143,8 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 			getAuditReportingAnalytics({
 				variables: {
 					search: {
-						fields: ['name', '_all'],
-						query: stateApp.landAnalyticsSearchQuery,
+						fields: searchFields,
+						query: globalFilter,
 					},
 					filters: getAllFilters(),
 				},
@@ -143,14 +153,14 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 			getActivityAnalytics({
 				variables: {
 					search: {
-						fields: ['name', '_all'],
-						query: stateApp.activitySearchQuery || stateApp.landAnalyticsSearchQuery,
+						fields: searchFields,
+						query: globalFilter,
 					},
 					filters: getAllFilters(),
 				},
 			});
 		}
-	}, [stateApp.activitySearchQuery, appliedFilters, tableFilters, stateApp.landAnalyticsSearchQuery, tableData]);
+	}, [appliedFilters, tableFilters, tableData, searchFields, globalFilter]);
 
 	useEffect(() => {
 		setTableFilters && setTableFilters(getActivityFilters(appliedFilters));
@@ -159,7 +169,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 	useEffect(() => {
 		if (analyticsData?.activitiesCountByTypePerOwner) {
 			const chartData = { series: copy(defaultSeriesActivities), xaxis: [] };
-			Object.entries(analyticsData?.activitiesCountByTypePerOwner).forEach((data, value) => {
+			Object.entries(analyticsData?.activitiesCountByTypePerOwner).forEach(data => {
 				if (data[1]?.name) {
 					chartData.xaxis.push(data[1].name.substring(0, 10));
 				}
@@ -176,7 +186,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 		}
 		if (analyticsData?.dealAmountByStatusPerOwner) {
 			const chartData = { series: copy(defaultSeriesDeals), xaxis: [] };
-			Object.entries(analyticsData?.dealAmountByStatusPerOwner).forEach((data, value) => {
+			Object.entries(analyticsData?.dealAmountByStatusPerOwner).forEach(data => {
 				if (data[1]?.name) {
 					chartData.xaxis.push(data[1].name.substring(0, 10));
 				}
@@ -193,7 +203,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 		}
 		if (contactData?.updatesCountByTypePerOwner) {
 			const chartData = { series: copy(defaultUpdateUsers), xaxis: [] };
-			Object.entries(contactData?.updatesCountByTypePerOwner).forEach((data, value) => {
+			Object.entries(contactData?.updatesCountByTypePerOwner).forEach(data => {
 				if (data[1]?.name) {
 					chartData.xaxis.push(data[1].name.substring(0, 10));
 				}
@@ -211,7 +221,10 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 	}, [analyticsData, contactData]);
 
 	const formatter = function (val) {
-		return (val / 1000000).toFixed(2) + 'MM';
+		const TO_FIXED = 2;
+		const DIVISOR = 1000000;
+
+		return (val / DIVISOR).toFixed(TO_FIXED) + 'MM';
 	};
 	return (
 		<Grid
@@ -224,7 +237,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 			style={{ padding: '30px' }}
 		>
 			{
-				<Grid item md={activeModule.value === 'CRM' ? 4 : 6} style={{ padding: '10px' }}>
+				<Grid item md={activeModule.value === 'CRM' ? CRM_MD : MD} style={{ padding: '10px' }}>
 					<Card variant="outlined">
 						<CardContent style={{ height: '265px' }}>
 							<label>{activeModule.value === 'CRM' ? 'Total Activities' : 'Total Updates'}</label>
@@ -285,7 +298,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 			}
 
 			{
-				<Grid item md={activeModule.value === 'CRM' ? 4 : 6} style={{ padding: '10px' }}>
+				<Grid item md={activeModule.value === 'CRM' ? CRM_MD : MD} style={{ padding: '10px' }}>
 					<Card variant="outlined">
 						<CardContent style={{ height: '265px', overflow: 'auto' }}>
 							<label>{activeModule.value === 'CRM' ? 'Activities Per Qualifier' : 'Updates Per User'}</label>
@@ -315,6 +328,16 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 			)}
 		</Grid>
 	);
+};
+
+ActivityAnalytics.propTypes = {
+	appliedFilters: PropTypes.array.isRequired,
+	tableFilters: PropTypes.array.isRequired,
+	module: PropTypes.string.isRequired,
+	setTableFilters: PropTypes.func,
+	tableData: PropTypes.array.isRequired,
+	searchFields: PropTypes.array.isRequired,
+	globalFilter: PropTypes.string.isRequired,
 };
 
 export default ActivityAnalytics;

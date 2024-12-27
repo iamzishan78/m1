@@ -1,3 +1,5 @@
+import React from 'react';
+
 import Badge from '@material-ui/core/Badge';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -6,7 +8,6 @@ import HomeIcon from '@material-ui/icons/HomeOutlined';
 import InfoOutlined from '@material-ui/icons/InfoOutlined';
 import CheckIcon from '@material-ui/icons/LocalAtm';
 import ContactIcon from '@material-ui/icons/PermIdentity';
-import React from 'react';
 
 import AgreementIcon from 'components/Shared/svgIcons/agreements';
 import WellIcon from 'components/Shared/svgIcons/well';

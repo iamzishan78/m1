@@ -1,6 +1,7 @@
-import { Button, ButtonGroup } from '@material-ui/core';
 import React, { memo } from 'react';
 import { useHistory } from 'react-router-dom';
+
+import { Button, ButtonGroup } from '@material-ui/core';
 
 import PropertyRevenueDetailDialog from 'components/MRTTable/TablesOverride/PropertyRelatedAgreementTable/RighDialogs';
 

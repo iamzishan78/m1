@@ -1,9 +1,11 @@
+import React from 'react';
+
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+
 import get from 'lodash/get';
-import React from 'react';
 
 import { Modals } from 'styles/Modal';
 

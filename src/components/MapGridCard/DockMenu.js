@@ -1,8 +1,10 @@
+import React from 'react';
+
 import { Grid, IconButton, Box } from '@material-ui/core';
 import Fade from '@material-ui/core/Fade';
 import Menu from '@material-ui/core/Menu';
 import Tooltip from '@material-ui/core/Tooltip';
-import React from 'react';
+
 import { BiDockBottom, BiDockLeft, BiDockRight, BiDockTop, BiLinkExternal } from 'react-icons/bi';
 
 const DockIcons = {

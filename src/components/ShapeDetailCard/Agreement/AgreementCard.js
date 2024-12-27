@@ -1,8 +1,9 @@
+import React, { useContext, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useContext, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 
 // contexts
 import { ExpandableCardContext } from 'components/ExpandableCard/ExpandableCardContext';

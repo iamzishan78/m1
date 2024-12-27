@@ -1,5 +1,6 @@
-import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
 import Avatar from 'react-avatar';
+
+import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
 
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';

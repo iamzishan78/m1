@@ -3,6 +3,9 @@
 //3rd party packages
 
 //@material-ui components
+import React, { useState, useContext, useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -21,10 +24,9 @@ import Typography from '@material-ui/core/Typography';
 import Add from '@material-ui/icons/Add';
 import DesktopWindowsIcon from '@material-ui/icons/DesktopWindows';
 import HeadsetIcon from '@material-ui/icons/Headset';
+
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import React, { useState, useContext, useEffect } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
 
 // App Bars
 import AdminSettingsAppBar from 'components/Navigation/AppBar/AdminSettings';

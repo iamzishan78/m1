@@ -1,4 +1,6 @@
-import { hookstate, useHookstate } from '@hookstate/core';
+import React, { useEffect, useState, useContext, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
+
 import { IconButton, Grid, Table, TableCell, TableBody, FormControl, CircularProgress } from '@material-ui/core';
 import TableRow from '@material-ui/core/TableRow';
 import TextField from '@material-ui/core/TextField';
@@ -6,10 +8,10 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import CreateTwoToneIcon from '@material-ui/icons/CreateTwoTone';
+
+import { hookstate, useHookstate } from '@hookstate/core';
 import { set, get, upperFirst, capitalize } from 'lodash';
 import moment from 'moment';
-import React, { useEffect, useState, useContext, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';

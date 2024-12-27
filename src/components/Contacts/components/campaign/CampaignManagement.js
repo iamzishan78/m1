@@ -1,5 +1,6 @@
-import { useLazyQuery } from '@apollo/client';
 import React, { useState, useEffect, useContext, useCallback } from 'react';
+
+import { useLazyQuery } from '@apollo/client';
 
 import CampaignAnalytics from 'components/Contacts/components/CampaignAnalytics';
 import CustomCampaignFilters from 'components/Contacts/components/CampaignFilter';

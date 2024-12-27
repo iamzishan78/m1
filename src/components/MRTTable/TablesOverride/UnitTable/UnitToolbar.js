@@ -1,6 +1,8 @@
-import { useApolloClient } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
 import React, { memo } from 'react';
+
+import { makeStyles } from '@material-ui/core/styles';
+
+import { useApolloClient } from '@apollo/client';
 
 import { BulkUpdate } from 'components/MRTTable/Common/CommonToolBarActions';
 

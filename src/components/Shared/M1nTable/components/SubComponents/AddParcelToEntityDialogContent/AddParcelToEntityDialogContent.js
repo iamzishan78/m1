@@ -1,4 +1,6 @@
-import { useMutation, useLazyQuery } from '@apollo/client';
+import React, { useContext, useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+
 import { Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -17,8 +19,8 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useContext, useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
 
 import InterestStep from './InterestStep';
 import ParcelStep from './ParcelStep/ParcelStep';

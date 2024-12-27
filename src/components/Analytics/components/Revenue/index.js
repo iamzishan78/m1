@@ -1,14 +1,15 @@
-import { useLazyQuery } from '@apollo/client';
-import { Grid, Divider, Tab, Tabs, TextField, Box } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { makeStyles, withStyles } from '@material-ui/styles';
-import sortBy from 'lodash/sortBy';
-import moment from 'moment';
 import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 
-import DetailTabsSection from 'components/Analytics/components/Revenue/DetailTabsSection';
+import { Grid, Divider, Tab, Tabs, TextField, Box } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { makeStyles, withStyles } from '@material-ui/styles';
 
+import { useLazyQuery } from '@apollo/client';
+import sortBy from 'lodash/sortBy';
+import moment from 'moment';
+
+import DetailTabsSection from 'components/Analytics/components/Revenue/DetailTabsSection';
 import MRTTable from 'components/MRTTable';
 import CustomDates from 'components/Revenue/components/Common/CustomDates';
 import LastCheckDateFilter from 'components/Revenue/components/Common/LastCheckDateFilter';

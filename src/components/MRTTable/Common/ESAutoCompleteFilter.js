@@ -1,8 +1,10 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useEffect, useRef, useState } from 'react';
+
 import { Autocomplete, TextField } from '@mui/material';
+
+import { useLazyQuery } from '@apollo/client';
 import _, { debounce } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useEffect, useRef, useState } from 'react';
 
 import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
 import vf_currency, { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';

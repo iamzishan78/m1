@@ -1,8 +1,10 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useState, useEffect, memo, useMemo } from 'react';
+
 import { TextField, CircularProgress } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery } from '@apollo/client';
 import get from 'lodash/get';
-import React, { useState, useEffect, memo, useMemo } from 'react';
 
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 

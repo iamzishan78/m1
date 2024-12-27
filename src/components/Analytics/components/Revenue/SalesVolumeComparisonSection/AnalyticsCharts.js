@@ -1,5 +1,6 @@
-import { Grid } from '@material-ui/core';
 import React from 'react';
+
+import { Grid } from '@material-ui/core';
 
 import OverShortComparison from 'components/Analytics/components/Revenue/SalesVolumeComparisonSection/OverShortComparison';
 import MonthlyProductionChart from 'components/Revenue/components/Properties/DetailComponents/Validation/MonthlyProductionChart';

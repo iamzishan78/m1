@@ -1,3 +1,5 @@
+import React, { useContext } from 'react';
+
 import Badge from '@material-ui/core/Badge';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -7,8 +9,8 @@ import GridOnIcon from '@material-ui/icons/GridOn';
 import HomeIcon from '@material-ui/icons/HomeOutlined';
 import PanoramaIcon from '@material-ui/icons/Panorama';
 import IdentityIcon from '@material-ui/icons/PermIdentity';
+
 import { get } from 'lodash';
-import React, { useContext } from 'react';
 
 import { AppContext } from '../../../AppContext';
 

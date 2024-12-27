@@ -1,12 +1,14 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useState, useContext, useEffect, useMemo } from 'react';
+import { useSelector } from 'react-redux';
+
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
+
+import { useLazyQuery } from '@apollo/client';
 import { get } from 'lodash';
 import sortBy from 'lodash/sortBy';
 import moment from 'moment';
-import React, { useState, useContext, useEffect, useMemo } from 'react';
-import { useSelector } from 'react-redux';
 
 import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
 import RelatedTractInterestTable from 'components/Common/RelatedTables/Tracts/tractInterests';
@@ -20,10 +22,11 @@ import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
 import { CONTACT_SUMMARY } from 'graphQL/useQueryContactSummary';
 
+import { tableController } from 'hookstate/tableController';
+
 import { AppContext } from 'AppContext';
 
 import { contactDetailInitialData } from './data';
-import { tableController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(theme => ({
 	card: {

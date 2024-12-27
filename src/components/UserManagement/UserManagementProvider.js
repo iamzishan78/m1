@@ -1,5 +1,6 @@
-import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
+
+import { makeStyles } from '@material-ui/core/styles';
 
 import UserManagementContainer from './Container';
 import { UserManagementContextProvider } from './UserManagementContext';

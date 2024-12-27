@@ -1,12 +1,14 @@
-import * as am4charts from '@amcharts/amcharts4/charts';
-import * as am4core from '@amcharts/amcharts4/core';
-import { useLazyQuery } from '@apollo/client';
+import React, { Fragment, useState, useEffect, useRef, useCallback } from 'react';
+
 import { Grid, TextField, CircularProgress, Box } from '@material-ui/core';
 import CardHeader from '@material-ui/core/CardHeader';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/styles';
+
+import * as am4charts from '@amcharts/amcharts4/charts';
+import * as am4core from '@amcharts/amcharts4/core';
+import { useLazyQuery } from '@apollo/client';
 import moment from 'moment';
-import React, { Fragment, useState, useEffect, useRef, useCallback } from 'react';
 import ReactDOMServer from 'react-dom/server';
 
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';

@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
-import CheckIcon from '@material-ui/icons/Check';
 import React from 'react';
+
+import CheckIcon from '@material-ui/icons/Check';
 
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { activityType } from 'components/MRTTable/utils/enums';

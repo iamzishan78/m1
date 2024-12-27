@@ -1,4 +1,6 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useState, useEffect } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+
 import {
 	CircularProgress,
 	Tab,
@@ -21,8 +23,8 @@ import CloseSharp from '@material-ui/icons/CloseSharp';
 import DoneSharpIcon from '@material-ui/icons/DoneSharp';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import RemoveSharpIcon from '@material-ui/icons/RemoveSharp';
-import React, { useState, useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+
+import { useLazyQuery } from '@apollo/client';
 
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';

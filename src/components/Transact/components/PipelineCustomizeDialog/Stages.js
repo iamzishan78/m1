@@ -1,4 +1,7 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useState, useContext, useEffect } from 'react';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { useDispatch, useSelector } from 'react-redux';
+
 import { Tooltip } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
 
@@ -18,9 +21,8 @@ import DragIndicator from '@material-ui/icons/DragIndicator';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import DetailsIcon from '@material-ui/icons/Settings';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useState, useContext, useEffect } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { useDispatch, useSelector } from 'react-redux';
+
+import { useLazyQuery } from '@apollo/client';
 
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 

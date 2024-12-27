@@ -17,7 +17,9 @@ const gridViewStatesControllerHandler = state => ({
 	},
 
 	gridViewApply: selectedGridView => {
-		if (!selectedGridView) {return;}
+		if (!selectedGridView) {
+			return;
+		}
 
 		const TableKey = state.tableKey?.get({ noproxy: true });
 		const Controller = tableController(TableKey);

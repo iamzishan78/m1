@@ -1,7 +1,9 @@
+import React from 'react';
+
 import { TableCell } from '@material-ui/core';
+
 import isEqual from 'lodash.isequal';
 import PropTypes from 'prop-types';
-import React from 'react';
 
 import SpreadsheetCell from './cell';
 

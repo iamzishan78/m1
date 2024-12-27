@@ -1,3 +1,6 @@
+import React, { useContext, useState, useEffect } from 'react';
+import { Droppable, Draggable } from 'react-beautiful-dnd';
+
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -11,8 +14,6 @@ import { createTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import DragIndicator from '@material-ui/icons/DragIndicator';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import React, { useContext, useState, useEffect } from 'react';
-import { Droppable, Draggable } from 'react-beautiful-dnd';
 
 import { AppContext } from 'AppContext';
 

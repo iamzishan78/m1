@@ -1,8 +1,10 @@
-import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
+
+import { makeStyles } from '@material-ui/core/styles';
 
 import Analytics from './../Analytics/Aanlytics';
 import { ContactsContextProvider } from './../Contacts/ContactsContext';
+
 const useStyles = makeStyles(theme => ({
 	ContactsWrapper: {
 		width: '100%',

@@ -1,5 +1,6 @@
-import { useMutation } from '@apollo/client';
-import { useLazyQuery } from '@apollo/client';
+import React, { useState, useContext, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
@@ -7,8 +8,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import React, { useState, useContext, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+
+import { useLazyQuery } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 
 import { DELETEDESCRIPTORFILE } from 'graphQL/useMutationDeleteDescriptorFile';
 import { CONTACT } from 'graphQL/useQueryContact';

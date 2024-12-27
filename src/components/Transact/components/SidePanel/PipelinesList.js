@@ -1,12 +1,14 @@
-import { useMutation } from '@apollo/client';
-import { List } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import update from 'immutability-helper';
 import React, { useEffect, useState, Fragment } from 'react';
 import { Flipper } from 'react-flip-toolkit';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Sortly, { findDescendants, findParent } from 'react-sortly';
+
+import { List } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { useMutation } from '@apollo/client';
+import update from 'immutability-helper';
 
 import { deepEqual } from 'components/Shared/functions';
 

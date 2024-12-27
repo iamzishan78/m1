@@ -1,9 +1,11 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useState, useContext, useEffect, useMemo } from 'react';
+import { useSelector } from 'react-redux';
+
 import { CircularProgress, Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useState, useContext, useEffect, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+
+import { useLazyQuery } from '@apollo/client';
 
 import MRTTable from 'components/MRTTable';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';

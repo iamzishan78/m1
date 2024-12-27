@@ -1,9 +1,10 @@
+import React from 'react';
+import { useHistory } from 'react-router-dom';
+
 import { IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import RoomIcon from '@material-ui/icons/Room';
-import React from 'react';
-import { useHistory } from 'react-router-dom';
 
 import { mapControlsController } from 'hookstate/mapControlsController';
 

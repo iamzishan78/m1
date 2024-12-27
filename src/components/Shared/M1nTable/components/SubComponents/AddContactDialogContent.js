@@ -1,4 +1,6 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useContext, useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+
 import { Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -11,8 +13,8 @@ import TextField from '@material-ui/core/TextField';
 import CloseIcon from '@material-ui/icons/Close';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useContext, useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 
 import EntityType from 'components/ContactDetailCard/components/FieldContent/EntityType';
 import { contactStatusOptions, featureFlagChanges } from 'components/ContactDetailedInfo/helper';

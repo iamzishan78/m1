@@ -1,6 +1,8 @@
-import { Typography } from '@mui/material';
-import { debounce } from 'lodash';
 import React, { useEffect } from 'react';
+
+import { Typography } from '@mui/material';
+
+import { debounce } from 'lodash';
 
 import MRTTable from 'components/MRTTable';
 

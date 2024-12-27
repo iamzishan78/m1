@@ -1,4 +1,5 @@
 import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
+
 import { isEmpty, pickBy } from 'lodash';
 
 import ListChips from 'components/Common/ListChips';

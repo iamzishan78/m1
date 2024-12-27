@@ -1,3 +1,6 @@
+import React, { memo, useState, useContext } from 'react';
+import { Link } from 'react-router-dom';
+
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
 import { makeStyles } from '@material-ui/core/styles';
@@ -9,9 +12,8 @@ import EventOutlinedIcon from '@material-ui/icons/EventOutlined';
 import EmailIcon from '@material-ui/icons/Mail';
 import MoreVertOutlinedIcon from '@material-ui/icons/MoreVertOutlined';
 import TextSMS from '@material-ui/icons/TextsmsOutlined';
+
 import ContactPageOutlinedIcon from '@mui/icons-material/ContactPageOutlined';
-import React, { memo, useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
 
 import AddActivityDialog from 'components/ContactDetailCard/components/AddActivityDialog';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';

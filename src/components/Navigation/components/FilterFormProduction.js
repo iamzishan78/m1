@@ -1,7 +1,8 @@
+import React, { useState, useContext, useEffect } from 'react';
+
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useState, useContext, useEffect } from 'react';
 
 import { NavigationContext } from '../NavigationContext';
 import ProdMinMax from './ProdMinMax';

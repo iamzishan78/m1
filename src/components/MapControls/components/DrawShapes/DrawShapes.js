@@ -1,12 +1,14 @@
-import { useMutation } from '@apollo/client';
+import React, { useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+
 import { makeStyles } from '@material-ui/core';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import CloseIcon from '@material-ui/icons/Close';
+
+import { useMutation } from '@apollo/client';
 import { get } from 'lodash';
-import React, { useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
 
 import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
 

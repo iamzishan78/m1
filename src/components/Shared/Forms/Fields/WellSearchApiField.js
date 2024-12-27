@@ -1,12 +1,14 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useState, useEffect } from 'react';
+
 import { Typography } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery } from '@apollo/client';
 import parse from 'autosuggest-highlight/parse';
-import React, { useState, useEffect } from 'react';
 
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';

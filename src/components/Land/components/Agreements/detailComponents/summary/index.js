@@ -1,3 +1,6 @@
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+
 import {
 	Grid,
 	Typography,
@@ -13,8 +16,6 @@ import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 
 import AgreementIcon from 'components/Shared/svgIcons/agreements';
 import TractIcon from 'components/Shared/svgIcons/tract';

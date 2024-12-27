@@ -1,4 +1,7 @@
-import { useMutation, useLazyQuery, gql } from '@apollo/client';
+import React, { useEffect, useState, Fragment, useRef, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+
 import { Menu, MenuItem, Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
@@ -12,12 +15,12 @@ import EditIcon from '@material-ui/icons/Edit';
 import GridOnIcon from '@material-ui/icons/GridOn';
 import LayerIcon from '@material-ui/icons/Layers';
 import OfflineBoltIcon from '@material-ui/icons/OfflineBoltOutlined';
+
 import { Dialog } from '@mui/material';
+
+import { useMutation, useLazyQuery, gql } from '@apollo/client';
 import { isEmpty } from 'lodash';
 import get from 'lodash/get';
-import React, { useEffect, useState, Fragment, useRef, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 import LimitExceedPopUp from 'components/MapControls/components/popup/LimitExceedPopup';
 import ShapeEditActions from 'components/MapControls/components/popup/ShapeEditActions';

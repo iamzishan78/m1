@@ -1,4 +1,5 @@
-import { useMutation, useQuery } from '@apollo/client';
+import React, { useState, useEffect } from 'react';
+
 import { Button, Grid, Box, CircularProgress, InputAdornment, IconButton } from '@material-ui/core';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -10,8 +11,9 @@ import CloseSharp from '@material-ui/icons/CloseSharp';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import SearchIcon from '@material-ui/icons/Search';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useMutation, useQuery } from '@apollo/client';
 import set from 'lodash/set';
-import React, { useState, useEffect } from 'react';
 
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import EntityType from 'components/ContactDetailCard/components/FieldContent/EntityType';

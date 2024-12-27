@@ -1,7 +1,9 @@
-import { useLazyQuery } from '@apollo/client';
-import Grid from '@material-ui/core/Grid';
 import React, { memo, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+
+import Grid from '@material-ui/core/Grid';
+
+import { useLazyQuery } from '@apollo/client';
 
 import PdfViewer from 'components/MRTTable/TablesOverride/DocumentTable/TableCell/PDFView';
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';

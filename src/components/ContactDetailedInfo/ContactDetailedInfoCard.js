@@ -1,8 +1,10 @@
-import { useLazyQuery } from '@apollo/client';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
+
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { useLazyQuery } from '@apollo/client';
 
 import {
 	getBasicInfoContent,

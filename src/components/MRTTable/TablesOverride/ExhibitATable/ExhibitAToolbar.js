@@ -1,5 +1,6 @@
-import { Box, Switch } from '@mui/material';
 import React, { memo, useEffect, useState } from 'react';
+
+import { Box, Switch } from '@mui/material';
 
 import { tableController } from 'hookstate/tableController';
 

@@ -1,4 +1,5 @@
-import { useMutation } from '@apollo/client';
+import React, { useState } from 'react';
+
 import { Tooltip, FormControlLabel, Switch } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -8,7 +9,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined';
 import DragIndicator from '@material-ui/icons/DragIndicator';
-import React, { useState } from 'react';
+
+import { useMutation } from '@apollo/client';
 
 import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
 

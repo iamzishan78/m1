@@ -1,4 +1,5 @@
-import { useApolloClient, useLazyQuery } from '@apollo/client';
+import React, { useState, useContext, useEffect, Fragment } from 'react';
+
 import { IconButton } from '@material-ui/core';
 import { Collapse } from '@material-ui/core';
 import { Grid, Typography, Divider, Button } from '@material-ui/core';
@@ -10,7 +11,8 @@ import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { Close as CloseButton } from '@material-ui/icons';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-import React, { useState, useContext, useEffect, Fragment } from 'react';
+
+import { useApolloClient, useLazyQuery } from '@apollo/client';
 
 import M1neral_headers, { getCustomFieldHeaders } from 'components/BulkUpload/jobHeaders';
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';

@@ -1,10 +1,12 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
+
 import { Box, Grid, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Close as ClearButton } from '@material-ui/icons';
+
+import { useLazyQuery } from '@apollo/client';
 import _ from 'lodash';
-import React, { useEffect, useMemo, useState } from 'react';
-import { useFormContext } from 'react-hook-form';
 
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } from 'components/MRTTable/utils/data';

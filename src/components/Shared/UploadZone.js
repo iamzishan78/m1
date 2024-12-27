@@ -1,11 +1,13 @@
-import { useMutation } from '@apollo/client';
-import { BlockBlobClient } from '@azure/storage-blob';
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+
 import { CircularProgress } from '@material-ui/core';
 import { Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+
+import { useMutation } from '@apollo/client';
+import { BlockBlobClient } from '@azure/storage-blob';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
-import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 
 import { ADDDESCRIPTORFILE } from 'graphQL/useMutationAddDescriptorFile';
 

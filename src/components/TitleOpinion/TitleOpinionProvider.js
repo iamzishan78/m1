@@ -1,8 +1,10 @@
-import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
+
+import { makeStyles } from '@material-ui/core/styles';
 
 import TitleOpinion from './TitleOpinion';
 import { TitleOpinionContextProvider } from './TitleOpinionContext';
+
 const useStyles = makeStyles(theme => ({
 	titleWrapper: {
 		width: '100%',
