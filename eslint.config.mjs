@@ -160,7 +160,7 @@ export default [
 			'no-magic-numbers': [
 				'error',
 				{
-					ignore: [0, 1, 10, 100, 1000], // Allow these numbers if needed
+					ignore: [0, 1, -1, 10, 100, 1000], // Allow these numbers if needed
 				},
 			],
 

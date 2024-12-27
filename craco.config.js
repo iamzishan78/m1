@@ -1,83 +1,61 @@
-const presetReact = require('@babel/preset-react').default;
-const presetCRA = require('babel-preset-react-app');
-const CracoEsbuildPlugin = require('craco-esbuild');
-const path = require('path');
-const { ProvidePlugin } = require('webpack');
-
 module.exports = {
-	babel: {
-		loaderOptions: babelLoaderOptions => {
-			const origBabelPresetReactAppIndex = babelLoaderOptions.presets.findIndex(preset =>
-				preset[0].includes('babel-preset-react-app')
-			);
-
-			if (origBabelPresetReactAppIndex !== -1) {
-				const overridenBabelPresetReactApp = (...args) => {
-					const babelPresetReactAppResult = presetCRA(...args);
-					const origPresetReact = babelPresetReactAppResult.presets.find(preset => preset[0] === presetReact);
-					Object.assign(origPresetReact[1], {
-						importSource: '@welldone-software/why-did-you-render',
-					});
-					return babelPresetReactAppResult;
-				};
-				babelLoaderOptions.presets[origBabelPresetReactAppIndex] = overridenBabelPresetReactApp;
-			}
-			return babelLoaderOptions;
+	webpack: {
+		configure: webpackConfig => {
+			// Add a Babel loader to handle optional chaining and other modern JavaScript features
+			webpackConfig.module.rules.push({
+				test: /\.(js|jsx|mjs|cjs|ts|tsx)$/, // Include JS/TS files
+				exclude: /node_modules/, // Exclude node_modules
+				use: {
+					loader: 'babel-loader',
+					options: {
+						presets: ['@babel/preset-env', ['@babel/preset-react', { runtime: 'automatic' }]],
+						plugins: [
+							['@babel/plugin-proposal-class-properties', { loose: true }], // Add class fields support
+							['@babel/plugin-proposal-private-methods', { loose: true }], // Add private methods support
+							['@babel/plugin-proposal-private-property-in-object', { loose: true }], // Add private properties in objects
+							'@babel/plugin-proposal-optional-chaining',
+							'@babel/plugin-proposal-nullish-coalescing-operator',
+							'@babel/plugin-proposal-logical-assignment-operators',
+						],
+					},
+				},
+			});
+			return webpackConfig;
 		},
+	},
+	babel: {
+		// Ensure optional chaining is supported
+		plugins: [
+			['@babel/plugin-proposal-class-properties', { loose: true }], // Add class fields support
+			['@babel/plugin-proposal-private-methods', { loose: true }], // Add private methods support
+			['@babel/plugin-proposal-private-property-in-object', { loose: true }], // Add private properties in objects
+			'@babel/plugin-proposal-optional-chaining',
+			'@babel/plugin-proposal-nullish-coalescing-operator',
+			'@babel/plugin-proposal-logical-assignment-operators',
+		],
 	},
 	eslint: {
 		enable: false,
-	},
-	webpack: {
-		configure: webpackConfig => {
-			webpackConfig.entry = process.env.CYPRESS === 'true' ? './src/cypress.js' : './src/index.js';
-			webpackConfig.resolve = {
-				...webpackConfig.resolve,
-				alias: {
-					...webpackConfig.resolve.alias,
-					'mapbox-gl': path.resolve('node_modules/mapbox-gl/dist/mapbox-gl.js'),
-				},
-				extensions: ['.js', '.jsx', '.ts', '.tsx'],
-				mainFields: ['browser', 'module', 'main'],
-			};
-
-			// Ensure Babel processes mapbox-gl
-			const babelLoader = webpackConfig.module.rules
-				.find(rule => rule.oneOf && Array.isArray(rule.oneOf))
-				.oneOf.find(rule => rule.loader && rule.loader.includes('babel-loader'));
-
-			babelLoader.include = [...(babelLoader.include || []), path.resolve('node_modules/mapbox-gl')];
-
-			return webpackConfig;
-		},
-		plugins: [
-			new ProvidePlugin({
-				React: 'react',
-				Buffer: ['buffer', 'Buffer'],
-				process: 'process/browser',
-			}),
-		],
-	},
-	plugins: [
-		{
-			plugin: CracoEsbuildPlugin,
-			options: {
-				esbuildLoaderOptions: {
-					loader: 'jsx',
-					target: 'es2018',
-				},
-				esbuildMinimizerOptions: {
-					target: 'es2018',
-					css: true,
-				},
-				skipEsbuildJest: true,
-				esbuildJestOptions: {
-					loaders: {
-						'.ts': 'ts',
-						'.tsx': 'tsx',
-					},
-				},
+		mode: 'extends',
+		configure: {
+			rules: {
+				// Example: disable prop-types rule for Material-UI
+				'react/prop-types': 'off',
 			},
 		},
-	],
+	},
+	// style: {
+	//  postcss: {
+	//      plugins: [
+	//          require('tailwindcss'),
+	//          require('autoprefixer'),
+	//      ],
+	//  },
+	// },
+	resolve: {
+		alias: {
+			// Ensure Material-UI styled-engine works correctly with styled-components if needed
+			'@mui/styled-engine': '@mui/styled-engine-sc',
+		},
+	},
 };
