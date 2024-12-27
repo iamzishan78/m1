@@ -18,7 +18,7 @@ import { copy, getFilters } from 'utils/helper';
 import { getActivityFilters } from './ActivitiesDashboard';
 
 const MD = 6;
-const CRM_MD = 6;
+const CRM_MD = 4;
 
 const defaultSeriesActivities = [
 	{
