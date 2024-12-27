@@ -20,7 +20,6 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 
-import { useLazyQuery, useMutation } from '@apollo/client';
 import clsx from 'clsx';
 
 // functions
