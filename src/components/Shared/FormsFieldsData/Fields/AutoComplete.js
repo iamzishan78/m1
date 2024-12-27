@@ -88,7 +88,7 @@ function AutoCompleteComponent({ control, item, watch, error }) {
 					<Autocomplete
 						options={options}
 						getOptionLabel={option => option.label}
-						getOptionSelected={(option, value) => option.value === value.value}
+						getOptionSelected={(option, value) => option.value == value.value}
 						loading={loading}
 						disabled={disabled}
 						loadingText={
@@ -109,7 +109,7 @@ function AutoCompleteComponent({ control, item, watch, error }) {
 								'No Record Found'
 							)
 						}
-						value={options.find(option => option.value === value) || null}
+						value={options.find(option => option.value === value?.toString()) || null}
 						onChange={(e, option) => {
 							onChange ? onChange(option?.value) : onInputChange(option ? option.value : null);
 						}}

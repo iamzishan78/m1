@@ -136,7 +136,11 @@ const contactForm = ({ getValues, setValue }) => {
 			defaultOptions: [
 			  { label: 'Yes', value: "true" },
 			  { label: 'No', value: "false" },
-			]
+			],
+			onChange: value => {
+				const booleanValue = value === true || value === 'true';
+				setValue('isPurchased', booleanValue);
+			},
 		},
 	];
 
