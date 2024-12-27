@@ -2,9 +2,9 @@ import React, { useContext, useMemo } from 'react';
 
 import { Container, Button, ButtonGroup } from '@material-ui/core';
 
+import AddAgreementOwnerAndTractDialog from 'components/Common/TableAddDialog/AddAgreementOwnerAndTractDialog';
 import { DrawerContext } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
 import MRTTable from 'components/MRTTable';
-import AddAgreementOwnerAndTractDialog from 'components/Table/TableAddDialog/AddAgreementOwnerAndTractDialog';
 
 import { AppContext } from 'AppContext';
 

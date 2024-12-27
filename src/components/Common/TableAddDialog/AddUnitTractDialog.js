@@ -15,9 +15,9 @@ import pick from 'lodash/pick';
 
 // contexts
 
+import TractForm from 'components/Common/TableAddDialog/Common/TractForm';
 import { getParcelOriginalProperties } from 'components/ParcelsDetailCard/utils/GetParcelOriginalProps';
 import AutoCompleteShapeLayer from 'components/Shared/Forms/Fields/AutoCompleteShapeLayer';
-import TractForm from 'components/Table/TableAddDialog/Common/TractForm';
 
 import { ADD_TRACTS_TOA_SHAPE } from 'graphQL/useMutationAddTractsToAShape';
 import { UPDATE_SHAPE_TRACTS } from 'graphQL/useMutationUpdateShapeTracts';

@@ -3,7 +3,7 @@ import React, { memo } from 'react';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 
-import AddUnitTractDialog from 'components/Table/TableAddDialog/AddUnitTractDialog';
+import AddUnitTractDialog from 'components/Common/TableAddDialog/AddUnitTractDialog';
 
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 

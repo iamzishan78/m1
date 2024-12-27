@@ -37,6 +37,7 @@ import { useApolloClient, useLazyQuery, useMutation } from '@apollo/client';
 import _ from 'lodash';
 import get from 'lodash/get';
 
+import TractForm from 'components/Common/TableAddDialog/Common/TractForm';
 import Loaders from 'components/Loaders';
 import { getParcelOriginalProperties } from 'components/ParcelsDetailCard/utils/GetParcelOriginalProps';
 import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
@@ -46,7 +47,6 @@ import AutoCompleteWithNewOption from 'components/Shared/Forms/Fields/AutoComple
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import { addTrailingZeros } from 'components/Shared/functions';
 import CloseIcon2 from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
-import TractForm from 'components/Table/TableAddDialog/Common/TractForm';
 
 import { ADD_OWNER_TOA_SHAPE } from 'graphQL/useMutationAddOwnerToAShape';
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
