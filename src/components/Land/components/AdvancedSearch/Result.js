@@ -1,8 +1,12 @@
-import { Typography } from '@mui/material';
-import MRTTable from 'components/MRTTable';
-import { tableController } from 'hookstate/tableController';
-import { debounce } from 'lodash';
 import React, { useEffect } from 'react';
+
+import { Typography } from '@mui/material';
+
+import { debounce } from 'lodash';
+
+import MRTTable from 'components/MRTTable';
+
+import { tableController } from 'hookstate/tableController';
 
 const tableKey = 'GenericTable';
 
@@ -27,12 +31,13 @@ const Result = ({ indices, search, setSearch }) => {
 		setSearch(stateValues.globalFilter);
 	}, [globalFilter]);
 
-	if (!indices || indices.length === 0)
+	if (!indices || indices.length === 0) {
 		return (
 			<Typography align="center" variant="h5">
 				Select an index to start searching.
 			</Typography>
 		);
+	}
 
 	return (
 		<MRTTable

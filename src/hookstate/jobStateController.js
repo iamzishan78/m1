@@ -1,4 +1,5 @@
 import { hookStateController } from 'hookstate/hookStateController';
+
 import { jobInitialState, jobState } from './initialStates';
 
 const jobStateControllerHandler = () => ({
@@ -9,7 +10,9 @@ const jobStateControllerHandler = () => ({
 		jobState.activeStepNumber.set(jobState.activeStepNumber.get() + 1);
 	},
 	prevStep: () => {
-		if (jobState.activeStepNumber.get() === 0) return;
+		if (jobState.activeStepNumber.get() === 0) {
+			return;
+		}
 
 		jobState.activeStepNumber.set(jobState.activeStepNumber.get() - 1);
 	},
@@ -28,12 +31,16 @@ const jobStateControllerHandler = () => ({
 	onRowUpdate: (newData, oldData) => {
 		return new Promise((resolve, reject) => {
 			try {
-				if (!oldData) throw new Error('Old data not provided');
+				if (!oldData) {
+					throw new Error('Old data not provided');
+				}
 
 				const csvDataToSend = jobController.getValue('csvDataToSend');
 				const index = csvDataToSend.indexOf(oldData);
 
-				if (index === -1) throw new Error('Old data not found in csvDataToSend');
+				if (index === -1) {
+					throw new Error('Old data not found in csvDataToSend');
+				}
 
 				delete newData.reason;
 				delete newData.invalidKey;

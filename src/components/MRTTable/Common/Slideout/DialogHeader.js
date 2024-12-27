@@ -1,12 +1,15 @@
 import React, { memo, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+
 import { Menu, MenuItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
-import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
 import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles } from '@material-ui/core/styles';
+import DeleteIcon from '@material-ui/icons/Delete';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+
+import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+
 import { slidoutStateController } from 'hookstate/slidoutStateController';
 
 const getDealNameFieldHeight = title => {

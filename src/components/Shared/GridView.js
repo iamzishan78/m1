@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch } from 'react-redux';
+
 import {
 	TextField,
 	InputAdornment,
@@ -9,24 +9,28 @@ import {
 	AccordionSummary,
 	AccordionDetails,
 } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import { AppContext } from '../../AppContext';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import LockOpenIcon from '@material-ui/icons/LockOpen';
-import LockIcon from '@material-ui/icons/Lock';
-import StarIcon from '@material-ui/icons/Star';
 import { Menu, MenuItem } from '@material-ui/core';
 import { CircularProgress } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import LockIcon from '@material-ui/icons/Lock';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import SearchIcon from '@material-ui/icons/Search';
+import StarIcon from '@material-ui/icons/Star';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 
 import LeftDialog from 'components/Shared/LeftDialog';
-import { UPDATE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
-import { UPDATE_FAVOURITE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
+
 import { ADD_GRID_VIEW } from 'graphQL/useMutationAddGridView';
+import { UPDATE_FAVOURITE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
+import { UPDATE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 
 import { setCurrentUserGridViewAction } from 'store/actions/sessionActions';
+
+import { AppContext } from '../../AppContext';
 
 const useStyles = makeStyles(theme => ({
 	container: {
@@ -214,7 +218,9 @@ function GridView({
 
 	useEffect(() => {
 		setTimeout(() => {
-			if (document.getElementById('fieldContentInput')) document.getElementById('fieldContentInput').focus();
+			if (document.getElementById('fieldContentInput')) {
+				document.getElementById('fieldContentInput').focus();
+			}
 		}, 100);
 	}, [showSaveAsNew]);
 
@@ -447,13 +453,14 @@ const InputField = ({
 							},
 							refetchQueries: ['getGridViews'],
 						});
-						if (selectedGridView._id === editGridViewId)
+						if (selectedGridView._id === editGridViewId) {
 							dispatch(
 								setCurrentUserGridViewAction.STARTED({
 									gridViewId: editGridViewId,
 									userId: user,
 								})
 							);
+						}
 					} else {
 						addGridView({
 							variables: {
@@ -595,13 +602,14 @@ const View = ({
 								},
 								refetchQueries: ['getGridViews'],
 							});
-							if (selectedGridView._id === view._id)
+							if (selectedGridView._id === view._id) {
 								dispatch(
 									setCurrentUserGridViewAction.STARTED({
 										gridViewId: view._id,
 										userId: userId,
 									})
 								);
+							}
 						}}
 					>
 						Share with others

@@ -2,7 +2,9 @@
 import moment from 'moment';
 
 export default function convert_date(value) {
-	if (!value) return null;
+	if (!value) {
+		return null;
+	}
 
 	const convertDate = unixStamp => {
 		const date = moment(unixStamp).utc(true).format('MM/DD/YYYY');

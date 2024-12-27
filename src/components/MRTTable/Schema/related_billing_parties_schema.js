@@ -1,6 +1,7 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import RelatedBillingPartiesToolbar from '../TablesOverride/RelatedBillingPartiesTable/RelatedBillingPartiesToolbar';
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+
+import RelatedBillingPartiesToolbar from '../TablesOverride/RelatedBillingPartiesTable/RelatedBillingPartiesToolbar';
 
 const esIndex = 'contacts_flat';
 
@@ -100,7 +101,7 @@ const RelatedBillingPartiesMeta = {
 			},
 			Cell: ({ row }) => {
 				const value = row.original?.billingParties?.allocation;
-				return value ? `${Number(value).toFixed(2)}%` : value === 0 ? `0%` : '';
+				return value ? `${Number(value).toFixed(2)}%` : value === 0 ? '0%' : '';
 			},
 		},
 		{

@@ -1,9 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
+
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
 import { useLazyQuery } from '@apollo/client';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+
 import { copy } from 'components/Shared/functions';
+
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+
 import { navController } from 'hookstate/navStateController';
 
 const ShapeFilter = ({ filterType, label }) => {

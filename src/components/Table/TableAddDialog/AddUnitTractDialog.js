@@ -1,26 +1,33 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useMutation } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Grid from '@material-ui/core/Grid';
-import { Box, CircularProgress, Dialog, Typography } from '@material-ui/core';
-import RightDialog from '../../ContactDetailCard/components/RightDialog';
-import DeleteConfirmationDialogContent from '../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import { useForm, Controller } from 'react-hook-form';
 
+import { Box, CircularProgress, Dialog, Typography } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import CloseIcon from '@material-ui/icons/Close';
+import DeleteIcon from '@material-ui/icons/Delete';
+
+import { useMutation } from '@apollo/client';
+import pick from 'lodash/pick';
+
 // contexts
-import { AppContext } from 'AppContext';
+
 import { getParcelOriginalProperties } from 'components/ParcelsDetailCard/utils/GetParcelOriginalProps';
 import AutoCompleteShapeLayer from 'components/Shared/Forms/Fields/AutoCompleteShapeLayer';
 import TractForm from 'components/Table/TableAddDialog/Common/TractForm';
+
 import { ADD_TRACTS_TOA_SHAPE } from 'graphQL/useMutationAddTractsToAShape';
 import { UPDATE_SHAPE_TRACTS } from 'graphQL/useMutationUpdateShapeTracts';
-import pick from 'lodash/pick';
+
 import { tableGlobalController } from 'hookstate/tableController';
+
+import { AppContext } from 'AppContext';
+
+import RightDialog from '../../ContactDetailCard/components/RightDialog';
+import DeleteConfirmationDialogContent from '../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 
 const useStyles = makeStyles(theme => ({
 	dialogFooter: {
@@ -227,7 +234,7 @@ function AddUnitTractDialog(props) {
 					maxWidth="sm"
 				>
 					<DeleteConfirmationDialogContent
-						header={`Delete Well Interest`}
+						header={'Delete Well Interest'}
 						onClose={handleCloseDialog}
 						deleteFunc={deleteFunc}
 						m1nSelectedRowsIds={null}

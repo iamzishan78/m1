@@ -1,8 +1,9 @@
-import { GlobalStickyStyles } from 'GlobalSettings';
 import { formatDate } from 'components/Shared/functions';
 
 //value formatters
 import vf_currency, { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+
+import { GlobalStickyStyles } from 'GlobalSettings';
 
 const AgreementsHeadCells = (isSnapGrid = false) => [
 	{

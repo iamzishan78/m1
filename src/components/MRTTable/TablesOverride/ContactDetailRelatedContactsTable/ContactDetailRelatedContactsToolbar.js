@@ -1,8 +1,12 @@
 import React, { memo, useContext } from 'react';
+
 import { Button } from '@material-ui/core';
-import { tableController } from 'hookstate/tableController';
-import { AppContext } from 'AppContext';
+
 import AddRelatedContactModal from 'components/ContactDetailCard/components/AddRelatedContactModal';
+
+import { tableController } from 'hookstate/tableController';
+
+import { AppContext } from 'AppContext';
 
 function ContactDettailRelatedContactsToolBar({ table, tableKey }) {
 	const [stateApp, setStateApp] = useContext(AppContext);

@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-import loadashFilter from 'lodash/filter';
+
 import { Typography, Grid } from '@material-ui/core';
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
 import { useLazyQuery } from '@apollo/client';
+import loadashFilter from 'lodash/filter';
+
 import { entityTypeOptions } from 'components/ContactDetailedInfo/helper';
+
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 
 const filter = createFilterOptions();
 
@@ -83,15 +87,19 @@ export default function EntityType({ setDocumentType, value, ...other }) {
 					return option.name;
 				}
 
-				if (option?.name) return option.name;
-				else return '';
+				if (option?.name) {
+					return option.name;
+				} else {
+					return '';
+				}
 			}}
 			getOptionSelected={(option, value) => {
 				return option?._id === search;
 			}}
 			renderOption={option => {
-				if (option._id === 'newEntity')
+				if (option._id === 'newEntity') {
 					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+				}
 				return (
 					<Grid container spacing={0}>
 						<Grid container item xs={12} alignItems="center">
@@ -125,8 +133,11 @@ export default function EntityType({ setDocumentType, value, ...other }) {
 				if (typeof newValue === 'string') {
 					setDocumentType({ _id: newValue, name: newValue });
 				} else if (newValue && newValue._id) {
-					if (newValue._id !== 'newEntity') setDocumentType(newValue);
-					else setDocumentType({ _id: 'newEntity', name: newValue.name });
+					if (newValue._id !== 'newEntity') {
+						setDocumentType(newValue);
+					} else {
+						setDocumentType({ _id: 'newEntity', name: newValue.name });
+					}
 				} else {
 					setSearch('');
 					setDocumentType({ _id: '', name: '' });

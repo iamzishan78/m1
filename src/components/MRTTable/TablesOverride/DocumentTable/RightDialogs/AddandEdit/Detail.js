@@ -1,35 +1,42 @@
 import React, { useEffect, useState, Fragment } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { useDispatch } from 'react-redux';
+
+import { IconButton, TextField, withStyles } from '@material-ui/core';
+import { Typography, Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import { Typography, Grid } from '@material-ui/core';
-import loadashFilter from 'lodash/filter';
-import { useDispatch } from 'react-redux';
-import { showErrorMessage } from 'actions';
-import { IconButton, TextField, withStyles } from '@material-ui/core';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import UploadZone from './UploadZone';
+import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
-import joinAddress from 'components/Shared/valueformatters/join-address.js';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
-import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
-import GenericDateField from 'components/Shared/components/Fields/GenericDateFIeld';
 import DeleteIcon from '@material-ui/icons/Delete';
 import GetAppIcon from '@material-ui/icons/GetApp';
-import { ADDDESCRIPTORFILE } from 'graphQL/useMutationAddDescriptorFile';
-import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { BlockBlobClient } from '@azure/storage-blob';
 import _ from 'lodash';
-import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
+import loadashFilter from 'lodash/filter';
+
 import Loader from 'components/Loaders';
+import GenericDateField from 'components/Shared/components/Fields/GenericDateFIeld';
 
 // functions
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
+import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
+import joinAddress from 'components/Shared/valueformatters/join-address.js';
+
+import { ADDDESCRIPTORFILE } from 'graphQL/useMutationAddDescriptorFile';
+import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
+import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
+import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { showErrorMessage } from 'actions';
+
 import { createViewStateController, initialState } from './AddAndEditController';
+import UploadZone from './UploadZone';
 
 const filter = createFilterOptions();
 
@@ -290,9 +297,14 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 				}).then(res => {
 					if (res?.data?.updateDocumentFile) {
 						const { success, message } = res.data.updateDocumentFile;
-						if (success) Loader.successToast('DocumentUpdating', message);
-						else Loader.errorToast('DocumentUpdating', message);
-					} else Loader.errorToast('DocumentUpdating', 'Failed to Update Document');
+						if (success) {
+							Loader.successToast('DocumentUpdating', message);
+						} else {
+							Loader.errorToast('DocumentUpdating', message);
+						}
+					} else {
+						Loader.errorToast('DocumentUpdating', 'Failed to Update Document');
+					}
 
 					tableGlobalController.refetch();
 				});
@@ -304,7 +316,9 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 
 	useEffect(() => {
 		let fieldsValue = {};
-		if (selectedDocument) fieldsValue = _.pick(selectedDocument, Object.keys(initialState));
+		if (selectedDocument) {
+			fieldsValue = _.pick(selectedDocument, Object.keys(initialState));
+		}
 		formController?.initialize(tableKey, fieldsValue);
 
 		return () => {
@@ -327,9 +341,14 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 		}).then(res => {
 			if (res?.data?.addFileDescriptor) {
 				const { success, message } = res.data.addFileDescriptor;
-				if (success) Loader.successToast('FileUploading', message);
-				else Loader.errorToast('FileUploading', message);
-			} else Loader.errorToast('FileUploading', 'Failed to Upload File');
+				if (success) {
+					Loader.successToast('FileUploading', message);
+				} else {
+					Loader.errorToast('FileUploading', message);
+				}
+			} else {
+				Loader.errorToast('FileUploading', 'Failed to Upload File');
+			}
 		});
 	};
 
@@ -343,9 +362,14 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 		}).then(res => {
 			if (res?.data?.updateDocumentFile) {
 				const { success, message } = res.data.updateDocumentFile;
-				if (success) Loader.successToast('ReplaceFile', message);
-				else Loader.errorToast('ReplaceFile', message);
-			} else Loader.errorToast('ReplaceFile', 'Failed to Update Document');
+				if (success) {
+					Loader.successToast('ReplaceFile', message);
+				} else {
+					Loader.errorToast('ReplaceFile', message);
+				}
+			} else {
+				Loader.errorToast('ReplaceFile', 'Failed to Update Document');
+			}
 
 			setFileUpload({ upload: false, fileExtension: null, fileInformation: '' });
 			tableGlobalController.refetch();
@@ -639,15 +663,19 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 				if (option.inputValue) {
 					return option.name;
 				}
-				if (option?.name) return option.name;
-				else return '';
+				if (option?.name) {
+					return option.name;
+				} else {
+					return '';
+				}
 			}}
 			getOptionSelected={(option, value) => {
 				return option?._id === value?._id;
 			}}
 			renderOption={option => {
-				if (option._id === 'newEntity')
+				if (option._id === 'newEntity') {
 					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+				}
 
 				return (
 					<Grid container spacing={0}>
@@ -684,9 +712,14 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 			}}
 			onChange={(event, newValue) => {
 				if (newValue && newValue._id) {
-					if (newValue._id !== 'newEntity') setDocumentType(newValue);
-					else setDocumentType({ _id: 'newEntity', name: newValue.name });
-				} else setDocumentType('');
+					if (newValue._id !== 'newEntity') {
+						setDocumentType(newValue);
+					} else {
+						setDocumentType({ _id: 'newEntity', name: newValue.name });
+					}
+				} else {
+					setDocumentType('');
+				}
 			}}
 			renderInput={params => (
 				<TextField

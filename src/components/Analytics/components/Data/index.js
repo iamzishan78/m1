@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+
 import { Divider, makeStyles, Tab, Tabs, withStyles } from '@material-ui/core';
+
 import MRTTable from 'components/MRTTable';
+
 import ShapeFile from './ShapeFile';
 
 const useStyles = makeStyles(theme => ({
@@ -95,9 +98,13 @@ export default function LandAnalytics() {
 			</div>
 
 			{tabs.map(({ label, table, overrideMeta, type }, index) => {
-				if (tab !== index) return null;
+				if (tab !== index) {
+					return null;
+				}
 
-				if (type === 'shapeFile') return <ShapeFile />;
+				if (type === 'shapeFile') {
+					return <ShapeFile />;
+				}
 
 				return (
 					<MRTTable

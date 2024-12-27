@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+
 import PlugIcon from './components/svgIcons/PlugIcon';
 
 // value formatters

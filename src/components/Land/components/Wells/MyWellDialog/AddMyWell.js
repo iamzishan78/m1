@@ -1,20 +1,25 @@
 import React, { useState, Fragment, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import moment from 'moment';
-import TextField from '@material-ui/core/TextField';
+import NumberFormat from 'react-number-format';
+
+import { Typography } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { Typography } from '@material-ui/core';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import parse from 'autosuggest-highlight/parse';
+import moment from 'moment';
 import PropTypes from 'prop-types';
-import NumberFormat from 'react-number-format';
+
+import { UPSERT_MY_WELL } from 'graphQL/useMutationUpsertMyWell';
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+
+import { tableGlobalController } from 'hookstate/tableController';
+
 import { wellParams } from './helpers';
 import { addMyWellStyles as useStyles } from './styles';
-import { UPSERT_MY_WELL } from 'graphQL/useMutationUpsertMyWell';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { tableGlobalController } from 'hookstate/tableController';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 
 function NumberFormatCustom(props) {
 	const { inputRef, onChange, name, ...other } = props;
@@ -80,13 +85,17 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 	const [getESSimpleSearch] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
 		fetchPolicy: 'no-cache',
 		onCompleted: wellsData => {
-			if (wellsData?.getESSimpleSearch?.hits) setFoundWells(wellsData.getESSimpleSearch.hits);
+			if (wellsData?.getESSimpleSearch?.hits) {
+				setFoundWells(wellsData.getESSimpleSearch.hits);
+			}
 		},
 	});
 
 	const { control, reset, getValues } = useForm();
 	useEffect(() => {
-		if (platformWell) reset(platformWell);
+		if (platformWell) {
+			reset(platformWell);
+		}
 	}, [platformWell, reset]);
 
 	useEffect(() => {
@@ -108,7 +117,9 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 	};
 
 	const handleSave = formData => {
-		if (!isSaveAllowed(formData)) return; // Check if saving is allowed using the isSaveAllowed function.
+		if (!isSaveAllowed(formData)) {
+			return;
+		} // Check if saving is allowed using the isSaveAllowed function.
 		const processedValues = {};
 		Object.entries(formData).forEach(([key, value]) => {
 			const param = wellParams.find(p => (p.esKey ?? p.key) === key);

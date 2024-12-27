@@ -1,11 +1,14 @@
 import React, { useState, useContext, useEffect } from 'react';
+
+import CircularProgress from '@material-ui/core/CircularProgress';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { NavigationContext } from '../NavigationContext';
-import { USERAVAILABLEFILTERTAGSQUERY } from '../../../graphQL/useQueryUserAvailableFilterTags';
+
 import { useLazyQuery } from '@apollo/client';
-import CircularProgress from '@material-ui/core/CircularProgress';
+
 import { AppContext } from '../../../AppContext';
+import { USERAVAILABLEFILTERTAGSQUERY } from '../../../graphQL/useQueryUserAvailableFilterTags';
+import { NavigationContext } from '../NavigationContext';
 
 export default function FilterTags() {
 	const [stateApp, setStateApp] = useContext(AppContext);
@@ -39,7 +42,9 @@ export default function FilterTags() {
 				filterTagsLoading: setFilterLoading,
 			}));
 		} else {
-			if (!stateNav.filterTrackedOwners) stateApp.toggleLayersActivity('Wells', true);
+			if (!stateNav.filterTrackedOwners) {
+				stateApp.toggleLayersActivity('Wells', true);
+			}
 
 			stateApp.toggleLayersActivity('User Tags', false);
 			setStateNav(stateNav => ({

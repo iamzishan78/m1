@@ -1,7 +1,8 @@
 /* eslint-disable no-undef */
 import MapProvider from 'components/Map/MapProvider';
-import { basic_timeouts } from '../../../cypressUtils/data';
+
 import { addShapePolygon, drawAreaGeometry, redrawnPolygon } from './data';
+import { basic_timeouts } from '../../../cypressUtils/data';
 
 let newCustomLayer = {};
 

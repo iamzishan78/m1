@@ -1,11 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Controller, useForm, useFieldArray } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
-import { NavigationContext } from 'components/Navigation/NavigationContext';
-import { AppContext } from '../../../AppContext';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
+
 import {
 	Grid,
 	Button,
@@ -20,31 +16,41 @@ import {
 	ListItemText,
 	ListItemIcon,
 } from '@material-ui/core';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import { KeyboardDatePicker } from '@material-ui/pickers';
-import { makeStyles } from '@material-ui/core/styles';
 import {
 	DeleteOutline as DeleteIcon,
 	MoreVert as MoreVertIcon,
 	Add as AddIcon,
 	ExpandMore as ExpandMoreIcon,
 } from '@material-ui/icons';
-import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
-import CommentsWithIcon from 'components/Shared/CommentsWithIcon';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { CREATE_AGREEMENT_PROVISION } from 'graphQL/useMutationCreateAgreementProvision';
-import debounce from 'lodash/debounce';
-import AutoCompleteWithNewOption from 'components/Shared/Forms/Fields/AutoCompleteWithNewOption';
-import { GET_PROVISION_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetProvisionAutoCompleteList';
-import { copy } from 'components/Shared/functions';
-import Loader from 'components/Loaders';
-import { detailCardController } from 'hookstate/detailCardController';
-import ResponsibleParty from './ResponsibleParty';
 import { Autocomplete } from '@material-ui/lab';
+import { KeyboardDatePicker } from '@material-ui/pickers';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+import debounce from 'lodash/debounce';
+import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+
+import Loader from 'components/Loaders';
+import { NavigationContext } from 'components/Navigation/NavigationContext';
+import CommentsWithIcon from 'components/Shared/CommentsWithIcon';
+import AutoCompleteWithNewOption from 'components/Shared/Forms/Fields/AutoCompleteWithNewOption';
+import { copy } from 'components/Shared/functions';
+
+import { CREATE_AGREEMENT_PROVISION } from 'graphQL/useMutationCreateAgreementProvision';
+import { GET_PROVISION_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetProvisionAutoCompleteList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+
+import { detailCardController } from 'hookstate/detailCardController';
+
+import ResponsibleParty from './ResponsibleParty';
+import { AppContext } from '../../../AppContext';
 
 const styles = makeStyles(() => ({
 	root: {
@@ -183,15 +189,19 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 	useEffect(() => {
 		if (dataProvisionAutoCompleteList?.provisionAutoCompleteList) {
 			dataProvisionAutoCompleteList?.provisionAutoCompleteList.forEach(list => {
-				if (list.key === 'type') setProvisionsList(list.list);
-				else if (list.key === 'frequency')
+				if (list.key === 'type') {
+					setProvisionsList(list.list);
+				} else if (list.key === 'frequency') {
 					setFrequenciesList(Array.from(new Set(['Annual', 'Monthly', 'Quarterly', 'Weekly', ...list.list])));
+				}
 			});
 		}
 	}, [dataProvisionAutoCompleteList]);
 
 	useEffect(() => {
-		if (setPCounts) setPCounts(fields.length);
+		if (setPCounts) {
+			setPCounts(fields.length);
+		}
 	}, [fields.length]);
 
 	const addRemoveProvision = (addProvision, provision) => {
@@ -258,7 +268,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 			if (assignedOwner && typeof assignedOwner === 'object') {
 				provision.assignedOwner = assignedOwner.value;
 			}
-			if (provision.type)
+			if (provision.type) {
 				upsertAgreementProvision({
 					variables: {
 						provision: {
@@ -270,6 +280,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 					},
 					refetchQueries: ['getAgreementProvisions', 'provisionAutoCompleteList'],
 				});
+			}
 		}
 	}, 500);
 
@@ -390,7 +401,9 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 															options={provisionAutoCompleteList}
 															value={value}
 															onChange={(_, value) => {
-																if (value) onChange(value.name);
+																if (value) {
+																	onChange(value.name);
+																}
 																handleChange(item, index);
 															}}
 														/>

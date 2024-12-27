@@ -1,4 +1,5 @@
 import { __assign, __spreadArrays } from 'tslib';
+
 import { deepEqualObjects } from '../components/Shared/functions/deepEqual.js';
 
 export function concatPagination(keyArgs) {
@@ -50,8 +51,10 @@ export function relayStylePagination(keyArgs) {
 				search: _a?.args?.search,
 				pageOverride: _a?.args?.pageOverride,
 			};
-			if (!existing || !deepEqualObjects(existingArgs, incomingArgs)) return;
-			var edges = existing.edges.filter(function (edge) {
+			if (!existing || !deepEqualObjects(existingArgs, incomingArgs)) {
+				return;
+			}
+			var edges = existing.edges.filter(edge => {
 				return canRead(edge.node);
 			});
 			return __assign(__assign({}, existing), {
@@ -67,7 +70,9 @@ export function relayStylePagination(keyArgs) {
 				existing = makeEmptyData();
 			}
 			var args = _a.args;
-			if (!args) return existing;
+			if (!args) {
+				return existing;
+			}
 			var incomingEdges = incoming.edges.slice(0);
 			if (incoming.pageInfo) {
 				updateCursor(incomingEdges, 0, incoming.pageInfo.startCursor);
@@ -76,14 +81,14 @@ export function relayStylePagination(keyArgs) {
 			var prefix = existing.edges;
 			var suffix = [];
 			if (args.pagination.after && args.pageOverride === void 0) {
-				var index = prefix.findIndex(function (edge) {
+				var index = prefix.findIndex(edge => {
 					return edge.cursor === args.pagination.after;
 				});
 				if (index >= 0) {
 					prefix = prefix.slice(0, index + 1);
 				}
 			} else if (args.pagination.before && args.pageOverride === void 0) {
-				var index = prefix.findIndex(function (edge) {
+				var index = prefix.findIndex(edge => {
 					return edge.cursor === args.pagination.before;
 				});
 				suffix = index < 0 ? prefix : prefix.slice(index);
@@ -102,8 +107,12 @@ export function relayStylePagination(keyArgs) {
 					pageInfo[name] = value;
 				}
 			};
-			if (!prefix.length) updatePageInfo('hasPreviousPage');
-			if (!suffix.length) updatePageInfo('hasNextPage');
+			if (!prefix.length) {
+				updatePageInfo('hasPreviousPage');
+			}
+			if (!suffix.length) {
+				updatePageInfo('hasNextPage');
+			}
 			return __assign(__assign(__assign({}, existing), incoming), { edges: edges, pageInfo: pageInfo, args: args });
 		},
 	};
@@ -120,12 +129,16 @@ function makeEmptyData() {
 	};
 }
 function cursorFromEdge(edges, index) {
-	if (index < 0) index += edges.length;
+	if (index < 0) {
+		index += edges.length;
+	}
 	var edge = edges[index];
 	return (edge && edge.cursor) || '';
 }
 function updateCursor(edges, index, cursor) {
-	if (index < 0) index += edges.length;
+	if (index < 0) {
+		index += edges.length;
+	}
 	var edge = edges[index];
 	if (cursor && edge && cursor !== edge.cursor) {
 		edges[index] = __assign(__assign({}, edge), { cursor: cursor });

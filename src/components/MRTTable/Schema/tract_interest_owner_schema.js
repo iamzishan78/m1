@@ -1,19 +1,21 @@
-import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
-import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+
 import ListChips from 'components/Common/ListChips';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import IsContactCell from 'components/MRTTable/Common/TableCells/isContactIcone';
-import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActionMenu';
-import TractInterestOwnerToolBar from 'components/MRTTable/TablesOverride/TractInterestOwnerTable/TractInterestOwnerToolBar';
-import { addTrailingZeros } from 'components/Shared/functions';
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import TractIcon from 'components/Shared/svgIcons/tract';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActionMenu';
+import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
+import IsContactCell from 'components/MRTTable/Common/TableCells/isContactIcone';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import TractInterestOwnerToolBar from 'components/MRTTable/TablesOverride/TractInterestOwnerTable/TractInterestOwnerToolBar';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import { addTrailingZeros } from 'components/Shared/functions';
+import TractIcon from 'components/Shared/svgIcons/tract';
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
+
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 const esIndex = 'shapeowners_flat';
 
@@ -142,7 +144,8 @@ const TractPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'contact.ownerType.keyword',
-			accessorKey: 'contact.ownerType',
+			id: 'contact.ownerType',
+			accessorFn: row => row?.contact?.ownerType,
 			header: 'Entity Type',
 		},
 
@@ -457,7 +460,8 @@ const TractPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'deals.name.keyword',
-			accessorKey: 'deals.name',
+			id: 'deals.name',
+			accessorFn: row => row?.deals?.name,
 			isExport: 'dealsName',
 			header: 'Associated Deals',
 			handleArrayExport: {

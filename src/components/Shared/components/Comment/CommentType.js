@@ -1,17 +1,22 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+
 import { Grid, TextField, ClickAwayListener, Popover } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-import EditNoteIcon from 'components/Shared/svgIcons/edit-note';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
-import { GET_COMMENT_TYPES, UPSERTCOMMENTTYPE } from 'graphQL/useQueryCommentType';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import { makeStyles } from '@material-ui/core/styles';
+
 import { useMutation, useQuery } from '@apollo/client';
-import { showInfoMessage } from 'actions';
-import { useDispatch } from 'react-redux';
 import _ from 'lodash';
+
+import EditNoteIcon from 'components/Shared/svgIcons/edit-note';
+
+import { GET_COMMENT_TYPES, UPSERTCOMMENTTYPE } from 'graphQL/useQueryCommentType';
+
+import { showInfoMessage } from 'actions';
 
 const useStyles = makeStyles(theme => ({
 	noBorder: {
@@ -204,7 +209,7 @@ export default function CommentType(props) {
 	useEffect(() => {
 		if (data && Array.isArray(data.commentsType)) {
 			const commentsType = data.commentsType;
-			const uniqueCommonType = _.uniqBy(commentsType, function (e) {
+			const uniqueCommonType = _.uniqBy(commentsType, e => {
 				return e.commentType;
 			});
 			setCommentTypes(uniqueCommonType);

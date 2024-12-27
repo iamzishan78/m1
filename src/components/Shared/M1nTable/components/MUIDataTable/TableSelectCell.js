@@ -1,9 +1,11 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import clsx from 'clsx';
-import { ExpandButton } from 'mui-datatables';
+
 import { Checkbox, TableCell } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+
+import clsx from 'clsx';
+import { ExpandButton } from 'mui-datatables';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles(
 	theme => ({

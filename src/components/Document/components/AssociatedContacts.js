@@ -1,14 +1,16 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 
+import { useMutation } from '@apollo/client';
+
 //Contexts
+import { ADD_CONTACT_TO_FILE_DESCRIPTOR } from 'graphQL/useMutationAddContactToFileDescriptor';
+import { DELETE_CONTACT_FROM_FILE_DESCRIPTOR } from 'graphQL/useMutationDeleteContactFromFileDescriptor';
+
 import { AppContext } from 'AppContext';
 
 import DocumentAssociation from './DocumentAssociation';
 import { DocumentContext } from '../DocumentContext';
-import { useMutation } from '@apollo/client';
-import { ADD_CONTACT_TO_FILE_DESCRIPTOR } from 'graphQL/useMutationAddContactToFileDescriptor';
-import { DELETE_CONTACT_FROM_FILE_DESCRIPTOR } from 'graphQL/useMutationDeleteContactFromFileDescriptor';
 
 export default function AssociatedContacts({ title }) {
 	// Initials
@@ -126,7 +128,7 @@ export default function AssociatedContacts({ title }) {
 			addFileLoading={addContactsLoading}
 			deleteFileLoading={deleteContactLoading}
 			updateDocumentLoading={getContactsLoading}
-			href={`/contact/details/{ID}?tenant={TENANT}`}
+			href={'/contact/details/{ID}?tenant={TENANT}'}
 		/>
 	);
 }

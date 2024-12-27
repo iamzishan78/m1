@@ -1,24 +1,26 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Switch, Route, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { Switch, Route, useLocation } from 'react-router-dom';
 
-import { setActiveModule, toggleQuickActionsPanel } from 'store/actions/commonActions';
-import { AppContext } from 'AppContext';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
-
-import RevenueAnalytics from 'components/Analytics/components/Revenue';
-import LandAnalytics from 'components/Analytics/components/Land';
 import ActivitiesDashboard from 'components/Activities/components/ActivitiesDashboard';
+import Data from 'components/Analytics/components/Data';
+import LandAnalytics from 'components/Analytics/components/Land';
+import RevenueAnalytics from 'components/Analytics/components/Revenue';
 import AuditReporting from 'components/AuditReporting/AuditReporting';
-import RigsCard from 'components/Dashboard/components/RigsCard';
 import PermitsCard from 'components/Dashboard/components/PermitsCard';
 import ProdCard from 'components/Dashboard/components/ProdCard';
+import RigsCard from 'components/Dashboard/components/RigsCard';
 import AdvancedSearch from 'components/Land/components/AdvancedSearch';
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import QuickActionPanel from 'components/Land/components/QuickActionPanel';
-import { analyticsManagementRoutes } from 'utils/data';
 import { RevenuePropertyDetails } from 'components/Revenue/components';
-import Data from 'components/Analytics/components/Data';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+
+import { setActiveModule, toggleQuickActionsPanel } from 'store/actions/commonActions';
+
+import { analyticsManagementRoutes } from 'utils/data';
+
+import { AppContext } from 'AppContext';
 
 const Components = {
 	Land: LandAnalytics,

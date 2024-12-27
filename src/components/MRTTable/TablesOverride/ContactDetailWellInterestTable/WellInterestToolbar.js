@@ -1,7 +1,10 @@
 import React, { memo } from 'react';
+
 import { Button } from '@material-ui/core';
-import { tableGlobalController, tableController } from 'hookstate/tableController';
+
 import CotactDetailWellInterestTableDialogs from 'components/MRTTable/TablesOverride/ContactDetailWellInterestTable/RightDialog';
+
+import { tableGlobalController, tableController } from 'hookstate/tableController';
 
 function WellInterestToolBar({ table, tableKey }) {
 	const Controller = tableController(tableKey);

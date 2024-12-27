@@ -1,6 +1,8 @@
 import React from 'react';
+
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
+
 import { slidoutStateController } from 'hookstate/slidoutStateController';
 
 const useStyles = makeStyles(theme => ({
@@ -65,7 +67,9 @@ export default function Drawer(props) {
 		<div className={classes.root}>
 			{drawerIcons.map((view, index) => {
 				const { name, Icon, show } = view;
-				if (show === false) return null;
+				if (show === false) {
+					return null;
+				}
 				return (
 					<Tooltip key={index} title={name} placement="left">
 						<div className={`${classes.icon} ${getClass(name)}`} onClick={() => handleClick(view)}>

@@ -1,20 +1,25 @@
 import React, { memo, useEffect, useMemo, useRef } from 'react';
+
 import Portal from '@material-ui/core/Portal';
+
 import { useMutation } from '@apollo/client';
 
-import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import ExpandableCardProvider from 'components/ExpandableCard/ExpandableCardProvider';
-import WellCardProvider from 'components/WellCard/WellCardProvider';
+import LayerSelectionPopup from 'components/Map/components/popup/LayerSelectionPopup';
 import PortalD from 'components/Map/components/Portal';
 import PermitCardProvider from 'components/PermitCard/PermitCardProvider';
 import ShapeDetailCard from 'components/ShapeDetailCard';
 import UdLayerCardProvider from 'components/UdLayerCard/UdLayerCardProvider';
-import LayerSelectionPopup from 'components/Map/components/popup/LayerSelectionPopup';
-import { popupController } from 'hookstate/popupStateController';
+import WellCardProvider from 'components/WellCard/WellCardProvider';
+
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+
 import { globalStateController } from 'hookstate/globalStateController';
-import WellClick from './WellClick';
-import PermitClick from './PermitClick';
 import { layerController } from 'hookstate/layerStateController';
+import { popupController } from 'hookstate/popupStateController';
+
+import PermitClick from './PermitClick';
+import WellClick from './WellClick';
 
 function Portals({ hideShape }) {
 	const container = useRef(null);
@@ -99,10 +104,13 @@ function Portals({ hideShape }) {
 			// !popupVals.selectedPermit &&
 			// !popupVals.selectedParcel &&
 			!popupVals.selectedUserDefinedLayer
-		)
+		) {
 			return;
+		}
 
-		if (popupVals.expandedCard) return;
+		if (popupVals.expandedCard) {
+			return;
+		}
 
 		popupController.updateState({
 			popupOpen: true,

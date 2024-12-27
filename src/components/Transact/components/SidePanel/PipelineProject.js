@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Accordion, AccordionSummary, Typography, Grid, TextField } from '@material-ui/core';
-import { ExpandMore, ExpandLess, Edit } from '@material-ui/icons';
-import { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
 import { Flipped } from 'react-flip-toolkit';
-import { UPDATE_PROJECT } from 'graphQL/useMutationUpdateProject';
+import { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
+
+import { Accordion, AccordionSummary, Typography, Grid, TextField } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { ExpandMore, ExpandLess, Edit } from '@material-ui/icons';
+
 import { useMutation } from '@apollo/client';
+
+import { UPDATE_PROJECT } from 'graphQL/useMutationUpdateProject';
 
 const useStyles = makeStyles(theme => ({
 	root: props => ({

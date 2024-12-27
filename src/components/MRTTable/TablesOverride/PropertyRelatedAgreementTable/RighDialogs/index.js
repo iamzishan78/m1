@@ -1,7 +1,10 @@
 import React, { memo } from 'react';
-import { tableGlobalController } from 'hookstate/tableController';
-import AddNewRelatedAgreementDialog from './AddNewRelatedAgreementDialog';
+
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+
+import { tableGlobalController } from 'hookstate/tableController';
+
+import AddNewRelatedAgreementDialog from './AddNewRelatedAgreementDialog';
 
 function PropertyRevenueDetailDialog() {
 	const { stateValues } = tableGlobalController.useState(['propertyRevenueDetailDialog']);

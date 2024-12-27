@@ -1,8 +1,9 @@
-import { Grid } from '@material-ui/core';
 import { Sparklines, SparklinesLine } from 'react-sparklines';
 
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import { Grid } from '@material-ui/core';
+
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import PropertiesRevenueToolbar from 'components/MRTTable/TablesOverride/PropertiesRevenue/PropertiesRevenueToolbar';
 
 import { GET_PROPERTIES_REVENUE } from 'graphQL/useQueryGetPropertiesRevenue';
@@ -13,7 +14,9 @@ const PropertiesRevenueMeta = {
 	getVariables: tableMeta => {
 		const { filters, filterDate, allDates = false } = tableMeta?.customProps || {};
 
-		if (!filters && !filterDate) return;
+		if (!filters && !filterDate) {
+			return;
+		}
 
 		return {
 			filters,

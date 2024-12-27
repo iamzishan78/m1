@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+
 import { CircularProgress } from '@material-ui/core';
-import { slidoutState } from 'hookstate/initialStates';
-import Documents from '../Documents';
-import Contacts from 'components/FlowDrawer/Contacts';
+import { makeStyles } from '@material-ui/core/styles';
+
 import { useHookstate } from '@hookstate/core';
+
+import Contacts from 'components/FlowDrawer/Contacts';
+
+import { slidoutState } from 'hookstate/initialStates';
+
 import CommentComponent from '../CommentComponent';
+import Documents from '../Documents';
 
 const useStyles = makeStyles(theme => ({
 	homeRoot: {
@@ -25,14 +30,15 @@ function DialogContent(props) {
 	const { name, Component } = view;
 	const { consts, functions } = view.props;
 
-	if (loader)
+	if (loader) {
 		return (
 			<div style={{ display: 'flex', justifyContent: 'center' }}>
 				<CircularProgress size="40px" />
 			</div>
 		);
+	}
 
-	if (name === 'Home')
+	if (name === 'Home') {
 		return (
 			<div
 				style={{
@@ -49,8 +55,9 @@ function DialogContent(props) {
 				</div>
 			</div>
 		);
-	else if (name === 'Documents') return <Documents id={parentId} isTransactPage={true} />;
-	else if (name === 'Contacts') {
+	} else if (name === 'Documents') {
+		return <Documents id={parentId} isTransactPage={true} />;
+	} else if (name === 'Contacts') {
 		if (consts && functions) {
 			const { loading, stateAppKey } = consts;
 			const { gotoContact, getRemoveDescriptorResponse, addSelectedContact, refetchData } = functions;

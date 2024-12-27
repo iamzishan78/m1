@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
-import get from 'lodash/get';
+
 import { useLazyQuery, useMutation } from '@apollo/client';
+import get from 'lodash/get';
+
+import { setStateIfDeepEqual } from 'components/Shared/functions';
+import AutocompEntityNamesVirtualizeList from 'components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
+
+import { ADDCONTACT } from 'graphQL/useMutationAddContact';
+import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
 
 import { AppContext } from 'AppContext';
-import { setStateIfDeepEqual } from 'components/Shared/functions';
-import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
-import { ADDCONTACT } from 'graphQL/useMutationAddContact';
-import AutocompEntityNamesVirtualizeList from 'components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
 
 export default function ContactPaginatedDropdown({ nameAutValue, setNameAutValue, ...rest }) {
 	const [stateApp] = useContext(AppContext);

@@ -1,19 +1,24 @@
 import React, { useContext, useEffect } from 'react';
-import { get, isEqual } from 'lodash';
+import { useForm } from 'react-hook-form';
+
 import { Tooltip } from '@material-ui/core';
-import moment from 'moment';
 import { Grid, TextField, Card, CardContent, Typography, Switch, FormControlLabel, Button } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import { headerStyles } from './styles';
 
+import { useLazyQuery } from '@apollo/client';
+import { get, isEqual } from 'lodash';
+import moment from 'moment';
+
+import CommonFieldList from 'components/Shared/Forms/Fields/CommonFieldList';
 import UsersListWithIcon from 'components/Shared/UsersListWithIcon';
 import vf_number from 'components/Shared/valueformatters/vf_number';
-import { AppContext } from 'AppContext';
 import MetaField from 'components/Table/helpers/MetaField';
-import { useLazyQuery } from '@apollo/client';
+
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
-import CommonFieldList from 'components/Shared/Forms/Fields/CommonFieldList';
-import { useForm } from 'react-hook-form';
+
+import { AppContext } from 'AppContext';
+
+import { headerStyles } from './styles';
 
 const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
 	const [stateApp, setStateApp] = useContext(AppContext);
@@ -33,14 +38,18 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
 	const { control } = useForm();
 
 	const offClickHandler = (key, value) => {
-		if (!key) return;
+		if (!key) {
+			return;
+		}
 
 		const oldCustomData = campaign.custom_data || {};
 		const customData = {
 			...oldCustomData,
 			[key.replaceAll('custom_data.', '')]: value,
 		};
-		if (!isEqual(customData, oldCustomData)) updateCampaignInformation('custom_data', customData);
+		if (!isEqual(customData, oldCustomData)) {
+			updateCampaignInformation('custom_data', customData);
+		}
 	};
 
 	return (

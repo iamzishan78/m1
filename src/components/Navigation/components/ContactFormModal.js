@@ -1,20 +1,23 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useMutation, useLazyQuery } from '@apollo/client';
-import styled from 'styled-components';
-import * as EmailValidator from 'email-validator';
-import { makeStyles } from '@material-ui/core/styles';
+
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import MenuItem from '@material-ui/core/MenuItem';
-import Typography from '@material-ui/core/Typography';
 import Select from '@material-ui/core/Select';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
+import * as EmailValidator from 'email-validator';
+import styled from 'styled-components';
+
 import { SENDEMAILCONTACT } from '../../../graphQL/useMutationSendEmailContact';
 
 const M1neralLogo = props => (
@@ -101,10 +104,18 @@ function ContactFormModal(props) {
 		let categoryErr = false;
 		let commentErr = false;
 		let emailErr = false;
-		if (!name || name.length === 0) nameErr = true;
-		if (!email || email.length === 0 || !EmailValidator.validate(email)) emailErr = true;
-		if (!category || category.length === 0) categoryErr = true;
-		if (!comment || comment.length === 0) commentErr = true;
+		if (!name || name.length === 0) {
+			nameErr = true;
+		}
+		if (!email || email.length === 0 || !EmailValidator.validate(email)) {
+			emailErr = true;
+		}
+		if (!category || category.length === 0) {
+			categoryErr = true;
+		}
+		if (!comment || comment.length === 0) {
+			commentErr = true;
+		}
 		setErrors({
 			name: nameErr,
 			category: categoryErr,
@@ -115,7 +126,9 @@ function ContactFormModal(props) {
 	};
 
 	const sendMail = async () => {
-		if (updateErrors()) return;
+		if (updateErrors()) {
+			return;
+		}
 
 		sendEmailContact({
 			variables: {

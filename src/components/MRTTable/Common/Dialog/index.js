@@ -1,20 +1,25 @@
 import React, { memo } from 'react';
+
 import Dialog from '@material-ui/core/Dialog';
+
 import { useMutation } from '@apollo/client';
 
-import Loader from 'components/Loaders';
-import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
-import BuyContactsInfoDialogContent from 'components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
+import Loader from 'components/Loaders';
 import ExportContactsPurchaseAndOwners from 'components/MRTTable/Common/Dialog/ExportContactsPurchaseAndOwners';
+import BuyContactsInfoDialogContent from 'components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
+
+import { GRID_GENERIC_REMOVE } from 'graphQL/useMutationCommonGridRemove';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
+
 import CommentDialog from './CommentDialog';
-import TagDialog from './TagDialog';
 import DeleteConfirmationDialog from './ConfirmationDialog/DeleteConfirmationDialog';
 import ExportConfirmationDialog from './ConfirmationDialog/ExportConfirmationDialog';
-
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { globalStateController } from 'hookstate/globalStateController';
-import { GRID_GENERIC_REMOVE } from 'graphQL/useMutationCommonGridRemove';
+import TagDialog from './TagDialog';
 
 function AllDialogs(props) {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
@@ -65,9 +70,14 @@ function AllDialogs(props) {
 			res => {
 				if (res?.data?.gridGenericRemove) {
 					const { success, message } = res.data.gridGenericRemove;
-					if (success) Loader.successToast('deletion', message);
-					else Loader.errorToast('deletion', message);
-				} else Loader.errorToast('deletion', 'Failed to delete row (s)');
+					if (success) {
+						Loader.successToast('deletion', message);
+					} else {
+						Loader.errorToast('deletion', message);
+					}
+				} else {
+					Loader.errorToast('deletion', 'Failed to delete row (s)');
+				}
 				tableGlobalController.refetch();
 			},
 			() => {

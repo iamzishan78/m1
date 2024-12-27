@@ -1,17 +1,22 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import Typography from '@material-ui/core/Typography';
+import { Waypoint } from 'react-waypoint';
+
+import { withStyles } from '@material-ui/core/styles';
 import MuiTableBody from '@material-ui/core/TableBody';
+import Typography from '@material-ui/core/Typography';
+
+import clsx from 'clsx';
+import cloneDeep from 'lodash.clonedeep';
 import { TableBodyCell } from 'mui-datatables';
+import PropTypes from 'prop-types';
+
 // import TableBodyCell from './TableBodyCell';
+
+import GlobalStyles from 'GlobalStyles';
+
 import TableBodyRow from './TableBodyRow';
 import TableSelectCell from './TableSelectCell';
-import { withStyles } from '@material-ui/core/styles';
-import cloneDeep from 'lodash.clonedeep';
 import { getPageValue } from './utils';
-import clsx from 'clsx';
-import { Waypoint } from 'react-waypoint';
-import GlobalStyles from 'GlobalStyles';
 
 const defaultBodyStyles = theme => ({
 	root: {},
@@ -70,7 +75,9 @@ class TableBody extends React.Component {
 	buildRows() {
 		const { data, page, rowsPerPage, count } = this.props;
 
-		if (this.props.options.serverSide) return data.length ? data : null;
+		if (this.props.options.serverSide) {
+			return data.length ? data : null;
+		}
 
 		let rows = [];
 		const highestPageInRange = getPageValue(count, rowsPerPage, page);
@@ -82,7 +89,9 @@ class TableBody extends React.Component {
 		}
 
 		for (let rowIndex = fromIndex; rowIndex < count && rowIndex < toIndex; rowIndex++) {
-			if (data[rowIndex] !== undefined) rows.push(data[rowIndex]);
+			if (data[rowIndex] !== undefined) {
+				rows.push(data[rowIndex]);
+			}
 		}
 
 		return rows.length ? rows : null;
@@ -185,7 +194,9 @@ class TableBody extends React.Component {
 		}
 
 		// Don't trigger onRowClick if the event was actually a row selection via checkbox
-		if (event.target.id && event.target.id.startsWith('MUIDataTableSelectCell')) return;
+		if (event.target.id && event.target.id.startsWith('MUIDataTableSelectCell')) {
+			return;
+		}
 
 		// Check if we should toggle row select when row is clicked anywhere
 		if (
@@ -207,9 +218,13 @@ class TableBody extends React.Component {
 		}
 
 		// Don't trigger onRowClick if the event was actually a row selection via click
-		if (this.props.options.selectableRowsOnClick) return;
+		if (this.props.options.selectableRowsOnClick) {
+			return;
+		}
 
-		if (this.props.options.onRowClick) this.props.options.onRowClick(row, data, event);
+		if (this.props.options.onRowClick) {
+			this.props.options.onRowClick(row, data, event);
+		}
 	};
 
 	processRow = (row, columnOrder) => {

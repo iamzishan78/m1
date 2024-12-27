@@ -1,9 +1,11 @@
 /* eslint-disable no-undef */
 
-import { GETPIPELINE } from 'graphQL/useQueryPipeline';
-import ldata from '../../fixtures/ldata.json';
 import M1nTable from 'components/Shared/M1nTable/M1nTable';
+
+import { GETPIPELINE } from 'graphQL/useQueryPipeline';
+
 import { headers } from '../../cypressUtils/cypressHeaders';
+import ldata from '../../fixtures/ldata.json';
 
 describe('Flow Line M1nTable', () => {
 	it('checks created at/by and updated at/by fields in flow grid', () => {

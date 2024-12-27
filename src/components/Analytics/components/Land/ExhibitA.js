@@ -1,8 +1,11 @@
+import React, { useEffect, useState } from 'react';
+
 import { Grid, makeStyles } from '@material-ui/core';
+
 import MRTTable from 'components/MRTTable';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableController } from 'hookstate/tableController';
-import React, { useEffect, useState } from 'react';
 
 const TableKey = 'ExhibitATable';
 
@@ -60,18 +63,24 @@ const FilterComp = ({ filterColumn }) => {
 	useEffect(() => {
 		const filter = stateValues.filters.find(f => f.field === columnSchema?.id || f.field === columnSchema?.name);
 
-		if (!filter) return setValue('');
+		if (!filter) {
+			return setValue('');
+		}
 
 		setValue(filter.value);
 	}, [columnSchema?.id, columnSchema?.name, stateValues.filters]);
 
 	const Comp = columnSchema?.SingleSelect;
 
-	if (!Comp) return null;
+	if (!Comp) {
+		return null;
+	}
 
 	const column = stateValues.mrtTableRef?.getColumn?.(columnSchema?.id);
 
-	if (!column) return null;
+	if (!column) {
+		return null;
+	}
 
 	return (
 		<Comp

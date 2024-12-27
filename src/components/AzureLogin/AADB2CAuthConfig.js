@@ -5,7 +5,9 @@ const B2CTenants = JSON.parse(process.env.REACT_APP_TENANS_B2C_CREDENTIALS);
 export const B2CTenantCredentials = B2CTenantName => {
 	let found;
 	for (let i = 0; i < B2CTenants.length; i++) {
-		if (B2CTenants[i].name.toUpperCase() === B2CTenantName.toUpperCase()) found = B2CTenants[i];
+		if (B2CTenants[i].name.toUpperCase() === B2CTenantName.toUpperCase()) {
+			found = B2CTenants[i];
+		}
 	}
 	return found;
 };

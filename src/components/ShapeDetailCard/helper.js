@@ -21,9 +21,11 @@ export const getShapeSubtitle = (properties, _shapeName) => {
 	}
 
 	let shapeSubtitle;
-	if (properties.State === 'TX')
+	if (properties.State === 'TX') {
 		shapeSubtitle = `${properties?.County}, ${state || ''} - ${blockTownship}${section ? `, SEC ${section}` : ''}`;
-	else shapeSubtitle = `${properties?.County}, ${state || ''} - ${shapeName}`;
+	} else {
+		shapeSubtitle = `${properties?.County}, ${state || ''} - ${shapeName}`;
+	}
 
 	return shapeSubtitle;
 };

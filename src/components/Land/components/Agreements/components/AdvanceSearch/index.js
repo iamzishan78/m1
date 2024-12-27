@@ -1,11 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react';
-import get from 'lodash/get';
-import { makeStyles } from '@material-ui/styles';
+
 import { IconButton } from '@material-ui/core';
 import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Chip } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon, Close as ClearButton } from '@material-ui/icons';
-import * as FilterComponents from './searchComponents';
+import { makeStyles } from '@material-ui/styles';
+
+import get from 'lodash/get';
+
 import { AppContext } from 'AppContext';
+
+import * as FilterComponents from './searchComponents';
 
 const filterTypes = {
 	// Summary: { component: "ProvisionFilters", countKey: "geographyFilterCount" },

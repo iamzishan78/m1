@@ -1,9 +1,13 @@
 import React, { memo } from 'react';
-import { Button, ButtonGroup } from '@material-ui/core';
-import { tableGlobalController } from 'hookstate/tableController';
 import { useHistory } from 'react-router-dom';
-import { getIdFromPath } from 'utils/helper';
+
+import { Button, ButtonGroup } from '@material-ui/core';
+
 import PropertyRevenueDetailDialog from 'components/MRTTable/TablesOverride/PropertyRelatedAgreementTable/RighDialogs';
+
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { getIdFromPath } from 'utils/helper';
 
 function PropertyRevenueDetailToolBar() {
 	const history = useHistory();

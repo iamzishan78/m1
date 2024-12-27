@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import MRTTable from 'components/MRTTable';
+
 import { basic_timeouts } from '../../cypressUtils/data';
 
 describe('CampaignTractInterest Table', () => {

@@ -1,9 +1,11 @@
 /* eslint-disable no-undef */
 import MRTTable from 'components/MRTTable';
-import { basic_timeouts } from '../../../cypress/cypressUtils/data';
-import ldata from '../../fixtures/ldata.json';
+
 import { REVERTCYPRESSDELETE } from 'graphQL/useMutationCommonCypressRevert';
+
+import { basic_timeouts } from '../../../cypress/cypressUtils/data';
 import { headers } from '../../cypressUtils/cypressHeaders';
+import ldata from '../../fixtures/ldata.json';
 
 // Describe block for testing the Tract Interest Owners Table
 describe('Tract Interest Owners Table', () => {
@@ -49,7 +51,7 @@ describe('Tract Interest Owners Table', () => {
 			['gridGenericRemove'],
 			alias => {
 				// Selecting all rows for deletion
-				cy.get(`[data-testid="over-ride-select-all-div"] input`).click();
+				cy.get('[data-testid="over-ride-select-all-div"] input').click();
 				// Clicking on the delete icon button to delete selected rows
 				cy.get('.MuiButtonBase-root[data-testid="delete-icon-button"]').click();
 				// Confirming the deletion

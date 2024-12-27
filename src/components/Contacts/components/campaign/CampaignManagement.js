@@ -1,15 +1,19 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { useLazyQuery } from '@apollo/client';
 
-import { AppContext } from 'AppContext';
+import { useLazyQuery } from '@apollo/client';
 
 import CampaignAnalytics from 'components/Contacts/components/CampaignAnalytics';
 import CustomCampaignFilters from 'components/Contacts/components/CampaignFilter';
 import MRTTable from 'components/MRTTable';
-import { tableController } from 'hookstate/tableController';
-import { copy, dateFilterToDate } from 'utils/helper';
 import { formatDate } from 'components/Shared/functions';
+
 import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
+
+import { tableController } from 'hookstate/tableController';
+
+import { copy, dateFilterToDate } from 'utils/helper';
+
+import { AppContext } from 'AppContext';
 
 const CampaignManagement = () => {
 	const esIndex = 'campaigns_flat';
@@ -31,7 +35,9 @@ const CampaignManagement = () => {
 		onCompleted: data => {
 			if (data?.getDbMinValue?.data) {
 				const date = new Date(data?.getDbMinValue.data);
-				if (date?.toString() !== 'Invalid Date') setLastCampaignMinDate(data?.getDbMinValue.data);
+				if (date?.toString() !== 'Invalid Date') {
+					setLastCampaignMinDate(data?.getDbMinValue.data);
+				}
 			}
 		},
 	});
@@ -57,7 +63,9 @@ const CampaignManagement = () => {
 		let externalFilters = tableController(TableKey).getExternalFilter();
 
 		externalFilters.forEach(externalFilter => {
-			if (newFilter.find(f => f.field === externalFilter.field)) return;
+			if (newFilter.find(f => f.field === externalFilter.field)) {
+				return;
+			}
 
 			tableController(TableKey).clearFilter(externalFilter.field);
 		});

@@ -1,11 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { AppContext } from 'AppContext';
+
 import { makeStyles } from '@material-ui/styles';
-import AgreementsTable from 'components/Table/Agreement/AgreementsTable';
-// actions
+
 import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
-import { useDispatch } from 'react-redux';
-import { setMapGridCardState } from 'actions';
+import AgreementsTable from 'components/Table/Agreement/AgreementsTable';
+
+import { mapControlsController } from 'hookstate/mapControlsController';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -25,8 +27,6 @@ const useStyles = makeStyles(theme => ({
 export default function ReportingGroups() {
 	const classes = useStyles();
 	const [stateApp] = useContext(AppContext);
-	const dispatch = useDispatch();
-	// redux
 
 	const [filterToggle, setFilterToggle] = React.useState(false);
 	// props to pass in table
@@ -37,7 +37,7 @@ export default function ReportingGroups() {
 	const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 166px)' };
 
 	useEffect(() => {
-		dispatch(setMapGridCardState({ searchInputValue: '' }));
+		mapControlsController.updateState({ searchValue: '' });
 	}, []);
 
 	return (

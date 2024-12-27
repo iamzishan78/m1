@@ -1,17 +1,20 @@
 import React, { useMemo } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import UnitIcon from 'components/Shared/svgIcons/unit';
-import Contact from 'components/Shared/svgIcons/contact';
 
-import Card from '@material-ui/core/Card';
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import { makeStyles } from '@material-ui/core/styles';
+import TractInterestsIcon from '@material-ui/icons/ListAlt';
+
+import moment from 'moment';
+
+import MRTTable from 'components/MRTTable';
+import Contact from 'components/Shared/svgIcons/contact';
+import TractIcon from 'components/Shared/svgIcons/tract';
+import UnitIcon from 'components/Shared/svgIcons/unit';
+
+import { tableGlobalController } from 'hookstate/tableController';
 
 import { campaignInitialData } from './data';
-import MRTTable from 'components/MRTTable';
-import moment from 'moment';
-import { tableGlobalController } from 'hookstate/tableController';
-import TractInterestsIcon from '@material-ui/icons/ListAlt';
-import TractIcon from 'components/Shared/svgIcons/tract';
 
 const useStyles = makeStyles(theme => ({
 	card: {

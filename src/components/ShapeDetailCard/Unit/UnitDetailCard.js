@@ -1,40 +1,44 @@
 import React, { useState, useEffect, useContext, useMemo } from 'react';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import set from 'lodash/set';
+import { useDispatch, useSelector } from 'react-redux';
+
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import GavelIcon from '@material-ui/icons/Gavel';
-import { useDispatch, useSelector } from 'react-redux';
-import Taps from 'components/Shared/Taps';
-import TabPanels from 'components/Shared/TabPanels';
-import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
-import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+import set from 'lodash/set';
+
 import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
 import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
-import TabButtons from 'components/Shared/TabPanels/TabButtons';
-import UnitSummary from './UnitSummary';
-import AssociatedWellsShapeTable from 'components/Table/Wells/AssociatedWellsShapeTable';
-import Tags from 'components/Shared/Tagger';
-import { showSuccessMessage, showErrorMessage } from 'actions';
-import { AppContext } from 'AppContext';
-import { copy } from 'components/Shared/functions';
-import { popupController } from 'hookstate/popupStateController';
-import MRTTable from 'components/MRTTable';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { detailCardStyles } from '../style';
 import { DrawerContextProvider } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
+import MRTTable from 'components/MRTTable';
+import PotentialShapeTractToolbar from 'components/MRTTable/TablesOverride/PotentialShapeTract/PotentialShapeTractToolbar';
+import { copy } from 'components/Shared/functions';
+import TabPanels from 'components/Shared/TabPanels';
+import Tags from 'components/Shared/Tagger';
+import Taps from 'components/Shared/Taps';
 import ParcelAgreementTable from 'components/Table/Parcel/ParcelAgreementTable';
+
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
+
 import { jobController } from 'hookstate/jobStateController';
 import { layerController } from 'hookstate/layerStateController';
-import { getShapeSubtitle } from '../helper';
 import { mapControlsController } from 'hookstate/mapControlsController';
-import PotentialShapeTractToolbar from 'components/MRTTable/TablesOverride/PotentialShapeTract/PotentialShapeTractToolbar';
+import { popupController } from 'hookstate/popupStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { showSuccessMessage, showErrorMessage } from 'actions';
+import { AppContext } from 'AppContext';
+
+import { getShapeSubtitle } from '../helper';
+import { detailCardStyles } from '../style';
+import UnitSummary from './UnitSummary';
 
 const setSelectedTab = tableGlobalController.setSelectedTab;
 
 export default function UnitDetailCard(props) {
 	const dispatch = useDispatch();
-	const [selectedWellTab, setWellSelectedTab] = useState(0);
 	const [uniObj, setUniObj] = useState();
 	const [properties, setProperties] = useState();
 	const [stateApp, setStateApp] = useContext(AppContext);
@@ -56,7 +60,9 @@ export default function UnitDetailCard(props) {
 	const contactsAdded = useSelector(state => state?.common?.contactsAdded);
 
 	useEffect(() => {
-		if (dataCustomLayer) refetchCustomLayer();
+		if (dataCustomLayer) {
+			refetchCustomLayer();
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [globalStateValues?.refetch]);
 
@@ -67,7 +73,9 @@ export default function UnitDetailCard(props) {
 	}, []);
 
 	useEffect(() => {
-		if (contactsAdded) setSelectedTab(0);
+		if (contactsAdded) {
+			setSelectedTab(0);
+		}
 	}, [contactsAdded]);
 
 	useEffect(() => {
@@ -83,7 +91,9 @@ export default function UnitDetailCard(props) {
 	useEffect(() => {
 		if (dataCustomLayer && dataCustomLayer.customLayer) {
 			let shape = JSON.parse(dataCustomLayer.customLayer.shape);
-			if (dataCustomLayer.customLayer.shapeJson) shape = copy(dataCustomLayer.customLayer.shapeJson);
+			if (dataCustomLayer.customLayer.shapeJson) {
+				shape = copy(dataCustomLayer.customLayer.shapeJson);
+			}
 			setUniObj({
 				...dataCustomLayer.customLayer,
 				shape,
@@ -122,8 +132,9 @@ export default function UnitDetailCard(props) {
 				const { customLayer } = updatedUnit.updateCustomLayer;
 				const feature = JSON.parse(customLayer.shape);
 
-				if (feature?.properties?.netRoyalityAcres && !feature?.properties?.netRoyalityAcres?.unitNra)
+				if (feature?.properties?.netRoyalityAcres && !feature?.properties?.netRoyalityAcres?.unitNra) {
 					feature.properties.netRoyalityAcres.unitNra = feature.properties?.netRoyalityAcres?.calculatedNra;
+				}
 
 				feature.id = customLayer._id;
 				feature.properties.id = customLayer._id;
@@ -147,12 +158,18 @@ export default function UnitDetailCard(props) {
 		e?.stopPropagation();
 		const { shape } = uniObj;
 		/* -------------------------------- Data Fix -------------------------------- */
-		if (field.includes('originalProperties.')) delete shape.properties[field];
-		if (field.includes('originalProperties.State'))
+		if (field.includes('originalProperties.')) {
+			delete shape.properties[field];
+		}
+		if (field.includes('originalProperties.State')) {
 			set(shape.properties, 'originalProperties.StateAbbreviation', value);
-		if (field.includes('originalProperties.Section')) set(shape.properties, 'originalProperties.ShortName', value);
-		if (field.includes('originalProperties.Meridian'))
+		}
+		if (field.includes('originalProperties.Section')) {
+			set(shape.properties, 'originalProperties.ShortName', value);
+		}
+		if (field.includes('originalProperties.Meridian')) {
 			set(shape.properties, 'originalProperties.PrincipalMeridian', value);
+		}
 		/* -------------------------------- Data Fix -------------------------------- */
 		set(shape.properties, field, value);
 
@@ -284,18 +301,6 @@ export default function UnitDetailCard(props) {
 		);
 	}
 
-	function WellHeader({ selectedWellTab, setWellSelectedTab }) {
-		return (
-			<TabButtons
-				labels={['Unit Wells', 'Potential Wells']}
-				value={selectedWellTab}
-				setValue={n => {
-					setWellSelectedTab(n);
-				}}
-			/>
-		);
-	}
-
 	return uniObj ? (
 		<DrawerContextProvider>
 			<Grid item sm={12} container className={classes.gridWidthScroll}>
@@ -333,7 +338,7 @@ export default function UnitDetailCard(props) {
 									</div>,
 									<div>
 										<MRTTable
-											name="PotentialOwnersTable"
+											name="PotentialWellOwnersTable"
 											overrideMeta={{
 												tabLabels: ['Unit Ownership', 'Potential Ownership'],
 												customProps: {
@@ -358,7 +363,7 @@ export default function UnitDetailCard(props) {
 								/>
 							</div>,
 							<TabPanels
-								value={selectedWellTab}
+								value={selectedTab}
 								panels={[
 									<div className={showSummary ? classes.subContent : classes.subContent2}>
 										<RelatedWellsTable
@@ -369,15 +374,15 @@ export default function UnitDetailCard(props) {
 										/>
 									</div>,
 									<div className={showSummary ? classes.subContent : classes.subContent2}>
-										<AssociatedWellsShapeTable
-											customLayer={uniObj}
-											shapeType="Unit"
-											parent="associatedWellsPerUnits"
-											targetLabel="well"
-											header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
-											showTracks
-											setSelectedTab={setWellSelectedTab}
-											dense
+										<MRTTable
+											name="PotentialWellsTable"
+											overrideMeta={{
+												tabLabels: ['Unit Wells', 'Potential Wells'],
+												customProps: {
+													customLayer: uniObj,
+													shapeType: 'Unit',
+												},
+											}}
 										/>
 									</div>,
 								]}

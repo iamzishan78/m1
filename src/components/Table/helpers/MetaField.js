@@ -1,37 +1,41 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { Controller, useForm } from 'react-hook-form';
 import Select from 'react-select';
-
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { Grid, Dialog, Menu, MenuItem, ListItemIcon, ListItemText, FormHelperText } from '@material-ui/core';
-import CheckIcon from '@material-ui/icons/Check';
-import AddIcon from '@material-ui/icons/Add';
-import ColorLensIcon from '@mui/icons-material/ColorLens';
-import { arrayMoveImmutable } from 'array-move';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { AppContext } from 'AppContext';
-import omit from 'lodash/omit';
-
-import CloseIcon from '@material-ui/icons/Close';
-import { Delete as DeleteIcon, MoreHoriz as MoreHorizIcon } from '@material-ui/icons/';
-import IconButton from '@material-ui/core/IconButton';
-
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 import { SortableContainer, SortableElement, sortableHandle } from 'react-sortable-hoc';
 
-import { GET_ALL_LIBRARY_META_DATA, CHECK_META_KEY_EXISTS } from 'graphQL/useQueryGetMetaData';
+import { Grid, Dialog, Menu, MenuItem, ListItemIcon, ListItemText, FormHelperText } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import IconButton from '@material-ui/core/IconButton';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import { Delete as DeleteIcon, MoreHoriz as MoreHorizIcon } from '@material-ui/icons/';
+import AddIcon from '@material-ui/icons/Add';
+import CheckIcon from '@material-ui/icons/Check';
+import CloseIcon from '@material-ui/icons/Close';
+import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
+
+import ColorLensIcon from '@mui/icons-material/ColorLens';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { arrayMoveImmutable } from 'array-move';
+import omit from 'lodash/omit';
+
+import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import { colorPallete } from 'components/Table/helpers';
+
 import { ADD_META_DATA } from 'graphQL/useMutationAddMetaData';
 import { UPDATE_META_DATA } from 'graphQL/useMutationUpdateMetaData';
-import { colorPallete } from 'components/Table/helpers';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { GET_ALL_LIBRARY_META_DATA, CHECK_META_KEY_EXISTS } from 'graphQL/useQueryGetMetaData';
+
 import { globalStateController } from 'hookstate/globalStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { AppContext } from 'AppContext';
+
 import { getMetaCss } from './getMetaCss';
 
 const useStyles = makeStyles(theme => ({
@@ -332,7 +336,9 @@ const MetaField = ({
 
 	useEffect(() => {
 		return () => {
-			if (!!tableKey) tableGlobalController.reInitialized();
+			if (tableKey) {
+				tableGlobalController.reInitialized();
+			}
 		};
 	}, [tableKey]);
 
@@ -831,28 +837,34 @@ const SortableComponent = ({ setItems, items }) => {
 	};
 
 	const focusOnInput = index => {
-		const input = document.getElementById(`option-input-${(index + 1)}`);
+		const input = document.getElementById(`option-input-${index + 1}`);
 		// Check if the input field with the specified id exists.
 		if (input) {
-			 // Focus on the found input field to ensure a smooth user experience.
+			// Focus on the found input field to ensure a smooth user experience.
 			input.focus();
 		}
 	};
 
-	const handleAddNewOption = (index) => {
+	const handleAddNewOption = index => {
 		const newItems = JSON.parse(JSON.stringify(items));
 		// Add the new element at the desired index
 		newItems.splice(index, 0, { palleteId: colorPallete[0].id });
 		// Update the state with the newly added item.
 		setItems(newItems);
 		// Use a timeout to ensure the DOM updates before focusing on the next input.
-    	// This prevents errors when trying to focus on an element that hasn't been rendered yet.
-		setTimeout(() => focusOnInput((index - 1)), 100);
+		// This prevents errors when trying to focus on an element that hasn't been rendered yet.
+		setTimeout(() => focusOnInput(index - 1), 100);
 	};
 
 	return (
 		<>
-			<SortableList setItems={setItems} items={items} onSortEnd={onSortEnd} useDragHandle handleAddNewOption={handleAddNewOption}/>
+			<SortableList
+				setItems={setItems}
+				items={items}
+				onSortEnd={onSortEnd}
+				useDragHandle
+				handleAddNewOption={handleAddNewOption}
+			/>
 			<div
 				style={{
 					color: '#929292',
@@ -862,7 +874,7 @@ const SortableComponent = ({ setItems, items }) => {
 					cursor: 'pointer',
 				}}
 				onClick={() => {
-					handleAddNewOption(items?.length)
+					handleAddNewOption(items?.length);
 				}}
 			>
 				<AddIcon
@@ -1050,12 +1062,12 @@ const SortableItem = SortableElement(({ item, removeIndex, itemIndex, updateInde
 										// Check if the caret is at the last position of the input
 										if (caretPosition === currentValue.length) {
 											// If at the last position, allow adding a new option
-											handleAddNewOption((itemIndex + 1));
+											handleAddNewOption(itemIndex + 1);
 										}
 									}
 								}}
 								onBlur={() => {
-										updateIndex(itemIndex, { ...item, value: itemValue })
+									updateIndex(itemIndex, { ...item, value: itemValue });
 								}}
 								InputProps={{
 									disableUnderline: true,

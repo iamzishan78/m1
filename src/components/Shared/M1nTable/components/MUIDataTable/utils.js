@@ -37,7 +37,7 @@ function getPageValue(count, rowsPerPage, page) {
 }
 
 function getCollatorComparator() {
-	if (!!Intl) {
+	if (Intl) {
 		const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
 		return collator.compare;
 	}
@@ -81,7 +81,9 @@ function buildCSV(columns, data, options) {
 	const CSVHead = buildHead(columns);
 
 	const buildBody = data => {
-		if (!data.length) return '';
+		if (!data.length) {
+			return '';
+		}
 		return data
 			.reduce(
 				(soFar, row) =>
@@ -137,7 +139,9 @@ function createCSVDownload(columns, data, options, downloadCSV) {
 }
 
 function convertToTitleCase(str) {
-	if (!str || str === '' || typeof str !== 'string') return str;
+	if (!str || str === '' || typeof str !== 'string') {
+		return str;
+	}
 
 	// Replace underscores and hyphens with spaces
 	str = str.replace(/[_-]/g, ' ');
@@ -177,7 +181,9 @@ function removeEmptyArrayKeys(obj) {
 }
 
 const fuzzySearch = (items, query, queryKey = 'name') => {
-	if (!query || query === '') return items;
+	if (!query || query === '') {
+		return items;
+	}
 
 	const search = query.split(' ');
 	const ret = items.reduce((found, i) => {
@@ -201,13 +207,16 @@ function convertAnalyticsDataToCSV(data = [], months = []) {
 		newData.Name = item.name;
 		newData.Total = item.total?.toFixed(2) ?? '';
 		months.forEach(key => {
-			if (item.breakDown) newData[key] = item.data?.[key]?.total?.toFixed(2) ?? '';
-			else newData[key] = item.data?.[key]?.toFixed(2) ?? '';
+			if (item.breakDown) {
+				newData[key] = item.data?.[key]?.total?.toFixed(2) ?? '';
+			} else {
+				newData[key] = item.data?.[key]?.toFixed(2) ?? '';
+			}
 		});
 
 		result.push(newData);
 
-		if (item.breakDown)
+		if (item.breakDown) {
 			Object.keys(item.breakDown).forEach(breakdownKey => {
 				const newData = {};
 				newData.Name = `_${breakdownKey}`;
@@ -218,6 +227,7 @@ function convertAnalyticsDataToCSV(data = [], months = []) {
 
 				result.push(newData);
 			});
+		}
 
 		return result;
 	});

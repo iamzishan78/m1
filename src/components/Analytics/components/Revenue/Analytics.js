@@ -1,14 +1,19 @@
 import React, { useEffect, useState, memo } from 'react';
-import { makeStyles } from '@material-ui/styles';
+
 import { Grid, Card, CardContent, Typography, IconButton } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+
 import { useLazyQuery } from '@apollo/client';
+import { get } from 'lodash';
+
 import FilterIcon from 'components/Common/SvgIcons/Filter';
 import { copy } from 'components/Shared/functions';
 import { vf_currency_dollar } from 'components/Shared/valueformatters/vf_currency';
-import { tableController } from 'hookstate/tableController';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+
 import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
-import { get } from 'lodash';
+import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+
+import { tableController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -188,7 +193,9 @@ function AnalyticsCards(props) {
 	};
 
 	useEffect(() => {
-		if (!tableStateValues?.data?.total) return;
+		if (!tableStateValues?.data?.total) {
+			return;
+		}
 		(async () => {
 			const { propertiesCount, revenueComparisonAnalytics, checkNumbersHits } = await getRevenueComparisonAnalytics();
 			setPropertyNumbers(propertiesCount || 0);
@@ -202,12 +209,13 @@ function AnalyticsCards(props) {
 	useEffect(() => {
 		let filters = copy(props.esFilters);
 		filters = filters.filter((filter, index) => filter.field !== 'isMisMatchedInterest');
-		if (isFiltered)
+		if (isFiltered) {
 			filters.push({
 				field: 'isMisMatchedInterest',
 				value: true,
 				type: 'term',
 			});
+		}
 		props.setESFilters(filters);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isFiltered]);

@@ -1,7 +1,8 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import WellInterestToolBar from 'components/MRTTable/TablesOverride/ContactDetailWellInterestTable/WellInterestToolbar';
+
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 const esIndex = 'wellinterests_flat';

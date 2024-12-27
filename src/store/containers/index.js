@@ -1,11 +1,17 @@
 import { connect } from 'react-redux';
+
 import { bindActionCreators } from 'redux';
 
-import MultipleOwnerToContactDrawer from 'components/Shared/M1nTable/components/SubComponents/MultipleOwnerToContactDrawer';
 import ConvertTaxOwnerToContact from 'components/MapControls/components/popup/ConvertTaxOwnerToContact';
 import ExportWellsOwners from 'components/MapControls/components/popup/ExportWellsOwners';
 import AssignOwnerToContactDrawer from 'components/Shared/M1nTable/components/SubComponents/AssignOwnerToContactDrawer';
+import MultipleOwnerToContactDrawer from 'components/Shared/M1nTable/components/SubComponents/MultipleOwnerToContactDrawer';
 
+import {
+	getContactCampaignAction,
+	convertTaxOwnerToContactAction,
+	convertMultipleOwnerToContactAction,
+} from 'store/actions/contactActions';
 import {
 	getShapeOwnersAndWellsAction,
 	getShapeOwnersAndCountAction,
@@ -13,14 +19,9 @@ import {
 	getMapFilterShapeOwnersAndCountAction,
 	execAsyncExportJobAction,
 } from 'store/actions/ownerActions';
-import {
-	getContactCampaignAction,
-	convertTaxOwnerToContactAction,
-	convertMultipleOwnerToContactAction,
-} from 'store/actions/contactActions';
-import { showSuccessMessage } from 'actions';
-
 import { getShapeOwnersSelectors } from 'store/selectors/index';
+
+import { showSuccessMessage } from 'actions';
 
 const AssignOwnerToContactDrawerProps = state => {
 	const { campaignList } = state.contact;

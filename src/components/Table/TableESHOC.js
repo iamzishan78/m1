@@ -1,40 +1,44 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useState, useEffect, useCallback, useRef, useMemo, memo } from 'react';
 import { useDispatch } from 'react-redux';
-import { useApolloClient, useLazyQuery } from '@apollo/client';
+import { useHistory } from 'react-router-dom';
+
 import { Button, Tooltip, IconButton } from '@material-ui/core';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { useHistory } from 'react-router-dom';
+
+import { useApolloClient, useLazyQuery } from '@apollo/client';
 import { isEmpty, isEqual, isNumber, uniqWith } from 'lodash';
 
-import { AppContext } from 'AppContext';
 // import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
-import { copy, deepEqual, getSearchFields, setStateIfDeepEqual } from 'components/Shared/functions';
-import { TAGSAMPLES } from 'graphQL/useQueryTagSamples';
-import { COMMENTSCOUNTER } from 'graphQL/useQueryCommentsCounter';
-import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
-import { TRACKSBYOBJECTTYPE } from 'graphQL/useQueryTracksByObjectType';
-
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
-import { AutoCompleteFilter } from './AutoCompleteFilter';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import TableHeader from 'components/Table/constants/agreements-header-schema';
-
 import { get } from 'lodash';
-
-import { usetableStyles } from './Styles';
-import { updateUserGridViewSettingAction } from 'store/actions/sessionActions';
-import { handleSelectedGridChange, setColumnDisplayAndFilter } from './helpers';
-import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
-import { formattingGridView, sortColumns } from 'utils/helper';
 import moment from 'moment';
 
-import GlobalSettings from 'GlobalSettings.js';
-import { execCommonAsyncExportJobAction } from 'store/actions/commonActions';
-import { useResetESTableToggle } from 'hookstate';
+import { copy, deepEqual, getSearchFields, setStateIfDeepEqual } from 'components/Shared/functions';
+import TableHeader from 'components/Table/constants/agreements-header-schema';
+
+import { COMMENTSCOUNTER } from 'graphQL/useQueryCommentsCounter';
 import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
+import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
+import { TAGSAMPLES } from 'graphQL/useQueryTagSamples';
+import { TRACKSBYOBJECTTYPE } from 'graphQL/useQueryTracksByObjectType';
+
+import { execCommonAsyncExportJobAction } from 'store/actions/commonActions';
+import { updateUserGridViewSettingAction } from 'store/actions/sessionActions';
+
+import { formattingGridView, sortColumns } from 'utils/helper';
+
+import { AppContext } from 'AppContext';
+import GlobalSettings from 'GlobalSettings.js';
+import { useResetESTableToggle } from 'hookstate';
+
+import { AutoCompleteFilter } from './AutoCompleteFilter';
+import { handleSelectedGridChange, setColumnDisplayAndFilter } from './helpers';
+import { usetableStyles } from './Styles';
 
 export const TableESHOC = Component => {
 	const HocWithDefaultProps = function HOC(props) {
@@ -282,7 +286,9 @@ export const TableESHOC = Component => {
 				}
 
 				let searchQuery = tableMeta.extendSearchQuery || search;
-				if (props.useWildeCard) searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+				if (props.useWildeCard) {
+					searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+				}
 
 				setPage(0);
 				setCurrentRowsLength(0);
@@ -330,15 +336,15 @@ export const TableESHOC = Component => {
 					},
 				});
 
-				if (selectedGridView)
+				if (selectedGridView) {
 					handleSelectedGridChange(
 						tableMeta.TableHeader,
 						{ ...selectedGridView, filters: (selectedGridView.filters || []).concat(tableMeta.filters || []) },
 						columns,
 						true
 					);
+				}
 			}
-			// eslint-disable-next-line
 		}, [tableMeta, search, metaDataRef.current, resetESTableToggle]);
 
 		useEffect(() => {
@@ -355,7 +361,9 @@ export const TableESHOC = Component => {
 
 				TableHeader = columns.length > 0 ? columns : TableHeader;
 				let hits = tableData?.hits;
-				if (formatHits) hits = formatHits(hits);
+				if (formatHits) {
+					hits = formatHits(hits);
+				}
 
 				if (metaDataRef.current) {
 					hits = setCustomMetaRows(hits);
@@ -366,7 +374,9 @@ export const TableESHOC = Component => {
 					setRows(rows.concat(hits));
 					document.getElementById(`waypoint-${rowIndex}`)?.scrollIntoView();
 					isPageChanged(false);
-				} else setRows(hits);
+				} else {
+					setRows(hits);
+				}
 
 				if (formatColumns) {
 					TableHeader = formatColumns(TableHeader, hits);
@@ -377,7 +387,9 @@ export const TableESHOC = Component => {
 			} else if (tableData?.hits?.length === 0) {
 				let { formatHits } = tableMeta;
 
-				if (formatHits) formatHits([]);
+				if (formatHits) {
+					formatHits([]);
+				}
 				setRows([]);
 				setColumnsData(getNonGridViewColumnsData(copy(tableMeta.TableHeader)));
 				setLoading(false);
@@ -456,9 +468,13 @@ export const TableESHOC = Component => {
 								const tableHeaders = getNonGridViewColumnsData(copy(TableHeader));
 								if (!tableHeaders.find(el => el.name === column.name) && tableMeta.customDataESKey) {
 									column.filterKey = `${tableMeta.customDataESKey}.${column.name}.keyword`;
-								} else column.filterKey = tableHeaders.find(el => el.name === column.name)?.esKey;
+								} else {
+									column.filterKey = tableHeaders.find(el => el.name === column.name)?.esKey;
+								}
 
-								if (!column.filterKey && column.esKey) column.filterKey = column.esKey;
+								if (!column.filterKey && column.esKey) {
+									column.filterKey = column.esKey;
+								}
 
 								return (
 									<AutoCompleteFilter
@@ -496,7 +512,9 @@ export const TableESHOC = Component => {
 			if (allFilters) {
 				tableCols.forEach((column, index) => {
 					// only required if table have selectedGridView
-					if (selectedGridView) setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
+					if (selectedGridView) {
+						setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
+					}
 					let value;
 					if (column?.custom?.oRFilter) {
 						value = get(
@@ -504,7 +522,7 @@ export const TableESHOC = Component => {
 							'value',
 							''
 						);
-					} else if (Array.isArray(column.esKey))
+					} else if (Array.isArray(column.esKey)) {
 						value = get(
 							allFilters.find(filter => {
 								return column.esKey.includes(filter.field);
@@ -512,7 +530,7 @@ export const TableESHOC = Component => {
 							'value',
 							''
 						);
-					else
+					} else {
 						value = get(
 							allFilters.find(filter => {
 								return JSON.stringify(filter.field) === JSON.stringify(column.esKey);
@@ -520,14 +538,19 @@ export const TableESHOC = Component => {
 							'value',
 							''
 						);
+					}
 
 					let filterList = Array.isArray(column.esKey) ? [] : [];
 					if (value && typeof value !== 'object') {
 						if (column.custom?.isDate && columns?.length) {
-							if (value !== '') value = moment(new Date(value)).format('MM/DD/YYYY');
+							if (value !== '') {
+								value = moment(new Date(value)).format('MM/DD/YYYY');
+							}
 						}
 						if (column.custom?.isDateTime && columns?.length) {
-							if (value !== '') value = moment(new Date(value)).format('MM/DD/YYYY HH:mm:ss.SSS');
+							if (value !== '') {
+								value = moment(new Date(value)).format('MM/DD/YYYY HH:mm:ss.SSS');
+							}
 						}
 						filterList = [value];
 					} else if (Array.isArray(value)) {
@@ -641,16 +664,17 @@ export const TableESHOC = Component => {
 				const ifAreContacs = checkIfOwnersAreContactsDataRef?.current?.ifAreContacts || [];
 				if (ifAreContacs.length > 0) {
 					let contact;
-					if (!data.contactId)
+					if (!data.contactId) {
 						contact = ifAreContacs.find(ifc => {
 							if (
 								ifc.globalOwner?.replace(/-/g, '') === data.id?.replace(/-/g, '') ||
 								ifc.globalOwner?.replace(/-/g, '') === data.globalOwnerId?.replace(/-/g, '')
-							)
+							) {
 								return true;
+							}
 							return false;
 						});
-					else {
+					} else {
 						contact = ifAreContacs.find(ifc => ifc._id === data.contactId);
 					}
 					if (contact) {
@@ -672,12 +696,16 @@ export const TableESHOC = Component => {
 						return refFilter.field === filter.field;
 					});
 
-					if (!refFilter) return filter;
+					if (!refFilter) {
+						return filter;
+					}
 
 					let value = filter.value;
 
 					if (Array.isArray(refFilter.value) && !Array.isArray(value)) {
-						if (value === refFilter.value[0]) value = refFilter.value;
+						if (value === refFilter.value[0]) {
+							value = refFilter.value;
+						}
 					}
 
 					return { ...filter, value };
@@ -713,7 +741,9 @@ export const TableESHOC = Component => {
 		const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
 			let searchQuery =
 				typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableState.searchText;
-			if (props.useWildeCard) searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+			if (props.useWildeCard) {
+				searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+			}
 
 			let pageESVariables = {
 				variables: {
@@ -754,9 +784,13 @@ export const TableESHOC = Component => {
 				const columnEsKey = columns[index].esKey;
 
 				let field;
-				if (tableState.columns[index]?.activeFilterKey) field = tableState.columns[index]?.activeFilterKey;
-				else if (Array.isArray(columnEsKey) && gridViewEsKey) field = gridViewEsKey;
-				else field = columnEsKey;
+				if (tableState.columns[index]?.activeFilterKey) {
+					field = tableState.columns[index]?.activeFilterKey;
+				} else if (Array.isArray(columnEsKey) && gridViewEsKey) {
+					field = gridViewEsKey;
+				} else {
+					field = columnEsKey;
+				}
 
 				return { field: field, value: value, oRFilter };
 			};
@@ -945,7 +979,9 @@ export const TableESHOC = Component => {
 					typeof tableMeta.extendSearchQuery !== 'undefined'
 						? tableMeta.extendSearchQuery
 						: tableStateRef.current.searchText;
-				if (props.useWildeCard) searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+				if (props.useWildeCard) {
+					searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+				}
 
 				const search = { query: searchQuery, fields: tableMeta.searchFields, advanceSearch: tableMeta.advanceSearch };
 				const filters = selectedFilters.current ? [...selectedFilters.current] : [];
@@ -994,7 +1030,9 @@ export const TableESHOC = Component => {
 					typeof tableMeta.extendSearchQuery !== 'undefined'
 						? tableMeta.extendSearchQuery
 						: tableStateRef.current.searchText;
-				if (props.useWildeCard) searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+				if (props.useWildeCard) {
+					searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+				}
 
 				const total = tableStateRef.current.count;
 				let allRows = [];
@@ -1113,10 +1151,14 @@ export const TableESHOC = Component => {
 				case 'filterChange':
 				case 'resetFilters':
 				case 'changeRowsPerPage':
-					if (action === 'search') setSearch(tableState.searchText);
+					if (action === 'search') {
+						setSearch(tableState.searchText);
+					}
 					if (isFiniteScroll) {
 						const tableClass = document.querySelectorAll('[class*=MUIDataTable-responsiveBase]');
-						if (tableClass.length > 0) tableClass[0].scrollTop = 0;
+						if (tableClass.length > 0) {
+							tableClass[0].scrollTop = 0;
+						}
 					}
 					tableActions.genericESAction();
 					break;
@@ -1135,9 +1177,9 @@ export const TableESHOC = Component => {
 						}
 
 						let selectAll = true;
-						if (!allRowsSelected || allRowsSelected?.length === 0 || total !== tableState.count)
+						if (!allRowsSelected || allRowsSelected?.length === 0 || total !== tableState.count) {
 							setAllRowsSelected(rowsSelected);
-						else {
+						} else {
 							selectAll = false;
 							tableState.selectedRows.data = [];
 							setAllRowsSelected([]);
@@ -1152,8 +1194,12 @@ export const TableESHOC = Component => {
 						]);
 
 						let searchQuery = pageESVariables?.search?.query;
-						if (props.useWildeCard) searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
-						if (pageESVariables?.search?.query) pageESVariables.search.query = searchQuery;
+						if (props.useWildeCard) {
+							searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+						}
+						if (pageESVariables?.search?.query) {
+							pageESVariables.search.query = searchQuery;
+						}
 
 						if (selectAll) {
 							tableState.selectedRows.data = rowsSelected.map(index => ({ index, dataIndex: index }));
@@ -1269,10 +1315,11 @@ export const TableESHOC = Component => {
 													color="secondary"
 													className={classes.multiSelectionTopBarButtons}
 													onClick={() => {
-														if (tableMeta.inputModeType === 'revenueStatementDetails')
+														if (tableMeta.inputModeType === 'revenueStatementDetails') {
 															history.push(
 																`/revenue/statement/${window.location.search.replace('?id=', '')}/line-item`
 															);
+														}
 													}}
 												>
 													{tableMeta.addBtnText}
@@ -1282,7 +1329,9 @@ export const TableESHOC = Component => {
 													color="secondary"
 													className={classes.multiSelectionTopBarButtons}
 													onClick={() => {
-														if (tableMeta.onClickAdd) tableMeta.onClickAdd();
+														if (tableMeta.onClickAdd) {
+															tableMeta.onClickAdd();
+														}
 														setAddToTable('add');
 														setClickedRow(null);
 													}}

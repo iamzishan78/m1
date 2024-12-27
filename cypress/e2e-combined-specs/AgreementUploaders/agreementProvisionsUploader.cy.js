@@ -80,7 +80,9 @@ describe('Agreement Provision Uploader Spec', () => {
 
 								const cypressAgreement = hits.find(hit => hit.agreementName === agreementName);
 
-								if (!cypressAgreement) throw new Error('Agreement added by cypress Uploader not found');
+								if (!cypressAgreement) {
+									throw new Error('Agreement added by cypress Uploader not found');
+								}
 
 								const indexOfcypressAgreement = hits.findIndex(hit => hit._id === cypressAgreement._id) + 1;
 
@@ -108,10 +110,11 @@ describe('Agreement Provision Uploader Spec', () => {
 
 											console.log('provisionTypeByUploader final: ', provisionTypeByUploader);
 
-											if (provisionTypeByUploader.length > 0)
+											if (provisionTypeByUploader.length > 0) {
 												provisionTypeByUploader.forEach(provisionType => {
 													expect(provisionTypes).to.include(provisionType);
 												});
+											}
 										});
 									});
 								});

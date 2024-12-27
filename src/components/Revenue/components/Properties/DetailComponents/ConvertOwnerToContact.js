@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@material-ui/core';
-import { Modals } from 'styles/Modal';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
-import { tableGlobalController } from 'hookstate/tableController';
+
 import { detailCardController } from 'hookstate/detailCardController';
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
+
+import { Modals } from 'styles/Modal';
 
 const ConvertOwnerToContact = ({
 	getOwnerEntityDetailAction,

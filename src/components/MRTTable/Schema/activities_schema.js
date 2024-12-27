@@ -1,10 +1,16 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import { formatDate } from 'components/Shared/functions';
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import CheckIcon from '@material-ui/icons/Check';
-import { getTruncateText } from '../utils/helper';
+
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { activityType } from 'components/MRTTable/utils/enums';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
+import { formatDate } from 'components/Shared/functions';
+
 import { slidoutState } from 'hookstate/initialStates';
+import { slidoutStateController } from 'hookstate/slidoutStateController';
+
+import { getTruncateText } from '../utils/helper';
 
 const esIndex = 'activities_flat';
 
@@ -65,8 +71,8 @@ const ActivitiesMeta = {
 			id: 'type',
 			header: 'Type',
 			Cell: ({ row }) => {
-				const value = row?.original?.type;
-				return <>{activityType[value] || row?.original?.type}</>;
+				const value = row?.original?.type || null;
+				return activityType[value] || value;
 			},
 		},
 		{
@@ -78,8 +84,8 @@ const ActivitiesMeta = {
 			simple: true,
 			type: 'date',
 			isSearchField: false,
-			Cell: ({ renderedCellValue, row }) => {
-				return <>{formatDate(row?.original?.dateTime)}</>;
+			Cell: ({ row }) => {
+				return formatDate(row?.original?.dateTime);
 			},
 		},
 		{
@@ -91,8 +97,8 @@ const ActivitiesMeta = {
 			simple: true,
 			type: 'date',
 			isSearchField: false,
-			Cell: ({ renderedCellValue, row }) => {
-				return <>{formatDate(row?.original?.endDateTime)}</>;
+			Cell: ({ row }) => {
+				return formatDate(row?.original?.endDateTime);
 			},
 		},
 		{

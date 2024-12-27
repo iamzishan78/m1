@@ -1,15 +1,18 @@
 import React, { useContext, useEffect } from 'react';
-import { AppContext } from '../../AppContext';
-import { TitleOpinionContext } from './TitleOpinionContext';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import useQueryTitleOpinion from '../../graphQL/useQueryTitleOpinion';
+
 import { Container, Grid } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
+
+import moment from 'moment';
+
+import { TitleOpinionContext } from './TitleOpinionContext';
+import { AppContext } from '../../AppContext';
 import GeneralInfoForm from './components/GeneralInfoForm';
 import MapShape from './components/MapShape';
 import TitleOpinionsTaps from './components/TitleOpinionsTaps';
-import moment from 'moment';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
+import useQueryTitleOpinion from '../../graphQL/useQueryTitleOpinion';
 
 const useStyles = makeStyles(theme => ({
 	containerWrapper: {

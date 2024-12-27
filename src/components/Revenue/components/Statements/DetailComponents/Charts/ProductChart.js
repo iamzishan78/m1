@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import * as am4core from '@amcharts/amcharts4/core';
-import * as am4charts from '@amcharts/amcharts4/charts';
 
 import {
 	Button,
@@ -14,8 +11,14 @@ import {
 	TableCell,
 	TableBody,
 } from '@material-ui/core';
-import vf_number from 'components/Shared/valueformatters/vf_number';
+import { makeStyles } from '@material-ui/core/styles';
+
+import * as am4charts from '@amcharts/amcharts4/charts';
+import * as am4core from '@amcharts/amcharts4/core';
+
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+import vf_number from 'components/Shared/valueformatters/vf_number';
+
 import { removeCommasFromString } from 'utils/helper';
 
 const useStyles = makeStyles(() => ({
@@ -105,7 +108,9 @@ const ProductChart = ({ productSummaryDetails }) => {
 	}, [productSummaryDetails]);
 
 	useEffect(() => {
-		if (!data?.revenue?.length) return;
+		if (!data?.revenue?.length) {
+			return;
+		}
 		var chart = am4core.create('product-donut', am4charts.PieChart);
 
 		// setting data
@@ -138,7 +143,7 @@ const ProductChart = ({ productSummaryDetails }) => {
 		pieSeries.slices.template.strokeOpacity = 1;
 
 		// Set Tooltip with currency formatter
-		pieSeries.slices.template.adapter.add('tooltipText', function (text, target) {
+		pieSeries.slices.template.adapter.add('tooltipText', (text, target) => {
 			const rawValue = target.dataItem.values.value.value || 0;
 			const value = rawValue === 0 ? '$0' : vf_currency_to_fixed(rawValue, 2);
 			const percent = roundToTwoDecimalPlaces(target.dataItem.values.value.percent);
@@ -160,7 +165,7 @@ const ProductChart = ({ productSummaryDetails }) => {
 		chart.legend.scrollable = true;
 
 		// Set legend label with currency formatter
-		chart.legend.labels.template.adapter.add('textOutput', function (text, target) {
+		chart.legend.labels.template.adapter.add('textOutput', (text, target) => {
 			if (target.dataItem && target.dataItem.dataContext) {
 				const rawValue = target.dataItem.values.value.value || 0;
 				const value = rawValue === 0 ? '$0' : vf_currency_to_fixed(rawValue, 2);
@@ -180,7 +185,9 @@ const ProductChart = ({ productSummaryDetails }) => {
 	}, [data, mode]);
 
 	useEffect(() => {
-		if (!data?.production?.items) return;
+		if (!data?.production?.items) {
+			return;
+		}
 		var chart = am4core.create('bar-chart', am4charts.XYChart);
 
 		// Add data

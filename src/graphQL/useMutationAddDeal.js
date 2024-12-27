@@ -46,7 +46,7 @@ export const DEAL_DESCRIPTOR = gql`
 `;
 
 export const CREATE_DEAL_DEFAULT_SETTINGS = gql`
-	mutation createDealDefaultSettings($stageDealDescriptors: [JSON], $dealId: ID) {
-		createDealDefaultSettings(stageDealDescriptors: $stageDealDescriptors, dealId: $dealId)
+	mutation createDealDefaultSettings($stageDealDescriptors: [JSON], $dealId: ID, $stageId: ID) {
+		createDealDefaultSettings(stageDealDescriptors: $stageDealDescriptors, dealId: $dealId, stageId: $stageId)
 	}
 `;

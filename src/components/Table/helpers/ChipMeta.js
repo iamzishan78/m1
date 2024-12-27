@@ -1,5 +1,7 @@
 import CloseIcon from '@material-ui/icons/Close';
+
 import { copy } from 'components/Shared/functions';
+
 const { getMetaCss } = require('./getMetaCss');
 
 export const ChipMeta = ({ index, chipsArray, chipValue, option, iconType, onCustomKeyChange, isSingleSelect }) => {

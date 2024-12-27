@@ -1,33 +1,39 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import React, { Fragment, useContext, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import { Grid } from '@material-ui/core';
+import { CircularProgress, Menu, MenuItem, TextField, InputAdornment, IconButton } from '@material-ui/core';
 import CardHeader from '@material-ui/core/CardHeader';
 import List from '@material-ui/core/List';
 import Paper from '@material-ui/core/Paper';
-import { useLazyQuery, useMutation } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { Fragment, useContext, useEffect, useState } from 'react';
-import Tooltip from '@material-ui/core/Tooltip';
-import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { CircularProgress, Menu, MenuItem, TextField, InputAdornment, IconButton } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import Tabs from '@material-ui/core/Tabs';
+import Tooltip from '@material-ui/core/Tooltip';
+import AddIcon from '@material-ui/icons/Add';
+import CallIcon from '@material-ui/icons/Call';
 import ClearIcon from '@material-ui/icons/Clear';
+import ContactMailIcon from '@material-ui/icons/ContactMail';
+import EmailIcon from '@material-ui/icons/Email';
+import DefaultIcon from '@material-ui/icons/Event';
+import DeadlineIcon from '@material-ui/icons/Flag';
+import MeetingIcon from '@material-ui/icons/Group';
+import SearchIcon from '@material-ui/icons/Search';
+import TaskIcon from '@material-ui/icons/WatchLater';
+
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+import moment from 'moment';
+
 import CheckCircleIcon from 'components/Shared/svgIcons/CheckCircleIcon';
 import EventCalendarIcon from 'components/Shared/svgIcons/EventCalendarIcon';
-import { GETALLACTIVITIES } from '../../../graphQL/useQueryGetAllActivities';
-import CallIcon from '@material-ui/icons/Call';
-import MeetingIcon from '@material-ui/icons/Group';
-import TaskIcon from '@material-ui/icons/WatchLater';
-import DeadlineIcon from '@material-ui/icons/Flag';
-import EmailIcon from '@material-ui/icons/Email';
-import ContactMailIcon from '@material-ui/icons/ContactMail';
-import DefaultIcon from '@material-ui/icons/Event';
-import moment from 'moment';
-import { useHistory } from 'react-router-dom';
-import { UPDATEACTIVITY } from '../../../graphQL/useMutationActivity';
+
 import { AppContext } from 'AppContext';
-import AddIcon from '@material-ui/icons/Add';
+
+import { UPDATEACTIVITY } from '../../../graphQL/useMutationActivity';
+import { GETALLACTIVITIES } from '../../../graphQL/useQueryGetAllActivities';
 import ActivitiesModal from '../../Activities/components/ActivitiesModal';
 
 const useStyles = makeStyles(theme => ({
@@ -245,7 +251,7 @@ const Tasks = () => {
 	const history = useHistory();
 	const [stateApp, setStateApp] = useContext(AppContext);
 	const [getAllActivities, { data: orginalData, loading }] = useLazyQuery(GETALLACTIVITIES, {
-		fetchPolicy: `network-only`,
+		fetchPolicy: 'network-only',
 	});
 	const [updateActivityMutation] = useMutation(UPDATEACTIVITY, {
 		refetchQueries: ['getAllActivities'],

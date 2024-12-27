@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+
 import { makeStyles } from '@material-ui/core/styles';
 
-import ListMenu from 'components/Shared/ListMenu';
 import CodeMapping from 'components/Shared/AdminSettings/CodeMapping';
 import Validations from 'components/Shared/AdminSettings/Validations';
-import { useLocation } from 'react-router-dom';
+import ListMenu from 'components/Shared/ListMenu';
 
 const menuOptions = [
 	{ label: 'Code Mapping', value: 'code_mapping' },

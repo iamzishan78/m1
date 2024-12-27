@@ -1,11 +1,15 @@
 import React, { useState, memo } from 'react';
+
 import { Breadcrumbs, Typography, IconButton, Menu, MenuItem } from '@material-ui/core';
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { useMutation } from '@apollo/client';
-import { tableController } from 'hookstate/tableController';
-import { UPDATE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
 import { CircularProgress } from '@material-ui/core';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+
+import { useMutation } from '@apollo/client';
+
+import { UPDATE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
+
+import { tableController } from 'hookstate/tableController';
 
 function GridViewComponent({ Icon, buttonRef, label, tableKey, fetchGridViews }) {
 	const [updateGridView, { data }] = useMutation(UPDATE_GRID_VIEW, {

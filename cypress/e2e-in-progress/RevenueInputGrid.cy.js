@@ -168,7 +168,9 @@ describe('Open Revenue Property Detail Card  Spec', () => {
 									cy.verifyApiResponse('@updateCheckDetailDeleteApi', { responseTimeout: longTimeout }).then(result => {
 										const isDeleted = result.response.body.data.updateCheckDetail?.updatedCheckDetail.IsDeleted;
 
-										if (!isDeleted) throw new Error('Check Not Deleted !!!');
+										if (!isDeleted) {
+											throw new Error('Check Not Deleted !!!');
+										}
 									});
 								});
 							}
@@ -190,7 +192,7 @@ Cypress.Commands.add('addAutoCompleteField', (index, columnName) => {
 		// cy.interceptApi('getESPaginatedList')
 		cy.interceptApi('updateCheckDetail');
 		cy.wrap($checkDetailRow).scrollIntoView().wait(1000).click();
-		cy.wrap($checkDetailRow).get(`[id='filter-autocomplete-es-field']`).scrollIntoView().click();
+		cy.wrap($checkDetailRow).get("[id='filter-autocomplete-es-field']").scrollIntoView().click();
 		cy.verifyApiResponse('@getESFilterListApi', { responseTimeout: longTimeout });
 		cy.get('body').type('{downArrow}{downArrow}{enter}');
 
@@ -202,6 +204,8 @@ Cypress.Commands.add('addAutoCompleteField', (index, columnName) => {
 Cypress.Commands.add('verifyField', $element => {
 	$element.invoke('val').then(value => {
 		console.log('value : ', value);
-		if (!value) throw new Error('Value not appeared for field');
+		if (!value) {
+			throw new Error('Value not appeared for field');
+		}
 	});
 });

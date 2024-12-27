@@ -1,6 +1,7 @@
+import DeckGlLayer from 'components/Map/DeckGL/helpers/DeckGlLayer';
+
 import { drawController } from 'hookstate/drawStateController';
 import { popupController } from 'hookstate/popupStateController';
-import DeckGlLayer from 'components/Map/DeckGL/helpers/DeckGlLayer';
 
 const onAbstactLayerClick = (feature, action, sourceId) => {
 	if (!feature) {
@@ -13,7 +14,9 @@ const onAbstactLayerClick = (feature, action, sourceId) => {
 	const selectedAbstracts = drawController.getValue('selectedAbstracts');
 
 	let drawStateToUpdate;
-	if (window.mapRef?.getLayer('Land Grid_selection')) window.mapRef.removeLayer('Land Grid_selection');
+	if (window.mapRef?.getLayer('Land Grid_selection')) {
+		window.mapRef.removeLayer('Land Grid_selection');
+	}
 
 	let requiredAbstracts = [];
 
@@ -47,16 +50,22 @@ const onAbstactLayerClick = (feature, action, sourceId) => {
 		},
 	});
 
-	if (drawStateToUpdate) drawController.updateState(drawStateToUpdate);
+	if (drawStateToUpdate) {
+		drawController.updateState(drawStateToUpdate);
+	}
 	popupController.updateState({
 		popupOpen: false,
 	});
 };
 
 const landgridLayerClickHandler = feature => {
-	if (!feature) return;
+	if (!feature) {
+		return;
+	}
 	const drawMode = window.drawRef.getMode();
-	if (drawMode.includes('draw') || drawMode.includes('drag')) return;
+	if (drawMode.includes('draw') || drawMode.includes('drag')) {
+		return;
+	}
 
 	const selectedAbstracts = drawController.getValue('selectedAbstracts');
 	const isFeatureSelected = selectedAbstracts.find(abstract => abstract?.properties?.Id === feature?.properties?.Id);

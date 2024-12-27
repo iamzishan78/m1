@@ -1,8 +1,12 @@
 import React, { memo } from 'react';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+
 import { Button, ButtonGroup } from '@material-ui/core';
-import { ADD_TRACTS_TOA_SHAPE } from 'graphQL/useMutationAddTractsToAShape';
+
 import { useMutation } from '@apollo/client';
+
+import { ADD_TRACTS_TOA_SHAPE } from 'graphQL/useMutationAddTractsToAShape';
+
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 function PotentialShapeTractToolbar({ tableKey, table }) {
 	const [addShapeTract] = useMutation(ADD_TRACTS_TOA_SHAPE, {
@@ -33,6 +37,8 @@ function PotentialShapeTractToolbar({ tableKey, table }) {
 
 		const shapeTracts = selectedRows.map(row => {
 			return {
+				...row?.shapeJson?.properties,
+				...row?.shapeJson?.originalProperties,
 				name: row?.name,
 				state: row?.shapeJson?.properties?.originalProperties?.State,
 				county: row?.shapeJson?.properties?.originalProperties?.County,

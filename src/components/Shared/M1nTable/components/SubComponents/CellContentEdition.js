@@ -1,21 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Grid } from '@material-ui/core';
+
 import { IconButton } from '@material-ui/core';
-import Tooltip from '@material-ui/core/Tooltip';
-import CreateTwoToneIcon from '@material-ui/icons/CreateTwoTone';
-import TextField from '@material-ui/core/TextField';
-import EditionPopover from '../../../../ContactDetailCard/components/EditionPopover';
-import ClearSharpIcon from '@material-ui/icons/ClearSharp';
-import CheckSharpIcon from '@material-ui/icons/CheckSharp';
+import { Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import { useMutation } from '@apollo/client';
-import { UPDATEPARCELOWNER } from 'graphQL/useMutationUpdateParcelOwner';
-import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { AppContext } from 'AppContext';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Tooltip from '@material-ui/core/Tooltip';
+import CheckSharpIcon from '@material-ui/icons/CheckSharp';
+import ClearSharpIcon from '@material-ui/icons/ClearSharp';
+import CreateTwoToneIcon from '@material-ui/icons/CreateTwoTone';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useMutation } from '@apollo/client';
 import $ from 'jquery';
+
+import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
+import { UPDATEPARCELOWNER } from 'graphQL/useMutationUpdateParcelOwner';
+
+import { AppContext } from 'AppContext';
+
+import EditionPopover from '../../../../ContactDetailCard/components/EditionPopover';
 
 const useStyles = makeStyles(theme => ({
 	fieldContentP: {
@@ -23,7 +28,9 @@ const useStyles = makeStyles(theme => ({
 			loading || (edit && fieldsCount <= 1 && !dropDownOptions) ? 'hidden' : 'visible',
 		margin: '0',
 		width: ({ noMargin }) => {
-			if (noMargin) return 'fit-content';
+			if (noMargin) {
+				return 'fit-content';
+			}
 		},
 		borderRadius: '4px',
 
@@ -272,12 +279,13 @@ export default function CellContentEdition({
 				fieldName = key;
 				break;
 			}
-			if (document.getElementById('fieldContentInput' + id + fieldName))
+			if (document.getElementById('fieldContentInput' + id + fieldName)) {
 				document.getElementById('fieldContentInput' + id + fieldName).focus();
+			}
 
 			//// resize height to fit its content, using jQuery
 			if (edit === false) {
-				$(document).ready(function () {
+				$(document).ready(() => {
 					if (
 						$('#' + id + fieldName) &&
 						$('#fieldContentInput' + id + fieldName) &&
@@ -304,7 +312,9 @@ export default function CellContentEdition({
 		for (const field in editContent) {
 			if (editContent[field] !== null) {
 				trimmedEditContent[field] = editContent[field].trim();
-				if (editContent[field].trim() !== content[field]) differences = true;
+				if (editContent[field].trim() !== content[field]) {
+					differences = true;
+				}
 			}
 		}
 
@@ -426,7 +436,7 @@ export default function CellContentEdition({
 
 	//// ajusting the main div height to the input heigth, using jQuery
 	if (fieldsCount <= 1 && !dropDownOptions) {
-		$(document).ready(function () {
+		$(document).ready(() => {
 			if (
 				$('#' + id + cellId) &&
 				$('#fieldContentInput' + id + cellId) &&
@@ -447,7 +457,9 @@ export default function CellContentEdition({
 				textArray = [[textArray.join(', '), content[key]].join(' ')];
 			} else if (key === 'jobTitle') {
 				textArray = [[textArray.join(', '), content[key]].join(' - ')];
-			} else textArray.push(content[key]);
+			} else {
+				textArray.push(content[key]);
+			}
 		}
 	}
 
@@ -470,7 +482,9 @@ export default function CellContentEdition({
 			id={id + cellId}
 			className={classes.cellDataDiv}
 			onClick={e => {
-				if (!isLinked || !toLink) e.preventDefault();
+				if (!isLinked || !toLink) {
+					e.preventDefault();
+				}
 				// e.stopPropagation();
 			}}
 		>

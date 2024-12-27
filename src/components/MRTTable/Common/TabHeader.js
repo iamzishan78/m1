@@ -1,5 +1,7 @@
 import React from 'react';
+
 import TabButtons from 'components/Shared/TabPanels/TabButtons';
+
 import { tableGlobalController } from 'hookstate/tableController';
 
 const TabHeader = ({ labels }) => {

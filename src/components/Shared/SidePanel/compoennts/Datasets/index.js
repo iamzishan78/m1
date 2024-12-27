@@ -1,33 +1,39 @@
 import React, { memo, useCallback, useContext, useEffect, useMemo } from 'react';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { makeStyles } from '@material-ui/styles';
+import { useDispatch } from 'react-redux';
+
 import { Typography } from '@material-ui/core';
-import ListItemText from '@material-ui/core/ListItemText';
-import Button from '@material-ui/core/Button';
-import DatabaseIcon from 'components/Shared/svgIcons/DatabaseIcon';
-import LayersIcon from '@material-ui/icons/Layers';
-import GridOnIcon from '@material-ui/icons/GridOn';
-import FileDatasetIcon from 'components/Shared/svgIcons/FileDatasetIcon';
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import ListItemText from '@material-ui/core/ListItemText';
+import GridOnIcon from '@material-ui/icons/GridOn';
+import LayersIcon from '@material-ui/icons/Layers';
+import { makeStyles } from '@material-ui/styles';
 
-import { copy } from 'components/Shared/functions';
+import { useLazyQuery, useMutation } from '@apollo/client';
 
-import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
-import { AppContext } from 'AppContext';
 import { snapGridSideBarData } from 'components/MapGridCard/components/data';
-import { GET_DATASETS } from 'graphQL/useQueryDataset';
-import { USER_MAP_SETTINGS_QUERY } from 'graphQL/useQueryUserMapSettings';
-import { scrollbarStyle } from 'styles/common';
-import DatasetMenu from './Menu';
+import { copy } from 'components/Shared/functions';
+import DatabaseIcon from 'components/Shared/svgIcons/DatabaseIcon';
+import FileDatasetIcon from 'components/Shared/svgIcons/FileDatasetIcon';
+
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { layerController } from 'hookstate/layerStateController';
+import { GET_DATASETS } from 'graphQL/useQueryDataset';
+import { USER_MAP_SETTINGS_QUERY } from 'graphQL/useQueryUserMapSettings';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { globalState } from 'hookstate/initialStates';
+import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+
+import { scrollbarStyle } from 'styles/common';
+
 import { showErrorMessage, showSuccessMessage } from 'actions';
-import { useDispatch } from 'react-redux';
+import { AppContext } from 'AppContext';
+
+import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
+import DatasetMenu from './Menu';
 
 const useStyles = makeStyles(theme => ({
 	root: props => ({
@@ -154,9 +160,13 @@ function Datasets({ headerButton, search, stateApp }) {
 			datasets = datasets.filter(dataset => {
 				return dataset.visibility;
 			});
-			if (search) datasets = datasets.filter(dataset => dataset.name.toLowerCase().includes(search.toLowerCase()));
+			if (search) {
+				datasets = datasets.filter(dataset => dataset.name.toLowerCase().includes(search.toLowerCase()));
+			}
 			return datasets;
-		} else return [];
+		} else {
+			return [];
+		}
 	}, [_datasets, mapSettings, search]);
 
 	const { mapControlsStateValues } = mapControlsController.useState(['selectedDataset'], 'mapControlsStateValues');
@@ -175,7 +185,11 @@ function Datasets({ headerButton, search, stateApp }) {
 			stateToUpdate.layerGridCard = false;
 			stateToUpdate.mapGridCardActivated = true;
 		} else {
-			stateToUpdate.selectedLayer = { ...dataset.categories[0] };
+			const layers = globalStateController.getValue('layers');
+			const layer = layers.find(
+				l => l.file === dataset.categories[0]?.file && l.layerShapeName === dataset.categories[0]?.layerShapeName
+			);
+			stateToUpdate.selectedLayer = { ...dataset.categories[0], layerSchema: layer?.layerSchema };
 			stateToUpdate.layerGridCard = true;
 			stateToUpdate.mapGridCardActivated = true;
 		}
@@ -217,12 +231,13 @@ function Datasets({ headerButton, search, stateApp }) {
 				dispatch(showErrorMessage('Failed to hide data source'));
 			}
 		});
-		if (layersSettingsToUpdate.length > 0)
+		if (layersSettingsToUpdate.length > 0) {
 			updateManyUserLayerSettings({
 				variables: {
 					manySettings: layersSettingsToUpdate,
 				},
 			});
+		}
 	};
 
 	const handleTransfer = dataset => {

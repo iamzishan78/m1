@@ -1,14 +1,16 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 
+import { useMutation } from '@apollo/client';
+
 //Contexts
+import { ADD_CHECK_TO_FILE_DESCRIPTOR } from 'graphQL/useMutationAddCheckToFileDescriptor';
+import { DELETE_CHECK_FROM_FILE_DESCRIPTOR } from 'graphQL/useMutationDeleteCheckFromFileDescriptor';
+
 import { AppContext } from 'AppContext';
 
 import DocumentAssociation from './DocumentAssociation';
 import { DocumentContext } from '../DocumentContext';
-import { useMutation } from '@apollo/client';
-import { ADD_CHECK_TO_FILE_DESCRIPTOR } from 'graphQL/useMutationAddCheckToFileDescriptor';
-import { DELETE_CHECK_FROM_FILE_DESCRIPTOR } from 'graphQL/useMutationDeleteCheckFromFileDescriptor';
 
 export default function AssociatedChecks() {
 	// Initials
@@ -121,7 +123,7 @@ export default function AssociatedChecks() {
 			addFileLoading={addChecksLoading}
 			deleteFileLoading={deleteCheckLoading}
 			updateDocumentLoading={getChecksLoading}
-			href={`/revenue/statement/details/{ID}?tenant={TENANT}`}
+			href={'/revenue/statement/details/{ID}?tenant={TENANT}'}
 		/>
 	);
 }

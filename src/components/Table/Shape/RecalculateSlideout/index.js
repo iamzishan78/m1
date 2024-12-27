@@ -1,8 +1,12 @@
 import React from 'react';
+
 import { makeStyles } from '@material-ui/core/styles';
+
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+
 import 'components/Transact/components/DealDialog/dialog.css';
 import DialogContent from './DialogContent';
+
 import { Typography } from '@material-ui/core';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import IconButton from '@material-ui/core/IconButton';

@@ -1,140 +1,120 @@
-/* eslint-disable no-lone-blocks */
 import React, { useState, useContext, useEffect, Fragment } from 'react';
-import { useHistory } from 'react-router-dom';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import ExpandableCardProvider from '../../../ExpandableCard/ExpandableCardProvider';
-import WellCardProvider from '../../../WellCard/WellCardProvider';
-import ContactDetailCard from '../../../ContactDetailCard/ContactDetailCard';
-import Tags from '../../Tagger';
-import Comments from '../../Comments';
-import Dialog from '@material-ui/core/Dialog';
-import { makeStyles } from '@material-ui/core/styles';
-import MUIDataTable, { TableViewCol } from 'mui-datatables';
+import Avatar from 'react-avatar';
 import { DndProvider } from 'react-dnd';
-import { Box, ButtonGroup, IconButton, Menu, MenuItem, Select } from '@material-ui/core';
-import TrackToggleButton from '../../TrackToggleButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import Badge from '@material-ui/core/Badge';
-import ChatIcon from '@material-ui/icons/Chat';
-import CachedIcon from '@material-ui/icons/Cached';
-import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
+import { useDispatch } from 'react-redux';
+import { Link, useHistory } from 'react-router-dom';
 
-import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
+import { Box, ButtonGroup, IconButton, Menu, MenuItem, Select, Typography } from '@material-ui/core';
+import Badge from '@material-ui/core/Badge';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Dialog from '@material-ui/core/Dialog';
+import Divider from '@material-ui/core/Divider';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import { Warning as WarningIcon, CheckCircle } from '@material-ui/icons';
+import AssessmentIcon from '@material-ui/icons/Assessment';
 import AssignmentTurnedInOutlinedIcon from '@material-ui/icons/AssignmentTurnedInOutlined';
-import EventOutlinedIcon from '@material-ui/icons/EventOutlined';
+import CachedIcon from '@material-ui/icons/Cached';
+import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
+import ChatIcon from '@material-ui/icons/Chat';
+import CheckIcon from '@material-ui/icons/Check';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import DeleteIcon from '@material-ui/icons/Delete';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
-import TextSMS from '@material-ui/icons/TextsmsOutlined';
+import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+import EditIcon from '@material-ui/icons/Edit';
+import EmailRoundedIcon from '@material-ui/icons/EmailRounded';
+import EventOutlinedIcon from '@material-ui/icons/EventOutlined';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
 import EmailIcon from '@material-ui/icons/Mail';
-
-import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
-import M1nTable from '../M1nTable';
-import WellIcon from '../../svgIcons/well';
-import AddContactDialogContent from './SubComponents/AddContactDialogContent';
-import DeleteConfirmationDialogContent from './SubComponents/DeleteConfirmationDialogContent';
-import MakeItAContactConfirmationDialogContent from './SubComponents/MakeItAContactConfirmationDialogContent';
-import Button from '@material-ui/core/Button';
-import EmailRoundedIcon from '@material-ui/icons/EmailRounded';
-import EditIcon from '@material-ui/icons/Edit';
 import MergeTypeIcon from '@material-ui/icons/MergeType';
-import BuyContactsInfoDialogContent from './SubComponents/BuyContactsInfoDialogContent';
-import PrintLabelsDialogContent from './SubComponents/PrintLabelsDialogContent';
-import SendMailersDialogContent from './SubComponents/SendMailersDialogContent';
-import { anyToDate } from '@amcharts/amcharts4/.internal/core/utils/Utils';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Divider from '@material-ui/core/Divider';
-import CellContentEdition from './SubComponents/CellContentEdition';
-import Avatar from 'react-avatar';
-import RoomIcon from '@material-ui/icons/Room';
-import { useDispatch } from 'react-redux';
-import { setMapGridCardState } from 'actions';
-import { deepEqualObjects, setStateIfDeepEqual } from '../../functions';
-import ReinviteUserDialog from './SubComponents/ReinviteUserDialog';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import MoreVertOutlinedIcon from '@material-ui/icons/MoreVertOutlined';
-import AddParcelToEntityDialogContent from './SubComponents/AddParcelToEntityDialogContent/AddParcelToEntityDialogContent';
-import Convert_contact from '../../svgIcons/convert_contact';
-import Contact_card from '../../svgIcons/contact_card';
-import ParcelScreenIcon from '../../svgIcons/parcelScreen';
-import ParcelsDetailCard from '../../../ParcelsDetailCard/ParcelsDetailCard';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import PageviewIcon from '@material-ui/icons/Pageview';
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import PostAddIcon from '@material-ui/icons/PostAdd';
+import RoomIcon from '@material-ui/icons/Room';
+import TextSMS from '@material-ui/icons/TextsmsOutlined';
+
+import { anyToDate } from '@amcharts/amcharts4/.internal/core/utils/Utils';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import debounce from 'lodash/debounce';
 import isEmpty from 'lodash/isEmpty';
-import AssessmentIcon from '@material-ui/icons/Assessment';
-import { WELLQUERY } from 'graphQL/useQueryWell';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import WellTableStyles from '../customStyles/WellTableStyle';
-import ParcelOwnershipStyles from '../customStyles/ParcelOwnership';
-import ProductionTableStyle from '../customStyles/ProductionDetailsStyle';
 import moment from 'moment';
-import MergeContactDrawer from './SubComponents/MergeContactDrawer';
-import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
-import ExportContacts from 'components/Shared/ExportContacts';
-import Grid from '@material-ui/core/Grid';
-import { Warning as WarningIcon, CheckCircle } from '@material-ui/icons';
+import MUIDataTable, { TableViewCol } from 'mui-datatables';
+
+import AddActivityDialog from 'components/ContactDetailCard/components/AddActivityDialog';
+import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import StackedBarChart from 'components/Shared/Charts/StackedBarChart';
-import ButtonDropDown from './ButtonGroup';
-// auto complete for well API#
-// import SearchWells from "components/Shared/Wells/WellsAutoCompleteFilter";
+import ExportContacts from 'components/Shared/ExportContacts';
+import { FEATURES, ROUTES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+import get_file_icon from 'components/Shared/functions/get_file_icon.js';
+import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
+import CustomFieldText from 'components/Shared/M1nTable/components/SubComponents/CustomFieldText';
+import RequestPageIcon from 'components/Shared/svgIcons/request_page';
+import capitalizeFirstLetter from 'components/Shared/valueformatters/capitalize-first-letter.js';
+import convert_date from 'components/Shared/valueformatters/convert_date.js';
+import ticksToDateString from 'components/Shared/valueformatters/ticks-to-string.js';
+import vf_currency from 'components/Shared/valueformatters/vf_currency';
 
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import { AUTO_CALCULATE_OFFER_PRICE } from 'graphQL/useMutationAutoCalculateOfferPrice';
+import { CONTACT } from 'graphQL/useQueryContact';
+import { GET_VIEW_TOKEN_URI } from 'graphQL/useQueryGetViewTokenUri';
+import { LEASELATSLONS } from 'graphQL/useQueryLeaseLatsLonsArray';
+import { OPERATORSLATSLONS } from 'graphQL/useQueryOperatorLatsLonsArray';
+import { OWNERSLATSLONS } from 'graphQL/useQueryOwnerLatsLonsArray';
+import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
+import { WELLQUERY } from 'graphQL/useQueryWell';
 
-// contexts
+import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+import { navController } from 'hookstate/navStateController';
+import { popupController } from 'hookstate/popupStateController';
+
+import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
+
 import { AppContext } from 'AppContext';
 
-// mui components
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-
-// functions / value formatters
-import capitalizeFirstLetter from 'components/Shared/valueformatters/capitalize-first-letter.js';
-import vf_currency from 'components/Shared/valueformatters/vf_currency';
-import ticksToDateString from 'components/Shared/valueformatters/ticks-to-string.js';
-import convert_date from 'components/Shared/valueformatters/convert_date.js';
-import get_file_icon from 'components/Shared/functions/get_file_icon.js';
-
-import RightDialog from 'components/ContactDetailCard/components/RightDialog';
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import { FEATURES, ROUTES } from 'components/Shared/FeatureFlag/common';
-
-import CustomFieldText from 'components/Shared/M1nTable/components/SubComponents/CustomFieldText';
-// import CustomFieldSelectV2 from "./SubComponents/CustomFieldSelectV2";
-// import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
-
-// queries
-import { OWNERSLATSLONS } from 'graphQL/useQueryOwnerLatsLonsArray';
-import { OPERATORSLATSLONS } from 'graphQL/useQueryOperatorLatsLonsArray';
-import { LEASELATSLONS } from 'graphQL/useQueryLeaseLatsLonsArray';
-import { Typography } from '@material-ui/core';
-import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
-
-//icons
-import GetAppIcon from '@material-ui/icons/GetApp';
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
-// import LocationOnIcon from '@material-ui/icons/LocationOn';
-// import { ReactComponent as RequestPageIcon } from 'components/Shared/svgIcons/request_page_icon.svg';
-import RequestPageIcon from 'components/Shared/svgIcons/request_page';
-// import RequestPageIcon from 'components/Shared/svgIcons/request_page_icon';
-import PageviewIcon from '@material-ui/icons/Pageview';
-import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
-import PostAddIcon from '@material-ui/icons/PostAdd';
+import ButtonDropDown from './ButtonGroup';
+import M1nTable from '../M1nTable';
+import TableBody from './MUIDataTable/TableBody';
+import AddContactDialogContent from './SubComponents/AddContactDialogContent';
+import AddParcelToEntityDialogContent from './SubComponents/AddParcelToEntityDialogContent/AddParcelToEntityDialogContent';
+import BuyContactsInfoDialogContent from './SubComponents/BuyContactsInfoDialogContent';
+import CellContentEdition from './SubComponents/CellContentEdition';
+import DeleteConfirmationDialogContent from './SubComponents/DeleteConfirmationDialogContent';
+import MakeItAContactConfirmationDialogContent from './SubComponents/MakeItAContactConfirmationDialogContent';
+import MergeContactDrawer from './SubComponents/MergeContactDrawer';
+import PrintLabelsDialogContent from './SubComponents/PrintLabelsDialogContent';
+import ReactSelectField from './SubComponents/ReactSelectField';
+import SendMailersDialogContent from './SubComponents/SendMailersDialogContent';
+import ContactDetailCard from '../../../ContactDetailCard/ContactDetailCard';
+import ExpandableCardProvider from '../../../ExpandableCard/ExpandableCardProvider';
+import ParcelsDetailCard from '../../../ParcelsDetailCard/ParcelsDetailCard';
+import WellCardProvider from '../../../WellCard/WellCardProvider';
+import Comments from '../../Comments';
+import Contact_card from '../../svgIcons/contact_card';
 import FilterIcon from '../../svgIcons/filter';
 import ViewColumnIcon from '../../svgIcons/view_column';
-import CheckIcon from '@material-ui/icons/Check';
-import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
-// import Link from "@material-ui/core/Link";
-import AddActivityDialog from 'components/ContactDetailCard/components/AddActivityDialog';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import { CONTACT } from 'graphQL/useQueryContact';
-import ReactSelectField from './SubComponents/ReactSelectField';
-import TableBody from './MUIDataTable/TableBody';
-import { AUTO_CALCULATE_OFFER_PRICE } from 'graphQL/useMutationAutoCalculateOfferPrice';
-
-import { Link } from 'react-router-dom';
-import Checkbox from '@material-ui/core/Checkbox';
-import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
-import { GET_VIEW_TOKEN_URI } from 'graphQL/useQueryGetViewTokenUri';
-import { popupController } from 'hookstate/popupStateController';
-import { navController } from 'hookstate/navStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { layerController } from 'hookstate/layerStateController';
+import WellIcon from '../../svgIcons/well';
+import Tags from '../../Tagger';
+import TrackToggleButton from '../../TrackToggleButton';
+import ProductionTableStyle from '../customStyles/ProductionDetailsStyle';
+import ReinviteUserDialog from './SubComponents/ReinviteUserDialog';
+import { deepEqualObjects, setStateIfDeepEqual } from '../../functions';
+import Convert_contact from '../../svgIcons/convert_contact';
+import ParcelScreenIcon from '../../svgIcons/parcelScreen';
+import ParcelOwnershipStyles from '../customStyles/ParcelOwnership';
+import WellTableStyles from '../customStyles/WellTableStyle';
 
 // suppress debug console logs
 DndProvider.whyDidYouRender = false;
@@ -679,8 +659,6 @@ function SubTable(props) {
 			let a = document.createElement('a');
 			a.href = viewFileResult.viewFile.uri;
 			a.download = viewFileResult.viewFile.name;
-			// selectors
-			// const { searchloading } = useSelector(({ MapGridCard }) => MapGridCard);
 
 			// if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
 			// a.target = "_blank";
@@ -722,7 +700,9 @@ function SubTable(props) {
 	const handleLocationFlyTo = newValue => {
 		if (newValue && newValue.center) {
 			let minLong, maxLong, minLat, maxLat;
-			if (newValue.bbox) [minLong, minLat, maxLong, maxLat] = newValue.bbox;
+			if (newValue.bbox) {
+				[minLong, minLat, maxLong, maxLat] = newValue.bbox;
+			}
 
 			setStateApp(stateApp => ({
 				...stateApp,
@@ -809,7 +789,9 @@ function SubTable(props) {
 	};
 
 	const handleClickFlyToIcon = (entityType, searchTarget, unmount = false) => {
-		if (!searchTarget) return;
+		if (!searchTarget) {
+			return;
+		}
 
 		if (entityType === 'well') {
 			handleWellFlyTo(searchTarget);
@@ -832,10 +814,11 @@ function SubTable(props) {
 			handleUnitFlyTo(searchTarget);
 		}
 
-		if (unmount)
+		if (unmount) {
 			mapControlsController.updateState({
 				mapGridCardActivated: false,
 			});
+		}
 	};
 
 	const registerSearchHandler = handleSearch => {
@@ -874,12 +857,14 @@ function SubTable(props) {
 						}}
 						aria-label="show comments"
 						onMouseOver={() => {
-							if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+							if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1) {
 								multiSelectMouseHoverColor(id, '#dadbde');
+							}
 						}}
 						onMouseOut={() => {
-							if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+							if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1) {
 								multiSelectMouseHoverColor(id, '#efefef');
+							}
 						}}
 						data-testid={`comment-icon-button-${tableMeta.rowIndex}`}
 					>
@@ -913,20 +898,26 @@ function SubTable(props) {
 			dataWell.well
 		) {
 			let selectedWell = props.rows.find(row => {
-				if (row.id) return row.id === dataWell.well.id;
+				if (row.id) {
+					return row.id === dataWell.well.id;
+				}
 				return row.Id === dataWell.well;
 			});
 
 			selectedWell = { ...selectedWell, ...dataWell.well };
 			//// temporary to fix the ticks dates fields comming from the rest api
-			if (selectedWell.permitApprovedDate && selectedWell.permitApprovedDate !== 'null')
+			if (selectedWell.permitApprovedDate && selectedWell.permitApprovedDate !== 'null') {
 				selectedWell.permitApprovedDate = ticksToDateString(selectedWell.permitApprovedDate);
-			if (selectedWell.spudDate && selectedWell.spudDate !== 'null')
+			}
+			if (selectedWell.spudDate && selectedWell.spudDate !== 'null') {
 				selectedWell.spudDate = ticksToDateString(selectedWell.spudDate);
-			if (selectedWell.completionDate && selectedWell.completionDate !== 'null')
+			}
+			if (selectedWell.completionDate && selectedWell.completionDate !== 'null') {
 				selectedWell.completionDate = ticksToDateString(selectedWell.completionDate);
-			if (selectedWell.firstProductionDate && selectedWell.firstProductionDate !== 'null')
+			}
+			if (selectedWell.firstProductionDate && selectedWell.firstProductionDate !== 'null') {
 				selectedWell.firstProductionDate = ticksToDateString(selectedWell.firstProductionDate);
+			}
 			//// temporary end
 			if (selectedWell) {
 				setSelectedRow(selectedWell);
@@ -945,7 +936,7 @@ function SubTable(props) {
 	useEffect(() => {
 		if (dataOwnerWells && dataOwnerWells.ownerLatsLonsArray) {
 			if (dataOwnerWells.ownerLatsLonsArray.length !== 0) {
-				if (dataOwnerWells.ownerLatsLonsArray.length === 1)
+				if (dataOwnerWells.ownerLatsLonsArray.length === 1) {
 					popupController.setState({
 						selectedWellId: dataOwnerWells.ownerLatsLonsArray[0].id.toLowerCase(),
 						wellSelectedCoordinates: [
@@ -953,6 +944,7 @@ function SubTable(props) {
 							dataOwnerWells.ownerLatsLonsArray[0].latitude,
 						],
 					});
+				}
 				setStateApp(stateApp => ({
 					...stateApp,
 					fitBounds: null,
@@ -980,7 +972,7 @@ function SubTable(props) {
 
 		if (dataOperatorWells && dataOperatorWells.operatorLatsLonsArray) {
 			if (dataOperatorWells.operatorLatsLonsArray.length !== 0) {
-				if (dataOperatorWells.operatorLatsLonsArray.length === 1)
+				if (dataOperatorWells.operatorLatsLonsArray.length === 1) {
 					popupController.setState({
 						selectedWellId: dataOperatorWells.operatorLatsLonsArray[0].id.toLowerCase(),
 						wellSelectedCoordinates: [
@@ -988,6 +980,7 @@ function SubTable(props) {
 							dataOperatorWells.operatorLatsLonsArray[0].latitude,
 						],
 					});
+				}
 				setStateApp(stateApp => ({
 					...stateApp,
 					fitBounds: null,
@@ -1018,7 +1011,7 @@ function SubTable(props) {
 
 		if (dataLeaseWells && dataLeaseWells.leaseLatsLonsArray) {
 			if (dataLeaseWells.leaseLatsLonsArray.length !== 0) {
-				if (dataLeaseWells.leaseLatsLonsArray.length === 1)
+				if (dataLeaseWells.leaseLatsLonsArray.length === 1) {
 					popupController.setState({
 						selectedWellId: dataLeaseWells.leaseLatsLonsArray[0].id.toLowerCase(),
 						wellSelectedCoordinates: [
@@ -1026,6 +1019,7 @@ function SubTable(props) {
 							dataLeaseWells.leaseLatsLonsArray[0].latitude,
 						],
 					});
+				}
 				setStateApp(stateApp => ({
 					...stateApp,
 					fitBounds: null,
@@ -1040,13 +1034,17 @@ function SubTable(props) {
 	}, [dataLeaseWells]);
 
 	useEffect(() => {
-		if (props.targetLabel === 'Parcel Interest') setTrueTargetLabel('Parcel Ownership');
+		if (props.targetLabel === 'Parcel Interest') {
+			setTrueTargetLabel('Parcel Ownership');
+		}
 	}, [props.targetLabel]);
 
 	useEffect(() => {
 		if (props.rows) {
 			const updInSameOrder = commingRows => {
-				if (!rows || rows.length == 0) return commingRows;
+				if (!rows || rows.length == 0) {
+					return commingRows;
+				}
 
 				let updatedRows = [];
 				let newRows = [];
@@ -1059,8 +1057,11 @@ function SubTable(props) {
 							(row._id && row._id === updRow._id)
 					);
 
-					if (position > -1) updatedRows[position] = updRow;
-					else newRows.push(updRow);
+					if (position > -1) {
+						updatedRows[position] = updRow;
+					} else {
+						newRows.push(updRow);
+					}
 				});
 
 				return [...newRows, ...updatedRows.filter(r => r)];
@@ -1074,8 +1075,12 @@ function SubTable(props) {
 						}),
 					]);
 					setFirstMount(false);
-				} else setRows(updInSameOrder([...props.rows]));
-			} else setRows([...props.rows]);
+				} else {
+					setRows(updInSameOrder([...props.rows]));
+				}
+			} else {
+				setRows([...props.rows]);
+			}
 
 			if (props.total === true) {
 				let temp = {};
@@ -1127,17 +1132,22 @@ function SubTable(props) {
 		if (rows && m1nSelectedRowsIndexes) {
 			if (rows.length > 0 && m1nSelectedRowsIndexes.length > 0) {
 				let selectedRowsTracks = m1nSelectedRowsIndexes.map(ind => {
-					if (rows[ind]) return rows[ind].isTracked;
+					if (rows[ind]) {
+						return rows[ind].isTracked;
+					}
 				});
 				setM1nSelectedRowsTracks(selectedRowsTracks);
-			} else setM1nSelectedRowsTracks([]);
+			} else {
+				setM1nSelectedRowsTracks([]);
+			}
 		}
 	}, [rows, props.columns, m1nSelectedRowsIndexes]);
 
 	const multiSelectMouseHoverColor = (id, color) => {
 		for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
-			if (document.getElementById(id + m1nSelectedRowsIds[i] + m1nSelectedRowsIndexes[i]))
+			if (document.getElementById(id + m1nSelectedRowsIds[i] + m1nSelectedRowsIndexes[i])) {
 				document.getElementById(id + m1nSelectedRowsIds[i] + m1nSelectedRowsIndexes[i]).style.backgroundColor = color;
+			}
 		}
 	};
 
@@ -1304,43 +1314,63 @@ function SubTable(props) {
 		if (
 			(column.name === 'status' && props.targetLabel === 'deal') ||
 			(column.name === 'type' && props.targetLabel === 'activity')
-		)
+		) {
 			return capitalizeFirstLetter(v);
-		if (column.name === 'deals') return v.map(item => item.name).join(',');
-		if (column.name === 'appraisedValue') return vf_currency(v);
+		}
+		if (column.name === 'deals') {
+			return v.map(item => item.name).join(',');
+		}
+		if (column.name === 'appraisedValue') {
+			return vf_currency(v);
+		}
 
-		if (column.name === 'taxValue') return vf_currency(v);
+		if (column.name === 'taxValue') {
+			return vf_currency(v);
+		}
 
-		if (column.name === 'offerPrice' && !!v && !isNaN(v)) return vf_currency(v);
-		if (column.name === 'closedPrice' && !!v && !isNaN(v)) return vf_currency(v);
+		if (column.name === 'offerPrice' && !!v && !isNaN(v)) {
+			return vf_currency(v);
+		}
+		if (column.name === 'closedPrice' && !!v && !isNaN(v)) {
+			return vf_currency(v);
+		}
 		if (
 			(column.name === 'seller_asking_price' ||
 				column.name === 'competitor_offer_price' ||
 				column.name === 'offer_price') &&
 			!!v &&
 			!isNaN(v)
-		)
+		) {
 			return vf_currency(v);
+		}
 
-		if (column.name === 'lastUpdateAt')
+		if (column.name === 'lastUpdateAt') {
 			return anyToDate(v).toLocaleString('en-US', {
 				year: 'numeric',
 				day: 'numeric',
 				month: 'numeric',
 			});
+		}
 
-		if (column.name === 'createAt')
+		if (column.name === 'createAt') {
 			return anyToDate(v).toLocaleString('en-US', {
 				year: 'numeric',
 				day: 'numeric',
 				month: 'numeric',
 			});
+		}
 
-		if (column.name === 'receivedDate' && !!v) return moment.parseZone(v).format('MM/DD/yyyy');
-		if (column.name === 'bidDate' && !!v) return moment.parseZone(v).format('MM/DD/yyyy');
-		if (column.name === 'closeDate' && !!v) return moment.parseZone(v).format('MM/DD/yyyy');
+		if (column.name === 'receivedDate' && !!v) {
+			return moment.parseZone(v).format('MM/DD/yyyy');
+		}
+		if (column.name === 'bidDate' && !!v) {
+			return moment.parseZone(v).format('MM/DD/yyyy');
+		}
+		if (column.name === 'closeDate' && !!v) {
+			return moment.parseZone(v).format('MM/DD/yyyy');
+		}
 
-		if ((column.name === 'end' || column.name === 'start') && !!v)
+		if ((column.name === 'end' || column.name === 'start') && !!v) {
 			return anyToDate(v).toLocaleString('en-US', {
 				year: 'numeric',
 				day: 'numeric',
@@ -1348,6 +1378,7 @@ function SubTable(props) {
 				minute: '2-digit',
 				hour: '2-digit',
 			});
+		}
 
 		return v;
 	};
@@ -1609,7 +1640,9 @@ function SubTable(props) {
 														props.showParcelDetails(selectedParcel);
 													} else {
 														let selectedWell = props.rows.find(row => {
-															if (row.id) return row.id === tableMeta.rowData[0];
+															if (row.id) {
+																return row.id === tableMeta.rowData[0];
+															}
 															return row.Id === tableMeta.rowData[0];
 														});
 
@@ -1631,17 +1664,6 @@ function SubTable(props) {
 																setTitle(selectedWell.wellName ? selectedWell.wellName : selectedWell.WellName);
 																setSubTitle(selectedWell.api ? selectedWell.api : selectedWell.api);
 																handleOpenExpandableCard();
-															} else if (props.targetLabel === 'owner') {
-																if (props.parent === 'OwnersPerWell') {
-																	selectedWell.id = selectedWell.globalOwnerId;
-																	delete selectedWell.globalOwnerId;
-																}
-
-																dispatch(
-																	setMapGridCardState({
-																		selectedOwner: selectedWell,
-																	})
-																);
 															}
 														}
 													}
@@ -1880,11 +1902,18 @@ function SubTable(props) {
 								customBodyRender: (value, tableMeta, updateValue) => {
 									let disabled = false;
 									let type = 'well';
-									if (column.name === 'Well' && !props.rows[tableMeta.rowIndex]?.well.globalWell) disabled = true;
-									if (column.name === 'ApiNumber' && !props.rows[tableMeta.rowIndex]?.globalWell) disabled = true;
-									if (column.name === 'OwnerName' && !props.rows[tableMeta.rowIndex]?.wellCount > 0) disabled = true;
-									if (column.name === 'Operator' && !props.rows[tableMeta.rowIndex]?.totalWellCount > 0)
+									if (column.name === 'Well' && !props.rows[tableMeta.rowIndex]?.well.globalWell) {
 										disabled = true;
+									}
+									if (column.name === 'ApiNumber' && !props.rows[tableMeta.rowIndex]?.globalWell) {
+										disabled = true;
+									}
+									if (column.name === 'OwnerName' && !props.rows[tableMeta.rowIndex]?.wellCount > 0) {
+										disabled = true;
+									}
+									if (column.name === 'Operator' && !props.rows[tableMeta.rowIndex]?.totalWellCount > 0) {
+										disabled = true;
+									}
 
 									const coordinates = props.rows[tableMeta.rowIndex]?.coordinates;
 									const data = props.rows.find(row => row.Id === coordinates?.objToPopulateSearchLayer?.objectId);
@@ -1894,8 +1923,9 @@ function SubTable(props) {
 												e.stopPropagation();
 												if (!disabled) {
 													type = coordinates?.objToPopulateSearchLayer?.objectType || type;
-													if (column.name === 'Well')
+													if (column.name === 'Well') {
 														coordinates.wellId = props.rows[tableMeta.rowIndex]?.well.globalWell;
+													}
 													handleClickFlyToIcon(type, coordinates, true);
 												}
 											}}
@@ -1923,10 +1953,15 @@ function SubTable(props) {
 									let id = props.targetLabel + tableMeta.columnIndex;
 
 									let disabled = false;
-									if (props.targetLabel === 'well' && !props.rows[tableMeta.rowIndex]?.globalWell) disabled = true;
-									if (props.targetLabel === 'owner' && !props.rows[tableMeta.rowIndex]?.wellCount > 0) disabled = true;
-									if (props.targetLabel === 'operator' && !props.rows[tableMeta.rowIndex]?.totalWellCount > 0)
+									if (props.targetLabel === 'well' && !props.rows[tableMeta.rowIndex]?.globalWell) {
 										disabled = true;
+									}
+									if (props.targetLabel === 'owner' && !props.rows[tableMeta.rowIndex]?.wellCount > 0) {
+										disabled = true;
+									}
+									if (props.targetLabel === 'operator' && !props.rows[tableMeta.rowIndex]?.totalWellCount > 0) {
+										disabled = true;
+									}
 
 									return (
 										// this whole implementation is a mesteban patch
@@ -1947,7 +1982,9 @@ function SubTable(props) {
 														props.targetLabel === 'operator' ||
 														props.rows[tableMeta.rowIndex]?.globalWell
 													) {
-														if (props.targetLabel === 'well') value.wellId = props.rows[tableMeta.rowIndex]?.globalWell;
+														if (props.targetLabel === 'well') {
+															value.wellId = props.rows[tableMeta.rowIndex]?.globalWell;
+														}
 														handleClickFlyToIcon(props.targetLabel, value);
 													} else if (props.parent === 'UnitsTable' || props.parent === 'search') {
 														const row_line = Object.assign(
@@ -2182,15 +2219,17 @@ function SubTable(props) {
 													if (
 														m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 &&
 														m1nSelectedRowsIndexes.length > 1
-													)
+													) {
 														multiSelectMouseHoverColor(id, '#dadbde');
+													}
 												}}
 												onMouseOut={() => {
 													if (
 														m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 &&
 														m1nSelectedRowsIndexes.length > 1
-													)
+													) {
 														multiSelectMouseHoverColor(id, '#efefef');
+													}
 												}}
 											>
 												<HomeOutlinedIcon size="large" />
@@ -2491,15 +2530,17 @@ function SubTable(props) {
 														if (
 															m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 &&
 															m1nSelectedRowsIndexes.length > 1
-														)
+														) {
 															multiSelectMouseHoverColor(id, '#dadbde');
+														}
 													}}
 													onMouseOut={() => {
 														if (
 															m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 &&
 															m1nSelectedRowsIndexes.length > 1
-														)
+														) {
 															multiSelectMouseHoverColor(id, '#efefef');
+														}
 													}}
 												>
 													{value && value[0] && value[0].length > 0 ? (
@@ -3115,19 +3156,21 @@ function SubTable(props) {
 										column.name === 'isClosed' &&
 										(props.targetLabel === 'activity' || props.targetLabel === 'activitiesDashboard') &&
 										value === true
-									)
+									) {
 										return (
 											<div style={{ textAlign: 'center' }}>
 												<CheckIcon id="checkIcon" />
 											</div>
 										);
+									}
 
 									if (
 										column.name === 'isClosed' &&
 										(props.targetLabel === 'activity' || props.targetLabel === 'activitiesDashboard') &&
 										value === false
-									)
+									) {
 										return <div style={{ textAlign: 'center' }}>--</div>;
+									}
 
 									////// if non editable column
 									if (
@@ -3138,7 +3181,7 @@ function SubTable(props) {
 										((column.name === 'end' || column.name === 'start') && props.targetLabel === 'activity')
 									) {
 										//// if no value
-										if (value === '' || value === null || !value)
+										if (value === '' || value === null || !value) {
 											return (
 												<p
 													style={{
@@ -3150,6 +3193,7 @@ function SubTable(props) {
 													--
 												</p>
 											);
+										}
 
 										//// if value
 										return (
@@ -3401,16 +3445,32 @@ function SubTable(props) {
 	}, [rows]);
 
 	useEffect(() => {
-		if (!props.selectedRowsValues || !m1nSelectedRowsIds) return;
-		if (props.selectedRowsValues.length < m1nSelectedRowsIds.length) return;
+		if (!props.selectedRowsValues || !m1nSelectedRowsIds) {
+			return;
+		}
+		if (props.selectedRowsValues.length < m1nSelectedRowsIds.length) {
+			return;
+		}
 
 		let selectedRowsIds = props.selectedRowsValues.map(row => {
-			if (props.parent === 'OwnersPerWell') return row.globalOwnerId;
-			if (props.parent === 'owner_WellInterests') return row.wellId;
-			if (props.parent === 'TractsTable') return row.contact._id;
-			if (row.id) return row.id;
-			if (row.Id) return row.Id;
-			if (row._id) return row._id;
+			if (props.parent === 'OwnersPerWell') {
+				return row.globalOwnerId;
+			}
+			if (props.parent === 'owner_WellInterests') {
+				return row.wellId;
+			}
+			if (props.parent === 'TractsTable') {
+				return row.contact._id;
+			}
+			if (row.id) {
+				return row.id;
+			}
+			if (row.Id) {
+				return row.Id;
+			}
+			if (row._id) {
+				return row._id;
+			}
 		});
 
 		setM1nSelectedRowsIds(selectedRowsIds);
@@ -3468,11 +3528,11 @@ function SubTable(props) {
 		viewColumns: props.targetLabel !== 'usermanagement',
 
 		onColumnViewChange: (changedColumn, action) => {
-			if (props.parent === 'Contactss' && columns && (action === 'add' || action === 'remove') && changedColumn)
+			if (props.parent === 'Contactss' && columns && (action === 'add' || action === 'remove') && changedColumn) {
 				props.setColumnsBase([
 					...columns.map(column => {
-						if (column.name === changedColumn)
-							if (action === 'add')
+						if (column.name === changedColumn) {
+							if (action === 'add') {
 								return {
 									...column,
 									options: column.options
@@ -3481,7 +3541,7 @@ function SubTable(props) {
 												display: true,
 											},
 								};
-							else
+							} else {
 								return {
 									...column,
 									options: column.options
@@ -3490,10 +3550,13 @@ function SubTable(props) {
 												display: false,
 											},
 								};
+							}
+						}
 
 						return column;
 					}),
 				]);
+			}
 		},
 		//// triggers when a row/s is selected ////
 		onRowSelectionChange: (currentRowsSelected, rowsSelected) => {
@@ -3503,16 +3566,30 @@ function SubTable(props) {
 					if (rows.length > 0 && indexArray.length > 0) {
 						let selectedRows = rows.filter((row, index) => indexArray.indexOf(index) !== -1);
 						let selectedRowsIds = selectedRows.map(row => {
-							if (props.parent === 'OwnersPerWell') return row.globalOwnerId;
-							if (props.parent === 'owner_WellInterests') return row.wellId;
-							if (props.parent === 'TractsTable') return row.contact._id;
-							if (row.id) return row.id;
-							if (row.Id) return row.Id;
-							if (row._id) return row._id;
+							if (props.parent === 'OwnersPerWell') {
+								return row.globalOwnerId;
+							}
+							if (props.parent === 'owner_WellInterests') {
+								return row.wellId;
+							}
+							if (props.parent === 'TractsTable') {
+								return row.contact._id;
+							}
+							if (row.id) {
+								return row.id;
+							}
+							if (row.Id) {
+								return row.Id;
+							}
+							if (row._id) {
+								return row._id;
+							}
 						});
 
 						setM1nSelectedRowsIds(selectedRowsIds);
-					} else setM1nSelectedRowsIds([]);
+					} else {
+						setM1nSelectedRowsIds([]);
+					}
 				}
 				setM1nSelectedRowsIndexes(indexArray);
 			} else {
@@ -3788,7 +3865,9 @@ function SubTable(props) {
 						) {
 							const getSelectedRows = () => {
 								const selectedRows = [];
-								if (_selectedRows.length > 0) return _selectedRows;
+								if (_selectedRows.length > 0) {
+									return _selectedRows;
+								}
 
 								for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
 									selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
@@ -4085,7 +4164,9 @@ function SubTable(props) {
 
 			const addAction = e => {
 				e.stopPropagation();
-				if (props.addAble?.type && props.addAble?.type === 'contact') handleExpandClick(null, null, null, 'addContact');
+				if (props.addAble?.type && props.addAble?.type === 'contact') {
+					handleExpandClick(null, null, null, 'addContact');
+				}
 				if (props.addAble?.type && props.addAble?.type === 'ownerToParcel') {
 					handleExpandClick(null, null, null, 'addOwnerToParcel');
 				}
@@ -4093,12 +4174,13 @@ function SubTable(props) {
 					handleExpandClick(null, null, null, 'addOwnerToUnit');
 				}
 
-				if (props.addAble?.type && props.addAble?.type === 'deals')
+				if (props.addAble?.type && props.addAble?.type === 'deals') {
 					setStateApp(stateApp => ({
 						...stateApp,
 						dealDialog: true,
 						activeDeal: { cardId: null, laneId: null },
 					}));
+				}
 
 				if (props.addAble?.type && props.addAble?.type === 'wellInterest') {
 					setStateApp(stateApp => ({
@@ -4108,9 +4190,10 @@ function SubTable(props) {
 					}));
 				}
 
-				if (props.addAble?.type && props.addAble?.type === 'parcelInterestsToEntity')
+				if (props.addAble?.type && props.addAble?.type === 'parcelInterestsToEntity') {
 					// handleExpandClick(null, null, null, "addOwnerToParcel");
 					handleExpandClick(null, null, null, 'addParcelInterestsToEntity');
+				}
 				if (props.addAble?.type === 'revenueStatementDetails') {
 					const checkId = window.location.pathname.split('/')[window.location.pathname.split('/').length - 1];
 					routeChange(`/revenue/statement/${checkId}/line-item`);
@@ -5146,7 +5229,7 @@ function SubTable(props) {
 										handleOpenExpandableCard();
 									}}
 								>
-									{`Do you want to create a new Contact from this Owner?`}
+									{'Do you want to create a new Contact from this Owner?'}
 								</MakeItAContactConfirmationDialogContent>
 							)}
 							{openDialog === 'addParcelInterestsToEntity' && (

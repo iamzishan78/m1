@@ -1,12 +1,16 @@
 import React, { memo } from 'react';
+
 import { Button, ButtonGroup } from '@material-ui/core';
 import PostAddIcon from '@material-ui/icons/PostAdd';
+
 import MetaFieldList from 'components/MRTTable/Common/MetaData/MetaFieldList';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
 import MetaField from 'components/Table/helpers/MetaField';
-import DocumentRightDialogs from './RightDialogs';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { slidoutStateController } from 'hookstate/slidoutStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import DocumentRightDialogs from './RightDialogs';
 
 function DocumentToolBar({ table, tableKey }) {
 	const Controller = tableController(tableKey);

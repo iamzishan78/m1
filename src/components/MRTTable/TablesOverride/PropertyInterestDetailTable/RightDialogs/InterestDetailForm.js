@@ -1,23 +1,26 @@
 import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
-import loadashFilter from 'lodash/filter';
-import moment from 'moment';
-import GlobalStyles from 'GlobalStyles.js';
 
-import { makeStyles } from '@material-ui/styles';
 import { Typography, Grid, TextField, MenuItem, Select, Button, IconButton } from '@material-ui/core';
 import { Clear } from '@material-ui/icons';
-import { useMutation } from '@apollo/client';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import { makeStyles } from '@material-ui/styles';
+
+import { useMutation } from '@apollo/client';
+import loadashFilter from 'lodash/filter';
+import moment from 'moment';
+
+import ContactPaginatedAutocomplete from 'components/Revenue/components/Common/ContactsPaginatedAutocomplete';
+import { getDateWithoutTime } from 'components/Shared/functions';
+import ArrowForwardIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
 import { ADD_PROPERTY_INTEREST } from 'graphQL/useMutationAddpropertyInterest';
 import { UPDATE_PROPERTY_INTEREST } from 'graphQL/useMutationUpdatepropertyInterest';
 
-import { getDateWithoutTime } from 'components/Shared/functions';
-import ArrowForwardIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
-import ContactPaginatedAutocomplete from 'components/Revenue/components/Common/ContactsPaginatedAutocomplete';
 import { tableGlobalController } from 'hookstate/tableController';
+
+import GlobalStyles from 'GlobalStyles.js';
 
 const interestTypeOptions = ['Royalty Interest', 'Overriding Royalty', 'Working Interest'];
 
@@ -411,15 +414,19 @@ const InterestType = ({ onChange, value, options, ...other }) => {
 					return option.name;
 				}
 
-				if (option?.name) return option.name;
-				else return '';
+				if (option?.name) {
+					return option.name;
+				} else {
+					return '';
+				}
 			}}
 			getOptionSelected={(option, value) => {
 				return option?._id === value?._id;
 			}}
 			renderOption={option => {
-				if (option._id === 'newEntity')
+				if (option._id === 'newEntity') {
 					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+				}
 
 				return (
 					<Grid container spacing={0}>
@@ -452,9 +459,14 @@ const InterestType = ({ onChange, value, options, ...other }) => {
 			}}
 			onChange={(event, newValue) => {
 				if (newValue && newValue._id) {
-					if (newValue._id !== 'newEntity') onChange(newValue);
-					else onChange({ _id: 'newEntity', name: newValue.name });
-				} else onChange('');
+					if (newValue._id !== 'newEntity') {
+						onChange(newValue);
+					} else {
+						onChange({ _id: 'newEntity', name: newValue.name });
+					}
+				} else {
+					onChange('');
+				}
 			}}
 			renderInput={params => (
 				<TextField

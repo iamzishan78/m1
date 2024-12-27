@@ -1,8 +1,11 @@
 import React, { memo } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+
 import Button from '@material-ui/core/Button';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { makeStyles } from '@material-ui/core/styles';
+
 import AddUnitTractDialog from 'components/Table/TableAddDialog/AddUnitTractDialog';
+
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(() => ({
 	multiSelectionTopBarButtons: {

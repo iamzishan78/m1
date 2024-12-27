@@ -1,17 +1,23 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+
+import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
-import Button from '@material-ui/core/Button';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import _ from 'lodash';
-import { useDispatch } from 'react-redux';
+
 import { useApolloClient } from '@apollo/client';
-import { execCommonAsyncExportJobAction } from 'store/actions/commonActions';
-import { globalStateController } from 'hookstate/globalStateController';
-import { Modals } from '../../../../../styles/Modal';
+import _ from 'lodash';
+
 import { excludeFilters } from 'components/MRTTable/Common/CommonToolBarActions';
+
+import { globalStateController } from 'hookstate/globalStateController';
+
+import { execCommonAsyncExportJobAction } from 'store/actions/commonActions';
+
+import { Modals } from '../../../../../styles/Modal';
 
 export default function ExportConfirmationDialog({ table, tableKey, header, onClose, children, controller }) {
 	const dispatch = useDispatch();
@@ -31,7 +37,7 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 		let excludedIds = [];
 		let total = tableStateValues?.data.total;
 		let customProps = tableStateValues.customProps;
-		if (rows.length !== 0 && !!!tableStateValues?.isAllRowsSelected && !tableStateValues?.isSubSetSelect) {
+		if (rows.length !== 0 && !tableStateValues?.isAllRowsSelected && !tableStateValues?.isSubSetSelect) {
 			isSelectAll = false;
 		} else if (!!tableStateValues?.isAllRowsSelected || tableStateValues?.isSubSetSelect) {
 			excludedIds = excludeFilters(tableKey, tableStateValues?.isSubSetSelect?.total);

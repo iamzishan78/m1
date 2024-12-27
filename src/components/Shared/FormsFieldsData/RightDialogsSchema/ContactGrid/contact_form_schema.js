@@ -1,6 +1,7 @@
 import { entityTypeOptions } from 'components/ContactDetailedInfo/helper';
-import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
 const phonenumber = inputtxt => {
 	if (inputtxt.match(/^([0-9]||-|\(|\)|\.|,)+$/) !== null) {

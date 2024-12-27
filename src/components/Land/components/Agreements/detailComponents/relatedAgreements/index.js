@@ -1,12 +1,15 @@
 import React, { useMemo } from 'react';
-import { makeStyles } from '@material-ui/styles';
+
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
-import { useStyles as customStyles } from '../style';
+import { makeStyles } from '@material-ui/styles';
 
 import MRTTable from 'components/MRTTable';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
 import RelatedAgreementToolbar from 'components/MRTTable/TablesOverride/RelatedAgreementTable/RelatedAgreementToolbar';
+
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { useStyles as customStyles } from '../style';
 
 const useStyles = makeStyles(theme => ({
 	root: {

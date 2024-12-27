@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
+
+import { Typography, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
 import AgreementAdvanceSearch from 'components/Land/components/Agreements/components/AdvanceSearch/';
-import { Typography, Divider } from '@material-ui/core';
 
 const useStyles = makeStyles(() => ({
 	title: {

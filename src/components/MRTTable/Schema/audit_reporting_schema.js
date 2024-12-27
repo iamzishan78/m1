@@ -1,6 +1,7 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { makeStyles } from '@material-ui/core/styles';
+
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
 const esIndex = 'contacts_flat';
 const useStyles = makeStyles(() => ({

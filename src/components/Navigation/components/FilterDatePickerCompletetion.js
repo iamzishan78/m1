@@ -1,12 +1,14 @@
 import React, { useContext, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Clear } from '@material-ui/icons';
-import { IconButton, TextField } from '@material-ui/core';
 import { useForm, Controller } from 'react-hook-form';
 
+import { IconButton, TextField } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { Clear } from '@material-ui/icons';
+
 import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { NavigationContext } from '../NavigationContext';
 import { navController } from 'hookstate/navStateController';
+
+import { NavigationContext } from '../NavigationContext';
 
 const useStyles = makeStyles(() => ({
 	root: {},
@@ -51,12 +53,16 @@ export default function FilterDatePickerCompletetion({ labelDates }) {
 			max: completetionDateTo && new Date(completetionDateTo).toISOString(),
 		};
 
-		if (!completetionDateFrom) delete value.min;
-		if (!completetionDateTo) delete value.max;
+		if (!completetionDateFrom) {
+			delete value.min;
+		}
+		if (!completetionDateTo) {
+			delete value.max;
+		}
 
 		const type = 'date';
 
-		navController.handleWellsFilters({ field: `completionDate`, value, type });
+		navController.handleWellsFilters({ field: 'completionDate', value, type });
 	}, [stateNav.completetionDateFrom, stateNav.completetionDateTo, setStateNav]);
 
 	const handleStartDate = date => {

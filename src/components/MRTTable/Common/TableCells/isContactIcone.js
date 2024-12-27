@@ -1,11 +1,14 @@
 import React, { memo } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
-import Tooltip from '@material-ui/core/Tooltip';
-import { IconButton } from '@material-ui/core';
-import ContactCard from 'components/Shared/svgIcons/contact_card';
 import { Link } from 'react-router-dom';
+
+import { IconButton } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+
+import ContactCard from 'components/Shared/svgIcons/contact_card';
 import ConvertContact from 'components/Shared/svgIcons/convert_contact';
+
 import { tableGlobalController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(() => ({
@@ -25,7 +28,7 @@ function IsContactCell({ contactId, rows }) {
 	const classes = useStyles();
 	let history = useHistory();
 
-	if (!!!contactId) {
+	if (!contactId) {
 		return (
 			<p
 				style={{
@@ -39,7 +42,7 @@ function IsContactCell({ contactId, rows }) {
 		);
 	}
 
-	if (contactId === 'false')
+	if (contactId === 'false') {
 		return (
 			<Tooltip title="Convert To Contact" placement="top">
 				<IconButton
@@ -60,6 +63,7 @@ function IsContactCell({ contactId, rows }) {
 				</IconButton>
 			</Tooltip>
 		);
+	}
 
 	return (
 		<Tooltip title={!contactId ? 'Convert To Contact' : 'Contact Details'} placement="top">

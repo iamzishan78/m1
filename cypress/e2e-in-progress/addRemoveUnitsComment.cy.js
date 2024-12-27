@@ -35,7 +35,9 @@ describe('Add and Remove Comments on Tract Details Spec', () => {
 
 				cy.verifyApiResponse('@getCommentsByObjectIdApi', { responseTimeout: longTimeout }).then(result => {
 					const comments = result.response.body.data.commentsByObjectId;
-					if (comments.lenth > 1) cy.get('#commentsContainer').scrollTo('bottom');
+					if (comments.lenth > 1) {
+						cy.get('#commentsContainer').scrollTo('bottom');
+					}
 				});
 
 				cy.interceptApi('removeComment');

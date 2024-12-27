@@ -1,14 +1,17 @@
 import React, { useContext } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-
-import UnitDetailCard from './UnitDetailCard';
+import { makeStyles } from '@material-ui/core/styles';
 
 // contexts
-import { AppContext } from 'AppContext';
 import { ExpandableCardContext } from 'components/ExpandableCard/ExpandableCardContext';
+
 import { popupController } from 'hookstate/popupStateController';
+
+import { AppContext } from 'AppContext';
+
+import UnitDetailCard from './UnitDetailCard';
 
 const useStyles = makeStyles(theme => ({
 	card: {

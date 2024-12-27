@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
+
 import { useLazyQuery } from '@apollo/client';
 
-import AnalyticsCharts from './AnalyticsCharts';
 import MRTTable from 'components/MRTTable';
+
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+
 import { tableController } from 'hookstate/tableController';
+
+import AnalyticsCharts from './AnalyticsCharts';
 
 export default function SalesVolumeComparisonSection({ checkDetailsData, esFilters, loadMore }) {
 	const [propertiesIds, setPropertiesIds] = useState([]);

@@ -1,13 +1,18 @@
+import { useCallback, useEffect, useRef } from 'react';
+
 import { useApolloClient } from '@apollo/client';
 import { debounce, set, get, isNumber } from 'lodash';
-import { useCallback, useEffect, useRef } from 'react';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { copy } from 'utils/helper';
-import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { drawController } from 'hookstate/drawStateController';
-import { GET_DB_AGGS, GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
+
 import { mergeArrays } from 'components/Shared/functions';
+
+import { GET_DB_AGGS, GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+
+import { drawController } from 'hookstate/drawStateController';
+import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { copy } from 'utils/helper';
 
 // Custom hook to handle queries for MRTTable
 const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) => {
@@ -69,7 +74,9 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		const { TableSchema } = tableMeta;
 		const isElasticIndex = tableStateValues.esIndex.includes('platformData:');
 
-		if (!TableSchema) return;
+		if (!TableSchema) {
+			return;
+		}
 
 		Controller.updateState({
 			isLoading: true,
@@ -86,7 +93,9 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		let sort = tableStateValues.sorting[0]
 			? {
 					field: (() => {
-						if (tableStateValues.sorting[0].field) return tableStateValues.sorting[0].field;
+						if (tableStateValues.sorting[0].field) {
+							return tableStateValues.sorting[0].field;
+						}
 
 						const sortingId = tableStateValues.sorting[0].id;
 						const matchingSchema = TableSchema.find(val => (val.accessorKey || val.id) === sortingId);
@@ -110,7 +119,9 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		let globalFilter = tableStateValues.globalFilter;
 
-		if (tableStateValues.isGeneric && !tableStateValues.globalSearch) globalFilter = null;
+		if (tableStateValues.isGeneric && !tableStateValues.globalSearch) {
+			globalFilter = null;
+		}
 
 		// Prepare query variables
 		const variables = {
@@ -127,8 +138,9 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		};
 
 		// Update layer filters if filter layer type is defined
-		if (tableStateValues.filterLayerType)
+		if (tableStateValues.filterLayerType) {
 			layerFiltersController.setVariables(tableStateValues.filterLayerType, variables);
+		}
 
 		// Fetch total count for non-elastic indices
 		let total = tableStateValues?.data?.total;
@@ -173,7 +185,9 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				// Determine column type
 				if (!columnsType.current[accessorKey]) {
 					const rowWithValue = rows.find(row => get(row, accessorKey) !== null && get(row, accessorKey) !== undefined);
-					if (rowWithValue) columnsType.current[accessorKey] = typeof get(rowWithValue, accessorKey);
+					if (rowWithValue) {
+						columnsType.current[accessorKey] = typeof get(rowWithValue, accessorKey);
+					}
 				}
 
 				// Set default value based on column type
@@ -182,8 +196,9 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				let value = get(row, accessorKey);
 
 				// Convert value to string if not an object or array
-				if (value !== undefined && value !== null && !Array.isArray(value) && typeof value !== 'object')
+				if (value !== undefined && value !== null && !Array.isArray(value) && typeof value !== 'object') {
 					value = defaultValue === '' ? `${value}` : value;
+				}
 
 				set(row, accessorKey, value, defaultValue);
 			});
@@ -217,7 +232,9 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		const tableMeta = tableState.get({ noproxy: true });
 		const { TableSchema, defaultFilters, esIndex, filters } = tableMeta;
 
-		if (!TableSchema) return;
+		if (!TableSchema) {
+			return;
+		}
 
 		const aggregationColumns = TableSchema?.filter(column => column.Aggregation)?.map(column => column.Aggregation);
 
@@ -246,11 +263,17 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 	// Effect to handle geo filters based on draw state
 	useEffect(() => {
-		if (isClientSide) return;
+		if (isClientSide) {
+			return;
+		}
 
-		if (!tableStateValues.geoKey) return;
+		if (!tableStateValues.geoKey) {
+			return;
+		}
 
-		if (!drawStateValues.selectedPolygonString) return Controller.clearFilter(tableStateValues.geoKey);
+		if (!drawStateValues.selectedPolygonString) {
+			return Controller.clearFilter(tableStateValues.geoKey);
+		}
 
 		if (drawStateValues.selectedPolygonString && drawStateValues.currentFeature) {
 			Controller.setFilter({
@@ -264,7 +287,9 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 	// Effect to fetch footer aggregation data and refetch data
 	useEffect(() => {
-		if (isClientSide) return;
+		if (isClientSide) {
+			return;
+		}
 
 		fetchFooterAggregationData();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -272,19 +297,27 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 	// Effect to reset pagination and scroll to top when filters, sorting, grouping, or global filter change
 	useEffect(() => {
-		if (isClientSide) return;
+		if (isClientSide) {
+			return;
+		}
 
 		resetPagination.current = true;
-		if (tableStateValues?.data?.rows?.length > 0) tableRef?.current?.scrollToIndex?.(0);
+		if (tableStateValues?.data?.rows?.length > 0) {
+			tableRef?.current?.scrollToIndex?.(0);
+		}
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState.filters, tableState.sorting, tableState.grouping, tableState.globalFilter, refetch]);
 
 	// Effect to call query when client-side and query changes
 	useEffect(() => {
-		if (!isClientSide) return;
+		if (!isClientSide) {
+			return;
+		}
 
-		if (!tableState.query.get()) return;
+		if (!tableState.query.get()) {
+			return;
+		}
 
 		callQuery();
 
@@ -293,9 +326,13 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 	// Effect to handle pagination changes for non-infinite scroll tables
 	useEffect(() => {
-		if (isClientSide) return;
+		if (isClientSide) {
+			return;
+		}
 
-		if (tableStateValues?.isInFiniteScroll) return;
+		if (tableStateValues?.isInFiniteScroll) {
+			return;
+		}
 
 		if (tableStateValues?.data?.rows?.length > 0) {
 			tableRef?.current?.scrollToIndex?.(0);
@@ -325,11 +362,15 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 	// Effect to call query initially with default pagination
 	useEffect(() => {
-		if (isClientSide) return;
+		if (isClientSide) {
+			return;
+		}
 
 		const tableMeta = tableState.get({ noproxy: true });
 
-		if (!tableMeta) return;
+		if (!tableMeta) {
+			return;
+		}
 
 		resetPagination.current = true;
 
@@ -355,33 +396,46 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const fetchMoreOnBottomReached = useCallback(
 		debounce(containerRefElement => {
-			if (isClientSide) return;
+			if (isClientSide) {
+				return;
+			}
 
-			if (!tableState?.isInFiniteScroll?.get()) return;
+			if (!tableState?.isInFiniteScroll?.get()) {
+				return;
+			}
 
-			if (!containerRefElement) return;
+			if (!containerRefElement) {
+				return;
+			}
 
-			if (tableState?.isFetching?.get()) return;
+			if (tableState?.isFetching?.get()) {
+				return;
+			}
 
 			const data = tableState?.data?.get({ noproxy: true });
 
-			if (data?.rows?.length >= data?.total) return;
+			if (data?.rows?.length >= data?.total) {
+				return;
+			}
 
 			const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
 
 			if (scrollHeight - scrollTop - clientHeight < 200) {
 				const tableMeta = tableState.get({ noproxy: true });
 
-				if (!tableMeta) return;
+				if (!tableMeta) {
+					return;
+				}
 
 				let pagination = {};
 
-				if (!tableMeta?.pagination?.pageIndex)
+				if (!tableMeta?.pagination?.pageIndex) {
 					pagination = {
 						pageIndex: 0,
 						first: tableStateValues.pageSize,
 						after: null,
 					};
+				}
 
 				if (tableMeta.data?.pit && tableMeta?.pagination?.pageIndex !== undefined) {
 					const pageIndex = (tableMeta?.pagination?.pageIndex || 0) + 1;

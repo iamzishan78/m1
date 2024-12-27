@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { useInView } from 'react-intersection-observer';
 import Select, { defaultTheme, components } from 'react-select';
 import { Waypoint } from 'react-waypoint';
-import { useInView } from 'react-intersection-observer';
+
 import { Grid, Tooltip } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
-import { copy } from 'components/Shared/functions';
+import { makeStyles } from '@material-ui/core/styles';
 import EditIcon from '@material-ui/icons/Edit';
-import { globalStateController } from 'hookstate/globalStateController';
+
+import { copy } from 'components/Shared/functions';
 import { BulletPointMeta } from 'components/Table/helpers/BulletPointMeta';
 import { ChipMeta } from 'components/Table/helpers/ChipMeta';
+
+import { globalStateController } from 'hookstate/globalStateController';
 
 const useStyles = makeStyles(theme => ({
 	myClass: {

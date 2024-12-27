@@ -1,16 +1,17 @@
 import React, { useContext, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+
 import { Box } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+
+import MRTTable from 'components/MRTTable';
+
+import { tableController } from 'hookstate/tableController';
 
 import { AppContext } from 'AppContext';
-import MRTTable from 'components/MRTTable';
-import { tableController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(() => ({
 	root: {
-		// padding: "0px 30px 30px",
 		marginTop: '65px',
-		// marginLeft: '-10px',
 	},
 }));
 

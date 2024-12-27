@@ -1,9 +1,12 @@
 import React, { useState, useEffect, memo, useMemo } from 'react';
-import { useLazyQuery } from '@apollo/client';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
-import get from 'lodash/get';
+
 import { TextField, CircularProgress } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery } from '@apollo/client';
+import get from 'lodash/get';
+
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 
 // Options for the relationship type dropdown
 const RelationshipTypeOptions = ['Child', 'Cousin', 'Parent', 'Spouse'];

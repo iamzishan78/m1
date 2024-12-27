@@ -1,8 +1,10 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import FlyToMap from '../Common/TableCells/coordinates_fly_map';
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+
 import { tableController } from 'hookstate/tableController';
+
+import FlyToMap from '../Common/TableCells/coordinates_fly_map';
 
 const esIndex = 'platformData:wells';
 

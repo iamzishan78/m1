@@ -1,10 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
+
 import FormControl from '@material-ui/core/FormControl';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+
 import debounce from 'lodash/debounce';
 
 import { AutoCompleteFilter } from 'components/Table/AutoCompleteFilter';
+
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 
 import { AppContext } from 'AppContext';
@@ -48,7 +51,9 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index }) 
 		filters: [{ field: 'shapeJson.properties.type.keyword', value: 'agreement' }],
 		extendSearchQuery: '',
 	};
-	if (filter.getOptionLabel) params['getOptionLabel'] = filter.getOptionLabel;
+	if (filter.getOptionLabel) {
+		params['getOptionLabel'] = filter.getOptionLabel;
+	}
 	return (
 		<FormControl variant="outlined" className={classes.formControl}>
 			<AutoCompleteFilter {...params} />

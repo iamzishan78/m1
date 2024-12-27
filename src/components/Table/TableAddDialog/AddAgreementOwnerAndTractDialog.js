@@ -1,17 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import ReactDOM from 'react-dom';
-import get from 'lodash/get';
-import { useApolloClient, useLazyQuery, useMutation } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import CloseIcon2 from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
-import SearchIcon from '@material-ui/icons/Search';
-import AutorenewIcon from '@material-ui/icons/Autorenew';
-import Grid from '@material-ui/core/Grid';
+import { useForm, Controller } from 'react-hook-form';
+import { useSelector } from 'react-redux';
+
 import {
 	Box,
 	CircularProgress,
@@ -31,31 +22,47 @@ import {
 	Menu,
 	ListItemIcon,
 } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import AutorenewIcon from '@material-ui/icons/Autorenew';
+import DeleteIcon from '@material-ui/icons/Delete';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import SearchIcon from '@material-ui/icons/Search';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import RightDialog from '../../ContactDetailCard/components/RightDialog';
-import DeleteConfirmationDialogContent from '../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-import { useForm, Controller } from 'react-hook-form';
 
-// contexts
+import { useApolloClient, useLazyQuery, useMutation } from '@apollo/client';
+import _ from 'lodash';
+import get from 'lodash/get';
+
+import Loaders from 'components/Loaders';
 import { getParcelOriginalProperties } from 'components/ParcelsDetailCard/utils/GetParcelOriginalProps';
-import { UPDATE_SHAPE_TRACTS } from 'graphQL/useMutationUpdateShapeTracts';
+import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
+import AutoCompleteParcelOwners from 'components/Shared/Forms/Fields/AutoCompleteParcelOwners';
+import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
+import AutoCompleteWithNewOption from 'components/Shared/Forms/Fields/AutoCompleteWithNewOption';
+import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
+import { addTrailingZeros } from 'components/Shared/functions';
+import CloseIcon2 from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+import TractForm from 'components/Table/TableAddDialog/Common/TractForm';
+
 import { ADD_OWNER_TOA_SHAPE } from 'graphQL/useMutationAddOwnerToAShape';
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
-import TractForm from 'components/Table/TableAddDialog/Common/TractForm';
-import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
-import AutoCompleteWithNewOption from 'components/Shared/Forms/Fields/AutoCompleteWithNewOption';
-import { addTrailingZeros } from 'components/Shared/functions';
+import { UPDATE_SHAPE_TRACTS } from 'graphQL/useMutationUpdateShapeTracts';
 import { GET_AUTOCOMPLETE_LIST } from 'graphQL/useQueryGetAutoCompleteList';
-import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
-import AutoCompleteParcelOwners from 'components/Shared/Forms/Fields/AutoCompleteParcelOwners';
-import Loaders from 'components/Loaders';
-import { GET_TRACT_ABSTRACT_SHAPE } from 'graphQL/useQueryGetTractAbstractShape';
-import { useSelector } from 'react-redux';
-import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
-import _ from 'lodash';
-import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
+import { GET_TRACT_ABSTRACT_SHAPE } from 'graphQL/useQueryGetTractAbstractShape';
+
 import { tableGlobalController } from 'hookstate/tableController';
+
+import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
+
+import RightDialog from '../../ContactDetailCard/components/RightDialog';
+import DeleteConfirmationDialogContent from '../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+
+// contexts
 
 const useStyles = makeStyles(theme => ({
 	dialogFooter: {
@@ -145,7 +152,9 @@ function AddAgreementOwnerAndTractDialog(props) {
 	}, [getMetaData]);
 
 	const interestMapping = useMemo(() => {
-		if (!metaDataRes) return;
+		if (!metaDataRes) {
+			return;
+		}
 
 		const { metaData } = metaDataRes.getMetaData;
 		const interestMetaData = metaData.filter(data => data.esKey === 'custom_data.interest_type')[0];
@@ -168,8 +177,9 @@ function AddAgreementOwnerAndTractDialog(props) {
 	}, [tract]);
 
 	useEffect(() => {
-		if (!isAcquisitionCostOverridden)
+		if (!isAcquisitionCostOverridden) {
 			setValue('acquisition_cost', calculateAcquisitionCost(nra, getValues().acquisition_nra));
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [nra]);
 
@@ -261,18 +271,21 @@ function AddAgreementOwnerAndTractDialog(props) {
 			orri,
 			workspaceSettings
 		);
-		if (!isNaN(parseFloat(calculatedNRA)))
+		if (!isNaN(parseFloat(calculatedNRA))) {
 			setIsNRAOverridden(parseFloat(calculatedNRA) !== parseFloat(nra) && !isNaN(parseFloat(nra)));
+		}
 
 		let calculatedAcres = calculateNetAcres(mineral_interest);
-		if (!isNaN(parseFloat(calculatedAcres)))
+		if (!isNaN(parseFloat(calculatedAcres))) {
 			setIsAcresOverridden(parseFloat(calculatedAcres) !== parseFloat(net_acres) && !isNaN(parseFloat(net_acres)));
+		}
 
 		let calculatedAcquisitionCost = calculateAcquisitionCost(nra, acquisition_nra);
-		if (!isNaN(parseFloat(calculatedAcquisitionCost)))
+		if (!isNaN(parseFloat(calculatedAcquisitionCost))) {
 			setIsAcquisitionCostOverridden(
 				parseFloat(calculatedAcquisitionCost) !== parseFloat(acquisition_cost) && !isNaN(parseFloat(acquisition_cost))
 			);
+		}
 	};
 
 	useEffect(() => {
@@ -285,9 +298,11 @@ function AddAgreementOwnerAndTractDialog(props) {
 			setNameAutValue({ _id: props.seletedOwner?.ownerEntity, name: props?.seletedOwner?.ownerName });
 			setSelectedShapeLayer(props.seletedOwner);
 
-			if (props.seletedOwner.depthTo === 'All depths' && props.seletedOwner.depthFrom === 'All depths')
+			if (props.seletedOwner.depthTo === 'All depths' && props.seletedOwner.depthFrom === 'All depths') {
 				props.seletedOwner.parcelOwnersRadioBValue = 'true';
-			else props.seletedOwner.parcelOwnersRadioBValue = 'false';
+			} else {
+				props.seletedOwner.parcelOwnersRadioBValue = 'false';
+			}
 			reset(props.seletedOwner);
 
 			setTimeout(() => checkOwnerOverRidden(props.seletedOwner), 0);
@@ -383,8 +398,9 @@ function AddAgreementOwnerAndTractDialog(props) {
 					'lease_royalty_interest',
 				].includes(key) &&
 				ownerToAdd[key]
-			)
+			) {
 				ownerToAdd[key] = addTrailingZeros(parseFloat(ownerToAdd[key]).toFixed(8));
+			}
 		});
 
 		if (ownerToAdd.parcelOwnersRadioBValue === 'true') {
@@ -392,7 +408,9 @@ function AddAgreementOwnerAndTractDialog(props) {
 			ownerToAdd.depthTo = 'All depths';
 		}
 
-		if (isNewTract) delete ownerToAdd.tract.tractId;
+		if (isNewTract) {
+			delete ownerToAdd.tract.tractId;
+		}
 
 		setLoading(true);
 		if (props.seletedOwner) {
@@ -453,7 +471,9 @@ function AddAgreementOwnerAndTractDialog(props) {
 	};
 
 	const calculateNetAcres = mineral_interest => {
-		if (!mineral_interest) return null;
+		if (!mineral_interest) {
+			return null;
+		}
 		const netAcres = addTrailingZeros(
 			getValues()?.tract?.sdGrossAcres ? (getValues()?.tract?.sdGrossAcres * mineral_interest).toFixed(8) : null
 		);
@@ -469,7 +489,9 @@ function AddAgreementOwnerAndTractDialog(props) {
 	// };
 
 	const calculateAcquisitionCost = (nra, aquisitionNra) => {
-		if (!nra && !aquisitionNra) return null;
+		if (!nra && !aquisitionNra) {
+			return null;
+		}
 		const aquisitionCost = parseFloat(nra || 0) * parseFloat(aquisitionNra || 0);
 
 		return aquisitionCost.toFixed(2);
@@ -737,7 +759,7 @@ function AddAgreementOwnerAndTractDialog(props) {
     /> */}
 				<Controller
 					control={control}
-					name={`tract.department`}
+					name={'tract.department'}
 					defaultValue={tract?.department || ''}
 					render={props => (
 						<AutoCompleteTypeComponent
@@ -756,7 +778,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 				/>
 				<Controller
 					control={control}
-					name={`tract.mapStatus`}
+					name={'tract.mapStatus'}
 					defaultValue={tract?.mapStatus || ''}
 					render={props => (
 						<AutoCompleteTypeComponent
@@ -840,8 +862,8 @@ function AddAgreementOwnerAndTractDialog(props) {
 				/>
 			)}
 
-			<TextField id="ownerEntity" name={`ownerEntity`} style={{ display: 'none' }} inputRef={register()} />
-			<TextField id="ownerName" name={`ownerName`} style={{ display: 'none' }} inputRef={register()} />
+			<TextField id="ownerEntity" name={'ownerEntity'} style={{ display: 'none' }} inputRef={register()} />
+			<TextField id="ownerName" name={'ownerName'} style={{ display: 'none' }} inputRef={register()} />
 
 			{interestMapping?.['Mineral Interest']?.includes(layerType) && (
 				<Controller
@@ -915,7 +937,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 							onWheel={e => e.target.blur()}
 							onChange={e => {
 								onChange(e.target.value);
-								if (!isNraOverridden)
+								if (!isNraOverridden) {
 									setValue(
 										'nra',
 										calculateStandardNraForTract(
@@ -926,6 +948,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 											workspaceSettings
 										)
 									);
+								}
 							}}
 						/>
 					)}
@@ -948,7 +971,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 							onWheel={e => e.target.blur()}
 							onChange={e => {
 								onChange(e.target.value);
-								if (!isNraOverridden)
+								if (!isNraOverridden) {
 									setValue(
 										'nra',
 										calculateStandardNraForTract(
@@ -959,6 +982,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 											workspaceSettings
 										)
 									);
+								}
 							}}
 						/>
 					)}
@@ -1105,8 +1129,9 @@ function AddAgreementOwnerAndTractDialog(props) {
 						onWheel={e => e.target.blur()}
 						onChange={e => {
 							props.onChange(parseFloat(e.target.value).toFixed(2));
-							if (!isAcquisitionCostOverridden)
+							if (!isAcquisitionCostOverridden) {
 								setValue('acquisition_cost', calculateAcquisitionCost(getValues().nra, e.target.value));
+							}
 						}}
 						InputProps={{
 							inputComponent: CurrencyFormatCustom,
@@ -1163,7 +1188,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 			/>
 			<Controller
 				control={control}
-				name={`parcelOwnersRadioBValue`}
+				name={'parcelOwnersRadioBValue'}
 				render={({ onChange, value, ref }) => (
 					<RadioGroup
 						row
@@ -1214,7 +1239,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 				<Grid item xs={6}>
 					<Controller
 						control={control}
-						name={`tractStatus`}
+						name={'tractStatus'}
 						render={({ onChange, value, ref }) => (
 							<AutoCompleteWithNewOption
 								margin="dense"
@@ -1297,7 +1322,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 					maxWidth="sm"
 				>
 					<DeleteConfirmationDialogContent
-						header={`Delete Well Interest`}
+						header={'Delete Well Interest'}
 						onClose={handleCloseDialog}
 						deleteFunc={deleteFunc}
 						m1nSelectedRowsIds={null}

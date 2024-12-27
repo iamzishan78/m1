@@ -1,15 +1,17 @@
 import { call, takeLatest, put } from 'redux-saga/effects';
 
-import Api from 'api';
-import { GET_CURRENT_USER_GRID_VIEW_SETTINGS } from 'graphQL/useQueryGetCurrentUserGridViewSettings';
 import { SET_CURRENT_USER_GRID_VIEW_MUTATION } from 'graphQL/useMutationSetCurrentUserGridView';
 import { UPDATE_USER_GRID_VIEW_SETTING_MUTATION } from 'graphQL/useMutationUpdateUserGridViewSetting';
+import { GET_CURRENT_USER_GRID_VIEW_SETTINGS } from 'graphQL/useQueryGetCurrentUserGridViewSettings';
+
 import {
 	currentUserGridViewSettingsAction,
 	setCurrentUserGridViewAction,
 	updateUserGridViewSettingAction,
 } from 'store/actions/sessionActions';
 import { CURRENT_USER_GRID_VIEW_SETTINGS, SET_CURRENT_USER_GRID_VIEW, UPDATE_USER_GRID_VIEW_SETTING } from 'store/type';
+
+import Api from 'api';
 
 function* currentUserGridViewSettings(action) {
 	try {

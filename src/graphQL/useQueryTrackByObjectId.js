@@ -11,3 +11,13 @@ export const TRACKBYOBJECTID = gql`
 		}
 	}
 `;
+
+export const IS_TRACKED_BY_IDS = gql`
+	query isTrackedByIds($ids: [String], $userId: String) {
+		isTrackedByIds(ids: $ids, userId: $userId) {
+			success
+			data
+			error
+		}
+	}
+`;

@@ -1,19 +1,22 @@
 import React, { useMemo } from 'react';
-import { get } from 'lodash';
-import moment from 'moment';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { makeStyles } from '@material-ui/styles';
+
 import { Button, DialogContent, DialogActions, CircularProgress } from '@material-ui/core';
 import { Typography, TextField, Grid, FormControl } from '@material-ui/core';
 import FolderIcon from '@material-ui/icons/Folder';
-import parse from 'autosuggest-highlight/parse';
+import { makeStyles } from '@material-ui/styles';
 
-import ArrowForwardIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
-import AutoCompleteESField from 'components/Shared/Forms/Fields/AutoCompleteESField';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import parse from 'autosuggest-highlight/parse';
+import { get } from 'lodash';
+import moment from 'moment';
+
 import { agreementTypes } from 'components/Land/components/Agreements/detailComponents/summary/data';
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
-import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
+import AutoCompleteESField from 'components/Shared/Forms/Fields/AutoCompleteESField';
+import ArrowForwardIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+
 import { UPSERT_RELATED_AGREEMENT_DESSCRIPTOR } from 'graphQL/useMutationsRelatedAgreement';
+import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 
 const agreementParams = [
 	{ key: 'agreementNumber', label: 'Agreement Number' },
@@ -118,8 +121,12 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const calcScoreOpacity = (maxMin, score) => {
-	if (maxMin[0] === maxMin[1]) return 0;
-	if (score === maxMin[1]) return 1;
+	if (maxMin[0] === maxMin[1]) {
+		return 0;
+	}
+	if (score === maxMin[1]) {
+		return 1;
+	}
 
 	return 1 - (score - maxMin[1]) / (maxMin[0] - maxMin[1]);
 };
@@ -156,7 +163,9 @@ const AddNewRelatedAgreementDialog = props => {
 	};
 
 	const addNewRelatedAgreement = () => {
-		if (!!upsertLoading) return;
+		if (upsertLoading) {
+			return;
+		}
 		upsertRelatedAgreementDescriptor({
 			variables: {
 				descriptorObject: customLayerId,
@@ -230,7 +239,9 @@ const AddNewRelatedAgreementDialog = props => {
 											},
 										]}
 										renderOption={option => {
-											if (option.id === 'newEntity') return;
+											if (option.id === 'newEntity') {
+												return;
+											}
 											let parts = parse([option.key[4], option.key[2]], Array());
 											const type =
 												get(option, `key[${2}]`) && agreementTypes.find(type => type.value === option.key[2]);

@@ -1,7 +1,7 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
-import vf_number from 'components/Shared/valueformatters/vf_number';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
+import vf_number from 'components/Shared/valueformatters/vf_number';
 
 const esIndex = 'checkdetails_flat';
 

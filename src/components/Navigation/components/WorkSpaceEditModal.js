@@ -1,27 +1,29 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch } from 'react-redux';
-import { useMutation } from '@apollo/client';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
+
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import Typography from '@material-ui/core/Typography';
+import MuiDialogContent from '@material-ui/core/DialogContent';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import { DropzoneAreaBase } from 'material-ui-dropzone';
-import { showErrorMessage } from 'actions';
+import Typography from '@material-ui/core/Typography';
+import CloseIcon from '@material-ui/icons/Close';
 
+import { useMutation } from '@apollo/client';
 import { BlockBlobClient } from '@azure/storage-blob';
+import { DropzoneAreaBase } from 'material-ui-dropzone';
 
-import { UPSERT_WORKSPACE_SETTINGS } from 'graphQL/useMutationWorksapceSettings';
-import { ADDFILE } from 'graphQL/useMutationAddFile';
-
-import { AppContext } from 'AppContext';
 import { workspaceTenantName } from 'components/Shared/functions';
+
+import { ADDFILE } from 'graphQL/useMutationAddFile';
+import { UPSERT_WORKSPACE_SETTINGS } from 'graphQL/useMutationWorksapceSettings';
+
+import { showErrorMessage } from 'actions';
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -152,7 +154,9 @@ export default function CustomizedDialogs({
 										},
 									},
 								});
-							} else dispatch(showErrorMessage('Upload failed'));
+							} else {
+								dispatch(showErrorMessage('Upload failed'));
+							}
 						})
 						.catch(err => console.log(err));
 				}
@@ -192,7 +196,9 @@ export default function CustomizedDialogs({
 				modifier: stateApp.user._id,
 				title: workspaceTitle,
 			};
-			if (src === m1neralIconPath) obj.file = null;
+			if (src === m1neralIconPath) {
+				obj.file = null;
+			}
 			addOrUpdateWorkspaceSettings({
 				variables: {
 					workspaceSettings: obj,

@@ -1,13 +1,15 @@
 // Importing necessary dependencies and components
 import React from 'react';
-import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import { Warning as WarningIcon, CheckCircle } from '@material-ui/icons';
+
 import { makeStyles } from '@material-ui/core/styles';
-import { formatDate } from 'components/Shared/functions';
+import { Warning as WarningIcon, CheckCircle } from '@material-ui/icons';
 import { LocalAtm as CurrencyIcon } from '@material-ui/icons';
+
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import { formatDate } from 'components/Shared/functions';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 // Define styles for tooltip
 const useStyles = makeStyles(theme => ({

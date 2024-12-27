@@ -1,10 +1,11 @@
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import WellsToolbar from 'components/MRTTable/TablesOverride/MyWellsTable/WellsToolbar';
-import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import { formatDate } from 'components/Shared/functions';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+
 import { globalStateController } from 'hookstate/globalStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 const esIndex = 'mywells_flat';
 
