@@ -10,8 +10,10 @@
 	display: none !important;
 }
 
-.MuiToolbar-root > .MuiBox-root > .MuiBox-root {
+.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded > .MuiBox-root > .MuiBox-root > .MuiBox-root {
 	min-width: max-content;
+	margin-top: auto;
+	margin-bottom: auto;
 }
 
 .MuiDialog-paperFullScreen {
@@ -20,9 +22,4 @@
 
 .MuiDialog-paperFullScreen > div {
 	width: auto !important;
-}
-
-.MuiToolbar-root > .MuiBox-root > .MuiBox-root {
-	margin-top: auto;
-	margin-bottom: auto;
 }
