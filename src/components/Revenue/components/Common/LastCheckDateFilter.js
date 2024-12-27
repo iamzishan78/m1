@@ -106,6 +106,7 @@ const LastCheckDateFilter = ({
 			filter =>
 				filter.type !== 'range' &&
 				filter.field !== `${stateESKey}state.keyword` &&
+				filter.field !== 'check.checkDate' &&
 				filter.field !== 'check.checkNumber.keyword' &&
 				filter.field !== 'property.number.keyword' &&
 				filter.field !== 'status.keyword'
@@ -116,7 +117,10 @@ const LastCheckDateFilter = ({
 		if (propertyNumberFilter) {
 			filters.push({ field: 'property.number.keyword', value: propertyNumberFilter });
 		}
-		if (fromDate && toDate && !isDuplicateFilter) {
+		if (fromDate && toDate) {
+			if (isDuplicateFilter) {
+				filters = filters?.filter(filter => filter.field !== field)
+			}
 			filters.unshift({
 				field,
 				value: [

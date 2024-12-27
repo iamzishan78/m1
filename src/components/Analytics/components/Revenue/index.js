@@ -343,8 +343,11 @@ export default function RevenueAnalytics(props) {
 		  tableController(TableKey).clearFilters(); // clear filter from the table state
 		
 		  newFilter.forEach(filter => {
-			const { field, value, type } = filter;
-			if (type) { // Check if the filter has a 'type' property
+			const { field, value, type, columnType, searchType } = filter;
+			if (columnType === 'date') {
+				const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+				filterToAdd.push({ field, value, type, searchType, columnType, timezone });   // If 'type' is present, add an object with field, value, and type to filterToAdd
+			} else if (type) { // Check if the filter has a 'type' property
 			  filterToAdd.push({ field, value, type });   // If 'type' is present, add an object with field, value, and type to filterToAdd
 			} else {
 			  filterToAdd.push({ field, value });    // If 'type' is not present, add an object with only field and value to filterToAdd
@@ -458,7 +461,7 @@ export default function RevenueAnalytics(props) {
 			{tabs[tab] === 'Comparisons' && (
 				<>
 					<LastCheckDateFilter
-					   	field="date"
+					   	field="check.checkDate"
 						esIndex={'checkdetailsinterestscomparison_flat'}
 						esFilters={esFilters}
 						setESFilters={setESFilters}
