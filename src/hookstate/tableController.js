@@ -23,7 +23,7 @@ import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { globalStateController } from 'hookstate/globalStateController';
 import { hookStateController } from 'hookstate/hookStateController';
 
-import { validateUrl } from 'utils/helper';
+import { compareObjects, validateUrl } from 'utils/helper';
 
 import { handleMRTSchema, handleVisiblityMenu } from './helpers';
 import { tableESState, tableGlobalState, tableInitialState } from './initialStates';
@@ -892,6 +892,49 @@ const tableESStateControllerHandler = state => ({
 		genericState.pinnedFields = pinnedFields;
 
 		return genericState;
+	},
+
+	setEditedData: (rowId, editedRow) => {
+		const tableKey = state.tableKey.get();
+		const data = state.data.get({ noproxy: true });
+
+		const currentRow = data.rows.find(r => r._id === rowId);
+
+		const changed = compareObjects(editedRow, currentRow);
+
+		if (changed) {
+			const editedData = state.editedData.get({ noproxy: true });
+			state.editedData.set({
+				...editedData,
+				[rowId]: editedRow,
+			});
+		} else {
+			// eslint-disable-next-line no-use-before-define
+			tableController(tableKey).clearEditedRow(rowId);
+		}
+	},
+	setValidationErrors: (rowId, columnId, validationError) => {
+		const validationErrors = state.validationErrors.get({ noproxy: true });
+
+		state.validationErrors.set({
+			...validationErrors,
+			[rowId]: {
+				...validationErrors[rowId],
+				[columnId]: validationError,
+			},
+		});
+	},
+	clearEditedRow: rowId => {
+		state.editedData.merge({
+			[rowId]: undefined,
+		});
+		state.validationErrors.merge({
+			[rowId]: undefined,
+		});
+	},
+	clearEditing: () => {
+		state.editedData.set({});
+		state.validationErrors.merge({});
 	},
 });
 

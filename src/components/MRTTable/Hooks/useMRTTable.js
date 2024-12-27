@@ -117,6 +117,14 @@ const useMRTTable = tableKey => {
 			enableStickyHeader: true,
 			enableStickyFooter: true,
 			enableSorting: tableStateValues?.grouping.length === 0,
+
+			createDisplayMode: tableStateValues.createDisplayMode,
+			editDisplayMode: tableStateValues.editDisplayMode,
+			enableEditing: tableStateValues.enableEditing,
+			enableRowActions: tableStateValues.enableRowActions,
+			positionActionsColumn: tableStateValues.positionActionsColumn,
+			getRowId: tableStateValues.getRowId,
+
 			muiTableBodyRowProps: row => ({
 				onClick: e => {
 					const { className } = e.target;

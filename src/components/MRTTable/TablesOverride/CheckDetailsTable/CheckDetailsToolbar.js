@@ -1,10 +1,16 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { tableController } from 'hookstate/tableController';
+import { useApolloClient } from '@apollo/client';
+import { merge } from 'lodash';
+import PropTypes from 'prop-types';
+
+import ToolbarButton from 'components/Shared/ui/ToolbarButton';
+
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 import { getIdFromPath } from 'utils/helper';
 
@@ -25,17 +31,30 @@ const useStyles = makeStyles(() => ({
 }));
 
 function CheckDetailsToolbar({ table, tableKey }) {
-	// initials
 	const classes = useStyles();
 	let history = useHistory();
 	const Controller = tableController(tableKey);
-	const tableState = Controller.useState(['isAllRowsSelected', 'rowSelection', 'tableStateValues']);
-	const tableStateValues = tableState.stateValues;
+	const { tableStateValues } = Controller.useState(
+		['isAllRowsSelected', 'rowSelection', 'editedData', 'validationErrors'],
+		'tableStateValues'
+	);
 	const isSomeRowsSelected =
 		table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original) || [];
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
+
+	const client = useApolloClient();
+
+	const saveable = useMemo(() => {
+		const hasEditedData = Object.values(tableStateValues.editedData).some(data => !!data);
+
+		const hasErrors = Object.values(tableStateValues.validationErrors).some(rowErrors =>
+			Object.values(rowErrors).some(error => !!error)
+		);
+
+		return hasEditedData && !hasErrors;
+	}, [tableStateValues.editedData, tableStateValues.validationErrors]);
 
 	return (
 		<>
@@ -62,9 +81,40 @@ function CheckDetailsToolbar({ table, tableKey }) {
 						<UpdateProperty selectedRows={selectedRows} resetRows={table.resetRowSelection} />
 					</div>
 				)}
+
+				<ToolbarButton
+					label="Save"
+					disabled={!saveable}
+					onClick={async () => {
+						const { data, handleUpdateData } = Controller.getAllValues();
+
+						const rowsToUpdate = Object.entries(tableStateValues.editedData)
+							.filter(([, value]) => !!value)
+							.map(([key, value]) => {
+								const currentRow = data.rows.find(r => r._id === key);
+
+								return merge(currentRow, value);
+							});
+
+						Controller.clearEditing();
+
+						try {
+							await handleUpdateData(client, rowsToUpdate);
+						} catch {
+							//
+						}
+
+						tableGlobalController.refetch();
+					}}
+				/>
 			</div>
 		</>
 	);
 }
+
+CheckDetailsToolbar.propTypes = {
+	table: PropTypes.object.isRequired,
+	tableKey: PropTypes.string.isRequired,
+};
 
 export default memo(CheckDetailsToolbar);
