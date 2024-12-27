@@ -13,7 +13,7 @@ import ToolbarActions from '../Common/ToolbarActions';
 import ToolbarInternalActions from '../Common/ToolbarInternalActions';
 import { tableESSimpleFilterModeOtions } from '../utils/data';
 
-const useTableESSimple = tableKey => {
+const useMRTTable = tableKey => {
 	const tableContainerRef = useRef(null); // access the MUI TableContainer element
 	const rowVirtualizerInstanceRef = useRef(null); // access the MUI TableContainer element
 	const tableRef = useRef(null); // access the MUI Table element
@@ -421,4 +421,4 @@ const useTableESSimple = tableKey => {
 	};
 };
 
-export default useTableESSimple;
+export default useMRTTable;
