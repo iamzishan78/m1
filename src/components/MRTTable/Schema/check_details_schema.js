@@ -9,7 +9,7 @@ import { CommonSchema, editFieldProps } from 'components/MRTTable/Schema/common_
 import { formatDate } from 'components/Shared/functions';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
-import { UPDATE_CHECK_DETAILS } from 'graphQL/useMutationUpdateCheckDetail';
+import { UPDATE_CHECK_DETAIL, UPDATE_CHECK_DETAILS } from 'graphQL/useMutationUpdateCheckDetail';
 
 import CheckDetailsToolbar from '../TablesOverride/CheckDetailsTable/CheckDetailsToolbar';
 
@@ -43,6 +43,12 @@ const CheckDetailsMeta = {
 				checkDetails: rows,
 			},
 			mutation: UPDATE_CHECK_DETAILS,
+		});
+	},
+	onDelete: async (client, row) => {
+		await client.mutate({
+			variables: { checkDetail: { ...row, IsDeleted: true } },
+			mutation: UPDATE_CHECK_DETAIL,
 		});
 	},
 

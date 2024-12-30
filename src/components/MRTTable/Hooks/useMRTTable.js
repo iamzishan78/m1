@@ -2,11 +2,15 @@ import React, { useRef, useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
+import { Delete } from '@mui/icons-material';
+import { Box, IconButton, Tooltip } from '@mui/material';
+
+import { useApolloClient } from '@apollo/client';
 import _ from 'lodash';
 
 import useHandleAdditionalQueries from 'components/MRTTable/Hooks/useHandleAdditionalQueries';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 import useHandleQuery from './useHandleQuery';
 import ToolbarActions from '../Common/ToolbarActions';
@@ -119,12 +123,43 @@ const useMRTTable = tableKey => {
 			enableSorting: tableStateValues?.grouping.length === 0,
 			enableFullScreenToggle: false,
 
-			createDisplayMode: tableStateValues.createDisplayMode,
-			editDisplayMode: tableStateValues.editDisplayMode,
-			enableEditing: tableStateValues.enableEditing,
-			enableRowActions: tableStateValues.enableRowActions,
-			positionActionsColumn: tableStateValues.positionActionsColumn,
-			getRowId: tableStateValues.getRowId,
+			...(tableStateValues.enableEditing && {
+				createDisplayMode: tableStateValues.createDisplayMode,
+				editDisplayMode: tableStateValues.editDisplayMode,
+				enableEditing: tableStateValues.enableEditing,
+				enableRowActions: tableStateValues.enableRowActions,
+				positionActionsColumn: tableStateValues.positionActionsColumn,
+				getRowId: tableStateValues.getRowId,
+				renderRowActions: ({ row }) => {
+					const client = useApolloClient();
+
+					return (
+						<Box sx={{ display: 'flex', gap: '1rem' }}>
+							<Tooltip title="Delete">
+								<IconButton
+									color="error"
+									onClick={() => {
+										tableGlobalController.updateState({
+											dialog: {
+												type: 'deleteGrid',
+												deletedData: row.original,
+												deleteType: 'row',
+												deleteFunc: async row => {
+													await tableStateValues.onDelete(client, row);
+
+													tableGlobalController.refetch();
+												},
+											},
+										});
+									}}
+								>
+									<Delete />
+								</IconButton>
+							</Tooltip>
+						</Box>
+					);
+				},
+			}),
 
 			muiTableBodyRowProps: row => ({
 				onClick: e => {

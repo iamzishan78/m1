@@ -3,6 +3,7 @@ import React, { memo } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 
 import { useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import Loader from 'components/Loaders';
@@ -51,6 +52,12 @@ function AllDialogs(props) {
 	};
 
 	const deleteFunc = async dataToDelete => {
+		if (rest.deleteType === 'row') {
+			rest.deleteFunc?.(dataToDelete);
+
+			return;
+		}
+
 		Loader.createToast('deletion', 'Deletion in Progress');
 		const user = globalStateController.getValue('user');
 		const testCase = globalStateController.getValue('testCase');
@@ -190,5 +197,11 @@ function AllDialogs(props) {
 		</>
 	);
 }
+
+AllDialogs.propTypes = {
+	tableKey: PropTypes.string.isRequired,
+	columns: PropTypes.array,
+	controller: PropTypes.object,
+};
 
 export default memo(AllDialogs);

@@ -19,11 +19,13 @@ const useStyles = makeStyles(() => ({
 
 const CheckDetailsSection = ({ checkId }) => {
 	const classes = useStyles();
+
 	return (
 		<div className={`${classes.sectionCard}`}>
 			<MRTTable
 				name={'CheckDetailsTable'}
 				overrideMeta={{
+					enableEditing: false,
 					defaultFilters: [
 						{
 							field: 'check._id.keyword',
