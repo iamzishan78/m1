@@ -168,6 +168,7 @@ const ActivitiesDashboard = () => {
 				tableData={activitiesTableState?.data}
 				module={'Activities'}
 				searchFields={activitiesTableState.searchFields}
+				globalFilter={activitiesTableState.globalFilter}
 			/>
 			<MRTTable
 				name={tableKey}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 import { Grid, Card, CardContent } from '@material-ui/core';
@@ -14,8 +14,6 @@ import { GET_ACTIVITY_ANALYTICS } from 'graphQL/useQueryActivityAnalytics';
 import { GET_CONTACT_ANALYTICS } from 'graphQL/useQueryContactDetail';
 
 import { copy, getFilters } from 'utils/helper';
-
-import { AppContext } from 'AppContext';
 
 import { getActivityFilters } from './ActivitiesDashboard';
 
@@ -71,8 +69,15 @@ const defaultUpdateUsers = [
 		data: [],
 	},
 ];
-const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilters, tableData, searchFields }) => {
-	const [stateApp] = useContext(AppContext);
+const ActivityAnalytics = ({
+	appliedFilters,
+	tableFilters,
+	module,
+	setTableFilters,
+	tableData,
+	searchFields,
+	globalFilter,
+}) => {
 	const [analyticsData, setAnalyticsData] = useState([]);
 	const [contactData, setContactData] = useState([]);
 	const [activitiesPerQualifier, setActivitiesPerQualifier] = useState({
@@ -138,8 +143,8 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 			getAuditReportingAnalytics({
 				variables: {
 					search: {
-						fields: ['name', '_all'],
-						query: stateApp.landAnalyticsSearchQuery,
+						fields: searchFields,
+						query: globalFilter,
 					},
 					filters: getAllFilters(),
 				},
@@ -149,13 +154,13 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters, module, setTableFilte
 				variables: {
 					search: {
 						fields: searchFields,
-						query: stateApp.activitySearchQuery || stateApp.landAnalyticsSearchQuery,
+						query: globalFilter,
 					},
 					filters: getAllFilters(),
 				},
 			});
 		}
-	}, [stateApp.activitySearchQuery, appliedFilters, tableFilters, stateApp.landAnalyticsSearchQuery, tableData]);
+	}, [appliedFilters, tableFilters, tableData, searchFields, globalFilter]);
 
 	useEffect(() => {
 		setTableFilters && setTableFilters(getActivityFilters(appliedFilters));
@@ -332,6 +337,7 @@ ActivityAnalytics.propTypes = {
 	setTableFilters: PropTypes.func,
 	tableData: PropTypes.array.isRequired,
 	searchFields: PropTypes.array.isRequired,
+	globalFilter: PropTypes.string.isRequired,
 };
 
 export default ActivityAnalytics;
