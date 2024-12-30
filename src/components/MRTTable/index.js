@@ -2,6 +2,7 @@ import React, { memo, useEffect } from 'react';
 
 import { useApolloClient } from '@apollo/client';
 import { MaterialReactTable } from 'material-react-table';
+import PropTypes from 'prop-types';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
@@ -32,7 +33,6 @@ function MRTTable({ tableKey, name, overrideMeta = {} }) {
 		return () => {
 			Controller.reset();
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [reInitialized]);
 
 	if (!stateValues.initialized) {
@@ -57,5 +57,18 @@ function MRTTable({ tableKey, name, overrideMeta = {} }) {
 
 	return <Table tableKey={tableKey} />;
 }
+
+// Define prop types for MRTTable
+MRTTable.propTypes = {
+	tableKey: PropTypes.string, // Optional string for the table key
+	name: PropTypes.string.isRequired, // Required string for the table name
+	overrideMeta: PropTypes.object, // Optional object for overriding metadata
+};
+
+// Define default props for MRTTable
+MRTTable.defaultProps = {
+	tableKey: undefined, // Default to undefined if not provided
+	overrideMeta: {}, // Default to an empty object if not provided
+};
 
 export default memo(MRTTable);

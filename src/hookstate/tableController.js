@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 
 import { hookstate } from '@hookstate/core';
@@ -13,6 +14,7 @@ import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOp
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatGridViewToMRT } from 'components/MRTTable/utils/helper';
 import { copy, deepEqual, formatDate } from 'components/Shared/functions';
+import { defaultHandleDefaultView } from 'components/Shared/GridView';
 import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
@@ -85,10 +87,12 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 				}
 
 				if (item?.type === 'text') {
+					const MAX_TEXT_SIZE = 40;
+
 					if (validateUrl(value)) {
 						return (
 							<a href={value} target="_blank" rel="noreferrer">
-								{value?.length > 40 ? value?.slice(0, 40) + '...' : value}
+								{value?.length > MAX_TEXT_SIZE ? value?.slice(0, MAX_TEXT_SIZE) + '...' : value}
 							</a>
 						);
 					}
@@ -166,7 +170,6 @@ const tableESStateControllerHandler = state => ({
 			isClientSide = false,
 			isSelectAllAllowed = true,
 			isAllRowsSelected,
-			isSelectall,
 			search,
 			fetchMetaData,
 			onCustomKeyChange,
@@ -192,6 +195,7 @@ const tableESStateControllerHandler = state => ({
 				...CommonSchema.SELECT_SOME,
 				Header: () => <TableHeaderMoreOptions tableKey={tableKey} />,
 				Cell: ({ row }) => {
+					// eslint-disable-next-line no-use-before-define
 					const tableState = tableController(tableKey).useState(['mrtTableRef']);
 					const tableStateValues = tableState.stateValues;
 
@@ -231,9 +235,20 @@ const tableESStateControllerHandler = state => ({
 			// Format the fetched grid view for use with a specific grid view library or framework, assumed to be Material-UI's React Table (MRT).
 			formatedGridView = formatGridViewToMRT(userDefaultDisplay);
 
+			let selectedGridView =
+				isDefaultGridView || !userDefaultDisplay ? gridViewSettings.defaultView : userDefaultDisplay;
+
+			if (selectedGridView.type === 'Default') {
+				selectedGridView = defaultHandleDefaultView(selectedGridView);
+				if (gridViewSettings.handleDefaultView) {
+					const user = globalStateController.getValue('user');
+					selectedGridView = gridViewSettings.handleDefaultView(selectedGridView, user);
+				}
+			}
+
 			// Setup the gridView object with the selected grid view configuration and some flags for UI control.
 			gridView = {
-				selectedGridView: isDefaultGridView || !userDefaultDisplay ? gridViewSettings.defaultView : userDefaultDisplay,
+				selectedGridView,
 				showViewModal: false,
 				showSaveAsNew: false,
 			};
@@ -372,13 +387,19 @@ const tableESStateControllerHandler = state => ({
 			defaultColumnPinning: defaultColumnsPinning,
 		};
 
+		if (!isClientSide) {
+			stateToUpdate.columnVisibility['mrt-row-select'] = false;
+		}
+
 		state.merge(stateToUpdate);
 
 		if (mapViewFilters.length > 0) {
+			// eslint-disable-next-line no-use-before-define
 			tableController(tableKey).setShowColumnFilters(true);
 		}
 		if (customLayersFieldAccessors[layerIdentifier]) {
 			mapViewFilters?.forEach(filter => {
+				// eslint-disable-next-line no-use-before-define
 				tableController(tableKey).setFilterMode(filter?.field.replace('.keyword', ''), filter.searchType);
 			});
 		}
@@ -450,6 +471,7 @@ const tableESStateControllerHandler = state => ({
 		});
 		const tableKey = state.tableKey.get();
 
+		// eslint-disable-next-line no-use-before-define
 		const updatedColumnnSchema = tableController(tableKey).setInitialFilterMode(columnSchema, mode, column);
 
 		state.TableSchema?.[index]?.merge(updatedColumnnSchema);
@@ -464,31 +486,19 @@ const tableESStateControllerHandler = state => ({
 	},
 
 	setColumnVisibility: visibility => {
+		const isClientSide = state.isClientSide.get();
+
 		if (!deepEqual(state.columnVisibility?.get({ noproxy: true }), visibility)) {
+			if (!isClientSide) {
+				visibility['mrt-row-select'] = false;
+			}
+
 			state.columnVisibility?.set(visibility);
 		}
 	},
 
 	setColumnPinning: (columnPinning, oldPinning, TableSchema) => {
 		if (!deepEqual(state.columnPinning?.get({ noproxy: true }), columnPinning)) {
-			let size = 0;
-			columnPinning.left.forEach(pin => {
-				if (pin === 'mrt-row-numbers') {
-					size += 60;
-				} else if (pin === 'mrt-row-select') {
-					size += 0;
-				} else {
-					size += state.TableSchema.get({ noproxy: true }).find(
-						column => column.id === pin || column.accessorKey === pin
-					)?.size;
-				}
-			});
-			const tableCss = {
-				...state.tableCss?.get({ noproxy: true }),
-				...(state.columnVirtualization.get()
-					? { '& .MuiTableRow-root>:nth-child(2)': { marginLeft: `-${size}px !important` } }
-					: {}),
-			};
 			state.columnPinning?.set(columnPinning);
 
 			let changeTableSchema = false;
@@ -524,14 +534,17 @@ const tableESStateControllerHandler = state => ({
 			if (changeTableSchema) {
 				state.TableSchema.set(TableSchema);
 			}
-			state.tableCss?.set(tableCss);
 		}
 		handleVisiblityMenu();
 	},
 
 	setColumnOrdering: order => {
-		if (!deepEqual(state.columnOrdering?.get({ noproxy: true }), order)) {
-			state.columnOrdering?.set(order);
+		const isClientSide = state.isClientSide.get();
+
+		const updatedOrder = isClientSide ? order : order.filter(col => col !== 'mrt-row-select');
+
+		if (!deepEqual(state.columnOrdering?.get({ noproxy: true }), updatedOrder)) {
+			state.columnOrdering?.set(updatedOrder);
 		}
 	},
 

@@ -1,3 +1,4 @@
+import React from 'react';
 import Avatar from 'react-avatar';
 
 import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
@@ -7,6 +8,8 @@ import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagCompon
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import ContactDettailRelatedContactsToolBar from 'components/MRTTable/TablesOverride/ContactDetailRelatedContactsTable/ContactDetailRelatedContactsToolbar';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
+
+import { tableGlobalController } from 'hookstate/tableController';
 
 const esIndex = 'contacts_flat';
 
@@ -74,8 +77,9 @@ const ContactDetailRelatedContactMeta = {
 						>
 							<ColumnWithLink
 								value={renderedCellValue}
-								link={`/contact/details/${row.getValue('_id')}/?tenant=${window.sessionStorage.getItem('tenantName')}`}
+								link={`/contact/details/${row.getValue('_id')}`}
 								onClick={e => {
+									window.location.reload();
 									e.stopPropagation();
 								}}
 							/>

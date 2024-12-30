@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 
 import _ from 'lodash';
@@ -18,6 +19,8 @@ import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoenn
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 import { tableController } from 'hookstate/tableController';
+
+import { SMALL_TIMEOUT } from 'utils/consts';
 
 import { globalStateController } from './globalStateController';
 
@@ -86,7 +89,7 @@ export const handleColumnMenuClick = () => {
 				element.addEventListener('click', clickListner);
 			});
 		}
-	}, 300);
+	}, SMALL_TIMEOUT);
 };
 
 export const handleMRTSchema = ({
@@ -95,7 +98,6 @@ export const handleMRTSchema = ({
 	esIndex,
 	defaultFlterMode,
 	search,
-	columnVirtualization,
 	globalFilter,
 	layerIdentifier,
 	isClientSide,
@@ -117,13 +119,15 @@ export const handleMRTSchema = ({
 		[];
 	const _TableSchema = _Schema.map(schemaColumn => {
 		if (schemaColumn.header && !schemaColumn.showInLast) {
-			schemaColumn.Header = () => {
+			const HeaderComp = () => {
 				const { header, type } = schemaColumn;
 				const {
 					stateValues: { showTypes },
 				} = tableController(tableKey).useState(['showTypes']);
 				return <DataType title={header} type={type || 'unknown'} showType={showTypes} />;
 			};
+
+			schemaColumn.Header = HeaderComp;
 		}
 
 		if (isClientSide) {
@@ -295,11 +299,11 @@ export const handleMRTSchema = ({
 		'& .MuiDialog-root': {
 			zIndex: '99999',
 		},
-		'& .MuiToolbar-root': {
+		'& .Mui-ToolbarDropZone': {
 			backgroundColor: '#F2F2F2',
 			borderBottom: '1px solid rgba(224, 224, 224, 1)',
 		},
-		'& th.MuiToolbar-root, .MuiTableRow-head, th.MuiTableCell-head': {
+		'& th.MuiToolbar-root, .MuiTableRow-head, th.MuiTableCell-head,th.MuiTableCell-head::before': {
 			backgroundColor: '#F2F2F2',
 		},
 		'& .Mui-TableHeadCell-Content-Labels': {
@@ -323,16 +327,6 @@ export const handleMRTSchema = ({
 	handleVisiblityMenuClick();
 	handleColumnMenuClick();
 
-	if (pinnedColumns.length > 0 && columnVirtualization) {
-		let size = 60;
-		// let size = 120;
-		pinnedColumns.forEach(column => {
-			size += column.size;
-		});
-		tableCss['& .MuiTableRow-root>:nth-child(2)'] = {
-			marginLeft: `-${size}px !important`,
-		};
-	}
 	const groupedField =
 		_TableSchema.find(column => column.isGrouped)?.accessorKey || _TableSchema.find(column => column.isGrouped)?.id;
 
@@ -343,6 +337,10 @@ export const handleMRTSchema = ({
 	const filterModes = _TableSchema
 		.filter(column => column.filter)
 		.reduce((acc, cur) => ({ ...acc, [cur.accessorKey || cur.id]: 'custom' }), {});
+
+	if (!isClientSide) {
+		columnVisibility['mrt-row-select'] = false;
+	}
 
 	return {
 		_TableSchema,
