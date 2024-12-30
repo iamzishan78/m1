@@ -19,6 +19,7 @@ export const CREATE_DATASET_LAYERS = gql`
 		$layerNames: [String]
 		$isCreateLayers: Boolean
 		$defaultSettings: [JSON]
+		$shouldUpdateDataset: Boolean
 	) {
 		createDatasetLayers(
 			dataset: $dataset
@@ -26,6 +27,7 @@ export const CREATE_DATASET_LAYERS = gql`
 			layerNames: $layerNames
 			isCreateLayers: $isCreateLayers
 			defaultSettings: $defaultSettings
+			shouldUpdateDataset: $shouldUpdateDataset
 		) {
 			success
 			message

@@ -18,7 +18,9 @@ describe('Add Metadata Agreement Spec', () => {
 			const hits = response.response.body.data.getESSimpleSearch.hits;
 			const cypressAgreement = hits.find(hit => hit.agreementName === agreementObj.agreementName.value);
 
-			if (!cypressAgreement) throw new Error('Sample Agreement added by cypress not found');
+			if (!cypressAgreement) {
+				throw new Error('Sample Agreement added by cypress not found');
+			}
 
 			const indexOfcypressAgreement = hits.findIndex(hit => hit._id === cypressAgreement._id) + 1;
 

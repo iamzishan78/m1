@@ -1,16 +1,23 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import React, { useContext, useState, useEffect, useMemo, useRef } from 'react';
-import get from 'lodash/get';
+
 import { Button, TextField, IconButton, CircularProgress, FormControl, Grid, makeStyles } from '@material-ui/core';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
+import { Autocomplete } from '@material-ui/lab';
 
-import { AppContext } from '../../../AppContext';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import get from 'lodash/get';
+
 import AutoCompleteAddNewField from 'components/Common/AutoCompleteWithAddNew';
 
-import RightDialog from './RightDialog';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { Autocomplete } from '@material-ui/lab';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { ADD_RELATED_CONTACT } from 'graphQL/useMutationRelatedContact';
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+
+import { tableGlobalController } from 'hookstate/tableController';
+
+import RightDialog from './RightDialog';
+import { AppContext } from '../../../AppContext';
 
 const useStyles = makeStyles(theme => ({
 	dialogHeader: {
@@ -43,7 +50,10 @@ export default function AddRelatedContactModal(props) {
 		fetchPolicy: 'no-cache',
 	});
 	const [addContact, { data: response, loading: isSubmitting }] = useMutation(ADD_RELATED_CONTACT, {
-		refetchQueries: ['getESSimpleSearch', 'getContactSummary'],
+		refetchQueries: ['getContactSummary'],
+		onCompleted: () => {
+			tableGlobalController.refetch();
+		},
 	});
 
 	useEffect(() => {
@@ -71,7 +81,7 @@ export default function AddRelatedContactModal(props) {
 				},
 				search: {
 					query: search ? `*${search}*` : null,
-					fields: ['name^4', '_id'],
+					fields: ['name', '_id'],
 				},
 				sort: {
 					field: 'lastUpdateAt',
@@ -92,6 +102,8 @@ export default function AddRelatedContactModal(props) {
 				relatedObject: props.relatedObject,
 				userId,
 			},
+			refetchQueries: ['getContactSummary'],
+			awaitRefetchQueries: true,
 		});
 	};
 

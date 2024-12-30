@@ -1,13 +1,17 @@
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import { isEmpty, pickBy } from 'lodash';
+
 import Loaders from 'components/Loaders';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CampaignIcon from 'components/Shared/svgIcons/campaign';
 import vf_number from 'components/Shared/valueformatters/vf_number';
+
 import { UPDATE_CAMPAIGN } from 'graphQL/useMutationCampaign';
+
 import { tableGlobalController } from 'hookstate/tableController';
-import { isEmpty, pickBy } from 'lodash';
+
 import { copy } from 'utils/helper';
 
 const esIndex = 'campaigns_flat';

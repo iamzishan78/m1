@@ -18,10 +18,10 @@ describe('Agreement Detail Tract Verify Spec', () => {
 		cy.searchOnMap('Agreements', searchStrings);
 		cy.verifyApiResponse('@getCustomLayerApi', { responseTimeout: longTimeout });
 
-		cy.log(`==== STEP:CLICK ON TRACT TAB ====`);
+		cy.log('==== STEP:CLICK ON TRACT TAB ====');
 		cy.get('#unitWells2', { timeout: longTimeout }).click();
 
-		cy.log(`==== STEP:CLICK ON TRACT TAB ====`);
+		cy.log('==== STEP:CLICK ON TRACT TAB ====');
 		cy.getTableCell('Tract Name', 1).then($tableCell => {
 			cy.wrap($tableCell).scrollIntoView().click();
 			cy.wait(5000);

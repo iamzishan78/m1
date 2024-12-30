@@ -1,10 +1,14 @@
 import React, { memo, useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import { IconButton } from '@material-ui/core';
 import PageviewIcon from '@material-ui/icons/Pageview';
+
 import { useLazyQuery } from '@apollo/client';
-import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
+
 import PdfViewer from 'components/MRTTable/TablesOverride/DocumentTable/TableCell/PDFView';
-import { useHistory } from 'react-router-dom';
+
+import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
 
 function FileView({ docInfo }) {
 	const splittedStrings = docInfo?.fileName?.split('.');

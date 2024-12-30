@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
+
 import { TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+
 import { validateUrl } from 'utils/helper';
+
 import LinkPopup from '../Popups/Link';
 
 const useStyles = makeStyles(() => ({

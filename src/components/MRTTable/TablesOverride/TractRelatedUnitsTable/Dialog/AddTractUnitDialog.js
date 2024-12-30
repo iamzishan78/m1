@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useMutation } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import Grid from '@material-ui/core/Grid';
-import { Box, CircularProgress, Typography } from '@material-ui/core';
 import { useForm, Controller } from 'react-hook-form';
+
+import { Box, CircularProgress, Typography } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import CloseIcon from '@material-ui/icons/Close';
+
+import { useMutation } from '@apollo/client';
+
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import AutoCompleteShapeLayer from 'components/Shared/Forms/Fields/AutoCompleteShapeLayer';
+
 import { ADD_TRACTS_TOA_SHAPE } from 'graphQL/useMutationAddTractsToAShape';
+
 import { tableGlobalController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(theme => ({
@@ -49,7 +54,7 @@ function AddTractUnitDialog(props) {
 		{ name: 'uMaxUnitPricing', label: 'Max Unit Pricing (per NRA)' },
 		{ name: 'qualifier', label: 'Qualifier' },
 		{ name: 'reviewer', label: 'Reviewer' },
-		{ name: 'campaignNames', label: 'Campaign' },
+		{ name: 'campaigns', label: 'Campaigns' },
 	];
 	const [loading, setLoading] = useState(false);
 	const [selectedShapeLayer, setSelectedShapeLayer] = useState(null);
@@ -70,10 +75,10 @@ function AddTractUnitDialog(props) {
 				...selectedShapeLayer?.shapeJson?.properties,
 				qualifier: selectedShapeLayer?.shapeJson?.properties?.qualifier?.name,
 				reviewer: selectedShapeLayer?.shapeJson?.properties?.reviewer?.name,
-				campaignNames: selectedShapeLayer?.shapeJson?.properties?.campaignName?.join(', '),
+				campaigns: selectedShapeLayer?.shapeJson?.properties?.campaigns?.map(c => c.name)?.join(', '),
 			});
 		}
-	}, [selectedShapeLayer]);
+	}, [reset, selectedShapeLayer]);
 
 	const handleClose = () => {
 		setSelectedShapeLayer(null);

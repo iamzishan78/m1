@@ -1,37 +1,49 @@
 import React, { useContext, useState, useEffect, useRef, useMemo } from 'react';
-import { useMutation, useLazyQuery } from '@apollo/client';
+import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { get } from 'lodash';
-import Chip from '@material-ui/core/Chip';
-
-import { AppContext } from '../../AppContext';
-import { TransactContext } from './TransactContext';
 import Board from 'react-trello';
-import { makeStyles } from '@material-ui/core/styles';
-import { UPDATESTAGEDEALDESCRIPTORS } from 'graphQL/useMutationUpdateStageDealDescriptors';
-import { UPDATE_STAGE_DEAL_DESCRIPTOR } from 'graphQL/useMutationUpdateStageDealDescriptor';
-import CircularProgress from '@material-ui/core/CircularProgress';
+
+import { Box } from '@material-ui/core';
 import Backdrop from '@material-ui/core/Backdrop';
+import Chip from '@material-ui/core/Chip';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
+import { get } from 'lodash';
+import moment from 'moment';
 
 import AddDealDialog from 'components/Transact/components/DealDialog/AddDealDialog';
+
+import { UPDATE_STAGE_DEAL_DESCRIPTOR } from 'graphQL/useMutationUpdateStageDealDescriptor';
+import { UPDATESTAGEDEALDESCRIPTORS } from 'graphQL/useMutationUpdateStageDealDescriptors';
+
+import { TransactContext } from './TransactContext';
+import { AppContext } from '../../AppContext';
+
 import './index.css';
-import TransactAppBar from './components/TransactAppBar';
 import SidePanel from './components/SidePanel';
-import { useSelector, useDispatch } from 'react-redux';
+import TransactAppBar from './components/TransactAppBar';
+
 import { setFlowState } from 'actions';
+
 import { UPDATEDEAL } from '../../graphQL/useMutationUpdateDeal';
+import DocViewer from '../Shared/DocViewer';
 import M1nTable from '../Shared/M1nTable/M1nTable';
+
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';
-import moment from 'moment';
 import { getRandomColor } from 'components/Shared/functions/ui.js';
+
 import vf_currency from '../Shared/valueformatters/vf_currency.js';
 import vf_number from '../Shared/valueformatters/vf_number.js';
-import DocViewer from '../Shared/DocViewer';
+
 import { validateEmail } from 'components/AzureLogin/loginHelpers';
+
 import { GETPIPELINE } from 'graphQL/useQueryPipeline';
 import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
+
 import PipelinesFetchHoc from 'components/Transact/components/Common/PipelinesFetchHoc';
-import { Box } from '@material-ui/core';
+
 import { getOppositeHexColor } from 'utils/helper';
 
 const useStyles = makeStyles(theme => ({
@@ -303,13 +315,14 @@ const Transact = () => {
 						pipeToShowTab: deals,
 					})
 				);
-			} else
+			} else {
 				dispatch(
 					setFlowState({
 						pipeToShow: null,
 						pipeToShowTab: null,
 					})
 				);
+			}
 		}
 	}, [pipelineData]);
 
@@ -410,7 +423,9 @@ const Transact = () => {
 
 		let unfilteredSourcePosition = unfilteredSourceLane.cards.findIndex(card => card?.id === cardId);
 		let unfilteredTargetPosition = (() => {
-			if (position === 0) return 0;
+			if (position === 0) {
+				return 0;
+			}
 			let atEnd = position >= filteredTargetLane?.cards?.length;
 			let prevCardFilteredPosition = position - atEnd;
 			let prevCardAtPosition = filteredTargetLane?.cards[prevCardFilteredPosition];
@@ -480,11 +495,12 @@ const Transact = () => {
 			if (
 				unfilteredTargetLane?.metadata?.dealsStatus &&
 				unfilteredTargetLane.metadata.dealsStatus.toLowerCase() !== cardDetails?.metadata?.status?.toLowerCase()
-			)
+			) {
 				updatedDeal = {
 					...updatedDeal,
 					status: unfilteredTargetLane.metadata.dealsStatus.toLowerCase(),
 				};
+			}
 			updateDeal({
 				variables: {
 					deal: { ...updatedDeal },
@@ -521,7 +537,9 @@ const Transact = () => {
 	};
 
 	const getCardColor = (rotting, stageChangeDate) => {
-		if (!selectedPipe.rottenness) return 'rgb(242, 242, 242)';
+		if (!selectedPipe.rottenness) {
+			return 'rgb(242, 242, 242)';
+		}
 
 		let cardColor = 'limegreen';
 		if (rotting && stageChangeDate) {
@@ -533,8 +551,11 @@ const Transact = () => {
 
 			let percentageDone = ((total - current) / total) * 100;
 
-			if (percentageDone >= 100) cardColor = 'red';
-			else if (percentageDone >= 75) cardColor = 'yellow';
+			if (percentageDone >= 100) {
+				cardColor = 'red';
+			} else if (percentageDone >= 75) {
+				cardColor = 'yellow';
+			}
 		}
 		return cardColor;
 	};
@@ -565,7 +586,9 @@ const Transact = () => {
 		}
 
 		let desc = description;
-		if (description && description.length > 50) desc = description.slice(0, 53) + '...';
+		if (description && description.length > 50) {
+			desc = description.slice(0, 53) + '...';
+		}
 
 		const stageChangeDate = metadata.stageChangeDate && moment.parseZone(metadata.stageChangeDate);
 		const lane = filteredBoardTransactData.lanes.find(lane => lane.id === laneId);
@@ -621,7 +644,9 @@ const Transact = () => {
 	const getLaneHeader = ({ title, id, metadata }) => {
 		const lane = filteredBoardTransactData?.lanes?.find(lane => lane.id === id);
 		let dealCount = 0;
-		if (lane) dealCount = lane?.cards.length;
+		if (lane) {
+			dealCount = lane?.cards.length;
+		}
 
 		let priceSum = 0;
 		lane &&

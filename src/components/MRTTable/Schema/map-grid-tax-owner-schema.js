@@ -1,11 +1,13 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+
+import { tableController } from 'hookstate/tableController';
+
 import IsContactCell from '../TablesOverride/TaxOwnerTable/TableCells/IsContactCell';
 import WellFlyToMap, {
 	useTaxOwnerWellFlyto,
 } from '../TablesOverride/TaxOwnerTable/TableCells/wells_coordinates_fly_map';
-import { tableController } from 'hookstate/tableController';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 
 const esIndex = 'platformData:globalowner';
 

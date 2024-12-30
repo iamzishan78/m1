@@ -1,11 +1,14 @@
 import React, { useMemo } from 'react';
+
 import { makeStyles } from '@material-ui/core/styles';
+
 import { get } from 'lodash';
 
-import SourceLayerManager from 'components/MapControls/components/SourceLayerManager';
 import LayerStyling from 'components/MapControls/components/Layer/LayerStyling';
 import NewLayerManager from 'components/MapControls/components/Layer/NewLayerManager';
+import SourceLayerManager from 'components/MapControls/components/SourceLayerManager';
 import TransferDataManager from 'components/MapControls/components/TransferDataManager';
+
 import { mapControlsController } from 'hookstate/mapControlsController';
 
 const useStyles = makeStyles(theme => ({

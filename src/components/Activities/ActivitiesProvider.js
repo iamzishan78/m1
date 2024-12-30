@@ -1,6 +1,7 @@
 import React from 'react';
-import { ActivitiesContextProvider } from './ActivitiesContext';
+
 import Calendar from '.';
+import { ActivitiesContextProvider } from './ActivitiesContext';
 
 export function ActivitiesProvider(props) {
 	return (

@@ -1,7 +1,10 @@
+import CheckIcon from '@material-ui/icons/Check';
+
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
-import CheckIcon from '@material-ui/icons/Check';
+
 import { tableGlobalController } from 'hookstate/tableController';
+
 import { getTruncateText } from '../utils/helper';
 
 const esIndex = 'activities_flat';

@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { makeStyles } from '@material-ui/styles';
+import React, { useMemo } from 'react';
+
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
-import { useStyles as customStyles } from '../style';
+import { makeStyles } from '@material-ui/styles';
 
-import RelatedDocumentsTable from './RelatedDocumentsTable';
+import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
+
+import { tableController } from 'hookstate/tableController';
+
+import { useStyles as customStyles } from '../style';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -67,10 +70,22 @@ const RelatedDocumets = props => {
 	const { uniObj } = props;
 	const classes = useStyles();
 	const customClasses = customStyles();
+	const tableState = tableController('RelatedDocumentTable').useState(['data']).stateValues;
 
-	const [counter, setCounter] = useState(0);
-
-	const customLayerId = useSelector(({ Land }) => Land.agreement?.activeAgreement)?._id;
+	const RelatedDocumentsOverrideMeta = useMemo(
+		() => ({
+			maxTableHeight: 'calc(50vh - 100px)',
+			defaultFilters: [{ field: 'shapeObj._id', value: uniObj?._id }],
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: uniObj?._id },
+			},
+			customValue: { parentRecord: uniObj?._id },
+			columnReordering: false,
+		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[uniObj?._id]
+	);
 
 	return (
 		<div className={classes.root}>
@@ -88,7 +103,7 @@ const RelatedDocumets = props => {
 							<Typography variant="h5" className={customClasses.titleText}>
 								Related Documents
 							</Typography>
-							<Chip color="info" label={counter} />
+							<Chip color="info" label={tableState?.data?.total} />
 						</Grid>
 					</Grid>
 				</AccordionSummary>
@@ -98,12 +113,9 @@ const RelatedDocumets = props => {
 							<Grid item xs={12} style={{ padding: '35px 20px 0px 0px' }}>
 								<RelatedDocumentsTable
 									id="relatedDocumentsTable"
-									dense
-									moduleId={customLayerId}
-									setDrawer={props.setDrawer}
-									setCounter={setCounter}
-									targetLabel="Shape"
-									portal={'#agreementDetailsDrawer'}
+									moduleId={uniObj?._id}
+									overrideMeta={RelatedDocumentsOverrideMeta}
+									relatedObjectType="Shape"
 								/>
 							</Grid>
 						)}

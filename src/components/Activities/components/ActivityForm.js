@@ -1,35 +1,39 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useState, useEffect, useRef } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { FormControl, Grid } from '@material-ui/core';
-import TextField from '@material-ui/core/TextField';
-import moment from 'moment';
-import get from 'lodash/get';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { useHistory } from 'react-router-dom';
 
-import { AppContext } from '../../../AppContext';
-import AutocompEntityNamesVirtualizeList from '../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
-import { setStateIfDeepEqual } from '../../Shared/functions';
-import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
-import { ADDCONTACT } from '../../../graphQL/useMutationAddContact';
-import { OPENDEALS } from '../../../graphQL/useQueryOpenDeals';
+import { FormControl, Grid } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { GETMONGOUSERS } from '../../../graphQL/useQueryGetUsers';
-import { ADDACTIVITY, DELETEACTIVITY, UPDATEACTIVITY } from '../../../graphQL/useMutationActivity';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { useHookstate } from '@hookstate/core';
+import get from 'lodash/get';
+import moment from 'moment';
+
+import AutoCompleteAddNewField from 'components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField';
 import { outcomeOptions } from 'components/ContactDetailCard/components/FieldContent/helper';
-import SimpleTextField from 'components/Shared/Slideout/FieldComponents/SimpleTextfield';
-import SingleSelectField from 'components/Shared/Slideout/FieldComponents/singleSelectField';
 import DateField from 'components/Shared/Slideout/FieldComponents/DateField';
+import DescriptionField from 'components/Shared/Slideout/FieldComponents/DescriptionField';
 import OwnerField from 'components/Shared/Slideout/FieldComponents/OwnerField';
 import SearchableSelectField from 'components/Shared/Slideout/FieldComponents/searchableSelectField';
-import DescriptionField from 'components/Shared/Slideout/FieldComponents/DescriptionField';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
+import SimpleTextField from 'components/Shared/Slideout/FieldComponents/SimpleTextfield';
+import SingleSelectField from 'components/Shared/Slideout/FieldComponents/singleSelectField';
+
 import { slidoutState } from 'hookstate/initialStates';
-import { useHookstate } from '@hookstate/core';
-import { activityFormState } from './activityFormStateController';
 import { globalState } from 'hookstate/initialStates';
+import { slidoutStateController } from 'hookstate/slidoutStateController';
 import { tableGlobalController } from 'hookstate/tableController';
-import AutoCompleteAddNewField from 'components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField';
+
+import { activityFormState } from './activityFormStateController';
+import { AppContext } from '../../../AppContext';
+import { ADDACTIVITY, DELETEACTIVITY, UPDATEACTIVITY } from '../../../graphQL/useMutationActivity';
+import { ADDCONTACT } from '../../../graphQL/useMutationAddContact';
+import { GETMONGOUSERS } from '../../../graphQL/useQueryGetUsers';
+import { OPENDEALS } from '../../../graphQL/useQueryOpenDeals';
+import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
+import { setStateIfDeepEqual } from '../../Shared/functions';
+import AutocompEntityNamesVirtualizeList from '../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
 
 const useStyles = makeStyles(theme => ({
 	dialogExpCard: {
@@ -241,7 +245,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 			slidoutStateController.updateEntityLoading(false);
 			tableGlobalController.refetch();
 		},
-		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
+		refetchQueries: ['getAllActivities', 'getESSimpleSearch', 'getContactSummary'],
 		awaitRefetchQueries: true,
 	});
 
@@ -319,7 +323,9 @@ export default function ActivityForm({ setSelectedActivityId }) {
 			activityType.set(activity.type);
 			slidoutStateController.updateParent('Activity');
 			slidoutStateController.updateTitle(activity.name);
-			if (!activityName) slidoutStateController.updateTitle(activity.name);
+			if (!activityName) {
+				slidoutStateController.updateTitle(activity.name);
+			}
 
 			status.set(activity.isClosed);
 			setNameAutValue({
@@ -367,8 +373,11 @@ export default function ActivityForm({ setSelectedActivityId }) {
 	useEffect(() => {
 		if (formMode.get()) {
 			if (formMode.get() === 'update') {
-				if (!selectedActivity.get()) addActivity();
-				else updateActivity();
+				if (!selectedActivity.get()) {
+					addActivity();
+				} else {
+					updateActivity();
+				}
 			} else if (formMode.get() === 'delete') {
 				deleteActivity();
 			}
@@ -379,7 +388,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 
 	const onModalClose = () => {
 		if (window.location.pathname.startsWith('/calendar/activities')) {
-			window.history.pushState('', '', `/calendar/activities`);
+			window.history.pushState('', '', '/calendar/activities');
 		}
 
 		clearFields();

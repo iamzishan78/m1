@@ -1,9 +1,9 @@
-import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
 import ListChips from 'components/Common/ListChips';
-import vf_currency, { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
+import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+
 import { GlobalStickyStyles } from 'GlobalSettings';
-import { history } from 'store';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 
 const UnitInterestsHeadCells = [
 	{
@@ -433,13 +433,13 @@ const UnitInterestsHeadCells = [
 	//     }
 	// },
 	{
-		name: 'campaignName',
-		label: 'Campaign',
-		esKey: 'campaignName.keyword',
+		name: 'campaigns',
+		label: 'Campaigns',
+		esKey: 'campaigns',
 		options: {
-			dbName: 'campaignName.keyword',
+			dbName: 'campaigns',
 			customRender: value => {
-				return <CampaignNameField value={value} fullWidth disabled />;
+				return <CampaignField value={value} fullWidth disabled />;
 			},
 			setCellProps: () => ({ style: { minWidth: '200px' } }),
 			sort: true,

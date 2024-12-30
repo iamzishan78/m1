@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useLazyQuery } from '@apollo/client';
-
-import { AppContext } from 'AppContext';
 import { Controller, useForm } from 'react-hook-form';
 
 import {
@@ -18,26 +15,29 @@ import {
 	FormControl,
 	Radio,
 } from '@material-ui/core';
-import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import CloseSharp from '@material-ui/icons/CloseSharp';
-import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import DoneSharpIcon from '@material-ui/icons/DoneSharp';
+import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import RemoveSharpIcon from '@material-ui/icons/RemoveSharp';
 
-import Tags from 'components/Shared/Tagger';
-import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
+import { useLazyQuery } from '@apollo/client';
+
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
+import { copy, setStateIfDeepEqual } from 'components/Shared/functions';
+import Tags from 'components/Shared/Tagger';
+
+import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
+
+import { AppContext } from 'AppContext';
 
 import AutocompEntityNamesVirtualizeList from './AutocompEntityNamesVirtualizeList';
 import RightDialog from '../../../../ContactDetailCard/components/RightDialog';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
-
-import { copy, setStateIfDeepEqual } from 'components/Shared/functions';
-
-import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
 
 const styles = () => ({
 	topHeading: { fontWeight: 'bold' },
@@ -106,7 +106,6 @@ const MultipleOwnerToContactDrawer = ({
 	const [primaryOwner, setPrimaryOwner] = useState(rows[0]);
 	const [tab, setTab] = useState(TAB.NEW);
 	const [actionType, setActionType] = useState('single');
-	const [searchCampaign, setSearchCampaign] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
 	const [nameAutValue, setNameAutValue] = useState({ name: '', id: 0, _id: 0 });
@@ -132,10 +131,10 @@ const MultipleOwnerToContactDrawer = ({
 
 	useEffect(() => {
 		getContactCampaignAction({
-			search: searchCampaign ? `${searchCampaign}*` : '*',
+			search: '*',
 		});
-		// eslint-disable-next-line
-	}, [searchCampaign]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	useEffect(() => {
 		if (allContacts?.paginatedContacts) {
@@ -148,7 +147,7 @@ const MultipleOwnerToContactDrawer = ({
 	useEffect(() => {
 		setIsNextPageLoading(true);
 		getPaginatedContacts({ variables: { search: nameAutInputValue } });
-	}, [nameAutInputValue]);
+	}, [getPaginatedContacts, nameAutInputValue]);
 
 	const setNameAutInputValue = (newState, n, k) => {
 		setStateIfDeepEqual(NameAutInputValue, newState);
@@ -168,22 +167,13 @@ const MultipleOwnerToContactDrawer = ({
 	};
 
 	const onConvert = () => {
-		let ownerIds = [];
 		let entitiesIds = [];
 		let entities = rows.filter(row => row.isEntity);
-		let owners = rows.filter(row => !row.isEntity);
 
 		if (entities.length > 0) {
 			let Ids = entities.filter(row => row.id !== primaryOwner.id);
 			Ids.unshift(primaryOwner);
 			entitiesIds = Ids.map(id => id._id);
-		} else if (owners.length > 0) {
-			let Ids = owners.filter(row => row.id !== primaryOwner.id);
-			Ids.unshift(primaryOwner);
-			ownerIds = Ids.reduce((ids, row) => {
-				ids.push({ id: row.globalOwnerId || row.id, ownershipType: row.ownershipType });
-				return ids;
-			}, []);
 		}
 
 		const autoCalculateOfferPrice = !!stateApp?.user?.features?.find(f => f.name === 'autoCalculateOfferPrice');
@@ -418,16 +408,15 @@ const MultipleOwnerToContactDrawer = ({
 								<label className={classes.bold}>Campaign Names</label>
 								<Controller
 									control={control}
-									name="campaignNames"
+									name="campaigns"
 									render={params => (
-										<CampaignNameField
+										<CampaignField
 											{...params}
 											value={params.value}
 											className={classes.maxWidth}
-											onChange={(values, id) => {
-												const _campaigns = [...campaigns, { id, name: values[values.length - 1] }];
+											onChange={values => {
 												params.onChange(values);
-												setCampaigns(_campaigns);
+												setCampaigns(values.map(val => ({ ...val, id: val._id })));
 											}}
 											fullWidth
 											targetLabel="Shape"

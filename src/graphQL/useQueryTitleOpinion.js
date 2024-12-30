@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 
@@ -29,7 +30,8 @@ export default function useQueryTitleOpinion(id) {
 			county: 'LEA',
 			project: 'Project1',
 			client: 'Tap Rock Resources, LLC',
-			generalNotes: `Note 1: Subject lands are HBP at all depths by the New Mexico NN State Com #001, API #30-025-24281, spud 11/5/1972, completed 3/2/1973 on an 80 acre spaced unit  comprised of the N2SW4 of Section 8, T-17-S, R35-E. Production is from the Morrow Formation at 12.425' TVD. Per NMOCD, the well is shown as "Active" with last production on 5/1/2017.`,
+			generalNotes:
+				'Note 1: Subject lands are HBP at all depths by the New Mexico NN State Com #001, API #30-025-24281, spud 11/5/1972, completed 3/2/1973 on an 80 acre spaced unit  comprised of the N2SW4 of Section 8, T-17-S, R35-E. Production is from the Morrow Formation at 12.425\' TVD. Per NMOCD, the well is shown as "Active" with last production on 5/1/2017.',
 			MORSections: [
 				{
 					name: 'Mineral Ownership',
@@ -388,7 +390,7 @@ export default function useQueryTitleOpinion(id) {
 							id11: "1980' FSL and 660' FWL of Section 8, T17S, R35E",
 							id12: '0',
 							id13: '0',
-							id14: `Conveys wellbore on the New Mexico "NN" State No. 1 Well (no longer producing)`,
+							id14: 'Conveys wellbore on the New Mexico "NN" State No. 1 Well (no longer producing)',
 							id15: '',
 						},
 						{

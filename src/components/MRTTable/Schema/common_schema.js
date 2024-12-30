@@ -1,7 +1,11 @@
 import { Box } from '@mui/material';
-import { addTrailingZeros, formatDate } from 'components/Shared/functions';
-import { tableController } from 'hookstate/tableController';
+
 import { get } from 'lodash';
+
+import { addTrailingZeros, formatDate } from 'components/Shared/functions';
+import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+
+import { tableController } from 'hookstate/tableController';
 
 export const CommonSchema = {
 	COMMENTS: {
@@ -24,8 +28,8 @@ export const CommonSchema = {
 		showInLast: true,
 	},
 	TAGS: {
-		name: 'tags.tag.keyword',
-		accessorKey: 'tags.tag',
+		name: 'tags',
+		accessorKey: 'tags',
 		header: 'Tags',
 		size: 250,
 		isPinned: false,
@@ -34,6 +38,7 @@ export const CommonSchema = {
 		isSearchField: true,
 		enableSorting: true,
 		type: 'string',
+		enableColumnFilter: false,
 		enableColumnActions: false,
 		enableColumnOrdering: false,
 		enableResizing: false,
@@ -43,6 +48,23 @@ export const CommonSchema = {
 			esType: 'collection',
 			actualKey: 'tag',
 		},
+	},
+	IS_TRACKED: {
+		name: 'isTracked',
+		accessorKey: 'isTracked',
+		header: '',
+		size: 120,
+		isPinned: false,
+		hidden: false,
+		filter: true,
+		isSearchField: true,
+		enableSorting: true,
+		type: 'string',
+		enableColumnFilter: false,
+		enableColumnActions: false,
+		enableColumnOrdering: false,
+		enableResizing: false,
+		showInLast: true,
 	},
 	HIDDEN: {
 		header: ' ',
@@ -120,8 +142,20 @@ export const CommonSchema = {
 		enableResizing: false,
 		size: 80,
 	},
+	USER: {
+		name: 'user.name',
+		accessorKey: 'user.name',
+		header: 'User',
+		size: 250,
+		filter: true,
+		isSearchField: false,
+		type: 'string',
+		Cell: ({ row }) => {
+			return <>{row.original?.user?.name}</>;
+		},
+	},
 	CREATED_BY: {
-		name: 'createBy.name.keyword',
+		name: 'createBy.name',
 		accessorKey: 'createBy.name',
 		header: 'Created By',
 		size: 250,
@@ -145,7 +179,7 @@ export const CommonSchema = {
 		},
 	},
 	LAST_UPDATED_BY: {
-		name: 'lastUpdateBy.name.keyword',
+		name: 'lastUpdateBy.name',
 		accessorKey: 'lastUpdateBy.name',
 		header: 'Last Updated By',
 		size: 250,
@@ -203,4 +237,53 @@ export const CommonSchema = {
 			return <div>{value ? addTrailingZeros(parseFloat(value).toFixed(8)) : 0}</div>;
 		},
 	}),
+	INTEREST_COLUMN: {
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: true,
+		isSearchField: false,
+		enableSorting: true,
+		type: 'number',
+		Cell: ({ renderedCellValue }) => {
+			const value = renderedCellValue?.props?.['aria-label'] ?? renderedCellValue;
+			if (value || value === 0) {
+				return <>{!value ? value : addTrailingZeros(parseFloat(value).toFixed(8))}</>;
+			}
+		},
+	},
+	CURRENCY_COLUMN: {
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: true,
+		isSearchField: false,
+		enableSorting: true,
+		type: 'number',
+		Cell: ({ renderedCellValue }) => {
+			const value = renderedCellValue?.props?.['aria-label'] ?? renderedCellValue;
+			if (value || value === 0) {
+				return <>{!value ? `$${value}` : vf_currency_to_fixed(value, 2)}</>;
+			}
+		},
+	},
+	STRING_COLUMN: {
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: true,
+		isSearchField: true,
+		enableSorting: true,
+		type: 'string',
+		filterVariant: 'select',
+	},
+	NUMBER_COLUMN: {
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: true,
+		isSearchField: true,
+		enableSorting: true,
+		type: 'number',
+	},
 };

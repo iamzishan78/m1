@@ -1,7 +1,8 @@
 import { Box } from '@mui/material';
-import { formatDate } from 'components/Shared/functions';
+
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import { formatDate } from 'components/Shared/functions';
 
 const esIndex = 'propertyinterest_flat';
 
@@ -31,7 +32,9 @@ const PropertyIntrestMeta = {
 				const id = row.getValue('property._id') || row.original?.property?._id;
 				const value = renderedCellValue || row.getValue('property.number');
 
-				if (!id) return value;
+				if (!id) {
+					return value;
+				}
 
 				return <ColumnWithLink value={value} link={`property/details/${id}`} onClick={() => {}} />;
 			},

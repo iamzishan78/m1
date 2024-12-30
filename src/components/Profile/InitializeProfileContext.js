@@ -1,8 +1,10 @@
-import { useQuery } from '@apollo/client';
-import { GETPROFILE } from '../../graphQL/useQueryGetProfile';
 import { useContext, useEffect } from 'react';
-import { AppContext } from '../../AppContext';
+
+import { useQuery } from '@apollo/client';
+
 import { ProfileContext } from './ProfileContext';
+import { AppContext } from '../../AppContext';
+import { GETPROFILE } from '../../graphQL/useQueryGetProfile';
 
 export default function InitializeProfile() {
 	const [stateApp] = useContext(AppContext);

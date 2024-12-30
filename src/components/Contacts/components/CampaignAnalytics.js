@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { get } from 'lodash';
-import { useLazyQuery } from '@apollo/client';
-import { makeStyles } from '@material-ui/styles';
+
 import { Grid, Card, CardContent, Typography } from '@material-ui/core';
-import { getFilters } from 'components/Table/Contact/CampaignsTable';
+import { makeStyles } from '@material-ui/styles';
+
+import { useLazyQuery } from '@apollo/client';
+import { get } from 'lodash';
+
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
 // Queries
 import { GET_CAMPAIGN_ANALYTICS } from 'graphQL/useQueryCampaignAnalytics';
+
+import { getActivityAnalyticsFilters } from 'utils/helper';
 
 const useStyles = makeStyles(() => ({
 	card: { borderRadius: '8px' },
@@ -69,9 +73,10 @@ export default function CampaignAnalytics({ appliedFilters, contactSearchQuery }
 					fields: ['name.keyword', 'status.keyword', 'owner.name.keyword', 'tags.tag.keyword'],
 					query,
 				},
-				filters: getFilters(appliedFilters),
+				filters: getActivityAnalyticsFilters(appliedFilters),
 			},
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [contactSearchQuery, appliedFilters, getCampaignAnalytics]);
 
 	return (

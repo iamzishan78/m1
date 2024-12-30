@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
+
 // import PropTypes from "prop-types";
 import keys from './../kit/keymap';
-
 import styles from './styles.css';
 
 const SpreadsheetGridInput = props => {

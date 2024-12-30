@@ -1,56 +1,24 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Switch, Route, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
+import { Switch, Route, useLocation } from 'react-router-dom';
 
-// import { toggleQuickActionsPanel, setActiveModule } from "store/actions/contactActions";
-import { setActiveModule, toggleQuickActionsPanel } from 'store/actions/commonActions';
-import { AppContext } from 'AppContext';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
-
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import QuickActionPanel from 'components/Land/components/QuickActionPanel';
-import ContactsTable from 'components/Table/Contact/ContactsTable';
 import * as Components from 'components/Contacts/components';
+import QuickActionPanel from 'components/Land/components/QuickActionPanel';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+
+import { setActiveModule, toggleQuickActionsPanel } from 'store/actions/commonActions';
 
 import { contactManagementRoutes } from 'utils/data';
 
-//// WE MAY NOT BE USING THIS ENTIRE FILE ANYMORE
-const useStyles = makeStyles(theme => ({
-	root: {
-		marginTop: '65px',
-		'& div': {
-			'&>.MuiPaper-root': {
-				display: 'flex',
-				'flex-direction': 'column',
-				height: 'calc(100vh - 65px)',
-				// top: "65px",
-				position: 'relative',
-				'align-items': 'stretch',
-				'&>.MuiPaper-root': {
-					display: 'contents',
-				},
-				'&>:nth-child(3)': {
-					height: 'inherit !important',
-				},
-				'&> table': {
-					bottom: 0,
-				},
-			},
-		},
-	},
-}));
+import { AppContext } from 'AppContext';
 
 export default function Contacts() {
-	const classes = useStyles();
 	const location = useLocation();
 	const [stateApp] = useContext(AppContext);
 	const dispatch = useDispatch();
 	const [allowedPaths, setAllowablePaths] = useState({});
 	const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
-
-	// waypointKey should any key of Table Header which do not have customRender in schema file
-	const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 66px)' };
 
 	useEffect(() => {
 		let option = {};
@@ -60,9 +28,12 @@ export default function Contacts() {
 			}
 		});
 		if (option) {
-			if (contactManagementRoutes[option.parent]) option.parent = contactManagementRoutes[option.parent];
+			if (contactManagementRoutes[option.parent]) {
+				option.parent = contactManagementRoutes[option.parent];
+			}
 			dispatch(setActiveModule(option));
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [location.pathname]);
 
 	const handlePanelStateChange = state => {
@@ -123,17 +94,6 @@ export default function Contacts() {
 						))}
 					</Switch>
 				</QuickActionPanel>
-			</FeatureFlag>
-			<FeatureFlag feature={FEATURES.CONTACTSUBMENU} noAccess>
-				<div className={classes.root}>
-					<ContactsTable
-						parent="Contacts"
-						headerLabel="Contacts"
-						contactSearchQuery={stateApp.contactSearchQuery}
-						userId={stateApp.user.mongoId}
-						loadMore={loadMore}
-					/>
-				</div>
 			</FeatureFlag>
 		</>
 	);

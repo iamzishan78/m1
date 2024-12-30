@@ -1,8 +1,9 @@
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import TractRelatedUnitsToolbar from 'components/MRTTable/TablesOverride/TractRelatedUnitsTable/TractRelatedUnitsToolbar';
-import { CommonSchema } from './common_schema';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+
+import { CommonSchema } from './common_schema';
 
 const esIndex = 'shapetracts_flat';
 
@@ -129,12 +130,15 @@ const TractUnitsMeta = {
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'shape.shapeJson.properties.campaignName.keyword',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.campaignName,
-			id: 'shape.shapeJson.properties.campaignName',
-			header: 'Campaign Name',
+			type: 'array',
+			name: 'shape.shapeJson.properties.campaigns.keyword',
+			accessorFn: row => row?.shape?.shapeJson?.properties?.campaigns,
+			id: 'shape.shapeJson.properties.campaigns',
+			header: 'Campaigns',
 			size: 270,
-			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
+			Cell: ({ row }) => {
+				return <CampaignField value={row?.original?.shape?.shapeJson?.properties?.campaigns} fullWidth disabled />;
+			},
 		},
 	],
 };

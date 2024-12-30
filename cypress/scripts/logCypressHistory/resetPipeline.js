@@ -1,4 +1,5 @@
 const axios = require('axios');
+
 const { RESET_PIPELINE } = require('../../../src/graphQL/useMutationCypress.js');
 
 const ResetPipeline = async ({ isUpdateReset }) => {

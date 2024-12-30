@@ -1,35 +1,41 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, Fragment, useRef, useCallback } from 'react';
-import { get } from 'lodash';
 import Avatar from 'react-avatar';
-import Grid from '@material-ui/core/Grid';
+import { useDispatch } from 'react-redux';
+import ReactTimeAgo from 'react-time-ago';
+
 import { CircularProgress, Menu, MenuItem, Tooltip } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
-import { useMutation, useLazyQuery } from '@apollo/client';
+import { makeStyles } from '@material-ui/core/styles';
 import {
 	ThumbUp as ThumbUpIcon,
 	ThumbUpAltOutlined as ThumbUpAltOutlinedIcon,
 	ExpandMore as ExpandMoreIcon,
 } from '@material-ui/icons';
-import { useSelector, useDispatch } from 'react-redux';
-import { updatePinComments } from 'store/actions/commonActions';
-import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-import { GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
-import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
-import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
-import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
-import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
-import CommentField from 'components/Shared/components/Fields/CommentField';
 
-import ReactTimeAgo from 'react-time-ago';
+import { useMutation, useLazyQuery } from '@apollo/client';
+import DOMPurify from 'dompurify';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 import ru from 'javascript-time-ago/locale/ru';
+import { get } from 'lodash';
 import moment from 'moment';
-import DOMPurify from 'dompurify';
+
+import CommentField from 'components/Shared/components/Fields/CommentField';
+
+import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
+import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
+import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
+import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
+import { GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { TOGGLECOMMENTREACTION } from 'graphQL/userMutationToggleCommentReaction';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { slidoutState } from 'hookstate/initialStates';
+
+import { updatePinComments } from 'store/actions/commonActions';
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
@@ -140,13 +146,14 @@ const useStyles = makeStyles(theme => ({
 		wordWrap: 'break-word',
 		wordBreak: 'break-word',
 		hyphens: 'auto',
+		margin: '0px !Important',
 	},
 }));
 
 function urlify(text) {
 	const urlRegex = /(https?:\/\/[^\s]+)/g;
 
-	return text.replace(urlRegex, function (url) {
+	return text.replace(urlRegex, url => {
 		return '<a href="' + url + '">' + url + '</a>';
 	});
 }
@@ -154,17 +161,26 @@ function urlify(text) {
 export function getLikedPeoplesName(comment, myUserId) {
 	const { likedBy } = comment;
 	const names = (likedBy || []).map(user => {
-		if (user._id === myUserId) return <li>You</li>;
-		else return <li>{user.name || user.displayName}</li>;
+		if (user._id === myUserId) {
+			return <li>You</li>;
+		} else {
+			return <li>{user.name || user.displayName}</li>;
+		}
 	});
 
-	if (names.length < 1) return '';
+	if (names.length < 1) {
+		return '';
+	}
 
 	return <ul style={{ listStyle: 'none', paddingLeft: 0 }}>{names}</ul>;
 }
 export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 	const classes = useStyles();
-	let formatComment = (eachComment?.comment || '').split(' ');
+
+	// Split by spaces and newlines, keeping spaces as part of the array
+	let formatComment = (eachComment?.comment || '')
+		.split(/(\s|\n)/) // Split by space or newline
+		.filter(part => part !== ''); // Remove empty strings
 
 	return (
 		<div id={eachComment?._id} className={`${classes.whiteSpace}`}>
@@ -178,36 +194,74 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 						}
 					</span>
 				)}
+
 			{formatComment.map((word, index) => {
+				// If word contains {{username}} syntax, process it separately
 				if (word.includes('{{') && word.includes('}}')) {
 					const splittedWord = word.split(/\r?\n/);
 
-					// splitt word to manage new lines in the word
 					if (splittedWord.length) {
 						return (
 							<>
 								{splittedWord.map(sWord => {
-									if (sWord.includes('{{') && sWord.includes('}}')) {
-										const firstPart = sWord.split('{{')[0];
-										const secondPart = sWord.split('}}')[1];
-										let id = sWord.split('{{')[1];
-										id = id.split('}}')[0];
-										return (
-											<>
-												{' '}
-												<span className={`${classes.commentWords} blue`}>
-													{firstPart}@{users?.find(user => user._id === id)?.name}
-													{secondPart}{' '}
-												</span>
-												{splittedWord.length > 1 && <br />}{' '}
-											</>
+									console.log('sWord', sWord);
+									const idRegex = /\{\{(.*?)\}\}/g;
+									let match;
+									let parts = [];
+									let lastIndex = 0;
+
+									// Process all matches of {{id}} in sWord
+									while ((match = idRegex.exec(sWord)) !== null) {
+										const id = match[1]; // Extract the ID inside {{ }}
+										const username = users?.find(user => user._id === id)?.name || '';
+
+										// Capture the text before the current match
+										if (match.index > lastIndex) {
+											// Replace \n with <br /> for the text portion
+											parts.push(
+												sWord
+													.substring(lastIndex, match.index)
+													.split('\n')
+													.map((text, idx) => (
+														<React.Fragment key={`text-${idx}`}>
+															{idx > 0 && <br />}
+															{text}
+														</React.Fragment>
+													))
+											);
+										}
+
+										// Add the username with no space after
+										parts.push(
+											<span className={`${classes.commentWords} blue`} key={id}>
+												@{username}
+											</span>
 										);
-									} else
-										return (
-											<p className={classes.commentWords}>
-												{sWord} <br />{' '}
-											</p>
+
+										// Update lastIndex to continue processing
+										lastIndex = match.index + match[0].length;
+									}
+
+									// Add any remaining text after the last match, replacing \n with <br />
+									if (lastIndex < sWord.length) {
+										parts.push(
+											sWord
+												.substring(lastIndex)
+												.split('\n')
+												.map((text, idx) => (
+													<React.Fragment key={`end-text-${idx}`}>
+														{idx > 0 && <br />}
+														{text}
+													</React.Fragment>
+												))
 										);
+									}
+
+									return (
+										<p className={classes.commentWords} style={{ display: 'inline-block' }} key={sWord}>
+											{parts.flat()}
+										</p>
+									);
 								})}
 							</>
 						);
@@ -215,7 +269,8 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 
 					return <p className={classes.commentWords}>{splittedWord}</p>;
 				} else {
-					const _word = index !== formatComment.length - 1 ? `${word} ` : word;
+					// Process regular words, ensure spaces are correctly handled
+					const _word = index !== formatComment.length - 1 ? `${word}` : word;
 					const sanitizedData = () => ({
 						__html: DOMPurify.sanitize(urlify(_word)),
 					});
@@ -233,7 +288,6 @@ export default function CommentComponent(props) {
 		isFileDetail: props.targetLabel === 'file' || false,
 	});
 	const dispatch = useDispatch();
-	const { pinComment } = useSelector(state => state.pin);
 
 	const {
 		stateValues: { user },
@@ -252,12 +306,11 @@ export default function CommentComponent(props) {
 	const [showCommentActionId, setShowCommentActionId] = useState(null);
 	const [loadingComments, setLoadingComments] = useState(true);
 	const [scrollIntoView, setScrollIntoView] = useState(false);
-	const [pinComments, setPinComments] = useState({ isPinned: false });
 	const commentContainerRef = useRef(null);
 
 	const [removeComment] = useMutation(REMOVECOMMENT);
 	const [upsertComment, { data: newlyAddedComment }] = useMutation(UPSERTCOMMENT);
-	const [toggleCommentReaction, { data: resultToggleCommentReaction }] = useMutation(TOGGLECOMMENTREACTION, {
+	const [toggleCommentReaction] = useMutation(TOGGLECOMMENTREACTION, {
 		refetchQueries: ['getCommentsByObjectId', 'getCommentsByObjectsIds'],
 	});
 	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
@@ -308,12 +361,15 @@ export default function CommentComponent(props) {
 			if (props.activityLog && props.activityLog.length > 0) {
 				let activityData = [];
 				props.activityLog.forEach(element => {
+					const timestamp = element?.createAt
+						? new Date(new Date(element.createAt).toUTCString()).getTime()
+						: new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime();
 					activityData.push({
 						user: { name: element.ownerName, email: element.ownerName },
 						activityData: element,
 						comment: element.notes,
 						outcome: element.outcome,
-						ts: new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime(),
+						ts: timestamp,
 						isActivity: true,
 						isEdited: false,
 						public: true,
@@ -339,7 +395,9 @@ export default function CommentComponent(props) {
 				user: { name: user.name, email: user.email },
 				isNew: true,
 			});
-			if (props.setNewCommentId) props.setNewCommentId(newlyAddedComment.upsertComment.comment._id);
+			if (props.setNewCommentId) {
+				props.setNewCommentId(newlyAddedComment.upsertComment.comment._id);
+			}
 			setCommentsArray(sortArrayBasedOnTs([...comments]));
 		}
 	}, [newlyAddedComment]);
@@ -374,12 +432,18 @@ export default function CommentComponent(props) {
 
 	const sortArrayBasedOnTs = array => {
 		const compare = (a, b) => {
-			if (a.ts < b.ts) return -1;
-			if (b.ts < a.ts) return 1;
+			if (a.ts < b.ts) {
+				return -1;
+			}
+			if (b.ts < a.ts) {
+				return 1;
+			}
 
 			return 0;
 		};
-		if (!props.multipleIds) array.sort(compare);
+		if (!props.multipleIds) {
+			array.sort(compare);
+		}
 
 		return array;
 	};
@@ -391,6 +455,7 @@ export default function CommentComponent(props) {
 						if (line.trim() !== '.') {
 							return line.trim();
 						}
+						return '';
 					})
 					.join('\n')
 			: `${value
@@ -399,6 +464,7 @@ export default function CommentComponent(props) {
 						if (line.trim() !== '.') {
 							return line.trim();
 						}
+						return '';
 					})
 					.join('\n')}`;
 
@@ -442,8 +508,6 @@ export default function CommentComponent(props) {
 		setEditCommentId('');
 	};
 	const pinToTop = eachComment => {
-		const x = Object.values(pinComments);
-
 		const newCommentList = commentsArray.map(c => {
 			if (c._id === eachComment) {
 				return {
@@ -568,7 +632,9 @@ export default function CommentComponent(props) {
 
 	const didILikedThisComment = useCallback(
 		comment => {
-			if (!user?._id) return false;
+			if (!user?._id) {
+				return false;
+			}
 
 			const likedBy = comment?.likedBy || [];
 			const find = likedBy.find(u => u._id === user._id);
@@ -923,13 +989,15 @@ export const CommentText = ({ eachComment, users }) => {
 												{secondPart}{' '}
 											</p>
 										);
-									} else if (sWord === '') return <br />;
-									else
+									} else if (sWord === '') {
+										return <br />;
+									} else {
 										return (
 											<p className={classes.commentWords}>
 												{sWord} <br />{' '}
 											</p>
 										);
+									}
 								})}
 							</>
 						);
@@ -956,7 +1024,6 @@ const ActionMenu = ({
 	setIsEdit,
 }) => {
 	const [anchorEl, setAnchorEl] = useState(null);
-	const { pinComment } = useSelector(state => state.pin);
 
 	const handleClick = event => {
 		setAnchorEl(event.currentTarget);

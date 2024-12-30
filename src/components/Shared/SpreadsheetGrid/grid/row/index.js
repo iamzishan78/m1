@@ -1,9 +1,11 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+
+import { TableCell } from '@material-ui/core';
+
 import isEqual from 'lodash.isequal';
+import PropTypes from 'prop-types';
 
 import SpreadsheetCell from './cell';
-import { TableCell } from '@material-ui/core';
 
 class SpreadsheetRow extends React.Component {
 	shouldComponentUpdate(nextProps) {

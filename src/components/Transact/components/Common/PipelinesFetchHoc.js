@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useLazyQuery } from '@apollo/client';
 import { useHistory } from 'react-router-dom';
 
+import { useLazyQuery } from '@apollo/client';
+
 import { GETPIPELINES } from 'graphQL/useQueryPipelines';
+
 import { setFlowState } from 'actions';
 
 export default function PipelinesFetchHoc(Component, module = 'flow') {
@@ -43,7 +45,9 @@ export default function PipelinesFetchHoc(Component, module = 'flow') {
 						const isExist = !!pipelinesData.pipelines.find(p => p._id === selectedPipe?._id);
 						if (selectedPipe && isExist) {
 							activePipeline = pipelinesData.pipelines.find(p => p._id === selectedPipe._id);
-						} else activePipeline = pipelinesData.pipelines[0];
+						} else {
+							activePipeline = pipelinesData.pipelines[0];
+						}
 					}
 					if (module === 'module') {
 						if (activePipeline && laneId && cardId) {
@@ -59,7 +63,7 @@ export default function PipelinesFetchHoc(Component, module = 'flow') {
 							pipelines: pipelinesData.pipelines,
 						})
 					);
-				} else
+				} else {
 					dispatch(
 						setFlowState({
 							selectedPipe: null,
@@ -67,6 +71,7 @@ export default function PipelinesFetchHoc(Component, module = 'flow') {
 							pipeToShow: false,
 						})
 					);
+				}
 			}
 		}, [pipelinesData]);
 

@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
+
 import { Autocomplete, TextField } from '@mui/material';
+
 import { useLazyQuery } from '@apollo/client';
 
 import { setStateIfDeepEqual } from 'components/Shared/functions';
+
 import { GET_DATASETS } from 'graphQL/useQueryDataset';
+
 import { globalStateController } from 'hookstate/globalStateController';
 
 const DatasetsAutoCompleteFilter = ({ sx, multiple, value, setValue }) => {
@@ -18,7 +22,9 @@ const DatasetsAutoCompleteFilter = ({ sx, multiple, value, setValue }) => {
 	}, [getDatasets]);
 
 	useEffect(() => {
-		if (!datasets?.getDatasets) return setStateIfDeepEqual(setOptions, []);
+		if (!datasets?.getDatasets) {
+			return setStateIfDeepEqual(setOptions, []);
+		}
 
 		setStateIfDeepEqual(
 			setOptions,
@@ -30,7 +36,7 @@ const DatasetsAutoCompleteFilter = ({ sx, multiple, value, setValue }) => {
 		<Autocomplete
 			sx={sx}
 			multiple={multiple}
-			id={`dataset-autocomplete`}
+			id={'dataset-autocomplete'}
 			options={options}
 			getOptionLabel={o => o.sourceName || ''}
 			loading={loading}

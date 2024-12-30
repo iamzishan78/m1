@@ -66,7 +66,7 @@ export const contactObj = {
 
 export const associatedDataList = [
 	{ name: 'Unit Interests', operationName: 'getESPaginatedList', verifyElementId: 'unitInterestTable' },
-	{ name: 'Well Interests', operationName: 'getPaginatedContactWellInterests', verifyElementId: 'wellInterestsTable' },
+	{ name: 'Well Interests', operationName: 'getESSimpleSearch', verifyElementId: 'wellInterestsTable' },
 	{ name: 'Tract Interests', operationName: 'getContactParcelInterest', verifyElementId: 'tractInterestTable' },
 	{ name: 'Tax Roll Interests', operationName: 'getContactTaxRollInterests', verifyElementId: 'taxInterestsTable' },
 	{ name: 'Activities', operationName: 'getESSimpleSearch', verifyElementId: 'activitiesInterestsTable' },

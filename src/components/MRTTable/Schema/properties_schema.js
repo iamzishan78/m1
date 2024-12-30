@@ -1,14 +1,17 @@
 // Importing necessary dependencies and components
-import { ErrorOutline } from '@material-ui/icons';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+
+import { ErrorOutline } from '@material-ui/icons';
+import { LocalAtm as CurrencyIcon } from '@material-ui/icons';
+
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import WellIcon from '../../../components/Shared/svgIcons/well.js';
-import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink.js';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
-import { LocalAtm as CurrencyIcon } from '@material-ui/icons';
+
+import WellIcon from '../../../components/Shared/svgIcons/well.js';
 // Elasticsearch index for properties
 const esIndex = 'properties_flat';
 
@@ -116,9 +119,11 @@ const PropertiesMeta = {
 			header: 'Well API#',
 			isExport: 'apiNumber',
 			Cell: ({ renderedCellValue }) => {
-				if (renderedCellValue?.length > 0)
+				if (renderedCellValue?.length > 0) {
 					return renderedCellValue?.length > 1 ? 'MULTIPLE' : renderedCellValue[0].apiNumber;
-				else return '';
+				} else {
+					return '';
+				}
 			},
 		},
 		{
@@ -129,9 +134,11 @@ const PropertiesMeta = {
 			header: 'Well Name',
 			isExport: 'wellName',
 			Cell: ({ renderedCellValue }) => {
-				if (renderedCellValue?.length > 0)
+				if (renderedCellValue?.length > 0) {
 					return renderedCellValue?.length > 1 ? 'MULTIPLE' : renderedCellValue[0].wellName;
-				else return '';
+				} else {
+					return '';
+				}
 			},
 		},
 		// Columns for Property details

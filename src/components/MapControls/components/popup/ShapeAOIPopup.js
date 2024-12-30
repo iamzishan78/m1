@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 
-import { useMutation } from '@apollo/client';
 import { makeStyles } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 
+import { useMutation } from '@apollo/client';
+
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+
 import { drawController } from 'hookstate/drawStateController';
 
 const useStyles = makeStyles(theme => ({

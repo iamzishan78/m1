@@ -1,29 +1,37 @@
 import React, { useEffect, useState } from 'react';
-import { MuiThemeProvider, createTheme } from '@material-ui/core/styles';
-import { AppProvider, setApolloHeaders } from './AppContext';
-import GlobalApolloClientProvider from './GlobalApolloClientProvider';
+import { Provider as ReduxProvider } from 'react-redux';
 import { toast, ToastContainer } from 'react-toastify';
-//components
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import ContactBulkProgress from './components/BulkUpload/ContactBulkProgress';
-// pick a date util library
-import MomentUtils from '@date-io/moment';
+
 import { CircularProgress } from '@material-ui/core';
+import { MuiThemeProvider, createTheme } from '@material-ui/core/styles';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+
+import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
+import MomentUtils from '@date-io/moment';
+import { split } from 'apollo-link';
+import { BatchHttpLink } from 'apollo-link-batch-http';
+import { HttpLink } from 'apollo-link-http';
+
+import { globalStateController } from 'hookstate/globalStateController';
+
+import { getSession } from 'utils/user';
+
+import { AppProvider, setApolloHeaders } from './AppContext';
+import ContactBulkProgress from './components/BulkUpload/ContactBulkProgress';
+import Notifications from './components/Notifications/Notifications';
+import GlobalApolloClientProvider from './GlobalApolloClientProvider';
+//components
+// pick a date util library
 
 //graphQL - queries in ./graphQL example usage in ./components/Maps.js
-import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
-import { HttpLink } from 'apollo-link-http';
-import { BatchHttpLink } from 'apollo-link-batch-http';
-import { split } from 'apollo-link';
+
 import { relayStylePagination } from './graphQL/apolloPaginationSchemes.js';
 // import ProfileProvider from "./components/Profile/ProfileProvider";
 // import ProfileDetailsProvider from "./components/Profile/ProfileDetailsProvider";
-import Notifications from './components/Notifications/Notifications';
+
 //redux
-import { Provider as ReduxProvider } from 'react-redux';
+
 import configureStore from './store';
-import { globalStateController } from 'hookstate/globalStateController';
-import { getSession } from 'utils/user';
 
 // user management
 const store = configureStore(/ provide initial state if any /);
@@ -128,8 +136,12 @@ function Providers({ children, headersData }) {
 		}
 
 		let fetchOptions = { headers: [] };
-		if (token) fetchOptions.headers['X-ZUMO-AUTH'] = token;
-		if (idToken) fetchOptions.headers['X-MS-TOKEN-AAD-ID-TOKEN'] = idToken;
+		if (token) {
+			fetchOptions.headers['X-ZUMO-AUTH'] = token;
+		}
+		if (idToken) {
+			fetchOptions.headers['X-MS-TOKEN-AAD-ID-TOKEN'] = idToken;
+		}
 		const cypress = globalStateController.getValue('cypress');
 		if (cypress) {
 			fetchOptions.headers['CYPRESS'] = 'true';

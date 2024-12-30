@@ -1,14 +1,21 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { TextField } from '@mui/material';
-import { makeStyles } from '@material-ui/core/styles';
-import { useLazyQuery } from '@apollo/client';
-import { colorBasedAttributes } from './ColorBasedAttributes';
-import { generateRandomColor } from 'components/MapControls/commonHelper';
-import { ColorPickerStyledBox } from '../Common';
+
 import { Paper } from '@material-ui/core';
-import { getLayerKey } from 'hookstate/helpers';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { TextField } from '@mui/material';
+
+import { useLazyQuery } from '@apollo/client';
+
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
+import { generateRandomColor } from 'components/MapControls/commonHelper';
+
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+
+import { getLayerKey } from 'hookstate/helpers';
+
+import { ColorPickerStyledBox } from '../Common';
+import { colorBasedAttributes } from './ColorBasedAttributes';
 
 // Styles for AttrsValuesDropdown
 const useStyles = makeStyles(() => ({
@@ -81,7 +88,6 @@ const AttrsValuesDropdown = ({
 	setAttributeBasedColors,
 }) => {
 	const classes = useStyles();
-	const [isOpen, setIsOpen] = useState(false);
 	const [displayColorPicker, setDisplayColorPicker] = useState(false);
 
 	// State for managing the clicked value and its color
@@ -130,9 +136,12 @@ const AttrsValuesDropdown = ({
 
 	// Making dropdown options with colors
 	const attroptions = useMemo(() => {
-		if (!filtersData?.getESSimpleFilter?.hits || !selectedValue?.label) return [];
-
-		const filterKeys = filtersData.getESSimpleFilter.hits.map(hit => hit.key).filter(key => key.trim());
+		if (!filtersData?.getESSimpleFilter?.hits || !selectedValue?.label) {
+			return [];
+		}
+		const filterKeys = filtersData.getESSimpleFilter.hits
+			.map(hit => hit?.key)
+			.filter(key => key && key.toString().trim());
 
 		filterKeys.unshift('');
 
@@ -162,14 +171,11 @@ const AttrsValuesDropdown = ({
 		<>
 			{selectedValue ? (
 				<div className={classes.dropdownContainer}>
-					<div id="color-dropdown" className={classes.dropdown} onClick={() => setIsOpen(!isOpen)}>
+					<div id="color-dropdown" className={classes.dropdown}>
 						<span>{selectedValue ? selectedValue['label'] : ''}</span>
-						<span
-							className={classes.arrowIcon}
-							style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
-						></span>
+						<span className={classes.arrowIcon} style={{ transform: 'rotate(180deg)' }}></span>
 					</div>
-					{isOpen && (
+					{attroptions?.length > 0 && (
 						<ul className={classes.dropdownList}>
 							{attroptions.map((option, index) => (
 								<li

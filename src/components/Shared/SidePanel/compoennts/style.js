@@ -1,11 +1,13 @@
 import React from 'react';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+
 import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import MenuItem from '@material-ui/core/MenuItem';
+import Paper from '@material-ui/core/Paper';
 import Select from '@material-ui/core/Select';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { createTheme } from '@material-ui/core/styles';
+
 import { scrollbarStyle } from 'styles/common';
 
 export const theme = createTheme({
@@ -81,7 +83,7 @@ export const useStyles = makeStyles(theme => ({
 		color: 'white',
 		backgroundColor: '#0e111a',
 		padding: '10px 20px',
-		minHeight: '230px',
+		minHeight: '100%',
 		'& .MuiFormControl-root': {
 			width: '100%',
 		},

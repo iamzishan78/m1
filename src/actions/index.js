@@ -1,5 +1,4 @@
 export * from 'actions/Notifications';
-export * from 'actions/MapGridCard';
 export * from 'actions/ContactDetailCard';
 export * from 'actions/AddParcelInterest';
 export * from 'actions/MainMap';

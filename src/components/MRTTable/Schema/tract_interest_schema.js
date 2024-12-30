@@ -1,12 +1,13 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
-import vf_currency from 'components/Shared/valueformatters/vf_currency';
 import ListChips from 'components/Common/ListChips';
-import ContactNameLink from '../Common/TableCells/ContactNameLink';
-import TractIcon from 'components/Shared/svgIcons/tract';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { addTrailingZeros } from 'components/Shared/functions';
+import TractIcon from 'components/Shared/svgIcons/tract';
+import vf_currency from 'components/Shared/valueformatters/vf_currency';
+
+import ContactNameLink from '../Common/TableCells/ContactNameLink';
 
 const esIndex = 'shapeowners_flat';
 
@@ -341,10 +342,14 @@ const TractInterestsMeta = {
 		// },
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'campaignName.keyword',
-			accessorKey: 'campaignName',
-			header: 'Campaign Name',
-			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
+			type: 'array',
+			name: 'campaigns',
+			accessorFn: row => row?.campaigns,
+			id: 'campaigns',
+			header: 'Campaigns',
+			Cell: ({ row }) => {
+				return <CampaignField value={row?.original?.campaigns} fullWidth disabled />;
+			},
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,

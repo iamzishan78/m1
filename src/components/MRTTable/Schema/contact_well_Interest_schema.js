@@ -1,8 +1,8 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import { addTrailingZeros } from 'components/Shared/functions';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import WellInterestToolBar from 'components/MRTTable/TablesOverride/ContactDetailWellInterestTable/WellInterestToolbar';
+
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 const esIndex = 'wellinterests_flat';
@@ -68,7 +68,7 @@ const ContactWellInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			header: 'Lease Acres',
 			name: 'well.leaseAcres',
 			accessorKey: 'well.leaseAcres',
@@ -89,43 +89,24 @@ const ContactWellInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			header: 'Amount',
-			name: 'amount.keyword',
-			accessorKey: 'amount',
-			enableColumnFilter: false,
-			Cell: ({ row }) => {
-				const amount = row.getValue('amount');
-				if (amount) {
-					return <>{addTrailingZeros(parseFloat(amount).toFixed(8))}</>;
-				}
-			},
+			name: 'interest.keyword',
+			accessorKey: 'interest',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			header: 'Tax Value',
 			name: 'value',
 			accessorKey: 'value',
-			Cell: ({ row }) => {
-				const value = row.getValue('value');
-				if (value) {
-					return <>{`$${value}`}</>;
-				}
-			},
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			header: 'NRA',
 			name: 'nra',
 			accessorKey: 'nra',
-			Cell: ({ row }) => {
-				const nra = row.getValue('nra');
-				if (nra) {
-					return <>{addTrailingZeros(parseFloat(nra).toFixed(8))}</>;
-				}
-			},
 		},
 
 		{

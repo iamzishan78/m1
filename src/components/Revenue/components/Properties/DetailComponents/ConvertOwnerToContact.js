@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@material-ui/core';
-import { Modals } from 'styles/Modal';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+
+import { detailCardController } from 'hookstate/detailCardController';
+import { tableGlobalController } from 'hookstate/tableController';
+
 import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
+
+import { Modals } from 'styles/Modal';
 
 const ConvertOwnerToContact = ({
 	getOwnerEntityDetailAction,
@@ -15,9 +20,12 @@ const ConvertOwnerToContact = ({
 	const modalClass = Modals();
 	const [showDialog, setShowOwnerDialog] = useState(true);
 	const [showConvertDialog, setShowConvertDialog] = useState(false);
+	const { stateValues } = detailCardController.useState(['summaryData']);
+	const propertyData = stateValues.summaryData;
 
 	useEffect(() => {
-		getOwnerEntityDetailAction(propertyDetails.owner);
+		getOwnerEntityDetailAction(propertyDetails?.owner);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [propertyDetails]);
 
 	return (
@@ -34,6 +42,12 @@ const ConvertOwnerToContact = ({
 					<Button
 						onClick={() => {
 							onClose();
+							tableGlobalController.updateState({
+								propertyInterestDetaillDialog: {
+									type: 'addInterestDetail',
+									propertyDetails: propertyData,
+								},
+							});
 						}}
 						color="primary"
 					>

@@ -39,14 +39,14 @@ describe('Agreement New Tracts Spec', () => {
 
 				cy.get('#tractDescription', { timeout: longTimeout }).type('Cypress Description');
 
-				cy.log(`==== STEP: SELECT ENTITY NAME ====`);
+				cy.log('==== STEP: SELECT ENTITY NAME ====');
 				cy.get('#AutocompEntityNamesList').scrollIntoView().click().type('mike jones');
 				cy.get("[id='AutocompEntityNamesList-option-0']");
 				cy.get('#AutocompEntityNamesList').click().type('{downArrow}{downArrow}{enter}');
 
 				cy.interceptApiByIndex('getESSimpleSearch', 'shapeowners_flat');
 
-				cy.log(`==== STEP: CLICK ON SAVE BUTTON ====`);
+				cy.log('==== STEP: CLICK ON SAVE BUTTON ====');
 				cy.interceptApi('addOwnerToAShape');
 				cy.get('#saveButton').click();
 				cy.verifyApiResponse('@addOwnerToAShapeApi', { responseTimeout: longTimeout });

@@ -1,26 +1,33 @@
 import React, { useState, useEffect, useContext } from 'react';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { makeStyles } from '@material-ui/core/styles';
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
-import moment from 'moment';
-import { uniqueId } from 'lodash';
-import { useLazyQuery } from '@apollo/client';
 import { useHistory } from 'react-router-dom';
 
-import { GETALLACTIVITIES } from '../../graphQL/useQueryGetAllActivities';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { useLazyQuery } from '@apollo/client';
+import { useHookstate } from '@hookstate/core';
+import { uniqueId } from 'lodash';
+import moment from 'moment';
+
+import MRTTable from 'components/MRTTable';
+
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-import ActivitiesToolbar from './components/ActivitiesToolbar';
+
+import { slidoutStateController } from 'hookstate/slidoutStateController';
+import { tableController } from 'hookstate/tableController';
+
 import ActivitiesEvent from './components/ActivitiesEvent';
+import ActivitiesToolbar from './components/ActivitiesToolbar';
 import { AppContext } from '../../AppContext';
 import ActivitiesSlideout from './components/ActivitiesSlideout';
-import { GET_CONTACTS_FOR_ACTIVITY } from 'graphQL/useQueryGetContactsForActivity';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
-import MRTTable from 'components/MRTTable';
-import { tableController } from 'hookstate/tableController';
+import { GETALLACTIVITIES } from '../../graphQL/useQueryGetAllActivities';
+
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './index.css';
-import { useHookstate } from '@hookstate/core';
+
 import { slidoutState } from 'hookstate/initialStates';
 
 const localizer = momentLocalizer(moment);
@@ -125,10 +132,10 @@ const Activities = () => {
 	const classes = useStyles();
 	let history = useHistory();
 	const [getAllActivities, { data: activitiesData, loading: activitiesLoading }] = useLazyQuery(GETALLACTIVITIES, {
-		fetchPolicy: `network-only`,
+		fetchPolicy: 'network-only',
 	});
 	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
-		fetchPolicy: `network-only`,
+		fetchPolicy: 'network-only',
 	});
 
 	const [getOperatorList, { data: operatorList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
@@ -164,7 +171,9 @@ const Activities = () => {
 			}));
 			obligations.unshift({ label: 'All', value: 'all' });
 			return obligations;
-		} else return [];
+		} else {
+			return [];
+		}
 	}, [activitiesData]);
 
 	useEffect(() => {

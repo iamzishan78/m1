@@ -1,6 +1,7 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import NumberFormat from 'react-number-format';
+
+import PropTypes from 'prop-types';
 
 export function CurrencyFormatCustom(props) {
 	const { inputRef, onChange, name, prefix, ...other } = props;

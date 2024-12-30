@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
+
 import { Autocomplete, TextField } from '@mui/material';
+
 import { useQuery } from '@apollo/client';
 
 import { setStateIfDeepEqual } from 'components/Shared/functions';
+
 import { GET_DB_MODELS } from 'graphQL/useQueryDbQuery';
 
 function IndexAutoCompleteFilter({ sx, multiple, value, setValue }) {
@@ -11,7 +14,9 @@ function IndexAutoCompleteFilter({ sx, multiple, value, setValue }) {
 	const { data, loading } = useQuery(GET_DB_MODELS);
 
 	useEffect(() => {
-		if (!data?.getDbModels?.data) return setStateIfDeepEqual(setOptions, []);
+		if (!data?.getDbModels?.data) {
+			return setStateIfDeepEqual(setOptions, []);
+		}
 
 		setStateIfDeepEqual(
 			setOptions,
@@ -23,7 +28,7 @@ function IndexAutoCompleteFilter({ sx, multiple, value, setValue }) {
 		<Autocomplete
 			sx={sx}
 			multiple={true}
-			id={`index-filter-autocomplete`}
+			id={'index-filter-autocomplete'}
 			options={multiple ? options?.filter(option => !value.includes(option)) : options}
 			loading={loading}
 			value={value}

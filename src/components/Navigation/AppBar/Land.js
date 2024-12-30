@@ -1,15 +1,19 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import { Grid, Typography, Button } from '@material-ui/core';
-import hat from 'hat';
 import { Add } from '@material-ui/icons';
+
+import { useMutation } from '@apollo/client';
+import hat from 'hat';
+
 import { SIDE_PANEL_MENU_ITEMS_LIST } from 'components/Land/index';
 import LandSearch from 'components/Navigation/components/LandSearch';
-import { useHistory } from 'react-router-dom';
-import { useMutation } from '@apollo/client';
-import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
 import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
+
+import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
+
 import { layerController } from 'hookstate/layerStateController';
 
 export default function LandAppBar(props) {
@@ -18,8 +22,9 @@ export default function LandAppBar(props) {
 	const { activeModule, quickActionsPanelState } = useSelector(({ common }) => common);
 	const [upsertCustomLayer] = useMutation(UPSERTCUSTOMLAYER, {
 		onCompleted: data => {
-			if (data?.upsertCustomLayer?.customLayer)
+			if (data?.upsertCustomLayer?.customLayer) {
 				history.push(`/land/agreement/details/${data.upsertCustomLayer.customLayer._id}`);
+			}
 		},
 	});
 
@@ -29,7 +34,7 @@ export default function LandAppBar(props) {
 		return [
 			{
 				isShow: false,
-				text: `Add New Agreement`,
+				text: 'Add New Agreement',
 				action: () => {
 					const newShapeFeature = {
 						id: featureId,

@@ -1,20 +1,27 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { AppContext } from 'AppContext';
+
 import { Grid, Typography, Divider, Tooltip, Input } from '@material-ui/core';
-import { Close as CloseButton, Search as SearchIcon, Clear as ClearIcon } from '@material-ui/icons';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import { copy, deepEqual, deepEqualObjects } from 'components/Shared/functions';
-import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
-import { useMutation } from '@apollo/client';
 import { IconButton } from '@material-ui/core';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import { makeStyles } from '@material-ui/core/styles';
+import { Close as CloseButton, Search as SearchIcon, Clear as ClearIcon } from '@material-ui/icons';
+
+import { useMutation } from '@apollo/client';
+
+import { copy, deepEqual, deepEqualObjects } from 'components/Shared/functions';
+
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
-import SourceManager from './SourceManager';
-import LayerManager from './LayerManager';
+import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
+
+import { AppContext } from 'AppContext';
+
+import LayerManager from './LayerManager';
+import SourceManager from './SourceManager';
 
 const useStyles = makeStyles(theme => ({
 	search: {

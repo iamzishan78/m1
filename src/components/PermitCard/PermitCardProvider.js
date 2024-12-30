@@ -1,7 +1,7 @@
 import React from 'react';
-import { PermitCardContextProvider } from './PermitCardContext';
 
 import PermitCard from './PermitCard';
+import { PermitCardContextProvider } from './PermitCardContext';
 
 function PermitCardProvider(props) {
 	const handleClosePermitCard = () => {

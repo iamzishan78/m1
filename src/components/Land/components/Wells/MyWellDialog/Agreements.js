@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import get from 'lodash/get';
+
 import {
 	Grid,
 	ListItemText,
@@ -12,27 +12,32 @@ import {
 	Tooltip,
 	InputBase,
 } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import Link from '@material-ui/core/Link';
-import AddIcon from '@material-ui/icons/Add';
-import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import IconButton from '@material-ui/core/IconButton';
+import Link from '@material-ui/core/Link';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import AddIcon from '@material-ui/icons/Add';
+import SearchIcon from '@material-ui/icons/Search';
+
+import { useMutation } from '@apollo/client';
+import get from 'lodash/get';
+
 import { agreementTypes } from 'components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData';
 
 //Contexts
+import WellSearchApiFieldES from 'components/Shared/Forms/Fields/WellSearchApiFieldES';
+
+import { ADD_SHAPE_WELL_INTEREST } from 'graphQL/useMutationAddShapeWellInterest';
+import { ADD_WELL_TO_FILE_DESCRIPTOR } from 'graphQL/useMutationAddWellToFileDescriptor';
+
 import { AppContext } from 'AppContext';
 
 //Components
-import WellSearchApiFieldES from 'components/Shared/Forms/Fields/WellSearchApiFieldES';
 import SearchField from './SearchField';
 
 // Hooks
-import { useMutation } from '@apollo/client';
 
 // Mutations
-import { ADD_WELL_TO_FILE_DESCRIPTOR } from 'graphQL/useMutationAddWellToFileDescriptor';
-import { ADD_SHAPE_WELL_INTEREST } from 'graphQL/useMutationAddShapeWellInterest';
 
 const useStyles = makeStyles(theme => ({
 	rootPadding: {

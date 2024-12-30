@@ -1,9 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+
 import { useLazyQuery } from '@apollo/client';
-import { CONTACT } from 'graphQL/useQueryContact';
-import { NavigationContext } from 'components/Navigation/NavigationContext';
+
 import { ContactDetailsContextProvider } from 'components/ContactDetailCard/ContactDetailsContext';
+import { NavigationContext } from 'components/Navigation/NavigationContext';
+
+import { CONTACT } from 'graphQL/useQueryContact';
+
 import UnitDetailCard from './UnitDetailCard';
 
 export default function ContactUnitInterestProvider(props) {

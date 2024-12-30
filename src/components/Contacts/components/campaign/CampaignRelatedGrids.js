@@ -1,17 +1,20 @@
 import React, { useMemo } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import UnitIcon from 'components/Shared/svgIcons/unit';
-import Contact from 'components/Shared/svgIcons/contact';
 
-import Card from '@material-ui/core/Card';
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import { makeStyles } from '@material-ui/core/styles';
+import TractInterestsIcon from '@material-ui/icons/ListAlt';
+
+import moment from 'moment';
+
+import MRTTable from 'components/MRTTable';
+import Contact from 'components/Shared/svgIcons/contact';
+import TractIcon from 'components/Shared/svgIcons/tract';
+import UnitIcon from 'components/Shared/svgIcons/unit';
+
+import { tableGlobalController } from 'hookstate/tableController';
 
 import { campaignInitialData } from './data';
-import MRTTable from 'components/MRTTable';
-import moment from 'moment';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
-import TractInterestsIcon from '@material-ui/icons/ListAlt';
-import TractIcon from 'components/Shared/svgIcons/tract';
 
 const useStyles = makeStyles(theme => ({
 	card: {
@@ -56,17 +59,17 @@ const useStyles = makeStyles(theme => ({
 
 function CamapignRelatedGrids({ campaign }) {
 	const classes = useStyles();
-	const globalSelectedTabKey = simpleTableGlobalController.useState(['tabKey'])?.stateValues;
+	const globalSelectedTabKey = tableGlobalController.useState(['tabKey'])?.stateValues;
 
 	const setSearchTapValue = state => {
-		simpleTableGlobalController.setSelectedTab(state?.index);
+		tableGlobalController.setSelectedTab(state?.index);
 	};
 
 	const campaignUnitInterestoverrideMeta = useMemo(
 		() => ({
 			defaultFilters: [
 				{ field: 'shape.layer.keyword', value: 'unit' },
-				{ field: 'campaignName.keyword', value: campaign?.name || '' },
+				{ field: 'campaigns', value: { _id: campaign?._id, name: campaign?.name } },
 				{ field: 'contact.IsDeleted', value: 'false' },
 				{ field: 'shape.IsDeleted', value: 'false' },
 			],
@@ -93,22 +96,23 @@ function CamapignRelatedGrids({ campaign }) {
 			},
 			deletedKeys: {
 				mainRecord: { key: '_id' },
-				campaignName: {
-					key: 'campaignName',
-					func: campaignName => campaignName.filter(c => c !== campaign?.name),
+				campaigns: {
+					key: 'campaigns',
+					func: campaigns => campaigns.filter(c => c._id !== campaign?._id),
 				},
 			},
 			customValue: { campaign: campaign },
 			maxTableHeight: '35vh',
 		}),
-		[campaign?.name]
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[campaign?._id]
 	);
 
 	const campaignUnitoverrideMeta = useMemo(
 		() => ({
 			defaultFilters: [
 				{ field: 'layer.keyword', value: 'unit' },
-				{ field: 'shapeJson.properties.campaignName.keyword', value: campaign?.name || '' },
+				{ field: 'shapeJson.properties.campaigns', value: { _id: campaign?._id, name: campaign?.name } },
 			],
 			gridViewSettings: {
 				label: 'Units',
@@ -142,7 +146,7 @@ function CamapignRelatedGrids({ campaign }) {
 								...shapeJson,
 								properties: {
 									...shapeJson.properties,
-									campaignName: shapeJson?.properties?.campaignName?.filter?.(name => name !== campaign?.name) || [],
+									campaigns: shapeJson?.properties?.campaigns?.filter?.(c => c._id !== campaign?._id) || [],
 								},
 							},
 						};
@@ -153,12 +157,13 @@ function CamapignRelatedGrids({ campaign }) {
 			isCampaignRefetch: true,
 			maxTableHeight: '35vh',
 		}),
-		[campaign?.name]
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[campaign?._id]
 	);
 
 	const campaignContactoverrideMeta = useMemo(
 		() => ({
-			defaultFilters: [{ field: 'campaignName.keyword', value: campaign?.name || '' }],
+			defaultFilters: [{ field: 'campaigns', value: { _id: campaign?._id, name: campaign?.name } }],
 			gridViewSettings: {
 				label: 'Contact Management',
 				module: 'Contacts',
@@ -200,14 +205,15 @@ function CamapignRelatedGrids({ campaign }) {
 			showAddContactButton: false,
 			maxTableHeight: '35vh',
 		}),
-		[campaign?.name]
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[campaign?._id]
 	);
 
 	const campaignTractOverrideMeta = useMemo(
 		() => ({
 			defaultFilters: [
 				{ field: 'layer.keyword', value: 'parcel' },
-				{ field: 'shapeJson.properties.campaignName.keyword', value: campaign?.name || '' },
+				{ field: 'shapeJson.properties.campaigns', value: { _id: campaign?._id, name: campaign?.name } },
 			],
 			deletedKeys: {
 				mainRecord: { key: '_id' },
@@ -220,13 +226,14 @@ function CamapignRelatedGrids({ campaign }) {
 								...shapeJson,
 								properties: {
 									...shapeJson.properties,
-									campaignName: shapeJson?.properties?.campaignName?.filter?.(name => name !== campaign?.name) || [],
+									campaigns: shapeJson?.properties?.campaigns?.filter?.(c => c._id !== campaign?._id) || [],
 								},
 							},
 						};
 					},
 				},
 			},
+			customValue: { parentRecord: campaign?._id, campaign: campaign },
 			isCampaignRefetch: true,
 			maxTableHeight: '35vh',
 			gridViewSettings: {
@@ -251,7 +258,8 @@ function CamapignRelatedGrids({ campaign }) {
 				},
 			},
 		}),
-		[campaign?.name]
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[campaign?._id]
 	);
 
 	const campaignTractInterestOverrideMeta = useMemo(
@@ -260,15 +268,16 @@ function CamapignRelatedGrids({ campaign }) {
 				{ field: 'shape.layer.keyword', value: 'parcel' },
 				{ field: 'contact.IsDeleted', value: 'false' },
 				{ field: 'shape.IsDeleted', value: 'false' },
-				{ field: 'campaignName.keyword', value: campaign?.name || '' },
+				{ field: 'campaigns', value: { _id: campaign?._id, name: campaign?.name } },
 			],
 			deletedKeys: {
 				mainRecord: { key: '_id' },
-				campaignName: {
-					key: 'campaignName',
-					func: campaignName => campaignName.filter(c => c !== campaign?.name),
+				campaigns: {
+					key: 'campaigns',
+					func: campaigns => campaigns.filter(c => c._id !== campaign?._id),
 				},
 			},
+			customValue: { campaign: campaign },
 			isCampaignRefetch: true,
 			maxTableHeight: '35vh',
 			gridViewSettings: {
@@ -293,6 +302,7 @@ function CamapignRelatedGrids({ campaign }) {
 				},
 			},
 		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[campaign?.name]
 	);
 

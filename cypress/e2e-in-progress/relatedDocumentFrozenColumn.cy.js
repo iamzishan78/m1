@@ -48,7 +48,9 @@ describe('Related Document Frozen Column Spec', () => {
 							cy.get('#saveDocumentButton', { timeout: longTimeout }).click();
 							cy.verifyApiResponse('@viewFilesApi', { responseTimeout: longTimeout });
 							cy.verifyApiResponse('@AddDescriptorFileApi', { responseTimeout: longTimeout });
-						} else documentName = hits[0].name;
+						} else {
+							documentName = hits[0].name;
+						}
 
 						cy.log('==== STEP: GET TABLE CELL FILE NAME ====');
 						cy.get('#addRelatedDcmnButton').scrollIntoView();

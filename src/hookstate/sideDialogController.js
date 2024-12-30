@@ -1,5 +1,7 @@
 import { hookstate } from '@hookstate/core';
+
 import { copy } from 'components/Shared/functions';
+
 import { hookStateController } from 'hookstate/hookStateController';
 
 export const commonIterestOwnerStates = {
@@ -18,7 +20,7 @@ export const commonIterestOwnerStates = {
 	contactStatus: null,
 	closed_price: null, // Add new field closed price for unit interest owner
 	status: null,
-	campaignName: [],
+	campaigns: [],
 	campaignPriority: null,
 	deals: [],
 	ownerEntity: null,
@@ -128,7 +130,9 @@ export const sideDialogState = {};
 const sideDialogStateControllerHandler = () => ({});
 
 export const sideDialogController = DialogKey => {
-	if (!sideDialogState[DialogKey]) sideDialogState[DialogKey] = hookstate(copy(initialStates[DialogKey]));
+	if (!sideDialogState[DialogKey]) {
+		sideDialogState[DialogKey] = hookstate(copy(initialStates[DialogKey]));
+	}
 
 	return {
 		...sideDialogStateControllerHandler(sideDialogState[DialogKey]),

@@ -1,26 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { copy } from 'utils/helper';
+
+import { Button } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
-
-import WellIcon from 'components/Shared/svgIcons/well';
-import PersonIcon from '@material-ui/icons/Person';
-import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
-// import TodayOutlinedIcon from '@material-ui/icons/TodayOutlined';
 import AddIcon from '@material-ui/icons/Add';
 import GavelIcon from '@material-ui/icons/Gavel';
-import { Button } from '@material-ui/core';
+import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
+import PersonIcon from '@material-ui/icons/Person';
+
 import { useLazyQuery } from '@apollo/client';
-import CommentComponent from 'components/Shared/CommentComponent';
+
+// import TodayOutlinedIcon from '@material-ui/icons/TodayOutlined';
+
+import QtrQtrSelectorNew from 'components/ShapeDetailCard/Common/QtrQtrSelectorNew';
 import SummaryTable from 'components/ShapeDetailCard/Common/SummaryTable';
 import unitDefaultData from 'components/ShapeDetailCard/Common/SummaryTable/unitDefaultData';
+import { summaryStyles } from 'components/ShapeDetailCard/style';
+import CommentComponent from 'components/Shared/CommentComponent';
+import ExpandableSearch from 'components/Shared/Forms/Fields/ExpandableSearch';
+import WellIcon from 'components/Shared/svgIcons/well';
+import MetaField from 'components/Table/helpers/MetaField';
+
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
-import { summaryStyles } from 'components/ShapeDetailCard/style';
-import ExpandableSearch from 'components/Shared/Forms/Fields/ExpandableSearch';
-import QtrQtrSelectorNew from 'components/ShapeDetailCard/Common/QtrQtrSelectorNew';
-import MetaField from 'components/Table/helpers/MetaField';
+
 import { globalStateController } from 'hookstate/globalStateController';
+
+import { copy } from 'utils/helper';
 
 export default function UnitSummary(props) {
 	const {
@@ -71,7 +77,9 @@ export default function UnitSummary(props) {
 	const addAgreementCustomData = data => {
 		const customData = copy(props.properties.custom_data) ?? {};
 		data.forEach(d => {
-			if (!customData[d.name]) customData[d.name] = null;
+			if (!customData[d.name]) {
+				customData[d.name] = null;
+			}
 		});
 		props.updateProperties(null, 'custom_data', customData);
 	};
@@ -190,8 +198,9 @@ export default function UnitSummary(props) {
 									setProperties({ ...unitProperties, description: e.target.value });
 								}}
 								onKeyDown={e => {
-									if (e.keyCode === 13 && !e.shiftKey)
+									if (e.keyCode === 13 && !e.shiftKey) {
 										props.updateProperties(e, 'description', unitProperties.description);
+									}
 								}}
 								onFocus={() => {
 									setTableDataState({ description: true });

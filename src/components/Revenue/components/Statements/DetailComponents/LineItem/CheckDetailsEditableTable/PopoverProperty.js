@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
-import { Grid, Popover, TextField, Typography, IconButton } from '@material-ui/core';
-import { debounce } from 'lodash';
-import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
-import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';
-import { UPDATE_PROPERTY } from 'graphQL/useMutationUpdateProperty';
-import LaunchIcon from '@material-ui/icons/Launch';
-import { Controller, useForm } from 'react-hook-form';
 import { useEffect } from 'react';
-import { history } from 'store';
+import { Controller, useForm } from 'react-hook-form';
+
+import { Grid, Popover, TextField, Typography, IconButton } from '@material-ui/core';
+import LaunchIcon from '@material-ui/icons/Launch';
+
 import { useMutation } from '@apollo/client';
+import { debounce } from 'lodash';
+
+import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';
+import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
+
+import { UPDATE_PROPERTY } from 'graphQL/useMutationUpdateProperty';
+
+import { history } from 'store';
 
 export function PopoverProperty({ anchorEl, onClose, property, onFieldChange, data }) {
 	const openPopover = Boolean(anchorEl);

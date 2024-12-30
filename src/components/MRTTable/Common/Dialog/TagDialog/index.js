@@ -1,6 +1,8 @@
 import React, { memo } from 'react';
-import Tags from './Tag';
+
 import { makeStyles } from '@material-ui/core/styles';
+
+import Tags from './Tag';
 
 const useStyles = makeStyles(() => ({
 	tagsDiv: {
@@ -13,7 +15,7 @@ const TagDialog = props => {
 
 	return (
 		<div className={classes.tagsDiv}>
-			<Tags targetSourceId={props?.targetSourceId} targetLabel={props?.targetLabel} />
+			<Tags targetSourceId={props?.targetSourceId} targetLabel={props?.targetLabel} refetch={props.refetch} />
 		</div>
 	);
 };

@@ -1,27 +1,34 @@
 import React, { useState, useContext, useEffect, useLayoutEffect } from 'react';
-import { AppContext, setApolloHeaders } from '../../AppContext';
-import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch } from 'react-redux';
-import { NavigationContext } from '../Navigation/NavigationContext';
-import SignInCard from './SignInCard';
+
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
+
+import * as msal from '@azure/msal-browser';
 import queryString from 'query-string';
 
-import { tenantsCredentials, b2cPolicies, msalConfig, loginRequest, authGraphQLRequest } from './AADAuthConfig';
-import * as msal from '@azure/msal-browser';
+import { SIMPLE_BYPASS_LOGIN_MUTATION } from 'graphQL/useMutationBypassLogin';
 import { GET_LOGGED_IN_USER } from 'graphQL/useMutationLoggedInUser';
 import { USER_MAP_SETTINGS } from 'graphQL/useQueryUserMapSettings';
-import { setUserAction } from 'store/actions/appActions';
-import { currentUserGridViewSettingsAction } from 'store/actions/sessionActions';
-import { saveUserSession } from 'utils/user';
-import Api from 'api';
 
-import BypassSignInCard from './BypassSignInCard';
-import { SIMPLE_BYPASS_LOGIN_MUTATION } from 'graphQL/useMutationBypassLogin';
-import { apolloClientEndpointDev, isDev } from 'utils/helper';
 import { globalStateController } from 'hookstate/globalStateController';
 import { mapStateController } from 'hookstate/mapStateController';
+
+import { setUserAction } from 'store/actions/appActions';
+import { currentUserGridViewSettingsAction } from 'store/actions/sessionActions';
+
 import { simpleAuthBypass } from 'utils/data';
+import { apolloClientEndpointDev, isDev } from 'utils/helper';
+import { saveUserSession } from 'utils/user';
+
+import Api from 'api';
+
+import { tenantsCredentials, b2cPolicies, msalConfig, loginRequest, authGraphQLRequest } from './AADAuthConfig';
+import BypassSignInCard from './BypassSignInCard';
+import HexocetCanvas from './hexoCatCanvas';
+import SignInCard from './SignInCard';
+import { AppContext, setApolloHeaders } from '../../AppContext';
+import { NavigationContext } from '../Navigation/NavigationContext';
 
 const localStyles = makeStyles(theme => ({
 	myRoot: {
@@ -58,7 +65,6 @@ const localStyles = makeStyles(theme => ({
 		display: 'flex',
 		height: '100vh',
 		flexDirection: 'column',
-		backgroundColor: '#343d54',
 	},
 	cardContainer: {
 		display: 'flex',
@@ -129,9 +135,11 @@ const Login = props => {
 		}
 
 		let authTokenExpires;
-		if (globalStateValues.bypassLogin) authTokenExpires = sessionData.authenticationToken.expiresOn;
-		else if (authGraphQLToken?.expiresOn)
+		if (globalStateValues.bypassLogin) {
+			authTokenExpires = sessionData.authenticationToken.expiresOn;
+		} else if (authGraphQLToken?.expiresOn) {
 			authTokenExpires = new Date(authGraphQLToken.expiresOn.setDate(authGraphQLToken.expiresOn.getDate() + 14));
+		}
 
 		const user = {
 			...mongoUser,
@@ -301,8 +309,11 @@ const Login = props => {
 					setLoading(false);
 				});
 		} else {
-			if (stateApp.myMSALObj === false) setLoading(false);
+			if (stateApp.myMSALObj === false) {
+				setLoading(false);
+			}
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [stateApp.myMSALObj, signingIn]);
 
 	const handleAADSignIn = async (tenantName, updateTenantFlags) => {
@@ -388,7 +399,9 @@ const Login = props => {
 	const handleBypassAADSignIn = async (tenantName, updateTenantFlags, email) => {
 		let tenant = tenantsCredentials(tenantName);
 
-		if (!tenant) return updateTenantFlags('Not a valid workspace or email');
+		if (!tenant) {
+			return updateTenantFlags('Not a valid workspace or email');
+		}
 
 		setSigningIn(true);
 		setLoadingSigInButton(true);
@@ -600,7 +613,7 @@ const Login = props => {
 	}
 
 	async function signInPopup(request) {
-		const loginResponse = await stateApp.myMSALObj.loginPopup(request).catch(function (error) {
+		const loginResponse = await stateApp.myMSALObj.loginPopup(request).catch(error => {
 			console.log(error);
 		});
 		if (stateApp.myMSALObj.getAllAccounts()) {
@@ -690,17 +703,24 @@ const Login = props => {
 			<CircularProgress size={80} disableShrink color="secondary" />
 		</div>
 	) : (
-		<div
-			className={width > 2050 ? `${localClass.height_100} ${localClass.myRoot}` : localClass.myRoot}
-			style={{ backgroundImage: `url(/icons/rock.jpg)` }}
-		>
+		<div className={width > 2050 ? `${localClass.height_100} ${localClass.myRoot}` : localClass.myRoot}>
+			<div
+				style={{
+					position: 'absolute',
+					top: 0,
+					left: 0,
+					right: 0,
+					bottom: 0,
+					zIndex: 1,
+				}}
+			>
+				<HexocetCanvas />
+			</div>
 			<div
 				className={localClass.rootNewUser}
 				style={{
-					backgroundImage: `url(/icons/rock.jpg)`,
-					backgroundPosition: 'center',
-					backgroundRepeat: 'no-repeat',
-					backgroundSize: 'cover',
+					position: 'relative',
+					zIndex: 2,
 				}}
 			>
 				{renderBody}

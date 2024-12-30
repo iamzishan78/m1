@@ -1,13 +1,15 @@
 import React, { useState, useContext, useCallback, useEffect } from 'react';
+import NumberFormat from 'react-number-format';
+
+import { FormLabel } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import NumberFormat from 'react-number-format';
-import Grid from '@material-ui/core/Grid';
-import { FormLabel } from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
 import CancelIcon from '@material-ui/icons/Cancel';
 
 import { navController } from 'hookstate/navStateController';
+
 import { NavigationContext } from '../NavigationContext';
 
 const useStyles = makeStyles({
@@ -65,8 +67,12 @@ export default function FilterLateralLength() {
 
 		const value = { min, max };
 
-		if (!min && min !== 0) delete value.min;
-		if (!max && max !== 0) delete value.max;
+		if (!min && min !== 0) {
+			delete value.min;
+		}
+		if (!max && max !== 0) {
+			delete value.max;
+		}
 
 		const type = 'range';
 		navController.handleWellsFilters({ field: 'lateralLength', value, type });
@@ -82,7 +88,9 @@ export default function FilterLateralLength() {
 	useEffect(() => {
 		if (stateNav.lateralLengthWell) {
 			setFilter();
-		} else clearFilters();
+		} else {
+			clearFilters();
+		}
 	}, [setFilter, stateNav.lateralLengthWell]);
 
 	useEffect(() => {

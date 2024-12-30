@@ -1,48 +1,55 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { set } from 'lodash';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
-import { useDispatch } from 'react-redux';
-import Taps from 'components/Shared/Taps';
-import TabPanels from 'components/Shared/TabPanels';
-import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
-import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
-import RelatedDetailsDocumentTable from 'components/Table/Documents/RelatedDetailsDocumentTable';
-import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
-import TabButtons from 'components/Shared/TabPanels/TabButtons';
-import AgreementSummary from './AgreementSummary';
-import ProvisionsTab from './ProvisionsTab';
-import ShapeWellInterestTable from 'components/Table/Shape/ShapeWellInterestTable';
-import AssociatedWellsShapeTable from 'components/Table/Wells/AssociatedWellsShapeTable';
-import AgreementOwnersTractsTable from 'components/Table/Agreement/AgreementOwnersTractsTable';
-import AssociatedTractsShapeTable from 'components/Table/Wells/AssociatedTractsShapeTable';
-import Tags from 'components/Shared/Tagger';
-import { showSuccessMessage, showErrorMessage, showInfoMessage } from 'actions';
-import AgreementLegalDescriptionFields from 'components/Land/components/Agreements/detailComponents/legalDescription/FieldsSection';
-import { DrawerContextProvider } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
 
-import { copy } from 'components/Shared/functions';
-import { detailCardStyles } from '../style';
-import { GET_AGREEMENT_PROVISIONS } from 'graphQL/useQueryGetAgreementProvisions';
-import { GET_STANDARD_PROVISIONS } from 'graphQL/useQueryGetStandardProvisions';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { set } from 'lodash';
 import moment from 'moment';
-import { popupController } from 'hookstate/popupStateController';
-import { jobController } from 'hookstate/jobStateController';
-import { layerController } from 'hookstate/layerStateController';
+
+import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
+import RelatedTractsTable from 'components/Common/RelatedTables/Tracts';
+import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
+import { DrawerContextProvider } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
+import AgreementLegalDescriptionFields from 'components/Land/components/Agreements/detailComponents/legalDescription/FieldsSection';
 import MRTTable from 'components/MRTTable';
 import AgreementRelatedUnitsToolbar from 'components/MRTTable/TablesOverride/AgreementRelatedUnitsTable/AgreementRelatedUnitsToolbar';
+import PotentialShapeTractToolbar from 'components/MRTTable/TablesOverride/PotentialShapeTract/PotentialShapeTractToolbar';
+import { copy } from 'components/Shared/functions';
+import TabPanels from 'components/Shared/TabPanels';
+import Tags from 'components/Shared/Tagger';
+import Taps from 'components/Shared/Taps';
+
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
+import { GET_AGREEMENT_PROVISIONS } from 'graphQL/useQueryGetAgreementProvisions';
+import { GET_STANDARD_PROVISIONS } from 'graphQL/useQueryGetStandardProvisions';
+
+import { jobController } from 'hookstate/jobStateController';
+import { layerController } from 'hookstate/layerStateController';
+import { popupController } from 'hookstate/popupStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { showSuccessMessage, showErrorMessage, showInfoMessage } from 'actions';
+
+import { detailCardStyles } from '../style';
+import AgreementSummary from './AgreementSummary';
+import ProvisionsTab from './ProvisionsTab';
 
 export default function AgreementDetailCard(props) {
 	const dispatch = useDispatch();
 	const [selectedTab, setSelectedTab] = useState(0);
-	const [selectedWellTab, setWellSelectedTab] = useState(0);
-	const [selectedTractTab, setTractSelectedTab] = useState(0);
+
 	const [uniObj, setUniObj] = useState();
-	const [tractOwners, setTractOwners] = useState();
 	const [properties, setProperties] = useState();
+	const relatedTractsTableState = tableController('RelatedTractsTable').useState(['data']).stateValues;
 	const [updateCustomLayer, { data: updatedUnit }] = useMutation(UPDATECUSTOMLAYER);
+
+	const {
+		stateValues: { tabKey: selectedTableTab },
+	} = tableGlobalController.useState(['tabKey']);
 
 	const classes = detailCardStyles();
 	const history = useHistory();
@@ -64,6 +71,7 @@ export default function AgreementDetailCard(props) {
 				history.goBack();
 			}
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [history, uniObj]);
 
 	useEffect(() => {
@@ -72,18 +80,22 @@ export default function AgreementDetailCard(props) {
 			getCustomLayer({ variables: { id: props.id } });
 			getAgreementProvisions({ variables: { agreementId: props.id } });
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.id]);
 
 	useEffect(() => {
 		if (selectedTab === 0 || selectedTab === 1) {
 			getAgreementProvisions({ variables: { agreementId: props.id } });
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedTab]);
 
 	useEffect(() => {
 		if (dataCustomLayer && dataCustomLayer.customLayer) {
 			let shape = JSON.parse(dataCustomLayer.customLayer.shape);
-			if (dataCustomLayer.customLayer.shapeJson) shape = copy(dataCustomLayer.customLayer.shapeJson);
+			if (dataCustomLayer.customLayer.shapeJson) {
+				shape = copy(dataCustomLayer.customLayer.shapeJson);
+			}
 			setUniObj({
 				...dataCustomLayer.customLayer,
 				shape,
@@ -92,6 +104,7 @@ export default function AgreementDetailCard(props) {
 			let feature = shape;
 			feature.id = dataCustomLayer.customLayer?._id;
 			feature.properties.id = dataCustomLayer.customLayer?._id;
+			feature.identifier = 'Agreements';
 			popupController.updateState({
 				selectedShape: { ...shape.properties, feature, id: dataCustomLayer.customLayer._id },
 			});
@@ -102,6 +115,7 @@ export default function AgreementDetailCard(props) {
 			}
 			setProperties(shape.properties);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dataCustomLayer?.customLayer]);
 
 	useEffect(() => {
@@ -123,6 +137,7 @@ export default function AgreementDetailCard(props) {
 				dispatch(showErrorMessage('Failed to update unit'));
 			}
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [updatedUnit]);
 
 	const updateProperties = (e, field, value) => {
@@ -136,11 +151,13 @@ export default function AgreementDetailCard(props) {
 
 		const customLayer = {};
 		let shapeLabel = shape.properties.shapeLabel;
-		if (field === 'agreementNumber')
+		if (field === 'agreementNumber') {
 			shapeLabel = `${value}${shape.properties.agreementName ? `-${shape.properties.agreementName}` : ''}`;
+		}
 
-		if (field === 'agreementName')
+		if (field === 'agreementName') {
 			shapeLabel = `${shape.properties.agreementNumber ? `${shape.properties.agreementNumber}-` : ''}${value}`;
+		}
 
 		if (field === 'agreementType') {
 			customLayer.layer = value;
@@ -275,34 +292,76 @@ export default function AgreementDetailCard(props) {
 		[uniObj]
 	);
 
-	const DocumentHeader = () => {
-		const classes = detailCardStyles();
-		return (
-			<div className={classes.documentHeader}>
-				<DescriptionOutlinedIcon />
-				<span>Documents</span>
-			</div>
-		);
-	};
-
-	const WellHeader = ({ selectedWellTab, setWellSelectedTab }) => (
-		<TabButtons
-			labels={['Agreement Wells', 'Potential Wells']}
-			value={selectedWellTab}
-			setValue={n => {
-				setWellSelectedTab(n);
-			}}
-		/>
+	const RelatedDocumentsOverrideMeta = useMemo(
+		() => ({
+			maxTableHeight: 'calc(50vh - 100px)',
+			defaultFilters: [{ field: 'shapeObj._id', value: uniObj?._id }],
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: uniObj?._id },
+			},
+			customValue: { parentRecord: uniObj?._id },
+			columnReordering: false,
+		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[uniObj?._id]
 	);
 
-	const TractHeader = ({ selectedTractTab, setTractSelectedTab }) => (
-		<TabButtons
-			labels={['Agreement Tracts', 'Potential Tracts']}
-			value={selectedTractTab}
-			setValue={n => {
-				setTractSelectedTab(n);
-			}}
-		/>
+	const RelatedTractsOverrideMeta = useMemo(
+		() => ({
+			maxTableHeight: 'calc(50vh - 100px)',
+			tabLabels: ['Related Tracts', 'Potential Tracts'],
+			defaultFilters: [{ field: 'shape._id', value: uniObj?._id }],
+			customProps: { customLayer: uniObj, shapeType: 'Agreement' },
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: uniObj?._id },
+			},
+			customValue: { parentRecord: uniObj?._id },
+			columnReordering: false,
+		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[uniObj?._id]
+	);
+
+	const RelatedWellsOverrideMeta = useMemo(
+		() => ({
+			maxTableHeight: 'calc(50vh - 100px)',
+			tabLabels: ['Agreement Wells', 'Potential Wells'],
+			defaultFilters: [{ field: 'shape._id', value: uniObj?._id }],
+			customProps: { customLayer: uniObj, shapeType: 'Agreement' },
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: uniObj?._id },
+			},
+			customValue: { parentRecord: uniObj?._id },
+			columnReordering: false,
+		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[uniObj?._id]
+	);
+
+	const PotentialTractsOverrideMeta = useMemo(
+		() => ({
+			tabLabels: ['Related Tracts', 'Potential Tracts'],
+			defaultFilters: [
+				{
+					type: 'geo_intersects',
+					field: 'shapeJson.geometry',
+					value: uniObj?.shapeJson?.geometry,
+				},
+				{ field: 'layer.keyword', value: 'parcel' },
+			],
+			customProps: { customLayer: uniObj, shapeType: 'Agreement' },
+			excludeFields: ['tags.tag', 'comments'],
+			gridViewSettings: null,
+			fetchMetaData: null,
+			CustomToolBar: PotentialShapeTractToolbar,
+			isDeleteDisabled: true,
+			isExportDisabled: true,
+		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[uniObj?._id]
 	);
 
 	return uniObj ? (
@@ -348,7 +407,7 @@ export default function AgreementDetailCard(props) {
 								>
 									<Grid item xs={12} style={{ padding: '15px 5px 25px 0px' }}>
 										<AgreementLegalDescriptionFields
-											tractOwners={tractOwners}
+											tractOwners={relatedTractsTableState?.data?.rows}
 											agreementDetails={uniObj?.shape?.properties}
 											updateAgreement={updateCustomProperties}
 										/>
@@ -356,37 +415,18 @@ export default function AgreementDetailCard(props) {
 									{uniObj && (
 										<Grid item xs={12}>
 											<TabPanels
-												value={selectedTractTab}
+												value={selectedTableTab}
 												panels={[
-													<div className={showSummary ? classes.agreementSubContent : classes.subContent2}>
-														<AgreementOwnersTractsTable
-															setRecord={setTractOwners}
-															customLayer={uniObj}
+													<div>
+														<RelatedTractsTable
+															id="relatedTractsTable"
+															overrideMeta={RelatedTractsOverrideMeta}
 															shapeType="Agreement"
-															header={
-																<TractHeader
-																	selectedTractTab={selectedTractTab}
-																	setTractSelectedTab={setTractSelectedTab}
-																/>
-															}
-															dense
-															commentType="Ownership"
-															targetLabel="Tract"
+															customLayer={uniObj}
 														/>
 													</div>,
 													<div className={showSummary ? classes.subContent : classes.subContent2}>
-														<AssociatedTractsShapeTable
-															customLayer={uniObj}
-															shapeType="Agreement"
-															header={
-																<TractHeader
-																	selectedTractTab={selectedTractTab}
-																	setTractSelectedTab={setTractSelectedTab}
-																/>
-															}
-															setSelectedTab={setTractSelectedTab}
-															dense
-														/>
+														<MRTTable name="TractsTable" overrideMeta={PotentialTractsOverrideMeta} />
 													</div>,
 												]}
 											/>
@@ -399,47 +439,37 @@ export default function AgreementDetailCard(props) {
 							</div>,
 							<div style={{ overflow: 'overlay', maxHeight: 'calc(100vh - 285px)' }}>
 								<TabPanels
-									value={selectedWellTab}
+									value={selectedTableTab}
 									panels={[
 										<div className={showSummary ? classes.subContent : classes.subContent2}>
-											<ShapeWellInterestTable
-												customLayer={uniObj}
+											<RelatedWellsTable
+												id="relatedWellsTable"
+												overrideMeta={RelatedWellsOverrideMeta}
 												shapeType="Agreement"
-												parent="associatedWellsPerUnits"
-												targetLabel="well"
-												header={
-													<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />
-												}
-												showTracks
-												dense
+												customLayer={uniObj}
 											/>
 										</div>,
 										<div className={showSummary ? classes.subContent : classes.subContent2}>
-											<AssociatedWellsShapeTable
-												customLayer={uniObj}
-												shapeType="Agreement"
-												parent="associatedWellsPerUnits"
-												targetLabel="well"
-												header={
-													<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />
-												}
-												showTracks
-												setSelectedTab={setWellSelectedTab}
-												dense
+											<MRTTable
+												name="PotentialWellsTable"
+												overrideMeta={{
+													tabLabels: ['Agreement Wells', 'Potential Wells'],
+													customProps: {
+														customLayer: uniObj,
+														shapeType: 'Agreement',
+													},
+												}}
 											/>
 										</div>,
 									]}
 								/>
 							</div>,
 							<div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
-								<RelatedDetailsDocumentTable
-									customLayer={uniObj}
+								<RelatedDocumentsTable
+									id="relatedDocumentsTable"
+									moduleId={uniObj?._id}
+									overrideMeta={RelatedDocumentsOverrideMeta}
 									relatedObjectType="Shape"
-									name="Agreement"
-									header={<DocumentHeader />}
-									addAble={{ type: 'AgreementDocument' }}
-									dense
-									targetLabel="documents"
 								/>
 							</div>,
 						]}

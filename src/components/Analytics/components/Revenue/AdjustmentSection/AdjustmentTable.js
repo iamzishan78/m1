@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import CSVDownloader from 'react-csv-downloader';
+
+import { Box, Grid, IconButton, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -6,14 +9,12 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import ArrowDropRight from '@material-ui/icons/ArrowRight';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowDropRight from '@material-ui/icons/ArrowRight';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
-import { Box, Grid, IconButton, Tooltip } from '@material-ui/core';
-import CSVDownloader from 'react-csv-downloader';
 
-import vf_number from 'components/Shared/valueformatters/vf_number';
 import { convertAnalyticsDataToCSV } from 'components/Shared/M1nTable/components/MUIDataTable/utils';
+import vf_number from 'components/Shared/valueformatters/vf_number';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -104,7 +105,9 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
 		monthsInterval.forEach(month => {
 			let total = 0;
 			items.forEach(item => {
-				if (typeof item?.data?.[month] === 'object') total += item?.data?.[month]?.total;
+				if (typeof item?.data?.[month] === 'object') {
+					total += item?.data?.[month]?.total;
+				}
 			});
 
 			totalAdjustments.data[month] = total;
@@ -124,7 +127,7 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
 									<TableCell style={{ paddingLeft: 0 }}>
 										<CSVDownloader
 											datas={convertAnalyticsDataToCSV(csvItems, monthsInterval)}
-											filename={`Adjustments`}
+											filename={'Adjustments'}
 											type="link"
 										>
 											<IconButton style={{ display: 'flex', padding: '0 0 0 15px' }}>
@@ -230,7 +233,9 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
 									{monthsInterval.map(month => {
 										let total = 0;
 										items.forEach(item => {
-											if (typeof item.data[month] === 'object') total += item.data[month].total;
+											if (typeof item.data[month] === 'object') {
+												total += item.data[month].total;
+											}
 										});
 										return (
 											<TableCell className={classes.totalColCell} scope="row">

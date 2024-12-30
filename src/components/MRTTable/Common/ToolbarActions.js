@@ -1,14 +1,21 @@
 import React, { useEffect } from 'react';
-import { ToggleButton } from '@mui/material';
+
+import { Typography } from '@material-ui/core';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
-import { IconButton, Tooltip } from '@mui/material';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import GridView from 'components/MRTTable/Common/GridView';
-import TabHeader from 'components/MRSimpleTable/Common/TabHeader';
-import { globalStateController } from 'hookstate/globalStateController';
-import { excludeFilters } from './CommonToolBarActions';
+
+import { ToggleButton } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
+
 import _ from 'lodash';
+
+import GridView from 'components/MRTTable/Common/GridView';
+import TabHeader from 'components/MRTTable/Common/TabHeader';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { excludeFilters } from './CommonToolBarActions';
 
 function ToolbarActions({ table, tableKey, children }) {
 	const tableState = tableController(tableKey).useCompleteState();
@@ -26,8 +33,9 @@ function ToolbarActions({ table, tableKey, children }) {
 		tableStateValues?.isSelectAllAllowed &&
 		isAllRowsSelected &&
 		Object.keys(tableStateValues?.rowSelection)?.length === tableStateValues.data?.total
-	)
+	) {
 		tableController(tableKey).setIsAllRowsSelected(isAllRowsSelected);
+	}
 
 	useEffect(() => {
 		tableController(tableKey).setMrtTableRef(table);
@@ -86,9 +94,15 @@ function ToolbarActions({ table, tableKey, children }) {
 					selectedRows?.length > 0
 						? selectedRows.map(item => {
 								let val;
-								if (originalKey) val = _.get(item, originalKey);
-								if (func) val = func(val);
-								if (value) val = value;
+								if (originalKey) {
+									val = _.get(item, originalKey);
+								}
+								if (func) {
+									val = func(val);
+								}
+								if (value) {
+									val = value;
+								}
 								return val;
 							})
 						: null;
@@ -131,6 +145,9 @@ function ToolbarActions({ table, tableKey, children }) {
 					alignItems: 'center',
 				}}
 			>
+				<Typography variant="h5" style={{ fontWeight: 'bold', marginRight: '5px' }}>
+					{tableStateValues.tableHeading}
+				</Typography>
 				<TabHeader labels={tableStateValues.tabLabels} />
 				{tableStateValues.gridViewSettings && !isSomethingSelected && (
 					<GridView tableKey={tableKey} {...tableStateValues.gridViewSettings} />
@@ -140,11 +157,10 @@ function ToolbarActions({ table, tableKey, children }) {
 				<div
 					style={{
 						display: 'flex',
-						height: '32px',
+						height: '75%',
 						gap: '0.5rem',
-						minHeight: '32px',
-						maxHeight: '80px',
-						marginTop: '8px',
+						marginTop: 'auto',
+						marginBottom: 'auto',
 					}}
 				>
 					{children}
@@ -180,7 +196,7 @@ function ToolbarActions({ table, tableKey, children }) {
 					</IconButton>
 				)}
 
-				{isSomethingSelected && !!!tableStateValues.isDeleteDisabled && (
+				{isSomethingSelected && !tableStateValues.isDeleteDisabled && (
 					<IconButton aria-label="delete" data-testid="delete-icon-button" onClick={() => handleDelete()}>
 						<Tooltip title="Delete">
 							<DeleteIcon />

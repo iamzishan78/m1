@@ -1,9 +1,10 @@
+import { intersect, area } from '@turf/turf';
 import mapboxgl from 'mapbox-gl';
 
-import { popupController } from 'hookstate/popupStateController';
-import { filterUniqueFeatures, getClickedFeature } from './common';
-import { intersect, area } from '@turf/turf';
 import { layerController } from 'hookstate/layerStateController';
+import { popupController } from 'hookstate/popupStateController';
+
+import { filterUniqueFeatures, getClickedFeature } from './common';
 
 const onRightClick = ({ x, y, coordinate }) => {
 	popupController.updateState({
@@ -28,7 +29,9 @@ const onRightClick = ({ x, y, coordinate }) => {
 		const layers = window.mapRef?.__deck?.layerManager?.layers?.filter(l => layerIds.includes(l.props.id)) || [];
 
 		layers.forEach(layer => {
-			if (!layer?.props?.data) return;
+			if (!layer?.props?.data) {
+				return;
+			}
 
 			const featuresIntersecting = layer.props.data.filter(feature => {
 				try {
@@ -55,14 +58,16 @@ const onRightClick = ({ x, y, coordinate }) => {
 			}
 		});
 
-		if (layersIntersecting.length > 0) features = filterUniqueFeatures(layersIntersecting);
+		if (layersIntersecting.length > 0) {
+			features = filterUniqueFeatures(layersIntersecting);
+		}
 	}
 
 	setTimeout(() => {
 		new mapboxgl.Popup({ offset: 0, closeOnClick: false })
 			.setLngLat(coordinate)
 			.setMaxWidth('none')
-			.setHTML(`<div id="popupContainer"></div>`)
+			.setHTML('<div id="popupContainer"></div>')
 			.addTo(window.mapRef);
 
 		popupController.updateState({

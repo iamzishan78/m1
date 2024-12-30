@@ -1,17 +1,22 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import Agreements from 'components/Shared/svgIcons/agreements';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import Grid from '@material-ui/core/Grid';
-import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
-import { formatDate } from 'components/Shared/functions';
-import { tableGlobalController } from 'hookstate/tableController';
-import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
-import { globalStateController } from 'hookstate/globalStateController';
-import { copy } from 'utils/helper';
+
 import _ from 'lodash';
+
 import Loader from 'components/Loaders';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import AgreementToolBar from 'components/MRTTable/TablesOverride/AgreementTable/AgreementToolbar';
+import { formatDate } from 'components/Shared/functions';
+import Agreements from 'components/Shared/svgIcons/agreements';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { copy } from 'utils/helper';
 
 const esIndex = 'shapes_flat';
 
@@ -117,8 +122,11 @@ const AgreementMeta = {
 				value = value?.toString();
 				const splitNumber = value?.split('_');
 				let link = '';
-				if (window.location.pathname.includes('/land/')) link = `/land/agreement/details/${row?.original?._id}`;
-				else link = `/map/${layer}s/${row?.original?._id}`;
+				if (window.location.pathname.includes('/land/')) {
+					link = `/land/agreement/details/${row?.original?._id}`;
+				} else {
+					link = `/map/${layer}s/${row?.original?._id}`;
+				}
 				return (
 					<div
 						style={{

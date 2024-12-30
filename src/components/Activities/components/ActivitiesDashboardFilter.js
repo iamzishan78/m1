@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+
 import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
+
 import moment from 'moment';
 
 import ActivitiesFilters from './ActivitiesFilters';
@@ -47,17 +49,20 @@ const ActivitiesDashboardFilter = ({
 
 	const [fromDate, setFromDate] = useState(null);
 	const [toDate, setToDate] = useState(null);
-	const [campaignName, setCampaignName] = useState('');
+	const [campaigns, setCampaigns] = useState('');
 	const [qualifier, setQualifier] = useState('');
 
 	useEffect(() => {
 		setFromDate(`${moment(minDate).startOf('month').format('yyyy-MM-DD')}`);
 	}, [minDate]);
 	useEffect(() => {
-		if (fromDate == 'Invalid date' || toDate == 'Invalid date') return;
-		setAppliedFilters({ fromDate, toDate, campaignName, qualifier });
+		if (fromDate === 'Invalid date' || toDate === 'Invalid date') {
+			return;
+		}
+		setAppliedFilters({ fromDate, toDate, campaigns, qualifier });
 		setFilterToggle(prev => !prev);
-	}, [fromDate, toDate, campaignName, qualifier]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [fromDate, toDate, campaigns, qualifier]);
 	return (
 		<div className={classes.actionBar}>
 			<Grid container direction="row" display="flex" justify="space-between" style={{ padding: '0px 36px 0px 45px' }}>
@@ -69,8 +74,8 @@ const ActivitiesDashboardFilter = ({
 						toDate={toDate}
 						setToDate={setToDate}
 						minDate={minDate}
-						campaignName={campaignName}
-						setCampaignName={setCampaignName}
+						campaigns={campaigns}
+						setCampaigns={setCampaigns}
 						qualifier={qualifier}
 						setQualifier={setQualifier}
 						esIndex={esIndex}

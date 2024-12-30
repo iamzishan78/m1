@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { Switch, Route, useLocation, Redirect } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { Switch, Route, useLocation, Redirect } from 'react-router-dom';
 
-import QuickActionPanel from 'components/Land/components/QuickActionPanel';
 import * as Components from 'components/Land/components';
+import QuickActionPanel from 'components/Land/components/QuickActionPanel';
 import { replaceLinkId } from 'components/Shared/functions';
 
 //Actions
@@ -111,7 +111,7 @@ export default function Land() {
 						component={Components[SIDE_PANEL_MENU_ITEMS_LIST[option].component]}
 					/>
 				))}
-				<Redirect to={`/land/agreements`} />
+				<Redirect to={'/land/agreements'} />
 			</Switch>
 		</QuickActionPanel>
 	);

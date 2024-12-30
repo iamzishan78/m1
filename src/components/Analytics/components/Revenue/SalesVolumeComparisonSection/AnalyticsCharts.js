@@ -1,10 +1,11 @@
 import React from 'react';
+
 import { Grid } from '@material-ui/core';
 
-import { WellCardContextProvider } from 'components/WellCard/WellCardContext';
-import { WellProdChartContextProvider } from 'components/WellProdChart/WellProdChartContext';
 import OverShortComparison from 'components/Analytics/components/Revenue/SalesVolumeComparisonSection/OverShortComparison';
 import MonthlyProductionChart from 'components/Revenue/components/Properties/DetailComponents/Validation/MonthlyProductionChart';
+import { WellCardContextProvider } from 'components/WellCard/WellCardContext';
+import { WellProdChartContextProvider } from 'components/WellProdChart/WellProdChartContext';
 
 const AnalyticsCharts = ({ esFilters, propertiesIds, checkDetailsData }) => {
 	const [wellProductionData, setWellProductionData] = React.useState([]);

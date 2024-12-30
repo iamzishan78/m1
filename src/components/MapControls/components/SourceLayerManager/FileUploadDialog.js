@@ -1,24 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import { Box, Checkbox, FormControlLabel } from '@material-ui/core';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { globalStateController } from 'hookstate/globalStateController';
-import { getFileExtension, uploadFileData } from 'components/Shared/functions';
-import { ADDFILE } from 'graphQL/useMutationAddFile';
-import { useApolloClient, useMutation } from '@apollo/client';
-import { getDefaultSettings, SimpleOrShapeFileImport } from './fileUploadHelper';
-import { GET_DATASET_UPLOAD_STATE } from 'graphQL/useQueryDataset';
-import { CheckBox, CheckBoxOutlineBlank } from '@material-ui/icons';
-import { showErrorMessage } from 'actions';
 import { useDispatch } from 'react-redux';
-import { CREATE_DATASET_LAYERS } from 'graphQL/useMutationDataset';
+
+import { Box, Checkbox, FormControlLabel } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import { CheckBox, CheckBoxOutlineBlank } from '@material-ui/icons';
+
+import { useApolloClient, useMutation } from '@apollo/client';
 import { v4 as uuid } from 'uuid';
+
+import { getFileExtension, uploadFileData } from 'components/Shared/functions';
+
+import { ADDFILE } from 'graphQL/useMutationAddFile';
+import { CREATE_DATASET_LAYERS } from 'graphQL/useMutationDataset';
+import { GET_DATASET_UPLOAD_STATE } from 'graphQL/useQueryDataset';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+
+import { showErrorMessage } from 'actions';
+
+import { getDefaultSettings, SimpleOrShapeFileImport } from './fileUploadHelper';
 
 const FileUploadDialog = () => {
 	const client = useApolloClient();
@@ -146,7 +153,9 @@ const FileUploadDialog = () => {
 	};
 
 	const handleApplyChanges = () => {
-		if (!dataset) return handleCreateDataset();
+		if (!dataset) {
+			return handleCreateDataset();
+		}
 
 		handleCreateLayers();
 	};
@@ -160,7 +169,9 @@ const FileUploadDialog = () => {
 	};
 
 	useEffect(() => {
-		if (!dataset?.categories) return;
+		if (!dataset?.categories) {
+			return;
+		}
 
 		setLayerNames(dataset.categories.map(c => c.name));
 	}, [dataset]);

@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { get } from 'lodash';
+import { Controller } from 'react-hook-form';
+
 import { Grid, TextField, InputAdornment, Select, MenuItem } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { Controller } from 'react-hook-form';
+
 import { useLazyQuery } from '@apollo/client';
+import { get } from 'lodash';
+import _ from 'lodash';
 
 import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
 import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
-import _ from 'lodash';
+
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+
 import { jobController } from 'hookstate/jobStateController';
 
 const useStyles = makeStyles(theme => ({
@@ -55,7 +59,9 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
 	const [searchOperator, setSearchOperator] = useState('');
 
 	useEffect(() => {
-		if (uploaderFormValues) reset(uploaderFormValues);
+		if (uploaderFormValues) {
+			reset(uploaderFormValues);
+		}
 		return () => {
 			const values = getValues();
 			Object.keys(values).forEach(key => {

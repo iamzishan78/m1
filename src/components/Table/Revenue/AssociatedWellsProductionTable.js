@@ -1,14 +1,16 @@
 import React, { useEffect } from 'react';
+
+import { Container } from '@material-ui/core';
+
 import moment from 'moment';
 // context
-import { Container } from '@material-ui/core';
-import Table from 'components/Shared/M1nTable/components/Table';
-import TableESHOC from 'components/Table/TableESHOC';
 
 import { deepEqualObjects, copy } from 'components/Shared/functions';
+import Table from 'components/Shared/M1nTable/components/Table';
+import TableHeader from 'components/Table/constants/production-detail-header-schema';
+import TableESHOC from 'components/Table/TableESHOC';
 
 // Header Schemas
-import TableHeader from 'components/Table/constants/production-detail-header-schema';
 
 // Utilities
 import { usetableStyles } from '../Styles';

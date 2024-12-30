@@ -1,9 +1,7 @@
-import React, { useState, useRef, useEffect, useContext, useMemo } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import { debounce, get } from 'lodash';
 
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { makeStyles, withStyles } from '@material-ui/styles';
 import {
 	Typography,
 	IconButton,
@@ -22,28 +20,38 @@ import {
 	MoreHoriz as MoreHorizIcon,
 	Delete as DeleteIcon,
 } from '@material-ui/icons';
+import { makeStyles, withStyles } from '@material-ui/styles';
 
-import { UPSERT_USER_DESCRIPTOR } from 'graphQL/useMutationUserDescriptor';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { get } from 'lodash';
+
+import AddNewRelatedAgreementDialog from 'components/Land/components/Agreements/detailComponents/relatedAgreements/AddNewRelatedAgreementDialog';
+import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
+import NavHeader from 'components/Revenue/components/Common/NavHeader';
+import Validation from 'components/Revenue/components/Properties/DetailComponents/Validation';
+import DocViewer from 'components/Shared/DocViewer';
+import { copy } from 'components/Shared/functions';
+import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import Tags from 'components/Shared/Tagger';
+
 import { UPDATE_PROPERTY } from 'graphQL/useMutationUpdateProperty';
-import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
+import { UPSERT_USER_DESCRIPTOR } from 'graphQL/useMutationUserDescriptor';
 import { GET_PROPERTY } from 'graphQL/useQueryGetProperty';
+import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
+
+import { detailCardController } from 'hookstate/detailCardController';
+
+import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
+import { ConvertOwnerToContactContainer } from 'store/containers/entity';
+
+import { getIdFromPath } from 'utils/helper';
+
 import { AppContext } from 'AppContext';
 
 // Components
-import Tags from 'components/Shared/Tagger';
-import PropertyInterestDetailsSection from './PropertyInterestDetailsSection';
-import InterestDetailForm from './InterestDetailForm';
-import { ConvertOwnerToContactContainer } from 'store/containers/entity';
 import HeaderSection from './HeaderSection';
-import NavHeader from 'components/Revenue/components/Common/NavHeader';
-import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
-import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-import DocViewer from 'components/Shared/DocViewer';
-
-import AddNewRelatedAgreementDialog from 'components/Land/components/Agreements/detailComponents/relatedAgreements/AddNewRelatedAgreementDialog';
-import Validation from 'components/Revenue/components/Properties/DetailComponents/Validation';
-import { getIdFromPath } from 'utils/helper';
+import InterestDetailForm from './InterestDetailForm';
+import PropertyInterestDetailsSection from './PropertyInterestDetailsSection';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -75,7 +83,7 @@ const useStyles = makeStyles(theme => ({
 	highlighter: {
 		background: '#263451',
 		padding: '5px 16px',
-		borderRadius: 16,
+		borderRadius: 5,
 		width: 'max-content',
 		transform: 'translateX(5px) translateY(11px)',
 		height: '32px',
@@ -224,6 +232,9 @@ export default function DetailComponents(props) {
 	const history = useHistory();
 	const [stateApp, setStateApp] = useContext(AppContext);
 
+	const { stateValues } = detailCardController.useState(['summaryData']);
+	const propertyData = stateValues.summaryData;
+
 	const propertyId = getIdFromPath(history.location.pathname);
 	const [propertyOwnerContact, setPropertyOwnerContacts] = useState([]);
 	const [showInterestDetails, setShowInterestDetails] = useState(false);
@@ -235,7 +246,6 @@ export default function DetailComponents(props) {
 	const selectedTabRef = useRef(null);
 	const [collapse, setCollapse] = useState(true);
 	const [anchorEl, setAnchorEl] = useState();
-	const [isButtonScroll, setButtonScroll] = useState(false);
 	const [propertyDetails, setProperty] = useState(null);
 	const [entityToConvert, setEntityToConvert] = useState(null);
 	const [isNewAgmt, setNewAgmtState] = useState(false);
@@ -260,7 +270,27 @@ export default function DetailComponents(props) {
 	}, [getProperty, propertyId]);
 
 	useEffect(() => {
-		if (getPropertyResult) setProperty(getPropertyResult?.getProperty.property);
+		if (getPropertyResult) {
+			setProperty(getPropertyResult?.getProperty.property);
+			const propertyData = getPropertyResult?.getProperty.property;
+
+			detailCardController.updateState({
+				summaryData: copy({ ...propertyData, systemId: propertyData?._id }),
+			});
+
+			const idsArray = [];
+			if (propertyData?.owner) {
+				idsArray.push(propertyData.owner?._id);
+			}
+			if (propertyData?.operator) {
+				idsArray.push(propertyData?.operator?._id);
+			}
+			if (idsArray.length > 0) {
+				checkIfOwnersAreContacts({
+					variables: { idsArray },
+				});
+			}
+		}
 		setStateApp(state => ({
 			...state,
 			selectedRevenueProperty: getPropertyResult?.getProperty.property,
@@ -278,12 +308,17 @@ export default function DetailComponents(props) {
 
 	useEffect(() => {
 		const idsArray = [];
-		if (propertyDetails?.owner) idsArray.push(propertyDetails.owner._id);
-		if (propertyDetails?.operator) idsArray.push(propertyDetails.operator._id);
-		if (idsArray.length > 0)
+		if (propertyDetails?.owner) {
+			idsArray.push(propertyDetails.owner._id);
+		}
+		if (propertyDetails?.operator) {
+			idsArray.push(propertyDetails.operator._id);
+		}
+		if (idsArray.length > 0) {
 			checkIfOwnersAreContacts({
 				variables: { idsArray },
 			});
+		}
 	}, [propertyDetails, refetchContacts]);
 
 	useEffect(() => {
@@ -295,17 +330,21 @@ export default function DetailComponents(props) {
 					entityId: c._id,
 				}))
 			);
+			const owner = checkIfOwnersAreContactsData?.ifAreContacts.map(c => ({
+				contactId: c.isContact,
+				name: c.name,
+				_id: c._id,
+			}));
+			const updatePropertyData = {
+				...propertyData,
+				owner: owner[0],
+			};
+
+			detailCardController.updateState({
+				summaryData: updatePropertyData,
+			});
 		}
 	}, [checkIfOwnersAreContactsData]);
-
-	const handleScroll = e => {
-		if (!isButtonScroll) {
-			const { scrollTop } = e.target;
-			if (scrollTop <= 150 && tab !== 0) setTab(0);
-			else if (scrollTop > 150 && tab !== 1) setTab(1);
-		}
-		handleEndScroll();
-	};
 
 	const deleteFunc = ids => {
 		if (ids.length > 0) {
@@ -324,10 +363,8 @@ export default function DetailComponents(props) {
 		}
 	};
 
-	const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
-
 	const onUpdateMetaData = data => {
-		if (data.owner)
+		if (data.owner) {
 			updateMetaOwner({
 				variables: {
 					descriptorObject: data.owner,
@@ -336,7 +373,7 @@ export default function DetailComponents(props) {
 					relatedObjectType: 'Property',
 				},
 			});
-		else {
+		} else {
 			updateProperty({
 				variables: {
 					property: {
@@ -502,13 +539,13 @@ export default function DetailComponents(props) {
 			</div>
 			<Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)} fullWidth={true} maxWidth={'sm'}>
 				<DeleteConfirmationDialogContent
-					header={`Delete Property`}
+					header={'Delete Property'}
 					onClose={() => setOpenDeleteDialog(false)}
 					deleteFunc={deleteFunc}
 					m1nSelectedRowsIds={[propertyDetails?._id]}
 					setM1nSelectedRowsIndexes={() => {}}
 				>
-					{`Do you want to delete this property?`}
+					{'Do you want to delete this property?'}
 				</DeleteConfirmationDialogContent>
 			</Dialog>
 			{/**

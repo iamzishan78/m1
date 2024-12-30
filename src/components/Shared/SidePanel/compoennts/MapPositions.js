@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
-
 import { useForm, Controller } from 'react-hook-form';
-import { withStyles } from '@material-ui/styles';
+
 import { Grid, Typography, FormControl, InputLabel, InputBase, Button } from '@material-ui/core';
-import { useStyles } from './style';
-import { mapStateController } from 'hookstate/mapStateController';
+import { withStyles } from '@material-ui/styles';
+
 import { globalStateController } from 'hookstate/globalStateController';
+import { mapStateController } from 'hookstate/mapStateController';
+
+import { useStyles } from './style';
+
 const BootstrapInput = withStyles(theme => ({
 	root: {
 		'label + &': {
@@ -68,8 +71,11 @@ export default function MapPositions(props) {
 
 	useEffect(() => {
 		const regExp = /[a-zA-Z]/g;
-		if (regExp.test(center)) setCenterError(true);
-		else setCenterError(false);
+		if (regExp.test(center)) {
+			setCenterError(true);
+		} else {
+			setCenterError(false);
+		}
 	}, [center]);
 
 	const getVars = mapVars => {
@@ -123,7 +129,13 @@ export default function MapPositions(props) {
 	return (
 		<div className={classes.mapPositionSection}>
 			<hr style={{ border: '1px solid #263451', borderRadius: '5px', marginTop: '20px', marginBottom: '20px' }} />
-			<Typography variant="subtitle1">Default Map Position</Typography>
+			<Grid container justifyContent="space-between" alignItems="center">
+				<Typography variant="subtitle1">Default Map Position</Typography>
+				<Button color="secondary" variant="outlined" onClick={handleSubmit(submitFunc)}>
+					Save Default
+				</Button>
+			</Grid>
+
 			<Grid
 				container
 				direction="row"
@@ -152,11 +164,6 @@ export default function MapPositions(props) {
 						error={centerError}
 						helperText={centerError ? 'Invalid Value' : ''} // helper text for errors
 					/>
-				</Grid>
-				<Grid item>
-					<Button color="secondary" variant="outlined" onClick={handleSubmit(submitFunc)}>
-						Save Default
-					</Button>
 				</Grid>
 			</Grid>
 		</div>

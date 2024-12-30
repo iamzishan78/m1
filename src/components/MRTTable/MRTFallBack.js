@@ -1,8 +1,10 @@
 import React, { useMemo, memo } from 'react';
+
 // Importing React, useMemo for memoization, and memo for optimizing the component by preventing unnecessary re-renders.
+import MRTTable from 'components/MRTTable';
+
 import { tableController } from 'hookstate/tableController';
 // Importing tableController from hookstate to manage and control the state of the table.
-import MRTTable from 'components/MRTTable';
 // Importing the MRTTable component to render the table.
 
 function MRTFallback({ tableKey, error, resetErrorBoundary }) {

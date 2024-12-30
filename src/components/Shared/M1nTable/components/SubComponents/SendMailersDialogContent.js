@@ -1,27 +1,32 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useMutation } from '@apollo/client';
-import { withStyles } from '@material-ui/core/styles';
-import { Grid } from '@material-ui/core';
-import { Modals } from 'styles/Modal';
-import DialogActions from '@material-ui/core/DialogActions';
-import FormLabel from '@material-ui/core/FormLabel';
-import Button from '@material-ui/core/Button';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import IconButton from '@material-ui/core/IconButton';
-import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
-import Typography from '@material-ui/core/Typography';
-import DialogContent from '@material-ui/core/DialogContent';
-import TextField from '@material-ui/core/TextField';
-import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
-import CircularProgress from '@material-ui/core/CircularProgress';
 
-import { showSuccessMessage, showErrorMessage } from 'actions';
-import { UPLOADRECIPIENTS } from 'graphQL/useMutationUploadStorefrontRecipientsList';
+import { Grid } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import FormLabel from '@material-ui/core/FormLabel';
+import IconButton from '@material-ui/core/IconButton';
+import { withStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
+import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
+
+import { useMutation } from '@apollo/client';
 
 // import value formatters
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
+
+import { UPLOADRECIPIENTS } from 'graphQL/useMutationUploadStorefrontRecipientsList';
+
 import { globalStateController } from 'hookstate/globalStateController';
+
+import { Modals } from 'styles/Modal';
+
+import { showSuccessMessage, showErrorMessage } from 'actions';
 
 const styles = theme => ({
 	root: {
@@ -152,7 +157,9 @@ export default function SendMailersDialogContent(props) {
 													reducedRows.splice(index, 1);
 													props.setRows(reducedRows);
 
-													if (reducedRows.length === 0) props.onClose();
+													if (reducedRows.length === 0) {
+														props.onClose();
+													}
 												}}
 											/>
 										</FormLabel>

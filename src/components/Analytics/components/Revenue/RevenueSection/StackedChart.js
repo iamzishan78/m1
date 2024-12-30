@@ -1,7 +1,9 @@
 import React from 'react';
+
 import { makeStyles } from '@material-ui/core/styles';
-import * as am4core from '@amcharts/amcharts4/core';
+
 import * as am4charts from '@amcharts/amcharts4/charts';
+import * as am4core from '@amcharts/amcharts4/core';
 import am4themes_animated from '@amcharts/amcharts4/themes/animated';
 
 const { useEffect, useState } = React;
@@ -32,9 +34,11 @@ const StackedAreaChart = ({ id = 'chartDiv2', items, monthsInterval }) => {
 			_data.push({ month: formattedDate });
 
 			items.forEach(item => {
-				if (typeof item.data[month] === 'object')
+				if (typeof item.data[month] === 'object') {
 					_data[index][item.name.toUpperCase()] = item.data[month]?.total?.toFixed(2) || 0;
-				else _data[index][item.name.toUpperCase()] = item.data[month]?.toFixed(2) || 0;
+				} else {
+					_data[index][item.name.toUpperCase()] = item.data[month]?.toFixed(2) || 0;
+				}
 			});
 		});
 		setData(_data);
@@ -49,8 +53,8 @@ const StackedAreaChart = ({ id = 'chartDiv2', items, monthsInterval }) => {
 		chart.data = data;
 
 		// Short the data based on the dates
-		chart.events.on('beforedatavalidated', function (ev) {
-			chart.data.sort(function (a, b) {
+		chart.events.on('beforedatavalidated', ev => {
+			chart.data.sort((a, b) => {
 				return new Date(a.month) - new Date(b.month);
 			});
 		});

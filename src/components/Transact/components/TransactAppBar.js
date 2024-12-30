@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+
 import { Typography, AppBar, Button, ButtonGroup, Tooltip, IconButton } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { Launch } from '@material-ui/icons';
 import Add from '@material-ui/icons/Add';
-import { makeStyles } from '@material-ui/core/styles';
-import { setFlowState } from 'actions';
-import PipelineCustomDialog from './PipelineCustomizeDialog';
 import SettingsIcon from '@material-ui/icons/Settings';
 
-import { useSelector, useDispatch } from 'react-redux';
+import { setFlowState } from 'actions';
+
+import PipelineCustomDialog from './PipelineCustomizeDialog';
 import vf_currency from '../../Shared/valueformatters/vf_currency.js';
 
 const useStyles = makeStyles(theme => ({
@@ -173,7 +175,9 @@ const sumDeals = (lanes, status) => {
 	lanes.forEach(deal => {
 		deal.cards.forEach(card => {
 			if (card.metadata.status === status && !card.metadata.IsDeleted) {
-				if (card.label && !isNaN(card.label)) sumAmount += card.label;
+				if (card.label && !isNaN(card.label)) {
+					sumAmount += card.label;
+				}
 				// parseFloat(card.label.split("$").join("").split(",").join(""));
 				sumCount++;
 			}

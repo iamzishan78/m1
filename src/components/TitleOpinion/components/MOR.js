@@ -1,9 +1,11 @@
 import React, { useContext } from 'react';
-import { TitleOpinionContext } from '../TitleOpinionContext';
+
 import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+
+import { TitleOpinionContext } from '../TitleOpinionContext';
 import Section from './Section';
 import SectionTable from './SectionTable';
-import TextField from '@material-ui/core/TextField';
 
 const useStyles = makeStyles(theme => ({
 	MSWrapper: {

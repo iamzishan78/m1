@@ -1,11 +1,15 @@
 import React, { useState, useContext, useEffect } from 'react';
+
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
 import { useLazyQuery } from '@apollo/client';
 import { debounce } from 'lodash';
 
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+
 import { navController } from 'hookstate/navStateController';
+
 import { NavigationContext } from '../NavigationContext';
 
 export default function OperatorFilterJ() {

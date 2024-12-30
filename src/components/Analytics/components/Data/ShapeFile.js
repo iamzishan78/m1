@@ -1,22 +1,27 @@
-import { Box } from '@mui/material';
-import MRTTable from 'components/MRTTable';
 import React, { useMemo, useState } from 'react';
-import DatasetsAutoCompleteFilter from './DatasetsAutoCompleteFilter';
+
+import { Box } from '@mui/material';
+
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+import MRTTable from 'components/MRTTable';
+
 import { tableGlobalController } from 'hookstate/tableController';
+
+import DatasetsAutoCompleteFilter from './DatasetsAutoCompleteFilter';
 
 const ShapeFile = () => {
 	const [dataset, setDataset] = useState(null);
 
 	const {
 		stateValues: { tabKey },
-	} = simpleTableGlobalController.useState(['tabKey']);
+	} = tableGlobalController.useState(['tabKey']);
 
 	const subFiles = useMemo(() => {
-		if (!dataset) return null;
+		if (!dataset) {
+			return null;
+		}
 
-		simpleTableGlobalController.setSelectedTab(0);
+		tableGlobalController.setSelectedTab(0);
 
 		const ds = {
 			_id: dataset._id,

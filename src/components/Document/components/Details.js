@@ -1,29 +1,34 @@
 import React, { useEffect, useState, Fragment } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+
+import { IconButton, TextField, withStyles } from '@material-ui/core';
+import { Typography, Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import { AppContext } from 'AppContext';
-import { Typography, Grid } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import DeleteIcon from '@material-ui/icons/Delete';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery } from '@apollo/client';
 import loadashFilter from 'lodash/filter';
 import get from 'lodash/get';
 
-import { IconButton, TextField, withStyles } from '@material-ui/core';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import UploadZone from '../../Shared/UploadZone';
-import Tooltip from '@material-ui/core/Tooltip';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import DeleteIcon from '@material-ui/icons/Delete';
-import joinAddress from 'components/Shared/valueformatters/join-address.js';
-import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
-import { useLazyQuery } from '@apollo/client';
-import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
-import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import GenericDateField from 'components/Shared/components/Fields/GenericDateFIeld';
 
 // functions
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
 import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
+import joinAddress from 'components/Shared/valueformatters/join-address.js';
+
+import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
+
+import { AppContext } from 'AppContext';
+
+import UploadZone from '../../Shared/UploadZone';
 
 const filter = createFilterOptions();
 
@@ -305,7 +310,9 @@ export default function DocumentDetails(props) {
 				refetchQueries: ['getParcelFiles', 'getParcelFilesCount'],
 				awaitRefetchQueries: true,
 			}).then(() => {
-				if (props?.refetchData) props.refetchData({ ...document });
+				if (props?.refetchData) {
+					props.refetchData({ ...document });
+				}
 				setFileData(null);
 				setStateApp({
 					...stateApp,
@@ -876,15 +883,19 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 					return option.name;
 				}
 
-				if (option?.name) return option.name;
-				else return '';
+				if (option?.name) {
+					return option.name;
+				} else {
+					return '';
+				}
 			}}
 			getOptionSelected={(option, value) => {
 				return option?._id === value?._id;
 			}}
 			renderOption={option => {
-				if (option._id === 'newEntity')
+				if (option._id === 'newEntity') {
 					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+				}
 
 				return (
 					<Grid container spacing={0}>
@@ -921,9 +932,14 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 			}}
 			onChange={(event, newValue) => {
 				if (newValue && newValue._id) {
-					if (newValue._id !== 'newEntity') setDocumentType(newValue);
-					else setDocumentType({ _id: 'newEntity', name: newValue.name });
-				} else setDocumentType('');
+					if (newValue._id !== 'newEntity') {
+						setDocumentType(newValue);
+					} else {
+						setDocumentType({ _id: 'newEntity', name: newValue.name });
+					}
+				} else {
+					setDocumentType('');
+				}
 			}}
 			renderInput={params => (
 				<TextField

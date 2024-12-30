@@ -4,7 +4,9 @@ export default fn => {
 	// Seems like webpack compiles this in a way we can't use "arguments" here.
 	// So, three of args are enough for now.
 	return (arg1, arg2, arg3) => {
-		if (running) return;
+		if (running) {
+			return;
+		}
 
 		running = true;
 

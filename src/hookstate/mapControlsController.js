@@ -1,4 +1,5 @@
 import { hookStateController } from 'hookstate/hookStateController';
+
 import { mapControls, mapControlsInitialState } from './initialStates';
 
 const mapControlsControllerHandler = state => ({

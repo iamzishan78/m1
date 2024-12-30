@@ -1,27 +1,35 @@
 import React, { useState, useEffect, useContext, useMemo } from 'react';
-import { useLazyQuery, useMutation } from '@apollo/client';
+
 import { Grid, IconButton, Divider, FormControlLabel, Switch, Tooltip, ClickAwayListener } from '@material-ui/core';
 import { Close as CloseIcon } from '@material-ui/icons';
-import { UPDATELAYERSETTINGS } from '../../../../graphQL/useMutationUpdateLayerSettings';
 import GridOnIcon from '@material-ui/icons/GridOn';
-import { getLayerColor } from 'components/Shared/SidePanel/compoennts/common';
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent.js';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
-import { LAYERS_FEATURES_COUNT } from 'graphQL/useQueryLayerFeaturesCount';
-import { useLayerStyle, useStyles, WidthPicker } from './Common';
-import { globalStateController } from 'hookstate/globalStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { layerController } from 'hookstate/layerStateController';
+
 import { Typography } from '@mui/material';
 import { Slider, TextField, Box } from '@mui/material';
-import { colorBasedAttributes } from './LayerAttributes/ColorBasedAttributes';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+import _ from 'lodash';
+
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent.js';
+import { getLayerColor } from 'components/Shared/SidePanel/compoennts/common';
+
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
+import { LAYERS_FEATURES_COUNT } from 'graphQL/useQueryLayerFeaturesCount';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { getLayerKey } from 'hookstate/helpers';
+import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+
 import { AppContext } from 'AppContext';
+
+import { useLayerStyle, useStyles, WidthPicker } from './Common';
 import AttrsAutocomplete from './LayerAttributes/AttrsAutocomplete';
 import AttrsValuesDropdown from './LayerAttributes/AttrsValuesDropdown';
-import { getLayerKey } from 'hookstate/helpers';
-import _ from 'lodash';
-import { GET_SHAPE_FILE_SCHEMA } from 'graphQL/useQueryGetShapeFileSchema';
+import { colorBasedAttributes } from './LayerAttributes/ColorBasedAttributes';
+import { UPDATELAYERSETTINGS } from '../../../../graphQL/useMutationUpdateLayerSettings';
 
 function LayerStyling() {
 	const classes = useStyles();
@@ -73,20 +81,22 @@ function LayerStyling() {
 
 	// Getting meta data for selected layer
 	useEffect(() => {
-		if (selectedLayer?._id)
+		if (selectedLayer?._id) {
 			getShapeFileSchema({
 				variables: {
 					layerId: selectedLayer?.layerId,
 				},
 			});
+		}
 
-		if (colorBasedAttributes[getLayerKey(selectedLayer?.identifier, colorBasedAttributes)]?.layerKey)
+		if (colorBasedAttributes[getLayerKey(selectedLayer?.identifier, colorBasedAttributes)]?.layerKey) {
 			getMetaData({
 				variables: {
 					user: stateApp.user?.mongoId,
 					category: colorBasedAttributes[getLayerKey(selectedLayer?.identifier, colorBasedAttributes)]?.layerKey,
 				},
 			});
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -130,6 +140,7 @@ function LayerStyling() {
 						},
 					},
 				});
+				layerController.resetBounds(selectedLayer?.identifier);
 			}, 250); // Adjust the debounce delay as needed
 
 			debouncedUpdate();
@@ -157,7 +168,8 @@ function LayerStyling() {
 	useEffect(() => {
 		setRows(0);
 		if (selectedLayer.file) {
-			layerFeaturesCount({ variables: { fileId: selectedLayer.file } });
+			selectedLayer.layerShapeName = selectedLayer.layerShapeName || selectedLayer.layerCategory;
+			layerFeaturesCount({ variables: { fileId: selectedLayer.file, layerShapeName: selectedLayer.layerShapeName } });
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [mapControlStates.selectedLayer.file, layerFeaturesCount]);
@@ -377,8 +389,12 @@ function LayerStyling() {
 											type="number"
 											onChange={e => {
 												let width = e.target.value ? Number(parseInt(e.target.value)) : 0;
-												if (width > 100) width = 100;
-												if (width < 0) width = 0;
+												if (width > 100) {
+													width = 100;
+												}
+												if (width < 0) {
+													width = 0;
+												}
 												setStrokeWidth(width);
 											}}
 											size="small"

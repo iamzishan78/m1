@@ -1,61 +1,64 @@
 import React, { useState, useEffect, useContext, Fragment, useCallback } from 'react';
-import { get } from 'lodash';
+import NumberFormat from 'react-number-format';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { useLazyQuery, useMutation } from '@apollo/client';
+
+import { TextField, FormControl, Grid, Dialog, Avatar, CircularProgress } from '@material-ui/core';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import { makeStyles } from '@material-ui/core/styles';
-import { TextField, FormControl, Grid } from '@material-ui/core';
-import { AppContext } from 'AppContext';
-import { TransactContext } from 'components/Transact/TransactContext';
-import { CONTACT } from 'graphQL/useQueryContact';
-import { ADDCONTACT } from 'graphQL/useMutationAddContact';
-import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { Dialog, Avatar, CircularProgress } from '@material-ui/core';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { get } from 'lodash';
+import moment from 'moment';
+import PropTypes from 'prop-types';
+import { createPortal } from 'react-dom/cjs/react-dom.production.min';
+
+import AddDialogeUploadZone from 'components/ContactDetailCard/components/AddDialogUploadZone';
+import DealTasksProgressZone from 'components/ContactDetailCard/components/DealTasksProgressZone';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import Contacts from 'components/FlowDrawer/Contacts';
+import MapProvider from 'components/Map/MapProvider';
+import { findBoundsMap } from 'components/MapControls/commonHelper';
+import { drawBoundaries } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+import Documents from 'components/Shared/Documents';
+import { getRandomColor } from 'components/Shared/functions/ui';
+import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import CustomAvatar from 'components/Shared/ui/CustomAvatar';
+import DealComments from 'components/Transact/components/DealComments';
 import DealDialogHeader from 'components/Transact/components/DealDialog/DealDialogHeader';
 import Drawer from 'components/Transact/components/Drawer';
-import moment from 'moment';
+import { TransactContext } from 'components/Transact/TransactContext';
 
-import DealTasksProgressZone from 'components/ContactDetailCard/components/DealTasksProgressZone';
-import DealComments from 'components/Transact/components/DealComments';
-import DealTasksDetails from '../DealTasksDetails';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-import { useDispatch, useSelector } from 'react-redux';
+import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 import { ADDDEAL, CREATE_DEAL_DEFAULT_SETTINGS } from 'graphQL/useMutationAddDeal';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import { UPDATEDEAL } from 'graphQL/useMutationUpdateDeal';
-import { UPSERTDEALDESCRIPTOR } from 'graphQL/useMutationUpsertDealDescriptor';
 import { REMOVEDEALDESCRIPTOR } from 'graphQL/useMutationRemoveDealDescriptor';
+import { UPDATEDEAL } from 'graphQL/useMutationUpdateDeal';
 import { UPDATE_STAGE_DEAL_DESCRIPTOR } from 'graphQL/useMutationUpdateStageDealDescriptor';
 import { UPDATESTAGEDEALDESCRIPTORS } from 'graphQL/useMutationUpdateStageDealDescriptors';
-import { showErrorMessage, showSuccessMessage } from 'actions';
-
-import PropTypes from 'prop-types';
-import NumberFormat from 'react-number-format';
-import Documents from 'components/Shared/Documents';
-import AddDialogeUploadZone from 'components/ContactDetailCard/components/AddDialogUploadZone';
-import { GETRECENTCONTACTFILES } from 'graphQL/useQueryGetContactFiles';
-import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
-import { GET_DEAL_SETTINGS } from 'graphQL/useQueryGetDealSettings';
+import { UPSERTDEALDESCRIPTOR } from 'graphQL/useMutationUpsertDealDescriptor';
+import { CONTACT } from 'graphQL/useQueryContact';
 import { GETDEAL } from 'graphQL/useQueryDeal';
-import Contacts from 'components/FlowDrawer/Contacts';
-import './dialog.css';
-
-import CustomAvatar from 'components/Shared/ui/CustomAvatar';
-
-import MapProvider from 'components/Map/MapProvider';
-import { getRandomColor } from 'components/Shared/functions/ui';
-import AssociatedFlowDealDetails from '../AssociatedFlowDealDetails';
-import { createPortal } from 'react-dom/cjs/react-dom.production.min';
-import ExistingDeal from './ExistingDeal';
-import { GET_FLOW_ASSOCIATED_SUMMARY } from 'graphQL/useQueryFlowAssociatedData';
-import { mapStateController } from 'hookstate/mapStateController';
 import { GET_DEAL_SHAPES } from 'graphQL/useQueryDealShapes';
+import { GET_FLOW_ASSOCIATED_SUMMARY } from 'graphQL/useQueryFlowAssociatedData';
+import { GETRECENTCONTACTFILES } from 'graphQL/useQueryGetContactFiles';
+import { GET_DEAL_SETTINGS } from 'graphQL/useQueryGetDealSettings';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
+
 import { globalStateController } from 'hookstate/globalStateController';
-import { findBoundsMap } from 'components/MapControls/commonHelper';
-import { mapControlsController } from 'hookstate/mapControlsController';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { drawBoundaries } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+import { mapControlsController } from 'hookstate/mapControlsController';
+import { mapStateController } from 'hookstate/mapStateController';
+
+import { showErrorMessage, showSuccessMessage } from 'actions';
+import { AppContext } from 'AppContext';
+
+import DealTasksDetails from '../DealTasksDetails';
+import ExistingDeal from './ExistingDeal';
+import AssociatedFlowDealDetails from '../AssociatedFlowDealDetails';
+
+import './dialog.css';
 
 function NumberFormatCustom(props) {
 	const { inputRef, onChange, ...other } = props;
@@ -396,6 +399,7 @@ const useStyles = makeStyles(theme => ({
 			backgroundColor: '#ECEDED',
 			color: '#606060',
 			fontWeight: '700',
+			borderRadius: '4px',
 		},
 	},
 	input: {
@@ -520,11 +524,12 @@ function AddDealDialog(props) {
 			const {
 				updateStageDealDescriptor: { stageDealDescriptors },
 			} = updatedStageDealDescriptor;
-			if (stageDealDescriptors)
+			if (stageDealDescriptors) {
 				setStateTransact(stateTransact => ({
 					...stateTransact,
 					dealToCreate: { _id: stageDealDescriptors.descriptorObject },
 				}));
+			}
 		}
 	}, [setStateTransact, updatedStageDealDescriptor]);
 
@@ -559,6 +564,7 @@ function AddDealDialog(props) {
 						variables: {
 							stageDealDescriptors,
 							dealId: deal._id,
+							stageId,
 						},
 					}).then(result => {
 						setStateApp(stateApp => ({
@@ -613,9 +619,9 @@ function AddDealDialog(props) {
 					stateApp.activeDeal?.laneId &&
 					stateApp.activeDeal?.descriptorId === localPipelineId &&
 					stateApp.activeDeal?.laneId === stageId
-				)
+				) {
 					setDealPosition(stateApp.activeDeal?.position);
-				else {
+				} else {
 					if (pipeToShow?._id === localPipelineId) {
 						let position = -1;
 
@@ -630,7 +636,9 @@ function AddDealDialog(props) {
 						}
 
 						setDealPosition(position + 1);
-					} else setDealPosition(null);
+					} else {
+						setDealPosition(null);
+					}
 				}
 			}
 		},
@@ -673,14 +681,17 @@ function AddDealDialog(props) {
 			const isExist = !!pipelines.find(p => p._id === selectedPipe?._id);
 			if (selectedPipe && isExist) {
 				activePipeline = pipelines.find(p => p._id === selectedPipe._id);
-			} else activePipeline = pipelines[0];
+			} else {
+				activePipeline = pipelines[0];
+			}
 			settingNewPipeWithDefaultStage(activePipeline._id, true);
 		}
 	}, [pipelines, props.contactId, selectedPipe, settingNewPipeWithDefaultStage]);
 
 	useEffect(() => {
-		if (stateApp.dealDialog && !stateApp.activeDeal?.cardId && selectedPipe?._id)
+		if (stateApp.dealDialog && !stateApp.activeDeal?.cardId && selectedPipe?._id) {
 			settingNewPipeWithDefaultStage(selectedPipe._id, true);
+		}
 	}, [selectedPipe?._id, settingNewPipeWithDefaultStage, stateApp.activeDeal?.cardId, stateApp.dealDialog]);
 
 	useEffect(() => {
@@ -892,7 +903,7 @@ function AddDealDialog(props) {
 				}
 
 				////////////////////////////////////////////
-				if (allPromises.length > 0)
+				if (allPromises.length > 0) {
 					Promise.all(allPromises)
 						.then(values => {
 							// if (success === true)
@@ -907,6 +918,7 @@ function AddDealDialog(props) {
 						.catch(reason => {
 							console.log(reason);
 						});
+				}
 			} else if (!addDealLoading) {
 				//// add a new deal
 				let variables = {
@@ -1031,13 +1043,15 @@ function AddDealDialog(props) {
 
 			setOwnerId(card.owners[0]?.relatedObject?._id || card.ownerId);
 
-			if (card.contacts?.length > 0)
+			if (card.contacts?.length > 0) {
 				// setting contact
 				setNameAutValue({
 					name: card.contacts[0]?.relatedObject?.entity?.name,
 					_id: card.contacts[0]?.relatedObject?._id,
 				});
-			else setNameAutValue(null);
+			} else {
+				setNameAutValue(null);
+			}
 		} else if (props.contact) {
 			setNameAutValue({ name: props.contact.name, _id: props.contact._id });
 		} else if (props.contactId) {
@@ -1069,7 +1083,9 @@ function AddDealDialog(props) {
 		setDescription('');
 		setStageId(null);
 		setDealState(null);
-		if (props.isTransactPage) setNameAutValue(null);
+		if (props.isTransactPage) {
+			setNameAutValue(null);
+		}
 		setPipelineId(null);
 		setOwnerId(null);
 		setReceivedDate('');
@@ -1077,7 +1093,9 @@ function AddDealDialog(props) {
 		setCloseDate('');
 		setMapSettings(null);
 		setDealPosition(null);
-		if (props.isTransactPage) setContact({});
+		if (props.isTransactPage) {
+			setContact({});
+		}
 		setStateApp(stateApp => ({
 			...stateApp,
 			dealDialog: false,
@@ -1107,7 +1125,7 @@ function AddDealDialog(props) {
 	const deleteDeal = async () => {
 		const cardId = stateApp.activeDeal?.cardId || stateApp.activeDeal?.id;
 
-		if (cardId)
+		if (cardId) {
 			await updateDeal({
 				variables: {
 					deal: { _id: cardId, IsDeleted: true },
@@ -1121,8 +1139,11 @@ function AddDealDialog(props) {
 				if (updateDeal?.success === true) {
 					dispatch(showSuccessMessage('The Deal was successfully deleted.'));
 					handleClose();
-				} else dispatch(showErrorMessage('An error occurred.'));
+				} else {
+					dispatch(showErrorMessage('An error occurred.'));
+				}
 			});
+		}
 	};
 
 	const handleUpdate = async () => {
@@ -1243,13 +1264,14 @@ function AddDealDialog(props) {
 		onCompleted: ({ getFileDescriptors }) => {
 			let allActive = true;
 
-			if (getFileDescriptors)
+			if (getFileDescriptors) {
 				for (let i = 0; i < getFileDescriptors.length; i++) {
 					if (getFileDescriptors[i].fileState !== 'active') {
 						allActive = false;
 						break;
 					}
 				}
+			}
 
 			if (!allActive) {
 				if (fileRequestCounter <= 40) {
@@ -1267,7 +1289,9 @@ function AddDealDialog(props) {
 				} else {
 					setFileRequestCounter(1);
 				}
-			} else setFileRequestCounter(1);
+			} else {
+				setFileRequestCounter(1);
+			}
 		},
 	});
 	const [viewFiles, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILESQUERY, {
@@ -1328,7 +1352,9 @@ function AddDealDialog(props) {
 	const handleClickDialogClose = () => {
 		setStateApp(state => {
 			const newState = { ...state, transactBarShowGrid: false, addType: null, interestsIds: null };
-			if (state.transactBarView === 'Map') newState.transactBarView = 'Deal';
+			if (state.transactBarView === 'Map') {
+				newState.transactBarView = 'Deal';
+			}
 
 			return newState;
 		});
@@ -1352,7 +1378,7 @@ function AddDealDialog(props) {
 					maxWidth="sm"
 				>
 					<DeleteConfirmationDialogContent
-						header={`Delete Deal`}
+						header={'Delete Deal'}
 						onClose={handleCloseDialog}
 						deleteFunc={deleteFunc}
 						m1nSelectedRowsIds={null}

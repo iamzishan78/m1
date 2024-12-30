@@ -1,4 +1,5 @@
 import { colorPallete } from 'components/Table/helpers';
+
 export const getMetaCss = ({ option, iconType, isMetaPopup = false }) => {
 	const pallete = colorPallete.find(pallete => pallete.id === option?.palleteId);
 	if (iconType === 'Chip') {

@@ -1,10 +1,12 @@
 import React, { useContext, useEffect, useMemo } from 'react';
-import { AppContext } from 'AppContext';
+
 import AnalyticsCards from 'components/Land/components/Common/AnalyticsCards';
 import MRTTable from 'components/MRTTable';
 import TabPanels from 'components/Shared/TabPanels';
-import { tableController } from 'hookstate/tableController';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { AppContext } from 'AppContext';
 
 const Tracts = () => {
 	const [stateApp] = useContext(AppContext); // Accessing global state from AppContext
@@ -15,7 +17,7 @@ const Tracts = () => {
 	const tabLabels = useMemo(() => ['Tracts', 'Tract Interests'], []);
 
 	// Get the currently selected tab, defaulting to the first tab if not defined
-	const selectedTab = simpleTableGlobalController?.useState(['tabKey'])?.stateValues?.tabKey || 0;
+	const selectedTab = tableGlobalController?.useState(['tabKey'])?.stateValues?.tabKey || 0;
 	const currentTableKey = tableKeys[selectedTab] || tableKeys[0]; // Ensure fallback to first table key
 
 	// Retrieve the current state of the table data and filters for each table

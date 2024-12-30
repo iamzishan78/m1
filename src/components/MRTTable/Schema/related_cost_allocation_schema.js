@@ -1,9 +1,7 @@
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+
 import RelatedCostAllocationsToolbar from '../TablesOverride/RelatedCostAllocationsTable/RelatedCostAllocationsToolbar';
-import { tableGlobalController } from 'hookstate/tableController';
-import { getArrayValue } from '../utils/helper';
-import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 
 const esIndex = 'properties_flat';
 
@@ -69,6 +67,7 @@ const RelatedCostAllocationsMeta = {
 			id: 'costAllocations.allocation',
 			header: 'Cost Allocation',
 			type: 'number',
+			isArrayKey: true,
 			handleArrayExport: {
 				esType: 'array',
 				// field in data array that will be matched
@@ -79,18 +78,18 @@ const RelatedCostAllocationsMeta = {
 				actualKey: 'allocation',
 			},
 			Cell: ({ row }) => {
-				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
-				const value = getArrayValue(row.original.costAllocations, 'allocation', paymentId, 'paymentId');
-				return value ? `${Number(value).toFixed(2)}%` : value === 0 ? `0%` : '';
+				const value = row.original?.costAllocations?.allocation;
+				return value ? `${Number(value).toFixed(2)}%` : value === 0 ? '0%' : '';
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'costAllocations.amount.keyword',
 			accessorFn: row => row?.costAllocations?.amount,
 			id: 'costAllocations.amount',
 			header: 'Cost Allocation Amount',
 			type: 'number',
+			isArrayKey: true,
 			handleArrayExport: {
 				esType: 'array',
 				// field in data array that will be matched
@@ -99,11 +98,6 @@ const RelatedCostAllocationsMeta = {
 				referenceValueKey: 'paymentId',
 				// field that needs to be exported from matched object
 				actualKey: 'amount',
-			},
-			Cell: ({ row }) => {
-				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
-				const value = getArrayValue(row.original.costAllocations, 'amount', paymentId, 'paymentId');
-				return value ? vf_currency_to_fixed(parseFloat(value), 2) : value === 0 ? `$0` : '';
 			},
 		},
 	],

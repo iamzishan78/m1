@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+
 import {
 	Grid,
 	ListItemText,
@@ -15,21 +16,24 @@ import {
 	AccordionDetails,
 	TextField,
 } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
+import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import AddIcon from '@material-ui/icons/Add';
-import IconButton from '@material-ui/core/IconButton';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import SearchIcon from '@material-ui/icons/Search';
 
-//Components
-import SearchField from './SearchField';
-import { statusData } from 'components/Table/Revenue/RevenuePropertiesTable';
-
-// Hooks
 import { useMutation } from '@apollo/client';
 
-// Mutations
+//Components
+import { statusData } from 'components/Table/Revenue/RevenuePropertiesTable';
+
 import { UPSERT_WELL_DESCRIPTOR } from 'graphQL/useMutationWellDescriptor';
+
+import SearchField from './SearchField';
+
+// Hooks
+
+// Mutations
 
 const propertyInterestParams = [
 	{

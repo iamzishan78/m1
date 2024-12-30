@@ -1,8 +1,11 @@
 import React, { memo } from 'react';
+
 import { Button } from '@material-ui/core';
+
 import { detailCardController } from 'hookstate/detailCardController';
-import { CostAllocationRightDialog } from './RightDialog';
 import { tableController } from 'hookstate/tableController';
+
+import { CostAllocationRightDialog } from './RightDialog';
 
 // This component is used in the RelatedCostAllocationsTable component for the toolbar
 function RelatedCostAllocationsToolbar({ table, tableKey }) {

@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
-import { UPDATE_ALL_USER_LAYERS_SETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
 import { DELETE_CYPRESS_CUSTOM_LAYERS } from 'graphQL/useMutationCommonCypressRevert';
+import { UPDATE_ALL_USER_LAYERS_SETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
+
 import ldata from '../../../fixtures/ldata.json';
 
 const headers = {

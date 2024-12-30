@@ -1,25 +1,32 @@
 import React, { useMemo, useEffect, useState, memo } from 'react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { useMutation, useLazyQuery } from '@apollo/client';
-import { get } from 'lodash';
+import { pdfjs } from 'react-pdf';
+
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
-import DeleteIcon from '@material-ui/icons/Delete';
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+
 // import { faCircle, faSquare } from "@fortawesome/free-regular-svg-icons";
-import GetAppIcon from '@material-ui/icons/GetApp';
-import DeleteDocumentConfirmation from 'components/Shared/DeleteDocumentConfirmation';
-import { AppContext } from 'AppContext';
-import { GETRECENTCONTACTFILES } from 'graphQL/useQueryGetContactFiles';
-import { DELETEDESCRIPTORFILE } from 'graphQL/useMutationDeleteDescriptorFile';
-import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
-import UploadZone from './DailogUploadZone';
 import Tooltip from '@material-ui/core/Tooltip';
-import { pdfjs } from 'react-pdf';
+import DeleteIcon from '@material-ui/icons/Delete';
+import GetAppIcon from '@material-ui/icons/GetApp';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
+import { get } from 'lodash';
+
+import DeleteDocumentConfirmation from 'components/Shared/DeleteDocumentConfirmation';
 
 // functions
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
+
+import { DELETEDESCRIPTORFILE } from 'graphQL/useMutationDeleteDescriptorFile';
+import { GETRECENTCONTACTFILES } from 'graphQL/useQueryGetContactFiles';
+import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
+
+import { AppContext } from 'AppContext';
+
+import UploadZone from './DailogUploadZone';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 const useStyles = makeStyles(theme => ({
@@ -162,9 +169,14 @@ const Documents = memo(props => {
 	const userId = stateApp.user.mongoId;
 
 	const [relatedObjectType, limit] = useMemo(() => {
-		if (props.isTransactPage) return ['Deal', 99];
-		if (props.targetLabel) return [props.targetLabel, 101];
-		else return ['Contact', 2];
+		if (props.isTransactPage) {
+			return ['Deal', 99];
+		}
+		if (props.targetLabel) {
+			return [props.targetLabel, 101];
+		} else {
+			return ['Contact', 2];
+		}
 	}, [props.isTransactPage]);
 
 	const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
@@ -176,13 +188,14 @@ const Documents = memo(props => {
 		onCompleted: ({ getFileDescriptors }) => {
 			let allActive = true;
 
-			if (getFileDescriptors)
+			if (getFileDescriptors) {
 				for (let i = 0; i < getFileDescriptors.length; i++) {
 					if (getFileDescriptors[i].fileState !== 'active') {
 						allActive = false;
 						break;
 					}
 				}
+			}
 
 			if (!allActive) {
 				if (fileRequestCounter <= 40) {
@@ -200,7 +213,9 @@ const Documents = memo(props => {
 				} else {
 					setFileRequestCounter(1);
 				}
-			} else setFileRequestCounter(1);
+			} else {
+				setFileRequestCounter(1);
+			}
 		},
 	});
 	const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);

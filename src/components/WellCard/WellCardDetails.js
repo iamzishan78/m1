@@ -1,50 +1,46 @@
-import React, { useContext, useState, useRef, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 
-// contexts
-import { WellCardContext } from './WellCardContext';
-
-// styling
-import { makeStyles } from '@material-ui/core/styles';
-import { withStyles } from '@material-ui/core/styles';
-
-//material-ui components
+import { Box, IconButton } from '@material-ui/core';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-
-//custom components
-import Taps from '../Shared/Taps';
-import TableSummary from './components/TableSummary';
-
-import QuadProvider from '../Quad/QuadProvider';
-import M1nTable from '../Shared/M1nTable/M1nTable';
-import WellProdChartProvider from '../WellProdChart/WellProdChartProvider';
-import WellStatusCard from '../Shared/WellStatusCard';
-import CompletionDateCard from '../Shared/CompletionDateCard';
-import FirstProdDateCard from '../Shared/FirstProdDateCard';
-import OwnerNumCard from '../Shared/OwnerNumCard';
-import PermitDateCard from '../Shared/PermitDateCard';
-import ProfileCard from '../Shared/ProfileCard';
-import WellTypeCard from '../Shared/WellTypeCard';
-import SpudDateCard from '../Shared/SpudDateCard';
-import PlugDateCard from '../Shared/PlugDateCard';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
-
-import SimulationContainer from './components/Stimulation';
-import FormationContainer from './components/Formation';
-import PermitsContainer from './components/WellPermits';
-import WellDetailsDocumentTable from 'components/Table/Documents/WellDetailsDocumentTable';
-
-import { useLazyQuery } from '@apollo/client';
-import { PRODUCTIONDETAILQUERY } from '../../graphQL/useQueryProductionDetail';
-import moment from 'moment';
-import { Box, IconButton } from '@material-ui/core';
+import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
-import CircularProgress from '@material-ui/core/CircularProgress';
-import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+import { useLazyQuery } from '@apollo/client';
+import moment from 'moment';
+
+// contexts
+import WellDetailsDocumentTable from 'components/Table/Documents/WellDetailsDocumentTable';
+
 import { popupController } from 'hookstate/popupStateController';
+
+import { WellCardContext } from './WellCardContext';
+
+// styling
+
+//material-ui components
+
+//custom components
+import { PRODUCTIONDETAILQUERY } from '../../graphQL/useQueryProductionDetail';
+import Taps from '../Shared/Taps';
+import TableSummary from './components/TableSummary';
+import QuadProvider from '../Quad/QuadProvider';
+import CompletionDateCard from '../Shared/CompletionDateCard';
+import FirstProdDateCard from '../Shared/FirstProdDateCard';
+import M1nTable from '../Shared/M1nTable/M1nTable';
+import OwnerNumCard from '../Shared/OwnerNumCard';
+import PermitDateCard from '../Shared/PermitDateCard';
+import PlugDateCard from '../Shared/PlugDateCard';
+import ProfileCard from '../Shared/ProfileCard';
+import SpudDateCard from '../Shared/SpudDateCard';
+import WellStatusCard from '../Shared/WellStatusCard';
+import WellTypeCard from '../Shared/WellTypeCard';
+import WellProdChartProvider from '../WellProdChart/WellProdChartProvider';
 
 const useStyles = makeStyles(theme => ({
 	grid: {
@@ -199,52 +195,9 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const tableGridStyle = makeStyles({
-	table: {
-		minHeight: '100px !important',
-	},
-	tableContainer: {
-		overflowX: 'auto',
-		marginBottom: 20,
-		background: 'white',
-
-		'&::-webkit-scrollbar': {
-			width: '0.75em',
-			height: '0.75em',
-		},
-		// "&:hover::-webkit-scrollbar": {
-		//     width: "1.0em",
-		// },
-		// "&::-webkit-scrollbar-track": {
-		//     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-		// },
-		'&::-webkit-scrollbar-thumb': {
-			backgroundColor: '#929292',
-			borderRadius: 10,
-		},
-	},
-	rowName: {
-		fontWeight: 'bold',
-		background: '#ebebeb',
-		minWidth: 150,
-	},
-	columnComments: {
-		fontWeight: 'bold',
-		background: '#ebebeb',
-		minWidth: 450,
-	},
-	tableRow: {
-		'& > td': {
-			padding: '4px 15px !important',
-			border: '2px solid #e3e3e3',
-		},
-	},
-});
-
 export default function WellCardDetails(props) {
 	const classes = useStyles();
 	const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
-	const [, setTabValue] = React.useState(0);
 	const [production, setProduction] = useState(null);
 	const [, setTarget] = useState(null);
 	const [showSummary, setShowSummary] = useState(true);
@@ -256,6 +209,7 @@ export default function WellCardDetails(props) {
 		getExternalProductionDetail({
 			variables: { id: stateValues.selectedWell.api, pageSize: '999' },
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -278,6 +232,7 @@ export default function WellCardDetails(props) {
 			}
 		} else {
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [externalProductionDetail, props.target, setTarget]);
 
 	const handleChangeOil = event => {
@@ -378,7 +333,7 @@ export default function WellCardDetails(props) {
 			</Grid>
 			<Grid item sm={12} container className={classes.gridWidthScroll}>
 				{showSummary && (
-					<Grid item sm={12} container style={{ height: '482px' }}>
+					<Grid item sm={12} container style={{ maxHeight: '482px', overflow: 'auto' }}>
 						<Grid container spacing={2} style={{ marginRight: 0, marginLeft: 0 }}>
 							<Grid item sm={8}>
 								<TableSummary summary={props.summary} />
@@ -389,7 +344,7 @@ export default function WellCardDetails(props) {
 						</Grid>
 					</Grid>
 				)}
-				<Grid item sm={12}>
+				<Grid item sm={12} style={{ overflow: 'auto', maxHeight: 'calc(100vh - 650px)' }}>
 					<Taps
 						tabLabels={['Production', 'Interest Owners', 'Documents']}
 						tabPanels={[
@@ -454,7 +409,7 @@ export default function WellCardDetails(props) {
 									/>
 								</div>
 							</Paper>,
-							<div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.wellDocument}`}>
+							<div className={`${classes.wellDocument}`}>
 								<WellDetailsDocumentTable
 									selectedWell={stateValues.selectedWell}
 									parent="associatedDocumentsPerWell"

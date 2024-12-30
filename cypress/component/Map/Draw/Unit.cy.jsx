@@ -1,7 +1,8 @@
 /* eslint-disable no-undef */
 import MapProvider from 'components/Map/MapProvider';
-import { basic_timeouts } from '../../../cypressUtils/data';
+
 import { drawAreaGeometry, editedPolygon, relocatedPolygon, resizedPolygon } from './data';
+import { basic_timeouts } from '../../../cypressUtils/data';
 
 let createdLandGridName = 'T007N R023E — Section 06';
 let customLayerByRectangle = {};

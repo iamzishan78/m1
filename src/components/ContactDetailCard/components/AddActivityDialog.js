@@ -1,35 +1,40 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useContext } from 'react';
-import clsx from 'clsx';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import moment from 'moment';
 import { useDispatch } from 'react-redux';
-import { showErrorMessage, showSuccessMessage } from 'actions';
+
 import { Menu, MenuItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
 import { Dialog, CircularProgress } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import DeleteIcon from '@material-ui/icons/Delete';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
-import Select from '@material-ui/core/Select';
-import Grid from '@material-ui/core/Grid';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { AppContext } from 'AppContext';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+import clsx from 'clsx';
+import moment from 'moment';
 
 import { ADDACTIVITY, UPDATEACTIVITY } from 'graphQL/useMutationActivity';
-import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { OPENDEALS } from 'graphQL/useQueryOpenDeals';
-import DeleteConfirmationDialogContent from '../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import { DELETEACTIVITY } from 'graphQL/useMutationActivity';
-import { outcomeOptions } from './FieldContent/helper';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+import { OPENDEALS } from 'graphQL/useQueryOpenDeals';
+
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { showErrorMessage, showSuccessMessage } from 'actions';
+import { AppContext } from 'AppContext';
+
 import AutoCompleteAddNewField from './FieldContent/AutoCompleteAddNewField';
+import { outcomeOptions } from './FieldContent/helper';
+import DeleteConfirmationDialogContent from '../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -43,9 +48,6 @@ const useStyles = makeStyles(theme => ({
 	},
 	dialogContentText: {
 		textAlign: 'center',
-	},
-	inputField: {
-		marginBottom: '30px',
 	},
 	inputFieldDateRoot: {
 		'& .MuiDialog-root': {
@@ -200,8 +202,7 @@ function AddActivityDialog(props) {
 	});
 
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-	const [isDeleting, setIsDeleting] = useState(false);
-	const [deleteActivityMutation, { loading: deleteLoading }] = useMutation(DELETEACTIVITY, {
+	const [deleteActivityMutation] = useMutation(DELETEACTIVITY, {
 		refetchQueries: ['getContact', 'getAllActivities', 'getContactSummary'],
 		awaitRefetchQueries: true,
 	});
@@ -233,7 +234,7 @@ function AddActivityDialog(props) {
 	}, [userLists]);
 
 	const [openDeals, setOpenDeals] = useState([]);
-	const [getOpenDeals, { loading: tloading, data: dealsData }] = useLazyQuery(OPENDEALS, {
+	const [getOpenDeals, { data: dealsData }] = useLazyQuery(OPENDEALS, {
 		fetchPolicy: 'network-only',
 	});
 
@@ -250,8 +251,11 @@ function AddActivityDialog(props) {
 	}, [dealsData]);
 
 	const [addActivityMutation, { loading: addLoading }] = useMutation(ADDACTIVITY, {
-		refetchQueries: ['getContact', 'getAllActivities', 'getMelissaRecordsCountForContactIds'],
+		refetchQueries: ['getContact', 'getAllActivities', 'getMelissaRecordsCountForContactIds', 'getESSimpleSearch'],
 		awaitRefetchQueries: true,
+		onCompleted: () => {
+			tableGlobalController.refetch();
+		},
 	});
 
 	const [updateActivityMutation, { loading: updateLoading }] = useMutation(UPDATEACTIVITY, {
@@ -311,13 +315,27 @@ function AddActivityDialog(props) {
 		let endTimeErr = false;
 		let ownerErr = false;
 
-		if (!activityType || activityType.length === 0) activityTypeErr = true;
-		if (!activityName || activityName.length === 0) activityNameErr = true;
-		if (!startDate) startDataErr = true;
-		if (!startTime) startTimeErr = true;
-		if (!endDate) endDateErr = true;
-		if (!endTime) endTimeErr = true;
-		if (!owner.id) ownerErr = true;
+		if (!activityType || activityType.length === 0) {
+			activityTypeErr = true;
+		}
+		if (!activityName || activityName.length === 0) {
+			activityNameErr = true;
+		}
+		if (!startDate) {
+			startDataErr = true;
+		}
+		if (!startTime) {
+			startTimeErr = true;
+		}
+		if (!endDate) {
+			endDateErr = true;
+		}
+		if (!endTime) {
+			endTimeErr = true;
+		}
+		if (!owner.id) {
+			ownerErr = true;
+		}
 
 		const dateTime = mergeDateAndTime(startDate, startTime);
 		const endDateTime = mergeDateAndTime(endDate, endTime);
@@ -343,7 +361,9 @@ function AddActivityDialog(props) {
 	};
 
 	const addActivity = async () => {
-		if (updateErrors()) return;
+		if (updateErrors()) {
+			return;
+		}
 
 		const dateTime = mergeDateAndTime(startDate, startTime);
 		const endDateTime = mergeDateAndTime(endDate, endTime);
@@ -374,7 +394,9 @@ function AddActivityDialog(props) {
 	};
 
 	const updateActivity = async () => {
-		if (updateErrors()) return;
+		if (updateErrors()) {
+			return;
+		}
 
 		const dateTime = mergeDateAndTime(startDate, startTime);
 		const endDateTime = mergeDateAndTime(endDate, endTime);
@@ -405,25 +427,21 @@ function AddActivityDialog(props) {
 	};
 
 	const deleteFunc = async () => {
-		try {
-			setIsDeleting(true);
-			await deleteActivityMutation({
-				variables: {
-					id: selectedActivity._id,
-				},
-			}).then(result => {
-				const {
-					data: { deleteActivity },
-				} = result;
-				if (deleteActivity?.success === true) {
-					dispatch(showSuccessMessage('The Activity was successfully deleted.'));
-					onModalClose();
-				} else dispatch(showErrorMessage('An error occurred.'));
-			});
-			setIsDeleting(false);
-		} catch {
-			setIsDeleting(false);
-		}
+		await deleteActivityMutation({
+			variables: {
+				id: selectedActivity._id,
+			},
+		}).then(result => {
+			const {
+				data: { deleteActivity },
+			} = result;
+			if (deleteActivity?.success === true) {
+				dispatch(showSuccessMessage('The Activity was successfully deleted.'));
+				onModalClose();
+			} else {
+				dispatch(showErrorMessage('An error occurred.'));
+			}
+		});
 	};
 
 	const handleMenuClick = event => {
@@ -445,7 +463,7 @@ function AddActivityDialog(props) {
 					maxWidth="sm"
 				>
 					<DeleteConfirmationDialogContent
-						header={`Delete Activity`}
+						header={'Delete Activity'}
 						onClose={handleCloseDialog}
 						deleteFunc={deleteFunc}
 						m1nSelectedRowsIds={null}
@@ -753,8 +771,11 @@ function AddActivityDialog(props) {
 					color="primary"
 					variant="contained"
 					onClick={() => {
-						if (addNew) addActivity();
-						else updateActivity();
+						if (addNew) {
+							addActivity();
+						} else {
+							updateActivity();
+						}
 					}}
 				>
 					{(addLoading || updateLoading) && <CircularProgress style={{ marginRight: 8 }} color="#fff" size={20} />}

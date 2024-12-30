@@ -1,23 +1,27 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { useLazyQuery } from '@apollo/client';
 import { useHistory } from 'react-router-dom';
-import { CONTACT_PURCHASE_DATA } from 'graphQL/useQueryContactPurchaseData';
 
-import { CONTACT } from 'graphQL/useQueryContact';
-import MelissaTable from './components/MelissaTable';
-import { LASTMELISSARECORD } from 'graphQL/useQueryGetMelissaRecords';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
 
-import { AppContext } from '../../AppContext';
+import { useLazyQuery } from '@apollo/client';
+
 import {
 	getBasicInfoContent,
 	getBasicInfoExpContent,
 	getBasicPurchaseInfoContent,
 	getBasicPurchaseInfoExpContent,
 } from 'components/ContactDetailedInfo/helper';
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+
+import { CONTACT } from 'graphQL/useQueryContact';
+import { CONTACT_PURCHASE_DATA } from 'graphQL/useQueryContactPurchaseData';
+import { LASTMELISSARECORD } from 'graphQL/useQueryGetMelissaRecords';
+
+import MelissaTable from './components/MelissaTable';
+import { AppContext } from '../../AppContext';
+
 const useStyles = makeStyles(theme => ({
 	root: {
 		width: '100%',

@@ -1,9 +1,12 @@
 import React, { memo } from 'react';
+
 import { Button } from '@material-ui/core';
-import { tableController } from 'hookstate/tableController';
-import { ADD_TRACTS_TOA_SHAPE } from 'graphQL/useMutationAddTractsToAShape';
+
 import { useMutation } from '@apollo/client';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+
+import { ADD_TRACTS_TOA_SHAPE } from 'graphQL/useMutationAddTractsToAShape';
+
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 function TractPotentialUnitsToolBar({ table, tableKey }) {
 	const [addShapeTract] = useMutation(ADD_TRACTS_TOA_SHAPE, {
@@ -50,7 +53,7 @@ function TractPotentialUnitsToolBar({ table, tableKey }) {
 			isLoading: false,
 		});
 
-		simpleTableGlobalController.setSelectedTab(0);
+		tableGlobalController.setSelectedTab(0);
 	};
 	const isSomeRowsSelected =
 		table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;

@@ -26,10 +26,11 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
+import { v4 as uuid } from 'uuid';
+
 import { deepEqualObjects } from '../../src/components/Shared/functions';
 import { baseUrls, basic_timeouts, loginCredential } from '../cypressUtils/data';
 import { camelize, findInObject, isSearchStringMatched } from '../cypressUtils/helper';
-import { v4 as uuid } from 'uuid';
 
 // Constants
 const workSpace = Cypress.env('TENENT') || 'localhost';
@@ -69,7 +70,9 @@ Cypress.Commands.add('hide', { prevSubject: 'element' }, subject => {
 Cypress.Commands.add('typeAndSelect', (searchId, stringToType, optionId = null) => {
 	cy.get(searchId, { timeout: longTimeout }).clear().type(stringToType).wait(3000);
 
-	if (optionId) cy.get(`[id="${optionId}"]`, { timeout: longTimeout }).should('be.visible');
+	if (optionId) {
+		cy.get(`[id="${optionId}"]`, { timeout: longTimeout }).should('be.visible');
+	}
 
 	cy.get(searchId).type('{downArrow}{enter}');
 });
@@ -81,9 +84,9 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null, alias = 
 		if (req.body.operationName === operationName) {
 			if (payloadKey) {
 				const { variables } = req.body;
-				if (payloadKey.searchString && isSearchStringMatched(payloadKey.searchString, variables))
+				if (payloadKey.searchString && isSearchStringMatched(payloadKey.searchString, variables)) {
 					req.alias = alias || `${operationName}WithSearchStringApi`;
-				else if (payloadKey?.sortOrder && variables?.sort?.order === payloadKey.sortOrder) {
+				} else if (payloadKey?.sortOrder && variables?.sort?.order === payloadKey.sortOrder) {
 					req.alias = alias || `${operationName}WithSortOrderApi`;
 				} else if (
 					payloadKey?.filter &&
@@ -116,12 +119,17 @@ Cypress.Commands.add(
 							allPresent = false;
 						}
 					});
-					if (allPresent) req.alias = alias;
-					else req.continue();
+					if (allPresent) {
+						req.alias = alias;
+					} else {
+						req.continue();
+					}
 				} else {
 					req.alias = alias;
 				}
-			} else req.continue();
+			} else {
+				req.continue();
+			}
 		});
 
 		interceptionFunction('@' + alias);
@@ -129,7 +137,9 @@ Cypress.Commands.add(
 		if (options.wait) {
 			cy.wait('@' + alias, { timeout: longTimeout });
 			cy.wait(4000);
-		} else return '@' + alias;
+		} else {
+			return '@' + alias;
+		}
 	}
 );
 
@@ -171,11 +181,17 @@ Cypress.Commands.add('verifyApiResponse', apiTitle => {
 		const operationName = interception?.request?.body?.operationName;
 		const response = interception?.response?.body?.data[operationName];
 
-		if (typeof response === 'string') throw new Error(response);
+		if (typeof response === 'string') {
+			throw new Error(response);
+		}
 
-		if (response?.success === false) throw new Error('Api Failed');
+		if (response?.success === false) {
+			throw new Error('Api Failed');
+		}
 		const errors = interception?.response?.body?.errors;
-		if (errors) throw new Error(`Api returned error: ${JSON.stringify(errors)}`);
+		if (errors) {
+			throw new Error(`Api returned error: ${JSON.stringify(errors)}`);
+		}
 
 		assert.isNotNull(interception.response?.body, `${apiTitle} run succesfully`);
 		return interception;
@@ -200,8 +216,11 @@ Cypress.Commands.add('selectQuickAction', (actionId, containsString, isFilter = 
 	cy.get(`[id="${actionId}"]`).trigger('click');
 	cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout });
 
-	if (isFilter) cy.get('.MuiChip-label', { timeout: longTimeout }).contains(containsString);
-	else cy.get('.MuiTypography-root', { timeout: extraTimeout }).contains(containsString);
+	if (isFilter) {
+		cy.get('.MuiChip-label', { timeout: longTimeout }).contains(containsString);
+	} else {
+		cy.get('.MuiTypography-root', { timeout: extraTimeout }).contains(containsString);
+	}
 });
 
 //Scroll grid by using id of the container
@@ -245,7 +264,9 @@ Cypress.Commands.add('gridSearch', (searchString, gridOperationName, searchId = 
 	cy.verifyApiResponse(`@${apiAlias}`, { responseTimeout: longTimeout }).then(apiResponse => {
 		let hits = apiResponse.response.body.data?.getESSimpleSearch?.hits;
 
-		if (gridOperationName === 'getESDocuments') hits = apiResponse.response.body.data.getESFiles.hits;
+		if (gridOperationName === 'getESDocuments') {
+			hits = apiResponse.response.body.data.getESFiles.hits;
+		}
 
 		const unmatchedHit = hits.find(hit => !findInObject(hit, searchString.toLowerCase()));
 
@@ -367,7 +388,9 @@ Cypress.Commands.add('createShapeLayer', shapeLayerItemId => {
 	cy.get('#parcel-button', { timeout: longTimeout }).should('be.visible').click();
 	cy.wait(3000);
 	cy.get(shapeLayerItemId).wait(1000).click();
-	if (shapeLayerItemId === '#agreementItem') cy.get('#addShapeButton').click();
+	if (shapeLayerItemId === '#agreementItem') {
+		cy.get('#addShapeButton').click();
+	}
 
 	cy.get('.MuiBox-root', { timeout: longTimeout }).should('be.visible');
 
@@ -422,7 +445,9 @@ Cypress.Commands.add('createShapeLayer', shapeLayerItemId => {
 	cy.get('#parcel-button', { timeout: longTimeout }).should('be.visible').click();
 	cy.wait(3000);
 	cy.get(shapeLayerItemId).wait(1000).click();
-	if (shapeLayerItemId === '#agreementItem') cy.get('#addShapeButton').click();
+	if (shapeLayerItemId === '#agreementItem') {
+		cy.get('#addShapeButton').click();
+	}
 
 	cy.get('.MuiBox-root', { timeout: longTimeout }).should('be.visible');
 
@@ -430,21 +455,21 @@ Cypress.Commands.add('createShapeLayer', shapeLayerItemId => {
 });
 
 Cypress.Commands.add('addTract', tractName => {
-	cy.log(`==== STEP: CLICK ON ADD TRACT BUTTON ====`);
+	cy.log('==== STEP: CLICK ON ADD TRACT BUTTON ====');
 	cy.get('#addTractToAgreementBtn').click({ force: true });
 
-	cy.log(`==== STEP: CLICK ON EXISTING TRACT TAB ====`);
+	cy.log('==== STEP: CLICK ON EXISTING TRACT TAB ====');
 	cy.get('#existingTractTab').click();
 
-	cy.log(`==== STEP: SELECT TRACT FROM DROP DOWN ====`);
+	cy.log('==== STEP: SELECT TRACT FROM DROP DOWN ====');
 	cy.typeAndSelect('#autucompleteShapeLayer', tractName, 'autucompleteShapeLayer-option-0');
 
-	cy.log(`==== STEP: SELECT ENTITY NAME ====`);
+	cy.log('==== STEP: SELECT ENTITY NAME ====');
 	cy.get('#AutocompEntityNamesList').click().type('mike jones');
 	cy.get("[id='AutocompEntityNamesList-option-0']");
 	cy.get('#AutocompEntityNamesList').click().type('{downArrow}{downArrow}{enter}');
 
-	cy.log(`==== STEP: CLICK ON SAVE BUTTON ====`);
+	cy.log('==== STEP: CLICK ON SAVE BUTTON ====');
 	cy.interceptApi('addOwnerToAShape');
 	cy.get('#saveButton').click();
 	cy.verifyApiResponse('@addOwnerToAShapeApi', { responseTimeout: longTimeout });
@@ -478,7 +503,9 @@ Cypress.Commands.add('deleteAndVerifyAgreement', (agreementName, agreementNumber
 
 		const cypressAgreement = hits.find(hit => hit.agreementName === agreementName);
 
-		if (!cypressAgreement) throw new Error('Agreement added by cypress not found');
+		if (!cypressAgreement) {
+			throw new Error('Agreement added by cypress not found');
+		}
 
 		const cypressAgreementId = cypressAgreement._id;
 
@@ -505,7 +532,9 @@ Cypress.Commands.add('deleteAndVerifyAgreement', (agreementName, agreementNumber
 				const hits = response.response.body.data.getESSimpleSearch.hits;
 				const isAggreementExist = hits.some(hit => hit.id === cypressAgreementId);
 
-				if (isAggreementExist) throw new Error('Agreement still exist');
+				if (isAggreementExist) {
+					throw new Error('Agreement still exist');
+				}
 
 				cy.wait(500);
 			});
@@ -543,7 +572,9 @@ Cypress.Commands.add('deleteTractAndVerify', tractName => {
 		cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: longTimeout }).then(response => {
 			const hits = response.response.body.data.getESSimpleSearch.hits;
 
-			if (hits.some(hit => hit?.tractId === tractId)) throw new Error('Tract still exist after delete');
+			if (hits.some(hit => hit?.tractId === tractId)) {
+				throw new Error('Tract still exist after delete');
+			}
 		});
 	});
 });
@@ -586,15 +617,14 @@ Cypress.Commands.add('checkFieldsMapping', () => {
 Cypress.Commands.add('getDataFromGrid', (gridField, totalRows) => {
 	let gridData = [];
 	for (let i = 1; i < totalRows; i++) {
-		// eslint-disable-next-line no-loop-func
 		cy.getTableCell('Agreement Number', i).then($tableCell => {
 			cy.wrap($tableCell)
 				.scrollIntoView()
-				.then(function ($numberCellText) {
+				.then($numberCellText => {
 					cy.getTableCell(gridField, i).then($tableCell => {
 						cy.wrap($tableCell)
 							.scrollIntoView()
-							.then(function ($nameCellText) {
+							.then($nameCellText => {
 								gridData.push({ agreementNumber: $numberCellText.text(), [camelize(gridField)]: $nameCellText.text() });
 								cy.wrap(gridData).as('gridData');
 							});

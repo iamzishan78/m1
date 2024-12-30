@@ -1,14 +1,16 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 
+import { useMutation } from '@apollo/client';
+
 //Contexts
+import { ADD_AGREEMENT_TO_FILE_DESCRIPTOR } from 'graphQL/useMutationAddAgreementToFileDescriptor';
+import { DELETE_AGREEMENT_FROM_FILE_DESCRIPTOR } from 'graphQL/useMutationDeleteAgreementFromFileDescriptor';
+
 import { AppContext } from 'AppContext';
 
 import DocumentAssociation from './DocumentAssociation';
 import { DocumentContext } from '../DocumentContext';
-import { useMutation } from '@apollo/client';
-import { ADD_AGREEMENT_TO_FILE_DESCRIPTOR } from 'graphQL/useMutationAddAgreementToFileDescriptor';
-import { DELETE_AGREEMENT_FROM_FILE_DESCRIPTOR } from 'graphQL/useMutationDeleteAgreementFromFileDescriptor';
 
 export default function AssociatedAgreements() {
 	// Initials
@@ -130,7 +132,7 @@ export default function AssociatedAgreements() {
 			addFileLoading={addAgreementsLoading}
 			deleteFileLoading={deleteAgreementLoading}
 			updateDocumentLoading={getAgreementsLoading}
-			href={`/land/agreement/details/{ID}?tenant={TENANT}`}
+			href={'/land/agreement/details/{ID}?tenant={TENANT}'}
 		/>
 	);
 }

@@ -1,15 +1,18 @@
 import { get } from 'lodash';
+import { v4 as uuid } from 'uuid';
+
 import { dividePolygon, makeGeoJSONFromStrings } from 'components/Map/DeckGL/helpers/common';
 import { copy, getPolygonString, processInBatches } from 'components/Shared/functions';
+import { agreementLayerIdentifiers } from 'components/Shared/functions/shapeLayer';
+
+import { ABSTRACTGEOQUERY } from 'graphQL/useQueryAbstractGeo';
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { GET_ES_SIMPLE_WELLS } from 'graphQL/useQueryESSimpleSearchWells';
+import { PLSSSECONDDIVISIONGEO } from 'graphQL/useQueryPLSSSecondDivisionGeo';
+import { RECENT_SUBMITTED_PERMITS_QUERY } from 'graphQL/useQueryRecentSubmittedPermits';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
-import { v4 as uuid } from 'uuid';
-import { agreementLayerIdentifiers } from 'components/Shared/functions/shapeLayer';
-import { RECENT_SUBMITTED_PERMITS_QUERY } from 'graphQL/useQueryRecentSubmittedPermits';
-import { ABSTRACTGEOQUERY } from 'graphQL/useQueryAbstractGeo';
-import { PLSSSECONDDIVISIONGEO } from 'graphQL/useQueryPLSSSecondDivisionGeo';
 
 const queries = {
 	Wells: {
@@ -45,7 +48,9 @@ const handleQuery = (queryHandler, onData) => {
 	const { queryString, getterKey, isLandGridQuery } = queries[queryHandler.identifier] || queries['search'];
 
 	const client = layerController.getValue('client');
-	if (!client) return;
+	if (!client) {
+		return;
+	}
 
 	return new Promise(async (resolve, reject) => {
 		const query = client.watchQuery({
@@ -53,7 +58,6 @@ const handleQuery = (queryHandler, onData) => {
 			variables: queryHandler.variables,
 			fetchPolicy: 'no-cache', // Disable caching for this query
 		});
-
 		// Subscribe to it, and do something with the data
 		queryHandler.observable = query.subscribe(res => {
 			queryHandler.finished = true;
@@ -80,6 +84,8 @@ const handleQuery = (queryHandler, onData) => {
 const getBoundsQuery = async ({
 	layerId,
 	identifier,
+	layerSettings,
+	isFileLayer,
 	boundingState,
 	onData,
 	geoField,
@@ -104,19 +110,29 @@ const getBoundsQuery = async ({
 
 	const zoom = layerController.getValue('zoom');
 
-	const isAgreementLayer = agreementLayerIdentifiers.includes(identifier);
+	const isAgreementLayer = agreementLayerIdentifiers.some(layer =>
+		identifier?.toLowerCase().includes(layer.toLowerCase())
+	);
 
-	if (!filters && !isLandGridQuery) return;
+	if (!filters && !isLandGridQuery) {
+		return;
+	}
 
-	if (!queryHandlers[layerId]) queryHandlers[layerId] = [];
+	if (!queryHandlers[layerId]) {
+		queryHandlers[layerId] = [];
+	}
 
 	queryHandlers[layerId].forEach(queryHandler => {
-		if (!queryHandler.finished) queryHandler.observable.unsubscribe();
+		if (!queryHandler.finished) {
+			queryHandler.observable.unsubscribe();
+		}
 	});
 
 	const { polygon, lastBounds } = boundingState || {};
 
-	if (!polygon) return;
+	if (!polygon) {
+		return;
+	}
 
 	globalStateController.setLayerLoading(layerId, true);
 	let geoPolygons = [polygon];
@@ -137,19 +153,26 @@ const getBoundsQuery = async ({
 	geoPolygons.forEach(geoPolygon => {
 		const { variables = {} } = copy(filters || {});
 
-		if (isAgreementLayer)
+		if (isAgreementLayer) {
 			variables.filters = filters.variables.filters.map(filter => {
-				if (filter.field !== 'shapeJson.properties.type.keyword') return filter;
-
+				if (filter.field !== 'shapeJson.properties.type.keyword') {
+					return filter;
+				}
 				return {
 					field: 'layer.keyword',
-					value: identifier.toLowerCase().replace(/s$/, ''),
+					value: agreementLayerIdentifiers
+						.find(metaKey => identifier?.startsWith(metaKey))
+						.toLowerCase()
+						.replace(/s$/, ''),
 				};
 			});
+		}
 
 		if (isLandGridQuery) {
 			const polygonString = getPolygonString(geoPolygon);
-			if (polygonString) variables.polygon = polygonString;
+			if (polygonString) {
+				variables.polygon = polygonString;
+			}
 		} else {
 			variables.filters.push({
 				type: 'geo_intersects',
@@ -164,6 +187,46 @@ const getBoundsQuery = async ({
 					value: lastBounds?.geometry,
 				});
 			}
+		}
+
+		// Initialize the base projection
+		variables.project = {
+			[geoField]: 1,
+			_id: 1,
+		};
+
+		// Add layer-specific fields
+		if (isFileLayer) {
+			Object.assign(variables.project, {
+				layer: 1,
+				name: 1,
+				fileId: 1,
+				type: 1,
+			});
+		} else {
+			Object.assign(variables.project, {
+				'shapeJson.id': 1,
+				'shapeJson.type': 1,
+				'shapeJson.properties.shapeSubTitle': 1,
+				'shapeJson.properties.shapeLabel': 1,
+				'shapeJson.properties.layerType': 1,
+				'shapeJson.properties.type': 1,
+				'shapeJson.properties.uName': 1,
+				'shapeJson.properties.agreementName': 1,
+				'shapeJson.properties.shapeCenter': 1,
+				shapeCenter: 1,
+				shapeArea: 1,
+			});
+		}
+		if (layerSettings.selectedAttribute) {
+			Object.assign(variables.project, {
+				[layerSettings.selectedAttribute.value.replace('.keyword', '')]: 1,
+			});
+		}
+		if (layerSettings.selectedStrokeAttribute) {
+			Object.assign(variables.project, {
+				[layerSettings.selectedStrokeAttribute.value.replace('.keyword', '')]: 1,
+			});
 		}
 
 		const queryHandler = {
@@ -188,14 +251,18 @@ const getBoundsQuery = async ({
 		if (!queryHandler.finished) {
 			const promise = handleQuery(queryHandler, onData);
 			newPromises.push(promise);
-		} else queryHandler.observable.unsubscribe();
+		} else {
+			queryHandler.observable.unsubscribe();
+		}
 
 		return !queryHandler.finished;
 	});
 	await processInBatches(newPromises, 10);
 
 	queryHandlers[layerId] = queryHandlers[layerId].filter(queryHandler => {
-		if (queryHandler.finished) queryHandler.observable.unsubscribe();
+		if (queryHandler.finished) {
+			queryHandler.observable.unsubscribe();
+		}
 
 		return !queryHandler.finished;
 	});

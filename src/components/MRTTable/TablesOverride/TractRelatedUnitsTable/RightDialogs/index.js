@@ -1,6 +1,8 @@
 import React, { memo } from 'react';
-import { tableGlobalController } from 'hookstate/tableController';
+
 import AddTractUnitDialog from 'components/MRTTable/TablesOverride/TractRelatedUnitsTable/Dialog/AddTractUnitDialog';
+
+import { tableGlobalController } from 'hookstate/tableController';
 
 function TractRelatedUnitsTableDialogs() {
 	const { stateValues } = tableGlobalController.useState(['tractRelatedUnitDialog']);

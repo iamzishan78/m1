@@ -1,9 +1,10 @@
+import ListChips from 'components/Common/ListChips';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import UnitIcon from 'components/Shared/svgIcons/unit';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
-import ListChips from 'components/Common/ListChips';
+
 import { CommonSchema } from './common_schema';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 import ContactNameLink from '../Common/TableCells/ContactNameLink';
 
 const esIndex = 'shapeowners_flat';
@@ -338,10 +339,14 @@ const UnitInterestMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'campaignName.keyword',
-			accessorKey: 'campaignName',
-			header: 'Campaign Name',
-			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
+			type: 'array',
+			name: 'campaigns',
+			accessorFn: row => row?.campaigns,
+			id: 'campaigns',
+			header: 'Campaigns',
+			Cell: ({ row }) => {
+				return <CampaignField value={row?.original?.campaigns} fullWidth disabled />;
+			},
 		},
 
 		{

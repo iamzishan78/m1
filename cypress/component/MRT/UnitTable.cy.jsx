@@ -1,10 +1,13 @@
 /* eslint-disable no-undef */
 import MRTTable from 'components/MRTTable';
-import { basic_timeouts } from '../../../cypress/cypressUtils/data';
-import { globalStateController } from 'hookstate/globalStateController';
-import ldata from '../../fixtures/ldata.json';
+
 import { REVERTCYPRESSDELETE } from 'graphQL/useMutationCommonCypressRevert';
+
+import { globalStateController } from 'hookstate/globalStateController';
+
+import { basic_timeouts } from '../../../cypress/cypressUtils/data';
 import { headers } from '../../cypressUtils/cypressHeaders';
+import ldata from '../../fixtures/ldata.json';
 
 const columns = [
 	{ name: 'M1neral System ID' },
@@ -51,7 +54,7 @@ describe('Unit Table', () => {
 				cy.interceptAndWait(
 					['gridGenericRemove'],
 					alias => {
-						cy.get(`[data-testid="over-ride-select-all-div"] input`).click();
+						cy.get('[data-testid="over-ride-select-all-div"] input').click();
 
 						cy.get('.MuiButtonBase-root[data-testid="delete-icon-button"]').click();
 

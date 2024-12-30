@@ -1,30 +1,34 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useDispatch, useSelector } from 'react-redux';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { Tooltip } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
 
 //icons
-import IconButton from '@material-ui/core/IconButton';
-
 import Grid from '@material-ui/core/Grid';
-import AddIcon from '@material-ui/icons/Add';
-import DetailsIcon from '@material-ui/icons/Settings';
-import DragIndicator from '@material-ui/icons/DragIndicator';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import IconButton from '@material-ui/core/IconButton';
 import RootRef from '@material-ui/core/RootRef';
+import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import TextField from '@material-ui/core/TextField';
+import AddIcon from '@material-ui/icons/Add';
+import DragIndicator from '@material-ui/icons/DragIndicator';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
-import { Tooltip } from '@material-ui/core';
+import DetailsIcon from '@material-ui/icons/Settings';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
 import { useLazyQuery } from '@apollo/client';
-import { AppContext } from 'AppContext';
-import { DEALSCOUNTINANSTAGE } from 'graphQL/useQueryNonDeletedDealsCountInAnStageByPipeline';
+
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+
+import { DEALSCOUNTINANSTAGE } from 'graphQL/useQueryNonDeletedDealsCountInAnStageByPipeline';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(() => ({
 	lanesRoot: {
@@ -181,9 +185,9 @@ export default function LanesInfoPanel({
 				...state,
 				uniuniversalCircularLoaderAct: false,
 			}));
-			if (dataDealsCountByStage.nonDeletedDealsCountInAnStageByPipeline.dealsCount > 0)
+			if (dataDealsCountByStage.nonDeletedDealsCountInAnStageByPipeline.dealsCount > 0) {
 				dispatch(showWarningMessage('There are deals associated to this stage, please remove them first.'));
-			else {
+			} else {
 				setDeleteDialogOpen(true);
 			}
 		}
@@ -203,9 +207,9 @@ export default function LanesInfoPanel({
 	}, [openPipeDialog, selectedPipe, setStages, stageToSetIndex]);
 
 	const removeStage = (stage, index) => {
-		if (stages.length === 1)
+		if (stages.length === 1) {
 			dispatch(showWarningMessage("The stage can't be deleted, the pipeline needs at least one stage."));
-		else {
+		} else {
 			if (stage?._id && selectedPipe) {
 				setStateApp(state => ({
 					...state,
@@ -244,7 +248,9 @@ export default function LanesInfoPanel({
 	};
 
 	const handleAddStage = () => {
-		if (stagesError) setStageError(false);
+		if (stagesError) {
+			setStageError(false);
+		}
 		setStages([
 			...stages,
 			{
@@ -314,7 +320,9 @@ export default function LanesInfoPanel({
 																			value={stage.name}
 																			onChange={event => {
 																				handleCellTextChange(event.target.value, 'name', index);
-																				if (stagesError) setStageError(false);
+																				if (stagesError) {
+																					setStageError(false);
+																				}
 																			}}
 																		/>
 
@@ -439,7 +447,7 @@ export default function LanesInfoPanel({
 					maxWidth="sm"
 				>
 					<DeleteConfirmationDialogContent
-						header={deleteDialogOpen === 'pipe' ? `Delete Flowline` : `Delete Stage`}
+						header={deleteDialogOpen === 'pipe' ? 'Delete Flowline' : 'Delete Stage'}
 						onClose={handleCloseDeleteDialog}
 						deleteFunc={deleteFunc ? deleteFunc : () => {}}
 						m1nSelectedRowsIds={null}

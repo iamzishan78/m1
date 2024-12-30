@@ -1,45 +1,50 @@
 import React, { useContext, useState, useEffect } from 'react';
-import update from 'immutability-helper';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
-import { AppContext } from 'AppContext';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+
 import { Typography } from '@material-ui/core';
-import Dialog from '@material-ui/core/Dialog';
-import Checkbox from '@material-ui/core/Checkbox';
 import { Collapse } from '@material-ui/core';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import { copy, deepEqual, deepEqualObjects } from 'components/Shared/functions';
-import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
-import { useMutation } from '@apollo/client';
 import { IconButton } from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import DeleteConfirmationDialog from '../DeleteConfirmationDialog';
-import Box from '@material-ui/core/Box';
+import { Popper, Grow, Paper, MenuList, MenuItem } from '@material-ui/core';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
-import UploadIcon from 'components/Shared/svgIcons/uploadIcon';
-import EditableTextField from 'components/Shared/components/Fields/EditableTextField';
-import { truncate } from 'components/Shared/functions';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import { Popper, Grow, Paper, MenuList, MenuItem } from '@material-ui/core';
-import EditIcon from '@material-ui/icons/Edit';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import Dialog from '@material-ui/core/Dialog';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { Close as ClearButton } from '@material-ui/icons';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
-import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
-import { useHistory } from 'react-router-dom';
+import { useMutation } from '@apollo/client';
+import update from 'immutability-helper';
+
+import EditableTextField from 'components/Shared/components/Fields/EditableTextField';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+import { copy, deepEqual, deepEqualObjects } from 'components/Shared/functions';
+import { truncate } from 'components/Shared/functions';
+import UploadIcon from 'components/Shared/svgIcons/uploadIcon';
 
-import { showInfoMessage } from 'actions';
-import { useDispatch } from 'react-redux';
-import Button from '@material-ui/core/Button';
+import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
+import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
+
+import { showInfoMessage } from 'actions';
+import { AppContext } from 'AppContext';
+
+import DeleteConfirmationDialog from '../DeleteConfirmationDialog';
 
 const useStyles = makeStyles(theme => ({
 	subHeaderItem: {
@@ -196,12 +201,14 @@ export default function AddLayer(props) {
 	useEffect(() => {
 		checkAllLayers(M1Layers, 'M1');
 		checkAllLayers(UdLayers, 'UD');
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currentLayers]);
 
 	useEffect(() => {
 		if (!deepEqual(currentLayers, globalStateValues.layers)) {
 			setCurrentLayers(copy(globalStateValues.layers));
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currentLayers, layers]);
 
 	const handleClick = event => {
@@ -275,7 +282,9 @@ export default function AddLayer(props) {
 		if (layers) {
 			for (let index = 0; index < layers.length; index++) {
 				if (layers[index].type === 'group') {
-					if (layers[index].layers.find(layer => layer.layerSettings.showable === false)) check = false;
+					if (layers[index].layers.find(layer => layer.layerSettings.showable === false)) {
+						check = false;
+					}
 				} else if (layers[index].layerSettings.showable === false) {
 					check = false;
 				}
@@ -369,13 +378,17 @@ export default function AddLayer(props) {
 	};
 
 	const checkIfDeleteAllow = layer => {
-		if (layer.name === 'Agreements' || layer.groupName === 'Agreements') return false;
+		if (layer.name === 'Agreements' || layer.groupName === 'Agreements') {
+			return false;
+		}
 		return true;
 	};
 
 	const checkIfcustomLayerCopy = layer => {
 		const customLayers = ['Units', 'Parcels', 'Tracts', 'Agreements', 'Deeds', 'Leases', 'Contracts', 'Surfaces'];
-		if (customLayers.includes(layer.identifier)) return false;
+		if (customLayers.includes(layer.identifier)) {
+			return false;
+		}
 		// Checking if layer.layerName starts with any customLayers
 		return customLayers.some(customLayer => layer.identifier.startsWith(customLayer));
 	};
@@ -406,8 +419,6 @@ export default function AddLayer(props) {
 			UdLayer => !((UdLayer.layerType === 'file layer' || UdLayer.groupName === 'Agreements') && UdLayer.groupId)
 		);
 	}, [currentLayers]);
-
-	console.log(UdLayers);
 
 	return (
 		<ClickAwayListener onClickAway={() => {}}>
@@ -483,6 +494,8 @@ export default function AddLayer(props) {
 														/>
 													</StyledListItem>
 												);
+											} else {
+												return null;
 											}
 										})}
 									</List>
@@ -532,8 +545,11 @@ export default function AddLayer(props) {
 															style={{ paddingLeft: 0, marginTop: 0, marginBottom: 0 }}
 															onClick={() => {
 																const _index = openUDLayers.findIndex(l => l === index);
-																if (_index === -1) setUDLayersStates([...openUDLayers, index]);
-																else setUDLayersStates(openUDLayers.filter(l => l !== index));
+																if (_index === -1) {
+																	setUDLayersStates([...openUDLayers, index]);
+																} else {
+																	setUDLayersStates(openUDLayers.filter(l => l !== index));
+																}
 															}}
 														>
 															<StyledListItem>
@@ -676,7 +692,7 @@ export default function AddLayer(props) {
 																			edge="end"
 																			size="small"
 																			onClick={() => {
-																				history.push(`/bulkupload/units`);
+																				history.push('/bulkupload/units');
 																			}}
 																		>
 																			<UploadIcon opacity="1.0" small />
@@ -692,7 +708,7 @@ export default function AddLayer(props) {
 																			edge="end"
 																			size="small"
 																			onClick={() => {
-																				history.push(`/bulkupload/tracts`);
+																				history.push('/bulkupload/tracts');
 																			}}
 																		>
 																			<UploadIcon opacity="1.0" small />
@@ -704,6 +720,7 @@ export default function AddLayer(props) {
 													);
 												}
 											}
+											return null;
 										})}
 									</List>
 								</Collapse>
@@ -714,7 +731,7 @@ export default function AddLayer(props) {
 					{openDeleteDialog && (
 						<Dialog
 							className={classes.dialog}
-							open={openDeleteDialog ? true : false}
+							open={openDeleteDialog}
 							onClose={() => {
 								setOpenDeleteDialog(false);
 							}}
@@ -722,9 +739,9 @@ export default function AddLayer(props) {
 							maxWidth={'sm'}
 						>
 							<DeleteConfirmationDialog
-								openDialog={openDeleteDialog ? true : false}
+								openDialog={openDeleteDialog}
 								handleDialogClose={setOpenDeleteDialog}
-								layer={openDeleteDialog}
+								layer={actionItem.layer || actionItem.group}
 							/>
 						</Dialog>
 					)}
@@ -751,7 +768,7 @@ export default function AddLayer(props) {
 										<MenuItem
 											onClick={e => {
 												e.stopPropagation();
-												setOpenDeleteDialog(actionItem.layer || actionItem.group);
+												setOpenDeleteDialog(Boolean(actionItem.layer || actionItem.group));
 												handleMenuClose();
 											}}
 										>

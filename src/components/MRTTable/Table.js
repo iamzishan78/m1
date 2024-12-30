@@ -1,15 +1,21 @@
 import React, { memo } from 'react';
+
 // Importing React and memo for component optimization by memoizing the Table component.
+import { ErrorBoundary } from 'react-error-boundary';
+
+import { MaterialReactTable } from 'material-react-table';
+
+import AllDialogs from 'components/MRTTable/Common/Dialog';
 import useTableESSimple from 'components/MRTTable/Hooks/useTableESSimple';
 // Custom hook to handle table setup and state for the ElasticSearch Simple table.
-import AllDialogs from 'components/MRTTable/Common/Dialog';
 // Importing a component that handles dialogs for the table.
-import { ErrorBoundary } from 'react-error-boundary';
+
 // Importing ErrorBoundary to catch and handle errors in the component tree.
 import MRTFallback from 'components/MRTTable/MRTFallBack';
+
 // Importing a fallback component to render when an error occurs.
-import { MaterialReactTable } from 'material-react-table';
 // Importing the MaterialReactTable component to render the table.
+import { tableController } from 'hookstate/tableController';
 
 function Table({ tableKey }) {
 	// Functional component Table accepts tableKey as props.
@@ -32,7 +38,7 @@ function Table({ tableKey }) {
 						// Spreading the state properties specific to the table into the state prop.
 					}}
 				/>
-				<AllDialogs tableKey={tableKey} />
+				<AllDialogs tableKey={tableKey} controller={tableController} />
 				{/* Rendering AllDialogs component. */}
 			</div>
 		</ErrorBoundary>

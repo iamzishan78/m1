@@ -1,4 +1,5 @@
 import commaNumber from 'comma-number';
+
 export default function vf_number(value, toFixed) {
 	const numberValue = typeof value === 'number' ? value : parseFloat(value);
 

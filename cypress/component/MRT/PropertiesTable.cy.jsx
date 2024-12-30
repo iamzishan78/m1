@@ -2,6 +2,7 @@
 
 // Importing MRTTable component
 import MRTTable from 'components/MRTTable';
+
 import { basic_timeouts } from '../../cypressUtils/data';
 
 // Definition of columns for the table

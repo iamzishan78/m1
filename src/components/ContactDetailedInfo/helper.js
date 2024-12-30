@@ -1,8 +1,10 @@
 import CircularProgress from '@material-ui/core/CircularProgress';
+
 import { anyToDate } from '@amcharts/amcharts4/.internal/core/utils/Utils';
-import { LinkTypes } from '../ContactDetailCard/components/FieldContent/helper';
-import moment from 'moment';
 import _ from 'lodash';
+import moment from 'moment';
+
+import { LinkTypes } from '../ContactDetailCard/components/FieldContent/helper';
 
 export const entityTypeOptions = [
 	{ label: 'CORPORATION', value: 'CORPORATION' },
@@ -213,13 +215,6 @@ export const getBasicInfoExpContent = (contactData, metafields = []) => {
 		}
 	}
 
-	let campaignName;
-	if (typeof contactData?.campaignName === 'string') {
-		campaignName = contactData?.campaignName;
-	} else if (Array.isArray(contactData?.campaignName)) {
-		campaignName = contactData.campaignName;
-	}
-
 	const formFields = {
 		'Mobile Phone 3': {
 			data: { mobilephone3: contactData?.mobilephone3 },
@@ -300,8 +295,8 @@ export const getBasicInfoExpContent = (contactData, metafields = []) => {
 			data: { outcome: contactData?.outcome },
 			linkType: LinkTypes.None,
 		},
-		'Campaign Name': {
-			data: { campaignName },
+		Campaigns: {
+			data: { campaigns: contactData?.campaigns || [] },
 			linkType: LinkTypes.None,
 		},
 		'Lead Source': {

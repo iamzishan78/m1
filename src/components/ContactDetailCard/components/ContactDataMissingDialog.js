@@ -1,10 +1,13 @@
 import React from 'react';
+
 import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
-import { Modals } from 'styles/Modal';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+
 import get from 'lodash/get';
+
+import { Modals } from 'styles/Modal';
 
 export default function ContactDataMissingDialog(props) {
 	const modalClass = Modals();

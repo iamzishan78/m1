@@ -1,15 +1,21 @@
 import React, { useContext, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
+
 import { useMutation } from '@apollo/client';
-import { UPDATELAYER } from '../../../graphQL/useMutationUpdateLayer';
-import { AppContext } from '../../../AppContext';
-import { useDispatch } from 'react-redux';
-import { setMainMapState, showErrorMessage, showSuccessMessage } from 'actions';
+
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
+
 import { layerController } from 'hookstate/layerStateController';
+
+import { setMainMapState, showErrorMessage, showSuccessMessage } from 'actions';
+
+import { AppContext } from '../../../AppContext';
+import { UPDATELAYER } from '../../../graphQL/useMutationUpdateLayer';
 
 export default function DeleteConfirmationDialog(props) {
 	const dispatch = useDispatch();
@@ -72,10 +78,11 @@ export default function DeleteConfirmationDialog(props) {
 			updateManyLayer({
 				variables: {
 					layers: props.layer.layers.map(layer => ({ _id: layer.layerId, IsDeleted: true })),
+					layerGroupId: props.layer.id,
 				},
-				refetchQueries: ['getAllLayerSettingsByUser'],
+				refetchQueries: ['getAllLayerSettingsByUser', 'getLayerGroups'],
 			});
-		} else
+		} else {
 			updateLayer({
 				variables: {
 					layer: {
@@ -86,6 +93,7 @@ export default function DeleteConfirmationDialog(props) {
 				refetchQueries: ['getAllLayerSettingsByUser'],
 				// awaitRefetchQueries: true,
 			});
+		}
 	};
 
 	return (

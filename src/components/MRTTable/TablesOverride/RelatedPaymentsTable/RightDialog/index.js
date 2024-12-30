@@ -1,12 +1,17 @@
 import React, { useContext } from 'react';
-import { detailCardController } from 'hookstate/detailCardController';
-import AddNewRelatedData from 'components/Land/components/Common/AddNewRelatedData';
-import { get, toNumber } from 'lodash';
-import { tableGlobalController } from 'hookstate/tableController';
+
 import { useMutation } from '@apollo/client';
+import { get, toNumber } from 'lodash';
+
+import AddNewRelatedData from 'components/Land/components/Common/AddNewRelatedData';
+
 import { ADD_PAYMENT } from 'graphQL/useMutationAddPayment';
-import { AppContext } from 'AppContext';
 import { UPDATE_PAYMENT } from 'graphQL/useMutationUpdatePayment';
+
+import { detailCardController } from 'hookstate/detailCardController';
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { AppContext } from 'AppContext';
 
 const onCompletion = setLoader => {
 	detailCardController.updateState({ drawer: '' });

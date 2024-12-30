@@ -1,22 +1,24 @@
 import React, { useContext, useEffect } from 'react';
-import TabPanels from 'components/Shared/TabPanels';
-import { AppContext } from 'AppContext';
+
 import MRTTable from 'components/MRTTable';
-import { tableController } from 'hookstate/tableController';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+import TabPanels from 'components/Shared/TabPanels';
+
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { AppContext } from 'AppContext';
 
 function Units() {
 	const [stateApp] = useContext(AppContext);
 
 	const {
 		stateValues: { tabKey: selectedTab },
-	} = simpleTableGlobalController.useState(['tabKey']);
-
-	const tableKey = ['UnitTable', 'UnitInterestTable'];
+	} = tableGlobalController.useState(['tabKey']);
 
 	useEffect(() => {
+		const tableKey = ['UnitTable', 'UnitInterestTable'];
+
 		tableController(tableKey[selectedTab]).setGlobalFilter(stateApp.landSearchQuery);
-	}, [stateApp.landSearchQuery]);
+	}, [selectedTab, stateApp.landSearchQuery]);
 
 	return (
 		<div

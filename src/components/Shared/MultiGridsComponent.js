@@ -1,31 +1,21 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { AppContext } from 'AppContext';
-import { useLazyQuery } from '@apollo/client';
-import Card from '@material-ui/core/Card';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { setMapGridCardState } from 'actions';
-import OwnersSummaryCard from 'components/OwnersSummaryCard/OwnersSummaryCard';
-import { TabPanel } from 'components/Shared/TabPanels';
-import ContactDetailedInfo from 'components/ContactDetailedInfo/ContactDetailedInfo';
-import ActivitiesTable from 'components/Table/Activities/ActivitiesTable';
-import RelatedContactsTable from 'components/Table/Contact/RelatedContactTable';
-import ContactWellInterestTable from 'components/Table/Contact/ContactWellInterestTable';
-import ContactParcelInterestTable from 'components/Table/Contact/ContactParcelInterestTable';
-import ContactTaxRollInterestTable from 'components/Table/Contact/ContactTaxRollInterestTable';
-import ContactRelatedAgreementTable from 'components/Table/Contact/ContactRelatedAgreementTable';
-import UnitInterestsTable from 'components/Table/Unit/UnitInterestsTable';
-import ContactDealsProvider from 'components/DealsDetailCard/ContactDealsProvider';
-import ContactDocumentsProvider from 'components/ViewDocuments/ContactDocumentsProvider';
+import React, { useState, useContext, useEffect, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 
 import { CircularProgress, Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import { makeStyles } from '@material-ui/core/styles';
 
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import { AGREEMENT_PAYMENT_SUMMARY } from 'graphQL/useQueryAgreementPaymentSummary';
-import { mapControlsController } from 'hookstate/mapControlsController';
+import { useLazyQuery } from '@apollo/client';
+
 import MRTTable from 'components/MRTTable';
-import { useMemo } from 'react';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+
+import { AGREEMENT_PAYMENT_SUMMARY } from 'graphQL/useQueryAgreementPaymentSummary';
+
+import { mapControlsController } from 'hookstate/mapControlsController';
 import { tableController } from 'hookstate/tableController';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	card: {
@@ -144,14 +134,10 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
 	// function state
 	const [searchTapValue, SearchTapValue] = useState(multiGridInitialData[0]);
 
-	// selectorsW
-	const { mapGridCardActiveTap, selectedOwner } = useSelector(({ MapGridCard }) => MapGridCard, shallowEqual);
 	const mapLayersPanelExtended = useSelector(({ MainMap }) => MainMap.mapLayersPanelExtended);
 	const userGridViewFilters = useSelector(({ session }) => session.userGridViewSettings?.filters);
 
 	const { mapControlsStateValues } = mapControlsController.useState(['mapGridCardActivated'], 'mapControlsStateValues');
-
-	const dispatch = useDispatch();
 
 	const setSearchTapValue = state => {
 		if (searchTapValue !== state) {
@@ -163,7 +149,6 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
 	const classes = useStyles({
 		mapLayersPanelExtended,
 		mapGridCardActivated: mapControlsStateValues.mapGridCardActivated,
-		mapGridCardActiveTap,
 		viewportWells: stateApp.viewportWells,
 		userGridViewFilters,
 		// screenSizes
@@ -181,14 +166,32 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
 	}, [getAgreementPaymentData, rest.paymentId]);
 
 	useEffect(() => {
-		tableController('RelatedPayeesTable').setFilter({ field: 'payments.paymentId', value: rest.paymentId });
-		tableController('RelatedBillingPartiesTable').setFilter({
-			field: 'billingParties.paymentId',
-			value: rest.paymentId,
+		tableController('RelatedPayeesTable').updateState({
+			defaultFilters: [
+				{
+					field: 'payments.paymentId',
+					value: rest.paymentId,
+					isArrayKey: true,
+				},
+			],
 		});
-		tableController('RelatedCostAllocationsTable').setFilter({
-			field: 'costAllocations.paymentId',
-			value: rest.paymentId,
+		tableController('RelatedBillingPartiesTable').updateState({
+			defaultFilters: [
+				{
+					field: 'billingParties.paymentId',
+					value: rest.paymentId,
+					isArrayKey: true,
+				},
+			],
+		});
+		tableController('RelatedCostAllocationsTable').updateState({
+			defaultFilters: [
+				{
+					field: 'costAllocations.paymentId',
+					value: rest.paymentId,
+					isArrayKey: true,
+				},
+			],
 		});
 	}, [rest.paymentId, searchTapValue.value]);
 
@@ -238,176 +241,70 @@ function MultiGridsComponent({ multiGridInitialData, moduleId, title, getCounts,
 		return agreementPaymentData ? agreementPaymentData.agreementPaymentSummary[value] : 0;
 	};
 
-	if (!getCounts) getCounts = getAgreementPaymentRelatedCount;
+	if (!getCounts) {
+		getCounts = getAgreementPaymentRelatedCount;
+	}
 
 	const handleSearchPanelChange = value => {
 		setSearchTapValue(value);
-		if (searchTapValue.index !== value.index) {
-			dispatch(setMapGridCardState({ searchResultData: [], searchloading: true }));
-		}
 	};
 
 	return (
 		<div className={classes.card}>
 			<Card className={classes.dockMenu}>
-				{selectedOwner ? (
-					<OwnersSummaryCard />
-				) : (
-					<div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`} style={{ position: 'relative' }}>
-						{/* //// search panel //// */}
-						<TabPanel
-							value={mapGridCardActiveTap}
-							index={0}
-							className={classes.tapsPanelsPadding}
-							style={{ width: '100%', height: '100%' }}
-						>
-							<Grid container direction="row" style={{ height: '100%', marginBottom: '20px' }}>
-								<Grid item md={2} className={classes.selectorOptions}>
-									<Typography variant="h6" component="h1" style={{ fontWeight: 'bold', padding: '10px 0px 0px 20px' }}>
-										{title}
-									</Typography>
+				<div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`} style={{ position: 'relative' }}>
+					<Grid container direction="row" style={{ height: '100%', marginBottom: '20px' }}>
+						<Grid item md={2} className={classes.selectorOptions}>
+							<Typography variant="h6" component="h1" style={{ fontWeight: 'bold', padding: '10px 0px 0px 20px' }}>
+								{title}
+							</Typography>
 
-									<List component="nav" aria-label="main mailbox folders">
-										{multiGridInitialData.map(row => {
-											const Icon = row?.Icon;
-											return (
-												<FeatureFlag feature={row.feature} noCheck={!row.feature}>
-													<ListItem
-														button
-														selected={row.value === searchTapValue.value}
-														onClick={() => handleSearchPanelChange(row)}
-													>
-														{Icon && (
-															<ListItemIcon style={{ minWidth: '40px' }}>
-																<Icon />
-															</ListItemIcon>
-														)}
+							<List component="nav" aria-label="main mailbox folders">
+								{multiGridInitialData.map(row => {
+									const Icon = row?.Icon;
+									return (
+										<FeatureFlag feature={row.feature} noCheck={!row.feature}>
+											<ListItem
+												button
+												selected={row.value === searchTapValue.value}
+												onClick={() => handleSearchPanelChange(row)}
+											>
+												{Icon && (
+													<ListItemIcon style={{ minWidth: '40px' }}>
+														<Icon />
+													</ListItemIcon>
+												)}
 
-														<ListItemText id={row.label}>
-															{row.label}
-															{isLoading ? (
-																<CircularProgress size="1rem" />
-															) : (
-																`(${row.showCounts && getCounts ? getCounts(row.value) : ''})`
-															)}
-														</ListItemText>
-													</ListItem>
-												</FeatureFlag>
-											);
-										})}
-									</List>
-								</Grid>
+												<ListItemText id={row.label}>
+													{row.label}
+													{isLoading ? (
+														<CircularProgress size="1rem" />
+													) : (
+														`(${row.showCounts && getCounts ? getCounts(row.value) : ''})`
+													)}
+												</ListItemText>
+											</ListItem>
+										</FeatureFlag>
+									);
+								})}
+							</List>
+						</Grid>
 
-								<Grid item md={10} style={{ padding: '0px' }}>
-									<div style={{ position: 'relative' }} classes={classes.gridTables}>
-										{searchTapValue.value === 'contactInformation' && (
-											<ContactDetailedInfo
-												user={stateApp.user}
-												purchaseData={rest.purchaseData}
-												contactData={rest.contactData}
-											/>
-										)}
-										{searchTapValue.value === 'activities' && (
-											<ActivitiesTable
-												esIndex={'activities_flat'}
-												id="activitiesInterestsTable"
-												searchFields={['name', '_all']}
-												filtersChange={() => {}}
-												appliedFilters={[
-													{
-														field: 'contactName.keyword',
-														value: rest.contactData?.name,
-													},
-												]}
-												filterToggle={() => {}}
-												targetLabel={'activitiesDashboard'}
-												header="Activities"
-												addAble={{ type: 'contactActivity' }}
-												onAddActivity={rest.onAddActivity}
-												dialogType="activitySideDialog"
-												applyCustomClasses
-											/>
-										)}
-										{searchTapValue.value === 'taxRollInterests' && (
-											<ContactTaxRollInterestTable
-												parent="assocTaxRollInterests"
-												id="taxInterestsTable"
-												header={'Tax Roll Interests'}
-												targetLabel="well"
-												contactId={rest.contactData._id}
-												showTracks
-											/>
-										)}
-										{searchTapValue.value === 'wellInterests' && (
-											<ContactWellInterestTable
-												parent="assocTaxRollInterests"
-												header={'Well Interests'}
-												targetLabel="well"
-												contactId={rest.contactData._id}
-												id="wellInterestsTable"
-												showTracks
-											/>
-										)}
-										{searchTapValue.value === 'unitInterests' && (
-											<UnitInterestsTable
-												parent="assocTaxRollInterests"
-												header={'Unit Interests'}
-												targetLabel="contactUnits"
-												id="unitInterestTable"
-												esFilters={[{ field: 'contact._id', value: rest.contactData._id }]}
-												esIndex="shapeowners_flat"
-												setESFilters={() => {}}
-												onTractCount={() => {}}
-											/>
-										)}
-										{searchTapValue.value === 'tractInterests' && (
-											<ContactParcelInterestTable
-												parent="contactAssocTaxRollInterests"
-												header={'Tract Interests'}
-												id="tractInterestTable"
-												targetLabel="parcel"
-												contactId={rest.contactData._id}
-												showTracks
-											/>
-										)}
-										{searchTapValue.value === 'deals' && <ContactDealsProvider />}
-										{searchTapValue.value === 'documents' && (
-											<ContactDocumentsProvider contactId={rest.contactData._id} />
-										)}
-										{searchTapValue.value === 'relatedContacts' && (
-											<RelatedContactsTable contactId={rest.contactData._id} />
-										)}
-										{searchTapValue.value === 'relatedAgreements' && (
-											<ContactRelatedAgreementTable
-												dense
-												moduleId={rest.contactData._id}
-												setDrawer={rest.setDrawer}
-												setCounter={() => {}}
-												esFilters={[{ field: 'contact._id', value: rest.contactData._id }]}
-												targetLabel="Shape"
-												setESFilters={() => {}}
-												onTractCount={() => {}}
-											/>
-										)}
-
-										{searchTapValue.value === 'payees' && (
-											<MRTTable name={'RelatedPayeesTable'} overrideMeta={overrideMetaRelatedPayees} />
-										)}
-										{searchTapValue.value === 'billingParties' && (
-											<MRTTable name={'RelatedBillingPartiesTable'} overrideMeta={overrideMetaRelatedBillingParties} />
-										)}
-										{searchTapValue.value === 'costAllocations' && (
-											<MRTTable
-												name={'RelatedCostAllocationsTable'}
-												overrideMeta={overrideMetaRelatedCostAllocations}
-											/>
-										)}
-									</div>
-								</Grid>
-							</Grid>
-						</TabPanel>
-					</div>
-				)}
+						<Grid item md={10} style={{ padding: '0px' }}>
+							<div style={{ position: 'relative' }} classes={classes.gridTables}>
+								{searchTapValue.value === 'payees' && (
+									<MRTTable name={'RelatedPayeesTable'} overrideMeta={overrideMetaRelatedPayees} />
+								)}
+								{searchTapValue.value === 'billingParties' && (
+									<MRTTable name={'RelatedBillingPartiesTable'} overrideMeta={overrideMetaRelatedBillingParties} />
+								)}
+								{searchTapValue.value === 'costAllocations' && (
+									<MRTTable name={'RelatedCostAllocationsTable'} overrideMeta={overrideMetaRelatedCostAllocations} />
+								)}
+							</div>
+						</Grid>
+					</Grid>
+				</div>
 			</Card>
 		</div>
 	);

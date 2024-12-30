@@ -1,12 +1,17 @@
 import { deepEqual } from 'components/Shared/functions';
+import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
+
 import { hookStateController } from 'hookstate/hookStateController';
+
 import { globalStateController } from './globalStateController';
-import { layerController } from './layerStateController';
 import { layerFilterInitialState, layerFilters } from './initialStates';
+import { layerController } from './layerStateController';
 
 const layerFiltersControllerHandler = state => ({
 	setVariables: (layerType, variables) => {
-		if (!layerType) return;
+		if (!layerType) {
+			return;
+		}
 
 		let filters = layerFilters[layerType].get({ noproxy: true }) || {};
 
@@ -30,7 +35,9 @@ const layerFiltersControllerHandler = state => ({
 	resetVariables: (layerType, mapViewFilters = []) => {
 		const initialVariables = layerFilterInitialState[layerType]?.variables;
 
-		if (!initialVariables) return;
+		if (!initialVariables) {
+			return;
+		}
 
 		const filters = layerFilters[layerType].get({ noproxy: true });
 
@@ -50,23 +57,33 @@ const layerFiltersControllerHandler = state => ({
 			const layer = layers?.[index - 1];
 			index--;
 
-			if (!layer.layerSettings.showable) continue;
+			if (!layer.layerSettings.showable) {
+				continue;
+			}
 
 			id = layerFiltersController.getFirstLayer(layer.identifier);
 
-			if (id) break;
+			if (id) {
+				break;
+			}
 		}
 
 		return id;
 	},
 	updateLayerIds: (layerType, firstLayer, lastLayer) => {
-		if (!layerType) return;
+		if (!layerType) {
+			return;
+		}
 
 		const filters = layerFilters[layerType].get({ noproxy: true });
 
-		if (!filters) return;
+		if (!filters) {
+			return;
+		}
 
-		if (filters.firstLayer === firstLayer && filters.lastLayer === lastLayer) return;
+		if (filters.firstLayer === firstLayer && filters.lastLayer === lastLayer) {
+			return;
+		}
 
 		const updatedFilters = {
 			...filters,
@@ -74,10 +91,14 @@ const layerFiltersControllerHandler = state => ({
 			lastLayer,
 		};
 
-		if (!deepEqual(filters, updatedFilters)) layerFilters[layerType]?.set(updatedFilters);
+		if (!deepEqual(filters, updatedFilters)) {
+			layerFilters[layerType]?.set(updatedFilters);
+		}
 	},
 	getFirstLayer: layerType => {
-		if (!layerType) return;
+		if (!layerType) {
+			return;
+		}
 
 		const filters = layerFilters[layerType].get({ noproxy: true });
 
@@ -113,6 +134,20 @@ const layerFiltersControllerHandler = state => ({
 		setTimeout(() => {
 			state.polygonsFilter.set(polygons);
 		}, 100);
+	},
+
+	updateLayerFiltersFromMapViews: (dataSourceName, mapViewFilters) => {
+		mapViewFilters = mapViewFilters.filter(filter => filter.dataSourceName === dataSourceName);
+		const state = layerFiltersController.getValue([dataSourceName]); // Get layer filters from hookstate
+		const initialFilters = state?.variables?.filters || []; // Get initial filters
+		let filters = initialFilters.filter(filter => !filter.isMapViewFilter); // Remove existing filter
+		filters = [
+			...filters,
+			...mapViewFilters.map(mapView =>
+				getFormattedFilterBasedOnType(mapView.filterType, mapView.fieldName, mapView.filterValues)
+			),
+		];
+		layerFiltersController.setVariables(dataSourceName, { filters });
 	},
 });
 

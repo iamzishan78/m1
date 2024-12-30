@@ -1,27 +1,29 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Drawer from '@material-ui/core/Drawer';
-import Button from '@material-ui/core/Button';
-import Switch from '@material-ui/core/Switch';
-import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core';
-import MenuItem from '@material-ui/core/MenuItem';
-import IconButton from '@material-ui/core/IconButton';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Drawer from '@material-ui/core/Drawer';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import Switch from '@material-ui/core/Switch';
 
-import { AppContext } from 'AppContext';
-import Tags from 'components/Shared/Tagger';
-import { getMapFilters } from 'utils/helper';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import { NavigationContext } from 'components/Navigation/NavigationContext';
 import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
 import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
-import { NavigationContext } from 'components/Navigation/NavigationContext';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import Tags from 'components/Shared/Tagger';
 
-import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import { drawController } from 'hookstate/drawStateController';
+
+import { getMapFilters } from 'utils/helper';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -69,7 +71,6 @@ const ConvertTaxOwnerToContact = ({
 	const [stateNav] = useContext(NavigationContext);
 	const { user } = stateApp;
 	const [newTagsIds, setNewTagsIds] = useState([]);
-	const [searchCampaign, setSearchCampaign] = useState('');
 	const [includeFilter, setIncludeFilter] = useState(true);
 	const [campaigns, setCampaigns] = useState([]);
 	const { control, getValues, watch } = useForm();
@@ -82,10 +83,9 @@ const ConvertTaxOwnerToContact = ({
 
 	useEffect(() => {
 		getContactCampaignAction({
-			search: searchCampaign ? `${searchCampaign}*` : '*',
+			search: '*',
 		});
-		// eslint-disable-next-line
-	}, [searchCampaign]);
+	}, [getContactCampaignAction]);
 
 	useEffect(() => {
 		if (!includeFilter) {
@@ -94,7 +94,6 @@ const ConvertTaxOwnerToContact = ({
 				userId: user.mongoId,
 			});
 		}
-		// eslint-disable-next-line
 	}, [includeFilter]);
 
 	useEffect(() => {
@@ -107,7 +106,6 @@ const ConvertTaxOwnerToContact = ({
 				search,
 			});
 		}
-		// eslint-disable-next-line
 	}, [
 		includeFilter,
 		stateNav.operatorName,
@@ -215,16 +213,15 @@ const ConvertTaxOwnerToContact = ({
 					<label className={classes.bold}>Campaign Names</label>
 					<Controller
 						control={control}
-						name="campaignNames"
+						name="campaigns"
 						render={params => (
-							<CampaignNameField
+							<CampaignField
 								{...params}
 								value={params.value}
 								className={classes.maxWidth}
-								onChange={(values, id) => {
-									const _campaigns = [...campaigns, { id, name: values[values.length - 1] }];
+								onChange={values => {
 									params.onChange(values);
-									setCampaigns(_campaigns);
+									setCampaigns(values.map(val => ({ ...val, id: val._id })));
 								}}
 								fullWidth
 								targetLabel="Shape"

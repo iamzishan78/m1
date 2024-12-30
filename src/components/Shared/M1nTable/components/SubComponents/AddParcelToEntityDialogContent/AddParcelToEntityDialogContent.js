@@ -1,33 +1,35 @@
 import React, { useContext, useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+
+import { Grid } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { Grid } from '@material-ui/core';
-import { AppContext } from '../../../../../../AppContext';
-import { Modals } from '../../../../../../styles/Modal';
-import { useMutation, useLazyQuery } from '@apollo/client';
-import { ADDOWNERTOAPARCEL } from '../../../../../../graphQL/useMutationAddOwnerToAParcel';
-import { makeStyles } from '@material-ui/core/styles';
-import { useDispatch } from 'react-redux';
-import { showErrorMessage, showSuccessMessage, setAddParcelInterestState } from '../../../../../../actions';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import AutocompEntityNamesVirtualizeList from '../AutocompEntityNamesVirtualizeList';
-import { ALLENTITYNAMESFORPARCEL } from '../../../../../../graphQL/useQueryAllEntityNamesToAddAsParcelOwner';
-import CircularProgress from '@material-ui/core/CircularProgress';
-
-import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
 import StepContent from '@material-ui/core/StepContent';
-import Button from '@material-ui/core/Button';
+import StepLabel from '@material-ui/core/StepLabel';
+import Stepper from '@material-ui/core/Stepper';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
+
 import InterestStep from './InterestStep';
 import ParcelStep from './ParcelStep/ParcelStep';
+import { showErrorMessage, showSuccessMessage, setAddParcelInterestState } from '../../../../../../actions';
+import { AppContext } from '../../../../../../AppContext';
+import { ADDOWNERTOAPARCEL } from '../../../../../../graphQL/useMutationAddOwnerToAParcel';
+import { ALLENTITYNAMESFORPARCEL } from '../../../../../../graphQL/useQueryAllEntityNamesToAddAsParcelOwner';
+import { Modals } from '../../../../../../styles/Modal';
+import AutocompEntityNamesVirtualizeList from '../AutocompEntityNamesVirtualizeList';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -96,7 +98,9 @@ export default function AddParcelToEntityDialogContent(props) {
 	}, []);
 
 	const handleNext = () => {
-		if (activeStep !== steps.length - 1) setActiveStep(prevActiveStep => prevActiveStep + 1);
+		if (activeStep !== steps.length - 1) {
+			setActiveStep(prevActiveStep => prevActiveStep + 1);
+		}
 	};
 
 	const handleBack = () => {

@@ -1,24 +1,29 @@
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
-import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
-import vf_currency from 'components/Shared/valueformatters/vf_currency';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActionMenu';
-import IsContactCell from 'components/MRTTable/Common/TableCells/isContactIcone';
-import OwnersPerUnitToolBar from 'components/MRTTable/TablesOverride/OwnersPerUnit/OwnersPerUnitToolBar';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import ListChips from 'components/Common/ListChips';
-import { addTrailingZeros } from 'components/Shared/functions';
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import UnitIcon from 'components/Shared/svgIcons/unit';
-import Loaders from 'components/Loaders';
-import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
-import { copy } from 'utils/helper';
+
 import { isEmpty, pickBy } from 'lodash';
+
+import ListChips from 'components/Common/ListChips';
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import Loaders from 'components/Loaders';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActionMenu';
+import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
+import IsContactCell from 'components/MRTTable/Common/TableCells/isContactIcone';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import OwnersPerUnitToolBar from 'components/MRTTable/TablesOverride/OwnersPerUnit/OwnersPerUnitToolBar';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import { addTrailingZeros } from 'components/Shared/functions';
+import UnitIcon from 'components/Shared/svgIcons/unit';
+import vf_currency from 'components/Shared/valueformatters/vf_currency';
+
+import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
+
 import { globalStateController } from 'hookstate/globalStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { copy } from 'utils/helper';
 
 const esIndex = 'shapeowners_flat';
 
@@ -471,11 +476,14 @@ const OwnersPerUnitMeta = {
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'campaignName.keyword',
-			accessorFn: row => row?.campaignName,
-			id: 'campaignName',
-			header: 'Campaign Name',
-			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
+			type: 'array',
+			name: 'campaigns',
+			accessorFn: row => row?.campaigns,
+			id: 'campaigns',
+			header: 'Campaigns',
+			Cell: ({ row }) => {
+				return <CampaignField value={row?.original?.campaigns} fullWidth disabled />;
+			},
 		},
 
 		{

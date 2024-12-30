@@ -1,25 +1,32 @@
 import React from 'react';
+
 import { MenuItem, Box } from '@mui/material';
 
-import { tableController } from 'hookstate/tableController';
 import { tableESSimpleFilterModes } from '../utils/data';
+
 let previousFilter = '';
-function FilterModeMenuItems({ option, tableKey, name, onSelectFilterMode }) {
+function FilterModeMenuItems({ option, tableKey, name, onSelectFilterMode, controller }) {
 	const mode = tableESSimpleFilterModes[option];
 	return (
 		<MenuItem
 			divider={mode.divider}
 			onClick={() => {
-				// When filter is mode equals to between and filter mode is not between, set filter mode to equals and then set filter mode to between
-				if (previousFilter.includes('between') && ['singleselect', 'multiselect'].includes(mode.option)) {
-					tableController(tableKey).setFilterMode(name, 'equals');
+				const isBetween = previousFilter.includes('between');
+				const isSingleMulti = ['singleselect', 'multiselect'].includes(mode.option);
+
+				if (isBetween && isSingleMulti) {
+					controller(tableKey).setFilterMode(name, 'equals');
 					setTimeout(() => {
-						tableController(tableKey).setFilterMode(name, mode.option);
+						controller(tableKey).setFilterMode(name, mode.option);
 						onSelectFilterMode(mode.option);
 					}, 0);
 				} else {
-					tableController(tableKey).setFilterMode(name, mode.option);
+					controller(tableKey).setFilterMode(name, mode.option);
 					onSelectFilterMode(mode.option);
+				}
+
+				if (isSingleMulti) {
+					controller(tableKey).clearFilter(name);
 				}
 
 				previousFilter = mode.option;

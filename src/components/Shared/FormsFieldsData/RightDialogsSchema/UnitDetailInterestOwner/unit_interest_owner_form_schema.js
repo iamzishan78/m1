@@ -1,13 +1,17 @@
-import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
-import { sideDialogController } from 'hookstate/sideDialogController';
+import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
-import IconButton from '@material-ui/core/IconButton';
+
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
-import { calculateStandardNraForUnit } from 'utils/calculatedNraHelper';
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import contactForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/ContactGrid/contact_form_schema';
+
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+
+import { sideDialogController } from 'hookstate/sideDialogController';
+
+import { calculateStandardNraForUnit } from 'utils/calculatedNraHelper';
 
 const calculateOfferPrice = (nra, uUnitPricing = 0) => {
 	if (!uUnitPricing) {
@@ -147,7 +151,9 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 			name: 'nra',
 			type: 'number',
 			isValueOverridden: value => {
-				if (!value) return;
+				if (!value) {
+					return;
+				}
 				const { working_interest, royalty_interest, orri, nri } = getValues() || {};
 
 				const workspaceSettings = sideDialogController('unitInterestDialog').getValue('workspaceSettings');
@@ -248,7 +254,9 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 			name: 'uUnitPricingInterest',
 			defaultValue: uUnitPricing,
 			isValueOverridden: value => {
-				if (!value) return;
+				if (!value) {
+					return;
+				}
 
 				// Check if the uUnitPricing is overriden
 				const isOverride = parseFloat(value.toString()).toFixed(2) !== parseFloat(uUnitPricing).toFixed(2);
@@ -296,7 +304,9 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 			label: 'Target Offer Price',
 			name: 'offer_price',
 			isValueOverridden: value => {
-				if (!value) return;
+				if (!value) {
+					return;
+				}
 				const { nra } = getValues() || {};
 
 				const calculatedOfferPrice = calculateOfferPrice(nra);
@@ -339,7 +349,9 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 			name: 'uMaxUnitPricingInterest',
 			defaultValue: uMaxUnitPricing,
 			isValueOverridden: value => {
-				if (!value) return;
+				if (!value) {
+					return;
+				}
 
 				const isOverride = parseFloat(value.toString()).toFixed(2) !== parseFloat(uMaxUnitPricing).toFixed(2);
 				sideDialogController('unitInterestDialog').updateState({
@@ -387,7 +399,9 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 			label: 'Max Offer Price',
 			name: 'max_offer_price',
 			isValueOverridden: value => {
-				if (!value) return;
+				if (!value) {
+					return;
+				}
 				const { nra } = getValues() || {};
 
 				const calculatedOfferPrice = calculateOfferPrice(nra, uMaxUnitPricing);
@@ -503,9 +517,9 @@ const unitInterestOwnerForm = ({ getValues, setValue, newOwner, metafields = [] 
 			},
 		},
 		{
-			label: 'Campaign Names',
-			name: 'campaignName',
-			renderField: 'campaignName',
+			label: 'Campaigns',
+			name: 'campaigns',
+			renderField: 'campaigns',
 		},
 		{
 			label: 'Campaign Priority',

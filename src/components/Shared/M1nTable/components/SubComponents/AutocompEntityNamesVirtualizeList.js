@@ -1,21 +1,26 @@
 import React from 'react';
-import TextField from '@material-ui/core/TextField';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import PropTypes from 'prop-types';
-import ContactCardIcon from 'components/Shared/svgIcons/contact_card';
-import ContactCardDisabledIcon from 'components/Shared/svgIcons/contact_card_disabled';
 import { useHistory } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
 import { VariableSizeList } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
+
 import { IconButton, Typography } from '@material-ui/core';
 import { Grid } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
 import debounce from 'lodash/debounce';
+import PropTypes from 'prop-types';
+
+import ContactCardIcon from 'components/Shared/svgIcons/contact_card';
+import ContactCardDisabledIcon from 'components/Shared/svgIcons/contact_card_disabled';
 
 // import value formatters
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
+
 import { AppContext } from 'AppContext';
+
 import { fuzzySearch } from '../MUIDataTable/utils';
 
 const LISTBOX_PADDING = 8; // px
@@ -28,7 +33,7 @@ const OuterElementType = React.forwardRef((props, ref) => {
 });
 
 // Adapter for react-window
-const ListboxComponent = React.forwardRef(function ListboxComponent(props, ref) {
+const ListboxComponent = React.forwardRef((props, ref) => {
 	const { children, isItemLoaded, loadMoreItems, itemCount, isNextPageLoading, nameAutInputValue, ...other } = props;
 
 	const itemData = React.Children.toArray(children);
@@ -302,15 +307,19 @@ export default function AutocompEntityNamesVirtualizeList(props) {
 					return option.name;
 				}
 
-				if (option?.name) return option.name;
-				else return '';
+				if (option?.name) {
+					return option.name;
+				} else {
+					return '';
+				}
 			}}
 			getOptionSelected={(option, value) => {
 				return option?._id === value?._id;
 			}}
 			renderOption={option => {
-				if (option._id === 'newEntity')
+				if (option._id === 'newEntity') {
 					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+				}
 
 				return (
 					<Grid container spacing={0}>
@@ -344,8 +353,9 @@ export default function AutocompEntityNamesVirtualizeList(props) {
 			}}
 			onChange={(event, newValue) => {
 				if (newValue && newValue._id) {
-					if (newValue._id !== 'newEntity') setNameAutValue(newValue);
-					else {
+					if (newValue._id !== 'newEntity') {
+						setNameAutValue(newValue);
+					} else {
 						if (addNewOnClick) {
 							addNewOnClick(newValue.name);
 						} else {
@@ -355,7 +365,9 @@ export default function AutocompEntityNamesVirtualizeList(props) {
 							});
 						}
 					}
-				} else setNameAutValue(null);
+				} else {
+					setNameAutValue(null);
+				}
 			}}
 			renderInput={params => (
 				<TextField

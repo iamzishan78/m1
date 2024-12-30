@@ -66,8 +66,9 @@ describe('Verify Well Spec', () => {
 				cy.verifyApiResponse('@getWellsFromDocumentApi', { responseTimeout: longTimeout }).then(wellsResponse2 => {
 					const wellsAfterDocDelete = wellsResponse2.response.body?.data?.getWellDescriptors[0]?.wells;
 
-					if (wellsAfterDocDelete && wellsAfterDocDelete.length !== wellsBeforeDocDelete.length)
-						throw new Error(`Wells are unattached after updating document`);
+					if (wellsAfterDocDelete && wellsAfterDocDelete.length !== wellsBeforeDocDelete.length) {
+						throw new Error('Wells are unattached after updating document');
+					}
 				});
 			});
 		});

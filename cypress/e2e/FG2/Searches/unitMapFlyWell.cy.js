@@ -11,7 +11,7 @@ describe('Unit Map Fly To Spec', () => {
 
 		cy.checkAndLogin('#workSpaceSignin');
 
-		cy.log(`==== STEP:Search UNIT ====`);
+		cy.log('==== STEP:Search UNIT ====');
 		cy.interceptApi('getCustomLayer');
 		cy.searchOnMap('Units', 'u');
 		cy.verifyApiResponse('@getCustomLayerApi', { responseTimeout: longTimeout });
@@ -19,20 +19,20 @@ describe('Unit Map Fly To Spec', () => {
 		cy.get('#expandIcon').click();
 		cy.wait(2000);
 
-		cy.log(`==== STEP:CLICK ON WELL TAB ====`);
+		cy.log('==== STEP:CLICK ON WELL TAB ====');
 		cy.interceptApi('tracksByObjectType');
 
 		cy.get('.MuiTab-wrapper', { timeout: longTimeout }).contains('Wells').click();
 
-		cy.log(`==== STEP:CLICK ON POTENTIAL WELLS ====`);
+		cy.log('==== STEP:CLICK ON POTENTIAL WELLS ====');
 		cy.get('#PotentialWells', { timeout: longTimeout }).click();
 
-		cy.log(`==== STEP:CLICK ON WELL CHECKBOX ====`);
+		cy.log('==== STEP:CLICK ON WELL CHECKBOX ====');
 		cy.get("[id='MUIDataTableSelectCell-0']", { timeout: longTimeout }).click();
 
 		cy.wait(1000);
 
-		cy.log(`==== STEP:CLICK ON ADD WELL ====`);
+		cy.log('==== STEP:CLICK ON ADD WELL ====');
 		cy.interceptApi('getESPaginatedList');
 		cy.interceptApi('AddMultiWellInterestToShape');
 		cy.get('#addWells', { timeout: longTimeout }).click();
@@ -45,7 +45,7 @@ describe('Unit Map Fly To Spec', () => {
 			const golbalWellId = hit.globalWell;
 			const wellId = hit._id;
 
-			cy.log(`==== STEP:CLICK ON MAP-FLY-TO ICON ====`);
+			cy.log('==== STEP:CLICK ON MAP-FLY-TO ICON ====');
 			cy.interceptApi('getESPaginatedList');
 			cy.interceptApi('getTenantWell');
 			cy.interceptApi('getWellSummaryDetail');
@@ -56,7 +56,7 @@ describe('Unit Map Fly To Spec', () => {
 
 			cy.wait(10000);
 
-			cy.log(`==== STEP:VERIFY URL AND CARD ====`);
+			cy.log('==== STEP:VERIFY URL AND CARD ====');
 			cy.url().should('eq', `http://localhost:3000/map/wells/${golbalWellId}`);
 
 			cy.get('#expandableCard', { timeout: longTimeout }).should('be.visible');

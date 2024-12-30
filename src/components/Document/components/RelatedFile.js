@@ -1,41 +1,44 @@
 import React, { useEffect, useState } from 'react';
-import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
+
+import { Typography, Grid } from '@material-ui/core';
+import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import { AppContext } from 'AppContext';
-import { Typography, Grid } from '@material-ui/core';
-import loadashFilter from 'lodash/filter';
-
-import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from '@material-ui/core';
-import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import UploadZone from '../../Shared/UploadZone';
+import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
-import GetAppIcon from '@material-ui/icons/GetApp';
 import DeleteIcon from '@material-ui/icons/Delete';
-import joinAddress from 'components/Shared/valueformatters/join-address.js';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-import AutocompEntityNamesVirtualizeList from 'components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
-import { VIEWFILEQUERY, VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
 import { useLazyQuery, useMutation } from '@apollo/client';
-import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
-import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
-import { CREATEDESCRIPTORFILE } from 'graphQL/useMutationCreateDescriptorFile';
-import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
-import { GET_DOCUMENTS } from 'graphQL/useQueryDocuments';
-import { setStateIfDeepEqual } from 'components/Shared/functions';
-import AutoCompleteDocumentList from 'components/Shared/Forms/Fields/AutoCompleteDocumentList';
+import clsx from 'clsx';
+import loadashFilter from 'lodash/filter';
+import { grey600, grey400 } from 'material-ui/styles/colors';
+
 import GenericDateField from 'components/Shared/components/Fields/GenericDateFIeld';
+import AutoCompleteDocumentList from 'components/Shared/Forms/Fields/AutoCompleteDocumentList';
+import get_file_icon from 'components/Shared/functions/get_file_icon.js';
+import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+import joinAddress from 'components/Shared/valueformatters/join-address.js';
+
+import { CREATEDESCRIPTORFILE } from 'graphQL/useMutationCreateDescriptorFile';
+import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
+import { GET_DOCUMENTS } from 'graphQL/useQueryDocuments';
+import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
+import { VIEWFILEQUERY, VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
+
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { AppContext } from 'AppContext';
+
+import UploadZone from '../../Shared/UploadZone';
 
 // functions
-import get_file_icon from 'components/Shared/functions/get_file_icon.js';
-import { grey600, grey400 } from 'material-ui/styles/colors';
-import { GET_PARCELS_FILES } from 'graphQL/useQueryGetParcelFiles';
 
 const filter = createFilterOptions();
 
@@ -185,12 +188,12 @@ export default function RelatedFile(props) {
 		partyName2: '',
 		fileId: '',
 	};
+	const recentFiles = [];
 	const classes = useStyles();
 	const [stateApp, setStateApp] = React.useContext(AppContext);
 
 	let [loader, setLoader] = useState(false);
 	const [selectedType, setSelectedType] = useState('new');
-	const [recentFiles, setRecentFiles] = useState([]);
 	const [fileData, setFileData] = useState(null);
 	const [newDocument, setNewDocument] = useState(documentInitial);
 	const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
@@ -208,8 +211,6 @@ export default function RelatedFile(props) {
 		_id: null,
 	});
 
-	const [getAllFiles, { data: dataParcelFiles, loading }] = useLazyQuery(GET_PARCELS_FILES);
-
 	const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
 		fetchPolicy: 'no-cache',
 	});
@@ -217,10 +218,10 @@ export default function RelatedFile(props) {
 		fetchPolicy: 'no-cache',
 	});
 	const [updateDocument] = useMutation(UPDATE_DOCUMENT);
-	const [getDocuments, { data: documents }] = useLazyQuery(GET_DOCUMENTS, {
+	const [getDocuments] = useLazyQuery(GET_DOCUMENTS, {
 		fetchPolicy: 'no-cache',
 	});
-	const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(CREATEDESCRIPTORFILE, {
+	const [addFile] = useMutation(CREATEDESCRIPTORFILE, {
 		refetchQueries: ['getRecentContactFiles', 'getParcelFiles', 'shapeSummaryDetails', 'getESSimpleSearch'], // refetch table data on adding new documents
 		awaitRefetchQueries: true,
 	});
@@ -259,6 +260,7 @@ export default function RelatedFile(props) {
 				variables: { fileIds: ID },
 			});
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [fileData]);
 
 	useEffect(() => {
@@ -311,6 +313,7 @@ export default function RelatedFile(props) {
 				setNewDocument(documentInitial);
 			}
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [stateApp.selectedDocument]);
 
 	const UpDatefileFN = () => {
@@ -341,23 +344,17 @@ export default function RelatedFile(props) {
 			refetchQueries: ['getParcelFiles', 'getESSimpleSearch'],
 			awaitRefetchQueries: true,
 		}).then(() => {
-			if (props.relatedObjectId && props.relatedObjectType) {
+			if (props.relatedObjectId && props.relatedObjectType && selectedType === 'new') {
 				addExistingDocument();
 			} else {
-				// props.getAllFiles({
-				//   variables: {
-				//     relatedObjectId: props.relatedObjectId,
-				//     relatedObjectType: props.relatedObjectType,
-				//   },
-				// });
 				props.setShowDocumentSlider(false);
 				setNameAutValueParty1({ name: '', _id: null });
 				setNameAutValueParty2({ name: '', _id: null });
 				setNewDocument(documentInitial);
 				setLoader(false);
+				tableGlobalController.refetch();
 			}
 		});
-		// }
 	};
 
 	const addExistingDocument = () => {
@@ -380,6 +377,7 @@ export default function RelatedFile(props) {
 			setNameAutValueParty2({ name: '', _id: null });
 			setNewDocument(documentInitial);
 			setLoader(false);
+			tableGlobalController.refetch();
 		});
 	};
 
@@ -424,11 +422,12 @@ export default function RelatedFile(props) {
 				setNameAutValueParty2({ name: '', _id: null });
 				setOpenDeleteConfirmDialog(false);
 				setLoader(false);
+				tableGlobalController.refetch();
 			});
 		}
 	};
 
-	const [viewFiles, { data: viewFileSResult, loading: viewFileSLoading }] = useLazyQuery(VIEWFILESQUERY, {
+	const [viewFiles, { data: viewFileSResult }] = useLazyQuery(VIEWFILESQUERY, {
 		fetchPolicy: 'no-cache',
 	});
 
@@ -943,6 +942,8 @@ export default function RelatedFile(props) {
 										</LightTooltip>
 									</div>
 								);
+							} else {
+								return null;
 							}
 						})}
 						{/* <div style={{width:'150px',marginLeft:'20px'}}>
@@ -1016,6 +1017,8 @@ export default function RelatedFile(props) {
 										</LightTooltip>
 									</div>
 								);
+							} else {
+								return null;
 							}
 						})}
 					</div>
@@ -1066,7 +1069,6 @@ export default function RelatedFile(props) {
 							addExistingDocument();
 						} else {
 							if (fileData || newDocument.fileId) {
-								setLoader(true);
 								UpDatefileFN();
 							}
 						}
@@ -1147,15 +1149,19 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 					return option.name;
 				}
 
-				if (option?.name) return option.name;
-				else return '';
+				if (option?.name) {
+					return option.name;
+				} else {
+					return '';
+				}
 			}}
 			getOptionSelected={(option, value) => {
 				return option?._id === value?._id;
 			}}
 			renderOption={option => {
-				if (option._id === 'newEntity')
+				if (option._id === 'newEntity') {
 					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+				}
 
 				return (
 					<Grid container spacing={0}>
@@ -1192,9 +1198,14 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 			}}
 			onChange={(event, newValue) => {
 				if (newValue && newValue._id) {
-					if (newValue._id !== 'newEntity') setDocumentType(newValue);
-					else setDocumentType({ _id: 'newEntity', name: newValue.name });
-				} else setDocumentType('');
+					if (newValue._id !== 'newEntity') {
+						setDocumentType(newValue);
+					} else {
+						setDocumentType({ _id: 'newEntity', name: newValue.name });
+					}
+				} else {
+					setDocumentType('');
+				}
 			}}
 			renderInput={params => (
 				<TextField
@@ -1207,63 +1218,6 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 				/>
 			)}
 			{...other}
-		/>
-	);
-};
-
-const ContactPaginatedDropdown = ({ nameAutValue, setNameAutValue }) => {
-	const classes = useStyles();
-	const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
-	const [hasNextPage, setHasNextPage] = useState(true);
-	const [isNextPageLoading, setIsNextPageLoading] = useState(false);
-	const [nameAutInputValue, NameAutInputValue] = useState('');
-	const setNameAutInputValue = newState => {
-		setStateIfDeepEqual(NameAutInputValue, newState);
-	};
-
-	const [getPaginatedContacts, { data: allContacts, loading: contactsLoading, fetchMore: fetchMorePaginatedContacts }] =
-		useLazyQuery(PAGINATEDCONTACTSQUERY, {
-			fetchPolicy: 'cache-and-network',
-			nextFetchPolicy: 'cache-first',
-		});
-
-	useEffect(() => {
-		if (allContacts?.paginatedContacts) {
-			setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map(el => el.node)]);
-			setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
-		}
-		setIsNextPageLoading(false);
-	}, [allContacts]);
-
-	useEffect(() => {
-		//will also run during initial mount
-		setIsNextPageLoading(true);
-		getPaginatedContacts({
-			variables: {
-				search: nameAutInputValue,
-			},
-		});
-	}, [nameAutInputValue]);
-
-	const loadNextPage = async pageVariables => {
-		setIsNextPageLoading(true);
-		fetchMorePaginatedContacts(pageVariables);
-		return null;
-	};
-
-	return (
-		<AutocompEntityNamesVirtualizeList
-			className={classes.maxWidth}
-			mongoEntitiesArray={mongoEntitiesArray}
-			setMongoEntitiesArray={setMongoEntitiesArray}
-			nameAutValue={nameAutValue}
-			setNameAutValue={setNameAutValue}
-			nameAutInputValue={nameAutInputValue}
-			setNameAutInputValue={setNameAutInputValue}
-			hasNextPage={hasNextPage}
-			isNextPageLoading={isNextPageLoading}
-			loadNextPage={loadNextPage}
-			addNew={true}
 		/>
 	);
 };

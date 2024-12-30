@@ -1,28 +1,33 @@
 import React, { useContext, useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+
+import { Grid } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { Grid } from '@material-ui/core';
-import { useLazyQuery, useMutation } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import CloseIcon from '@material-ui/icons/Close';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+
 import EntityType from 'components/ContactDetailCard/components/FieldContent/EntityType';
 import { contactStatusOptions, featureFlagChanges } from 'components/ContactDetailedInfo/helper';
-import { useSelector } from 'react-redux';
-import { AppContext } from '../../../../../AppContext';
-import { Modals } from '../../../../../styles/Modal';
-import { PAGINATEDCONTACTSQUERY } from '../../../../../graphQL/useQueryPaginatedContacts';
-import { ADDCONTACT } from '../../../../../graphQL/useMutationAddContact';
-import RightDialog from '../../../../ContactDetailCard/components/RightDialog';
-import { GETMONGOUSERS } from '../../../../../graphQL/useQueryGetUsers';
-import Taps from '../../../Taps';
+
 import { tableGlobalController } from 'hookstate/tableController';
+
+import { AppContext } from '../../../../../AppContext';
+import { ADDCONTACT } from '../../../../../graphQL/useMutationAddContact';
+import { GETMONGOUSERS } from '../../../../../graphQL/useQueryGetUsers';
+import { PAGINATEDCONTACTSQUERY } from '../../../../../graphQL/useQueryPaginatedContacts';
+import { Modals } from '../../../../../styles/Modal';
+import RightDialog from '../../../../ContactDetailCard/components/RightDialog';
+import Taps from '../../../Taps';
 
 const phonenumber = inputtxt => {
 	if (inputtxt.match(/^([0-9]||-|\(|\)|\.|,)+$/) !== null) {

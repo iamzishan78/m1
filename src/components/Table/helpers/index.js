@@ -1,15 +1,18 @@
 import React, { useContext, useState } from 'react';
-import { AppContext } from '../../../AppContext';
 import { useDispatch } from 'react-redux';
+
 import { Breadcrumbs, Typography, IconButton } from '@material-ui/core';
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Menu, MenuItem } from '@material-ui/core';
-import { AutoCompleteFilter } from '../AutoCompleteFilter';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+
 import get from 'lodash/get';
+import moment from 'moment';
 
 import { setCurrentUserGridViewAction } from 'store/actions/sessionActions';
-import moment from 'moment';
+
+import { AppContext } from '../../../AppContext';
+import { AutoCompleteFilter } from '../AutoCompleteFilter';
 
 export const handleTagColumn = (TableHeader, cleanAvailableTags) => {
 	return cleanAvailableTags.length > 0
@@ -63,22 +66,28 @@ export const handleCustomFilterColumns = (TableHeader, filterObject) => {
 };
 
 export const setColumnDisplayAndFilter = (TableHeader, selectedGridView, column) => {
-	if (!TableHeader) return;
+	if (!TableHeader) {
+		return;
+	}
 	if (selectedGridView?.columns) {
 		const col = selectedGridView.columns.find(col => col.name === column.name);
 		if (col && typeof col.display !== 'undefined') {
 			column.options.display = col.display;
-			if (col.hasOwnProperty('viewColumns')) column.options.viewColumns = col.viewColumns;
+			if (col.hasOwnProperty('viewColumns')) {
+				column.options.viewColumns = col.viewColumns;
+			}
 			if (column.esKey && !column.noFilter) {
 				column.options.filter = true;
 			}
 		} else if (column.name !== ' ') {
 			const tableHeaderCol = TableHeader.find(tH => tH.name === column.name);
 			if (tableHeaderCol) {
-				if (typeof tableHeaderCol?.options?.display !== 'undefined')
+				if (typeof tableHeaderCol?.options?.display !== 'undefined') {
 					column.options.display = tableHeaderCol.options.display;
-				if (typeof tableHeaderCol?.options?.filter !== 'undefined')
+				}
+				if (typeof tableHeaderCol?.options?.filter !== 'undefined') {
 					column.options.filter = tableHeaderCol.options.filter;
+				}
 			} else {
 				column.options.display = false;
 				column.options.filter = false;

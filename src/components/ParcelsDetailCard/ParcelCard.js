@@ -1,36 +1,39 @@
+// import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+
+// QUERIES
 import React, { useState, useContext, useEffect, useRef } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
+
+import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
-import Typography from '@material-ui/core/Typography';
+import CardContent from '@material-ui/core/CardContent';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
+import Typography from '@material-ui/core/Typography';
 import LayerIcon from '@material-ui/icons/Layers';
-import Button from '@material-ui/core/Button';
 
-import WellIcon from '../WellCard/components/svgIcons/WellIcon';
-import OwnershipIcon from '../WellCard/components/svgIcons/OwnershipIcon';
-import DescriptionIcon from '../WellCard/components/svgIcons/DescriptionIcon';
-// import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+import { useLazyQuery } from '@apollo/client';
+
+// contexts
+import { getPolygonString } from 'components/Shared/functions';
+
+import { GET_PARCELS_FILES_COUNT } from 'graphQL/useQueryGetParcelFiles';
+import { SHAPEWELLSCOUNT } from 'graphQL/useQueryShapeWellsCount';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { popupController } from 'hookstate/popupStateController';
 
 import ParcelsDetailCard from './ParcelsDetailCard';
 import { getParcelOriginalProperties } from './utils/GetParcelOriginalProps';
-
-// QUERIES
-import { useLazyQuery } from '@apollo/client';
-import { GET_PARCELS_FILES_COUNT } from 'graphQL/useQueryGetParcelFiles';
 import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
-
-// contexts
 import { ExpandableCardContext } from '../ExpandableCard/ExpandableCardContext';
-import { SHAPEWELLSCOUNT } from 'graphQL/useQueryShapeWellsCount';
-import { getPolygonString } from 'components/Shared/functions';
-import { popupController } from 'hookstate/popupStateController';
-import { globalStateController } from 'hookstate/globalStateController';
+import DescriptionIcon from '../WellCard/components/svgIcons/DescriptionIcon';
+import OwnershipIcon from '../WellCard/components/svgIcons/OwnershipIcon';
+import WellIcon from '../WellCard/components/svgIcons/WellIcon';
 
 const useStyles = makeStyles(theme => ({
 	card: {
@@ -161,13 +164,14 @@ export default function ParcelCard(props) {
 	}, [parcelObj]);
 
 	useEffect(() => {
-		if (parcelObj)
+		if (parcelObj) {
 			getParcelFilesCount({
 				variables: {
 					relatedObjectId: parcelObj?._id || globalStateController.getValue('user'),
 					relatedObjectType: 'Parcel',
 				},
 			});
+		}
 	}, [parcelObj]);
 
 	useEffect(() => {

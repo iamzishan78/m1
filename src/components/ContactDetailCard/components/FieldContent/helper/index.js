@@ -44,10 +44,14 @@ export const textFieldLabels = field => {
 };
 
 export const getHrefValue = (linkValue, linkType) => {
-	if (linkType == LinkTypes.Mail) return `mailto:${linkValue}`;
-	if (linkType == LinkTypes.Simple)
+	if (linkType == LinkTypes.Mail) {
+		return `mailto:${linkValue}`;
+	}
+	if (linkType == LinkTypes.Simple) {
 		return `${!linkValue.startsWith('http') && !linkValue.startsWith('//') ? '//' : ''}${linkValue}`;
-	else return linkValue;
+	} else {
+		return linkValue;
+	}
 };
 
 export const outcomeOptions = ['Interested', 'Left Message', 'No Response', 'Not Interested', 'Unable to Reach'];

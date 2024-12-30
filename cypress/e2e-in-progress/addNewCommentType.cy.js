@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 
 import { basic_timeouts } from '../../cypressUtils/data';
+
 const eachComment = '12345';
 describe('Add new Comment Type spec', () => {
 	it('passes', () => {
