@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { Button } from '@material-ui/core';
 
 import { useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import { ADD_MULTI_WELLINTEREST_TO_CONTACT } from 'graphQL/useMutationAddMultiWellInterestToContact';
 
@@ -27,32 +28,34 @@ function ContactTaxRollInterestToolbar({ table, tableKey }) {
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
 
-	const [addMultiWellInterestToContact, { data }] = useMutation(ADD_MULTI_WELLINTEREST_TO_CONTACT, {
+	const [addMultiWellInterestToContact] = useMutation(ADD_MULTI_WELLINTEREST_TO_CONTACT, {
 		refetchQueries: ['getContactWells'],
 		awaitRefetchQueries: true,
+		onCompleted: data => {
+			tableController(tableKey).updateState({
+				isLoading: false,
+				isFetching: false,
+			});
+
+			if (data?.addMultiWellInterestToContact?.success) {
+				dispatch(showSuccessMessage(data?.addMultiWellInterestToContact?.message));
+			} else {
+				dispatch(showErrorMessage(data?.addMultiWellInterestToContact?.message));
+			}
+		},
 	});
 
-	const addWellInterestToContact = async e => {
+	const addWellInterestToContact = e => {
 		e.stopPropagation();
 		const { contactId } = Controller.getValue('customProps');
 
 		table.resetRowSelection();
 		tableController(tableKey).updateState({
-			isLoading: true,
+			isFetching: true,
 		});
 
-		await addMultiWellInterestToContact({
+		addMultiWellInterestToContact({
 			variables: { wells: selectedRows, contactId: contactId, userId: stateApp.user.mongoId },
-		});
-
-		if (data?.addMultiWellInterestToContact?.success) {
-			dispatch(showSuccessMessage(data?.addMultiWellInterestToContact?.message));
-		} else {
-			dispatch(showErrorMessage(data?.addMultiWellInterestToContact?.message));
-		}
-
-		tableController(tableKey).updateState({
-			isLoading: false,
 		});
 	};
 
@@ -68,5 +71,10 @@ function ContactTaxRollInterestToolbar({ table, tableKey }) {
 		</Button>
 	);
 }
+
+ContactTaxRollInterestToolbar.propTypes = {
+	table: PropTypes.object.isRequired,
+	tableKey: PropTypes.string.isRequired,
+};
 
 export default memo(ContactTaxRollInterestToolbar);
