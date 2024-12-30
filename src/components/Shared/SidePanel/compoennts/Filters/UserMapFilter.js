@@ -298,11 +298,19 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 
 		const shapeFileOptions = filterTypeOptions.filter(option => ['singleselect', 'multiselect'].includes(option.value));
 
+		const wellsFilterOptions = filterTypeOptions.filter(option => ['multiselect'].includes(option.value));
+
 		const selectedField = getSelectedField(mapView?.fieldName) || fieldName;
 
 		// Making filter options based on selected dataset
-		const requiredFilterOptions =
-			dataSourceName && customLayersFieldAccessors[dataSourceName] ? filterTypeOptions : shapeFileOptions;
+		let requiredFilterOptions = [];
+		if (dataSourceName === 'Wells') {
+			requiredFilterOptions = wellsFilterOptions;
+		} else if (dataSourceName && customLayersFieldAccessors[dataSourceName]) {
+			requiredFilterOptions = filterTypeOptions;
+		} else {
+			requiredFilterOptions = shapeFileOptions;
+		}
 
 		const fileId = dataSourceName?.substring(0, dataSourceName.indexOf('_'));
 		const layerShapeName = dataSourceName?.substring(dataSourceName.indexOf('_') + 1);
