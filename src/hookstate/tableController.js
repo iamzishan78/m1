@@ -238,7 +238,7 @@ const tableESStateControllerHandler = state => ({
 			let selectedGridView =
 				isDefaultGridView || !userDefaultDisplay ? gridViewSettings.defaultView : userDefaultDisplay;
 
-			if (selectedGridView.type === 'Default') {
+			if (selectedGridView?.type === 'Default') {
 				selectedGridView = defaultHandleDefaultView(selectedGridView);
 				if (gridViewSettings.handleDefaultView) {
 					const user = globalStateController.getValue('user');
