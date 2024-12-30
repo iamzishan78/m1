@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
 
 import { isEmpty, pickBy } from 'lodash';
@@ -14,9 +17,7 @@ import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import OwnersPerUnitToolBar from 'components/MRTTable/TablesOverride/OwnersPerUnit/OwnersPerUnitToolBar';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
-import { addTrailingZeros } from 'components/Shared/functions';
 import UnitIcon from 'components/Shared/svgIcons/unit';
-import vf_currency from 'components/Shared/valueformatters/vf_currency';
 
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 
@@ -57,7 +58,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 
 		Loaders.successToast(loaderId, 'Updation Complete');
 		tableGlobalController.refetch();
-	} catch (err) {
+	} catch {
 		Loaders.errorToast(loaderId, 'Failed to Update');
 	}
 };
@@ -249,92 +250,49 @@ const OwnersPerUnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			name: 'working_interest',
 			accessorKey: 'working_interest',
 			header: 'Working Interest',
-			isSearchField: false,
-			type: 'number',
-			enableSorting: true,
-			Cell: ({ renderedCellValue }) => {
-				if (renderedCellValue) {
-					return <>{addTrailingZeros(parseFloat(renderedCellValue).toFixed(8))}</>;
-				}
-			},
 			...CommonSchema.AGGREGATED_FOOTER('working_interest', 'OwnersPerUnitTable'),
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			name: 'royalty_interest',
 			accessorKey: 'royalty_interest',
 			header: 'Royalty Interest',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ renderedCellValue }) => {
-				if (renderedCellValue) {
-					return <>{addTrailingZeros(parseFloat(renderedCellValue).toFixed(8))}</>;
-				}
-			},
 			...CommonSchema.AGGREGATED_FOOTER('royalty_interest', 'OwnersPerUnitTable'),
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			name: 'orri',
 			accessorKey: 'orri',
 			header: 'ORRI',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ renderedCellValue }) => {
-				if (renderedCellValue) {
-					return <>{addTrailingZeros(parseFloat(renderedCellValue).toFixed(8))}</>;
-				}
-			},
 			...CommonSchema.AGGREGATED_FOOTER('orri', 'OwnersPerUnitTable'),
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			name: 'nri',
 			accessorKey: 'nri',
 			header: 'NRI',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => {
-				if (row?.original?.nri) {
-					return <>{addTrailingZeros(parseFloat(row?.original?.nri).toFixed(8))}</>;
-				}
-			},
 			...CommonSchema.AGGREGATED_FOOTER('nri', 'OwnersPerUnitTable'),
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			name: 'net_acres',
 			accessorKey: 'net_acres',
 			header: 'Net Acres',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => {
-				if (row?.original?.net_acres) {
-					return <>{addTrailingZeros(parseFloat(row?.original?.net_acres).toFixed(8))}</>;
-				}
-			},
 			...CommonSchema.AGGREGATED_FOOTER('net_acres', 'OwnersPerUnitTable'),
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			name: 'nra',
 			accessorKey: 'nra',
 			header: 'NRA',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => {
-				if (row?.original?.nra) {
-					return <>{addTrailingZeros(parseFloat(row?.original?.nra).toFixed(8))}</>;
-				}
-			},
 			...CommonSchema.AGGREGATED_FOOTER('nra', 'OwnersPerUnitTable'),
 		},
 
@@ -346,89 +304,61 @@ const OwnersPerUnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			name: 'tractAcres',
 			accessorKey: 'tractAcres',
 			header: 'Unit Tract Acres',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => {
-				if (row?.original?.tractAcres) {
-					return <>{addTrailingZeros(parseFloat(row?.original?.tractAcres).toFixed(8))}</>;
-				}
-			},
 			...CommonSchema.AGGREGATED_FOOTER('tractAcres', 'OwnersPerUnitTable'),
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'seller_asking_price',
 			accessorKey: 'seller_asking_price',
 			header: 'Seller Asking Price',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'competitor_offer_price',
 			accessorKey: 'competitor_offer_price',
 			header: 'Competitor Offer Price',
-			isSearchField: false,
-			type: 'number',
 			size: 300,
-			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'uUnitPricingInterest',
 			accessorKey: 'uUnitPricingInterest',
 			header: 'Target Price/NRA',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'offer_price',
 			accessorKey: 'offer_price',
 			header: 'Target Offer Price',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'uMaxUnitPricingInterest',
 			accessorKey: 'uMaxUnitPricingInterest',
 			header: 'Max Price/NRA',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'max_offer_price',
 			accessorKey: 'max_offer_price',
 			header: 'Max Offer Price',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'actual_offer_price',
 			accessorKey: 'actual_offer_price',
 			header: 'Actual Offer Price',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
 		},
 
 		{

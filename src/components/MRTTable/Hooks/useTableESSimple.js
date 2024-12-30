@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -104,20 +104,21 @@ const useTableESSimple = tableKey => {
 			enableRowVirtualization: !!tableStateValues?.isInFiniteScroll,
 			enableColumnVirtualization: !!tableStateValues?.columnVirtualization,
 			rowVirtualizerInstanceRef, // get access to the virtualizer instance
-			// rowVirtualizerProps: { overscan: 5 },
 			enableDensityToggle: false,
 			enableColumnFilterModes: true,
 			// enableColumnOrdering: true,
-			enableColumnOrdering:
-				typeof tableStateValues?.columnReordering === 'boolean' ? tableStateValues?.columnReordering : true,
+			enableColumnOrdering: tableStateValues?.columnReordering ?? true,
+			enableGrouping: tableStateValues?.columnReordering ?? true,
 			enableColumnResizing: true,
 			enableRowSelection: true,
-			enablePinning: true,
+			enableColumnPinning: true,
 			// enableMultiRowSelection: true,
 			// enableSelectAll: true,
 			enableStickyHeader: true,
 			enableStickyFooter: true,
 			enableSorting: tableStateValues?.grouping.length === 0,
+			enableFullScreenToggle: false,
+
 			muiTableBodyRowProps: row => ({
 				onClick: e => {
 					const { className } = e.target;
@@ -148,6 +149,7 @@ const useTableESSimple = tableKey => {
 			columns: tableStateValues?.TableSchema,
 			data: tableStateValues?.data?.rows || [],
 			enableRowNumbers: true,
+			rowNumberDisplayMode: 'original',
 			muiToolbarAlertBannerProps: tableStateValues?.isError
 				? {
 						color: 'error',
@@ -179,42 +181,17 @@ const useTableESSimple = tableKey => {
 
 			...(isClientSide
 				? {
-						...(tableStateValues?.groupedField && {
-							enableGrouping: true,
-							manualGroupinng: true,
-							onGroupingChange: groupingFunc => {
-								const newGrouping = groupingFunc(tableStateValues.grouping);
-								tableState.grouping.set(newGrouping);
-
-								if (newGrouping.length === 1) {
-									return tableState.sorting.set([
-										{
-											id: newGrouping[0],
-											desc: false,
-										},
-									]);
-								}
-
-								if (newGrouping.length > 0) {
-									tableState.sorting.set([]);
-								}
-								return newGrouping;
-							},
-						}),
 						...(tableStateValues?.isInFiniteScroll && { enablePagination: false }),
 						selectAllMode: tableStateValues?.isSelectAllAllowed ? 'all' : 'page',
 						enableFacetedValues: tableStateValues?.enableFacetedValues,
 					}
 				: {
-						enableGrouping:
-							typeof tableStateValues?.columnReordering === 'boolean' ? tableStateValues?.columnReordering : true,
-						manualGroupinng:
-							typeof tableStateValues?.columnReordering === 'boolean' ? tableStateValues?.columnReordering : true,
+						manualGroupinng: tableStateValues?.columnReordering ?? true,
 						onGroupingChange: groupingFunc => {
 							const newGrouping = groupingFunc(tableStateValues.grouping);
 							tableState.grouping.set(newGrouping);
 
-							if (newGrouping.length === 1) {
+							if (newGrouping.length > 0) {
 								return tableState.sorting.set([
 									{
 										id: newGrouping[0],
@@ -223,9 +200,6 @@ const useTableESSimple = tableKey => {
 								]);
 							}
 
-							if (newGrouping.length > 0) {
-								tableState.sorting.set([]);
-							}
 							return newGrouping;
 						},
 						...(tableStateValues?.isInFiniteScroll && { enablePagination: false }),
@@ -237,7 +211,6 @@ const useTableESSimple = tableKey => {
 								return newPagination;
 							},
 						}),
-						enableFullScreenToggle: false,
 						manualSorting: true,
 						enableHiding: tableStateValues?.enableHiding,
 						manualFiltering: true,

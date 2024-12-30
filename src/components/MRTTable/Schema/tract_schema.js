@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import _ from 'lodash';
 
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
@@ -7,7 +10,6 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import TractIcon from 'components/Shared/svgIcons/tract';
-import vf_currency from 'components/Shared/valueformatters/vf_currency';
 
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 
@@ -53,7 +55,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 		});
 		Loader.successToast(loaderId, 'Updation Complete');
 		tableGlobalController.refetch();
-	} catch (err) {
+	} catch {
 		Loader.errorToast(loaderId, 'Updation in Complete');
 	}
 };
@@ -225,36 +227,36 @@ const TractMeta = {
 			isSearchField: false, // Don't pass in search fields
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
+			type: 'string',
 			name: 'shapeJson.properties.uUnitPricingNMA.keyword',
 			accessorFn: row => row?.original?.uUnitPricingNMA,
 			id: 'shapeJson.properties.uUnitPricingNMA',
 			header: 'Target Pricing (per NMA)',
-			Cell: ({ row }) => <>{vf_currency(row?.original?.uUnitPricingNMA)}</>,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
+			type: 'string',
 			name: 'shapeJson.properties.uMaxUnitPricingNMA.keyword',
 			accessorFn: row => row?.original?.uMaxUnitPricingNMA,
 			id: 'shapeJson.properties.uMaxUnitPricingNMA',
 			header: 'Max Pricing (per NMA)',
-			Cell: ({ row }) => <>{vf_currency(row?.original?.uMaxUnitPricingNMA)}</>,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
+			type: 'string',
 			name: 'shapeJson.properties.uUnitPricing.keyword',
 			accessorFn: row => row?.original?.uUnitPricing,
 			id: 'shapeJson.properties.uUnitPricing',
 			header: 'Target Pricing (per NRA)',
-			Cell: ({ row }) => <>{vf_currency(row?.original?.uUnitPricing)}</>,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
+			type: 'string',
 			name: 'shapeJson.properties.uMaxUnitPricing.keyword',
 			accessorFn: row => row?.original?.uMaxUnitPricing,
 			id: 'shapeJson.properties.uMaxUnitPricing',
 			header: 'Max Pricing (per NRA)',
-			Cell: ({ row }) => <>{vf_currency(row?.original?.uMaxUnitPricing)}</>,
 		},
 		// {
 		// 	...CommonSchema.COMMON_COLUMN,
