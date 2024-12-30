@@ -162,11 +162,11 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 				mapView?.dataSourceName?.value || mapView?.dataSourceName
 			);
 
-			let _filterType = selectedField?.type || filterType;
+			let _filterType = selectedField?.type || mapView.filterType;
 
 			return {
 				dataSourceName: mapView?.dataSourceName?.value || mapView?.dataSourceName,
-				filterType: _filterType?.value || _filterType || mapView.filterType?.value,
+				filterType: _filterType?.value || _filterType,
 				fieldName: mapView?.fieldName?.value || mapView?.fieldName,
 				filterValues: isMultiSelect
 					? mapView.filterValues && isString
