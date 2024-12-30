@@ -1,25 +1,26 @@
+/* Show/Hide columns modal Action Button UI
+		Hides the action buttons */
 .MuiModal-root > .MuiPaper-root > .MuiMenu-list > div > button {
 	display: none;
 }
+
+/* Show/Hide columns modal UI 
+   Removes default padding from the menu list and its direct div children. */
 .MuiModal-root > .MuiPaper-root > .MuiMenu-list > div,
 .MuiModal-root > .MuiPaper-root > .MuiMenu-list {
 	padding: 0;
 }
 
+/* Hides the "Pin to right" button (assuming it has this aria-label). */
 [aria-label='Pin to right'] {
 	display: none !important;
 }
 
+/* Global Search UI
+   Styles the container of the Global Search input field.
+   Ensures the container takes up only the necessary width and vertically centers it. */
 .MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded > .MuiBox-root > .MuiBox-root > .MuiBox-root {
 	min-width: max-content;
 	margin-top: auto;
 	margin-bottom: auto;
-}
-
-.MuiDialog-paperFullScreen {
-	margin-left: 61px !important;
-}
-
-.MuiDialog-paperFullScreen > div {
-	width: auto !important;
 }

@@ -14,6 +14,7 @@ import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOp
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatGridViewToMRT } from 'components/MRTTable/utils/helper';
 import { copy, deepEqual, formatDate } from 'components/Shared/functions';
+import { defaultHandleDefaultView } from 'components/Shared/GridView';
 import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
@@ -234,9 +235,20 @@ const tableESStateControllerHandler = state => ({
 			// Format the fetched grid view for use with a specific grid view library or framework, assumed to be Material-UI's React Table (MRT).
 			formatedGridView = formatGridViewToMRT(userDefaultDisplay);
 
+			let selectedGridView =
+				isDefaultGridView || !userDefaultDisplay ? gridViewSettings.defaultView : userDefaultDisplay;
+
+			if (selectedGridView.type === 'Default') {
+				selectedGridView = defaultHandleDefaultView(selectedGridView);
+				if (gridViewSettings.handleDefaultView) {
+					const user = globalStateController.getValue('user');
+					selectedGridView = gridViewSettings.handleDefaultView(selectedGridView, user);
+				}
+			}
+
 			// Setup the gridView object with the selected grid view configuration and some flags for UI control.
 			gridView = {
-				selectedGridView: isDefaultGridView || !userDefaultDisplay ? gridViewSettings.defaultView : userDefaultDisplay,
+				selectedGridView,
 				showViewModal: false,
 				showSaveAsNew: false,
 			};

@@ -11,7 +11,7 @@ const AcreageSummaryMeta = {
 		pageIndex: 0,
 		pageSize: 25,
 	},
-	defaultSort: { field: '_ts', order: 'asc' },
+	defaultSort: { field: 'state', order: 'asc' },
 	gridViewSettings: {
 		label: 'Acreage Summary',
 		module: 'Acreage Summary',

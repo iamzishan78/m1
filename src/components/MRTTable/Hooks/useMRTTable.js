@@ -107,8 +107,8 @@ const useMRTTable = tableKey => {
 			enableDensityToggle: false,
 			enableColumnFilterModes: true,
 			// enableColumnOrdering: true,
-			enableColumnOrdering:
-				typeof tableStateValues?.columnReordering === 'boolean' ? tableStateValues?.columnReordering : true,
+			enableColumnOrdering: tableStateValues?.columnReordering ?? true,
+			enableGrouping: tableStateValues?.columnReordering ?? true,
 			enableColumnResizing: true,
 			enableRowSelection: true,
 			enableColumnPinning: true,
@@ -117,6 +117,7 @@ const useMRTTable = tableKey => {
 			enableStickyHeader: true,
 			enableStickyFooter: true,
 			enableSorting: tableStateValues?.grouping.length === 0,
+			enableFullScreenToggle: false,
 
 			createDisplayMode: tableStateValues.createDisplayMode,
 			editDisplayMode: tableStateValues.editDisplayMode,
@@ -155,6 +156,7 @@ const useMRTTable = tableKey => {
 			columns: tableStateValues?.TableSchema,
 			data: tableStateValues?.data?.rows || [],
 			enableRowNumbers: true,
+			rowNumberDisplayMode: 'original',
 			muiToolbarAlertBannerProps: tableStateValues?.isError
 				? {
 						color: 'error',
@@ -186,42 +188,17 @@ const useMRTTable = tableKey => {
 
 			...(isClientSide
 				? {
-						...(tableStateValues?.groupedField && {
-							enableGrouping: true,
-							manualGroupinng: true,
-							onGroupingChange: groupingFunc => {
-								const newGrouping = groupingFunc(tableStateValues.grouping);
-								tableState.grouping.set(newGrouping);
-
-								if (newGrouping.length === 1) {
-									return tableState.sorting.set([
-										{
-											id: newGrouping[0],
-											desc: false,
-										},
-									]);
-								}
-
-								if (newGrouping.length > 0) {
-									tableState.sorting.set([]);
-								}
-								return newGrouping;
-							},
-						}),
 						...(tableStateValues?.isInFiniteScroll && { enablePagination: false }),
 						selectAllMode: tableStateValues?.isSelectAllAllowed ? 'all' : 'page',
 						enableFacetedValues: tableStateValues?.enableFacetedValues,
 					}
 				: {
-						enableGrouping:
-							typeof tableStateValues?.columnReordering === 'boolean' ? tableStateValues?.columnReordering : true,
-						manualGroupinng:
-							typeof tableStateValues?.columnReordering === 'boolean' ? tableStateValues?.columnReordering : true,
+						manualGroupinng: tableStateValues?.columnReordering ?? true,
 						onGroupingChange: groupingFunc => {
 							const newGrouping = groupingFunc(tableStateValues.grouping);
 							tableState.grouping.set(newGrouping);
 
-							if (newGrouping.length === 1) {
+							if (newGrouping.length > 0) {
 								return tableState.sorting.set([
 									{
 										id: newGrouping[0],
@@ -230,9 +207,6 @@ const useMRTTable = tableKey => {
 								]);
 							}
 
-							if (newGrouping.length > 0) {
-								tableState.sorting.set([]);
-							}
 							return newGrouping;
 						},
 						...(tableStateValues?.isInFiniteScroll && { enablePagination: false }),
@@ -244,7 +218,6 @@ const useMRTTable = tableKey => {
 								return newPagination;
 							},
 						}),
-						enableFullScreenToggle: false,
 						manualSorting: true,
 						enableHiding: tableStateValues?.enableHiding,
 						manualFiltering: true,
@@ -322,11 +295,11 @@ const useMRTTable = tableKey => {
 
 							const newFilters = _.values(
 								_.merge(
+									_.keyBy(_newFilters, 'id'),
 									_.keyBy(
 										formattedColumnFilters.filter(filter => filter.isMapViewFilter),
 										'id'
-									),
-									_.keyBy(_newFilters, 'id')
+									)
 								)
 							);
 

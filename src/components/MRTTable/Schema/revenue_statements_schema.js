@@ -1,18 +1,17 @@
-// Importing necessary dependencies and components
+/* eslint-disable react/prop-types */
 import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Warning as WarningIcon, CheckCircle } from '@material-ui/icons';
-import { LocalAtm as CurrencyIcon } from '@material-ui/icons';
+import { Warning as WarningIcon, CheckCircle, LocalAtm as CurrencyIcon } from '@material-ui/icons';
 
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
-import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+
 // Define styles for tooltip
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	tooltip: {
 		position: 'absolute',
 		top: 15,
@@ -46,7 +45,7 @@ const RevenueStatementsMeta = {
 			name: 'All Revenue Statements',
 			type: 'Default',
 		},
-		handleDefaultView: (view, user) => {
+		handleDefaultView: view => {
 			return view;
 		},
 		cssOverride: {
@@ -68,7 +67,7 @@ const RevenueStatementsMeta = {
 			accessorKey: 'checkNumber',
 			header: 'Check Number',
 			// Cell rendering for Check Number column
-			Cell: ({ renderedCellValue, row }) => {
+			Cell: ({ row }) => {
 				const checkNumber = row?.original?.checkNumber;
 				const payor = row.getValue('payor.name');
 				return (
@@ -84,13 +83,10 @@ const RevenueStatementsMeta = {
 		},
 		// Column for Check Amount
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'checkAmount',
-			accessorFn: row => vf_currency_to_fixed(row?.checkAmount, 2), //Commma sperated checkamount after each thousand
 			id: 'checkAmount',
 			header: 'Check Amount',
-			isSearchField: false,
-			Cell: ({ row }) => <>{vf_currency_to_fixed(row?.original?.checkAmount, 2)}</>,
 		},
 		// Column for Check Date
 		{
@@ -103,7 +99,7 @@ const RevenueStatementsMeta = {
 			type: 'date',
 			isSearchField: false,
 			// Cell rendering for Check Date column
-			Cell: ({ renderedCellValue, row }) => {
+			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.checkDate)}</>;
 			},
 		},
@@ -140,7 +136,7 @@ const RevenueStatementsMeta = {
 			type: 'date',
 			isSearchField: false,
 			// Cell rendering for Deposit Date column
-			Cell: ({ renderedCellValue, row }) => {
+			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.depositDate)}</>;
 			},
 		},

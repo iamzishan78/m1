@@ -14,6 +14,8 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 
 import { copy } from 'utils/helper';
 
+const PAGE_SIZE = 50;
+
 // Custom hook to handle queries for MRTTable
 const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) => {
 	// Get table controller instance
@@ -272,7 +274,8 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		}
 
 		if (!drawStateValues.selectedPolygonString) {
-			return Controller.clearFilter(tableStateValues.geoKey);
+			Controller.clearFilter(tableStateValues.geoKey);
+			return;
 		}
 
 		if (drawStateValues.selectedPolygonString && drawStateValues.currentFeature) {
@@ -282,7 +285,6 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				value: drawStateValues.currentFeature.geometry,
 			});
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [drawStateValues.selectedPolygonString]);
 
 	// Effect to fetch footer aggregation data and refetch data
@@ -292,7 +294,6 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		}
 
 		fetchFooterAggregationData();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [refetch, tableState.filters]);
 
 	// Effect to reset pagination and scroll to top when filters, sorting, grouping, or global filter change
@@ -305,8 +306,6 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		if (tableStateValues?.data?.rows?.length > 0) {
 			tableRef?.current?.scrollToIndex?.(0);
 		}
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState.filters, tableState.sorting, tableState.grouping, tableState.globalFilter, refetch]);
 
 	// Effect to call query when client-side and query changes
@@ -320,8 +319,6 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		}
 
 		callQuery();
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState.query, tableState.customProps, refetch]);
 
 	// Effect to handle pagination changes for non-infinite scroll tables
@@ -357,7 +354,6 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				callQuery(pagination);
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState.pagination]);
 
 	// Effect to call query initially with default pagination
@@ -376,11 +372,9 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		callQuery({
 			pageIndex: 0,
-			first: tableStateValues?.pageSize || 50,
+			first: tableStateValues?.pageSize || PAGE_SIZE,
 			after: null,
 		});
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		tableState.filters,
 		tableState.searchFields,
@@ -393,7 +387,6 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	]);
 
 	// Callback function to fetch more data when scrolling near the bottom for infinite scroll
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const fetchMoreOnBottomReached = useCallback(
 		debounce(containerRefElement => {
 			if (isClientSide) {
@@ -420,7 +413,9 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 			const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
 
-			if (scrollHeight - scrollTop - clientHeight < 200) {
+			const REFETCH_BUFFER = 200;
+
+			if (scrollHeight - scrollTop - clientHeight < REFETCH_BUFFER) {
 				const tableMeta = tableState.get({ noproxy: true });
 
 				if (!tableMeta) {
@@ -455,7 +450,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				if (tableStateValues.onScrollCheck) {
 					const startIndex = Object.keys(tableStateValues.rowSelection).length;
 					const newstate = tableStateValues.rowSelection;
-					for (let i = startIndex; i < startIndex + 50; i++) {
+					for (let i = startIndex; i < startIndex + PAGE_SIZE; i++) {
 						newstate[i] = true;
 					}
 					Controller.setColumnCheck(newstate);
