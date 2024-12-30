@@ -81,7 +81,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		}
 
 		Controller.updateState({
-			isLoading: true,
+			isLoading: !tableStateValues.data?.rows?.length,
 			isFetching: true,
 			isError: false,
 		});

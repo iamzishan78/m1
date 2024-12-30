@@ -3,6 +3,7 @@ import React, { memo } from 'react';
 import { Button } from '@material-ui/core';
 
 import { useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import { ADD_TRACTS_TOA_SHAPE } from 'graphQL/useMutationAddTractsToAShape';
 
@@ -12,12 +13,20 @@ function TractPotentialUnitsToolBar({ table, tableKey }) {
 	const [addShapeTract] = useMutation(ADD_TRACTS_TOA_SHAPE, {
 		refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
 		awaitRefetchQueries: true,
+		onCompleted: () => {
+			tableController(tableKey).updateState({
+				isLoading: false,
+				isFetching: false,
+			});
+
+			tableGlobalController.setSelectedTab(0);
+		},
 	});
 	const Controller = tableController(tableKey);
 	const tableState = Controller.useState(['rowSelection']);
 	const tableStateValues = tableState.stateValues;
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
-	const addUnitToTract = async e => {
+	const addUnitToTract = e => {
 		const { customLayer } = Controller.getValue('customProps');
 		e.stopPropagation();
 		const shapeTract = {
@@ -41,19 +50,14 @@ function TractPotentialUnitsToolBar({ table, tableKey }) {
 		});
 		table.resetRowSelection();
 		tableController(tableKey).updateState({
-			isLoading: true,
+			isFetching: true,
 		});
-		await addShapeTract({
+		addShapeTract({
 			variables: {
 				shapeTracts: shapeTracts,
 				shapeType: 'Unit',
 			},
 		});
-		tableController(tableKey).updateState({
-			isLoading: false,
-		});
-
-		tableGlobalController.setSelectedTab(0);
 	};
 	const isSomeRowsSelected =
 		table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
@@ -67,5 +71,10 @@ function TractPotentialUnitsToolBar({ table, tableKey }) {
 		</>
 	);
 }
+
+TractPotentialUnitsToolBar.propTypes = {
+	table: PropTypes.object.isRequired,
+	tableKey: PropTypes.string.isRequired,
+};
 
 export default memo(TractPotentialUnitsToolBar);
