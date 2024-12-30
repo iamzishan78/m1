@@ -338,6 +338,10 @@ export const handleMRTSchema = ({
 		.filter(column => column.filter)
 		.reduce((acc, cur) => ({ ...acc, [cur.accessorKey || cur.id]: 'custom' }), {});
 
+	if (!isClientSide) {
+		columnVisibility['mrt-row-select'] = false;
+	}
+
 	return {
 		_TableSchema,
 		tableCss,
