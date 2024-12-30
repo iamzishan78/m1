@@ -149,6 +149,7 @@ const useTableESSimple = tableKey => {
 			columns: tableStateValues?.TableSchema,
 			data: tableStateValues?.data?.rows || [],
 			enableRowNumbers: true,
+			rowNumberDisplayMode: 'original',
 			muiToolbarAlertBannerProps: tableStateValues?.isError
 				? {
 						color: 'error',
@@ -190,7 +191,7 @@ const useTableESSimple = tableKey => {
 							const newGrouping = groupingFunc(tableStateValues.grouping);
 							tableState.grouping.set(newGrouping);
 
-							if (newGrouping.length === 1) {
+							if (newGrouping.length > 0) {
 								return tableState.sorting.set([
 									{
 										id: newGrouping[0],
@@ -199,9 +200,6 @@ const useTableESSimple = tableKey => {
 								]);
 							}
 
-							if (newGrouping.length > 0) {
-								tableState.sorting.set([]);
-							}
 							return newGrouping;
 						},
 						...(tableStateValues?.isInFiniteScroll && { enablePagination: false }),
