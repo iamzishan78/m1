@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import _ from 'lodash';
 
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
@@ -9,7 +12,7 @@ import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import UnitToolbar from 'components/MRTTable/TablesOverride/UnitTable/UnitToolbar';
 import UnitIcon from 'components/Shared/svgIcons/unit';
-import vf_currency from 'components/Shared/valueformatters/vf_currency.js';
+import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
@@ -17,6 +20,7 @@ import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableGlobalController } from 'hookstate/tableController';
 
+import { CURRENCY_TO_FIXED } from 'utils/consts';
 import { copy } from 'utils/helper';
 
 const esIndex = 'shapes_flat';
@@ -56,7 +60,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 		});
 		Loader.successToast(loaderId, 'Updation Complete');
 		tableGlobalController.refetch();
-	} catch (err) {
+	} catch {
 		Loader.errorToast(loaderId, 'Updation in Complete');
 	}
 };
@@ -228,7 +232,7 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uUnitPricing.keyword',
-			accessorFn: row => vf_currency(row?.shapeJson?.properties?.uUnitPricing), // format value with $ sign
+			accessorFn: row => vf_currency_to_fixed(row?.shapeJson?.properties?.uUnitPricing, CURRENCY_TO_FIXED), // format value with $ sign
 			id: 'shapeJson.properties.uUnitPricing',
 			header: 'Target Price/Acre',
 		},
@@ -236,7 +240,7 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uMaxUnitPricing.keyword',
-			accessorFn: row => vf_currency(row?.shapeJson?.properties?.uMaxUnitPricing), // format value with $ sign
+			accessorFn: row => vf_currency_to_fixed(row?.shapeJson?.properties?.uMaxUnitPricing, CURRENCY_TO_FIXED), // format value with $ sign
 			id: 'shapeJson.properties.uMaxUnitPricing',
 			header: 'Max Price/Acre',
 		},

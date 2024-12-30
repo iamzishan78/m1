@@ -1,7 +1,9 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import TractPotentialUnitsToolbar from 'components/MRTTable/TablesOverride/TractPotentialUnitsTable/TractPotentialUnitsToolbar';
-import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 
 import { CommonSchema } from './common_schema';
 
@@ -92,28 +94,22 @@ const TractPotentialUnitsMeta = {
 			header: 'Current Operator',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
+			type: 'string',
 			name: 'shapeJson.properties.uUnitPricing.keyword',
 			accessorKey: 'shapeJson.properties.uUnitPricing',
 			id: 'shapeJson.properties.uUnitPricing',
 			header: 'Target Unit Pricing (Per NRA)',
 			size: 320,
-			Cell: ({ row }) => {
-				const value = row?.original?.shapeJson?.properties?.uUnitPricing;
-				return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ''}</p>;
-			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
+			type: 'string',
 			name: 'shapeJson.properties.uMaxUnitPricing.keyword',
 			accessorKey: 'shapeJson.properties.uMaxUnitPricing',
 			id: 'shapeJson.properties.uMaxUnitPricing',
 			header: 'Max Unit Pricing (Per NRA)',
 			size: 320,
-			Cell: ({ row }) => {
-				const value = row?.original?.shapeJson?.properties?.uMaxUnitPricing;
-				return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ''}</p>;
-			},
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
