@@ -2,17 +2,14 @@ import React, { useRef, useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
-import { Delete } from '@mui/icons-material';
-import { Box, IconButton, Tooltip } from '@mui/material';
-
-import { useApolloClient } from '@apollo/client';
 import _ from 'lodash';
 
 import useHandleAdditionalQueries from 'components/MRTTable/Hooks/useHandleAdditionalQueries';
 
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { tableController } from 'hookstate/tableController';
 
 import useHandleQuery from './useHandleQuery';
+import EditRowActions from '../Common/EditTable/EditRowActions';
 import ToolbarActions from '../Common/ToolbarActions';
 import ToolbarInternalActions from '../Common/ToolbarInternalActions';
 import { tableESSimpleFilterModeOtions } from '../utils/data';
@@ -130,35 +127,7 @@ const useMRTTable = tableKey => {
 				enableRowActions: tableStateValues.enableRowActions,
 				positionActionsColumn: tableStateValues.positionActionsColumn,
 				getRowId: tableStateValues.getRowId,
-				renderRowActions: ({ row }) => {
-					const client = useApolloClient();
-
-					return (
-						<Box sx={{ display: 'flex', gap: '1rem' }}>
-							<Tooltip title="Delete">
-								<IconButton
-									color="error"
-									onClick={() => {
-										tableGlobalController.updateState({
-											dialog: {
-												type: 'deleteGrid',
-												deletedData: row.original,
-												deleteType: 'row',
-												deleteFunc: async row => {
-													await tableStateValues.onDelete(client, row);
-
-													tableGlobalController.refetch();
-												},
-											},
-										});
-									}}
-								>
-									<Delete />
-								</IconButton>
-							</Tooltip>
-						</Box>
-					);
-				},
+				renderRowActions: EditRowActions(tableStateValues.onDelete),
 			}),
 
 			muiTableBodyRowProps: row => ({
