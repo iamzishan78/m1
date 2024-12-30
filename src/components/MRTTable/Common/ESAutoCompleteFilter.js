@@ -34,6 +34,7 @@ const formatValue = (value, field) => {
 function ESAutoCompleteFilter({
 	tableKey,
 	esIndex,
+	modelName,
 	column: {
 		field,
 		label,
@@ -124,6 +125,7 @@ function ESAutoCompleteFilter({
 			getFilters({
 				variables: {
 					esIndex,
+					modelName,
 					index: esIndex,
 					filters:
 						typeof field === 'string'
@@ -396,6 +398,7 @@ function ESAutoCompleteFilter({
 ESAutoCompleteFilter.propTypes = {
 	tableKey: PropTypes.string.isRequired,
 	esIndex: PropTypes.string.isRequired,
+	modelName: PropTypes.string,
 	column: PropTypes.shape({
 		field: PropTypes.string.isRequired,
 		label: PropTypes.string.isRequired,
