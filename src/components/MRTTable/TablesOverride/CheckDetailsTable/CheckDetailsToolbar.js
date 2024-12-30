@@ -47,10 +47,10 @@ function CheckDetailsToolbar({ table, tableKey }) {
 	const client = useApolloClient();
 
 	const saveable = useMemo(() => {
-		const hasEditedData = Object.values(tableStateValues.editedData).some(data => !!data);
+		const hasEditedData = Object.values(tableStateValues.editedData || {}).some(data => !!data);
 
-		const hasErrors = Object.values(tableStateValues.validationErrors).some(rowErrors =>
-			Object.values(rowErrors).some(error => !!error)
+		const hasErrors = Object.values(tableStateValues.validationErrors || {}).some(rowErrors =>
+			Object.values(rowErrors || {}).some(error => !!error)
 		);
 
 		return hasEditedData && !hasErrors;
