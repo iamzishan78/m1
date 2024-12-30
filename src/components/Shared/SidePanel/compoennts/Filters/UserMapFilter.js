@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
 		borderLeft: '5px solid #0E638D', // Left border with a blue accent
 		position: 'relative',
 		color: 'white',
-		height: '400px', // Fixed height for the filter container
+		minHeight: '400px', // Fixed height for the filter container
 	},
 	autoComplete: {
 		marginBottom: '25px', // Margin for spacing between autocomplete fields
