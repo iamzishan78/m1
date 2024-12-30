@@ -59,6 +59,7 @@ import ExistingDeal from './ExistingDeal';
 import AssociatedFlowDealDetails from '../AssociatedFlowDealDetails';
 
 import './dialog.css';
+import { tableGlobalController } from 'hookstate/tableController';
 
 function NumberFormatCustom(props) {
 	const { inputRef, onChange, ...other } = props;
@@ -977,6 +978,7 @@ function AddDealDialog(props) {
 				});
 			}
 		}
+		tableGlobalController.refetch();
 		setUploadedFiles([]);
 	};
 

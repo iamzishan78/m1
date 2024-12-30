@@ -56,6 +56,7 @@ import UnitTractsMeta from './unit_tract_schema';
 import WellsMeta from './wells_schema';
 import RunsheetMeta from './runsheet_schema';
 import WellProductionMeta from './well_production_schema';
+import DealsMeta from './deals_schema';
 
 export const SCHEMA = {
 	ContactTable: ContactMeta,
@@ -120,6 +121,7 @@ export const SCHEMA = {
 	BulkDataEditingTable: BulkDataEditingMeta,
 	CheckDetailsTable: CheckDetailsMeta, // revenue > statement > checkDetails
 	RunsheetTable: RunsheetMeta,
+	DealsTable: DealsMeta,
 
 	// Query Tables
 	PotentialWellOwnersTable: PotentialWellOwnersMeta,

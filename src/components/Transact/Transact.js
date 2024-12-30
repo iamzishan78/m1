@@ -29,7 +29,6 @@ import { setFlowState } from 'actions';
 
 import { UPDATEDEAL } from '../../graphQL/useMutationUpdateDeal';
 import DocViewer from '../Shared/DocViewer';
-import M1nTable from '../Shared/M1nTable/M1nTable';
 
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';
 import { getRandomColor } from 'components/Shared/functions/ui.js';
@@ -45,6 +44,7 @@ import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
 import PipelinesFetchHoc from 'components/Transact/components/Common/PipelinesFetchHoc';
 
 import { getOppositeHexColor } from 'utils/helper';
+import MRTTable from 'components/MRTTable';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -152,7 +152,7 @@ const useStyles = makeStyles(theme => ({
 		},
 		'& div': {
 			'&>.MuiPaper-root': {
-				'&>:nth-child(3)': { minHeight: 'calc(100vh - 258px) !important', maxHeight: 'calc(100vh - 258px) !important' },
+				// '&>:nth-child(3)': { minHeight: 'calc(100vh - 258px) !important', maxHeight: 'calc(100vh - 258px) !important' },
 			},
 		},
 		'& .MuiToolbar-root': { textAlign: 'initial' },
@@ -684,6 +684,49 @@ const Transact = () => {
 			</header>
 		);
 	};
+
+	const DealsOverrideMeta = useMemo(() => {
+		return {
+			defaultFilters: [{ field: 'stage.pipeline.name', value: selectedPipe?.name }],
+			onClickedRow: selectedRow => {
+				history.push(
+					`/flow/${selectedRow?.stage?.pipeline?._id}/lane/${selectedRow?.stage?._id}/card/${selectedRow?._id}`
+				);
+
+				const lane = pipelineData?.pipeline?.lanes?.find(lane => lane.id === selectedRow?.stage?._id);
+				const card = lane?.cards?.find(card => card.id === selectedRow?._id);
+
+				const activeDeal = {
+					cardId: selectedRow?._id,
+					laneId: selectedRow?.stage?._id,
+					laneName: selectedRow?.stage?.name,
+					pipeline: selectedRow?.stage?.pipeline?._id,
+					pipelineName: selectedRow?.stage?.pipeline?.name,
+					ownerName:
+						card?.metadata?.owners && card.metadata.owners[0]?.relatedObject?.name
+							? card.metadata.owners[0].relatedObject.name
+							: null,
+					contactName:
+						card?.metadata?.contacts && card.metadata.contacts[0]?.relatedObject?.entity?.name
+							? card.metadata.contacts[0].relatedObject.entity.name
+							: null,
+					isContact:
+						card?.metadata?.contacts && card.metadata.contacts[0]?.relatedObject?._id
+							? card.metadata.contacts[0].relatedObject._id
+							: null,
+					...card.metadata,
+					...selectedRow,
+				};
+
+				setStateApp(stateApp => ({
+					...stateApp,
+					dealDialog: true,
+					activeDeal,
+				}));
+			},
+		};
+	}, [selectedPipe, pipelineData]);
+
 	return (
 		<div className={classes.root}>
 			{stateApp.viewDoc && <DocViewer width="calc(100vw - 28vw)" />}
@@ -768,14 +811,7 @@ const Transact = () => {
 								//onCardMoveAcrossLanes
 							/>
 						)}
-						{stateApp.dealDisplayType === 'table' && (
-							<M1nTable
-								dense
-								filteredTabTransactData={filteredTabTransactData}
-								parent="TransactDeals"
-								flowLineType={selectedPipe.flowLineType}
-							/>
-						)}
+						{stateApp.dealDisplayType === 'table' && <MRTTable name="DealsTable" overrideMeta={DealsOverrideMeta} />}
 					</div>
 				) : pipeToShow === false ? (
 					<h1 style={{ marginTop: 80 }}>
