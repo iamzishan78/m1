@@ -1,6 +1,8 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
-import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
@@ -105,26 +107,15 @@ const RelatedPaymentsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'amount.keyword',
-			accessorFn: row => row?.amount,
-			id: 'amount',
+			accessorKey: 'amount',
 			type: 'number',
 			header: 'Amount',
-			Cell: ({ row }) => {
-				const value = row?.original?.amount;
-				return value ? vf_currency_to_fixed(parseFloat(value), 2) : value === 0 ? '$0' : '';
-			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'companyShare.keyword',
-			accessorFn: row => row?.companyShare,
-			id: 'companyShare',
+			accessorKey: 'companyShare',
 			header: 'Company Share',
-			type: 'number',
-			Cell: ({ row }) => {
-				const value = row?.original?.companyShare;
-				return value ? vf_currency_to_fixed(parseFloat(value), 2) : value === 0 ? '$0' : '';
-			},
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,

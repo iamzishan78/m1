@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import Grid from '@material-ui/core/Grid';
 
 import _ from 'lodash';
@@ -9,7 +12,6 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import AgreementToolBar from 'components/MRTTable/TablesOverride/AgreementTable/AgreementToolbar';
 import { formatDate } from 'components/Shared/functions';
 import Agreements from 'components/Shared/svgIcons/agreements';
-import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 
@@ -55,7 +57,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 		});
 		Loader.successToast(loaderId, 'Updation Complete');
 		tableGlobalController.refetch();
-	} catch (err) {
+	} catch {
 		Loader.errorToast(loaderId, 'Updation in Complete');
 	}
 };
@@ -351,15 +353,11 @@ const AgreementMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
+			type: 'string',
 			name: 'shapeJson.properties.totalAcquisitionCost.keyword',
 			accessorKey: 'shapeJson.properties.totalAcquisitionCost',
 			header: 'Total Acquisition Cost',
-			isSearchField: false,
-			Cell: ({ row }) => {
-				const value = row?.original?.shapeJson?.properties?.totalAcquisitionCost;
-				return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ''}</p>;
-			},
 		},
 
 		{

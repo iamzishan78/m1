@@ -14,8 +14,8 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 
 import { copy } from 'utils/helper';
 
-const MAX_CLIENT_HEIGHT = 200;
-const CHUNK_SIZE = 50;
+const PAGE_SIZE = 50;
+
 // Custom hook to handle queries for MRTTable
 const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) => {
 	// Get table controller instance
@@ -81,7 +81,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		}
 
 		Controller.updateState({
-			isLoading: true,
+			isLoading: !tableStateValues.data?.rows?.length,
 			isFetching: true,
 			isError: false,
 		});
@@ -288,7 +288,6 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			});
 			return;
 		}
-		 
 	}, [drawStateValues.selectedPolygonString]);
 
 	// Effect to fetch footer aggregation data and refetch data
@@ -298,7 +297,6 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		}
 
 		fetchFooterAggregationData();
-		 
 	}, [refetch, tableState.filters]);
 
 	// Effect to reset pagination and scroll to top when filters, sorting, grouping, or global filter change
@@ -311,8 +309,6 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		if (tableStateValues?.data?.rows?.length > 0) {
 			tableRef?.current?.scrollToIndex?.(0);
 		}
-
-		 
 	}, [tableState.filters, tableState.sorting, tableState.grouping, tableState.globalFilter, refetch]);
 
 	// Effect to call query when client-side and query changes
@@ -326,8 +322,6 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		}
 
 		callQuery();
-
-		 
 	}, [tableState.query, tableState.customProps, refetch]);
 
 	// Effect to handle pagination changes for non-infinite scroll tables
@@ -363,7 +357,6 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				callQuery(pagination);
 			}
 		}
-		 
 	}, [tableState.pagination]);
 
 	// Effect to call query initially with default pagination
@@ -382,11 +375,9 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		callQuery({
 			pageIndex: 0,
-			first: tableStateValues?.pageSize || CHUNK_SIZE,
+			first: tableStateValues?.pageSize || PAGE_SIZE,
 			after: null,
 		});
-
-		 
 	}, [
 		tableState.filters,
 		tableState.searchFields,
@@ -399,7 +390,6 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	]);
 
 	// Callback function to fetch more data when scrolling near the bottom for infinite scroll
-	 
 	const fetchMoreOnBottomReached = useCallback(
 		debounce(containerRefElement => {
 			if (isClientSide) {
@@ -426,7 +416,9 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 			const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
 
-			if (scrollHeight - scrollTop - clientHeight < MAX_CLIENT_HEIGHT) {
+			const REFETCH_BUFFER = 200;
+
+			if (scrollHeight - scrollTop - clientHeight < REFETCH_BUFFER) {
 				const tableMeta = tableState.get({ noproxy: true });
 
 				if (!tableMeta) {
@@ -461,7 +453,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				if (tableStateValues.onScrollCheck) {
 					const startIndex = Object.keys(tableStateValues.rowSelection).length;
 					const newstate = tableStateValues.rowSelection;
-					for (let i = startIndex; i < startIndex + CHUNK_SIZE; i++) {
+					for (let i = startIndex; i < startIndex + PAGE_SIZE; i++) {
 						newstate[i] = true;
 					}
 					Controller.setColumnCheck(newstate);

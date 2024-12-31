@@ -1,6 +1,5 @@
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import contactTaxRollInterestToolbar from 'components/MRTTable/TablesOverride/TaxRollInterest/contactTaxRollInterestToolbar';
-import vf_currency from 'components/Shared/valueformatters/vf_currency';
 
 import { GET_CONTACT_TAX_ROLL_INTERESTS_QUERY } from 'graphQL/useQueryGetContactTaxRollInterests';
 
@@ -11,7 +10,7 @@ const TaxRollInterestsMeta = {
 		const { contactId } = tableMeta?.customProps || {};
 
 		if (!contactId) {
-			return;
+			return null;
 		}
 
 		return {
@@ -65,7 +64,7 @@ const TaxRollInterestsMeta = {
 			accessorFn: row => row?.lease,
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.NUMBER_COLUMN,
 			header: 'Lease Acers',
 			accessorKey: 'leaseAcres',
 			name: 'leaseAcres',
@@ -100,11 +99,10 @@ const TaxRollInterestsMeta = {
 			accessorFn: row => row?.amount,
 		},
 		{
-			...CommonSchema.NUMBER_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			header: 'Tax Value',
 			accessorKey: 'taxValue',
 			name: 'taxValue',
-			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
 		},
 		{
 			...CommonSchema.NUMBER_COLUMN,

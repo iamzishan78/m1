@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
 		borderLeft: '5px solid #0E638D', // Left border with a blue accent
 		position: 'relative',
 		color: 'white',
-		height: '400px', // Fixed height for the filter container
+		minHeight: '400px', // Fixed height for the filter container
 	},
 	autoComplete: {
 		marginBottom: '25px', // Margin for spacing between autocomplete fields
@@ -162,11 +162,11 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 				mapView?.dataSourceName?.value || mapView?.dataSourceName
 			);
 
-			let _filterType = selectedField?.type || filterType;
+			let _filterType = selectedField?.type || mapView.filterType;
 
 			return {
 				dataSourceName: mapView?.dataSourceName?.value || mapView?.dataSourceName,
-				filterType: _filterType?.value || _filterType || mapView.filterType?.value,
+				filterType: _filterType?.value || _filterType,
 				fieldName: mapView?.fieldName?.value || mapView?.fieldName,
 				filterValues: isMultiSelect
 					? mapView.filterValues && isString
@@ -298,11 +298,19 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 
 		const shapeFileOptions = filterTypeOptions.filter(option => ['singleselect', 'multiselect'].includes(option.value));
 
+		const wellsFilterOptions = filterTypeOptions.filter(option => ['multiselect'].includes(option.value));
+
 		const selectedField = getSelectedField(mapView?.fieldName) || fieldName;
 
 		// Making filter options based on selected dataset
-		const requiredFilterOptions =
-			dataSourceName && customLayersFieldAccessors[dataSourceName] ? filterTypeOptions : shapeFileOptions;
+		let requiredFilterOptions = [];
+		if (dataSourceName === 'Wells') {
+			requiredFilterOptions = wellsFilterOptions;
+		} else if (dataSourceName && customLayersFieldAccessors[dataSourceName]) {
+			requiredFilterOptions = filterTypeOptions;
+		} else {
+			requiredFilterOptions = shapeFileOptions;
+		}
 
 		const fileId = dataSourceName?.substring(0, dataSourceName.indexOf('_'));
 		const layerShapeName = dataSourceName?.substring(dataSourceName.indexOf('_') + 1);

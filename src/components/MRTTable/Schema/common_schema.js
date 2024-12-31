@@ -258,8 +258,8 @@ export const CommonSchema = {
 		isSearchField: false,
 		enableSorting: true,
 		type: 'number',
-		Cell: ({ renderedCellValue }) => {
-			const value = renderedCellValue?.props?.['aria-label'] ?? renderedCellValue;
+		Cell: ({ row, column }) => {
+			const value = row.getValue(column.id);
 
 			if (!value && value !== 0) {
 				return null;
@@ -276,8 +276,8 @@ export const CommonSchema = {
 		isSearchField: false,
 		enableSorting: true,
 		type: 'number',
-		Cell: ({ renderedCellValue }) => {
-			const value = renderedCellValue?.props?.['aria-label'] ?? renderedCellValue;
+		Cell: ({ row, column }) => {
+			const value = row.getValue(column.id);
 
 			if (!value && value !== 0) {
 				return null;

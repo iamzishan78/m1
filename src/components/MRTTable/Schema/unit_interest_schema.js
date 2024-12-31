@@ -1,8 +1,10 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import ListChips from 'components/Common/ListChips';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import UnitIcon from 'components/Shared/svgIcons/unit';
-import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 
 import { CommonSchema } from './common_schema';
 import ContactNameLink from '../Common/TableCells/ContactNameLink';
@@ -68,7 +70,7 @@ const UnitInterestMeta = {
 			accessorKey: 'contact.entityDetail.name',
 			header: 'Contact Name',
 			size: 500,
-			Cell: ({ renderedCellValue, row }) => {
+			Cell: ({ row }) => {
 				return <ContactNameLink contact={row?.original?.contact} />;
 			},
 		},
@@ -264,56 +266,34 @@ const UnitInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'offer_price',
 			accessorKey: 'offer_price',
 			header: 'Target Offer Price',
-			isSearchField: false,
-			Cell: ({ row }) => {
-				return <p>{vf_currency_to_fixed(row?.original?.offer_price, 2)}</p>;
-			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'uUnitPricingInterest',
 			accessorKey: 'uUnitPricingInterest',
 			header: 'Target Price/NRA',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => {
-				return <p>{vf_currency_to_fixed(row?.original?.uUnitPricingInterest, 2)}</p>;
-			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'max_offer_price',
 			accessorKey: 'max_offer_price',
 			header: 'Max Offer Price',
-			isSearchField: false,
-			Cell: ({ row }) => {
-				return <p>{vf_currency_to_fixed(row?.original?.max_offer_price, 2)}</p>;
-			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'uMaxUnitPricingInterest',
 			accessorKey: 'uMaxUnitPricingInterest',
 			header: 'Max Price/NRA',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => {
-				return <p>{vf_currency_to_fixed(row?.original?.uMaxUnitPricingInterest, 2)}</p>;
-			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'actual_offer_price',
 			accessorKey: 'actual_offer_price',
 			header: 'Actual Offer Price',
-			isSearchField: false,
-			Cell: ({ row }) => {
-				return <p>{vf_currency_to_fixed(row?.original?.actual_offer_price, 2)}</p>;
-			},
 		},
 
 		{

@@ -7,6 +7,7 @@ import EmailRoundedIcon from '@material-ui/icons/EmailRounded';
 import MergeTypeIcon from '@material-ui/icons/MergeType';
 
 import { useApolloClient } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import {
 	BulkUpdate,
@@ -149,69 +150,80 @@ function ContactToolbar({ table, tableKey }) {
 					<ButtonDropDown options={options} data_test_id="add-contact-icon-button" />
 				)}
 
-				<ViewContactData isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} />
+				{isSomethingSelected && (
+					<>
+						<ViewContactData isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} />
 
-				<BulkUpdate isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} />
+						<BulkUpdate isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} />
 
-				<Button
-					color="secondary"
-					startIcon={<MergeTypeIcon />}
-					className={
-						isSomethingSelected && selectedRows.length > 1 ? classes.selectTopBarButtons : classes.disabledTopBarButtons
-					}
-					disabled={!(isSomethingSelected && selectedRows.length > 1)}
-					onClick={() =>
-						openSideDialog({
-							type: 'merge',
-							selectedRows,
-							isAllRowsSelected: sidePropsPass.isAllRowsSelected,
-							search: sidePropsPass.search,
-							sorting: sidePropsPass.sorting,
-							defaultSort: sidePropsPass.defaultSort,
-							esIndex: sidePropsPass.esIndex,
-							filters: sidePropsPass.filters,
-							total: sidePropsPass.total,
-							client,
-							table,
-							tableKey,
-						})
-					}
-				>
-					Merge
-				</Button>
-				<Button
-					color="secondary"
-					startIcon={<EmailRoundedIcon />}
-					className={isSomethingSelected ? classes.selectTopBarButtons : classes.disabledTopBarButtons}
-					disabled={!isSomethingSelected}
-					onClick={() =>
-						openSideDialog({
-							type: 'sendMailers',
-							selectedRows,
-							isAllRowsSelected: sidePropsPass.isAllRowsSelected,
-							search: sidePropsPass.search,
-							sorting: sidePropsPass.sorting,
-							defaultSort: sidePropsPass.defaultSort,
-							esIndex: sidePropsPass.esIndex,
-							filters: sidePropsPass.filters,
-							total: sidePropsPass.total,
-							client,
-							table,
-							tableKey,
-							props: {
-								...(tableStateValues.customProps?.campaign && { campaign: tableStateValues.customProps?.campaign }),
-							},
-						})
-					}
-				>
-					Mailers
-				</Button>
+						<Button
+							color="secondary"
+							startIcon={<MergeTypeIcon />}
+							className={
+								isSomethingSelected && selectedRows.length > 1
+									? classes.selectTopBarButtons
+									: classes.disabledTopBarButtons
+							}
+							disabled={!(isSomethingSelected && selectedRows.length > 1)}
+							onClick={() =>
+								openSideDialog({
+									type: 'merge',
+									selectedRows,
+									isAllRowsSelected: sidePropsPass.isAllRowsSelected,
+									search: sidePropsPass.search,
+									sorting: sidePropsPass.sorting,
+									defaultSort: sidePropsPass.defaultSort,
+									esIndex: sidePropsPass.esIndex,
+									filters: sidePropsPass.filters,
+									total: sidePropsPass.total,
+									client,
+									table,
+									tableKey,
+								})
+							}
+						>
+							Merge
+						</Button>
+						<Button
+							color="secondary"
+							startIcon={<EmailRoundedIcon />}
+							className={isSomethingSelected ? classes.selectTopBarButtons : classes.disabledTopBarButtons}
+							disabled={!isSomethingSelected}
+							onClick={() =>
+								openSideDialog({
+									type: 'sendMailers',
+									selectedRows,
+									isAllRowsSelected: sidePropsPass.isAllRowsSelected,
+									search: sidePropsPass.search,
+									sorting: sidePropsPass.sorting,
+									defaultSort: sidePropsPass.defaultSort,
+									esIndex: sidePropsPass.esIndex,
+									filters: sidePropsPass.filters,
+									total: sidePropsPass.total,
+									client,
+									table,
+									tableKey,
+									props: {
+										...(tableStateValues.customProps?.campaign && { campaign: tableStateValues.customProps?.campaign }),
+									},
+								})
+							}
+						>
+							Mailers
+						</Button>
 
-				{isSomethingSelected && <ExportData classes={classes} {...exportPropsPass} />}
+						<ExportData classes={classes} {...exportPropsPass} />
+					</>
+				)}
 			</>
 			<ContactTableDialogs tableKey={tableKey} />
 		</>
 	);
 }
+
+ContactToolbar.propTypes = {
+	table: PropTypes.object.isRequired,
+	tableKey: PropTypes.string.isRequired,
+};
 
 export default memo(ContactToolbar);

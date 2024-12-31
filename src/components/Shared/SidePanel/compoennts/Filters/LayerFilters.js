@@ -314,7 +314,7 @@ const LayerFilters = () => {
 				))}
 				<FormProvider {...formMethods}>
 					<div style={{ marginTop: '50px' }}>
-						<StyledMenuSecondaryHeaderItem>
+						<StyledMenuSecondaryHeaderItem disableRipple>
 							<ListItemText primary={'User Defined Data'} />
 							<StyledListItemSecondaryAction>
 								<Button
