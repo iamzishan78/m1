@@ -86,6 +86,21 @@ const CheckDetailsMeta = {
 
 		tableGlobalController.refetch();
 	},
+	getDefaultValue: () => {
+		const data = tableController('CheckDetailsTable').getValue('data');
+
+		const row = data?.rows?.[0] || {};
+
+		const defaultValue = {};
+
+		const keys = ['property', 'check'];
+
+		keys.forEach(key => {
+			set(defaultValue, key, get(row, key));
+		});
+
+		return defaultValue;
+	},
 	handleUpdateData: async (client, rows) => {
 		await client.mutate({
 			variables: {

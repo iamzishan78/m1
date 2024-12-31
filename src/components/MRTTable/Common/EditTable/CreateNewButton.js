@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { get, set } from 'lodash';
 import { createRow } from 'material-react-table';
 import PropTypes from 'prop-types';
 
@@ -26,21 +25,10 @@ const CreateNewButton = ({ table, tableKey, label = 'Create New' }) => {
 			onClick={async () => {
 				Controller.clearEditing();
 
-				const data = Controller.getValue('data');
+				const { getDefaultValue } = Controller.getAllValues();
 
-				const row = data?.rows?.[0] || {};
+				const defaultValue = getDefaultValue?.() || {};
 
-				const defaultValue = {};
-
-				console.log(row);
-
-				const keys = ['property', 'check'];
-
-				keys.forEach(key => {
-					set(defaultValue, key, get(row, key));
-				});
-
-				// table.setCreatingRow(true);
 				table.setCreatingRow(createRow(table, defaultValue));
 
 				Controller.updateState({ isCreateMode: true });
