@@ -13,7 +13,7 @@ import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
 
 import { tableController } from 'hookstate/tableController';
 
-import { getRangeFilters, getDateFilters } from 'utils/helper';
+import { getDateFilters } from 'utils/helper';
 
 import { AppContext } from 'AppContext';
 
@@ -23,55 +23,32 @@ const useStyles = makeStyles(() => ({
 	},
 }));
 
-const getFilters = appliedFilters => {
+export const getFilters = appliedFilters => {
 	let filters = [];
 	if (appliedFilters) {
 		let range = [];
-		if (appliedFilters.filter !== 'audit') {
-			range = getRangeFilters(
-				{
-					dateTime: {
-						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
-						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
-					},
+
+		range = getDateFilters(
+			{
+				lastUpdateAt: {
+					from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+					to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
 				},
-				'simple'
-			);
-			if (range.length > 0) {
-				filters = [...filters, ...range];
-			}
-			range = getRangeFilters(
-				{
-					endDateTime: {
-						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
-						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
-					},
-				},
-				'simple'
-			);
-		} else {
-			range = getDateFilters(
-				{
-					lastUpdateAt: {
-						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
-						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
-					},
-				},
-				'simple'
-			);
-			if (range.length > 0) {
-				filters = [...filters, ...range];
-			}
-			range = getDateFilters(
-				{
-					lastUpdateAt: {
-						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
-						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
-					},
-				},
-				'simple'
-			);
+			},
+			'simple'
+		);
+		if (range.length > 0) {
+			filters = [...filters, ...range];
 		}
+		range = getDateFilters(
+			{
+				lastUpdateAt: {
+					from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+					to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+				},
+			},
+			'simple'
+		);
 
 		if (range.length > 0) {
 			filters = [...filters, ...range];
