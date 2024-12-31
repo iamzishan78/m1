@@ -30,6 +30,7 @@ import FailedBulkDataEditingMeta from './QuerySchema/failed_bulk_data_editing';
 import PotentialShapeOwnersMeta from './QuerySchema/potential_shape_owners_schema';
 import PotentialWellOwnersMeta from './QuerySchema/potential_well_owners_schema';
 import PotentialWellsMeta from './QuerySchema/potential_wells_schema';
+import ProductionWellsMeta from './QuerySchema/production_wells_schema';
 import PropertiesRevenueMeta from './QuerySchema/properties_revenue_schema';
 import TaxRollInterestsMeta from './QuerySchema/tax_roll_interests_schema';
 import UserManagementMeta from './QuerySchema/user_management_schema';
@@ -131,6 +132,7 @@ export const SCHEMA = {
 	TaxRollInterestsTable: TaxRollInterestsMeta,
 	PotentialWellsTable: PotentialWellsMeta,
 	PotentialShapeOwnersTable: PotentialShapeOwnersMeta,
+	ProductionWellsTable: ProductionWellsMeta,
 	WellProductionTable: WellProductionMeta,
 	FailedBulkDataEditingTable: FailedBulkDataEditingMeta,
 };

@@ -45,6 +45,16 @@ const useMRTTable = tableKey => {
 		...(!isClientSide && {
 			selectedCountOfRowCountRowsSelected: `${Object.keys(tableStateValues?.rowSelection || {})?.length} of ${tableStateValues?.data.total} row(s) selected`,
 		}),
+		...(isClientSide && {
+			filterSingleselect: 'Single Select', // adding label custom for filter mode
+		}),
+	};
+
+	const filterFns = {
+		// custom implementation for Single Select
+		singleselect: (row, id, filterValue) => {
+			return row.getValue(id) === filterValue;
+		},
 	};
 
 	if (tableStateValues.asyncRowSelection && !tableStateValues.isSubSetSelect && !isClientSide) {
@@ -111,7 +121,7 @@ const useMRTTable = tableKey => {
 			enableColumnOrdering: tableStateValues?.columnReordering ?? true,
 			enableGrouping: tableStateValues?.columnReordering ?? true,
 			enableColumnResizing: true,
-			enableRowSelection: true,
+			enableRowSelection: !tableStateValues?.disableRowSelection,
 			enableColumnPinning: true,
 			// enableMultiRowSelection: true,
 			// enableSelectAll: true,
@@ -178,6 +188,9 @@ const useMRTTable = tableKey => {
 				},
 				onScroll: e => fetchMoreOnBottomReached?.(e.target),
 			},
+			...(isClientSide && {
+				filterFns, // adding label custom for filter mode
+			}),
 			localization: localizationOptions,
 			muiTableProps: {
 				ref: tableRef, // get access to the table element
