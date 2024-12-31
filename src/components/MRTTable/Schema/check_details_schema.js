@@ -30,7 +30,7 @@ const CheckDetailsMeta = {
 	},
 	maxTableHeight: 'calc(60vh - 200px)',
 	isInFiniteScroll: true,
-	columnVirtualization: true,
+	columnVirtualization: false,
 	CustomToolBar: CheckDetailsToolbar,
 	isDeleteDisabled: true,
 
