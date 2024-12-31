@@ -5,8 +5,7 @@ import { debounce, set, get, isNumber } from 'lodash';
 
 import { mergeArrays } from 'components/Shared/functions';
 
-import { GET_DB_AGGS, GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
-import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+import { GET_DB_AGGS, GET_DB_DATA_TOTAL, GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 import { drawController } from 'hookstate/drawStateController';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
@@ -55,6 +54,17 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 			const rows = tableMeta.getDataFromRes(res);
 
+			if (tableMeta?.FooterKeys?.length) {
+				const footerProps = {};
+				tableMeta.FooterKeys.forEach(key => {
+					footerProps[key] = rows.reduce((acc, row) => acc + row[key], 0);
+				});
+
+				Controller.updateState({
+					footerProps,
+				});
+			}
+
 			Controller.updateState({
 				data: {
 					rows: JSON.parse(JSON.stringify(rows).replaceAll(' \\u0000', '').replaceAll('\\u0000', '')),
@@ -94,22 +104,22 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		let sort = tableStateValues.sorting[0]
 			? {
-				field: (() => {
-					if (tableStateValues.sorting[0].field) {
-						return tableStateValues.sorting[0].field;
-					}
+					field: (() => {
+						if (tableStateValues.sorting[0].field) {
+							return tableStateValues.sorting[0].field;
+						}
 
-					const sortingId = tableStateValues.sorting[0].id;
-					const matchingSchema = TableSchema.find(val => (val.accessorKey || val.id) === sortingId);
+						const sortingId = tableStateValues.sorting[0].id;
+						const matchingSchema = TableSchema.find(val => (val.accessorKey || val.id) === sortingId);
 
-					if (matchingSchema?.isComposite) {
-						return matchingSchema.name.split(',')[0];
-					}
+						if (matchingSchema?.isComposite) {
+							return matchingSchema.name.split(',')[0];
+						}
 
-					return matchingSchema?.name;
-				})(),
-				order: tableStateValues.sorting[0].desc ? 'desc' : 'asc',
-			}
+						return matchingSchema?.name;
+					})(),
+					order: tableStateValues.sorting[0].desc ? 'desc' : 'asc',
+				}
 			: tableState?.defaultSort?.get({ noproxy: true });
 
 		if (metaField?.isCustom) {

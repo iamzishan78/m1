@@ -305,7 +305,18 @@ export const CommonSchema = {
 		isSearchField: true,
 		enableSorting: true,
 		type: 'number',
+		filterVariant: 'equals',
 	},
+	CUMULATIVE_FOOTER: (field, tableKey, toFixed = TO_FIXED) => ({
+		Footer: () => {
+			const Controller = tableController(tableKey);
+			const footerProps = Controller.getValue('footerProps') || {};
+
+			const value = get(footerProps, field);
+
+			return <div>{value ? addTrailingZeros(parseFloat(value).toFixed(toFixed)) : 0}</div>;
+		},
+	}),
 };
 
 export const validateRequiredString = value => (!value?.length ? 'Required' : undefined);

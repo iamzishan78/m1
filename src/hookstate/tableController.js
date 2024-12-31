@@ -298,6 +298,11 @@ const tableESStateControllerHandler = state => ({
 			defaultColumnsOrdering?.unshift('actionMenu');
 			defaultColumnsPinning?.left?.unshift('actionMenu');
 		}
+
+		if (rest?.disableRowSelection) {
+			pull(defaultColumnsOrdering, 'over-ride-checkbox');
+			pull(defaultColumnsPinning.left, 'over-ride-checkbox');
+		}
 		const formattedmapViewsFilters = mapViewFilters
 			.map(filter => ({
 				...filter,
