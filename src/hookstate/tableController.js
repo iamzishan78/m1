@@ -685,7 +685,7 @@ const tableESStateControllerHandler = state => ({
 		const mapView = globalStateController.getValue('mapView');
 		const mapViewsFitlers = mapView?.selectedMapView?.filters || [];
 		if (
-			mapViewsFitlers.find(({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') === field) &&
+			mapViewsFitlers.find(({ fieldName }) => (fieldName?.value || fieldName)?.replace('.keyword', '') === field) &&
 			updateMapView
 		) {
 			const tableState = state.get({
