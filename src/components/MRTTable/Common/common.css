@@ -24,3 +24,8 @@
 	margin-top: auto;
 	margin-bottom: auto;
 }
+
+/* Hide circular loader */
+#mrt-progress {
+	display: none;
+}
