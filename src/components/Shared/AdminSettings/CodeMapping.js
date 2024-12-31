@@ -10,7 +10,7 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import CustomFieldSelect from 'components/Shared/M1nTable/components/SubComponents/CustomFieldSelect';
 import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
 import LongIcon from 'components/Shared/svgIcons/LongIcon';
-import MetaField from 'components/Table/helpers/MetaField';
+import MetaField from 'utils/MetaField';
 
 import { UPDATE_META_DATA } from 'graphQL/useMutationUpdateMetaData';
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';

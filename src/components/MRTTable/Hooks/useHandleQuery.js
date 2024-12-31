@@ -5,8 +5,7 @@ import { debounce, set, get, isNumber } from 'lodash';
 
 import { mergeArrays } from 'components/Shared/functions';
 
-import { GET_DB_AGGS, GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
-import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+import { GET_DB_AGGS, GET_DB_DATA_TOTAL, GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 import { drawController } from 'hookstate/drawStateController';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
@@ -34,7 +33,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	const client = useApolloClient();
 
 	// Destructure table state values
-	const { isClientSide } = tableStateValues;
+	const { isClientSide, modelName } = tableStateValues;
 
 	// Function to execute query based on client-side or server-side querying
 	const callQuery = async _pagination => {
@@ -55,6 +54,17 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 			const rows = tableMeta.getDataFromRes(res);
 
+			if (tableMeta?.FooterKeys?.length) {
+				const footerProps = {};
+				tableMeta.FooterKeys.forEach(key => {
+					footerProps[key] = rows.reduce((acc, row) => acc + row[key], 0);
+				});
+
+				Controller.updateState({
+					footerProps,
+				});
+			}
+
 			Controller.updateState({
 				data: {
 					rows: JSON.parse(JSON.stringify(rows).replaceAll(' \\u0000', '').replaceAll('\\u0000', '')),
@@ -74,7 +84,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		const tableMeta = tableState.get({ noproxy: true });
 		const pagination = _pagination || tableMeta.pagination;
 		const { TableSchema } = tableMeta;
-		const isElasticIndex = tableStateValues.esIndex.includes('platformData:');
+		const isElasticIndex = tableStateValues?.esIndex?.includes('platformData:');
 
 		if (!TableSchema) {
 			return;
@@ -128,6 +138,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		// Prepare query variables
 		const variables = {
 			index: tableStateValues.esIndex,
+			modelName,
 			pagination: { ...pagination, pageIndex: undefined, pageSize: undefined },
 			search: {
 				query: globalFilter ? `${globalFilter}` : '',
@@ -251,6 +262,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			const result = await client.query({
 				variables: {
 					index: esIndex,
+					modelName,
 					filters: [...filters, ...defaultFilters],
 					aggs: Object.assign({}, ...aggregationColumns),
 				},
@@ -284,6 +296,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				field: tableStateValues.geoKey,
 				value: drawStateValues.currentFeature.geometry,
 			});
+			return;
 		}
 	}, [drawStateValues.selectedPolygonString]);
 

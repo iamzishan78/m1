@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 export const GET_DB_DATA = gql`
 	query getDbData(
 		$index: String
+		$modelName: String
 		$search: esSearchInput
 		$filters: [esFilterInput]
 		$sort: esSortInput
@@ -12,6 +13,7 @@ export const GET_DB_DATA = gql`
 	) {
 		getDbData(
 			index: $index
+			modelName: $modelName
 			search: $search
 			filters: $filters
 			sort: $sort
@@ -25,12 +27,20 @@ export const GET_DB_DATA = gql`
 export const GET_DB_DATA_TOTAL = gql`
 	query getDbDataTotal(
 		$index: String
+		$modelName: String
 		$search: esSearchInput
 		$filters: [esFilterInput]
 		$sort: esSortInput
 		$pagination: esPaginationInput
 	) {
-		getDbDataTotal(index: $index, search: $search, filters: $filters, sort: $sort, pagination: $pagination) {
+		getDbDataTotal(
+			index: $index
+			modelName: $modelName
+			search: $search
+			filters: $filters
+			sort: $sort
+			pagination: $pagination
+		) {
 			success
 			message
 			error
@@ -64,6 +74,7 @@ export const GET_DB_MODELS = gql`
 export const GET_DB_FILTERS = gql`
 	query getDbFilters(
 		$index: String
+		$modelName: String
 		$search: esSearchInput
 		$filters: [esFilterInput]
 		$sort: esSortInput
@@ -74,6 +85,7 @@ export const GET_DB_FILTERS = gql`
 	) {
 		getDbFilters(
 			index: $index
+			modelName: $modelName
 			search: $search
 			filters: $filters
 			filterAggs: $filterAggs
@@ -86,7 +98,14 @@ export const GET_DB_FILTERS = gql`
 `;
 
 export const GET_DB_AGGS = gql`
-	query getDbAggs($index: String, $search: esSearchInput, $fields: [JSON], $filters: [JSON], $aggs: JSON) {
-		getDbAggs(index: $index, search: $search, fields: $fields, filters: $filters, aggs: $aggs)
+	query getDbAggs(
+		$index: String
+		$modelName: String
+		$search: esSearchInput
+		$fields: [JSON]
+		$filters: [JSON]
+		$aggs: JSON
+	) {
+		getDbAggs(index: $index, modelName: $modelName, search: $search, fields: $fields, filters: $filters, aggs: $aggs)
 	}
 `;

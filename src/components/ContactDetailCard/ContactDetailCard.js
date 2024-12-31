@@ -31,7 +31,6 @@ import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import OpenCorporatesIcon from 'components/Shared/svgIcons/OpenCorporatesIcon';
 import RequestPageIcon from 'components/Shared/svgIcons/request_page';
-import MetaField from 'components/Table/helpers/MetaField';
 import PipelinesFetchHoc from 'components/Transact/components/Common/PipelinesFetchHoc';
 import AddDealDialog from 'components/Transact/components/DealDialog/AddDealDialog';
 
@@ -44,6 +43,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 
 import { OWNERTYPE } from 'utils/data';
 import { getOpenCorporatesUrl } from 'utils/helper';
+import MetaField from 'utils/MetaField';
 
 import { AppContext } from 'AppContext';
 

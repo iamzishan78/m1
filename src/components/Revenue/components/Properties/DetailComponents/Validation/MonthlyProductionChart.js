@@ -10,8 +10,11 @@ import WellProdChart from 'components/WellProdChart/WellProdChart';
 import { WellProdChartContext } from 'components/WellProdChart/WellProdChartContext';
 
 import { GET_ASSOCIATED_WELL_PRODUCTION_DATA } from 'graphQL/useQueryAssociatedWellProductionData';
+import { AppContext } from 'AppContext';
+import PropTypes from 'prop-types';
 
 const ValidationChart = ({ filter, propertyId, wellProductionData, setWellProductionData, propertiesIds }) => {
+	const [, setStateApp] = useContext(AppContext);
 	const [, setStateWellCard] = useContext(WellCardContext);
 	const [, setStateWellProdChart] = useContext(WellProdChartContext);
 	const [getAssociatedWellProductionData, { data: associatedWells }] = useLazyQuery(
@@ -37,6 +40,7 @@ const ValidationChart = ({ filter, propertyId, wellProductionData, setWellProduc
 			const wellData = JSON.parse(JSON.stringify(associatedWells.getAssociatedWellProductionData));
 			const productionData = [];
 			const wellIds = [];
+			const NOT_FOUND = -1;
 			wellData.forEach(data => {
 				wellIds.push(data.well._id);
 				if (data.well.productionData.length > 0) {
@@ -75,7 +79,7 @@ const ValidationChart = ({ filter, propertyId, wellProductionData, setWellProduc
 						production.ReportDate = date;
 						const index = productionData.findIndex(d => d.ReportDate === date);
 
-						if (index > -1) {
+						if (index > NOT_FOUND) {
 							productionData[index].allocatedGas =
 								get(productionData[index], 'allocatedGas', 0) + get(production, 'allocatedGas', 0);
 							productionData[index].allocatedOil =
@@ -97,6 +101,10 @@ const ValidationChart = ({ filter, propertyId, wellProductionData, setWellProduc
 					});
 				}
 			});
+			setStateApp(stateApp => ({
+				...stateApp,
+				associatedWellIds: wellIds,
+			}));
 
 			let data = productionData.map(p => {
 				const d = p.ReportDate.split('/');
@@ -150,6 +158,14 @@ const ValidationChart = ({ filter, propertyId, wellProductionData, setWellProduc
 	}, [propertyId, propertiesIds]);
 
 	return <WellProdChart />;
+};
+
+ValidationChart.propTypes = {
+	filter: PropTypes.arrayOf(PropTypes.object),
+	propertyId: PropTypes.string.isRequired,
+	wellProductionData: PropTypes.arrayOf(PropTypes.object),
+	setWellProductionData: PropTypes.func.isRequired,
+	propertiesIds: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default ValidationChart;

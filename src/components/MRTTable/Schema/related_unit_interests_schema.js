@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import ListChips from 'components/Common/ListChips';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
@@ -244,6 +247,11 @@ const RelatedlUnitInterestMeta = {
 			name: 'deals.name.keyword',
 			accessorKey: 'deals.name',
 			header: 'Associated Deals',
+			isExport: 'deals',
+			handleArrayExport: {
+				esType: 'collection',
+				actualKey: 'name',
+			},
 			Cell: ({ row }) => {
 				return (
 					<div>

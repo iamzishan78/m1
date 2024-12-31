@@ -1,4 +1,4 @@
-import React, { useState, useContext, useMemo } from 'react';
+import React, { useState, useContext, useMemo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
@@ -6,6 +6,7 @@ import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { get } from 'lodash';
+import PropTypes from 'prop-types';
 
 import RelatedTractInterestTable from 'components/Common/RelatedTables/Tracts/tractInterests';
 import RelatedUnitInterestTable from 'components/Common/RelatedTables/Units/unitInterests';
@@ -21,7 +22,7 @@ const useStyles = makeStyles(theme => ({
 		width: '72vw',
 		height: '50vh',
 		position: 'absolute',
-		zIndex: 9999,
+		zIndex: '1300 !important',
 		bottom: 0,
 		left: 0,
 	},
@@ -121,7 +122,7 @@ const useStyles = makeStyles(theme => ({
 // params:
 // contact: ObjectId[]
 function AssociatedFlowDetails(props) {
-	const [stateApp] = useContext(AppContext);
+	const [stateApp, setStateApp] = useContext(AppContext);
 
 	const [searchTapValue, SearchTapValue] = useState(contactDetailInitialData[0]);
 
@@ -145,6 +146,18 @@ function AssociatedFlowDetails(props) {
 		// screenSizes
 	});
 
+	const onClose = useCallback(e => {
+		e.stopPropagation();
+		setStateApp({ ...stateApp, transactBarShowGrid: false });
+	}, []);
+
+	const toolbarInternalActions = {
+		onClose,
+		style: {
+			marginRight: '0.5rem',
+		},
+	};
+
 	const relatedUnitInterestOverride = useMemo(
 		() => ({
 			tableHeading: 'Unit Interests',
@@ -155,6 +168,7 @@ function AssociatedFlowDetails(props) {
 				{ field: 'shape.layer.keyword', value: 'unit' },
 			],
 			refetchQueries: ['flowDealSummary'],
+			toolbarInternalActions,
 		}),
 		[props.contacts, props.deal]
 	);
@@ -169,6 +183,7 @@ function AssociatedFlowDetails(props) {
 				{ field: 'shape.layer.keyword', value: 'parcel' },
 			],
 			refetchQueries: ['flowDealSummary'],
+			toolbarInternalActions,
 		}),
 		[props.contacts, props.deal]
 	);
@@ -192,6 +207,7 @@ function AssociatedFlowDetails(props) {
 									const Icon = row.Icon;
 									return (
 										<ListItem
+											key={row.value}
 											button
 											selected={row.value === searchTapValue.value}
 											onClick={() => handleSearchPanelChange(row)}
@@ -211,7 +227,7 @@ function AssociatedFlowDetails(props) {
 						</Grid>
 
 						<Grid item md={10} style={{ padding: '0px' }}>
-							<div style={{ position: 'relative' }} classes={classes.gridTables}>
+							<div style={{ position: 'relative' }} className={classes.gridTables}>
 								{searchTapValue.value === 'unitInterests' && (
 									<RelatedUnitInterestTable id="relatedUnitInterestsTable" overrideMeta={relatedUnitInterestOverride} />
 								)}
@@ -230,4 +246,9 @@ function AssociatedFlowDetails(props) {
 	);
 }
 
+AssociatedFlowDetails.propTypes = {
+	contacts: PropTypes.array.isRequired,
+	deal: PropTypes.object.isRequired,
+	dealSummaryData: PropTypes.object.isRequired,
+};
 export default AssociatedFlowDetails;

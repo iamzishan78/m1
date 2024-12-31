@@ -4,7 +4,7 @@ import React from 'react';
 import { hookstate } from '@hookstate/core';
 import _, { get, isEqual, isEmpty, pull } from 'lodash';
 
-import { extractUniqueFilters } from 'components/Map/DeckGL/helpers/common';
+import { extractUniqueFilters, filterValidFilters } from 'components/Map/DeckGL/helpers/common';
 import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController';
 import CustomFieldText from 'components/MRTTable/Common/MetaData/CustomFieldText';
 import { metaDataColumnStateController } from 'components/MRTTable/Common/MetaData/MetaDataColumnsController';
@@ -24,7 +24,7 @@ import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { globalStateController } from 'hookstate/globalStateController';
 import { hookStateController } from 'hookstate/hookStateController';
 
-import { validateUrl } from 'utils/helper';
+import { compareObjects, validateUrl } from 'utils/helper';
 
 import { handleMRTSchema, handleVisiblityMenu } from './helpers';
 import { tableESState, tableGlobalState, tableInitialState } from './initialStates';
@@ -168,6 +168,7 @@ const tableESStateControllerHandler = state => ({
 			defaultFilters,
 			customProps = {},
 			isClientSide = false,
+			modelName,
 			isSelectAllAllowed = true,
 			isAllRowsSelected,
 			search,
@@ -190,7 +191,7 @@ const tableESStateControllerHandler = state => ({
 		}
 
 		let _Schema = TableSchema;
-		if (!rest.isGeneric && !isClientSide) {
+		if (!rest.isGeneric && !isClientSide && !rest.enableEditing) {
 			_Schema.unshift({
 				...CommonSchema.SELECT_SOME,
 				Header: () => <TableHeaderMoreOptions tableKey={tableKey} />,
@@ -268,6 +269,7 @@ const tableESStateControllerHandler = state => ({
 			_Schema,
 			tableKey,
 			esIndex,
+			modelName,
 			defaultFlterMode,
 			search,
 			columnVirtualization,
@@ -296,6 +298,11 @@ const tableESStateControllerHandler = state => ({
 			defaultColumnsOrdering?.unshift('actionMenu');
 			defaultColumnsPinning?.left?.unshift('actionMenu');
 		}
+
+		if (rest?.disableRowSelection) {
+			pull(defaultColumnsOrdering, 'over-ride-checkbox');
+			pull(defaultColumnsPinning.left, 'over-ride-checkbox');
+		}
 		const formattedmapViewsFilters = mapViewFilters
 			.map(filter => ({
 				...filter,
@@ -314,6 +321,7 @@ const tableESStateControllerHandler = state => ({
 			tableKey,
 			pageSize,
 			isClientSide,
+			modelName,
 			data: { rows: [], total: 0 },
 			isLoading: false,
 			isFetching: false,
@@ -338,13 +346,14 @@ const tableESStateControllerHandler = state => ({
 			isTrackedList: [],
 		};
 
+		const _defaultFilters = defaultFilters || state?.defaultFilters?.get({ noproxy: true }) || [];
 		if (isClientSide) {
 			stateToUpdate = {
 				...stateToUpdate,
 				isSelectAllAllowed: isSelectAllAllowed || false,
 				isAllRowsSelected: isAllRowsSelected || false,
 				showColumnFilters: false,
-				defaultFilters: state?.defaultFilters?.get({ noproxy: true }) || defaultFilters || [],
+				defaultFilters: filterValidFilters(_defaultFilters),
 				filters: [],
 				sorting: [],
 				columnVisibility,
@@ -365,8 +374,8 @@ const tableESStateControllerHandler = state => ({
 				isSelectAllAllowed,
 				isAllRowsSelected,
 				showColumnFilters: formatedGridView?.filters ? true : false,
-				defaultFilters: defaultFilters || state?.defaultFilters?.get({ noproxy: true }) || [],
-				filters: extractUniqueFilters(combinedFilters),
+				defaultFilters: filterValidFilters(_defaultFilters),
+				filters: filterValidFilters(extractUniqueFilters(combinedFilters)),
 				layerIdentifier,
 				layerSchema,
 				sorting: formatedGridView?.sorting ? formatedGridView.sorting : [],
@@ -915,6 +924,50 @@ const tableESStateControllerHandler = state => ({
 		genericState.pinnedFields = pinnedFields;
 
 		return genericState;
+	},
+
+	setEditedData: (rowId, editedRow) => {
+		const tableKey = state.tableKey.get();
+		const data = state.data.get({ noproxy: true });
+
+		const currentRow = data.rows.find(r => r._id === rowId);
+
+		const changed = compareObjects(editedRow, currentRow);
+
+		if (changed) {
+			const editedData = state.editedData.get({ noproxy: true });
+			state.editedData.set({
+				...editedData,
+				[rowId]: editedRow,
+			});
+		} else {
+			// eslint-disable-next-line no-use-before-define
+			tableController(tableKey).clearEditedRow(rowId);
+		}
+	},
+	setValidationErrors: (rowId, columnId, validationError) => {
+		const validationErrors = state.validationErrors.get({ noproxy: true });
+
+		state.validationErrors.set({
+			...validationErrors,
+			[rowId]: {
+				...validationErrors[rowId],
+				[columnId]: validationError,
+			},
+		});
+	},
+	clearEditedRow: rowId => {
+		state.editedData.merge({
+			[rowId]: undefined,
+		});
+		state.validationErrors.merge({
+			[rowId]: undefined,
+		});
+	},
+	clearEditing: () => {
+		state.editedData.set({});
+		state.validationErrors.merge({});
+		state.isCreateMode.merge(false);
 	},
 });
 

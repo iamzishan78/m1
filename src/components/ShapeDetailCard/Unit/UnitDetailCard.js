@@ -17,7 +17,6 @@ import { copy } from 'components/Shared/functions';
 import TabPanels from 'components/Shared/TabPanels';
 import Tags from 'components/Shared/Tagger';
 import Taps from 'components/Shared/Taps';
-import ParcelAgreementTable from 'components/Table/Parcel/ParcelAgreementTable';
 
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
@@ -291,15 +290,17 @@ export default function UnitDetailCard(props) {
 		[uniObj?._id]
 	);
 
-	function RunsheetHeader() {
-		const classes = detailCardStyles();
-		return (
-			<div className={classes.documentHeader}>
-				<GavelIcon />
-				<span>RUNSHEET INSTRUMENTS</span>
-			</div>
-		);
-	}
+	const runsheetOverrideMeta = useMemo(
+		() => ({
+			maxTableHeight: 'calc(50vh - 100px)',
+			defaultFilters: [
+				{ field: 'customLayerId', value: uniObj?._id },
+				{ field: 'isRunsheetInstrument', value: 'true' },
+			],
+		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[uniObj?._id]
+	);
 
 	return uniObj ? (
 		<DrawerContextProvider>
@@ -351,17 +352,8 @@ export default function UnitDetailCard(props) {
 									</div>,
 								]}
 							/>,
-							<div className={showSummary ? classes.subContent : classes.subContent2}>
-								<ParcelAgreementTable
-									esIndex="runsheetinstrument_flat"
-									parent="associatedRunsheetPerParcel"
-									targetLabel="parcelRunsheet"
-									customLayer={copy(uniObj)}
-									dense
-									header={<RunsheetHeader />}
-									isCheckboxSticky={true}
-								/>
-							</div>,
+							<MRTTable name="RunsheetTable" overrideMeta={runsheetOverrideMeta} />,
+							,
 							<TabPanels
 								value={selectedTab}
 								panels={[

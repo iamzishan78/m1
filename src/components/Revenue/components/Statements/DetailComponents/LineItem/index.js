@@ -5,13 +5,16 @@ import { useHistory } from 'react-router-dom';
 import { Grid, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
+import PropTypes from 'prop-types';
+
+import MRTTable from 'components/MRTTable';
 import PdfViewer from 'components/Revenue/components/Statements/DetailComponents/LineItem/PdfViewer';
 
-import CheckDetailsEditableTable from './CheckDetailsEditableTable';
+const SPACING = 2;
 
 const useStyles = makeStyles(theme => ({
 	root: {
-		padding: theme.spacing(2),
+		padding: theme.spacing(SPACING),
 	},
 	inputModeButton: {
 		width: '200px',
@@ -45,7 +48,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-export default function LineItem(props) {
+export default function LineItem({ checkId }) {
 	const classes = useStyles();
 	const history = useHistory();
 	// const [checkId, setCheckId] = useState();
@@ -77,17 +80,27 @@ export default function LineItem(props) {
 			</Grid>
 			{showPdfSection && (
 				<div className={classes.pdfViewerRoot}>
-					<PdfViewer togglePdfViewState={togglePdfViewState} checkId={props.checkId} />
+					<PdfViewer togglePdfViewState={togglePdfViewState} checkId={checkId} />
 				</div>
 			)}
 			<div className={classes.tableRoot}>
-				<CheckDetailsEditableTable
-					parent="CheckDetailsTable"
-					header="Check Details"
-					showPdfSection={showPdfSection}
-					checkId={props.checkId}
+				<MRTTable
+					name={'CheckDetailsTable'}
+					overrideMeta={{
+						enableEditing: true,
+						defaultFilters: [
+							{
+								field: 'check._id.keyword',
+								value: checkId,
+							},
+						],
+					}}
 				/>
 			</div>
 		</div>
 	);
 }
+
+LineItem.propTypes = {
+	checkId: PropTypes.string.isRequired,
+};

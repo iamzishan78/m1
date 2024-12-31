@@ -17,7 +17,7 @@ import {
 import OwnerPerUnitTableDialogs from 'components/MRTTable/TablesOverride/OwnersPerUnit/RightDialogs';
 import { NavigationContext } from 'components/Navigation/NavigationContext';
 import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
-import MetaField from 'components/Table/helpers/MetaField';
+import MetaField from 'utils/MetaField';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { navController } from 'hookstate/navStateController';

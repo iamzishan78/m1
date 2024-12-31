@@ -30,7 +30,17 @@ const gridViewStatesControllerHandler = state => ({
 		const columns = TableSchema?.map(element => element.accessorKey || element.id);
 
 		const updatedGridViewOrdering = columns?.filter(column => selectedGridView.columnOrdering?.includes(column));
-		const updatedGridViewPinning = columns?.filter(column => selectedGridView.columnPinning?.left?.includes(column));
+		const updatedGridViewLeftPinning = columns?.filter(column =>
+			selectedGridView.columnPinning?.left?.includes(column)
+		);
+		const updatedGridViewRightPinning = columns?.filter(column =>
+			selectedGridView.columnPinning?.right?.includes(column)
+		);
+		const updatedGridViewPinning = { left: updatedGridViewLeftPinning };
+		if (selectedGridView.columnPinning?.right?.length > 0) {
+			updatedGridViewPinning.right = updatedGridViewRightPinning;
+		}
+
 		const updatedGridFilters = selectedGridView.filters?.filter(filter => columns.includes(filter.field)) || [];
 		const updatedGridSorting = selectedGridView.sorting?.filter(sort => columns.includes(sort.id)) || [];
 
@@ -43,7 +53,7 @@ const gridViewStatesControllerHandler = state => ({
 			...selectedGridView,
 			columns: updatedGridColumns,
 			columnOrdering: updatedGridViewOrdering,
-			columnPinning: { left: updatedGridViewPinning },
+			columnPinning: updatedGridViewPinning,
 			filters: updatedGridFilters,
 			sorting: updatedGridSorting,
 		};
@@ -98,6 +108,7 @@ const gridViewStatesControllerHandler = state => ({
 				filterLeftPinning.splice(1, 0, 'mrt-row-numbers');
 			}
 			const newColumnPinning = {
+				...viewToApply.columnPinning,
 				left: filterLeftPinning,
 			};
 			Controller.setColumnPinning(newColumnPinning, columnPinning, TableSchema);

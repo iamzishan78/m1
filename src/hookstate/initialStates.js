@@ -53,6 +53,9 @@ export const tableInitialState = {
 	isIncludeInactive: false,
 	gridView: {},
 	showTypes: false,
+	editedData: {},
+	validationErrors: {},
+	isCreateMode: false,
 };
 export const tableESState = {};
 export const tableGlobalState = hookstate({

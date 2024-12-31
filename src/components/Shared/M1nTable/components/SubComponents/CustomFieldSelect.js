@@ -9,7 +9,7 @@ import ArrowDropDownIcon from '@material-ui/lab/es/internal/svg-icons/ArrowDropD
 
 import isEmpty from 'lodash/isEmpty';
 
-import { colorPallete } from 'components/Table/helpers';
+import { colorPallete } from 'utils/consts';
 
 import { AppContext } from 'AppContext';
 

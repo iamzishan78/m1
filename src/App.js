@@ -7,6 +7,7 @@ import { Switch, Route } from 'react-router-dom';
 import { useApolloClient } from '@apollo/client';
 import { useAuth0 } from '@auth0/auth0-react';
 import { ConnectedRouter } from 'connected-react-router';
+import PropTypes from 'prop-types';
 
 import AdminProvider from 'components/Admin/AdminProvider';
 import AnalyticsProvider from 'components/Analytics/AnalyticsProvider';
@@ -34,7 +35,6 @@ import MapProvider from './components/Map/MapProvider';
 import NavigationProvider from './components/Navigation/NavigationProvider';
 import StudioProvider from './components/Studio/StudioProvider';
 import TitleOpinionProvider from './components/TitleOpinion/TitleOpinionProvider';
-import TrackProvider from './components/Track/TrackProvider';
 import TransactProvider from './components/Transact/TransactProvider';
 import ContactDocumentsProvider from './components/ViewDocuments/ContactDocumentsProvider';
 import { history } from './store';
@@ -86,7 +86,6 @@ function App() {
 							/>
 							<Route exact path="/signup" component={SignUpCard} />
 							<Route exact path="/forgotpassword" component={ForgotPassword} />
-							<PrivateRoute exact path="/track" component={TrackProvider} />
 							<PrivateRoute path="/flow" component={TransactProvider} />
 							<PrivateRoute exact path="/documents" component={DocumentProvider} />
 							<PrivateRoute exact path="/documents/:documentId/view" component={DocumentProvider} />
@@ -126,3 +125,8 @@ function App() {
 }
 
 export default App;
+
+PrivateRoute.propTypes = {
+	component: PropTypes.oneOfType([PropTypes.elementType, PropTypes.node]).isRequired,
+	options: PropTypes.object,
+};
