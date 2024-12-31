@@ -225,8 +225,9 @@ const tableESStateControllerHandler = state => ({
 
 		const dataSourceViews = selectedMapViewFilters?.filter(view => layerIdentifier === view.dataSourceName);
 		const mapViewFilters =
-			dataSourceViews?.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)) ||
-			[];
+			dataSourceViews
+				?.filter(view => view?.filterValues?.length !== 0)
+				?.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)) || [];
 
 		if (gridViewSettings) {
 			// Fetch user-specific or default grid views based on provided settings and overrides.
