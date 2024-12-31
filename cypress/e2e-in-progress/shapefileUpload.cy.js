@@ -94,7 +94,7 @@ describe('Shape File Upload Spec', () => {
 				cy.log('==== STEP: CLICKING ON GRID BUTTON TO OPEN SOURCE GRID ===');
 				cy.interceptApi('getOpenDeals');
 				cy.interceptApi('getAllMongoUsers');
-				cy.interceptApi('getESSimpleSearch');
+				cy.interceptApi('getDbData');
 				cy.get("[id='grid-icon-cypressford']", { timeout: longTimeout }).scrollIntoView().click({ force: true });
 
 				cy.log('==== STEP: WAITING ===');

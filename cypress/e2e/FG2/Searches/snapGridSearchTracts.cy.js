@@ -20,6 +20,6 @@ describe('SnapGrid Search Tracts Spec', () => {
 		cy.log(`==== STEP:Search TRACT BY NAME ${searchStrings} IN SNAPGRID ====`);
 		cy.get('.MuiTypography-displayBlock').contains('Tracts').click();
 		cy.get('#MapGridTractsTable', { timeout: longTimeout }).should('be.visible');
-		cy.gridSearch(searchStrings, 'getESSimpleSearch', '#mapGridCardSearch-basic');
+		cy.gridSearch(searchStrings, 'getDbData', '#mapGridCardSearch-basic');
 	});
 });

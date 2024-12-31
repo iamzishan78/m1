@@ -10,7 +10,7 @@ import { useLazyQuery } from '@apollo/client';
 import get from 'lodash/get';
 import moment from 'moment';
 
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { CUSTOM_DATES } from 'utils/data';
 import { esIndexFilterKeyMap } from 'utils/data';
@@ -257,7 +257,7 @@ const CampaignFilter = ({
 	const [stateApp] = useContext(AppContext);
 	const [search, setSearch] = useState('');
 
-	const [getCampaign, { data: filtersData }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
+	const [getCampaign, { data: filtersData }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 
 	const getAllFilters = () => {
 		let rangeFilters = [];
@@ -311,7 +311,7 @@ const CampaignFilter = ({
 			}}
 			value={value}
 			inputValue={search?.toString()}
-			options={get(filtersData, 'getESSimpleFilter.hits', [])
+			options={get(filtersData, 'getDbFilters.hits', [])
 				.map(d => d.key)
 				.filter(Boolean)}
 			getOptionLabel={op => op?.name || ''}
@@ -350,7 +350,7 @@ const QualifierFilter = ({
 	const [stateApp] = useContext(AppContext);
 	const [search, setSearch] = useState('');
 
-	const [getQualifiers, { data: filtersData }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
+	const [getQualifiers, { data: filtersData }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 
 	const getAllFilters = () => {
 		let rangeFilters = [];
@@ -412,7 +412,7 @@ const QualifierFilter = ({
 			}}
 			value={value}
 			inputValue={search?.toString()}
-			options={get(filtersData, 'getESSimpleFilter.hits', [])}
+			options={get(filtersData, 'getDbFilters.hits', [])}
 			getOptionSelected={(option, value) => option.key === value}
 			getOptionLabel={option => option?.key?.toString().replace(/^,|,$/gm, '') || ''}
 			renderInput={params => (

@@ -168,7 +168,7 @@ function AddUnitInterestDialog(props) {
 					],
 				},
 				// Specify the queries to be refetched after the mutation
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
+				refetchQueries: ['getDbData', 'getESFilterList'],
 				// Await the refetch queries to complete before proceeding
 				awaitRefetchQueries: true,
 			});
@@ -190,7 +190,7 @@ function AddUnitInterestDialog(props) {
 					},
 				},
 				// Specify the queries to be refetched after the mutation
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getShapeSummaryDetails'],
+				refetchQueries: ['getDbData', 'getESFilterList', 'getShapeSummaryDetails'],
 				// Await the refetch queries to complete before proceeding
 				awaitRefetchQueries: true,
 			});
@@ -218,7 +218,7 @@ function AddUnitInterestDialog(props) {
 						},
 					],
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getShapeSummaryDetails'],
+				refetchQueries: ['getDbData', 'getESFilterList', 'getShapeSummaryDetails'],
 				awaitRefetchQueries: true,
 			});
 		} catch {
@@ -537,7 +537,7 @@ function AddUnitInterestDialog(props) {
 						onClose={handleCloseDialog}
 						deleteFunc={deleteFunc}
 						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
+						setM1nSelectedRowsIndexes={() => { }}
 					>
 						Do you want to delete the selected well?
 					</DeleteConfirmationDialogContent>

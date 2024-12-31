@@ -37,7 +37,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 				campaign,
 			},
 			mutation: UPDATE_CAMPAIGN,
-			refetchQueries: ['getESSimpleFilter'],
+			refetchQueries: ['getDbFilters'],
 		});
 
 		Loaders.successToast(loaderId, 'Updation Complete');

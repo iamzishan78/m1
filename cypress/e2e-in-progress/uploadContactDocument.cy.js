@@ -12,7 +12,7 @@ describe('upload contact documnet', () => {
 
 		cy.checkAndLogin();
 
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.get("[title='Contacts']", { timeout: longTimeout }).should('be.visible').click();
 		cy.get('#quickActionPanel', { timeout: longTimeout }).contains('All Entities').click({ force: true });
 		cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(res => {

@@ -106,7 +106,7 @@ function AgreementUnitDialog(props) {
 				Loaders.errorToast('ageement-unit-creation', data.addRelatedShape.message);
 			}
 		},
-		refetchQueries: ['getESSimpleSearch', 'getESFilterList'],
+		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
 
@@ -120,7 +120,7 @@ function AgreementUnitDialog(props) {
 				descriptorObject: props.shapeId,
 				relatedObject: selectedShapeLayer._id,
 			},
-			refetchQueries: ['getESSimpleSearch', 'getCustomLayer'],
+			refetchQueries: ['getDbData', 'getCustomLayer'],
 			awaitRefetchQueries: true,
 		});
 		tableGlobalController.refetch();
@@ -240,7 +240,7 @@ function AgreementUnitDialog(props) {
 							handleSave();
 						}}
 						className={classes.footerButton}
-						// disabled={!selectedShapeLayer?._id}
+					// disabled={!selectedShapeLayer?._id}
 					>
 						{loading ? <CircularProgress size={14} /> : 'Save'}
 					</Button>

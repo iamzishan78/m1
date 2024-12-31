@@ -180,7 +180,7 @@ const AddNewRelatedAgreementDialog = ({ customLayerId, handleClose, parentType, 
 				relatedObjectType: 'Agreement',
 				isDeleted: false,
 			},
-			refetchQueries: ['getESSimpleSearch'],
+			refetchQueries: ['getDbData'],
 			awaitRefetchQueries: true,
 		});
 	};

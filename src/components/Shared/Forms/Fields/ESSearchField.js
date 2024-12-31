@@ -13,7 +13,7 @@ import debounce from 'lodash/debounce';
 
 // Queries
 
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles(theme => ({
 	secondaryText: {
@@ -34,14 +34,14 @@ function ESSearchField({ filters, index, pagination, fields, sort, fieldName, on
 	const [selectedItem, setSelectedItem] = useState(null);
 	const [focused, setFocused] = useState(false);
 
-	const [getESSimpleSearch, { data: constDataItems, loading }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+	const [getDbData, { data: constDataItems, loading }] = useLazyQuery(GET_DB_DATA, {
 		fetchPolicy: 'no-cache',
 	});
 	// searching
 	const callItemESSearch = React.useMemo(
 		() =>
 			debounce(request => {
-				getESSimpleSearch({
+				getDbData({
 					variables: {
 						filters,
 						index,
@@ -60,7 +60,7 @@ function ESSearchField({ filters, index, pagination, fields, sort, fieldName, on
 
 	// setting the items
 	useEffect(() => {
-		const allESItem = constDataItems?.getESSimpleSearch?.hits;
+		const allESItem = constDataItems?.getDbData?.hits;
 		setFoundItems(allESItem);
 	}, [constDataItems]);
 
@@ -116,9 +116,8 @@ function ESSearchField({ filters, index, pagination, fields, sort, fieldName, on
 						{...params}
 						required
 						variant="outlined"
-						label={`${fieldName.replace(/ies$/, 'y').replace(/s$/, '')} ${
-							fieldName.toLowerCase().includes('revenue') ? 'Number' : 'Name'
-						}`}
+						label={`${fieldName.replace(/ies$/, 'y').replace(/s$/, '')} ${fieldName.toLowerCase().includes('revenue') ? 'Number' : 'Name'
+							}`}
 						InputLabelProps={{ shrink: true }}
 						onChange={event => {
 							callItemESSearch({ input: `*${event.target.value}*` }, results => null);

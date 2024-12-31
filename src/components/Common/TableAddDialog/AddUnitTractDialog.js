@@ -67,7 +67,7 @@ function AddUnitTractDialog(props) {
 			setLoading(false);
 			handleClose();
 		},
-		refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
+		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
 	const [updateShapeTract, { data: updateData }] = useMutation(UPDATE_SHAPE_TRACTS, {
@@ -75,8 +75,8 @@ function AddUnitTractDialog(props) {
 			setLoading(false);
 			handleClose();
 		},
-		onError: err => {},
-		refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
+		onError: err => { },
+		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
 
@@ -215,7 +215,7 @@ function AddUnitTractDialog(props) {
 						isDeleted: true,
 					},
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
+				refetchQueries: ['getDbData', 'getESFilterList'],
 				awaitRefetchQueries: true,
 			});
 		} catch {
@@ -238,7 +238,7 @@ function AddUnitTractDialog(props) {
 						onClose={handleCloseDialog}
 						deleteFunc={deleteFunc}
 						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
+						setM1nSelectedRowsIndexes={() => { }}
 					>
 						Do you want to delete the selected well interest?
 					</DeleteConfirmationDialogContent>

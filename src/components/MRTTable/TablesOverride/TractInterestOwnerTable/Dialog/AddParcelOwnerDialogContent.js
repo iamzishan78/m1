@@ -295,7 +295,7 @@ function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
 					'getparcelOwners',
 					'getContactParcelInterests',
 					'getContactParcelInterest',
-					'getESSimpleSearch',
+					'getDbData',
 					'getCustomLayer',
 				],
 				awaitRefetchQueries: true,
@@ -317,7 +317,7 @@ function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
 					'getparcelOwners',
 					'getContactParcelInterests',
 					'getContactParcelInterest',
-					'getESSimpleSearch',
+					'getDbData',
 				],
 				awaitRefetchQueries: true,
 			});

@@ -65,7 +65,7 @@ function AddTractUnitDialog(props) {
 			handleClose();
 			tableGlobalController.refetch();
 		},
-		refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
+		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
 

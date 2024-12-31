@@ -222,7 +222,7 @@ export default function RelatedFile(props) {
 		fetchPolicy: 'no-cache',
 	});
 	const [addFile] = useMutation(CREATEDESCRIPTORFILE, {
-		refetchQueries: ['getRecentContactFiles', 'getParcelFiles', 'shapeSummaryDetails', 'getESSimpleSearch'], // refetch table data on adding new documents
+		refetchQueries: ['getRecentContactFiles', 'getParcelFiles', 'shapeSummaryDetails', 'getDbData'], // refetch table data on adding new documents
 		awaitRefetchQueries: true,
 	});
 
@@ -341,7 +341,7 @@ export default function RelatedFile(props) {
 					fileId: fileId || newDocument.fileId,
 				},
 			},
-			refetchQueries: ['getParcelFiles', 'getESSimpleSearch'],
+			refetchQueries: ['getParcelFiles', 'getDbData'],
 			awaitRefetchQueries: true,
 		}).then(() => {
 			if (props.relatedObjectId && props.relatedObjectType && selectedType === 'new') {
@@ -369,7 +369,7 @@ export default function RelatedFile(props) {
 				relatedObjectType: props.relatedObjectType,
 			},
 			// add queries to refetch
-			refetchQueries: ['getParcelFiles', 'getESSimpleSearch'],
+			refetchQueries: ['getParcelFiles', 'getDbData'],
 			awaitRefetchQueries: true,
 		}).then(() => {
 			props.setShowDocumentSlider('');
@@ -408,7 +408,7 @@ export default function RelatedFile(props) {
 						isDeleted: true,
 					},
 				},
-				refetchQueries: ['getDocuments', 'shapeSummaryDetails', 'getESSimpleSearch'],
+				refetchQueries: ['getDocuments', 'shapeSummaryDetails', 'getDbData'],
 				awaitRefetchQueries: true,
 			}).then(() => {
 				setStateApp({
@@ -978,11 +978,11 @@ export default function RelatedFile(props) {
 													<IconButton
 														disabled={false}
 														size="small"
-														// onClick={() =>
-														//   handleViewFile(
-														//     files?.getFileDescriptors[key].fileId
-														//   )
-														// }
+													// onClick={() =>
+													//   handleViewFile(
+													//     files?.getFileDescriptors[key].fileId
+													//   )
+													// }
 													>
 														<GetAppIcon />
 													</IconButton>
@@ -1090,7 +1090,7 @@ export default function RelatedFile(props) {
 						onClose={handleDeleteCancel}
 						deleteFunc={handleDeleteAccept}
 						m1nSelectedRowsIds={[document._id]}
-						setM1nSelectedRowsIndexes={() => {}}
+						setM1nSelectedRowsIndexes={() => { }}
 					>
 						Do you want to delete the selected documents?
 					</DeleteConfirmationDialogContent>
@@ -1135,8 +1135,8 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 			options={
 				documentTypes
 					? documentTypes?.getFilesType?.map(type => {
-							return { _id: type, name: type };
-						})
+						return { _id: type, name: type };
+					})
 					: []
 			}
 			getOptionLabel={option => {

@@ -29,7 +29,7 @@ import _ from 'lodash';
 
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 import { AppContext } from 'AppContext';
 
@@ -57,7 +57,7 @@ export default function LinkWithIcon(props) {
 	});
 	const [unlinkGlobalOwners] = useMutation(UNLINK_GLOBAL_OWNER);
 	const [linkTaxOwners] = useMutation(LINK_PLATFORM_OWNER);
-	const [getESSimpleSearch, { data: esSearchData, loading }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+	const [getDbData, { data: esSearchData, loading }] = useLazyQuery(GET_DB_DATA, {
 		fetchPolicy: 'no-cache',
 	});
 
@@ -142,7 +142,7 @@ export default function LinkWithIcon(props) {
 
 	const debouncedSearch = useMemo(() => {
 		return _.debounce((search, showAll) => {
-			getESSimpleSearch({
+			getDbData({
 				variables: {
 					index: 'platformData:globalowner',
 					pagination: {
@@ -328,7 +328,7 @@ export default function LinkWithIcon(props) {
 												<Grid item xs={6}>
 													<Typography color={'primary'}>PLATFORM OWNERS</Typography>
 												</Grid>
-												{!_.isEmpty(esSearchData?.getESSimpleSearch?.hits) && (
+												{!_.isEmpty(esSearchData?.getDbData?.hits) && (
 													<Grid
 														item
 														xs={6}
@@ -356,15 +356,15 @@ export default function LinkWithIcon(props) {
 													<CircularProgress color="secondary" />
 												</Grid>
 											)}
-											{esSearchData?.getESSimpleSearch?.hits?.map(taxOwner => (
+											{esSearchData?.getDbData?.hits?.map(taxOwner => (
 												<ListGlobalOwners
 													taxOwner={taxOwner}
 													onClick={() => {
 														isLinked(taxOwner)
 															? setGlobalOwnerDialog({
-																	state: true,
-																	globalOwner: taxOwner.globalOwnerId,
-																})
+																state: true,
+																globalOwner: taxOwner.globalOwnerId,
+															})
 															: handleLinkTaxOwners(taxOwner);
 													}}
 													key={'search_tax_owners' + taxOwner._id}
@@ -372,7 +372,7 @@ export default function LinkWithIcon(props) {
 													isLoading={processingPlatformOwners.includes(taxOwner.globalOwnerId)}
 												/>
 											))}
-											{!loading && _.isEmpty(esSearchData?.getESSimpleSearch?.hits) && (
+											{!loading && _.isEmpty(esSearchData?.getDbData?.hits) && (
 												<Grid container justifyContent="center">
 													<Typography>No platform owners found.</Typography>
 												</Grid>
@@ -464,7 +464,7 @@ export default function LinkWithIcon(props) {
 					onClose={() => setGlobalOwnerDialog(state => ({ ...state, state: false }))}
 					deleteFunc={handleRemoveGlobalOwner}
 					m1nSelectedRowsIds={null}
-					setM1nSelectedRowsIndexes={() => {}}
+					setM1nSelectedRowsIndexes={() => { }}
 				>
 					Are you sure you want to remove this Global Owner?
 				</DeleteConfirmationDialogContent>

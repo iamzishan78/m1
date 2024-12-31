@@ -73,7 +73,7 @@ function UnitToolbar({ table, tableKey }) {
 			tableKey,
 			selectedCampaign: tableStateValues.customProps?.campaign,
 			objectType: 'unit',
-			refetchQueries: ['getESSimpleSearch'],
+			refetchQueries: ['getDbData'],
 		};
 	};
 

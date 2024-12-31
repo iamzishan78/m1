@@ -90,7 +90,7 @@ const InterestDetailForm = ({ selectedInterest, propertyOwnerContact, onClose })
 			onClose();
 			tableGlobalController.refetch();
 		},
-		refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
+		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
 	const [updatePropertyInterest, { loading: updateLoading }] = useMutation(UPDATE_PROPERTY_INTEREST, {
@@ -98,7 +98,7 @@ const InterestDetailForm = ({ selectedInterest, propertyOwnerContact, onClose })
 			onClose();
 			tableGlobalController.refetch();
 		},
-		refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
+		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
 
@@ -141,9 +141,9 @@ const InterestDetailForm = ({ selectedInterest, propertyOwnerContact, onClose })
 				effectiveDate: effectiveDate ? moment(effectiveDate).format('YYYY-MM-DD') : null,
 				owner: owner
 					? {
-							...owner,
-							name: owner?.entityDetail?.name,
-						}
+						...owner,
+						name: owner?.entityDetail?.name,
+					}
 					: { name: '', _id: null },
 			});
 		} else if (propertyOwnerContact) {

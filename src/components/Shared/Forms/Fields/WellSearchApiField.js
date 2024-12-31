@@ -10,7 +10,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useLazyQuery } from '@apollo/client';
 import parse from 'autosuggest-highlight/parse';
 
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
 
 const useStyles = makeStyles(theme => ({}));
@@ -26,11 +26,11 @@ function WellSearchApiField(props) {
 		// must be network-only to trigger state change for field updates
 		fetchPolicy: 'network-only',
 	});
-	const [getESSimpleSearch] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+	const [getDbData] = useLazyQuery(GET_DB_DATA, {
 		fetchPolicy: 'no-cache',
 		onCompleted: wellsData => {
-			if (wellsData?.getESSimpleSearch?.hits) {
-				setFoundWells(wellsData.getESSimpleSearch.hits);
+			if (wellsData?.getDbData?.hits) {
+				setFoundWells(wellsData.getDbData.hits);
 			}
 		},
 	});
@@ -140,7 +140,7 @@ function WellSearchApiField(props) {
 						label={props.label}
 						InputLabelProps={{ shrink: true }}
 						onChange={event => {
-							getESSimpleSearch({
+							getDbData({
 								variables: {
 									index: 'platformData:wells',
 									pagination: {

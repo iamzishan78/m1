@@ -50,7 +50,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 				ignoreResponse: true,
 			},
 			mutation: UPDATECONTACT,
-			refetchQueries: ['getESSimpleFilter'],
+			refetchQueries: ['getDbFilters'],
 		});
 
 		// Updating loader for process completion

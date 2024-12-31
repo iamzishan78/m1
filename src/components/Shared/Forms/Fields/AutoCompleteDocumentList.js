@@ -10,7 +10,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useLazyQuery } from '@apollo/client';
 import debounce from 'lodash/debounce';
 
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles({
 	inputRoot: {
@@ -25,8 +25,8 @@ const useStyles = makeStyles({
 	},
 });
 
-const debouncedSearch = debounce((getESSimpleSearch, searchTerm) => {
-	getESSimpleSearch({
+const debouncedSearch = debounce((getDbData, searchTerm) => {
+	getDbData({
 		variables: {
 			index: 'documents_flat',
 			pagination: {
@@ -45,17 +45,17 @@ const AutoCompleteDocumentList = ({ onSelect, search, setSearch }) => {
 	const classes = useStyles();
 	const [documents, setDocuments] = useState([]);
 	const [value, setValue] = useState({ name: '', _id: null });
-	const [getESSimpleSearch, { data: documentData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH);
+	const [getDbData, { data: documentData }] = useLazyQuery(GET_DB_DATA);
 
-	const handleSearch = useCallback(searchTerm => debouncedSearch(getESSimpleSearch, searchTerm), [getESSimpleSearch]);
+	const handleSearch = useCallback(searchTerm => debouncedSearch(getDbData, searchTerm), [getDbData]);
 
 	useEffect(() => {
 		handleSearch(search);
 	}, [search, handleSearch]);
 
 	useEffect(() => {
-		if (documentData?.getESSimpleSearch?.hits) {
-			setDocuments(documentData?.getESSimpleSearch?.hits);
+		if (documentData?.getDbData?.hits) {
+			setDocuments(documentData?.getDbData?.hits);
 		}
 	}, [documentData]);
 

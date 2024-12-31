@@ -231,7 +231,7 @@ export default function ParcelInstrument(props) {
 	});
 	const [deleteFile] = useMutation(DELETEDESCRIPTORRELATEDFILE);
 	const [addParcelAgreement] = useMutation(ADD_PARCEL_AGREEMENT, {
-		refetchQueries: ['getESSimpleSearch'],
+		refetchQueries: ['getDbData'],
 		awaitRefetchQueries: true,
 		onCompleted: () => {
 			tableGlobalController.refetch();
@@ -241,7 +241,7 @@ export default function ParcelInstrument(props) {
 		},
 	});
 	const [updateParcelAgreement] = useMutation(UPDATE_PARCEL_AGREEMENT, {
-		refetchQueries: ['getESSimpleSearch'],
+		refetchQueries: ['getDbData'],
 		awaitRefetchQueries: true,
 		onCompleted: () => {
 			tableGlobalController.refetch();
@@ -251,7 +251,7 @@ export default function ParcelInstrument(props) {
 		},
 	});
 	const [deleteParcelRunsheet] = useMutation(DELETE_PARCEL_RUNSHEET, {
-		refetchQueries: ['getESSimpleSearch'],
+		refetchQueries: ['getDbData'],
 		awaitRefetchQueries: true,
 		onCompleted: () => {
 			tableGlobalController.refetch();
@@ -360,7 +360,7 @@ export default function ParcelInstrument(props) {
 					parcelId: selectedInstrument.customLayerId,
 					fileId: selectedInstrument.fileId,
 				},
-				refetchQueries: ['getESSimpleSearch'],
+				refetchQueries: ['getDbData'],
 				awaitRefetchQueries: true,
 			}).then(() => {
 				props.setShowSlider(false);
@@ -377,7 +377,7 @@ export default function ParcelInstrument(props) {
 					descriptorObjectId: selectedInstrument.fileId,
 					relatedObjectId: selectedInstrument._id,
 				},
-				refetchQueries: ['getESSimpleSearch'],
+				refetchQueries: ['getDbData'],
 				awaitRefetchQueries: true,
 			}).then(() => {
 				setFileData(null);
@@ -481,7 +481,7 @@ export default function ParcelInstrument(props) {
 						parcelId: props.parcelId,
 					},
 				},
-				refetchQueries: ['getESSimpleSearch'],
+				refetchQueries: ['getDbData'],
 				awaitRefetchQueries: true,
 			}).then(() => {
 				props.setShowSlider(false);
@@ -543,7 +543,7 @@ export default function ParcelInstrument(props) {
 						onClose={handleDeleteCancel}
 						deleteFunc={handleDeleteAccept}
 						m1nSelectedRowsIds={[document._id]}
-						setM1nSelectedRowsIndexes={() => {}}
+						setM1nSelectedRowsIndexes={() => { }}
 					>
 						{`Do you want to delete the selected ${DELETE_OPTIONS_ENUMS[initiateDeleteDialogForFileOrAgreement]}?`}
 					</DeleteConfirmationDialogContent>
@@ -976,8 +976,8 @@ const AutoCompleteField = ({ setValue, value, options, ...other }) => {
 			options={
 				options
 					? options?.map(type => {
-							return { _id: type, name: type };
-						})
+						return { _id: type, name: type };
+					})
 					: []
 			}
 			getOptionLabel={option => {

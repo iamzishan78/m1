@@ -246,7 +246,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 			onModalClose();
 			tableGlobalController.refetch(); // refech mrttable rows
 		},
-		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
+		refetchQueries: ['getAllActivities', 'getDbData'],
 		awaitRefetchQueries: true,
 	});
 
@@ -255,7 +255,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 			onModalClose();
 			tableGlobalController.refetch(); // refech mrttable rows
 		},
-		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
+		refetchQueries: ['getAllActivities', 'getDbData'],
 		awaitRefetchQueries: true,
 	});
 
@@ -264,7 +264,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 			onModalClose();
 			tableGlobalController.refetch(); // refech mrttable rows
 		},
-		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
+		refetchQueries: ['getAllActivities', 'getDbData'],
 		awaitRefetchQueries: true,
 	});
 
@@ -556,20 +556,20 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 			open={!!stateApp.activityDialog}
 			onClose={
 				addLoading && updateLoading
-					? () => {}
+					? () => { }
 					: () => {
-							onModalClose();
-						}
+						onModalClose();
+					}
 			}
 		>
 			<ExpandableCardProvider
 				expanded={true}
 				handleCloseExpandableCard={
 					addLoading && updateLoading
-						? () => {}
+						? () => { }
 						: () => {
-								onModalClose();
-							}
+							onModalClose();
+						}
 				}
 				title={addNew ? 'Add Activity' : 'Activity Details'}
 				subTitle={''}

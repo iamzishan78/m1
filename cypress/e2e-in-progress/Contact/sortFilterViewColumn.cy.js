@@ -40,7 +40,7 @@ describe('Sort Filter ViewColumn Grid Spec', () => {
 			cy.log('==== STEP: CLICK ON CONTACT====');
 			cy.getTableCell('Name', 3).click();
 
-			cy.interceptApi('getESSimpleSearch');
+			cy.interceptApi('getDbData');
 			cy.log('==== STEP: CLICK CONTACT BREADCRUMB 1 ====');
 			cy.get('.MuiBreadcrumbs-li', { timeout: longTimeout }).contains('Contacts').should('be.visible').click();
 
@@ -61,7 +61,7 @@ describe('Sort Filter ViewColumn Grid Spec', () => {
 			cy.log('==== STEP: CLICK ON FILTER ICON ====');
 			cy.get('#filterIcon').click();
 
-			cy.interceptApi('getESSimpleSearch', {
+			cy.interceptApi('getDbData', {
 				filter: {
 					field: 'contactOwners.name.keyword',
 					value: 'Jacob',
@@ -88,7 +88,7 @@ describe('Sort Filter ViewColumn Grid Spec', () => {
 			cy.log('==== STEP: CLICK ON CONTACT AGAIN ====');
 			cy.getTableCell('Name', 5).click();
 
-			cy.interceptApi('getESSimpleSearch');
+			cy.interceptApi('getDbData');
 			cy.log('==== STEP: CLICK CONTACT BREADCRUMB 2====');
 			cy.get('.MuiBreadcrumbs-li', { timeout: longTimeout }).contains('Contacts').should('be.visible').click();
 			cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout });

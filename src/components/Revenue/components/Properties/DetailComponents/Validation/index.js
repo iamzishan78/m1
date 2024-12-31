@@ -12,7 +12,7 @@ import ValidationFilter from 'components/Revenue/components/Properties/DetailCom
 import { WellCardContextProvider } from 'components/WellCard/WellCardContext';
 import { WellProdChartContextProvider } from 'components/WellProdChart/WellProdChartContext';
 
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 const Validation = ({ propertyId }) => {
 	const [esFilters, setESFilters] = useState([]);
@@ -22,10 +22,10 @@ const Validation = ({ propertyId }) => {
 	const [checkDetailsData, setCheckDetailsData] = useState([]);
 	const [startDate, setStartDate] = useState(null);
 
-	const [getESSimpleSearch, { data: elasticData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: 'no-cache' });
+	const [getDbData, { data: elasticData }] = useLazyQuery(GET_DB_DATA, { fetchPolicy: 'no-cache' });
 
 	useEffect(() => {
-		getESSimpleSearch({
+		getDbData({
 			variables: {
 				index: 'checkdetails_flat',
 				pagination: {
@@ -45,10 +45,10 @@ const Validation = ({ propertyId }) => {
 	}, [esFilters]);
 
 	useEffect(() => {
-		if (elasticData?.getESSimpleSearch?.hits?.length > 0) {
+		if (elasticData?.getDbData?.hits?.length > 0) {
 			let data = [];
-			for (let i = 0; i < elasticData?.getESSimpleSearch?.hits?.length; i++) {
-				const check = elasticData?.getESSimpleSearch?.hits[i];
+			for (let i = 0; i < elasticData?.getDbData?.hits?.length; i++) {
+				const check = elasticData?.getDbData?.hits[i];
 				data.push({
 					product: check.product,
 					ReportDate: check.date,

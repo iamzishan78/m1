@@ -251,7 +251,7 @@ function AddActivityDialog(props) {
 	}, [dealsData]);
 
 	const [addActivityMutation, { loading: addLoading }] = useMutation(ADDACTIVITY, {
-		refetchQueries: ['getContact', 'getAllActivities', 'getMelissaRecordsCountForContactIds', 'getESSimpleSearch'],
+		refetchQueries: ['getContact', 'getAllActivities', 'getMelissaRecordsCountForContactIds', 'getDbData'],
 		awaitRefetchQueries: true,
 		onCompleted: () => {
 			tableGlobalController.refetch();
@@ -467,7 +467,7 @@ function AddActivityDialog(props) {
 						onClose={handleCloseDialog}
 						deleteFunc={deleteFunc}
 						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
+						setM1nSelectedRowsIndexes={() => { }}
 					>
 						Do you want to delete the selected Activity?
 					</DeleteConfirmationDialogContent>
