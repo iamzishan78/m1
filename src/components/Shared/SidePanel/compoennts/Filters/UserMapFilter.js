@@ -21,6 +21,7 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 
 import { customLayersFieldAccessors } from './consts';
 import CustomAutocomplete from './CustomAutocomplete';
+import moment from 'moment';
 
 // Define custom styles using Material-UI's makeStyles hook
 const useStyles = makeStyles(theme => ({
@@ -76,7 +77,10 @@ export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValue
 			filterValue = ' ';
 			break;
 		case 'date':
-			filterValue = { gte: formatDate(filterValues?.[0]), lte: formatDate(filterValues?.[1]) };
+			filterValue = {
+				gte: formatDate(filterValues?.[0] || '1970-01-01'),
+				lte: formatDate(filterValues?.[1] || moment().format('YYYY-MM-DD')),
+			};
 			break;
 		case 'range':
 			filterValue = [filterValues?.[0], filterValues?.[1]];
