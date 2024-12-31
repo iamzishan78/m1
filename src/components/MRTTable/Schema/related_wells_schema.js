@@ -5,6 +5,10 @@ import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
 const esIndex = 'shapewellinterests_flat';
+const onClickedRow = selectedRow => {
+	window.setDrawer('relatedWell');
+	window.setStateApp(stateApp => ({ ...stateApp, selectedWell: selectedRow }));
+};
 
 const RelatedWellsMeta = {
 	esIndex,
@@ -16,6 +20,7 @@ const RelatedWellsMeta = {
 	defaultSort: { field: '_ts', order: 'desc' },
 	isInFiniteScroll: true,
 	columnVirtualization: true,
+	onClickedRow,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
