@@ -127,6 +127,8 @@ const useMRTTable = tableKey => {
 				enableRowActions: tableStateValues.enableRowActions,
 				positionActionsColumn: tableStateValues.positionActionsColumn,
 				getRowId: tableStateValues.getRowId,
+				onCreatingRowCancel: tableStateValues.onCreatingRowCancel,
+				onCreatingRowSave: tableStateValues.onCreatingRowSave,
 				renderRowActions: EditRowActions(tableStateValues.onDelete),
 			}),
 

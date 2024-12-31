@@ -96,7 +96,9 @@ const theme = createTheme({
 
 function Providers({ children }) {
 	const [apolloClient, setApolloClient] = useState(null);
+
 	useEffect(() => {
+		globalStateController.updateState({ client: apolloClient });
 		// eslint-disable-next-line no-new
 		new GlobalApolloClientProvider(apolloClient);
 	}, [apolloClient]);

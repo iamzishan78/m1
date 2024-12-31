@@ -3,13 +3,18 @@ import React from 'react';
 
 import DeleteIcon from '@material-ui/icons/Delete';
 
+import { set } from 'lodash';
+
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import { CommonSchema, editFieldProps } from 'components/MRTTable/Schema/common_schema';
-import { formatDate } from 'components/Shared/functions';
+import { copy, formatDate } from 'components/Shared/functions';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
 import { UPDATE_CHECK_DETAIL, UPDATE_CHECK_DETAILS } from 'graphQL/useMutationUpdateCheckDetail';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 import CheckDetailsToolbar from '../TablesOverride/CheckDetailsTable/CheckDetailsToolbar';
 
@@ -35,8 +40,30 @@ const CheckDetailsMeta = {
 	enableRowActions: true,
 	positionActionsColumn: 'last',
 	getRowId: row => row?._id,
-	// onCreatingRowCancel: () => setValidationErrors({}),
-	// onCreatingRowSave: handleCreateUser,
+	onCreatingRowCancel: async ({ table }) => {
+		tableController('CheckDetailsTable').clearEditing();
+		table.setCreatingRow(null);
+	},
+	onCreatingRowSave: async ({ row, table, values, exitCreatingMode }) => {
+		const client = globalStateController.getValue('client');
+
+		const obj = copy(row.original);
+
+		Object.entries(values).forEach(([key, value]) => {
+			set(obj, key, value);
+		});
+
+		await client.mutate({
+			variables: { checkDetail: { ...obj } },
+			mutation: UPDATE_CHECK_DETAIL,
+		});
+
+		tableController('CheckDetailsTable').clearEditing();
+		table.setCreatingRow(null);
+		exitCreatingMode();
+
+		tableGlobalController.refetch();
+	},
 	handleUpdateData: async (client, rows) => {
 		await client.mutate({
 			variables: {

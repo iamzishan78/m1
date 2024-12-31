@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import PropTypes from 'prop-types';
 
+import CreateNewButton from 'components/MRTTable/Common/EditTable/CreateNewButton';
 import InputModeButton from 'components/MRTTable/Common/EditTable/InputModeButton';
 import SaveButton from 'components/MRTTable/Common/EditTable/SaveButton';
 
@@ -52,6 +53,8 @@ function CheckDetailsToolbar({ table, tableKey }) {
 				)}
 
 				<SaveButton tableKey={tableKey} />
+
+				<CreateNewButton table={table} tableKey={tableKey} />
 			</div>
 		</>
 	);

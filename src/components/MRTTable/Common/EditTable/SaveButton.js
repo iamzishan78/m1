@@ -11,7 +11,7 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 const SaveButton = ({ tableKey }) => {
 	const Controller = tableController(tableKey);
 	const { tableStateValues } = Controller.useState(
-		['editedData', 'validationErrors', 'enableEditing'],
+		['editedData', 'validationErrors', 'enableEditing', 'isCreateMode'],
 		'tableStateValues'
 	);
 
@@ -27,7 +27,7 @@ const SaveButton = ({ tableKey }) => {
 		return hasEditedData && !hasErrors;
 	}, [tableStateValues.editedData, tableStateValues.validationErrors]);
 
-	if (!tableStateValues.enableEditing) {
+	if (!tableStateValues.enableEditing || tableStateValues.isCreateMode) {
 		return null;
 	}
 

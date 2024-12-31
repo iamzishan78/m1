@@ -957,6 +957,7 @@ const tableESStateControllerHandler = state => ({
 	clearEditing: () => {
 		state.editedData.set({});
 		state.validationErrors.merge({});
+		state.isCreateMode.merge(false);
 	},
 });
 

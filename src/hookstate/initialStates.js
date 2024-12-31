@@ -55,6 +55,7 @@ export const tableInitialState = {
 	showTypes: false,
 	editedData: {},
 	validationErrors: {},
+	isCreateMode: false,
 };
 export const tableESState = {};
 export const tableGlobalState = hookstate({

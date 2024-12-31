@@ -29,3 +29,9 @@
 #mrt-progress {
 	display: none;
 }
+
+tr *,
+tr *::before,
+tr *::after {
+	box-sizing: unset !important;
+}
