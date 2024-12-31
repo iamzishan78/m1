@@ -28,8 +28,8 @@ import TableHOC from 'components/Table/TableHOC';
 import { ADD_PROPERTY } from 'graphQL/useMutationAddProperty';
 import { UPDATE_CHECK_DETAIL } from 'graphQL/useMutationUpdateCheckDetail';
 import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
-import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
 
 import { ActionCell } from './ActionCell';
 import { RevenueStatementHeadCells } from './data';
@@ -123,7 +123,7 @@ function CheckDetailsEditableTable(props) {
 	const classes = usetableStyles();
 	const tclasses = useStyles({ showPdfSection: props.showPdfSection });
 
-	const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
+	const [getDbData, { data: elasticData }] = useLazyQuery(GET_DB_DATA, {
 		fetchPolicy: 'no-cache',
 		onCompleted: () => {
 			props.setLoading(false);
@@ -133,11 +133,11 @@ function CheckDetailsEditableTable(props) {
 		fetchPolicy: 'no-cache',
 	});
 
-	const [loadMoreList, { data: loadMoreData, loading }] = useLazyQuery(GET_ES_PAGINATED_LIST, {});
+	const [loadMoreList, { data: loadMoreData, loading }] = useLazyQuery(GET_DB_DATA, {});
 
 	useEffect(() => {
-		if (loadMoreData?.getESPaginatedList?.hits) {
-			let hits = copy(loadMoreData.getESPaginatedList.hits);
+		if (loadMoreData?.getDbData?.hits) {
+			let hits = copy(loadMoreData.getDbData.hits);
 			hits = hits.reverse();
 			props.setRows(hits.concat(rows));
 			setTimeout(() => document.getElementById(`${hits.length - 1}-0`)?.scrollIntoView(), 0);
@@ -171,7 +171,7 @@ function CheckDetailsEditableTable(props) {
 
 	const [updateCheckDetail] = useMutation(UPDATE_CHECK_DETAIL);
 
-	const tableData = elasticData?.getESPaginatedList;
+	const tableData = elasticData?.getDbData;
 
 	// const startPaginationAt = 10;
 	const esIndex = 'checkdetails_flat';
@@ -193,7 +193,7 @@ function CheckDetailsEditableTable(props) {
 			set(row, 'property.county', '');
 			let checkDetail;
 			const { data: result1 } = await client.query({
-				query: GET_ES_PAGINATED_LIST,
+				query: GET_DB_DATA,
 				variables: {
 					esIndex: 'properties_flat',
 					search: `number:"${value}"`,
@@ -203,11 +203,11 @@ function CheckDetailsEditableTable(props) {
 					},
 				},
 			});
-			if (result1?.getESPaginatedList?.hits.length) {
+			if (result1?.getDbData?.hits.length) {
 				checkDetail = result1;
 			} else {
 				const { data: result2 } = await client.query({
-					query: GET_ES_PAGINATED_LIST,
+					query: GET_DB_DATA,
 					variables: {
 						esIndex: 'properties_flat',
 						search: `name:"${value}"`,
@@ -221,8 +221,8 @@ function CheckDetailsEditableTable(props) {
 			}
 
 			let newProperty = {};
-			if (checkDetail?.getESPaginatedList?.hits.length > 0) {
-				newProperty = checkDetail.getESPaginatedList.hits[0];
+			if (checkDetail?.getDbData?.hits.length > 0) {
+				newProperty = checkDetail.getDbData.hits[0];
 				setNewProperty(null);
 			} else {
 				const { data: property } = await client.mutate({
@@ -338,9 +338,9 @@ function CheckDetailsEditableTable(props) {
 
 	// get paginated data hits from checkdetails_flat table
 	useEffect(() => {
-		getESPaginatedList({
+		getDbData({
 			variables: {
-				esIndex,
+				index: esIndex,
 				filters: [
 					{
 						field: 'check._id.keyword',
@@ -355,7 +355,7 @@ function CheckDetailsEditableTable(props) {
 				search: search.text ? `${search.text}*` : '',
 			},
 		});
-	}, [props.parent, props.checkId, search.text, sort, startPaginationAt, getESPaginatedList]);
+	}, [props.parent, props.checkId, search.text, sort, startPaginationAt, getDbData]);
 
 	useEffect(() => {
 		if (tableData?.hits?.length > 0) {
@@ -413,7 +413,7 @@ function CheckDetailsEditableTable(props) {
 			setTimeout(() => {
 				loadMoreList({
 					variables: {
-						esIndex,
+						index: esIndex,
 						filters: [
 							{
 								field: 'check._id.keyword',

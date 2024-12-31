@@ -109,7 +109,7 @@ function RevenuePropertiesTable(props) {
 					properties: ids,
 				},
 				awaitRefetchQueries: true,
-				refetchQueries: ['getESSimpleSearch'],
+				refetchQueries: ['getDbData'],
 			}).then(() => {
 				props.setLoading(false);
 				props.setSelectedRows([]);
@@ -134,11 +134,10 @@ function RevenuePropertiesTable(props) {
 						m1nSelectedRowsIds={props.selectedRows.map(sR => props.rows[sR.dataIndex]?._id)}
 						setM1nSelectedRowsIndexes={props.setSelectedRows}
 					>
-						{`Do you want to delete the selected ${
-							props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1
+						{`Do you want to delete the selected ${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1
 								? 'properties'
 								: 'property'
-						}?`}
+							}?`}
 					</DeleteConfirmationDialogContent>
 				)}
 			</Dialog>

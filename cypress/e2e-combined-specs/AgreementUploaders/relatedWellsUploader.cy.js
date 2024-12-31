@@ -9,7 +9,7 @@ describe('Related Wells Uploader Spec', () => {
 
 		cy.viewport(1536, 960);
 
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.visit('http://localhost:3000/land/agreements');
 
 		cy.checkAndLogin();
@@ -71,8 +71,8 @@ describe('Related Wells Uploader Spec', () => {
 							cy.log(`==== STEP: VERIFYING RELATED WELLS FOR AGREEMENT : ${agreementName} ====`);
 							cy.wait(5000);
 
-							cy.gridSearch(agreementName, 'getESSimpleSearch').then(response => {
-								const hits = response.response.body.data.getESSimpleSearch.hits;
+							cy.gridSearch(agreementName, 'getDbData').then(response => {
+								const hits = response.response.body.data.getDbData.hits;
 
 								const cypressAgreement = hits.find(hit => hit.agreementName === agreementName);
 
@@ -84,14 +84,14 @@ describe('Related Wells Uploader Spec', () => {
 
 								cy.log('==== STEP: OPEN CYPRESS AGREEMENT DETAIL  ====');
 								cy.getTableCell('Agreement', indexOfcypressAgreement).then($agreementNameCell => {
-									cy.interceptApi('getESPaginatedList');
+									cy.interceptApi('getDbData');
 									cy.wrap($agreementNameCell)
 										.contains(`${agreementNumber} - ${agreementName}`)
 										.scrollIntoView()
 										.click({ waitForAnimations: false });
 
 									cy.verifyApiResponse('@getESPaginatedListApi', { responseTimeout: longTimeout }).then(result => {
-										const wellApiNumbers = result.response?.body?.data?.getESPaginatedList.hits.map(
+										const wellApiNumbers = result.response?.body?.data?.getDbData.hits.map(
 											hit => hit.apiNumber
 										);
 										cy.log(JSON.stringify(wellApiNumbers));

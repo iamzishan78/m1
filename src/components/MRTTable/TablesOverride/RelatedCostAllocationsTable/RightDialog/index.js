@@ -21,7 +21,7 @@ export const CostAllocationRightDialog = () => {
 	const { paymentId } = paymentMultiGrid || {};
 
 	const [addPaymentPropertyDescriptor] = useMutation(ADD_PAYMENT_PROPERTY_DESCRIPTOR, {
-		refetchQueries: ['getESSimpleSearch', 'getAgreementPaymentSummary'],
+		refetchQueries: ['getDbData', 'getAgreementPaymentSummary'],
 		awaitRefetchQueries: true,
 	});
 

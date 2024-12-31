@@ -10,7 +10,7 @@ describe('Verify QTR Calls Spec', () => {
 
 		cy.viewport(1400, 900);
 
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.visit('http://localhost:3000/land/agreements');
 
 		cy.checkAndLogin();
@@ -19,7 +19,7 @@ describe('Verify QTR Calls Spec', () => {
 
 		cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: shorTimeout });
 
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 
 		cy.log('==== STEP: OPEN AGREEMENT DETAIL ====');
 
@@ -28,7 +28,7 @@ describe('Verify QTR Calls Spec', () => {
 		});
 
 		cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
-			const hits = response.response.body.data.getESSimpleSearch.hits;
+			const hits = response.response.body.data.getDbData.hits;
 			const tractToTest = hits.find(hit => hit?.shapeLabel === tractName);
 
 			const selectedQTR = tractToTest?.qtrQtrSelection?.selectedQtr;

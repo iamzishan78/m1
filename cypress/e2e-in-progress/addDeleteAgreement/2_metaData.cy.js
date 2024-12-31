@@ -14,8 +14,8 @@ describe('Add Metadata Agreement Spec', () => {
 		cy.get('#addButton', { timeout: longTimeout }).should('be.visible');
 
 		cy.log('==== STEP: SEARCH AGREEMENT ON GRID ====');
-		cy.gridSearch(agreementObj.agreementName.value, 'getESSimpleSearch').then(response => {
-			const hits = response.response.body.data.getESSimpleSearch.hits;
+		cy.gridSearch(agreementObj.agreementName.value, 'getDbData').then(response => {
+			const hits = response.response.body.data.getDbData.hits;
 			const cypressAgreement = hits.find(hit => hit.agreementName === agreementObj.agreementName.value);
 
 			if (!cypressAgreement) {

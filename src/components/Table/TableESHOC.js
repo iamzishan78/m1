@@ -20,8 +20,8 @@ import TableHeader from 'components/Table/constants/agreements-header-schema';
 
 import { COMMENTSCOUNTER } from 'graphQL/useQueryCommentsCounter';
 import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
 import { TAGSAMPLES } from 'graphQL/useQueryTagSamples';
@@ -88,7 +88,7 @@ export const TableESHOC = Component => {
 			setStateIfDeepEqual(DataTracks, newState);
 		};
 
-		const [getESSimpleSearch, { data: elasticData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+		const [getDbData, { data: elasticData }] = useLazyQuery(GET_DB_DATA, {
 			fetchPolicy: 'no-cache',
 			onCompleted: () => {
 				setLoading(false);
@@ -125,7 +125,7 @@ export const TableESHOC = Component => {
 
 		const history = useHistory();
 
-		const tableData = elasticData?.getESSimpleSearch || {};
+		const tableData = elasticData?.getDbData || {};
 
 		const [dataTotal, setDataTotal] = useState(null);
 
@@ -329,10 +329,10 @@ export const TableESHOC = Component => {
 					}
 				})();
 
-				getESSimpleSearch({
+				getDbData({
 					variables,
 					onCompleted: data => {
-						setDataTotal(total ?? data?.getESSimpleSearch?.total);
+						setDataTotal(total ?? data?.getDbData?.total);
 					},
 				});
 
@@ -483,7 +483,7 @@ export const TableESHOC = Component => {
 										column={column}
 										index={index}
 										onChange={onChange}
-										query={GET_ES_SIMPLE_FILTER}
+										query={GET_DB_FILTERS}
 										searchFields={tableMeta.searchFields}
 										filters={appliedFilters}
 										extendSearchQuery={extendSearchQuery}
@@ -504,77 +504,6 @@ export const TableESHOC = Component => {
 			return tableCols;
 		};
 
-		const setColumnsData = tableCols => {
-			let { TableHeader } = tableMeta;
-			tableCols = addColumnOptions(tableCols);
-
-			const allFilters = (selectedGridView?.filters || []).concat(initialFilters);
-			if (allFilters) {
-				tableCols.forEach((column, index) => {
-					// only required if table have selectedGridView
-					if (selectedGridView) {
-						setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
-					}
-					let value;
-					if (column?.custom?.oRFilter) {
-						value = get(
-							allFilters.find(filtr => filtr.field.includes(column.esKey[0])),
-							'value',
-							''
-						);
-					} else if (Array.isArray(column.esKey)) {
-						value = get(
-							allFilters.find(filter => {
-								return column.esKey.includes(filter.field);
-							}),
-							'value',
-							''
-						);
-					} else {
-						value = get(
-							allFilters.find(filter => {
-								return JSON.stringify(filter.field) === JSON.stringify(column.esKey);
-							}),
-							'value',
-							''
-						);
-					}
-
-					let filterList = Array.isArray(column.esKey) ? [] : [];
-					if (value && typeof value !== 'object') {
-						if (column.custom?.isDate && columns?.length) {
-							if (value !== '') {
-								value = moment(new Date(value)).format('MM/DD/YYYY');
-							}
-						}
-						if (column.custom?.isDateTime && columns?.length) {
-							if (value !== '') {
-								value = moment(new Date(value)).format('MM/DD/YYYY HH:mm:ss.SSS');
-							}
-						}
-						filterList = [value];
-					} else if (Array.isArray(value)) {
-						filterList = value.filter(v => v);
-					}
-					// if (column?.options?.filter) {
-					column.options.filterList = filterList;
-					// }
-				});
-			} else {
-				tableCols.forEach((column, index) => {
-					setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
-					if (column.options) {
-						column.options.filterList = Array.isArray(column.esKey) ? undefined : [];
-					}
-				});
-			}
-			// shift _id and sticky Colums to the first Place
-			let stickyColumns = tableCols.filter(cD => cD.name === '_id' || cD?.options?.stickyColumn);
-			tableCols = tableCols.filter(cD => cD.name !== '_id' && !cD.options?.stickyColumn);
-			tableCols.unshift(...stickyColumns);
-
-			setColumns(getNonGridViewColumnsData(tableCols));
-		};
 
 		const initializeGenericData = useCallback(
 			(ids, actions) => {
@@ -633,31 +562,31 @@ export const TableESHOC = Component => {
 				data.commentsCounter = !genericDataActions?.includes('comments')
 					? data.comments?.length
 					: (() => {
-							const comments = dataCommentsCounterRef?.current?.commentsCounter || [];
-							let commentsCounter = 0;
-							for (let i = 0; i < comments.length; i++) {
-								if (id === comments[i]._id) {
-									commentsCounter = comments[i].total;
-									break;
-								}
+						const comments = dataCommentsCounterRef?.current?.commentsCounter || [];
+						let commentsCounter = 0;
+						for (let i = 0; i < comments.length; i++) {
+							if (id === comments[i]._id) {
+								commentsCounter = comments[i].total;
+								break;
 							}
-							return commentsCounter;
-						})();
+						}
+						return commentsCounter;
+					})();
 			}
 			if (actions.includes('tags')) {
 				data.tags = !genericDataActions?.includes('tags')
 					? data?.tags && data?.tags?.[0] && data?.tags?.[0].tag && [data.tags.map(t => t.tag), data.tags.length]
 					: (() => {
-							const tags = dataTagSamplesRef?.current?.tagSamples || [];
-							let newTags = [[], 0];
-							for (let i = 0; i < tags.length; i++) {
-								if (id === tags[i]._id) {
-									newTags = [tags[i].tags, tags[i].total];
-									break;
-								}
+						const tags = dataTagSamplesRef?.current?.tagSamples || [];
+						let newTags = [[], 0];
+						for (let i = 0; i < tags.length; i++) {
+							if (id === tags[i]._id) {
+								newTags = [tags[i].tags, tags[i].total];
+								break;
 							}
-							return newTags;
-						})();
+						}
+						return newTags;
+					})();
 			}
 
 			if (actions.includes('ifAreContacts')) {
@@ -760,16 +689,16 @@ export const TableESHOC = Component => {
 					},
 					...(!isEmpty(tableState.sortOrder) && tableState.sortOrder.direction !== 'none'
 						? {
-								sort: (() => {
-									let field =
-										columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
-										columns.find(el => el.name === tableState.sortOrder?.name)?.name;
-									return {
-										field: Array.isArray(field) ? field[0] : field,
-										order: tableState.sortOrder?.direction,
-									};
-								})(),
-							}
+							sort: (() => {
+								let field =
+									columns.find(el => el.name === tableState.sortOrder?.name)?.esKey ||
+									columns.find(el => el.name === tableState.sortOrder?.name)?.name;
+								return {
+									field: Array.isArray(field) ? field[0] : field,
+									order: tableState.sortOrder?.direction,
+								};
+							})(),
+						}
 						: { sort: tableMeta.defaultSort }),
 
 					filters: tableState.filters ? [...tableState.filters] : [],
@@ -1050,16 +979,16 @@ export const TableESHOC = Component => {
 						},
 						...(!isEmpty(tableStateRef.current.sortOrder) && tableStateRef.current.sortOrder.direction !== 'none'
 							? {
-									sort: (() => {
-										let field =
-											columns.find(el => el.name === tableStateRef.current.sortOrder?.name)?.esKey ||
-											columns.find(el => el.name === tableStateRef.current.sortOrder?.name)?.name;
-										return {
-											field: Array.isArray(field) ? field[0] : field,
-											order: tableStateRef.current.sortOrder?.direction,
-										};
-									})(),
-								}
+								sort: (() => {
+									let field =
+										columns.find(el => el.name === tableStateRef.current.sortOrder?.name)?.esKey ||
+										columns.find(el => el.name === tableStateRef.current.sortOrder?.name)?.name;
+									return {
+										field: Array.isArray(field) ? field[0] : field,
+										order: tableStateRef.current.sortOrder?.direction,
+									};
+								})(),
+							}
 							: { sort: tableMeta.defaultSort }),
 
 						filters: selectedFilters.current.length !== 0 ? [...selectedFilters.current] : tableMeta.filters,
@@ -1083,9 +1012,9 @@ export const TableESHOC = Component => {
 
 					const allSelectedRows = await client.query({
 						...pageESVariables,
-						query: GET_ES_SIMPLE_SEARCH,
+						query: GET_DB_DATA,
 					});
-					const hits = allSelectedRows?.data?.getESSimpleSearch?.hits || [];
+					const hits = allSelectedRows?.data?.getDbData?.hits || [];
 					selectedData = [...selectedData, ...hits];
 				} while (iter * max < total);
 
@@ -1120,7 +1049,7 @@ export const TableESHOC = Component => {
 				meta,
 				tableData,
 				columns,
-				getESSimpleSearch,
+				getDbData,
 				selectedGridView
 			);
 			activeSearchRef.current = tableActions.pageESVariables.variables.search;
@@ -1220,9 +1149,9 @@ export const TableESHOC = Component => {
 
 								const allSelectedRows = await client.query({
 									...pageESVariables,
-									query: GET_ES_SIMPLE_SEARCH,
+									query: GET_DB_DATA,
 								});
-								const hits = allSelectedRows?.data?.getESSimpleSearch?.hits || [];
+								const hits = allSelectedRows?.data?.getDbData?.hits || [];
 								selectedData = [...selectedData, ...hits];
 							} while (iter * max < total);
 
@@ -1291,61 +1220,61 @@ export const TableESHOC = Component => {
 			customToolbar:
 				tableMeta.addBtnText || tableMeta.addableName || tableMeta?.downloadAll?.exportPx
 					? () => {
-							return (
-								<>
-									{tableMeta?.downloadAll?.exportPx && (
-										<div
-											style={{
-												display: 'inline',
-												position: 'absolute',
-												right: tableMeta?.downloadAll?.exportPx,
-											}}
-										>
-											<IconButton onClick={onDownload} disabled={isExporting}>
-												<Tooltip title="Download to CSV" aria-label="add">
-													<CloudDownloadIcon />
-												</Tooltip>
-											</IconButton>
-										</div>
-									)}
-									{(tableMeta.addBtnText || tableMeta.addableName) && (
-										<div style={{ display: 'inline', float: 'left', marginRight: '15px', marginTop: '5px' }}>
-											{tableMeta.addWithInput ? (
-												<Button
-													color="secondary"
-													className={classes.multiSelectionTopBarButtons}
-													onClick={() => {
-														if (tableMeta.inputModeType === 'revenueStatementDetails') {
-															history.push(
-																`/revenue/statement/${window.location.search.replace('?id=', '')}/line-item`
-															);
-														}
-													}}
-												>
-													{tableMeta.addBtnText}
-												</Button>
-											) : (
-												<Button
-													color="secondary"
-													className={classes.multiSelectionTopBarButtons}
-													onClick={() => {
-														if (tableMeta.onClickAdd) {
-															tableMeta.onClickAdd();
-														}
-														setAddToTable('add');
-														setClickedRow(null);
-													}}
-												>
-													{tableMeta.addBtnText
-														? `+ ADD ${tableMeta.addBtnText}`
-														: `+ ADD ${tableMeta.addableName} To ${tableMeta.shapeType?.toUpperCase()}`}
-												</Button>
-											)}
-										</div>
-									)}
-								</>
-							);
-						}
+						return (
+							<>
+								{tableMeta?.downloadAll?.exportPx && (
+									<div
+										style={{
+											display: 'inline',
+											position: 'absolute',
+											right: tableMeta?.downloadAll?.exportPx,
+										}}
+									>
+										<IconButton onClick={onDownload} disabled={isExporting}>
+											<Tooltip title="Download to CSV" aria-label="add">
+												<CloudDownloadIcon />
+											</Tooltip>
+										</IconButton>
+									</div>
+								)}
+								{(tableMeta.addBtnText || tableMeta.addableName) && (
+									<div style={{ display: 'inline', float: 'left', marginRight: '15px', marginTop: '5px' }}>
+										{tableMeta.addWithInput ? (
+											<Button
+												color="secondary"
+												className={classes.multiSelectionTopBarButtons}
+												onClick={() => {
+													if (tableMeta.inputModeType === 'revenueStatementDetails') {
+														history.push(
+															`/revenue/statement/${window.location.search.replace('?id=', '')}/line-item`
+														);
+													}
+												}}
+											>
+												{tableMeta.addBtnText}
+											</Button>
+										) : (
+											<Button
+												color="secondary"
+												className={classes.multiSelectionTopBarButtons}
+												onClick={() => {
+													if (tableMeta.onClickAdd) {
+														tableMeta.onClickAdd();
+													}
+													setAddToTable('add');
+													setClickedRow(null);
+												}}
+											>
+												{tableMeta.addBtnText
+													? `+ ADD ${tableMeta.addBtnText}`
+													: `+ ADD ${tableMeta.addableName} To ${tableMeta.shapeType?.toUpperCase()}`}
+											</Button>
+										)}
+									</div>
+								)}
+							</>
+						);
+					}
 					: undefined,
 			customToolbarSelect: ({ data }) => {
 				return (

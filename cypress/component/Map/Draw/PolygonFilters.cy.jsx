@@ -26,7 +26,7 @@ Cypress.Commands.add('testPolygonFilter', ({ type }) => {
 	cy.wait(5000);
 
 	// Get query name according to the type
-	const query = type === 'grid' ? 'getESSimpleSearch' : 'getESSimpleWells';
+	const query = 'getDbData';
 
 	// Intercept and wait for specified requests
 	cy.interceptAndWait(

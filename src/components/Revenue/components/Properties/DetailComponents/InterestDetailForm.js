@@ -90,14 +90,14 @@ const InterestDetailForm = props => {
 		onCompleted: () => {
 			props.onClose();
 		},
-		refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
+		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
 	const [updatePropertyInterest] = useMutation(UPDATE_PROPERTY_INTEREST, {
 		onCompleted: () => {
 			props.onClose();
 		},
-		refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
+		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
 
@@ -140,9 +140,9 @@ const InterestDetailForm = props => {
 				effectiveDate: effectiveDate ? moment(effectiveDate).format('YYYY-MM-DD') : null,
 				owner: owner
 					? {
-							...owner,
-							name: owner.entityDetail.name,
-						}
+						...owner,
+						name: owner.entityDetail.name,
+					}
 					: { name: '', _id: null },
 			});
 		} else if (props.propertyOwnerContact) {

@@ -3,7 +3,7 @@ import UnitTractsTable from 'components/Table/Shape/UnitTractsTable';
 
 describe('UnitRelatedTracts ESHOC Table', () => {
 	beforeEach(() => {
-		cy.interceptAndWait(['getESPaginatedList', 'shapetracts_flat'], () => {
+		cy.interceptAndWait(['getDbData', 'shapetracts_flat'], () => {
 			cy.viewport(1600, 1200).mount(
 				<UnitTractsTable customLayer={{ _id: '661eaa597d7f7a2368c2daf9' }} shapeType="Unit" dense />
 			);

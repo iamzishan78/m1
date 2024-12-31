@@ -87,7 +87,7 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
 					shapeOwners: shapeOwnersData,
 					userId: stateApp.user.mongoId,
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
+				refetchQueries: ['getDbData', 'getESFilterList', 'getCustomLayer'],
 				awaitRefetchQueries: true,
 			});
 		} else if (stateApp?.addType === 'tractInterests') {
@@ -112,7 +112,7 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
 						'getparcelOwners',
 						'getContactParcelInterests',
 						'getContactParcelInterest',
-						'getESSimpleSearch',
+						'getDbData',
 					],
 					awaitRefetchQueries: true,
 				});

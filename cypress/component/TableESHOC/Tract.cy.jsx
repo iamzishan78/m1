@@ -3,7 +3,7 @@ import TractsTable from 'components/Table/Tract/TractsTable';
 
 describe('Tract ESHOC Table', () => {
 	beforeEach(() => {
-		cy.interceptAndWait(['getESSimpleSearch', 'shapes_flat'], () => {
+		cy.interceptAndWait(['getDbData', 'shapes_flat'], () => {
 			cy.viewport(1600, 1200).mount(
 				<TractsTable
 					id="MapGridTractsTable"

@@ -12,7 +12,7 @@ import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } from 'components/MRTTable/utils/data';
 import { formatDate } from 'components/Shared/functions';
 
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableESState } from 'hookstate/initialStates';
@@ -130,7 +130,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 		debouncedSetSearchText(e?.target?.value || '');
 	};
 	// Lazy query to fetch filter list from the GraphQL API when required
-	const [getFiltersList, { data: filtersData }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
+	const [getFiltersList, { data: filtersData }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 
 	// Watch form fields to dynamically react to their values
 	const dataSourceNameField = watch(`mapViews.${index}.dataSourceName`);
@@ -279,7 +279,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 
 	// Memoized calculation of autocomplete fields to optimize rendering
 	const autocompleteFields = useMemo(() => {
-		const filterValueHits = filtersData?.getESSimpleFilter?.hits || []; // Get filter options from query results
+		const filterValueHits = filtersData?.getDbFilters?.hits || []; // Get filter options from query results
 		const filterValuesOptions = filterValueHits.map(hit => hit.key).filter(key => (key?.trim ? key.trim() : key)); // Clean options
 
 		// Map filter type options to autocomplete options

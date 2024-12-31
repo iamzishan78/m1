@@ -1,5 +1,27 @@
 import gql from 'graphql-tag';
 
+export const GET_DB_DATA = gql`
+	query getDbData(
+		$index: String
+		$search: esSearchInput
+		$filters: [esFilterInput]
+		$sort: esSortInput
+		$pagination: esPaginationInput
+		$project: JSON
+		$parent: String
+	) {
+		getDbData(
+			index: $index
+			search: $search
+			filters: $filters
+			sort: $sort
+			pagination: $pagination
+			project: $project
+			parent: $parent
+		)
+	}
+`;
+
 export const GET_DB_DATA_TOTAL = gql`
 	query getDbDataTotal(
 		$index: String

@@ -19,7 +19,7 @@ function PotentialShapeTractToolbar({ tableKey, table }) {
 
 			tableGlobalController.setSelectedTab(0);
 		},
-		refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
+		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
 	const Controller = tableController(tableKey);

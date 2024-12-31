@@ -30,7 +30,7 @@ import TractIcon from 'components/Shared/svgIcons/tract';
 import UnitIcon from 'components/Shared/svgIcons/unit';
 import capitalizeFirstLetter from 'components/Shared/valueformatters/capitalize-first-letter';
 
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
@@ -396,7 +396,7 @@ function Search({ stateApp, setStateApp, isDocument }) {
 	const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(OWNERSLATSLONS);
 	const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(OPERATORSLATSLONS);
 	const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
-	const [getLandGridGeom, { data: dataLandGridGeom }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: 'no-cache' });
+	const [getLandGridGeom, { data: dataLandGridGeom }] = useLazyQuery(GET_DB_DATA, { fetchPolicy: 'no-cache' });
 	const [getContactsWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
 	const [getSearchHistory, { data: searchHistoryData }] = useLazyQuery(USERSEARCHHISTORY);
 
@@ -445,16 +445,15 @@ function Search({ stateApp, setStateApp, isDocument }) {
 		}
 	}, [searchHistoryList]);
 
-	const [getESSimpleSearch, { data: esSearchData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: 'no-cache' });
+	const [getDbData, { data: esSearchData }] = useLazyQuery(GET_DB_DATA, { fetchPolicy: 'no-cache' });
 	//////////// Search History End//////////////////
 	const startPaginationAt = 25;
 
 	const callMapboxSearch = React.useMemo(
 		() =>
 			debounce((request, top, callback) => {
-				const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${request.input}.json?access_token=${
-					stateApp.mapboxglAccessToken
-				}&autocomplete=true&country=us%2Cca&limit=${top > 50 ? 50 : top}`;
+				const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${request.input}.json?access_token=${stateApp.mapboxglAccessToken
+					}&autocomplete=true&country=us%2Cca&limit=${top > 50 ? 50 : top}`;
 
 				const headers = new Headers();
 				headers.append('Content-Type', 'application/json');
@@ -479,8 +478,8 @@ function Search({ stateApp, setStateApp, isDocument }) {
 	const callESSearch = React.useMemo(
 		() =>
 			debounce(request => {
-				const { esIndex, search, searchFields, filter } = esCallData[searchOption] || { search: () => {} };
-				getESSimpleSearch({
+				const { esIndex, search, searchFields, filter } = esCallData[searchOption] || { search: () => { } };
+				getDbData({
 					variables: {
 						index: esIndex,
 						pagination: {
@@ -501,10 +500,10 @@ function Search({ stateApp, setStateApp, isDocument }) {
 
 	useEffect(() => {
 		let newOptions = [];
-		if (esSearchData?.getESSimpleSearch?.hits) {
+		if (esSearchData?.getDbData?.hits) {
 			const { formatOptions } = esCallData[searchOption];
 			newOptions = [
-				...esSearchData.getESSimpleSearch.hits.map(result => {
+				...esSearchData.getDbData.hits.map(result => {
 					return formatOptions(result);
 				}),
 			];
@@ -532,19 +531,19 @@ function Search({ stateApp, setStateApp, isDocument }) {
 					if (results) {
 						let resultsMod = results.features
 							? results.features.map(result => {
-									return {
-										...result,
-										Id: result.id,
-										Source: searchOption === 'places' ? 'places' : 'mapboxSearch',
-										Score: result.relevance ? result.relevance : 0,
-										Primary: result.text ? result.text : '',
-										Secondary: result.place_name
-											? result.place_name.indexOf(result.text + ', ') === 0
-												? result.place_name.slice(result.place_name.indexOf(', ') + 2, result.place_name.length)
-												: result.place_name
-											: '',
-									};
-								})
+								return {
+									...result,
+									Id: result.id,
+									Source: searchOption === 'places' ? 'places' : 'mapboxSearch',
+									Score: result.relevance ? result.relevance : 0,
+									Primary: result.text ? result.text : '',
+									Secondary: result.place_name
+										? result.place_name.indexOf(result.text + ', ') === 0
+											? result.place_name.slice(result.place_name.indexOf(', ') + 2, result.place_name.length)
+											: result.place_name
+										: '',
+								};
+							})
 							: [];
 
 						newOptions = [...newOptions, ...resultsMod];
@@ -666,22 +665,22 @@ function Search({ stateApp, setStateApp, isDocument }) {
 
 	//// getting land grid geom ////
 	useEffect(() => {
-		if (dataLandGridGeom && dataLandGridGeom?.getESSimpleSearch?.hits) {
-			if (dataLandGridGeom?.getESSimpleSearch?.hits?.length !== 0) {
+		if (dataLandGridGeom && dataLandGridGeom?.getDbData?.hits) {
+			if (dataLandGridGeom?.getDbData?.hits?.length !== 0) {
 				setStateApp(stateApp =>
-					dataLandGridGeom?.getESSimpleSearch?.hits?.length === 1
+					dataLandGridGeom?.getDbData?.hits?.length === 1
 						? {
-								...stateApp,
-								selectedWell: null,
-								fitBounds: true,
-								searchLoader: false,
-								landGridListFromSearch: [
-									...dataLandGridGeom?.getESSimpleSearch?.hits?.map(hit => ({
-										...hit,
-										shape: JSON.stringify({ geometry: hit?.geoJSON, properties: {} }),
-									})),
-								],
-							}
+							...stateApp,
+							selectedWell: null,
+							fitBounds: true,
+							searchLoader: false,
+							landGridListFromSearch: [
+								...dataLandGridGeom?.getDbData?.hits?.map(hit => ({
+									...hit,
+									shape: JSON.stringify({ geometry: hit?.geoJSON, properties: {} }),
+								})),
+							],
+						}
 						: stateApp
 				);
 				layerController.toggleLayersActivity('Search', true);
@@ -703,16 +702,16 @@ function Search({ stateApp, setStateApp, isDocument }) {
 				setStateApp(stateApp =>
 					dataContactWells.contactWells.length === 1
 						? {
-								...stateApp,
-								selectedWell: null,
-								fitBounds: null,
-								searchLoader: false,
-							}
+							...stateApp,
+							selectedWell: null,
+							fitBounds: null,
+							searchLoader: false,
+						}
 						: {
-								...stateApp,
-								fitBounds: null,
-								searchLoader: false,
-							}
+							...stateApp,
+							fitBounds: null,
+							searchLoader: false,
+						}
 				);
 				layerController.updateState({ wellListFromSearch: [...dataContactWells.contactWells] });
 				layerController.toggleLayersActivity('Search', true);
@@ -1117,20 +1116,20 @@ function Search({ stateApp, setStateApp, isDocument }) {
 											<div>
 												{((searchValue && searchValue !== '') ||
 													(layerStateValues.wellListFromSearch && layerStateValues.wellListFromSearch.length > 0)) && (
-													<Tooltip title="Clear" placement="top">
-														<IconButton
-															size="small"
-															onClick={() => {
-																setValue('');
-																mapControlsController.updateState({ searchValue: '' });
+														<Tooltip title="Clear" placement="top">
+															<IconButton
+																size="small"
+																onClick={() => {
+																	setValue('');
+																	mapControlsController.updateState({ searchValue: '' });
 
-																layerController.updateState({ wellListFromSearch: [] });
-															}}
-														>
-															<ClearIcon htmlColor="#fff" />
-														</IconButton>
-													</Tooltip>
-												)}
+																	layerController.updateState({ wellListFromSearch: [] });
+																}}
+															>
+																<ClearIcon htmlColor="#fff" />
+															</IconButton>
+														</Tooltip>
+													)}
 												<Tooltip title="Search History" placement="top">
 													<IconButton
 														size="small"

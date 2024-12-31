@@ -130,7 +130,7 @@ function ParcelAgreementTable(props) {
 						parcelId: props.customLayer._id,
 						fileId: record.fileId,
 					},
-					refetchQueries: ['getParcelAgreement', 'getESSimpleSearch'],
+					refetchQueries: ['getParcelAgreement', 'getDbData'],
 					awaitRefetchQueries: true,
 				});
 			}
@@ -157,9 +157,8 @@ function ParcelAgreementTable(props) {
 					m1nSelectedRowsIds={props.selectedRows.map(sR => props.rows[sR.dataIndex]?._id)}
 					setM1nSelectedRowsIndexes={props.setSelectedRows}
 				>
-					{`Do you want to permanently delete the Runsheet Instrument${
-						props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? 's' : ''
-					}?`}
+					{`Do you want to permanently delete the Runsheet Instrument${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? 's' : ''
+						}?`}
 				</DeleteConfirmationDialogContent>
 			)}
 			<Table

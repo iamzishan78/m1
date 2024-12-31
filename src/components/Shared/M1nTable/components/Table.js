@@ -543,7 +543,7 @@ function SubTable(props) {
 	const [rows, Rows] = useState([]);
 	const [_selectedRows, setSelectedRows] = useState([]);
 	const [isSearchOpen, openSearch] = useState(false);
-	const [handleSearch, setHandleSearch] = useState(() => () => {});
+	const [handleSearch, setHandleSearch] = useState(() => () => { });
 	const [dataWell, setDataWell] = useState();
 	const [defaultActivityType, setDefaultAcitivityType] = useState('call');
 	const [contact, setContact] = useState(null);
@@ -639,7 +639,7 @@ function SubTable(props) {
 		fetchPolicy: 'no-cache',
 	});
 	const [autoCalculateOfferPrice, { data: autoCalculateOfferPriceData }] = useMutation(AUTO_CALCULATE_OFFER_PRICE, {
-		refetchQueries: ['getESSimpleSearch'],
+		refetchQueries: ['getDbData'],
 	});
 	const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
 		fetchPolicy: 'no-cache',
@@ -677,15 +677,15 @@ function SubTable(props) {
 			`/map/wells/${value?.wellId}`,
 			shapeType
 				? {
-						fromShapeDetail: true,
-						shapeName: selectedShape?.shapeLabel,
-						shapeId: shapeId[shapeId.length - 1],
-						shapeType: shapeType === 'agreement' ? 'Agreements' : 'Units',
-						link:
-							shapeType === 'agreement'
-								? `/land/agreement/details/${selectedShape?.id}`
-								: `/map/units/${shapeId[shapeId.length - 1]}`,
-					}
+					fromShapeDetail: true,
+					shapeName: selectedShape?.shapeLabel,
+					shapeId: shapeId[shapeId.length - 1],
+					shapeType: shapeType === 'agreement' ? 'Agreements' : 'Units',
+					link:
+						shapeType === 'agreement'
+							? `/land/agreement/details/${selectedShape?.id}`
+							: `/map/units/${shapeId[shapeId.length - 1]}`,
+				}
 				: null
 		);
 		mapControlsController.updateState({
@@ -845,7 +845,7 @@ function SubTable(props) {
 				<Tooltip
 					title={!value || value === 0 ? 'Add Comments' : 'View Comments'}
 					placement="top"
-					// style={{ marginRight: "10px" }}
+				// style={{ marginRight: "10px" }}
 				>
 					<Button
 						id={id + targetSourceId + tableMeta.rowIndex}
@@ -1613,9 +1613,8 @@ function SubTable(props) {
 												id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
 												size={props.dense ? 'small' : 'medium'}
 												color="secondary"
-												className={`${classes.icons} ${
-													colInd === tableMeta.columnIndex && rowInd === tableMeta.rowIndex ? classes.iconSelected : ''
-												}`}
+												className={`${classes.icons} ${colInd === tableMeta.columnIndex && rowInd === tableMeta.rowIndex ? classes.iconSelected : ''
+													}`}
 												onClick={e => {
 													e.stopPropagation();
 													if (value) {
@@ -2255,11 +2254,10 @@ function SubTable(props) {
 												<IconButton
 													size={props.dense ? 'small' : 'medium'}
 													color="primary"
-													className={`${classes.icons} ${!value || value.length === 0 ? classes.noOwnersIcon : ''} ${
-														colInd === tableMeta.columnIndex && rowInd === tableMeta.rowIndex
+													className={`${classes.icons} ${!value || value.length === 0 ? classes.noOwnersIcon : ''} ${colInd === tableMeta.columnIndex && rowInd === tableMeta.rowIndex
 															? classes.iconSelected
 															: ''
-													}`}
+														}`}
 													onClick={e => {
 														e.stopPropagation();
 														if (value && value.length > 0) {
@@ -2410,11 +2408,10 @@ function SubTable(props) {
 												<IconButton
 													size={props.dense ? 'small' : 'medium'}
 													color="primary"
-													className={`${classes.icons} ${!value ? classes.noOwnersIcon : ''} ${
-														colInd === tableMeta.columnIndex && rowInd === tableMeta.rowIndex
+													className={`${classes.icons} ${!value ? classes.noOwnersIcon : ''} ${colInd === tableMeta.columnIndex && rowInd === tableMeta.rowIndex
 															? classes.iconSelected
 															: ''
-													}`}
+														}`}
 													onClick={e => {
 														e.stopPropagation();
 														if (value && value > 0) {
@@ -2452,11 +2449,10 @@ function SubTable(props) {
 												<IconButton
 													size={props.dense ? 'small' : 'medium'}
 													color="primary"
-													className={`${classes.icons} ${!value || value.length === 0 ? classes.noOwnersIcon : ''}  ${
-														colInd === tableMeta.columnIndex && rowInd === tableMeta.rowIndex
+													className={`${classes.icons} ${!value || value.length === 0 ? classes.noOwnersIcon : ''}  ${colInd === tableMeta.columnIndex && rowInd === tableMeta.rowIndex
 															? classes.iconSelected
 															: ''
-													}`}
+														}`}
 													onClick={e => {
 														e.stopPropagation();
 														if (value.length > 0) {
@@ -2514,11 +2510,10 @@ function SubTable(props) {
 											<Tooltip title={value && value[1] === 0 ? 'Add Tags' : 'Tags'} placement="top">
 												<Badge
 													id={id + targetSourceId + tableMeta.rowIndex}
-													className={`${classes.TagSample} ${
-														colInd === tableMeta.columnIndex && rowInd === tableMeta.rowIndex
+													className={`${classes.TagSample} ${colInd === tableMeta.columnIndex && rowInd === tableMeta.rowIndex
 															? classes.iconSelected
 															: ''
-													}`}
+														}`}
 													badgeContent={value && value[0] && value[0].length > 0 ? value[1] : 0}
 													color="secondary"
 													onClick={e => {
@@ -2641,7 +2636,7 @@ function SubTable(props) {
 									}
 									const fileExtension = row_line?.fileName
 										?.split('.')
-										[row_line?.fileName?.split('.').length - 1]?.toLowerCase();
+									[row_line?.fileName?.split('.').length - 1]?.toLowerCase();
 									const file = row_line?.fileName;
 									const uri = row_line?.fileUrl;
 
@@ -2689,7 +2684,7 @@ function SubTable(props) {
 																e.stopPropagation();
 																const type = row_line?.fileName
 																	?.split('.')
-																	[row_line?.fileName?.split('.').length - 1]?.toLowerCase();
+																[row_line?.fileName?.split('.').length - 1]?.toLowerCase();
 																if (type === 'pdf') {
 																	if (props.addAble?.type === 'document') {
 																		window.history.pushState('', '', `/documents/${row_line._id}/view`);
@@ -2744,7 +2739,7 @@ function SubTable(props) {
 																	e.stopPropagation();
 																	const type = row_line?.fileName
 																		?.split('.')
-																		[row_line?.fileName?.split('.').length - 1]?.toLowerCase();
+																	[row_line?.fileName?.split('.').length - 1]?.toLowerCase();
 																	if (type === 'pdf') {
 																		if (props.addAble?.type === 'document') {
 																			window.history.pushState('', '', `/documents/${row_line._id}/view`);
@@ -3222,13 +3217,12 @@ function SubTable(props) {
 												// justifyContent: "left",
 												...column.style,
 											}}
-											className={`${
-												props.parent === 'assocTaxRollInterests' &&
-												props.addAble?.type === 'wellInterest' &&
-												(!tableMeta.rowData[15] || tableMeta.rowData[20])
+											className={`${props.parent === 'assocTaxRollInterests' &&
+													props.addAble?.type === 'wellInterest' &&
+													(!tableMeta.rowData[15] || tableMeta.rowData[20])
 													? [classes.blue]
 													: []
-											}`}
+												}`}
 										>
 											{props.targetLabel === 'contact' && column.name !== 'name' && (
 												<CellContentEdition
@@ -3238,8 +3232,8 @@ function SubTable(props) {
 													dropDownOptions={column.dropDownOptions ? column.dropDownOptions : null}
 													entityId={
 														props.targetLabel === 'Parcel Interest' ||
-														props.targetLabel === 'Parcel Ownershipship' ||
-														props.targetLabel === 'contact'
+															props.targetLabel === 'Parcel Ownershipship' ||
+															props.targetLabel === 'contact'
 															? tableMeta.rowData[1]
 															: null
 													}
@@ -3308,9 +3302,9 @@ function SubTable(props) {
 													dropDownOptions={column.dropDownOptions ? column.dropDownOptions : null}
 													entityId={
 														props.targetLabel === 'Parcel Interest' ||
-														props.targetLabel === 'Parcel Ownershipship' ||
-														props.targetLabel === 'Unit Ownershipship' ||
-														props.targetLabel === 'contact'
+															props.targetLabel === 'Parcel Ownershipship' ||
+															props.targetLabel === 'Unit Ownershipship' ||
+															props.targetLabel === 'contact'
 															? tableMeta.rowData[1]
 															: null
 													}
@@ -3520,9 +3514,9 @@ function SubTable(props) {
 		print: false,
 		download:
 			props.parent === 'assocTaxRollInterests' ||
-			props.parent === 'OwnersPerWell' ||
-			props.parent === 'RevenueStatementTable' ||
-			props.parent === 'CheckDetailsTable'
+				props.parent === 'OwnersPerWell' ||
+				props.parent === 'RevenueStatementTable' ||
+				props.parent === 'CheckDetailsTable'
 				? true
 				: false,
 		viewColumns: props.targetLabel !== 'usermanagement',
@@ -3538,8 +3532,8 @@ function SubTable(props) {
 									options: column.options
 										? { ...column.options, display: true }
 										: {
-												display: true,
-											},
+											display: true,
+										},
 								};
 							} else {
 								return {
@@ -3547,8 +3541,8 @@ function SubTable(props) {
 									options: column.options
 										? { ...column.options, display: false }
 										: {
-												display: false,
-											},
+											display: false,
+										},
 								};
 							}
 						}
@@ -3611,340 +3605,340 @@ function SubTable(props) {
 			props.header === 'Interest Owners Tied to Contact'
 				? false
 				: (selectedRows, displayData, setSelectedRow) => {
-						//// if contacts set the multi selection top bar: ////
+					//// if contacts set the multi selection top bar: ////
 
-						// if (props.addAble?.type === "suggestedOwnerToParcel") {
-						//   return (
-						//     <div style={{ height: "48px", display: "flex" }}>
-						//       <div
-						//         style={{
-						//           marginTop: "6px",
-						//           height: "35px",
-						//           display: "flex",
-						//           marginRight: "20px",
-						//         }}
-						//       >
-						//         <Button
-						//           color="secondary"
-						//           className={classes.multiSelectionTopBarButtons}
-						//           disabled={props.addAble?.type === "suggestedOwnerToParcel" && m1nSelectedRowsIndexes.length === 0}
-						//           onClick={() => {
-						//             const parcelInterests = m1nSelectedRowsIndexes.map((index) => rows[index])
-						//             return handleExpandClick(null, null, parcelInterests, "multipleOwnerToContact");
-						//             // props.suggestedOwnerToParcel(m1nSelectedRowsIndexes, setSelectedRow);
-						//           }}
-						//         >
-						//           + ADD TO PARCEL
-						//         </Button>
-						//       </div>
-						//     </div>
-						//   );
-						// }
-						if (props.addAble?.type === 'parcelDocument') {
-							return (
+					// if (props.addAble?.type === "suggestedOwnerToParcel") {
+					//   return (
+					//     <div style={{ height: "48px", display: "flex" }}>
+					//       <div
+					//         style={{
+					//           marginTop: "6px",
+					//           height: "35px",
+					//           display: "flex",
+					//           marginRight: "20px",
+					//         }}
+					//       >
+					//         <Button
+					//           color="secondary"
+					//           className={classes.multiSelectionTopBarButtons}
+					//           disabled={props.addAble?.type === "suggestedOwnerToParcel" && m1nSelectedRowsIndexes.length === 0}
+					//           onClick={() => {
+					//             const parcelInterests = m1nSelectedRowsIndexes.map((index) => rows[index])
+					//             return handleExpandClick(null, null, parcelInterests, "multipleOwnerToContact");
+					//             // props.suggestedOwnerToParcel(m1nSelectedRowsIndexes, setSelectedRow);
+					//           }}
+					//         >
+					//           + ADD TO PARCEL
+					//         </Button>
+					//       </div>
+					//     </div>
+					//   );
+					// }
+					if (props.addAble?.type === 'parcelDocument') {
+						return (
+							<div
+								style={{
+									height: '48px',
+									display: 'flex',
+								}}
+							>
 								<div
 									style={{
-										height: '48px',
+										marginTop: '6px',
+										height: '35px',
 										display: 'flex',
 									}}
 								>
-									<div
-										style={{
-											marginTop: '6px',
-											height: '35px',
-											display: 'flex',
-										}}
-									>
-										<Tooltip title={'Delete'}>
-											<IconButton
-												size="medium"
-												style={{ margin: '0 5px' }}
-												onClick={e => {
-													handleExpandClick(null, null, null, 'deleteParcelDocument');
-												}}
-												aria-label="delete"
-											>
-												<DeleteIcon />
-											</IconButton>
-										</Tooltip>
-									</div>
+									<Tooltip title={'Delete'}>
+										<IconButton
+											size="medium"
+											style={{ margin: '0 5px' }}
+											onClick={e => {
+												handleExpandClick(null, null, null, 'deleteParcelDocument');
+											}}
+											aria-label="delete"
+										>
+											<DeleteIcon />
+										</IconButton>
+									</Tooltip>
 								</div>
-							);
-						}
-						if (props.addAble?.type === 'wellDocument') {
-							return (
+							</div>
+						);
+					}
+					if (props.addAble?.type === 'wellDocument') {
+						return (
+							<div
+								style={{
+									height: '48px',
+									display: 'flex',
+								}}
+							>
 								<div
 									style={{
-										height: '48px',
+										marginTop: '6px',
+										height: '35px',
 										display: 'flex',
 									}}
 								>
-									<div
-										style={{
-											marginTop: '6px',
-											height: '35px',
-											display: 'flex',
-										}}
-									>
-										<Tooltip title={'Delete'}>
-											<IconButton
-												size="medium"
-												style={{ margin: '0 5px' }}
-												onClick={e => {
-													handleExpandClick(null, null, null, 'deleteWellDocument');
-												}}
-												aria-label="delete"
-											>
-												<DeleteIcon />
-											</IconButton>
-										</Tooltip>
-									</div>
+									<Tooltip title={'Delete'}>
+										<IconButton
+											size="medium"
+											style={{ margin: '0 5px' }}
+											onClick={e => {
+												handleExpandClick(null, null, null, 'deleteWellDocument');
+											}}
+											aria-label="delete"
+										>
+											<DeleteIcon />
+										</IconButton>
+									</Tooltip>
 								</div>
-							);
-						}
-						if (props.addAble?.type === 'parcelRunsheet') {
-							return (
+							</div>
+						);
+					}
+					if (props.addAble?.type === 'parcelRunsheet') {
+						return (
+							<div
+								style={{
+									height: '48px',
+									display: 'flex',
+								}}
+							>
 								<div
 									style={{
-										height: '48px',
+										marginTop: '6px',
+										height: '35px',
 										display: 'flex',
 									}}
 								>
-									<div
-										style={{
-											marginTop: '6px',
-											height: '35px',
-											display: 'flex',
-										}}
-									>
-										<Tooltip title={'Delete'}>
-											<IconButton
-												size="medium"
-												style={{ margin: '0 5px' }}
-												onClick={e => {
-													handleExpandClick(null, null, null, 'deleteParcelRunsheet');
-												}}
-												aria-label="delete"
-											>
-												<DeleteIcon />
-											</IconButton>
-										</Tooltip>
-									</div>
+									<Tooltip title={'Delete'}>
+										<IconButton
+											size="medium"
+											style={{ margin: '0 5px' }}
+											onClick={e => {
+												handleExpandClick(null, null, null, 'deleteParcelRunsheet');
+											}}
+											aria-label="delete"
+										>
+											<DeleteIcon />
+										</IconButton>
+									</Tooltip>
 								</div>
-							);
-						}
-						if (
-							props.addAble?.type === 'TractInterests' &&
-							(props.parent === 'assocTaxRollInterests' || props.parent === 'contactAssocTaxRollInterests')
-						) {
-							return (
+							</div>
+						);
+					}
+					if (
+						props.addAble?.type === 'TractInterests' &&
+						(props.parent === 'assocTaxRollInterests' || props.parent === 'contactAssocTaxRollInterests')
+					) {
+						return (
+							<div
+								style={{
+									height: '48px',
+									display: 'flex',
+								}}
+							>
 								<div
 									style={{
-										height: '48px',
+										marginTop: '6px',
+										marginRight: '5px',
+										height: '35px',
 										display: 'flex',
 									}}
 								>
-									<div
-										style={{
-											marginTop: '6px',
-											marginRight: '5px',
-											height: '35px',
-											display: 'flex',
+									<Button
+										color="secondary"
+										className={classes.multiSelectionTopBarButtons}
+										style={{ width: '200px' }}
+										disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
+										onClick={() => {
+											setStateApp(stateApp => ({
+												...stateApp,
+												dealDialog: true,
+												addExistingDeal: true,
+												addType: props.parent === 'contactAssocTaxRollInterests' ? 'tractInterests' : 'interests',
+												interestsIds: m1nSelectedRowsIds,
+												activeDeal: { cardId: null, laneId: null },
+											}));
 										}}
 									>
+										+ ADD TO DEAL
+									</Button>
+								</div>
+							</div>
+						);
+					}
+					if (props.addAble?.type === 'wellInterest' && props.parent === 'ownersPerUnit') {
+						const getSelectedRows = () => {
+							const selectedRows = [];
+							for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
+								selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
+							}
+							return selectedRows;
+						};
+
+						return (
+							<div
+								style={{
+									height: '48px',
+									display: 'flex',
+								}}
+							>
+								<div
+									style={{
+										marginTop: '6px',
+										height: '35px',
+										display: 'flex',
+									}}
+								>
+									<FeatureFlag feature={FEATURES.IDICORE}>
 										<Button
 											color="secondary"
+											startIcon={<RequestPageIcon color="white" />}
 											className={classes.multiSelectionTopBarButtons}
-											style={{ width: '200px' }}
 											disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
-											onClick={() => {
-												setStateApp(stateApp => ({
-													...stateApp,
-													dealDialog: true,
-													addExistingDeal: true,
-													addType: props.parent === 'contactAssocTaxRollInterests' ? 'tractInterests' : 'interests',
-													interestsIds: m1nSelectedRowsIds,
-													activeDeal: { cardId: null, laneId: null },
-												}));
-											}}
+											onClick={() => handleExpandClick(null, null, getSelectedRows(), 'buyContactsInfoData')}
 										>
-											+ ADD TO DEAL
+											Contact Data
 										</Button>
-									</div>
-								</div>
-							);
-						}
-						if (props.addAble?.type === 'wellInterest' && props.parent === 'ownersPerUnit') {
-							const getSelectedRows = () => {
-								const selectedRows = [];
-								for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
-									selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
-								}
-								return selectedRows;
-							};
+									</FeatureFlag>
 
-							return (
+									<Tooltip title={'Delete'}>
+										<IconButton
+											size="medium"
+											style={{ margin: '0 5px' }}
+											onClick={e => {
+												handleExpandClick(null, null, null, 'deleteWellInterest');
+											}}
+											aria-label="delete"
+										>
+											<DeleteIcon />
+										</IconButton>
+									</Tooltip>
+								</div>
+							</div>
+						);
+					}
+					if (props.addAble?.type === 'wellInterest') {
+						return (
+							<div
+								style={{
+									height: '48px',
+									display: 'flex',
+								}}
+							>
 								<div
 									style={{
-										height: '48px',
+										marginTop: '6px',
+										height: '35px',
 										display: 'flex',
 									}}
 								>
-									<div
-										style={{
-											marginTop: '6px',
-											height: '35px',
-											display: 'flex',
-										}}
-									>
-										<FeatureFlag feature={FEATURES.IDICORE}>
-											<Button
-												color="secondary"
-												startIcon={<RequestPageIcon color="white" />}
-												className={classes.multiSelectionTopBarButtons}
-												disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
-												onClick={() => handleExpandClick(null, null, getSelectedRows(), 'buyContactsInfoData')}
-											>
-												Contact Data
-											</Button>
-										</FeatureFlag>
-
-										<Tooltip title={'Delete'}>
-											<IconButton
-												size="medium"
-												style={{ margin: '0 5px' }}
-												onClick={e => {
-													handleExpandClick(null, null, null, 'deleteWellInterest');
-												}}
-												aria-label="delete"
-											>
-												<DeleteIcon />
-											</IconButton>
-										</Tooltip>
-									</div>
+									<Tooltip title={'Delete'}>
+										<IconButton
+											size="medium"
+											style={{ margin: '0 5px' }}
+											onClick={e => {
+												handleExpandClick(null, null, null, 'deleteWellInterest');
+											}}
+											aria-label="delete"
+										>
+											<DeleteIcon id="deleteWellInterest" />
+										</IconButton>
+									</Tooltip>
 								</div>
-							);
-						}
-						if (props.addAble?.type === 'wellInterest') {
-							return (
+							</div>
+						);
+					}
+
+					if (
+						props.header === "Owner's Contacts" ||
+						props.header === 'Contacts' ||
+						props.header === 'Active Users' ||
+						props.header === 'Documents'
+					) {
+						const getSelectedRows = () => {
+							const selectedRows = [];
+							if (_selectedRows.length > 0) {
+								return _selectedRows;
+							}
+
+							for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
+								selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
+							}
+							return selectedRows;
+						};
+
+						return (
+							<div
+								style={{
+									height: '48px',
+									display: 'flex',
+								}}
+							>
 								<div
 									style={{
-										height: '48px',
+										marginTop: '6px',
+										height: '35px',
 										display: 'flex',
 									}}
 								>
-									<div
-										style={{
-											marginTop: '6px',
-											height: '35px',
-											display: 'flex',
-										}}
-									>
-										<Tooltip title={'Delete'}>
-											<IconButton
-												size="medium"
-												style={{ margin: '0 5px' }}
-												onClick={e => {
-													handleExpandClick(null, null, null, 'deleteWellInterest');
-												}}
-												aria-label="delete"
-											>
-												<DeleteIcon id="deleteWellInterest" />
-											</IconButton>
-										</Tooltip>
-									</div>
-								</div>
-							);
-						}
-
-						if (
-							props.header === "Owner's Contacts" ||
-							props.header === 'Contacts' ||
-							props.header === 'Active Users' ||
-							props.header === 'Documents'
-						) {
-							const getSelectedRows = () => {
-								const selectedRows = [];
-								if (_selectedRows.length > 0) {
-									return _selectedRows;
-								}
-
-								for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
-									selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
-								}
-								return selectedRows;
-							};
-
-							return (
-								<div
-									style={{
-										height: '48px',
-										display: 'flex',
-									}}
-								>
-									<div
-										style={{
-											marginTop: '6px',
-											height: '35px',
-											display: 'flex',
-										}}
-									>
-										{props.header !== 'Active Users' && props.header !== 'Documents' && (
-											<>
-												{/* {m1nSelectedRowsIndexes?.length > 1 && ( */}
-												<FeatureFlag feature={FEATURES.IDICORE}>
-													<Button
-														color="secondary"
-														startIcon={<RequestPageIcon color="white" />}
-														className={classes.multiSelectionTopBarButtons}
-														disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
-														onClick={() => {
-															// const rows = getSelectedRows();
-															// const contacts = [];
-															// for (let i = 0; i < rows.length; i++) {
-															//   if (!rows[i].firstName || !rows[i].lastName || !rows[i].address1) {
-															//     contacts.push(rows[i]);
-															//   }
-															// }
-															// setContactDataMissing(contacts);
-															// if (contacts.length > 0) {
-															//   handleExpandClick(null, null, getSelectedRows(), "contactDataMissing");
-															// } else {
-															handleExpandClick(null, null, getSelectedRows(), 'buyContactsInfoData');
-															// }
-														}}
-													>
-														Contact Data
-													</Button>
-												</FeatureFlag>
+									{props.header !== 'Active Users' && props.header !== 'Documents' && (
+										<>
+											{/* {m1nSelectedRowsIndexes?.length > 1 && ( */}
+											<FeatureFlag feature={FEATURES.IDICORE}>
 												<Button
 													color="secondary"
-													startIcon={<EditIcon />}
+													startIcon={<RequestPageIcon color="white" />}
 													className={classes.multiSelectionTopBarButtons}
 													disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
 													onClick={() => {
-														handleExpandClick(null, null, getSelectedRows(), 'asign');
+														// const rows = getSelectedRows();
+														// const contacts = [];
+														// for (let i = 0; i < rows.length; i++) {
+														//   if (!rows[i].firstName || !rows[i].lastName || !rows[i].address1) {
+														//     contacts.push(rows[i]);
+														//   }
+														// }
+														// setContactDataMissing(contacts);
+														// if (contacts.length > 0) {
+														//   handleExpandClick(null, null, getSelectedRows(), "contactDataMissing");
+														// } else {
+														handleExpandClick(null, null, getSelectedRows(), 'buyContactsInfoData');
+														// }
 													}}
 												>
-													Bulk Update
+													Contact Data
 												</Button>
+											</FeatureFlag>
+											<Button
+												color="secondary"
+												startIcon={<EditIcon />}
+												className={classes.multiSelectionTopBarButtons}
+												disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
+												onClick={() => {
+													handleExpandClick(null, null, getSelectedRows(), 'asign');
+												}}
+											>
+												Bulk Update
+											</Button>
 
-												<Button
-													color="secondary"
-													startIcon={<MergeTypeIcon />}
-													className={classes.multiSelectionTopBarButtons}
-													disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length <= 1}
-													onClick={() => {
-														handleExpandClick(null, null, getSelectedRows(), 'merge');
-													}}
-												>
-													Merge
-												</Button>
+											<Button
+												color="secondary"
+												startIcon={<MergeTypeIcon />}
+												className={classes.multiSelectionTopBarButtons}
+												disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length <= 1}
+												onClick={() => {
+													handleExpandClick(null, null, getSelectedRows(), 'merge');
+												}}
+											>
+												Merge
+											</Button>
 
-												{/* )} */}
+											{/* )} */}
 
-												{/* temporary comment out until melissa is back */}
-												{/* <Button
+											{/* temporary comment out until melissa is back */}
+											{/* <Button
                       color="secondary"
                       startIcon={<ContactPhoneRoundedIcon />}
                       className={classes.multiSelectionTopBarButtons}
@@ -3959,142 +3953,142 @@ function SubTable(props) {
                     >
                       Buy Contact Info
                       </Button> */}
-												<Button
-													color="secondary"
-													startIcon={<EmailRoundedIcon />}
-													className={classes.multiSelectionTopBarButtons}
-													onClick={() => {
-														handleExpandClick(null, null, getSelectedRows(), 'sendMailers');
-													}}
-												>
-													Mailers
-												</Button>
-												<FeatureFlag feature={FEATURES.CONTACTGRIDEXPORT}>
-													<Button
-														color="secondary"
-														startIcon={<CloudDownloadIcon color="white" />}
-														className={classes.multiSelectionTopBarButtons}
-														onClick={() => {
-															let owners = [];
-															const rows = _selectedRows?.length > 0 ? _selectedRows : props.rows;
-															for (let i in props.selectedRows) {
-																owners.push(rows[props.selectedRows[i].dataIndex]);
-															}
-															props.setSelectedRows && props.setSelectedRows(owners);
-															// props.setOpenCustomDialog("exportContacts");
-															handleExpandClick(null, null, getSelectedRows(), 'exportContacts');
-														}}
-													>
-														Export
-													</Button>
-												</FeatureFlag>
-
-												<Divider orientation="vertical" flexItem />
-											</>
-										)}
-										<Tooltip title={'Delete'}>
-											<IconButton
-												size="medium"
-												style={{ margin: '0 5px' }}
-												onClick={e => {
-													if (props.header === 'Documents') {
-														handleExpandClick(null, null, null, 'deleteDocument');
-													} else if (props.header !== 'Active Users') {
-														handleExpandClick(null, null, null, 'deleteContact');
-													} else {
-														handleExpandClick(null, null, null, 'deleteUser');
-													}
-												}}
-												aria-label="delete"
-											>
-												<DeleteIcon />
-											</IconButton>
-										</Tooltip>
-									</div>
-								</div>
-							);
-						}
-
-						//// if Parcel Ownership set the multi selection top bar: ////
-						if (props.targetLabel === 'Parcel Ownership') {
-							const getSelectedRows = () => {
-								const selectedRows = [];
-								for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
-									rows[m1nSelectedRowsIndexes[i]]._id = rows[m1nSelectedRowsIndexes[i]].isContact;
-									selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
-								}
-								return selectedRows;
-							};
-
-							return (
-								<div
-									style={{
-										height: '48px',
-										display: 'flex',
-									}}
-								>
-									<div
-										style={{
-											marginTop: '6px',
-											height: '35px',
-											display: 'flex',
-										}}
-									>
-										<FeatureFlag feature={FEATURES.IDICORE}>
 											<Button
 												color="secondary"
-												startIcon={<RequestPageIcon color="white" />}
+												startIcon={<EmailRoundedIcon />}
 												className={classes.multiSelectionTopBarButtons}
-												disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
-												onClick={() => handleExpandClick(null, null, getSelectedRows(), 'buyContactsInfoData')}
-											>
-												Contact Data
-											</Button>
-										</FeatureFlag>
-										<Tooltip title={'Delete'}>
-											<IconButton
-												size="medium"
-												style={{ margin: '0 5px' }}
-												onClick={e => {
-													handleExpandClick(null, null, null, 'deleteParcelOwnership');
+												onClick={() => {
+													handleExpandClick(null, null, getSelectedRows(), 'sendMailers');
 												}}
-												aria-label="delete"
 											>
-												<DeleteIcon />
-											</IconButton>
-										</Tooltip>
-									</div>
+												Mailers
+											</Button>
+											<FeatureFlag feature={FEATURES.CONTACTGRIDEXPORT}>
+												<Button
+													color="secondary"
+													startIcon={<CloudDownloadIcon color="white" />}
+													className={classes.multiSelectionTopBarButtons}
+													onClick={() => {
+														let owners = [];
+														const rows = _selectedRows?.length > 0 ? _selectedRows : props.rows;
+														for (let i in props.selectedRows) {
+															owners.push(rows[props.selectedRows[i].dataIndex]);
+														}
+														props.setSelectedRows && props.setSelectedRows(owners);
+														// props.setOpenCustomDialog("exportContacts");
+														handleExpandClick(null, null, getSelectedRows(), 'exportContacts');
+													}}
+												>
+													Export
+												</Button>
+											</FeatureFlag>
+
+											<Divider orientation="vertical" flexItem />
+										</>
+									)}
+									<Tooltip title={'Delete'}>
+										<IconButton
+											size="medium"
+											style={{ margin: '0 5px' }}
+											onClick={e => {
+												if (props.header === 'Documents') {
+													handleExpandClick(null, null, null, 'deleteDocument');
+												} else if (props.header !== 'Active Users') {
+													handleExpandClick(null, null, null, 'deleteContact');
+												} else {
+													handleExpandClick(null, null, null, 'deleteUser');
+												}
+											}}
+											aria-label="delete"
+										>
+											<DeleteIcon />
+										</IconButton>
+									</Tooltip>
 								</div>
-							);
-						}
+							</div>
+						);
+					}
 
-						//// if Parcel Interest set the multi selection top bar: ////
-						if (props.targetLabel === 'Parcel Interest') {
-							return (
-								<Tooltip title={'Delete'}>
-									<IconButton
-										size="medium"
-										style={{ margin: '0 5px' }}
-										onClick={e => {
-											handleExpandClick(null, null, null, 'deleteParcelInterest');
-										}}
-										aria-label="delete"
-									>
-										<DeleteIcon />
-									</IconButton>
-								</Tooltip>
-							);
-						}
+					//// if Parcel Ownership set the multi selection top bar: ////
+					if (props.targetLabel === 'Parcel Ownership') {
+						const getSelectedRows = () => {
+							const selectedRows = [];
+							for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
+								rows[m1nSelectedRowsIndexes[i]]._id = rows[m1nSelectedRowsIndexes[i]].isContact;
+								selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
+							}
+							return selectedRows;
+						};
 
-						//// default empty top bar ////
 						return (
 							<div
 								style={{
 									height: '48px',
+									display: 'flex',
 								}}
-							/>
+							>
+								<div
+									style={{
+										marginTop: '6px',
+										height: '35px',
+										display: 'flex',
+									}}
+								>
+									<FeatureFlag feature={FEATURES.IDICORE}>
+										<Button
+											color="secondary"
+											startIcon={<RequestPageIcon color="white" />}
+											className={classes.multiSelectionTopBarButtons}
+											disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
+											onClick={() => handleExpandClick(null, null, getSelectedRows(), 'buyContactsInfoData')}
+										>
+											Contact Data
+										</Button>
+									</FeatureFlag>
+									<Tooltip title={'Delete'}>
+										<IconButton
+											size="medium"
+											style={{ margin: '0 5px' }}
+											onClick={e => {
+												handleExpandClick(null, null, null, 'deleteParcelOwnership');
+											}}
+											aria-label="delete"
+										>
+											<DeleteIcon />
+										</IconButton>
+									</Tooltip>
+								</div>
+							</div>
 						);
-					},
+					}
+
+					//// if Parcel Interest set the multi selection top bar: ////
+					if (props.targetLabel === 'Parcel Interest') {
+						return (
+							<Tooltip title={'Delete'}>
+								<IconButton
+									size="medium"
+									style={{ margin: '0 5px' }}
+									onClick={e => {
+										handleExpandClick(null, null, null, 'deleteParcelInterest');
+									}}
+									aria-label="delete"
+								>
+									<DeleteIcon />
+								</IconButton>
+							</Tooltip>
+						);
+					}
+
+					//// default empty top bar ////
+					return (
+						<div
+							style={{
+								height: '48px',
+							}}
+						/>
+					);
+				},
 
 		customToolbar: () => {
 			let buttonLabel = '+ ADD',
@@ -4215,15 +4209,15 @@ function SubTable(props) {
 						style={
 							props.addAble?.type === 'contact'
 								? {
-										marginRight: '105px',
-										marginTop: '5px',
-									}
+									marginRight: '105px',
+									marginTop: '5px',
+								}
 								: {
-										display: 'inline',
-										float: 'left',
-										marginRight: '15px',
-										marginTop: '5px',
-									}
+									display: 'inline',
+									float: 'left',
+									marginRight: '15px',
+									marginTop: '5px',
+								}
 						}
 					>
 						{props.addAble?.type === 'parcelInterest' && (
@@ -4231,7 +4225,7 @@ function SubTable(props) {
 								color="secondary"
 								className={classes.multiSelectionTopBarButtons}
 								disabled={true}
-								onClick={() => {}}
+								onClick={() => { }}
 							>
 								{buttonLabel}
 							</Button>
@@ -4264,15 +4258,15 @@ function SubTable(props) {
 						{(props.addAble?.type === 'wellInterest' ||
 							props.addAble?.type === 'suggestedOwnerToParcel' ||
 							props.addAble?.type === 'revenueStatementDetails') && (
-							<Button
-								color="secondary"
-								className={classes.multiSelectionTopBarButtons}
-								disabled={props.addAble?.type === 'suggestedOwnerToParcel' && m1nSelectedRowsIndexes.length === 0}
-								onClick={addAction}
-							>
-								{buttonLabel}
-							</Button>
-						)}
+								<Button
+									color="secondary"
+									className={classes.multiSelectionTopBarButtons}
+									disabled={props.addAble?.type === 'suggestedOwnerToParcel' && m1nSelectedRowsIndexes.length === 0}
+									onClick={addAction}
+								>
+									{buttonLabel}
+								</Button>
+							)}
 						{(props.addAble?.type === 'deals' ||
 							props.addAble?.type === 'contact' ||
 							props.addAble?.type === 'ownerToParcel' ||
@@ -4558,7 +4552,7 @@ function SubTable(props) {
 									tableState.sortOrder?.name === 'fullContactAddress'
 										? 'address1'
 										: tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.dbName ||
-											tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.name,
+										tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.name,
 								order: tableState.sortOrder?.direction === 'asc' ? 1 : -1,
 							},
 						}),
@@ -4938,9 +4932,8 @@ function SubTable(props) {
 			}}
 		>
 			<div
-				className={`${classes.table} ${rows && !props.loading ? '' : classes.loadingTable} ${
-					columns && columns.length > 0 ? '' : classes.emptyTable
-				}`}
+				className={`${classes.table} ${rows && !props.loading ? '' : classes.loadingTable} ${columns && columns.length > 0 ? '' : classes.emptyTable
+					}`}
 			>
 				<MUIDataTable
 					id={props.parent}
@@ -4989,36 +4982,36 @@ function SubTable(props) {
 						filter:
 							//  props.parent === 'ownersPerParcel'               /// will need to build a backend for this search
 							props.parent === 'potentialOwnersPerParcel' || /// will need to build a backend for this search
-							props.parent === 'associatedWellsPerParcel' || /// will need to build a backend for this search
-							props.parent === 'boundary_grid_wells' /// will need to build a backend for this search
+								props.parent === 'associatedWellsPerParcel' || /// will need to build a backend for this search
+								props.parent === 'boundary_grid_wells' /// will need to build a backend for this search
 								? // || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search
 
-									false
+								false
 								: null,
 
 						viewColumns:
 							// props.parent === 'ownersPerParcel'                 /// will need to build a backend for this search
 							props.parent === 'potentialOwnersPerParcel' || /// will need to build a backend for this search
-							props.parent === 'associatedWellsPerParcel' || /// will need to build a backend for this search
-							props.parent === 'boundary_grid_wells' /// will need to build a backend for this search
+								props.parent === 'associatedWellsPerParcel' || /// will need to build a backend for this search
+								props.parent === 'boundary_grid_wells' /// will need to build a backend for this search
 								? // || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search
 
-									false
+								false
 								: null,
 
 						search:
 							// props.header === 'Contacts'
 							// ||
 							props.header === 'Deals' ||
-							props.parent === 'WellsTable' ||
-							(props.parent === 'Activities' && props.header === 'Activities') ||
-							props.header === 'Monthly Production' ||
-							// || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search
-							props.parent === 'potentialOwnersPerParcel' || /// will need to build a backend for this search
-							props.parent === 'associatedWellsPerParcel' || /// will need to build a backend for this search
-							props.parent === 'boundary_grid_wells' || /// will need to build a backend for this search
-							props.parent === 'boundary_grid_owners' || /// will need to build a backend for this search
-							props.parent === 'search' /// will need to build a backend for this search
+								props.parent === 'WellsTable' ||
+								(props.parent === 'Activities' && props.header === 'Activities') ||
+								props.header === 'Monthly Production' ||
+								// || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search
+								props.parent === 'potentialOwnersPerParcel' || /// will need to build a backend for this search
+								props.parent === 'associatedWellsPerParcel' || /// will need to build a backend for this search
+								props.parent === 'boundary_grid_wells' || /// will need to build a backend for this search
+								props.parent === 'boundary_grid_owners' || /// will need to build a backend for this search
+								props.parent === 'search' /// will need to build a backend for this search
 								? false
 								: props.parent !== 'search',
 						// have to use props.parent here for initial value
@@ -5113,14 +5106,14 @@ function SubTable(props) {
 					<ExportContacts
 						{...props.exportContactsProps}
 						onClose={handleCloseDialog}
-						// onClose={() => {}}
-						// search={props.activeSearchRef.current}
-						// filters={[...props.initialFilters, ...uniqBy(props.customAppliedFilters, "field") || []]}
-						// total={props.options.count}
-						// isSelectAll={isSelectAll}
-						// rows={selectedRows}
-						// esIndex={esIndex}
-						// open={true}
+					// onClose={() => {}}
+					// search={props.activeSearchRef.current}
+					// filters={[...props.initialFilters, ...uniqBy(props.customAppliedFilters, "field") || []]}
+					// total={props.options.count}
+					// isSelectAll={isSelectAll}
+					// rows={selectedRows}
+					// esIndex={esIndex}
+					// open={true}
 					/>
 				)}
 				{openDialog &&
@@ -5141,17 +5134,17 @@ function SubTable(props) {
 							onClose={handleCloseDialog}
 							fullWidth={
 								openDialog === 'comment' ||
-								openDialog === 'owner' ||
-								openDialog === 'wellsPerOwner' ||
-								openDialog === 'buyContactsInfo' ||
-								openDialog === 'sendMailers' ||
-								openDialog === 'printLabels' ||
-								openDialog === 'deleteUser' ||
-								openDialog === 'deleteWellInterest' ||
-								openDialog === 'deleteParcelDocument' ||
-								openDialog === 'deleteWellDocument' ||
-								openDialog === 'deleteParcelRunsheet' ||
-								openDialog === 'addParcelInterestsToEntity'
+									openDialog === 'owner' ||
+									openDialog === 'wellsPerOwner' ||
+									openDialog === 'buyContactsInfo' ||
+									openDialog === 'sendMailers' ||
+									openDialog === 'printLabels' ||
+									openDialog === 'deleteUser' ||
+									openDialog === 'deleteWellInterest' ||
+									openDialog === 'deleteParcelDocument' ||
+									openDialog === 'deleteWellDocument' ||
+									openDialog === 'deleteParcelRunsheet' ||
+									openDialog === 'addParcelInterestsToEntity'
 									? true
 									: false
 							}
@@ -5159,19 +5152,19 @@ function SubTable(props) {
 								openDialog === 'owner' || openDialog === 'wellsPerOwner' || openDialog === 'ownerContacts'
 									? 'xl'
 									: openDialog === 'owner' ||
-										  openDialog === 'ownersPerContacts' ||
-										  openDialog === 'wellsPerOwner' ||
-										  openDialog === 'owner' ||
-										  openDialog === 'wellsPerOwner' ||
-										  openDialog === 'addParcelInterestsToEntity'
+										openDialog === 'ownersPerContacts' ||
+										openDialog === 'wellsPerOwner' ||
+										openDialog === 'owner' ||
+										openDialog === 'wellsPerOwner' ||
+										openDialog === 'addParcelInterestsToEntity'
 										? 'lg'
 										: openDialog === 'addContact' ||
-											  openDialog === 'addOwnerToParcel' ||
-											  openDialog === 'addOwnerToUnit' ||
-											  openDialog === 'deleteOwnersFromContact' ||
-											  openDialog === 'deleteContact' ||
-											  openDialog === 'deleteDocument' ||
-											  openDialog === 'deleteUser'
+											openDialog === 'addOwnerToParcel' ||
+											openDialog === 'addOwnerToUnit' ||
+											openDialog === 'deleteOwnersFromContact' ||
+											openDialog === 'deleteContact' ||
+											openDialog === 'deleteDocument' ||
+											openDialog === 'deleteUser'
 											? 'xs'
 											: 'sm'
 							}
@@ -5244,13 +5237,12 @@ function SubTable(props) {
 									m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
 									setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
 								>
-									{`Do you want to permanently delete the owner${
-										m1nSelectedRowsIds &&
-										m1nSelectedRowsIds.length > 1 &&
-										removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+									{`Do you want to permanently delete the owner${m1nSelectedRowsIds &&
+											m1nSelectedRowsIds.length > 1 &&
+											removeDuplicatesIds(m1nSelectedRowsIds).length > 1
 											? 's'
 											: ''
-									} from  this contact?`}
+										} from  this contact?`}
 								</DeleteConfirmationDialogContent>
 							)}
 							{openDialog === 'deleteWellInterest' && (
@@ -5261,13 +5253,12 @@ function SubTable(props) {
 									m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
 									setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
 								>
-									{`Do you want to permanently delete the well${
-										m1nSelectedRowsIds &&
-										m1nSelectedRowsIds.length > 1 &&
-										removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+									{`Do you want to permanently delete the well${m1nSelectedRowsIds &&
+											m1nSelectedRowsIds.length > 1 &&
+											removeDuplicatesIds(m1nSelectedRowsIds).length > 1
 											? 's'
 											: ''
-									} from  this unit?`}
+										} from  this unit?`}
 								</DeleteConfirmationDialogContent>
 							)}
 							{openDialog === 'deleteParcelDocument' && (
@@ -5278,13 +5269,12 @@ function SubTable(props) {
 									m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
 									setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
 								>
-									{`Do you want to permanently delete the document${
-										m1nSelectedRowsIds &&
-										m1nSelectedRowsIds.length > 1 &&
-										removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+									{`Do you want to permanently delete the document${m1nSelectedRowsIds &&
+											m1nSelectedRowsIds.length > 1 &&
+											removeDuplicatesIds(m1nSelectedRowsIds).length > 1
 											? 's'
 											: ''
-									} from  this parcel?`}
+										} from  this parcel?`}
 								</DeleteConfirmationDialogContent>
 							)}
 							{openDialog === 'deleteWellDocument' && (
@@ -5295,13 +5285,12 @@ function SubTable(props) {
 									m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
 									setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
 								>
-									{`Do you want to permanently delete the document${
-										m1nSelectedRowsIds &&
-										m1nSelectedRowsIds.length > 1 &&
-										removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+									{`Do you want to permanently delete the document${m1nSelectedRowsIds &&
+											m1nSelectedRowsIds.length > 1 &&
+											removeDuplicatesIds(m1nSelectedRowsIds).length > 1
 											? 's'
 											: ''
-									} from  this well?`}
+										} from  this well?`}
 								</DeleteConfirmationDialogContent>
 							)}
 							{openDialog === 'deleteParcelRunsheet' && (
@@ -5312,13 +5301,12 @@ function SubTable(props) {
 									m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
 									setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
 								>
-									{`Do you want to permanently delete the instrument${
-										m1nSelectedRowsIds &&
-										m1nSelectedRowsIds.length > 1 &&
-										removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+									{`Do you want to permanently delete the instrument${m1nSelectedRowsIds &&
+											m1nSelectedRowsIds.length > 1 &&
+											removeDuplicatesIds(m1nSelectedRowsIds).length > 1
 											? 's'
 											: ''
-									} from  this parcel?`}
+										} from  this parcel?`}
 								</DeleteConfirmationDialogContent>
 							)}
 
@@ -5331,23 +5319,20 @@ function SubTable(props) {
 									setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
 								>
 									{props.header === "Owner's Contacts" &&
-										`Do you want to remove the contact${
-											m1nSelectedRowsIds &&
+										`Do you want to remove the contact${m1nSelectedRowsIds &&
 											m1nSelectedRowsIds.length > 1 &&
 											removeDuplicatesIds(m1nSelectedRowsIds).length > 1
-												? 's'
-												: ''
+											? 's'
+											: ''
 										} from this owner?`}
 
 									{props.header === 'Contacts' &&
-										`Do you want to delete the selected ${
-											['campaignContact'].includes(props.addAble?.type) ? 'record' : 'contact'
-										}${
-											m1nSelectedRowsIds &&
+										`Do you want to delete the selected ${['campaignContact'].includes(props.addAble?.type) ? 'record' : 'contact'
+										}${m1nSelectedRowsIds &&
 											m1nSelectedRowsIds.length > 1 &&
 											removeDuplicatesIds(m1nSelectedRowsIds).length > 1
-												? 's'
-												: ''
+											? 's'
+											: ''
 										}?`}
 								</DeleteConfirmationDialogContent>
 							)}
@@ -5360,36 +5345,33 @@ function SubTable(props) {
 									setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
 								>
 									{props.header === 'Documents' &&
-										`Do you want to delete the selected document${
-											m1nSelectedRowsIds &&
+										`Do you want to delete the selected document${m1nSelectedRowsIds &&
 											m1nSelectedRowsIds.length > 1 &&
 											removeDuplicatesIds(m1nSelectedRowsIds).length > 1
-												? 's'
-												: ''
+											? 's'
+											: ''
 										}?`}
 								</DeleteConfirmationDialogContent>
 							)}
 							{openDialog === 'deleteParcelOwnership' && (
 								<DeleteConfirmationDialogContent
-									header={`Delete Owner${
-										m1nSelectedRowsIds &&
-										m1nSelectedRowsIds.length > 1 &&
-										removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+									header={`Delete Owner${m1nSelectedRowsIds &&
+											m1nSelectedRowsIds.length > 1 &&
+											removeDuplicatesIds(m1nSelectedRowsIds).length > 1
 											? 's'
 											: ''
-									}`}
+										}`}
 									onClose={handleCloseDialog}
 									deleteFunc={props.deleteFunc}
 									m1nSelectedRowsIds={removeDuplicatesIds(m1nSelectedRowsIds)}
 									setM1nSelectedRowsIndexes={setM1nSelectedRowsIndexes}
 								>
-									{`Do you want to delete the owner${
-										m1nSelectedRowsIds &&
-										m1nSelectedRowsIds.length > 1 &&
-										removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+									{`Do you want to delete the owner${m1nSelectedRowsIds &&
+											m1nSelectedRowsIds.length > 1 &&
+											removeDuplicatesIds(m1nSelectedRowsIds).length > 1
 											? 's'
 											: ''
-									}?`}
+										}?`}
 								</DeleteConfirmationDialogContent>
 							)}
 							{openDialog === 'deleteParcelInterest' && (
@@ -5528,8 +5510,8 @@ function SubTable(props) {
 								cardHeightExpanded="100%"
 								targetSourceId={
 									targetLabelToExpand === 'owner' ||
-									targetLabelToExpand === 'well' ||
-									(!targetLabelToExpand && (props.targetLabel === 'owner' || props.targetLabel === 'well'))
+										targetLabelToExpand === 'well' ||
+										(!targetLabelToExpand && (props.targetLabel === 'owner' || props.targetLabel === 'well'))
 										? selectedRow.id
 										: selectedRow._id
 								}
@@ -5570,8 +5552,8 @@ function SubTable(props) {
 								cardHeightExpanded="100%"
 								targetSourceId={
 									targetLabelToExpand === 'owner' ||
-									targetLabelToExpand === 'well' ||
-									(!targetLabelToExpand && (props.targetLabel === 'owner' || props.targetLabel === 'well'))
+										targetLabelToExpand === 'well' ||
+										(!targetLabelToExpand && (props.targetLabel === 'owner' || props.targetLabel === 'well'))
 										? selectedRow.id
 										: selectedRow._id
 								}

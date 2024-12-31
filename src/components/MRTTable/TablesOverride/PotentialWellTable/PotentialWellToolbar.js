@@ -20,7 +20,7 @@ function PotentialWellToolbar({ tableKey, table }) {
 
 			tableGlobalController.setSelectedTab(0);
 		},
-		refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getShapeSummaryDetails'],
+		refetchQueries: ['getDbData', 'getESFilterList', 'getShapeSummaryDetails'],
 		awaitRefetchQueries: true,
 	});
 

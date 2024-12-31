@@ -5,7 +5,7 @@ import { basic_timeouts } from '../../cypressUtils/data';
 
 describe('CampaignTractInterest Table', () => {
 	beforeEach(() => {
-		cy.interceptAndWait(['getESSimpleSearch', 'shapeowners_flat'], () => {
+		cy.interceptAndWait(['getDbData', 'shapeowners_flat'], () => {
 			cy.viewport(1600, 1200).mount(<MRTTable name="CampaignTractInterestTable" />);
 		});
 	});

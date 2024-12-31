@@ -21,7 +21,7 @@ export const PayeeRightDialog = () => {
 	const { paymentId } = paymentMultiGrid || {};
 
 	const [addPaymentContactDescriptor] = useMutation(ADD_PAYMENT_CONTACT_DESCRIPTOR, {
-		refetchQueries: ['getESSimpleSearch', 'getAgreementPaymentSummary'],
+		refetchQueries: ['getDbData', 'getAgreementPaymentSummary'],
 		awaitRefetchQueries: true,
 	});
 

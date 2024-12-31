@@ -163,7 +163,7 @@ function RelatedWellsDialog(props) {
 						},
 					],
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
+				refetchQueries: ['getDbData', 'getESFilterList'],
 				awaitRefetchQueries: true,
 			});
 		} else {
@@ -177,7 +177,7 @@ function RelatedWellsDialog(props) {
 						...getValues(),
 					},
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getShapeSummaryDetails'],
+				refetchQueries: ['getDbData', 'getESFilterList', 'getShapeSummaryDetails'],
 				awaitRefetchQueries: true,
 			});
 		}
@@ -204,7 +204,7 @@ function RelatedWellsDialog(props) {
 						},
 					],
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getShapeSummaryDetails'],
+				refetchQueries: ['getDbData', 'getESFilterList', 'getShapeSummaryDetails'],
 				awaitRefetchQueries: true,
 			});
 		} catch {
@@ -462,7 +462,7 @@ function RelatedWellsDialog(props) {
 						onClose={handleCloseDialog}
 						deleteFunc={deleteFunc}
 						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
+						setM1nSelectedRowsIndexes={() => { }}
 					>
 						Do you want to delete the selected well?
 					</DeleteConfirmationDialogContent>

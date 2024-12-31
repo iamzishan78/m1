@@ -19,7 +19,7 @@ describe('Add and Remove Comments on Tract Details Spec', () => {
 			.contains('Units')
 			.trigger('click');
 
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.get('#cognitive-search-autocomplete').should('be.visible').type('a');
 
 		cy.verifyApiResponse('@getESSimpleSearchApi', { reponseTimeout: longTimeout }).then(response => {

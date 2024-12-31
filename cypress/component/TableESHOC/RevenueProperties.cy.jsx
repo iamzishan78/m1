@@ -3,7 +3,7 @@ import RevenuePropertiesTable from 'components/Table/Revenue/RevenuePropertiesTa
 
 describe('Revenue Properties ESHOC Table', () => {
 	beforeEach(() => {
-		cy.interceptAndWait(['getESSimpleSearch', 'properties_flat'], () => {
+		cy.interceptAndWait(['getDbData', 'properties_flat'], () => {
 			cy.viewport(1600, 1200).mount(
 				<RevenuePropertiesTable
 					searchBar={false}

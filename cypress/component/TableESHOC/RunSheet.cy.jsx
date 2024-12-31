@@ -4,7 +4,7 @@ import { basic_timeouts } from '../../../cypress/cypressUtils/data';
 
 describe('TractDetail Runsheet  ESHOC Table', () => {
 	beforeEach(() => {
-		cy.interceptAndWait(['getESSimpleSearch', 'runsheetinstrument_flat'], () => {
+		cy.interceptAndWait(['getDbData', 'runsheetinstrument_flat'], () => {
 			cy.viewport(1600, 1200).mount(
 				<ParcelAgreementTable
 					esIndex="runsheetinstrument_flat"

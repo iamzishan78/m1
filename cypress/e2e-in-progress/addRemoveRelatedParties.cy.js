@@ -9,7 +9,7 @@ describe('Add/Remove Related Parties Spec', () => {
 		cy.visit('http://localhost:3000/');
 
 		cy.checkAndLogin();
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.get("[title='Assets']", { timeout: longTimeout }).should('be.visible').click();
 		cy.get('#quickActionPanel', { timeout: longTimeout }).contains('Agreements').click();
 

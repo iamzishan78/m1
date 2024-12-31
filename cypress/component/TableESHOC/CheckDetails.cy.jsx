@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import _ from 'lodash';
 
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryESSimpleSearch';
 import { GET_PROPERTY } from 'graphQL/useQueryGetProperty';
 
 import ldata from '../../fixtures/ldata.json';
@@ -13,14 +13,14 @@ const headers = {
 
 const getElasticDataPayload = ({ index, search = null, filters = [], pagination = null }) => {
 	return {
-		operationName: 'getESSimpleSearch',
+		operationName: 'getDbData',
 		variables: {
 			index: index,
 			search: search,
 			filters: filters,
 			pagination: pagination,
 		},
-		query: GET_ES_SIMPLE_SEARCH.loc.source.body,
+		query: GET_DB_DATA.loc.source.body,
 	};
 };
 
@@ -43,7 +43,7 @@ describe('CheckDetails ESHOC Table', () => {
 			headers: headers,
 			body: getElasticDataPayload({ index: 'checkdetails_flat' }),
 		}).then(checkDetailsResponse => {
-			const propertyIds = checkDetailsResponse.body.data.getESSimpleSearch.hits.map(
+			const propertyIds = checkDetailsResponse.body.data.getDbData.hits.map(
 				checkDetail => checkDetail.property._id
 			);
 

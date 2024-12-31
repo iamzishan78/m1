@@ -11,7 +11,7 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 
 function TractPotentialUnitsToolBar({ table, tableKey }) {
 	const [addShapeTract] = useMutation(ADD_TRACTS_TOA_SHAPE, {
-		refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
+		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 		onCompleted: () => {
 			tableController(tableKey).updateState({

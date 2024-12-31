@@ -29,11 +29,11 @@ export const PaymentRightDialog = () => {
 	const relatedObjectId = get(agreementDetailsValues, 'customLayer._id');
 
 	const [addPayment] = useMutation(ADD_PAYMENT, {
-		refetchQueries: ['getESSimpleSearch'],
+		refetchQueries: ['getDbData'],
 		awaitRefetchQueries: true,
 	});
 	const [updatePayment] = useMutation(UPDATE_PAYMENT, {
-		refetchQueries: ['getESSimpleSearch'],
+		refetchQueries: ['getDbData'],
 		awaitRefetchQueries: true,
 	});
 

@@ -280,7 +280,7 @@ export default function AssignOwnerToContactDrawer({
 	});
 
 	const options = {
-		refetchQueries: ['getESContacts', 'getESSimpleSearch'],
+		refetchQueries: ['getESContacts', 'getDbData'],
 		awaitRefetchQueries: true,
 		onCompleted: () => {
 			tableGlobalController.refetch();
@@ -289,15 +289,15 @@ export default function AssignOwnerToContactDrawer({
 
 	const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS, {
 		...options,
-		refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
+		refetchQueries: ['getDbData', 'getESFilterList', 'getCustomLayer'],
 	});
 	const [updateParcelOwners] = useMutation(UPDATE_PARCEL_OWNERS, {
 		...options,
-		refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
+		refetchQueries: ['getDbData', 'getESFilterList', 'getCustomLayer'],
 	});
 	const [updateShapes] = useMutation(UPDATE_SHAPES, {
 		...options,
-		refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
+		refetchQueries: ['getDbData', 'getESFilterList', 'getCustomLayer'],
 	});
 	const [assignOwnerToContact] = useMutation(ASSIGN_OWNER_TO_CONTACT, options);
 	const [updateBulkContact] = useMutation(UPDATEBULKCONTACT, options);
@@ -409,7 +409,7 @@ export default function AssignOwnerToContactDrawer({
 			variables: {
 				shapes: shapesToUpdate,
 			},
-			refetchQueries: ['getESPaginatedList', 'getESFilterList', 'getCustomLayer'], // Refetch these queries after the update
+			refetchQueries: ['getESFilterList', 'getCustomLayer'], // Refetch these queries after the update
 			awaitRefetchQueries: true,
 		}).then(
 			res => {
@@ -576,7 +576,7 @@ export default function AssignOwnerToContactDrawer({
 
 							if (rest.header === 'UnitTable') {
 								entityType = 'Shape';
-								refetchQueries = ['getESPaginatedList', 'getESFilterList', 'getCustomLayer'];
+								refetchQueries = ['getESFilterList', 'getCustomLayer'];
 							}
 
 							const variables = {
@@ -628,7 +628,7 @@ export default function AssignOwnerToContactDrawer({
 							variables: {
 								parcelOwners: parcelOwnersToUpdate,
 							},
-							refetchQueries: ['getESPaginatedList', 'getESFilterList', 'getCustomLayer'],
+							refetchQueries: ['getESFilterList', 'getCustomLayer'],
 							awaitRefetchQueries: true,
 						}).then(
 							res => {
@@ -672,7 +672,7 @@ export default function AssignOwnerToContactDrawer({
 								shapeOwners: shapeOwnersToUpdate,
 								userId: getUser?._id,
 							},
-							refetchQueries: ['getESPaginatedList', 'getESFilterList', 'getCustomLayer'],
+							refetchQueries: ['getESFilterList', 'getCustomLayer'],
 							awaitRefetchQueries: true,
 						}).then(
 							res => {

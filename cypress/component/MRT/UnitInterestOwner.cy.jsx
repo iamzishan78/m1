@@ -9,7 +9,7 @@ let responseHits;
 describe('Unit Interest Owners Table', () => {
 	beforeEach(() => {
 		cy.interceptAndWait(
-			['getESSimpleSearch', 'shapeowners_flat'],
+			['getDbData', 'shapeowners_flat'],
 			alias => {
 				cy.viewport(1600, 1200).mount(
 					<MRTTable
@@ -33,7 +33,7 @@ describe('Unit Interest Owners Table', () => {
 				);
 
 				cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
-					responseHits = response.response.body.data.getESSimpleSearch.hits;
+					responseHits = response.response.body.data.getDbData.hits;
 				});
 			},
 			{ wait: false }

@@ -13,7 +13,7 @@ import debounce from 'lodash/debounce';
 
 // Queries
 
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles(theme => ({
 	secondaryText: {
@@ -35,12 +35,12 @@ function WellSearchApiField({ esIndex, fields, filters = [], optionsParams, targ
 	const [selectedOption, setSelectedOption] = useState(null);
 	const [focused, setFocused] = useState(false);
 
-	const [getESSimpleSearch, { data: constDataWells }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: 'no-cache' });
+	const [getDbData, { data: constDataWells }] = useLazyQuery(GET_DB_DATA, { fetchPolicy: 'no-cache' });
 	// searching wells
 	const callWellESSearch = React.useMemo(
 		() =>
 			debounce((request, callback) => {
-				getESSimpleSearch({
+				getDbData({
 					variables: {
 						index: esIndex,
 						pagination: {
@@ -61,7 +61,7 @@ function WellSearchApiField({ esIndex, fields, filters = [], optionsParams, targ
 
 	// setting the wells in set
 	useEffect(() => {
-		const allESWell = constDataWells?.getESSimpleSearch?.hits;
+		const allESWell = constDataWells?.getDbData?.hits;
 		setFoundWells(allESWell);
 	}, [constDataWells]);
 

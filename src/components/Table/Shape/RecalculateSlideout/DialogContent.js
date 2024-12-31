@@ -64,7 +64,7 @@ function DialogContent({ rows, setRows, onClose }) {
 				layerId, // Layer ID for which the owners' calculated values need to be reset
 			},
 			// Refetch queries to update UI after resetting calculated values
-			refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
+			refetchQueries: ['getDbData', 'getESFilterList', 'getCustomLayer'],
 			awaitRefetchQueries: true, // Wait for refetch queries to complete before updating UI
 		});
 

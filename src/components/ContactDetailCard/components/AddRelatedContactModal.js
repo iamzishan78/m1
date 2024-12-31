@@ -12,7 +12,7 @@ import get from 'lodash/get';
 import AutoCompleteAddNewField from 'components/Common/AutoCompleteWithAddNew';
 
 import { ADD_RELATED_CONTACT } from 'graphQL/useMutationRelatedContact';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
@@ -46,7 +46,7 @@ export default function AddRelatedContactModal(props) {
 	const [stateApp, setStateApp] = useContext(AppContext);
 	const userId = stateApp.user.mongoId;
 
-	const [getESSearch, { data: esFilter, loading }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+	const [getESSearch, { data: esFilter, loading }] = useLazyQuery(GET_DB_DATA, {
 		fetchPolicy: 'no-cache',
 	});
 	const [addContact, { data: response, loading: isSubmitting }] = useMutation(ADD_RELATED_CONTACT, {
@@ -112,7 +112,7 @@ export default function AddRelatedContactModal(props) {
 	};
 
 	const formattedContactOptions = useMemo(() => {
-		const options = get(esFilter, 'getESSimpleSearch.hits', []).map(option => ({
+		const options = get(esFilter, 'getDbData.hits', []).map(option => ({
 			value: option._id,
 			name: option.name,
 			fullObject: option,
