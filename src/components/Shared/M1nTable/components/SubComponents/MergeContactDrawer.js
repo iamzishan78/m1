@@ -63,7 +63,7 @@ export default function MergeContactDrawer({ onClose, rows, setRows }) {
 	const [rowsLoading, setRowsLoading] = useState(false);
 
 	const [mergeContacts] = useMutation(MERGE_CONTACTS, {
-		refetchQueries: ['getESContacts', 'getESSimpleSearch'],
+		refetchQueries: ['getESContacts', 'getDbData'],
 		awaitRefetchQueries: true,
 		onCompleted: () => {
 			tableGlobalController.refetch();

@@ -639,7 +639,7 @@ function SubTable(props) {
 		fetchPolicy: 'no-cache',
 	});
 	const [autoCalculateOfferPrice, { data: autoCalculateOfferPriceData }] = useMutation(AUTO_CALCULATE_OFFER_PRICE, {
-		refetchQueries: ['getESSimpleSearch'],
+		refetchQueries: ['getDbData'],
 	});
 	const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
 		fetchPolicy: 'no-cache',

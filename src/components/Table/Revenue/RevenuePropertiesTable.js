@@ -109,7 +109,7 @@ function RevenuePropertiesTable(props) {
 					properties: ids,
 				},
 				awaitRefetchQueries: true,
-				refetchQueries: ['getESSimpleSearch'],
+				refetchQueries: ['getDbData'],
 			}).then(() => {
 				props.setLoading(false);
 				props.setSelectedRows([]);

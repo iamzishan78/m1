@@ -232,15 +232,15 @@ export default function ParcelInstrument(props) {
 	});
 	const [deleteFile] = useMutation(DELETEDESCRIPTORRELATEDFILE);
 	const [addParcelAgreement] = useMutation(ADD_PARCEL_AGREEMENT, {
-		refetchQueries: ['getESSimpleSearch'],
+		refetchQueries: ['getDbData'],
 		awaitRefetchQueries: true,
 	});
 	const [updateParcelAgreement] = useMutation(UPDATE_PARCEL_AGREEMENT, {
-		refetchQueries: ['getESSimpleSearch'],
+		refetchQueries: ['getDbData'],
 		awaitRefetchQueries: true,
 	});
 	const [deleteParcelRunsheet] = useMutation(DELETE_PARCEL_RUNSHEET, {
-		refetchQueries: ['getESSimpleSearch'],
+		refetchQueries: ['getDbData'],
 		awaitRefetchQueries: true,
 	});
 
@@ -343,7 +343,7 @@ export default function ParcelInstrument(props) {
 					parcelId: selectedInstrument.customLayerId,
 					fileId: selectedInstrument.fileId,
 				},
-				refetchQueries: ['getESSimpleSearch'],
+				refetchQueries: ['getDbData'],
 				awaitRefetchQueries: true,
 			}).then(() => {
 				props.setShowSlider(false);
@@ -360,7 +360,7 @@ export default function ParcelInstrument(props) {
 					descriptorObjectId: selectedInstrument.fileId,
 					relatedObjectId: selectedInstrument._id,
 				},
-				refetchQueries: ['getESSimpleSearch'],
+				refetchQueries: ['getDbData'],
 				awaitRefetchQueries: true,
 			}).then(() => {
 				setFileData(null);
@@ -461,7 +461,7 @@ export default function ParcelInstrument(props) {
 						parcelId: props.parcelId,
 					},
 				},
-				refetchQueries: ['getESSimpleSearch'],
+				refetchQueries: ['getDbData'],
 				awaitRefetchQueries: true,
 			}).then(() => {
 				props.setShowSlider(false);

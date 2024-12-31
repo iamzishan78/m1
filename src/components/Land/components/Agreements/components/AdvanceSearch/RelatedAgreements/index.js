@@ -9,7 +9,7 @@ import debounce from 'lodash/debounce';
 import { copy } from 'components/Shared/functions';
 import { AutoCompleteFilter } from 'components/Table/AutoCompleteFilter';
 
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { AppContext } from 'AppContext';
 
@@ -47,7 +47,7 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
 		},
 		index,
 		onChange,
-		query: GET_ES_SIMPLE_FILTER,
+		query: GET_DB_FILTERS,
 		searchFields: filter.searchFields,
 		filters: [
 			{ field: 'shapeJson.properties.type.keyword', value: 'agreement' },

@@ -105,7 +105,7 @@ export default function AddContactDialogContent(props) {
 		});
 		await addContact({
 			variables: { contact },
-			refetchQueries: ['getPaginatedContacts', 'getContact', 'getESContacts', 'getESSimpleSearch'],
+			refetchQueries: ['getPaginatedContacts', 'getContact', 'getESContacts', 'getDbData'],
 			awaitRefetchQueries: true,
 		});
 		tableGlobalController.refetch();

@@ -3,7 +3,7 @@ import AgreementsTable from 'components/Table/Agreement/AgreementsTable';
 
 describe('Agreements ESHOC Table', () => {
 	beforeEach(() => {
-		cy.interceptAndWait(['getESSimpleSearch', 'shapes_flat'], () => {
+		cy.interceptAndWait(['getDbData', 'shapes_flat'], () => {
 			cy.viewport(1600, 1200).mount(
 				<AgreementsTable
 					esIndex={'shapes_flat'}

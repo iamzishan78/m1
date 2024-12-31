@@ -20,8 +20,8 @@ import TableHeader from 'components/Table/constants/agreements-header-schema';
 
 import { COMMENTSCOUNTER } from 'graphQL/useQueryCommentsCounter';
 import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
 import { TAGSAMPLES } from 'graphQL/useQueryTagSamples';
@@ -88,7 +88,7 @@ export const TableESHOC = Component => {
 			setStateIfDeepEqual(DataTracks, newState);
 		};
 
-		const [getESSimpleSearch, { data: elasticData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+		const [getDbData, { data: elasticData }] = useLazyQuery(GET_DB_DATA, {
 			fetchPolicy: 'no-cache',
 			onCompleted: () => {
 				setLoading(false);
@@ -125,7 +125,7 @@ export const TableESHOC = Component => {
 
 		const history = useHistory();
 
-		const tableData = elasticData?.getESSimpleSearch || {};
+		const tableData = elasticData?.getDbData || {};
 
 		const [dataTotal, setDataTotal] = useState(null);
 
@@ -329,10 +329,10 @@ export const TableESHOC = Component => {
 					}
 				})();
 
-				getESSimpleSearch({
+				getDbData({
 					variables,
 					onCompleted: data => {
-						setDataTotal(total ?? data?.getESSimpleSearch?.total);
+						setDataTotal(total ?? data?.getDbData?.total);
 					},
 				});
 
@@ -483,7 +483,7 @@ export const TableESHOC = Component => {
 										column={column}
 										index={index}
 										onChange={onChange}
-										query={GET_ES_SIMPLE_FILTER}
+										query={GET_DB_FILTERS}
 										searchFields={tableMeta.searchFields}
 										filters={appliedFilters}
 										extendSearchQuery={extendSearchQuery}
@@ -502,78 +502,6 @@ export const TableESHOC = Component => {
 				}
 			});
 			return tableCols;
-		};
-
-		const setColumnsData = tableCols => {
-			let { TableHeader } = tableMeta;
-			tableCols = addColumnOptions(tableCols);
-
-			const allFilters = (selectedGridView?.filters || []).concat(initialFilters);
-			if (allFilters) {
-				tableCols.forEach((column, index) => {
-					// only required if table have selectedGridView
-					if (selectedGridView) {
-						setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
-					}
-					let value;
-					if (column?.custom?.oRFilter) {
-						value = get(
-							allFilters.find(filtr => filtr.field.includes(column.esKey[0])),
-							'value',
-							''
-						);
-					} else if (Array.isArray(column.esKey)) {
-						value = get(
-							allFilters.find(filter => {
-								return column.esKey.includes(filter.field);
-							}),
-							'value',
-							''
-						);
-					} else {
-						value = get(
-							allFilters.find(filter => {
-								return JSON.stringify(filter.field) === JSON.stringify(column.esKey);
-							}),
-							'value',
-							''
-						);
-					}
-
-					let filterList = Array.isArray(column.esKey) ? [] : [];
-					if (value && typeof value !== 'object') {
-						if (column.custom?.isDate && columns?.length) {
-							if (value !== '') {
-								value = moment(new Date(value)).format('MM/DD/YYYY');
-							}
-						}
-						if (column.custom?.isDateTime && columns?.length) {
-							if (value !== '') {
-								value = moment(new Date(value)).format('MM/DD/YYYY HH:mm:ss.SSS');
-							}
-						}
-						filterList = [value];
-					} else if (Array.isArray(value)) {
-						filterList = value.filter(v => v);
-					}
-					// if (column?.options?.filter) {
-					column.options.filterList = filterList;
-					// }
-				});
-			} else {
-				tableCols.forEach((column, index) => {
-					setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
-					if (column.options) {
-						column.options.filterList = Array.isArray(column.esKey) ? undefined : [];
-					}
-				});
-			}
-			// shift _id and sticky Colums to the first Place
-			let stickyColumns = tableCols.filter(cD => cD.name === '_id' || cD?.options?.stickyColumn);
-			tableCols = tableCols.filter(cD => cD.name !== '_id' && !cD.options?.stickyColumn);
-			tableCols.unshift(...stickyColumns);
-
-			setColumns(getNonGridViewColumnsData(tableCols));
 		};
 
 		const initializeGenericData = useCallback(
@@ -1083,9 +1011,9 @@ export const TableESHOC = Component => {
 
 					const allSelectedRows = await client.query({
 						...pageESVariables,
-						query: GET_ES_SIMPLE_SEARCH,
+						query: GET_DB_DATA,
 					});
-					const hits = allSelectedRows?.data?.getESSimpleSearch?.hits || [];
+					const hits = allSelectedRows?.data?.getDbData?.hits || [];
 					selectedData = [...selectedData, ...hits];
 				} while (iter * max < total);
 
@@ -1115,14 +1043,7 @@ export const TableESHOC = Component => {
 			tableState.esIndex = tableMeta.esIndex;
 			// tableState.filters = tableMeta.filters ? tableMeta.filters : [];
 			tableState.polygon = tableMeta.polygon ? tableMeta.polygon : undefined;
-			const tableActions = initializeTableActions(
-				tableState,
-				meta,
-				tableData,
-				columns,
-				getESSimpleSearch,
-				selectedGridView
-			);
+			const tableActions = initializeTableActions(tableState, meta, tableData, columns, getDbData, selectedGridView);
 			activeSearchRef.current = tableActions.pageESVariables.variables.search;
 			const existingFilter = tableMeta.filters ? tableMeta.filters : [];
 			activeFiltersRef.current = handleMultiFieldFilter(
@@ -1220,9 +1141,9 @@ export const TableESHOC = Component => {
 
 								const allSelectedRows = await client.query({
 									...pageESVariables,
-									query: GET_ES_SIMPLE_SEARCH,
+									query: GET_DB_DATA,
 								});
-								const hits = allSelectedRows?.data?.getESSimpleSearch?.hits || [];
+								const hits = allSelectedRows?.data?.getDbData?.hits || [];
 								selectedData = [...selectedData, ...hits];
 							} while (iter * max < total);
 

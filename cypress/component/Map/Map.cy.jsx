@@ -24,7 +24,7 @@ describe('Map Component', () => {
 		});
 
 		// Intercepting API calls and waiting for their responses
-		cy.interceptAndWait(['getESSimpleSearch'], () => {
+		cy.interceptAndWait(['getDbData'], () => {
 			cy.get('#dataNameSelect').click();
 			cy.wait(100);
 			cy.get('[data-test="sentinelStart"] + div ul li:nth-child(1)').click({ force: true });

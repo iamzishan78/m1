@@ -199,7 +199,7 @@ export default function BuyContactsInfoDialogContent(props) {
 					tenantId: stateApp.user.tenantId,
 					persons: validContactData,
 				},
-				refetchQueries: ['featureQuota', 'getCheckPurchaseData', 'getContactPurchaseData', 'getESSimpleSearch'],
+				refetchQueries: ['featureQuota', 'getCheckPurchaseData', 'getContactPurchaseData', 'getDbData'],
 				awaitRefetchQueries: true,
 			});
 		}

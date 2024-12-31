@@ -17,7 +17,7 @@ import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
 
 import { GET_CHECK_DETAILS_DATA } from 'graphQL/useQueryCheckDetailsData';
 import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from 'graphQL/useQueryGetPortfolioGrossRevenueSummary';
 
 import { tableController } from 'hookstate/tableController';
@@ -152,11 +152,11 @@ export default function RevenueAnalytics(props) {
 		fetchPolicy: 'no-cache',
 	});
 
-	const [getCheckNumbers] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
+	const [getCheckNumbers] = useLazyQuery(GET_DB_FILTERS, {
 		fetchPolicy: 'no-cache',
 	});
 
-	const [getPropertyNumbers] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
+	const [getPropertyNumbers] = useLazyQuery(GET_DB_FILTERS, {
 		fetchPolicy: 'no-cache',
 	});
 
@@ -172,7 +172,7 @@ export default function RevenueAnalytics(props) {
 					filterKey: 'property.number.keyword',
 					filterAggs: { query: '', field: 'property.number.keyword', size: getTableStateValues()?.data?.total || 0 },
 				},
-				onCompleted: res => resolve(res?.getESSimpleFilter?.hits),
+				onCompleted: res => resolve(res?.getDbFilters?.hits),
 				onError: error => reject(error),
 			});
 		});
@@ -185,7 +185,7 @@ export default function RevenueAnalytics(props) {
 					filterKey: 'check.checkNumber.keyword',
 					filterAggs: { query: '', field: 'check.checkNumber.keyword', size: getTableStateValues()?.data?.total || 0 },
 				},
-				onCompleted: res => resolve(res?.getESSimpleFilter?.hits),
+				onCompleted: res => resolve(res?.getDbFilters?.hits),
 				onError: error => reject(error),
 			});
 		});

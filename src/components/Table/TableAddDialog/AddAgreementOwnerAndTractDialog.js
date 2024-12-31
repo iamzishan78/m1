@@ -238,7 +238,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 				Loaders.errorToast('ageement-tract-creation', data.addOwnerToAShape.message);
 			}
 		},
-		refetchQueries: ['getESSimpleSearch', 'getESFilterList'],
+		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
 
@@ -248,7 +248,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 			tableGlobalController.refetch();
 			Loaders.successToast('ageement-tract-creation', 'Agreement tract updated Successfully');
 		},
-		refetchQueries: ['getESSimpleSearch', 'getESFilterList'],
+		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
 
@@ -258,7 +258,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 			handleClose();
 		},
 		onError: err => {},
-		refetchQueries: ['getESSimpleSearch', 'getESFilterList'],
+		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
 
@@ -425,7 +425,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 					],
 					shapeType: props.shapeType,
 				},
-				refetchQueries: ['getESSimpleSearch', 'getCustomLayer'],
+				refetchQueries: ['getDbData', 'getCustomLayer'],
 				awaitRefetchQueries: true,
 			});
 			Loaders.createToast('ageement-tract-creation', 'Agreement tract update in progress');
@@ -438,7 +438,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 						...ownerToAdd,
 					},
 				},
-				refetchQueries: ['getESSimpleSearch', 'getCustomLayer'],
+				refetchQueries: ['getDbData', 'getCustomLayer'],
 				awaitRefetchQueries: true,
 			});
 			Loaders.createToast('ageement-tract-creation', 'Agreement tract creation in progress');
@@ -462,7 +462,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 						isDeleted: true,
 					},
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
+				refetchQueries: ['getDbData', 'getESFilterList'],
 				awaitRefetchQueries: true,
 			});
 		} catch {

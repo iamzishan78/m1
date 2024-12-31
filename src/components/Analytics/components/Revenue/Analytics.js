@@ -11,7 +11,7 @@ import { copy } from 'components/Shared/functions';
 import { vf_currency_dollar } from 'components/Shared/valueformatters/vf_currency';
 
 import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { tableController } from 'hookstate/tableController';
 
@@ -103,15 +103,15 @@ function AnalyticsCards(props) {
 	const searchQuery = globalFilter ? `${globalFilter}` : '';
 	const searchFields = tableStateValues.searchFields;
 
-	// const [getESSimpleFilter] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
+	// const [getDbFilters] = useLazyQuery(GET_DB_FILTERS, {
 	//   fetchPolicy: 'no-cache',
 	// });
 
-	const [getPropertyNumbers] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
+	const [getPropertyNumbers] = useLazyQuery(GET_DB_FILTERS, {
 		fetchPolicy: 'no-cache',
 	});
 
-	const [getCheckNumbers] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
+	const [getCheckNumbers] = useLazyQuery(GET_DB_FILTERS, {
 		fetchPolicy: 'no-cache',
 	});
 
@@ -133,7 +133,7 @@ function AnalyticsCards(props) {
 					filterKey: 'property._id.keyword',
 					filterAggs: { query: '', field: 'property._id.keyword', size: tableStateValues?.data?.total || 0 },
 				},
-				onCompleted: res => resolve(res?.getESSimpleFilter?.hits?.length),
+				onCompleted: res => resolve(res?.getDbFilters?.hits?.length),
 				onError: error => reject(error),
 			});
 		});
@@ -151,7 +151,7 @@ function AnalyticsCards(props) {
 					filterKey: 'check.checkNumber.keyword',
 					filterAggs: { query: '', field: 'check.checkNumber.keyword', size: tableStateValues?.data?.total || 0 },
 				},
-				onCompleted: res => resolve(res?.getESSimpleFilter?.hits),
+				onCompleted: res => resolve(res?.getDbFilters?.hits),
 				onError: error => reject(error),
 			});
 		});

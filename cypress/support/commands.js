@@ -262,7 +262,7 @@ Cypress.Commands.add('gridSearch', (searchString, gridOperationName, searchId = 
 		.type(searchString);
 
 	cy.verifyApiResponse(`@${apiAlias}`, { responseTimeout: longTimeout }).then(apiResponse => {
-		let hits = apiResponse.response.body.data?.getESSimpleSearch?.hits;
+		let hits = apiResponse.response.body.data?.getDbData?.hits;
 
 		if (gridOperationName === 'getESDocuments') {
 			hits = apiResponse.response.body.data.getESFiles.hits;
@@ -327,7 +327,7 @@ Cypress.Commands.add('detachDocument', () => {
 // ContactGrid Commands
 
 Cypress.Commands.add('sortColumn', (columnName, sortOrder) => {
-	cy.interceptApi('getESSimpleSearch', { sortOrder: sortOrder });
+	cy.interceptApi('getDbData', { sortOrder: sortOrder });
 	cy.get('.MuiButton-label', { timeout: longTimeout })
 		.contains(columnName)
 		.scrollIntoView()
@@ -337,7 +337,7 @@ Cypress.Commands.add('sortColumn', (columnName, sortOrder) => {
 });
 
 Cypress.Commands.add('removeFilter', filterLabel => {
-	cy.interceptApi('getESSimpleSearch');
+	cy.interceptApi('getDbData');
 
 	cy.get('body').then(body => {
 		if (body.find('.MuiChip-label').length > 0) {
@@ -498,8 +498,8 @@ Cypress.Commands.add('addComment', () => {
 // This command will delete agreement then will verify too
 Cypress.Commands.add('deleteAndVerifyAgreement', (agreementName, agreementNumber) => {
 	cy.log('==== STEP: SEARCH AGREEMENT ON GRID ====');
-	cy.gridSearch(agreementName, 'getESSimpleSearch').then(response => {
-		const hits = response.response.body.data.getESSimpleSearch.hits;
+	cy.gridSearch(agreementName, 'getDbData').then(response => {
+		const hits = response.response.body.data.getDbData.hits;
 
 		const cypressAgreement = hits.find(hit => hit.agreementName === agreementName);
 
@@ -521,15 +521,15 @@ Cypress.Commands.add('deleteAndVerifyAgreement', (agreementName, agreementNumber
 
 			cy.log('==== STEP: DELETE AGREEMENT PROCESS START ====');
 			cy.get('#moreHorizIcon', { timeout: longTimeout }).children().click();
-			cy.interceptApi('getESSimpleSearch');
+			cy.interceptApi('getDbData');
 			cy.interceptApi('updateCustomLayer');
 			cy.deleteConfirmation();
 			cy.verifyApiResponse('@updateCustomLayerApi');
 
 			cy.get('#addButton', { timeout: longTimeout }).should('be.visible');
 
-			cy.gridSearch(agreementName, 'getESSimpleSearch').then(response => {
-				const hits = response.response.body.data.getESSimpleSearch.hits;
+			cy.gridSearch(agreementName, 'getDbData').then(response => {
+				const hits = response.response.body.data.getDbData.hits;
 				const isAggreementExist = hits.some(hit => hit.id === cypressAgreementId);
 
 				if (isAggreementExist) {
@@ -548,7 +548,7 @@ Cypress.Commands.add('deleteTractAndVerify', tractName => {
 		cy.get('#legalDescriptionTab').click();
 
 		// cy.get('.MuiTableCell-body', { timeout: longTimeout }).contains(tractName, { timeout: longTimeout }).scrollIntoView()
-		const hits = response.response.body.data.getESSimpleSearch.hits;
+		const hits = response.response.body.data.getDbData.hits;
 		const tractId = hits.find(hit => hit?.tract?.tractName === tractName)?.tractId;
 		const indexOfSampleContact = hits.findIndex(hit => hit?.tract?.tractName === tractName) + 1;
 
@@ -562,7 +562,7 @@ Cypress.Commands.add('deleteTractAndVerify', tractName => {
 			.scrollIntoView()
 			.click();
 
-		cy.interceptApiByIndex('getESSimpleSearch', 'shapeowners_flat');
+		cy.interceptApiByIndex('getDbData', 'shapeowners_flat');
 		cy.interceptApi('updateShapeOwners');
 		cy.get('#tractMoreHorizIcon', { timeout: longTimeout }).click();
 		cy.get('#deleteTract', { timeout: longTimeout }).click();
@@ -570,7 +570,7 @@ Cypress.Commands.add('deleteTractAndVerify', tractName => {
 		cy.verifyApiResponse('@updateShapeOwnersApi', { responseTimeout: longTimeout });
 
 		cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: longTimeout }).then(response => {
-			const hits = response.response.body.data.getESSimpleSearch.hits;
+			const hits = response.response.body.data.getDbData.hits;
 
 			if (hits.some(hit => hit?.tractId === tractId)) {
 				throw new Error('Tract still exist after delete');

@@ -47,7 +47,7 @@ function AgreementsTable(props) {
 	const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
 	const [updateGridView] = useMutation(UPDATE_GRID_VIEW);
 	const [removeAgreements] = useMutation(REMOVE_AGREEMENTS, {
-		refetchQueries: ['getESSimpleSearch'],
+		refetchQueries: ['getDbData'],
 		awaitRefetchQueries: true,
 	});
 	const excludeFromViewColumns = ['interest_type', 'tract_status'];

@@ -6,7 +6,7 @@ import { debounce, set, get, isNumber } from 'lodash';
 import { mergeArrays } from 'components/Shared/functions';
 
 import { GET_DB_AGGS, GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 import { drawController } from 'hookstate/drawStateController';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
@@ -169,10 +169,10 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		// Fetch data using ES simple search query
 		const allSelectedRows = await client.query({
 			variables,
-			query: GET_ES_SIMPLE_SEARCH,
+			query: GET_DB_DATA,
 		});
 
-		const data = allSelectedRows?.data?.getESSimpleSearch;
+		const data = allSelectedRows?.data?.getDbData;
 		if (isElasticIndex) {
 			total = data.total;
 		}

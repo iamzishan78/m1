@@ -13,20 +13,20 @@ let wellName;
 describe('MyWells ESHOC Table', () => {
 	it('adds and remove well from slideout', () => {
 		let addedWellId;
-		cy.interceptAndWait(['getESSimpleSearch', 'mywells_flat'], () => {
+		cy.interceptAndWait(['getDbData', 'mywells_flat'], () => {
 			cy.viewport(1600, 1200).mount(<Wells />, { testCase: 'MyWellsNameUpdate' });
 		});
 		cy.contains('+ ADD WELL').click({ force: true });
 		cy.get('[data-testid="well-search-field"]').clear().type('JJ PRATER HEIRS JJ-I1');
 		cy.wait(15000);
 		cy.interceptAndWait(
-			['getESSimpleSearch'],
+			['getDbData'],
 			alias => {
 				cy.get('.MuiAutocomplete-option').first().click();
 				cy.wait(10000);
 				cy.get('[data-testid="close-dialog"]').click();
 				cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
-					addedWellId = response.response.body.data.getESSimpleSearch.hits[0]._id;
+					addedWellId = response.response.body.data.getDbData.hits[0]._id;
 				});
 				cy.get("[data-testid='column-with-link']", {
 					timeout: basic_timeouts.midTimeout,
@@ -38,11 +38,11 @@ describe('MyWells ESHOC Table', () => {
 				cy.get('[data-testid="menu-icon"]').click();
 				cy.get('[data-testid="delete-button"]').click();
 				cy.interceptAndWait(
-					['getESSimpleSearch'],
+					['getDbData'],
 					alias => {
 						cy.get('[data-testid="deleteButton-popup"]').click();
 						cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
-							expect(addedWellId).to.not.equal(response.response.body.data.getESSimpleSearch.hits?.[0]?._id);
+							expect(addedWellId).to.not.equal(response.response.body.data.getDbData.hits?.[0]?._id);
 						});
 					},
 					{ wait: false }
@@ -54,7 +54,7 @@ describe('MyWells ESHOC Table', () => {
 
 	it('adds well from slideout', () => {
 		let addedWellId;
-		cy.interceptAndWait(['getESSimpleSearch', 'mywells_flat'], () => {
+		cy.interceptAndWait(['getDbData', 'mywells_flat'], () => {
 			cy.viewport(1600, 1200).mount(<Wells />, {
 				testCase: 'MyWellsNameUpdate',
 			});
@@ -63,13 +63,13 @@ describe('MyWells ESHOC Table', () => {
 		cy.get('[data-testid="well-search-field"]').clear().type('JJ PRATER HEIRS JJ-I1');
 		cy.wait(15000);
 		cy.interceptAndWait(
-			['getESSimpleSearch'],
+			['getDbData'],
 			alias => {
 				cy.get('.MuiAutocomplete-option').first().click();
 				cy.wait(10000);
 				cy.get('[data-testid="close-dialog"]').click();
 				cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
-					addedWellId = response.response.body.data.getESSimpleSearch.hits[0]._id;
+					addedWellId = response.response.body.data.getDbData.hits[0]._id;
 				});
 			},
 			{ wait: false }
@@ -77,7 +77,7 @@ describe('MyWells ESHOC Table', () => {
 	});
 
 	it('checks well name is updating correctly', () => {
-		cy.interceptAndWait(['getESSimpleSearch', 'mywells_flat'], () => {
+		cy.interceptAndWait(['getDbData', 'mywells_flat'], () => {
 			cy.viewport(1600, 1200).mount(<Wells />, {
 				testCase: 'MyWellsNameUpdate',
 			});
@@ -109,7 +109,7 @@ describe('MyWells ESHOC Table', () => {
 	});
 
 	it('deletes wells correctly', () => {
-		cy.interceptAndWait(['getESSimpleSearch', 'mywells_flat'], () => {
+		cy.interceptAndWait(['getDbData', 'mywells_flat'], () => {
 			cy.viewport(1600, 1200).mount(<Wells />, { testCase: 'MyWellsNameUpdate' });
 		});
 

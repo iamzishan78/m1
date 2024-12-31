@@ -33,20 +33,20 @@ describe('Unit Map Fly To Spec', () => {
 		cy.wait(1000);
 
 		cy.log('==== STEP:CLICK ON ADD WELL ====');
-		cy.interceptApi('getESPaginatedList');
+		cy.interceptApi('getDbData');
 		cy.interceptApi('AddMultiWellInterestToShape');
 		cy.get('#addWells', { timeout: longTimeout }).click();
 		cy.verifyApiResponse('@AddMultiWellInterestToShapeApi', { responseTimeout: longTimeout });
 
 		cy.verifyApiResponse('@tracksByObjectTypeApi', { responseTimeout: longTimeout });
 		cy.verifyApiResponse('@getESPaginatedListApi', { responseTimeout: longTimeout }).then(esPaginatedListResponse => {
-			const hit = esPaginatedListResponse.response.body.data.getESPaginatedList.hits[0];
+			const hit = esPaginatedListResponse.response.body.data.getDbData.hits[0];
 
 			const golbalWellId = hit.globalWell;
 			const wellId = hit._id;
 
 			cy.log('==== STEP:CLICK ON MAP-FLY-TO ICON ====');
-			cy.interceptApi('getESPaginatedList');
+			cy.interceptApi('getDbData');
 			cy.interceptApi('getTenantWell');
 			cy.interceptApi('getWellSummaryDetail');
 			cy.get(`[id='map-fly-to-${wellId}']`, { timeout: longTimeout }).scrollIntoView().click({ force: true });

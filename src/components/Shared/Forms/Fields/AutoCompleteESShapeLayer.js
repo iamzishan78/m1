@@ -10,7 +10,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useLazyQuery } from '@apollo/client';
 import { capitalize } from 'lodash';
 
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles({
 	inputRoot: {
@@ -28,7 +28,7 @@ const useStyles = makeStyles({
 const AutoCompleteESShapeLayer = ({ label, value, filters, setSelectedShapeLayer, searchFields }) => {
 	const [search, setSearch] = useState('');
 
-	const [getESSimpleSearch, { data: elasticData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+	const [getDbData, { data: elasticData }] = useLazyQuery(GET_DB_DATA, {
 		fetchPolicy: 'no-cache',
 		onCompleted: () => {
 			// setLoading(false);
@@ -36,7 +36,7 @@ const AutoCompleteESShapeLayer = ({ label, value, filters, setSelectedShapeLayer
 	});
 
 	useEffect(() => {
-		getESSimpleSearch({
+		getDbData({
 			variables: {
 				index: 'shapes_flat',
 				pagination: {
@@ -50,7 +50,7 @@ const AutoCompleteESShapeLayer = ({ label, value, filters, setSelectedShapeLayer
 				filters,
 			},
 		});
-	}, [getESSimpleSearch, search]);
+	}, [getDbData, search]);
 
 	const onInputChange = e => {
 		if (e?.target?.value) {
@@ -63,7 +63,7 @@ const AutoCompleteESShapeLayer = ({ label, value, filters, setSelectedShapeLayer
 	};
 	const classes = useStyles();
 
-	const layerList = elasticData?.getESSimpleSearch?.hits || [];
+	const layerList = elasticData?.getDbData?.hits || [];
 
 	return (
 		<Autocomplete

@@ -9,7 +9,7 @@ describe('Comments Uploader Spec', () => {
 
 		cy.viewport(1536, 960);
 
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.visit('http://localhost:3000/land/agreements');
 
 		cy.checkAndLogin();
@@ -77,8 +77,8 @@ describe('Comments Uploader Spec', () => {
 							cy.log(`==== STEP: VERIFYING COMMENTS FOR AGREEMENT : ${agreementName} ====`);
 							cy.wait(5000);
 
-							cy.gridSearch(agreementName, 'getESSimpleSearch').then(response => {
-								const hits = response.response.body.data.getESSimpleSearch.hits;
+							cy.gridSearch(agreementName, 'getDbData').then(response => {
+								const hits = response.response.body.data.getDbData.hits;
 
 								const cypressAgreement = hits.find(hit => hit.agreementName === agreementName);
 

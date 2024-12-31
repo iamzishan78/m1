@@ -251,7 +251,7 @@ function AddActivityDialog(props) {
 	}, [dealsData]);
 
 	const [addActivityMutation, { loading: addLoading }] = useMutation(ADDACTIVITY, {
-		refetchQueries: ['getContact', 'getAllActivities', 'getMelissaRecordsCountForContactIds', 'getESSimpleSearch'],
+		refetchQueries: ['getContact', 'getAllActivities', 'getMelissaRecordsCountForContactIds', 'getDbData'],
 		awaitRefetchQueries: true,
 		onCompleted: () => {
 			tableGlobalController.refetch();

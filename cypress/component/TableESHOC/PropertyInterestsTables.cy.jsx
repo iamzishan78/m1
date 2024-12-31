@@ -3,7 +3,7 @@ import PropertyInterestDetailsSection from 'components/Revenue/components/Proper
 
 describe('Property interest details ESHOC Table', () => {
 	beforeEach(() => {
-		cy.interceptAndWait(['getESSimpleSearch', 'propertyinterest_flat'], () => {
+		cy.interceptAndWait(['getDbData', 'propertyinterest_flat'], () => {
 			cy.viewport(1600, 1200).mount(
 				<>
 					<InterestDetailForm

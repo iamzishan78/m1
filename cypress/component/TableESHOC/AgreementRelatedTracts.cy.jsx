@@ -3,7 +3,7 @@ import AgreementOwnersTractsTable from 'components/Table/Agreement/AgreementOwne
 
 describe('AgreementRelatedTracts  ESHOC Table', () => {
 	beforeEach(() => {
-		cy.interceptAndWait(['getESSimpleSearch', 'shapeowners_flat'], () => {
+		cy.interceptAndWait(['getDbData', 'shapeowners_flat'], () => {
 			cy.viewport(1600, 1200).mount(
 				<AgreementOwnersTractsTable
 					id="AgreementOwnersTractsTable"

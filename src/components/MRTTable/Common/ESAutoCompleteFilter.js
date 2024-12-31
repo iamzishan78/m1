@@ -9,7 +9,7 @@ import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
 import vf_currency, { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { tableController } from 'hookstate/tableController';
 
@@ -63,7 +63,7 @@ function ESAutoCompleteFilter({
 		},
 	};
 
-	const [getFilters, { data: filtersData, loading }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
+	const [getFilters, { data: filtersData, loading }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 
 	const [options, setOptions] = useState([]);
 	const hasMore = useRef(true);
@@ -151,7 +151,7 @@ function ESAutoCompleteFilter({
 	}, 700);
 
 	useEffect(() => {
-		const hits = filtersData?.getESSimpleFilter?.hits;
+		const hits = filtersData?.getDbFilters?.hits;
 
 		if (!hits) {
 			return;

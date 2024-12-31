@@ -182,7 +182,7 @@ export const AutoCompleteFilter = React.memo(
 					filterKeys: typeof filterKey !== 'string' ? filterKey : undefined,
 					filterKey: typeof filterKey === 'string' ? filterKey : undefined,
 					search,
-					...(getFiltersType === 'getESSimpleFilter' && { search: { query: extendSearchQuery, fields: searchFields } }),
+					...(getFiltersType === 'getDbFilters' && { search: { query: extendSearchQuery, fields: searchFields } }),
 					extendSearchQuery,
 					size: 10,
 					key_as_string: custom?.key_as_string,

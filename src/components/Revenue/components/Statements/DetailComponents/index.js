@@ -239,7 +239,7 @@ export default function DetailComponents(props) {
 
 	// mutations
 	const [removeChecks] = useMutation(REMOVE_CHECKS, {
-		refetchQueries: ['getESPaginatedList'],
+		refetchQueries: ['getDbData'],
 		awaitRefetchQueries: true,
 	});
 

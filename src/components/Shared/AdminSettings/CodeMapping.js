@@ -13,7 +13,7 @@ import LongIcon from 'components/Shared/svgIcons/LongIcon';
 import MetaField from 'components/Table/helpers/MetaField';
 
 import { UPDATE_META_DATA } from 'graphQL/useMutationUpdateMetaData';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
 import { AppContext } from 'AppContext';
@@ -136,7 +136,7 @@ const CodeMapping = ({ settingsFor }) => {
 	const [updateMetaData, {}] = useMutation(UPDATE_META_DATA);
 	const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
-	const [getUniqueType, { data: uniqueType }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
+	const [getUniqueType, { data: uniqueType }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 
 	useEffect(() => {
 		if (metaDataRes?.getMetaData) {
@@ -153,8 +153,8 @@ const CodeMapping = ({ settingsFor }) => {
 	}, [getMetaData]);
 
 	useEffect(() => {
-		if (uniqueType?.getESSimpleFilter) {
-			const data = uniqueType?.getESSimpleFilter?.hits?.map(hit => hit.key)?.filter(data => data);
+		if (uniqueType?.getDbFilters) {
+			const data = uniqueType?.getDbFilters?.hits?.map(hit => hit.key)?.filter(data => data);
 			setCodes(data);
 		}
 	}, [uniqueType]);

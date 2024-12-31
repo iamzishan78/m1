@@ -130,7 +130,7 @@ function ParcelAgreementTable(props) {
 						parcelId: props.customLayer._id,
 						fileId: record.fileId,
 					},
-					refetchQueries: ['getParcelAgreement', 'getESSimpleSearch'],
+					refetchQueries: ['getParcelAgreement', 'getDbData'],
 					awaitRefetchQueries: true,
 				});
 			}
