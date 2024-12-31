@@ -5,9 +5,17 @@ import { globalStateController } from 'hookstate/globalStateController';
 import FilterModeMenuItems from '../Common/FilterModeMenuItems';
 
 const filterModeMenu =
-	({ options, tableKey, name, controller }) =>
+	({ options, tableKey, name, controller, layerIdentifier }) =>
 	({ onSelectFilterMode }) => {
 		const filterModes = globalStateController.getValue('columnFilterModesFnRefs') || {};
+		const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView;
+
+		const mapViewFilter = selectedMapView?.filters?.find(
+			filter => filter?.fieldName?.replace('.keyword', '') === name && filter?.dataSourceName === layerIdentifier
+		);
+
+		if (mapViewFilter?.filterType) onSelectFilterMode(mapViewFilter?.filterType);
+		// const mapViewFilter = selectedMapView?.filters?.find()
 
 		if (!filterModes?.[tableKey]) {
 			filterModes[tableKey] = {};

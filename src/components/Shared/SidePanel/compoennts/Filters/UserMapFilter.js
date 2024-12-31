@@ -191,7 +191,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 
 		if (layerType === 'agreement') {
 			esIndex = 'shapes_flat';
-			filters = [{ field: 'shapeJson.properties.layerType', value: 'agreement' }];
+			filters = [{ field: 'shapeJson.properties.type.keyword', value: 'agreement' }];
 		} else if (layerType === 'wells') {
 			esIndex = 'mywells_flat';
 			filters = [];

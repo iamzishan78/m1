@@ -16,6 +16,7 @@ import { tableGlobalController } from 'hookstate/tableController';
 
 import { AppContext } from '../../AppContext';
 import { platformDataInitialData, platformDataWellsInitialData, snapGridSideBarData } from './components/data';
+import { globalStateController } from 'hookstate/globalStateController';
 
 const useStyles = makeStyles(theme => {
 	return {
@@ -227,12 +228,17 @@ function MapGridCard(props) {
 			const fileQuery = generateFileFilters({ fileLayer: mapControlsStateValues.selectedLayer });
 			const fileId = mapControlsStateValues.selectedLayer?.file;
 			const layerShapeName = mapControlsStateValues?.selectedLayer?.layerShapeName;
+
+			const globalLayer = globalStateController
+				.getValue('layers')
+				?.find(layer => layer?.layerShapeName === layerShapeName && layer?.file === fileId);
+
 			const layerIdentifier = `${fileId}_${layerShapeName}`;
 			tableGlobalController.reInitialized();
 			return {
 				filterLayerType: layerIdentifier,
 				maxTableHeight: '40vh',
-				layerSchema: mapControlsStateValues?.selectedLayer?.layerSchema,
+				layerSchema: mapControlsStateValues?.selectedLayer?.layerSchema || globalLayer?.layerSchema,
 				toolbarInternalActions: {
 					onClose,
 					style: {

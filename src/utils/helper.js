@@ -718,51 +718,28 @@ export const getActivityAnalyticsFilters = appliedFilters => {
 	let filters = [];
 	if (appliedFilters) {
 		let range = [];
-		if (appliedFilters.filter !== 'audit') {
-			range = getRangeFilters(
-				{
-					dateTime: {
-						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
-						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
-					},
+
+		range = getDateFilters(
+			{
+				lastUpdateAt: {
+					from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+					to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
 				},
-				'simple'
-			);
-			if (range.length > 0) {
-				filters = [...filters, ...range];
-			}
-			range = getRangeFilters(
-				{
-					endDateTime: {
-						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
-						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
-					},
-				},
-				'simple'
-			);
-		} else {
-			range = getRangeFilters(
-				{
-					lastUpdateAt: {
-						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
-						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
-					},
-				},
-				'simple'
-			);
-			if (range.length > 0) {
-				filters = [...filters, ...range];
-			}
-			range = getRangeFilters(
-				{
-					lastUpdateAt: {
-						from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
-						to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
-					},
-				},
-				'simple'
-			);
+			},
+			'simple'
+		);
+		if (range.length > 0) {
+			filters = [...filters, ...range];
 		}
+		range = getDateFilters(
+			{
+				lastUpdateAt: {
+					from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+					to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+				},
+			},
+			'simple'
+		);
 
 		if (range.length > 0) {
 			filters = [...filters, ...range];
