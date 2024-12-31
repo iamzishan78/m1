@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import ListChips from 'components/Common/ListChips';
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
@@ -195,6 +198,11 @@ const RelatedTractInterestMeta = {
 			name: 'deals.name.keyword',
 			accessorKey: 'deals.name',
 			header: 'Associated Deals',
+			isExport: 'deals',
+			handleArrayExport: {
+				esType: 'collection',
+				actualKey: 'name',
+			},
 			Cell: ({ row }) => {
 				return (
 					<div>
