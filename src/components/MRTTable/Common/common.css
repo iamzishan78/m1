@@ -30,8 +30,8 @@
 	display: none;
 }
 
-tr *,
-tr *::before,
-tr *::after {
-	box-sizing: unset !important;
+/* Update Action Column Size */
+tr {
+	--col-mrt_row_actions-size: 120;
+	--header-mrt_row_actions-size: 120;
 }
