@@ -1,4 +1,4 @@
-import React, { useState, useContext, useMemo } from 'react';
+import React, { useState, useContext, useMemo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
@@ -122,7 +122,7 @@ const useStyles = makeStyles(theme => ({
 // params:
 // contact: ObjectId[]
 function AssociatedFlowDetails(props) {
-	const [stateApp] = useContext(AppContext);
+	const [stateApp, setStateApp] = useContext(AppContext);
 
 	const [searchTapValue, SearchTapValue] = useState(contactDetailInitialData[0]);
 
@@ -146,6 +146,18 @@ function AssociatedFlowDetails(props) {
 		// screenSizes
 	});
 
+	const onClose = useCallback(e => {
+		e.stopPropagation();
+		setStateApp({ ...stateApp, transactBarShowGrid: false });
+	}, []);
+
+	const toolbarInternalActions = {
+		onClose,
+		style: {
+			marginRight: '0.5rem',
+		},
+	};
+
 	const relatedUnitInterestOverride = useMemo(
 		() => ({
 			tableHeading: 'Unit Interests',
@@ -156,6 +168,7 @@ function AssociatedFlowDetails(props) {
 				{ field: 'shape.layer.keyword', value: 'unit' },
 			],
 			refetchQueries: ['flowDealSummary'],
+			toolbarInternalActions,
 		}),
 		[props.contacts, props.deal]
 	);
@@ -170,6 +183,7 @@ function AssociatedFlowDetails(props) {
 				{ field: 'shape.layer.keyword', value: 'parcel' },
 			],
 			refetchQueries: ['flowDealSummary'],
+			toolbarInternalActions,
 		}),
 		[props.contacts, props.deal]
 	);
