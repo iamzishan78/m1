@@ -362,9 +362,9 @@ export default function LinkWithIcon(props) {
 													onClick={() => {
 														isLinked(taxOwner)
 															? setGlobalOwnerDialog({
-																state: true,
-																globalOwner: taxOwner.globalOwnerId,
-															})
+																	state: true,
+																	globalOwner: taxOwner.globalOwnerId,
+																})
 															: handleLinkTaxOwners(taxOwner);
 													}}
 													key={'search_tax_owners' + taxOwner._id}
@@ -464,7 +464,7 @@ export default function LinkWithIcon(props) {
 					onClose={() => setGlobalOwnerDialog(state => ({ ...state, state: false }))}
 					deleteFunc={handleRemoveGlobalOwner}
 					m1nSelectedRowsIds={null}
-					setM1nSelectedRowsIndexes={() => { }}
+					setM1nSelectedRowsIndexes={() => {}}
 				>
 					Are you sure you want to remove this Global Owner?
 				</DeleteConfirmationDialogContent>

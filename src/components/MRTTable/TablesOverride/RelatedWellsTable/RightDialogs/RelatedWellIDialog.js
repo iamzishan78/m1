@@ -462,7 +462,7 @@ function RelatedWellsDialog(props) {
 						onClose={handleCloseDialog}
 						deleteFunc={deleteFunc}
 						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => { }}
+						setM1nSelectedRowsIndexes={() => {}}
 					>
 						Do you want to delete the selected well?
 					</DeleteConfirmationDialogContent>

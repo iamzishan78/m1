@@ -543,7 +543,7 @@ export default function ParcelInstrument(props) {
 						onClose={handleDeleteCancel}
 						deleteFunc={handleDeleteAccept}
 						m1nSelectedRowsIds={[document._id]}
-						setM1nSelectedRowsIndexes={() => { }}
+						setM1nSelectedRowsIndexes={() => {}}
 					>
 						{`Do you want to delete the selected ${DELETE_OPTIONS_ENUMS[initiateDeleteDialogForFileOrAgreement]}?`}
 					</DeleteConfirmationDialogContent>
@@ -976,8 +976,8 @@ const AutoCompleteField = ({ setValue, value, options, ...other }) => {
 			options={
 				options
 					? options?.map(type => {
-						return { _id: type, name: type };
-					})
+							return { _id: type, name: type };
+						})
 					: []
 			}
 			getOptionLabel={option => {

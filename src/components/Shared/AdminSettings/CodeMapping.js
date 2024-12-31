@@ -133,7 +133,7 @@ const CodeMapping = ({ settingsFor }) => {
 	const [showEmpty, setShowEmpty] = useState(false);
 	const [mappingType, setMappingType] = useState(mappingTypeOptions[settingsFor][0]);
 
-	const [updateMetaData, { }] = useMutation(UPDATE_META_DATA);
+	const [updateMetaData, {}] = useMutation(UPDATE_META_DATA);
 	const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
 	const [getUniqueType, { data: uniqueType }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });

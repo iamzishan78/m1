@@ -93,7 +93,7 @@ describe('ShapeDetailCard Component', () => {
 						cardHeightExpanded="calc(100vh - 64px)"
 						targetSourceId={selectedShape?.id}
 						targetLabel={selectedShape.type}
-					// deleteCustomLayer={deleteCustomLayer}
+						// deleteCustomLayer={deleteCustomLayer}
 					></ExpandableCardProvider>,
 					{ spec: 'ShapeDetailCard', testCase: { layerId: selectedShape.id } }
 				);

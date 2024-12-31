@@ -39,7 +39,7 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
 	const params = {
 		esIndex: 'shapes_flat',
 		variant: 'outlined',
-		setFilters: () => { },
+		setFilters: () => {},
 		filterList,
 		column: {
 			label: filter.label,

@@ -108,12 +108,7 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
 					variables: {
 						parcelOwner,
 					},
-					refetchQueries: [
-						'getparcelOwners',
-						'getContactParcelInterests',
-						'getContactParcelInterest',
-						'getDbData',
-					],
+					refetchQueries: ['getparcelOwners', 'getContactParcelInterests', 'getContactParcelInterest', 'getDbData'],
 					awaitRefetchQueries: true,
 				});
 			});

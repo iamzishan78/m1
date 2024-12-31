@@ -204,11 +204,11 @@ const getBoundsQuery = async ({
 			});
 		} else if (isWellsQuery) {
 			Object.assign(variables.project, {
-				'api': 1,
-				'id': 1,
-				'wellName': 1,
-				'wellType': 1,
-				'wellStatus': 1
+				api: 1,
+				id: 1,
+				wellName: 1,
+				wellType: 1,
+				wellStatus: 1,
 			});
 		} else {
 			Object.assign(variables.project, {

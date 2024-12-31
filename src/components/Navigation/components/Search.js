@@ -452,8 +452,9 @@ function Search({ stateApp, setStateApp, isDocument }) {
 	const callMapboxSearch = React.useMemo(
 		() =>
 			debounce((request, top, callback) => {
-				const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${request.input}.json?access_token=${stateApp.mapboxglAccessToken
-					}&autocomplete=true&country=us%2Cca&limit=${top > 50 ? 50 : top}`;
+				const endpoint = `https://api.mapbox.com/geocoding/v5/mapbox.places/${request.input}.json?access_token=${
+					stateApp.mapboxglAccessToken
+				}&autocomplete=true&country=us%2Cca&limit=${top > 50 ? 50 : top}`;
 
 				const headers = new Headers();
 				headers.append('Content-Type', 'application/json');
@@ -478,7 +479,7 @@ function Search({ stateApp, setStateApp, isDocument }) {
 	const callESSearch = React.useMemo(
 		() =>
 			debounce(request => {
-				const { esIndex, search, searchFields, filter } = esCallData[searchOption] || { search: () => { } };
+				const { esIndex, search, searchFields, filter } = esCallData[searchOption] || { search: () => {} };
 				getDbData({
 					variables: {
 						index: esIndex,
@@ -531,19 +532,19 @@ function Search({ stateApp, setStateApp, isDocument }) {
 					if (results) {
 						let resultsMod = results.features
 							? results.features.map(result => {
-								return {
-									...result,
-									Id: result.id,
-									Source: searchOption === 'places' ? 'places' : 'mapboxSearch',
-									Score: result.relevance ? result.relevance : 0,
-									Primary: result.text ? result.text : '',
-									Secondary: result.place_name
-										? result.place_name.indexOf(result.text + ', ') === 0
-											? result.place_name.slice(result.place_name.indexOf(', ') + 2, result.place_name.length)
-											: result.place_name
-										: '',
-								};
-							})
+									return {
+										...result,
+										Id: result.id,
+										Source: searchOption === 'places' ? 'places' : 'mapboxSearch',
+										Score: result.relevance ? result.relevance : 0,
+										Primary: result.text ? result.text : '',
+										Secondary: result.place_name
+											? result.place_name.indexOf(result.text + ', ') === 0
+												? result.place_name.slice(result.place_name.indexOf(', ') + 2, result.place_name.length)
+												: result.place_name
+											: '',
+									};
+								})
 							: [];
 
 						newOptions = [...newOptions, ...resultsMod];
@@ -670,17 +671,17 @@ function Search({ stateApp, setStateApp, isDocument }) {
 				setStateApp(stateApp =>
 					dataLandGridGeom?.getDbData?.hits?.length === 1
 						? {
-							...stateApp,
-							selectedWell: null,
-							fitBounds: true,
-							searchLoader: false,
-							landGridListFromSearch: [
-								...dataLandGridGeom?.getDbData?.hits?.map(hit => ({
-									...hit,
-									shape: JSON.stringify({ geometry: hit?.geoJSON, properties: {} }),
-								})),
-							],
-						}
+								...stateApp,
+								selectedWell: null,
+								fitBounds: true,
+								searchLoader: false,
+								landGridListFromSearch: [
+									...dataLandGridGeom?.getDbData?.hits?.map(hit => ({
+										...hit,
+										shape: JSON.stringify({ geometry: hit?.geoJSON, properties: {} }),
+									})),
+								],
+							}
 						: stateApp
 				);
 				layerController.toggleLayersActivity('Search', true);
@@ -702,16 +703,16 @@ function Search({ stateApp, setStateApp, isDocument }) {
 				setStateApp(stateApp =>
 					dataContactWells.contactWells.length === 1
 						? {
-							...stateApp,
-							selectedWell: null,
-							fitBounds: null,
-							searchLoader: false,
-						}
+								...stateApp,
+								selectedWell: null,
+								fitBounds: null,
+								searchLoader: false,
+							}
 						: {
-							...stateApp,
-							fitBounds: null,
-							searchLoader: false,
-						}
+								...stateApp,
+								fitBounds: null,
+								searchLoader: false,
+							}
 				);
 				layerController.updateState({ wellListFromSearch: [...dataContactWells.contactWells] });
 				layerController.toggleLayersActivity('Search', true);
@@ -1116,20 +1117,20 @@ function Search({ stateApp, setStateApp, isDocument }) {
 											<div>
 												{((searchValue && searchValue !== '') ||
 													(layerStateValues.wellListFromSearch && layerStateValues.wellListFromSearch.length > 0)) && (
-														<Tooltip title="Clear" placement="top">
-															<IconButton
-																size="small"
-																onClick={() => {
-																	setValue('');
-																	mapControlsController.updateState({ searchValue: '' });
+													<Tooltip title="Clear" placement="top">
+														<IconButton
+															size="small"
+															onClick={() => {
+																setValue('');
+																mapControlsController.updateState({ searchValue: '' });
 
-																	layerController.updateState({ wellListFromSearch: [] });
-																}}
-															>
-																<ClearIcon htmlColor="#fff" />
-															</IconButton>
-														</Tooltip>
-													)}
+																layerController.updateState({ wellListFromSearch: [] });
+															}}
+														>
+															<ClearIcon htmlColor="#fff" />
+														</IconButton>
+													</Tooltip>
+												)}
 												<Tooltip title="Search History" placement="top">
 													<IconButton
 														size="small"

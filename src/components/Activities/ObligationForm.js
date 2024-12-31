@@ -326,21 +326,21 @@ export default function ObligationForm({ setSelectedActivityId }) {
 	return (
 		<div>
 			<div className={classes.inputFieldRoot}>
-				<SimpleTextField disabled title="Obligation Type" value={activityType.get()} setValue={() => { }} />
+				<SimpleTextField disabled title="Obligation Type" value={activityType.get()} setValue={() => {}} />
 
 				<FormControl variant="outlined" fullWidth size="small">
 					<Grid container className={classes.gridStyle}>
-						<DateField disabled={true} title="Start Date" date={startDate.get()} setDate={() => { }} />
-						<DateField disabled={true} title="End Date" date={endDate.get()} setDate={() => { }} />
+						<DateField disabled={true} title="Start Date" date={startDate.get()} setDate={() => {}} />
+						<DateField disabled={true} title="End Date" date={endDate.get()} setDate={() => {}} />
 					</Grid>
 				</FormControl>
 
-				<SimpleTextField disabled title="Frequecy" value={frequency.get()} setValue={() => { }} />
+				<SimpleTextField disabled title="Frequecy" value={frequency.get()} setValue={() => {}} />
 				{activityType.get() !== 'Payment' && (
-					<SimpleTextField disabled title="Applicable" value={applicable.get()} setValue={() => { }} />
+					<SimpleTextField disabled title="Applicable" value={applicable.get()} setValue={() => {}} />
 				)}
-				<SimpleTextField disabled title="Value" value={obligationValue.get()} setValue={() => { }} />
-				<SimpleTextField disabled title="Responsible Party" value={responsibleParty.get()} setValue={() => { }} />
+				<SimpleTextField disabled title="Value" value={obligationValue.get()} setValue={() => {}} />
+				<SimpleTextField disabled title="Responsible Party" value={responsibleParty.get()} setValue={() => {}} />
 
 				<OwnerField
 					disabled={true}

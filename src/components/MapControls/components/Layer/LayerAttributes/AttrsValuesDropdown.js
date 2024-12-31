@@ -139,9 +139,7 @@ const AttrsValuesDropdown = ({
 		if (!filtersData?.getDbFilters?.hits || !selectedValue?.label) {
 			return [];
 		}
-		const filterKeys = filtersData.getDbFilters.hits
-			.map(hit => hit?.key)
-			.filter(key => key && key.toString().trim());
+		const filterKeys = filtersData.getDbFilters.hits.map(hit => hit?.key).filter(key => key && key.toString().trim());
 
 		filterKeys.unshift('');
 

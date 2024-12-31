@@ -406,7 +406,7 @@ export default function RevenueAnalytics(props) {
 										type="Properties"
 										esFilters={filters}
 										setESFilters={setFilters}
-										setFilterToggle={() => { }}
+										setFilterToggle={() => {}}
 										isBackground={false}
 										noUpdate={true}
 										strechedWidth

@@ -91,22 +91,22 @@ function ESAutoCompleteFilter({
 
 		let sort = sorting[0]
 			? {
-				field: (() => {
-					if (sorting[0].field) {
-						return sorting[0].field;
-					}
+					field: (() => {
+						if (sorting[0].field) {
+							return sorting[0].field;
+						}
 
-					const sortingId = sorting[0].id;
-					const matchingSchema = TableSchema.find(val => (val.accessorKey || val.id) === sortingId);
+						const sortingId = sorting[0].id;
+						const matchingSchema = TableSchema.find(val => (val.accessorKey || val.id) === sortingId);
 
-					if (matchingSchema?.isComposite) {
-						return matchingSchema.name.split(',')[0];
-					}
+						if (matchingSchema?.isComposite) {
+							return matchingSchema.name.split(',')[0];
+						}
 
-					return matchingSchema?.name;
-				})(),
-				order: sorting[0].desc ? 'desc' : 'asc',
-			}
+						return matchingSchema?.name;
+					})(),
+					order: sorting[0].desc ? 'desc' : 'asc',
+				}
 			: defaultSort;
 
 		const filtersArray = [...filters, ...defaultFilters];
@@ -358,13 +358,13 @@ function ESAutoCompleteFilter({
 
 				let value = multiple
 					? option.map(option => {
-						if (typeof option === 'object') {
-							return option.value;
-						} else {
-							const foundOption = _.find(requiredOptions, { label: option });
-							return foundOption ? foundOption.value : option;
-						}
-					})
+							if (typeof option === 'object') {
+								return option.value;
+							} else {
+								const foundOption = _.find(requiredOptions, { label: option });
+								return foundOption ? foundOption.value : option;
+							}
+						})
 					: option.value;
 
 				if (type === 'date') {

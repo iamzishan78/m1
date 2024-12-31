@@ -357,7 +357,7 @@ export default function DetailComponents(props) {
 					onClose={handleDeleteCancel}
 					deleteFunc={handleDeleteAccept}
 					m1nSelectedRowsIds={[document._id]}
-					setM1nSelectedRowsIndexes={() => { }}
+					setM1nSelectedRowsIndexes={() => {}}
 				>
 					Do you want to delete the selected statement?
 				</DeleteConfirmationDialogContent>
@@ -381,8 +381,9 @@ export default function DetailComponents(props) {
 									</IconButton>
 									<div className={classes.titleText}>
 										{checksFlatData && (
-											<Typography style={{ fontWeight: 'bold', fontSize: 'large', marginLeft: 8 }}>{`${checksFlatData?.checkNumber || ''
-												} - ${checksFlatData?.payor?.name || ''}`}</Typography>
+											<Typography style={{ fontWeight: 'bold', fontSize: 'large', marginLeft: 8 }}>{`${
+												checksFlatData?.checkNumber || ''
+											} - ${checksFlatData?.payor?.name || ''}`}</Typography>
 										)}
 										<div className={classes.tagsContainer}>
 											<div className={classes.highlighter}>

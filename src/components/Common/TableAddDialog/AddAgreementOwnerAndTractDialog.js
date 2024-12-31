@@ -257,7 +257,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 			setLoading(false);
 			handleClose();
 		},
-		onError: err => { },
+		onError: err => {},
 		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
@@ -884,12 +884,12 @@ function AddAgreementOwnerAndTractDialog(props) {
 								const net_acres = !isAcresOverridden ? calculateNetAcres(e.target.value) : getValues().net_acres;
 								const nra = !isNraOverridden
 									? calculateStandardNraForTract(
-										getValues()?.tract?.sdGrossAcres,
-										e.target.value,
-										getValues().royalty_interest,
-										getValues().orri,
-										workspaceSettings
-									)
+											getValues()?.tract?.sdGrossAcres,
+											e.target.value,
+											getValues().royalty_interest,
+											getValues().orri,
+											workspaceSettings
+										)
 									: getValues().nra;
 								setValue('net_acres', net_acres);
 								setValue('nra', nra);
@@ -1326,7 +1326,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 						onClose={handleCloseDialog}
 						deleteFunc={deleteFunc}
 						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => { }}
+						setM1nSelectedRowsIndexes={() => {}}
 					>
 						Do you want to delete the selected well interest?
 					</DeleteConfirmationDialogContent>

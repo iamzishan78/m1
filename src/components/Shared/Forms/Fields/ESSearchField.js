@@ -116,8 +116,9 @@ function ESSearchField({ filters, index, pagination, fields, sort, fieldName, on
 						{...params}
 						required
 						variant="outlined"
-						label={`${fieldName.replace(/ies$/, 'y').replace(/s$/, '')} ${fieldName.toLowerCase().includes('revenue') ? 'Number' : 'Name'
-							}`}
+						label={`${fieldName.replace(/ies$/, 'y').replace(/s$/, '')} ${
+							fieldName.toLowerCase().includes('revenue') ? 'Number' : 'Name'
+						}`}
 						InputLabelProps={{ shrink: true }}
 						onChange={event => {
 							callItemESSearch({ input: `*${event.target.value}*` }, results => null);

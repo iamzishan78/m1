@@ -91,9 +91,7 @@ describe('Related Wells Uploader Spec', () => {
 										.click({ waitForAnimations: false });
 
 									cy.verifyApiResponse('@getESPaginatedListApi', { responseTimeout: longTimeout }).then(result => {
-										const wellApiNumbers = result.response?.body?.data?.getDbData.hits.map(
-											hit => hit.apiNumber
-										);
+										const wellApiNumbers = result.response?.body?.data?.getDbData.hits.map(hit => hit.apiNumber);
 										cy.log(JSON.stringify(wellApiNumbers));
 
 										cy.get('@gridData').then(gridData => {

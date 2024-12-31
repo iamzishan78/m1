@@ -330,21 +330,21 @@ export default function Comments(props) {
 	const newCommentCleaner = value =>
 		value.trim()[value.trim().length - 1] === '.'
 			? value
-				.split('\n')
-				.map(line => {
-					if (line.trim() !== '.') {
-						return line.trim();
-					}
-				})
-				.join('\n')
+					.split('\n')
+					.map(line => {
+						if (line.trim() !== '.') {
+							return line.trim();
+						}
+					})
+					.join('\n')
 			: `${value
-				.split('\n')
-				.map(line => {
-					if (line.trim() !== '.') {
-						return line.trim();
-					}
-				})
-				.join('\n')}.`;
+					.split('\n')
+					.map(line => {
+						if (line.trim() !== '.') {
+							return line.trim();
+						}
+					})
+					.join('\n')}.`;
 
 	const addNewComment = (value, commentedOn) => {
 		upsertComment({
@@ -534,8 +534,8 @@ export default function Comments(props) {
 				style={
 					props.detailCard || props.handleRightDialogClose
 						? {
-							padding: '23px 23px 8px 23px',
-						}
+								padding: '23px 23px 8px 23px',
+							}
 						: {}
 				}
 			>
@@ -600,9 +600,9 @@ export default function Comments(props) {
 							setComment={setComment}
 							showActions={showActions}
 							setShowActions={setShowActions}
-						// setEditCommentId={setEditCommentId}
-						// isEdit={isEdit}
-						// setIsEdit={setIsEdit}
+							// setEditCommentId={setEditCommentId}
+							// isEdit={isEdit}
+							// setIsEdit={setIsEdit}
 						/>
 					</Grid>
 				</Grid>
@@ -619,113 +619,113 @@ export default function Comments(props) {
 						{commentsArray.map((comment, index) =>
 							props.detailCard
 								? ((publicComment && comment.public) ||
-									(!publicComment && !comment.public && stateApp?.user?.email === comment?.user?.email)) &&
-								(commentsDisplayedCount += 1) &&
-								(props.top && props.top < commentsDisplayedCount ? null : (
-									//// ListItem ////
-									<div key={index}>
-										{commentsDisplayedCount !== 1 && (
-											<Divider
-												style={{
-													marginTop: '13px',
-													marginBottom: '13px',
-												}}
-											/>
-										)}
-										{/* //// name and date line //// */}
-										<h5 className={classes.nameAndDateLine}>{`${comment?.user?.name} · ${new Intl.DateTimeFormat(
-											'en-US',
-											{
-												year: 'numeric',
-												month: 'long',
-												day: '2-digit',
-												hour: '2-digit',
-												minute: '2-digit',
-											}
-										).format(comment.ts)}`}</h5>
+										(!publicComment && !comment.public && stateApp?.user?.email === comment?.user?.email)) &&
+									(commentsDisplayedCount += 1) &&
+									(props.top && props.top < commentsDisplayedCount ? null : (
+										//// ListItem ////
+										<div key={index}>
+											{commentsDisplayedCount !== 1 && (
+												<Divider
+													style={{
+														marginTop: '13px',
+														marginBottom: '13px',
+													}}
+												/>
+											)}
+											{/* //// name and date line //// */}
+											<h5 className={classes.nameAndDateLine}>{`${comment?.user?.name} · ${new Intl.DateTimeFormat(
+												'en-US',
+												{
+													year: 'numeric',
+													month: 'long',
+													day: '2-digit',
+													hour: '2-digit',
+													minute: '2-digit',
+												}
+											).format(comment.ts)}`}</h5>
 
-										{/* //// comment line //// */}
-										<div style={{ marginTop: '7px', marginBottom: '7px' }}>
-											{comment.comment.split('\n').map((line, i) => {
-												return (
-													<p
-														key={i}
-														style={{
-															color: '#757575',
-															margin: '0',
-														}}
-													>
-														{line}
-													</p>
-												);
-											})}
+											{/* //// comment line //// */}
+											<div style={{ marginTop: '7px', marginBottom: '7px' }}>
+												{comment.comment.split('\n').map((line, i) => {
+													return (
+														<p
+															key={i}
+															style={{
+																color: '#757575',
+																margin: '0',
+															}}
+														>
+															{line}
+														</p>
+													);
+												})}
+											</div>
+
+											{/* //// delete line //// */}
+											<h5 className={classes.deleteLine} onClick={() => handleDeleteClick(comment)}>
+												Delete
+											</h5>
 										</div>
-
-										{/* //// delete line //// */}
-										<h5 className={classes.deleteLine} onClick={() => handleDeleteClick(comment)}>
-											Delete
-										</h5>
-									</div>
-								))
+									))
 								: //// ListItem  End ////
-								((publicComment && comment.public) ||
-									(!publicComment && stateApp.user.email === comment?.user?.email && !comment.public)) && (
-									<ListItem key={index} className={classes.listItem} alignItems="flex-start">
-										<ListItemAvatar className={classes.avatar}>
-											<Avatar
-												name={comment?.user?.name}
-												color={Avatar.getRandomColor(comment?.user?.email, [
-													'#b5d2f6',
-													'#ade2e9',
-													'#eaeaea',
-													'#f2c1e2',
-													'#d7d6fb',
-												])}
-												fgColor="#000"
-												size="35"
-												round
+									((publicComment && comment.public) ||
+										(!publicComment && stateApp.user.email === comment?.user?.email && !comment.public)) && (
+										<ListItem key={index} className={classes.listItem} alignItems="flex-start">
+											<ListItemAvatar className={classes.avatar}>
+												<Avatar
+													name={comment?.user?.name}
+													color={Avatar.getRandomColor(comment?.user?.email, [
+														'#b5d2f6',
+														'#ade2e9',
+														'#eaeaea',
+														'#f2c1e2',
+														'#d7d6fb',
+													])}
+													fgColor="#000"
+													size="35"
+													round
+												/>
+											</ListItemAvatar>
+											<ListItemText
+												className={classes.listItemText}
+												primary={
+													// <div style={{ marginBottom: '8px' }}>
+													//   <div style={{
+													//     marginTop: '2px',
+													//     marginBottom: '5px',
+													//     fontWeight: 'bolder',
+													//     color: '#3e3e3e',
+													//     fontSize: '15px',
+													//   }}>{comment?.commentType || 'General'}</div>
+													//   <CommentText users={userLists?.allMongoUsers} eachComment={comment} />
+													// </div>
+													<CommonCommentText users={userLists?.allMongoUsers} eachComment={comment} />
+												}
+												secondary={
+													`${comment?.user?.name}` +
+													(comment.ids
+														? ''
+														: ` - ${new Intl.DateTimeFormat('en-US', {
+																year: 'numeric',
+																month: 'long',
+																day: '2-digit',
+																hour: '2-digit',
+																minute: '2-digit',
+															}).format(comment.ts)}`)
+												}
 											/>
-										</ListItemAvatar>
-										<ListItemText
-											className={classes.listItemText}
-											primary={
-												// <div style={{ marginBottom: '8px' }}>
-												//   <div style={{
-												//     marginTop: '2px',
-												//     marginBottom: '5px',
-												//     fontWeight: 'bolder',
-												//     color: '#3e3e3e',
-												//     fontSize: '15px',
-												//   }}>{comment?.commentType || 'General'}</div>
-												//   <CommentText users={userLists?.allMongoUsers} eachComment={comment} />
-												// </div>
-												<CommonCommentText users={userLists?.allMongoUsers} eachComment={comment} />
-											}
-											secondary={
-												`${comment?.user?.name}` +
-												(comment.ids
-													? ''
-													: ` - ${new Intl.DateTimeFormat('en-US', {
-														year: 'numeric',
-														month: 'long',
-														day: '2-digit',
-														hour: '2-digit',
-														minute: '2-digit',
-													}).format(comment.ts)}`)
-											}
-										/>
-										<ListItemSecondaryAction>
-											<IconButton
-												edge="end"
-												aria-label="delete"
-												data-testid={`comment-delete-icon-${index}`}
-												onClick={() => handleDeleteClick(comment)}
-											>
-												<DeleteIcon />
-											</IconButton>
-										</ListItemSecondaryAction>
-									</ListItem>
-								)
+											<ListItemSecondaryAction>
+												<IconButton
+													edge="end"
+													aria-label="delete"
+													data-testid={`comment-delete-icon-${index}`}
+													onClick={() => handleDeleteClick(comment)}
+												>
+													<DeleteIcon />
+												</IconButton>
+											</ListItemSecondaryAction>
+										</ListItem>
+									)
 						)}
 					</List>
 				) : (

@@ -75,7 +75,7 @@ function AddUnitTractDialog(props) {
 			setLoading(false);
 			handleClose();
 		},
-		onError: err => { },
+		onError: err => {},
 		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
@@ -238,7 +238,7 @@ function AddUnitTractDialog(props) {
 						onClose={handleCloseDialog}
 						deleteFunc={deleteFunc}
 						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => { }}
+						setM1nSelectedRowsIndexes={() => {}}
 					>
 						Do you want to delete the selected well interest?
 					</DeleteConfirmationDialogContent>

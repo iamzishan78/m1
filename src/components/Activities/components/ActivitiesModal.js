@@ -556,20 +556,20 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 			open={!!stateApp.activityDialog}
 			onClose={
 				addLoading && updateLoading
-					? () => { }
+					? () => {}
 					: () => {
-						onModalClose();
-					}
+							onModalClose();
+						}
 			}
 		>
 			<ExpandableCardProvider
 				expanded={true}
 				handleCloseExpandableCard={
 					addLoading && updateLoading
-						? () => { }
+						? () => {}
 						: () => {
-							onModalClose();
-						}
+								onModalClose();
+							}
 				}
 				title={addNew ? 'Add Activity' : 'Activity Details'}
 				subTitle={''}

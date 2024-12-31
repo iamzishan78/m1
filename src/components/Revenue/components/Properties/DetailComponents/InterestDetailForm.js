@@ -140,9 +140,9 @@ const InterestDetailForm = props => {
 				effectiveDate: effectiveDate ? moment(effectiveDate).format('YYYY-MM-DD') : null,
 				owner: owner
 					? {
-						...owner,
-						name: owner.entityDetail.name,
-					}
+							...owner,
+							name: owner.entityDetail.name,
+						}
 					: { name: '', _id: null },
 			});
 		} else if (props.propertyOwnerContact) {

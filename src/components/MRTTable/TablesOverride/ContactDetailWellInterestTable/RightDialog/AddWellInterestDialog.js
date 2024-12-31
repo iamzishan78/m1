@@ -60,9 +60,9 @@ function NumberFormatCustom(props) {
 					},
 				});
 			}}
-		// thousandSeparator
-		// isNumericString
-		// prefix="$"
+			// thousandSeparator
+			// isNumericString
+			// prefix="$"
 		/>
 	);
 }
@@ -325,12 +325,7 @@ function AddWellInterestDialog(props) {
 						nra: formRoyaltyAcres,
 					},
 				},
-				refetchQueries: [
-					'getContactWells',
-					'getDbData',
-					'getContactWellInterestsFilterOptions',
-					'getContactSummary',
-				],
+				refetchQueries: ['getContactWells', 'getDbData', 'getContactWellInterestsFilterOptions', 'getContactSummary'],
 				awaitRefetchQueries: true,
 			});
 		} else {
@@ -410,7 +405,7 @@ function AddWellInterestDialog(props) {
 						onClose={handleCloseDialog}
 						deleteFunc={deleteFunc}
 						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => { }}
+						setM1nSelectedRowsIndexes={() => {}}
 					>
 						Do you want to delete the selected well interest?
 					</DeleteConfirmationDialogContent>

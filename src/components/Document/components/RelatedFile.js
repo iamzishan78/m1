@@ -978,11 +978,11 @@ export default function RelatedFile(props) {
 													<IconButton
 														disabled={false}
 														size="small"
-													// onClick={() =>
-													//   handleViewFile(
-													//     files?.getFileDescriptors[key].fileId
-													//   )
-													// }
+														// onClick={() =>
+														//   handleViewFile(
+														//     files?.getFileDescriptors[key].fileId
+														//   )
+														// }
 													>
 														<GetAppIcon />
 													</IconButton>
@@ -1090,7 +1090,7 @@ export default function RelatedFile(props) {
 						onClose={handleDeleteCancel}
 						deleteFunc={handleDeleteAccept}
 						m1nSelectedRowsIds={[document._id]}
-						setM1nSelectedRowsIndexes={() => { }}
+						setM1nSelectedRowsIndexes={() => {}}
 					>
 						Do you want to delete the selected documents?
 					</DeleteConfirmationDialogContent>
@@ -1135,8 +1135,8 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 			options={
 				documentTypes
 					? documentTypes?.getFilesType?.map(type => {
-						return { _id: type, name: type };
-					})
+							return { _id: type, name: type };
+						})
 					: []
 			}
 			getOptionLabel={option => {

@@ -240,7 +240,7 @@ function AgreementUnitDialog(props) {
 							handleSave();
 						}}
 						className={classes.footerButton}
-					// disabled={!selectedShapeLayer?._id}
+						// disabled={!selectedShapeLayer?._id}
 					>
 						{loading ? <CircularProgress size={14} /> : 'Save'}
 					</Button>

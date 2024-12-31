@@ -132,7 +132,7 @@ const AutoCompleteESShapeLayer = ({ label, value, filters, setSelectedShapeLayer
 					size="small"
 				/>
 			)}
-		// {...other}
+			// {...other}
 		/>
 	);
 };
