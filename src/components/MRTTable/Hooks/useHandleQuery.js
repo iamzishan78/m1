@@ -1,9 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useApolloClient } from '@apollo/client';
 import { debounce, set, get } from 'lodash';
 import { useCallback, useEffect, useRef } from 'react';
 import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { GET_ES_AGGS_LIST } from 'graphQL/useQueryESAggsList';
 import { copy } from 'utils/helper';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { drawController } from 'hookstate/drawStateController';
@@ -21,46 +21,40 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		const tableMeta = tableState.get({ noproxy: true });
 		const pagination = _pagination || tableMeta.pagination;
 		const { TableSchema } = tableMeta;
-		if (!TableSchema) return
+		if (!TableSchema) return;
 
 		Controller.updateState({
 			isLoading: true,
 			isFetching: true,
 			isError: false,
 		});
-		let metaField = {}
+		let metaField = {};
 		if (tableStateValues.sorting.length) {
 			metaField = TableSchema?.find(item => (item.accessorKey || item.id) === tableStateValues.sorting[0]?.id);
 		}
 
 		let sort = tableStateValues.sorting[0]
 			? {
-				field: (() => {
-					const sortingId = tableStateValues.sorting[0].id;
-					const matchingSchema = TableSchema.find(
-						val => (val.accessorKey || val.id) === sortingId
-					);
+					field: (() => {
+						const sortingId = tableStateValues.sorting[0].id;
+						const matchingSchema = TableSchema.find(val => (val.accessorKey || val.id) === sortingId);
 
-					if (matchingSchema?.isComposite) {
-						return matchingSchema.name.split(',')[0];
-					}
+						if (matchingSchema?.isComposite) {
+							return matchingSchema.name.split(',')[0];
+						}
 
-					return matchingSchema?.name;
-				})(),
-				order: tableStateValues.sorting[0].desc ? 'desc' : 'asc',
-			}
+						return matchingSchema?.name;
+					})(),
+					order: tableStateValues.sorting[0].desc ? 'desc' : 'asc',
+				}
 			: tableState?.defaultSort?.get({ noproxy: true });
 		if (metaField?.isCustom) {
-			sort.unmapped_type = "keyword"
+			sort.unmapped_type = 'keyword';
 		}
 
-		const filters = [...tableMeta?.defaultFilters || [], ...tableMeta?.filters || []];
+		const filters = [...(tableMeta?.defaultFilters || []), ...(tableMeta?.filters || [])];
 
-		if (
-			tableStateValues.geoKey &&
-			drawStateValues.selectedPolygonString &&
-			drawStateValues.currentFeature
-		) {
+		if (tableStateValues.geoKey && drawStateValues.selectedPolygonString && drawStateValues.currentFeature) {
 			filters.push({
 				type: 'geo_intersects',
 				field: tableStateValues.geoKey,
@@ -70,8 +64,9 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		let globalFilter = tableStateValues.globalFilter;
 
-		if (tableStateValues.isGeneric && !tableStateValues.globalSearch)
-			globalFilter = null;
+		if (tableStateValues.isGeneric && !tableStateValues.globalSearch) globalFilter = null;
+
+		const aggregationColumns = TableSchema?.filter(column => column.Aggregation)?.map(column => column.Aggregation);
 
 		const variables = {
 			index: tableStateValues.esIndex,
@@ -83,8 +78,8 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			},
 			sort,
 			filters,
+			...(aggregationColumns.length ? { aggs: Object.assign({}, ...aggregationColumns) } : {}),
 		};
-
 
 		if (tableStateValues.filterLayerType)
 			layerFiltersController.setVariables(tableStateValues.filterLayerType, variables);
@@ -93,6 +88,12 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			variables,
 			query: GET_ES_SIMPLE_SEARCH,
 		});
+
+		if (allSelectedRows?.data?.getESSimpleSearch?.aggregations) {
+			Controller.updateState({
+				footerProps: allSelectedRows?.data?.getESSimpleSearch?.aggregations,
+			});
+		}
 
 		const data = allSelectedRows?.data?.getESSimpleSearch;
 		let rows = copy(data.hits) || [];
@@ -107,7 +108,8 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				const defaultValue =
 					!columnsType.current[accessorKey] || columnsType.current[accessorKey] === 'number' ? undefined : '';
 				let value = get(row, accessorKey);
-				if (value !== undefined && value !== null && !Array.isArray(value) && typeof value !== 'object') value = defaultValue === '' ? `${value}` : value;
+				if (value !== undefined && value !== null && !Array.isArray(value) && typeof value !== 'object')
+					value = defaultValue === '' ? `${value}` : value;
 				set(row, accessorKey, value || defaultValue, defaultValue);
 			});
 		});
@@ -131,38 +133,41 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		});
 	};
 
-	async function fetchFooterAggregationData() {
-		const tableMeta = tableState.get({ noproxy: true });
-		const { TableSchema, defaultFilters, esIndex, filters } = tableMeta;
-		if (!TableSchema) return
+	// commenting out this code as it is not working as expected on Elastic will be uncommented once conversion to mongo is complete.
 
-		const aggregationColumns = TableSchema?.filter(column => column.Aggregation)?.map(column => column.Aggregation);
+	// async function fetchFooterAggregationData() {
+	// 	const tableMeta = tableState.get({ noproxy: true });
+	// 	const { TableSchema, defaultFilters, esIndex, filters } = tableMeta;
+	// 	if (!TableSchema) return;
 
-		for (let i = 0; i < filters?.length; i++) {
-			if (Number.isInteger(filters[i].value)) {
-				filters[i].value = filters[i].value.toString();
-			}
-		}
+	// 	const aggregationColumns = TableSchema?.filter(column => column.Aggregation)?.map(column => column.Aggregation);
 
-		if (aggregationColumns?.length) {
-			const result = await client.query({
-				variables: {
-					esIndex,
-					filters: [...filters, ...defaultFilters],
-					aggs: Object.assign({}, ...aggregationColumns),
-				},
-				query: GET_ES_AGGS_LIST,
-			});
+	// 	for (let i = 0; i < filters?.length; i++) {
+	// 		if (Number.isInteger(filters[i].value)) {
+	// 			filters[i].value = filters[i].value.toString();
+	// 		}
+	// 	}
 
-			Controller.updateState({
-				footerProps: result?.data?.getESAggsList?.aggregations,
-			});
-		}
-	}
+	// 	if (aggregationColumns?.length) {
+	// 		const result = await client.query({
+	// 			variables: {
+	// 				esIndex,
+	// 				filters: [...filters, ...defaultFilters],
+	// 				aggs: Object.assign({}, ...aggregationColumns),
+	// 				search: tableStateValues.globalFilter ? `*${tableStateValues.globalFilter}*` : '*',
+	// 			},
+	// 			query: GET_ES_AGGS_LIST,
+	// 		});
 
-	useEffect(() => {
-		fetchFooterAggregationData();
-	}, [refetch, tableState.filters]);
+	// 		Controller.updateState({
+	// 			footerProps: result?.data?.getESAggsList?.aggregations,
+	// 		});
+	// 	}
+	// }
+
+	// useEffect(() => {
+	// 	fetchFooterAggregationData();
+	// }, [refetch, tableState.filters, tableState.globalFilter]);
 
 	useEffect(() => {
 		resetPagination.current = true;
@@ -257,12 +262,12 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				}
 
 				if (tableStateValues.onScrollCheck) {
-					const startIndex = Object.keys(tableStateValues.rowSelection).length
-					const newstate = tableStateValues.rowSelection
+					const startIndex = Object.keys(tableStateValues.rowSelection).length;
+					const newstate = tableStateValues.rowSelection;
 					for (let i = startIndex; i < startIndex + 50; i++) {
-						newstate[i] = true
+						newstate[i] = true;
 					}
-					Controller.setColumnCheck(newstate)
+					Controller.setColumnCheck(newstate);
 				}
 
 				callQuery(pagination);
