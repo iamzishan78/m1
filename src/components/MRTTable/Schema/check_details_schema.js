@@ -3,11 +3,11 @@ import React from 'react';
 
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import { set } from 'lodash';
+import { get, set } from 'lodash';
 
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import { CommonSchema, editFieldProps } from 'components/MRTTable/Schema/common_schema';
+import { CommonSchema, editFieldProps, validateRequiredString } from 'components/MRTTable/Schema/common_schema';
 import { copy, formatDate } from 'components/Shared/functions';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
@@ -47,18 +47,40 @@ const CheckDetailsMeta = {
 	onCreatingRowSave: async ({ row, table, values, exitCreatingMode }) => {
 		const client = globalStateController.getValue('client');
 
+		const Controller = tableController('CheckDetailsTable');
+
 		const obj = copy(row.original);
 
 		Object.entries(values).forEach(([key, value]) => {
 			set(obj, key, value);
 		});
 
+		const TableSchema = Controller.getValue('TableSchema');
+
+		let hasErrors = false;
+
+		TableSchema.filter(c => c.validate).forEach(({ id, validate }) => {
+			const value = get(obj, id);
+
+			const validationError = validate?.(value);
+
+			if (validationError) {
+				hasErrors = true;
+			}
+
+			Controller.setValidationErrors('mrt-row-create', id, validationError);
+		});
+
+		if (hasErrors) {
+			return;
+		}
+
 		await client.mutate({
 			variables: { checkDetail: { ...obj } },
 			mutation: UPDATE_CHECK_DETAIL,
 		});
 
-		tableController('CheckDetailsTable').clearEditing();
+		Controller.clearEditing();
 		table.setCreatingRow(null);
 		exitCreatingMode();
 
@@ -165,7 +187,8 @@ const CheckDetailsMeta = {
 				return <>{formatDate(row?.original?.date)}</>; // format date before showing
 			},
 
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'date'),
+			validate: validateRequiredString,
+			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'date', validateRequiredString),
 		},
 
 		{
@@ -174,7 +197,8 @@ const CheckDetailsMeta = {
 			accessorKey: 'product',
 			header: 'Product',
 
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text'),
+			validate: validateRequiredString,
+			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString),
 		},
 
 		{
@@ -183,7 +207,8 @@ const CheckDetailsMeta = {
 			accessorKey: 'disbursement',
 			header: 'Decimal Interest',
 
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number'),
+			validate: validateRequiredString,
+			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
 		},
 
 		{
@@ -192,7 +217,8 @@ const CheckDetailsMeta = {
 			accessorKey: 'interestType',
 			header: 'Type',
 
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text'),
+			validate: validateRequiredString,
+			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString),
 		},
 
 		{
@@ -201,7 +227,8 @@ const CheckDetailsMeta = {
 			accessorKey: 'price',
 			header: 'Avg Price',
 
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number'),
+			validate: validateRequiredString,
+			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
 		},
 
 		{
@@ -216,7 +243,8 @@ const CheckDetailsMeta = {
 				return value ? <p>{vf_number(value, TO_FIXED)}</p> : <p style={{ color: '#898989b0' }}>--</p>;
 			},
 
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number'),
+			validate: validateRequiredString,
+			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
 		},
 
 		{
@@ -225,7 +253,8 @@ const CheckDetailsMeta = {
 			accessorKey: 'grossPropertyValue',
 			header: 'Prop Gross Revenue',
 
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number'),
+			validate: validateRequiredString,
+			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
 		},
 
 		{
@@ -240,7 +269,8 @@ const CheckDetailsMeta = {
 				return value ? <p>{vf_number(value, TO_FIXED)}</p> : <p style={{ color: '#898989b0' }}>--</p>;
 			},
 
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number'),
+			validate: validateRequiredString,
+			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
 		},
 
 		{
@@ -249,7 +279,8 @@ const CheckDetailsMeta = {
 			accessorKey: 'grossOwnerValue',
 			header: 'Owner Gross Revenue',
 
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number'),
+			validate: validateRequiredString,
+			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
 		},
 
 		{
@@ -258,7 +289,8 @@ const CheckDetailsMeta = {
 			accessorKey: 'ownerTax',
 			header: 'Owner Tax Amt',
 
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number'),
+			validate: validateRequiredString,
+			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
 		},
 
 		{
@@ -267,7 +299,8 @@ const CheckDetailsMeta = {
 			accessorKey: 'taxType',
 			header: 'Tax Type',
 
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text'),
+			validate: validateRequiredString,
+			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString),
 		},
 
 		{
@@ -276,7 +309,8 @@ const CheckDetailsMeta = {
 			accessorKey: 'ownerDeducts',
 			header: 'Deduct Amt',
 
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number'),
+			validate: validateRequiredString,
+			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
 		},
 
 		{
@@ -285,7 +319,8 @@ const CheckDetailsMeta = {
 			accessorKey: 'deductType',
 			header: 'Deduct Cd',
 
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text'),
+			validate: validateRequiredString,
+			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString),
 		},
 
 		{
@@ -294,7 +329,8 @@ const CheckDetailsMeta = {
 			accessorKey: 'netOwnerValue',
 			header: 'Owner Net Rev',
 
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number'),
+			validate: validateRequiredString,
+			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
 		},
 		{
 			...CommonSchema.HIDDEN,

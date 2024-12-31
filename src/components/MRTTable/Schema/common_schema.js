@@ -300,8 +300,10 @@ export const CommonSchema = {
 	},
 };
 
+export const validateRequiredString = value => (!value?.length ? 'Required' : undefined);
+
 export const editFieldProps =
-	(tableKey, type, required = true) =>
+	(tableKey, type, validate, required = true) =>
 	({ cell, row }) => {
 		const Controller = tableController(tableKey);
 
@@ -314,9 +316,7 @@ export const editFieldProps =
 		const [value, setValue] = useState(cell.getValue());
 
 		const onBlur = event => {
-			const validateRequiredString = value => !!value.length;
-
-			const validationError = !validateRequiredString(event.currentTarget.value) ? 'Required' : undefined;
+			const validationError = validate?.(event.currentTarget.value);
 
 			const rowData = editedData[row.id] || {};
 
