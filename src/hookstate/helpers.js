@@ -96,6 +96,7 @@ export const handleMRTSchema = ({
 	_Schema,
 	tableKey,
 	esIndex,
+	modelName,
 	defaultFlterMode,
 	search,
 	globalFilter,
@@ -163,6 +164,7 @@ export const handleMRTSchema = ({
 						<ESAutoCompleteFilter
 							tableKey={tableKey}
 							esIndex={esIndex}
+							modelName={modelName}
 							column={{
 								field: column.columnDef.name,
 								isComposite: column.columnDef.isComposite,
@@ -200,6 +202,7 @@ export const handleMRTSchema = ({
 						<ESAutoCompleteFilter
 							tableKey={tableKey}
 							esIndex={esIndex}
+							modelName={modelName}
 							column={{
 								field: column.columnDef.name,
 								label: column.columnDef.header,

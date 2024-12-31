@@ -34,27 +34,31 @@ const useStyles = makeStyles(theme => {
 				mapGridCardActivated === 'min' ? '57vw' : mapGridCardActivated === 'exp' ? '96vw' : '57vw',
 			height: ({ mapGridCardActivated }) =>
 				mapGridCardActivated === 'min' ? '60vh' : mapGridCardActivated === 'exp' ? '91vh' : '60vh',
-			left: ({ mapGridCardActivated, expandGrid }) => (mapGridCardActivated === 'exp' ? '2vw' : '2vw'),
+			left: ({ mapGridCardActivated }) => (mapGridCardActivated === 'exp' ? '2vw' : '2vw'),
 			top: ({ mapGridCardActivated }) => (mapGridCardActivated === 'exp' ? '5vh' : '12vh'),
 			zIndex: '1300',
 			position: 'fixed',
 		},
 		dockMenu: ({ dockMenu, mapLayersPanelExtended }) => {
+			const extendedPanelMargin = 447;
+			const nonExtendedPanelMargin = 52;
+			const margin = 20;
+
 			let css = {},
-				leftMargin = mapLayersPanelExtended ? 477 : 52;
+				leftMargin = mapLayersPanelExtended ? extendedPanelMargin : nonExtendedPanelMargin;
 			if (dockMenu === 'bottom' || dockMenu === 'top') {
 				css = {
 					top: dockMenu === 'bottom' ? '50vh' : '6vh',
 					height: '50vh',
 				};
 				if (dockMenu === 'top') {
-					css = { ...css, width: `calc(100vw - ${leftMargin + 20}px)`, left: `${leftMargin + 20}px` };
+					css = { ...css, width: `calc(100vw - ${leftMargin + margin}px)`, left: `${leftMargin + margin}px` };
 				} else {
 					css = { ...css, width: `calc(100vw - ${leftMargin}px)`, left: `${leftMargin}px` };
 				}
 			} else if (dockMenu === 'left') {
 				css = {
-					left: `${leftMargin + 20}px`,
+					left: `${leftMargin + margin}px`,
 					width: '50vw',
 					height: '94vh',
 					top: '6vh',
@@ -68,8 +72,8 @@ const useStyles = makeStyles(theme => {
 				};
 			} else if (dockMenu === 'full') {
 				css = {
-					left: `${leftMargin + 20}px`,
-					width: `calc(100vw - ${leftMargin + 20}px)`,
+					left: `${leftMargin + margin}px`,
+					width: `calc(100vw - ${leftMargin + margin}px)`,
 					height: '94vh',
 					top: '6vh',
 				};
@@ -139,6 +143,8 @@ const useStyles = makeStyles(theme => {
 									return 'calc(100vh - 204px)';
 								} else if (dockMenu === 'full') {
 									return 'calc(100vh - 153px)';
+								} else {
+									return '';
 								}
 							},
 						},
@@ -150,6 +156,8 @@ const useStyles = makeStyles(theme => {
 									return userGridViewFilters?.length > 0 ? 'calc(100vh - 235px)' : 'calc(100vh - 200px)';
 								} else if (dockMenu === 'full') {
 									return userGridViewFilters?.length ? 'calc(100vh - 275px)' : 'calc(100vh - 183px)';
+								} else {
+									return '';
 								}
 							},
 						},
@@ -197,7 +205,10 @@ const useStyles = makeStyles(theme => {
 	};
 });
 
-function MapGridCard(props) {
+const SELECTED_DATASET_GRID_WIDTH = 12;
+const NON_SELECTED_DATASET_GRID_WIDTH = 10;
+
+function MapGridCard() {
 	// contexts
 	const [stateApp] = useContext(AppContext);
 
@@ -299,7 +310,11 @@ function MapGridCard(props) {
 									{[...platformDataWellsInitialData, ...snapGridSideBarData].map(row => {
 										const Icon = row.Icon;
 										return (
-											<FeatureFlag feature={FEATURES[row.featureFlag]} noCheck={!FEATURES[row.featureFlag]}>
+											<FeatureFlag
+												key={row.value}
+												feature={FEATURES[row.featureFlag]}
+												noCheck={!FEATURES[row.featureFlag]}
+											>
 												<ListItem
 													button
 													selected={row.value === searchTapValue.value}
@@ -352,8 +367,13 @@ function MapGridCard(props) {
 								</Grid>
 							)}
 
-						<Grid item md={mapControlsStateValues.selectedDataset ? 10 : 12}>
-							<div style={{ position: 'relative' }} classes={classes.gridTables}>
+						<Grid
+							item
+							md={
+								mapControlsStateValues.selectedDataset ? NON_SELECTED_DATASET_GRID_WIDTH : SELECTED_DATASET_GRID_WIDTH
+							}
+						>
+							<div style={{ position: 'relative' }} className={classes.gridTables}>
 								<Fragment>
 									{searchTapValue.value === 'well' && (
 										<MRTTable

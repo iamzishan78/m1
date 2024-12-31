@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 export const GET_ES_SIMPLE_SEARCH = gql`
 	query getESSimpleSearch(
 		$index: String
+		$modelName: String
 		$search: esSearchInput
 		$filters: [esFilterInput]
 		$sort: esSortInput
@@ -12,6 +13,7 @@ export const GET_ES_SIMPLE_SEARCH = gql`
 	) {
 		getESSimpleSearch(
 			index: $index
+			modelName: $modelName
 			search: $search
 			filters: $filters
 			sort: $sort

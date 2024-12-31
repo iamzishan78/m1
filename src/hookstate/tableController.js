@@ -4,7 +4,7 @@ import React from 'react';
 import { hookstate } from '@hookstate/core';
 import _, { get, isEqual, isEmpty, pull } from 'lodash';
 
-import { extractUniqueFilters } from 'components/Map/DeckGL/helpers/common';
+import { extractUniqueFilters, filterValidFilters } from 'components/Map/DeckGL/helpers/common';
 import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController';
 import CustomFieldText from 'components/MRTTable/Common/MetaData/CustomFieldText';
 import { metaDataColumnStateController } from 'components/MRTTable/Common/MetaData/MetaDataColumnsController';
@@ -168,6 +168,7 @@ const tableESStateControllerHandler = state => ({
 			defaultFilters,
 			customProps = {},
 			isClientSide = false,
+			modelName,
 			isSelectAllAllowed = true,
 			isAllRowsSelected,
 			search,
@@ -267,6 +268,7 @@ const tableESStateControllerHandler = state => ({
 			_Schema,
 			tableKey,
 			esIndex,
+			modelName,
 			defaultFlterMode,
 			search,
 			columnVirtualization,
@@ -313,6 +315,7 @@ const tableESStateControllerHandler = state => ({
 			tableKey,
 			pageSize,
 			isClientSide,
+			modelName,
 			data: { rows: [], total: 0 },
 			isLoading: false,
 			isFetching: false,
@@ -337,13 +340,14 @@ const tableESStateControllerHandler = state => ({
 			isTrackedList: [],
 		};
 
+		const _defaultFilters = defaultFilters || state?.defaultFilters?.get({ noproxy: true }) || [];
 		if (isClientSide) {
 			stateToUpdate = {
 				...stateToUpdate,
 				isSelectAllAllowed: isSelectAllAllowed || false,
 				isAllRowsSelected: isAllRowsSelected || false,
 				showColumnFilters: false,
-				defaultFilters: state?.defaultFilters?.get({ noproxy: true }) || defaultFilters || [],
+				defaultFilters: filterValidFilters(_defaultFilters),
 				filters: [],
 				sorting: [],
 				columnVisibility,
@@ -364,8 +368,8 @@ const tableESStateControllerHandler = state => ({
 				isSelectAllAllowed,
 				isAllRowsSelected,
 				showColumnFilters: formatedGridView?.filters ? true : false,
-				defaultFilters: defaultFilters || state?.defaultFilters?.get({ noproxy: true }) || [],
-				filters: extractUniqueFilters(combinedFilters),
+				defaultFilters: filterValidFilters(_defaultFilters),
+				filters: filterValidFilters(extractUniqueFilters(combinedFilters)),
 				layerIdentifier,
 				layerSchema,
 				sorting: formatedGridView?.sorting ? formatedGridView.sorting : [],

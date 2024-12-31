@@ -3,7 +3,7 @@ import React from 'react';
 import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
-import { AutoCompleteFilter } from 'components/Table/AutoCompleteFilter';
+import { AutoCompleteFilter } from 'components/Common/AutoCompleteFilter';
 
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 

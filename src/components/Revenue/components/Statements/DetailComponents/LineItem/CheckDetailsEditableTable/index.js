@@ -15,10 +15,10 @@ import moment from 'moment';
 import AutoCompleteESField from 'components/Shared/Forms/Fields/AutoCompleteESField';
 import { deepEqualObjects, copy } from 'components/Shared/functions';
 import { Grid as TableGrid, Input, Date } from 'components/Shared/SpreadsheetGrid';
-import { AutoCompleteFilter } from 'components/Table/AutoCompleteFilter';
-import TableHeader from 'components/Table/constants/check-details-header-schema';
-import { usetableStyles } from 'components/Table/Styles';
-import TableHOC from 'components/Table/TableHOC';
+import { AutoCompleteFilter } from 'components/Common/AutoCompleteFilter';
+// import TableHeader from 'components/Table/constants/check-details-header-schema';
+// import { usetableStyles } from 'components/Table/Styles';
+// import TableHOC from 'components/Table/TableHOC';
 
 // QUERIES
 
@@ -120,7 +120,8 @@ function CheckDetailsEditableTable(props) {
 		AnchorEl(null);
 	};
 
-	const classes = usetableStyles();
+	// const classes = usetableStyles();
+	const classes = makeStyles();
 	const tclasses = useStyles({ showPdfSection: props.showPdfSection });
 
 	const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
@@ -555,4 +556,4 @@ function CheckDetailsEditableTable(props) {
 	);
 }
 
-export default React.memo(TableHOC(CheckDetailsEditableTable), deepEqualObjects);
+export default React.memo(CheckDetailsEditableTable, deepEqualObjects);

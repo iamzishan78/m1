@@ -15,7 +15,6 @@ import { DrawerContextProvider } from 'components/Land/components/Agreements/det
 import MRTTable from 'components/MRTTable';
 import TabPanels from 'components/Shared/TabPanels';
 import Tags from 'components/Shared/Tagger';
-import ParcelAgreementTable from 'components/Table/Parcel/ParcelAgreementTable';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { jobController } from 'hookstate/jobStateController';
@@ -487,6 +486,18 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 		);
 	}
 
+	const runsheetOverrideMeta = useMemo(
+		() => ({
+			maxTableHeight: 'calc(50vh - 100px)',
+			defaultFilters: [
+				{ field: 'customLayerId', value: parcelObj?._id },
+				{ field: 'isRunsheetInstrument', value: 'true' },
+			],
+		}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[parcelObj?._id]
+	);
+
 	return parcelObj ? (
 		<DrawerContextProvider>
 			<Grid item sm={12} container className={classes.gridWidthScroll}>
@@ -522,17 +533,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 									</div>,
 								]}
 							/>,
-							<div className={classes.subContent}>
-								<ParcelAgreementTable
-									esIndex="runsheetinstrument_flat"
-									parent="ownersPerParcel"
-									targetLabel="parcelRunsheet"
-									customLayer={copy(parcelObj)}
-									dense
-									header={<RunsheetHeader />}
-									isCheckboxSticky={true}
-								/>
-							</div>,
+							<MRTTable name="RunsheetTable" overrideMeta={runsheetOverrideMeta} />,
 							<div className={classes.subContent}>
 								<RelatedWellsTable
 									id="relatedWellsTable"

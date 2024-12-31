@@ -4,6 +4,7 @@ import { Autocomplete, TextField } from '@mui/material';
 
 import { useLazyQuery } from '@apollo/client';
 import _, { debounce } from 'lodash';
+import PropTypes from 'prop-types';
 
 import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
 import vf_currency, { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
@@ -12,6 +13,9 @@ import vf_number from 'components/Shared/valueformatters/vf_number';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 
 import { tableController } from 'hookstate/tableController';
+
+const MIN_SEARCH_LENGTH = 700;
+const MIN_FILTER_LENGTH = 2;
 
 // format value to show filter value & option with $ sign as prefix
 const formatValue = (value, field) => {
@@ -30,6 +34,7 @@ const formatValue = (value, field) => {
 function ESAutoCompleteFilter({
 	tableKey,
 	esIndex,
+	modelName,
 	column: {
 		field,
 		label,
@@ -50,6 +55,7 @@ function ESAutoCompleteFilter({
 		field = field.split(',');
 	}
 	const searchMode = type === 'date' ? 'FE' : 'BE';
+	const searchText = useRef('');
 	const searchMapping = {
 		FE: {
 			size: 10000,
@@ -67,15 +73,10 @@ function ESAutoCompleteFilter({
 
 	const [options, setOptions] = useState([]);
 	const hasMore = useRef(true);
-	const searchText = useRef('');
 	const appendOptions = useRef(false);
 	const filtersRef = useRef(null);
 
 	const getFiltersAction = debounce(({ afterKey } = {}) => {
-		if (filtersData && multiple && filterValue?.length !== 0) {
-			return;
-		}
-
 		const { searchFields, filters, defaultFilters, advanceSearch, sorting, defaultSort, TableSchema } = tableController(
 			tableKey
 		).getValues([
@@ -124,6 +125,7 @@ function ESAutoCompleteFilter({
 			getFilters({
 				variables: {
 					esIndex,
+					modelName,
 					index: esIndex,
 					filters:
 						typeof field === 'string'
@@ -148,7 +150,7 @@ function ESAutoCompleteFilter({
 				},
 			});
 		}
-	}, 700);
+	}, MIN_SEARCH_LENGTH);
 
 	useEffect(() => {
 		const hits = filtersData?.getESSimpleFilter?.hits;
@@ -193,7 +195,7 @@ function ESAutoCompleteFilter({
 
 		if (type === 'price') {
 			options = hits.map(({ key }) => ({
-				label: vf_currency_to_fixed(key, 2),
+				label: vf_currency_to_fixed(key, MIN_FILTER_LENGTH),
 				value: key,
 			}));
 			options = _.uniqWith(options, (a, b) => a.label === b.label);
@@ -201,7 +203,7 @@ function ESAutoCompleteFilter({
 
 		if (type === 'decimal') {
 			options = hits.map(({ key }) => ({
-				label: vf_number(key, 2),
+				label: vf_number(key, MIN_FILTER_LENGTH),
 				value: key,
 			}));
 			options = _.uniqWith(options, (a, b) => a.label === b.label);
@@ -262,29 +264,29 @@ function ESAutoCompleteFilter({
 		}
 	} else if (type === 'price') {
 		if (typeof filterValue === 'number') {
-			filterValue = vf_currency_to_fixed(filterValue, 2);
+			filterValue = vf_currency_to_fixed(filterValue, MIN_FILTER_LENGTH);
 		} else if (typeof filterValue === 'object' && !Array.isArray(filterValue)) {
-			filterValue = vf_currency_to_fixed(filterValue, 2);
+			filterValue = vf_currency_to_fixed(filterValue, MIN_FILTER_LENGTH);
 		} else if (Array.isArray(filterValue)) {
-			filterValue = filterValue.map(val => vf_currency_to_fixed(val, 2));
+			filterValue = filterValue.map(val => vf_currency_to_fixed(val, MIN_FILTER_LENGTH));
 		} else if (typeof filterValue === 'boolean' || type === 'defaultFiltersOptions') {
 			// If there are default filters, use them
 			const requiredFilterValue = defaultFilterOptions?.find(option => option?.value === filterValue)?.label;
-			filterValue = vf_currency_to_fixed(requiredFilterValue, 2);
+			filterValue = vf_currency_to_fixed(requiredFilterValue, MIN_FILTER_LENGTH);
 		}
 	} else if (type === 'decimal' && filterValue !== '') {
 		if (typeof filterValue === 'number') {
-			filterValue = vf_number(filterValue, 2);
+			filterValue = vf_number(filterValue, MIN_FILTER_LENGTH);
 		} else if (typeof filterValue === 'object' && !Array.isArray(filterValue)) {
-			filterValue = vf_number(filterValue, 2);
+			filterValue = vf_number(filterValue, MIN_FILTER_LENGTH);
 		} else if (Array.isArray(filterValue)) {
-			filterValue = filterValue.map(val => vf_number(val, 2));
+			filterValue = filterValue.map(val => vf_number(val, MIN_FILTER_LENGTH));
 		} else if (typeof filterValue === 'boolean' || type === 'defaultFiltersOptions') {
 			// If there are default filters, use them
 			const requiredFilterValue = defaultFilterOptions?.find(option => option?.value === filterValue)?.label;
-			filterValue = vf_number(requiredFilterValue, 2);
+			filterValue = vf_number(requiredFilterValue, MIN_FILTER_LENGTH);
 		}
-		filterValue = vf_number(filterValue, 2);
+		filterValue = vf_number(filterValue, MIN_FILTER_LENGTH);
 	}
 	const id = Array.isArray(field) ? field.join(' ') : field;
 	// Filter out the options
@@ -392,5 +394,26 @@ function ESAutoCompleteFilter({
 		/>
 	);
 }
+
+ESAutoCompleteFilter.propTypes = {
+	tableKey: PropTypes.string.isRequired,
+	esIndex: PropTypes.string.isRequired,
+	modelName: PropTypes.string,
+	column: PropTypes.shape({
+		field: PropTypes.string.isRequired,
+		label: PropTypes.string.isRequired,
+		type: PropTypes.string.isRequired,
+		custom: PropTypes.object,
+		defaultFilterOptions: PropTypes.array,
+		setFilterValue: PropTypes.func,
+		filterValue: PropTypes.any,
+		filterSelectOptions: PropTypes.array,
+		isComposite: PropTypes.bool,
+	}).isRequired,
+	extendSearchQuery: PropTypes.func.isRequired,
+	multiple: PropTypes.bool.isRequired,
+	textFieldProps: PropTypes.object,
+	_value: PropTypes.any,
+};
 
 export default ESAutoCompleteFilter;
