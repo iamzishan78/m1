@@ -23,6 +23,7 @@ import { mapStateController } from 'hookstate/mapStateController';
 
 import LayerControls from './LayerControls';
 import { getLayerColor } from '../common';
+import { mapControlsController } from 'hookstate/mapControlsController';
 
 const useStyles = makeStyles(theme => ({
 	root: props => ({
@@ -200,6 +201,7 @@ const LayerItem = React.memo(props => {
 								{layerFilters?.length ? (
 									<IconButton>
 										<Badge
+											onClick={() => mapControlsController.updateState({ selectedControl: 'filter' })}
 											badgeContent={layerFilters?.length}
 											color="primary"
 											overlap="circular"
