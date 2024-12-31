@@ -151,6 +151,7 @@ export const handleMRTSchema = ({
 					tableKey,
 					name: schemaColumn.accessorKey || schemaColumn.id,
 					controller: tableController,
+					layerIdentifier,
 				});
 			}
 
@@ -254,6 +255,7 @@ export const handleMRTSchema = ({
 				tableKey,
 				name: schemaColumn.accessorKey || schemaColumn.id,
 				controller: tableController,
+				layerIdentifier,
 			});
 		}
 

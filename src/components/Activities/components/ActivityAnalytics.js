@@ -7,13 +7,14 @@ import { useLazyQuery } from '@apollo/client';
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
 
+import { getFilters } from 'components/AuditReporting/AuditReporting';
 import DonutChart from 'components/Shared/Charts/DonutChart';
 import StackedBarChart from 'components/Shared/Charts/StackedBarChart';
 
 import { GET_ACTIVITY_ANALYTICS } from 'graphQL/useQueryActivityAnalytics';
 import { GET_CONTACT_ANALYTICS } from 'graphQL/useQueryContactDetail';
 
-import { copy, getFilters } from 'utils/helper';
+import { copy } from 'utils/helper';
 
 import { getActivityFilters } from './ActivitiesDashboard';
 

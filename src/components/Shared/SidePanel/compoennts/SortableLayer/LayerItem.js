@@ -119,7 +119,7 @@ const LayerItem = React.memo(props => {
 		mapStateController.moved();
 	};
 
-	const layerFilters = mapView?.selectedMapView?.filters.filter(filter => {
+	const layerFilters = mapView?.selectedMapView?.filters?.filter(filter => {
 		const { dataSourceName } = filter || {};
 
 		// In case of shape files

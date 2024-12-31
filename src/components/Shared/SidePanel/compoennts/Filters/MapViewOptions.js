@@ -145,7 +145,7 @@ function MapViewOptions({ tableKey, allMapViews, defaultView }) {
 	useEffect(() => {
 		if (allMapViews) {
 			if (search) {
-				setFilterMapView(allMapViews.filter(view => view.name.toLowerCase().includes(search.toLowerCase())));
+				setFilterMapView(allMapViews.filter(view => view?.name?.toLowerCase()?.includes(search?.toLowerCase())));
 			} else {
 				setFilterMapView(allMapViews);
 			}
