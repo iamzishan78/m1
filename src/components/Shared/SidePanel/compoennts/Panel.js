@@ -574,10 +574,12 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 							{globalStateValues?.mapView?.showViewModal && (
 								<MapViewOptions
 									allMapViews={globalStateValues?.allMapViews || []}
-									defaultView={{
-										name: 'Standard Map View',
-										type: 'Default',
-									}}
+									defaultView={
+										globalStateValues?.allMapViews?.find(view => view?.type === 'Default') || {
+											name: 'Standard Map View',
+											type: 'Default',
+										}
+									}
 									fetchMapViews={fetchMapViews}
 								/>
 							)}

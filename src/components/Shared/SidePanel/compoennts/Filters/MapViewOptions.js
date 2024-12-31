@@ -240,18 +240,24 @@ function MapViewOptions({ tableKey, allMapViews, defaultView }) {
 							Standard
 						</AccordionSummary>
 						<AccordionDetails className={classes.details}>
-							<View
-								view={defaultView}
-								// setEditGridView={setEditGridView}
-								setViewName={setViewName}
-								// updateGridView={updateGridView}
-								userId={getUser?._id}
-								// updateFavouriteGridView={updateFavouriteGridView}
-								onClick={handleClick}
-								tableKey={tableKey}
-								defaultView={defaultView}
-								module={module}
-							/>
+							{filterMapView.map(
+								view =>
+									view.type === 'Default' && (
+										<View
+											view={view}
+											handleMapViewChange={handleMapViewChange}
+											// setEditGridView={setEditGridView}
+											setViewName={setViewName}
+											// updateGridView={updateGridView}
+											userId={getUser?._id}
+											// updateFavouriteGridView={updateFavouriteGridView}
+											onClick={handleClick}
+											tableKey={tableKey}
+											defaultView={defaultView}
+											module={module}
+										/>
+									)
+							)}
 						</AccordionDetails>
 					</Accordion>
 				</div>
