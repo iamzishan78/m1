@@ -6,6 +6,7 @@ import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { get } from 'lodash';
+import PropTypes from 'prop-types';
 
 import RelatedTractInterestTable from 'components/Common/RelatedTables/Tracts/tractInterests';
 import RelatedUnitInterestTable from 'components/Common/RelatedTables/Units/unitInterests';
@@ -21,7 +22,7 @@ const useStyles = makeStyles(theme => ({
 		width: '72vw',
 		height: '50vh',
 		position: 'absolute',
-		zIndex: 9999,
+		zIndex: '1300 !important',
 		bottom: 0,
 		left: 0,
 	},
@@ -192,6 +193,7 @@ function AssociatedFlowDetails(props) {
 									const Icon = row.Icon;
 									return (
 										<ListItem
+											key={row.value}
 											button
 											selected={row.value === searchTapValue.value}
 											onClick={() => handleSearchPanelChange(row)}
@@ -211,7 +213,7 @@ function AssociatedFlowDetails(props) {
 						</Grid>
 
 						<Grid item md={10} style={{ padding: '0px' }}>
-							<div style={{ position: 'relative' }} classes={classes.gridTables}>
+							<div style={{ position: 'relative' }} className={classes.gridTables}>
 								{searchTapValue.value === 'unitInterests' && (
 									<RelatedUnitInterestTable id="relatedUnitInterestsTable" overrideMeta={relatedUnitInterestOverride} />
 								)}
@@ -230,4 +232,9 @@ function AssociatedFlowDetails(props) {
 	);
 }
 
+AssociatedFlowDetails.propTypes = {
+	contacts: PropTypes.array.isRequired,
+	deal: PropTypes.object.isRequired,
+	dealSummaryData: PropTypes.object.isRequired,
+};
 export default AssociatedFlowDetails;
