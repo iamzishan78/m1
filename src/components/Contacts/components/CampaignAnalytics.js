@@ -5,8 +5,9 @@ import { makeStyles } from '@material-ui/styles';
 
 import { useLazyQuery } from '@apollo/client';
 import { get } from 'lodash';
+import PropTypes from 'prop-types';
 
-import vf_number from 'components/Shared/valueformatters/vf_number';
+import vf_number, { vf_number_to_precision } from 'components/Shared/valueformatters/vf_number';
 
 // Queries
 import { GET_CAMPAIGN_ANALYTICS } from 'graphQL/useQueryCampaignAnalytics';
@@ -53,6 +54,7 @@ const useStyles = makeStyles(() => ({
 export default function CampaignAnalytics({ appliedFilters, contactSearchQuery }) {
 	const classes = useStyles();
 	const [analyticsData, setAnalyticsData] = useState({});
+	const precision = 9;
 
 	const [getCampaignAnalytics] = useLazyQuery(GET_CAMPAIGN_ANALYTICS, {
 		fetchPolicy: 'no-cache',
@@ -76,7 +78,6 @@ export default function CampaignAnalytics({ appliedFilters, contactSearchQuery }
 				filters: getActivityAnalyticsFilters(appliedFilters),
 			},
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [contactSearchQuery, appliedFilters, getCampaignAnalytics]);
 
 	return (
@@ -136,7 +137,7 @@ export default function CampaignAnalytics({ appliedFilters, contactSearchQuery }
 							Total NRA
 						</Typography>
 						<Typography variant="h6" component="div" className={classes.cardNumberTypography}>
-							{vf_number(Math.round(get(analyticsData, 'totalNra', 0)))}
+							{vf_number_to_precision(get(analyticsData, 'totalNra'), precision)}
 						</Typography>
 					</CardContent>
 				</Card>
@@ -144,3 +145,8 @@ export default function CampaignAnalytics({ appliedFilters, contactSearchQuery }
 		</Grid>
 	);
 }
+
+CampaignAnalytics.propTypes = {
+	appliedFilters: PropTypes.object.isRequired,
+	contactSearchQuery: PropTypes.string.isRequired,
+};
