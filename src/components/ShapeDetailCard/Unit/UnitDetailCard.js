@@ -238,6 +238,7 @@ export default function UnitDetailCard(props) {
 	const RelatedDocumentsOverrideMeta = useMemo(
 		() => ({
 			maxTableHeight: 'calc(50vh - 100px)',
+			gridViewSettings: null,
 			defaultFilters: [{ field: 'shapeObj._id', value: uniObj?._id }],
 			deletedKeys: {
 				mainRecord: { key: '_id' },

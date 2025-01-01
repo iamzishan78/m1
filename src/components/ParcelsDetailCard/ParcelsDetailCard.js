@@ -465,6 +465,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	const RelatedDocumentsOverrideMeta = useMemo(
 		() => ({
 			maxTableHeight: 'calc(50vh - 100px)',
+			gridViewSettings: null,
 			defaultFilters: [{ field: 'shapeObj._id', value: parcelObj?._id }],
 			deletedKeys: {
 				mainRecord: { key: '_id' },
