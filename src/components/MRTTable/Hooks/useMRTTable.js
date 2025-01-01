@@ -340,7 +340,7 @@ const useMRTTable = tableKey => {
 
 									// Ignore "between" filters if both values are empty to prevent unnecessary backend calls
 									const areBothValuesEmpty = item?.value?.every?.(v => v === '');
-									if (!mode.includes('between') || !areBothValuesEmpty) {
+									if (!mode?.includes('between') || !areBothValuesEmpty) {
 										result.push(newItem);
 									}
 								});
