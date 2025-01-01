@@ -372,7 +372,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 				parentRecord: { value: parcelObj?._id },
 			},
 			customValue: { parentRecord: parcelObj?._id },
-			columnReordering: false,
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[parcelObj?._id]
@@ -473,7 +472,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 				parentRecord: { value: parcelObj?._id },
 			},
 			customValue: { parentRecord: parcelObj?._id },
-			columnReordering: false,
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[parcelObj?._id]

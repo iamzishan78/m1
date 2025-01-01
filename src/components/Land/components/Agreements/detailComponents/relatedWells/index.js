@@ -82,7 +82,6 @@ export default function LagalDescription({ uniObj, agreementId }) {
 				parentRecord: { value: agreementId },
 			},
 			customValue: { parentRecord: agreementId },
-			columnReordering: false,
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[agreementId]

@@ -118,8 +118,8 @@ const useMRTTable = tableKey => {
 			enableDensityToggle: false,
 			enableColumnFilterModes: true,
 			// enableColumnOrdering: true,
-			enableColumnOrdering: tableStateValues?.columnReordering ?? true,
-			enableGrouping: tableStateValues?.columnReordering ?? true,
+			enableColumnOrdering: tableStateValues?.enableColumnOrdering ?? true,
+			enableGrouping: tableStateValues?.enableGrouping ?? true,
 			enableColumnResizing: true,
 			enableRowSelection: !tableStateValues?.disableRowSelection,
 			enableColumnPinning: true,
@@ -212,7 +212,7 @@ const useMRTTable = tableKey => {
 						enableFacetedValues: tableStateValues?.enableFacetedValues,
 					}
 				: {
-						manualGroupinng: tableStateValues?.columnReordering ?? true,
+						manualGrouping: tableStateValues?.enableGrouping ?? true,
 						onGroupingChange: groupingFunc => {
 							const newGrouping = groupingFunc(tableStateValues.grouping);
 							tableState.grouping.set(newGrouping);

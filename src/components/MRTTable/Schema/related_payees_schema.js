@@ -17,7 +17,6 @@ const RelatedPaymentsMeta = {
 	maxTableHeight: 'calc(100vh - 550px)',
 	CustomToolBar: RelatedPayeesToolbar,
 	isInFiniteScroll: true,
-	columnReordering: false,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,

@@ -303,7 +303,6 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 				parentRecord: { value: contactData?._id },
 			},
 			customValue: { parentRecord: contactData?._id },
-			columnReordering: false,
 		}),
 		[contactData?._id]
 	);
