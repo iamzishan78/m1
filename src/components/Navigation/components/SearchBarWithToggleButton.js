@@ -1,6 +1,5 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
-import { useHistory } from 'react-router-dom';
+import { useLocation, useHistory } from 'react-router-dom';
 
 import { CircularProgress } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
@@ -17,7 +16,7 @@ import { popupController } from 'hookstate/popupStateController';
 import Search from './Search';
 import { AppContext } from '../../../AppContext';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		'& .MuiButtonGroup-root': {
 			width: '100%',
@@ -86,7 +85,6 @@ function GridIcon() {
 					mapControlsController.toggleMapGridCardAtived();
 					mapControlsController.updateState({
 						selectedDataset: { name: 'M1 Platform' },
-						expandedPanel: false,
 						layerGridCard: false,
 					});
 				}}

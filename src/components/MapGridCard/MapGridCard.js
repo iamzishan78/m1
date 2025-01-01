@@ -10,13 +10,13 @@ import MRTTable from 'components/MRTTable';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
+import { globalStateController } from 'hookstate/globalStateController';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 import { tableGlobalController } from 'hookstate/tableController';
 
 import { AppContext } from '../../AppContext';
 import { platformDataInitialData, platformDataWellsInitialData, snapGridSideBarData } from './components/data';
-import { globalStateController } from 'hookstate/globalStateController';
 
 const useStyles = makeStyles(theme => {
 	return {
@@ -41,8 +41,8 @@ const useStyles = makeStyles(theme => {
 			position: 'fixed',
 		},
 		dockMenu: ({ dockMenu, mapLayersPanelExtended }) => {
-			const extendedPanelMargin = 447;
-			const nonExtendedPanelMargin = 52;
+			const extendedPanelMargin = 485;
+			const nonExtendedPanelMargin = 60;
 			const margin = 20;
 
 			let css = {},
