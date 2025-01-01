@@ -15,6 +15,8 @@ import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
 import { slidoutStateController } from 'hookstate/slidoutStateController';
 import { tableGlobalController } from 'hookstate/tableController';
 
+import { history } from 'store';
+
 const esIndex = 'documents_flat';
 
 const onClickedRow = selectedRow => {
@@ -30,6 +32,7 @@ const onClickedRow = selectedRow => {
 		newEntity: false,
 		title: 'File Detail',
 	});
+	history.push(`/documents/details/${selectedRow?._id}/?tenant=m1dev`);
 };
 
 const onCustomKeyChange = async (client, row, value, item) => {
