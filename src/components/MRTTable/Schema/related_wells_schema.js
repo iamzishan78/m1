@@ -31,9 +31,6 @@ const RelatedWellsMeta = {
 			header: 'Well',
 			name: 'well.wellName',
 			accessorKey: 'well.wellName',
-			filter: false,
-			enableColumnFilter: false,
-			enableSorting: false,
 			Cell: ({ row }) => {
 				return (
 					<div
