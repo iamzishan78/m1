@@ -227,7 +227,9 @@ const tableESStateControllerHandler = state => ({
 		const dataSourceViews = selectedMapViewFilters?.filter(view => layerIdentifier === view.dataSourceName);
 		const mapViewFilters =
 			dataSourceViews
-				?.filter(view => view?.filterValues?.length !== 0)
+				?.filter(view => {
+					return view?.filterValues?.length > 0 || ['empty', 'notEmpty'].includes(view?.filterType);
+				})
 				?.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)) || [];
 
 		if (gridViewSettings) {
@@ -488,7 +490,9 @@ const tableESStateControllerHandler = state => ({
 
 		const columnFilterModesFnRefs = globalStateController.getValue('columnFilterModesFnRefs');
 
-		columnFilterModesFnRefs?.[state.tableKey.get({ noproxy: true })]?.[column]?.(mode);
+		if (!columnFilterModesFnRefs?.[state.tableKey.get({ noproxy: true })]?.[column]?.intiated) {
+			columnFilterModesFnRefs?.[state.tableKey.get({ noproxy: true })]?.[column]?.onSelectFilterMode(mode);
+		}
 	},
 
 	setSelectAll: value => {
