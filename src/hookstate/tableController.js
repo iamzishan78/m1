@@ -220,17 +220,13 @@ const tableESStateControllerHandler = state => ({
 
 		let gridView = {};
 
-		const mapView = globalStateController.getValue('mapView');
-		const { filters } = mapView?.selectedMapView || {};
-		const selectedMapViewFilters = filters || [];
+		const mapView = globalStateController.getValue('mapView') || {};
+		const selectedMapViewFilters = mapView.selectedMapView?.filters || [];
 
-		const dataSourceViews = selectedMapViewFilters?.filter(view => layerIdentifier === view.dataSourceName);
-		const mapViewFilters =
-			dataSourceViews
-				?.filter(view => {
-					return view?.filterValues?.length > 0 || ['empty', 'notEmpty'].includes(view?.filterType);
-				})
-				?.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)) || [];
+		const mapViewFilters = selectedMapViewFilters
+			.filter(view => view.dataSourceName === layerIdentifier)
+			.filter(view => view?.filterValues?.length > 0 || ['empty', 'notEmpty'].includes(view?.filterType))
+			.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues));
 
 		if (gridViewSettings) {
 			// Fetch user-specific or default grid views based on provided settings and overrides.
@@ -305,17 +301,16 @@ const tableESStateControllerHandler = state => ({
 			pull(defaultColumnsOrdering, 'over-ride-checkbox');
 			pull(defaultColumnsPinning.left, 'over-ride-checkbox');
 		}
-		const formattedmapViewsFilters = mapViewFilters
-			.map(filter => ({
-				...filter,
-				field: filter.field.replace('.keyword', ''),
-				value: filter.value,
-			}))
-			.filter(filter => filter.value);
 
-		const combinedFilters = formatedGridView?.filters
-			? [...formatedGridView.filters, ...formattedmapViewsFilters]
-			: [...formattedmapViewsFilters];
+		const formattedMapViewFilters = mapViewFilters
+			.map(({ field, value, ...rest }) => ({
+				...rest,
+				field: field.replace('.keyword', ''),
+				value,
+			}))
+			.filter(({ value }) => Boolean(value));
+
+		const combinedFilters = [...(formatedGridView?.filters || []), ...formattedMapViewFilters];
 
 		let stateToUpdate = {
 			...rest,
