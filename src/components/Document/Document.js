@@ -45,11 +45,6 @@ export default function DocumentComponent() {
 
 	const [getDbData, { data: elasticData }] = useLazyQuery(GET_DB_DATA, {
 		fetchPolicy: 'no-cache',
-		onCompleted: wellsData => {
-			if (wellsData?.getDbData?.hits) {
-				setFoundWells(wellsData.getDbData.hits);
-			}
-		},
 	});
 
 	// Function to extract the document ID from the URL
@@ -93,12 +88,12 @@ export default function DocumentComponent() {
 	  }, [location]);
 	
 	  useEffect(() => {
-		if (elasticData?.getESSimpleSearch?.hits?.length) {
+		if (elasticData?.getDbData?.hits?.length) {
 			tableGlobalController.updateState({
 				documentDialog: {
 					type: 'createAndAddDocument',
 					tableKey: 'DocumentTable',
-					selectedRow: elasticData?.getESSimpleSearch?.hits[0],
+					selectedRow: elasticData?.getDbData?.hits[0],
 				},
 			});
 		

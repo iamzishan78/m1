@@ -32,7 +32,7 @@ const onClickedRow = selectedRow => {
 		newEntity: false,
 		title: 'File Detail',
 	});
-	history.push(`/documents/details/${selectedRow?._id}/?tenant=m1dev`);
+	history.push(`/documents/details/${selectedRow?._id}`);
 };
 
 const onCustomKeyChange = async (client, row, value, item) => {
