@@ -212,7 +212,7 @@ const useMRTTable = tableKey => {
 						enableFacetedValues: tableStateValues?.enableFacetedValues,
 					}
 				: {
-						manualGroupinng: tableStateValues?.columnReordering ?? true,
+						manualGrouping: tableStateValues?.columnReordering ?? true,
 						onGroupingChange: groupingFunc => {
 							const newGrouping = groupingFunc(tableStateValues.grouping);
 							tableState.grouping.set(newGrouping);
