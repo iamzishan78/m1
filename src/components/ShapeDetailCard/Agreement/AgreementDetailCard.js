@@ -296,6 +296,7 @@ export default function AgreementDetailCard(props) {
 		() => ({
 			maxTableHeight: 'calc(50vh - 100px)',
 			gridViewSettings: null,
+			fetchMetaData: null,
 			defaultFilters: [{ field: 'shapeObj._id', value: uniObj?._id }],
 			deletedKeys: {
 				mainRecord: { key: '_id' },

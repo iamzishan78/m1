@@ -466,6 +466,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 		() => ({
 			maxTableHeight: 'calc(50vh - 100px)',
 			gridViewSettings: null,
+			fetchMetaData: null,
 			defaultFilters: [{ field: 'shapeObj._id', value: parcelObj?._id }],
 			deletedKeys: {
 				mainRecord: { key: '_id' },
