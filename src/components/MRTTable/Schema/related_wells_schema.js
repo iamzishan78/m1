@@ -1,3 +1,7 @@
+/* eslint-disable react/prop-types */
+
+import React from 'react';
+
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map';
@@ -93,6 +97,27 @@ const RelatedWellsMeta = {
 			header: 'Well Status',
 			name: 'wellStatus.keyword',
 			accessorKey: 'wellStatus',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			header: 'Last 12 (BOE)',
+			name: 'lastTwelveMonthBOE',
+			accessorKey: 'lastTwelveMonthBOE',
+		},
+
+		{
+			...CommonSchema.NUMBER_COLUMN,
+			header: 'Measured Depth (ft)',
+			name: 'measuredDepth',
+			accessorKey: 'measuredDepth',
+		},
+
+		{
+			...CommonSchema.NUMBER_COLUMN,
+			header: 'Lateral Length (ft)',
+			name: 'lateralLength',
+			accessorKey: 'lateralLength',
 		},
 
 		{
