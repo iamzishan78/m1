@@ -59,11 +59,6 @@ export default [
 	{
 		plugins: {
 			import: pluginImport,
-			'react-hooks': {
-				rules: {
-					'exhaustive-deps': 'error',
-				},
-			},
 		},
 	},
 	{
