@@ -647,7 +647,7 @@ const tableESStateControllerHandler = state => ({
 							? tableState.filterModes[filter.field.replace('.keyword', '')]?.mode
 							: existingFilter?.filterType
 								? existingFilter.filterType
-								: tableState?.esIndex === 'shapefile_flat'
+								: tableState?.esIndex === 'shapefile_flat' || typeof filter.value === 'object'
 									? 'multiselect'
 									: 'singleselect',
 
