@@ -277,6 +277,7 @@ export const CommonSchema = {
 		isSearchField: false,
 		enableSorting: true,
 		type: 'number',
+		subType: 'price',
 		Cell: ({ row, column }) => {
 			const value = row.getValue(column.id);
 
