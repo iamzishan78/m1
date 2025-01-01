@@ -8,7 +8,7 @@ import MRTTable from 'components/MRTTable';
 import { slidoutStateController } from 'hookstate/slidoutStateController';
 import { tableGlobalController } from 'hookstate/tableController';
 
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -42,11 +42,12 @@ export default function DocumentComponent() {
 	const classes = useStyles();
   	const location = useLocation();
 
-	const [getESSimpleSearch, { data: elasticData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+
+	const [getDbData, { data: elasticData }] = useLazyQuery(GET_DB_DATA, {
 		fetchPolicy: 'no-cache',
 		onCompleted: wellsData => {
-			if (wellsData?.getESSimpleSearch?.hits) {
-				setFoundWells(wellsData.getESSimpleSearch.hits);
+			if (wellsData?.getDbData?.hits) {
+				setFoundWells(wellsData.getDbData.hits);
 			}
 		},
 	});
@@ -73,7 +74,7 @@ export default function DocumentComponent() {
 		// Set the initial document ID from the URL on page load or refresh
 		const idFromUrl = getDocIdFromUrl();
 		if (idFromUrl) {
-			getESSimpleSearch({
+			getDbData({
 				variables: {
 					index: 'documents_flat',
 					pagination: {
