@@ -138,16 +138,9 @@ const RelatedWellsMeta = {
 			accessorKey: 'coordinates',
 			header: '',
 			size: 70,
-			Cell: ({ row }) => {
-				return (
-					<FlyToMap
-						id={row?.original?.well?.globalWell}
-						type="shape"
-						shape="wells"
-						disabled={!row?.original?.well?.globalWell}
-					/>
-				);
-			},
+			Cell: ({ row }) => (
+				<FlyToMap id={row?.original?.well?.globalWell} type="wells" disabled={!row?.original?.well?.globalWell} />
+			),
 		},
 	],
 };
