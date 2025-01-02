@@ -30,9 +30,6 @@ const RelatedWellsMeta = {
 			header: 'Well',
 			name: 'well.wellName',
 			id: 'well.wellName',
-			filter: false,
-			enableColumnFilter: false,
-			enableSorting: false,
 			Cell: ({ row }) => {
 				return (
 					<div
@@ -99,6 +96,27 @@ const RelatedWellsMeta = {
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
+			header: 'Last 12 (BOE)',
+			name: 'lastTwelveMonthBOE',
+			id: 'lastTwelveMonthBOE',
+		},
+
+		{
+			...CommonSchema.NUMBER_COLUMN,
+			header: 'Measured Depth (ft)',
+			name: 'measuredDepth',
+			id: 'measuredDepth',
+		},
+
+		{
+			...CommonSchema.NUMBER_COLUMN,
+			header: 'Lateral Length (ft)',
+			name: 'lateralLength',
+			id: 'lateralLength',
+		},
+
+		{
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const id = row.getValue('_id');
@@ -119,16 +137,9 @@ const RelatedWellsMeta = {
 			id: 'coordinates',
 			header: '',
 			size: 70,
-			Cell: ({ row }) => {
-				return (
-					<FlyToMap
-						id={row?.original?.well?.globalWell}
-						type="shape"
-						shape="wells"
-						disabled={!row?.original?.well?.globalWell}
-					/>
-				);
-			},
+			Cell: ({ row }) => (
+				<FlyToMap id={row?.original?.well?.globalWell} type="wells" disabled={!row?.original?.well?.globalWell} />
+			),
 		},
 	],
 };

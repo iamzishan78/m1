@@ -238,13 +238,14 @@ export default function UnitDetailCard(props) {
 	const RelatedDocumentsOverrideMeta = useMemo(
 		() => ({
 			maxTableHeight: 'calc(50vh - 100px)',
+			gridViewSettings: null,
+			fetchMetaData: null,
 			defaultFilters: [{ field: 'shapeObj._id', value: uniObj?._id }],
 			deletedKeys: {
 				mainRecord: { key: '_id' },
 				parentRecord: { value: uniObj?._id },
 			},
 			customValue: { parentRecord: uniObj?._id },
-			columnReordering: false,
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[uniObj?._id]
@@ -261,7 +262,6 @@ export default function UnitDetailCard(props) {
 				parentRecord: { value: uniObj?._id },
 			},
 			customValue: { parentRecord: uniObj?._id },
-			columnReordering: false,
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[uniObj?._id]
@@ -352,8 +352,9 @@ export default function UnitDetailCard(props) {
 									</div>,
 								]}
 							/>,
-							<MRTTable name="RunsheetTable" overrideMeta={runsheetOverrideMeta} />,
-							,
+							<div>
+								<MRTTable name="RunsheetTable" overrideMeta={runsheetOverrideMeta} />
+							</div>,
 							<TabPanels
 								value={selectedTab}
 								panels={[

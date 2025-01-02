@@ -295,13 +295,14 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 	const RelatedDocumentsOverrideMeta = useMemo(
 		() => ({
 			maxTableHeight: 'calc(50vh - 100px)',
+			gridViewSettings: null,
+			fetchMetaData: null,
 			defaultFilters: [{ field: 'contacts._id', value: contactData?._id }],
 			deletedKeys: {
 				mainRecord: { key: '_id' },
 				parentRecord: { value: contactData?._id },
 			},
 			customValue: { parentRecord: contactData?._id },
-			columnReordering: false,
 		}),
 		[contactData?._id]
 	);

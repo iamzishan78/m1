@@ -93,7 +93,6 @@ const RelatedAgreements = props => {
 				parentRecord: { value: uniObj?._id },
 			},
 			customValue: { parentRecord: uniObj?._id },
-			columnReordering: false,
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[uniObj?._id]

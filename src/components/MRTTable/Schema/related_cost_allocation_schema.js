@@ -21,7 +21,6 @@ const RelatedCostAllocationsMeta = {
 	maxTableHeight: 'calc(100vh - 550px)',
 	CustomToolBar: RelatedCostAllocationsToolbar,
 	isInFiniteScroll: true,
-	columnReordering: false,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
