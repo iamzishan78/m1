@@ -62,7 +62,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-export default function LagalDescription({ uniObj }) {
+export default function LagalDescription({ uniObj, agreementId }) {
 	const classes = useStyles();
 	const customClasses = customStyles();
 	const tableState = tableController('RelatedWellsTable').useState(['data']).stateValues;
@@ -75,17 +75,16 @@ export default function LagalDescription({ uniObj }) {
 		() => ({
 			tabLabels: ['Agreement Wells', 'Potential Wells'],
 			maxTableHeight: 'calc(50vh - 100px)',
-			defaultFilters: [{ field: 'shape._id', value: uniObj?._id }],
+			defaultFilters: [{ field: 'shape._id', value: agreementId }],
 			customProps: { customLayer: uniObj, shapeType: 'Agreement' },
 			deletedKeys: {
 				mainRecord: { key: '_id' },
-				parentRecord: { value: uniObj?._id },
+				parentRecord: { value: agreementId },
 			},
-			customValue: { parentRecord: uniObj?._id },
-			columnReordering: false,
+			customValue: { parentRecord: agreementId },
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[uniObj?._id]
+		[agreementId]
 	);
 
 	return (

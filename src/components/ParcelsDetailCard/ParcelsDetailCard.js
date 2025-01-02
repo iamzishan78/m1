@@ -372,7 +372,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 				parentRecord: { value: parcelObj?._id },
 			},
 			customValue: { parentRecord: parcelObj?._id },
-			columnReordering: false,
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[parcelObj?._id]
@@ -465,13 +464,14 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	const RelatedDocumentsOverrideMeta = useMemo(
 		() => ({
 			maxTableHeight: 'calc(50vh - 100px)',
+			gridViewSettings: null,
+			fetchMetaData: null,
 			defaultFilters: [{ field: 'shapeObj._id', value: parcelObj?._id }],
 			deletedKeys: {
 				mainRecord: { key: '_id' },
 				parentRecord: { value: parcelObj?._id },
 			},
 			customValue: { parentRecord: parcelObj?._id },
-			columnReordering: false,
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[parcelObj?._id]

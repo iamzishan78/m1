@@ -1,3 +1,7 @@
+/* eslint-disable react/prop-types */
+
+import React from 'react';
+
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map';
@@ -32,9 +36,6 @@ const RelatedWellsMeta = {
 			header: 'Well',
 			name: 'well.wellName',
 			accessorKey: 'well.wellName',
-			filter: false,
-			enableColumnFilter: false,
-			enableSorting: false,
 			Cell: ({ row }) => {
 				return (
 					<div
@@ -118,6 +119,27 @@ const RelatedWellsMeta = {
 			accessorKey: 'lateralLength',
 		},
 		{
+			...CommonSchema.COMMON_COLUMN,
+			header: 'Last 12 (BOE)',
+			name: 'lastTwelveMonthBOE',
+			accessorKey: 'lastTwelveMonthBOE',
+		},
+
+		{
+			...CommonSchema.NUMBER_COLUMN,
+			header: 'Measured Depth (ft)',
+			name: 'measuredDepth',
+			accessorKey: 'measuredDepth',
+		},
+
+		{
+			...CommonSchema.NUMBER_COLUMN,
+			header: 'Lateral Length (ft)',
+			name: 'lateralLength',
+			accessorKey: 'lateralLength',
+		},
+
+		{
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const id = row.getValue('_id');
@@ -138,16 +160,9 @@ const RelatedWellsMeta = {
 			accessorKey: 'coordinates',
 			header: '',
 			size: 70,
-			Cell: ({ row }) => {
-				return (
-					<FlyToMap
-						id={row?.original?.well?.globalWell}
-						type="shape"
-						shape="wells"
-						disabled={!row?.original?.well?.globalWell}
-					/>
-				);
-			},
+			Cell: ({ row }) => (
+				<FlyToMap id={row?.original?.well?.globalWell} type="wells" disabled={!row?.original?.well?.globalWell} />
+			),
 		},
 	],
 };

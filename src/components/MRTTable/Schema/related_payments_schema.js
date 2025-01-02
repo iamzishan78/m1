@@ -40,7 +40,6 @@ const RelatedPaymentsMeta = {
 	maxTableHeight: 'calc(100vh - 550px)',
 	CustomToolBar: RelatedPaymentsToolbar,
 	isInFiniteScroll: true,
-	columnReordering: false,
 	enableRowSelected: true,
 	hasMultiGrids: true,
 	TableSchema: [

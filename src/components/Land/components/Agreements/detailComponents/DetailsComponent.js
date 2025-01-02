@@ -700,7 +700,11 @@ export function DetailComponents(props) {
 							</div>
 							<div style={{ backgroundColor: '#f3f3f3 !important', height: 24 }} />
 							<div id="related-wells-div" className={classes.tabDetailSection} ref={el => sectionsRef.current.push(el)}>
-								<RelatedWells uniObj={uniObj} shapeSummaryDetails={dataShapeSummaryDetails?.shapeSummaryDetails} />
+								<RelatedWells
+									agreementId={agreementId}
+									uniObj={uniObj}
+									shapeSummaryDetails={dataShapeSummaryDetails?.shapeSummaryDetails}
+								/>
 							</div>
 							<div style={{ backgroundColor: '#f3f3f3 !important', height: 24 }} />
 							<div id="related-docs-div" className={classes.tabDetailSection} ref={el => sectionsRef.current.push(el)}>
