@@ -19,7 +19,7 @@ import LayerIcon from '@material-ui/icons/Layers';
 import { useLazyQuery } from '@apollo/client';
 
 // contexts
-import { getPolygonString } from 'components/Shared/functions';
+import { copy, getPolygonString } from 'components/Shared/functions';
 
 import { GET_PARCELS_FILES_COUNT } from 'graphQL/useQueryGetParcelFiles';
 import { SHAPEWELLSCOUNT } from 'graphQL/useQueryShapeWellsCount';
@@ -35,7 +35,7 @@ import DescriptionIcon from '../WellCard/components/svgIcons/DescriptionIcon';
 import OwnershipIcon from '../WellCard/components/svgIcons/OwnershipIcon';
 import WellIcon from '../WellCard/components/svgIcons/WellIcon';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	card: {
 		borderStyle: 'none',
 		height: '100%',
@@ -111,7 +111,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-export default function ParcelCard(props) {
+export default function ParcelCard() {
 	const parcelPLSS = useRef(false);
 
 	// contexts
@@ -134,6 +134,7 @@ export default function ParcelCard(props) {
 	});
 	const documentCount = dataParcelFiles?.getParcelFilesCount || 0;
 	const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
+	// console.log('🚀 ~ ParcelCard ~ dataCustomLayer:', dataCustomLayer);
 
 	const selectedParcel = popupState?.stateValues?.selectedParcel;
 
@@ -145,6 +146,8 @@ export default function ParcelCard(props) {
 
 	useEffect(() => {
 		if (selectedParcel) {
+			console.log(selectedParcel.id);
+
 			getCustomLayer({
 				variables: {
 					id: selectedParcel.id,
@@ -180,6 +183,9 @@ export default function ParcelCard(props) {
 			if (typeof shape === 'string') {
 				shape = JSON.parse(shape);
 			}
+			if (dataCustomLayer.customLayer.shapeJson) {
+				shape = copy(dataCustomLayer.customLayer.shapeJson);
+			}
 			setParcelObj({
 				...dataCustomLayer.customLayer,
 				shape: shape,
@@ -206,6 +212,7 @@ export default function ParcelCard(props) {
 			<div style={{ height: '100%', padding: '9px' }}>
 				<Card>
 					<CardActions classes={{ root: classes.cardAction }}>
+						{/* eslint-disable-next-line no-magic-numbers */}
 						<Button className={classes.button} onClick={() => handleOpenDetails(3)}>
 							<div className={classes.iconContainer}>
 								<WellIcon htmlColor="black" viewBox="0 0 36 31" fontSize="large" />
@@ -228,6 +235,7 @@ export default function ParcelCard(props) {
 								</Typography>
 							</div>
 						</Button>
+						{/* eslint-disable-next-line no-magic-numbers */}
 						<Button className={classes.button} onClick={() => handleOpenDetails(4)}>
 							<div className={classes.iconContainer}>
 								<DescriptionIcon htmlColor="black" viewBox="5 0 17 26" fontSize="large" />

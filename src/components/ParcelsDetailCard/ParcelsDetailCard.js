@@ -1,10 +1,10 @@
+/* eslint-disable react/jsx-key */
 import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import GavelIcon from '@material-ui/icons/Gavel';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { set } from 'lodash';
@@ -216,6 +216,7 @@ const useStyles = makeStyles(theme => ({
 
 const setSelectedTab = tableGlobalController.setSelectedTab;
 
+// eslint-disable-next-line react/prop-types
 export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	const classes = useStyles();
 	const dispatch = useDispatch();
@@ -233,6 +234,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	const [updateCustomLayer, { data: updatedParcel, loading: updatingParcel }] = useMutation(UPDATECUSTOMLAYER);
 
 	const [getCustomLayer, { data: dataCustomLayer, refetch: refetchCustomLayer }] = useLazyQuery(CUSTOMLAYER);
+	console.log('🚀 ~ ParcelsDetailCard ~ dataCustomLayer:', dataCustomLayer);
 
 	const globalState = tableGlobalController.useState(['refetch']);
 	const globalStateValues = globalState.stateValues;
@@ -268,6 +270,9 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 			let shape = copy(dataCustomLayer.customLayer.shape);
 			if (typeof shape === 'string') {
 				shape = JSON.parse(shape);
+			}
+			if (dataCustomLayer.customLayer.shapeJson) {
+				shape = copy(dataCustomLayer.customLayer.shapeJson);
 			}
 			const data = {
 				...dataCustomLayer.customLayer,
@@ -373,7 +378,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 			},
 			customValue: { parentRecord: parcelObj?._id },
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[parcelObj?._id]
 	);
 
@@ -473,18 +477,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 			},
 			customValue: { parentRecord: parcelObj?._id },
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[parcelObj?._id]
 	);
-
-	function RunsheetHeader() {
-		return (
-			<div className={classes.documentHeader}>
-				<GavelIcon />
-				<span>RUNSHEET INSTRUMENTS</span>
-			</div>
-		);
-	}
 
 	const runsheetOverrideMeta = useMemo(
 		() => ({
@@ -494,7 +488,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 				{ field: 'isRunsheetInstrument', value: 'true' },
 			],
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[parcelObj?._id]
 	);
 
