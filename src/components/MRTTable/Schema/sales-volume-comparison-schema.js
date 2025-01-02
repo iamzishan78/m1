@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
 
@@ -20,20 +23,20 @@ const SalesVolumeComparisonMeta = {
 		{
 			...CommonSchema.MONGO_ID,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 		// Property Name column
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'property.name.keyword',
-			accessorKey: 'property.name',
+			id: 'property.name',
 			header: 'Property Name',
 		},
 		// Property Number column
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.number.keyword',
-			accessorKey: 'property.number',
+			id: 'property.number',
 			header: 'Property Number',
 			isExternalFilter: true,
 		},
@@ -41,7 +44,6 @@ const SalesVolumeComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'wells.apiNumber.keyword',
-			accessorFn: row => row?.wells?.apiNumber,
 			id: 'wells.apiNumber',
 			header: 'Well API',
 			Cell: ({ row }) => {
@@ -53,7 +55,6 @@ const SalesVolumeComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'wells.wellName.keyword',
-			accessorFn: row => row?.wells?.wellName,
 			id: 'wells.wellName',
 			header: 'Well Name',
 			Cell: ({ row }) => {
@@ -65,7 +66,7 @@ const SalesVolumeComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'date',
-			accessorKey: 'date',
+			id: 'date',
 			header: 'Sales Date',
 			isHiddenFieldExport: true,
 			type: 'date',
@@ -77,7 +78,7 @@ const SalesVolumeComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'product.keyword',
-			accessorKey: 'product',
+			id: 'product',
 			header: 'Product',
 			isHiddenFieldExport: true,
 		},
@@ -85,7 +86,7 @@ const SalesVolumeComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'reportedVolume',
-			accessorKey: 'reportedVolume',
+			id: 'reportedVolume',
 			header: 'Reported Volume',
 			isHiddenFieldExport: true,
 		},
@@ -93,7 +94,7 @@ const SalesVolumeComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'grossPropertyVolume',
-			accessorKey: 'grossPropertyVolume',
+			id: 'grossPropertyVolume',
 			header: 'Statement Volume',
 			isHiddenFieldExport: true,
 		},
@@ -101,7 +102,7 @@ const SalesVolumeComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'wells.production.data.ReportDate',
-			accessorKey: 'wells.production.data.ReportDate',
+			id: 'wells.production.data.ReportDate',
 			header: 'Report Date',
 			type: 'date',
 		},
@@ -109,21 +110,21 @@ const SalesVolumeComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'wells.production.data.allocatedOil',
-			accessorKey: 'wells.production.data.allocatedOil',
+			id: 'wells.production.data.allocatedOil',
 			header: 'Oil Production',
 		},
 		// Gas Production column
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'wells.production.data.allocatedGas',
-			accessorKey: 'wells.production.data.allocatedGas',
+			id: 'wells.production.data.allocatedGas',
 			header: 'Gas Production',
 		},
 		// Over/Short column with custom cell rendering to display color-coded value
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'data.allocatedWater',
-			accessorKey: 'overShort',
+			id: 'overShort',
 			header: 'Over/Short',
 			isSearchField: false, // disabled searching field
 			enableSorting: false, // disabled sorting field
@@ -145,7 +146,7 @@ const SalesVolumeComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'data.allocatedWater',
-			accessorKey: 'difference',
+			id: 'difference',
 			header: '% Difference',
 			isSearchField: false, // disabled searching field
 			enableSorting: false, // disabled sorting field
@@ -167,7 +168,6 @@ const SalesVolumeComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'check.checkNumber.keyword',
-			accessorFn: row => row?.check?.checkNumber,
 			header: 'Check Number',
 			isExternalFilter: true,
 		},

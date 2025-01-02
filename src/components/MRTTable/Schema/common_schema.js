@@ -11,12 +11,12 @@ import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_curre
 
 import { tableController } from 'hookstate/tableController';
 
-import { CURRENCY_TO_FIXED, TO_FIXED } from 'utils/consts';
+import { CURRENCY_TO_FIXED, INTEREST_TO_FIXED } from 'utils/consts';
 
 export const CommonSchema = {
 	COMMENTS: {
 		name: 'comments',
-		accessorKey: 'comments',
+		id: 'comments',
 		header: '',
 		size: 120,
 		isPinned: false,
@@ -36,7 +36,7 @@ export const CommonSchema = {
 	},
 	TAGS: {
 		name: 'tags',
-		accessorKey: 'tags',
+		id: 'tags',
 		header: 'Tags',
 		size: 250,
 		isPinned: false,
@@ -59,7 +59,7 @@ export const CommonSchema = {
 	},
 	IS_TRACKED: {
 		name: 'isTracked',
-		accessorKey: 'isTracked',
+		id: 'isTracked',
 		header: '',
 		size: 120,
 		isPinned: false,
@@ -140,7 +140,7 @@ export const CommonSchema = {
 	},
 	SELECT_SOME: {
 		name: 'over-ride-checkbox',
-		accessorKey: 'over-ride-checkbox',
+		id: 'over-ride-checkbox',
 		isPinned: true,
 		hidden: false,
 		isSearchField: false,
@@ -158,7 +158,7 @@ export const CommonSchema = {
 	},
 	USER: {
 		name: 'user.name',
-		accessorKey: 'user.name',
+		id: 'user.name',
 		header: 'User',
 		size: 250,
 		filter: true,
@@ -170,7 +170,7 @@ export const CommonSchema = {
 	},
 	CREATED_BY: {
 		name: 'createBy.name',
-		accessorKey: 'createBy.name',
+		id: 'createBy.name',
 		header: 'Created By',
 		size: 250,
 		filter: true,
@@ -182,7 +182,7 @@ export const CommonSchema = {
 	},
 	CREATED_DATE: {
 		name: 'createAt',
-		accessorKey: 'createAt',
+		id: 'createAt',
 		header: 'Created Date',
 		size: 250,
 		filter: true,
@@ -194,7 +194,7 @@ export const CommonSchema = {
 	},
 	LAST_UPDATED_BY: {
 		name: 'lastUpdateBy.name',
-		accessorKey: 'lastUpdateBy.name',
+		id: 'lastUpdateBy.name',
 		header: 'Last Updated By',
 		size: 250,
 		filter: true,
@@ -206,7 +206,7 @@ export const CommonSchema = {
 	},
 	LAST_UPDATED_DATE: {
 		name: 'lastUpdateAt',
-		accessorKey: 'lastUpdateAt',
+		id: 'lastUpdateAt',
 		header: 'Last Updated Date',
 		size: 250,
 		filter: true,
@@ -230,7 +230,7 @@ export const CommonSchema = {
 						...sx,
 					}}
 				>
-					{parseFloat(cell.getValue().toFixed(TO_FIXED))}
+					{parseFloat(cell.getValue().toFixed(INTEREST_TO_FIXED))}
 				</Box>
 			</>
 		),
@@ -248,7 +248,7 @@ export const CommonSchema = {
 			const mongoKey = `sum_${field}`.replace(/\./g, '_');
 			const value = get(footerProps, `${mongoKey}[0].${mongoKey}`);
 
-			return <div>{value ? addTrailingZeros(parseFloat(value).toFixed(TO_FIXED)) : 0}</div>;
+			return <div>{value ? addTrailingZeros(parseFloat(value).toFixed(INTEREST_TO_FIXED)) : 0}</div>;
 		},
 	}),
 	INTEREST_COLUMN: {
@@ -266,7 +266,7 @@ export const CommonSchema = {
 				return null;
 			}
 
-			return <>{!value ? value : addTrailingZeros(parseFloat(value).toFixed(TO_FIXED))}</>;
+			return <>{!value ? value : addTrailingZeros(parseFloat(value).toFixed(INTEREST_TO_FIXED))}</>;
 		},
 	},
 	CURRENCY_COLUMN: {
@@ -308,7 +308,7 @@ export const CommonSchema = {
 		type: 'number',
 		filterVariant: 'equals',
 	},
-	CUMULATIVE_FOOTER: (field, tableKey, toFixed = TO_FIXED) => ({
+	CUMULATIVE_FOOTER: (field, tableKey, toFixed = INTEREST_TO_FIXED) => ({
 		Footer: () => {
 			const Controller = tableController(tableKey);
 			const footerProps = Controller.getValue('footerProps') || {};

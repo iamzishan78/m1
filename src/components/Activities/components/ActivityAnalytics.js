@@ -14,6 +14,7 @@ import StackedBarChart from 'components/Shared/Charts/StackedBarChart';
 import { GET_ACTIVITY_ANALYTICS } from 'graphQL/useQueryActivityAnalytics';
 import { GET_CONTACT_ANALYTICS } from 'graphQL/useQueryContactDetail';
 
+import { TO_FIXED } from 'utils/consts';
 import { copy } from 'utils/helper';
 
 import { getActivityFilters } from './ActivitiesDashboard';
@@ -222,7 +223,6 @@ const ActivityAnalytics = ({
 	}, [analyticsData, contactData]);
 
 	const formatter = function (val) {
-		const TO_FIXED = 2;
 		const DIVISOR = 1000000;
 
 		return (val / DIVISOR).toFixed(TO_FIXED) + 'MM';

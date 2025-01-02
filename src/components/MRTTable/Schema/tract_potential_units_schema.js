@@ -26,24 +26,23 @@ const TractPotentialUnitsMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
-			accessorKey: 'id',
+			id: 'id',
 		},
 
 		{
 			...CommonSchema.HIDDEN,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 		{
 			...CommonSchema.HIDDEN,
 			name: '_id.keyword',
-			accessorFn: row => row?._id,
 			id: '_id',
 		},
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'name.keyword',
-			accessorKey: 'name',
+			id: 'name',
 			header: 'Unit Name',
 			Cell: ({ renderedCellValue, row }) => (
 				<div
@@ -59,21 +58,18 @@ const TractPotentialUnitsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uNumber.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uNumber,
 			id: 'shapeJson.properties.uNumber',
 			header: 'Unit Number',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uType.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uType,
 			id: 'shapeJson.properties.uType',
 			header: 'Unit Type',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uAcres.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uAcres,
 			id: 'shapeJson.properties.uAcres',
 			header: 'Unit Acres',
 		},
@@ -81,7 +77,6 @@ const TractPotentialUnitsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uStatus.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uStatus,
 			id: 'shapeJson.properties.uStatus',
 			header: 'Unit Status',
 		},
@@ -89,7 +84,6 @@ const TractPotentialUnitsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uPrimaryOperator.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uPrimaryOperator,
 			id: 'shapeJson.properties.uPrimaryOperator',
 			header: 'Current Operator',
 		},
@@ -97,7 +91,6 @@ const TractPotentialUnitsMeta = {
 			...CommonSchema.CURRENCY_COLUMN,
 			type: 'string',
 			name: 'shapeJson.properties.uUnitPricing.keyword',
-			accessorKey: 'shapeJson.properties.uUnitPricing',
 			id: 'shapeJson.properties.uUnitPricing',
 			header: 'Target Unit Pricing (Per NRA)',
 			size: 320,
@@ -106,7 +99,6 @@ const TractPotentialUnitsMeta = {
 			...CommonSchema.CURRENCY_COLUMN,
 			type: 'string',
 			name: 'shapeJson.properties.uMaxUnitPricing.keyword',
-			accessorKey: 'shapeJson.properties.uMaxUnitPricing',
 			id: 'shapeJson.properties.uMaxUnitPricing',
 			header: 'Max Unit Pricing (Per NRA)',
 			size: 320,
@@ -114,14 +106,12 @@ const TractPotentialUnitsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.qualifier.name.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.qualifier?.name,
 			id: 'shapeJson.properties.qualifier.name',
 			header: 'Qualifier',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.reviewer.name.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.reviewer?.name,
 			id: 'shapeJson.properties.reviewer.name',
 			header: 'Reviewer',
 		},
@@ -129,7 +119,6 @@ const TractPotentialUnitsMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			type: 'array',
 			name: 'shapeJson.properties.campaigns.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.campaigns,
 			id: 'shapeJson.properties.campaigns',
 			header: 'Campaigns',
 			size: 270,

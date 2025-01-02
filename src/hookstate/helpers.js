@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
 
-import _ from 'lodash';
+import _, { get } from 'lodash';
 
 import DataType from 'components/Common/DataType';
 import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';
@@ -119,6 +119,29 @@ export const handleMRTSchema = ({
 		dataSourceViews?.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)) ||
 		[];
 	const _TableSchema = _Schema.map(schemaColumn => {
+		if (!schemaColumn.accessorFn) {
+			let defaultValue = null;
+
+			switch (schemaColumn.type) {
+				case 'string':
+				case 'number':
+				case 'mongoID':
+				case 'boolean':
+				case 'date':
+					defaultValue = '';
+					break;
+
+				case 'array':
+					defaultValue = [];
+					break;
+
+				default:
+					break;
+			}
+
+			schemaColumn.accessorFn = row => get(row, schemaColumn.id, defaultValue);
+		}
+
 		if (schemaColumn.header && !schemaColumn.showInLast) {
 			const HeaderComp = () => {
 				const { header, type } = schemaColumn;

@@ -31,7 +31,6 @@ import PotentialShapeOwnersMeta from './QuerySchema/potential_shape_owners_schem
 import PotentialWellOwnersMeta from './QuerySchema/potential_well_owners_schema';
 import PotentialWellsMeta from './QuerySchema/potential_wells_schema';
 import ProductionWellsMeta from './QuerySchema/production_wells_schema';
-import PropertiesRevenueMeta from './QuerySchema/properties_revenue_schema';
 import TaxRollInterestsMeta from './QuerySchema/tax_roll_interests_schema';
 import UserManagementMeta from './QuerySchema/user_management_schema';
 import RelatedBillingPartiesMeta from './related_billing_parties_schema';
@@ -128,7 +127,6 @@ export const SCHEMA = {
 	// Query Tables
 	PotentialWellOwnersTable: PotentialWellOwnersMeta,
 	UserManagementTable: UserManagementMeta,
-	PropertiesRevenueTable: PropertiesRevenueMeta, // analytics > revenue > revenue  by month
 	TaxRollInterestsTable: TaxRollInterestsMeta,
 	PotentialWellsTable: PotentialWellsMeta,
 	PotentialShapeOwnersTable: PotentialShapeOwnersMeta,

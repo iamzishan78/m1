@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import Grid from '@material-ui/core/Grid';
 
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
@@ -24,13 +27,13 @@ const ContactDetailRelatedAgreementMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'shapeJson.properties.agreementNumber.keyword',
-			accessorKey: 'shapeJson.properties.agreementNumber',
+			id: 'shapeJson.properties.agreementNumber',
 			header: 'Agreement Number',
 			Cell: ({ row }) => {
 				let value = row?.original?.shapeJson.properties.agreementNumber;
@@ -90,41 +93,41 @@ const ContactDetailRelatedAgreementMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.agreementName.keyword',
-			accessorKey: 'shapeJson.properties.agreementName',
+			id: 'shapeJson.properties.agreementName',
 			header: 'Agreement Name',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.agreementType.keyword',
-			accessorKey: 'shapeJson.properties.agreementType',
+			id: 'shapeJson.properties.agreementType',
 			header: 'Agmt Type',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.agreementSubtype.keyword',
-			accessorKey: 'shapeJson.properties.agreementSubtype',
+			id: 'shapeJson.properties.agreementSubtype',
 			header: 'Agmt Subtype',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.grantee.keyword',
-			accessorKey: 'shapeJson.properties.grantee',
+			id: 'shapeJson.properties.grantee',
 			header: 'Grantee',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.grantor.keyword',
-			accessorKey: 'shapeJson.properties.grantor',
+			id: 'shapeJson.properties.grantor',
 			header: 'Grantor',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.agreementDate',
-			accessorKey: 'shapeJson.properties.agreementDate',
+			id: 'shapeJson.properties.agreementDate',
 			type: 'date',
 			header: 'Agmt Date',
 			isSearchField: false,
@@ -137,7 +140,7 @@ const ContactDetailRelatedAgreementMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.effectiveDate',
-			accessorKey: 'shapeJson.properties.effectiveDate',
+			id: 'shapeJson.properties.effectiveDate',
 			type: 'date',
 			header: 'Efftv Date',
 			isSearchField: false,
@@ -150,7 +153,7 @@ const ContactDetailRelatedAgreementMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.expirationDate',
-			accessorKey: 'shapeJson.properties.expirationDate',
+			id: 'shapeJson.properties.expirationDate',
 			type: 'date',
 			header: 'Exp Date',
 			isSearchField: false,
@@ -163,7 +166,7 @@ const ContactDetailRelatedAgreementMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.extensionDate',
-			accessorKey: 'shapeJson.properties.extensionDate',
+			id: 'shapeJson.properties.extensionDate',
 			type: 'date',
 			header: 'Ext Date',
 			isSearchField: false,
@@ -176,7 +179,7 @@ const ContactDetailRelatedAgreementMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.agreementStatus.keyword',
-			accessorKey: 'shapeJson.properties.agreementStatus',
+			id: 'shapeJson.properties.agreementStatus',
 			header: 'Status',
 		},
 		{

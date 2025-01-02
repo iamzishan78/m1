@@ -20,60 +20,60 @@ const WellProductionMeta = {
 		{
 			...CommonSchema.MONGO_ID,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 		{
 			...CommonSchema.HIDDEN,
 			name: 'Id.keyword',
-			accessorKey: 'data.Id',
+			id: 'data.Id',
 			header: 'Well Id',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'data.ReportDate.keyword',
-			accessorKey: 'data.ReportDate',
+			id: 'data.ReportDate',
 			header: 'Report Date',
 		},
 
 		{
 			...CommonSchema.NUMBER_COLUMN,
 			name: 'data.oil',
-			accessorKey: 'data.oil',
+			id: 'data.oil',
 			header: 'Oil (BBL)',
 		},
 
 		{
 			...CommonSchema.NUMBER_COLUMN,
 			name: 'data.gas',
-			accessorKey: 'data.gas',
+			id: 'data.gas',
 			header: 'Gas (MCF)',
 		},
 
 		{
 			...CommonSchema.NUMBER_COLUMN,
 			name: 'data.water',
-			accessorKey: 'data.water',
+			id: 'data.water',
 			header: 'H2O (BBL)',
 		},
 
 		{
 			...CommonSchema.NUMBER_COLUMN,
 			name: 'data.allocatedOil',
-			accessorKey: 'data.allocatedOil',
+			id: 'data.allocatedOil',
 			header: 'Allocated Oil (BBL)',
 		},
 
 		{
 			...CommonSchema.NUMBER_COLUMN,
 			name: 'data.allocatedGas',
-			accessorKey: 'data.allocatedGas',
+			id: 'data.allocatedGas',
 			header: 'Allocated Gas (MCF)',
 		},
 
 		{
 			...CommonSchema.NUMBER_COLUMN,
 			name: 'data.allocatedWater',
-			accessorKey: 'data.allocatedWater',
+			id: 'data.allocatedWater',
 			header: 'Allocated Water (BBL)',
 		},
 	],

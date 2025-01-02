@@ -25,33 +25,33 @@ const RelatedlUnitInterestMeta = {
 		{
 			...CommonSchema.MONGO_ID,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 
 		{
 			...CommonSchema.HIDDEN,
 			name: 'contact._id.keyword',
 			header: 'Contact ID',
-			accessorKey: 'contact._id',
+			id: 'contact._id',
 		},
 		{
 			...CommonSchema.HIDDEN,
 			name: 'customLayerId.keyword',
 			header: 'Custom Layer ID',
-			accessorKey: 'customLayerId',
+			id: 'customLayerId',
 		},
 
 		{
 			...CommonSchema.HIDDEN,
 			name: 'ownerEntity',
 			header: 'Owner Entity',
-			accessorKey: 'ownerEntity',
+			id: 'ownerEntity',
 		},
 
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'shape.shapeJson.properties.uName.keyword',
-			accessorKey: 'shape.shapeJson.properties.uName',
+			id: 'shape.shapeJson.properties.uName',
 			header: 'Unit Name',
 			Cell: ({ renderedCellValue, row }) => (
 				<div
@@ -74,7 +74,6 @@ const RelatedlUnitInterestMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.State.keyword',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.State,
 			id: 'shape.shapeJson.properties.originalProperties.State',
 			header: 'State',
 		},
@@ -82,7 +81,6 @@ const RelatedlUnitInterestMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.County.keyword',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.County,
 			id: 'shape.shapeJson.properties.originalProperties.County',
 			header: 'County',
 		},
@@ -90,7 +88,6 @@ const RelatedlUnitInterestMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.surveyMerdian.keyword',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.surveyMerdian,
 			id: 'shape.shapeJson.properties.originalProperties.surveyMerdian',
 			header: 'Survey/ Meridian',
 		},
@@ -98,7 +95,6 @@ const RelatedlUnitInterestMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.blockTownship.keyword',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.blockTownship,
 			id: 'shape.shapeJson.properties.originalProperties.blockTownship',
 			header: 'Block/ Township',
 		},
@@ -106,7 +102,6 @@ const RelatedlUnitInterestMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.rangeSection.keyword',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.rangeSection,
 			id: 'shape.shapeJson.properties.originalProperties.rangeSection',
 			header: 'Section/ Range',
 		},
@@ -114,7 +109,6 @@ const RelatedlUnitInterestMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.abstractNameShortName.keyword',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.abstractNameShortName,
 			id: 'shape.shapeJson.properties.originalProperties.abstractNameShortName',
 			header: 'Abstract/ Section',
 		},
@@ -122,14 +116,12 @@ const RelatedlUnitInterestMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'contact.entityDetail.name.keyword',
-			accessorFn: row => row?.contact?.entityDetail?.name,
 			id: 'contact.entityDetail.name',
 			header: 'Owner Name',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'taxYear',
-			accessorFn: row => row?.taxYear,
 			id: 'taxYear',
 			isSearchField: false,
 			header: 'Tax Year',
@@ -137,89 +129,80 @@ const RelatedlUnitInterestMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'dataSource.keyword',
-			accessorKey: 'dataSource',
+			id: 'dataSource',
 			header: 'Data Source',
 		},
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'working_interest',
-			accessorFn: row => row?.working_interest,
 			id: 'working_interest',
 			header: 'Working Interest',
 		},
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'royalty_interest',
-			accessorFn: row => row?.royalty_interest,
 			id: 'royalty_interest',
 			header: 'Royalty Interest',
 		},
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'orri',
-			accessorFn: row => row?.orri,
 			id: 'orri',
 			header: 'ORRI',
 		},
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'nri',
-			accessorFn: row => row?.nri,
 			id: 'nri',
 			header: 'NRI',
 		},
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'nra',
-			accessorFn: row => row?.nra,
 			id: 'nra',
 			header: 'NRA',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'unitTractId.keyword',
-			accessorKey: 'unitTractId',
+			id: 'unitTractId',
 			header: 'Unit Tract ID',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'tractAcres',
-			accessorKey: 'tractAcres',
+			id: 'tractAcres',
 			header: 'Unit Tract Acres',
 			isSearchField: false,
 		},
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'offer_price',
-			accessorFn: row => row?.offer_price,
 			id: 'offer_price',
 			header: 'Target Offer Price',
 		},
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'max_offer_price',
-			accessorFn: row => row?.max_offer_price,
 			id: 'max_offer_price',
 			header: 'Max Offer Price',
 		},
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'actual_offer_price',
-			accessorFn: row => row?.actual_offer_price,
 			id: 'actual_offer_price',
 			header: 'Actual Offer Price',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shape.shapeJson.properties.description.keyword',
-			accessorKey: 'shape.shapeJson.properties.description',
+			id: 'shape.shapeJson.properties.description',
 			header: 'Unit description',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			type: 'array',
 			name: 'campaigns',
-			accessorFn: row => row?.campaigns,
 			id: 'campaigns',
 			header: 'Campaigns',
 			Cell: ({ row }) => {
@@ -229,14 +212,13 @@ const RelatedlUnitInterestMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'campaignPriority.keyword',
-			accessorFn: row => row?.campaignPriority,
 			id: 'campaignPriority',
 			header: 'Campaign Priority',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'contact.ownerType.keyword',
-			accessorKey: 'contact.ownerType',
+			id: 'contact.ownerType',
 			header: 'Owner Type',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -245,7 +227,7 @@ const RelatedlUnitInterestMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'deals.name.keyword',
-			accessorKey: 'deals.name',
+			id: 'deals.name',
 			header: 'Associated Deals',
 			isExport: 'deals',
 			handleArrayExport: {
