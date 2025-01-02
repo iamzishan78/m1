@@ -265,7 +265,6 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			const mapViewFilters = getMapViewFilters();
 			// Upsert the map view data to the GraphQL API
 			if (canUpdateMapView) {
-				debugger;
 				const tableKey = Object.keys(tableESState).find(key => {
 					const tableState = tableESState[key].get({ noproxy: true });
 					return tableState?.layerIdentifier === dataSourceName;
@@ -286,7 +285,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 						formattedFilter?.value === filter.value
 				);
 
-				if (!isFilterApplied) {
+				if (!isFilterApplied && tableKey) {
 					if (!formattedFilter?.value || formattedFilter?.value?.length === 0) {
 						tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
 					} else {
@@ -299,7 +298,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 					}
 				}
 
-				if (!tableController(tableKey))
+				if (!tableKey)
 					globalStateController.updateState({
 						mapView: {
 							selectedMapView: {

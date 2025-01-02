@@ -2,6 +2,7 @@
 import React from 'react';
 
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import DealsToolbar from 'components/MRTTable/TablesOverride/RelatedDeals/Toolbar';
 import { formatDate } from 'components/Shared/functions';
 
 const DealsMeta = {
@@ -11,6 +12,7 @@ const DealsMeta = {
 	columnVirtualization: true,
 	modelName: 'Deal',
 	defaultSort: { field: 'lastUpdateAt', order: 'desc', unmapped_type: 'date' },
+	CustomToolBar: DealsToolbar,
 	TableSchema: [
 		{
 			...CommonSchema.MONGO_ID,

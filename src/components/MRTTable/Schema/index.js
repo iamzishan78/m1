@@ -123,6 +123,7 @@ export const SCHEMA = {
 	CheckDetailsTable: CheckDetailsMeta, // revenue > statement > checkDetails
 	RunsheetTable: RunsheetMeta,
 	DealsTable: DealsMeta,
+	RelatedDealsTable: DealsMeta,
 
 	// Query Tables
 	PotentialWellOwnersTable: PotentialWellOwnersMeta,

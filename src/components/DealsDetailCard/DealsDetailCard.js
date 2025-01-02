@@ -4,14 +4,14 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { useLazyQuery } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import DealDisplay from './components/DealDisplay';
 import { CONTACTDEALS } from '../../graphQL/useQueryContactDeals';
 import DocViewer from '../Shared/DocViewer';
-import M1nTable from '../Shared/M1nTable/M1nTable';
 import vf_currency from '../Shared/valueformatters/vf_currency.js';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	gridWidthScroll: {
 		backgroundColor: '#fff',
 		'& .formLabel': {
@@ -40,8 +40,7 @@ const sumDeals = deals => {
 		return '$0';
 	}
 };
-
-export default function DealsDetailCard(props) {
+function DealsDetailCard(props) {
 	const [wonDeals, setWonDeals] = useState([]); // deal closed
 	const [lostDeals, setLostDeals] = useState([]); // deal rejected
 	const [activeDeals, setActiveDeals] = useState([]); // all other deals
@@ -108,7 +107,12 @@ export default function DealsDetailCard(props) {
 				<DealDisplay dealSum={wonSum} dealType="CLOSED" dealLength={wonDeals.length} color="rgb(223,168,89)" />
 				<DealDisplay dealSum={lostSum} dealType="LOST" dealLength={lostDeals.length} color="rgb(130,189,200)" />
 			</div>
-			<M1nTable dense parent="Deals" contact={props.contact} />
 		</Grid>
 	);
 }
+
+DealsDetailCard.propTypes = {
+	contact: PropTypes.object.isRequired,
+};
+
+export default DealsDetailCard;

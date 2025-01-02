@@ -10,6 +10,8 @@ import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 
+import PropTypes from 'prop-types';
+
 const ButtonDropDown = ({
 	options,
 	children,
@@ -21,7 +23,7 @@ const ButtonDropDown = ({
 }) => {
 	const [open, setOpen] = React.useState(false);
 	const anchorRef = React.useRef(null);
-	const [selectedIndex, setSelectedIndex] = React.useState(0);
+	const selectedIndex = 0;
 
 	const handleClick = event => {
 		options[selectedIndex].action(event);
@@ -54,19 +56,21 @@ const ButtonDropDown = ({
 					<>{children}</>
 					{options[selectedIndex].text}
 				</Button>
-				<Button
-					color="primary"
-					size="small"
-					{...rest}
-					aria-controls={open ? 'split-button-menu' : undefined}
-					aria-expanded={open ? 'true' : undefined}
-					aria-label="select merge strategy"
-					aria-haspopup="menu"
-					onClick={handleToggle}
-					style={sideButtonStyles}
-				>
-					<ArrowDropDownIcon id="addButtonArrowIcon" />
-				</Button>
+				{options?.length > 1 && (
+					<Button
+						color="primary"
+						size="small"
+						{...rest}
+						aria-controls={open ? 'split-button-menu' : undefined}
+						aria-expanded={open ? 'true' : undefined}
+						aria-label="select merge strategy"
+						aria-haspopup="menu"
+						onClick={handleToggle}
+						style={sideButtonStyles}
+					>
+						<ArrowDropDownIcon id="addButtonArrowIcon" />
+					</Button>
+				)}
 			</ButtonGroup>
 
 			<Popper id="popper-1" open={open} anchorEl={anchorRef.current} role={undefined} transition>
@@ -92,6 +96,8 @@ const ButtonDropDown = ({
 													{option.text}
 												</MenuItem>
 											);
+										} else {
+											return null;
 										}
 									})}
 								</MenuList>
@@ -102,6 +108,21 @@ const ButtonDropDown = ({
 			</Popper>
 		</>
 	);
+};
+
+ButtonDropDown.propTypes = {
+	options: PropTypes.arrayOf(
+		PropTypes.shape({
+			action: PropTypes.func.isRequired,
+			text: PropTypes.string.isRequired,
+			isShow: PropTypes.bool,
+		})
+	).isRequired,
+	children: PropTypes.node,
+	onClick: PropTypes.func,
+	buttonStyles: PropTypes.object,
+	sideButtonStyles: PropTypes.object,
+	data_test_id: PropTypes.string,
 };
 
 export default ButtonDropDown;
