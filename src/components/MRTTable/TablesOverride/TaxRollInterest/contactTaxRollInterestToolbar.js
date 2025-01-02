@@ -1,10 +1,10 @@
-import React, { memo, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
-
-import { Button } from '@material-ui/core';
 
 import { useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
+
+import ToolbarButton from 'components/Shared/ui/ToolbarButton';
 
 import { ADD_MULTI_WELLINTEREST_TO_CONTACT } from 'graphQL/useMutationAddMultiWellInterestToContact';
 
@@ -18,15 +18,11 @@ function ContactTaxRollInterestToolbar({ table, tableKey }) {
 	const [stateApp] = useContext(AppContext);
 
 	const Controller = tableController(tableKey);
-	const tableState = Controller.useState(['rowSelection']);
-	const tableStateValues = tableState.stateValues;
-
-	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
-
-	const isSomeRowsSelected =
-		table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
+	const { tableStateValues } = Controller.useState(['customProps'], 'tableStateValues');
+	const isSomeRowsSelected = table.getIsSomeRowsSelected();
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
+	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 
 	const [addMultiWellInterestToContact] = useMutation(ADD_MULTI_WELLINTEREST_TO_CONTACT, {
 		refetchQueries: ['getContactWells'],
@@ -47,7 +43,7 @@ function ContactTaxRollInterestToolbar({ table, tableKey }) {
 
 	const addWellInterestToContact = e => {
 		e.stopPropagation();
-		const { contactId } = Controller.getValue('customProps');
+		const { contactId } = tableStateValues.customProps;
 
 		table.resetRowSelection();
 		tableController(tableKey).updateState({
@@ -60,15 +56,11 @@ function ContactTaxRollInterestToolbar({ table, tableKey }) {
 	};
 
 	return (
-		<Button
-			variant="contained"
-			color="primary"
-			style={{ height: '30px', marginBottom: '8px' }}
-			disabled={!isSomethingSelected}
-			onClick={addWellInterestToContact}
-		>
-			+ ADD TO CONTACT
-		</Button>
+		<div style={{ display: 'flex', alignItems: 'center' }}>
+			{isSomethingSelected && (
+				<ToolbarButton label="+ ADD TO CONTACT" disabled={!isSomethingSelected} onClick={addWellInterestToContact} />
+			)}
+		</div>
 	);
 }
 
@@ -77,4 +69,4 @@ ContactTaxRollInterestToolbar.propTypes = {
 	tableKey: PropTypes.string.isRequired,
 };
 
-export default memo(ContactTaxRollInterestToolbar);
+export default ContactTaxRollInterestToolbar;

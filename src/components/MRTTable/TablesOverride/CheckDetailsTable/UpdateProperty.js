@@ -8,8 +8,8 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import Loader from 'components/Loaders';
 
 import { UPSERT_CHECK_PROPERTY } from 'graphQL/useMutationCheckPropertyUpdate';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
@@ -20,10 +20,10 @@ function UpdateProperty(props) {
 	const [query, setQuery] = useState('');
 
 	// Queries
-	const [getESSimpleFilter, { loading }] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
+	const [getDbFilters, { loading }] = useLazyQuery(GET_DB_FILTERS, {
 		fetchPolicy: 'no-cache',
 	});
-	const [getESSimpleSearch] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+	const [getDbData] = useLazyQuery(GET_DB_DATA, {
 		fetchPolicy: 'no-cache',
 	});
 
@@ -34,7 +34,7 @@ function UpdateProperty(props) {
 	useEffect(() => {
 		(async () => {
 			await new Promise((resolve, reject) => {
-				getESSimpleSearch({
+				getDbData({
 					variables: {
 						index: 'checkdetails_flat',
 						filters: [{ field: 'property.IsDeleted', value: false }],
@@ -44,7 +44,7 @@ function UpdateProperty(props) {
 					},
 					onCompleted: res => {
 						if (res) {
-							const { total } = res?.getESSimpleSearch;
+							const { total } = res?.getDbData;
 							setTotalProperties(total);
 						}
 					},
@@ -58,7 +58,7 @@ function UpdateProperty(props) {
 	useEffect(() => {
 		(async () => {
 			await new Promise((resolve, reject) => {
-				getESSimpleFilter({
+				getDbFilters({
 					variables: {
 						index: 'checkdetails_flat',
 						filters: [{ field: 'property.IsDeleted', value: false }],
@@ -71,7 +71,7 @@ function UpdateProperty(props) {
 					},
 					onCompleted: res => {
 						if (res) {
-							const propertiesNumbers = res?.getESSimpleFilter?.hits?.map(obj => obj.key);
+							const propertiesNumbers = res?.getDbFilters?.hits?.map(obj => obj.key);
 							setPropertiesNumbers(propertiesNumbers);
 						}
 					},

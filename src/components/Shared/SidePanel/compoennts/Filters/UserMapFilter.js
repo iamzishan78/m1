@@ -12,7 +12,7 @@ import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } from 'components/MRTTable/utils/data';
 import { formatDate } from 'components/Shared/functions';
 
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableESState } from 'hookstate/initialStates';
@@ -59,22 +59,22 @@ const useStyles = makeStyles(theme => ({
 
 // Function to format filter values based on the filter type
 export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValues) => {
-	// Handle cases where filterType might be an object
-	filterType = filterType?.value || filterType;
+	// Normalize filterType if it's an object
+	const normalizedFilterType = filterType?.value || filterType;
 
 	let filterValue;
 
-	switch (filterType) {
+	switch (normalizedFilterType) {
 		case 'multiselect':
 			return {
 				field: fieldName?.value || fieldName,
 				value: filterValues,
 				isMapViewFilter: true,
-				searchType: filterType,
+				searchType: normalizedFilterType,
 			};
 		case 'empty':
 		case 'notEmpty':
-			filterValue = ' ';
+			filterValue = ' '; // empty value for empty/notEmpty filters
 			break;
 		case 'date':
 			filterValue = {
@@ -90,27 +90,39 @@ export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValue
 			break;
 	}
 
-	return {
+	// Construct the final filter object
+	const baseFilter = {
 		field: fieldName?.value || fieldName,
 		value: filterValue,
 		isMapViewFilter: true,
-		searchType: filterType,
-		...(filterType !== 'singleselect' && {
-			type: 'advanced',
-			isKeyword: true,
-			columnType: 'string',
-		}),
-		...(filterType === 'date' && {
-			columnType: 'date',
-			isKeyword: false,
-			// isSearchField: false,
-			searchType: 'betweenInclusive',
-		}),
-		...(filterType === 'range' && {
-			type: 'advanced',
-			searchType: 'betweenInclusive',
-		}),
+		searchType: normalizedFilterType,
 	};
+
+	// Additional properties based on filter type
+	switch (normalizedFilterType) {
+		case 'singleselect':
+			return baseFilter;
+		case 'date':
+			return {
+				...baseFilter,
+				columnType: 'date',
+				isKeyword: false,
+				searchType: 'betweenInclusive',
+			};
+		case 'range':
+			return {
+				...baseFilter,
+				type: 'advanced',
+				searchType: 'betweenInclusive',
+			};
+		default:
+			return {
+				...baseFilter,
+				type: 'advanced',
+				isKeyword: true,
+				columnType: 'string',
+			};
+	}
 };
 
 const UserMapFilter = ({ mapView, index, remove }) => {
@@ -130,7 +142,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 		debouncedSetSearchText(e?.target?.value || '');
 	};
 	// Lazy query to fetch filter list from the GraphQL API when required
-	const [getFiltersList, { data: filtersData }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
+	const [getFiltersList, { data: filtersData }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 
 	// Watch form fields to dynamically react to their values
 	const dataSourceNameField = watch(`mapViews.${index}.dataSourceName`);
@@ -191,7 +203,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 
 		if (layerType === 'agreement') {
 			esIndex = 'shapes_flat';
-			filters = [{ field: 'shapeJson.properties.layerType', value: 'agreement' }];
+			filters = [{ field: 'shapeJson.properties.type.keyword', value: 'agreement' }];
 		} else if (layerType === 'wells') {
 			esIndex = 'mywells_flat';
 			filters = [];
@@ -279,7 +291,7 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 
 	// Memoized calculation of autocomplete fields to optimize rendering
 	const autocompleteFields = useMemo(() => {
-		const filterValueHits = filtersData?.getESSimpleFilter?.hits || []; // Get filter options from query results
+		const filterValueHits = filtersData?.getDbFilters?.hits || []; // Get filter options from query results
 		const filterValuesOptions = filterValueHits.map(hit => hit.key).filter(key => (key?.trim ? key.trim() : key)); // Clean options
 
 		// Map filter type options to autocomplete options

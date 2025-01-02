@@ -751,3 +751,8 @@ export const baseTenantsMaps = () => {
 };
 
 export const PaymentFeatureTenants = ['m1dev', 'frontier', 'localhost'];
+
+export const statusData = [
+	{ label: 'Not in Pay', value: 'NotInPay' },
+	{ label: 'In Pay', value: 'InPay' },
+];

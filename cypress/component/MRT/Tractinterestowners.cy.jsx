@@ -11,7 +11,7 @@ import ldata from '../../fixtures/ldata.json';
 describe('Tract Interest Owners Table', () => {
 	// Before each test, intercept and wait for specific requests and mount the MRTTable component with predefined props
 	beforeEach(() => {
-		cy.interceptAndWait(['getESSimpleSearch', 'shapeowners_flat'], () => {
+		cy.interceptAndWait(['getDbData', 'shapeowners_flat'], () => {
 			// Mounting the MRTTable component with predefined props
 			cy.viewport(1600, 1200).mount(
 				<MRTTable

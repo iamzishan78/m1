@@ -29,3 +29,9 @@
 #mrt-progress {
 	display: none;
 }
+
+/* Update Action Column Size */
+tr {
+	--col-mrt_row_actions-size: 120;
+	--header-mrt_row_actions-size: 120;
+}

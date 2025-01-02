@@ -1,11 +1,10 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useMemo } from 'react';
 
 import { Box, IconButton } from '@material-ui/core';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import { makeStyles } from '@material-ui/core/styles';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
@@ -13,22 +12,22 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
 import { useLazyQuery } from '@apollo/client';
 import moment from 'moment';
-
 // contexts
-import WellDetailsDocumentTable from 'components/Table/Documents/WellDetailsDocumentTable';
+import PropTypes from 'prop-types';
+
+import MRTTable from 'components/MRTTable';
+import WellDetailsDocumentTable from 'components/WellCard/components/WellDetailsDocumentTable';
 
 import { popupController } from 'hookstate/popupStateController';
-
-import { WellCardContext } from './WellCardContext';
 
 // styling
 
 //material-ui components
 
 //custom components
-import { PRODUCTIONDETAILQUERY } from '../../graphQL/useQueryProductionDetail';
-import Taps from '../Shared/Taps';
 import TableSummary from './components/TableSummary';
+import { WellCardContext } from './WellCardContext';
+import { PRODUCTIONDETAILQUERY } from '../../graphQL/useQueryProductionDetail';
 import QuadProvider from '../Quad/QuadProvider';
 import CompletionDateCard from '../Shared/CompletionDateCard';
 import FirstProdDateCard from '../Shared/FirstProdDateCard';
@@ -38,11 +37,12 @@ import PermitDateCard from '../Shared/PermitDateCard';
 import PlugDateCard from '../Shared/PlugDateCard';
 import ProfileCard from '../Shared/ProfileCard';
 import SpudDateCard from '../Shared/SpudDateCard';
+import Taps from '../Shared/Taps';
 import WellStatusCard from '../Shared/WellStatusCard';
 import WellTypeCard from '../Shared/WellTypeCard';
 import WellProdChartProvider from '../WellProdChart/WellProdChartProvider';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	grid: {
 		// height: "100%",
 		width: 'auto',
@@ -209,7 +209,6 @@ export default function WellCardDetails(props) {
 		getExternalProductionDetail({
 			variables: { id: stateValues.selectedWell.api, pageSize: '999' },
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -230,9 +229,7 @@ export default function WellCardDetails(props) {
 			if (props.target) {
 				setTarget(props.target);
 			}
-		} else {
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [externalProductionDetail, props.target, setTarget]);
 
 	const handleChangeOil = event => {
@@ -312,6 +309,12 @@ export default function WellCardDetails(props) {
 		</div>
 	);
 
+	const WellProductionOverrideMeta = useMemo(() => {
+		return {
+			customProps: { id: stateValues.selectedWell.api, pageSize: '999' },
+		};
+	}, [stateValues.selectedWell.api]);
+
 	return stateValues.selectedWell ? (
 		<React.Fragment>
 			<Grid item sm={12} className={classes.gridItemGrey}>
@@ -348,7 +351,7 @@ export default function WellCardDetails(props) {
 					<Taps
 						tabLabels={['Production', 'Interest Owners', 'Documents']}
 						tabPanels={[
-							<Paper elevation={3} style={{ padding: '10px' }}>
+							<Paper key={1} elevation={3} style={{ padding: '10px' }}>
 								<Grid container spacing={2}>
 									<Grid item xs={12}>
 										<div className={classes.toggle}>
@@ -394,14 +397,12 @@ export default function WellCardDetails(props) {
 									</Grid>
 									<Grid item xs={12}>
 										{production != null && (
-											<div className={showSummary ? classes.subContent : classes.subContent2}>
-												<M1nTable dense parent="production_WellDetails" productionDetails={production} />
-											</div>
+											<MRTTable name="ProductionWellsTable" overrideMeta={WellProductionOverrideMeta} />
 										)}
 									</Grid>
 								</Grid>
 							</Paper>,
-							<Paper elevation={3} style={{ padding: '10px' }}>
+							<Paper key={2} elevation={3} style={{ padding: '10px' }}>
 								<div className={showSummary ? classes.subContent : classes.subContent2}>
 									<M1nTable
 										parent="OwnersPerWell"
@@ -409,7 +410,7 @@ export default function WellCardDetails(props) {
 									/>
 								</div>
 							</Paper>,
-							<div className={`${classes.wellDocument}`}>
+							<div key={3} className={`${classes.wellDocument}`}>
 								<WellDetailsDocumentTable
 									selectedWell={stateValues.selectedWell}
 									parent="associatedDocumentsPerWell"
@@ -426,3 +427,8 @@ export default function WellCardDetails(props) {
 		</React.Fragment>
 	) : null;
 }
+
+WellCardDetails.propTypes = {
+	summary: PropTypes.object.isRequired,
+	target: PropTypes.object.isRequired,
+};

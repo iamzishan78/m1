@@ -3,9 +3,9 @@ import React from 'react';
 import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
-import { AutoCompleteFilter } from 'components/Table/AutoCompleteFilter';
+import { AutoCompleteFilter } from 'components/Common/AutoCompleteFilter';
 
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { wellsFilterColumnsHeader } from 'utils/data';
 
@@ -82,7 +82,7 @@ const WellsFilters = ({ filters, setFilters }) => {
 							index={index}
 							custom={Array.isArray(filterColumn.filterKey) ? custom : undefined}
 							onChange={onChange}
-							query={GET_ES_SIMPLE_FILTER}
+							query={GET_DB_FILTERS}
 							searchFields={['*']}
 							filters={appliedFilters}
 							extendSearchQuery={''}

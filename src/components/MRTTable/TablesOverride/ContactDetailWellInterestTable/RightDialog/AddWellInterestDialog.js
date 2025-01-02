@@ -33,7 +33,7 @@ import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/componen
 
 import { ADDWELLINTEREST } from 'graphQL/useMutationAddWellInterest';
 import { UPDATEWELLINTEREST } from 'graphQL/useMutationUpdateWellInterest';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { INTERESTOWNERTYPESQUERY } from 'graphQL/useQueryInterestOwnerTypes';
 import { INTERESTTYPESQUERY } from 'graphQL/useQueryInterestTypes';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
@@ -173,7 +173,7 @@ function AddWellInterestDialog(props) {
 		refetchQueries: [
 			'getContactWells',
 			'getContactWellCardDetail',
-			'getESSimpleSearch',
+			'getDbData',
 			'getContactWellInterestsFilterOptions',
 		],
 		awaitRefetchQueries: true,
@@ -184,15 +184,15 @@ function AddWellInterestDialog(props) {
 			setLoading(false);
 			handleClose();
 		},
-		refetchQueries: ['getContactWells', 'getESSimpleSearch', 'getContactWellInterestsFilterOptions'],
+		refetchQueries: ['getContactWells', 'getDbData', 'getContactWellInterestsFilterOptions'],
 		awaitRefetchQueries: true,
 	});
 
-	const [getESSimpleSearch] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+	const [getDbData] = useLazyQuery(GET_DB_DATA, {
 		fetchPolicy: 'no-cache',
 		onCompleted: wellsData => {
-			if (wellsData?.getESSimpleSearch?.hits) {
-				setFoundWells(wellsData.getESSimpleSearch.hits);
+			if (wellsData?.getDbData?.hits) {
+				setFoundWells(wellsData.getDbData.hits);
 			}
 		},
 	});
@@ -325,12 +325,7 @@ function AddWellInterestDialog(props) {
 						nra: formRoyaltyAcres,
 					},
 				},
-				refetchQueries: [
-					'getContactWells',
-					'getESSimpleSearch',
-					'getContactWellInterestsFilterOptions',
-					'getContactSummary',
-				],
+				refetchQueries: ['getContactWells', 'getDbData', 'getContactWellInterestsFilterOptions', 'getContactSummary'],
 				awaitRefetchQueries: true,
 			});
 		} else {
@@ -354,7 +349,7 @@ function AddWellInterestDialog(props) {
 				refetchQueries: [
 					'getContactWells',
 					'getContactWellCardDetail',
-					'getESSimpleSearch',
+					'getDbData',
 					'getContactWellInterestsFilterOptions',
 					'getContactSummary',
 				],
@@ -383,7 +378,7 @@ function AddWellInterestDialog(props) {
 						isDeleted: true,
 					},
 				},
-				refetchQueries: ['getContactWells', 'getESSimpleSearch', 'getContactWellInterestsFilterOptions'],
+				refetchQueries: ['getContactWells', 'getDbData', 'getContactWellInterestsFilterOptions'],
 				awaitRefetchQueries: true,
 			});
 		} catch {
@@ -538,7 +533,7 @@ function AddWellInterestDialog(props) {
 										label="Search for a well by name or API"
 										InputLabelProps={{ shrink: true }}
 										onChange={event => {
-											getESSimpleSearch({
+											getDbData({
 												variables: {
 													index: 'platformData:wells',
 													pagination: {

@@ -53,7 +53,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 				userId: user._id,
 			},
 			mutation: UPDATE_SHAPE_OWNERS,
-			refetchQueries: ['getESSimpleFilter'],
+			refetchQueries: ['getDbFilters'],
 		});
 
 		Loaders.successToast(loaderId, 'Updation Complete');

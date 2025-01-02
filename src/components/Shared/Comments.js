@@ -364,8 +364,8 @@ export default function Comments(props) {
 				'getCommentsByObjectId',
 				'getCommentsCounter',
 				'getCommentsByObjectsIds',
-				'getESPaginatedList',
-				'getESSimpleSearch',
+
+				'getDbData',
 				...props.refetchQueries,
 			],
 			awaitRefetchQueries: true,
@@ -404,8 +404,8 @@ export default function Comments(props) {
 					'getCommentsByObjectId',
 					'getCommentsCounter',
 					'getCommentsByObjectsIds',
-					'getESPaginatedList',
-					'getESSimpleSearch',
+
+					'getDbData',
 					...props.refetchQueries,
 				],
 				awaitRefetchQueries: true,
@@ -420,8 +420,8 @@ export default function Comments(props) {
 						'getCommentsByObjectId',
 						'getCommentsCounter',
 						'getCommentsByObjectsIds',
-						'getESPaginatedList',
-						'getESSimpleSearch',
+
+						'getDbData',
 						...props.refetchQueries,
 					],
 					awaitRefetchQueries: true,
@@ -512,8 +512,8 @@ export default function Comments(props) {
 				'getCommentsByObjectId',
 				'getCommentsCounter',
 				'getCommentsByObjectsIds',
-				'getESPaginatedList',
-				'getESSimpleSearch',
+
+				'getDbData',
 				...props.refetchQueries,
 			],
 			awaitRefetchQueries: true,

@@ -96,6 +96,7 @@ export const handleMRTSchema = ({
 	_Schema,
 	tableKey,
 	esIndex,
+	modelName,
 	defaultFlterMode,
 	search,
 	globalFilter,
@@ -150,6 +151,7 @@ export const handleMRTSchema = ({
 					tableKey,
 					name: schemaColumn.accessorKey || schemaColumn.id,
 					controller: tableController,
+					layerIdentifier,
 				});
 			}
 
@@ -163,11 +165,13 @@ export const handleMRTSchema = ({
 						<ESAutoCompleteFilter
 							tableKey={tableKey}
 							esIndex={esIndex}
+							modelName={modelName}
 							column={{
 								field: column.columnDef.name,
 								isComposite: column.columnDef.isComposite,
 								label: column.columnDef.header,
 								type: column.columnDef.type,
+								subType: column.columnDef.subType,
 								defaultFilterOptions: column.columnDef.defaultFilterOptions,
 								setFilterValue: column.setFilterValue,
 								filterSelectOptions: column.columnDef.filterSelectOptions,
@@ -200,10 +204,12 @@ export const handleMRTSchema = ({
 						<ESAutoCompleteFilter
 							tableKey={tableKey}
 							esIndex={esIndex}
+							modelName={modelName}
 							column={{
 								field: column.columnDef.name,
 								label: column.columnDef.header,
 								type: column.columnDef.type,
+								subType: column.columnDef.subType,
 								defaultFilterOptions: column.columnDef.defaultFilterOptions,
 								setFilterValue: column.setFilterValue,
 								filterSelectOptions: column.columnDef.filterSelectOptions,
@@ -251,6 +257,7 @@ export const handleMRTSchema = ({
 				tableKey,
 				name: schemaColumn.accessorKey || schemaColumn.id,
 				controller: tableController,
+				layerIdentifier,
 			});
 		}
 

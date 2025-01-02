@@ -23,7 +23,7 @@ import { layersWithSelectedShapeKey } from 'components/Shared/functions/shapeLay
 import { convertToTitleCase } from 'components/Shared/M1nTable/components/MUIDataTable/utils';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
 import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
 
@@ -335,7 +335,7 @@ function Map({
 
 	const getElasticWell = async paramId => {
 		const { data: well } = await client.query({
-			query: GET_ES_SIMPLE_SEARCH,
+			query: GET_DB_DATA,
 			variables: {
 				index: 'platformData:wells',
 				pagination: {
@@ -351,7 +351,7 @@ function Map({
 				sort: [],
 			},
 		});
-		const wellFeature = { ...well.getESSimpleSearch.hits[0] };
+		const wellFeature = { ...well.getDbData.hits[0] };
 		if (wellFeature?.Id) {
 			wellFeature.id = wellFeature.Id;
 		}

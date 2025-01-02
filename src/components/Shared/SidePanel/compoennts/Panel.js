@@ -63,6 +63,7 @@ import {
 } from './style';
 import { AppContext } from '../../../../AppContext';
 import { deepEqualObjects } from '../../functions';
+import { customLayersFieldAccessors } from './Filters/consts';
 
 const layerIcons = [
 	{
@@ -232,6 +233,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 		['filters', 'mapView', 'allMapViews', 'layerSettingsLoading'],
 		'globalStateValues'
 	);
+	const layers = globalStateController.getValue('layers');
 	const client = useApolloClient();
 	// Query to fetch map views from the GraphQL API
 	const [mapViews, { data }] = useLazyQuery(GET_MAP_VIEWS);
@@ -282,9 +284,13 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 	const totalFilterCount =
 		navStateValues.geographyFilterCount +
 		navStateValues.wellFilterCount +
-		(globalStateValues?.mapView?.selectedMapView?.filters?.filter(
-			filter => filter?.filterValues || ['empty', 'notEmpty'.includes(filter?.filterType)]
-		)?.length || 0);
+		(globalStateValues?.mapView?.selectedMapView?.filters?.filter(filter => {
+			const fileId = filter?.dataSourceName?.substring(0, filter?.dataSourceName?.indexOf('_'));
+			const layerShapeName = filter?.dataSourceName?.substring(filter?.dataSourceName?.indexOf('_') + 1);
+			const layer = layers.find(l => l.file === fileId && l.layerShapeName === layerShapeName);
+			const dataSourceExists = filter?.dataSourceName && (customLayersFieldAccessors[filter?.dataSourceName] || layer);
+			return (filter?.filterValues || ['empty', 'notEmpty'.includes(filter?.filterType)]) && dataSourceExists;
+		})?.length || 0);
 
 	useEffect(() => {
 		setTotalHitMapCount(stateApp.checkedHeats.length);
@@ -568,10 +574,12 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 							{globalStateValues?.mapView?.showViewModal && (
 								<MapViewOptions
 									allMapViews={globalStateValues?.allMapViews || []}
-									defaultView={{
-										name: 'Standard Map View',
-										type: 'Default',
-									}}
+									defaultView={
+										globalStateValues?.allMapViews?.find(view => view?.type === 'Default') || {
+											name: 'Standard Map View',
+											type: 'Default',
+										}
+									}
 									fetchMapViews={fetchMapViews}
 								/>
 							)}

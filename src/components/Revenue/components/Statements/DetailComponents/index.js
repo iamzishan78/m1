@@ -32,7 +32,7 @@ import NavHeader from 'components/Revenue/components/Common/NavHeader';
 import DocViewer from 'components/Shared/DocViewer';
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import Tags from 'components/Shared/Tagger';
-import MetaField from 'components/Table/helpers/MetaField';
+import MetaField from 'utils/MetaField';
 
 import { REMOVE_CHECKS } from 'graphQL/useMutationRemoveChecks';
 import { UPDATE_CHECK_DATA } from 'graphQL/useMutationUpdateCheck';
@@ -239,7 +239,7 @@ export default function DetailComponents(props) {
 
 	// mutations
 	const [removeChecks] = useMutation(REMOVE_CHECKS, {
-		refetchQueries: ['getESPaginatedList'],
+		refetchQueries: ['getDbData'],
 		awaitRefetchQueries: true,
 	});
 

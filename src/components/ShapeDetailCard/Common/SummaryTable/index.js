@@ -13,6 +13,7 @@ import { hookstate, useHookstate } from '@hookstate/core';
 import { set, get, upperFirst, capitalize } from 'lodash';
 import moment from 'moment';
 
+import filterConsts from 'components/Common/TableAddDialog/Common/filterConsts';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
@@ -29,7 +30,6 @@ import ShapeOwnerInput from 'components/Shared/ShapeOwnerInput';
 import UserList from 'components/Shared/UserList';
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
 import vf_number from 'components/Shared/valueformatters/vf_number';
-import filterConsts from 'components/Table/TableAddDialog/Common/filterConsts';
 
 import { globalStateController } from 'hookstate/globalStateController';
 

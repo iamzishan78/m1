@@ -35,7 +35,7 @@ describe('Campaign Contact Table', () => {
 			headers: headers,
 			body: updateContactPayload,
 		}).then(response => {
-			cy.interceptAndWait(['getESSimpleSearch', 'contacts_flat'], () => {
+			cy.interceptAndWait(['getDbData', 'contacts_flat'], () => {
 				cy.viewport(1600, 1200).mount(
 					<MRTTable
 						name="CampaignContactTable"

@@ -56,7 +56,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 				},
 			},
 			mutation: UPDATECUSTOMLAYER,
-			refetchQueries: ['getESSimpleFilter'],
+			refetchQueries: ['getDbFilters'],
 		});
 		Loader.successToast(loaderId, 'Updation Complete');
 		tableGlobalController.refetch();
@@ -233,6 +233,7 @@ const UnitMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uUnitPricing.keyword',
 			accessorFn: row => vf_currency_to_fixed(row?.shapeJson?.properties?.uUnitPricing, CURRENCY_TO_FIXED), // format value with $ sign
+			subType: 'price',
 			id: 'shapeJson.properties.uUnitPricing',
 			header: 'Target Price/Acre',
 		},
@@ -241,6 +242,7 @@ const UnitMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uMaxUnitPricing.keyword',
 			accessorFn: row => vf_currency_to_fixed(row?.shapeJson?.properties?.uMaxUnitPricing, CURRENCY_TO_FIXED), // format value with $ sign
+			subType: 'price',
 			id: 'shapeJson.properties.uMaxUnitPricing',
 			header: 'Max Price/Acre',
 		},

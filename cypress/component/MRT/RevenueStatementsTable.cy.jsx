@@ -20,7 +20,7 @@ const columns = [
 describe('Properties Table', () => {
 	// Before each test, intercept network requests and mount the MRTTable component
 	beforeEach(() => {
-		cy.interceptAndWait(['getESSimpleSearch', 'checks_flat'], () => {
+		cy.interceptAndWait(['getDbData', 'checks_flat'], () => {
 			cy.viewport(1600, 1200).mount(<MRTTable name="RevenueStatementsTable" />);
 		});
 	});

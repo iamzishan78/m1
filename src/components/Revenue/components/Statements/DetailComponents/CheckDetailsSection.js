@@ -1,4 +1,8 @@
+import React from 'react';
+
 import { makeStyles } from '@material-ui/core/styles';
+
+import PropTypes from 'prop-types';
 
 import MRTTable from 'components/MRTTable';
 
@@ -15,12 +19,13 @@ const useStyles = makeStyles(() => ({
 
 const CheckDetailsSection = ({ checkId }) => {
 	const classes = useStyles();
+
 	return (
 		<div className={`${classes.sectionCard}`}>
-			{/* Check details table */}
 			<MRTTable
 				name={'CheckDetailsTable'}
 				overrideMeta={{
+					enableEditing: false,
 					defaultFilters: [
 						{
 							field: 'check._id.keyword',
@@ -31,6 +36,10 @@ const CheckDetailsSection = ({ checkId }) => {
 			/>
 		</div>
 	);
+};
+
+CheckDetailsSection.propTypes = {
+	checkId: PropTypes.string.isRequired,
 };
 
 export default CheckDetailsSection;

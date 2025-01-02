@@ -5,14 +5,14 @@ import { MaterialReactTable } from 'material-react-table';
 import PropTypes from 'prop-types';
 
 import AllDialogs from 'components/MRTTable/Common/Dialog';
-import useTableESSimple from 'components/MRTTable/Hooks/useTableESSimple';
+import useMRTTable from 'components/MRTTable/Hooks/useMRTTable';
 import MRTFallback from 'components/MRTTable/MRTFallBack';
 
 import { tableController } from 'hookstate/tableController';
 
 function Table({ tableKey }) {
 	// Functional component Table accepts tableKey as props.
-	const { tableProps, tablePropsState, classes } = useTableESSimple(tableKey);
+	const { tableProps, tablePropsState, classes } = useMRTTable(tableKey);
 	// Destructuring the table properties, state, and CSS classes from the custom hook.
 
 	return (

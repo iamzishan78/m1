@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 
 import { useApolloClient } from '@apollo/client';
 
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
 
 import { popupController } from 'hookstate/popupStateController';
@@ -20,7 +20,7 @@ function WellClick() {
 
 	const getElasticWell = async paramId => {
 		const { data: well } = await client.query({
-			query: GET_ES_SIMPLE_SEARCH,
+			query: GET_DB_DATA,
 			variables: {
 				index: 'platformData:wells',
 				pagination: {
@@ -39,11 +39,11 @@ function WellClick() {
 		const { data: tenantWell } = await client.query({
 			query: TENANTWELL,
 			variables: {
-				globalWellId: well.getESSimpleSearch.hits[0]?.id,
+				globalWellId: well.getDbData.hits[0]?.id,
 			},
 		});
 		return {
-			...well.getESSimpleSearch.hits[0],
+			...well.getDbData.hits[0],
 			tenantWellId: tenantWell?.tenantWell?.tenantWellId,
 		};
 	};

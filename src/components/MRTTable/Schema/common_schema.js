@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Box } from '@mui/material';
 
-import { get } from 'lodash';
+import { get, set } from 'lodash';
+import moment from 'moment';
 
 import { addTrailingZeros, formatDate } from 'components/Shared/functions';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
@@ -29,6 +30,7 @@ export const CommonSchema = {
 		enableColumnFilter: false,
 		isExport: false,
 		enableColumnOrdering: false,
+		enableColumnDragging: false,
 		enableResizing: false,
 		showInLast: true,
 	},
@@ -46,6 +48,7 @@ export const CommonSchema = {
 		enableColumnFilter: false,
 		enableColumnActions: false,
 		enableColumnOrdering: false,
+		enableColumnDragging: false,
 		enableResizing: false,
 		showInLast: true,
 		isExport: 'tags',
@@ -68,6 +71,7 @@ export const CommonSchema = {
 		enableColumnFilter: false,
 		enableColumnActions: false,
 		enableColumnOrdering: false,
+		enableColumnDragging: false,
 		enableResizing: false,
 		showInLast: true,
 	},
@@ -80,6 +84,7 @@ export const CommonSchema = {
 		enableHiding: false,
 		enableColumnActions: false,
 		enableColumnOrdering: false,
+		enableColumnDragging: false,
 		enableSorting: false,
 	},
 	MONGO_ID: {
@@ -90,6 +95,7 @@ export const CommonSchema = {
 		enableColumnPinning: false,
 		enableColumnActions: false,
 		enableColumnOrdering: false,
+		enableColumnDragging: false,
 		enableSorting: false,
 		size: 250,
 		isHiddenFieldExport: true,
@@ -103,6 +109,7 @@ export const CommonSchema = {
 		isExternalFilter: false,
 		enableColumnActions: true,
 		enableColumnOrdering: false,
+		enableColumnDragging: false,
 		size: 350,
 	},
 	COMMON_COLUMN: {
@@ -127,6 +134,7 @@ export const CommonSchema = {
 		enableColumnFilter: false,
 		isExport: false,
 		enableColumnOrdering: false,
+		enableColumnDragging: false,
 		enableResizing: false,
 		showInLast: true,
 	},
@@ -142,6 +150,7 @@ export const CommonSchema = {
 		isExternalFilter: false,
 		enableColumnActions: false,
 		enableColumnOrdering: false,
+		enableColumnDragging: false,
 		enableColumnFilter: false,
 		isExport: false,
 		enableResizing: false,
@@ -268,6 +277,7 @@ export const CommonSchema = {
 		isSearchField: false,
 		enableSorting: true,
 		type: 'number',
+		subType: 'price',
 		Cell: ({ row, column }) => {
 			const value = row.getValue(column.id);
 
@@ -296,5 +306,64 @@ export const CommonSchema = {
 		isSearchField: true,
 		enableSorting: true,
 		type: 'number',
+		filterVariant: 'equals',
 	},
+	CUMULATIVE_FOOTER: (field, tableKey, toFixed = TO_FIXED) => ({
+		Footer: () => {
+			const Controller = tableController(tableKey);
+			const footerProps = Controller.getValue('footerProps') || {};
+
+			const value = get(footerProps, field);
+
+			return <div>{value ? addTrailingZeros(parseFloat(value).toFixed(toFixed)) : 0}</div>;
+		},
+	}),
 };
+
+export const validateRequiredString = value => (!value?.length ? 'Required' : undefined);
+
+export const editFieldProps =
+	(tableKey, type, validate, required = true) =>
+	({ cell, row }) => {
+		const Controller = tableController(tableKey);
+
+		const {
+			stateValues: { validationErrors, editedData },
+		} = Controller.useState(['validationErrors', 'editedData']);
+
+		const errorText = validationErrors?.[row.id]?.[cell.column.id];
+
+		const [value, setValue] = useState(cell.getValue());
+
+		const onBlur = event => {
+			const validationError = validate?.(event.currentTarget.value);
+
+			const rowData = editedData[row.id] || {};
+
+			set(rowData, cell.column.id, event.currentTarget.value);
+
+			Controller.setValidationErrors(row.id, cell.column.id, validationError);
+			Controller.setEditedData(row.id, rowData);
+		};
+
+		return {
+			type,
+			required,
+
+			...(type === 'date' && { value: moment(value).format('yyyy-MM-DD') }),
+
+			error: !!errorText,
+			helperText: errorText,
+			//store edited user in state to be saved later
+			onChange: e => {
+				setValue(e.currentTarget.value);
+
+				if (type === 'date') {
+					onBlur(e);
+				}
+			},
+			onBlur: e => {
+				onBlur(e);
+			},
+		};
+	};

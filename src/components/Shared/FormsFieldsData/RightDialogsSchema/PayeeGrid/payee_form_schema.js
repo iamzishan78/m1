@@ -2,7 +2,7 @@ import { InputAdornment } from '@material-ui/core';
 
 import { calculatePercentage } from 'components/Shared/valueformatters/vf_currency';
 
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
@@ -15,7 +15,7 @@ const payeeForm = ({ setValue }) => {
 			name: 'payeeName',
 			renderField: 'autoComplete',
 			required: true,
-			query: GET_ES_SIMPLE_SEARCH,
+			query: GET_DB_DATA,
 			isESSearch: true,
 			variables: {
 				index: 'contacts_flat',
@@ -31,7 +31,7 @@ const payeeForm = ({ setValue }) => {
 			},
 			getOptions: apiRes => {
 				// Transform API response into options for autocomplete
-				const filterData = apiRes?.data?.getESSimpleSearch?.hits.map(hit => ({
+				const filterData = apiRes?.data?.getDbData?.hits.map(hit => ({
 					label: hit?.name,
 					value: hit,
 				}));

@@ -260,7 +260,7 @@ export default function AddUnitOwnerDialogContent({
 					shapeOwners: shapeOwner,
 					userId: getUser?._id,
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
+				refetchQueries: ['getDbData', 'getESFilterList', 'getCustomLayer'],
 				awaitRefetchQueries: true,
 			});
 		} else {
@@ -279,7 +279,7 @@ export default function AddUnitOwnerDialogContent({
 					shapeType: props.shapeType,
 					shapeOwner,
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
+				refetchQueries: ['getDbData', 'getESFilterList', 'getCustomLayer'],
 				awaitRefetchQueries: true,
 			});
 		}

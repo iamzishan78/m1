@@ -163,7 +163,7 @@ function RelatedWellsDialog(props) {
 						},
 					],
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
+				refetchQueries: ['getDbData', 'getESFilterList'],
 				awaitRefetchQueries: true,
 			});
 		} else {
@@ -177,7 +177,7 @@ function RelatedWellsDialog(props) {
 						...getValues(),
 					},
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getShapeSummaryDetails'],
+				refetchQueries: ['getDbData', 'getESFilterList', 'getShapeSummaryDetails'],
 				awaitRefetchQueries: true,
 			});
 		}
@@ -204,7 +204,7 @@ function RelatedWellsDialog(props) {
 						},
 					],
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getShapeSummaryDetails'],
+				refetchQueries: ['getDbData', 'getESFilterList', 'getShapeSummaryDetails'],
 				awaitRefetchQueries: true,
 			});
 		} catch {

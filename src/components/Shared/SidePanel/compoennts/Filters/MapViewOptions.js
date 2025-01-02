@@ -145,7 +145,7 @@ function MapViewOptions({ tableKey, allMapViews, defaultView }) {
 	useEffect(() => {
 		if (allMapViews) {
 			if (search) {
-				setFilterMapView(allMapViews.filter(view => view.name.toLowerCase().includes(search.toLowerCase())));
+				setFilterMapView(allMapViews.filter(view => view?.name?.toLowerCase()?.includes(search?.toLowerCase())));
 			} else {
 				setFilterMapView(allMapViews);
 			}
@@ -240,18 +240,24 @@ function MapViewOptions({ tableKey, allMapViews, defaultView }) {
 							Standard
 						</AccordionSummary>
 						<AccordionDetails className={classes.details}>
-							<View
-								view={defaultView}
-								// setEditGridView={setEditGridView}
-								setViewName={setViewName}
-								// updateGridView={updateGridView}
-								userId={getUser?._id}
-								// updateFavouriteGridView={updateFavouriteGridView}
-								onClick={handleClick}
-								tableKey={tableKey}
-								defaultView={defaultView}
-								module={module}
-							/>
+							{filterMapView.map(
+								view =>
+									view.type === 'Default' && (
+										<View
+											view={view}
+											handleMapViewChange={handleMapViewChange}
+											// setEditGridView={setEditGridView}
+											setViewName={setViewName}
+											// updateGridView={updateGridView}
+											userId={getUser?._id}
+											// updateFavouriteGridView={updateFavouriteGridView}
+											onClick={handleClick}
+											tableKey={tableKey}
+											defaultView={defaultView}
+											module={module}
+										/>
+									)
+							)}
 						</AccordionDetails>
 					</Accordion>
 				</div>
@@ -362,7 +368,7 @@ function InputField({ editMapViewId, viewName, setViewName, upsertMapView, setEd
 									name: viewName,
 									type: 'Custom',
 									userId: globalStateController.getValue('user').mongoId,
-									filters: selectedMapView.filters,
+									filters: selectedMapView.filters.filter(filter => filter),
 								},
 							},
 							refetchQueries: ['getMapViews'],

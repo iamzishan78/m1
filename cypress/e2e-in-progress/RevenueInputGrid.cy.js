@@ -9,7 +9,7 @@ describe('Open Revenue Property Detail Card  Spec', () => {
 	it('passes', () => {
 		cy.viewport(1400, 900);
 
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.visit('http://localhost:3000/revenue/statements');
 
 		cy.checkAndLogin();
@@ -20,7 +20,7 @@ describe('Open Revenue Property Detail Card  Spec', () => {
 		cy.get('#menuIcon').click();
 
 		cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(esSimpleSearchResult => {
-			const simpleSearchHits = esSimpleSearchResult.response.body.data.getESSimpleSearch.hits;
+			const simpleSearchHits = esSimpleSearchResult.response.body.data.getDbData.hits;
 			const indexOfStatement = simpleSearchHits.findIndex(hit => hit?.checkDetail?.lines < 5) + 1;
 
 			cy.log('==== STEP: OPEN REVENUE CHECK DETAIL ===');
@@ -28,13 +28,13 @@ describe('Open Revenue Property Detail Card  Spec', () => {
 				cy.wrap($row).scrollIntoView().children().eq(1).children().click();
 
 				cy.log('==== STEP: CLICKING ON INPUT BUTTON ===');
-				cy.interceptApi('getESPaginatedList');
+				cy.interceptApi('getDbData');
 				cy.interceptApi('getESCount');
 				cy.get('#inputModeButton', { timeout: longTimeout }).scrollIntoView().wait(5000).trigger('click');
 				cy.verifyApiResponse('@getESCountApi', { responseTimeout: longTimeout });
 
 				cy.verifyApiResponse('@getESPaginatedListApi', { responseTimeout: longTimeout }).then(result => {
-					const index = result.response.body.data.getESPaginatedList.total + 1;
+					const index = result.response.body.data.getDbData.total + 1;
 
 					cy.log('==== STEP: CLOSE PDF ===');
 					cy.get('#closePdfIcon', { timeout: longTimeout }).click();
@@ -44,7 +44,7 @@ describe('Open Revenue Property Detail Card  Spec', () => {
 					cy.get('#addNewLineItemButton', { timeout: longTimeout }).wait(5000).click();
 
 					cy.log('==== STEP: SELECT PROPERTY FIELD FROM TABLE ===');
-					cy.interceptApi('getESPaginatedList');
+					cy.interceptApi('getDbData');
 					cy.addAutoCompleteField(index, 'Property #');
 					cy.verifyApiResponse('@getESPaginatedListApi', { responseTimeout: longTimeout });
 
@@ -86,15 +86,15 @@ describe('Open Revenue Property Detail Card  Spec', () => {
 					cy.addAutoCompleteField(index, 'Type');
 
 					cy.log('==== STEP: CLICK ON EXIT BUTON ===');
-					cy.interceptApi('getESSimpleSearch');
+					cy.interceptApi('getDbData');
 					cy.get('#exitButton', { timeout: longTimeout }).scrollIntoView().wait(5000).trigger('click');
 					cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(result => {
-						const recentHit = result.response.body.data.getESSimpleSearch.hits[index - 1];
+						const recentHit = result.response.body.data.getDbData.hits[index - 1];
 
 						cy.log('==== STEP: VERIFY ADDED CHECK IN GRID ===');
 						if (!recentHit) {
 							cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(result2 => {
-								const recentHit2 = result2.response.body.data.getESSimpleSearch.hits[index - 1];
+								const recentHit2 = result2.response.body.data.getDbData.hits[index - 1];
 								console.log('result2 : ', result2);
 								if (!recentHit2) {
 									console.log('result2 : ', result2);
@@ -104,7 +104,7 @@ describe('Open Revenue Property Detail Card  Spec', () => {
 						}
 
 						cy.log('==== STEP: CLICK ON INPUT MODE BUTTON===');
-						cy.interceptApiByIndex('getESPaginatedList', 'checkdetails_flat');
+						cy.interceptApiByIndex('getDbData', 'checkdetails_flat');
 						cy.get('#inputModeButton', { timeout: longTimeout }).scrollIntoView().click();
 						cy.wait(5000);
 
@@ -116,7 +116,7 @@ describe('Open Revenue Property Detail Card  Spec', () => {
 						cy.verifyApiResponse('@getESPaginatedListApiByIndex', { responseTimeout: longTimeout });
 						cy.verifyApiResponse('@getESPaginatedListApiByIndex', { responseTimeout: longTimeout }).then(
 							paginatedApiResult => {
-								const lastHit = paginatedApiResult.response.body.data.getESPaginatedList.hits[index - 1];
+								const lastHit = paginatedApiResult.response.body.data.getDbData.hits[index - 1];
 
 								console.log('paginatedApiResult : ', paginatedApiResult);
 								cy.log('==== STEP: VERIFY ADDED CHECK IN INPUT MODE GRID ===');
@@ -189,7 +189,7 @@ Cypress.Commands.add('addAutoCompleteField', (index, columnName) => {
 	cy.getTableCell(columnName, index).then($checkDetailRow => {
 		cy.interceptApi('getESFilterList');
 		cy.get('#checkDetailGrid').scrollIntoView();
-		// cy.interceptApi('getESPaginatedList')
+		// cy.interceptApi('getDbData')
 		cy.interceptApi('updateCheckDetail');
 		cy.wrap($checkDetailRow).scrollIntoView().wait(1000).click();
 		cy.wrap($checkDetailRow).get("[id='filter-autocomplete-es-field']").scrollIntoView().click();

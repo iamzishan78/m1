@@ -196,7 +196,7 @@ const CustomAutocomplete = ({
 		<Autocomplete
 			{...field}
 			multiple={multiple}
-			options={options}
+			options={options.filter(option => (multiple ? !field?.value?.includes(option) : true))}
 			onChange={(e, v, r) => {
 				onChange?.(e, v, r);
 				field.onChange(v);

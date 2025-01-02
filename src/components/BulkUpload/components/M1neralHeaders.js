@@ -21,9 +21,6 @@ import { jobController } from 'hookstate/jobStateController';
 
 import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
 
-// import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
-// import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
-
 const useStyles = makeStyles({
 	root: {
 		width: '100%',
