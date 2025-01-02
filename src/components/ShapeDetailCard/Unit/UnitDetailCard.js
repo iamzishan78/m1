@@ -352,8 +352,9 @@ export default function UnitDetailCard(props) {
 									</div>,
 								]}
 							/>,
-							<MRTTable name="RunsheetTable" overrideMeta={runsheetOverrideMeta} />,
-							,
+							<div>
+								<MRTTable name="RunsheetTable" overrideMeta={runsheetOverrideMeta} />
+							</div>,
 							<TabPanels
 								value={selectedTab}
 								panels={[
