@@ -99,7 +99,24 @@ const RelatedWellsMeta = {
 			name: 'wellStatus.keyword',
 			accessorKey: 'wellStatus',
 		},
-
+		{
+			...CommonSchema.COMMON_COLUMN,
+			header: 'Last 12 (BOE)',
+			name: 'lastTwelveMonthBOE.keyword',
+			accessorKey: 'lastTwelveMonthBOE',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			header: 'MD (ft)',
+			name: 'measuredDepth.keyword',
+			accessorKey: 'measuredDepth',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			header: 'Lateral Length (ft)',
+			name: 'lateralLength.keyword',
+			accessorKey: 'lateralLength',
+		},
 		{
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
