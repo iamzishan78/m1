@@ -581,11 +581,12 @@ export default function AssignOwnerToContactDrawer({
 					case 'ContactTable':
 					case 'CampaignContactTable':
 					case 'UnitTable':
+					case 'CampaignUnitTable':
 						{
 							let entityType = 'Contact';
 							let refetchQueries = ['getESContacts'];
 
-							if (rest.header === 'UnitTable') {
+							if (['UnitTable', 'CampaignUnitTable'].includes(rest.header)) {
 								entityType = 'Shape';
 								refetchQueries = ['getESFilterList', 'getCustomLayer'];
 							}

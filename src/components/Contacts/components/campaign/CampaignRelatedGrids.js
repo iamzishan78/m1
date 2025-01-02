@@ -111,6 +111,13 @@ function CamapignRelatedGrids({ campaign }) {
 				},
 			},
 			customValue: { parentRecord: campaign?._id, campaign: campaign },
+			customProps: {
+				campaign,
+				exportValues: {
+					'Campaign System ID': campaign?._id,
+					'Campaign Name': campaign?.name,
+				},
+			},
 			isCampaignRefetch: true,
 			maxTableHeight: '35vh',
 		}),
@@ -129,7 +136,7 @@ function CamapignRelatedGrids({ campaign }) {
 			customProps: {
 				campaign,
 				exportValues: {
-					'Campaign  System ID': campaign?._id,
+					'Campaign System ID': campaign?._id,
 					'Campaign Name': campaign?.name,
 				},
 			},
