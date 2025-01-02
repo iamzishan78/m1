@@ -21,7 +21,6 @@ const RelatedBillingPartiesMeta = {
 	maxTableHeight: 'calc(100vh - 550px)',
 	CustomToolBar: RelatedBillingPartiesToolbar,
 	isInFiniteScroll: true,
-	columnReordering: false,
 	isGeneric: false,
 	TableSchema: [
 		{

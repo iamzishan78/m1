@@ -26,7 +26,6 @@ const TaxRollInterestsMeta = {
 	isExportDisabled: true,
 	enableFacetedValues: true,
 	isInFiniteScroll: true,
-	columnVirtualization: true,
 	TableSchema: [
 		{
 			...CommonSchema.STRING_COLUMN,

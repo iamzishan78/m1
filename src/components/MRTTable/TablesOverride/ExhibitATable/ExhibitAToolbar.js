@@ -2,21 +2,28 @@ import React, { memo, useEffect, useState } from 'react';
 
 import { Box, Switch } from '@mui/material';
 
+import PropTypes from 'prop-types';
+
 import { tableController } from 'hookstate/tableController';
 
 function ExhibitAToolbar({ tableKey }) {
 	const [inactiveAgreementToggle, setInactiveAgreementToggle] = useState(false);
+	const Controller = tableController(tableKey);
+
+	const tableState = Controller.useState(['gridView']);
+	const tableStateValues = tableState.stateValues;
+	const selectedGridView = tableStateValues?.gridView?.selectedGridView;
 
 	useEffect(() => {
 		if (!inactiveAgreementToggle) {
-			tableController(tableKey).setFilter({
+			Controller.setFilter({
 				field: 'shape.shapeJson.properties.agreementStatus',
 				value: ['Active', 'ACTIVE', 'active'],
 			});
 		} else {
-			tableController(tableKey).clearFilter('shape.shapeJson.properties.agreementStatus');
+			Controller.clearFilter('shape.shapeJson.properties.agreementStatus');
 		}
-	}, [inactiveAgreementToggle, tableKey]);
+	}, [inactiveAgreementToggle, tableKey, selectedGridView]);
 
 	return (
 		<>
@@ -32,5 +39,8 @@ function ExhibitAToolbar({ tableKey }) {
 		</>
 	);
 }
+ExhibitAToolbar.propTypes = {
+	tableKey: PropTypes.string.isRequired,
+};
 
 export default memo(ExhibitAToolbar);
