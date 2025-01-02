@@ -485,9 +485,7 @@ const tableESStateControllerHandler = state => ({
 
 		const columnFilterModesFnRefs = globalStateController.getValue('columnFilterModesFnRefs');
 
-		if (!columnFilterModesFnRefs?.[state.tableKey.get({ noproxy: true })]?.[column]?.intiated) {
-			columnFilterModesFnRefs?.[state.tableKey.get({ noproxy: true })]?.[column]?.onSelectFilterMode(mode);
-		}
+		columnFilterModesFnRefs?.[state.tableKey.get({ noproxy: true })]?.[column]?.onSelectFilterMode(mode);
 	},
 
 	setSelectAll: value => {

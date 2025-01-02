@@ -352,7 +352,9 @@ const LayerFilters = () => {
 							}
 
 							// Render the UserMapFilter component if the checks pass
-							return <UserMapFilter key={mapView.id} mapView={mapView} index={index} remove={remove} />;
+							return (
+								<UserMapFilter key={mapView.id} mapView={mapView} index={index} remove={remove} resetForm={resetForm} />
+							);
 						})}
 					</div>
 				</FormProvider>

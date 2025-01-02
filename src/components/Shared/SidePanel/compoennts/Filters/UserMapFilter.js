@@ -68,7 +68,7 @@ export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValue
 		case 'multiselect':
 			return {
 				field: fieldName?.value || fieldName,
-				value: filterValues,
+				value: filterValues || [],
 				isMapViewFilter: true,
 				searchType: normalizedFilterType,
 			};
@@ -125,7 +125,7 @@ export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValue
 	}
 };
 
-const UserMapFilter = ({ mapView, index, remove }) => {
+const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 	const classes = useStyles(); // Apply custom styles
 	const { control, setValue, watch } = useFormContext(); // Get form control methods
 
@@ -260,20 +260,53 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 			const selectedField = getSelectedField(fieldName?.value || fieldName);
 
 			const canUpdateMapView =
-				dataSourceName && selectedField?.value && (filterType || ['date', 'range'].includes(selectedField?.type));
+				dataSourceName &&
+				selectedField?.value &&
+				(filterType || ['date', 'range'].includes(selectedField?.type)) &&
+				filterValues;
 
 			const mapViewFilters = getMapViewFilters();
 			// Upsert the map view data to the GraphQL API
 			if (canUpdateMapView) {
-				globalStateController.updateState({
-					mapView: {
-						selectedMapView: {
-							...selectedMapView,
-							filters: mapViewFilters,
-						},
-					},
+				debugger;
+				const tableKey = Object.keys(tableESState).find(key => {
+					const tableState = tableESState[key].get({ noproxy: true });
+					return tableState?.layerIdentifier === dataSourceName;
 				});
-				tableGlobalController.reInitialized();
+				const tableState = tableESState[tableKey]?.get({ noproxy: true });
+
+				const formattedFilter = getFormattedFilterBasedOnType(
+					filterType,
+					selectedField?.value?.replace('.keyword', ''),
+					filterValues
+				);
+
+				const isFilterApplied = tableState?.filters?.find(
+					filter =>
+						formattedFilter?.field?.replace('.keyword', '') === filter?.field?.replace('.keyword', '') &&
+						// &&
+						// formattedFilter?.searchType === filter.searchType
+						formattedFilter?.value === filter.value
+				);
+
+				if (!isFilterApplied) {
+					tableController(tableKey).setFilter(formattedFilter);
+					tableController(tableKey).setShowColumnFilters(true);
+					tableController(tableKey).setFilterMode(
+						formattedFilter?.field?.replace('.keyword', ''),
+						formattedFilter?.searchType
+					);
+				}
+
+				if (!tableController(tableKey))
+					globalStateController.updateState({
+						mapView: {
+							selectedMapView: {
+								...selectedMapView,
+								filters: mapViewFilters,
+							},
+						},
+					});
 				layerFiltersController.updateLayerFiltersFromMapViews(dataSourceName, mapViewFilters);
 			}
 		}
@@ -402,6 +435,16 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 
 		remove(index); // Set the filter cleared state to true
 
+		const tableKey = Object.keys(tableESState).find(key => {
+			const tableState = tableESState[key].get({ noproxy: true });
+			return tableState?.layerIdentifier === dataSourceName;
+		});
+
+		tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
+		resetForm({
+			mapViews: mapViewFilters || [],
+		});
+
 		globalStateController.updateState({
 			mapView: {
 				selectedMapView: {
@@ -411,7 +454,6 @@ const UserMapFilter = ({ mapView, index, remove }) => {
 			},
 		});
 		layerFiltersController.updateLayerFiltersFromMapViews(dataSourceName, mapViewFilters);
-		tableGlobalController.reInitialized();
 	};
 
 	return (
