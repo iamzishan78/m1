@@ -368,7 +368,7 @@ function InputField({ editMapViewId, viewName, setViewName, upsertMapView, setEd
 									name: viewName,
 									type: 'Custom',
 									userId: globalStateController.getValue('user').mongoId,
-									filters: selectedMapView.filters.filter(filter => filter),
+									filters: selectedMapView?.filters?.filter(filter => filter) || [],
 								},
 							},
 							refetchQueries: ['getMapViews'],

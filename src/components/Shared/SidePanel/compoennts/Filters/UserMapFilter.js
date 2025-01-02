@@ -260,10 +260,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			const selectedField = getSelectedField(fieldName?.value || fieldName);
 
 			const canUpdateMapView =
-				dataSourceName &&
-				selectedField?.value &&
-				(filterType || ['date', 'range'].includes(selectedField?.type)) &&
-				filterValues;
+				dataSourceName && selectedField?.value && (filterType || ['date', 'range'].includes(selectedField?.type));
 
 			const mapViewFilters = getMapViewFilters();
 			// Upsert the map view data to the GraphQL API
@@ -290,12 +287,16 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				);
 
 				if (!isFilterApplied) {
-					tableController(tableKey).setFilter(formattedFilter);
-					tableController(tableKey).setShowColumnFilters(true);
-					tableController(tableKey).setFilterMode(
-						formattedFilter?.field?.replace('.keyword', ''),
-						formattedFilter?.searchType
-					);
+					if (!formattedFilter?.value || formattedFilter?.value?.length === 0) {
+						tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
+					} else {
+						tableController(tableKey).setFilter(formattedFilter);
+						tableController(tableKey).setShowColumnFilters(true);
+						tableController(tableKey).setFilterMode(
+							formattedFilter?.field?.replace('.keyword', ''),
+							formattedFilter?.searchType
+						);
+					}
 				}
 
 				if (!tableController(tableKey))
@@ -441,6 +442,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		});
 
 		tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
+		tableController(tableKey).setFilterMode((fieldName?.value || fieldName)?.replace('.keyword', ''), 'singleselect');
 		resetForm({
 			mapViews: mapViewFilters || [],
 		});
