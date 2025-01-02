@@ -59,22 +59,22 @@ const useStyles = makeStyles(theme => ({
 
 // Function to format filter values based on the filter type
 export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValues) => {
-	// Handle cases where filterType might be an object
-	filterType = filterType?.value || filterType;
+	// Normalize filterType if it's an object
+	const normalizedFilterType = filterType?.value || filterType;
 
 	let filterValue;
 
-	switch (filterType) {
+	switch (normalizedFilterType) {
 		case 'multiselect':
 			return {
 				field: fieldName?.value || fieldName,
 				value: filterValues,
 				isMapViewFilter: true,
-				searchType: filterType,
+				searchType: normalizedFilterType,
 			};
 		case 'empty':
 		case 'notEmpty':
-			filterValue = ' ';
+			filterValue = ' '; // empty value for empty/notEmpty filters
 			break;
 		case 'date':
 			filterValue = {
@@ -90,27 +90,39 @@ export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValue
 			break;
 	}
 
-	return {
+	// Construct the final filter object
+	const baseFilter = {
 		field: fieldName?.value || fieldName,
 		value: filterValue,
 		isMapViewFilter: true,
-		searchType: filterType,
-		...(filterType !== 'singleselect' && {
-			type: 'advanced',
-			isKeyword: true,
-			columnType: 'string',
-		}),
-		...(filterType === 'date' && {
-			columnType: 'date',
-			isKeyword: false,
-			// isSearchField: false,
-			searchType: 'betweenInclusive',
-		}),
-		...(filterType === 'range' && {
-			type: 'advanced',
-			searchType: 'betweenInclusive',
-		}),
+		searchType: normalizedFilterType,
 	};
+
+	// Additional properties based on filter type
+	switch (normalizedFilterType) {
+		case 'singleselect':
+			return baseFilter;
+		case 'date':
+			return {
+				...baseFilter,
+				columnType: 'date',
+				isKeyword: false,
+				searchType: 'betweenInclusive',
+			};
+		case 'range':
+			return {
+				...baseFilter,
+				type: 'advanced',
+				searchType: 'betweenInclusive',
+			};
+		default:
+			return {
+				...baseFilter,
+				type: 'advanced',
+				isKeyword: true,
+				columnType: 'string',
+			};
+	}
 };
 
 const UserMapFilter = ({ mapView, index, remove }) => {

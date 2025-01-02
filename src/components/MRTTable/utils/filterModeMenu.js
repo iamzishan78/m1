@@ -40,6 +40,17 @@ const filterModeMenu =
 			};
 		}
 
+		// Sets initiated to false because no filter mode is applied yet
+		if (filterModes?.[tableKey]?.[name]?.intiated === true) {
+			filterModes[tableKey] = {
+				...filterModes[tableKey],
+				[name]: {
+					onSelectFilterMode,
+					intiated: false,
+				},
+			};
+		}
+
 		globalStateController.updateState({
 			columnFilterModesFnRefs: filterModes,
 		});
