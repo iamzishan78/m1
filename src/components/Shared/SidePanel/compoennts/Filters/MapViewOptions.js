@@ -240,7 +240,7 @@ function MapViewOptions({ tableKey, allMapViews, defaultView }) {
 							Standard
 						</AccordionSummary>
 						<AccordionDetails className={classes.details}>
-							{filterMapView.map(
+							{[defaultView].map(
 								view =>
 									view.type === 'Default' && (
 										<View
