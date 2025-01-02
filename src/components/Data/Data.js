@@ -2,59 +2,33 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Switch, Route, useLocation } from 'react-router-dom';
 
-import ActivitiesDashboard from 'components/Activities/components/ActivitiesDashboard';
-import LandAnalytics from 'components/Analytics/components/Land';
-import RevenueAnalytics from 'components/Analytics/components/Revenue';
-import AuditReporting from 'components/AuditReporting/AuditReporting';
-import PermitsCard from 'components/Dashboard/components/PermitsCard';
-import ProdCard from 'components/Dashboard/components/ProdCard';
-import RigsCard from 'components/Dashboard/components/RigsCard';
-import AdvancedSearch from 'components/Land/components/AdvancedSearch';
 import QuickActionPanel from 'components/Land/components/QuickActionPanel';
-import { RevenuePropertyDetails } from 'components/Revenue/components';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
 import { setActiveModule, toggleQuickActionsPanel } from 'store/actions/commonActions';
 
-import { analyticsManagementRoutes } from 'utils/data';
+import { dataManagementRoutes } from 'utils/data';
 
 import { AppContext } from 'AppContext';
 
-const Components = {
-	Land: LandAnalytics,
-	Revenue: RevenueAnalytics,
-	ActivitiesDashboard,
-	RigsCard: RigsCard,
-	PermitsCard: PermitsCard,
-	ProdCard: ProdCard,
-	RevenuePropertyDetails,
-	AdvancedSearch: AdvancedSearch,
-	AuditReporting: AuditReporting,
-};
+import Content from './Content';
 
-export default function Analytics() {
+export default function Data() {
 	const location = useLocation();
 	const [stateApp] = useContext(AppContext);
 	const dispatch = useDispatch();
 	const [allowedPaths, setAllowablePaths] = useState({});
 	const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
-	const [isDetailView, setDetailView] = useState(false);
-	const [propertyDetailRoute] = useState(analyticsManagementRoutes.REVENUE_PROPERTY_DETAILS);
 
 	useEffect(() => {
-		let option = Object.values(analyticsManagementRoutes).find(item => {
+		let option = Object.values(dataManagementRoutes).find(item => {
 			return item.link === location.pathname;
 		});
-		if (location.pathname.includes('/property/details/')) {
-			dispatch(setActiveModule(propertyDetailRoute));
-			setDetailView(true);
-		}
 		if (option) {
 			dispatch(setActiveModule(option));
-			setDetailView(false);
 		}
-	}, [dispatch, location.pathname, propertyDetailRoute]);
+	}, [dispatch, location.pathname]);
 
 	const handlePanelStateChange = state => {
 		dispatch(toggleQuickActionsPanel(state));
@@ -71,8 +45,9 @@ export default function Analytics() {
 	}, [allowedPaths]);
 
 	useEffect(() => {
-		const allPaths = JSON.parse(JSON.stringify(analyticsManagementRoutes));
-		const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.ANALYTICS);
+		const allPaths = JSON.parse(JSON.stringify(dataManagementRoutes));
+
+		const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.DATA);
 		const allAllowedPaths = {};
 		if (feature?.JSON) {
 			const data = JSON.parse(feature.JSON);
@@ -82,26 +57,29 @@ export default function Analytics() {
 				}
 			});
 		}
+
 		setAllowablePaths(allAllowedPaths);
 	}, [stateApp?.user]);
 
 	return (
 		<>
-			<FeatureFlag feature={FEATURES.ANALYTICS}>
+			<FeatureFlag feature={FEATURES.DATA}>
 				<QuickActionPanel
-					title="Analytics"
+					title="Data"
 					handlePanelStateChange={handlePanelStateChange}
 					quickActionsPanelState={quickActionsPanelState}
 					activeModule={activeModule}
 					actions={sidePanelOptions}
 				>
-					{Object.keys(allowedPaths).map((option, index) => {
+					{Object.keys(allowedPaths).map(option => {
 						return (
 							<Switch key={option}>
 								<Route
 									exact
-									path={isDetailView && index === 1 ? propertyDetailRoute?.link : allowedPaths[option].link}
-									component={Components[isDetailView ? propertyDetailRoute.component : allowedPaths[option].component]}
+									path={allowedPaths[option].link}
+									component={() => {
+										return <Content type={option} />;
+									}}
 								/>
 							</Switch>
 						);

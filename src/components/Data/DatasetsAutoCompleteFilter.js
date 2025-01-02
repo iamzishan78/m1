@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 
 import { useLazyQuery } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import { setStateIfDeepEqual } from 'components/Shared/functions';
 
@@ -23,7 +24,8 @@ const DatasetsAutoCompleteFilter = ({ sx, multiple, value, setValue }) => {
 
 	useEffect(() => {
 		if (!datasets?.getDatasets) {
-			return setStateIfDeepEqual(setOptions, []);
+			setStateIfDeepEqual(setOptions, []);
+			return;
 		}
 
 		setStateIfDeepEqual(
@@ -49,6 +51,13 @@ const DatasetsAutoCompleteFilter = ({ sx, multiple, value, setValue }) => {
 			}}
 		/>
 	);
+};
+
+DatasetsAutoCompleteFilter.propTypes = {
+	sx: PropTypes.object,
+	multiple: PropTypes.bool,
+	value: PropTypes.bool,
+	setValue: PropTypes.func.isRequired,
 };
 
 export default DatasetsAutoCompleteFilter;

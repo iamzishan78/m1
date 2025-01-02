@@ -11,6 +11,7 @@ import PropTypes from 'prop-types';
 
 import AdminProvider from 'components/Admin/AdminProvider';
 import AnalyticsProvider from 'components/Analytics/AnalyticsProvider';
+import DataProvider from 'components/Data/DataProvider';
 import Land from 'components/Land';
 import RevenueProvider from 'components/Revenue/RevenueProvider';
 
@@ -103,6 +104,7 @@ function App() {
 							/>
 							<PrivateRoute exact path="/contact/details/:contactId/documents" component={ContactDocumentsProvider} />
 							<PrivateRoute title="Analytics" path="/analytics" component={AnalyticsProvider} />
+							<PrivateRoute title="Data" path="/data" component={DataProvider} />
 							<PrivateRoute exact path="/dashboard" component={DashboardProvider} />
 							<PrivateRoute exact path="/studio" component={StudioProvider} />
 							<PrivateRoute

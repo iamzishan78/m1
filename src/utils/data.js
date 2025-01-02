@@ -255,16 +255,6 @@ export const analyticsManagementRoutes = {
 	// 	isDefault: true,
 	// 	hideSearch: true,
 	// },
-	Data: {
-		featureFlag: 'CONTACTSUBMENU',
-		title: 'Data',
-		link: '/analytics/data',
-		component: 'Data',
-		value: 'Data',
-		search: true,
-		isDefault: true,
-		hideSearch: true,
-	},
 	REVENUE_PROPERTY_DETAILS: {
 		featureFlag: 'CONTACTSUBMENU',
 		title: 'Revenue',
@@ -668,6 +658,57 @@ export const AdminManagementRoutes = {
 		search: true,
 		isDefault: true,
 		isExcluded: true,
+	},
+};
+
+export const dataManagementRoutes = {
+	PlatformWells: {
+		featureFlag: 'DATA',
+		title: 'Platform Wells',
+		link: '/data/wells',
+		value: 'PlatformWells',
+		isDefault: true,
+		hideSearch: true,
+	},
+	Agreements: {
+		featureFlag: 'DATA',
+		title: 'Agreements',
+		link: '/data/agreements',
+		value: 'Agreements',
+		isDefault: true,
+		hideSearch: true,
+	},
+	Units: {
+		featureFlag: 'DATA',
+		title: 'Units',
+		link: '/data/units',
+		value: 'Units',
+		isDefault: true,
+		hideSearch: true,
+	},
+	Tracts: {
+		featureFlag: 'DATA',
+		title: 'Tracts',
+		link: '/data/tracts',
+		value: 'Tracts',
+		isDefault: true,
+		hideSearch: true,
+	},
+	MyWells: {
+		featureFlag: 'DATA',
+		title: 'My Wells',
+		link: '/data/mywells',
+		value: 'MyWells',
+		isDefault: true,
+		hideSearch: true,
+	},
+	ShapeFile: {
+		featureFlag: 'DATA',
+		title: 'Shape File',
+		link: '/data/shapefiles',
+		value: 'ShapeFile',
+		isDefault: true,
+		hideSearch: true,
 	},
 };
 
