@@ -14,6 +14,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useMutation, useQuery } from '@apollo/client';
 import set from 'lodash/set';
+import PropTypes from 'prop-types';
 
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import EntityType from 'components/ContactDetailCard/components/FieldContent/EntityType';
@@ -118,7 +119,6 @@ function SelectedField({
 	setContactOwner,
 	contactOwner,
 	fieldKey,
-	campaigns,
 	classes,
 	publicTags,
 }) {
@@ -253,13 +253,24 @@ function SelectedField({
 	return ''; // Default case returns an empty string
 }
 
+SelectedField.propTypes = {
+	field: PropTypes.string.isRequired,
+	setFieldKey: PropTypes.func.isRequired,
+	setCampaigns: PropTypes.func.isRequired,
+	setContactOwner: PropTypes.func.isRequired,
+	contactOwner: PropTypes.string,
+	fieldKey: PropTypes.string,
+	campaigns: PropTypes.arrayOf(PropTypes.object).isRequired, // Adjust if campaigns have a specific structure
+	classes: PropTypes.object, // Adjust based on the structure of classes if necessary
+	publicTags: PropTypes.array, // Adjust if publicTags have a specific structure
+};
+
 export default function AssignOwnerToContactDrawer({
 	onClose,
 	rows,
 	setRows,
 	showSuccessMessage,
 	getContactCampaignAction,
-	campaignList,
 	selectedCampaign,
 	...rest
 }) {
@@ -368,7 +379,7 @@ export default function AssignOwnerToContactDrawer({
 	const onFieldToUpdateChange = field => {
 		setField(field);
 		if (field === 'Campaigns' && selectedCampaign) {
-			setFieldKey(selectedCampaign.name);
+			setFieldKey([{ _id: selectedCampaign._id, name: selectedCampaign.name }]);
 		} else {
 			setFieldKey('');
 		}
@@ -615,89 +626,91 @@ export default function AssignOwnerToContactDrawer({
 						break;
 
 					case 'TractPerUnitTable':
-						const parcelOwnersToUpdate = rows.map(row => ({
-							_id: row._id,
-							shapeId: row.customLayerId,
-							campaigns,
-							relatedObject: row.ownerEntity,
-							createBy: getUser?._id,
-							lastUpdateBy: getUser?._id,
-						}));
+						{
+							const parcelOwnersToUpdate = rows.map(row => ({
+								_id: row._id,
+								shapeId: row.customLayerId,
+								campaigns,
+								relatedObject: row.ownerEntity,
+								createBy: getUser?._id,
+								lastUpdateBy: getUser?._id,
+							}));
 
-						updateParcelOwners({
-							variables: {
-								parcelOwners: parcelOwnersToUpdate,
-							},
-							refetchQueries: ['getESFilterList', 'getCustomLayer'],
-							awaitRefetchQueries: true,
-						}).then(
-							res => {
-								resetESTableToggle.set(!resetESTableToggle.get());
-								if (res.data && res.data.updateParcelOwners) {
-									const success = res.data.updateParcelOwners.success;
-									if (success) {
-										Loader.successToast('contact-creation', 'Updated');
-										showSuccessMessage(`${field} Bulk Updated Successfully`);
-										if (rest.onBulkUpdateComplete) {
-											rest.onBulkUpdateComplete();
+							updateParcelOwners({
+								variables: {
+									parcelOwners: parcelOwnersToUpdate,
+								},
+								refetchQueries: ['getESFilterList', 'getCustomLayer'],
+								awaitRefetchQueries: true,
+							}).then(
+								res => {
+									resetESTableToggle.set(!resetESTableToggle.get());
+									if (res.data && res.data.updateParcelOwners) {
+										const success = res.data.updateParcelOwners.success;
+										if (success) {
+											Loader.successToast('contact-creation', 'Updated');
+											showSuccessMessage(`${field} Bulk Updated Successfully`);
+											if (rest.onBulkUpdateComplete) {
+												rest.onBulkUpdateComplete();
+											}
+										} else {
+											Loader.errorToast('contact-creation', 'Updated');
 										}
 									} else {
-										Loader.errorToast('contact-creation', 'Updated');
+										Loader.errorToast('contact-creation', 'Failed');
 									}
-								} else {
-									Loader.errorToast('contact-creation', 'Failed');
+								},
+								err => {
+									console.log(err);
+									Loader.errorToast('contact-creation', errorMsg);
 								}
-							},
-							err => {
-								console.log(err);
-								Loader.errorToast('contact-creation', errorMsg);
-							}
-						);
-
+							);
+						}
 						break;
 
 					default:
-						const shapeOwnersToUpdate = rows.map(row => ({
-							_id: row._id,
-							shapeId: row.customLayerId,
-							campaigns,
-							relatedObject: row.ownerEntity,
-							createBy: getUser?._id,
-							lastUpdateBy: getUser?._id,
-						}));
+						{
+							const shapeOwnersToUpdate = rows.map(row => ({
+								_id: row._id,
+								shapeId: row.customLayerId,
+								campaigns,
+								relatedObject: row.ownerEntity,
+								createBy: getUser?._id,
+								lastUpdateBy: getUser?._id,
+							}));
 
-						updateShapeOwners({
-							variables: {
-								shapeType: 'Unit',
-								shapeOwners: shapeOwnersToUpdate,
-								userId: getUser?._id,
-							},
-							refetchQueries: ['getESFilterList', 'getCustomLayer'],
-							awaitRefetchQueries: true,
-						}).then(
-							res => {
-								resetESTableToggle.set(!resetESTableToggle.get());
-								if (res.data && res.data.updateShapeOwners) {
-									const success = res.data.updateShapeOwners.success;
-									if (success) {
-										Loader.successToast('contact-creation', 'Updated');
-										showSuccessMessage(`${field} Bulk Updated Successfully`);
-										if (rest.onBulkUpdateComplete) {
-											rest.onBulkUpdateComplete();
+							updateShapeOwners({
+								variables: {
+									shapeType: 'Unit',
+									shapeOwners: shapeOwnersToUpdate,
+									userId: getUser?._id,
+								},
+								refetchQueries: ['getESFilterList', 'getCustomLayer'],
+								awaitRefetchQueries: true,
+							}).then(
+								res => {
+									resetESTableToggle.set(!resetESTableToggle.get());
+									if (res.data && res.data.updateShapeOwners) {
+										const success = res.data.updateShapeOwners.success;
+										if (success) {
+											Loader.successToast('contact-creation', 'Updated');
+											showSuccessMessage(`${field} Bulk Updated Successfully`);
+											if (rest.onBulkUpdateComplete) {
+												rest.onBulkUpdateComplete();
+											}
+										} else {
+											Loader.errorToast('contact-creation', 'Updated');
 										}
 									} else {
-										Loader.errorToast('contact-creation', 'Updated');
+										Loader.errorToast('contact-creation', 'Failed');
 									}
-								} else {
-									Loader.errorToast('contact-creation', 'Failed');
+								},
+								err => {
+									console.log(err);
+									Loader.errorToast('contact-creation', errorMsg);
 								}
-							},
-							err => {
-								console.log(err);
-								Loader.errorToast('contact-creation', errorMsg);
-							}
-						);
-
+							);
+						}
 						break;
 				}
 
@@ -866,3 +879,13 @@ export default function AssignOwnerToContactDrawer({
 		</RightDialog>
 	);
 }
+
+AssignOwnerToContactDrawer.propTypes = {
+	onClose: PropTypes.func.isRequired,
+	rows: PropTypes.array.isRequired,
+	setRows: PropTypes.func.isRequired,
+	showSuccessMessage: PropTypes.func.isRequired,
+	getContactCampaignAction: PropTypes.func.isRequired,
+	selectedCampaign: PropTypes.object,
+	rest: PropTypes.object,
+};
