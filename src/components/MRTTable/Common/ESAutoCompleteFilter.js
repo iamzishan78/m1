@@ -160,7 +160,6 @@ function ESAutoCompleteFilter({
 				case 'price':
 					label = vf_currency_to_fixed(value, MIN_FILTER_LENGTH);
 					break;
-				case 'decimal':
 				case 'number':
 					label = vf_number(value, MIN_FILTER_LENGTH);
 					break;

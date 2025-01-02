@@ -126,19 +126,19 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.MONGO_ID,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 
 		{
 			...CommonSchema.HIDDEN,
 			name: 'ownerEntity',
-			accessorKey: 'ownerEntity',
+			id: 'ownerEntity',
 		},
 
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'contact.entityDetail.name.keyword',
-			accessorKey: 'contact.entityDetail.name',
+			id: 'contact.entityDetail.name',
 			isExport: 'name',
 			header: 'Owner Name',
 			Cell: ({ renderedCellValue, row }) => {
@@ -186,7 +186,7 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'contact.entityDetail.currentAddress.keyword',
-			accessorKey: 'contact.entityDetail.currentAddress',
+			id: 'contact.entityDetail.currentAddress',
 			header: 'Current Address',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -194,7 +194,7 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'contact.entityDetail.primaryAddress.keyword',
-			accessorKey: 'contact.entityDetail.primaryAddress',
+			id: 'contact.entityDetail.primaryAddress',
 			header: 'Primary Address',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -202,7 +202,7 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shape.shapeJson.properties.uName.keyword',
-			accessorKey: 'shape.shapeJson.properties.uName',
+			id: 'shape.shapeJson.properties.uName',
 			header: 'Unit Name',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -210,7 +210,7 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shape.shapeJson.properties.uNumber.keyword',
-			accessorKey: 'shape.shapeJson.properties.uNumber',
+			id: 'shape.shapeJson.properties.uNumber',
 			header: 'Unit #',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -219,7 +219,6 @@ const OwnersPerUnitMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.StateAbbreviation.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.StateAbbreviation',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.StateAbbreviation,
 			header: 'State',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -228,7 +227,6 @@ const OwnersPerUnitMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.County.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.County',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.County,
 			header: 'County',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -236,7 +234,7 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shape.shapeJson.properties.uAcres.keyword',
-			accessorKey: 'shape.shapeJson.properties.uAcres',
+			id: 'shape.shapeJson.properties.uAcres',
 			header: 'Unit Acres',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -244,7 +242,6 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'contact.ownerType.keyword',
-			accessorFn: row => row?.contact?.ownerType,
 			id: 'contact.ownerType',
 			header: 'Entity Type',
 		},
@@ -252,7 +249,7 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'working_interest',
-			accessorKey: 'working_interest',
+			id: 'working_interest',
 			header: 'Working Interest',
 			...CommonSchema.AGGREGATED_FOOTER('working_interest', 'OwnersPerUnitTable'),
 		},
@@ -260,7 +257,7 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'royalty_interest',
-			accessorKey: 'royalty_interest',
+			id: 'royalty_interest',
 			header: 'Royalty Interest',
 			...CommonSchema.AGGREGATED_FOOTER('royalty_interest', 'OwnersPerUnitTable'),
 		},
@@ -268,7 +265,7 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'orri',
-			accessorKey: 'orri',
+			id: 'orri',
 			header: 'ORRI',
 			...CommonSchema.AGGREGATED_FOOTER('orri', 'OwnersPerUnitTable'),
 		},
@@ -276,14 +273,14 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'nri',
-			accessorKey: 'nri',
+			id: 'nri',
 			header: 'NRI',
 			...CommonSchema.AGGREGATED_FOOTER('nri', 'OwnersPerUnitTable'),
 		},
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'net_acres',
-			accessorKey: 'net_acres',
+			id: 'net_acres',
 			header: 'Net Acres',
 			...CommonSchema.AGGREGATED_FOOTER('net_acres', 'OwnersPerUnitTable'),
 		},
@@ -291,7 +288,7 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'nra',
-			accessorKey: 'nra',
+			id: 'nra',
 			header: 'NRA',
 			...CommonSchema.AGGREGATED_FOOTER('nra', 'OwnersPerUnitTable'),
 		},
@@ -299,14 +296,14 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'unitTractId.keyword',
-			accessorKey: 'unitTractId',
+			id: 'unitTractId',
 			header: 'Unit Tract ID',
 		},
 
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'tractAcres',
-			accessorKey: 'tractAcres',
+			id: 'tractAcres',
 			header: 'Unit Tract Acres',
 			...CommonSchema.AGGREGATED_FOOTER('tractAcres', 'OwnersPerUnitTable'),
 		},
@@ -314,14 +311,14 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'seller_asking_price',
-			accessorKey: 'seller_asking_price',
+			id: 'seller_asking_price',
 			header: 'Seller Asking Price',
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'competitor_offer_price',
-			accessorKey: 'competitor_offer_price',
+			id: 'competitor_offer_price',
 			header: 'Competitor Offer Price',
 			size: 300,
 		},
@@ -329,42 +326,41 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'uUnitPricingInterest',
-			accessorKey: 'uUnitPricingInterest',
+			id: 'uUnitPricingInterest',
 			header: 'Target Price/NRA',
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'offer_price',
-			accessorKey: 'offer_price',
+			id: 'offer_price',
 			header: 'Target Offer Price',
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'uMaxUnitPricingInterest',
-			accessorKey: 'uMaxUnitPricingInterest',
+			id: 'uMaxUnitPricingInterest',
 			header: 'Max Price/NRA',
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'max_offer_price',
-			accessorKey: 'max_offer_price',
+			id: 'max_offer_price',
 			header: 'Max Offer Price',
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'actual_offer_price',
-			accessorKey: 'actual_offer_price',
+			id: 'actual_offer_price',
 			header: 'Actual Offer Price',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'contact.contactStatus.keyword',
-			accessorFn: row => row?.contact?.contactStatus,
 			id: 'contact.contactStatus',
 			header: 'Contact Status',
 		},
@@ -372,7 +368,6 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'contact.status.keyword',
-			accessorFn: row => row?.contact?.status,
 			id: 'contact.status',
 			header: 'Contact Stage',
 		},
@@ -380,7 +375,6 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'contact.homePhone.keyword',
-			accessorFn: row => row?.contact?.homePhone,
 			id: 'contact.homePhone',
 			header: 'Contact Home Phone 1',
 			size: 275,
@@ -389,7 +383,6 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'contact.mobilePhone.keyword',
-			accessorFn: row => row?.contact?.mobilePhone,
 			id: 'contact.mobilePhone',
 			header: 'Contact Mobile Phone 1',
 			size: 275,
@@ -398,7 +391,7 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'contactOwners.keyword',
-			accessorKey: 'contactOwners',
+			id: 'contactOwners',
 			header: 'Contact Owner',
 			Cell: ({ row }) => {
 				return <div>{row?.original?.contactOwners[0]}</div>;
@@ -408,7 +401,6 @@ const OwnersPerUnitMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			type: 'array',
 			name: 'campaigns',
-			accessorFn: row => row?.campaigns,
 			id: 'campaigns',
 			header: 'Campaigns',
 			Cell: ({ row }) => {
@@ -419,13 +411,13 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'campaignPriority.keyword',
-			accessorKey: 'campaignPriority',
+			id: 'campaignPriority',
 			header: 'Campaign Priority 1',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shape.shapeJson.properties.reviewer.name.keyword',
-			accessorKey: 'shape.shapeJson.properties.reviewer.name',
+			id: 'shape.shapeJson.properties.reviewer.name',
 			header: 'Reviewer',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -434,7 +426,7 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shape.shapeJson.properties.qualifier.name.keyword',
-			accessorKey: 'shape.shapeJson.properties.qualifier.name',
+			id: 'shape.shapeJson.properties.qualifier.name',
 			header: 'Qualifier',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -442,7 +434,7 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'dataSource.keyword',
-			accessorKey: 'dataSource',
+			id: 'dataSource',
 			header: 'Data Source',
 		},
 
@@ -450,7 +442,6 @@ const OwnersPerUnitMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'taxYear',
 			type: 'number',
-			accessorFn: row => row?.taxYear,
 			id: 'taxYear',
 			header: 'Tax Year',
 			isSearchField: false,
@@ -459,7 +450,6 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'deals.name.keyword',
-			accessorFn: row => row?.deals?.name,
 			id: 'deals.name',
 			header: 'Associated Deals',
 			handleArrayExport: {
@@ -490,7 +480,6 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'contact.isPurchased',
-			accessorFn: row => row?.contact?.isPurchased,
 			header: 'Purchased Data Exists',
 			id: 'contact.isPurchased',
 			filterSelectOptions: [
@@ -522,7 +511,7 @@ const OwnersPerUnitMeta = {
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'isContact',
-			accessorKey: 'isContact',
+			id: 'isContact',
 			Cell: ({ row }) => {
 				const ownerEntity = row.getValue('ownerEntity');
 				return <IsContactCell contactId={ownerEntity} />;
@@ -550,7 +539,7 @@ const OwnersPerUnitMeta = {
 			showInLast: false,
 			size: 80,
 			name: 'actionMenu',
-			accessorKey: 'actionMenu',
+			id: 'actionMenu',
 			Cell: ({ row }) => {
 				const name = row.getValue('name');
 				const contactId = row.getValue('ownerEntity');

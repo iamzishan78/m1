@@ -1,7 +1,12 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
 import vf_number from 'components/Shared/valueformatters/vf_number';
+
+import { TO_FIXED } from 'utils/consts';
 
 const esIndex = 'checkdetails_flat';
 
@@ -20,13 +25,13 @@ const PropertyRevenueDetailMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'check.checkNumber.keyword',
-			accessorKey: 'check.checkNumber',
+			id: 'check.checkNumber',
 			header: 'Check #',
 			Cell: ({ row }) => {
 				return (
@@ -44,28 +49,28 @@ const PropertyRevenueDetailMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'check.payor.name.keyword',
-			accessorKey: 'check.payor.name',
+			id: 'check.payor.name',
 			header: 'Purchaser',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.purchaserNumber.keyword',
-			accessorKey: 'property.purchaserNumber',
+			id: 'property.purchaserNumber',
 			header: 'Purhaser Property #',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.name.keyword',
-			accessorKey: 'property.name',
+			id: 'property.name',
 			header: 'Property Name',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'check.checkDate',
-			accessorKey: 'check.checkDate',
+			id: 'check.checkDate',
 			header: 'Check Date',
 			isSearchField: false,
 			type: 'date',
@@ -77,7 +82,7 @@ const PropertyRevenueDetailMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'date',
-			accessorKey: 'date',
+			id: 'date',
 			header: 'Sales Date',
 			isSearchField: false,
 			type: 'date',
@@ -89,103 +94,103 @@ const PropertyRevenueDetailMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'product.keyword',
-			accessorKey: 'product',
+			id: 'product',
 			header: 'Product',
 		},
 
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'disbursement',
-			accessorKey: 'disbursement',
+			id: 'disbursement',
 			header: 'Decimal Interest',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'interestType.keyword',
-			accessorKey: 'interestType',
+			id: 'interestType',
 			header: 'Type',
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'price',
-			accessorKey: 'price',
+			id: 'price',
 			header: 'Avg Price',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'grossPropertyVolume',
-			accessorKey: 'grossPropertyVolume',
+			id: 'grossPropertyVolume',
 			header: 'Prop Gross Volume',
 			isSearchField: false,
 			type: 'number',
 			Cell: ({ row }) => {
 				const value = row?.original?.grossPropertyVolume;
-				return value ? <p>{vf_number(value, 2)}</p> : <p style={{ color: '#898989b0' }}>--</p>;
+				return value ? <p>{vf_number(value, TO_FIXED)}</p> : <p style={{ color: '#898989b0' }}>--</p>;
 			},
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'grossPropertyValue',
-			accessorKey: 'grossPropertyValue',
+			id: 'grossPropertyValue',
 			header: 'Prop Gross Revenue',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'grossOwnerVolume',
-			accessorKey: 'grossOwnerVolume',
+			id: 'grossOwnerVolume',
 			header: 'Owner Volume',
 			isSearchField: false,
 			type: 'number',
 			Cell: ({ row }) => {
 				const value = row?.original?.grossOwnerVolume;
-				return value ? <p>{vf_number(value, 2)}</p> : <p style={{ color: '#898989b0' }}>--</p>;
+				return value ? <p>{vf_number(value, TO_FIXED)}</p> : <p style={{ color: '#898989b0' }}>--</p>;
 			},
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'grossOwnerValue',
-			accessorKey: 'grossOwnerValue',
+			id: 'grossOwnerValue',
 			header: 'Owner Gross Revenue',
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'ownerTax',
-			accessorKey: 'ownerTax',
+			id: 'ownerTax',
 			header: 'Owner Tax Amt',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'taxType.keyword',
-			accessorKey: 'taxType',
+			id: 'taxType',
 			header: 'Tax Type',
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'ownerDeducts',
-			accessorKey: 'ownerDeducts',
+			id: 'ownerDeducts',
 			header: 'Deduct Amt',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'deductType.keyword',
-			accessorKey: 'deductType',
+			id: 'deductType',
 			header: 'Deduct Cd',
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'netOwnerValue',
-			accessorKey: 'netOwnerValue',
+			id: 'netOwnerValue',
 			header: 'Owner Net Rev',
 		},
 	],

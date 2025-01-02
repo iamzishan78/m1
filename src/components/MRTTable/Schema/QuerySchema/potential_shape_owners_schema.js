@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import IsContactCell from 'components/MRTTable/Common/TableCells/isContactIcone';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
@@ -18,7 +21,7 @@ const PotentialShapeOwnersMeta = {
 		const { customLayer } = tableMeta?.customProps || {};
 
 		if (!customLayer) {
-			return;
+			return null;
 		}
 
 		const polygon = getPolygonString(customLayer?.shape);
@@ -49,55 +52,47 @@ const PotentialShapeOwnersMeta = {
 			...CommonSchema.HIDDEN,
 			name: 'id',
 			id: 'id',
-			accessorFn: row => row?.id,
 		},
 		{
 			...CommonSchema.HIDDEN,
 			name: 'entity',
 			id: 'entity',
-			accessorFn: row => row?.entity,
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'Name',
 			id: 'name',
 			name: 'name',
-			accessorFn: row => row?.name,
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'Entity Type',
 			id: 'ownershipType',
 			name: 'ownershipType',
-			accessorFn: row => row?.ownershipType,
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'Street Address',
 			id: 'StreetAddress',
 			name: 'StreetAddress',
-			accessorFn: row => row?.StreetAddress,
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'City',
 			id: 'City',
 			name: 'City',
-			accessorFn: row => row?.City,
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'State',
 			id: 'State',
 			name: 'State',
-			accessorFn: row => row?.State,
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			header: 'Zip Code',
 			id: 'Zip',
 			name: 'Zip',
-			accessorFn: row => row?.Zip,
 		},
 
 		{

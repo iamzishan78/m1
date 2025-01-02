@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map';
@@ -20,13 +23,13 @@ const RelatedWellsMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 		{
 			...CommonSchema.INITAIL_PINNED,
 			header: 'Well',
 			name: 'well.wellName',
-			accessorKey: 'well.wellName',
+			id: 'well.wellName',
 			filter: false,
 			enableColumnFilter: false,
 			enableSorting: false,
@@ -57,42 +60,42 @@ const RelatedWellsMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Lease Number',
 			name: 'leaseId.keyword',
-			accessorKey: 'leaseId',
+			id: 'leaseId',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Lease Name',
 			name: 'lease.keyword',
-			accessorKey: 'lease',
+			id: 'lease',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Operator',
 			name: 'operator.keyword',
-			accessorKey: 'operator',
+			id: 'operator',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Well Type',
 			name: 'wellType.keyword',
-			accessorKey: 'wellType',
+			id: 'wellType',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'WellBore Profile',
 			name: 'wellBoreProfile.keyword',
-			accessorKey: 'wellBoreProfile',
+			id: 'wellBoreProfile',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Well Status',
 			name: 'wellStatus.keyword',
-			accessorKey: 'wellStatus',
+			id: 'wellStatus',
 		},
 
 		{
@@ -113,7 +116,7 @@ const RelatedWellsMeta = {
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'coordinates',
-			accessorKey: 'coordinates',
+			id: 'coordinates',
 			header: '',
 			size: 70,
 			Cell: ({ row }) => {

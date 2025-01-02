@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import { Summarize } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 
@@ -56,25 +59,23 @@ const AcreageDetilsMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
-			accessorKey: 'id',
+			id: 'id',
 		},
 
 		{
 			...CommonSchema.HIDDEN,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 		{
 			...CommonSchema.HIDDEN,
 			header: 'Agreement Id',
-			accessorFn: row => row?.shape._id,
 			id: 'shape._id',
 			name: 'shape._id',
 		},
 		{
 			...CommonSchema.INITAIL_PINNED,
 			header: 'Agreement #',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.agreementNumber,
 			id: 'shape.shapeJson.properties.agreementNumber',
 			name: 'shape.shapeJson.properties.agreementNumber.keyword',
 			Cell: ({ row }) => {
@@ -142,14 +143,12 @@ const AcreageDetilsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Agreement Name',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.agreementName || '',
 			id: 'shape.shapeJson.properties.agreementName',
 			name: 'shape.shapeJson.properties.agreementName.keyword',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Agreement Type',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.layerSubType,
 			id: 'shape.shapeJson.properties.layerSubType',
 			name: 'shape.shapeJson.properties.layerSubType.keyword',
 			Cell: ({ row }) => {
@@ -160,56 +159,48 @@ const AcreageDetilsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Agreement Subtype',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.agreementSubtype || '',
 			id: 'shape.shapeJson.properties.agreementSubtype',
 			name: 'shape.shapeJson.properties.agreementSubtype.keyword',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Rights',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.rightsType || '',
 			id: 'shape.shapeJson.properties.rightsType',
 			name: 'shape.shapeJson.properties.rightsType.keyword',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Agreement Status',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.agreementStatus || '',
 			id: 'shape.shapeJson.properties.agreementStatus',
 			name: 'shape.shapeJson.properties.agreementStatus.keyword',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'State',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.State || '',
 			id: 'shape.shapeJson.properties.originalProperties.State',
 			name: 'shape.shapeJson.properties.originalProperties.State.keyword',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'County',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.County || '',
 			id: 'shape.shapeJson.properties.originalProperties.County',
 			name: 'shape.shapeJson.properties.originalProperties.County.keyword',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Tract Name',
-			accessorFn: row => row?.parcel?.name || '',
 			id: 'parcel.name',
 			name: 'parcel.name.keyword',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Tract Status',
-			accessorFn: row => row?.parcel?.tractStatus || '',
 			id: 'parcel.tractStatus',
 			name: 'parcel.tractStatus.keyword',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Report Gross',
-			accessorFn: row => row?.parcel?.shapeJson?.properties?.report?.reportGrossAcres,
 			id: 'parcel.shapeJson.properties.report.reportGrossAcres',
 			name: 'parcel.shapeJson.properties.report.reportGrossAcres',
 			type: 'number',
@@ -219,7 +210,6 @@ const AcreageDetilsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Gross',
-			accessorFn: row => row?.parcel?.shapeJson?.properties?.report?.sdGrossAcres,
 			id: 'parcel.shapeJson.properties.report.sdGrossAcres',
 			name: 'parcel.shapeJson.properties.report.sdGrossAcres',
 			type: 'number',
@@ -229,7 +219,6 @@ const AcreageDetilsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Net',
-			accessorFn: row => row?.parcel?.shapeJson?.properties?.report?.netAcres,
 			id: 'parcel.shapeJson.properties.report.netAcres',
 			name: 'parcel.shapeJson.properties.report.netAcres',
 			type: 'number',
@@ -239,7 +228,6 @@ const AcreageDetilsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Co. Net',
-			accessorFn: row => row?.parcel?.shapeJson?.properties?.report?.companyNetAcres,
 			id: 'parcel.shapeJson.properties.report.companyNetAcres',
 			name: 'parcel.shapeJson.properties.report.companyNetAcres',
 			type: 'number',
@@ -249,7 +237,6 @@ const AcreageDetilsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'NRA',
-			accessorFn: row => row?.parcel?.shapeJson?.properties?.report?.netRoyalty,
 			id: 'parcel.shapeJson.properties.report.netRoyalty',
 			name: 'parcel.shapeJson.properties.report.netRoyalty',
 			type: 'number',
@@ -259,21 +246,18 @@ const AcreageDetilsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Acquisition',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.acquisitionID || '',
 			id: 'shape.shapeJson.properties.acquisitionID',
 			name: 'shape.shapeJson.properties.acquisitionID.keyword',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Prospect',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.prospectID || '',
 			id: 'shape.shapeJson.properties.prospectID',
 			name: 'shape.shapeJson.properties.prospectID.keyword',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Internal Company',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.internalCompany || '',
 			id: 'shape.shapeJson.properties.internalCompany',
 			name: 'shape.shapeJson.properties.internalCompany.keyword',
 		},

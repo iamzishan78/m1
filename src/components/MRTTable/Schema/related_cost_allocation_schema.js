@@ -1,5 +1,10 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+
+import { TO_FIXED } from 'utils/consts';
 
 import RelatedCostAllocationsToolbar from '../TablesOverride/RelatedCostAllocationsTable/RelatedCostAllocationsToolbar';
 
@@ -21,17 +26,16 @@ const RelatedCostAllocationsMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
-			accessorKey: 'id',
+			id: 'id',
 		},
 		{
 			...CommonSchema.HIDDEN,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'number.keyword',
-			accessorFn: row => row?.number,
 			id: 'number',
 			header: 'Property #',
 			Cell: ({ row }) => {
@@ -56,14 +60,12 @@ const RelatedCostAllocationsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'name.keyword',
-			accessorFn: row => row?.name,
 			id: 'name',
 			header: 'Property Name',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'costAllocations.allocation.keyword',
-			accessorFn: row => row?.costAllocations?.allocation,
 			id: 'costAllocations.allocation',
 			header: 'Cost Allocation',
 			type: 'number',
@@ -79,13 +81,12 @@ const RelatedCostAllocationsMeta = {
 			},
 			Cell: ({ row }) => {
 				const value = row.original?.costAllocations?.allocation;
-				return value ? `${Number(value).toFixed(2)}%` : value === 0 ? '0%' : '';
+				return value ? `${Number(value).toFixed(TO_FIXED)}%` : value === 0 ? '0%' : '';
 			},
 		},
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'costAllocations.amount.keyword',
-			accessorFn: row => row?.costAllocations?.amount,
 			id: 'costAllocations.amount',
 			header: 'Cost Allocation Amount',
 			type: 'number',

@@ -105,20 +105,20 @@ const UnitMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
-			accessorKey: 'id',
+			id: 'id',
 			header: 'ID',
 		},
 
 		{
 			...CommonSchema.MONGO_ID,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'name.keyword',
-			accessorKey: 'name',
+			id: 'name',
 			header: 'Unit Name',
 			Cell: ({ renderedCellValue, row }) => (
 				<div
@@ -135,7 +135,6 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uNumber.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uNumber,
 			id: 'shapeJson.properties.uNumber',
 			header: 'Unit #',
 		},
@@ -153,7 +152,6 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.originalProperties.County.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.County,
 			id: 'shapeJson.properties.originalProperties.County',
 			header: 'County',
 		},
@@ -161,28 +159,24 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.originalProperties.surveyMerdian.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.surveyMerdian,
 			id: 'shapeJson.properties.originalProperties.surveyMerdian',
 			header: 'Survey/ Meridian',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.originalProperties.blockTownship.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.blockTownship,
 			id: 'shapeJson.properties.originalProperties.blockTownship',
 			header: 'Block/ Township',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.originalProperties.rangeSection.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.rangeSection,
 			id: 'shapeJson.properties.originalProperties.rangeSection',
 			header: 'Section/ Range',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.originalProperties.abstractNameShortName.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.abstractNameShortName,
 			id: 'shapeJson.properties.originalProperties.abstractNameShortName',
 			header: 'Abstract/ Section',
 		},
@@ -207,7 +201,6 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uStatus.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uStatus,
 			id: 'shapeJson.properties.uStatus',
 			header: 'Unit Status',
 		},
@@ -215,7 +208,6 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uPrimaryOperator.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uPrimaryOperator,
 			id: 'shapeJson.properties.uPrimaryOperator',
 			header: 'Current Operator',
 		},
@@ -224,7 +216,6 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.totalUnitInterest.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.totalUnitInterest,
 			id: 'shapeJson.properties.totalUnitInterest',
 			header: 'Total Unit Interest',
 		},
@@ -250,7 +241,7 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'interestSummary.unitInterestCount',
-			accessorKey: 'interestSummary.unitInterestCount',
+			id: 'interestSummary.unitInterestCount',
 			header: 'Owner Count',
 			isSearchField: false,
 		},
@@ -259,7 +250,6 @@ const UnitMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			type: 'array',
 			name: 'shapeJson.properties.campaigns.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.campaigns,
 			id: 'shapeJson.properties.campaigns',
 			header: 'Campaigns',
 			size: 270,
@@ -271,7 +261,6 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.qualifier.name.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.qualifier?.name,
 			id: 'shapeJson.properties.qualifier.name',
 			header: 'Qualifier',
 		},
@@ -279,14 +268,12 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.reviewer.name.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.reviewer?.name,
 			id: 'shapeJson.properties.reviewer.name',
 			header: 'Reviewer',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.ownerName.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.ownerName,
 			id: 'shapeJson.properties.ownerName',
 			header: 'Owner',
 		},
@@ -322,7 +309,7 @@ const UnitMeta = {
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'coordinates',
-			accessorKey: 'coordinates',
+			id: 'coordinates',
 			header: '',
 			size: 70,
 			Cell: ({ row }) => {

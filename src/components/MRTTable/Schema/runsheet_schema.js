@@ -1,11 +1,16 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import { formatDate } from 'components/Shared/functions';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import RunsheetToolbar from '../TablesOverride/RunsheetTable/RunsheetToolbar';
-import { tableGlobalController } from 'hookstate/tableController';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import FileDownload from 'components/MRTTable/TablesOverride/DocumentTable/TableCell/FileDownload';
 import FileView from 'components/MRTTable/TablesOverride/DocumentTable/TableCell/FileView';
+import { formatDate } from 'components/Shared/functions';
+
+import { tableGlobalController } from 'hookstate/tableController';
+
+import RunsheetToolbar from '../TablesOverride/RunsheetTable/RunsheetToolbar';
 
 const esIndex = 'runsheetinstrument_flat';
 
@@ -33,30 +38,30 @@ const RunsheetMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'instrumentType.keyword',
-			accessorKey: 'instrumentType',
+			id: 'instrumentType',
 			header: 'Instrument Type',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'fromPartySummary.keyword',
-			accessorKey: 'fromPartySummary',
+			id: 'fromPartySummary',
 			header: 'Party of the First (Grantor)',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'toPartySummary.keyword',
-			accessorKey: 'toPartySummary',
+			id: 'toPartySummary',
 			header: 'Party of the Second (Grantee)',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'effectiveDate',
-			accessorKey: 'effectiveDate',
+			id: 'effectiveDate',
 			header: 'Effective Date',
 			type: 'date',
 			isSearchField: false, // don't include in search fields
@@ -67,7 +72,7 @@ const RunsheetMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'executionDate',
-			accessorKey: 'executionDate',
+			id: 'executionDate',
 			header: 'Instrument Date',
 			type: 'date',
 			isSearchField: false, // don't include in search fields
@@ -78,7 +83,7 @@ const RunsheetMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'fileDate',
-			accessorKey: 'fileDate',
+			id: 'fileDate',
 			header: 'File Date',
 			type: 'date',
 			isSearchField: false, // donn't include in search fields
@@ -89,37 +94,37 @@ const RunsheetMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'recordType.keyword',
-			accessorKey: 'recordType',
+			id: 'recordType',
 			header: 'Record Type',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'recordationNumber.keyword',
-			accessorKey: 'recordationNumber',
+			id: 'recordationNumber',
 			header: 'Rec #',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'volume.keyword',
-			accessorKey: 'volume',
+			id: 'volume',
 			header: 'Volume',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'page.keyword',
-			accessorKey: 'page',
+			id: 'page',
 			header: 'Page',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'legalDescription.keyword',
-			accessorKey: 'legalDescription',
+			id: 'legalDescription',
 			header: 'Legal Description',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'legalDescription.keyword',
-			accessorKey: 'legalDescription',
+			id: 'legalDescription',
 			header: 'Legal Description',
 		},
 		{
@@ -147,7 +152,7 @@ const RunsheetMeta = {
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'actionMenu',
-			accessorKey: 'actionMenu',
+			id: 'actionMenu',
 			header: ' ',
 			size: 80,
 			Cell: ({ row }) => {
@@ -158,7 +163,7 @@ const RunsheetMeta = {
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'actionMenu2',
-			accessorKey: 'actionMenu2',
+			id: 'actionMenu2',
 			header: ' ',
 			size: 80,
 			Cell: ({ row }) => {

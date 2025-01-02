@@ -58,13 +58,13 @@ const RevenueStatementsMeta = {
 		{
 			...CommonSchema.MONGO_ID,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 		// Column for Check Number with link
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'checkNumber.keyword',
-			accessorKey: 'checkNumber',
+			id: 'checkNumber',
 			header: 'Check Number',
 			// Cell rendering for Check Number column
 			Cell: ({ row }) => {
@@ -92,7 +92,6 @@ const RevenueStatementsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'checkDate',
-			accessorFn: row => row?.checkDate,
 			id: 'checkDate',
 			header: 'Check Date',
 			simple: true,
@@ -106,7 +105,6 @@ const RevenueStatementsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'payor.name.keyword',
-			accessorFn: row => row?.payor?.name,
 			id: 'payor.name',
 			header: 'Payor Name',
 		},
@@ -114,14 +112,12 @@ const RevenueStatementsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'payee.name.keyword',
-			accessorFn: row => row?.payee?.name,
 			id: 'payee.name',
 			header: 'Owner Name',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'payee.number.keyword',
-			accessorFn: row => row?.payee?.number,
 			id: 'payee.number',
 			header: 'Owner Number',
 		},
@@ -129,7 +125,6 @@ const RevenueStatementsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'depositDate',
-			accessorFn: row => row?.depositDate,
 			id: 'depositDate',
 			header: 'Deposit Date',
 			simple: true,
@@ -144,7 +139,6 @@ const RevenueStatementsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'checkDetail.lines',
-			accessorFn: row => row?.checkDetail?.lines,
 			id: 'checkDetail.lines',
 			header: 'Lines',
 			isSearchField: false,
@@ -153,21 +147,18 @@ const RevenueStatementsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'source.keyword',
-			accessorFn: row => row?.source,
 			id: 'source',
 			header: 'Source',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'sourceId.keyword',
-			accessorFn: row => row?.sourceId,
 			id: 'sourceId',
 			header: 'Source ID',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'approvalStatus.keyword',
-			accessorFn: row => row?.approvalStatus,
 			id: 'approvalStatus',
 			header: 'Approval Status',
 		},
@@ -201,7 +192,6 @@ const RevenueStatementsMeta = {
 		{
 			size: 220,
 			name: 'isAmountValidated',
-			accessorFn: row => row?.isAmountValidated,
 			id: 'isAmountValidated',
 			header: '',
 			enableColumnActions: false,

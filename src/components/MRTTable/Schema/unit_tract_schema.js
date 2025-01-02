@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import TractPerUnitToolBar from 'components/MRTTable/TablesOverride/TractPerUnit/TractPerUnitToolBar';
@@ -38,19 +41,19 @@ const TractMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
-			accessorKey: 'id',
+			id: 'id',
 		},
 
 		{
 			...CommonSchema.HIDDEN,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'name.keyword',
-			accessorKey: 'name',
+			id: 'name',
 			header: 'Tract Name',
 			Cell: ({ renderedCellValue, row }) => (
 				<div
@@ -69,80 +72,80 @@ const TractMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'state.keyword',
-			accessorKey: 'state',
+			id: 'state',
 			header: 'State',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'county.keyword',
-			accessorKey: 'county',
+			id: 'county',
 			header: 'county',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'meridian.keyword',
-			accessorKey: 'meridian',
+			id: 'meridian',
 			header: 'Meridian',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'township.keyword',
-			accessorKey: 'township',
+			id: 'township',
 			header: 'Township',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'range.keyword',
-			accessorKey: 'range',
+			id: 'range',
 			header: 'Range',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'section.keyword',
-			accessorKey: 'section',
+			id: 'section',
 			header: 'Section',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'altSurvey.keyword',
-			accessorKey: 'altSurvey',
+			id: 'altSurvey',
 			header: 'Alt Survey',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'legalDescription.keyword',
-			accessorKey: 'legalDescription',
+			id: 'legalDescription',
 			header: 'Full Legal Description',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeArea',
-			accessorKey: 'shapeArea',
+			id: 'shapeArea',
 			header: 'Tract Calc. Acres',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'sdGrossAcres',
-			accessorKey: 'sdGrossAcres',
+			id: 'sdGrossAcres',
 			header: 'Tract Gross Acres',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'unitTractId.keyword',
-			accessorKey: 'unitTractId',
+			id: 'unitTractId',
 			header: 'Unit Tract ID',
 			isSearchField: false,
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'uAcres',
-			accessorKey: 'uAcres',
+			id: 'uAcres',
 			header: 'Unit Tract Acres',
 			isSearchField: false,
 		},

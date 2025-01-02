@@ -16,9 +16,10 @@ import { UPDATE_CHECK_DETAIL, UPDATE_CHECK_DETAILS } from 'graphQL/useMutationUp
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
+import { TO_FIXED } from 'utils/consts';
+
 import CheckDetailsToolbar from '../TablesOverride/CheckDetailsTable/CheckDetailsToolbar';
 
-const TO_FIXED = 2;
 const esIndex = 'checkdetails_flat';
 
 const CheckDetailsMeta = {
@@ -122,14 +123,14 @@ const CheckDetailsMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 			enableEditing: false,
 		},
 		// Pinned column
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'property.name.keyword',
-			accessorKey: 'property.name',
+			id: 'property.name',
 			header: 'Property',
 			Cell: ({ row }) => {
 				const value = `${row?.original?.property?.purchaserNumber || ''} - ${row?.original?.property?.name || ''}`;
@@ -156,7 +157,7 @@ const CheckDetailsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.purchaserNumber.keyword',
-			accessorKey: 'property.purchaserNumber',
+			id: 'property.purchaserNumber',
 			header: 'Payor Prop #',
 			enableEditing: false,
 		},
@@ -164,7 +165,7 @@ const CheckDetailsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.name.keyword',
-			accessorKey: 'property.name',
+			id: 'property.name',
 			header: 'Property Name',
 			enableEditing: false,
 		},
@@ -172,21 +173,21 @@ const CheckDetailsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.number.keyword',
-			accessorKey: 'property.number',
+			id: 'property.number',
 			header: 'Operator Prop #',
 			enableEditing: false,
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.state.keyword',
-			accessorKey: 'property.state',
+			id: 'property.state',
 			header: 'State',
 			enableEditing: false,
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.county.keyword',
-			accessorKey: 'property.county',
+			id: 'property.county',
 			header: 'County',
 			enableEditing: false,
 		},
@@ -194,7 +195,7 @@ const CheckDetailsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'date',
-			accessorKey: 'date',
+			id: 'date',
 			header: 'Sales Date',
 			isSearchField: false,
 			type: 'date',
@@ -209,7 +210,7 @@ const CheckDetailsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'product.keyword',
-			accessorKey: 'product',
+			id: 'product',
 			header: 'Product',
 
 			validate: validateRequiredString,
@@ -219,7 +220,7 @@ const CheckDetailsMeta = {
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'disbursement',
-			accessorKey: 'disbursement',
+			id: 'disbursement',
 			header: 'Decimal Interest',
 
 			validate: validateRequiredString,
@@ -229,7 +230,7 @@ const CheckDetailsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'interestType.keyword',
-			accessorKey: 'interestType',
+			id: 'interestType',
 			header: 'Type',
 
 			validate: validateRequiredString,
@@ -239,7 +240,7 @@ const CheckDetailsMeta = {
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'price',
-			accessorKey: 'price',
+			id: 'price',
 			header: 'Avg Price',
 
 			validate: validateRequiredString,
@@ -249,7 +250,7 @@ const CheckDetailsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'grossPropertyVolume',
-			accessorKey: 'grossPropertyVolume',
+			id: 'grossPropertyVolume',
 			header: 'Prop Gross Volume',
 			isSearchField: false,
 			type: 'number',
@@ -265,7 +266,7 @@ const CheckDetailsMeta = {
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'grossPropertyValue',
-			accessorKey: 'grossPropertyValue',
+			id: 'grossPropertyValue',
 			header: 'Prop Gross Revenue',
 
 			validate: validateRequiredString,
@@ -275,7 +276,7 @@ const CheckDetailsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'grossOwnerVolume',
-			accessorKey: 'grossOwnerVolume',
+			id: 'grossOwnerVolume',
 			header: 'Owner Volume',
 			isSearchField: false,
 			type: 'number',
@@ -291,7 +292,7 @@ const CheckDetailsMeta = {
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'grossOwnerValue',
-			accessorKey: 'grossOwnerValue',
+			id: 'grossOwnerValue',
 			header: 'Owner Gross Revenue',
 
 			validate: validateRequiredString,
@@ -301,7 +302,7 @@ const CheckDetailsMeta = {
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'ownerTax',
-			accessorKey: 'ownerTax',
+			id: 'ownerTax',
 			header: 'Owner Tax Amt',
 
 			validate: validateRequiredString,
@@ -311,7 +312,7 @@ const CheckDetailsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'taxType.keyword',
-			accessorKey: 'taxType',
+			id: 'taxType',
 			header: 'Tax Type',
 
 			validate: validateRequiredString,
@@ -321,7 +322,7 @@ const CheckDetailsMeta = {
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'ownerDeducts',
-			accessorKey: 'ownerDeducts',
+			id: 'ownerDeducts',
 			header: 'Deduct Amt',
 
 			validate: validateRequiredString,
@@ -331,7 +332,7 @@ const CheckDetailsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'deductType.keyword',
-			accessorKey: 'deductType',
+			id: 'deductType',
 			header: 'Deduct Cd',
 
 			validate: validateRequiredString,
@@ -341,7 +342,7 @@ const CheckDetailsMeta = {
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'netOwnerValue',
-			accessorKey: 'netOwnerValue',
+			id: 'netOwnerValue',
 			header: 'Owner Net Rev',
 
 			validate: validateRequiredString,
@@ -350,7 +351,7 @@ const CheckDetailsMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: 'propertyId',
-			accessorKey: 'propertyId',
+			id: 'propertyId',
 			enableEditing: false,
 		},
 		// Comment button
