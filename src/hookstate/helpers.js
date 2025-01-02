@@ -136,10 +136,6 @@ export const handleMRTSchema = ({
 					break;
 
 				default:
-					if (schemaColumn.type) {
-						console.log(schemaColumn, schemaColumn.type);
-					}
-
 					break;
 			}
 
