@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 
 import { Button, ButtonGroup } from '@material-ui/core';
 
@@ -85,4 +85,4 @@ PotentialWellToolbar.propTypes = {
 	tableKey: PropTypes.string.isRequired,
 };
 
-export default memo(PotentialWellToolbar);
+export default PotentialWellToolbar;

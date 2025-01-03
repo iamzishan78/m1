@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
@@ -226,4 +226,4 @@ ContactToolbar.propTypes = {
 	tableKey: PropTypes.string.isRequired,
 };
 
-export default memo(ContactToolbar);
+export default ContactToolbar;

@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 
 import { useApolloClient } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import {
 	BulkUpdate,
@@ -243,4 +244,9 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 	);
 }
 
-export default memo(OwnersPerUnitToolBar);
+OwnersPerUnitToolBar.propTypes = {
+	table: PropTypes.object.isRequired,
+	tableKey: PropTypes.string.isRequired,
+};
+
+export default OwnersPerUnitToolBar;
