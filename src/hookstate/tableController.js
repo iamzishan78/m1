@@ -632,7 +632,9 @@ const tableESStateControllerHandler = state => ({
 				identifierMapViewSchema?.find(key => key.value.replace('.keyword', '') === filter.field.replace('.keyword', ''))
 			) {
 				const existingFilter = mapViewsFitlers.find(
-					({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') === filter.field
+					({ fieldName, filterType }) =>
+						(fieldName?.value || fieldName).replace('.keyword', '') === filter.field &&
+						filterType === filter?.searchType
 				);
 
 				const isValuesEqual = _.isEqual(

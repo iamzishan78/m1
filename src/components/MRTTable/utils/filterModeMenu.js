@@ -35,7 +35,7 @@ const filterModeMenu =
 				...filterModes[tableKey],
 				[name]: {
 					onSelectFilterMode,
-					intiated: false,
+					intiated: !mapViewFilter?.filterType,
 				},
 			};
 		}

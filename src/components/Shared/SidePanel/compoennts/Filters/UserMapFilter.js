@@ -77,10 +77,10 @@ export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValue
 			filterValue = ' '; // empty value for empty/notEmpty filters
 			break;
 		case 'date':
-			filterValue = {
-				gte: formatDate(filterValues?.[0] || '1970-01-01'),
-				lte: formatDate(filterValues?.[1] || moment().format('YYYY-MM-DD')),
-			};
+			filterValue = [
+				formatDate(filterValues?.[0] || '1970-01-01'),
+				formatDate(filterValues?.[1] || moment().format('YYYY-MM-DD')),
+			];
 			break;
 		case 'range':
 			filterValue = [filterValues?.[0], filterValues?.[1]];
@@ -272,7 +272,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				const tableState = tableESState[tableKey]?.get({ noproxy: true });
 
 				const formattedFilter = getFormattedFilterBasedOnType(
-					filterType,
+					selectedField?.type || filterType,
 					selectedField?.value?.replace('.keyword', ''),
 					filterValues
 				);
@@ -280,9 +280,8 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				const isFilterApplied = tableState?.filters?.find(
 					filter =>
 						formattedFilter?.field?.replace('.keyword', '') === filter?.field?.replace('.keyword', '') &&
-						// &&
-						// formattedFilter?.searchType === filter.searchType
-						formattedFilter?.value === filter.value
+						(formattedFilter?.searchType === 'multiselect' || formattedFilter?.searchType === filter.searchType) &&
+						_.isEqual(formattedFilter?.value, filter.value)
 				);
 
 				if (!isFilterApplied && tableKey) {

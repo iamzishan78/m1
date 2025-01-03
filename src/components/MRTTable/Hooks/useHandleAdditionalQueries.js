@@ -27,7 +27,7 @@ const useHandleAdditionalQueries = ({ Controller, tableState, tableStateValues }
 
 		const rows = tableStateValues?.data?.rows.slice(stateValues?.alreadyCheckedOwnersLength ?? 0);
 
-		const idsArray = rows.map(row => row.id);
+		const idsArray = rows.map(row => row.globalOwnerId);
 
 		if (!idsArray || idsArray.length === 0) {
 			return;
