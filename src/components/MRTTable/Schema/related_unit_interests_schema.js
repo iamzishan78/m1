@@ -194,6 +194,12 @@ const RelatedlUnitInterestMeta = {
 			header: 'Actual Offer Price',
 		},
 		{
+			...CommonSchema.CURRENCY_COLUMN,
+			name: 'closed_price',
+			id: 'closed_price',
+			header: 'Closed Price',
+		},
+		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shape.shapeJson.properties.description.keyword',
 			id: 'shape.shapeJson.properties.description',
