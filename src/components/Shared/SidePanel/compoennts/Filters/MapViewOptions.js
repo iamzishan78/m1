@@ -183,6 +183,7 @@ function MapViewOptions({ tableKey, allMapViews, defaultView }) {
 			mapView: { ...mapViewStateValues.mapView, selectedMapView: mapView, showViewModal: false },
 			viewChanged: true,
 		});
+		tableGlobalController.reInitialized();
 	};
 
 	return (
@@ -347,7 +348,6 @@ function InputField({ editMapViewId, viewName, setViewName, upsertMapView, setEd
 				event.stopPropagation();
 				if (event.key === 'Enter') {
 					const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView || {};
-					selectedMapView.name = viewName;
 					event.preventDefault();
 					if (editMapViewId) {
 						upsertMapView({
@@ -358,8 +358,6 @@ function InputField({ editMapViewId, viewName, setViewName, upsertMapView, setEd
 								},
 							},
 							refetchQueries: ['getMapViews'],
-						}).then(res => {
-							tableGlobalController.reInitialized();
 						});
 					} else {
 						upsertMapView({
@@ -375,7 +373,7 @@ function InputField({ editMapViewId, viewName, setViewName, upsertMapView, setEd
 						});
 					}
 					globalStateController.updateState({
-						mapView: { ...mapViewStateValues.mapView, showViewModal: false, selectedMapView: selectedMapView },
+						mapView: { ...mapViewStateValues.mapView, showViewModal: false },
 						viewChanged: true,
 					});
 				}
