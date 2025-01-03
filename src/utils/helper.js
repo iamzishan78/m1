@@ -1,4 +1,4 @@
-import { get, isEqual, isObject } from 'lodash';
+import { get, isEqual, isInteger, isObject } from 'lodash';
 import moment from 'moment';
 
 import { tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
@@ -11,7 +11,6 @@ import { getSession } from 'utils/user';
 import { WEEK_DAYS } from './consts';
 
 export const apolloClientEndpointDev = 'http://localhost:7071/api/m1graph';
-// eslint-disable-next-line no-undef
 export const isDev = process.env.REACT_APP_NODE_ENV === 'development';
 const decimalForamtter = new Intl.NumberFormat('en-US', {
 	style: 'decimal',
@@ -808,3 +807,6 @@ export const compareObjects = (child, parent) => {
 	}
 	return false; // No differences found
 };
+
+// eslint-disable-next-line no-magic-numbers
+export const isEven = num => isInteger(num) && num % 2 === 0;

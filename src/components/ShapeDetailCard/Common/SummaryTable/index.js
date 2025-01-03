@@ -33,8 +33,9 @@ import vf_number from 'components/Shared/valueformatters/vf_number';
 
 import { globalStateController } from 'hookstate/globalStateController';
 
+import { ENTER_KEY_CODE, INTEREST_TO_FIXED } from 'utils/consts';
 import { US_STATES_CODES } from 'utils/data';
-import { getRoundedNra, validateUrl } from 'utils/helper';
+import { getRoundedNra, isEven, validateUrl } from 'utils/helper';
 
 import { showErrorMessage, showInfoMessage } from 'actions';
 import { AppContext } from 'AppContext';
@@ -64,7 +65,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
 				}}
 				data-testid={`data-field-${data.label}`}
 				onKeyDown={e => {
-					if (e.keyCode === 13) {
+					if (e.keyCode === ENTER_KEY_CODE) {
 						e.stopPropagation();
 						if (['uName', 'shapeLabel'].includes(data.key) && !e.target.value?.trim()) {
 							// validate after trimming the value
@@ -180,7 +181,6 @@ export default function SummaryTableInfo({
 		if (properties?.originalProperties?.County) {
 			setCounty(properties.originalProperties.County);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [properties, metaData]);
 
 	useEffect(() => {
@@ -217,7 +217,6 @@ export default function SummaryTableInfo({
 			// Set the filtered table data to the concatenated table data
 			setFilteredTableData(td);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [search, tableData]);
 
 	const getKey = (data, type, e) => {
@@ -248,7 +247,7 @@ export default function SummaryTableInfo({
 	const onKeyDown = (e, data, type) => {
 		if (type === 'value') {
 			if (data.key === 'netRoyalityAcres') {
-				e.target.value = parseFloat(e.target.value).toFixed(8);
+				e.target.value = parseFloat(e.target.value).toFixed(INTEREST_TO_FIXED);
 				set(tableTempProperties, 'netRoyalityAcres.unitNra', e.target.value);
 				setTableTempProperties(copy(tableTempProperties));
 			}
@@ -366,7 +365,6 @@ export default function SummaryTableInfo({
 		data => {
 			return [{ field: data.filterField, value: upperFirst(data.esKey) }, ...getDependencies(data.dependencyArray)];
 		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[properties]
 	);
 
@@ -375,7 +373,7 @@ export default function SummaryTableInfo({
 			<TableBody>
 				{filteredTableData.map((data, index) => (
 					<>
-						<TableRow className={index % 2 === 0 ? classes.rowGrey : classes.rowWhite}>
+						<TableRow className={isEven(index) ? classes.rowGrey : classes.rowWhite}>
 							<TableCell
 								className={classes.cell1}
 								align="left"
@@ -604,14 +602,14 @@ export default function SummaryTableInfo({
 												}}
 												onChange={(e, value) => {
 													e.keyCode = 13;
-													if (value?.key && e.keyCode === 13) {
+													if (value?.key && e.keyCode === ENTER_KEY_CODE) {
 														updateProperties(e, data.key, value.key);
 													}
 												}}
 												autoFocus={false}
 												newOptions={data.newOptions !== false}
 												newOptionFilters={newOptionFilters(data)}
-												autoCompleteType={true ? 'CustomLayer' : 'AgreementShapeOwner'}
+												autoCompleteType={'CustomLayer'}
 											/>
 										)}
 										{data.type === 'custom' && (
@@ -713,13 +711,12 @@ export default function SummaryTableInfo({
 															: '-')}
 													{data.type === 'currency' &&
 														(vf_currency(data.value) || vf_currency(properties[data.key]) || '-')}
-													{data.type === 'comma-number' &&
-														(data.value ? vf_number(data.value) : vf_number(properties[data.key]) || '-')}
+													{data.type === 'comma-number' && (vf_number(data.value || properties[data.key]) || '-')}
 													{data.type === 'calculation' &&
 														((
 															<>
 																<Typography className={isNraMatched() ? classes.nraText : classes.nraHighLight}>
-																	{getRoundedNra(properties?.netRoyalityAcres?.unitNra || 0, 2)}
+																	{getRoundedNra(properties?.netRoyalityAcres?.unitNra || 0)}
 																</Typography>
 															</>
 														) ||
