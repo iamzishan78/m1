@@ -126,8 +126,7 @@ const PotentialShapeOwnersMeta = {
 				const { stateValues } = Controller.useState(['ownersWhoAreContact', 'data']);
 
 				const contact = stateValues.ownersWhoAreContact?.find(contact => contact?.globalOwner === row?.original?.id);
-
-				return <IsContactCell contactId={contact?._id || 'false'} rows={[row.original.node]} />;
+				return <IsContactCell contactId={contact?._id || 'false'} rows={[row.original]} />;
 			},
 		},
 		{

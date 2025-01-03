@@ -33,6 +33,7 @@ import PotentialWellsMeta from './QuerySchema/potential_wells_schema';
 import ProductionWellsMeta from './QuerySchema/production_wells_schema';
 import TaxRollInterestsMeta from './QuerySchema/tax_roll_interests_schema';
 import UserManagementMeta from './QuerySchema/user_management_schema';
+import WellOwnersMeta from './QuerySchema/wells_owners_schema';
 import RelatedBillingPartiesMeta from './related_billing_parties_schema';
 import RelatedCostAllocationsMeta from './related_cost_allocation_schema';
 import RelatedPayeesMeta from './related_payees_schema';
@@ -134,4 +135,5 @@ export const SCHEMA = {
 	ProductionWellsTable: ProductionWellsMeta,
 	WellProductionTable: WellProductionMeta,
 	FailedBulkDataEditingTable: FailedBulkDataEditingMeta,
+	WellOwnersTable: WellOwnersMeta,
 };
