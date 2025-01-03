@@ -152,7 +152,7 @@ function MapViewOptions({ tableKey, allMapViews, defaultView }) {
 		}
 	}, [search, allMapViews]);
 
-	const handleClick = (view, updateSelectedView) => {
+	const handleClick = (view, updateSelectedView = true) => {
 		let data = JSON.parse(JSON.stringify(view));
 		const prevMapView = globalStateController.getValue('mapView');
 		prevMapView?.selectedMapView?.filters?.forEach(filter => {
