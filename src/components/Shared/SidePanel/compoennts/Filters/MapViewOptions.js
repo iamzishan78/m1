@@ -111,7 +111,7 @@ function MapViewOptions({ tableKey, allMapViews, defaultView }) {
 	);
 	const [upsertMapView] = useMutation(UPSERT_MAP_VIEW, {});
 
-	const handleMapViewChange = mapView => {
+	const handleMapViewChange = (mapView, updateSelectedView = true) => {
 		upsertMapView({
 			variables: {
 				mapView: { ...mapView, userId: getUser?._id },
@@ -120,7 +120,7 @@ function MapViewOptions({ tableKey, allMapViews, defaultView }) {
 			tableGlobalController.reInitialized();
 		});
 
-		handleClick(mapView);
+		handleClick(mapView, updateSelectedView);
 	};
 
 	useEffect(() => {
@@ -152,7 +152,7 @@ function MapViewOptions({ tableKey, allMapViews, defaultView }) {
 		}
 	}, [search, allMapViews]);
 
-	const handleClick = view => {
+	const handleClick = (view, updateSelectedView) => {
 		let data = JSON.parse(JSON.stringify(view));
 		const prevMapView = globalStateController.getValue('mapView');
 		prevMapView?.selectedMapView?.filters?.forEach(filter => {
@@ -180,7 +180,11 @@ function MapViewOptions({ tableKey, allMapViews, defaultView }) {
 
 		globalStateController.updateState({
 			allMapViews: _allMapViews,
-			mapView: { ...mapViewStateValues.mapView, selectedMapView: mapView, showViewModal: false },
+			mapView: {
+				...mapViewStateValues.mapView,
+				...(updateSelectedView && { selectedMapView: mapView }),
+				showViewModal: false,
+			},
 			viewChanged: true,
 		});
 		tableGlobalController.reInitialized();
@@ -490,10 +494,13 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 				<MenuItem
 					style={{ width: '250px' }}
 					onClick={() => {
-						handleMapViewChange({
-							...view,
-							isFavourite: !view.isFavourite,
-						});
+						handleMapViewChange(
+							{
+								...view,
+								isFavourite: !view.isFavourite,
+							},
+							false
+						);
 					}}
 				>
 					{view.isFavourite ? 'Remove as favorite' : 'Set as favorite'}
