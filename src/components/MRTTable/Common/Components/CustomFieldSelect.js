@@ -13,7 +13,7 @@ import { colorPallete } from 'utils/consts';
 
 import { AppContext } from 'AppContext';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	noBorder: {
 		border: 'none',
 	},
@@ -131,7 +131,7 @@ const CustomFieldSelect = ({
 				borderRadius: '6px',
 			}}
 			onClick={e => e.stopPropagation()}
-			onMouseLeave={e => {
+			onMouseLeave={() => {
 				setShowOptions(false);
 				setShowIcon(false);
 			}}
@@ -173,7 +173,7 @@ const CustomFieldSelect = ({
 				getOptionSelected={option => {
 					return option.value === value || option.value === value?.value;
 				}}
-				filterOptions={(options, params) => {
+				filterOptions={options => {
 					return options;
 				}}
 				renderOption={option => {

@@ -5,14 +5,14 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import { useLazyQuery } from '@apollo/client';
 
+import AutocompEntityNamesVirtualizeList from 'components/MRTTable/Common/Components/AutocompEntityNamesVirtualizeList';
 import LinkWithIcon from 'components/Shared/LinkWithIcon';
 
 import { AppContext } from '../../../AppContext';
 import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
 import { setStateIfDeepEqual } from '../../Shared/functions';
-import AutocompEntityNamesVirtualizeList from '../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	search: {
 		width: '35%',
 		marginLeft: '5px',
@@ -70,7 +70,7 @@ const ContactSearch = props => {
 
 	useEffect(() => {
 		if (allContacts?.paginatedContacts) {
-			setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map(el => el.node)]);
+			setMongoEntitiesArray([...(allContacts?.paginatedContacts?.edges?.map(el => el.node) || [])]);
 			setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
 		}
 		setIsNextPageLoading(false);

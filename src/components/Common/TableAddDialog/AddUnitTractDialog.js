@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { Box, CircularProgress, Dialog, Typography } from '@material-ui/core';
@@ -13,23 +13,17 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { useMutation } from '@apollo/client';
 import pick from 'lodash/pick';
 
-// contexts
-
 import TractForm from 'components/Common/TableAddDialog/Common/TractForm';
+import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import { getParcelOriginalProperties } from 'components/ParcelsDetailCard/utils/GetParcelOriginalProps';
-import AutoCompleteShapeLayer from 'components/Shared/Forms/Fields/AutoCompleteShapeLayer';
 
 import { ADD_TRACTS_TOA_SHAPE } from 'graphQL/useMutationAddTractsToAShape';
 import { UPDATE_SHAPE_TRACTS } from 'graphQL/useMutationUpdateShapeTracts';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
-import { AppContext } from 'AppContext';
-
-import RightDialog from '../../ContactDetailCard/components/RightDialog';
-import DeleteConfirmationDialogContent from '../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	dialogFooter: {
 		display: 'flex',
 		justifyContent: 'flex-end',
@@ -56,9 +50,23 @@ function AddUnitTractDialog(props) {
 	const { control, reset, register, getValues, watch } = useForm();
 
 	const [loading, setLoading] = useState(false);
-	const [stateApp, setStateApp] = useContext(AppContext);
 	const [tractValue, setTractValue] = useState({ name: '', _id: null });
 	const [selectedShapeLayer, setSelectedShapeLayer] = useState(null);
+
+	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+	const openConfirmationDialog = () => {
+		setDeleteDialogOpen(true);
+	};
+	const handleCloseDialog = () => {
+		setDeleteDialogOpen(false);
+	};
+
+	const handleClose = () => {
+		setSelectedShapeLayer(null);
+		reset({});
+		props.onClose();
+	};
 
 	const tract = watch();
 
@@ -75,7 +83,6 @@ function AddUnitTractDialog(props) {
 			setLoading(false);
 			handleClose();
 		},
-		onError: err => {},
 		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
@@ -89,7 +96,7 @@ function AddUnitTractDialog(props) {
 		}
 		if (type) {
 			handleCloseDialog();
-			setStateApp(state => ({
+			window.setStateApp(state => ({
 				...state,
 				universalCircularLoaderAct: false,
 			}));
@@ -154,12 +161,6 @@ function AddUnitTractDialog(props) {
 		}
 	}, [selectedShapeLayer]);
 
-	const handleClose = () => {
-		setSelectedShapeLayer(null);
-		reset({});
-		props.onClose();
-	};
-
 	const handleSave = () => {
 		setLoading(true);
 		if (props.seletedTract) {
@@ -177,7 +178,7 @@ function AddUnitTractDialog(props) {
 					selectedTractToUpdate: props.seletedTract._id, // Pass selectedTract id for replace tract with current selected tract
 				},
 			});
-			setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
+			window.setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
 		} else {
 			addShapeTract({
 				variables: {
@@ -192,17 +193,8 @@ function AddUnitTractDialog(props) {
 					shapeType: props.shapeType,
 				},
 			});
-			setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
+			window.setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
 		}
-	};
-
-	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-
-	const openConfirmationDialog = () => {
-		setDeleteDialogOpen(true);
-	};
-	const handleCloseDialog = () => {
-		setDeleteDialogOpen(false);
 	};
 
 	const deleteFunc = async () => {
@@ -233,15 +225,9 @@ function AddUnitTractDialog(props) {
 					fullWidth={false}
 					maxWidth="sm"
 				>
-					<DeleteConfirmationDialogContent
-						header={'Delete Well Interest'}
-						onClose={handleCloseDialog}
-						deleteFunc={deleteFunc}
-						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
-					>
+					<DeleteConfirmationDialog header={'Delete Well Interest'} onClose={handleCloseDialog} deleteFunc={deleteFunc}>
 						Do you want to delete the selected well interest?
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 			)}
 			<RightDialog open={props.open} handleClickDialogClose={handleClose} width={props.width}>

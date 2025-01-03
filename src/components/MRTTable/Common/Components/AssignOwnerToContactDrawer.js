@@ -19,6 +19,7 @@ import PropTypes from 'prop-types';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import EntityType from 'components/ContactDetailCard/components/FieldContent/EntityType';
 import { timeZoneOptions } from 'components/ContactDetailCard/components/FieldContent/timeZoneList';
+import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import Loader from 'components/Loaders';
 import RelatedContact from 'components/MRTTable/Common/Dialog/BulkUpdate/RelatedContact';
 import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
@@ -42,8 +43,6 @@ import { tableGlobalController } from 'hookstate/tableController';
 import { Modals } from 'styles/Modal';
 
 import { resetESTableToggle } from 'hookstate';
-
-import RightDialog from '../../../../ContactDetailCard/components/RightDialog';
 
 const styles = () => ({
 	topHeading: { fontWeight: 'bold' },

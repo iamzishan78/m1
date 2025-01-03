@@ -15,6 +15,7 @@ import moment from 'moment';
 
 import filterConsts from 'components/Common/TableAddDialog/Common/filterConsts';
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
 import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
 import { summaryTableStyles } from 'components/ShapeDetailCard/style';
@@ -25,7 +26,6 @@ import NumberField from 'components/Shared/components/Fields/NumberField';
 import { AutoCompleteLandgrid } from 'components/Shared/Forms/Fields/AutoCompleteLandgrid';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
 import { copy } from 'components/Shared/functions';
-import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
 import ShapeOwnerInput from 'components/Shared/ShapeOwnerInput';
 import UserList from 'components/Shared/UserList';
 import vf_currency from 'components/Shared/valueformatters/vf_currency';

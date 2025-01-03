@@ -31,8 +31,7 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import $ from 'jquery';
 
-import 'material-icons/iconfont/material-icons.css';
-// Components
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import { agreementTypes } from 'components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData';
 import { modifyExandableCardStyle } from 'components/Shared/functions/shapeLayer';
 
@@ -50,18 +49,13 @@ import { UPDATECUSTOMLAYER } from '../../graphQL/useMutationUpdateCustomLayer';
 import { TRACKBYOBJECTID } from '../../graphQL/useQueryTrackByObjectId';
 import CommentsWithIcon from '../Shared/CommentsWithIcon';
 import LinkWithIcon from '../Shared/LinkWithIcon';
-import DeleteConfirmationDialogContent from '../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import TaggerWithIcon from '../Shared/TaggerWithIcon';
 import TrackToggleButton from '../Shared/TrackToggleButton';
 import ContactSearch from './components/ContactSearch';
 import ExpandIcon from './components/svgIcons/ExpandIcon';
 import ShrinkIcon from './components/svgIcons/ShrinkIcon';
 
-//import { default as DrawPoly } from "components/Shared/svgIcons/polygon";
-
-// Mutations
-// Queries
-// contexts
+import 'material-icons/iconfont/material-icons.css';
 
 function ExpandableCard(props) {
 	// initials
@@ -84,14 +78,10 @@ function ExpandableCard(props) {
 	const [mouseX] = useState(props.mouseX);
 	const [mouseY] = useState(props.mouseY);
 	const [position] = useState(props.position);
-	const [cardHeight] = useState(props.cardHeight);
 	const [breadcrumbs, setBreadcrumbs] = useState(null);
-	// const [zIdx, setZidx] = useState(props.zIndex);
 	const [cardLeft, setCardLeft] = useState(props.cardLeft);
 	const [cardTop, setCardTop] = useState(props.cardTop);
-	const [cardHeightExpanded] = useState(props.cardHeightExpanded);
 	const [width, setWidth] = useState(props.cardWidth);
-	const [height, setHeight] = useState(props.cardHeight);
 	const [target, setTarget] = useState({});
 	const [targetSourceId] = useState(props.targetSourceId);
 	const [targetLabel] = useState(props.targetLabel);
@@ -140,7 +130,7 @@ function ExpandableCard(props) {
 		selectedShape || selectedParcel
 	);
 
-	const useStyles = makeStyles(theme => ({
+	const useStyles = makeStyles(() => ({
 		root: {
 			// zIndex: 88888,
 		},
@@ -319,7 +309,6 @@ function ExpandableCard(props) {
 				},
 			});
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [stateApp.user.mongoId, targetSourceId]);
 
 	useEffect(() => {
@@ -332,14 +321,11 @@ function ExpandableCard(props) {
 
 	useEffect(() => {
 		setWidth(cardWidth);
-		setHeight(cardHeight);
 		if (props.expanded) {
 			handleExpand();
 		} else {
 			handleShrink();
 		}
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.expanded]);
 
 	useEffect(() => {
@@ -377,7 +363,6 @@ function ExpandableCard(props) {
 				setWidth('100%');
 			}
 		}
-		setHeight(cardHeightExpanded);
 
 		if (props.targetLabel === 'well' || props.targetLabel === 'expandedWell') {
 			const newPath = `/map/wells/${selectedWell.id}`;
@@ -401,13 +386,10 @@ function ExpandableCard(props) {
 	};
 
 	const handleShrink = () => {
-		if (parent === 'map' && $('#popupContainer').length) {
-		}
 		setCardTop(mouseY);
 		setCardLeft(mouseX);
 		setStateExpandableCard(state => ({ ...state, expanded: false }));
 		setWidth(cardWidth);
-		setHeight(cardHeight);
 		popupController.updateState({
 			expandedCard: false,
 		});
@@ -683,15 +665,13 @@ function ExpandableCard(props) {
 					fullWidth={false}
 					maxWidth="sm"
 				>
-					<DeleteConfirmationDialogContent
+					<DeleteConfirmationDialog
 						header={`Delete ${targetLabel === 'expandedParcel' ? 'parcel' : targetLabel}`}
 						onClose={() => setOpenDialog(false)}
 						deleteFunc={deleteFunc}
-						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
 					>
 						Are you sure you want to delete the selected {targetLabel === 'expandedParcel' ? 'parcel' : targetLabel}?
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 			)}
 

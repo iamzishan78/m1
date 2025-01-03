@@ -27,7 +27,9 @@ import RemoveSharpIcon from '@material-ui/icons/RemoveSharp';
 import { useLazyQuery } from '@apollo/client';
 
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import AutocompEntityNamesVirtualizeList from 'components/MRTTable/Common/Components/AutocompEntityNamesVirtualizeList';
 import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
 import { copy, setStateIfDeepEqual } from 'components/Shared/functions';
 import Tags from 'components/Shared/Tagger';
@@ -35,9 +37,6 @@ import Tags from 'components/Shared/Tagger';
 import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
 
 import { AppContext } from 'AppContext';
-
-import AutocompEntityNamesVirtualizeList from './AutocompEntityNamesVirtualizeList';
-import RightDialog from '../../../../ContactDetailCard/components/RightDialog';
 
 const styles = () => ({
 	topHeading: { fontWeight: 'bold' },
@@ -94,11 +93,8 @@ const MultipleOwnerToContactDrawer = ({
 	setRows,
 	getContactCampaignAction,
 	convertMultipleOwnerToContactAction,
-	campaignList,
-	isEntities,
 	jobName,
 	jobType,
-	onSuccess,
 }) => {
 	const [stateApp] = React.useContext(AppContext);
 	const classes = useStyles();
@@ -133,7 +129,6 @@ const MultipleOwnerToContactDrawer = ({
 		getContactCampaignAction({
 			search: '*',
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -149,7 +144,7 @@ const MultipleOwnerToContactDrawer = ({
 		getPaginatedContacts({ variables: { search: nameAutInputValue } });
 	}, [getPaginatedContacts, nameAutInputValue]);
 
-	const setNameAutInputValue = (newState, n, k) => {
+	const setNameAutInputValue = newState => {
 		setStateIfDeepEqual(NameAutInputValue, newState);
 	};
 

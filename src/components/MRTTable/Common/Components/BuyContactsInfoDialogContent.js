@@ -1,9 +1,7 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { Backdrop, FormLabel } from '@material-ui/core';
-import { Grid } from '@material-ui/core';
-import { Tooltip } from '@material-ui/core';
+import { Backdrop, FormLabel, Grid, Tooltip } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -30,11 +28,12 @@ import { GET_IDICORE_DATA } from 'graphQL/useQueryGetIdiCoreData';
 import { jobController } from 'hookstate/jobStateController';
 import { tableGlobalController } from 'hookstate/tableController';
 
-import { showSuccessMessage, showErrorMessage } from '../../../../../actions';
-import { AppContext } from '../../../../../AppContext';
-import { Modals } from '../../../../../styles/Modal';
+import { Modals } from 'styles/Modal';
 
-const styles = theme => ({
+import { showErrorMessage, showSuccessMessage } from 'actions';
+import { AppContext } from 'AppContext';
+
+const styles = () => ({
 	dialogTitle: {
 		padding: '25px',
 		display: 'flex',
@@ -43,7 +42,7 @@ const styles = theme => ({
 	},
 });
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	iconsSuccess: {
 		'& svg': {
 			fill: '#04b004 !important',
@@ -70,7 +69,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const DialogTitle = withStyles(styles)(props => {
-	const { children, classes, onClose, updateMelissaTable, ...other } = props;
+	const { children, classes, onClose, ...other } = props;
 	return (
 		<MuiDialogTitle disableTypography className={classes.dialogTitle} {...other}>
 			<Typography variant="h5" style={{ fontWeight: 'bold' }}>
@@ -120,7 +119,6 @@ export default function BuyContactsInfoDialogContent(props) {
 				tenantId: stateApp.user.tenantId,
 			},
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -306,7 +304,7 @@ export default function BuyContactsInfoDialogContent(props) {
 							</Grid>
 
 							{contactDataMissing &&
-								contactDataMissing.map((row, index) => (
+								contactDataMissing.map(row => (
 									<Grid item xs={12} className={modalClass.inputContainer}>
 										<FormLabel className={modalClass.inputLabel}>{`${row.name || 'Name Missing'}`}</FormLabel>
 										<FormLabel className={modalClass.inputContent}>

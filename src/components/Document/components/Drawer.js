@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from 'react';
 
-import { CircularProgress, Dialog, DialogTitle, IconButton } from '@material-ui/core';
-import { Menu, MenuItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import {
+	CircularProgress,
+	Dialog,
+	DialogTitle,
+	IconButton,
+	Menu,
+	MenuItem,
+	ListItemIcon,
+	ListItemText,
+} from '@material-ui/core';
 import Drawer from '@material-ui/core/Drawer';
 import { makeStyles } from '@material-ui/core/styles';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -10,7 +18,7 @@ import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import clsx from 'clsx';
 
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
 import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
@@ -212,7 +220,6 @@ export default function DocumentDrawer(props) {
 				},
 			});
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [stateApp.selectedDocument?._id]);
 
 	const documentInitial = {
@@ -358,7 +365,7 @@ export default function DocumentDrawer(props) {
 		}
 	}, [stateApp.selectedDocument]);
 
-	const toggleDrawer = (anchor, open) => event => {
+	const toggleDrawer = () => event => {
 		if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
 			return;
 		}
@@ -497,15 +504,13 @@ export default function DocumentDrawer(props) {
 				open={stateApp.DocumentDrawer === true || Object.entries(stateApp?.selectedDocument || {}).length > 0}
 			>
 				<Dialog open={openDeleteConfirmDialog} onClose={handleDeleteCancel} style={{ zIndex: 99999999999 }}>
-					<DeleteConfirmationDialogContent
+					<DeleteConfirmationDialog
 						header="Delete Document"
 						onClose={handleDeleteCancel}
 						deleteFunc={handleDeleteAccept}
-						m1nSelectedRowsIds={[document._id]}
-						setM1nSelectedRowsIndexes={() => {}}
 					>
 						Do you want to delete the selected documents?
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 				<Dialog open={loader} style={{ zIndex: 99999999999 }}>
 					<DialogTitle id="alert-dialog-title">

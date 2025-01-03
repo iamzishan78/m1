@@ -7,8 +7,8 @@ import PropTypes from 'prop-types';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import Loader from 'components/Loaders';
+import BuyContactsInfoDialogContent from 'components/MRTTable/Common/Components/BuyContactsInfoDialogContent';
 import ExportContactsPurchaseAndOwners from 'components/MRTTable/Common/Dialog/ExportContactsPurchaseAndOwners';
-import BuyContactsInfoDialogContent from 'components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
 
 import { GRID_GENERIC_REMOVE } from 'graphQL/useMutationCommonGridRemove';
 

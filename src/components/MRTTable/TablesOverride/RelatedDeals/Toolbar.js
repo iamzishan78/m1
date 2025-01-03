@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { useLazyQuery } from '@apollo/client';
 import PropTypes from 'prop-types';
 
-import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
+import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown';
 
 import { GETPIPELINE } from 'graphQL/useQueryPipeline';
 

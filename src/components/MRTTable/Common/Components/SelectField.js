@@ -17,7 +17,7 @@ import { ChipMeta } from 'utils/ChipMeta';
 
 import { AppContext } from 'AppContext';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	myClass: {
 		padding: '6px 6px',
 		'& .MuiIconButton-root': {
@@ -47,7 +47,6 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
 
 	useEffect(() => {
 		onFilterChange('');
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dropdownOptions]);
 
 	const CustomMenuList = props => {

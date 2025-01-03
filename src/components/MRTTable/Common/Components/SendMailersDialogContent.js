@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { Grid } from '@material-ui/core';
@@ -17,7 +17,6 @@ import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 
 import { useMutation } from '@apollo/client';
 
-// import value formatters
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
 import { UPLOADRECIPIENTS } from 'graphQL/useMutationUploadStorefrontRecipientsList';
@@ -71,8 +70,7 @@ export default function SendMailersDialogContent(props) {
 	const [campaign, setCampaign] = useState('');
 	const [rowsLoading, setRowsLoading] = useState(false);
 
-	//const [uploadRecipients] = useMutation(UPLOADRECIPIENTS);
-	const [uploadRecipients, { data: dataUploadRecipients }] = useMutation(UPLOADRECIPIENTS, {
+	const [uploadRecipients] = useMutation(UPLOADRECIPIENTS, {
 		onCompleted: data => {
 			window.open(data.uploadStorefrontRecipientsList.link, '_blank');
 		},

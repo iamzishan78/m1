@@ -7,8 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 
-import { useLazyQuery } from '@apollo/client';
-import { useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { get } from 'lodash';
 import loadashFilter from 'lodash/filter';
 
@@ -25,8 +24,8 @@ import MergeHistory from 'components/ContactDetailCard/components/FieldContent/M
 import PencilEditIcon from 'components/ContactDetailCard/components/FieldContent/PencilEditIcon';
 import useStyles from 'components/ContactDetailCard/components/FieldContent/style';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
 import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
-import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
 import GoogleMapIcon from 'components/Shared/svgIcons/GoogleMapIcon';
 import ZillowIcon from 'components/Shared/svgIcons/ZillowIcon';
 
@@ -66,7 +65,6 @@ export default function FieldContent({
 	row,
 	handleQuickActionActivity,
 	metafields,
-	...props
 }) {
 	const [stateApp, setStateApp] = React.useContext(AppContext);
 	const [edit, setEdit] = useState(null);
@@ -134,7 +132,6 @@ export default function FieldContent({
 
 	useEffect(() => {
 		editContent.ownerType && handleUpdating();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [editContent.ownerType]);
 
 	useEffect(() => {
@@ -148,7 +145,6 @@ export default function FieldContent({
 				document.getElementById('fieldContentInput' + fieldName).focus();
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [edit]);
 
 	const getOrganizedContent = () => {
@@ -288,7 +284,7 @@ export default function FieldContent({
 						},
 						refetchQueries: ['getPaginatedContacts', 'getContact', 'getparcelOwners'],
 						awaitRefetchQueries: false,
-					}).then(res => {
+					}).then(() => {
 						let entries = Object.entries(editContent);
 						entries.forEach(entry => {
 							content = { ...content, [entry[0]]: entry[1] };
@@ -312,7 +308,7 @@ export default function FieldContent({
 				},
 				refetchQueries: ['getLastMelissaRecord'],
 				awaitRefetchQueries: true,
-			}).then(res => {
+			}).then(() => {
 				setIsCurEdited(true);
 				let entries = Object.entries(editContent);
 				entries.forEach(entry => {
@@ -334,7 +330,7 @@ export default function FieldContent({
 				},
 				refetchQueries: ['getLastMelissaRecord'],
 				awaitRefetchQueries: true,
-			}).then(res => {
+			}).then(() => {
 				setIsCurEdited(true);
 				let entries = Object.entries(editContent);
 				entries.forEach(entry => {
@@ -717,12 +713,12 @@ export const Status = ({ setDocumentType, value, options, ...other }) => {
 					return '';
 				}
 			}}
-			getOptionSelected={(option, value) => {
+			getOptionSelected={option => {
 				return option?._id === search;
 			}}
 			renderOption={option => {
 				if (option._id === 'newEntity') {
-					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+					return <Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>;
 				}
 
 				return (

@@ -14,14 +14,15 @@ import {
 	ViewContactData,
 	openSideDialog,
 } from 'components/MRTTable/Common/CommonToolBarActions';
+import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown';
 import OwnerPerUnitTableDialogs from 'components/MRTTable/TablesOverride/OwnersPerUnit/RightDialogs';
 import { NavigationContext } from 'components/Navigation/NavigationContext';
-import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
-import MetaField from 'utils/MetaField';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { navController } from 'hookstate/navStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import MetaField from 'utils/MetaField';
 
 const useStyles = makeStyles(() => ({
 	disabledTopBarButtons: {

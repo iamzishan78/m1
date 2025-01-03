@@ -4,8 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { Tooltip } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
-
-//icons
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import RootRef from '@material-ui/core/RootRef';
@@ -24,7 +22,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery } from '@apollo/client';
 
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 
 import { DEALSCOUNTINANSTAGE } from 'graphQL/useQueryNonDeletedDealsCountInAnStageByPipeline';
 
@@ -283,7 +281,7 @@ export default function LanesInfoPanel({
 					{stages && (
 						<DragDropContext onDragEnd={onDragEnd}>
 							<Droppable droppableId="droppableM1">
-								{(provided, snapshot) => (
+								{provided => (
 									<RootRef rootRef={provided.innerRef}>
 										<Table size="small">
 											<TableHead>
@@ -305,7 +303,7 @@ export default function LanesInfoPanel({
 													const labelId = `checkbox-list-label-${stage.position}`;
 													return (
 														<Draggable key={labelId} draggableId={labelId} index={stage.position}>
-															{(provided, snapshot) => (
+															{provided => (
 																<TableRow key={stage.position} ref={provided.innerRef} {...provided.draggableProps}>
 																	<TableCell padding="checkbox" {...provided.dragHandleProps}>
 																		<DragIndicator />
@@ -446,17 +444,15 @@ export default function LanesInfoPanel({
 					fullWidth={false}
 					maxWidth="sm"
 				>
-					<DeleteConfirmationDialogContent
+					<DeleteConfirmationDialog
 						header={deleteDialogOpen === 'pipe' ? 'Delete Flowline' : 'Delete Stage'}
 						onClose={handleCloseDeleteDialog}
 						deleteFunc={deleteFunc ? deleteFunc : () => {}}
-						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
 					>
 						{deleteDialogOpen === 'pipe'
 							? 'Are you sure you want to delete the Flowline?'
 							: 'Are you sure you want to delete the stage?'}
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 			)}
 		</div>

@@ -2,14 +2,9 @@ import React, { useContext, useState, useEffect, useRef } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import { useHistory } from 'react-router-dom';
 
-import { Grid } from '@material-ui/core';
-import { CircularProgress, Dialog, DialogTitle } from '@material-ui/core';
+import { Grid, CircularProgress, Dialog, DialogTitle, TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-
-// import Checkbox from "@material-ui/core/Checkbox";
-// import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Typography from '@material-ui/core/Typography';
 import CallIcon from '@material-ui/icons/Call';
 import ContactMailIcon from '@material-ui/icons/ContactMail';
@@ -43,10 +38,10 @@ import { GETMONGOUSERS } from '../../../graphQL/useQueryGetUsers';
 import { OPENDEALS } from '../../../graphQL/useQueryOpenDeals';
 import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
 import ExpandableCardProvider from '../../ExpandableCard/ExpandableCardProvider';
+import AutocompEntityNamesVirtualizeList from '../../MRTTable/Common/Components/AutocompEntityNamesVirtualizeList';
 import { setStateIfDeepEqual } from '../../Shared/functions';
-import AutocompEntityNamesVirtualizeList from '../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	dialogExpCard: {
 		'& .MuiDialog-paperScrollPaper': {
 			height: '100%',
@@ -221,6 +216,14 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 	const [errors, setErrors] = useState({ ...initialErrors });
 	const [users, setUsers] = useState([]);
 	const { selectedActivity } = stateApp;
+	const [nameAutValue, setNameAutValue] = useState({ name: '', _id: null });
+	const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
+	const [nameAutInputValue, NameAutInputValue] = useState('');
+	const setNameAutInputValue = newState => {
+		setStateIfDeepEqual(NameAutInputValue, newState);
+	};
+	const [hasNextPage, setHasNextPage] = useState(true);
+	const [isNextPageLoading, setIsNextPageLoading] = useState(false);
 
 	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
 		fetchPolicy: 'cache-and-network',
@@ -240,6 +243,40 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 			);
 		}
 	}, [userLists]);
+
+	const clearFields = () => {
+		setAddNew(true);
+		setNotes('');
+		setOwner({
+			name: stateApp.user.fullname || stateApp.user.email,
+			id: stateApp.user.mongoId,
+		});
+		setNameAutValue({ name: '', _id: null });
+		setDealId(null);
+		setActivityType('');
+		setActivityName('');
+		setClosed(false);
+		setStartDate(getCurrentDate());
+		setCalenderDate(new Date());
+		setEndDate(getCurrentDate());
+		setStartTime('08:00');
+		setEndTime('08:00');
+		setNameAutInputValue('');
+	};
+
+	const onModalClose = () => {
+		if (history.location.pathname !== '/contacts/activityDashboard') {
+			window.history.pushState('', '', '/calendar/activities');
+		}
+
+		clearFields();
+		setSelectedActivityId(null);
+		setStateApp(stateApp => ({
+			...stateApp,
+			activityDialog: false,
+			selectedActivity: null,
+		}));
+	};
 
 	const [addActivityMutation, { loading: addLoading }] = useMutation(ADDACTIVITY, {
 		onCompleted: () => {
@@ -277,15 +314,6 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 	);
 	const [addContact, { data: addContactData }] = useMutation(ADDCONTACT);
 
-	const [nameAutValue, setNameAutValue] = useState({ name: '', _id: null });
-	const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
-	const [nameAutInputValue, NameAutInputValue] = useState('');
-	const setNameAutInputValue = newState => {
-		setStateIfDeepEqual(NameAutInputValue, newState);
-	};
-	const [hasNextPage, setHasNextPage] = useState(true);
-	const [isNextPageLoading, setIsNextPageLoading] = useState(false);
-
 	useEffect(() => {
 		//will also run during initial mount
 		setIsNextPageLoading(true);
@@ -310,7 +338,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 
 	useEffect(() => {
 		if (allContacts?.paginatedContacts) {
-			setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map(el => el.node)]);
+			setMongoEntitiesArray([...(allContacts?.paginatedContacts?.edges?.map(el => el.node) || [])]);
 			setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
 		}
 		setIsNextPageLoading(false);
@@ -381,40 +409,6 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 			setOpenDeals(dealsData?.openDeals?.deals);
 		}
 	}, [dealsData]);
-
-	const onModalClose = () => {
-		if (history.location.pathname !== '/contacts/activityDashboard') {
-			window.history.pushState('', '', '/calendar/activities');
-		}
-
-		clearFields();
-		setSelectedActivityId(null);
-		setStateApp(stateApp => ({
-			...stateApp,
-			activityDialog: false,
-			selectedActivity: null,
-		}));
-	};
-
-	const clearFields = () => {
-		setAddNew(true);
-		setNotes('');
-		setOwner({
-			name: stateApp.user.fullname || stateApp.user.email,
-			id: stateApp.user.mongoId,
-		});
-		setNameAutValue({ name: '', _id: null });
-		setDealId(null);
-		setActivityType('');
-		setActivityName('');
-		setClosed(false);
-		setStartDate(getCurrentDate());
-		setCalenderDate(new Date());
-		setEndDate(getCurrentDate());
-		setStartTime('08:00');
-		setEndTime('08:00');
-		setNameAutInputValue('');
-	};
 
 	const updateErrors = () => {
 		let activityTypeErr = false;
@@ -539,6 +533,8 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 		});
 	};
 
+	const dealValue = openDeals.find(deal => deal._id === dealId) || null;
+
 	const handleOnDealClick = () => {
 		const { _id: stageId, pipeline } = dealValue.stage;
 		const dealId = dealValue._id;
@@ -547,7 +543,6 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 
 	const handleOnContactView = () => `/contact/details/${nameAutValue._id}?tenant=${workspaceTenantName()}`;
 
-	const dealValue = openDeals.find(deal => deal._id === dealId) || null;
 	return (
 		<Dialog
 			className={classes.dialogExpCard}

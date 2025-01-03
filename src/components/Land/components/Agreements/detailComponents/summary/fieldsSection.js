@@ -23,6 +23,7 @@ import { useLazyQuery } from '@apollo/client';
 import { get } from 'lodash';
 import uniqBy from 'lodash/uniqBy';
 
+import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
 import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';
 import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
 import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
@@ -30,15 +31,15 @@ import CustomTextField from 'components/Shared/components/Fields/CustomTextField
 import DateField from 'components/Shared/components/Fields/DateField';
 import NumberField from 'components/Shared/components/Fields/NumberField';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
-import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
 import keys from 'components/Shared/SpreadsheetGrid/kit/keymap';
-import MetaField from 'utils/MetaField';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
 import { popupController } from 'hookstate/popupStateController';
 
+import { TO_FIXED } from 'utils/consts';
 import { copy } from 'utils/helper';
+import MetaField from 'utils/MetaField';
 
 import { showInfoMessage } from 'actions';
 import { AppContext } from 'AppContext';
@@ -46,7 +47,7 @@ import { AppContext } from 'AppContext';
 import { useStyles as summaryStyles } from '../style';
 import fieldsData from './data';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	valueOveridden: {
 		'& .MuiInputBase-input': {
 			color: '#01B0F0 !important',
@@ -82,7 +83,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 
 	useEffect(() => {
 		document.addEventListener('keydown', onGlobalKeyDown, false);
-		document.addEventListener('blur', e => {});
+		document.addEventListener('blur', () => {});
 	}, []);
 
 	useEffect(() => {
@@ -105,7 +106,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 	}, [stateApp.user?.mongoId, getMetaData]);
 
 	useEffect(() => {
-		return history.listen(location => {
+		return history.listen(() => {
 			if (!agreementDetails?.agreementNumber) {
 				popupController.updateState({
 					selectedShape: null,
@@ -378,7 +379,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 												<TextField
 													{...props}
 													id={`field-${field.key}`}
-													value={parseFloat(props.value).toFixed(2)}
+													value={parseFloat(props.value).toFixed(TO_FIXED)}
 													className={
 														isAcquisitionCostOverridden ? overrideClasses.valueOveridden : overrideClasses.valueNormal
 													}
@@ -388,14 +389,14 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 													inputRef={props.ref}
 													onWheel={e => e.target.blur()}
 													onChange={e => {
-														const toFixedValue = parseFloat(e.target.value).toFixed(2);
+														const toFixedValue = parseFloat(e.target.value).toFixed(TO_FIXED);
 														const calculatedAcquisitionCost = parseFloat(
 															agreementDetails?.calculated?.totalAcquisitionCost || 0
-														).toFixed(2);
+														).toFixed(TO_FIXED);
 														props.onChange(toFixedValue);
 														setIsAcquisitionCostOverridden(toFixedValue !== calculatedAcquisitionCost);
 													}}
-													onBlur={e =>
+													onBlur={() =>
 														offClickHandler(field.key, {
 															value: Number(props.value),
 															overridden: isAcquisitionCostOverridden,
@@ -411,7 +412,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 																		onClick={() => {
 																			const totalAcquisitionCost = parseFloat(
 																				agreementDetails?.calculated?.totalAcquisitionCost || 0
-																			).toFixed(2);
+																			).toFixed(TO_FIXED);
 																			props.onChange(totalAcquisitionCost);
 																			offClickHandler(field.key, {
 																				value: Number(totalAcquisitionCost),
