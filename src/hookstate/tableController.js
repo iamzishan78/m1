@@ -469,7 +469,7 @@ const tableESStateControllerHandler = state => ({
 
 		return updatedColumnnSchema;
 	},
-	setFilterMode: (column, mode) => {
+	setFilterMode: (column, mode, callSelectFilterMode = true) => {
 		const index = state.TableSchema?.get({ noproxy: true })?.findIndex(
 			element => element.accessorKey === column || element.id === column
 		);
@@ -485,7 +485,8 @@ const tableESStateControllerHandler = state => ({
 
 		const columnFilterModesFnRefs = globalStateController.getValue('columnFilterModesFnRefs');
 
-		columnFilterModesFnRefs?.[state.tableKey.get({ noproxy: true })]?.[column]?.onSelectFilterMode(mode);
+		if (callSelectFilterMode)
+			columnFilterModesFnRefs?.[state.tableKey.get({ noproxy: true })]?.[column]?.onSelectFilterMode(mode);
 	},
 
 	setSelectAll: value => {

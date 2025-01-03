@@ -289,12 +289,12 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 					if (!formattedFilter?.value || formattedFilter?.value?.length === 0) {
 						tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
 					} else {
-						tableController(tableKey).setFilter(formattedFilter);
 						tableController(tableKey).setShowColumnFilters(true);
 						tableController(tableKey).setFilterMode(
 							formattedFilter?.field?.replace('.keyword', ''),
 							formattedFilter?.searchType
 						);
+						tableController(tableKey).setFilter(formattedFilter);
 					}
 				}
 
@@ -441,7 +441,11 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		});
 
 		tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
-		tableController(tableKey).setFilterMode((fieldName?.value || fieldName)?.replace('.keyword', ''), 'singleselect');
+		tableController(tableKey).setFilterMode(
+			(fieldName?.value || fieldName)?.replace('.keyword', ''),
+			'singleselect',
+			false
+		);
 		resetForm({
 			mapViews: mapViewFilters || [],
 		});
