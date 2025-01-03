@@ -20,7 +20,6 @@ import { drawShapeStyles, findBoundsMap } from 'components/MapControls/commonHel
 import MapControls from 'components/MapControls/MapControls';
 import SpeedDialComponent from 'components/MapControls/SpeedDialComponent';
 import { layersWithSelectedShapeKey } from 'components/Shared/functions/shapeLayer';
-import { convertToTitleCase } from 'components/Shared/M1nTable/components/MUIDataTable/utils';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
@@ -37,6 +36,7 @@ import { navController } from 'hookstate/navStateController';
 import { popupController } from 'hookstate/popupStateController';
 
 import { baseTenantsMaps } from 'utils/data';
+import { convertToTitleCase } from 'utils/helper';
 
 import { layerRefs } from 'hookstate';
 
@@ -465,7 +465,7 @@ function Map({
 				} else {
 					getCustomLayer(paramId);
 				}
-			} catch (e) {
+			} catch {
 				history.push('/');
 			}
 		}
@@ -1106,7 +1106,7 @@ function Map({
 						}
 					);
 				}
-			} catch (e) {
+			} catch {
 				//
 			}
 		}

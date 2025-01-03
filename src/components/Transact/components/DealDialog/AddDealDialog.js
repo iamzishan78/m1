@@ -21,9 +21,9 @@ import Contacts from 'components/FlowDrawer/Contacts';
 import MapProvider from 'components/Map/MapProvider';
 import { findBoundsMap } from 'components/MapControls/commonHelper';
 import { drawBoundaries } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import Documents from 'components/Shared/Documents';
 import { getRandomColor } from 'components/Shared/functions/ui';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';
 import DealComments from 'components/Transact/components/DealComments';
 import DealDialogHeader from 'components/Transact/components/DealDialog/DealDialogHeader';
@@ -1391,15 +1391,9 @@ function AddDealDialog(props) {
 					fullWidth={false}
 					maxWidth="sm"
 				>
-					<DeleteConfirmationDialogContent
-						header={'Delete Deal'}
-						onClose={handleCloseDialog}
-						deleteFunc={deleteFunc}
-						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
-					>
+					<DeleteConfirmationDialog header={'Delete Deal'} onClose={handleCloseDialog} deleteFunc={deleteFunc}>
 						Do you want to delete the selected deal?
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 			)}
 			<div className={classes.dealDetailRoot}>

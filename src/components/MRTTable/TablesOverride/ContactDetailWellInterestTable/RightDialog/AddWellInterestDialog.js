@@ -29,7 +29,8 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import parse from 'autosuggest-highlight/parse';
 import PropTypes from 'prop-types';
 
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 
 import { ADDWELLINTEREST } from 'graphQL/useMutationAddWellInterest';
 import { UPDATEWELLINTEREST } from 'graphQL/useMutationUpdateWellInterest';
@@ -38,15 +39,14 @@ import { INTERESTOWNERTYPESQUERY } from 'graphQL/useQueryInterestOwnerTypes';
 import { INTERESTTYPESQUERY } from 'graphQL/useQueryInterestTypes';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
 
-// contexts
 import { tableGlobalController } from 'hookstate/tableController';
+
+import { INTEREST_TO_FIXED } from 'utils/consts';
 
 import { AppContext } from 'AppContext';
 
-import RightDialog from '../../../../ContactDetailCard/components/RightDialog';
-
 function NumberFormatCustom(props) {
-	const { inputRef, onChange, name, ...other } = props;
+	const { inputRef, onChange, ...other } = props;
 
 	return (
 		<NumberFormat
@@ -73,7 +73,7 @@ NumberFormatCustom.propTypes = {
 	onChange: PropTypes.func.isRequired,
 };
 function CurrencyFormatCustom(props) {
-	const { inputRef, onChange, name, ...other } = props;
+	const { inputRef, onChange, ...other } = props;
 
 	return (
 		<NumberFormat
@@ -100,7 +100,7 @@ CurrencyFormatCustom.propTypes = {
 	onChange: PropTypes.func.isRequired,
 };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	dialogFooter: {
 		display: 'flex',
 		justifyContent: 'flex-end',
@@ -230,7 +230,6 @@ function AddWellInterestDialog(props) {
 
 		setFormLeaseName(leaseToSet);
 		setFormLeaseAcres(leaseAcresToSet);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dataTenantWell]);
 
 	useEffect(() => {
@@ -283,8 +282,8 @@ function AddWellInterestDialog(props) {
 
 	const formatRoyaltyAcres = royaltyAcres => {
 		const decimals = royaltyAcres.toString().split('.');
-		if (decimals[1] && decimals[1].length > 8) {
-			royaltyAcres = royaltyAcres.toFixed(8);
+		if (decimals[1] && decimals[1].length > INTEREST_TO_FIXED) {
+			royaltyAcres = royaltyAcres.toFixed(INTEREST_TO_FIXED);
 		}
 		return Number(royaltyAcres);
 	};
@@ -293,7 +292,7 @@ function AddWellInterestDialog(props) {
 		if (initializing || leaseAcres == null || interest == null) {
 			return;
 		}
-		setFormRoyaltyAcres(formatRoyaltyAcres(leaseAcres * interest * 8));
+		setFormRoyaltyAcres(formatRoyaltyAcres(leaseAcres * interest * INTEREST_TO_FIXED));
 	};
 
 	const handleValidate = () => {
@@ -400,15 +399,9 @@ function AddWellInterestDialog(props) {
 					fullWidth={false}
 					maxWidth="sm"
 				>
-					<DeleteConfirmationDialogContent
-						header={'Delete Well Interest'}
-						onClose={handleCloseDialog}
-						deleteFunc={deleteFunc}
-						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
-					>
+					<DeleteConfirmationDialog header={'Delete Well Interest'} onClose={handleCloseDialog} deleteFunc={deleteFunc}>
 						Do you want to delete the selected well interest?
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 			)}
 			<RightDialog open={props.open} handleClickDialogClose={handleClose} width={props.width}>
@@ -478,7 +471,7 @@ function AddWellInterestDialog(props) {
 										});
 								}}
 								value={selectedWell}
-								getOptionLabel={(option, value) => option.WellName}
+								getOptionLabel={option => option.WellName}
 								filterOptions={x => x}
 								renderOption={option => {
 									const parts = parse(option.WellName, []);
@@ -718,7 +711,7 @@ function AddWellInterestDialog(props) {
 											id="royality-acres"
 											inputComponent={NumberFormatCustom}
 											className={
-												formRoyaltyAcres !== formatRoyaltyAcres(formInterestAmount * formLeaseAcres * 8)
+												formRoyaltyAcres !== formatRoyaltyAcres(formInterestAmount * formLeaseAcres * INTEREST_TO_FIXED)
 													? classes.royaltyAcres
 													: ''
 											}
@@ -728,11 +721,14 @@ function AddWellInterestDialog(props) {
 											endAdornment={
 												<InputAdornment position="end" style={{ position: 'absolute', right: '-3px' }}>
 													{formRoyaltyAcres !== '' &&
-														formRoyaltyAcres !== formatRoyaltyAcres(formInterestAmount * formLeaseAcres * 8) && (
+														formRoyaltyAcres !==
+															formatRoyaltyAcres(formInterestAmount * formLeaseAcres * INTEREST_TO_FIXED) && (
 															<IconButton
 																aria-label="toggle royality-acres"
 																onClick={() =>
-																	setFormRoyaltyAcres(formatRoyaltyAcres(formInterestAmount * formLeaseAcres * 8))
+																	setFormRoyaltyAcres(
+																		formatRoyaltyAcres(formInterestAmount * formLeaseAcres * INTEREST_TO_FIXED)
+																	)
 																}
 															>
 																<AutorenewIcon />

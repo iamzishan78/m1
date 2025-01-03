@@ -14,22 +14,19 @@ import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import { useLazyQuery, useMutation } from '@apollo/client';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import AutoCompleteFieldComponent from 'components/Shared/Forms/Fields/AutoCompleteField';
 import WellSearchApiField from 'components/Shared/Forms/Fields/WellSearchApiField';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import CloseIcon2 from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
 import { ADD_SHAPE_WELL_INTEREST } from 'graphQL/useMutationAddShapeWellInterest';
 import { UPDATE_SHAPE_WELL_INTEREST } from 'graphQL/useMutationUpdateShapeWellInterest';
-
-// contexts
-
 import { WELL_INTEREST_SELECT_OPTIONS } from 'graphQL/useQueryWellInterestSelectOptions';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableGlobalController } from 'hookstate/tableController';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	dialogFooter: {
 		display: 'flex',
 		justifyContent: 'flex-end',
@@ -90,19 +87,16 @@ function RelatedWellsDialog(props) {
 		getWellInterestsSelectOptions({
 			variables: { selectKeys: ['Operator', 'WellType', 'WellStatus', 'WellBoreProfile'] },
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
 		setWellInterestSelectOptions(dataWellInterestsSelectOptions?.wellInterestsSelectOptions?.res);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, dataWellInterestsSelectOptions);
 
 	const getOptions = useCallback(
 		type => {
 			return wellInterestSelectOptions ? wellInterestSelectOptions[type]?.map(e => e.Desc || e.Name) : [];
 		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[wellInterestSelectOptions]
 	);
 
@@ -120,7 +114,6 @@ function RelatedWellsDialog(props) {
 
 			reset(props.wellInterest);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.wellInterest]);
 
 	useEffect(() => {
@@ -457,15 +450,9 @@ function RelatedWellsDialog(props) {
 					fullWidth={false}
 					maxWidth="sm"
 				>
-					<DeleteConfirmationDialogContent
-						header={'Delete Well'}
-						onClose={handleCloseDialog}
-						deleteFunc={deleteFunc}
-						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
-					>
+					<DeleteConfirmationDialog header={'Delete Well'} onClose={handleCloseDialog} deleteFunc={deleteFunc}>
 						Do you want to delete the selected well?
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 			)}
 			<RightDialog open={props.open} handleClickDialogClose={handleClose} width={props.width}>

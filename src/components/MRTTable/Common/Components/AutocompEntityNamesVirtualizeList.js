@@ -3,8 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { VariableSizeList } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 
-import { IconButton, Typography } from '@material-ui/core';
-import { Grid } from '@material-ui/core';
+import { IconButton, Typography, Grid } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
@@ -15,13 +14,11 @@ import PropTypes from 'prop-types';
 
 import ContactCardIcon from 'components/Shared/svgIcons/contact_card';
 import ContactCardDisabledIcon from 'components/Shared/svgIcons/contact_card_disabled';
-
-// import value formatters
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
-import { AppContext } from 'AppContext';
+import { fuzzySearch } from 'utils/helper';
 
-import { fuzzySearch } from '../MUIDataTable/utils';
+import { AppContext } from 'AppContext';
 
 const LISTBOX_PADDING = 8; // px
 
@@ -34,19 +31,12 @@ const OuterElementType = React.forwardRef((props, ref) => {
 
 // Adapter for react-window
 const ListboxComponent = React.forwardRef((props, ref) => {
-	const { children, isItemLoaded, loadMoreItems, itemCount, isNextPageLoading, nameAutInputValue, ...other } = props;
+	const { children, isItemLoaded, loadMoreItems, itemCount, ...other } = props;
 
 	const itemData = React.Children.toArray(children);
-	// const smUp = useMediaQuery(theme.breakpoints.up("sm"), { noSsr: true });
-	// const itemCount = /*hasNextPage ? itemData.length + 1 : */itemData.length;
-	// const itemSize = smUp ? 36 : 48;
 	const itemSize = 65;
 
-	const getChildSize = child => {
-		// if (React.isValidElement(child) && child.type === ListSubheader) {
-		//   return 48;
-		// }
-
+	const getChildSize = () => {
 		return itemSize;
 	};
 
@@ -115,22 +105,6 @@ ListboxComponent.propTypes = {
 
 const useStyles = makeStyles({
 	inputRoot: props =>
-		props.darkCard
-			? {
-					backgroundColor: '#273551',
-					color: '#ffffff',
-					'& .MuiSvgIcon-root': {
-						fill: '#ffffff',
-					},
-				}
-			: {
-					backgroundColor: '#ffffff',
-					color: 'grey',
-					'& .MuiSvgIcon-root': {
-						fill: 'grey',
-					},
-				},
-	inputRoot: props =>
 		props.withContactCard && {
 			'& .MuiAutocomplete-endAdornment': {
 				right: '60px !important',
@@ -172,10 +146,8 @@ const paramUseStyles = makeStyles({
 
 export default function AutocompEntityNamesVirtualizeList(props) {
 	const {
-		addNew,
 		addNewOnClick,
 		mongoEntitiesArray,
-		setMongoEntitiesArray,
 		nameAutValue,
 		setNameAutValue,
 		nameAutInputValue,
@@ -205,7 +177,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
 		return !!mongoEntitiesArray[index];
 	};
 
-	const loadMoreItems = async (startIndex, stopIndex) => {
+	const loadMoreItems = async startIndex => {
 		if (isNextPageLoading || !hasNextPage) {
 			return () => {};
 		} else {
@@ -232,7 +204,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
 
 	const onInputChange = React.useMemo(
 		() =>
-			debounce((event, value, reason) => {
+			debounce((event, value) => {
 				setNameAutInputValue(value);
 			}, 500),
 		[]
@@ -318,7 +290,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
 			}}
 			renderOption={option => {
 				if (option._id === 'newEntity') {
-					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+					return <Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>;
 				}
 
 				return (

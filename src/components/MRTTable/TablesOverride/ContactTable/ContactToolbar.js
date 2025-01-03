@@ -15,7 +15,7 @@ import {
 	ViewContactData,
 	openSideDialog,
 } from 'components/MRTTable/Common/CommonToolBarActions';
-import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
+import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown';
 
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 

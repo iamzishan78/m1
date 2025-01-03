@@ -11,7 +11,7 @@ import { getMetaCss } from 'utils/getMetaCss';
 
 import SelectField from './SelectField';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		'&:hover': {
 			borderBottom: ({ showUnderline }) => (showUnderline ? '2px solid rgba(0, 0, 0, 0.87) !important' : 'inherit'),
@@ -55,7 +55,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const ReactSelectField = ({
-	index,
 	isSingleSelect,
 	onCustomKeyChange,
 	dropdownOptions,
@@ -143,11 +142,11 @@ const ReactSelectField = ({
 					border: variant === 'outlined' ? '1px solid rgba(0, 0, 0, 0.42)' : 'none',
 					borderBottom: fullWidth ? '1px solid rgba(0, 0, 0, 0.42)' : 'none',
 				}}
-				onMouseLeave={e => {
+				onMouseLeave={() => {
 					// setIsOpen(false);
 					setShowIcon(showChevron || false);
 				}}
-				onMouseEnter={e => {
+				onMouseEnter={() => {
 					setShowIcon(true);
 				}}
 				onClick={e => e.stopPropagation()}

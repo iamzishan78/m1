@@ -22,7 +22,7 @@ const useStyles = makeStyles({
 	},
 });
 
-export default function SmallTXQtr(props) {
+export default function SmallTXQtr() {
 	const classes = useStyles();
 	const array5 = [1, 2, 3, 4, 5];
 

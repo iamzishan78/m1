@@ -6,6 +6,12 @@ export const SMALL_TIMEOUT = 300;
 
 export const WEEK_DAYS = 7;
 
+export const ENTER_KEY_CODE = 13;
+
+export const BYTE = 1024;
+
+export const CREATED_STATUS = 201;
+
 export const colorPallete = [
 	{
 		id: 1,

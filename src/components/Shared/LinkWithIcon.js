@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useMemo, useRef } from 'react';
+import React, { useContext, useEffect, useState, useMemo } from 'react';
 
 import {
 	Grid,
@@ -27,7 +27,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import _ from 'lodash';
 
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
@@ -45,7 +45,7 @@ export default function LinkWithIcon(props) {
 	const [inputSearchValue, setSearchValue] = useState('');
 	const [showAll, setShow] = useState(false);
 	const [showSearchOptions, setShowOptions] = useState(false);
-	const [stateApp, setStateApp] = useContext(AppContext);
+	const [stateApp] = useContext(AppContext);
 	const [processingPlatformOwners, setProcessingOwners] = useState([]);
 	const [isDeleteGlobalOwnerDialog, setGlobalOwnerDialog] = useState({
 		state: false,
@@ -459,15 +459,13 @@ export default function LinkWithIcon(props) {
 				fullWidth={false}
 				maxWidth="sm"
 			>
-				<DeleteConfirmationDialogContent
+				<DeleteConfirmationDialog
 					header="Remove Global Owner"
 					onClose={() => setGlobalOwnerDialog(state => ({ ...state, state: false }))}
 					deleteFunc={handleRemoveGlobalOwner}
-					m1nSelectedRowsIds={null}
-					setM1nSelectedRowsIndexes={() => {}}
 				>
 					Are you sure you want to remove this Global Owner?
-				</DeleteConfirmationDialogContent>
+				</DeleteConfirmationDialog>
 			</Dialog>
 		</React.Fragment>
 	);

@@ -7,18 +7,19 @@ import { makeStyles } from '@material-ui/styles';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 
-import CustomFieldSelect from 'components/Shared/M1nTable/components/SubComponents/CustomFieldSelect';
-import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
+import CustomFieldSelect from 'components/MRTTable/Common/Components/CustomFieldSelect';
+import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
 import LongIcon from 'components/Shared/svgIcons/LongIcon';
-import MetaField from 'utils/MetaField';
 
 import { UPDATE_META_DATA } from 'graphQL/useMutationUpdateMetaData';
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
+import MetaField from 'utils/MetaField';
+
 import { AppContext } from 'AppContext';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	actionBar: ({ isBackground }) => ({
 		padding: '10px 25px',
 		display: 'flex',
@@ -133,7 +134,7 @@ const CodeMapping = ({ settingsFor }) => {
 	const [showEmpty, setShowEmpty] = useState(false);
 	const [mappingType, setMappingType] = useState(mappingTypeOptions[settingsFor][0]);
 
-	const [updateMetaData, {}] = useMutation(UPDATE_META_DATA);
+	const [updateMetaData] = useMutation(UPDATE_META_DATA);
 	const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
 	const [getUniqueType, { data: uniqueType }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
