@@ -1,6 +1,3 @@
-// import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
-
-// QUERIES
 import React, { useState, useContext, useEffect, useRef } from 'react';
 
 import Button from '@material-ui/core/Button';
@@ -18,7 +15,6 @@ import LayerIcon from '@material-ui/icons/Layers';
 
 import { useLazyQuery } from '@apollo/client';
 
-// contexts
 import { copy, getPolygonString } from 'components/Shared/functions';
 
 import { GET_PARCELS_FILES_COUNT } from 'graphQL/useQueryGetParcelFiles';

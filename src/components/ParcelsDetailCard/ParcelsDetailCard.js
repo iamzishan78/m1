@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-key */
 import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -504,7 +503,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 						tabLabels={['Summary', 'Interest Owners', 'Runsheet', 'Wells', 'Units', 'Agreements', 'Documents']}
 						openTabIdex={selectTabIndex}
 						tabPanels={[
-							<div style={{ overflow: 'overlay', maxHeight: 'calc(100vh - 285px)', overflowX: 'hidden' }}>
+							<div key="Summary" style={{ overflow: 'overlay', maxHeight: 'calc(100vh - 285px)', overflowX: 'hidden' }}>
 								<ParcelSummary
 									id={id}
 									customLayer={copy(parcelObj)}
@@ -516,18 +515,19 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 								/>
 							</div>,
 							<TabPanels
+								key="Interest Owners"
 								value={selectedTab}
 								panels={[
-									<div>
-										<MRTTable name="TractPerUnitTable" overrideMeta={overrideMeta} />
-									</div>,
-									<div>
-										<MRTTable name="PotentialShapeOwnersTable" overrideMeta={potentialShapeOwnersOverrideMeta} />
-									</div>,
+									<MRTTable key="TractPerUnitTable" name="TractPerUnitTable" overrideMeta={overrideMeta} />,
+									<MRTTable
+										key="PotentialShapeOwnersTable"
+										name="PotentialShapeOwnersTable"
+										overrideMeta={potentialShapeOwnersOverrideMeta}
+									/>,
 								]}
 							/>,
-							<MRTTable name="RunsheetTable" overrideMeta={runsheetOverrideMeta} />,
-							<div className={classes.subContent}>
+							<MRTTable key="Runsheet" name="RunsheetTable" overrideMeta={runsheetOverrideMeta} />,
+							<div key="Wells" className={classes.subContent}>
 								<RelatedWellsTable
 									id="relatedWellsTable"
 									overrideMeta={RelatedWellsOverrideMeta}
@@ -536,20 +536,23 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 								/>
 							</div>,
 							<TabPanels
+								key="Units"
 								value={selectedTab}
 								panels={[
-									<div>
-										<MRTTable name="TractUnitsTable" overrideMeta={overrideMetaTractUnits} />
-									</div>,
-									<div>
-										<MRTTable name="TractPotentialUnitsTable" overrideMeta={overrideMetaTractPotentialUnits} />
-									</div>,
+									<MRTTable key="TractUnitsTable" name="TractUnitsTable" overrideMeta={overrideMetaTractUnits} />,
+									<MRTTable
+										key="TractPotentialUnitsTable"
+										name="TractPotentialUnitsTable"
+										overrideMeta={overrideMetaTractPotentialUnits}
+									/>,
 								]}
 							/>,
-							<div>
-								<MRTTable name="ShapeDetailAgreementTable" overrideMeta={RelatedAgreementOverrideMeta} />
-							</div>,
-							<div className={`${classes.subContent} ${classes.parcelDocument}`}>
+							<MRTTable
+								key="Agreements"
+								name="ShapeDetailAgreementTable"
+								overrideMeta={RelatedAgreementOverrideMeta}
+							/>,
+							<div key="Documents" className={`${classes.subContent} ${classes.parcelDocument}`}>
 								<RelatedDocumentsTable
 									id="relatedDocumentsTable"
 									moduleId={parcelObj?._id}
