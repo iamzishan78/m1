@@ -228,6 +228,10 @@ const tableESStateControllerHandler = state => ({
 			.filter(view => view?.filterValues?.length > 0 || ['empty', 'notEmpty'].includes(view?.filterType))
 			.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues));
 
+		globalStateController.updateState({
+			columnFilterModesFnRefs: {},
+		});
+
 		if (gridViewSettings) {
 			// Fetch user-specific or default grid views based on provided settings and overrides.
 			const userDefaultDisplay = await fetchGridViews(client, gridViewSettings.module, tableKey, rest.gridViewOverride);
@@ -469,7 +473,7 @@ const tableESStateControllerHandler = state => ({
 
 		return updatedColumnnSchema;
 	},
-	setFilterMode: (column, mode) => {
+	setFilterMode: (column, mode, callSelectFilterMode = true) => {
 		const index = state.TableSchema?.get({ noproxy: true })?.findIndex(
 			element => element.accessorKey === column || element.id === column
 		);
@@ -485,7 +489,8 @@ const tableESStateControllerHandler = state => ({
 
 		const columnFilterModesFnRefs = globalStateController.getValue('columnFilterModesFnRefs');
 
-		columnFilterModesFnRefs?.[state.tableKey.get({ noproxy: true })]?.[column]?.onSelectFilterMode(mode);
+		if (callSelectFilterMode)
+			columnFilterModesFnRefs?.[state.tableKey.get({ noproxy: true })]?.[column]?.onSelectFilterMode(mode);
 	},
 
 	setSelectAll: value => {

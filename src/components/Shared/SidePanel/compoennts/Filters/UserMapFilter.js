@@ -289,12 +289,12 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 					if (!formattedFilter?.value || formattedFilter?.value?.length === 0) {
 						tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
 					} else {
-						tableController(tableKey).setFilter(formattedFilter);
 						tableController(tableKey).setShowColumnFilters(true);
 						tableController(tableKey).setFilterMode(
 							formattedFilter?.field?.replace('.keyword', ''),
 							formattedFilter?.searchType
 						);
+						tableController(tableKey).setFilter(formattedFilter);
 					}
 				}
 
@@ -388,8 +388,16 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				label: 'Field Name',
 				options: customLayersFieldAccessors[dataSourceName]?.keys || layer?.layerSchema || [], // Dynamic based on data source
 				defaultValue: mapView?.dataSourceName ? getSelectedField(mapView?.fieldName) || mapView?.fieldName : null, // Set default value if mapView is provided
-				onChange: () => {
-					setValue(`mapViews.${index}.filterType`, null);
+				onChange: (e, v, r) => {
+					setValue(
+						`mapViews.${index}.filterType`,
+						v?.type
+							? null
+							: {
+									label: 'Multi Select',
+									value: 'multiselect',
+								}
+					);
 					setValue(`mapViews.${index}.filterValues`, null);
 				}, // Reset other fields on change
 			},
@@ -441,7 +449,11 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		});
 
 		tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
-		tableController(tableKey).setFilterMode((fieldName?.value || fieldName)?.replace('.keyword', ''), 'singleselect');
+		tableController(tableKey).setFilterMode(
+			(fieldName?.value || fieldName)?.replace('.keyword', ''),
+			'singleselect',
+			false
+		);
 		resetForm({
 			mapViews: mapViewFilters || [],
 		});
