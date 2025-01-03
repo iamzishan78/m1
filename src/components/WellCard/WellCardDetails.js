@@ -396,12 +396,16 @@ export default function WellCardDetails(props) {
 								</Grid>
 							</Paper>,
 							<Paper key={2} elevation={3} style={{ padding: '10px' }}>
-								<div className={showSummary ? classes.subContent : classes.subContent2}>
-									{/* <M1nTable
-										parent="OwnersPerWell"
-										selectedWell={stateValues.selectedWell} // MIGRATE TO WELL CARD CONTEXT
-									/> */}
-								</div>
+								<MRTTable
+									key="WellOwnersTable"
+									name="WellOwnersTable"
+									overrideMeta={{
+										maxTableHeight: 'calc(50vh - 200px)',
+										customProps: {
+											id: stateValues.selectedWell?.id,
+										},
+									}}
+								/>
 							</Paper>,
 							<div key={3} className={`${classes.wellDocument}`}>
 								<WellDetailsDocumentTable
