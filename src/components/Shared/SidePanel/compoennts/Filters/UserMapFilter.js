@@ -388,8 +388,16 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				label: 'Field Name',
 				options: customLayersFieldAccessors[dataSourceName]?.keys || layer?.layerSchema || [], // Dynamic based on data source
 				defaultValue: mapView?.dataSourceName ? getSelectedField(mapView?.fieldName) || mapView?.fieldName : null, // Set default value if mapView is provided
-				onChange: () => {
-					setValue(`mapViews.${index}.filterType`, null);
+				onChange: (e, v, r) => {
+					setValue(
+						`mapViews.${index}.filterType`,
+						v?.type
+							? null
+							: {
+									label: 'Multi Select',
+									value: 'multiselect',
+								}
+					);
 					setValue(`mapViews.${index}.filterValues`, null);
 				}, // Reset other fields on change
 			},
