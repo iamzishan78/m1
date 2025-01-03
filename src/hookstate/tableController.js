@@ -228,6 +228,10 @@ const tableESStateControllerHandler = state => ({
 			.filter(view => view?.filterValues?.length > 0 || ['empty', 'notEmpty'].includes(view?.filterType))
 			.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues));
 
+		globalStateController.updateState({
+			columnFilterModesFnRefs: {},
+		});
+
 		if (gridViewSettings) {
 			// Fetch user-specific or default grid views based on provided settings and overrides.
 			const userDefaultDisplay = await fetchGridViews(client, gridViewSettings.module, tableKey, rest.gridViewOverride);
