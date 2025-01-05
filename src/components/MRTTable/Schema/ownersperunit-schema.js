@@ -357,7 +357,12 @@ const OwnersPerUnitMeta = {
 			id: 'actual_offer_price',
 			header: 'Actual Offer Price',
 		},
-
+		{
+			...CommonSchema.CURRENCY_COLUMN,
+			name: 'closed_price',
+			id: 'closed_price',
+			header: 'Closed Price',
+		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'contact.contactStatus.keyword',
