@@ -625,7 +625,7 @@ export default function AssignOwnerToContactDrawer({
 						}
 						break;
 
-					case 'TractPerUnitTable':
+					case 'TractInterestOwnerTable':
 						{
 							const parcelOwnersToUpdate = rows.map(row => ({
 								_id: row._id,

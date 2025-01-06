@@ -1,4 +1,7 @@
+/* eslint-disable no-magic-numbers */
 /* eslint-disable no-undef */
+import React from 'react';
+
 import _ from 'lodash';
 
 import MRTTable from 'components/MRTTable';
@@ -13,7 +16,7 @@ describe('Unit Interest Owners Table', () => {
 			alias => {
 				cy.viewport(1600, 1200).mount(
 					<MRTTable
-						name="OwnersPerUnitTable"
+						name="UnitInterestOwnerTable"
 						overrideMeta={{
 							defaultFilters: [
 								{
@@ -28,7 +31,7 @@ describe('Unit Interest Owners Table', () => {
 						}}
 					/>,
 					{
-						spec: 'OwnersPerUnitTable',
+						spec: 'UnitInterestOwnerTable',
 					}
 				);
 

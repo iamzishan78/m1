@@ -3,10 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
-import GavelIcon from '@material-ui/icons/Gavel';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import set from 'lodash/set';
+import PropTypes from 'prop-types';
 
 import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
 import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
@@ -36,12 +36,12 @@ import UnitSummary from './UnitSummary';
 
 const setSelectedTab = tableGlobalController.setSelectedTab;
 
-export default function UnitDetailCard(props) {
+export default function UnitDetailCard({ id }) {
 	const dispatch = useDispatch();
 	const [uniObj, setUniObj] = useState();
 	const [properties, setProperties] = useState();
 	const [stateApp, setStateApp] = useContext(AppContext);
-	const OwnersPerUnitGridState = tableController('OwnersPerUnitTable').useState(['data']).stateValue;
+	const UnitInterestOwnerGridState = tableController('UnitInterestOwnerTable').useState(['data']).stateValue;
 	const [updateCustomLayer, { data: updatedUnit, loading: updatingLayer }] = useMutation(UPDATECUSTOMLAYER);
 
 	const globalState = tableGlobalController.useState(['refetch']);
@@ -62,7 +62,6 @@ export default function UnitDetailCard(props) {
 		if (dataCustomLayer) {
 			refetchCustomLayer();
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [globalStateValues?.refetch]);
 
 	useEffect(() => {
@@ -78,14 +77,14 @@ export default function UnitDetailCard(props) {
 	}, [contactsAdded]);
 
 	useEffect(() => {
-		if (props.id) {
+		if (id) {
 			getCustomLayer({
 				variables: {
-					id: props.id,
+					id: id,
 				},
 			});
 		}
-	}, [getCustomLayer, props.id]);
+	}, [getCustomLayer, id]);
 
 	useEffect(() => {
 		if (dataCustomLayer && dataCustomLayer.customLayer) {
@@ -100,9 +99,9 @@ export default function UnitDetailCard(props) {
 
 			setProperties(shape.properties);
 		}
-	}, [dataCustomLayer, OwnersPerUnitGridState?.data]);
+	}, [dataCustomLayer, UnitInterestOwnerGridState?.data]);
 
-	const overrideMeta = useMemo(
+	const unitInterestOwnerOverrideMeta = useMemo(
 		() => ({
 			tabLabels: ['Unit Ownership', 'Potential Ownership'],
 			defaultFilters: [
@@ -115,7 +114,7 @@ export default function UnitDetailCard(props) {
 	);
 
 	// Table overridden meta
-	const RelatedAgreementOverrideMeta = useMemo(
+	const relatedAgreementOverrideMeta = useMemo(
 		() => ({
 			defaultFilters: [{ field: 'relatedShape._id', value: dataCustomLayer?.customLayer?._id }],
 			maxTableHeight: 'calc(60vh - 200px)',
@@ -211,7 +210,7 @@ export default function UnitDetailCard(props) {
 		});
 	};
 
-	const updateCustomProperties = (type, value, key, id) => {
+	const updateCustomProperties = (type, value, key) => {
 		const { shape } = uniObj;
 		set(properties, `${key}`, value);
 		properties.custom_data_arr?.forEach(data => {
@@ -235,7 +234,7 @@ export default function UnitDetailCard(props) {
 		});
 	};
 
-	const RelatedDocumentsOverrideMeta = useMemo(
+	const relatedDocumentsOverrideMeta = useMemo(
 		() => ({
 			maxTableHeight: 'calc(50vh - 100px)',
 			gridViewSettings: null,
@@ -247,11 +246,10 @@ export default function UnitDetailCard(props) {
 			},
 			customValue: { parentRecord: uniObj?._id },
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[uniObj?._id]
 	);
 
-	const RelatedWellsOverrideMeta = useMemo(
+	const relatedWellsOverrideMeta = useMemo(
 		() => ({
 			maxTableHeight: 'calc(50vh - 100px)',
 			tabLabels: ['Unit Wells', 'Potential Wells'],
@@ -263,11 +261,10 @@ export default function UnitDetailCard(props) {
 			},
 			customValue: { parentRecord: uniObj?._id },
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[uniObj?._id]
 	);
 
-	const PotentialTractsOverrideMeta = useMemo(
+	const potentialTractsOverrideMeta = useMemo(
 		() => ({
 			tabLabels: ['Unit Tracts', 'Potential Tracts'],
 			defaultFilters: [
@@ -286,7 +283,6 @@ export default function UnitDetailCard(props) {
 			isDeleteDisabled: true,
 			isExportDisabled: true,
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[uniObj?._id]
 	);
 
@@ -298,7 +294,6 @@ export default function UnitDetailCard(props) {
 				{ field: 'isRunsheetInstrument', value: 'true' },
 			],
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[uniObj?._id]
 	);
 
@@ -307,7 +302,7 @@ export default function UnitDetailCard(props) {
 			<Grid item sm={12} container className={classes.gridWidthScroll}>
 				<Grid item xs={12} style={{ padding: '10px 15px 0px 15px' }} className={classes.border}>
 					<div className={classes.tags}>
-						<Tags width="100%" targetSourceId={props.id} targetLabel="unit" publicLeftBottom hideCheckBox />
+						<Tags width="100%" targetSourceId={id} targetLabel="unit" publicLeftBottom hideCheckBox />
 					</div>
 				</Grid>
 				<Grid item sm={12}>
@@ -316,6 +311,7 @@ export default function UnitDetailCard(props) {
 						openTabIdex={selectedTab}
 						tabPanels={[
 							<div
+								key="Summary"
 								style={{
 									height: 'calc(100vh - 285px)',
 									overflow: 'overlay',
@@ -326,47 +322,48 @@ export default function UnitDetailCard(props) {
 									setProperties={setProperties}
 									updateProperties={updateProperties}
 									updateCustomProperties={updateCustomProperties}
-									id={props.id}
+									id={id}
 									customLayer={uniObj}
 									updating={updatingLayer}
 								/>
 							</div>,
 							<TabPanels
+								key="Interest Owners"
 								value={selectedTab}
 								panels={[
-									<div>
-										<MRTTable name="OwnersPerUnitTable" overrideMeta={overrideMeta} />
-									</div>,
-									<div>
-										<MRTTable
-											name="PotentialWellOwnersTable"
-											overrideMeta={{
-												tabLabels: ['Unit Ownership', 'Potential Ownership'],
-												customProps: {
-													customLayer: uniObj,
-													year: 2023,
-													filterByWells: false,
-												},
-											}}
-										/>
-									</div>,
+									<MRTTable
+										key="UnitInterestOwnerTable"
+										name="UnitInterestOwnerTable"
+										overrideMeta={unitInterestOwnerOverrideMeta}
+									/>,
+									<MRTTable
+										key="PotentialWellOwnersTable"
+										name="PotentialWellOwnersTable"
+										overrideMeta={{
+											tabLabels: ['Unit Ownership', 'Potential Ownership'],
+											customProps: {
+												customLayer: uniObj,
+												year: 2023,
+												filterByWells: false,
+											},
+										}}
+									/>,
 								]}
 							/>,
-							<div>
-								<MRTTable name="RunsheetTable" overrideMeta={runsheetOverrideMeta} />
-							</div>,
+							<MRTTable key="Runsheet" name="RunsheetTable" overrideMeta={runsheetOverrideMeta} />,
 							<TabPanels
+								key="Wells"
 								value={selectedTab}
 								panels={[
-									<div className={showSummary ? classes.subContent : classes.subContent2}>
+									<div key="relatedWellsTable" className={showSummary ? classes.subContent : classes.subContent2}>
 										<RelatedWellsTable
 											id="relatedWellsTable"
-											overrideMeta={RelatedWellsOverrideMeta}
+											overrideMeta={relatedWellsOverrideMeta}
 											shapeType="Unit"
 											customLayer={uniObj}
 										/>
 									</div>,
-									<div className={showSummary ? classes.subContent : classes.subContent2}>
+									<div key="PotentialWellsTable" className={showSummary ? classes.subContent : classes.subContent2}>
 										<MRTTable
 											name="PotentialWellsTable"
 											overrideMeta={{
@@ -381,9 +378,11 @@ export default function UnitDetailCard(props) {
 								]}
 							/>,
 							<TabPanels
+								key="Tracts"
 								value={selectedTab}
 								panels={[
 									<MRTTable
+										key="UnitTractTable"
 										name="UnitTractTable"
 										overrideMeta={{
 											tabLabels: ['Unit Tracts', 'Potential Tracts'],
@@ -393,19 +392,22 @@ export default function UnitDetailCard(props) {
 											},
 										}}
 									/>,
-									<div>
-										<MRTTable name="TractsTable" overrideMeta={PotentialTractsOverrideMeta} />
-									</div>,
+									<MRTTable key="TractsTable" name="TractsTable" overrideMeta={potentialTractsOverrideMeta} />,
 								]}
 							/>,
-							<div>
-								<MRTTable name="UnitRelatedAgreementTable" overrideMeta={RelatedAgreementOverrideMeta} />
-							</div>,
-							<div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
+							<MRTTable
+								key="Agreements"
+								name="UnitRelatedAgreementTable"
+								overrideMeta={relatedAgreementOverrideMeta}
+							/>,
+							<div
+								key="Documents"
+								className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}
+							>
 								<RelatedDocumentsTable
 									id="relatedDocumentsTable"
 									moduleId={uniObj?._id}
-									overrideMeta={RelatedDocumentsOverrideMeta}
+									overrideMeta={relatedDocumentsOverrideMeta}
 									relatedObjectType="Shape"
 								/>
 							</div>,
@@ -420,3 +422,7 @@ export default function UnitDetailCard(props) {
 		</div>
 	);
 }
+
+UnitDetailCard.propTypes = {
+	id: PropTypes.string.isRequired,
+};
