@@ -64,7 +64,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 };
 
 const onClickedRow = selectedRow => {
-	const Controller = tableController('OwnersPerUnitTable');
+	const Controller = tableController('UnitInterestOwnerTable');
 	const { customLayer } = Controller.getValue('customProps');
 	tableGlobalController.updateState({
 		dialog: {
@@ -79,7 +79,7 @@ const onClickedRow = selectedRow => {
 	});
 };
 
-const OwnersPerUnitMeta = {
+const UnitInterestOwnerMeta = {
 	esIndex,
 	pageSize: 25,
 	pagination: {
@@ -251,7 +251,7 @@ const OwnersPerUnitMeta = {
 			name: 'working_interest',
 			id: 'working_interest',
 			header: 'Working Interest',
-			...CommonSchema.AGGREGATED_FOOTER('working_interest', 'OwnersPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('working_interest', 'UnitInterestOwnerTable'),
 		},
 
 		{
@@ -259,7 +259,7 @@ const OwnersPerUnitMeta = {
 			name: 'royalty_interest',
 			id: 'royalty_interest',
 			header: 'Royalty Interest',
-			...CommonSchema.AGGREGATED_FOOTER('royalty_interest', 'OwnersPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('royalty_interest', 'UnitInterestOwnerTable'),
 		},
 
 		{
@@ -267,7 +267,7 @@ const OwnersPerUnitMeta = {
 			name: 'orri',
 			id: 'orri',
 			header: 'ORRI',
-			...CommonSchema.AGGREGATED_FOOTER('orri', 'OwnersPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('orri', 'UnitInterestOwnerTable'),
 		},
 
 		{
@@ -275,14 +275,14 @@ const OwnersPerUnitMeta = {
 			name: 'nri',
 			id: 'nri',
 			header: 'NRI',
-			...CommonSchema.AGGREGATED_FOOTER('nri', 'OwnersPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('nri', 'UnitInterestOwnerTable'),
 		},
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'net_acres',
 			id: 'net_acres',
 			header: 'Net Acres',
-			...CommonSchema.AGGREGATED_FOOTER('net_acres', 'OwnersPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('net_acres', 'UnitInterestOwnerTable'),
 		},
 
 		{
@@ -290,7 +290,7 @@ const OwnersPerUnitMeta = {
 			name: 'nra',
 			id: 'nra',
 			header: 'NRA',
-			...CommonSchema.AGGREGATED_FOOTER('nra', 'OwnersPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('nra', 'UnitInterestOwnerTable'),
 		},
 
 		{
@@ -305,7 +305,7 @@ const OwnersPerUnitMeta = {
 			name: 'tractAcres',
 			id: 'tractAcres',
 			header: 'Unit Tract Acres',
-			...CommonSchema.AGGREGATED_FOOTER('tractAcres', 'OwnersPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('tractAcres', 'UnitInterestOwnerTable'),
 		},
 
 		{
@@ -555,4 +555,4 @@ const OwnersPerUnitMeta = {
 	],
 };
 
-export default OwnersPerUnitMeta;
+export default UnitInterestOwnerMeta;

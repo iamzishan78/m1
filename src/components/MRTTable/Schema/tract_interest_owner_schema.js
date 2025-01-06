@@ -21,7 +21,7 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 const esIndex = 'shapeowners_flat';
 
 const onClickedRow = selectedRow => {
-	const Controller = tableController('TractPerUnitTable');
+	const Controller = tableController('TractInterestOwnerTable');
 	const { customLayer } = Controller.getValue('customProps');
 	tableGlobalController.updateState({
 		dialog: {
@@ -33,7 +33,7 @@ const onClickedRow = selectedRow => {
 	});
 };
 
-const TractPerUnitMeta = {
+const TractInterestOwnerMeta = {
 	esIndex,
 	pageSize: 25,
 	pagination: {
@@ -153,7 +153,7 @@ const TractPerUnitMeta = {
 			name: 'surface_interest',
 			id: 'surface_interest',
 			header: 'Surface Interest',
-			...CommonSchema.AGGREGATED_FOOTER('surface_interest', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('surface_interest', 'TractInterestOwnerTable'),
 		},
 
 		{
@@ -162,7 +162,7 @@ const TractPerUnitMeta = {
 			name: 'mineral_interest',
 			id: 'mineral_interest',
 			header: 'Mineral Interest',
-			...CommonSchema.AGGREGATED_FOOTER('mineral_interest', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('mineral_interest', 'TractInterestOwnerTable'),
 		},
 
 		{
@@ -179,7 +179,7 @@ const TractPerUnitMeta = {
 			name: 'royalty_interest',
 			id: 'royalty_interest',
 			header: 'Royalty Interest (Lease)',
-			...CommonSchema.AGGREGATED_FOOTER('royalty_interest', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('royalty_interest', 'TractInterestOwnerTable'),
 		},
 
 		{
@@ -188,7 +188,7 @@ const TractPerUnitMeta = {
 			id: 'orri',
 			header: 'ORRI',
 			isSearchField: false,
-			...CommonSchema.AGGREGATED_FOOTER('orri', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('orri', 'TractInterestOwnerTable'),
 		},
 
 		// {
@@ -203,7 +203,7 @@ const TractPerUnitMeta = {
 			name: 'operating_rights',
 			id: 'operating_rights',
 			header: 'Working Interest',
-			...CommonSchema.AGGREGATED_FOOTER('operating_rights', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('operating_rights', 'TractInterestOwnerTable'),
 		},
 
 		{
@@ -218,14 +218,14 @@ const TractPerUnitMeta = {
 			name: 'net_acres',
 			id: 'net_acres',
 			header: 'Net Acres',
-			...CommonSchema.AGGREGATED_FOOTER('net_acres', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('net_acres', 'TractInterestOwnerTable'),
 		},
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'company_net_acres',
 			id: 'company_net_acres',
 			header: 'Co Net Acres',
-			...CommonSchema.AGGREGATED_FOOTER('company_net_acres', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('company_net_acres', 'TractInterestOwnerTable'),
 		},
 
 		{
@@ -233,7 +233,7 @@ const TractPerUnitMeta = {
 			name: 'nra',
 			id: 'nra',
 			header: 'NRA',
-			...CommonSchema.AGGREGATED_FOOTER('nra', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('nra', 'TractInterestOwnerTable'),
 		},
 
 		{
@@ -468,4 +468,4 @@ const TractPerUnitMeta = {
 	],
 };
 
-export default TractPerUnitMeta;
+export default TractInterestOwnerMeta;
