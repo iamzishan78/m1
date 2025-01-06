@@ -1,10 +1,13 @@
 import React from 'react';
+
 import { Container } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+
+import InitializeProfile from 'components/Profile/InitializeProfileContext';
+import { ProfileContextProvider } from 'components/Profile/ProfileContext';
+
 import CardGrid from './components/CardsGrid';
 import DateBar from './components/WeatherCard';
-import { makeStyles } from '@material-ui/core/styles';
-import { ProfileContextProvider } from 'components/Profile/ProfileContext';
-import InitializeProfile from 'components/Profile/InitializeProfileContext';
 
 const useStyles = makeStyles(theme => ({
 	root: {

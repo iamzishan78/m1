@@ -1,24 +1,30 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useState, useEffect, useRef } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { FormControl, Grid } from '@material-ui/core';
-import moment from 'moment';
-import { useLazyQuery, useMutation } from '@apollo/client';
 
+import { FormControl, Grid } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { useHookstate } from '@hookstate/core';
+import moment from 'moment';
+
+import DateField from 'components/Shared/Slideout/FieldComponents/DateField';
+import DescriptionField from 'components/Shared/Slideout/FieldComponents/DescriptionField';
+import OwnerField from 'components/Shared/Slideout/FieldComponents/OwnerField';
 import SimpleTextField from 'components/Shared/Slideout/FieldComponents/SimpleTextfield';
 import SingleSelectField from 'components/Shared/Slideout/FieldComponents/singleSelectField';
-import DateField from 'components/Shared/Slideout/FieldComponents/DateField';
-import OwnerField from 'components/Shared/Slideout/FieldComponents/OwnerField';
-import DescriptionField from 'components/Shared/Slideout/FieldComponents/DescriptionField';
-import { slidoutStateController } from 'hookstate/slidoutStateController';
-import { slidoutState } from 'hookstate/initialStates';
-import { useHookstate } from '@hookstate/core';
-import { AppContext } from 'AppContext';
+
 import { DELETEACTIVITY, UPDATEACTIVITY } from 'graphQL/useMutationActivity';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-import { obligationFormState } from './obligationFormStateController';
+
+import { slidoutState } from 'hookstate/initialStates';
 import { globalState } from 'hookstate/initialStates';
+import { slidoutStateController } from 'hookstate/slidoutStateController';
 import { tableGlobalController } from 'hookstate/tableController';
+
+import { AppContext } from 'AppContext';
+
+import { obligationFormState } from './obligationFormStateController';
 
 const useStyles = makeStyles(theme => ({
 	dialogExpCard: {
@@ -209,7 +215,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
 			onModalClose();
 			tableGlobalController.refetch();
 		},
-		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
+		refetchQueries: ['getAllActivities', 'getDbData'],
 		awaitRefetchQueries: true,
 	});
 
@@ -219,7 +225,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
 			globalState.universalLoader.set(false);
 			tableGlobalController.refetch();
 		},
-		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
+		refetchQueries: ['getAllActivities', 'getDbData'],
 		awaitRefetchQueries: true,
 	});
 
@@ -256,7 +262,9 @@ export default function ObligationForm({ setSelectedActivityId }) {
 			});
 
 			slidoutStateController.updateTitle(activity.name);
-			if (!activityName) slidoutStateController.updateTitle(activity.name);
+			if (!activityName) {
+				slidoutStateController.updateTitle(activity.name);
+			}
 
 			outcomeFieldRef.current?.updateDefaultValue(activity.outcome);
 			endDate.set(moment.parseZone(activity.end).format('yyyy-MM-DD'));
@@ -267,8 +275,9 @@ export default function ObligationForm({ setSelectedActivityId }) {
 
 	useEffect(() => {
 		if (formMode.get()) {
-			if (formMode.get() === 'update') updateActivity();
-			else if (formMode.get() === 'delete') {
+			if (formMode.get() === 'update') {
+				updateActivity();
+			} else if (formMode.get() === 'delete') {
 				deleteActivity();
 			}
 
@@ -278,7 +287,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
 	}, [formMode.get()]);
 
 	const onModalClose = () => {
-		window.history.pushState('', '', `/calendar/obligations`);
+		window.history.pushState('', '', '/calendar/obligations');
 
 		clearFields();
 		setSelectedActivityId(null);

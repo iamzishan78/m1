@@ -1,5 +1,4 @@
 // this function is intended to convert a date to a presentable format
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
 	faFilePdf,
 	faFilePowerpoint,
@@ -10,6 +9,7 @@ import {
 	faFileCode,
 	faFileImage,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default function get_file_icon(value) {
 	const getFileIcon = fileExtension => {

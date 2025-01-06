@@ -1,13 +1,18 @@
 import React, { Fragment, useState, useCallback, useContext, useEffect } from 'react';
-import CardHeader from '@material-ui/core/CardHeader';
+
 import { TextField } from '@material-ui/core';
+import CardHeader from '@material-ui/core/CardHeader';
 import { makeStyles } from '@material-ui/core/styles';
-import { CREATE_NOTE } from 'graphQL/useMutationNote';
+
 import { useMutation } from '@apollo/client';
-import { ProfileContext } from '../../Profile/ProfileContext';
-import { GET_USER_NOTES } from 'graphQL/useQueryGetNote';
 import { useLazyQuery } from '@apollo/client';
+
+import { CREATE_NOTE } from 'graphQL/useMutationNote';
+import { GET_USER_NOTES } from 'graphQL/useQueryGetNote';
+
 import { globalStateController } from 'hookstate/globalStateController';
+
+import { ProfileContext } from '../../Profile/ProfileContext';
 
 const useStyles = makeStyles(theme => ({
 	notes: {
@@ -61,7 +66,7 @@ function Notepad() {
 	};
 	return (
 		<Fragment>
-			<CardHeader style={{ margin: '8px' }} title={`Private notepad`} />
+			<CardHeader style={{ margin: '8px' }} title={'Private notepad'} />
 			<TextField
 				margin="dense"
 				variant="outlined"

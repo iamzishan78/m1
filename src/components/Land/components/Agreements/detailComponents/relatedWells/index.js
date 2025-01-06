@@ -1,13 +1,15 @@
-import React, { useMemo, useState } from 'react';
-import { makeStyles } from '@material-ui/styles';
+import React, { useMemo } from 'react';
+
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
-import { useStyles as customStyles } from '../style';
+import { makeStyles } from '@material-ui/styles';
 
-import TabButtons from 'components/Shared/TabPanels/TabButtons';
-import AssociatedWellsShapeTable from 'components/Table/Wells/AssociatedWellsShapeTable';
 import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
-import { tableController } from 'hookstate/tableController';
+import MRTTable from 'components/MRTTable';
+
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { useStyles as customStyles } from '../style';
 
 // Components
 const useStyles = makeStyles(theme => ({
@@ -60,37 +62,29 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-export default function LagalDescription({ uniObj }) {
+export default function LagalDescription({ uniObj, agreementId }) {
 	const classes = useStyles();
 	const customClasses = customStyles();
-	const [selectedWellTab, setWellSelectedTab] = useState(0);
 	const tableState = tableController('RelatedWellsTable').useState(['data']).stateValues;
 
-	const WellHeader = ({ selectedWellTab, setWellSelectedTab }) => (
-		<TabButtons
-			labels={['Agreement Wells', 'Potential Wells']}
-			value={selectedWellTab}
-			setValue={n => {
-				setWellSelectedTab(n);
-			}}
-		/>
-	);
+	const {
+		stateValues: { tabKey: selectedTab },
+	} = tableGlobalController.useState(['tabKey']);
 
 	const RelatedWellsOverrideMeta = useMemo(
 		() => ({
 			tabLabels: ['Agreement Wells', 'Potential Wells'],
 			maxTableHeight: 'calc(50vh - 100px)',
-			defaultFilters: [{ field: 'shape._id', value: uniObj?._id }],
+			defaultFilters: [{ field: 'shape._id', value: agreementId }],
 			customProps: { customLayer: uniObj, shapeType: 'Agreement' },
 			deletedKeys: {
 				mainRecord: { key: '_id' },
-				parentRecord: { value: uniObj?._id },
+				parentRecord: { value: agreementId },
 			},
-			customValue: { parentRecord: uniObj?._id },
-			columnReordering: false,
+			customValue: { parentRecord: agreementId },
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[uniObj?._id]
+		[agreementId]
 	);
 
 	return (
@@ -117,7 +111,7 @@ export default function LagalDescription({ uniObj }) {
 					<Grid container direction="column" alignItems="center" spacing={4} style={{ display: 'block' }}>
 						{uniObj && (
 							<Grid item xs={12} style={{ padding: '35px 20px 0px 0px' }}>
-								{selectedWellTab === 0 && (
+								{selectedTab === 0 && (
 									<RelatedWellsTable
 										id="relatedWellsTable"
 										overrideMeta={RelatedWellsOverrideMeta}
@@ -125,16 +119,16 @@ export default function LagalDescription({ uniObj }) {
 										customLayer={uniObj}
 									/>
 								)}
-								{selectedWellTab === 1 && (
-									<AssociatedWellsShapeTable
-										customLayer={uniObj}
-										shapeType="Agreement"
-										parent="associatedWellsPerUnits"
-										targetLabel="well"
-										header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
-										showTracks
-										setSelectedTab={setWellSelectedTab}
-										dense
+								{selectedTab === 1 && (
+									<MRTTable
+										name="PotentialWellsTable"
+										overrideMeta={{
+											tabLabels: ['Agreement Wells', 'Potential Wells'],
+											customProps: {
+												customLayer: uniObj,
+												shapeType: 'Unit',
+											},
+										}}
 									/>
 								)}
 							</Grid>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, memo, useMemo } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+
 import {
 	TextField,
 	InputAdornment,
@@ -10,24 +10,27 @@ import {
 	Menu,
 	MenuItem,
 } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import { useMutation } from '@apollo/client';
+import { makeStyles } from '@material-ui/core/styles';
+import BookmarkIcon from '@material-ui/icons/Bookmark';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import SearchIcon from '@material-ui/icons/Search';
 import StarIcon from '@material-ui/icons/Star';
-import BookmarkIcon from '@material-ui/icons/Bookmark';
 
+import { useMutation } from '@apollo/client';
+
+import { defaultHandleDefaultView } from 'components/Shared/GridView';
 import LeftDialog from 'components/Shared/LeftDialog';
+
+import { ADD_GRID_VIEW } from 'graphQL/useMutationAddGridView';
 import {
 	UPDATE_GRID_VIEW,
 	UPDATE_FAVOURITE_GRID_VIEW,
 	UPDATE_DEFAULT_GRID_VIEW,
 } from 'graphQL/useMutationUpdateGridView';
-import { ADD_GRID_VIEW } from 'graphQL/useMutationAddGridView';
 
-import { tableController, tableGlobalController } from 'hookstate/tableController';
 import { globalStateController } from 'hookstate/globalStateController';
-import { defaultHandleDefaultView } from 'components/Shared/GridView';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(() => ({
 	container: {
@@ -146,7 +149,9 @@ function GridViewOptions({
 
 	useEffect(() => {
 		setTimeout(() => {
-			if (document.getElementById('fieldContentInput')) document.getElementById('fieldContentInput').focus();
+			if (document.getElementById('fieldContentInput')) {
+				document.getElementById('fieldContentInput').focus();
+			}
 		}, 100);
 	}, [tableStateValues?.gridView?.showSaveAsNew]);
 
@@ -172,7 +177,9 @@ function GridViewOptions({
 		});
 		setTimeout(() => {
 			data.filters?.forEach(filter => {
-				if (filter.searchType) Controller.setFilterMode(filter?.field.replace('.keyword', ''), filter.searchType);
+				if (filter.searchType) {
+					Controller.setFilterMode(filter?.field.replace('.keyword', ''), filter.searchType);
+				}
 			});
 		}, 0);
 	};

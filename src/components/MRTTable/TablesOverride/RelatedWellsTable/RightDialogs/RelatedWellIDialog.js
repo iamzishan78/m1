@@ -1,31 +1,32 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon2 from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-
-import DeleteIcon from '@material-ui/icons/Delete';
-import Grid from '@material-ui/core/Grid';
-import { CircularProgress, Dialog, ListItemIcon, ListItemText, Menu, MenuItem } from '@material-ui/core';
-import RightDialog from 'components/ContactDetailCard/components/RightDialog';
-import { WELL_INTEREST_SELECT_OPTIONS } from 'graphQL/useQueryWellInterestSelectOptions';
-import { ADD_SHAPE_WELL_INTEREST } from 'graphQL/useMutationAddShapeWellInterest';
-import { UPDATE_SHAPE_WELL_INTEREST } from 'graphQL/useMutationUpdateShapeWellInterest';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-
 import { useForm, Controller } from 'react-hook-form';
 
-// contexts
-import WellSearchApiField from 'components/Shared/Forms/Fields/WellSearchApiField';
+import { CircularProgress, Dialog, ListItemIcon, ListItemText, Menu, MenuItem } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import DeleteIcon from '@material-ui/icons/Delete';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+
+import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import AutoCompleteFieldComponent from 'components/Shared/Forms/Fields/AutoCompleteField';
+import WellSearchApiField from 'components/Shared/Forms/Fields/WellSearchApiField';
+import CloseIcon2 from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+
+import { ADD_SHAPE_WELL_INTEREST } from 'graphQL/useMutationAddShapeWellInterest';
+import { UPDATE_SHAPE_WELL_INTEREST } from 'graphQL/useMutationUpdateShapeWellInterest';
+import { WELL_INTEREST_SELECT_OPTIONS } from 'graphQL/useQueryWellInterestSelectOptions';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableGlobalController } from 'hookstate/tableController';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	dialogFooter: {
 		display: 'flex',
 		justifyContent: 'flex-end',
@@ -86,19 +87,16 @@ function RelatedWellsDialog(props) {
 		getWellInterestsSelectOptions({
 			variables: { selectKeys: ['Operator', 'WellType', 'WellStatus', 'WellBoreProfile'] },
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
 		setWellInterestSelectOptions(dataWellInterestsSelectOptions?.wellInterestsSelectOptions?.res);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, dataWellInterestsSelectOptions);
 
 	const getOptions = useCallback(
 		type => {
 			return wellInterestSelectOptions ? wellInterestSelectOptions[type]?.map(e => e.Desc || e.Name) : [];
 		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[wellInterestSelectOptions]
 	);
 
@@ -116,7 +114,6 @@ function RelatedWellsDialog(props) {
 
 			reset(props.wellInterest);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.wellInterest]);
 
 	useEffect(() => {
@@ -159,7 +156,7 @@ function RelatedWellsDialog(props) {
 						},
 					],
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
+				refetchQueries: ['getDbData', 'getESFilterList'],
 				awaitRefetchQueries: true,
 			});
 		} else {
@@ -173,7 +170,7 @@ function RelatedWellsDialog(props) {
 						...getValues(),
 					},
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getShapeSummaryDetails'],
+				refetchQueries: ['getDbData', 'getESFilterList', 'getShapeSummaryDetails'],
 				awaitRefetchQueries: true,
 			});
 		}
@@ -200,7 +197,7 @@ function RelatedWellsDialog(props) {
 						},
 					],
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getShapeSummaryDetails'],
+				refetchQueries: ['getDbData', 'getESFilterList', 'getShapeSummaryDetails'],
 				awaitRefetchQueries: true,
 			});
 		} catch {
@@ -209,7 +206,9 @@ function RelatedWellsDialog(props) {
 	};
 
 	const setTenantWell = well => {
-		if (well) reset(well);
+		if (well) {
+			reset(well);
+		}
 	};
 
 	const handleMenuClick = event => {
@@ -451,15 +450,9 @@ function RelatedWellsDialog(props) {
 					fullWidth={false}
 					maxWidth="sm"
 				>
-					<DeleteConfirmationDialogContent
-						header={`Delete Well`}
-						onClose={handleCloseDialog}
-						deleteFunc={deleteFunc}
-						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
-					>
+					<DeleteConfirmationDialog header={'Delete Well'} onClose={handleCloseDialog} deleteFunc={deleteFunc}>
 						Do you want to delete the selected well?
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 			)}
 			<RightDialog open={props.open} handleClickDialogClose={handleClose} width={props.width}>

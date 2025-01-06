@@ -1,6 +1,8 @@
 import React, { memo } from 'react';
-import Tags from './Tag';
+
 import { makeStyles } from '@material-ui/core/styles';
+
+import Tags from './Tag';
 
 const useStyles = makeStyles(() => ({
 	tagsDiv: {

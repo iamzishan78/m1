@@ -1,11 +1,15 @@
 import React, { useEffect, memo, useRef } from 'react';
-import GridViewComponent from 'components/MRTTable/Common/GridView/GridViewComponent';
-import GridViewOptions from 'components/MRTTable/Common/GridView/GridViewOptions';
-import { tableController } from 'hookstate/tableController';
-import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController';
-import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
+
 import { useApolloClient } from '@apollo/client';
+
+import GridViewComponent from 'components/MRTTable/Common/GridView/GridViewComponent';
+import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController';
+import GridViewOptions from 'components/MRTTable/Common/GridView/GridViewOptions';
+
+import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
+
 import { globalStateController } from 'hookstate/globalStateController';
+import { tableController } from 'hookstate/tableController';
 
 function GridView({ tableKey, defaultView, handleDefaultView, Icon, label, module }) {
 	const { user } = globalStateController.useState(['user']);

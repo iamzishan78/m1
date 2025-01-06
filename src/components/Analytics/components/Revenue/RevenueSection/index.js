@@ -1,11 +1,12 @@
 import React from 'react';
+
 import { Typography, Grid } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/styles';
 
 import DonutChart from './DonutChart';
-import StackedChart from './StackedChart';
 import RevenueTable from './RevenueTable';
+import StackedChart from './StackedChart';
 
 const useStyles = makeStyles(theme => ({
 	root: {

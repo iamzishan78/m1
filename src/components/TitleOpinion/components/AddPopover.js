@@ -1,10 +1,12 @@
 import React, { useContext } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Popover from '@material-ui/core/Popover';
+
 import Button from '@material-ui/core/Button';
-import { TitleOpinionContext } from '../TitleOpinionContext';
 import IconButton from '@material-ui/core/IconButton';
+import Popover from '@material-ui/core/Popover';
+import { makeStyles } from '@material-ui/core/styles';
 import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded';
+
+import { TitleOpinionContext } from '../TitleOpinionContext';
 import Modal from './Modal';
 
 const useStyles = makeStyles(theme => ({

@@ -1,12 +1,15 @@
 /* eslint-disable no-undef */
-import MRTTable from 'components/MRTTable';
-import { basic_timeouts, retries } from '../../cypressUtils/data';
 import moment from 'moment';
-import ldata from '../../fixtures/ldata.json';
-import { headers } from '../../cypressUtils/cypressHeaders';
-import { REVERTCYPRESSDELETE } from 'graphQL/useMutationCommonCypressRevert';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+
+import MRTTable from 'components/MRTTable';
+
 import { DELETEACTIVITY } from 'graphQL/useMutationActivity';
+import { REVERTCYPRESSDELETE } from 'graphQL/useMutationCommonCypressRevert';
+import { GET_DB_DATA } from 'graphQL/useQueryESSimpleSearch';
+
+import { headers } from '../../cypressUtils/cypressHeaders';
+import { basic_timeouts, retries } from '../../cypressUtils/data';
+import ldata from '../../fixtures/ldata.json';
 
 let responseHits = [];
 
@@ -28,14 +31,14 @@ const columns = [
 
 const getElasticDataPayload = ({ index, search = null, filters = [], pagination = null }) => {
 	return {
-		operationName: 'getESSimpleSearch',
+		operationName: 'getDbData',
 		variables: {
 			index: index,
 			search: search,
 			filters: filters,
 			pagination: pagination,
 		},
-		query: GET_ES_SIMPLE_SEARCH.loc.source.body,
+		query: GET_DB_DATA.loc.source.body,
 	};
 };
 
@@ -54,7 +57,7 @@ const checkPurchasedPhoneNumbers = job => {
 describe('Contact Table', () => {
 	beforeEach(() => {
 		cy.interceptAndWait(
-			['getESSimpleSearch'],
+			['getDbData'],
 			alias => {
 				cy.viewport(1600, 1200).mount(<MRTTable name="ContactTable" />, {
 					spec: 'ContactTableSpec',
@@ -63,7 +66,7 @@ describe('Contact Table', () => {
 					},
 				});
 				cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
-					responseHits = response.response.body.data.getESSimpleSearch.hits;
+					responseHits = response.response.body.data.getDbData.hits;
 				});
 			},
 			{ wait: false }
@@ -119,7 +122,7 @@ describe('Contact Table', () => {
 							],
 						}),
 					}).then(esResponse => {
-						const activities = esResponse.body.data.getESSimpleSearch.hits;
+						const activities = esResponse.body.data.getDbData.hits;
 						// Checking if the activity is attached with the contact
 						expect(activities.some(e => e._id === activity._id)).to.eq(true);
 
@@ -193,9 +196,9 @@ describe('Contact Table', () => {
 
 	// Define a test case to verify the Campaign Name Bulk Update functionality
 	it('Campaign Name Bulk Update Works', () => {
-		// Intercept and wait for a specific API call ('getESSimpleSearch') and perform actions after the call is made
+		// Intercept and wait for a specific API call ('getDbData') and perform actions after the call is made
 		cy.interceptAndWait(
-			['getESSimpleSearch'],
+			['getDbData'],
 			alias => {
 				// Set the viewport size to simulate a desktop environment
 				cy.viewport(1600, 1200).mount(<MRTTable name="ContactTable" />, {
@@ -208,7 +211,7 @@ describe('Contact Table', () => {
 				// Wait for the API call to finish with a custom timeout and process the response
 				cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
 					// Store the hits from the API response for later assertions or usage
-					responseHits = response.response.body.data.getESSimpleSearch.hits;
+					responseHits = response.response.body.data.getDbData.hits;
 				});
 			},
 			{ wait: false } // Do not automatically wait for the intercepted request
@@ -243,7 +246,7 @@ describe('Contact Table', () => {
 			.eq(0)
 			.invoke('text')
 			.then(campaignName => {
-				// Intercept and wait for the 'getESSimpleSearch' API call again after clicking the action button to submit the update
+				// Intercept and wait for the 'getDbData' API call again after clicking the action button to submit the update
 				cy.interceptAndWait(['upsertEntityCampaigns'], () => {
 					cy.get('[data-testid="action-button"]', { timeout: 5000 }).click();
 				});
@@ -258,11 +261,11 @@ describe('Contact Table', () => {
 	});
 
 	it('Filters by name and checks is primary address value is exporting', retries.fiveTries, () => {
-		cy.get(`[data-testid="MoreVertIcon"]`).first().click();
+		cy.get('[data-testid="MoreVertIcon"]').first().click();
 		cy.wait(basic_timeouts.shorTimeout);
 		cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
 		cy.wait(basic_timeouts.shorTimeout);
-		cy.get(`[data-testid="MoreVertIcon"]`).first().click();
+		cy.get('[data-testid="MoreVertIcon"]').first().click();
 		cy.wait(basic_timeouts.shorTimeout);
 		cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
 		cy.wait(basic_timeouts.shorTimeout);
@@ -324,7 +327,7 @@ describe('Contact Table', () => {
 			['gridGenericRemove'],
 			alias => {
 				// Selecting all rows for deletion
-				cy.get(`[data-testid="over-ride-select-all-div"] input`).click();
+				cy.get('[data-testid="over-ride-select-all-div"] input').click();
 				// Clicking on the delete icon button to delete selected rows
 				cy.get('.MuiButtonBase-root[data-testid="delete-icon-button"]').click();
 				// Confirming the deletion

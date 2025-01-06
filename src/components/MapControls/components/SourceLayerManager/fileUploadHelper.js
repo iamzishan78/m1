@@ -1,5 +1,6 @@
 import { CREATE_JOB } from 'graphQL/useMutationCreateJob';
 import { INITIALIZE_EXPORT_JOB } from 'graphQL/useMutationinitializeExportJob';
+
 import { jobController } from 'hookstate/jobStateController';
 
 const random_rgb = () => {
@@ -12,9 +13,13 @@ const random_rgb = () => {
 export const getDefaultSettings = (type, layerName, sourceProps, bbox) => {
 	const idColor = random_rgb();
 	let paintProps = {};
-	if (type === 'Point' || type === 'MultiPoint') type = 'circle';
-	else if (type === 'LineString' || type === 'Feature' || type === 'MultiLineString') type = 'line';
-	else type = 'fill';
+	if (type === 'Point' || type === 'MultiPoint') {
+		type = 'circle';
+	} else if (type === 'LineString' || type === 'Feature' || type === 'MultiLineString') {
+		type = 'line';
+	} else {
+		type = 'fill';
+	}
 
 	if (type === 'circle') {
 		paintProps = {

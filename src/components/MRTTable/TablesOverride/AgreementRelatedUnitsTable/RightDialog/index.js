@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import RightDialog from 'components/ContactDetailCard/components/RightDialog';
-import AutoCompleteShapeLayer from 'components/Shared/Forms/Fields/AutoCompleteShapeLayer';
 import { Controller, useForm } from 'react-hook-form';
-import TextField from '@material-ui/core/TextField';
-import IconButton from '@material-ui/core/IconButton';
+
 import { Button, CircularProgress, Grid, makeStyles } from '@material-ui/core';
-import CloseIcon2 from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
-import Loaders from 'components/Loaders';
+import IconButton from '@material-ui/core/IconButton';
+import TextField from '@material-ui/core/TextField';
+
 import { useMutation } from '@apollo/client';
+
+import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import Loaders from 'components/Loaders';
+import AutoCompleteShapeLayer from 'components/Shared/Forms/Fields/AutoCompleteShapeLayer';
+import CloseIcon2 from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+
 import { ADD_RELATED_SHAPE } from 'graphQL/useMutationAddUnitToAgreement';
+
 import { tableGlobalController } from 'hookstate/tableController';
 
 // Styles
@@ -101,19 +106,21 @@ function AgreementUnitDialog(props) {
 				Loaders.errorToast('ageement-unit-creation', data.addRelatedShape.message);
 			}
 		},
-		refetchQueries: ['getESSimpleSearch', 'getESFilterList'],
+		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
 
 	const handleSave = async () => {
-		if (!props?.shapeId || !selectedShapeLayer?._id) return;
+		if (!props?.shapeId || !selectedShapeLayer?._id) {
+			return;
+		}
 		setLoading(true);
 		await addRelatedShape({
 			variables: {
 				descriptorObject: props.shapeId,
 				relatedObject: selectedShapeLayer._id,
 			},
-			refetchQueries: ['getESSimpleSearch', 'getCustomLayer'],
+			refetchQueries: ['getDbData', 'getCustomLayer'],
 			awaitRefetchQueries: true,
 		});
 		tableGlobalController.refetch();
@@ -203,7 +210,7 @@ function AgreementUnitDialog(props) {
 					control={control}
 					variant="outlined"
 					margin="dense"
-					name={`unit.status`}
+					name={'unit.status'}
 					label={'Unit Status'}
 					InputLabelProps={{ shrink: true }}
 					fullWidth

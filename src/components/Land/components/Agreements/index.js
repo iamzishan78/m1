@@ -1,8 +1,10 @@
 import React, { useContext, useEffect } from 'react';
 
-import { AppContext } from 'AppContext';
 import MRTTable from 'components/MRTTable';
+
 import { tableController } from 'hookstate/tableController';
+
+import { AppContext } from 'AppContext';
 
 function Agreements(props) {
 	const [stateApp] = useContext(AppContext);

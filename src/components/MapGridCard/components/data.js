@@ -1,12 +1,13 @@
-import LeaseIcon from 'components/Shared/svgIcons/lease';
-import WellIcon from 'components/Shared/svgIcons/well';
-import TractIcon from 'components/Shared/svgIcons/tract';
-import UnitIcon from 'components/Shared/svgIcons/unit';
-import FolderIcon from '@material-ui/icons/Folder';
 import TaxOwnerIcon from '@material-ui/icons/AccountBalance';
+import FolderIcon from '@material-ui/icons/Folder';
 import LayersIcon from '@material-ui/icons/Layers';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
+
+import LeaseIcon from 'components/Shared/svgIcons/lease';
 import OperatorIcon from 'components/Shared/svgIcons/operator';
+import TractIcon from 'components/Shared/svgIcons/tract';
+import UnitIcon from 'components/Shared/svgIcons/unit';
+import WellIcon from 'components/Shared/svgIcons/well';
 
 export const platformDataWellsInitialData = [
 	{ index: 0, value: 'well', Icon: WellIcon, gridLabel: 'Platform Wells', label: 'Wells', shapeGrid: true },

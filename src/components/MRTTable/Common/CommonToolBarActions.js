@@ -1,12 +1,18 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import Button from '@material-ui/core/Button';
-import EditIcon from '@material-ui/icons/Edit';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import EditIcon from '@material-ui/icons/Edit';
+
+import _ from 'lodash';
+
 import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
+import { getAllData } from 'components/MRTTable/utils/GetAllData';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import RequestPageIcon from 'components/Shared/svgIcons/request_page';
+
 import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { getAllData } from 'components/MRTTable/utils/GetAllData';
-import _ from 'lodash';
 
 export const excludeFilters = (tableKey, total) => {
 	const rowSelection = tableController(tableKey).getValue('rowSelection');
@@ -52,7 +58,7 @@ export const openSideExportDialog = ({
 
 		total = total - excludedIds.length;
 		isAllRowsSelected = excludedIds.length ? false : isAllRowsSelected;
-	} else if (!!isSubSetSelect) {
+	} else if (isSubSetSelect) {
 		excludedIds = excludeFilters(tableKey, isSubSetSelect?.total);
 		total = isSubSetSelect?.total - excludedIds?.length;
 	} else {
@@ -117,7 +123,7 @@ export const openSideDialog = async ({
 		const allFilters = [...filters, ...excludedIds];
 		const newTotaltotal = total - excludedIds?.length;
 		showRows = await getAllData(search, sorting, defaultSort, esIndex, allFilters, newTotaltotal, client);
-	} else if (!!isSubSetSelect) {
+	} else if (isSubSetSelect) {
 		const excludedIds = excludeFilters(tableKey, isSubSetSelect?.total);
 		const allFilters = [...filters, ...excludedIds];
 		const total = isSubSetSelect?.total - excludedIds?.length;
@@ -135,7 +141,9 @@ export const openSideDialog = async ({
 		},
 	});
 
-	if (table.getIsAllRowsSelected()) table.toggleAllRowsSelected();
+	if (table.getIsAllRowsSelected()) {
+		table.toggleAllRowsSelected();
+	}
 
 	table.resetRowSelection();
 };

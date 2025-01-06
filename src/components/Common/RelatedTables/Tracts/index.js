@@ -1,9 +1,12 @@
 import React, { useContext, useMemo } from 'react';
+
 import { Container, Button, ButtonGroup } from '@material-ui/core';
-import { AppContext } from 'AppContext';
-import MRTTable from 'components/MRTTable';
+
+import AddAgreementOwnerAndTractDialog from 'components/Common/TableAddDialog/AddAgreementOwnerAndTractDialog';
 import { DrawerContext } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
-import AddAgreementOwnerAndTractDialog from 'components/Table/TableAddDialog/AddAgreementOwnerAndTractDialog';
+import MRTTable from 'components/MRTTable';
+
+import { AppContext } from 'AppContext';
 
 function RelatedTractsTable(props) {
 	const [stateApp, setStateApp] = useContext(AppContext);

@@ -1,10 +1,12 @@
 import React, { useContext, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Clear } from '@material-ui/icons';
-import { IconButton, TextField } from '@material-ui/core';
 import { useForm, Controller } from 'react-hook-form';
 
+import { IconButton, TextField } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { Clear } from '@material-ui/icons';
+
 import { navController } from 'hookstate/navStateController';
+
 import { NavigationContext } from '../NavigationContext';
 
 const useStyles = makeStyles(() => ({
@@ -50,12 +52,16 @@ export default function FilterDatePickerFirstProd({ labelDates }) {
 			max: firstProdDateTo && new Date(firstProdDateTo).toISOString(),
 		};
 
-		if (!firstProdDateFrom) delete value.min;
-		if (!firstProdDateTo) delete value.max;
+		if (!firstProdDateFrom) {
+			delete value.min;
+		}
+		if (!firstProdDateTo) {
+			delete value.max;
+		}
 
 		const type = 'date';
 
-		navController.handleWellsFilters({ field: `firstProductionDate`, value, type });
+		navController.handleWellsFilters({ field: 'firstProductionDate', value, type });
 	}, [stateNav.firstProdDateFrom, stateNav.firstProdDateTo, setStateNav]);
 
 	const handleStartDate = date => {

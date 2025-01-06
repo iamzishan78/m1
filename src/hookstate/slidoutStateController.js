@@ -1,6 +1,8 @@
-import { hookStateController } from 'hookstate/hookStateController';
-import { slidoutInitialState, slidoutState } from './initialStates';
 import { useHookstate } from '@hookstate/core';
+
+import { hookStateController } from 'hookstate/hookStateController';
+
+import { slidoutInitialState, slidoutState } from './initialStates';
 
 export const useSlideoutState = () => useHookstate(slidoutState);
 const slidoutStateControllerHandler = state => ({

@@ -1,8 +1,10 @@
 import React, { useContext } from 'react';
+
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { navController } from 'hookstate/navStateController';
+
 import { NavigationContext } from '../NavigationContext';
 
 const primaryFormationList = [

@@ -2,6 +2,7 @@
 // initally being used for commonalities on grids
 
 import Typography from '@material-ui/core/Typography';
+
 import GlobalStyles from 'GlobalStyles.js';
 
 const GlobalSettings = {

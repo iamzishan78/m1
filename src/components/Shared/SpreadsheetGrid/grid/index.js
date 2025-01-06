@@ -1,12 +1,16 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+
+import { TableRow } from '@material-ui/core';
+
+import isEmpty from 'lodash/isEmpty';
 import find from 'lodash.find';
 import isEqual from 'lodash.isequal';
-import isEmpty from 'lodash/isEmpty';
+import PropTypes from 'prop-types';
+
 import keys from './../kit/keymap';
 import tablePropTypes from './../kit/tablePropTypes';
 import Row from './row';
-import { TableRow } from '@material-ui/core';
+
 import './styles.css';
 
 class SpreadsheetGrid extends React.PureComponent {
@@ -116,7 +120,9 @@ class SpreadsheetGrid extends React.PureComponent {
 					addNewFromMoveRight = true;
 					return;
 				}
-				if (currentActiveCell !== newActiveCell) newFocusedCell = newActiveCell;
+				if (currentActiveCell !== newActiveCell) {
+					newFocusedCell = newActiveCell;
+				}
 
 				if (find(block.props.disabledCells, newActiveCell)) {
 					moveRight(newActiveCell);
@@ -128,7 +134,9 @@ class SpreadsheetGrid extends React.PureComponent {
 				if (x < rowsCount - 1) {
 					newActiveCell = { x: x + 1, y };
 				}
-				if (currentActiveCell !== newActiveCell) newFocusedCell = newActiveCell;
+				if (currentActiveCell !== newActiveCell) {
+					newFocusedCell = newActiveCell;
+				}
 
 				if (find(block.props.disabledCells, newActiveCell)) {
 					moveDown(newActiveCell);
@@ -153,7 +161,9 @@ class SpreadsheetGrid extends React.PureComponent {
 				} else if (x > 0) {
 					newActiveCell = { x: x - 1, y: columnsCount - 1 };
 				}
-				if (currentActiveCell !== newActiveCell) newFocusedCell = newActiveCell;
+				if (currentActiveCell !== newActiveCell) {
+					newFocusedCell = newActiveCell;
+				}
 
 				if (find(block.props.disabledCells, newActiveCell)) {
 					moveLeft(newActiveCell);
@@ -202,7 +212,9 @@ class SpreadsheetGrid extends React.PureComponent {
 
 				if (e.shiftKey) {
 					moveLeft({ x, y });
-				} else moveRight({ x, y });
+				} else {
+					moveRight({ x, y });
+				}
 
 				// newFocusedCell = this.state.activeCell;
 				e.preventDefault();
@@ -302,8 +314,9 @@ class SpreadsheetGrid extends React.PureComponent {
 	}
 
 	getCellClassName(column, row, x, y) {
-		if (column.id === 'action')
+		if (column.id === 'action') {
 			return this.state.hoveredRow === x ? 'SpreadsheetGrid__showAction' : 'SpreadsheetGrid__hideAction';
+		}
 
 		return (
 			'SpreadsheetGrid__cell' +

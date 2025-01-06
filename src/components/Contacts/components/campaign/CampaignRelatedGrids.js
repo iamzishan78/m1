@@ -1,17 +1,16 @@
 import React, { useMemo } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import UnitIcon from 'components/Shared/svgIcons/unit';
-import Contact from 'components/Shared/svgIcons/contact';
 
-import Card from '@material-ui/core/Card';
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import { makeStyles } from '@material-ui/core/styles';
+
+import PropTypes from 'prop-types';
+
+import MRTTable from 'components/MRTTable';
+
+import { tableGlobalController } from 'hookstate/tableController';
 
 import { campaignInitialData } from './data';
-import MRTTable from 'components/MRTTable';
-import moment from 'moment';
-import { tableGlobalController } from 'hookstate/tableController';
-import TractInterestsIcon from '@material-ui/icons/ListAlt';
-import TractIcon from 'components/Shared/svgIcons/tract';
 
 const useStyles = makeStyles(theme => ({
 	card: {
@@ -70,27 +69,8 @@ function CamapignRelatedGrids({ campaign }) {
 				{ field: 'contact.IsDeleted', value: 'false' },
 				{ field: 'shape.IsDeleted', value: 'false' },
 			],
-			gridViewSettings: {
-				label: 'Unit Interests',
-				module: 'UnitInterest',
-				Icon: UnitIcon,
-				defaultView: {
-					name: 'All Unit Interests',
-					type: 'Default',
-				},
-				handleDefaultView: (view, user) => {
-					if (view?.name === 'My Unit Interest') {
-						view.filters[0].value = user._id;
-					}
-					return view;
-				},
-				cssOverride: {
-					top: '532px',
-					left: '274px',
-					maxHeight: '40%',
-					marginLeft: '-9px',
-				},
-			},
+			gridViewSettings: null,
+			fetchMetaData: null,
 			deletedKeys: {
 				mainRecord: { key: '_id' },
 				campaigns: {
@@ -101,7 +81,6 @@ function CamapignRelatedGrids({ campaign }) {
 			customValue: { campaign: campaign },
 			maxTableHeight: '35vh',
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[campaign?._id]
 	);
 
@@ -111,27 +90,8 @@ function CamapignRelatedGrids({ campaign }) {
 				{ field: 'layer.keyword', value: 'unit' },
 				{ field: 'shapeJson.properties.campaigns', value: { _id: campaign?._id, name: campaign?.name } },
 			],
-			gridViewSettings: {
-				label: 'Units',
-				module: 'Units',
-				Icon: UnitIcon,
-				defaultView: {
-					name: 'All Units',
-					type: 'Default',
-				},
-				handleDefaultView: (view, user) => {
-					if (view?.name === 'My Units') {
-						view.filters[0].value = user._id;
-					}
-					return view;
-				},
-				cssOverride: {
-					top: '532px',
-					left: '274px',
-					maxHeight: '40%',
-					marginLeft: '-9px',
-				},
-			},
+			gridViewSettings: null,
+			fetchMetaData: null,
 			deletedKeys: {
 				mainRecord: { key: '_id' },
 				parentRecord: { value: campaign?._id },
@@ -151,41 +111,24 @@ function CamapignRelatedGrids({ campaign }) {
 				},
 			},
 			customValue: { parentRecord: campaign?._id, campaign: campaign },
+			customProps: {
+				campaign,
+				exportValues: {
+					'Campaign System ID': campaign?._id,
+					'Campaign Name': campaign?.name,
+				},
+			},
 			isCampaignRefetch: true,
 			maxTableHeight: '35vh',
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[campaign?._id]
 	);
 
 	const campaignContactoverrideMeta = useMemo(
 		() => ({
 			defaultFilters: [{ field: 'campaigns', value: { _id: campaign?._id, name: campaign?.name } }],
-			gridViewSettings: {
-				label: 'Contact Management',
-				module: 'Contacts',
-				Icon: Contact,
-				defaultView: {
-					name: 'All Contacts',
-					type: 'Default',
-				},
-				handleDefaultView: (view, user) => {
-					if (view?.name === 'My Contacts') {
-						view.filters[0].value = user.name;
-					}
-					if (view?.name === 'Recently Modified' || view.name === 'Recently Added') {
-						view.filters[0].value.range[view.filters[0].field].gte = moment().subtract(30, 'days').toISOString();
-						view.filters[0].value.range[view.filters[0].field].lte = moment().toISOString();
-					}
-					return view;
-				},
-				cssOverride: {
-					top: '532px',
-					left: '274px',
-					maxHeight: '40%',
-					marginLeft: '-9px',
-				},
-			},
+			gridViewSettings: null,
+			fetchMetaData: null,
 			deletedKeys: {
 				mainRecord: { key: '_id' },
 				parentRecord: { value: campaign?._id },
@@ -193,7 +136,7 @@ function CamapignRelatedGrids({ campaign }) {
 			customProps: {
 				campaign,
 				exportValues: {
-					'Campaign  System ID': campaign?._id,
+					'Campaign System ID': campaign?._id,
 					'Campaign Name': campaign?.name,
 				},
 			},
@@ -202,7 +145,6 @@ function CamapignRelatedGrids({ campaign }) {
 			showAddContactButton: false,
 			maxTableHeight: '35vh',
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[campaign?._id]
 	);
 
@@ -233,29 +175,9 @@ function CamapignRelatedGrids({ campaign }) {
 			customValue: { parentRecord: campaign?._id, campaign: campaign },
 			isCampaignRefetch: true,
 			maxTableHeight: '35vh',
-			gridViewSettings: {
-				label: 'Tracts',
-				module: 'Tracts',
-				Icon: TractIcon,
-				defaultView: {
-					name: 'All Tracts',
-					type: 'Default',
-				},
-				handleDefaultView: (view, user) => {
-					if (view?.name === 'My Tracts') {
-						view.filters[0].value = user._id;
-					}
-					return view;
-				},
-				cssOverride: {
-					top: '656px',
-					left: '425px',
-					maxHeight: '40%',
-					marginLeft: '-9px',
-				},
-			},
+			gridViewSettings: null,
+			fetchMetaData: null,
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[campaign?._id]
 	);
 
@@ -277,29 +199,9 @@ function CamapignRelatedGrids({ campaign }) {
 			customValue: { campaign: campaign },
 			isCampaignRefetch: true,
 			maxTableHeight: '35vh',
-			gridViewSettings: {
-				label: 'Tract Interests',
-				module: 'TractInterest',
-				Icon: TractInterestsIcon,
-				defaultView: {
-					name: 'All Tract Interests',
-					type: 'Default',
-				},
-				handleDefaultView: (view, user) => {
-					if (view?.name === 'My TractInterest') {
-						view.filters[0].value = user._id;
-					}
-					return view;
-				},
-				cssOverride: {
-					top: '656px',
-					left: '425px',
-					maxHeight: '40%',
-					marginLeft: '-9px',
-				},
-			},
+			gridViewSettings: null,
+			fetchMetaData: null,
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[campaign?.name]
 	);
 
@@ -319,6 +221,7 @@ function CamapignRelatedGrids({ campaign }) {
 									const { Icon } = row;
 									return (
 										<ListItem
+											key={row.index}
 											button
 											selected={row.index === globalSelectedTabKey.tabKey}
 											onClick={() => setSearchTapValue(row)}
@@ -334,19 +237,22 @@ function CamapignRelatedGrids({ campaign }) {
 						</Grid>
 
 						<Grid item md={10} style={{ padding: '0px 0px', overflow: 'overlay' }}>
-							<div style={{ position: 'relative' }} classes={classes.gridTables}>
+							<div style={{ position: 'relative' }} className={classes.gridTables}>
 								{globalSelectedTabKey.tabKey === 0 && campaign?.name && (
 									<MRTTable name="CampaignContactTable" overrideMeta={campaignContactoverrideMeta} />
 								)}
 								{globalSelectedTabKey.tabKey === 1 && campaign?.name && (
 									<MRTTable name="CampaignUnitTable" overrideMeta={campaignUnitoverrideMeta} />
 								)}
+								{/* eslint-disable-next-line no-magic-numbers */}
 								{globalSelectedTabKey.tabKey === 2 && campaign?.name && (
 									<MRTTable name="CampaignUnitInterestTable" overrideMeta={campaignUnitInterestoverrideMeta} />
 								)}
+								{/* eslint-disable-next-line no-magic-numbers */}
 								{globalSelectedTabKey.tabKey === 3 && campaign?.name && (
 									<MRTTable name="CampaignTractTable" overrideMeta={campaignTractOverrideMeta} />
 								)}
+								{/* eslint-disable-next-line no-magic-numbers */}
 								{globalSelectedTabKey.tabKey === 4 && campaign?.name && (
 									<MRTTable name="CampaignTractInterestTable" overrideMeta={campaignTractInterestOverrideMeta} />
 								)}
@@ -358,5 +264,9 @@ function CamapignRelatedGrids({ campaign }) {
 		</div>
 	);
 }
+
+CamapignRelatedGrids.propTypes = {
+	campaign: PropTypes.object.isRequired,
+};
 
 export default CamapignRelatedGrids;

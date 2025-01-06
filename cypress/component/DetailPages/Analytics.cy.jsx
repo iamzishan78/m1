@@ -1,13 +1,14 @@
 /* eslint-disable no-undef */
-import { RevenuePropertyDetails } from 'components/Revenue/components';
-import MRTTable from 'components/MRTTable';
 import React from 'react';
+
+import MRTTable from 'components/MRTTable';
+import { RevenuePropertyDetails } from 'components/Revenue/components';
 
 // Describe block for testing the AgreementFieldsSection
 describe('AnalyticsSection', () => {
 	beforeEach(() => {
 		cy.interceptAndWait(
-			['getESSimpleSearch'],
+			['getDbData'],
 			alias => {
 				cy.viewport(1600, 1200).mount(<MRTTable name="PropertyIntrestTable" />, {
 					spec: 'PropertyIntrestTableSpec',

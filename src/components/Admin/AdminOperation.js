@@ -1,10 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Autocomplete, TextField, Button, Grid, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
+
 import { makeStyles } from '@material-ui/styles';
-import { TRIGGER_ADMIN_OPERATIONS } from 'graphQL/useMutationadminESOperations';
+
+import { Autocomplete, TextField, Button, Grid, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
+
 import { useLazyQuery, useMutation } from '@apollo/client';
+
+import { TRIGGER_ADMIN_OPERATIONS } from 'graphQL/useMutationadminESOperations';
 import { GET_DB_OPERATIONS } from 'graphQL/useQueryadminDBOperations';
+
 import { adminOperationsController } from 'hookstate/adminOperationsController';
+
 import { getHeaders } from 'utils/helper';
 
 const useStyles = makeStyles(() => ({
@@ -38,10 +44,11 @@ const useStyles = makeStyles(() => ({
 const useGetDBOperations = options => {
 	const [getDBOperations, { data: operationModels }] = useLazyQuery(GET_DB_OPERATIONS);
 	useEffect(() => {
-		if (options.callApi !== false)
+		if (options.callApi !== false) {
 			getDBOperations({
 				variables: { options },
 			});
+		}
 	}, [getDBOperations, options]);
 
 	// Memoizing the returned data to avoid unnecessary recalculations
@@ -143,8 +150,9 @@ export default function Flatten() {
 
 	const modelOptions = useMemo(() => {
 		let _models = models[adminOperationsState.adminOperationType] || [];
-		if (adminOperationsState.adminOperationType === 'databaseFlatenning')
+		if (adminOperationsState.adminOperationType === 'databaseFlatenning') {
 			_models = _models.filter(model => model !== 'ShapeFile' && model !== 'Test');
+		}
 		return {
 			all: _models,
 			withSelectAll: ['Select All', ..._models],

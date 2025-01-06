@@ -1,10 +1,11 @@
 import React from 'react';
-import { history } from 'store';
 import { Link as RouterLink } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
+
 import { Box, Tooltip } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
 import GlobalStyles from 'GlobalStyles';
+import { history } from 'store';
 
 const commonLinkStyles = {
 	maxWidth: '380px',

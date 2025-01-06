@@ -20,6 +20,6 @@ describe('SnapGrid Search Agreements Spec', () => {
 		cy.log(`==== STEP:Search AGREEMENT BY NAME ${searchStrings} IN SNAPGRID ====`);
 		cy.get('.MuiTypography-displayBlock').contains('Agreements').click();
 		cy.get('#MapGridAgreementsTable', { timeout: longTimeout }).should('be.visible');
-		cy.gridSearch(searchStrings, 'getESSimpleSearch', '#mapGridCardSearch-basic');
+		cy.gridSearch(searchStrings, 'getDbData', '#mapGridCardSearch-basic');
 	});
 });

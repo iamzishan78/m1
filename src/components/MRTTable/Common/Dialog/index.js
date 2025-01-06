@@ -1,20 +1,26 @@
 import React, { memo } from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import { useMutation } from '@apollo/client';
 
-import Loader from 'components/Loaders';
-import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
+import Dialog from '@material-ui/core/Dialog';
+
+import { useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
+
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
-import BuyContactsInfoDialogContent from 'components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
+import Loader from 'components/Loaders';
+import BuyContactsInfoDialogContent from 'components/MRTTable/Common/Components/BuyContactsInfoDialogContent';
 import ExportContactsPurchaseAndOwners from 'components/MRTTable/Common/Dialog/ExportContactsPurchaseAndOwners';
+
+import { GRID_GENERIC_REMOVE } from 'graphQL/useMutationCommonGridRemove';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
+
 import CommentDialog from './CommentDialog';
-import TagDialog from './TagDialog';
 import DeleteConfirmationDialog from './ConfirmationDialog/DeleteConfirmationDialog';
 import ExportConfirmationDialog from './ConfirmationDialog/ExportConfirmationDialog';
-
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { globalStateController } from 'hookstate/globalStateController';
-import { GRID_GENERIC_REMOVE } from 'graphQL/useMutationCommonGridRemove';
+import TagDialog from './TagDialog';
 
 function AllDialogs(props) {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
@@ -46,6 +52,12 @@ function AllDialogs(props) {
 	};
 
 	const deleteFunc = async dataToDelete => {
+		if (rest.deleteType === 'row') {
+			rest.deleteFunc?.(dataToDelete);
+
+			return;
+		}
+
 		Loader.createToast('deletion', 'Deletion in Progress');
 		const user = globalStateController.getValue('user');
 		const testCase = globalStateController.getValue('testCase');
@@ -65,9 +77,14 @@ function AllDialogs(props) {
 			res => {
 				if (res?.data?.gridGenericRemove) {
 					const { success, message } = res.data.gridGenericRemove;
-					if (success) Loader.successToast('deletion', message);
-					else Loader.errorToast('deletion', message);
-				} else Loader.errorToast('deletion', 'Failed to delete row (s)');
+					if (success) {
+						Loader.successToast('deletion', message);
+					} else {
+						Loader.errorToast('deletion', message);
+					}
+				} else {
+					Loader.errorToast('deletion', 'Failed to delete row (s)');
+				}
 				tableGlobalController.refetch();
 			},
 			() => {
@@ -180,5 +197,11 @@ function AllDialogs(props) {
 		</>
 	);
 }
+
+AllDialogs.propTypes = {
+	tableKey: PropTypes.string.isRequired,
+	columns: PropTypes.array,
+	controller: PropTypes.object,
+};
 
 export default memo(AllDialogs);

@@ -1,7 +1,10 @@
 import React, { useState, useContext, useEffect } from 'react';
+
 import { makeStyles } from '@material-ui/styles';
-import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
+
 import MRTTable from 'components/MRTTable';
+import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
+
 import { tableController } from 'hookstate/tableController';
 
 // actions

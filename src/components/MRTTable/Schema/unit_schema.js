@@ -1,19 +1,27 @@
-import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map';
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import UnitIcon from 'components/Shared/svgIcons/unit';
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import _ from 'lodash';
-import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
-import vf_currency from 'components/Shared/valueformatters/vf_currency.js';
-import vf_number from 'components/Shared/valueformatters/vf_number';
 import Loader from 'components/Loaders';
-import { globalStateController } from 'hookstate/globalStateController';
-import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
-import { tableGlobalController } from 'hookstate/tableController';
-import { copy } from 'utils/helper';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import UnitToolbar from 'components/MRTTable/TablesOverride/UnitTable/UnitToolbar';
+import UnitIcon from 'components/Shared/svgIcons/unit';
+import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+import vf_number from 'components/Shared/valueformatters/vf_number';
+
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { CURRENCY_TO_FIXED } from 'utils/consts';
+import { copy } from 'utils/helper';
 
 const esIndex = 'shapes_flat';
 
@@ -48,11 +56,11 @@ const onCustomKeyChange = async (client, row, value, item) => {
 				},
 			},
 			mutation: UPDATECUSTOMLAYER,
-			refetchQueries: ['getESSimpleFilter'],
+			refetchQueries: ['getDbFilters'],
 		});
 		Loader.successToast(loaderId, 'Updation Complete');
 		tableGlobalController.refetch();
-	} catch (err) {
+	} catch {
 		Loader.errorToast(loaderId, 'Updation in Complete');
 	}
 };
@@ -97,20 +105,20 @@ const UnitMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
-			accessorKey: 'id',
+			id: 'id',
 			header: 'ID',
 		},
 
 		{
 			...CommonSchema.MONGO_ID,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'name.keyword',
-			accessorKey: 'name',
+			id: 'name',
 			header: 'Unit Name',
 			Cell: ({ renderedCellValue, row }) => (
 				<div
@@ -127,7 +135,6 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uNumber.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uNumber,
 			id: 'shapeJson.properties.uNumber',
 			header: 'Unit #',
 		},
@@ -145,7 +152,6 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.originalProperties.County.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.County,
 			id: 'shapeJson.properties.originalProperties.County',
 			header: 'County',
 		},
@@ -153,28 +159,24 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.originalProperties.surveyMerdian.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.surveyMerdian,
 			id: 'shapeJson.properties.originalProperties.surveyMerdian',
 			header: 'Survey/ Meridian',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.originalProperties.blockTownship.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.blockTownship,
 			id: 'shapeJson.properties.originalProperties.blockTownship',
 			header: 'Block/ Township',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.originalProperties.rangeSection.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.rangeSection,
 			id: 'shapeJson.properties.originalProperties.rangeSection',
 			header: 'Section/ Range',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.originalProperties.abstractNameShortName.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.abstractNameShortName,
 			id: 'shapeJson.properties.originalProperties.abstractNameShortName',
 			header: 'Abstract/ Section',
 		},
@@ -199,7 +201,6 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uStatus.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uStatus,
 			id: 'shapeJson.properties.uStatus',
 			header: 'Unit Status',
 		},
@@ -207,7 +208,6 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uPrimaryOperator.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uPrimaryOperator,
 			id: 'shapeJson.properties.uPrimaryOperator',
 			header: 'Current Operator',
 		},
@@ -216,7 +216,6 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.totalUnitInterest.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.totalUnitInterest,
 			id: 'shapeJson.properties.totalUnitInterest',
 			header: 'Total Unit Interest',
 		},
@@ -224,7 +223,8 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uUnitPricing.keyword',
-			accessorFn: row => vf_currency(row?.shapeJson?.properties?.uUnitPricing), // format value with $ sign
+			accessorFn: row => vf_currency_to_fixed(row?.shapeJson?.properties?.uUnitPricing, CURRENCY_TO_FIXED), // format value with $ sign
+			subType: 'price',
 			id: 'shapeJson.properties.uUnitPricing',
 			header: 'Target Price/Acre',
 		},
@@ -232,7 +232,8 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uMaxUnitPricing.keyword',
-			accessorFn: row => vf_currency(row?.shapeJson?.properties?.uMaxUnitPricing), // format value with $ sign
+			accessorFn: row => vf_currency_to_fixed(row?.shapeJson?.properties?.uMaxUnitPricing, CURRENCY_TO_FIXED), // format value with $ sign
+			subType: 'price',
 			id: 'shapeJson.properties.uMaxUnitPricing',
 			header: 'Max Price/Acre',
 		},
@@ -240,7 +241,7 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'interestSummary.unitInterestCount',
-			accessorKey: 'interestSummary.unitInterestCount',
+			id: 'interestSummary.unitInterestCount',
 			header: 'Owner Count',
 			isSearchField: false,
 		},
@@ -249,7 +250,6 @@ const UnitMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			type: 'array',
 			name: 'shapeJson.properties.campaigns.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.campaigns,
 			id: 'shapeJson.properties.campaigns',
 			header: 'Campaigns',
 			size: 270,
@@ -261,7 +261,6 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.qualifier.name.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.qualifier?.name,
 			id: 'shapeJson.properties.qualifier.name',
 			header: 'Qualifier',
 		},
@@ -269,14 +268,12 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.reviewer.name.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.reviewer?.name,
 			id: 'shapeJson.properties.reviewer.name',
 			header: 'Reviewer',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.ownerName.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.ownerName,
 			id: 'shapeJson.properties.ownerName',
 			header: 'Owner',
 		},
@@ -312,7 +309,7 @@ const UnitMeta = {
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'coordinates',
-			accessorKey: 'coordinates',
+			id: 'coordinates',
 			header: '',
 			size: 70,
 			Cell: ({ row }) => {

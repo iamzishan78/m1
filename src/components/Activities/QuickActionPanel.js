@@ -1,24 +1,30 @@
 import React, { useContext, useState } from 'react';
-import clsx from 'clsx';
+import DatePicker from 'react-datepicker';
 import { useHistory } from 'react-router-dom';
+
 import { IconButton } from '@material-ui/core';
-import ListItemText from '@material-ui/core/ListItemText';
 import { Divider, Grid, Typography, Drawer } from '@material-ui/core';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ListItemText from '@material-ui/core/ListItemText';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import MenuIcon from '@material-ui/icons/Menu';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import TextField from '@material-ui/core/TextField';
-import { makeStyles } from '@material-ui/core/styles';
-import { useStyles, StyledMenu, StyledMenuItem } from 'components/Land/style';
+
+import clsx from 'clsx';
 import moment from 'moment';
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+
+import { useStyles, StyledMenu, StyledMenuItem } from 'components/Land/style';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+
 import { ActivitiesContext } from './ActivitiesContext';
-import DatePicker from 'react-datepicker';
+
 import 'react-datepicker/dist/react-datepicker.css';
+
 const useToolbarStyles = makeStyles(theme => ({
 	root: {
 		padding: '16px',

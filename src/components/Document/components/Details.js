@@ -1,29 +1,31 @@
 import React, { useEffect, useState, Fragment } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+
+import { IconButton, TextField, withStyles, Typography, Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import { AppContext } from 'AppContext';
-import { Typography, Grid } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import DeleteIcon from '@material-ui/icons/Delete';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery } from '@apollo/client';
 import loadashFilter from 'lodash/filter';
 import get from 'lodash/get';
 
-import { IconButton, TextField, withStyles } from '@material-ui/core';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import UploadZone from '../../Shared/UploadZone';
-import Tooltip from '@material-ui/core/Tooltip';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import DeleteIcon from '@material-ui/icons/Delete';
+import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
+import GenericDateField from 'components/Shared/components/Fields/GenericDateFIeld';
+import get_file_icon from 'components/Shared/functions/get_file_icon.js';
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
-import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
-import { useLazyQuery } from '@apollo/client';
+
 import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
-import GenericDateField from 'components/Shared/components/Fields/GenericDateFIeld';
+import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
 
-// functions
-import get_file_icon from 'components/Shared/functions/get_file_icon.js';
-import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
+import { AppContext } from 'AppContext';
+
+import UploadZone from '../../Shared/UploadZone';
 
 const filter = createFilterOptions();
 
@@ -219,10 +221,9 @@ export default function DocumentDetails(props) {
 	} = props;
 	const [metaData, setMetaData] = useState([]);
 	const [stateApp, setStateApp] = React.useContext(AppContext);
-	const [recentFiles, setRecentFiles] = useState([]);
 	const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
-	const [viewFile, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILEQUERY, {
+	const [viewFile] = useLazyQuery(VIEWFILEQUERY, {
 		fetchPolicy: 'no-cache',
 	});
 
@@ -305,7 +306,9 @@ export default function DocumentDetails(props) {
 				refetchQueries: ['getParcelFiles', 'getParcelFilesCount'],
 				awaitRefetchQueries: true,
 			}).then(() => {
-				if (props?.refetchData) props.refetchData({ ...document });
+				if (props?.refetchData) {
+					props.refetchData({ ...document });
+				}
 				setFileData(null);
 				setStateApp({
 					...stateApp,
@@ -530,7 +533,7 @@ export default function DocumentDetails(props) {
 						</div>
 					</ListItem>
 
-					{metaData.map((meta, index) => {
+					{metaData.map(meta => {
 						const value = newDocument.custom_data[meta.name];
 						let isInView = false;
 						if (stateApp.selectedView && stateApp.selectedView?.columns?.length > 0) {
@@ -538,53 +541,57 @@ export default function DocumentDetails(props) {
 								isInView = true;
 							}
 						}
-						if (isInView || value) {
-							return (
-								<Fragment key={meta.name}>
-									{meta.type === 'text' && (
-										<ListItem className={classes.listItem}>
-											<h4>{meta.label}</h4>
-											<TextField
-												className={classes.maxWidth}
-												value={value}
-												onChange={e => {
-													const custom_data = JSON.parse(JSON.stringify(newDocument.custom_data));
-													custom_data[meta.name] = e.target.value;
-													setNewDocument({
-														...newDocument,
-														custom_data,
-													});
-												}}
-											/>
-										</ListItem>
-									)}
-									{meta.type === 'dropdown' && (
-										<ListItem id={`${meta.label}-field`} className={classes.listItem}>
-											<h4>{meta.label}</h4>
-											<ReactSelectField
-												isSingleSelect={true}
-												fullWidth
-												showUnderline
-												showChevron={true}
-												index={'documentTable'}
-												dropdownOptions={meta.dropdownOptions}
-												column={meta}
-												value={value}
-												onCustomKeyChange={value => {
-													const custom_data = JSON.parse(JSON.stringify(newDocument.custom_data));
-													custom_data[meta.name] = value ? value : null; // empty string is falsey so null
-													setNewDocument({
-														...newDocument,
-														custom_data,
-													});
-												}}
-											/>
-										</ListItem>
-									)}
-									{meta.type === 'multiselect' && (
-										<ListItem id={`${meta.label}-field`} className={classes.listItem}>
-											<h4>{meta.label}</h4>
-											{/* <CustomFieldMultiSelect
+
+						if (!isInView && !value) {
+							return null;
+						}
+
+						return (
+							<Fragment key={meta.name}>
+								{meta.type === 'text' && (
+									<ListItem className={classes.listItem}>
+										<h4>{meta.label}</h4>
+										<TextField
+											className={classes.maxWidth}
+											value={value}
+											onChange={e => {
+												const custom_data = JSON.parse(JSON.stringify(newDocument.custom_data));
+												custom_data[meta.name] = e.target.value;
+												setNewDocument({
+													...newDocument,
+													custom_data,
+												});
+											}}
+										/>
+									</ListItem>
+								)}
+								{meta.type === 'dropdown' && (
+									<ListItem id={`${meta.label}-field`} className={classes.listItem}>
+										<h4>{meta.label}</h4>
+										<ReactSelectField
+											isSingleSelect={true}
+											fullWidth
+											showUnderline
+											showChevron={true}
+											index={'documentTable'}
+											dropdownOptions={meta.dropdownOptions}
+											column={meta}
+											value={value}
+											onCustomKeyChange={value => {
+												const custom_data = JSON.parse(JSON.stringify(newDocument.custom_data));
+												custom_data[meta.name] = value ? value : null; // empty string is falsey so null
+												setNewDocument({
+													...newDocument,
+													custom_data,
+												});
+											}}
+										/>
+									</ListItem>
+								)}
+								{meta.type === 'multiselect' && (
+									<ListItem id={`${meta.label}-field`} className={classes.listItem}>
+										<h4>{meta.label}</h4>
+										{/* <CustomFieldMultiSelect
                         fullWidth
                         index={"documentTable"}
                         dropdownOptions={meta.dropdownOptions}
@@ -600,182 +607,109 @@ export default function DocumentDetails(props) {
                         }}
                       /> */}
 
-											<ReactSelectField
-												fullWidth
-												showUnderline
-												showChevron={true}
-												index={'documentTable'}
-												dropdownOptions={meta.dropdownOptions}
-												column={meta}
-												value={value}
-												onCustomKeyChange={value => {
-													const custom_data = JSON.parse(JSON.stringify(newDocument.custom_data));
-													custom_data[meta.name] = value ? value : null; // empty string is falsey so null
-													setNewDocument({
-														...newDocument,
-														custom_data,
-													});
-												}}
-											/>
-										</ListItem>
-									)}
-								</Fragment>
-							);
-						}
+										<ReactSelectField
+											fullWidth
+											showUnderline
+											showChevron={true}
+											index={'documentTable'}
+											dropdownOptions={meta.dropdownOptions}
+											column={meta}
+											value={value}
+											onCustomKeyChange={value => {
+												const custom_data = JSON.parse(JSON.stringify(newDocument.custom_data));
+												custom_data[meta.name] = value ? value : null; // empty string is falsey so null
+												setNewDocument({
+													...newDocument,
+													custom_data,
+												});
+											}}
+										/>
+									</ListItem>
+								)}
+							</Fragment>
+						);
 					})}
 				</List>
 			</div>
 			<div style={{ flexShrink: 0 }}>
-				{(stateApp.selectedDocument?.fileId || fileData) && replaceFile !== 'IN_PROGRESS' ? (
+				{(stateApp.selectedDocument?.fileId || fileData) && replaceFile !== 'IN_PROGRESS' && (
 					<ListItem>
 						<div style={{ display: 'flex', justifyContent: 'start' }} id="attachedDocument">
-							{viewFileSResult?.viewFiles?.map((value, key) => {
+							{viewFileSResult?.viewFiles?.map((value, index) => {
 								let fileExtension = value?.name?.slice(value.name.lastIndexOf('.') + 1)?.toLowerCase();
-								if (key <= 1) {
-									return (
-										<div key={key}>
-											<LightTooltip
-												title={
-													<div className={classes.IconSection}>
-														<IconButton
-															size="small"
-															onClick={() => {
-																setReplaceFile('INITIATE');
-																setOpenDeleteConfirmDialog(true);
-																setFileIdToDelete(
-																	stateApp?.selectedDocument?.fileId || stateApp?.selectedDocument?._id
-																);
-																// setStateApp((state) => ({ ...state, selectedDocument: { ...state.selectedDocument, fileId: null } }))
-																// setFileData(null)
-															}}
-														>
-															<DeleteIcon id="documentDeleteIcon" />
-														</IconButton>
 
-														<IconButton
-															disabled={false}
-															size="small"
-															onClick={e => {
-																e.preventDefault();
-																handleViewFile(value.id);
-															}}
-														>
-															<GetAppIcon />
-														</IconButton>
-													</div>
-												}
-												interactive
-											>
-												<div>
-													{new RegExp(['jpg', 'jpeg', 'png', 'bmp'].join('|')).test(fileExtension) ? (
-														<img src={value.uri} alt={value.name} className={classes.forImage}></img>
-													) : (
-														<div
-															className={classes.forImageContainer}
-															onClick={() => {
-																const isPdf = fileExtension === 'pdf';
-
-																if (isPdf && stateApp?.selectedDocument.viewToken) {
-																	setStateApp(state => ({
-																		...state,
-																		viewDoc: {
-																			uri: stateApp.selectedDocument.viewToken,
-																			name: stateApp.selectedDocument.name,
-																		},
-																	}));
-																	// setStateApp((state) => ({
-																	//   ...state,
-																	//   pdfView: stateApp.selectedDocument,
-																	// }));
-																} else {
-																	handleViewFile(stateApp.selectedDocument.fileId, isPdf);
-																}
-															}}
-														>
-															{get_file_icon(fileExtension)}
-														</div>
-													)}
-													<div className={classes.imageSubText}>
-														{value?.name?.length > 12 ? value.name.slice(0, 8) + '...' : value.name}
-													</div>
-												</div>
-											</LightTooltip>
-										</div>
-									);
+								if (index < 1) {
+									return null;
 								}
-							})}
-						</div>
-					</ListItem>
-				) : (
-					<ListItem>
-						<div style={{ display: 'flex', justifyContent: 'start' }}>
-							{recentFiles?.map((value, key) => {
-								let fileExtension = value?.name?.slice(value.name.lastIndexOf('.') + 1)?.toLowerCase();
-								if (key <= 1) {
-									return (
-										<div key={key}>
-											<LightTooltip
-												title={
-													<div className={classes.IconSection}>
-														<IconButton
-															size="small"
-															onClick={() => {
-																setReplaceFile('INITIATE');
-																setOpenDeleteConfirmDialog(true);
-																setFileIdToDelete(value.id);
-																// setStateApp((state) => ({ ...state, selectedDocument: { ...state.selectedDocument, fileId: null } }))
-																// setFileData(null)
-															}}
-														>
-															<DeleteIcon />
-														</IconButton>
 
-														<IconButton
-															disabled={false}
-															size="small"
-															// onClick={() =>
-															//   handleViewFile(
-															//     files?.getFileDescriptors[key].fileId
-															//   )
-															// }
-														>
-															<GetAppIcon />
-														</IconButton>
-													</div>
-												}
-												interactive
-											>
-												<div>
-													{new RegExp(['jpg', 'jpeg', 'png', 'bmp'].join('|')).test(fileExtension) ? (
-														<img src={value.uri} alt={value.name} className={classes.forImage}></img>
-													) : (
-														<div
-															className={classes.forImageContainer}
-															onClick={() => {
-																if (fileExtension === 'pdf') {
-																	setStateApp({
-																		...stateApp,
-																		viewDoc: {
-																			uri: value.uri,
-																			name: value.name,
-																		},
-																	});
-																} else {
-																	handleViewFile();
-																}
-															}}
-														>
-															{get_file_icon(fileExtension)}
-														</div>
-													)}
-													<div className={classes.imageSubText}>
-														{value?.name?.length > 12 ? value.name.slice(0, 8) + '...' : value.name}
-													</div>
+								return (
+									<div key={index}>
+										<LightTooltip
+											title={
+												<div className={classes.IconSection}>
+													<IconButton
+														size="small"
+														onClick={() => {
+															setReplaceFile('INITIATE');
+															setOpenDeleteConfirmDialog(true);
+															setFileIdToDelete(stateApp?.selectedDocument?.fileId || stateApp?.selectedDocument?._id);
+															// setStateApp((state) => ({ ...state, selectedDocument: { ...state.selectedDocument, fileId: null } }))
+															// setFileData(null)
+														}}
+													>
+														<DeleteIcon id="documentDeleteIcon" />
+													</IconButton>
+
+													<IconButton
+														disabled={false}
+														size="small"
+														onClick={e => {
+															e.preventDefault();
+															handleViewFile(value.id);
+														}}
+													>
+														<GetAppIcon />
+													</IconButton>
 												</div>
-											</LightTooltip>
-										</div>
-									);
-								}
+											}
+											interactive
+										>
+											<div>
+												{new RegExp(['jpg', 'jpeg', 'png', 'bmp'].join('|')).test(fileExtension) ? (
+													<img src={value.uri} alt={value.name} className={classes.forImage}></img>
+												) : (
+													<div
+														className={classes.forImageContainer}
+														onClick={() => {
+															const isPdf = fileExtension === 'pdf';
+
+															if (isPdf && stateApp?.selectedDocument.viewToken) {
+																setStateApp(state => ({
+																	...state,
+																	viewDoc: {
+																		uri: stateApp.selectedDocument.viewToken,
+																		name: stateApp.selectedDocument.name,
+																	},
+																}));
+																// setStateApp((state) => ({
+																//   ...state,
+																//   pdfView: stateApp.selectedDocument,
+																// }));
+															} else {
+																handleViewFile(stateApp.selectedDocument.fileId, isPdf);
+															}
+														}}
+													>
+														{get_file_icon(fileExtension)}
+													</div>
+												)}
+												<div className={classes.imageSubText}>
+													{value?.name?.length > 12 ? value.name.slice(0, 8) + '...' : value.name}
+												</div>
+											</div>
+										</LightTooltip>
+									</div>
+								);
 							})}
 						</div>
 					</ListItem>
@@ -876,15 +810,19 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 					return option.name;
 				}
 
-				if (option?.name) return option.name;
-				else return '';
+				if (option?.name) {
+					return option.name;
+				} else {
+					return '';
+				}
 			}}
 			getOptionSelected={(option, value) => {
 				return option?._id === value?._id;
 			}}
 			renderOption={option => {
-				if (option._id === 'newEntity')
-					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+				if (option._id === 'newEntity') {
+					return <Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>;
+				}
 
 				return (
 					<Grid container spacing={0}>
@@ -921,9 +859,14 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 			}}
 			onChange={(event, newValue) => {
 				if (newValue && newValue._id) {
-					if (newValue._id !== 'newEntity') setDocumentType(newValue);
-					else setDocumentType({ _id: 'newEntity', name: newValue.name });
-				} else setDocumentType('');
+					if (newValue._id !== 'newEntity') {
+						setDocumentType(newValue);
+					} else {
+						setDocumentType({ _id: 'newEntity', name: newValue.name });
+					}
+				} else {
+					setDocumentType('');
+				}
 			}}
 			renderInput={params => (
 				<TextField

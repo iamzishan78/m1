@@ -1,19 +1,26 @@
 /* eslint-disable no-undef */
+import React from 'react';
+
 import MRTTable from 'components/MRTTable';
-import { basic_timeouts } from '../../../cypress/cypressUtils/data';
-import ldata from '../../fixtures/ldata.json';
+
 import { REVERTCYPRESSDELETE } from 'graphQL/useMutationCommonCypressRevert';
+
+import { SUCCESS_STATUS } from 'utils/consts';
+
 import { headers } from '../../cypressUtils/cypressHeaders';
+import { basic_timeouts } from '../../cypressUtils/data';
+import ldata from '../../fixtures/ldata.json';
 
 // Describe block for testing the Tract Interest Owners Table
 describe('Tract Interest Owners Table', () => {
 	// Before each test, intercept and wait for specific requests and mount the MRTTable component with predefined props
 	beforeEach(() => {
-		cy.interceptAndWait(['getESSimpleSearch', 'shapeowners_flat'], () => {
+		cy.interceptAndWait(['getDbData', 'shapeowners_flat'], () => {
 			// Mounting the MRTTable component with predefined props
+			// eslint-disable-next-line no-magic-numbers
 			cy.viewport(1600, 1200).mount(
 				<MRTTable
-					name="TractPerUnitTable"
+					name="TractInterestOwnerTable"
 					// Overriding meta information with default filters
 					overrideMeta={{
 						defaultFilters: [
@@ -49,7 +56,7 @@ describe('Tract Interest Owners Table', () => {
 			['gridGenericRemove'],
 			alias => {
 				// Selecting all rows for deletion
-				cy.get(`[data-testid="over-ride-select-all-div"] input`).click();
+				cy.get('[data-testid="over-ride-select-all-div"] input').click();
 				// Clicking on the delete icon button to delete selected rows
 				cy.get('.MuiButtonBase-root[data-testid="delete-icon-button"]').click();
 				// Confirming the deletion
@@ -58,7 +65,7 @@ describe('Tract Interest Owners Table', () => {
 				cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(deleteResponse => {
 					const data = deleteResponse?.response?.body?.data?.gridGenericRemove.data;
 					// Asserting that the status code is 200 for successful deletion
-					expect(deleteResponse?.response?.statusCode).to.eq(200);
+					expect(deleteResponse?.response?.statusCode).to.eq(SUCCESS_STATUS);
 					// Waiting for some time before reverting the deletion
 					cy.wait(1000).then(() => {
 						// Building payload for reverting the deletion
@@ -75,7 +82,7 @@ describe('Tract Interest Owners Table', () => {
 							body: getLayerPayload,
 						}).then(r => {
 							// Asserting that the revert operation is successful
-							expect(r.status).to.eq(200);
+							expect(r.status).to.eq(SUCCESS_STATUS);
 							expect(r.body.data?.revertCypressDelete?.success).to.eq(true);
 						});
 					});

@@ -1,38 +1,55 @@
 import React, { useContext, useState, useEffect, useRef, useMemo } from 'react';
-import { useMutation, useLazyQuery } from '@apollo/client';
-import { useHistory } from 'react-router-dom';
-import { get } from 'lodash';
-import Chip from '@material-ui/core/Chip';
-
-import { AppContext } from '../../AppContext';
-import { TransactContext } from './TransactContext';
-import Board from 'react-trello';
-import { makeStyles } from '@material-ui/core/styles';
-import { UPDATESTAGEDEALDESCRIPTORS } from 'graphQL/useMutationUpdateStageDealDescriptors';
-import { UPDATE_STAGE_DEAL_DESCRIPTOR } from 'graphQL/useMutationUpdateStageDealDescriptor';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Backdrop from '@material-ui/core/Backdrop';
-
-import AddDealDialog from 'components/Transact/components/DealDialog/AddDealDialog';
-import './index.css';
-import TransactAppBar from './components/TransactAppBar';
-import SidePanel from './components/SidePanel';
 import { useSelector, useDispatch } from 'react-redux';
-import { setFlowState } from 'actions';
-import { UPDATEDEAL } from '../../graphQL/useMutationUpdateDeal';
-import M1nTable from '../Shared/M1nTable/M1nTable';
-import CustomAvatar from 'components/Shared/ui/CustomAvatar';
+import { useHistory } from 'react-router-dom';
+import Board from 'react-trello';
+
+import { Box } from '@material-ui/core';
+import Backdrop from '@material-ui/core/Backdrop';
+import Chip from '@material-ui/core/Chip';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
+import { get } from 'lodash';
 import moment from 'moment';
+
+import './index.css';
+import { validateEmail } from 'components/AzureLogin/loginHelpers';
+import MRTTable from 'components/MRTTable';
 import { getRandomColor } from 'components/Shared/functions/ui.js';
+import CustomAvatar from 'components/Shared/ui/CustomAvatar';
+import PipelinesFetchHoc from 'components/Transact/components/Common/PipelinesFetchHoc';
+import AddDealDialog from 'components/Transact/components/DealDialog/AddDealDialog';
+
+import { UPDATE_STAGE_DEAL_DESCRIPTOR } from 'graphQL/useMutationUpdateStageDealDescriptor';
+import { UPDATESTAGEDEALDESCRIPTORS } from 'graphQL/useMutationUpdateStageDealDescriptors';
+import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
+import { GETPIPELINE } from 'graphQL/useQueryPipeline';
+
+import { getOppositeHexColor } from 'utils/helper';
+
+import { setFlowState } from 'actions';
+
+import SidePanel from './components/SidePanel';
+import TransactAppBar from './components/TransactAppBar';
+import { TransactContext } from './TransactContext';
+import { AppContext } from '../../AppContext';
+import { UPDATEDEAL } from '../../graphQL/useMutationUpdateDeal';
+import DocViewer from '../Shared/DocViewer';
 import vf_currency from '../Shared/valueformatters/vf_currency.js';
 import vf_number from '../Shared/valueformatters/vf_number.js';
-import DocViewer from '../Shared/DocViewer';
-import { validateEmail } from 'components/AzureLogin/loginHelpers';
-import { GETPIPELINE } from 'graphQL/useQueryPipeline';
-import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
-import PipelinesFetchHoc from 'components/Transact/components/Common/PipelinesFetchHoc';
-import { Box } from '@material-ui/core';
-import { getOppositeHexColor } from 'utils/helper';
+
+
+
+
+const THREE = 3;
+const FOUR = 4;
+const SIX = 6;
+const THIRTY = 30;
+const FOURTY = 40;
+const FIFTY = 50;
+const FIFTY_THREE = 53;
+const SEVENTY_FIVE = 75;
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -140,7 +157,7 @@ const useStyles = makeStyles(theme => ({
 		},
 		'& div': {
 			'&>.MuiPaper-root': {
-				'&>:nth-child(3)': { minHeight: 'calc(100vh - 258px) !important', maxHeight: 'calc(100vh - 258px) !important' },
+				// '&>:nth-child(3)': { minHeight: 'calc(100vh - 258px) !important', maxHeight: 'calc(100vh - 258px) !important' },
 			},
 		},
 		'& .MuiToolbar-root': { textAlign: 'initial' },
@@ -150,8 +167,8 @@ const useStyles = makeStyles(theme => ({
 		'z-index': 1,
 	},
 	dealOwnerAvatar: {
-		width: theme.spacing(3),
-		height: theme.spacing(3),
+		width: theme.spacing(THREE),
+		height: theme.spacing(THREE),
 		color: '#fff',
 		fontSize: '0.6rem',
 		backgroundColor: '#4880F6',
@@ -180,13 +197,13 @@ const CARD_FIELD_MAPPER = {
 const Transact = () => {
 	let history = useHistory();
 	const dispatch = useDispatch();
-	const { pipeToShow, pipeToShowTab, selectedPipe } = useSelector(({ Flow }) => Flow);
+	const { pipeToShow, selectedPipe } = useSelector(({ Flow }) => Flow);
 	const [stateApp, setStateApp] = useContext(AppContext);
 	const [, setStateTransact] = useContext(TransactContext);
 	const [filteredBoardTransactData, setFilteredBoardTransactData] = useState({
 		lanes: [],
 	});
-	const [filteredTabTransactData, setFilteredTabTransactData] = useState([]);
+
 	const [dealFilter, setDealFilter] = useState('all');
 	const classes = useStyles({ dealDialog: stateApp.dealDialog });
 	const cardColors = useRef({});
@@ -247,10 +264,10 @@ const Transact = () => {
 				let laneId = '';
 				let cardId = '';
 				if (history.location.pathname.includes('lane')) {
-					laneId = history.location.pathname.split('/')[4];
+					laneId = history.location.pathname.split('/')[FOUR];
 				}
 				if (history.location.pathname.includes('card')) {
-					cardId = history.location.pathname.split('/')[6];
+					cardId = history.location.pathname.split('/')[SIX];
 				}
 
 				let deals = [];
@@ -303,13 +320,14 @@ const Transact = () => {
 						pipeToShowTab: deals,
 					})
 				);
-			} else
+			} else {
 				dispatch(
 					setFlowState({
 						pipeToShow: null,
 						pipeToShowTab: null,
 					})
 				);
+			}
 		}
 	}, [pipelineData]);
 
@@ -355,27 +373,6 @@ const Transact = () => {
 		}
 	}, [profiledata]);
 
-	const filterTabCards = (cards, filter) => {
-		return cards.filter(card => {
-			switch (filter) {
-				case 'all':
-					return !card.IsDeleted; // remove deleted cards
-
-				case 'deleted':
-					return card.IsDeleted; // get deleted cards
-
-				default:
-					return card.status === filter && !card.IsDeleted;
-			}
-		});
-	};
-
-	useEffect(() => {
-		if (pipeToShowTab && dealFilter) {
-			setFilteredTabTransactData([...filterTabCards(pipeToShowTab, dealFilter)]);
-		}
-	}, [pipeToShowTab, dealFilter]);
-
 	useEffect(() => {
 		return () => {
 			setStateApp(stateApp => ({
@@ -384,8 +381,6 @@ const Transact = () => {
 			}));
 		};
 	}, []);
-
-	const handleDataChange = newData => {};
 
 	const handleCardClick = (cardId, metadata, laneId) => {
 		history.push(`/flow/${selectedPipe._id}/lane/${laneId}/card/${cardId}`);
@@ -410,7 +405,9 @@ const Transact = () => {
 
 		let unfilteredSourcePosition = unfilteredSourceLane.cards.findIndex(card => card?.id === cardId);
 		let unfilteredTargetPosition = (() => {
-			if (position === 0) return 0;
+			if (position === 0) {
+				return 0;
+			}
 			let atEnd = position >= filteredTargetLane?.cards?.length;
 			let prevCardFilteredPosition = position - atEnd;
 			let prevCardAtPosition = filteredTargetLane?.cards[prevCardFilteredPosition];
@@ -480,11 +477,12 @@ const Transact = () => {
 			if (
 				unfilteredTargetLane?.metadata?.dealsStatus &&
 				unfilteredTargetLane.metadata.dealsStatus.toLowerCase() !== cardDetails?.metadata?.status?.toLowerCase()
-			)
+			) {
 				updatedDeal = {
 					...updatedDeal,
 					status: unfilteredTargetLane.metadata.dealsStatus.toLowerCase(),
 				};
+			}
 			updateDeal({
 				variables: {
 					deal: { ...updatedDeal },
@@ -515,13 +513,10 @@ const Transact = () => {
 		}
 	};
 
-	const onCardMoveAcrossLanes = (fromLaneId, toLaneId, cardId, addedIndex) => {
-		if (fromLaneId !== toLaneId) {
-		}
-	};
-
 	const getCardColor = (rotting, stageChangeDate) => {
-		if (!selectedPipe.rottenness) return 'rgb(242, 242, 242)';
+		if (!selectedPipe.rottenness) {
+			return 'rgb(242, 242, 242)';
+		}
 
 		let cardColor = 'limegreen';
 		if (rotting && stageChangeDate) {
@@ -533,8 +528,11 @@ const Transact = () => {
 
 			let percentageDone = ((total - current) / total) * 100;
 
-			if (percentageDone >= 100) cardColor = 'red';
-			else if (percentageDone >= 75) cardColor = 'yellow';
+			if (percentageDone >= 100) {
+				cardColor = 'red';
+			} else if (percentageDone >= SEVENTY_FIVE) {
+				cardColor = 'yellow';
+			}
 		}
 		return cardColor;
 	};
@@ -565,7 +563,9 @@ const Transact = () => {
 		}
 
 		let desc = description;
-		if (description && description.length > 50) desc = description.slice(0, 53) + '...';
+		if (description && description.length > FIFTY) {
+			desc = description.slice(0, FIFTY_THREE) + '...';
+		}
 
 		const stageChangeDate = metadata.stageChangeDate && moment.parseZone(metadata.stageChangeDate);
 		const lane = filteredBoardTransactData.lanes.find(lane => lane.id === laneId);
@@ -580,7 +580,9 @@ const Transact = () => {
 			>
 				<header className={CardClasses.cardHeaderStyle}>
 					<div style={{ display: 'flex', justifyContent: 'space-between' }}>
-						<span className={CardClasses.cardTitle}>{title?.length > 30 ? `${title.substr(0, 40)}...` : title}</span>
+						<span className={CardClasses.cardTitle}>
+							{title?.length > THIRTY ? `${title.substr(0, FOURTY)}...` : title}
+						</span>
 						{owner && <CustomAvatar email={ownerEmail} text={owner} color={cardColors[ownerId]} />}
 					</div>
 
@@ -605,6 +607,7 @@ const Transact = () => {
 					{tags?.length > 0 &&
 						tags.map(tag => (
 							<Chip
+								key={tag.tag}
 								style={{
 									height: 25,
 									background: tag.color || 'powderblue',
@@ -617,11 +620,14 @@ const Transact = () => {
 			</article>
 		);
 	});
+	GetCard.displayName = 'GetCard';
 
 	const getLaneHeader = ({ title, id, metadata }) => {
 		const lane = filteredBoardTransactData?.lanes?.find(lane => lane.id === id);
 		let dealCount = 0;
-		if (lane) dealCount = lane?.cards.length;
+		if (lane) {
+			dealCount = lane?.cards.length;
+		}
 
 		let priceSum = 0;
 		lane &&
@@ -659,6 +665,49 @@ const Transact = () => {
 			</header>
 		);
 	};
+
+	const DealsOverrideMeta = useMemo(() => {
+		return {
+			defaultFilters: [{ field: 'stage.pipeline.name', value: selectedPipe?.name }],
+			onClickedRow: selectedRow => {
+				history.push(
+					`/flow/${selectedRow?.stage?.pipeline?._id}/lane/${selectedRow?.stage?._id}/card/${selectedRow?._id}`
+				);
+
+				const lane = pipelineData?.pipeline?.lanes?.find(lane => lane.id === selectedRow?.stage?._id);
+				const card = lane?.cards?.find(card => card.id === selectedRow?._id);
+
+				const activeDeal = {
+					cardId: selectedRow?._id,
+					laneId: selectedRow?.stage?._id,
+					laneName: selectedRow?.stage?.name,
+					pipeline: selectedRow?.stage?.pipeline?._id,
+					pipelineName: selectedRow?.stage?.pipeline?.name,
+					ownerName:
+						card?.metadata?.owners && card.metadata.owners[0]?.relatedObject?.name
+							? card.metadata.owners[0].relatedObject.name
+							: null,
+					contactName:
+						card?.metadata?.contacts && card.metadata.contacts[0]?.relatedObject?.entity?.name
+							? card.metadata.contacts[0].relatedObject.entity.name
+							: null,
+					isContact:
+						card?.metadata?.contacts && card.metadata.contacts[0]?.relatedObject?._id
+							? card.metadata.contacts[0].relatedObject._id
+							: null,
+					...card.metadata,
+					...selectedRow,
+				};
+
+				setStateApp(stateApp => ({
+					...stateApp,
+					dealDialog: true,
+					activeDeal,
+				}));
+			},
+		};
+	}, [selectedPipe, pipelineData]);
+
 	return (
 		<div className={classes.root}>
 			{stateApp.viewDoc && <DocViewer width="calc(100vw - 28vw)" />}
@@ -705,9 +754,9 @@ const Transact = () => {
 								editLaneTitle={false}
 								hideCardDeleteIcon={true}
 								handleDragEnd={handleCardDragEnd}
-								onDataChange={handleDataChange}
+								onDataChange={() => {}}
 								onCardClick={handleCardClick}
-								onCardMoveAcrossLanes={onCardMoveAcrossLanes}
+								onCardMoveAcrossLanes={() => {}}
 								laneStyle={{
 									backgroundColor: '#fff',
 									color: '#011133',
@@ -743,14 +792,7 @@ const Transact = () => {
 								//onCardMoveAcrossLanes
 							/>
 						)}
-						{stateApp.dealDisplayType === 'table' && (
-							<M1nTable
-								dense
-								filteredTabTransactData={filteredTabTransactData}
-								parent="TransactDeals"
-								flowLineType={selectedPipe.flowLineType}
-							/>
-						)}
+						{stateApp.dealDisplayType === 'table' && <MRTTable name="DealsTable" overrideMeta={DealsOverrideMeta} />}
 					</div>
 				) : pipeToShow === false ? (
 					<h1 style={{ marginTop: 80 }}>

@@ -1,36 +1,41 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, Fragment, useRef, useCallback } from 'react';
-import { get } from 'lodash';
 import Avatar from 'react-avatar';
-import Grid from '@material-ui/core/Grid';
+import { useDispatch } from 'react-redux';
+import ReactTimeAgo from 'react-time-ago';
+
 import { CircularProgress, Menu, MenuItem, Tooltip } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
-import { useMutation, useLazyQuery } from '@apollo/client';
+import { makeStyles } from '@material-ui/core/styles';
 import {
 	ThumbUp as ThumbUpIcon,
 	ThumbUpAltOutlined as ThumbUpAltOutlinedIcon,
 	ExpandMore as ExpandMoreIcon,
 } from '@material-ui/icons';
-import { useDispatch } from 'react-redux';
-import { updatePinComments } from 'store/actions/commonActions';
-import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-import { GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
-import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
-import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
-import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
-import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
-import CommentField from 'components/Shared/components/Fields/CommentField';
 
-import ReactTimeAgo from 'react-time-ago';
+import { useMutation, useLazyQuery } from '@apollo/client';
+import DOMPurify from 'dompurify';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 import ru from 'javascript-time-ago/locale/ru';
+import { get } from 'lodash';
 import moment from 'moment';
-import DOMPurify from 'dompurify';
+
+import CommentField from 'components/Shared/components/Fields/CommentField';
+
+import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
+import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
+import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
+import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
+import { GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { TOGGLECOMMENTREACTION } from 'graphQL/userMutationToggleCommentReaction';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { slidoutState } from 'hookstate/initialStates';
+
+import { updatePinComments } from 'store/actions/commonActions';
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
@@ -148,7 +153,7 @@ const useStyles = makeStyles(theme => ({
 function urlify(text) {
 	const urlRegex = /(https?:\/\/[^\s]+)/g;
 
-	return text.replace(urlRegex, function (url) {
+	return text.replace(urlRegex, url => {
 		return '<a href="' + url + '">' + url + '</a>';
 	});
 }
@@ -156,11 +161,16 @@ function urlify(text) {
 export function getLikedPeoplesName(comment, myUserId) {
 	const { likedBy } = comment;
 	const names = (likedBy || []).map(user => {
-		if (user._id === myUserId) return <li>You</li>;
-		else return <li>{user.name || user.displayName}</li>;
+		if (user._id === myUserId) {
+			return <li>You</li>;
+		} else {
+			return <li>{user.name || user.displayName}</li>;
+		}
 	});
 
-	if (names.length < 1) return '';
+	if (names.length < 1) {
+		return '';
+	}
 
 	return <ul style={{ listStyle: 'none', paddingLeft: 0 }}>{names}</ul>;
 }
@@ -189,7 +199,6 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 				// If word contains {{username}} syntax, process it separately
 				if (word.includes('{{') && word.includes('}}')) {
 					const splittedWord = word.split(/\r?\n/);
-					console.log('splittedWord', splittedWord);
 
 					if (splittedWord.length) {
 						return (
@@ -386,7 +395,9 @@ export default function CommentComponent(props) {
 				user: { name: user.name, email: user.email },
 				isNew: true,
 			});
-			if (props.setNewCommentId) props.setNewCommentId(newlyAddedComment.upsertComment.comment._id);
+			if (props.setNewCommentId) {
+				props.setNewCommentId(newlyAddedComment.upsertComment.comment._id);
+			}
 			setCommentsArray(sortArrayBasedOnTs([...comments]));
 		}
 	}, [newlyAddedComment]);
@@ -421,12 +432,18 @@ export default function CommentComponent(props) {
 
 	const sortArrayBasedOnTs = array => {
 		const compare = (a, b) => {
-			if (a.ts < b.ts) return -1;
-			if (b.ts < a.ts) return 1;
+			if (a.ts < b.ts) {
+				return -1;
+			}
+			if (b.ts < a.ts) {
+				return 1;
+			}
 
 			return 0;
 		};
-		if (!props.multipleIds) array.sort(compare);
+		if (!props.multipleIds) {
+			array.sort(compare);
+		}
 
 		return array;
 	};
@@ -615,7 +632,9 @@ export default function CommentComponent(props) {
 
 	const didILikedThisComment = useCallback(
 		comment => {
-			if (!user?._id) return false;
+			if (!user?._id) {
+				return false;
+			}
 
 			const likedBy = comment?.likedBy || [];
 			const find = likedBy.find(u => u._id === user._id);
@@ -970,13 +989,15 @@ export const CommentText = ({ eachComment, users }) => {
 												{secondPart}{' '}
 											</p>
 										);
-									} else if (sWord === '') return <br />;
-									else
+									} else if (sWord === '') {
+										return <br />;
+									} else {
 										return (
 											<p className={classes.commentWords}>
 												{sWord} <br />{' '}
 											</p>
 										);
+									}
 								})}
 							</>
 						);

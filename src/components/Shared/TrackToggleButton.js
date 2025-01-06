@@ -1,12 +1,15 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { useMutation, useLazyQuery } from '@apollo/client';
+
+import { CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import MyLocationIcon from '@material-ui/icons/MyLocation';
 import Tooltip from '@material-ui/core/Tooltip';
+import MyLocationIcon from '@material-ui/icons/MyLocation';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
+
 import { AppContext } from '../../AppContext';
 import { TOGGLETRACK } from '../../graphQL/useMutationToggleCreateRemoveTrack';
-import { CircularProgress } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -43,13 +46,15 @@ export default function TrackToggleButton(props) {
 		if (props.multipleIds) {
 			if (loading) {
 				for (let i = 0; i < props.multipleIds.length; i++) {
-					if (document.getElementById(props.targetLabel + props.multipleIds[i] + 'loader'))
+					if (document.getElementById(props.targetLabel + props.multipleIds[i] + 'loader')) {
 						document.getElementById(props.targetLabel + props.multipleIds[i] + 'loader').style.visibility = 'visible';
+					}
 				}
 			} else {
 				for (let i = 0; i < props.multipleIds.length; i++) {
-					if (document.getElementById(props.targetLabel + props.multipleIds[i] + 'loader'))
+					if (document.getElementById(props.targetLabel + props.multipleIds[i] + 'loader')) {
 						document.getElementById(props.targetLabel + props.multipleIds[i] + 'loader').style.visibility = 'hidden';
+					}
 				}
 			}
 		}
@@ -128,12 +133,14 @@ export default function TrackToggleButton(props) {
 					handleToggle();
 				}}
 				onMouseOver={e => {
-					if (props.multiSelectMouseHoverColor && props.idBase)
+					if (props.multiSelectMouseHoverColor && props.idBase) {
 						props.multiSelectMouseHoverColor(props.idBase, '#dadbde');
+					}
 				}}
 				onMouseOut={e => {
-					if (props.multiSelectMouseHoverColor && props.idBase)
+					if (props.multiSelectMouseHoverColor && props.idBase) {
 						props.multiSelectMouseHoverColor(props.idBase, 'transparent');
+					}
 				}}
 			>
 				{loading ? (

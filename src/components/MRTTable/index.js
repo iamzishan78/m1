@@ -1,12 +1,15 @@
 import React, { memo, useEffect } from 'react';
-import { MaterialReactTable } from 'material-react-table';
 
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { SCHEMA } from './Schema';
 import { useApolloClient } from '@apollo/client';
+import { MaterialReactTable } from 'material-react-table';
+import PropTypes from 'prop-types';
+
 import { globalStateController } from 'hookstate/globalStateController';
-import { copy } from '../Shared/functions/index';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { SCHEMA } from './Schema';
 import Table from './Table';
+import { copy } from '../Shared/functions/index';
 
 function MRTTable({ tableKey, name, overrideMeta = {} }) {
 	const client = useApolloClient();
@@ -30,10 +33,9 @@ function MRTTable({ tableKey, name, overrideMeta = {} }) {
 		return () => {
 			Controller.reset();
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [reInitialized]);
 
-	if (!stateValues.initialized)
+	if (!stateValues.initialized) {
 		return (
 			<MaterialReactTable
 				columns={extendedMeta.TableSchema.filter(column => !column.hidden).map(column => ({
@@ -51,8 +53,22 @@ function MRTTable({ tableKey, name, overrideMeta = {} }) {
 				enableFullScreenToggle={false}
 			/>
 		);
+	}
 
 	return <Table tableKey={tableKey} />;
 }
+
+// Define prop types for MRTTable
+MRTTable.propTypes = {
+	tableKey: PropTypes.string, // Optional string for the table key
+	name: PropTypes.string.isRequired, // Required string for the table name
+	overrideMeta: PropTypes.object, // Optional object for overriding metadata
+};
+
+// Define default props for MRTTable
+MRTTable.defaultProps = {
+	tableKey: undefined, // Default to undefined if not provided
+	overrideMeta: {}, // Default to an empty object if not provided
+};
 
 export default memo(MRTTable);

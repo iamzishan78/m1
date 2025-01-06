@@ -1,26 +1,29 @@
 import React, { useEffect, useState, Fragment, useRef } from 'react';
-import { get, set, isEmpty } from 'lodash';
-import { useMutation } from '@apollo/client';
 import { Controller, useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 
 import { Grid, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
+import { IconButton } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
 import { Autorenew as AutorenewIcon } from '@material-ui/icons';
 import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
-import AddIcCallIcon from '@mui/icons-material/AddIcCall';
-import { makeStyles } from '@material-ui/core/styles';
-import { IconButton } from '@material-ui/core';
-import Tooltip from '@material-ui/core/Tooltip';
 
-import vf_number from 'components/Shared/valueformatters/vf_number';
+import AddIcCallIcon from '@mui/icons-material/AddIcCall';
+
+import { useMutation } from '@apollo/client';
+import { get, set, isEmpty } from 'lodash';
+
 import AutoCompleteWithAddNew from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
 import { SUMMARY_FIELDS, featureFlagChanges } from 'components/ContactDetailedInfo/helper';
-import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
-import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import { NumberFormatComma } from 'components/Shared/Forms/Formatting/NumberFormatComma';
 import TextSmsIcon from 'components/Shared/svgIcons/textsms';
 import VoiceMailIcon from 'components/Shared/svgIcons/voicemail';
+import vf_number from 'components/Shared/valueformatters/vf_number';
+
+import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 
 const useStyles = makeStyles(() => ({
 	container: {
@@ -117,11 +120,15 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 	const getCommaValue = value => {
 		if (value && !value.includes('.')) {
 			return vf_number(Number(value.replace(/,/g, '')));
-		} else return value;
+		} else {
+			return value;
+		}
 	};
 
 	const updateFieldData = (key, value) => {
-		if (contactData[key] === value) return;
+		if (contactData[key] === value) {
+			return;
+		}
 
 		let contact = { _id: contactData._id, lastUpdateBy: user._id };
 		const _key = key.replace('evaluatedContactInterests', 'contactInterests');
@@ -202,7 +209,9 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 
 									// eslint-disable-next-line react-hooks/rules-of-hooks
 									useEffect(() => {
-										if (initialized.current) return;
+										if (initialized.current) {
+											return;
+										}
 
 										if (
 											field.key.includes('offerPriceSum') ||
@@ -214,8 +223,9 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 											let value = field.value ?? params.value;
 											if (value) {
 												initialized.current = true;
-												if (value.toString().includes(','))
+												if (value.toString().includes(',')) {
 													value = parseFloat(value.toString().replace(/[^\d.-]/g, ''));
+												}
 												params.onChange(parseFloat(value).toFixed(2));
 											}
 										} else {
@@ -248,18 +258,23 @@ export default function SummaryFields({ contactData, handleQuickActionActivity }
 															field.key.includes('nraSum') ||
 															field.key.includes('maxOfferPriceSum') ||
 															field.key.includes('closedPriceSum')
-														)
+														) {
 															currValue = parseFloat(currValue.replace(/[^\d.-]/g, ''));
+														}
 
 														const prevValue = get(contactData, field.key) || '';
 
-														if (currValue != prevValue) updateFieldData(field.key, currValue);
+														if (currValue != prevValue) {
+															updateFieldData(field.key, currValue);
+														}
 													}}
 													onChange={({ target }) => {
 														params.onChange(target.value);
 													}}
 													onKeyUp={e => {
-														if (e.key === 'Enter') e.target.blur();
+														if (e.key === 'Enter') {
+															e.target.blur();
+														}
 													}}
 													disabled={field.disabled}
 													className={`${classes.field} ${isValueOveridden ? classes.baseValueChanged : null}`}

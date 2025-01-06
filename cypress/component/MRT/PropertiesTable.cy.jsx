@@ -2,6 +2,7 @@
 
 // Importing MRTTable component
 import MRTTable from 'components/MRTTable';
+
 import { basic_timeouts } from '../../cypressUtils/data';
 
 // Definition of columns for the table
@@ -26,7 +27,7 @@ const checkWellFields = job => {
 describe('Properties Table', () => {
 	// Before each test, intercept network requests and mount the MRTTable component
 	beforeEach(() => {
-		cy.interceptAndWait(['getESSimpleSearch', 'properties_flat'], () => {
+		cy.interceptAndWait(['getDbData', 'properties_flat'], () => {
 			cy.viewport(1600, 1200).mount(<MRTTable name="PropertiesTable" />, {
 				spec: 'PropertiesTableSpec',
 			});

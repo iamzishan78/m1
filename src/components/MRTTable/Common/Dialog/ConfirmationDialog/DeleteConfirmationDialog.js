@@ -1,10 +1,12 @@
 import React from 'react';
+
+import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
-import Button from '@material-ui/core/Button';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+
 import { Modals } from '../../../../../styles/Modal';
 
 export default function DeleteConfirmationDialog({ header, children, onClose, deleteFunc, deletedData }) {

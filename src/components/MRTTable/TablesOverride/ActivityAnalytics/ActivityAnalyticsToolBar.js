@@ -1,8 +1,12 @@
 import React, { memo, useState, useEffect } from 'react';
+
 import get from 'lodash/get';
-import { tableGlobalController } from 'hookstate/tableController';
-import { activityTypes } from 'utils/data';
+
 import ActivitiesModal from 'components/Activities/components/ActivitiesModal';
+
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { activityTypes } from 'utils/data';
 
 function ActivityAnalyticsToolBar({ table, tableKey }) {
 	const { stateValues } = tableGlobalController.useState(['dialog']);

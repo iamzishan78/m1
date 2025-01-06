@@ -9,7 +9,7 @@ describe('Agreement Existing Tracts Spec', () => {
 
 		cy.viewport(1536, 960);
 
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.visit('http://localhost:3000/land/agreements');
 
 		cy.checkAndLogin();
@@ -30,7 +30,7 @@ describe('Agreement Existing Tracts Spec', () => {
 				cy.wait(10000);
 				cy.get('#legalDescriptionTab').click();
 
-				cy.interceptApiByIndex('getESSimpleSearch', 'shapeowners_flat');
+				cy.interceptApiByIndex('getDbData', 'shapeowners_flat');
 				cy.addTract(tractName);
 				cy.deleteTractAndVerify(tractName);
 

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import { VariableSizeList } from 'react-window';
+
+import { useTheme } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { VariableSizeList } from 'react-window';
-import { useTheme } from '@material-ui/core/styles';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 
 const filter = createFilterOptions();
 
@@ -59,7 +60,7 @@ function AutoCompleteFieldComponent(props) {
 				const filtered = filter(options, params);
 				return filtered;
 			}}
-			ListboxComponent={React.forwardRef(function ListboxComponent(props, ref) {
+			ListboxComponent={React.forwardRef((props, ref) => {
 				const { children, ...other } = props;
 				const itemData = React.Children.toArray(children);
 				return (

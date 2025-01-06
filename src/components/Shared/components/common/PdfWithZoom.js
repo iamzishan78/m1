@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import _ from 'underscore';
+import { Document, Page } from 'react-pdf';
 
-import { makeStyles } from '@material-ui/core/styles';
 import { IconButton } from '@material-ui/core';
-
+import { makeStyles } from '@material-ui/core/styles';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import ZoomOutIcon from '@material-ui/icons/ZoomOut';
-import { Document, Page } from 'react-pdf';
+
+import _ from 'underscore';
 
 const useStyles = makeStyles(theme => ({
 	ZoomIcons: {

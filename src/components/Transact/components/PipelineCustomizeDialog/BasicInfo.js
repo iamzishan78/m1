@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef, Fragment } from 'react';
-import { useSelector } from 'react-redux';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Controller } from 'react-hook-form';
-import { makeStyles } from '@material-ui/core/styles';
+import { useSelector } from 'react-redux';
+
 import {
 	Grid,
 	FormControl,
@@ -19,8 +20,8 @@ import {
 	TableBody,
 	TableRow,
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { DragIndicator } from '@material-ui/icons';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 // import { TransactContext } from "components/Transact/TransactContext";
 

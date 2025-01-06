@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Grid, TextField } from '@material-ui/core';
-import loadashFilter from 'lodash/filter';
+import { makeStyles } from '@material-ui/core/styles';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
 import { useLazyQuery } from '@apollo/client';
+import loadashFilter from 'lodash/filter';
+
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 
 const useStyles = makeStyles({
 	inputRoot: {
@@ -83,15 +85,19 @@ const AutoCompleteWithAddNew = ({ setValue, value, fieldKey, defaultOptions = []
 					return option.name;
 				}
 
-				if (option?.name) return option.name;
-				else return '';
+				if (option?.name) {
+					return option.name;
+				} else {
+					return '';
+				}
 			}}
 			getOptionSelected={(option, value) => {
 				return option?._id === search;
 			}}
 			renderOption={option => {
-				if (option._id === 'newEntity')
+				if (option._id === 'newEntity') {
 					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+				}
 
 				return (
 					<Grid container spacing={0}>
@@ -124,8 +130,11 @@ const AutoCompleteWithAddNew = ({ setValue, value, fieldKey, defaultOptions = []
 			}}
 			onChange={(event, newValue) => {
 				if (newValue && newValue._id) {
-					if (newValue._id !== 'newEntity') setValue(newValue);
-					else setValue({ _id: 'newEntity', name: newValue.name });
+					if (newValue._id !== 'newEntity') {
+						setValue(newValue);
+					} else {
+						setValue({ _id: 'newEntity', name: newValue.name });
+					}
 				} else {
 					setSearch('');
 					setValue({ _id: '', name: '' });

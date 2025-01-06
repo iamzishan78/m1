@@ -1,16 +1,19 @@
 import React, { useContext, useState, useEffect } from 'react';
+
 import { InputAdornment, TextField, IconButton, Tooltip } from '@material-ui/core';
-import { fade, makeStyles } from '@material-ui/core/styles';
-import SearchIcon from '@material-ui/icons/Search';
-import ClearIcon from '@material-ui/icons/Clear';
-import PostAddOutlinedIcon from '@material-ui/icons/PostAddOutlined';
+import Button from '@material-ui/core/Button';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import { fade, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
-import Button from '@material-ui/core/Button';
-import { AppContext } from '../../../AppContext';
+import ClearIcon from '@material-ui/icons/Clear';
+import PostAddOutlinedIcon from '@material-ui/icons/PostAddOutlined';
+import SearchIcon from '@material-ui/icons/Search';
+
 import { tableController } from 'hookstate/tableController';
+
+import { AppContext } from '../../../AppContext';
 
 const useStyles = makeStyles(theme => ({
 	search: {

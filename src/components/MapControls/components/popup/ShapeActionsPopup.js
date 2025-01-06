@@ -1,46 +1,52 @@
 import React, { useEffect, useState, Fragment, useRef, useCallback } from 'react';
-import { useMutation, useLazyQuery, gql } from '@apollo/client';
-import get from 'lodash/get';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+
 import { Menu, MenuItem, Grid } from '@material-ui/core';
-import Modal from '@material-ui/core/Modal';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-import GridOnIcon from '@material-ui/icons/GridOn';
-import OfflineBoltIcon from '@material-ui/icons/OfflineBoltOutlined';
-import CloudDownloadOutlinedIcon from '@material-ui/icons/CloudDownloadOutlined';
-import AddBox from '@material-ui/icons/AddBox';
-import LayerIcon from '@material-ui/icons/Layers';
-import Typography from '@material-ui/core/Typography';
+import Modal from '@material-ui/core/Modal';
 import Tooltip from '@material-ui/core/Tooltip';
-import { useDispatch } from 'react-redux';
+import Typography from '@material-ui/core/Typography';
+import AddBox from '@material-ui/icons/AddBox';
+import CloudDownloadOutlinedIcon from '@material-ui/icons/CloudDownloadOutlined';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import GridOnIcon from '@material-ui/icons/GridOn';
+import LayerIcon from '@material-ui/icons/Layers';
+import OfflineBoltIcon from '@material-ui/icons/OfflineBoltOutlined';
+
+import { Dialog } from '@mui/material';
+
+import { useMutation, useLazyQuery, gql } from '@apollo/client';
+import { isEmpty } from 'lodash';
+import get from 'lodash/get';
+
+import LimitExceedPopUp from 'components/MapControls/components/popup/LimitExceedPopup';
+import ShapeEditActions from 'components/MapControls/components/popup/ShapeEditActions';
+import DeleteConfirmationDialogContent from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+import { getPolygonString } from 'components/Shared/functions';
+import { shapeTypeLayers, calculateLandArea } from 'components/Shared/functions/shapeLayer';
 import ConvertContact from 'components/Shared/svgIcons/convert_contact';
 
-import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
-import { shapeTypeLayers, calculateLandArea } from 'components/Shared/functions/shapeLayer';
-import LimitExceedPopUp from 'components/MapControls/components/popup/LimitExceedPopup';
-import { ConvertTaxOwnerToContactContainer, ExportWellsOwnersContainer } from 'store/containers';
-import { resetShapeOwnerAction } from 'store/actions/ownerActions';
+import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
+import { ABSTRACTGEOQUERY } from 'graphQL/useQueryAbstractGeo';
 
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
-import { getPolygonString } from 'components/Shared/functions';
-import ShapeEditActions from 'components/MapControls/components/popup/ShapeEditActions';
 import { drawController } from 'hookstate/drawStateController';
 import { globalStateController } from 'hookstate/globalStateController';
-import { ABSTRACTGEOQUERY } from 'graphQL/useQueryAbstractGeo';
-import FilterAltIcon from '../../../Shared/svgIcons/FilterAltIcon';
-import CheckCircle from '../../../Shared/svgIcons/check-circle';
-import ShapeTypeMenu from './ShapeTypeMenu';
-import { drawBoundary, clearSelectedAbstracts } from '../DrawShapes/drawShapesHelpers';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { Dialog } from '@mui/material';
-import DeleteConfirmationDialogContent from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
-import { isEmpty } from 'lodash';
 import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+
+import { resetShapeOwnerAction } from 'store/actions/ownerActions';
+import { ConvertTaxOwnerToContactContainer, ExportWellsOwnersContainer } from 'store/containers';
+
+import ShapeTypeMenu from './ShapeTypeMenu';
+import CheckCircle from '../../../Shared/svgIcons/check-circle';
+import FilterAltIcon from '../../../Shared/svgIcons/FilterAltIcon';
+import { drawBoundary, clearSelectedAbstracts } from '../DrawShapes/drawShapesHelpers';
 
 const ShapeActionsPopup = props => {
 	const dispatch = useDispatch();
@@ -96,7 +102,6 @@ const ShapeActionsPopup = props => {
 		) {
 			cache.modify({
 				fields: {
-					// eslint-disable-next-line default-param-last
 					allCustomLayers(existingCustomLayers = [], { readField }) {
 						const newCustomLayerRef = cache.writeFragment({
 							data: customLayer,
@@ -133,7 +138,9 @@ const ShapeActionsPopup = props => {
 	const addShapeToLayerButton = useRef();
 
 	useEffect(() => {
-		if (!currentFeature) return;
+		if (!currentFeature) {
+			return;
+		}
 
 		getAbstractGeo({
 			variables: {
@@ -143,7 +150,9 @@ const ShapeActionsPopup = props => {
 	}, [drawState.currentFeature]);
 
 	useEffect(() => {
-		if (!onlyAddShape) return;
+		if (!onlyAddShape) {
+			return;
+		}
 
 		setAnchorEl(addShapeToLayerButton.current);
 	}, [onlyAddShape]);
@@ -295,8 +304,9 @@ const ShapeActionsPopup = props => {
 				<MenuItem
 					id="tractItem"
 					onClick={e => {
-						if (showAddShapePopup) setTractAnchorEl(e.currentTarget);
-						else {
+						if (showAddShapePopup) {
+							setTractAnchorEl(e.currentTarget);
+						} else {
 							clearSelectedAbstracts();
 							saveAndOpenParcelDetail(upsertCustomLayer, dispatch, history);
 						}
@@ -308,8 +318,9 @@ const ShapeActionsPopup = props => {
 				<MenuItem
 					id="unitBoundaryItem"
 					onClick={e => {
-						if (showAddShapePopup) setUnitAnchorEl(e.currentTarget);
-						else {
+						if (showAddShapePopup) {
+							setUnitAnchorEl(e.currentTarget);
+						} else {
 							clearSelectedAbstracts();
 							saveAndOpenShapeDetail('unit');
 						}
@@ -551,14 +562,15 @@ const ShapeActionsPopup = props => {
 									aria-label="Set Boundary"
 									disabled={onlyAddShape}
 									onClick={() => {
-										if (selectedAction === 'edit-aoi')
+										if (selectedAction === 'edit-aoi') {
 											drawController.handleSaveAOIToShape({ updateCustomLayer, dispatch });
-										else if (
+										} else if (
 											selectedAction === 'edit-shape' ||
 											shapeEditMode === 'redraw' ||
 											shapeEditMode === 'fullEdit'
-										)
+										) {
 											drawController.confirmShapeEditing(updateCustomLayer, dispatch, history);
+										}
 									}}
 								>
 									<CheckCircle />
@@ -584,7 +596,7 @@ const ShapeActionsPopup = props => {
 				maxWidth="sm"
 			>
 				<DeleteConfirmationDialogContent
-					header={`Delete AOI Shape`}
+					header={'Delete AOI Shape'}
 					onClose={handleDeleteAoiModal}
 					deleteFunc={deleteAOI}
 					m1nSelectedRowsIds={null}

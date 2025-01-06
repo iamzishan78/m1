@@ -1,6 +1,8 @@
 import { hookstate } from '@hookstate/core';
-import { copy } from 'components/Shared/functions';
+
 import { ROUTES } from 'components/Shared/FeatureFlag/common';
+import { copy } from 'components/Shared/functions';
+
 import { simpleAuthBypass } from 'utils/data';
 
 /* -------------------------------------------------------------------------- */
@@ -51,6 +53,9 @@ export const tableInitialState = {
 	isIncludeInactive: false,
 	gridView: {},
 	showTypes: false,
+	editedData: {},
+	validationErrors: {},
+	isCreateMode: false,
 };
 export const tableESState = {};
 export const tableGlobalState = hookstate({
@@ -319,6 +324,7 @@ export const layerFilters = hookstate(copy(layerFilterInitialState));
 /* -------------------------------------------------------------------------- */
 
 export const mapControlsInitialState = {
+	searchValue: '',
 	fileUploadedContent: null,
 	fileUploaded: null,
 	selectedControl: 'layer',

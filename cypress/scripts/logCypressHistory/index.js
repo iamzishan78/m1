@@ -1,19 +1,19 @@
 // Core modules
-const path = require('path');
 const { exec, execSync } = require('child_process');
+const path = require('path');
 
 // Custom modules for pipeline management
 const { GetCypressLog } = require('./getCypressLog.js');
+const { monitorPipeline } = require('./monitorPipeline.js');
 const { ResetPipeline } = require('./resetPipeline.js');
+const { triggerAzurePipeline } = require('./triggerAzurePipeline.js');
 const { UpsertCypressLog } = require('./upsertCypressLog.js');
 
 // Utility modules
-const { fetchPullRequests } = require('./utils/fetchPullRequest.js');
 const { fetchCypressSpecs } = require('./utils/fetchCypresssSpecs.js');
+const { fetchPullRequests } = require('./utils/fetchPullRequest.js');
 
 // Pipeline monitoring and triggering modules
-const { monitorPipeline } = require('./monitorPipeline.js');
-const { triggerAzurePipeline } = require('./triggerAzurePipeline.js');
 
 // Paths for dependencies
 const crossEnvCommand = path.resolve(__dirname, '../../../node_modules/.bin/cross-env');
@@ -70,9 +70,11 @@ const cypressCommand = path.resolve(__dirname, '../../../node_modules/.bin/cypre
 		});
 
 		// Use either specs tring from reset process or upsert process
-		if ([PIPELINE_RUN_MODES.FAILED_ONLY, PIPELINE_RUN_MODES.PASSED_ONLY].includes(PIPELINE_RUN_MODE))
+		if ([PIPELINE_RUN_MODES.FAILED_ONLY, PIPELINE_RUN_MODES.PASSED_ONLY].includes(PIPELINE_RUN_MODE)) {
 			finalSpecsString = resetSpecsString;
-		else finalSpecsString = specsString;
+		} else {
+			finalSpecsString = specsString;
+		}
 
 		// Run all the specs returned by API
 		if (finalSpecsString) {

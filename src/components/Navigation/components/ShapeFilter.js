@@ -1,9 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
+
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
 import { useLazyQuery } from '@apollo/client';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+
 import { copy } from 'components/Shared/functions';
+
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+
 import { navController } from 'hookstate/navStateController';
 
 const ShapeFilter = ({ filterType, label }) => {
@@ -14,7 +19,7 @@ const ShapeFilter = ({ filterType, label }) => {
 	const controllerKey = `${filterType}Filter`;
 	const { navStateValues } = navController.useState([controllerKey], 'navStateValues');
 
-	const [getESSearch, { data, loading }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+	const [getESSearch, { data, loading }] = useLazyQuery(GET_DB_DATA, {
 		fetchPolicy: 'no-cache',
 	});
 
@@ -44,13 +49,13 @@ const ShapeFilter = ({ filterType, label }) => {
 	}, []);
 
 	useEffect(() => {
-		if (Array.isArray(data?.getESSimpleSearch?.hits)) {
-			totalRows.current = data?.getESSimpleSearch.total;
+		if (Array.isArray(data?.getDbData?.hits)) {
+			totalRows.current = data?.getDbData.total;
 			if (appendOptions.current) {
 				appendOptions.current = false;
-				setRows([...rows, ...copy(data?.getESSimpleSearch?.hits)]);
+				setRows([...rows, ...copy(data?.getDbData?.hits)]);
 			} else {
-				setRows(copy(data?.getESSimpleSearch?.hits));
+				setRows(copy(data?.getDbData?.hits));
 			}
 		}
 	}, [data]);

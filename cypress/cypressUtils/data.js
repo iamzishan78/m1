@@ -65,11 +65,11 @@ export const contactObj = {
 };
 
 export const associatedDataList = [
-	{ name: 'Unit Interests', operationName: 'getESPaginatedList', verifyElementId: 'unitInterestTable' },
-	{ name: 'Well Interests', operationName: 'getPaginatedContactWellInterests', verifyElementId: 'wellInterestsTable' },
+	{ name: 'Unit Interests', operationName: 'getDbData', verifyElementId: 'unitInterestTable' },
+	{ name: 'Well Interests', operationName: 'getDbData', verifyElementId: 'wellInterestsTable' },
 	{ name: 'Tract Interests', operationName: 'getContactParcelInterest', verifyElementId: 'tractInterestTable' },
 	{ name: 'Tax Roll Interests', operationName: 'getContactTaxRollInterests', verifyElementId: 'taxInterestsTable' },
-	{ name: 'Activities', operationName: 'getESSimpleSearch', verifyElementId: 'activitiesInterestsTable' },
+	{ name: 'Activities', operationName: 'getDbData', verifyElementId: 'activitiesInterestsTable' },
 	{ name: 'Documents', operationName: 'viewFiles', verifyElementId: 'viewDocuments' },
 ];
 

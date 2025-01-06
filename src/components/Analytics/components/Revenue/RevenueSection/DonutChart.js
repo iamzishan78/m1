@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
+
 import { makeStyles } from '@material-ui/core/styles';
-import * as am4core from '@amcharts/amcharts4/core';
+
 import * as am4charts from '@amcharts/amcharts4/charts';
+import * as am4core from '@amcharts/amcharts4/core';
+
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
 const useStyles = makeStyles(() => ({
@@ -21,7 +24,9 @@ const DonutChart = ({ items, total, id = 'pie-chart' }) => {
 	const classes = useStyles();
 
 	useEffect(() => {
-		if (items?.length === 0) return;
+		if (items?.length === 0) {
+			return;
+		}
 		const _data = items.map(item => ({
 			category: item.name.toUpperCase(),
 			value: item.total,
@@ -31,7 +36,9 @@ const DonutChart = ({ items, total, id = 'pie-chart' }) => {
 	}, [items]);
 
 	useEffect(() => {
-		if (data?.length === 0) return;
+		if (data?.length === 0) {
+			return;
+		}
 		var chart = am4core.create(id, am4charts.PieChart);
 
 		// setting data

@@ -1,5 +1,4 @@
 import React from 'react';
-
 import ReactApexChart from 'react-apexcharts';
 
 const DonutChart = ({ data, height, marginTop, islegendEnabled = true }) => {

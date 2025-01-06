@@ -1,7 +1,9 @@
-import gjv from 'geojson-validation';
 import * as turf from '@turf/turf';
-import { popupController } from 'hookstate/popupStateController';
+import gjv from 'geojson-validation';
+
 import { drawController } from 'hookstate/drawStateController';
+import { popupController } from 'hookstate/popupStateController';
+
 import { layerRefs } from 'hookstate';
 
 export const clearMapAndCloseShapeActionsPopup = () => {
@@ -21,7 +23,9 @@ export const clearMapAndCloseShapeActionsPopup = () => {
 
 	const sourceId = layerRefs.abstract_geo?.get({ noproxy: true })?.sourceId;
 
-	if (!sourceId) return;
+	if (!sourceId) {
+		return;
+	}
 
 	// unselecting the grids
 	const featuresList = window.mapRef?.getSource(sourceId)._data.features;
@@ -103,7 +107,7 @@ export const findBoundsMap = (shapes, map, padding, onlySendBounds = false) => {
 			}
 		});
 	}
-	if (bound && !onlySendBounds)
+	if (bound && !onlySendBounds) {
 		try {
 			map?.fitBounds(
 				[
@@ -125,7 +129,7 @@ export const findBoundsMap = (shapes, map, padding, onlySendBounds = false) => {
 		} catch (err) {
 			// Removing padding for smaller screens
 			try {
-				if (bound.minLong && bound.minLat && bound.maxLong && bound.maxLat)
+				if (bound.minLong && bound.minLat && bound.maxLong && bound.maxLat) {
 					map?.fitBounds(
 						[
 							[bound.minLong, bound.minLat],
@@ -135,10 +139,12 @@ export const findBoundsMap = (shapes, map, padding, onlySendBounds = false) => {
 							easing: () => 1,
 						}
 					);
+				}
 			} catch (err) {
 				console.log('🚀 ~ findBoundsMap ~ err:', err.message);
 			}
 		}
+	}
 	return { ...bound };
 };
 

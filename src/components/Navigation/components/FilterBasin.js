@@ -1,12 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useLazyQuery } from '@apollo/client';
+
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { NavigationContext } from '../NavigationContext';
+
+import { useLazyQuery } from '@apollo/client';
+
+import { findBoundsMap } from 'components/MapControls/commonHelper';
+
+import { layerController } from 'hookstate/layerStateController';
+
 import { BASINNAMESQUERY } from '../../../graphQL/useQueryBasinNames';
 import { GETBASINSHAPES } from '../../../graphQL/useQueryBasinShapes';
-import { findBoundsMap } from 'components/MapControls/commonHelper';
-import { layerController } from 'hookstate/layerStateController';
+import { NavigationContext } from '../NavigationContext';
 
 export default function BasinFilterJ() {
 	const [stateNav, setStateNav] = useContext(NavigationContext);

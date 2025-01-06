@@ -1,10 +1,13 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import { useLazyQuery } from '@apollo/client';
-import { get, uniq } from 'lodash';
+
 import { TextField, Typography, Grid } from '@material-ui/core';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+
+import { useLazyQuery } from '@apollo/client';
+import { get, uniq } from 'lodash';
 import loadashFilter from 'lodash/filter';
+
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 
 const filter = createFilterOptions();
 
@@ -50,12 +53,16 @@ const AutoCompleteAddNewField = forwardRef(
 				getOptionSelected={(option, value) => option.name === value.name}
 				onInputChange={onInputChange}
 				getOptionLabel={option => {
-					if (option?.name) return option.name;
-					else return '';
+					if (option?.name) {
+						return option.name;
+					} else {
+						return '';
+					}
 				}}
 				renderOption={option => {
-					if (option?._id === 'newEntity')
+					if (option?._id === 'newEntity') {
 						return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+					}
 
 					return (
 						<Grid container spacing={0}>
@@ -87,9 +94,14 @@ const AutoCompleteAddNewField = forwardRef(
 				}}
 				onChange={(event, newValue) => {
 					if (newValue && newValue._id) {
-						if (newValue._id !== 'newEntity') onChange(newValue);
-						else onChange({ _id: 'newEntity', name: newValue.name });
-					} else setSearch('');
+						if (newValue._id !== 'newEntity') {
+							onChange(newValue);
+						} else {
+							onChange({ _id: 'newEntity', name: newValue.name });
+						}
+					} else {
+						setSearch('');
+					}
 				}}
 				options={options.map(op => ({ name: op, _id: op }))}
 				loading={loading}

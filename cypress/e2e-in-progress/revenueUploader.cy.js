@@ -9,7 +9,7 @@ describe('Revenue Uploader Spec', () => {
 
 		cy.viewport(1400, 900);
 
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.visit('http://localhost:3000/revenue/statements');
 
 		cy.checkAndLogin();

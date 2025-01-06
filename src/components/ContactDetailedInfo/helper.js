@@ -1,8 +1,10 @@
 import CircularProgress from '@material-ui/core/CircularProgress';
+
 import { anyToDate } from '@amcharts/amcharts4/.internal/core/utils/Utils';
-import { LinkTypes } from '../ContactDetailCard/components/FieldContent/helper';
-import moment from 'moment';
 import _ from 'lodash';
+import moment from 'moment';
+
+import { LinkTypes } from '../ContactDetailCard/components/FieldContent/helper';
 
 export const entityTypeOptions = [
 	{ label: 'CORPORATION', value: 'CORPORATION' },

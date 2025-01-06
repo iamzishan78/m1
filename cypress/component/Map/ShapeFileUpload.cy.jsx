@@ -1,19 +1,23 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
-import { v4 as uuid } from 'uuid';
 import * as turf from '@turf/turf';
+import { isEqual } from 'lodash';
+import { v4 as uuid } from 'uuid';
+
 import MapProvider from 'components/Map/MapProvider';
 import { getUdLayerCardTitle } from 'components/UdLayerCard/UdLayerCard';
-import { popupController } from 'hookstate/popupStateController';
+
 import { UPDATE_DATASET } from 'graphQL/useMutationDataset';
+import { UPDATE_LAYER_GROUP } from 'graphQL/useMutationLayerGroup';
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
-import { UPDATE_LAYER_GROUP } from 'graphQL/useMutationLayerGroup';
+
+import { popupController } from 'hookstate/popupStateController';
+
+import { headers } from '../../cypressUtils/cypressHeaders';
 import { basic_timeouts } from '../../cypressUtils/data';
 import ldata from '../../fixtures/ldata.json';
-import { headers } from '../../cypressUtils/cypressHeaders';
-import { isEqual } from 'lodash';
 
 const { midTimeout, longTimeout, partialLongTimeout } = basic_timeouts;
 
@@ -306,8 +310,8 @@ describe('Map Component Shape File Upload', () => {
 
 	// Test case to ensure that data exists in the dataset grid
 	it('Data exists in dataset grid', () => {
-		// Intercepting requests for 'getESSimpleSearch' and 'shapefile_flat' and waiting for them to complete
-		cy.interceptAndWait(['getESSimpleSearch', 'shapefile_flat'], () => {
+		// Intercepting requests for 'getDbData' and 'shapefile_flat' and waiting for them to complete
+		cy.interceptAndWait(['getDbData', 'shapefile_flat'], () => {
 			// Clicking on the grid icon corresponding to the given sourceName after scrolling into view
 			cy.get(`[id='grid-icon-${sourceName}']`, { timeout: longTimeout }).scrollIntoView().click({ force: true });
 		});
@@ -325,8 +329,8 @@ describe('Map Component Shape File Upload', () => {
 
 	// Test case to verify that the shapefile grid flyto functionality works
 	it('Shapefile grid flyto works', () => {
-		// Intercepting requests for 'getESSimpleSearch' and 'shapefile_flat' and waiting for them to complete
-		cy.interceptAndWait(['getESSimpleSearch', 'shapefile_flat'], () => {
+		// Intercepting requests for 'getDbData' and 'shapefile_flat' and waiting for them to complete
+		cy.interceptAndWait(['getDbData', 'shapefile_flat'], () => {
 			// Clicking on the grid icon corresponding to the given sourceName after scrolling into view
 			cy.get(`[id='grid-icon-${sourceName}']`, { timeout: longTimeout }).scrollIntoView().click({ force: true });
 		});
