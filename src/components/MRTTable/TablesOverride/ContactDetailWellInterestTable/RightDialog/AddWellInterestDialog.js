@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from 'react';
-import NumberFormat from 'react-number-format';
 
 import {
 	CircularProgress,
@@ -27,7 +26,6 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import parse from 'autosuggest-highlight/parse';
-import PropTypes from 'prop-types';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
@@ -44,61 +42,7 @@ import { tableGlobalController } from 'hookstate/tableController';
 import { INTEREST_TO_FIXED } from 'utils/consts';
 
 import { AppContext } from 'AppContext';
-
-function NumberFormatCustom(props) {
-	const { inputRef, onChange, ...other } = props;
-
-	return (
-		<NumberFormat
-			{...other}
-			getInputRef={inputRef}
-			onValueChange={values => {
-				onChange({
-					target: {
-						name: props.name,
-						value: values.value,
-					},
-				});
-			}}
-			// thousandSeparator
-			// isNumericString
-			// prefix="$"
-		/>
-	);
-}
-
-NumberFormatCustom.propTypes = {
-	inputRef: PropTypes.func.isRequired,
-	name: PropTypes.string.isRequired,
-	onChange: PropTypes.func.isRequired,
-};
-function CurrencyFormatCustom(props) {
-	const { inputRef, onChange, ...other } = props;
-
-	return (
-		<NumberFormat
-			{...other}
-			getInputRef={inputRef}
-			onValueChange={values => {
-				onChange({
-					target: {
-						name: props.name,
-						value: values.value,
-					},
-				});
-			}}
-			thousandSeparator
-			isNumericString
-			prefix="$"
-		/>
-	);
-}
-
-CurrencyFormatCustom.propTypes = {
-	inputRef: PropTypes.func.isRequired,
-	name: PropTypes.string.isRequired,
-	onChange: PropTypes.func.isRequired,
-};
+import { CurrencyFormatCustom, NumberFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
 
 const useStyles = makeStyles(() => ({
 	dialogFooter: {
@@ -170,12 +114,7 @@ function AddWellInterestDialog(props) {
 			handleClose();
 			refetchTable();
 		},
-		refetchQueries: [
-			'getContactWells',
-			'getContactWellCardDetail',
-			'getDbData',
-			'getContactWellInterestsFilterOptions',
-		],
+		refetchQueries: ['getContactWells', 'getContactWellCardDetail', 'getDbData'],
 		awaitRefetchQueries: true,
 	});
 	const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, {
@@ -184,7 +123,7 @@ function AddWellInterestDialog(props) {
 			setLoading(false);
 			handleClose();
 		},
-		refetchQueries: ['getContactWells', 'getDbData', 'getContactWellInterestsFilterOptions'],
+		refetchQueries: ['getContactWells', 'getDbData'],
 		awaitRefetchQueries: true,
 	});
 
@@ -324,7 +263,7 @@ function AddWellInterestDialog(props) {
 						nra: formRoyaltyAcres,
 					},
 				},
-				refetchQueries: ['getContactWells', 'getDbData', 'getContactWellInterestsFilterOptions', 'getContactSummary'],
+				refetchQueries: ['getContactWells', 'getDbData', 'getContactSummary'],
 				awaitRefetchQueries: true,
 			});
 		} else {
@@ -345,13 +284,7 @@ function AddWellInterestDialog(props) {
 						nra: formRoyaltyAcres,
 					},
 				},
-				refetchQueries: [
-					'getContactWells',
-					'getContactWellCardDetail',
-					'getDbData',
-					'getContactWellInterestsFilterOptions',
-					'getContactSummary',
-				],
+				refetchQueries: ['getContactWells', 'getContactWellCardDetail', 'getDbData', 'getContactSummary'],
 				awaitRefetchQueries: true,
 			});
 		}
@@ -377,7 +310,7 @@ function AddWellInterestDialog(props) {
 						isDeleted: true,
 					},
 				},
-				refetchQueries: ['getContactWells', 'getDbData', 'getContactWellInterestsFilterOptions'],
+				refetchQueries: ['getContactWells', 'getDbData'],
 				awaitRefetchQueries: true,
 			});
 		} catch {

@@ -31,13 +31,12 @@ import CustomTextField from 'components/Shared/components/Fields/CustomTextField
 import DateField from 'components/Shared/components/Fields/DateField';
 import NumberField from 'components/Shared/components/Fields/NumberField';
 import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
-import keys from 'components/Shared/SpreadsheetGrid/kit/keymap';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
 import { popupController } from 'hookstate/popupStateController';
 
-import { TO_FIXED } from 'utils/consts';
+import { KEYBOARD_KEYS, TO_FIXED } from 'utils/consts';
 import { copy } from 'utils/helper';
 import MetaField from 'utils/MetaField';
 
@@ -131,7 +130,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 	const onGlobalKeyDown = e => {
 		const id = e?.target?.id;
 
-		if (e.keyCode === keys.TAB) {
+		if (e.keyCode === KEYBOARD_KEYS.TAB) {
 			if (e.shiftKey) {
 				if (!document.getElementById(`field-${Number(id.split('-')[1]) - 1}`)) {
 					e.preventDefault();

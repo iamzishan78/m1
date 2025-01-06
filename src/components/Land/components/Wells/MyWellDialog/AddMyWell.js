@@ -21,30 +21,6 @@ import { tableGlobalController } from 'hookstate/tableController';
 import { wellParams } from './helpers';
 import { addMyWellStyles as useStyles } from './styles';
 
-function NumberFormatCustom(props) {
-	const { inputRef, onChange, name, ...other } = props;
-
-	return (
-		<NumberFormat
-			{...other}
-			getInputRef={inputRef}
-			onValueChange={values => {
-				onChange({
-					target: {
-						name: props.name,
-						value: values.value,
-					},
-				});
-			}}
-		/>
-	);
-}
-
-NumberFormatCustom.propTypes = {
-	inputRef: PropTypes.func.isRequired,
-	name: PropTypes.string.isRequired,
-	onChange: PropTypes.func.isRequired,
-};
 function CurrencyFormatCustom(props) {
 	const { inputRef, onChange, name, ...other } = props;
 

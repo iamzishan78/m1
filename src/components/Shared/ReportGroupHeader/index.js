@@ -12,7 +12,7 @@ import { ADD_GRID_VIEW } from 'graphQL/useMutationAddGridView';
 import { UPDATE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 
-import { ENTER_KEY_CODE } from 'utils/consts';
+import { KEYBOARD_KEYS } from 'utils/consts';
 
 import { AppContext } from 'AppContext';
 
@@ -196,7 +196,7 @@ export default function ReportGroupHeader({
 							InputLabelProps={{ className: classes.textFieldLabel }}
 							onChange={e => setConfig({ ...config, name: e.target.value })}
 							onKeyDown={e => {
-								if (e.keyCode === ENTER_KEY_CODE) {
+								if (e.keyCode === KEYBOARD_KEYS.ENTER) {
 									e.preventDefault();
 									handleAddUpdateDelete();
 								}

@@ -347,28 +347,6 @@ function RelatedWellsDialog(props) {
 					options={getOptions('Operator') || []}
 					as={<AutoCompleteFieldComponent />}
 				/>
-
-				{/* <Controller
-              control={control}
-              name="leaseAcres"
-              render={(props) => (
-                <TextField
-                  variant="outlined"
-                  margin="dense"
-                  value={props.value}
-                  inputRef={props.ref}
-                  onChange={(event) => {
-                    props.onChange(parseFloat(event.target.value))
-                  }}
-                  label={"Lease Acres"}
-                  fullWidth
-                  defaultValue=""
-                  InputProps={{
-                    inputComponent: NumberFormatCustom,
-                  }}
-                />
-              )}
-            /> */}
 			</div>
 
 			<div>
