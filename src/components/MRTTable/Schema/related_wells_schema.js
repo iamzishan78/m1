@@ -8,6 +8,10 @@ import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
 const esIndex = 'shapewellinterests_flat';
+const onClickedRow = selectedRow => {
+	window.setDrawer('relatedWell');
+	window.setStateApp(stateApp => ({ ...stateApp, selectedWell: selectedRow }));
+};
 
 const RelatedWellsMeta = {
 	esIndex,
@@ -19,6 +23,7 @@ const RelatedWellsMeta = {
 	defaultSort: { field: '_ts', order: 'desc' },
 	isInFiniteScroll: true,
 	columnVirtualization: true,
+	onClickedRow,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
@@ -94,7 +99,24 @@ const RelatedWellsMeta = {
 			name: 'wellStatus.keyword',
 			id: 'wellStatus',
 		},
-
+		{
+			...CommonSchema.COMMON_COLUMN,
+			header: 'Last 12 (BOE)',
+			name: 'lastTwelveMonthBOE.keyword',
+			accessorKey: 'lastTwelveMonthBOE',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			header: 'MD (ft)',
+			name: 'measuredDepth.keyword',
+			accessorKey: 'measuredDepth',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			header: 'Lateral Length (ft)',
+			name: 'lateralLength.keyword',
+			accessorKey: 'lateralLength',
+		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Last 12 (BOE)',

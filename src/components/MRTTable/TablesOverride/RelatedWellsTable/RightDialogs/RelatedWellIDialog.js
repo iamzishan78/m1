@@ -104,7 +104,7 @@ function RelatedWellsDialog(props) {
 		if (props.wellInterest) {
 			props.wellInterest.api = props.wellInterest.apiNumber;
 			setSelectedWell({
-				Id: props.wellInterest.wellId,
+				Id: props.wellInterest.globalWell,
 				WellName: props.wellInterest.wellName,
 				ApiNumber: props.wellInterest.api,
 				LeaseId: props.wellInterest.leaseId,
@@ -343,7 +343,6 @@ function RelatedWellsDialog(props) {
 					name="operator"
 					label="Operator"
 					defaultValue={''}
-					disabled
 					options={getOptions('Operator') || []}
 					as={<AutoCompleteFieldComponent />}
 				/>
@@ -356,7 +355,6 @@ function RelatedWellsDialog(props) {
 						name="wellType"
 						label="Well Type"
 						defaultValue={''}
-						disabled
 						options={getOptions('WellType') || []}
 						as={<AutoCompleteFieldComponent />}
 					/>
@@ -366,7 +364,6 @@ function RelatedWellsDialog(props) {
 						name="wellBoreProfile"
 						label="Wellbore Profile"
 						defaultValue={''}
-						disabled
 						options={getOptions('WellBoreProfile') || []}
 						as={<AutoCompleteFieldComponent />}
 					/>
@@ -376,9 +373,41 @@ function RelatedWellsDialog(props) {
 						name="wellStatus"
 						label="Well Status"
 						defaultValue={''}
-						disabled
 						options={getOptions('WellStatus') || []}
 						as={<AutoCompleteFieldComponent />}
+					/>
+					<Controller
+						control={control}
+						name="lastTwelveMonthBOE"
+						label="Last 12 (BOE)"
+						as={TextField}
+						variant="outlined"
+						margin="dense"
+						disabled
+						fullWidth
+						defaultValue=""
+					/>
+					<Controller
+						control={control}
+						name="measuredDepth"
+						label="MD (ft)"
+						as={TextField}
+						variant="outlined"
+						margin="dense"
+						disabled
+						fullWidth
+						defaultValue=""
+					/>
+					<Controller
+						control={control}
+						name="lateralLength"
+						label="Lateral Length (ft)"
+						defaultValue={''}
+						as={TextField}
+						variant="outlined"
+						margin="dense"
+						disabled
+						fullWidth
 					/>
 				</FormControl>
 			</div>
