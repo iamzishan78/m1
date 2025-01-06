@@ -34,17 +34,6 @@ const filterModeMenu =
 			onSelectFilterMode(filterType);
 		}
 
-		// Sets initiated to false because no filter mode is applied yet
-		if (columnFilterModesFnRefs?.[tableKey]?.[name]?.intiated !== true) {
-			columnFilterModesFnRefs[tableKey] = {
-				...columnFilterModesFnRefs[tableKey],
-				[name]: {
-					onSelectFilterMode,
-					intiated: !filterType,
-				},
-			};
-		}
-
 		return options.map(option => (
 			<FilterModeMenuItems
 				option={option}
