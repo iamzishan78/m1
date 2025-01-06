@@ -77,7 +77,10 @@ export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValue
 			filterValue = ' '; // empty value for empty/notEmpty filters
 			break;
 		case 'date':
-			filterValue = [filterValues?.[0] || '1970-01-01', filterValues?.[1] || moment().format('YYYY-MM-DD')];
+			filterValue = {
+				gte: filterValues?.gte || '1970-01-01',
+				lte: filterValues?.lte || moment().format('YYYY-MM-DD'),
+			};
 			break;
 		case 'range':
 			filterValue = [filterValues?.[0], filterValues?.[1]];
@@ -103,6 +106,7 @@ export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValue
 			return {
 				...baseFilter,
 				columnType: 'date',
+				type: 'advanced',
 				isKeyword: false,
 				searchType: 'betweenInclusive',
 			};

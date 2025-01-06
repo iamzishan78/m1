@@ -653,7 +653,7 @@ const tableESStateControllerHandler = state => ({
 								? existingFilter.filterType
 								: tableState?.esIndex === 'shapefile_flat' || typeof filter.value === 'object'
 									? 'multiselect'
-									: 'singleselect',
+									: filter?.searchType,
 
 						fieldName: filter.field,
 						filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
