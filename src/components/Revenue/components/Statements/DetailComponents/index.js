@@ -226,7 +226,6 @@ export default function DetailComponents(props) {
 	const history = useHistory();
 	const previousRoute = history.pathHistory[1];
 	const isLineItem = history.location.pathname.includes('/line-item');
-	const checkId = getIdFromPath();
 
 	const classes = useStyles({ ...props, collapse });
 	// queries
@@ -263,6 +262,7 @@ export default function DetailComponents(props) {
 
 		return pathname.replace('/line-item', '').split('/')[pathname.replace('/line-item', '').split('/').length - 1];
 	}
+	const checkId = getIdFromPath();
 
 	const handleDeleteAccept = () => {
 		// Check Document Logic goes here
@@ -309,6 +309,8 @@ export default function DetailComponents(props) {
 		};
 	}, []);
 
+	const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
+
 	const handleScroll = e => {
 		if (!isButtonScroll) {
 			const { scrollTop } = e.target;
@@ -322,8 +324,6 @@ export default function DetailComponents(props) {
 		}
 		handleEndScroll();
 	};
-
-	const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
 
 	const handleMenuClick = event => setAnchorEl(event.currentTarget);
 
@@ -378,9 +378,8 @@ export default function DetailComponents(props) {
 									</IconButton>
 									<div className={classes.titleText}>
 										{checksFlatData && (
-											<Typography style={{ fontWeight: 'bold', fontSize: 'large', marginLeft: 8 }}>{`${
-												checksFlatData?.checkNumber || ''
-											} - ${checksFlatData?.payor?.name || ''}`}</Typography>
+											<Typography style={{ fontWeight: 'bold', fontSize: 'large', marginLeft: 8 }}>{`${checksFlatData?.checkNumber || ''
+												} - ${checksFlatData?.payor?.name || ''}`}</Typography>
 										)}
 										<div className={classes.tagsContainer}>
 											<div className={classes.highlighter}>
