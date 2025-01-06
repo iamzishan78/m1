@@ -85,16 +85,6 @@ export default function RevenueStatements() {
 
 	const onGettingPotentialIssues = count => setPotentialIssuesCount(count);
 
-	const getCounts = async () => {
-		const approvedCounts = await getDBCounts('approvalStatus.keyword', 'Approved');
-		const unApprovedCounts = await getDBCounts('approvalStatus.keyword', 'Unapproved');
-		const potentialIssuesCounts = await getDBCounts('isAmountValidated', false, 'term');
-
-		setApprovedCount(approvedCounts);
-		setUnapprovedCount(unApprovedCounts);
-		onGettingPotentialIssues(potentialIssuesCounts);
-	};
-
 	const getDBCounts = (key, value, type) => {
 		const gridFilters = revenueStatmentTableState?.filters ? revenueStatmentTableState?.filters : [];
 		return new Promise((resolve, reject) => {
@@ -116,6 +106,16 @@ export default function RevenueStatements() {
 				},
 			});
 		});
+	};
+
+	const getCounts = async () => {
+		const approvedCounts = await getDBCounts('approvalStatus.keyword', 'Approved');
+		const unApprovedCounts = await getDBCounts('approvalStatus.keyword', 'Unapproved');
+		const potentialIssuesCounts = await getDBCounts('isAmountValidated', false, 'term');
+
+		setApprovedCount(approvedCounts);
+		setUnapprovedCount(unApprovedCounts);
+		onGettingPotentialIssues(potentialIssuesCounts);
 	};
 
 	return (

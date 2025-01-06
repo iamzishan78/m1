@@ -17,8 +17,8 @@ import SingleSelectField from 'components/Shared/Slideout/FieldComponents/single
 import { DELETEACTIVITY, UPDATEACTIVITY } from 'graphQL/useMutationActivity';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
+import { globalStateController } from 'hookstate/globalStateController';
 import { slidoutState } from 'hookstate/initialStates';
-import { globalState } from 'hookstate/initialStates';
 import { slidoutStateController } from 'hookstate/slidoutStateController';
 import { tableGlobalController } from 'hookstate/tableController';
 
@@ -222,7 +222,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
 	const [deleteActivityMutation] = useMutation(DELETEACTIVITY, {
 		onCompleted: () => {
 			onModalClose();
-			globalState.universalLoader.set(false);
+			globalStateController.updateState({ universalLoader: false });
 			tableGlobalController.refetch();
 		},
 		refetchQueries: ['getAllActivities', 'getDbData'],
@@ -236,7 +236,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
 	];
 
 	const deleteActivity = async () => {
-		globalState.universalLoader.set(true);
+		globalStateController.updateState({ universalLoader: true });
 		await deleteActivityMutation({
 			variables: {
 				id: selectedActivity.get()._id,
@@ -307,7 +307,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
 	};
 
 	const updateActivity = async () => {
-		globalState.universalLoader.set(true);
+		globalStateController.updateState({ universalLoader: true });
 
 		updateActivityMutation({
 			variables: {
@@ -319,28 +319,28 @@ export default function ObligationForm({ setSelectedActivityId }) {
 				},
 			},
 		}).then(result => {
-			globalState.universalLoader.set(false);
+			globalStateController.updateState({ universalLoader: false });
 		});
 	};
 
 	return (
 		<div>
 			<div className={classes.inputFieldRoot}>
-				<SimpleTextField disabled title="Obligation Type" value={activityType.get()} setValue={() => {}} />
+				<SimpleTextField disabled title="Obligation Type" value={activityType.get()} setValue={() => { }} />
 
 				<FormControl variant="outlined" fullWidth size="small">
 					<Grid container className={classes.gridStyle}>
-						<DateField disabled={true} title="Start Date" date={startDate.get()} setDate={() => {}} />
-						<DateField disabled={true} title="End Date" date={endDate.get()} setDate={() => {}} />
+						<DateField disabled={true} title="Start Date" date={startDate.get()} setDate={() => { }} />
+						<DateField disabled={true} title="End Date" date={endDate.get()} setDate={() => { }} />
 					</Grid>
 				</FormControl>
 
-				<SimpleTextField disabled title="Frequecy" value={frequency.get()} setValue={() => {}} />
+				<SimpleTextField disabled title="Frequecy" value={frequency.get()} setValue={() => { }} />
 				{activityType.get() !== 'Payment' && (
-					<SimpleTextField disabled title="Applicable" value={applicable.get()} setValue={() => {}} />
+					<SimpleTextField disabled title="Applicable" value={applicable.get()} setValue={() => { }} />
 				)}
-				<SimpleTextField disabled title="Value" value={obligationValue.get()} setValue={() => {}} />
-				<SimpleTextField disabled title="Responsible Party" value={responsibleParty.get()} setValue={() => {}} />
+				<SimpleTextField disabled title="Value" value={obligationValue.get()} setValue={() => { }} />
+				<SimpleTextField disabled title="Responsible Party" value={responsibleParty.get()} setValue={() => { }} />
 
 				<OwnerField
 					disabled={true}

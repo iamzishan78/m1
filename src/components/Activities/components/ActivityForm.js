@@ -20,7 +20,8 @@ import SearchableSelectField from 'components/Shared/Slideout/FieldComponents/se
 import SimpleTextField from 'components/Shared/Slideout/FieldComponents/SimpleTextfield';
 import SingleSelectField from 'components/Shared/Slideout/FieldComponents/singleSelectField';
 
-import { slidoutState, globalState } from 'hookstate/initialStates';
+import { globalStateController } from 'hookstate/globalStateController';
+import { slidoutState } from 'hookstate/initialStates';
 import { slidoutStateController } from 'hookstate/slidoutStateController';
 import { tableGlobalController } from 'hookstate/tableController';
 
@@ -261,7 +262,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 	const [addActivityMutation] = useMutation(ADDACTIVITY, {
 		onCompleted: () => {
 			onModalClose();
-			globalState.universalLoader.set(false);
+			globalStateController.updateState({ universalLoader: false });
 			tableGlobalController.refetch();
 		},
 		refetchQueries: ['getAllActivities', 'getDbData'],
@@ -271,7 +272,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 	const [updateActivityMutation] = useMutation(UPDATEACTIVITY, {
 		onCompleted: () => {
 			onModalClose();
-			globalState.universalLoader.set(false);
+			globalStateController.updateState({ universalLoader: false });
 			tableGlobalController.refetch();
 		},
 		refetchQueries: ['getAllActivities', 'getDbData'],
@@ -406,8 +407,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 			onModalClose();
 			return;
 		}
-
-		globalState.universalLoader.set(true);
+		globalStateController.updateState({ universalLoader: true });
 		const dateTime = mergeDateAndTime(startDate.get(), startTime.get());
 		const endDateTime = mergeDateAndTime(endDate.get(), endTime.get());
 
@@ -435,7 +435,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 	};
 
 	const updateActivity = async () => {
-		globalState.universalLoader.set(true);
+		globalStateController.updateState({ universalLoader: true })
 		const dateTime = mergeDateAndTime(startDate.get(), startTime.get());
 		const endDateTime = mergeDateAndTime(endDate.get(), endTime.get());
 

@@ -23,7 +23,6 @@ import { GET_DATASETS } from 'graphQL/useQueryDataset';
 import { USER_MAP_SETTINGS_QUERY } from 'graphQL/useQueryUserMapSettings';
 
 import { globalStateController } from 'hookstate/globalStateController';
-import { globalState } from 'hookstate/initialStates';
 import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 
@@ -198,24 +197,23 @@ function Datasets({ headerButton, search, stateApp }) {
 
 	const handleRemove = (dataset, value) => {
 		datasets.find(d => d._id === dataset._id).visibility = value;
-		globalStateController.updateState({ datasets });
 		const layersSettingsToUpdate = [];
-
-		globalStateController.getValue('layers').forEach((clayer, layerIndex) => {
+		const layers = globalStateController.getValue('layers')
+		layers.forEach((clayer, layerIndex) => {
 			if (clayer.file === dataset.file) {
 				layersSettingsToUpdate.push({
 					_id: clayer._id,
 					layerSettings: { ...clayer.layerSettings, showable: value },
 				});
 				layerController.handleDeckLayer({ ...clayer, layerSettings: { ...clayer.layerSettings, showable: value } });
-				globalState.layers[layerIndex].merge({
-					layerSettings: {
-						...clayer.layerSettings,
-						showable: value,
-					},
-				});
+				layers[layerIndex].layerSettings = {
+					...clayer.layerSettings,
+					showable: value,
+				}
 			}
 		});
+		globalStateController.updateState({ layers, datasets });
+
 		updateUserMapSettings({
 			variables: {
 				settings: {

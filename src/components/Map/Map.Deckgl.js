@@ -494,7 +494,7 @@ function Map({
 				...state,
 				layers,
 			}));
-			globalState.layers.set(layers);
+			globalStateController.updateState({ layers });
 			stateApp.layers = layers;
 
 			const mapViewFilters = globalStateController.getValue('mapView')?.selectedMapView?.filters || [];
