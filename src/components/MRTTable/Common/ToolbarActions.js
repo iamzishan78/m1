@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
 
+
+
 import { Typography } from '@material-ui/core';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import { ToggleButton } from '@mui/material';
-import { IconButton, Tooltip } from '@mui/material';
+import { ToggleButton, IconButton, Tooltip } from '@mui/material';
 
 import _ from 'lodash';
+import PropTypes from 'prop-types'; // Import PropTypes
 
 import GridView from 'components/MRTTable/Common/GridView';
 import TabHeader from 'components/MRTTable/Common/TabHeader';
@@ -39,7 +41,6 @@ function ToolbarActions({ table, tableKey, children }) {
 
 	useEffect(() => {
 		tableController(tableKey).setMrtTableRef(table);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const handleExport = () => {
@@ -149,9 +150,7 @@ function ToolbarActions({ table, tableKey, children }) {
 					{tableStateValues.tableHeading}
 				</Typography>
 				<TabHeader labels={tableStateValues.tabLabels} />
-				{tableStateValues.gridViewSettings && !isSomethingSelected && (
-					<GridView tableKey={tableKey} {...tableStateValues.gridViewSettings} />
-				)}
+				{tableStateValues.gridViewSettings && !isSomethingSelected && <GridView moduleName={tableKey} />}
 			</div>
 			<div style={{ display: 'flex', gap: '0.5rem', marginLeft: '0.5rem' }}>
 				<div
@@ -207,5 +206,11 @@ function ToolbarActions({ table, tableKey, children }) {
 		</div>
 	);
 }
+
+ToolbarActions.propTypes = {
+	table: PropTypes.object.isRequired,
+	tableKey: PropTypes.string.isRequired,
+	children: PropTypes.node,
+};
 
 export default ToolbarActions;
