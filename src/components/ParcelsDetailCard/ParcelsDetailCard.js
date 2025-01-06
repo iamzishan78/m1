@@ -310,7 +310,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 				{ field: 'descriptor', value: 'ParcelDescriptor' },
 			],
 			customProps: { customLayer: parcelObj },
-			gridViewSettings: null,
 		}),
 		[parcelObj]
 	);
