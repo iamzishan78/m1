@@ -162,7 +162,6 @@ export const CommonSchema = {
 		header: 'User',
 		size: 250,
 		filter: true,
-		isSearchField: false,
 		type: 'string',
 		Cell: ({ row }) => {
 			return <>{row.original?.user?.name}</>;
