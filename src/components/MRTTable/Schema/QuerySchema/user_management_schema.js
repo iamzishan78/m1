@@ -36,7 +36,7 @@ const UserManagementMeta = {
 	isClientSide: true,
 	isSelectAllAllowed: true,
 	isDeleteAllowed: true,
-	isExportAllowed: false,
+	isExportDisabled: true,
 	enableFacetedValues: true,
 	TableSchema: [
 		{
