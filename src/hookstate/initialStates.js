@@ -480,3 +480,26 @@ export const adminOperationsInitialState = {
 	message: null,
 };
 export const adminOperationsState = hookstate(copy(adminOperationsInitialState));
+
+/* -------------------------------------------------------------------------- */
+/*                              View Controller                               */
+/* -------------------------------------------------------------------------- */
+
+export const viewInitialState = {
+	client: null,
+	moduleName: null,
+	isTable: false,
+	icon: { jsxEl: null },
+	label: null,
+	isNotBreadcrumbView: false,
+	allViews: [],
+	selectedView: null,
+	isViewOpen: false,
+	fetchViewSettings: false,
+	styleOverride: {
+		bgColor: {},
+		color: {},
+	},
+	isLoading: false,
+};
+export const viewStates = {};
