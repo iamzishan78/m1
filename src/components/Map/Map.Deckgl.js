@@ -1,45 +1,46 @@
-import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
+/* eslint-disable import/order */
+import _ from 'lodash';
 import React, { useContext, useState, useRef, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { useLazyQuery, useApolloClient, useQuery } from '@apollo/client';
+import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-
-import { makeStyles } from '@material-ui/core/styles';
-
-import { useLazyQuery, useApolloClient, useQuery } from '@apollo/client';
+import MapIcon from '@material-ui/icons/Map';
+import mapboxgl from 'mapbox-gl';
+import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from 'mapbox-gl-draw-circle';
+import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
 import * as turf from '@turf/turf';
 import gjv from 'geojson-validation';
-import _ from 'lodash';
-import mapboxgl from 'mapbox-gl';
-import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from 'mapbox-gl-draw-circle';
-import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import parseLinkHeader from 'parse-link-header';
 
-import { drawShapeStyles, findBoundsMap } from 'components/MapControls/commonHelper';
+// Internal imports
 import MapControls from 'components/MapControls/MapControls';
 import SpeedDialComponent from 'components/MapControls/SpeedDialComponent';
+import { drawShapeStyles, findBoundsMap } from 'components/MapControls/commonHelper';
 import { layersWithSelectedShapeKey } from 'components/Shared/functions/shapeLayer';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
+import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 
-import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
-import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
-import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
-
+// Hookstate imports
 import { drawController } from 'hookstate/drawStateController';
 import { globalStateController } from 'hookstate/globalStateController';
-import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { layerController } from 'hookstate/layerStateController';
+import { layerFiltersController } from 'hookstate/layerFiltersController';
+import { layerRefs } from 'hookstate';
 import { mapControlsController } from 'hookstate/mapControlsController';
 import { mapStateController } from 'hookstate/mapStateController';
 import { navController } from 'hookstate/navStateController';
 import { popupController } from 'hookstate/popupStateController';
 
+// Parent imports
 import { baseTenantsMaps } from 'utils/data';
 import { convertToTitleCase } from 'utils/helper';
 
-import { layerRefs } from 'hookstate';
-
+// Sibling imports
+import { copy } from '../Shared/functions';
 import HugeRequest from './components/HugeRequest';
 import DeckGL from './DeckGL';
 import onRightClick from './DeckGL/helpers/onRightClick';
@@ -47,9 +48,6 @@ import DefaultFiltersTest from './filtersDefaultTest';
 import { setMainMapState } from '../../actions';
 import { SRMode } from './MapBoxDrawRotate/index';
 import { AppContext } from '../../AppContext';
-import { ALLLAYERSETTINGSBYUSER } from '../../graphQL/useQueryAllLayerSettingsByUser';
-import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
-import { copy } from '../Shared/functions';
 import ZoomFault from './components/ZoomFault';
 import { extractUniqueFilters, getClickedFeature } from './DeckGL/helpers/common';
 import DeckGlLayer from './DeckGL/helpers/DeckGlLayer';
@@ -58,13 +56,45 @@ import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
 import MarkerIcon from './sprites/marker-icon.png';
 import {
 	drawBoundary,
-	drawWellBoundary,
 	drawPlaceBoundary,
+	drawWellBoundary,
 } from '../MapControls/components/DrawShapes/drawShapesHelpers';
 import MapGridCardProvider from '../MapGridCard/MapGridProvider';
 
-import './Map.css';
-import './popup.css';
+// GraphQL imports
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
+import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
+import { ALLLAYERSETTINGSBYUSER } from 'graphQL/useQueryAllLayerSettingsByUser';
+import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
+
+// Constants
+const LATITUDE_UPPER_BOUND = 90;
+const LATITUDE_LOWER_BOUND = -90;
+const LONGITUDE_UPPER_BOUND = 180;
+const LONGITUDE_LOWER_BOUND = -180;
+const LATITUDE_PRECISION = 0.005;
+const LONGITUDE_PRECISION = 0.005;
+const HIGHER_PRECISION = 0.08;
+const LATITUDE_MAX_THRESHOLD = LATITUDE_UPPER_BOUND - LATITUDE_PRECISION;
+const LATITUDE_MIN_THRESHOLD = LATITUDE_LOWER_BOUND + LATITUDE_PRECISION;
+const LONGITUDE_MAX_THRESHOLD = LONGITUDE_UPPER_BOUND - LONGITUDE_PRECISION;
+const LONGITUDE_MIN_THRESHOLD = LONGITUDE_LOWER_BOUND + LONGITUDE_PRECISION;
+const BOUND_ADJUSTMENT = 0.03; // Adjustment for latitude and longitude bounds
+const PADDING_TOP = 100;
+const PADDING_BOTTOM = 200;
+const PADDING_LEFT = 10;
+const PADDING_RIGHT = 100;
+const STATIC_EASING = 1; // Easing function always returns 1 for this scenario
+const MAX_GEOMETRY_LENGTH = 20000;
+const HALF_SEC_INTERVAL = 500;
+const TWO_HUNDERD_FIFTY = 250;
+const ZERO = 0;
+const ONE = 1;
+const TWO = 2;
+const THREE = 3;
+const TWENTY = 20;
+const SEVENTY = 70;
 
 const useStyles = makeStyles(() => ({
 	mapWrapper: {
@@ -202,20 +232,23 @@ function Map({
 		useLazyQuery(ALLLAYERSETTINGSBYUSER);
 
 	// Query to fetch map views from the GraphQL API
-	useQuery(GET_MAP_VIEWS, {
+	useQuery(GET_GRID_VIEWS, {
 		variables: {
 			userId: globalStateController.getValue('user').mongoId,
+			module: 'MapView',
 		},
 		onCompleted: data => {
-			const mapViews = data?.getMapViews?.mapViews;
-			const currentMapView = mapViews?.find(view => view.isCurrent);
-			if (!globalStateController.getValue('mapView')?.selectedMapView) {
-				globalStateController.updateState({
-					mapView: {
-						selectedMapView: currentMapView,
-					},
-				});
-			}
+			const allViews = data?.getGridViews?.gridViews;
+			viewStateController('MapView').initialize({
+				client,
+				allViews,
+				Icon: MapIcon,
+				label: 'Map',
+				styleOverride: {
+					bgColor: { backgroundColor: '#0E111A' },
+					color: { color: 'white' },
+				},
+			});
 		},
 	});
 
@@ -228,19 +261,39 @@ function Map({
 		const longDif = maxLong - minLong;
 
 		if (latDif === 0) {
-			maxLat = maxLat + 0.005 > 90 ? 89.995 : maxLat + 0.005;
-			minLat = minLat - 0.005 < -90 ? -89.995 : minLat - 0.005;
+			maxLat =
+				maxLat + LATITUDE_PRECISION > LATITUDE_UPPER_BOUND ? LATITUDE_MAX_THRESHOLD : maxLat + LATITUDE_PRECISION;
+
+			minLat =
+				minLat - LATITUDE_PRECISION < LATITUDE_LOWER_BOUND ? LATITUDE_MIN_THRESHOLD : minLat - LATITUDE_PRECISION;
 		} else {
-			maxLat = maxLat + latDif * 0.08 > 90 ? 89.995 : maxLat + latDif * 0.08;
-			minLat = minLat - latDif * 0.08 < -90 ? -89.995 : minLat - latDif * 0.08;
+			maxLat =
+				maxLat + latDif * HIGHER_PRECISION > LATITUDE_UPPER_BOUND
+					? LATITUDE_MAX_THRESHOLD
+					: maxLat + latDif * HIGHER_PRECISION;
+
+			minLat =
+				minLat - latDif * HIGHER_PRECISION < LATITUDE_LOWER_BOUND
+					? LATITUDE_MIN_THRESHOLD
+					: minLat - latDif * HIGHER_PRECISION;
 		}
 
 		if (longDif === 0) {
-			maxLong = maxLong + 0.005 > 180 ? 179.995 : maxLong + 0.005;
-			minLong = minLong - 0.005 < -180 ? -179.995 : minLong - 0.005;
+			maxLong =
+				maxLong + LONGITUDE_PRECISION > LONGITUDE_UPPER_BOUND ? LONGITUDE_MAX_THRESHOLD : maxLong + LONGITUDE_PRECISION;
+
+			minLong =
+				minLong - LONGITUDE_PRECISION < LONGITUDE_LOWER_BOUND ? LONGITUDE_MIN_THRESHOLD : minLong - LONGITUDE_PRECISION;
 		} else {
-			maxLong = maxLong + longDif * 0.08 > 180 ? 179.995 : maxLong + latDif * 0.08;
-			maxLong = maxLong - longDif * 0.08 < -180 ? -179.995 : maxLong - latDif * 0.08;
+			maxLong =
+				maxLong + longDif * HIGHER_PRECISION > LONGITUDE_UPPER_BOUND
+					? LONGITUDE_MAX_THRESHOLD
+					: maxLong + longDif * HIGHER_PRECISION;
+
+			minLong =
+				minLong - longDif * HIGHER_PRECISION < LONGITUDE_LOWER_BOUND
+					? LONGITUDE_MIN_THRESHOLD
+					: minLong - longDif * HIGHER_PRECISION;
 		}
 
 		return {
@@ -443,10 +496,18 @@ function Map({
 		const bbox = turf.bbox(combined);
 		window.mapRef.fitBounds(
 			[
-				[bbox[0] - 0.03, bbox[1] - 0.03], // Southwest coordinates
-				[bbox[0] + 0.03, bbox[1] + 0.03], // Northeast coordinates
+				[bbox[0] - BOUND_ADJUSTMENT, bbox[1] - BOUND_ADJUSTMENT], // Southwest coordinates
+				[bbox[0] + BOUND_ADJUSTMENT, bbox[1] + BOUND_ADJUSTMENT], // Northeast coordinates
 			],
-			{ padding: { top: 100, bottom: 200, left: 10, right: 100 }, easing: () => 1 }
+			{
+				padding: {
+					top: PADDING_TOP,
+					bottom: PADDING_BOTTOM,
+					left: PADDING_LEFT,
+					right: PADDING_RIGHT,
+				},
+				easing: () => STATIC_EASING,
+			}
 		);
 
 		const layers = globalStateController.getValue('layers');
@@ -497,7 +558,8 @@ function Map({
 			globalState.layers.set(layers);
 			stateApp.layers = layers;
 
-			const mapViewFilters = globalStateController.getValue('mapView')?.selectedMapView?.filters || [];
+			//Refactor Flag
+			const mapViewFilters = viewStateController('MapView').getValue('selectedView')?.filters || [];
 			// for of loop on mapViewFilters
 			for (const filter of mapViewFilters) {
 				const dataSource = filter?.dataSourceName;
@@ -738,7 +800,7 @@ function Map({
 				id: feature.id,
 			})?.geometryLength;
 			const newGeometryLength = Math.round(turf.length(feature.geometry, { units: 'feet' }), 0);
-			if (newGeometryLength > 20000 && !(geometryLength >= newGeometryLength)) {
+			if (newGeometryLength > MAX_GEOMETRY_LENGTH && !(geometryLength >= newGeometryLength)) {
 				map.setFeatureState(
 					{
 						source: 'wellsVT',
@@ -920,7 +982,7 @@ function Map({
 					});
 					clearInterval(interval);
 				}
-			}, 500);
+			}, HALF_SEC_INTERVAL);
 
 			newMap.on('load', () => {
 				window.mapRef = null; // Remove the existing map instance to avoid rendering multiple maps
@@ -942,6 +1004,7 @@ function Map({
 					newMap.addImage('marker-icon', image, { sdf: true });
 				});
 				setTimeout(() => {
+					// eslint-disable-next-line no-new
 					new DeckGlLayer({
 						layerId: 'top_deck_layer',
 						type: 'ScatterplotLayer',
@@ -950,6 +1013,7 @@ function Map({
 						},
 					});
 
+					// eslint-disable-next-line no-new
 					new DeckGlLayer({
 						layerId: 'first_deck_layer',
 						type: 'ScatterplotLayer',
@@ -958,7 +1022,7 @@ function Map({
 							data: [],
 						},
 					});
-				}, 250);
+				}, TWO_HUNDERD_FIFTY);
 
 				// FOR aoi_labels
 				newMap.addSource('aoi_label_source', {
@@ -1020,8 +1084,8 @@ function Map({
 	}, [filterDrawing]);
 
 	useEffect(() => {
-		if (draw && navStateValues.filterDrawing?.length === 2) {
-			const feature = navStateValues.filterDrawing[1];
+		if (draw && navStateValues.filterDrawing?.length === TWO) {
+			const feature = navStateValues.filterDrawing[ONE];
 			setDrawingFilterFeatureId(feature.id);
 			draw.delete(feature.id);
 			draw.add(feature);
@@ -1119,10 +1183,10 @@ function Map({
 					if (gjv.valid(shape)) {
 						const bbox = turf.bbox(shape);
 						return {
-							minLong: bbox[0],
-							minLat: bbox[1],
-							maxLong: bbox[2],
-							maxLat: bbox[3],
+							minLong: bbox[ZERO],
+							minLat: bbox[ONE],
+							maxLong: bbox[TWO],
+							maxLat: bbox[THREE],
 						};
 					}
 					return null;
@@ -1244,10 +1308,10 @@ function Map({
 				if (gjv.valid(shape)) {
 					const bbox = turf.bbox(shape);
 					return {
-						minLong: bbox[0],
-						minLat: bbox[1],
-						maxLong: bbox[2],
-						maxLat: bbox[3],
+						minLong: bbox[ZERO],
+						minLat: bbox[ONE],
+						maxLong: bbox[TWO],
+						maxLat: bbox[THREE],
 					};
 				}
 				return null;
@@ -1290,11 +1354,11 @@ function Map({
 		if (map && mapStateValues.toggle3d) {
 			if (mapStateValues.toggle3d === true) {
 				if (map.getPitch() === 0 && map.getBearing() === 0) {
-					map.setPitch(70);
-					map.setBearing(20);
+					map.setPitch(SEVENTY);
+					map.setBearing(TWENTY);
 				} else {
-					map.setPitch(0);
-					map.setBearing(0);
+					map.setPitch(ZERO);
+					map.setBearing(ZERO);
 				}
 				mapStateController.updateState({
 					mapVars: {
@@ -1337,5 +1401,16 @@ function Map({
 		</div>
 	);
 }
+
+Map.propTypes = {
+	type: PropTypes.string.isRequired,
+	paramId: PropTypes.string.isRequired,
+	expandedPanel: PropTypes.bool,
+	mapControls: PropTypes.bool,
+	openSpeedDial: PropTypes.bool,
+	width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	hideShape: PropTypes.bool,
+	layerPadding: PropTypes.number,
+};
 
 export default React.memo(Map);
