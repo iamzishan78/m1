@@ -38,7 +38,9 @@ import _ from 'lodash';
 import get from 'lodash/get';
 
 import TractForm from 'components/Common/TableAddDialog/Common/TractForm';
+import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import Loaders from 'components/Loaders';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import { getParcelOriginalProperties } from 'components/ParcelsDetailCard/utils/GetParcelOriginalProps';
 import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
 import AutoCompleteParcelOwners from 'components/Shared/Forms/Fields/AutoCompleteParcelOwners';
@@ -58,13 +60,9 @@ import { GET_TRACT_ABSTRACT_SHAPE } from 'graphQL/useQueryGetTractAbstractShape'
 import { tableGlobalController } from 'hookstate/tableController';
 
 import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
+import { INTEREST_TO_FIXED, TO_FIXED } from 'utils/consts';
 
-import RightDialog from '../../ContactDetailCard/components/RightDialog';
-import DeleteConfirmationDialogContent from '../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-
-// contexts
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	dialogFooter: {
 		display: 'flex',
 		justifyContent: 'flex-end',
@@ -143,6 +141,41 @@ function AddAgreementOwnerAndTractDialog(props) {
 
 	const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
+	const calculateNetAcres = mineral_interest => {
+		if (!mineral_interest) {
+			return null;
+		}
+		const netAcres = addTrailingZeros(
+			getValues()?.tract?.sdGrossAcres
+				? (getValues()?.tract?.sdGrossAcres * mineral_interest).toFixed(INTEREST_TO_FIXED)
+				: null
+		);
+		return netAcres;
+	};
+
+	// const calculateNRA = (interest1, interest2, net_acres = getValues().net_acres) => {
+	//   if (!interest1 && !interest2) return null;
+	//   let nra = parseFloat(net_acres || 0) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0)) * 8;
+	//   nra = addTrailingZeros(nra.toFixed(8));
+
+	//   return nra;
+	// };
+
+	const calculateAcquisitionCost = (nra, aquisitionNra) => {
+		if (!nra && !aquisitionNra) {
+			return null;
+		}
+		const aquisitionCost = parseFloat(nra || 0) * parseFloat(aquisitionNra || 0);
+
+		return aquisitionCost.toFixed(TO_FIXED);
+	};
+
+	const handleClose = () => {
+		setSelectedShapeLayer(null);
+		reset({});
+		props.onClose();
+	};
+
 	useEffect(() => {
 		getMetaData({
 			variables: {
@@ -153,7 +186,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 
 	const interestMapping = useMemo(() => {
 		if (!metaDataRes) {
-			return;
+			return null;
 		}
 
 		const { metaData } = metaDataRes.getMetaData;
@@ -168,19 +201,16 @@ function AddAgreementOwnerAndTractDialog(props) {
 			form.tract = { tractName: form.tract?.tractName, state };
 			reset(form);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [state]);
 
 	useEffect(() => {
 		register('tract.qtrQtrSelection');
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tract]);
 
 	useEffect(() => {
 		if (!isAcquisitionCostOverridden) {
 			setValue('acquisition_cost', calculateAcquisitionCost(nra, getValues().acquisition_nra));
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [nra]);
 
 	useEffect(() => {
@@ -213,7 +243,6 @@ function AddAgreementOwnerAndTractDialog(props) {
 		} catch (error) {
 			console.log('%c Fetch track with newState', 'color:red', error);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		tract.state,
 		tract.county,
@@ -257,7 +286,6 @@ function AddAgreementOwnerAndTractDialog(props) {
 			setLoading(false);
 			handleClose();
 		},
-		onError: err => {},
 		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
@@ -312,7 +340,6 @@ function AddAgreementOwnerAndTractDialog(props) {
 		} else {
 			reset({ countAcres: 'Yes' });
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.seletedOwner]);
 
 	const handleMenuClick = event => {
@@ -325,7 +352,6 @@ function AddAgreementOwnerAndTractDialog(props) {
 
 	useEffect(() => {
 		getautoCompleteList({ variables: { type: 'AgreementShapeOwner', data: { key: 'tractStatus' } } });
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -365,14 +391,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 				reset({ ...getValues(), tract: {} });
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedShapeLayer]);
-
-	const handleClose = () => {
-		setSelectedShapeLayer(null);
-		reset({});
-		props.onClose();
-	};
 
 	const handleSave = () => {
 		// if (newTractError) {
@@ -399,7 +418,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 				].includes(key) &&
 				ownerToAdd[key]
 			) {
-				ownerToAdd[key] = addTrailingZeros(parseFloat(ownerToAdd[key]).toFixed(8));
+				ownerToAdd[key] = addTrailingZeros(parseFloat(ownerToAdd[key]).toFixed(INTEREST_TO_FIXED));
 			}
 		});
 
@@ -470,38 +489,10 @@ function AddAgreementOwnerAndTractDialog(props) {
 		}
 	};
 
-	const calculateNetAcres = mineral_interest => {
-		if (!mineral_interest) {
-			return null;
-		}
-		const netAcres = addTrailingZeros(
-			getValues()?.tract?.sdGrossAcres ? (getValues()?.tract?.sdGrossAcres * mineral_interest).toFixed(8) : null
-		);
-		return netAcres;
-	};
-
-	// const calculateNRA = (interest1, interest2, net_acres = getValues().net_acres) => {
-	//   if (!interest1 && !interest2) return null;
-	//   let nra = parseFloat(net_acres || 0) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0)) * 8;
-	//   nra = addTrailingZeros(nra.toFixed(8));
-
-	//   return nra;
-	// };
-
-	const calculateAcquisitionCost = (nra, aquisitionNra) => {
-		if (!nra && !aquisitionNra) {
-			return null;
-		}
-		const aquisitionCost = parseFloat(nra || 0) * parseFloat(aquisitionNra || 0);
-
-		return aquisitionCost.toFixed(2);
-	};
-
 	useEffect(() => {
 		if (nameAutValue?._id && nameAutValue?.name) {
 			reset({ ...getValues(), tract, ownerEntity: nameAutValue._id, ownerName: nameAutValue.name });
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [nameAutValue]);
 
 	const setExistingOwner = (e, value) => {
@@ -511,7 +502,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 			if (value.ownerData.mineral_interest && !value.ownerData.net_acres) {
 				net_acres = addTrailingZeros(
 					getValues()?.tract?.sdGrossAcres
-						? (getValues()?.tract?.sdGrossAcres * value.ownerData.mineral_interest).toFixed(8)
+						? (getValues()?.tract?.sdGrossAcres * value.ownerData.mineral_interest).toFixed(INTEREST_TO_FIXED)
 						: null
 				);
 			}
@@ -528,7 +519,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 				orri: value.ownerData.orri || '',
 				depthFrom: value.ownerData.depthFrom || '',
 				depthTo: value.ownerData.depthTo || '',
-				nra: value.ownerData.nra?.toFixed?.(8) || '',
+				nra: value.ownerData.nra?.toFixed?.(INTEREST_TO_FIXED) || '',
 			};
 
 			reset(data);
@@ -1124,11 +1115,11 @@ function AddAgreementOwnerAndTractDialog(props) {
 						label="Acquisition $/NRA"
 						variant="outlined"
 						margin="dense"
-						value={parseFloat(props.value).toFixed(2)}
+						value={parseFloat(props.value).toFixed(TO_FIXED)}
 						inputRef={props.ref}
 						onWheel={e => e.target.blur()}
 						onChange={e => {
-							props.onChange(parseFloat(e.target.value).toFixed(2));
+							props.onChange(parseFloat(e.target.value).toFixed(TO_FIXED));
 							if (!isAcquisitionCostOverridden) {
 								setValue('acquisition_cost', calculateAcquisitionCost(getValues().nra, e.target.value));
 							}
@@ -1150,12 +1141,12 @@ function AddAgreementOwnerAndTractDialog(props) {
 						label="Acquisition Cost"
 						variant="outlined"
 						margin="dense"
-						value={parseFloat(props.value).toFixed(2)}
+						value={parseFloat(props.value).toFixed(TO_FIXED)}
 						inputRef={props.ref}
 						onWheel={e => e.target.blur()}
 						className={isAcquisitionCostOverridden ? classes.netAcresOveridden : classes.netAcresNormal}
 						onChange={e => {
-							const toFixedValue = parseFloat(e.target.value).toFixed(2);
+							const toFixedValue = parseFloat(e.target.value).toFixed(TO_FIXED);
 							props.onChange(toFixedValue);
 							const acquisition_cost = calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra);
 							setIsAcquisitionCostOverridden(acquisition_cost !== toFixedValue);
@@ -1189,7 +1180,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 			<Controller
 				control={control}
 				name={'parcelOwnersRadioBValue'}
-				render={({ onChange, value, ref }) => (
+				render={({ onChange, value }) => (
 					<RadioGroup
 						row
 						value={value || 'true'}
@@ -1240,7 +1231,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 					<Controller
 						control={control}
 						name={'tractStatus'}
-						render={({ onChange, value, ref }) => (
+						render={({ onChange, value }) => (
 							<AutoCompleteWithNewOption
 								margin="dense"
 								label="Tract Status"
@@ -1321,15 +1312,9 @@ function AddAgreementOwnerAndTractDialog(props) {
 					fullWidth={false}
 					maxWidth="sm"
 				>
-					<DeleteConfirmationDialogContent
-						header={'Delete Well Interest'}
-						onClose={handleCloseDialog}
-						deleteFunc={deleteFunc}
-						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
-					>
+					<DeleteConfirmationDialog header={'Delete Well Interest'} onClose={handleCloseDialog} deleteFunc={deleteFunc}>
 						Do you want to delete the selected well interest?
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 			)}
 			{!!props.drawerContainer && ReactDOM.createPortal(content, props.drawerContainer)}

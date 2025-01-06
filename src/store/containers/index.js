@@ -4,8 +4,8 @@ import { bindActionCreators } from 'redux';
 
 import ConvertTaxOwnerToContact from 'components/MapControls/components/popup/ConvertTaxOwnerToContact';
 import ExportWellsOwners from 'components/MapControls/components/popup/ExportWellsOwners';
-import AssignOwnerToContactDrawer from 'components/Shared/M1nTable/components/SubComponents/AssignOwnerToContactDrawer';
-import MultipleOwnerToContactDrawer from 'components/Shared/M1nTable/components/SubComponents/MultipleOwnerToContactDrawer';
+import AssignOwnerToContactDrawer from 'components/MRTTable/Common/Components/AssignOwnerToContactDrawer';
+import MultipleOwnerToContactDrawer from 'components/MRTTable/Common/Components/MultipleOwnerToContactDrawer';
 
 import {
 	getContactCampaignAction,

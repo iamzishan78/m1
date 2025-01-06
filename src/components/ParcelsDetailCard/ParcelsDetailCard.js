@@ -4,10 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import GavelIcon from '@material-ui/icons/Gavel';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { set } from 'lodash';
+import PropTypes from 'prop-types';
 
 import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
 import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
@@ -222,7 +222,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	const [parcelObj, setParcelObj] = useState();
 	const [properties, setProperties] = useState();
 
-	const tractPerUnitGridState = tableController('TractPerUnitTable').useState(['data']).stateValue;
+	const tractOwnerGridState = tableController('TractInterestOwnerTable').useState(['data']).stateValue;
 	const tractUnitsGridState = tableController('TractUnitsTable').useState(['data']).stateValues;
 	const tractPotentialUnitsState = tableController('TractPotentialUnitsTable').useState(['data']).stateValues;
 	const {
@@ -269,6 +269,9 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 			if (typeof shape === 'string') {
 				shape = JSON.parse(shape);
 			}
+			if (dataCustomLayer.customLayer.shapeJson) {
+				shape = copy(dataCustomLayer.customLayer.shapeJson);
+			}
 			const data = {
 				...dataCustomLayer.customLayer,
 				shape,
@@ -296,9 +299,9 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 
 			setProperties(shape.properties);
 		}
-	}, [dataCustomLayer, tractPerUnitGridState?.data, tractUnitsGridState?.data, tractPotentialUnitsState?.data]);
+	}, [dataCustomLayer, tractOwnerGridState?.data, tractUnitsGridState?.data, tractPotentialUnitsState?.data]);
 
-	const overrideMeta = useMemo(
+	const tractOwnerOverrideMeta = useMemo(
 		() => ({
 			tabLabels: ['Tract Ownership', 'Potential Ownership'],
 			defaultFilters: [
@@ -319,7 +322,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 		[parcelObj]
 	);
 
-	const overrideMetaTractUnits = useMemo(
+	const tractUnitsOverrideMeta = useMemo(
 		() => ({
 			tabLabels: ['Related Units', 'Potential Units'],
 			defaultFilters: [{ field: 'parcel._id', value: parcelObj?._id }],
@@ -328,7 +331,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 		[parcelObj]
 	);
 
-	const overrideMetaTractPotentialUnits = useMemo(
+	const tractPotentialUnitsOverrideMeta = useMemo(
 		() => ({
 			tabLabels: ['Related Units', 'Potential Units'],
 			defaultFilters: [
@@ -345,7 +348,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	);
 
 	// Table overridden meta
-	const RelatedAgreementOverrideMeta = useMemo(
+	const relatedAgreementOverrideMeta = useMemo(
 		() => ({
 			defaultFilters: [
 				{ field: 'tract.tractId', value: parcelObj?._id },
@@ -361,10 +364,9 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 		[parcelObj]
 	);
 
-	const RelatedWellsOverrideMeta = useMemo(
+	const relatedWellsOverrideMeta = useMemo(
 		() => ({
 			maxTableHeight: 'calc(50vh - 100px)',
-			tabLabels: ['Tract Wells', 'Potential Wells'],
 			defaultFilters: [{ field: 'shape._id', value: parcelObj?._id }],
 			customProps: { customLayer: parcelObj, shapeType: 'Parcel' },
 			deletedKeys: {
@@ -373,7 +375,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 			},
 			customValue: { parentRecord: parcelObj?._id },
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[parcelObj?._id]
 	);
 
@@ -461,7 +462,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 		});
 	};
 
-	const RelatedDocumentsOverrideMeta = useMemo(
+	const relatedDocumentsOverrideMeta = useMemo(
 		() => ({
 			maxTableHeight: 'calc(50vh - 100px)',
 			gridViewSettings: null,
@@ -473,18 +474,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 			},
 			customValue: { parentRecord: parcelObj?._id },
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[parcelObj?._id]
 	);
-
-	function RunsheetHeader() {
-		return (
-			<div className={classes.documentHeader}>
-				<GavelIcon />
-				<span>RUNSHEET INSTRUMENTS</span>
-			</div>
-		);
-	}
 
 	const runsheetOverrideMeta = useMemo(
 		() => ({
@@ -494,7 +485,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 				{ field: 'isRunsheetInstrument', value: 'true' },
 			],
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[parcelObj?._id]
 	);
 
@@ -511,7 +501,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 						tabLabels={['Summary', 'Interest Owners', 'Runsheet', 'Wells', 'Units', 'Agreements', 'Documents']}
 						openTabIdex={selectTabIndex}
 						tabPanels={[
-							<div style={{ overflow: 'overlay', maxHeight: 'calc(100vh - 285px)', overflowX: 'hidden' }}>
+							<div key="Summary" style={{ overflow: 'overlay', maxHeight: 'calc(100vh - 285px)', overflowX: 'hidden' }}>
 								<ParcelSummary
 									id={id}
 									customLayer={copy(parcelObj)}
@@ -523,44 +513,52 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 								/>
 							</div>,
 							<TabPanels
+								key="Interest Owners"
 								value={selectedTab}
 								panels={[
-									<div>
-										<MRTTable name="TractPerUnitTable" overrideMeta={overrideMeta} />
-									</div>,
-									<div>
-										<MRTTable name="PotentialShapeOwnersTable" overrideMeta={potentialShapeOwnersOverrideMeta} />
-									</div>,
+									<MRTTable
+										key="TractInterestOwnerTable"
+										name="TractInterestOwnerTable"
+										overrideMeta={tractOwnerOverrideMeta}
+									/>,
+									<MRTTable
+										key="PotentialShapeOwnersTable"
+										name="PotentialShapeOwnersTable"
+										overrideMeta={potentialShapeOwnersOverrideMeta}
+									/>,
 								]}
 							/>,
-							<MRTTable name="RunsheetTable" overrideMeta={runsheetOverrideMeta} />,
-							<div className={classes.subContent}>
+							<MRTTable key="Runsheet" name="RunsheetTable" overrideMeta={runsheetOverrideMeta} />,
+							<div key="Wells" className={classes.subContent}>
 								<RelatedWellsTable
 									id="relatedWellsTable"
-									overrideMeta={RelatedWellsOverrideMeta}
+									overrideMeta={relatedWellsOverrideMeta}
 									shapeType="Parcel"
 									customLayer={copy(parcelObj)}
 								/>
 							</div>,
 							<TabPanels
+								key="Units"
 								value={selectedTab}
 								panels={[
-									<div>
-										<MRTTable name="TractUnitsTable" overrideMeta={overrideMetaTractUnits} />
-									</div>,
-									<div>
-										<MRTTable name="TractPotentialUnitsTable" overrideMeta={overrideMetaTractPotentialUnits} />
-									</div>,
+									<MRTTable key="TractUnitsTable" name="TractUnitsTable" overrideMeta={tractUnitsOverrideMeta} />,
+									<MRTTable
+										key="TractPotentialUnitsTable"
+										name="TractPotentialUnitsTable"
+										overrideMeta={tractPotentialUnitsOverrideMeta}
+									/>,
 								]}
 							/>,
-							<div>
-								<MRTTable name="ShapeDetailAgreementTable" overrideMeta={RelatedAgreementOverrideMeta} />
-							</div>,
-							<div className={`${classes.subContent} ${classes.parcelDocument}`}>
+							<MRTTable
+								key="Agreements"
+								name="ShapeDetailAgreementTable"
+								overrideMeta={relatedAgreementOverrideMeta}
+							/>,
+							<div key="Documents" className={`${classes.subContent} ${classes.parcelDocument}`}>
 								<RelatedDocumentsTable
 									id="relatedDocumentsTable"
 									moduleId={parcelObj?._id}
-									overrideMeta={RelatedDocumentsOverrideMeta}
+									overrideMeta={relatedDocumentsOverrideMeta}
 									relatedObjectType="Parcel"
 								/>
 							</div>,
@@ -582,3 +580,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 		</div>
 	);
 }
+
+ParcelsDetailCard.propTypes = {
+	id: PropTypes.string.isRequired,
+	selectTabIndex: PropTypes.number.isRequired,
+};

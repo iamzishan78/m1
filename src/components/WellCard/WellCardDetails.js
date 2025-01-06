@@ -12,7 +12,6 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
 import { useLazyQuery } from '@apollo/client';
 import moment from 'moment';
-// contexts
 import PropTypes from 'prop-types';
 
 import MRTTable from 'components/MRTTable';
@@ -20,18 +19,12 @@ import WellDetailsDocumentTable from 'components/WellCard/components/WellDetails
 
 import { popupController } from 'hookstate/popupStateController';
 
-// styling
-
-//material-ui components
-
-//custom components
 import TableSummary from './components/TableSummary';
 import { WellCardContext } from './WellCardContext';
 import { PRODUCTIONDETAILQUERY } from '../../graphQL/useQueryProductionDetail';
 import QuadProvider from '../Quad/QuadProvider';
 import CompletionDateCard from '../Shared/CompletionDateCard';
 import FirstProdDateCard from '../Shared/FirstProdDateCard';
-import M1nTable from '../Shared/M1nTable/M1nTable';
 import OwnerNumCard from '../Shared/OwnerNumCard';
 import PermitDateCard from '../Shared/PermitDateCard';
 import PlugDateCard from '../Shared/PlugDateCard';
@@ -403,12 +396,16 @@ export default function WellCardDetails(props) {
 								</Grid>
 							</Paper>,
 							<Paper key={2} elevation={3} style={{ padding: '10px' }}>
-								<div className={showSummary ? classes.subContent : classes.subContent2}>
-									<M1nTable
-										parent="OwnersPerWell"
-										selectedWell={stateValues.selectedWell} // MIGRATE TO WELL CARD CONTEXT
-									/>
-								</div>
+								<MRTTable
+									key="WellOwnersTable"
+									name="WellOwnersTable"
+									overrideMeta={{
+										maxTableHeight: 'calc(50vh - 200px)',
+										customProps: {
+											id: stateValues.selectedWell?.id,
+										},
+									}}
+								/>
 							</Paper>,
 							<div key={3} className={`${classes.wellDocument}`}>
 								<WellDetailsDocumentTable

@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 
 import { Button, ButtonGroup } from '@material-ui/core';
 
@@ -96,4 +96,4 @@ PotentialShapeTractToolbar.propTypes = {
 	tableKey: PropTypes.string.isRequired,
 };
 
-export default memo(PotentialShapeTractToolbar);
+export default PotentialShapeTractToolbar;

@@ -27,8 +27,8 @@ import {
 import { useMutation, useLazyQuery } from '@apollo/client';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import { deepEqualObjects } from 'components/Shared/functions';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 import BaicInfoPanel from 'components/Transact/components/PipelineCustomizeDialog/BasicInfo';
 import StageDetails from 'components/Transact/components/PipelineCustomizeDialog/StageDetails';
@@ -114,7 +114,7 @@ const a11yProps = index => ({
 	'aria-controls': `full-width-tabpanel-${index}`,
 });
 
-const PipelineCustomDialog = props => {
+const PipelineCustomDialog = () => {
 	const history = useHistory();
 	const dispatch = useDispatch();
 	const [tab, setTab] = useState(0);
@@ -158,7 +158,6 @@ const PipelineCustomDialog = props => {
 				setDeleteDialogOpen('pipe');
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dataDealsCountByPipeline]);
 
 	useEffect(() => {
@@ -345,7 +344,7 @@ const PipelineCustomDialog = props => {
 				}
 
 				allPromises.push(
-					new Promise((resolve, reject) => {
+					new Promise(resolve => {
 						updatePipeline({
 							variables: {
 								pipeline: pipeToUpdate,
@@ -395,7 +394,7 @@ const PipelineCustomDialog = props => {
 
 			if (stagesToUpdate && stagesToUpdate.length > 0) {
 				allPromises.push(
-					new Promise((resolve, reject) => {
+					new Promise(resolve => {
 						updateStages({
 							variables: {
 								stages: stagesToUpdate,
@@ -418,14 +417,14 @@ const PipelineCustomDialog = props => {
 			}
 
 			Promise.all(allPromises)
-				.then(values => {
+				.then(() => {
 					if (success === true) {
 						dispatch(showSuccessMessage('Flowline was successfully updated.'));
 					} else {
 						dispatch(showErrorMessage('An error occurred during the update.'));
 					}
 				})
-				.catch(reason => {});
+				.catch(() => {});
 		}
 	};
 
@@ -507,7 +506,7 @@ const PipelineCustomDialog = props => {
 									textColor="primary"
 									variant="fullWidth"
 								>
-									{FLOWLINE_CUSTOM_TABS.map((tab, index) => (
+									{FLOWLINE_CUSTOM_TABS.map(tab => (
 										<Tab label={tab.label} {...a11yProps(tab.value)} />
 									))}
 								</Tabs>
@@ -579,17 +578,15 @@ const PipelineCustomDialog = props => {
 					fullWidth={false}
 					maxWidth="sm"
 				>
-					<DeleteConfirmationDialogContent
+					<DeleteConfirmationDialog
 						header={deleteDialogOpen === 'pipe' ? 'Delete Flowline' : 'Delete Stage'}
 						onClose={handleCloseDeleteDialog}
 						deleteFunc={deleteFunc ? deleteFunc : () => {}}
-						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
 					>
 						{deleteDialogOpen === 'pipe'
 							? 'Are you sure you want to delete the flowline?'
 							: 'Are you sure you want to delete the stage?'}
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 			)}
 		</>

@@ -317,6 +317,15 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 		[contactData?._id]
 	);
 
+	const RelatedDealsOverrideMeta = useMemo(() => {
+		return {
+			disableRowSelection: true,
+			maxTableHeight: 'calc(50vh - 260px)',
+			defaultFilters: [{ field: 'relatedContacts._id', value: contactData._id }],
+			excludeFields: ['createBy', 'createAt', 'lastUpdateBy', 'lastUpdateAt'],
+		};
+	}, [contactData._id]);
+
 	return (
 		<div className={classes.card}>
 			<Card className={classes.dockMenu}>
@@ -381,7 +390,12 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 										overrideMeta={relatedTractInterestOverride}
 									/>
 								)}
-								{searchTapValue.value === 'deals' && <ContactDealsProvider />}
+								{searchTapValue.value === 'deals' && (
+									<>
+										<ContactDealsProvider />
+										<MRTTable name="RelatedDealsTable" overrideMeta={RelatedDealsOverrideMeta} />
+									</>
+								)}
 								{searchTapValue.value === 'documents' && (
 									<DrawerContextProvider>
 										<RelatedDocumentsTable

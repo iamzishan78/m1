@@ -46,8 +46,8 @@ const PotentialWellOwnersMeta = {
 	CustomToolBar: PotentialWellOwnersToolbar,
 	isClientSide: true,
 	isSelectAllAllowed: true,
-	isDeleteAllowed: false,
-	isExportAllowed: false,
+	isDeleteDisabled: true,
+	isExportDisabled: true,
 	enableFacetedValues: true,
 	TableSchema: [
 		{

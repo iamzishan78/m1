@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext, Fragment, useCallback } from 'react';
-import NumberFormat from 'react-number-format';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
@@ -21,9 +20,9 @@ import Contacts from 'components/FlowDrawer/Contacts';
 import MapProvider from 'components/Map/MapProvider';
 import { findBoundsMap } from 'components/MapControls/commonHelper';
 import { drawBoundaries } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import Documents from 'components/Shared/Documents';
 import { getRandomColor } from 'components/Shared/functions/ui';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';
 import DealComments from 'components/Transact/components/DealComments';
 import DealDialogHeader from 'components/Transact/components/DealDialog/DealDialogHeader';
@@ -60,32 +59,11 @@ import ExistingDeal from './ExistingDeal';
 import AssociatedFlowDealDetails from '../AssociatedFlowDealDetails';
 
 import './dialog.css';
+import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
 
 const THREE = 3;
 const FIVE = 5;
 const FOURTY = 40;
-
-function NumberFormatCustom(props) {
-	const { inputRef, onChange, ...other } = props;
-
-	return (
-		<NumberFormat
-			{...other}
-			getInputRef={inputRef}
-			onValueChange={values => {
-				onChange({
-					target: {
-						name: props.name,
-						value: values.value,
-					},
-				});
-			}}
-			thousandSeparator
-			isNumericString
-			prefix="$"
-		/>
-	);
-}
 
 const formatIt = mdata => {
 	return {
@@ -169,12 +147,6 @@ export const useDealMapFlyto = mapReady => {
 	}, [dataDealShapes, stateApp.transactBarView, mapReady]);
 
 	return { handleFlyto };
-};
-
-NumberFormatCustom.propTypes = {
-	inputRef: PropTypes.func.isRequired,
-	name: PropTypes.string.isRequired,
-	onChange: PropTypes.func.isRequired,
 };
 
 const useStyles = makeStyles(theme => ({
@@ -1391,15 +1363,9 @@ function AddDealDialog(props) {
 					fullWidth={false}
 					maxWidth="sm"
 				>
-					<DeleteConfirmationDialogContent
-						header={'Delete Deal'}
-						onClose={handleCloseDialog}
-						deleteFunc={deleteFunc}
-						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
-					>
+					<DeleteConfirmationDialog header={'Delete Deal'} onClose={handleCloseDialog} deleteFunc={deleteFunc}>
 						Do you want to delete the selected deal?
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 			)}
 			<div className={classes.dealDetailRoot}>
@@ -1680,7 +1646,7 @@ function AddDealDialog(props) {
 																		setLabel(e.target.value);
 																	}}
 																	InputProps={{
-																		inputComponent: NumberFormatCustom,
+																		inputComponent: CurrencyFormatCustom,
 																		classes: {
 																			root: classes.customDataTextInputRoot,
 																			focused: classes.focused,
@@ -1709,7 +1675,7 @@ function AddDealDialog(props) {
 																		setClosedPrice(e.target.value);
 																	}}
 																	InputProps={{
-																		inputComponent: NumberFormatCustom,
+																		inputComponent: CurrencyFormatCustom,
 																		classes: {
 																			root: classes.customDataTextInputRoot,
 																			focused: classes.focused,

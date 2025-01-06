@@ -178,7 +178,13 @@ export const handleMRTSchema = ({
 				});
 			}
 
-			return schemaColumn;
+			const updatedFilterModes = tableController(tableKey).setInitialFilterMode(
+				schemaColumn,
+				'singleselect',
+				schemaColumn.id
+			);
+
+			return { ...schemaColumn, ...updatedFilterModes };
 		}
 
 		if (schemaColumn.filter && !schemaColumn.Filter) {

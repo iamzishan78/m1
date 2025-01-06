@@ -107,7 +107,10 @@ function ESAutoCompleteFilter({
 					esIndex,
 					modelName,
 					index: esIndex,
-					filters: filtersArray,
+					filters:
+						typeof field === 'string'
+							? filtersArray.filter(filter => filter?.field !== field?.replace('.keyword', ''))
+							: filtersArray,
 					filterKeys: isComposite ? compositeFields : undefined,
 					filterKey: !isComposite ? field : undefined,
 					search: { query: tableController(tableKey).getGlobalFilter(), fields: searchFields, advanceSearch },

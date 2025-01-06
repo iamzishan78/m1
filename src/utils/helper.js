@@ -1,4 +1,4 @@
-import { get, isEqual, isObject } from 'lodash';
+import { get, isEqual, isInteger, isObject } from 'lodash';
 import moment from 'moment';
 
 import { tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
@@ -8,10 +8,9 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { wellsKeys } from 'utils/data';
 import { getSession } from 'utils/user';
 
-import { WEEK_DAYS } from './consts';
+import { TO_FIXED, WEEK_DAYS } from './consts';
 
 export const apolloClientEndpointDev = 'http://localhost:7071/api/m1graph';
-// eslint-disable-next-line no-undef
 export const isDev = process.env.REACT_APP_NODE_ENV === 'development';
 const decimalForamtter = new Intl.NumberFormat('en-US', {
 	style: 'decimal',
@@ -178,7 +177,7 @@ export const parseDate = dateValue => {
 		const newDate = new Date();
 		newDate.setFullYear(Number(splittedDate[0])); // Use setFullYear instead of setYear
 		newDate.setMonth(Number(splittedDate[1]) - 1);
-		// eslint-disable-next-line no-magic-numbers
+
 		newDate.setDate(Number(splittedDate[2]));
 
 		return newDate;
@@ -790,7 +789,6 @@ export const getActivityAnalyticsFilters = appliedFilters => {
 
 export const compareObjects = (child, parent) => {
 	for (const key in child) {
-		// eslint-disable-next-line no-prototype-builtins
 		if (child.hasOwnProperty(key)) {
 			const childValue = child[key];
 			const parentValue = get(parent, key);
@@ -807,4 +805,91 @@ export const compareObjects = (child, parent) => {
 		}
 	}
 	return false; // No differences found
+};
+
+export const isEven = num => isInteger(num) && num % 2 === 0;
+
+export const convertAnalyticsDataToCSV = (data = [], months = []) => {
+	const datas = data.flatMap(item => {
+		const result = [];
+		const newData = {};
+		newData.Name = item.name;
+		newData.Total = item.total?.toFixed(TO_FIXED) ?? '';
+		months.forEach(key => {
+			if (item.breakDown) {
+				newData[key] = item.data?.[key]?.total?.toFixed(TO_FIXED) ?? '';
+			} else {
+				newData[key] = item.data?.[key]?.toFixed(TO_FIXED) ?? '';
+			}
+		});
+
+		result.push(newData);
+
+		if (item.breakDown) {
+			Object.keys(item.breakDown).forEach(breakdownKey => {
+				const newData = {};
+				newData.Name = `_${breakdownKey}`;
+				newData.Total = item.breakDown?.[breakdownKey]?.toFixed(TO_FIXED) ?? '';
+				months.forEach(key => {
+					newData[key] = item.data?.[key]?.breakDown[breakdownKey]?.toFixed(TO_FIXED) ?? '';
+				});
+
+				result.push(newData);
+			});
+		}
+
+		return result;
+	});
+	return datas;
+};
+
+export const convertToTitleCase = str => {
+	if (!str || str === '' || typeof str !== 'string') {
+		return str;
+	}
+
+	// Replace underscores and hyphens with spaces
+	str = str.replace(/[_-]/g, ' ');
+
+	// Split the string by spaces
+	let words = str.split(' ');
+
+	// Capitalize the first letter of each word
+	words = words.map(word => {
+		return word.charAt(0).toUpperCase() + word.slice(1);
+	});
+
+	// Join the words with spaces
+	str = words.join(' ');
+
+	// Extract and append the number at the end of the string, if present
+	let regex = /\d+$/;
+	let match = str.match(regex);
+	if (match) {
+		let number = match[0];
+		str = str.replace(regex, '') + ' ' + number;
+	}
+
+	return str;
+};
+
+export const fuzzySearch = (items, query, queryKey = 'name') => {
+	if (!query || query === '') {
+		return items;
+	}
+
+	const search = query.split(' ');
+	const ret = items.reduce((found, i) => {
+		let matches = 0;
+		search.forEach(s => {
+			if (i[queryKey].toLowerCase().indexOf(s.toLowerCase()) > -1) {
+				matches++;
+			}
+		});
+		if (matches === search.length) {
+			found.push(i);
+		}
+		return found;
+	}, []);
+	return ret;
 };

@@ -78,8 +78,8 @@ export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValue
 			break;
 		case 'date':
 			filterValue = {
-				gte: formatDate(filterValues?.[0] || '1970-01-01'),
-				lte: formatDate(filterValues?.[1] || moment().format('YYYY-MM-DD')),
+				gte: filterValues?.gte || '1970-01-01',
+				lte: filterValues?.lte || moment().format('YYYY-MM-DD'),
 			};
 			break;
 		case 'range':
@@ -106,6 +106,7 @@ export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValue
 			return {
 				...baseFilter,
 				columnType: 'date',
+				type: 'advanced',
 				isKeyword: false,
 				searchType: 'betweenInclusive',
 			};
@@ -260,15 +261,11 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			const selectedField = getSelectedField(fieldName?.value || fieldName);
 
 			const canUpdateMapView =
-				dataSourceName &&
-				selectedField?.value &&
-				(filterType || ['date', 'range'].includes(selectedField?.type)) &&
-				filterValues;
+				dataSourceName && selectedField?.value && (filterType || ['date', 'range'].includes(selectedField?.type));
 
 			const mapViewFilters = getMapViewFilters();
 			// Upsert the map view data to the GraphQL API
 			if (canUpdateMapView) {
-				debugger;
 				const tableKey = Object.keys(tableESState).find(key => {
 					const tableState = tableESState[key].get({ noproxy: true });
 					return tableState?.layerIdentifier === dataSourceName;
@@ -276,7 +273,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				const tableState = tableESState[tableKey]?.get({ noproxy: true });
 
 				const formattedFilter = getFormattedFilterBasedOnType(
-					filterType,
+					selectedField?.type || filterType,
 					selectedField?.value?.replace('.keyword', ''),
 					filterValues
 				);
@@ -284,21 +281,24 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				const isFilterApplied = tableState?.filters?.find(
 					filter =>
 						formattedFilter?.field?.replace('.keyword', '') === filter?.field?.replace('.keyword', '') &&
-						// &&
-						// formattedFilter?.searchType === filter.searchType
-						formattedFilter?.value === filter.value
+						(formattedFilter?.searchType === 'multiselect' || formattedFilter?.searchType === filter.searchType) &&
+						_.isEqual(formattedFilter?.value, filter.value)
 				);
 
-				if (!isFilterApplied) {
-					tableController(tableKey).setFilter(formattedFilter);
-					tableController(tableKey).setShowColumnFilters(true);
-					tableController(tableKey).setFilterMode(
-						formattedFilter?.field?.replace('.keyword', ''),
-						formattedFilter?.searchType
-					);
+				if (!isFilterApplied && tableKey) {
+					if (!formattedFilter?.value || formattedFilter?.value?.length === 0) {
+						tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
+					} else {
+						tableController(tableKey).setShowColumnFilters(true);
+						tableController(tableKey).setFilterMode(
+							formattedFilter?.field?.replace('.keyword', ''),
+							formattedFilter?.searchType
+						);
+						tableController(tableKey).setFilter(formattedFilter);
+					}
 				}
 
-				if (!tableController(tableKey))
+				if (!tableKey)
 					globalStateController.updateState({
 						mapView: {
 							selectedMapView: {
@@ -388,8 +388,16 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				label: 'Field Name',
 				options: customLayersFieldAccessors[dataSourceName]?.keys || layer?.layerSchema || [], // Dynamic based on data source
 				defaultValue: mapView?.dataSourceName ? getSelectedField(mapView?.fieldName) || mapView?.fieldName : null, // Set default value if mapView is provided
-				onChange: () => {
-					setValue(`mapViews.${index}.filterType`, null);
+				onChange: (e, v, r) => {
+					setValue(
+						`mapViews.${index}.filterType`,
+						v?.type
+							? null
+							: {
+									label: 'Multi Select',
+									value: 'multiselect',
+								}
+					);
 					setValue(`mapViews.${index}.filterValues`, null);
 				}, // Reset other fields on change
 			},
@@ -441,6 +449,11 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		});
 
 		tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
+		tableController(tableKey).setFilterMode(
+			(fieldName?.value || fieldName)?.replace('.keyword', ''),
+			'singleselect',
+			false
+		);
 		resetForm({
 			mapViews: mapViewFilters || [],
 		});

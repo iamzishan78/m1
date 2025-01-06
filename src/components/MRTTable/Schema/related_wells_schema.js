@@ -33,11 +33,8 @@ const RelatedWellsMeta = {
 		{
 			...CommonSchema.INITAIL_PINNED,
 			header: 'Well',
-			name: 'well.wellName',
+			name: 'well.wellName.keyword',
 			id: 'well.wellName',
-			filter: false,
-			enableColumnFilter: false,
-			enableSorting: false,
 			Cell: ({ row }) => {
 				return (
 					<div
@@ -124,21 +121,21 @@ const RelatedWellsMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Last 12 (BOE)',
 			name: 'lastTwelveMonthBOE',
-			accessorKey: 'lastTwelveMonthBOE',
+			id: 'lastTwelveMonthBOE',
 		},
 
 		{
 			...CommonSchema.NUMBER_COLUMN,
 			header: 'Measured Depth (ft)',
 			name: 'measuredDepth',
-			accessorKey: 'measuredDepth',
+			id: 'measuredDepth',
 		},
 
 		{
 			...CommonSchema.NUMBER_COLUMN,
 			header: 'Lateral Length (ft)',
 			name: 'lateralLength',
-			accessorKey: 'lateralLength',
+			id: 'lateralLength',
 		},
 
 		{
