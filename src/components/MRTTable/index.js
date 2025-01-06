@@ -4,12 +4,13 @@ import { useApolloClient } from '@apollo/client';
 import { MaterialReactTable } from 'material-react-table';
 import PropTypes from 'prop-types';
 
+import { copy } from 'components/Shared/functions';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 import { SCHEMA } from './Schema';
 import Table from './Table';
-import { copy } from '../Shared/functions/index';
 
 function MRTTable({ tableKey, name, overrideMeta = {} }) {
 	const client = useApolloClient();
@@ -51,7 +52,14 @@ function MRTTable({ tableKey, name, overrideMeta = {} }) {
 						accessorKey: column.accessorKey,
 						header: column.header,
 						size: column.size,
-					})) || []
+					})) || [
+						{
+							id: ' ',
+							accessorKey: ' ',
+							header: '',
+							size: 450,
+						},
+					]
 				}
 				data={[]}
 				state={{
