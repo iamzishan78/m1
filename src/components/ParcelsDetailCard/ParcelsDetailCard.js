@@ -222,7 +222,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	const [parcelObj, setParcelObj] = useState();
 	const [properties, setProperties] = useState();
 
-	const tractPerUnitGridState = tableController('TractPerUnitTable').useState(['data']).stateValue;
+	const tractOwnerGridState = tableController('TractInterestOwnerTable').useState(['data']).stateValue;
 	const tractUnitsGridState = tableController('TractUnitsTable').useState(['data']).stateValues;
 	const tractPotentialUnitsState = tableController('TractPotentialUnitsTable').useState(['data']).stateValues;
 	const {
@@ -233,7 +233,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	const [updateCustomLayer, { data: updatedParcel, loading: updatingParcel }] = useMutation(UPDATECUSTOMLAYER);
 
 	const [getCustomLayer, { data: dataCustomLayer, refetch: refetchCustomLayer }] = useLazyQuery(CUSTOMLAYER);
-	console.log('🚀 ~ ParcelsDetailCard ~ dataCustomLayer:', dataCustomLayer);
 
 	const globalState = tableGlobalController.useState(['refetch']);
 	const globalStateValues = globalState.stateValues;
@@ -300,9 +299,9 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 
 			setProperties(shape.properties);
 		}
-	}, [dataCustomLayer, tractPerUnitGridState?.data, tractUnitsGridState?.data, tractPotentialUnitsState?.data]);
+	}, [dataCustomLayer, tractOwnerGridState?.data, tractUnitsGridState?.data, tractPotentialUnitsState?.data]);
 
-	const overrideMeta = useMemo(
+	const tractOwnerOverrideMeta = useMemo(
 		() => ({
 			tabLabels: ['Tract Ownership', 'Potential Ownership'],
 			defaultFilters: [
@@ -323,7 +322,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 		[parcelObj]
 	);
 
-	const overrideMetaTractUnits = useMemo(
+	const tractUnitsOverrideMeta = useMemo(
 		() => ({
 			tabLabels: ['Related Units', 'Potential Units'],
 			defaultFilters: [{ field: 'parcel._id', value: parcelObj?._id }],
@@ -332,7 +331,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 		[parcelObj]
 	);
 
-	const overrideMetaTractPotentialUnits = useMemo(
+	const tractPotentialUnitsOverrideMeta = useMemo(
 		() => ({
 			tabLabels: ['Related Units', 'Potential Units'],
 			defaultFilters: [
@@ -349,7 +348,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	);
 
 	// Table overridden meta
-	const RelatedAgreementOverrideMeta = useMemo(
+	const relatedAgreementOverrideMeta = useMemo(
 		() => ({
 			defaultFilters: [
 				{ field: 'tract.tractId', value: parcelObj?._id },
@@ -365,7 +364,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 		[parcelObj]
 	);
 
-	const RelatedWellsOverrideMeta = useMemo(
+	const relatedWellsOverrideMeta = useMemo(
 		() => ({
 			maxTableHeight: 'calc(50vh - 100px)',
 			tabLabels: ['Tract Wells', 'Potential Wells'],
@@ -464,7 +463,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 		});
 	};
 
-	const RelatedDocumentsOverrideMeta = useMemo(
+	const relatedDocumentsOverrideMeta = useMemo(
 		() => ({
 			maxTableHeight: 'calc(50vh - 100px)',
 			gridViewSettings: null,
@@ -518,7 +517,11 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 								key="Interest Owners"
 								value={selectedTab}
 								panels={[
-									<MRTTable key="TractPerUnitTable" name="TractPerUnitTable" overrideMeta={overrideMeta} />,
+									<MRTTable
+										key="TractInterestOwnerTable"
+										name="TractInterestOwnerTable"
+										overrideMeta={tractOwnerOverrideMeta}
+									/>,
 									<MRTTable
 										key="PotentialShapeOwnersTable"
 										name="PotentialShapeOwnersTable"
@@ -530,7 +533,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 							<div key="Wells" className={classes.subContent}>
 								<RelatedWellsTable
 									id="relatedWellsTable"
-									overrideMeta={RelatedWellsOverrideMeta}
+									overrideMeta={relatedWellsOverrideMeta}
 									shapeType="Parcel"
 									customLayer={copy(parcelObj)}
 								/>
@@ -539,24 +542,24 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 								key="Units"
 								value={selectedTab}
 								panels={[
-									<MRTTable key="TractUnitsTable" name="TractUnitsTable" overrideMeta={overrideMetaTractUnits} />,
+									<MRTTable key="TractUnitsTable" name="TractUnitsTable" overrideMeta={tractUnitsOverrideMeta} />,
 									<MRTTable
 										key="TractPotentialUnitsTable"
 										name="TractPotentialUnitsTable"
-										overrideMeta={overrideMetaTractPotentialUnits}
+										overrideMeta={tractPotentialUnitsOverrideMeta}
 									/>,
 								]}
 							/>,
 							<MRTTable
 								key="Agreements"
 								name="ShapeDetailAgreementTable"
-								overrideMeta={RelatedAgreementOverrideMeta}
+								overrideMeta={relatedAgreementOverrideMeta}
 							/>,
 							<div key="Documents" className={`${classes.subContent} ${classes.parcelDocument}`}>
 								<RelatedDocumentsTable
 									id="relatedDocumentsTable"
 									moduleId={parcelObj?._id}
-									overrideMeta={RelatedDocumentsOverrideMeta}
+									overrideMeta={relatedDocumentsOverrideMeta}
 									relatedObjectType="Parcel"
 								/>
 							</div>,

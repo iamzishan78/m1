@@ -48,7 +48,7 @@ import RunsheetMeta from './runsheet_schema';
 import SalesVolumeComparisonMeta from './sales-volume-comparison-schema';
 import ShapeDetailAgreementMeta from './shapeDetail_agreement_schema';
 import ShapesFilesGenericMeta from './shapefiles_generic_schema';
-import TractPerUnitMeta from './tract_interest_owner_schema';
+import TractInterestOwnerMeta from './tract_interest_owner_schema';
 import TractInterestsMeta from './tract_interest_schema';
 import TractPotentialUnitsMeta from './tract_potential_units_schema';
 import TractMeta from './tract_schema';
@@ -67,7 +67,7 @@ export const SCHEMA = {
 	ComparisonTable: ComparisonMeta,
 	PropertyIntrestTable: PropertyIntrestMeta,
 	OwnersPerUnitTable: OwnersPerUnitMeta, // unit detail => Interest owner grid schema
-	TractPerUnitTable: TractPerUnitMeta, // tract detail => Interest owner grid schema
+	TractInterestOwnerTable: TractInterestOwnerMeta, // tract detail => Interest owner grid schema
 	TractsTable: TractMeta,
 	AgreementTable: AgreementMeta,
 	UnitTable: UnitMeta,
