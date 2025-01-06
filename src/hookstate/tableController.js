@@ -12,6 +12,7 @@ import ReactSelectField from 'components/MRTTable/Common/MetaData/ReactSelectFie
 import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import { columnFilterModesFnRefs } from 'components/MRTTable/utils/filterModeMenu';
 import { formatGridViewToMRT } from 'components/MRTTable/utils/helper';
 import { copy, deepEqual, formatDate } from 'components/Shared/functions';
 import { defaultHandleDefaultView } from 'components/Shared/GridView';
@@ -228,9 +229,7 @@ const tableESStateControllerHandler = state => ({
 			.filter(view => view?.filterValues?.length > 0 || ['empty', 'notEmpty'].includes(view?.filterType))
 			.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues));
 
-		globalStateController.updateState({
-			columnFilterModesFnRefs: {},
-		});
+		Object.keys(columnFilterModesFnRefs).forEach(key => delete columnFilterModesFnRefs[key]);
 
 		if (gridViewSettings) {
 			// Fetch user-specific or default grid views based on provided settings and overrides.
@@ -487,10 +486,9 @@ const tableESStateControllerHandler = state => ({
 
 		state.TableSchema?.[index]?.merge(updatedColumnnSchema);
 
-		const columnFilterModesFnRefs = globalStateController.getValue('columnFilterModesFnRefs');
-
-		if (callSelectFilterMode)
-			columnFilterModesFnRefs?.[state.tableKey.get({ noproxy: true })]?.[column]?.onSelectFilterMode(mode);
+		if (callSelectFilterMode) {
+			columnFilterModesFnRefs?.[tableKey]?.[column]?.onSelectFilterMode(mode);
+		}
 	},
 
 	setSelectAll: value => {
@@ -653,7 +651,7 @@ const tableESStateControllerHandler = state => ({
 								? existingFilter.filterType
 								: tableState?.esIndex === 'shapefile_flat' || typeof filter.value === 'object'
 									? 'multiselect'
-									: 'singleselect',
+									: filter?.searchType,
 
 						fieldName: filter.field,
 						filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,

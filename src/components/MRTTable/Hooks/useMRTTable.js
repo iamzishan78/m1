@@ -198,7 +198,6 @@ const useMRTTable = tableKey => {
 			renderTopToolbarCustomActions: props =>
 				CustomToolBar ? (
 					<ToolbarActions {...props} tableKey={tableKey}>
-						{' '}
 						<CustomToolBar {...props} tableKey={tableKey} />
 					</ToolbarActions>
 				) : (
