@@ -41,7 +41,7 @@ export default function UnitDetailCard({ id }) {
 	const [uniObj, setUniObj] = useState();
 	const [properties, setProperties] = useState();
 	const [stateApp, setStateApp] = useContext(AppContext);
-	const OwnersPerUnitGridState = tableController('OwnersPerUnitTable').useState(['data']).stateValue;
+	const UnitInterestOwnerGridState = tableController('UnitInterestOwnerTable').useState(['data']).stateValue;
 	const [updateCustomLayer, { data: updatedUnit, loading: updatingLayer }] = useMutation(UPDATECUSTOMLAYER);
 
 	const globalState = tableGlobalController.useState(['refetch']);
@@ -99,9 +99,9 @@ export default function UnitDetailCard({ id }) {
 
 			setProperties(shape.properties);
 		}
-	}, [dataCustomLayer, OwnersPerUnitGridState?.data]);
+	}, [dataCustomLayer, UnitInterestOwnerGridState?.data]);
 
-	const overrideMeta = useMemo(
+	const unitInterestOwnerOverrideMeta = useMemo(
 		() => ({
 			tabLabels: ['Unit Ownership', 'Potential Ownership'],
 			defaultFilters: [
@@ -114,7 +114,7 @@ export default function UnitDetailCard({ id }) {
 	);
 
 	// Table overridden meta
-	const RelatedAgreementOverrideMeta = useMemo(
+	const relatedAgreementOverrideMeta = useMemo(
 		() => ({
 			defaultFilters: [{ field: 'relatedShape._id', value: dataCustomLayer?.customLayer?._id }],
 			maxTableHeight: 'calc(60vh - 200px)',
@@ -234,7 +234,7 @@ export default function UnitDetailCard({ id }) {
 		});
 	};
 
-	const RelatedDocumentsOverrideMeta = useMemo(
+	const relatedDocumentsOverrideMeta = useMemo(
 		() => ({
 			maxTableHeight: 'calc(50vh - 100px)',
 			gridViewSettings: null,
@@ -249,7 +249,7 @@ export default function UnitDetailCard({ id }) {
 		[uniObj?._id]
 	);
 
-	const RelatedWellsOverrideMeta = useMemo(
+	const relatedWellsOverrideMeta = useMemo(
 		() => ({
 			maxTableHeight: 'calc(50vh - 100px)',
 			tabLabels: ['Unit Wells', 'Potential Wells'],
@@ -264,7 +264,7 @@ export default function UnitDetailCard({ id }) {
 		[uniObj?._id]
 	);
 
-	const PotentialTractsOverrideMeta = useMemo(
+	const potentialTractsOverrideMeta = useMemo(
 		() => ({
 			tabLabels: ['Unit Tracts', 'Potential Tracts'],
 			defaultFilters: [
@@ -331,7 +331,11 @@ export default function UnitDetailCard({ id }) {
 								key="Interest Owners"
 								value={selectedTab}
 								panels={[
-									<MRTTable key="OwnersPerUnitTable" name="OwnersPerUnitTable" overrideMeta={overrideMeta} />,
+									<MRTTable
+										key="UnitInterestOwnerTable"
+										name="UnitInterestOwnerTable"
+										overrideMeta={unitInterestOwnerOverrideMeta}
+									/>,
 									<MRTTable
 										key="PotentialWellOwnersTable"
 										name="PotentialWellOwnersTable"
@@ -354,7 +358,7 @@ export default function UnitDetailCard({ id }) {
 									<div key="relatedWellsTable" className={showSummary ? classes.subContent : classes.subContent2}>
 										<RelatedWellsTable
 											id="relatedWellsTable"
-											overrideMeta={RelatedWellsOverrideMeta}
+											overrideMeta={relatedWellsOverrideMeta}
 											shapeType="Unit"
 											customLayer={uniObj}
 										/>
@@ -388,13 +392,13 @@ export default function UnitDetailCard({ id }) {
 											},
 										}}
 									/>,
-									<MRTTable key="TractsTable" name="TractsTable" overrideMeta={PotentialTractsOverrideMeta} />,
+									<MRTTable key="TractsTable" name="TractsTable" overrideMeta={potentialTractsOverrideMeta} />,
 								]}
 							/>,
 							<MRTTable
 								key="Agreements"
 								name="UnitRelatedAgreementTable"
-								overrideMeta={RelatedAgreementOverrideMeta}
+								overrideMeta={relatedAgreementOverrideMeta}
 							/>,
 							<div
 								key="Documents"
@@ -403,7 +407,7 @@ export default function UnitDetailCard({ id }) {
 								<RelatedDocumentsTable
 									id="relatedDocumentsTable"
 									moduleId={uniObj?._id}
-									overrideMeta={RelatedDocumentsOverrideMeta}
+									overrideMeta={relatedDocumentsOverrideMeta}
 									relatedObjectType="Shape"
 								/>
 							</div>,

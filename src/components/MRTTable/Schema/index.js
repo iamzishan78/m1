@@ -20,7 +20,6 @@ import GenericMeta from './generic-schema';
 import TaxOwnerMeta from './map-grid-tax-owner-schema';
 import MyWellsMeta from './my_wells_schema';
 import ObligationsMeta from './obligations_schema';
-import OwnersPerUnitMeta from './ownersperunit-schema';
 import PropertiesMeta from './properties_schema';
 import PropertyInterestDetailMeta from './property-interest-details-schema';
 import PropertyRevenueDetailMeta from './property-revenue-details-schema';
@@ -53,6 +52,7 @@ import TractInterestsMeta from './tract_interest_schema';
 import TractPotentialUnitsMeta from './tract_potential_units_schema';
 import TractMeta from './tract_schema';
 import TractUnitsMeta from './tract_units_schema';
+import UnitInterestOwnerMeta from './unit_interest_owner_schema';
 import UnitInterestMeta from './unit_interest_schema';
 import UnitRelatedAgreementMeta from './unit_relatedAgreements_schema';
 import UnitMeta from './unit_schema';
@@ -66,7 +66,7 @@ export const SCHEMA = {
 	CampaignContactTable: ContactMeta,
 	ComparisonTable: ComparisonMeta,
 	PropertyIntrestTable: PropertyIntrestMeta,
-	OwnersPerUnitTable: OwnersPerUnitMeta, // unit detail => Interest owner grid schema
+	UnitInterestOwnerTable: UnitInterestOwnerMeta, // unit detail => Interest owner grid schema
 	TractInterestOwnerTable: TractInterestOwnerMeta, // tract detail => Interest owner grid schema
 	TractsTable: TractMeta,
 	AgreementTable: AgreementMeta,

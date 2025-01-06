@@ -1,5 +1,6 @@
-/* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable no-undef */
+import React from 'react';
+
 import MRTTable from 'components/MRTTable';
 
 import { REVERTCYPRESSDELETE } from 'graphQL/useMutationCommonCypressRevert';
