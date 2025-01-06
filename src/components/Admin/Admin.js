@@ -4,6 +4,7 @@ import { Switch, Route, useLocation } from 'react-router-dom';
 
 import AdminOperation from 'components/Admin/AdminOperation';
 import BulkDataEditing from 'components/Admin/components/BulkDataEditing';
+import ExternalTools from 'components/ExternalTools';
 import QuickActionPanel from 'components/Land/components/QuickActionPanel';
 import AdminSettings from 'components/Shared/AdminSettings';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
@@ -24,6 +25,7 @@ const Components = {
 	AdminOperation,
 	BulkDataEditing,
 	BulkDataEditingDetail,
+	ExternalTools,
 };
 
 function isM1neralAddress(email) {
@@ -48,7 +50,6 @@ export default function Admin() {
 		if (option) {
 			dispatch(setActiveModule(option));
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [location.pathname]);
 
 	const handlePanelStateChange = state => {
@@ -106,7 +107,7 @@ export default function Admin() {
 				actions={sidePanelOptions}
 			>
 				{Object.values(allowedPaths).map(option => (
-					<Switch>
+					<Switch key={option.component}>
 						<Route exact path={option.link} component={Components[option.component]} />
 					</Switch>
 				))}

@@ -478,5 +478,6 @@ export const adminOperationsInitialState = {
 	createNewFlatData: 'No',
 	warning: null,
 	message: null,
+	apiKeys: { dialpad: '' },
 };
 export const adminOperationsState = hookstate(copy(adminOperationsInitialState));
