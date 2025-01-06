@@ -145,7 +145,8 @@
 		"lint": "eslint . --fix --max-warnings=0",
 		"format": "prettier . --write",
 		"prepare": "husky install",
-		"cy:run": "node cypress/scripts/logCypressHistory/index.js"
+		"cy:run": "node cypress/scripts/logCypressHistory/index.js",
+		"analyze": "source-map-explorer 'build/static/js/*.js'"
 	},
 	"eslintConfig": {
 		"extends": "react-app"
