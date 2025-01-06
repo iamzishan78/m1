@@ -428,7 +428,7 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 					<StarIcon
 						style={{ marginTop: '5px' }}
 						onClick={() => {
-							handleMapViewChange({ ...view, isFavourite: false, userId });
+							handleMapViewChange({ ...view, isFavourite: false, userId }, false);
 						}}
 					/>
 				)}
