@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -65,4 +65,4 @@ CheckDetailsToolbar.propTypes = {
 	tableKey: PropTypes.string.isRequired,
 };
 
-export default memo(CheckDetailsToolbar);
+export default CheckDetailsToolbar;

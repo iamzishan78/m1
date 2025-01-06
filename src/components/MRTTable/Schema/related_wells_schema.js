@@ -28,7 +28,7 @@ const RelatedWellsMeta = {
 		{
 			...CommonSchema.INITAIL_PINNED,
 			header: 'Well',
-			name: 'well.wellName',
+			name: 'well.wellName.keyword',
 			id: 'well.wellName',
 			Cell: ({ row }) => {
 				return (
