@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { set } from 'lodash';
+import PropTypes from 'prop-types';
 
 import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
 import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
@@ -215,7 +216,6 @@ const useStyles = makeStyles(theme => ({
 
 const setSelectedTab = tableGlobalController.setSelectedTab;
 
-// eslint-disable-next-line react/prop-types
 export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	const classes = useStyles();
 	const dispatch = useDispatch();
@@ -310,6 +310,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 				{ field: 'descriptor', value: 'ParcelDescriptor' },
 			],
 			customProps: { customLayer: parcelObj },
+			gridViewSettings: null,
 		}),
 		[parcelObj]
 	);
@@ -367,7 +368,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	const relatedWellsOverrideMeta = useMemo(
 		() => ({
 			maxTableHeight: 'calc(50vh - 100px)',
-			tabLabels: ['Tract Wells', 'Potential Wells'],
 			defaultFilters: [{ field: 'shape._id', value: parcelObj?._id }],
 			customProps: { customLayer: parcelObj, shapeType: 'Parcel' },
 			deletedKeys: {
@@ -581,3 +581,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 		</div>
 	);
 }
+
+ParcelsDetailCard.propTypes = {
+	id: PropTypes.string.isRequired,
+	selectTabIndex: PropTypes.number.isRequired,
+};
