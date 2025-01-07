@@ -558,7 +558,6 @@ function Map({
 			globalState.layers.set(layers);
 			stateApp.layers = layers;
 
-			//Refactor Flag
 			const mapViewFilters = viewStateController('MapView').getValue('selectedView')?.filters || [];
 			// for of loop on mapViewFilters
 			for (const filter of mapViewFilters) {

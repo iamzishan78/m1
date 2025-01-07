@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 
 import {
@@ -17,6 +17,7 @@ import { ExpandMore as ExpandMoreIcon, Close as ClearButton } from '@material-ui
 
 // Contexts
 
+import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import { NavigationContext } from 'components/Navigation/NavigationContext';
 //Components
 import * as LayerFiltersComponents from 'components/Shared/SidePanel/compoennts/Filters';
@@ -26,8 +27,8 @@ import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { navController } from 'hookstate/navStateController';
 
 import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
-import UserMapFilter from './UserMapFilter';
 import { customLayersFieldAccessors } from './consts';
+import UserMapFilter from './UserMapFilter';
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -170,8 +171,10 @@ const LayerFilters = () => {
 	const classes = useStyles();
 	const [stateNav, setStateNav] = useContext(NavigationContext);
 
+	const {
+		stateValues: { selectedView },
+	} = viewStateController('MapView').useState(['selectedView']);
 	const { navStateValues } = navController.useState(['geographyFilterCount', 'wellFilterCount'], 'navStateValues');
-	const { mapStateValues } = globalStateController.useState(['mapView', 'viewChanged'], 'mapStateValues');
 	const layers = globalStateController.getValue('layers');
 
 	const formMethods = useForm({
@@ -185,40 +188,13 @@ const LayerFilters = () => {
 		name: 'mapViews', // This refers to the array in the form's state
 	});
 
-	// Memoize resetForm to avoid unnecessary re-creation
-	const resetForm = useCallback(
-		values => {
-			formMethods.reset(values);
-		},
-		[formMethods]
-	);
-
 	useEffect(() => {
-		const selectedMapView = mapStateValues?.mapView?.selectedMapView;
-		if (selectedMapView) {
-			resetForm({
-				mapViews: selectedMapView?.filters || [],
+		if (selectedView) {
+			formMethods.reset({
+				mapViews: selectedView?.filters || [],
 			});
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
-
-	useEffect(() => {
-		const selectedMapView = mapStateValues?.mapView?.selectedMapView;
-		if (mapStateValues?.viewChanged === false) {
-			return;
-		}
-
-		if (selectedMapView) {
-			resetForm({
-				mapViews: selectedMapView?.filters || [],
-			});
-			globalStateController.updateState({
-				viewChanged: false,
-			});
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [mapStateValues?.viewChanged]);
+	}, [selectedView?.filters?.length]);
 
 	const resetFilters = (params, additionalParamsToReset = {}) => {
 		const geoFiltersToReset = {};
@@ -279,7 +255,7 @@ const LayerFilters = () => {
 		<>
 			<div className={classes.root}>
 				{Object.keys(filterTypes).map((filterType, index) => (
-					<Accordion className={classes.accordionRoot}>
+					<Accordion className={classes.accordionRoot} key={filterType}>
 						<AccordionSummary
 							aria-controls="panel1a-content"
 							id="panel1a-header"
@@ -348,12 +324,18 @@ const LayerFilters = () => {
 								const layer = layers.find(l => l.file === fileId && l.layerShapeName === layerShapeName);
 
 								// Skip rendering if no custom layers field accessor or no matching layer found
-								if (!customLayersFieldAccessors[mapView?.dataSourceName] && !layer) return null;
+								if (!customLayersFieldAccessors[mapView?.dataSourceName] && !layer) {return null;}
 							}
 
 							// Render the UserMapFilter component if the checks pass
 							return (
-								<UserMapFilter key={mapView.id} mapView={mapView} index={index} remove={remove} resetForm={resetForm} />
+								<UserMapFilter
+									key={mapView.id}
+									mapView={mapView}
+									index={index}
+									remove={remove}
+									resetForm={formMethods.reset}
+								/>
 							);
 						})}
 					</div>

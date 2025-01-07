@@ -179,7 +179,6 @@ const tableESStateControllerHandler = state => ({
 				...CommonSchema.SELECT_SOME,
 				Header: () => <TableHeaderMoreOptions tableKey={tableKey} />,
 				Cell: ({ row }) => {
-					 
 					const tableState = tableController(tableKey).useState(['mrtTableRef']);
 					const tableStateValues = tableState.stateValues;
 
@@ -203,7 +202,6 @@ const tableESStateControllerHandler = state => ({
 
 		let gridView = {};
 
-		//Refactor Flag
 		const selectedView = viewStateController('MapView').getValue('selectedView');
 		const selectedMapViewFilters = selectedView?.filters || [];
 
@@ -384,12 +382,10 @@ const tableESStateControllerHandler = state => ({
 		state.merge(stateToUpdate);
 
 		if (mapViewFilters.length > 0) {
-			 
 			tableController(tableKey).setShowColumnFilters(true);
 		}
 		if (customLayersFieldAccessors[layerIdentifier]) {
 			mapViewFilters?.forEach(filter => {
-				 
 				tableController(tableKey).setFilterMode(filter?.field.replace('.keyword', ''), filter.searchType);
 			});
 		}
@@ -461,15 +457,15 @@ const tableESStateControllerHandler = state => ({
 		});
 		const tableKey = state.tableKey.get();
 
-		 
 		const updatedColumnnSchema = tableController(tableKey).setInitialFilterMode(columnSchema, mode, column);
 
 		state.TableSchema?.[index]?.merge(updatedColumnnSchema);
 
 		const columnFilterModesFnRefs = globalStateController.getValue('columnFilterModesFnRefs');
 
-		if (callSelectFilterMode)
-			{columnFilterModesFnRefs?.[state.tableKey.get({ noproxy: true })]?.[column]?.onSelectFilterMode(mode);}
+		if (callSelectFilterMode) {
+			columnFilterModesFnRefs?.[state.tableKey.get({ noproxy: true })]?.[column]?.onSelectFilterMode(mode);
+		}
 	},
 
 	setSelectAll: value => {
@@ -647,7 +643,6 @@ const tableESStateControllerHandler = state => ({
 						newFilter,
 					];
 
-					//Refactor Flag
 					viewStateController('MapView').updateState({
 						selectedView: {
 							...selectedView,
@@ -912,7 +907,6 @@ const tableESStateControllerHandler = state => ({
 				[rowId]: editedRow,
 			});
 		} else {
-			 
 			tableController(tableKey).clearEditedRow(rowId);
 		}
 	},

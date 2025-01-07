@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import { deepEqual } from 'components/Shared/functions';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
@@ -97,7 +98,7 @@ const layerFiltersControllerHandler = state => ({
 	},
 	getFirstLayer: layerType => {
 		if (!layerType) {
-			return;
+			return null;
 		}
 
 		const filters = layerFilters[layerType].get({ noproxy: true });
@@ -105,10 +106,10 @@ const layerFiltersControllerHandler = state => ({
 		return filters?.firstLayer;
 	},
 	clearWellsFilters: () => {
-		// eslint-disable-next-line no-use-before-define
+		 
 		const { variables } = layerFiltersController.getValue('Wells');
 
-		// eslint-disable-next-line no-use-before-define
+		 
 		layerFiltersController.setVariables('Wells', {
 			...variables,
 			filters: [],
@@ -137,15 +138,15 @@ const layerFiltersControllerHandler = state => ({
 	},
 
 	updateLayerFiltersFromMapViews: (dataSourceName, mapViewFilters) => {
-		mapViewFilters = mapViewFilters.filter(filter => filter.dataSourceName === dataSourceName);
+		mapViewFilters = mapViewFilters?.filter(filter => filter?.dataSourceName === dataSourceName);
 		const state = layerFiltersController.getValue([dataSourceName]); // Get layer filters from hookstate
 		const initialFilters = state?.variables?.filters || []; // Get initial filters
-		let filters = initialFilters.filter(filter => !filter.isMapViewFilter); // Remove existing filter
+		let filters = initialFilters?.filter(filter => !filter.isMapViewFilter); // Remove existing filter
 		filters = [
 			...filters,
-			...mapViewFilters.map(mapView =>
+			...(mapViewFilters?.map(mapView =>
 				getFormattedFilterBasedOnType(mapView.filterType, mapView.fieldName, mapView.filterValues)
-			),
+			) ?? {}),
 		];
 		layerFiltersController.setVariables(dataSourceName, { filters });
 	},

@@ -61,7 +61,6 @@ import {
 import { AppContext } from '../../../../AppContext';
 import { deepEqualObjects } from '../../functions';
 
-
 const layerIcons = [
 	{
 		action: 'layer',
@@ -255,7 +254,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 	const [searchState, setSearchState] = useState(false);
 	const [tab, setTab] = useState(0);
 
-	//Refactor Flag
 	const totalFilterCount =
 		navStateValues.geographyFilterCount + navStateValues.wellFilterCount + (selectedView?.filters?.length || 0);
 

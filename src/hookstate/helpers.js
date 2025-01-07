@@ -5,6 +5,7 @@ import _, { get } from 'lodash';
 
 import DataType from 'components/Common/DataType';
 import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';
+import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import {
 	customFilterOptions,
 	dateFilterOptions,
@@ -21,8 +22,6 @@ import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compo
 import { tableController } from 'hookstate/tableController';
 
 import { SMALL_TIMEOUT } from 'utils/consts';
-
-import { globalStateController } from './globalStateController';
 
 export const handleVisiblityMenu = () => {
 	const interval2 = setInterval(() => {
@@ -111,8 +110,8 @@ export const handleMRTSchema = ({
 	}
 
 	// Syncing map views with generic grids
-	const mapView = globalStateController.getValue('mapView');
-	const selectedMapViewFilters = mapView?.selectedMapView?.filters || [];
+	const selectedMapView = viewStateController('MapView').getValue('selectedView');
+	const selectedMapViewFilters = selectedMapView?.filters || [];
 
 	const dataSourceViews = selectedMapViewFilters?.filter(view => layerIdentifier === view.dataSourceName);
 	const mapViewFilters =

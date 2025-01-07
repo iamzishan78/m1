@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-
 import { Menu, MenuItem, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { MoreVert as MoreVertIcon, Star as StarIcon, Bookmark as BookmarkIcon } from '@material-ui/icons';
@@ -142,6 +141,26 @@ function ViewItem({ moduleName, view }) {
 				anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
 				transformOrigin={{ vertical: 'top', horizontal: 'center' }}
 			>
+				<MenuItem
+					className={classes.menuItem}
+					onClick={() => {
+						setAnchorEl(null);
+						ViewController.updateViewPreference(view, 'favourite');
+					}}
+				>
+					{isFavourite ? 'Remove as favorite' : 'Set as favorite'}
+				</MenuItem>
+
+				<MenuItem
+					className={classes.menuItem}
+					onClick={() => {
+						setAnchorEl(null);
+						ViewController.updateViewPreference(view, 'default');
+					}}
+				>
+					{isDefault ? 'Remove as default view' : 'Set as default view'}
+				</MenuItem>
+
 				{view.type !== 'Default' && (
 					<>
 						<MenuItem
@@ -159,16 +178,6 @@ function ViewItem({ moduleName, view }) {
 							className={classes.menuItem}
 							onClick={() => {
 								setAnchorEl(null);
-								ViewController.updateViewPreference(view, 'default');
-							}}
-						>
-							{isDefault ? 'Remove as default view' : 'Set as default view'}
-						</MenuItem>
-
-						<MenuItem
-							className={classes.menuItem}
-							onClick={() => {
-								setAnchorEl(null);
 								ViewController.updateView({
 									id: view?._id,
 									fieldsToUpdate: { isDeleted: true },
@@ -179,16 +188,6 @@ function ViewItem({ moduleName, view }) {
 						</MenuItem>
 					</>
 				)}
-
-				<MenuItem
-					className={classes.menuItem}
-					onClick={() => {
-						setAnchorEl(null);
-						ViewController.updateViewPreference(view, 'favourite');
-					}}
-				>
-					{isFavourite ? 'Remove as favorite' : 'Set as favorite'}
-				</MenuItem>
 			</Menu>
 		</div>
 	);

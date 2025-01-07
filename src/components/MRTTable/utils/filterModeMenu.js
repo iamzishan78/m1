@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
+
 import { globalStateController } from 'hookstate/globalStateController';
 
 import FilterModeMenuItems from '../Common/FilterModeMenuItems';
@@ -8,7 +10,8 @@ const filterModeMenu =
 	({ options, tableKey, name, controller, layerIdentifier }) =>
 	({ onSelectFilterMode }) => {
 		const filterModes = globalStateController.getValue('columnFilterModesFnRefs') || {};
-		const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView;
+		//Refatcor Flag
+		const selectedMapView = viewStateController('MapView').getValue('selectedView');
 		const mapViewFilter = selectedMapView?.filters?.find(
 			filter => filter?.fieldName?.replace('.keyword', '') === name && filter?.dataSourceName === layerIdentifier
 		);
