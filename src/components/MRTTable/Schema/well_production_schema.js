@@ -15,7 +15,6 @@ const WellProductionMeta = {
 	isInFiniteScroll: true,
 	columnVirtualization: false,
 	isDeleteDisabled: true,
-	isExportDisabled: true,
 	TableSchema: [
 		{
 			...CommonSchema.MONGO_ID,

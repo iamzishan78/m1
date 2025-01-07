@@ -15,7 +15,7 @@ const BulkDataEditingMeta = {
 	},
 	isInFiniteScroll: true,
 	isDeleteDisabled: true,
-	isExportDisabled: true,
+	// isExportDisabled: true,
 	CustomToolBar: BulkDataEditingToolBar,
 	maxTableHeight: 'calc(100vh - 200px)',
 	defaultSort: { field: 'ts', order: 'desc' },

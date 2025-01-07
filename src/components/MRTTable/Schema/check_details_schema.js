@@ -214,7 +214,7 @@ const CheckDetailsMeta = {
 			header: 'Product',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString, { isSelect: true }),
 		},
 
 		{
@@ -234,7 +234,7 @@ const CheckDetailsMeta = {
 			header: 'Type',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString, { isSelect: true }),
 		},
 
 		{
@@ -316,7 +316,7 @@ const CheckDetailsMeta = {
 			header: 'Tax Type',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString, { isSelect: true }),
 		},
 
 		{

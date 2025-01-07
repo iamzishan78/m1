@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 
 import MRTTable from 'components/MRTTable';
+import useTabedTablesUnmount from 'components/MRTTable/Hooks/useTabedTablesUnmount';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
@@ -56,6 +57,8 @@ const useStyles = makeStyles(theme => ({
 function CamapignRelatedGrids({ campaign }) {
 	const classes = useStyles();
 	const globalSelectedTabKey = tableGlobalController.useState(['tabKey'])?.stateValues;
+
+	useTabedTablesUnmount();
 
 	const setSearchTapValue = state => {
 		tableGlobalController.setSelectedTab(state?.index);
