@@ -44,9 +44,12 @@ const useStyles = makeStyles(theme => ({
 		border: '2px dashed #dddddd',
 		marginBottom: '30px',
 	},
+	bold: {
+		fontWeight: 'bold',
+	},
 }));
 
-export default function UploadZone({ setFileUpload, relatedObjectType, customClass }) {
+export default function UploadZone({ setFileUpload, relatedObjectType, customClass, title }) {
 	const handleFileInput = files => {
 		if (Array.isArray(files)) {
 			let fileName = files[0]?.file?.name;
@@ -63,6 +66,7 @@ export default function UploadZone({ setFileUpload, relatedObjectType, customCla
 		<>
 			<div className={customClass ? classes.root : null}>
 				<Container>
+					{title && <label className={classes.bold}>{title}</label> }
 					<DropzoneAreaBase
 						onAdd={handleFileInput}
 						showAlerts={relatedObjectType === 'Contact'}

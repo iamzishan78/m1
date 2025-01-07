@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { IconButton, TextField, withStyles, Typography, Grid } from '@material-ui/core';
+import { IconButton, TextField, withStyles, Typography, Grid, Divider, Box, Container } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -179,6 +179,12 @@ const useStyles = makeStyles({
 			marginBottom: 0,
 		},
 	},
+	linkLabel: {
+		fontWeight: 'bold',
+		fontSize: '14px',
+		display: 'block',
+		marginBottom: '5px',
+	}
 });
 
 const LightTooltip = withStyles(theme => ({
@@ -584,7 +590,48 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 
 				{!fileUpload?.fileExtension ? (
 					<div className={classes.Uploadcomp}>
-						<UploadZone userId={getUser?._id} fileId={selectedDocument?._id} setFileUpload={setFileUpload} />
+						<UploadZone userId={getUser?._id} fileId={selectedDocument?._id} setFileUpload={setFileUpload} title={'Upload Document'}/>
+						<Container>
+						<Box sx={{ display: 'flex', alignItems: 'center', my: 2 }}>
+								<Divider sx={{ flex: 1 }} />
+								<Typography
+								sx={{
+									mx: 2,
+									fontSize: '14px',
+									fontWeight: 'bold',
+									color: '#666',
+								}}
+								>
+								--------- OR ---------
+								</Typography>
+								<Divider sx={{ flex: 1 }} />
+							</Box>
+							{/* Drive Link Input */}
+							<div style={{ marginTop: '20px' }}>
+							<label className={classes.linkLabel}>{'Paste Link'}</label>
+								<input
+									type="text"
+									placeholder="Paste url link to an external document"
+									// value={driveLink}
+									onChange={(e) => {
+									// setDriveLink(e.target.value);
+									if (e.target.value 
+										// && 
+										// fileData
+									) {
+										setFileData(null); // Clear the uploaded file if a link is entered
+									}
+									}}
+									style={{
+									width: '100%',
+									padding: '8px',
+									borderRadius: '4px',
+									border: '1px solid #ccc',
+									}}
+								/>
+							</div>
+						</Container>
+							
 					</div>
 				) : null}
 				<div className={classes.dialogFooter}>
