@@ -307,7 +307,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 		return () => {
 			formController?.reset();
 		};
-	}, []);
+	}, [selectedDocument]);
 
 	useEffect(() => {
 		const value = url?.isValid ? url?.value : null

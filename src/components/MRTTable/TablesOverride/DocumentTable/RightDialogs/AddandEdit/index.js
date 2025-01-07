@@ -130,7 +130,7 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 	useEffect(() => {
 		slideOutState.views.set(views);
 		slideOutState.view.set(views[0]);
-	}, [wellsCount]);
+	}, [selectedDocument, wellsCount]);
 
 	return <Slideout show={true} deleteFunc={deleteFunc} />;
 }

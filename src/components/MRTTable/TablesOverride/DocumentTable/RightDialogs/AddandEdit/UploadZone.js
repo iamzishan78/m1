@@ -133,7 +133,7 @@ export default function UploadZone({ setFileUpload, relatedObjectType, customCla
 								width: '100%',
 								padding: '8px',
 								borderRadius: '4px',
-								border: '1px solid #ccc',
+								border: url.error ? "1px solid red" : "",
 							}}
 							onBlur={() =>
 								handleUrlBlur()
@@ -141,8 +141,9 @@ export default function UploadZone({ setFileUpload, relatedObjectType, customCla
 						/>
 						    {/* Error Message */}
 							{url.error && (
-								<div style={{ color: 'red', marginTop: '8px', fontSize: '12px' }}>
-								Please enter a valid URL.
+								<div style={{ marginTop: '8px', fontSize: '14px'}}>
+									<span style={{ color: 'red', marginTop: '8px', fontSize: '14px' }}> { `The path ${url?.value} is invalid`} </span><br/> 
+									<span style={{ marginTop: '8px', fontSize: '14px' }}> { `This must be an external URL such as http://example.com`} </span> 
 								</div>
 							)}
 					</div>
