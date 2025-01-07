@@ -23,15 +23,18 @@ const filterModeMenu =
 		}
 
 		// Checks if filter mode is applied already or not
+		let intiated = null;
 		if (filterType && !columnFilterModesFnRefs?.[tableKey]?.[name]?.intiated) {
+			intiated = true;
+			const isSingleMulti = ['singleselect', 'multiselect'].includes(filterType);
 			columnFilterModesFnRefs[tableKey] = {
 				...columnFilterModesFnRefs[tableKey],
 				[name]: {
 					onSelectFilterMode,
-					intiated: true,
+					intiated,
 				},
 			};
-			onSelectFilterMode(filterType);
+			if (!isSingleMulti) {onSelectFilterMode(filterType);}
 		}
 
 		return options.map(option => (
