@@ -626,7 +626,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 								uploadFile();
 							} else {
 								delete formStateValues.tableKey;
-								saveDocument(formStateValues);
+								saveDocument({ ...formStateValues, fileId : null});
 								handleClose();
 							}
 						}}
