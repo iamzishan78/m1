@@ -42,7 +42,7 @@ const useStyles = makeStyles(() => ({
 	},
 }));
 
-function TagCell({ id, targetSourceId, tags, targetLabel }) {
+function TagCell({ id, targetSourceId, tags, targetLabel, tableKey }) {
 	const classes = useStyles();
 	return (
 		<div style={{ marginRight: '10px' }}>
@@ -60,6 +60,7 @@ function TagCell({ id, targetSourceId, tags, targetLabel }) {
 								type: 'tags',
 								targetSourceId,
 								targetLabel,
+								tableKey,
 							},
 						});
 					}}
