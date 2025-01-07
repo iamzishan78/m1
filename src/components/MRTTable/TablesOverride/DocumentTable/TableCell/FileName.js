@@ -12,7 +12,7 @@ import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
 
 function FileName({ docInfo }) {
 	const splittedStrings = docInfo?.fileName?.split('.');
-	const docExtention = splittedStrings?.[splittedStrings.length - 1]?.toLowerCase();
+	const docExtention = docInfo?.url ? 'url' : splittedStrings?.[splittedStrings.length - 1]?.toLowerCase();
 	const [openPdfView, setOpenPdfView] = useState(false);
 	let history = useHistory();
 

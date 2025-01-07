@@ -225,7 +225,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 	});
 
 	const [fileUpload, setFileUpload] = useState({ upload: false, fileExtension: null, fileInformation: '' });
-	const [url, setUrl] = useState({ isValid: false, value: null, error: false });
+	const [url, setUrl] = useState({ isValid: selectedDocument?.url ? true : false, value: selectedDocument?.url, error: false });
 	const [inputFile, setInputFile] = useState(null);
 	const [fileDownload, setFileDownload] = useState(false);
 
@@ -395,7 +395,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 					flexGrow: 1,
 					overflow: 'auto',
 					minHeight: '2em',
-					maxHeight: 'calc(100vh - 310px)',
+					maxHeight: 'calc(100vh - 400px)',
 				}}
 			>
 				<List>
@@ -627,6 +627,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 							} else {
 								delete formStateValues.tableKey;
 								saveDocument(formStateValues);
+								handleClose();
 							}
 						}}
 						className={classes.footerButton}
