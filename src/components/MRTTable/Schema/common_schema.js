@@ -163,9 +163,6 @@ export const CommonSchema = {
 		size: 250,
 		filter: true,
 		type: 'string',
-		Cell: ({ row }) => {
-			return <>{row.original?.user?.name}</>;
-		},
 	},
 	CREATED_BY: {
 		name: 'createBy.name',
@@ -175,9 +172,6 @@ export const CommonSchema = {
 		filter: true,
 		isSearchField: false,
 		type: 'string',
-		Cell: ({ row }) => {
-			return <>{row.original?.createBy?.name}</>;
-		},
 	},
 	CREATED_DATE: {
 		name: 'createAt',
@@ -199,9 +193,6 @@ export const CommonSchema = {
 		filter: true,
 		isSearchField: false,
 		type: 'string',
-		Cell: ({ row }) => {
-			return <>{row.original?.lastUpdateBy?.name}</>;
-		},
 	},
 	LAST_UPDATED_DATE: {
 		name: 'lastUpdateAt',
