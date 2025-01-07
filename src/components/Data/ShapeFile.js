@@ -4,6 +4,7 @@ import { Box } from '@mui/material';
 
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import MRTTable from 'components/MRTTable';
+import useTabedTablesUnmount from 'components/MRTTable/Hooks/useTabedTablesUnmount';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
@@ -15,6 +16,8 @@ const ShapeFile = () => {
 	const {
 		stateValues: { tabKey },
 	} = tableGlobalController.useState(['tabKey']);
+
+	useTabedTablesUnmount();
 
 	const subFiles = useMemo(() => {
 		if (!dataset) {
