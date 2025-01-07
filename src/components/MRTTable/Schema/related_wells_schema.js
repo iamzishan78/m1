@@ -142,7 +142,15 @@ const RelatedWellsMeta = {
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const id = row.getValue('_id');
-				return <TagCell id={id} targetSourceId={id} tags={row?.original?.tags} targetLabel={'well'} />;
+				return (
+					<TagCell
+						id={id}
+						targetSourceId={id}
+						tags={row?.original?.tags}
+						targetLabel={'well'}
+						tableKey={'RelatedWellsTable'}
+					/>
+				);
 			},
 		},
 
@@ -150,7 +158,9 @@ const RelatedWellsMeta = {
 			...CommonSchema.COMMENTS,
 			Cell: ({ renderedCellValue, row }) => {
 				const id = row.getValue('_id');
-				return <CommentCell id={id} value={renderedCellValue?.length} targetLabel={'well'} />;
+				return (
+					<CommentCell id={id} value={renderedCellValue?.length} targetLabel={'well'} tableKey={'RelatedWellsTable'} />
+				);
 			},
 		},
 		{

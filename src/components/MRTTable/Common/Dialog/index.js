@@ -100,6 +100,8 @@ function AllDialogs(props) {
 		}
 	};
 
+	if (rest?.tableKey && rest?.tableKey !== props?.tableKey) return null;
+
 	return (
 		<>
 			{type === 'tags' && (

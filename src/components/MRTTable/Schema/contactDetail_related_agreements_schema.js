@@ -192,6 +192,7 @@ const ContactDetailRelatedAgreementMeta = {
 						targetSourceId={targetSourceId}
 						tags={row?.original?.tags}
 						targetLabel={'agreement'}
+						tableKey={'RelatedAgreementTable'}
 					/>
 				);
 			},
@@ -200,7 +201,14 @@ const ContactDetailRelatedAgreementMeta = {
 			...CommonSchema.COMMENTS,
 			Cell: ({ renderedCellValue, row }) => {
 				const id = row.getValue('_id');
-				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'agreement'} />;
+				return (
+					<CommentCell
+						id={id}
+						value={renderedCellValue.length}
+						targetLabel={'agreement'}
+						tableKey={'RelatedAgreementTable'}
+					/>
+				);
 			},
 		},
 	],
