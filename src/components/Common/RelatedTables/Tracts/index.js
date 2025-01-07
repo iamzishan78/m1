@@ -7,6 +7,7 @@ import { DrawerContext } from 'components/Land/components/Agreements/detailCompo
 import MRTTable from 'components/MRTTable';
 
 import { AppContext } from 'AppContext';
+import ToolbarButton from 'components/Shared/ui/ToolbarButton';
 
 function RelatedTractsTable(props) {
 	const [stateApp, setStateApp] = useContext(AppContext);
@@ -35,26 +36,13 @@ function RelatedTractsTable(props) {
 			onClickedRow: onClickedRow,
 			CustomToolBar: () => {
 				return (
-					<ButtonGroup
-						variant="contained"
-						style={{ height: '30px', marginBottom: '8px' }}
-						color="primary"
-						aria-label="split button"
-					>
-						<Button
-							id="addRelatedDocumentButton"
-							size="small"
-							color="primary"
-							aria-label="select merge strategy"
-							aria-haspopup="menu"
-							onClick={() => {
-								setDrawer('relatedTract');
-								setStateApp(stateApp => ({ ...stateApp, selectedTract: null }));
-							}}
-						>
-							+ ADD TRACT
-						</Button>
-					</ButtonGroup>
+					<ToolbarButton
+						label={'+ ADD TRACT'}
+						onClick={() => {
+							setDrawer('relatedTract');
+							setStateApp(stateApp => ({ ...stateApp, selectedTract: null }));
+						}}
+					/>
 				);
 			},
 		}),

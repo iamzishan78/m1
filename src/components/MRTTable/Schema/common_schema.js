@@ -162,11 +162,7 @@ export const CommonSchema = {
 		header: 'User',
 		size: 250,
 		filter: true,
-		isSearchField: false,
 		type: 'string',
-		Cell: ({ row }) => {
-			return <>{row.original?.user?.name}</>;
-		},
 	},
 	CREATED_BY: {
 		name: 'createBy.name',
@@ -176,9 +172,6 @@ export const CommonSchema = {
 		filter: true,
 		isSearchField: false,
 		type: 'string',
-		Cell: ({ row }) => {
-			return <>{row.original?.createBy?.name}</>;
-		},
 	},
 	CREATED_DATE: {
 		name: 'createAt',
@@ -200,9 +193,6 @@ export const CommonSchema = {
 		filter: true,
 		isSearchField: false,
 		type: 'string',
-		Cell: ({ row }) => {
-			return <>{row.original?.lastUpdateBy?.name}</>;
-		},
 	},
 	LAST_UPDATED_DATE: {
 		name: 'lastUpdateAt',
@@ -323,7 +313,7 @@ export const CommonSchema = {
 export const validateRequiredString = value => (!value?.length ? 'Required' : undefined);
 
 export const editFieldProps =
-	(tableKey, type, validate, required = true) =>
+	(tableKey, type, validate, { isSelect = false, required = true } = {}) =>
 	({ cell, row }) => {
 		const Controller = tableController(tableKey);
 
@@ -336,11 +326,13 @@ export const editFieldProps =
 		const [value, setValue] = useState(cell.getValue());
 
 		const onBlur = event => {
-			const validationError = validate?.(event.currentTarget.value);
+			const target = isSelect ? event.target : event.currentTarget;
+
+			const validationError = validate?.(target.value);
 
 			const rowData = editedData[row.id] || {};
 
-			set(rowData, cell.column.id, event.currentTarget.value);
+			set(rowData, cell.column.id, target.value);
 
 			Controller.setValidationErrors(row.id, cell.column.id, validationError);
 			Controller.setEditedData(row.id, rowData);
@@ -350,15 +342,19 @@ export const editFieldProps =
 			type,
 			required,
 
+			select: isSelect,
+
 			...(type === 'date' && { value: moment(value).format('yyyy-MM-DD') }),
 
 			error: !!errorText,
 			helperText: errorText,
 			//store edited user in state to be saved later
 			onChange: e => {
-				setValue(e.currentTarget.value);
+				const target = isSelect ? e.target : e.currentTarget;
 
-				if (type === 'date') {
+				setValue(target.value);
+
+				if (type === 'date' || isSelect) {
 					onBlur(e);
 				}
 			},

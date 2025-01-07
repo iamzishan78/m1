@@ -85,7 +85,10 @@ export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValue
 			filterValue = ' '; // empty value for empty/notEmpty filters
 			break;
 		case 'date':
-			filterValue = [filterValues?.[0] || '1970-01-01', filterValues?.[1] || moment().format('YYYY-MM-DD')];
+			filterValue = {
+				gte: filterValues?.gte || '1970-01-01',
+				lte: filterValues?.lte || moment().format('YYYY-MM-DD'),
+			};
 			break;
 		case 'range':
 			filterValue = [filterValues?.[0], filterValues?.[1]];
@@ -111,6 +114,7 @@ export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValue
 			return {
 				...baseFilter,
 				columnType: 'date',
+				type: 'advanced',
 				isKeyword: false,
 				searchType: 'betweenInclusive',
 			};
@@ -161,6 +165,11 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 	const mapViews = watch('mapViews');
 
 	const layers = globalStateController.getValue('layers');
+
+	const tableKey = Object.keys(tableESState).find(key => {
+		const tableState = tableESState[key].get({ noproxy: true });
+		return tableState?.layerIdentifier === dataSourceName;
+	});
 
 	const [debouncedFilterValues, setDebouncedFilterValues] = useState(filterValues); // New state for debounced filter values
 
@@ -277,10 +286,6 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			const mapViewFilters = getMapViewFilters();
 			// Upsert the map view data to the GraphQL API
 			if (canUpdateMapView) {
-				const tableKey = Object.keys(tableESState).find(key => {
-					const tableState = tableESState[key].get({ noproxy: true });
-					return tableState?.layerIdentifier === dataSourceName;
-				});
 				const tableState = tableESState[tableKey]?.get({ noproxy: true });
 
 				const formattedFilter = getFormattedFilterBasedOnType(
@@ -393,11 +398,24 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 						v?.type
 							? null
 							: {
-									label: 'Multi Select',
-									value: 'multiselect',
-								}
+								label: 'Multi Select',
+								value: 'multiselect',
+							}
 					);
 					setValue(`mapViews.${index}.filterValues`, null);
+
+					if (tableKey) {
+						tableController(tableKey).clearFilter(
+							(previousValue?.value || previousValue)?.replace('.keyword', ''),
+							true,
+							false
+						);
+						tableController(tableKey).setFilterMode(
+							(fieldName?.value || fieldName)?.replace('.keyword', ''),
+							'singleselect',
+							false
+						);
+					}
 				}, // Reset other fields on change
 			},
 		];
@@ -440,11 +458,6 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		mapViewFilters = mapViewFilters.filter((_, i) => i !== index);
 
 		remove(index); // Set the filter cleared state to true
-
-		const tableKey = Object.keys(tableESState).find(key => {
-			const tableState = tableESState[key].get({ noproxy: true });
-			return tableState?.layerIdentifier === dataSourceName;
-		});
 
 		tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
 		tableController(tableKey).setFilterMode(

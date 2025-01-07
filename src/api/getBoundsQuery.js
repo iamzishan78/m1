@@ -201,6 +201,7 @@ const getBoundsQuery = async ({
 				name: 1,
 				fileId: 1,
 				type: 1,
+				'properties.layerShapeName': 1,
 			});
 		} else if (isWellsQuery) {
 			Object.assign(variables.project, {

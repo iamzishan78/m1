@@ -59,6 +59,7 @@ const CampaignMeta = {
 		pageSize: 50,
 	},
 	defaultSort: { field: 'flatSyncAt', order: 'desc' },
+	refetchQueries: ['getCampaignAnalytics'],
 	maxTableHeight: 'calc(100vh - 490px)',
 	onCustomKeyChange,
 	isInFiniteScroll: true,

@@ -222,7 +222,14 @@ const RelatedTractsMeta = {
 			Cell: ({ renderedCellValue, row }) => {
 				const id = row.getValue('_id');
 				const targetLabel = 'parcel';
-				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={targetLabel} />;
+				return (
+					<CommentCell
+						id={id}
+						value={renderedCellValue.length}
+						targetLabel={targetLabel}
+						tableKey={'RelatedTractsTable'}
+					/>
+				);
 			},
 		},
 	],

@@ -291,13 +291,7 @@ function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
 			});
 			updateParcelOwner({
 				variables: { parcelOwner },
-				refetchQueries: [
-					'getparcelOwners',
-					'getContactParcelInterests',
-					'getContactParcelInterest',
-					'getDbData',
-					'getCustomLayer',
-				],
+				refetchQueries: ['getparcelOwners', 'getDbData', 'getCustomLayer'],
 				awaitRefetchQueries: true,
 			});
 		} else {
@@ -312,13 +306,7 @@ function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
 			});
 			addOwnerToAParcel({
 				variables: { parcelOwner },
-				refetchQueries: [
-					'getCustomLayer',
-					'getparcelOwners',
-					'getContactParcelInterests',
-					'getContactParcelInterest',
-					'getDbData',
-				],
+				refetchQueries: ['getCustomLayer', 'getparcelOwners', 'getDbData'],
 				awaitRefetchQueries: true,
 			});
 		}

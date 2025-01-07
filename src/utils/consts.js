@@ -6,10 +6,21 @@ export const SMALL_TIMEOUT = 300;
 
 export const WEEK_DAYS = 7;
 
-export const ENTER_KEY_CODE = 13;
+export const KEYBOARD_KEYS = {
+	ENTER: 13,
+	TAB: 9,
+	UP: 38,
+	DOWN: 40,
+	LEFT: 37,
+	RIGHT: 39,
+	ESC: 27,
+	SMALL_N: 110,
+	CAPITAL_N: 78,
+};
 
 export const BYTE = 1024;
 
+export const SUCCESS_STATUS = 200;
 export const CREATED_STATUS = 201;
 
 export const colorPallete = [

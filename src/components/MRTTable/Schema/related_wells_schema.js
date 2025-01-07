@@ -8,6 +8,10 @@ import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
 const esIndex = 'shapewellinterests_flat';
+const onClickedRow = selectedRow => {
+	window.setDrawer('relatedWell');
+	window.setStateApp(stateApp => ({ ...stateApp, selectedWell: selectedRow }));
+};
 
 const RelatedWellsMeta = {
 	esIndex,
@@ -19,6 +23,7 @@ const RelatedWellsMeta = {
 	defaultSort: { field: '_ts', order: 'desc' },
 	isInFiniteScroll: true,
 	columnVirtualization: true,
+	onClickedRow,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
@@ -94,7 +99,24 @@ const RelatedWellsMeta = {
 			name: 'wellStatus.keyword',
 			id: 'wellStatus',
 		},
-
+		{
+			...CommonSchema.COMMON_COLUMN,
+			header: 'Last 12 (BOE)',
+			name: 'lastTwelveMonthBOE.keyword',
+			accessorKey: 'lastTwelveMonthBOE',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			header: 'MD (ft)',
+			name: 'measuredDepth.keyword',
+			accessorKey: 'measuredDepth',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			header: 'Lateral Length (ft)',
+			name: 'lateralLength.keyword',
+			accessorKey: 'lateralLength',
+		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			header: 'Last 12 (BOE)',
@@ -120,7 +142,15 @@ const RelatedWellsMeta = {
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const id = row.getValue('_id');
-				return <TagCell id={id} targetSourceId={id} tags={row?.original?.tags} targetLabel={'well'} />;
+				return (
+					<TagCell
+						id={id}
+						targetSourceId={id}
+						tags={row?.original?.tags}
+						targetLabel={'well'}
+						tableKey={'RelatedWellsTable'}
+					/>
+				);
 			},
 		},
 
@@ -128,7 +158,9 @@ const RelatedWellsMeta = {
 			...CommonSchema.COMMENTS,
 			Cell: ({ renderedCellValue, row }) => {
 				const id = row.getValue('_id');
-				return <CommentCell id={id} value={renderedCellValue?.length} targetLabel={'well'} />;
+				return (
+					<CommentCell id={id} value={renderedCellValue?.length} targetLabel={'well'} tableKey={'RelatedWellsTable'} />
+				);
 			},
 		},
 		{

@@ -56,14 +56,15 @@ export default function CampaignAnalytics({ appliedFilters, contactSearchQuery }
 	const [analyticsData, setAnalyticsData] = useState({});
 	const precision = 9;
 
-	const [getCampaignAnalytics] = useLazyQuery(GET_CAMPAIGN_ANALYTICS, {
+	const [getCampaignAnalytics, { data }] = useLazyQuery(GET_CAMPAIGN_ANALYTICS, {
 		fetchPolicy: 'no-cache',
-		onCompleted: data => {
-			if (data?.campaignAnalytics) {
-				setAnalyticsData(data?.campaignAnalytics);
-			}
-		},
 	});
+
+	useEffect(() => {
+		if (data?.campaignAnalytics) {
+			setAnalyticsData(data?.campaignAnalytics);
+		}
+	}, [data]);
 
 	// Wrap non-empty query with '*' to use a contains expression; otherwise, use '*'
 	const query = contactSearchQuery ? `*${contactSearchQuery}*` : '*';

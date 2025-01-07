@@ -144,7 +144,7 @@ function SelectedField({
 				<CampaignField
 					value={fieldKey}
 					onChange={values => {
-						setFieldKey(values); // Sets the field key value
+						setFieldKey(values?.length === 0 ? '' : values); // Sets the field key value
 						setCampaigns(values); // Updates campaigns array
 					}}
 					fullWidth // Renders field with full width
@@ -625,7 +625,7 @@ export default function AssignOwnerToContactDrawer({
 						}
 						break;
 
-					case 'TractPerUnitTable':
+					case 'TractInterestOwnerTable':
 						{
 							const parcelOwnersToUpdate = rows.map(row => ({
 								_id: row._id,

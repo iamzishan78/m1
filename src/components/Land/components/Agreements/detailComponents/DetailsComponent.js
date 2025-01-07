@@ -185,9 +185,9 @@ const useStyles = makeStyles(() => ({
 			},
 		},
 	},
-	tabsDetailContainer: () => ({
+	tabsDetailContainer: ({ drawer }) => ({
 		padding: 20,
-		width: '100%',
+		width: drawer ? 'calc(100% - 644px)' : '100%',
 	}),
 	menuIcon: {
 		marginLeft: 10,
@@ -599,7 +599,7 @@ export function DetailComponents(props) {
 								className={classes.metaButton}
 								onClick={handleMetaToggle}
 							>
-								Metadata
+								Meta Data
 							</Button>
 							<IconButton size="small" component="span" className={classes.menuIcon} onClick={handleMenuClick}>
 								<MoreHorizIcon id="moreHorizIcon" size="medium" />
