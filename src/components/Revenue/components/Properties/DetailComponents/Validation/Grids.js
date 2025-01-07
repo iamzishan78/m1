@@ -24,8 +24,6 @@ const ValidationGrids = ({ propertyId }) => {
 
 	// Ensure `WellProductionOverrideMeta` updates when `stateApp.associatedWellIds` changes
 	const WellProductionOverrideMeta = useMemo(() => {
-		if (!stateApp.associatedWellIds) return null;
-
 		return {
 			defaultFilters: [{ field: 'well._id', value: stateApp.associatedWellIds }],
 			tabLabels: ['Well Production', 'Sales vs Production Volumes'],

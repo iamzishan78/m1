@@ -197,7 +197,7 @@ const CustomAutocomplete = ({
 			multiple={multiple}
 			options={options.filter(option => (multiple ? !field?.value?.includes(option) : true))}
 			onChange={(e, v, r) => {
-				onChange?.(e, v, r);
+				onChange?.(e, v, r, field?.value);
 				field.onChange(v);
 			}}
 			value={(multiple && typeof field?.value === 'string' ? [field?.value] : field?.value) || (multiple ? [] : '')}

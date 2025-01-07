@@ -33,7 +33,7 @@ import vf_number from 'components/Shared/valueformatters/vf_number';
 
 import { globalStateController } from 'hookstate/globalStateController';
 
-import { ENTER_KEY_CODE, INTEREST_TO_FIXED } from 'utils/consts';
+import { KEYBOARD_KEYS, INTEREST_TO_FIXED } from 'utils/consts';
 import { US_STATES_CODES } from 'utils/data';
 import { getRoundedNra, isEven, validateUrl } from 'utils/helper';
 
@@ -65,7 +65,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
 				}}
 				data-testid={`data-field-${data.label}`}
 				onKeyDown={e => {
-					if (e.keyCode === ENTER_KEY_CODE) {
+					if (e.keyCode === KEYBOARD_KEYS.ENTER) {
 						e.stopPropagation();
 						if (['uName', 'shapeLabel'].includes(data.key) && !e.target.value?.trim()) {
 							// validate after trimming the value
@@ -602,7 +602,7 @@ export default function SummaryTableInfo({
 												}}
 												onChange={(e, value) => {
 													e.keyCode = 13;
-													if (value?.key && e.keyCode === ENTER_KEY_CODE) {
+													if (value?.key && e.keyCode === KEYBOARD_KEYS.ENTER) {
 														updateProperties(e, data.key, value.key);
 													}
 												}}

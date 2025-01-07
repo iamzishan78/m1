@@ -270,6 +270,7 @@ const RelatedlUnitInterestMeta = {
 						targetSourceId={targetSourceId}
 						tags={row?.original?.tags}
 						targetLabel={'Unit Ownership'}
+						tableKey={'RelatedUnitInterestTable'}
 					/>
 				);
 			},
@@ -279,7 +280,14 @@ const RelatedlUnitInterestMeta = {
 			...CommonSchema.COMMENTS,
 			Cell: ({ renderedCellValue, row }) => {
 				const id = row.getValue('ownerEntity');
-				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'Unit Ownership'} />;
+				return (
+					<CommentCell
+						id={id}
+						value={renderedCellValue.length}
+						targetLabel={'Unit Ownership'}
+						tableKey={'RelatedUnitInterestTable'}
+					/>
+				);
 			},
 		},
 	],

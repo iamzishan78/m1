@@ -691,7 +691,7 @@ const tableESStateControllerHandler = state => ({
 		return esFilters;
 	},
 
-	clearFilter: (field, updateMapView = true) => {
+	clearFilter: (field, updateMapView = true, viewChanged = true) => {
 		const filtersState = state.filters?.get({ noproxy: true });
 		const mapView = globalStateController.getValue('mapView');
 		const mapViewsFitlers = mapView?.selectedMapView?.filters || [];
@@ -705,10 +705,10 @@ const tableESStateControllerHandler = state => ({
 
 			if (tableState?.layerIdentifier) {
 				globalStateController.updateState({
-					viewChanged: true,
+					viewChanged,
 					mapView: {
 						...mapView,
-						viewChanged: true,
+						viewChanged,
 						selectedMapView: {
 							...mapView?.selectedMapView,
 							filters: [
