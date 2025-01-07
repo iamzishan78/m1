@@ -8,7 +8,7 @@ import FilterModeMenuItems from '../Common/FilterModeMenuItems';
 export const columnFilterModesFnRefs = {};
 
 const filterModeMenu =
-	({ options, tableKey, name, controller, layerIdentifier }) =>
+	({ options, tableKey, name, schemaColumn, controller, layerIdentifier }) =>
 	({ onSelectFilterMode }) => {
 		const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView;
 		const mapViewFilter = selectedMapView?.filters?.find(
@@ -16,7 +16,11 @@ const filterModeMenu =
 		);
 		const isClientSide = tableController(tableKey).getValue('isClientSide');
 
-		const filterType = isClientSide ? 'singleselect' : mapViewFilter?.filterType;
+		const filterType = isClientSide
+			? schemaColumn.type === 'number'
+				? 'equals'
+				: 'singleselect'
+			: mapViewFilter?.filterType;
 
 		if (!columnFilterModesFnRefs?.[tableKey]) {
 			columnFilterModesFnRefs[tableKey] = {};
@@ -34,7 +38,9 @@ const filterModeMenu =
 					intiated,
 				},
 			};
-			if (!isSingleMulti) {onSelectFilterMode(filterType);}
+			if (!isSingleMulti) {
+				onSelectFilterMode(filterType);
+			}
 		}
 
 		return options.map(option => (

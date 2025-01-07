@@ -139,7 +139,7 @@ export const handleMRTSchema = ({
 					break;
 			}
 
-			schemaColumn.accessorFn = row => get(row, schemaColumn.id, defaultValue);
+			schemaColumn.accessorFn = row => get(row, schemaColumn.id) ?? defaultValue;
 		}
 
 		if (schemaColumn.header && !schemaColumn.showInLast) {
@@ -173,6 +173,7 @@ export const handleMRTSchema = ({
 					options,
 					tableKey,
 					name: schemaColumn.accessorKey || schemaColumn.id,
+					schemaColumn,
 					controller: tableController,
 					layerIdentifier,
 				});
@@ -180,7 +181,7 @@ export const handleMRTSchema = ({
 
 			const updatedFilterModes = tableController(tableKey).setInitialFilterMode(
 				schemaColumn,
-				'singleselect',
+				schemaColumn.type === 'number' ? 'equals' : 'singleselect',
 				schemaColumn.id
 			);
 
@@ -285,6 +286,7 @@ export const handleMRTSchema = ({
 				options,
 				tableKey,
 				name: schemaColumn.accessorKey || schemaColumn.id,
+				schemaColumn,
 				controller: tableController,
 				layerIdentifier,
 			});
