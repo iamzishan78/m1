@@ -44,6 +44,9 @@ const useStyles = makeStyles(theme => ({
 		border: '2px dashed #dddddd',
 		marginBottom: '30px',
 	},
+	disabledDropzoneClass : {
+		'&:hover': { backgroundColor: '#eee' },
+	},
 	bold: {
 		fontWeight: 'bold',
 	},
@@ -56,6 +59,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function UploadZone({ setFileUpload, relatedObjectType, customClass, title, setUrl, url }) {
+	const classes = useStyles();
+
 	const handleFileInput = files => {
 		if (Array.isArray(files)) {
 			let fileName = files[0]?.file?.name;
@@ -74,17 +79,16 @@ export default function UploadZone({ setFileUpload, relatedObjectType, customCla
 
 	const handleUrlChange = (event) => {
 		const value = event.target.value;
-		setUrl({...url, value: value });
+		const isValid = validateUrl(value);
+		setUrl({...url, value: value, isValid: isValid  });
 	};
 
 	const handleUrlBlur = () => {
 		// Validate URL when the field loses focus
 		const error = url?.value && !validateUrl(url?.value) ? true : false;
-		const isValid = error ? false : true;
+		const isValid = (error || !url?.value)  ? false : true;
 		setUrl({ ...url, error: error, isValid: isValid });
 	};
-
-	const classes = useStyles();
 
 	return (
 		<>
@@ -97,7 +101,10 @@ export default function UploadZone({ setFileUpload, relatedObjectType, customCla
 						filesLimit={1}
 						dropzoneText={'+'}
 						maxFileSize={104857600}
-						dropzoneClass={classes.dropzoneClassCRM}
+						dropzoneClass={`${classes.dropzoneClassCRM} ${(url?.value ? classes.disabledDropzoneClass : '')}`} 
+						dropzoneProps={
+							{disabled:(url?.value ?? false)}
+						}
 					></DropzoneAreaBase>
 
 					<Box sx={{ display: 'flex', alignItems: 'center', my: 2 }}>
