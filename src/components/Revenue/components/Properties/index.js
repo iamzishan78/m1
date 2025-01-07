@@ -1,6 +1,8 @@
-import { useLazyQuery } from '@apollo/client';
-import { makeStyles } from '@material-ui/styles';
 import React, { useState, useContext, useEffect } from 'react';
+
+import { makeStyles } from '@material-ui/styles';
+
+import { useLazyQuery } from '@apollo/client';
 
 import MRTTable from 'components/MRTTable';
 import AnalyticsCards from 'components/Revenue/components/Common/AnalyticsCards';

@@ -1,9 +1,11 @@
-import { useMutation } from '@apollo/client';
+import React, { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+
 import { Button, CircularProgress, Grid, makeStyles } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
-import React, { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+
+import { useMutation } from '@apollo/client';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import Loaders from 'components/Loaders';
@@ -104,7 +106,7 @@ function AgreementUnitDialog(props) {
 				Loaders.errorToast('ageement-unit-creation', data.addRelatedShape.message);
 			}
 		},
-		refetchQueries: ['getESSimpleSearch', 'getESFilterList'],
+		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
 
@@ -118,7 +120,7 @@ function AgreementUnitDialog(props) {
 				descriptorObject: props.shapeId,
 				relatedObject: selectedShapeLayer._id,
 			},
-			refetchQueries: ['getESSimpleSearch', 'getCustomLayer'],
+			refetchQueries: ['getDbData', 'getCustomLayer'],
 			awaitRefetchQueries: true,
 		});
 		tableGlobalController.refetch();

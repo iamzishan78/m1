@@ -1,3 +1,6 @@
+import React, { useCallback, useContext, useEffect } from 'react';
+import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
+
 import {
 	Typography,
 	Accordion,
@@ -11,10 +14,8 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { ExpandMore as ExpandMoreIcon, Close as ClearButton } from '@material-ui/icons';
-import React, { useCallback, useContext, useEffect } from 'react';
 
 // Contexts
-import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 
 import { NavigationContext } from 'components/Navigation/NavigationContext';
 //Components
@@ -26,6 +27,7 @@ import { navController } from 'hookstate/navStateController';
 
 import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem } from '../style';
 import UserMapFilter from './UserMapFilter';
+import { customLayersFieldAccessors } from './consts';
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -170,6 +172,7 @@ const LayerFilters = () => {
 
 	const { navStateValues } = navController.useState(['geographyFilterCount', 'wellFilterCount'], 'navStateValues');
 	const { mapStateValues } = globalStateController.useState(['mapView', 'viewChanged'], 'mapStateValues');
+	const layers = globalStateController.getValue('layers');
 
 	const formMethods = useForm({
 		defaultValues: {
@@ -313,7 +316,7 @@ const LayerFilters = () => {
 				))}
 				<FormProvider {...formMethods}>
 					<div style={{ marginTop: '50px' }}>
-						<StyledMenuSecondaryHeaderItem>
+						<StyledMenuSecondaryHeaderItem disableRipple>
 							<ListItemText primary={'User Defined Data'} />
 							<StyledListItemSecondaryAction>
 								<Button
@@ -334,9 +337,25 @@ const LayerFilters = () => {
 								</Button>
 							</StyledListItemSecondaryAction>
 						</StyledMenuSecondaryHeaderItem>
-						{fields.map((mapView, index) => (
-							<UserMapFilter key={mapView.id} mapView={mapView} index={index} remove={remove} />
-						))}
+						{fields.map((mapView, index) => {
+							// Check if mapView has a valid dataSourceName and if it's a string
+							if (mapView?.dataSourceName && typeof mapView?.dataSourceName === 'string') {
+								// Extract fileId and layerShapeName from dataSourceName
+								const fileId = mapView?.dataSourceName?.substring(0, mapView?.dataSourceName?.indexOf('_'));
+								const layerShapeName = mapView?.dataSourceName?.substring(mapView?.dataSourceName?.indexOf('_') + 1);
+
+								// Find the corresponding layer in the layers array
+								const layer = layers.find(l => l.file === fileId && l.layerShapeName === layerShapeName);
+
+								// Skip rendering if no custom layers field accessor or no matching layer found
+								if (!customLayersFieldAccessors[mapView?.dataSourceName] && !layer) return null;
+							}
+
+							// Render the UserMapFilter component if the checks pass
+							return (
+								<UserMapFilter key={mapView.id} mapView={mapView} index={index} remove={remove} resetForm={resetForm} />
+							);
+						})}
 					</div>
 				</FormProvider>
 			</div>

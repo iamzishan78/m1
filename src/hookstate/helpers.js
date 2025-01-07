@@ -1,5 +1,7 @@
-import _ from 'lodash';
+/* eslint-disable react/prop-types */
 import React from 'react';
+
+import _, { get } from 'lodash';
 
 import DataType from 'components/Common/DataType';
 import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';
@@ -17,6 +19,8 @@ import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoenn
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 import { tableController } from 'hookstate/tableController';
+
+import { SMALL_TIMEOUT } from 'utils/consts';
 
 import { globalStateController } from './globalStateController';
 
@@ -85,16 +89,16 @@ export const handleColumnMenuClick = () => {
 				element.addEventListener('click', clickListner);
 			});
 		}
-	}, 300);
+	}, SMALL_TIMEOUT);
 };
 
 export const handleMRTSchema = ({
 	_Schema,
 	tableKey,
 	esIndex,
+	modelName,
 	defaultFlterMode,
 	search,
-	columnVirtualization,
 	globalFilter,
 	layerIdentifier,
 	isClientSide,
@@ -115,14 +119,39 @@ export const handleMRTSchema = ({
 		dataSourceViews?.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)) ||
 		[];
 	const _TableSchema = _Schema.map(schemaColumn => {
+		if (!schemaColumn.accessorFn) {
+			let defaultValue = null;
+
+			switch (schemaColumn.type) {
+				case 'string':
+				case 'number':
+				case 'mongoID':
+				case 'boolean':
+				case 'date':
+					defaultValue = '';
+					break;
+
+				case 'array':
+					defaultValue = [];
+					break;
+
+				default:
+					break;
+			}
+
+			schemaColumn.accessorFn = row => get(row, schemaColumn.id) ?? defaultValue;
+		}
+
 		if (schemaColumn.header && !schemaColumn.showInLast) {
-			schemaColumn.Header = () => {
+			const HeaderComp = () => {
 				const { header, type } = schemaColumn;
 				const {
 					stateValues: { showTypes },
 				} = tableController(tableKey).useState(['showTypes']);
 				return <DataType title={header} type={type || 'unknown'} showType={showTypes} />;
 			};
+
+			schemaColumn.Header = HeaderComp;
 		}
 
 		if (isClientSide) {
@@ -144,11 +173,19 @@ export const handleMRTSchema = ({
 					options,
 					tableKey,
 					name: schemaColumn.accessorKey || schemaColumn.id,
+					schemaColumn,
 					controller: tableController,
+					layerIdentifier,
 				});
 			}
 
-			return schemaColumn;
+			const updatedFilterModes = tableController(tableKey).setInitialFilterMode(
+				schemaColumn,
+				schemaColumn.type === 'number' ? 'equals' : 'singleselect',
+				schemaColumn.id
+			);
+
+			return { ...schemaColumn, ...updatedFilterModes };
 		}
 
 		if (schemaColumn.filter && !schemaColumn.Filter) {
@@ -158,11 +195,13 @@ export const handleMRTSchema = ({
 						<ESAutoCompleteFilter
 							tableKey={tableKey}
 							esIndex={esIndex}
+							modelName={modelName}
 							column={{
 								field: column.columnDef.name,
 								isComposite: column.columnDef.isComposite,
 								label: column.columnDef.header,
 								type: column.columnDef.type,
+								subType: column.columnDef.subType,
 								defaultFilterOptions: column.columnDef.defaultFilterOptions,
 								setFilterValue: column.setFilterValue,
 								filterSelectOptions: column.columnDef.filterSelectOptions,
@@ -195,10 +234,12 @@ export const handleMRTSchema = ({
 						<ESAutoCompleteFilter
 							tableKey={tableKey}
 							esIndex={esIndex}
+							modelName={modelName}
 							column={{
 								field: column.columnDef.name,
 								label: column.columnDef.header,
 								type: column.columnDef.type,
+								subType: column.columnDef.subType,
 								defaultFilterOptions: column.columnDef.defaultFilterOptions,
 								setFilterValue: column.setFilterValue,
 								filterSelectOptions: column.columnDef.filterSelectOptions,
@@ -245,7 +286,9 @@ export const handleMRTSchema = ({
 				options,
 				tableKey,
 				name: schemaColumn.accessorKey || schemaColumn.id,
+				schemaColumn,
 				controller: tableController,
+				layerIdentifier,
 			});
 		}
 
@@ -294,11 +337,11 @@ export const handleMRTSchema = ({
 		'& .MuiDialog-root': {
 			zIndex: '99999',
 		},
-		'& .MuiToolbar-root': {
+		'& .Mui-ToolbarDropZone': {
 			backgroundColor: '#F2F2F2',
 			borderBottom: '1px solid rgba(224, 224, 224, 1)',
 		},
-		'& th.MuiToolbar-root, .MuiTableRow-head, th.MuiTableCell-head': {
+		'& th.MuiToolbar-root, .MuiTableRow-head, th.MuiTableCell-head,th.MuiTableCell-head::before': {
 			backgroundColor: '#F2F2F2',
 		},
 		'& .Mui-TableHeadCell-Content-Labels': {
@@ -322,16 +365,6 @@ export const handleMRTSchema = ({
 	handleVisiblityMenuClick();
 	handleColumnMenuClick();
 
-	if (pinnedColumns.length > 0 && columnVirtualization) {
-		let size = 60;
-		// let size = 120;
-		pinnedColumns.forEach(column => {
-			size += column.size;
-		});
-		tableCss['& .MuiTableRow-root>:nth-child(2)'] = {
-			marginLeft: `-${size}px !important`,
-		};
-	}
 	const groupedField =
 		_TableSchema.find(column => column.isGrouped)?.accessorKey || _TableSchema.find(column => column.isGrouped)?.id;
 
@@ -342,6 +375,10 @@ export const handleMRTSchema = ({
 	const filterModes = _TableSchema
 		.filter(column => column.filter)
 		.reduce((acc, cur) => ({ ...acc, [cur.accessorKey || cur.id]: 'custom' }), {});
+
+	if (!isClientSide) {
+		columnVisibility['mrt-row-select'] = false;
+	}
 
 	return {
 		_TableSchema,

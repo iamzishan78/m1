@@ -1,10 +1,12 @@
-import { useMutation, useLazyQuery } from '@apollo/client';
+import React, { useState, useEffect, useMemo } from 'react';
+
 import { Grid, Typography, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { AccountCircle } from '@material-ui/icons';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
 import { get } from 'lodash';
-import React, { useState, useEffect, useMemo } from 'react';
 
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';
 import NewSubtask from 'components/Transact/components/Common/NewSubtask';

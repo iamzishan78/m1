@@ -1,7 +1,9 @@
+import React, { useState, useEffect } from 'react';
+
+import { makeStyles } from '@material-ui/core/styles';
+
 import * as am4charts from '@amcharts/amcharts4/charts';
 import * as am4core from '@amcharts/amcharts4/core';
-import { makeStyles } from '@material-ui/core/styles';
-import React, { useState, useEffect } from 'react';
 
 import vf_number from 'components/Shared/valueformatters/vf_number';
 

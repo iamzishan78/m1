@@ -1,6 +1,7 @@
-import { range } from 'lodash';
 import React, { useContext, useState, useEffect } from 'react';
 import ReactDataGrid from 'react-data-grid-m1n-version';
+
+import { range } from 'lodash';
 
 import { TitleOpinionContext } from '../TitleOpinionContext';
 import 'react-data-grid-m1n-version/dist/react-data-grid.css';

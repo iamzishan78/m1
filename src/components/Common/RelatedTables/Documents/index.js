@@ -1,5 +1,6 @@
-import { Container, Button, ButtonGroup } from '@material-ui/core';
 import React, { useContext, useMemo } from 'react';
+
+import { Container, Button, ButtonGroup } from '@material-ui/core';
 
 import RelatedFile from 'components/Document/components/RelatedFile';
 import { DrawerContext } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
@@ -31,12 +32,7 @@ function RelatedDocumentsTable(props) {
 			onClickedRow: onClickedRow,
 			CustomToolBar: () => {
 				return (
-					<ButtonGroup
-						variant="contained"
-						style={{ height: '30px', marginTop: '3px' }}
-						color="primary"
-						aria-label="split button"
-					>
+					<ButtonGroup variant="contained" style={{ height: '30px' }} color="primary" aria-label="split button">
 						<Button
 							id="addRelatedDocumentButton"
 							size="small"

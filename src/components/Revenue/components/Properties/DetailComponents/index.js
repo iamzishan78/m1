@@ -1,5 +1,6 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useState, useRef, useEffect, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import {
 	Typography,
 	IconButton,
@@ -19,17 +20,17 @@ import {
 	Delete as DeleteIcon,
 } from '@material-ui/icons';
 import { makeStyles, withStyles } from '@material-ui/styles';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { get } from 'lodash';
-import React, { useState, useRef, useEffect, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
 
 import AddNewRelatedAgreementDialog from 'components/Land/components/Agreements/detailComponents/relatedAgreements/AddNewRelatedAgreementDialog';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
 import NavHeader from 'components/Revenue/components/Common/NavHeader';
 import Validation from 'components/Revenue/components/Properties/DetailComponents/Validation';
 import DocViewer from 'components/Shared/DocViewer';
 import { copy } from 'components/Shared/functions';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import Tags from 'components/Shared/Tagger';
 
 import { UPDATE_PROPERTY } from 'graphQL/useMutationUpdateProperty';
@@ -37,20 +38,20 @@ import { UPSERT_USER_DESCRIPTOR } from 'graphQL/useMutationUserDescriptor';
 import { GET_PROPERTY } from 'graphQL/useQueryGetProperty';
 import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
 
+import { detailCardController } from 'hookstate/detailCardController';
+
 import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
 import { ConvertOwnerToContactContainer } from 'store/containers/entity';
-import { AppContext } from 'AppContext';
-
-// Components
-import PropertyInterestDetailsSection from './PropertyInterestDetailsSection';
-import InterestDetailForm from './InterestDetailForm';
-import HeaderSection from './HeaderSection';
 
 import { getIdFromPath } from 'utils/helper';
 
-import { detailCardController } from 'hookstate/detailCardController';
+import { AppContext } from 'AppContext';
 
-const useStyles = makeStyles(theme => ({
+import HeaderSection from './HeaderSection';
+import InterestDetailForm from './InterestDetailForm';
+import PropertyInterestDetailsSection from './PropertyInterestDetailsSection';
+
+const useStyles = makeStyles(() => ({
 	root: {
 		height: '100vh',
 		backgroundColor: '#f3f3f3',
@@ -343,21 +344,17 @@ export default function DetailComponents(props) {
 		}
 	}, [checkIfOwnersAreContactsData]);
 
-	const deleteFunc = ids => {
-		if (ids.length > 0) {
-			for (let i = 0; i < ids.length; i++) {
-				updateProperty({
-					variables: {
-						property: {
-							_id: propertyDetails._id,
-							IsDeleted: true,
-						},
-					},
-				}).then(res => {
-					history.push('/revenue/properties');
-				});
-			}
-		}
+	const deleteFunc = () => {
+		updateProperty({
+			variables: {
+				property: {
+					_id: propertyDetails._id,
+					IsDeleted: true,
+				},
+			},
+		}).then(() => {
+			history.push('/revenue/properties');
+		});
 	};
 
 	const onUpdateMetaData = data => {
@@ -535,15 +532,13 @@ export default function DetailComponents(props) {
 				)}
 			</div>
 			<Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)} fullWidth={true} maxWidth={'sm'}>
-				<DeleteConfirmationDialogContent
+				<DeleteConfirmationDialog
 					header={'Delete Property'}
 					onClose={() => setOpenDeleteDialog(false)}
 					deleteFunc={deleteFunc}
-					m1nSelectedRowsIds={[propertyDetails?._id]}
-					setM1nSelectedRowsIndexes={() => {}}
 				>
 					{'Do you want to delete this property?'}
-				</DeleteConfirmationDialogContent>
+				</DeleteConfirmationDialog>
 			</Dialog>
 			{/**
 			 * Menu for meta data

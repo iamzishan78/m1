@@ -1,4 +1,6 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+
 import { CircularProgress, Dialog, ListItemIcon, ListItemText, Menu, MenuItem } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
@@ -8,26 +10,23 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import DeleteIcon from '@material-ui/icons/Delete';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import React, { useState, useEffect, useCallback } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
+import AutoCompleteFieldComponent from 'components/Shared/Forms/Fields/AutoCompleteField';
 import WellSearchApiField from 'components/Shared/Forms/Fields/WellSearchApiField';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import CloseIcon2 from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
 import { ADD_SHAPE_WELL_INTEREST } from 'graphQL/useMutationAddShapeWellInterest';
 import { UPDATE_SHAPE_WELL_INTEREST } from 'graphQL/useMutationUpdateShapeWellInterest';
-
-// contexts
-import AutoCompleteFieldComponent from 'components/Shared/Forms/Fields/AutoCompleteField';
-
 import { WELL_INTEREST_SELECT_OPTIONS } from 'graphQL/useQueryWellInterestSelectOptions';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableGlobalController } from 'hookstate/tableController';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	dialogFooter: {
 		display: 'flex',
 		justifyContent: 'flex-end',
@@ -88,19 +87,16 @@ function RelatedWellsDialog(props) {
 		getWellInterestsSelectOptions({
 			variables: { selectKeys: ['Operator', 'WellType', 'WellStatus', 'WellBoreProfile'] },
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
 		setWellInterestSelectOptions(dataWellInterestsSelectOptions?.wellInterestsSelectOptions?.res);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, dataWellInterestsSelectOptions);
 
 	const getOptions = useCallback(
 		type => {
 			return wellInterestSelectOptions ? wellInterestSelectOptions[type]?.map(e => e.Desc || e.Name) : [];
 		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[wellInterestSelectOptions]
 	);
 
@@ -108,7 +104,7 @@ function RelatedWellsDialog(props) {
 		if (props.wellInterest) {
 			props.wellInterest.api = props.wellInterest.apiNumber;
 			setSelectedWell({
-				Id: props.wellInterest.wellId,
+				Id: props.wellInterest.globalWell,
 				WellName: props.wellInterest.wellName,
 				ApiNumber: props.wellInterest.api,
 				LeaseId: props.wellInterest.leaseId,
@@ -118,7 +114,6 @@ function RelatedWellsDialog(props) {
 
 			reset(props.wellInterest);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.wellInterest]);
 
 	useEffect(() => {
@@ -161,7 +156,7 @@ function RelatedWellsDialog(props) {
 						},
 					],
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
+				refetchQueries: ['getDbData', 'getESFilterList'],
 				awaitRefetchQueries: true,
 			});
 		} else {
@@ -175,7 +170,7 @@ function RelatedWellsDialog(props) {
 						...getValues(),
 					},
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getShapeSummaryDetails'],
+				refetchQueries: ['getDbData', 'getESFilterList', 'getShapeSummaryDetails'],
 				awaitRefetchQueries: true,
 			});
 		}
@@ -202,7 +197,7 @@ function RelatedWellsDialog(props) {
 						},
 					],
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getShapeSummaryDetails'],
+				refetchQueries: ['getDbData', 'getESFilterList', 'getShapeSummaryDetails'],
 				awaitRefetchQueries: true,
 			});
 		} catch {
@@ -348,32 +343,9 @@ function RelatedWellsDialog(props) {
 					name="operator"
 					label="Operator"
 					defaultValue={''}
-					disabled
 					options={getOptions('Operator') || []}
 					as={<AutoCompleteFieldComponent />}
 				/>
-
-				{/* <Controller
-              control={control}
-              name="leaseAcres"
-              render={(props) => (
-                <TextField
-                  variant="outlined"
-                  margin="dense"
-                  value={props.value}
-                  inputRef={props.ref}
-                  onChange={(event) => {
-                    props.onChange(parseFloat(event.target.value))
-                  }}
-                  label={"Lease Acres"}
-                  fullWidth
-                  defaultValue=""
-                  InputProps={{
-                    inputComponent: NumberFormatCustom,
-                  }}
-                />
-              )}
-            /> */}
 			</div>
 
 			<div>
@@ -383,7 +355,6 @@ function RelatedWellsDialog(props) {
 						name="wellType"
 						label="Well Type"
 						defaultValue={''}
-						disabled
 						options={getOptions('WellType') || []}
 						as={<AutoCompleteFieldComponent />}
 					/>
@@ -393,7 +364,6 @@ function RelatedWellsDialog(props) {
 						name="wellBoreProfile"
 						label="Wellbore Profile"
 						defaultValue={''}
-						disabled
 						options={getOptions('WellBoreProfile') || []}
 						as={<AutoCompleteFieldComponent />}
 					/>
@@ -403,9 +373,41 @@ function RelatedWellsDialog(props) {
 						name="wellStatus"
 						label="Well Status"
 						defaultValue={''}
-						disabled
 						options={getOptions('WellStatus') || []}
 						as={<AutoCompleteFieldComponent />}
+					/>
+					<Controller
+						control={control}
+						name="lastTwelveMonthBOE"
+						label="Last 12 (BOE)"
+						as={TextField}
+						variant="outlined"
+						margin="dense"
+						disabled
+						fullWidth
+						defaultValue=""
+					/>
+					<Controller
+						control={control}
+						name="measuredDepth"
+						label="MD (ft)"
+						as={TextField}
+						variant="outlined"
+						margin="dense"
+						disabled
+						fullWidth
+						defaultValue=""
+					/>
+					<Controller
+						control={control}
+						name="lateralLength"
+						label="Lateral Length (ft)"
+						defaultValue={''}
+						as={TextField}
+						variant="outlined"
+						margin="dense"
+						disabled
+						fullWidth
 					/>
 				</FormControl>
 			</div>
@@ -455,15 +457,9 @@ function RelatedWellsDialog(props) {
 					fullWidth={false}
 					maxWidth="sm"
 				>
-					<DeleteConfirmationDialogContent
-						header={'Delete Well'}
-						onClose={handleCloseDialog}
-						deleteFunc={deleteFunc}
-						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
-					>
+					<DeleteConfirmationDialog header={'Delete Well'} onClose={handleCloseDialog} deleteFunc={deleteFunc}>
 						Do you want to delete the selected well?
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 			)}
 			<RightDialog open={props.open} handleClickDialogClose={handleClose} width={props.width}>

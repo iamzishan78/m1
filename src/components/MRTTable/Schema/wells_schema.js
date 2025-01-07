@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
@@ -28,19 +31,18 @@ const WellsMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
-			accessorKey: 'id',
+			id: 'id',
 		},
 		{
 			...CommonSchema.HIDDEN,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 		{
 			...CommonSchema.INITAIL_PINNED,
 			id: 'api',
 			header: 'API',
 			name: 'api.keyword',
-			accessorFn: row => row?.api,
 			getFilterByServerSide: true,
 			Cell: ({ renderedCellValue, row }) => {
 				const { stateValues } = tableController('WellsTable').useState(['toolbarInternalActions']);
@@ -66,7 +68,6 @@ const WellsMeta = {
 			header: 'Well Name',
 			name: 'wellName.keyword',
 			getFilterByServerSide: true,
-			accessorFn: row => row?.wellName,
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -74,7 +75,6 @@ const WellsMeta = {
 			id: 'state',
 			header: 'State',
 			name: 'state.keyword',
-			accessorFn: row => row?.state,
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -82,7 +82,6 @@ const WellsMeta = {
 			id: 'county',
 			header: 'County',
 			name: 'county.keyword',
-			accessorFn: row => row?.county,
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -90,7 +89,6 @@ const WellsMeta = {
 			id: 'wellType',
 			header: 'Well Type',
 			name: 'wellType.keyword',
-			accessorFn: row => row?.wellType,
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -98,7 +96,6 @@ const WellsMeta = {
 			id: 'wellStatus',
 			header: 'Well Status',
 			name: 'wellStatus.keyword',
-			accessorFn: row => row?.wellStatus,
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -106,7 +103,6 @@ const WellsMeta = {
 			id: 'operator',
 			header: 'Operator Name',
 			name: 'operator.keyword',
-			accessorFn: row => row?.operator,
 			getFilterByServerSide: true,
 		},
 		{
@@ -115,7 +111,6 @@ const WellsMeta = {
 			id: 'wellBoreProfile',
 			header: 'Well Profile',
 			name: 'wellBoreProfile.keyword',
-			accessorFn: row => row?.wellBoreProfile,
 		},
 		{
 			...CommonSchema.COMMENTS,
@@ -129,7 +124,7 @@ const WellsMeta = {
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'coordinates',
-			accessorKey: 'coordinates',
+			id: 'coordinates',
 			header: '',
 			size: 70,
 			Cell: ({ row }) => {

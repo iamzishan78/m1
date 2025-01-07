@@ -1,10 +1,12 @@
-import { useLazyQuery } from '@apollo/client';
-import { TextField, CircularProgress } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import get from 'lodash/get';
 import React, { useState, useEffect, memo, useMemo } from 'react';
 
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { TextField, CircularProgress } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery } from '@apollo/client';
+import get from 'lodash/get';
+
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 // Options for the relationship type dropdown
 const RelationshipTypeOptions = ['Child', 'Cousin', 'Parent', 'Spouse'];
@@ -12,7 +14,7 @@ const RelationshipTypeOptions = ['Child', 'Cousin', 'Parent', 'Spouse'];
 // The main component function
 function RelatedContact({ setFieldKey }) {
 	// useLazyQuery hook to get ES search results
-	const [getESSearch, { data: esFilter, loading }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+	const [getESSearch, { data: esFilter, loading }] = useLazyQuery(GET_DB_DATA, {
 		fetchPolicy: 'no-cache',
 	});
 
@@ -67,7 +69,7 @@ function RelatedContact({ setFieldKey }) {
 
 	// Memoize contact options to avoid unnecessary recalculations
 	const formattedContactOptions = useMemo(() => {
-		const options = get(esFilter, 'getESSimpleSearch.hits', []).map(option => ({
+		const options = get(esFilter, 'getDbData.hits', []).map(option => ({
 			value: option._id,
 			name: option.name,
 			fullObject: option,

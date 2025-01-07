@@ -4,10 +4,6 @@ import union from '@turf/union';
 import hat from 'hat';
 
 import { makeGeoJSONFromStrings } from 'components/Map/DeckGL/helpers/common';
-import { popupController } from './popupStateController';
-import { globalStateController } from './globalStateController';
-import { layerFiltersController } from './layerFiltersController';
-import { jobController } from './jobStateController';
 import DeckGlLayer from 'components/Map/DeckGL/helpers/DeckGlLayer';
 import {
 	clearMapAndCloseShapeActionsPopup,
@@ -29,14 +25,17 @@ import { calculateLandArea, shapeTypeLayers } from 'components/Shared/functions/
 
 import { hookStateController } from 'hookstate/hookStateController';
 
-import { setMapGridCardState, toggleMapGridCardAtived } from 'actions';
 import { showErrorMessage } from 'actions';
 import { layerRefs } from 'hookstate';
 
+import { globalStateController } from './globalStateController';
 import { drawInitialState, drawState } from './initialStates';
+import { jobController } from './jobStateController';
+import { layerFiltersController } from './layerFiltersController';
 import { layerController } from './layerStateController';
 import { mapControlsController } from './mapControlsController';
 import { navController } from './navStateController';
+import { popupController } from './popupStateController';
 
 const drawStateControllerHandler = state => {
 	/* --------------------------- DrawShapes Actions --------------------------- */
@@ -173,12 +172,6 @@ const drawStateControllerHandler = state => {
 			shapeGridOwnersCount: 0,
 			...additionalProps,
 		}));
-
-		dispatch(
-			setMapGridCardState({
-				mapGridCardActiveTap: 0,
-			})
-		);
 	};
 
 	/* ------------------------- DrawShapes Actions End ------------------------- */
@@ -495,7 +488,6 @@ const drawStateControllerHandler = state => {
 			selectedPolygonString: getPolygonString(selectedFeature),
 		});
 
-		dispatch(toggleMapGridCardAtived());
 		mapControlsController.toggleMapGridCardAtived();
 
 		closeDrawTool();

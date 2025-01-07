@@ -26,6 +26,8 @@ const folders = items.filter(item => {
 	return fs.statSync(itemPath).isDirectory();
 });
 
+const builtinPatterns = ['react**', '@material-ui/**', '@mui/**'];
+
 /** @type {import('eslint').Linter.Config[]} */
 export default [
 	// Configuration to ignore specific file patterns and directories
@@ -51,6 +53,7 @@ export default [
 
 	{ files: ['**/*.{js,mjs,cjs,jsx}'] },
 	{ languageOptions: { globals: globals.browser } },
+	{ languageOptions: { globals: globals.node } },
 	pluginJs.configs.recommended,
 	pluginReact.configs.flat.recommended,
 	{
@@ -158,22 +161,30 @@ export default [
 			'no-magic-numbers': [
 				'error',
 				{
-					ignore: [0, 1, 10, 100, 1000], // Allow these numbers if needed
+					ignore: [0, 1, -1, 10, 100, 1000], // Allow these numbers if needed
 				},
 			],
 
 			'import/no-named-as-default': 'off',
 			'import/no-named-as-default-member': 'off',
+			'import/newline-after-import': 'error',
 
 			'import/order': [
 				'error',
 				{
-					groups: [['builtin', 'external'], ['internal'], ['parent', 'sibling', 'index']],
-					pathGroups: folders.map(folder => ({
-						pattern: `${folder}/**`,
-						group: 'internal',
-						position: 'before',
-					})),
+					groups: [['builtin', 'external'], ['internal'], ['parent', 'sibling', 'index'], ['unknown']],
+					pathGroups: [
+						...builtinPatterns.map(pattern => ({
+							pattern,
+							group: 'builtin',
+							position: 'before',
+						})),
+						...folders.map(folder => ({
+							pattern: `${folder}/**`,
+							group: 'internal',
+							position: 'before',
+						})),
+					],
 					pathGroupsExcludedImportTypes: ['builtin'],
 					'newlines-between': 'always',
 					alphabetize: {

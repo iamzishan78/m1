@@ -1,8 +1,9 @@
+import React, { useEffect, useRef, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
 import { useQuery, useApolloClient } from '@apollo/client';
 import { useMutation } from '@apollo/client';
 import { debounce } from 'lodash';
-import React, { useEffect, useRef, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
 import Loader from 'components/Loaders/serverLoader';
 import useRefetchHelper from 'components/Shared/Hooks/useRefetchHelper';
@@ -19,10 +20,12 @@ import { setReduxKey } from 'store/actions/commonActions';
 const ContactBulkProgress = () => {
 	const bulkUpload = useSelector(state => state.common.bulkUpload);
 	const refetchHelper = useRefetchHelper();
-	const refetchHelperDebounced = useMemo(() => debounce(requestPayload => refetchHelper(requestPayload), 1000), []);
 	const { globalStateValues } = globalStateController.useState(['user'], 'globalStateValues');
 	const jobState = jobController.useState(['bulkUpload', 'storeJobOutput'], 'jobStateValues');
 	const { jobStateValues } = jobState;
+
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const refetchHelperDebounced = useMemo(() => debounce(requestPayload => refetchHelper(requestPayload), 1000), []);
 
 	const dispatch = useDispatch();
 
@@ -62,6 +65,7 @@ const ContactBulkProgress = () => {
 			stopPolling();
 			refetch();
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [jobState.bulkUpload, bulkUpload]);
 
 	useEffect(() => {
@@ -82,6 +86,7 @@ const ContactBulkProgress = () => {
 		} else {
 			stopPolling();
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dataJobs?.getJobsStatus]);
 
 	// useEffect hook to run side-effects when `dataJobs?.getJobsStatus` changes
@@ -99,6 +104,7 @@ const ContactBulkProgress = () => {
 				isJobFailed: targetJobOutput?.status === 'Failed',
 			});
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dataJobs?.getJobsStatus]); // Dependency array to rerun the effect when dataJobs?.getJobsStatus changes
 
 	const onCloseToast = jobId => {
@@ -170,6 +176,7 @@ const ContactBulkProgress = () => {
 				// Determine message for different job types
 				if (name === 'idiCore') {
 					message = lastMessage;
+					refetchHelper(['getContactPurchaseData']);
 				} else if (type === 'contacts') {
 					message =
 						status === 'Created'
@@ -226,6 +233,7 @@ const ContactBulkProgress = () => {
 						// Check if the current progress is equal to the total progress
 						if (jobProgress === totalProgress) {
 							tableGlobalController.refetch();
+							tableGlobalController.setSelectedTab(0);
 						}
 					}
 				} else if (status === 'Failed') {

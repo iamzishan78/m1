@@ -1,5 +1,6 @@
-import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
+
+import { makeStyles } from '@material-ui/core/styles';
 
 import InitializeProfile from './InitializeProfileContext';
 import Profile from './Profile';

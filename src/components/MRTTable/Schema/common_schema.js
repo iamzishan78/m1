@@ -1,15 +1,22 @@
+/* eslint-disable react/prop-types */
+import React, { useState } from 'react';
+
 import { Box } from '@mui/material';
-import { get } from 'lodash';
+
+import { get, set } from 'lodash';
+import moment from 'moment';
 
 import { addTrailingZeros, formatDate } from 'components/Shared/functions';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 
 import { tableController } from 'hookstate/tableController';
 
+import { CURRENCY_TO_FIXED, INTEREST_TO_FIXED } from 'utils/consts';
+
 export const CommonSchema = {
 	COMMENTS: {
 		name: 'comments',
-		accessorKey: 'comments',
+		id: 'comments',
 		header: '',
 		size: 120,
 		isPinned: false,
@@ -23,12 +30,13 @@ export const CommonSchema = {
 		enableColumnFilter: false,
 		isExport: false,
 		enableColumnOrdering: false,
+		enableColumnDragging: false,
 		enableResizing: false,
 		showInLast: true,
 	},
 	TAGS: {
-		name: 'tags.tag',
-		accessorKey: 'tags.tag',
+		name: 'tags',
+		id: 'tags',
 		header: 'Tags',
 		size: 250,
 		isPinned: false,
@@ -40,6 +48,7 @@ export const CommonSchema = {
 		enableColumnFilter: false,
 		enableColumnActions: false,
 		enableColumnOrdering: false,
+		enableColumnDragging: false,
 		enableResizing: false,
 		showInLast: true,
 		isExport: 'tags',
@@ -48,15 +57,34 @@ export const CommonSchema = {
 			actualKey: 'tag',
 		},
 	},
+	IS_TRACKED: {
+		name: 'isTracked',
+		id: 'isTracked',
+		header: '',
+		size: 120,
+		isPinned: false,
+		hidden: false,
+		filter: true,
+		isSearchField: true,
+		enableSorting: true,
+		type: 'string',
+		enableColumnFilter: false,
+		enableColumnActions: false,
+		enableColumnOrdering: false,
+		enableColumnDragging: false,
+		enableResizing: false,
+		showInLast: true,
+	},
 	HIDDEN: {
 		header: ' ',
 		isAlwaysHidden: true,
 		isSearchField: false,
 		hidden: true,
-		enablePinning: false,
+		enableColumnPinning: false,
 		enableHiding: false,
 		enableColumnActions: false,
 		enableColumnOrdering: false,
+		enableColumnDragging: false,
 		enableSorting: false,
 	},
 	MONGO_ID: {
@@ -64,9 +92,10 @@ export const CommonSchema = {
 		isSearchField: false,
 		hidden: true,
 		enableColumnFilter: false,
-		enablePinning: false,
+		enableColumnPinning: false,
 		enableColumnActions: false,
 		enableColumnOrdering: false,
+		enableColumnDragging: false,
 		enableSorting: false,
 		size: 250,
 		isHiddenFieldExport: true,
@@ -80,6 +109,7 @@ export const CommonSchema = {
 		isExternalFilter: false,
 		enableColumnActions: true,
 		enableColumnOrdering: false,
+		enableColumnDragging: false,
 		size: 350,
 	},
 	COMMON_COLUMN: {
@@ -104,12 +134,13 @@ export const CommonSchema = {
 		enableColumnFilter: false,
 		isExport: false,
 		enableColumnOrdering: false,
+		enableColumnDragging: false,
 		enableResizing: false,
 		showInLast: true,
 	},
 	SELECT_SOME: {
 		name: 'over-ride-checkbox',
-		accessorKey: 'over-ride-checkbox',
+		id: 'over-ride-checkbox',
 		isPinned: true,
 		hidden: false,
 		isSearchField: false,
@@ -119,26 +150,32 @@ export const CommonSchema = {
 		isExternalFilter: false,
 		enableColumnActions: false,
 		enableColumnOrdering: false,
+		enableColumnDragging: false,
 		enableColumnFilter: false,
 		isExport: false,
 		enableResizing: false,
 		size: 80,
 	},
+	USER: {
+		name: 'user.name',
+		id: 'user.name',
+		header: 'User',
+		size: 250,
+		filter: true,
+		type: 'string',
+	},
 	CREATED_BY: {
 		name: 'createBy.name',
-		accessorKey: 'createBy.name',
+		id: 'createBy.name',
 		header: 'Created By',
 		size: 250,
 		filter: true,
 		isSearchField: false,
 		type: 'string',
-		Cell: ({ row }) => {
-			return <>{row.original?.createBy?.name}</>;
-		},
 	},
 	CREATED_DATE: {
 		name: 'createAt',
-		accessorKey: 'createAt',
+		id: 'createAt',
 		header: 'Created Date',
 		size: 250,
 		filter: true,
@@ -150,19 +187,16 @@ export const CommonSchema = {
 	},
 	LAST_UPDATED_BY: {
 		name: 'lastUpdateBy.name',
-		accessorKey: 'lastUpdateBy.name',
+		id: 'lastUpdateBy.name',
 		header: 'Last Updated By',
 		size: 250,
 		filter: true,
 		isSearchField: false,
 		type: 'string',
-		Cell: ({ row }) => {
-			return <>{row.original?.lastUpdateBy?.name}</>;
-		},
 	},
 	LAST_UPDATED_DATE: {
 		name: 'lastUpdateAt',
-		accessorKey: 'lastUpdateAt',
+		id: 'lastUpdateAt',
 		header: 'Last Updated Date',
 		size: 250,
 		filter: true,
@@ -186,7 +220,7 @@ export const CommonSchema = {
 						...sx,
 					}}
 				>
-					{parseFloat(cell.getValue().toFixed(3))}
+					{parseFloat(cell.getValue().toFixed(INTEREST_TO_FIXED))}
 				</Box>
 			</>
 		),
@@ -204,7 +238,7 @@ export const CommonSchema = {
 			const mongoKey = `sum_${field}`.replace(/\./g, '_');
 			const value = get(footerProps, `${mongoKey}[0].${mongoKey}`);
 
-			return <div>{value ? addTrailingZeros(parseFloat(value).toFixed(8)) : 0}</div>;
+			return <div>{value ? addTrailingZeros(parseFloat(value).toFixed(INTEREST_TO_FIXED)) : 0}</div>;
 		},
 	}),
 	INTEREST_COLUMN: {
@@ -215,11 +249,14 @@ export const CommonSchema = {
 		isSearchField: false,
 		enableSorting: true,
 		type: 'number',
-		Cell: ({ renderedCellValue }) => {
-			const value = renderedCellValue?.props?.['aria-label'] ?? renderedCellValue;
-			if (value || value === 0) {
-				return <>{!value ? value : addTrailingZeros(parseFloat(value).toFixed(8))}</>;
+		Cell: ({ row, column }) => {
+			const value = row.getValue(column.id);
+
+			if (!value && value !== 0) {
+				return null;
 			}
+
+			return <>{!value ? value : addTrailingZeros(parseFloat(value).toFixed(INTEREST_TO_FIXED))}</>;
 		},
 	},
 	CURRENCY_COLUMN: {
@@ -230,11 +267,15 @@ export const CommonSchema = {
 		isSearchField: false,
 		enableSorting: true,
 		type: 'number',
-		Cell: ({ renderedCellValue }) => {
-			const value = renderedCellValue?.props?.['aria-label'] ?? renderedCellValue;
-			if (value || value === 0) {
-				return <>{!value ? `$${value}` : vf_currency_to_fixed(value, 2)}</>;
+		subType: 'price',
+		Cell: ({ row, column }) => {
+			const value = row.getValue(column.id);
+
+			if (!value && value !== 0) {
+				return null;
 			}
+
+			return <>{!value ? `$${value}` : vf_currency_to_fixed(value, CURRENCY_TO_FIXED)}</>;
 		},
 	},
 	STRING_COLUMN: {
@@ -255,5 +296,70 @@ export const CommonSchema = {
 		isSearchField: true,
 		enableSorting: true,
 		type: 'number',
+		filterVariant: 'equals',
 	},
+	CUMULATIVE_FOOTER: (field, tableKey, toFixed = INTEREST_TO_FIXED) => ({
+		Footer: () => {
+			const Controller = tableController(tableKey);
+			const footerProps = Controller.getValue('footerProps') || {};
+
+			const value = get(footerProps, field);
+
+			return <div>{value ? addTrailingZeros(parseFloat(value).toFixed(toFixed)) : 0}</div>;
+		},
+	}),
 };
+
+export const validateRequiredString = value => (!value?.length ? 'Required' : undefined);
+
+export const editFieldProps =
+	(tableKey, type, validate, { isSelect = false, required = true } = {}) =>
+	({ cell, row }) => {
+		const Controller = tableController(tableKey);
+
+		const {
+			stateValues: { validationErrors, editedData },
+		} = Controller.useState(['validationErrors', 'editedData']);
+
+		const errorText = validationErrors?.[row.id]?.[cell.column.id];
+
+		const [value, setValue] = useState(cell.getValue());
+
+		const onBlur = event => {
+			const target = isSelect ? event.target : event.currentTarget;
+
+			const validationError = validate?.(target.value);
+
+			const rowData = editedData[row.id] || {};
+
+			set(rowData, cell.column.id, target.value);
+
+			Controller.setValidationErrors(row.id, cell.column.id, validationError);
+			Controller.setEditedData(row.id, rowData);
+		};
+
+		return {
+			type,
+			required,
+
+			select: isSelect,
+
+			...(type === 'date' && { value: moment(value).format('yyyy-MM-DD') }),
+
+			error: !!errorText,
+			helperText: errorText,
+			//store edited user in state to be saved later
+			onChange: e => {
+				const target = isSelect ? e.target : e.currentTarget;
+
+				setValue(target.value);
+
+				if (type === 'date' || isSelect) {
+					onBlur(e);
+				}
+			},
+			onBlur: e => {
+				onBlur(e);
+			},
+		};
+	};

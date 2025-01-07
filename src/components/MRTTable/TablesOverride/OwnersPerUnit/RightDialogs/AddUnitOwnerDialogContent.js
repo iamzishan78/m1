@@ -1,4 +1,7 @@
-import { useMutation, useLazyQuery } from '@apollo/client';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+
 import { Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -6,29 +9,29 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
+
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
 import _, { get, isString } from 'lodash';
-import React, { useEffect, useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import { extractValueRecursively } from 'components/MRTTable/utils/helper';
 import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
-
+import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
+import unitInterestOwnerForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/UnitDetailInterestOwner/unit_interest_owner_form_schema';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+
 import { ADD_OWNER_TOA_SHAPE } from 'graphQL/useMutationAddOwnerToAShape';
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
-
 import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
-
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { sideDialogController, unitInterestOwnerState } from 'hookstate/sideDialogController';
 import { tableGlobalController } from 'hookstate/tableController';
+
 import { showErrorMessage, showSuccessMessage } from 'actions';
-import unitInterestOwnerForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/UnitDetailInterestOwner/unit_interest_owner_form_schema';
-import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 
 const useStyles = makeStyles(theme => ({
 	maxWidth: {
@@ -257,7 +260,7 @@ export default function AddUnitOwnerDialogContent({
 					shapeOwners: shapeOwner,
 					userId: getUser?._id,
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
+				refetchQueries: ['getDbData', 'getESFilterList', 'getCustomLayer'],
 				awaitRefetchQueries: true,
 			});
 		} else {
@@ -276,7 +279,7 @@ export default function AddUnitOwnerDialogContent({
 					shapeType: props.shapeType,
 					shapeOwner,
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
+				refetchQueries: ['getDbData', 'getESFilterList', 'getCustomLayer'],
 				awaitRefetchQueries: true,
 			});
 		}

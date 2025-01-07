@@ -1,10 +1,12 @@
-import { useMutation } from '@apollo/client';
-import { Accordion, AccordionSummary, Typography, Grid, TextField } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { ExpandMore, ExpandLess, Edit } from '@material-ui/icons';
 import React, { useState } from 'react';
 import { Flipped } from 'react-flip-toolkit';
 import { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
+
+import { Accordion, AccordionSummary, Typography, Grid, TextField } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { ExpandMore, ExpandLess, Edit } from '@material-ui/icons';
+
+import { useMutation } from '@apollo/client';
 
 import { UPDATE_PROJECT } from 'graphQL/useMutationUpdateProject';
 

@@ -1,5 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useMutation, useLazyQuery } from '@apollo/client';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+
 import { Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -7,13 +9,17 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
+
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
 import _ from 'lodash';
-import React, { useState, useEffect, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import AutocompEntityNamesVirtualizeList from 'components/MRTTable/Common/Components/AutocompEntityNamesVirtualizeList';
+import { extractValueRecursively } from 'components/MRTTable/utils/helper';
+import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import parcelOwnerForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/ParcelDetailInterestOwner/parcel_interest_owner_form_schema';
 import { setStateIfDeepEqual } from 'components/Shared/functions';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
@@ -24,16 +30,11 @@ import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import { UPDATEPARCELOWNER } from 'graphQL/useMutationUpdateParcelOwner';
 import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
 
-import AutocompEntityNamesVirtualizeList from 'components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
-
 import { globalStateController } from 'hookstate/globalStateController';
 import { sideDialogController, tractInterestOwnerState } from 'hookstate/sideDialogController';
 import { tableGlobalController } from 'hookstate/tableController';
 
 import { showErrorMessage, showSuccessMessage } from '../../../../../../src/actions';
-
-import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
-import { extractValueRecursively } from 'components/MRTTable/utils/helper';
 
 const useStyles = makeStyles(theme => ({
 	dialogContent: {
@@ -78,7 +79,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRow, ...props }) {
+function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
 	const dispatch = useDispatch();
 	const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
 	const tenantName = window.sessionStorage.getItem('tenantName');
@@ -151,7 +152,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
 	useEffect(() => {
 		if (allContacts?.paginatedContacts) {
-			setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map(el => el.node)]);
+			setMongoEntitiesArray([...(allContacts?.paginatedContacts?.edges?.map(el => el.node) || [])]);
 			setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
 		}
 		setIsNextPageLoading(false);
@@ -171,6 +172,11 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 		setIsNextPageLoading(true);
 		fetchMorePaginatedContacts(pageVariables);
 		return null;
+	};
+
+	const handleClickDialogClose = () => {
+		props.onClose();
+		sideDialogController('tractInterestDialog').reset();
 	};
 
 	useEffect(() => {
@@ -206,7 +212,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
 	useEffect(() => {
 		const { uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing, leaseBonusPerAcre } =
-			props?.customLayer?.shapeJson?.properties;
+			props?.customLayer?.shapeJson?.properties || {};
 		sideDialogController('tractInterestDialog').updateState({
 			uUnitPricingNMA,
 			uMaxUnitPricingNMA,
@@ -221,11 +227,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 			workspaceSettings,
 		});
 	}, [workspaceSettings]);
-
-	const handleClickDialogClose = () => {
-		props.onClose();
-		sideDialogController('tractInterestDialog').reset();
-	};
 
 	const handleUpdateContact = ownerToAdd => {
 		if (
@@ -245,8 +246,9 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 						_id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
 						contactStatus: ownerToAdd.contactStatus && (ownerToAdd.contactStatus.value || ownerToAdd.contactStatus),
 						status: ownerToAdd.status && (ownerToAdd.status.value || ownerToAdd.status),
-						contactOwner: ownerToAdd.contactOwners && (ownerToAdd.contactOwners.label || ownerToAdd.contactOwners),
-						contactOwnerId: ownerToAdd.contactOwners && (ownerToAdd.contactOwners.value || ownerToAdd.contactOwners),
+						...(ownerToAdd?.contactOwners && _.isString(ownerToAdd?.contactOwners)
+							? { contactOwnerId: ownerToAdd.contactOwners }
+							: {}),
 						lastUpdateBy: getUser?._id,
 						ownerType: ownerToAdd.ownerType && (ownerToAdd.ownerType.value || ownerToAdd.ownerType),
 						campaignPriority:
@@ -289,13 +291,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 			});
 			updateParcelOwner({
 				variables: { parcelOwner },
-				refetchQueries: [
-					'getparcelOwners',
-					'getContactParcelInterests',
-					'getContactParcelInterest',
-					'getESSimpleSearch',
-					'getCustomLayer',
-				],
+				refetchQueries: ['getparcelOwners', 'getDbData', 'getCustomLayer'],
 				awaitRefetchQueries: true,
 			});
 		} else {
@@ -310,13 +306,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 			});
 			addOwnerToAParcel({
 				variables: { parcelOwner },
-				refetchQueries: [
-					'getCustomLayer',
-					'getparcelOwners',
-					'getContactParcelInterests',
-					'getContactParcelInterest',
-					'getESSimpleSearch',
-				],
+				refetchQueries: ['getCustomLayer', 'getparcelOwners', 'getDbData'],
 				awaitRefetchQueries: true,
 			});
 		}
@@ -332,10 +322,11 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 			rowData?.depthFrom === 'All depths' && rowData?.depthTo === 'All depths'
 				? (rowData.depthBoth = 'true')
 				: (rowData.depthBoth = 'false');
-			rowData.qtr1 = selectedRow?.qtr?.[0];
-			rowData.qtr2 = selectedRow?.qtr?.[1];
-			rowData.qtr3 = selectedRow?.qtr?.[2];
-			rowData.qtr4 = selectedRow?.qtr?.[3];
+			const [qtr1, qtr2, qtr3, qtr4] = rowData?.qtr || [];
+			rowData.qtr1 = qtr1;
+			rowData.qtr2 = qtr2;
+			rowData.qtr3 = qtr3;
+			rowData.qtr4 = qtr4;
 			rowData.contactStatus = selectedRow?.contact?.contactStatus;
 			rowData.status = selectedRow?.contact?.status;
 			rowData.contactOwners = selectedRow?.contactOwners; // auto-complete the contact owner in slideout
@@ -460,3 +451,37 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 		</div>
 	);
 }
+
+AddParcelOwnerDialogContent.propTypes = {
+	selectedRow: PropTypes.shape({
+		_id: PropTypes.string,
+		contactStatus: PropTypes.string,
+		status: PropTypes.string,
+		contactOwners: PropTypes.array,
+		ownerType: PropTypes.string,
+		campaignPriority: PropTypes.string,
+		qtr: PropTypes.string,
+		contact: PropTypes.shape({
+			_id: PropTypes.string,
+			contactStatus: PropTypes.string,
+			status: PropTypes.string,
+		}),
+		contactId: PropTypes.string,
+		ownerEntity: PropTypes.string,
+	}),
+	onClose: PropTypes.func.isRequired,
+	customLayer: PropTypes.shape({
+		_id: PropTypes.string,
+		state: PropTypes.string,
+		shapeJson: PropTypes.shape({
+			properties: PropTypes.shape({
+				uAcres: PropTypes.number,
+				uUnitPricing: PropTypes.number,
+				uMaxUnitPricing: PropTypes.number,
+			}),
+		}),
+	}),
+	customLayerId: PropTypes.string,
+};
+
+export default AddParcelOwnerDialogContent;

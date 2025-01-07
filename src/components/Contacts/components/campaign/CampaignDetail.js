@@ -1,4 +1,8 @@
-import { useMutation, useLazyQuery } from '@apollo/client';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
+import { useParams, useHistory } from 'react-router-dom';
+
 import {
 	Typography,
 	Button,
@@ -16,23 +20,19 @@ import {
 } from '@material-ui/core';
 import { InfoOutlined as InfoOutlinedIcon, MoreHoriz as MoreHorizIcon, Delete as DeleteIcon } from '@material-ui/icons';
 import { withStyles } from '@material-ui/styles';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
 import { debounce, get } from 'lodash';
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
-import { useParams, useHistory } from 'react-router-dom';
 import { isEmpty } from 'underscore';
 
-// Components
 import CampaignHeader from 'components/Contacts/components/campaign/CampaignHeaderSection';
 import CampaignRelatedGrids from 'components/Contacts/components/campaign/CampaignRelatedGrids';
 import NavHeader from 'components/Land/components/Common/NavHeader';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
 import DocViewer from 'components/Shared/DocViewer';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import Tags from 'components/Shared/Tagger';
 
-// Queries & Mutations
 import { UPDATE_CAMPAIGN } from 'graphQL/useMutationCampaign';
 import { GET_CAMPAIGN } from 'graphQL/useQueryCampaign';
 
@@ -137,7 +137,6 @@ const CampaignDetail = ({ viewDoc }) => {
 		if (campaignContactTableStateValues.isCampaignRefetch || CampaignUnitTableValues.isCampaignRefetch) {
 			refetchCampaign();
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [globalStateValues?.refetch]);
 
 	useEffect(() => {
@@ -165,8 +164,6 @@ const CampaignDetail = ({ viewDoc }) => {
 				history.goBack();
 			}
 		};
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const updateCampaignInformation = (key, value) => {
@@ -206,7 +203,7 @@ const CampaignDetail = ({ viewDoc }) => {
 
 	const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
 
-	const handleScroll = e => {
+	const handleScroll = () => {
 		if (!isButtonScroll) {
 			let activeTab = 0;
 			if (getRelativePosition('header-div') < 5) {
@@ -277,7 +274,7 @@ const CampaignDetail = ({ viewDoc }) => {
 														notchedOutline: classes.notchedOutline,
 													},
 												}}
-												onFocus={e => {
+												onFocus={() => {
 													// Set focus on the input element when the TextField is clicked
 													inputRef.current && inputRef.current.focus();
 												}}
@@ -418,15 +415,13 @@ const CampaignDetail = ({ viewDoc }) => {
 				</MenuItem>
 			</Menu>
 			<Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)} fullWidth={true} maxWidth={'sm'}>
-				<DeleteConfirmationDialogContent
+				<DeleteConfirmationDialog
 					header={'Delete Campaign'}
 					onClose={() => setOpenDeleteDialog(false)}
 					deleteFunc={() => updateCampaignInformation('isDeleted', true)}
-					m1nSelectedRowsIds={[campaign.current?._id]}
-					setM1nSelectedRowsIndexes={() => {}}
 				>
 					{'Do you want to delete this campaign?'}
-				</DeleteConfirmationDialogContent>
+				</DeleteConfirmationDialog>
 			</Dialog>
 		</NavHeader>
 	);

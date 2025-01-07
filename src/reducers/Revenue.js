@@ -11,7 +11,7 @@ export default function Revenue(state = INIT_STATE, action) {
 		}
 		case SET_REVENUE_PROPERTIES_DATA: {
 			// formatting values here
-			const formattedData = action.payload?.data?.getESPaginatedList?.hits?.map(eachRow => {
+			const formattedData = action.payload?.data?.getDbData?.hits?.map(eachRow => {
 				return {
 					_id: eachRow._id,
 					name: eachRow.name,

@@ -1,13 +1,15 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useState, useEffect } from 'react';
+
 import { Grid, Typography } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery } from '@apollo/client';
 import { uniqBy } from 'lodash';
 import loadashFilter from 'lodash/filter';
-import React, { useState, useEffect } from 'react';
 
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { US_STATES } from 'utils/data';
 
@@ -73,7 +75,7 @@ export const AutoCompleteLandgrid = React.memo(
 		const [options, setOptions] = useState([]);
 		const [search, setSearch] = useState(value);
 		// const { filterKey, type } = column
-		const [getFilters, { data: filtersData, loading }] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
+		const [getFilters, { data: filtersData, loading }] = useLazyQuery(GET_DB_FILTERS, {
 			fetchPolicy: 'no-cache',
 		});
 

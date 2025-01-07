@@ -1,16 +1,17 @@
-import { useLazyQuery } from '@apollo/client';
-import { Grid } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import get from 'lodash/get';
-import moment from 'moment';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 
-import Table from 'components/Shared/M1nTable/components/Table';
+import { Grid } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { useLazyQuery } from '@apollo/client';
+import moment from 'moment';
+
+import MRTTable from 'components/MRTTable';
 
 import { JOB_RESPONSE } from 'graphQL/useQueryJobResponse';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	container: {
 		width: '100%',
 		'& .MuiToolbar-root': {
@@ -24,7 +25,6 @@ const BulkDataEditingDetail = () => {
 
 	const classes = useStyles();
 	const [getJobResponse, { data: jobResponseData }] = useLazyQuery(JOB_RESPONSE);
-	const [uploadedData, setUploadedData] = useState([]);
 
 	useEffect(() => {
 		getJobResponse({
@@ -32,40 +32,16 @@ const BulkDataEditingDetail = () => {
 				jobId,
 			},
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [jobId]);
 
-	useEffect(() => {
-		if (jobResponseData?.getJobResponse?.uploadedData) {
-			const data = get(jobResponseData, 'getJobResponse.uploadedData', []).map(d => {
-				return {
-					...d,
-					index: get(d, 'index', 0) + 1,
-					name:
-						get(d, 'entityDetail.name', '') ||
-						get(d, 'entityDetail.firstName', '') ||
-						get(d, 'entityDetail.lastName', ''),
-				};
-			});
-			setUploadedData(data);
-		}
-	}, [jobResponseData]);
-
-	const columns = [
-		{
-			name: 'name',
-			label: 'Column',
-		},
-		{
-			name: 'index',
-			label: 'Cell',
-		},
-		{
-			name: 'reason',
-			label: 'Error Description',
-		},
-	];
-
+	const failedBulkOverrideMeta = useMemo(
+		() => ({
+			customProps: {
+				jobId,
+			},
+		}),
+		[jobId]
+	);
 	return (
 		<>
 			<Grid container direction="row" display="flex" style={{ padding: 25, marginTop: 50 }}>
@@ -141,14 +117,7 @@ const BulkDataEditingDetail = () => {
 			<Grid container direction="row" display="flex" style={{ padding: 25 }}>
 				<div className={classes.container}>
 					{jobResponseData?.getJobResponse?.status?.toLowerCase().includes('fail') && (
-						<Table
-							style={{ backgroundColor: '#fff' }}
-							header={null}
-							columns={columns}
-							rows={uploadedData}
-							total={uploadedData.length}
-							startPaginationAt={25}
-						/>
+						<MRTTable name="FailedBulkDataEditingTable" overrideMeta={failedBulkOverrideMeta} />
 					)}
 				</div>
 			</Grid>

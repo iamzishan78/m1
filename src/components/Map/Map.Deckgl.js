@@ -1,36 +1,30 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-// react imports
+/* eslint-disable no-magic-numbers */
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-// custom components
-import './popup.css';
-import gjv from 'geojson-validation';
-
-// 3rd party packages
-import mapboxgl from 'mapbox-gl';
-import * as turf from '@turf/turf';
-import MapboxDraw from '@mapbox/mapbox-gl-draw';
-import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from 'mapbox-gl-draw-circle';
-import StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
-import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
-import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
-import { useLazyQuery, useApolloClient, useQuery } from '@apollo/client';
-
-// material-ui
 import { makeStyles } from '@material-ui/core/styles';
+
+import { useLazyQuery, useApolloClient, useQuery } from '@apollo/client';
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
+import * as turf from '@turf/turf';
+import gjv from 'geojson-validation';
 import _ from 'lodash';
+import mapboxgl from 'mapbox-gl';
+import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from 'mapbox-gl-draw-circle';
+import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import parseLinkHeader from 'parse-link-header';
+import PropTypes from 'prop-types';
 
 import { drawShapeStyles, findBoundsMap } from 'components/MapControls/commonHelper';
+import MapControls from 'components/MapControls/MapControls';
+import SpeedDialComponent from 'components/MapControls/SpeedDialComponent';
 import { layersWithSelectedShapeKey } from 'components/Shared/functions/shapeLayer';
-
-import './Map.css';
-import { convertToTitleCase } from 'components/Shared/M1nTable/components/MUIDataTable/utils';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
 import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
 
@@ -38,11 +32,13 @@ import { drawController } from 'hookstate/drawStateController';
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
 import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
 import { mapStateController } from 'hookstate/mapStateController';
 import { navController } from 'hookstate/navStateController';
 import { popupController } from 'hookstate/popupStateController';
 
 import { baseTenantsMaps } from 'utils/data';
+import { convertToTitleCase } from 'utils/helper';
 
 import { layerRefs } from 'hookstate';
 
@@ -58,25 +54,19 @@ import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
 import { copy } from '../Shared/functions';
 import ZoomFault from './components/ZoomFault';
 import { extractUniqueFilters, getClickedFeature } from './DeckGL/helpers/common';
+import DeckGlLayer from './DeckGL/helpers/DeckGlLayer';
 import onFeatureClick from './DeckGL/helpers/onFeatureClick';
+import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
 import MarkerIcon from './sprites/marker-icon.png';
-import MapGridCardProvider from '../MapGridCard/MapGridProvider';
 import {
 	drawBoundary,
 	drawWellBoundary,
 	drawPlaceBoundary,
 } from '../MapControls/components/DrawShapes/drawShapesHelpers';
+import MapGridCardProvider from '../MapGridCard/MapGridProvider';
 
-// queries
-
-// contexts
-
-import MapControls from 'components/MapControls/MapControls';
-import SpeedDialComponent from 'components/MapControls/SpeedDialComponent';
-
-import DeckGlLayer from './DeckGL/helpers/DeckGlLayer';
-import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
-
+import './Map.css';
+import './popup.css';
 
 const useStyles = makeStyles(() => ({
 	mapWrapper: {
@@ -115,7 +105,7 @@ const useStyles = makeStyles(() => ({
 	footerLeftLogo: {
 		position: 'absolute',
 		bottom: '5px',
-		zIndex: '1',
+		zIndex: '2000',
 		left: '10px',
 	},
 	portal: {
@@ -163,8 +153,11 @@ function Map({
 	});
 
 	const dispatch = useDispatch();
-	const { searchInputValue } = useSelector(({ MapGridCard }) => MapGridCard);
 	const removeLayerFromMap = useSelector(({ MainMap }) => MainMap.removeLayerFromMap);
+
+	const {
+		stateValues: { searchValue },
+	} = mapControlsController.useState(['searchValue']);
 
 	const [mapStyles, MapStyles] = useState([]);
 	const setMapStyles = state => {
@@ -321,7 +314,7 @@ function Map({
 			});
 
 		popupController.updateState({
-			popupOpen: !!(popupController.getValue('wellSelectedCoordinates')?.length > 0 && searchInputValue),
+			popupOpen: !!(popupController.getValue('wellSelectedCoordinates')?.length > 0 && searchValue),
 			expandedCard: false,
 		});
 
@@ -344,7 +337,7 @@ function Map({
 
 	const getElasticWell = async paramId => {
 		const { data: well } = await client.query({
-			query: GET_ES_SIMPLE_SEARCH,
+			query: GET_DB_DATA,
 			variables: {
 				index: 'platformData:wells',
 				pagination: {
@@ -360,7 +353,7 @@ function Map({
 				sort: [],
 			},
 		});
-		const wellFeature = { ...well.getESSimpleSearch.hits[0] };
+		const wellFeature = { ...well.getDbData.hits[0] };
 		if (wellFeature?.Id) {
 			wellFeature.id = wellFeature.Id;
 		}
@@ -474,7 +467,7 @@ function Map({
 				} else {
 					getCustomLayer(paramId);
 				}
-			} catch (e) {
+			} catch {
 				history.push('/');
 			}
 		}
@@ -1115,7 +1108,7 @@ function Map({
 						}
 					);
 				}
-			} catch (e) {
+			} catch {
 				//
 			}
 		}
@@ -1346,5 +1339,32 @@ function Map({
 		</div>
 	);
 }
+
+Map.propTypes = {
+	type: PropTypes.string.isRequired,
+	paramId: PropTypes.string,
+	expandedPanel: PropTypes.bool, // Boolean, defaults to true
+	mapControls: PropTypes.bool, // Boolean, defaults to true
+	openSpeedDial: PropTypes.bool, // Boolean, defaults to true
+	width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]), // Can be a string or number
+	hideShape: PropTypes.bool, // Boolean, defaults to false
+	layerPadding: PropTypes.oneOfType([
+		PropTypes.number,
+		PropTypes.shape({
+			top: PropTypes.number,
+			bottom: PropTypes.number,
+			left: PropTypes.number,
+			right: PropTypes.number,
+		}),
+	]), // Null or an object with padding values
+};
+
+Map.defaultProps = {
+	expandedPanel: true,
+	mapControls: true,
+	openSpeedDial: true,
+	hideShape: false,
+	layerPadding: null,
+};
 
 export default React.memo(Map);

@@ -1,5 +1,6 @@
-import { useQuery } from '@apollo/client';
 import { useContext, useEffect } from 'react';
+
+import { useQuery } from '@apollo/client';
 
 import { ProfileContext } from './ProfileContext';
 import { AppContext } from '../../AppContext';

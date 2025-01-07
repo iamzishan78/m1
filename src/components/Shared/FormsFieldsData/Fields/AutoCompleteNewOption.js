@@ -1,11 +1,14 @@
-import { useApolloClient } from '@apollo/client';
-import { Typography } from '@material-ui/core';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import { Grid, TextField, CircularProgress } from '@mui/material';
-import { debounce } from 'lodash';
-import loadashFilter from 'lodash/filter';
 import React, { useEffect, useState } from 'react';
 import { Controller } from 'react-hook-form';
+
+import { Typography } from '@material-ui/core';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
+import { Grid, TextField, CircularProgress } from '@mui/material';
+
+import { useApolloClient } from '@apollo/client';
+import { debounce } from 'lodash';
+import loadashFilter from 'lodash/filter';
 
 function AutoCompleteNewOption({ control, item }) {
 	const { name, label, defaultOptions = [], variables, query, getOptions, onChange, isESSearch } = item;

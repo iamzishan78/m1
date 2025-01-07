@@ -1,7 +1,8 @@
+import React, { memo } from 'react';
+
 import Badge from '@material-ui/core/Badge';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
-import React, { memo } from 'react';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
@@ -41,7 +42,7 @@ const useStyles = makeStyles(() => ({
 	},
 }));
 
-function TagCell({ id, targetSourceId, tags, targetLabel }) {
+function TagCell({ id, targetSourceId, tags, targetLabel, tableKey }) {
 	const classes = useStyles();
 	return (
 		<div style={{ marginRight: '10px' }}>
@@ -59,6 +60,7 @@ function TagCell({ id, targetSourceId, tags, targetLabel }) {
 								type: 'tags',
 								targetSourceId,
 								targetLabel,
+								tableKey,
 							},
 						});
 					}}

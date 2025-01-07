@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Switch, Route, useLocation } from 'react-router-dom';
 
 import ActivitiesDashboard from 'components/Activities/components/ActivitiesDashboard';
-import Data from 'components/Analytics/components/Data';
 import LandAnalytics from 'components/Analytics/components/Land';
 import RevenueAnalytics from 'components/Analytics/components/Revenue';
 import AuditReporting from 'components/AuditReporting/AuditReporting';
@@ -12,11 +11,12 @@ import ProdCard from 'components/Dashboard/components/ProdCard';
 import RigsCard from 'components/Dashboard/components/RigsCard';
 import AdvancedSearch from 'components/Land/components/AdvancedSearch';
 import QuickActionPanel from 'components/Land/components/QuickActionPanel';
-
 import { RevenuePropertyDetails } from 'components/Revenue/components';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+
 import { setActiveModule, toggleQuickActionsPanel } from 'store/actions/commonActions';
+
 import { analyticsManagementRoutes } from 'utils/data';
 
 import { AppContext } from 'AppContext';
@@ -31,7 +31,6 @@ const Components = {
 	RevenuePropertyDetails,
 	AdvancedSearch: AdvancedSearch,
 	AuditReporting: AuditReporting,
-	Data: Data,
 };
 
 export default function Analytics() {
@@ -98,7 +97,7 @@ export default function Analytics() {
 				>
 					{Object.keys(allowedPaths).map((option, index) => {
 						return (
-							<Switch>
+							<Switch key={option}>
 								<Route
 									exact
 									path={isDetailView && index === 1 ? propertyDetailRoute?.link : allowedPaths[option].link}

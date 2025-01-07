@@ -310,8 +310,8 @@ describe('Map Component Shape File Upload', () => {
 
 	// Test case to ensure that data exists in the dataset grid
 	it('Data exists in dataset grid', () => {
-		// Intercepting requests for 'getESSimpleSearch' and 'shapefile_flat' and waiting for them to complete
-		cy.interceptAndWait(['getESSimpleSearch', 'shapefile_flat'], () => {
+		// Intercepting requests for 'getDbData' and 'shapefile_flat' and waiting for them to complete
+		cy.interceptAndWait(['getDbData', 'shapefile_flat'], () => {
 			// Clicking on the grid icon corresponding to the given sourceName after scrolling into view
 			cy.get(`[id='grid-icon-${sourceName}']`, { timeout: longTimeout }).scrollIntoView().click({ force: true });
 		});
@@ -329,8 +329,8 @@ describe('Map Component Shape File Upload', () => {
 
 	// Test case to verify that the shapefile grid flyto functionality works
 	it('Shapefile grid flyto works', () => {
-		// Intercepting requests for 'getESSimpleSearch' and 'shapefile_flat' and waiting for them to complete
-		cy.interceptAndWait(['getESSimpleSearch', 'shapefile_flat'], () => {
+		// Intercepting requests for 'getDbData' and 'shapefile_flat' and waiting for them to complete
+		cy.interceptAndWait(['getDbData', 'shapefile_flat'], () => {
 			// Clicking on the grid icon corresponding to the given sourceName after scrolling into view
 			cy.get(`[id='grid-icon-${sourceName}']`, { timeout: longTimeout }).scrollIntoView().click({ force: true });
 		});

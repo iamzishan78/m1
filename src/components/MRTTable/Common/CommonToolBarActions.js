@@ -1,6 +1,10 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import Button from '@material-ui/core/Button';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import EditIcon from '@material-ui/icons/Edit';
+
 import _ from 'lodash';
 
 import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';

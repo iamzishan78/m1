@@ -1,4 +1,5 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useContext, useEffect, useState, useMemo } from 'react';
+
 import {
 	Grid,
 	Container,
@@ -16,18 +17,19 @@ import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import CloseIcon from '@material-ui/icons/Close';
-
-import PersonIcon from '@material-ui/icons/Person';
 import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import KeyboardTabSharpIcon from '@material-ui/icons/KeyboardTabSharp';
 import LinkIcon from '@material-ui/icons/Link';
+import PersonIcon from '@material-ui/icons/Person';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import SearchIcon from '@material-ui/icons/Search';
-import _ from 'lodash';
-import React, { useContext, useEffect, useState, useMemo, useRef } from 'react';
 
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import _ from 'lodash';
+
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
+
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 import { AppContext } from 'AppContext';
 
@@ -43,7 +45,7 @@ export default function LinkWithIcon(props) {
 	const [inputSearchValue, setSearchValue] = useState('');
 	const [showAll, setShow] = useState(false);
 	const [showSearchOptions, setShowOptions] = useState(false);
-	const [stateApp, setStateApp] = useContext(AppContext);
+	const [stateApp] = useContext(AppContext);
 	const [processingPlatformOwners, setProcessingOwners] = useState([]);
 	const [isDeleteGlobalOwnerDialog, setGlobalOwnerDialog] = useState({
 		state: false,
@@ -55,7 +57,7 @@ export default function LinkWithIcon(props) {
 	});
 	const [unlinkGlobalOwners] = useMutation(UNLINK_GLOBAL_OWNER);
 	const [linkTaxOwners] = useMutation(LINK_PLATFORM_OWNER);
-	const [getESSimpleSearch, { data: esSearchData, loading }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+	const [getDbData, { data: esSearchData, loading }] = useLazyQuery(GET_DB_DATA, {
 		fetchPolicy: 'no-cache',
 	});
 
@@ -140,7 +142,7 @@ export default function LinkWithIcon(props) {
 
 	const debouncedSearch = useMemo(() => {
 		return _.debounce((search, showAll) => {
-			getESSimpleSearch({
+			getDbData({
 				variables: {
 					index: 'platformData:globalowner',
 					pagination: {
@@ -326,7 +328,7 @@ export default function LinkWithIcon(props) {
 												<Grid item xs={6}>
 													<Typography color={'primary'}>PLATFORM OWNERS</Typography>
 												</Grid>
-												{!_.isEmpty(esSearchData?.getESSimpleSearch?.hits) && (
+												{!_.isEmpty(esSearchData?.getDbData?.hits) && (
 													<Grid
 														item
 														xs={6}
@@ -354,7 +356,7 @@ export default function LinkWithIcon(props) {
 													<CircularProgress color="secondary" />
 												</Grid>
 											)}
-											{esSearchData?.getESSimpleSearch?.hits?.map(taxOwner => (
+											{esSearchData?.getDbData?.hits?.map(taxOwner => (
 												<ListGlobalOwners
 													taxOwner={taxOwner}
 													onClick={() => {
@@ -370,7 +372,7 @@ export default function LinkWithIcon(props) {
 													isLoading={processingPlatformOwners.includes(taxOwner.globalOwnerId)}
 												/>
 											))}
-											{!loading && _.isEmpty(esSearchData?.getESSimpleSearch?.hits) && (
+											{!loading && _.isEmpty(esSearchData?.getDbData?.hits) && (
 												<Grid container justifyContent="center">
 													<Typography>No platform owners found.</Typography>
 												</Grid>
@@ -457,15 +459,13 @@ export default function LinkWithIcon(props) {
 				fullWidth={false}
 				maxWidth="sm"
 			>
-				<DeleteConfirmationDialogContent
+				<DeleteConfirmationDialog
 					header="Remove Global Owner"
 					onClose={() => setGlobalOwnerDialog(state => ({ ...state, state: false }))}
 					deleteFunc={handleRemoveGlobalOwner}
-					m1nSelectedRowsIds={null}
-					setM1nSelectedRowsIndexes={() => {}}
 				>
 					Are you sure you want to remove this Global Owner?
-				</DeleteConfirmationDialogContent>
+				</DeleteConfirmationDialog>
 			</Dialog>
 		</React.Fragment>
 	);

@@ -1,15 +1,17 @@
-import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
-import { Grid, TextField, Select, MenuItem, IconButton, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { Clear } from '@material-ui/icons';
-import { Autocomplete, createFilterOptions } from '@material-ui/lab';
-import { get, debounce } from 'lodash';
-import loadashFilter from 'lodash/filter';
-import moment from 'moment';
 import React, { useEffect, useState, useContext } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+
+import { Grid, TextField, Select, MenuItem, IconButton, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { Clear } from '@material-ui/icons';
+import { Autocomplete, createFilterOptions } from '@material-ui/lab';
+
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
+import { get, debounce } from 'lodash';
+import loadashFilter from 'lodash/filter';
+import moment from 'moment';
 
 import ContactPaginatedAutocomplete from 'components/Revenue/components/Common/ContactsPaginatedAutocomplete';
 import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
@@ -17,18 +19,17 @@ import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoComple
 import ContactCardIcon from 'components/Shared/svgIcons/contact_card';
 import AssociatedWellsList from 'components/Shared/Wells/AssociatedWells';
 
-import StateField from './State';
-
-import { CONTACT_ENTITY } from 'graphQL/useQueryContactEntity';
 import { UPDATE_PROPERTY } from 'graphQL/useMutationUpdateProperty';
+import { CONTACT_ENTITY } from 'graphQL/useQueryContactEntity';
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { GET_AUTOCOMPLETE_PROPERTY_LIST } from 'graphQL/useQueryGetProperty';
+import { SHAPE_AUTOCOMPLETE_LIST } from 'graphQL/useQueryShapeAutoCompleteList';
 
 import { showInfoMessage } from 'actions';
-
-import { SHAPE_AUTOCOMPLETE_LIST } from 'graphQL/useQueryShapeAutoCompleteList';
 import { AppContext } from 'AppContext';
+
 import CountyField from './County';
+import StateField from './State';
 
 const useStyles = makeStyles(theme => ({
 	titleText: {

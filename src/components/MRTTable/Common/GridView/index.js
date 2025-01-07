@@ -1,5 +1,6 @@
-import { useApolloClient } from '@apollo/client';
 import React, { useEffect, memo, useRef } from 'react';
+
+import { useApolloClient } from '@apollo/client';
 
 import GridViewComponent from 'components/MRTTable/Common/GridView/GridViewComponent';
 import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController';

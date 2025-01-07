@@ -1,6 +1,9 @@
+import React, { useEffect } from 'react';
+
 import { Button, Typography } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
-import React, { memo, useEffect } from 'react';
+
+import PropTypes from 'prop-types';
 
 import { detailCardController } from 'hookstate/detailCardController';
 import { tableGlobalController } from 'hookstate/tableController';
@@ -8,7 +11,7 @@ import { tableGlobalController } from 'hookstate/tableController';
 import { PaymentRightDialog } from './RightDialog';
 
 // This component is used in the RelatedPaymentsTable component for the toolbar
-function RelatedPaymentsToolbar({ table, tableKey }) {
+function RelatedPaymentsToolbar({ table }) {
 	const paymentMultiGrid = tableGlobalController.getValue('paymentMultiGrid');
 
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
@@ -29,7 +32,6 @@ function RelatedPaymentsToolbar({ table, tableKey }) {
 				},
 			});
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedRows]);
 
 	return (
@@ -69,4 +71,9 @@ function RelatedPaymentsToolbar({ table, tableKey }) {
 	);
 }
 
-export default memo(RelatedPaymentsToolbar);
+RelatedPaymentsToolbar.propTypes = {
+	table: PropTypes.object.isRequired,
+	tableKey: PropTypes.string.isRequired,
+};
+
+export default RelatedPaymentsToolbar;

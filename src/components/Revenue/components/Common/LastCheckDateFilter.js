@@ -1,10 +1,12 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useSelector } from 'react-redux';
+
 import { Grid, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/styles';
+
+import { useLazyQuery } from '@apollo/client';
 import { get } from 'lodash';
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useSelector } from 'react-redux';
 
 import CustomDates from 'components/Revenue/components/Common/CustomDates';
 import { copy } from 'components/Shared/functions';

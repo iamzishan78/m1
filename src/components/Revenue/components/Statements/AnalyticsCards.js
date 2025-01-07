@@ -1,6 +1,7 @@
+import React, { useState } from 'react';
+
 import { Grid, Card, CardContent, Typography, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import React, { useState } from 'react';
 
 import FilterIcon from 'components/Common/SvgIcons/Filter';
 

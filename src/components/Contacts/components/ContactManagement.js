@@ -1,6 +1,7 @@
+import React, { useContext, useEffect } from 'react';
+
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useContext, useEffect } from 'react';
 
 import MRTTable from 'components/MRTTable';
 
@@ -10,9 +11,7 @@ import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(() => ({
 	root: {
-		// padding: "0px 30px 30px",
 		marginTop: '65px',
-		// marginLeft: '-10px',
 	},
 }));
 

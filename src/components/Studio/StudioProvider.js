@@ -1,6 +1,7 @@
+import React from 'react';
+
 import { makeStyles } from '@material-ui/core/styles';
 import { createTheme, MuiThemeProvider } from '@material-ui/core/styles';
-import React from 'react';
 
 import Studio from './Studio';
 import { StudioContextProvider } from './StudioContext';

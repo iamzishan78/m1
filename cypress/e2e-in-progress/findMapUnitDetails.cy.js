@@ -24,7 +24,7 @@ describe('open well detail card of Unit', () => {
 			.contains('Units')
 			.trigger('click');
 
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.get('#cognitive-search-autocomplete').should('be.visible').type('panther');
 
 		cy.verifyApiResponse('@getESSimpleSearchApi', { reponseTimeout: longTimeout }).then(response => {

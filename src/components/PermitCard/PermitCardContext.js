@@ -1,4 +1,5 @@
 import React, { useState, createContext } from 'react';
+
 const PermitCardContext = createContext([{}, () => {}]);
 
 const PermitCardContextProvider = React.memo(props => {

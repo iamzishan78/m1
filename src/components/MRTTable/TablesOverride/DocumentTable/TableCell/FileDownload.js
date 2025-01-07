@@ -1,7 +1,9 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { memo, useEffect } from 'react';
+
 import { IconButton } from '@material-ui/core';
 import GetAppIcon from '@material-ui/icons/GetApp';
-import React, { memo, useEffect } from 'react';
+
+import { useLazyQuery } from '@apollo/client';
 
 import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
 
@@ -34,14 +36,16 @@ function FileDownload({ id }) {
 				alignItems: 'center',
 			}}
 		>
-			<IconButton
-				onClick={e => {
-					e.stopPropagation();
-					handleViewFile(id);
-				}}
-			>
-				<GetAppIcon />
-			</IconButton>
+			{id && (
+				<IconButton
+					onClick={e => {
+						e.stopPropagation();
+						handleViewFile(id);
+					}}
+				>
+					<GetAppIcon />
+				</IconButton>
+			)}
 		</div>
 	);
 }

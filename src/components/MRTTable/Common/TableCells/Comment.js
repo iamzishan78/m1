@@ -1,11 +1,12 @@
+import React, { memo } from 'react';
+
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
 import ChatIcon from '@material-ui/icons/Chat';
-import React, { memo } from 'react';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
-function CommentCell({ rowNumber, value, id, targetLabel, hideShareCommentsToggle }) {
+function CommentCell({ rowNumber, value, id, targetLabel, hideShareCommentsToggle, tableKey }) {
 	return (
 		<Tooltip title={!value || value === 0 ? 'Add Comments' : 'View Comments'} placement="top">
 			<Button
@@ -21,6 +22,7 @@ function CommentCell({ rowNumber, value, id, targetLabel, hideShareCommentsToggl
 							targetSourceId: id,
 							targetLabel,
 							hideShareCommentsToggle,
+							tableKey,
 						},
 					});
 				}}

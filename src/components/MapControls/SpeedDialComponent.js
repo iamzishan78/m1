@@ -1,10 +1,8 @@
-import { makeStyles } from '@material-ui/core/styles';
+import React, { useEffect, useContext, useState, memo } from 'react';
 
-import AspectRatioOutlinedIcon from '@material-ui/icons/AspectRatioOutlined';
-import { useDispatch } from 'react-redux';
-import { toggleMapGridCardAtived } from '../../actions';
-import { clearMapAndCloseShapeActionsPopup } from './commonHelper';
+import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles';
+import AspectRatioOutlinedIcon from '@material-ui/icons/AspectRatioOutlined';
 import CancelIcon from '@material-ui/icons/Cancel';
 import EditIcon from '@material-ui/icons/Edit';
 import LanguageIcon from '@material-ui/icons/Language';
@@ -12,7 +10,6 @@ import LayersIcon from '@material-ui/icons/Layers';
 import MenuIcon from '@material-ui/icons/Menu';
 import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
-import React, { useEffect, useContext, useState, memo } from 'react';
 
 import { drawController } from 'hookstate/drawStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
@@ -21,6 +18,7 @@ import { popupController } from 'hookstate/popupStateController';
 
 import { layerRefs } from 'hookstate';
 
+import { clearMapAndCloseShapeActionsPopup } from './commonHelper';
 import { AppContext } from '../../AppContext';
 import { default as Cube3d } from '../Shared/svgIcons/cube-3d';
 
@@ -103,7 +101,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export function SpeedDialComponent(props) {
-	const dispatch = useDispatch();
 	const [toggle3d, setToggle3d] = useState(false);
 
 	const { mapControlsStateValues } = mapControlsController.useState(
@@ -131,6 +128,7 @@ export function SpeedDialComponent(props) {
 		if (popupStateValues.selectedUserDefinedLayer || drawStateValues.shapeToExtend) {
 			mapControlsController.updateState({ selectedMapControl: 'draw', selectedControl: 'layer' });
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedUserDefinedLayer, shapeToExtend]);
 
 	useEffect(() => {
@@ -140,6 +138,7 @@ export function SpeedDialComponent(props) {
 			});
 			mapControlsController.updateState({ selectedMapControl: 'draw', selectedControl: 'layer' });
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedAbstracts]);
 
 	const handleOpen = () => {
@@ -198,7 +197,6 @@ export function SpeedDialComponent(props) {
 				handleCloseShapeDrawer();
 				handleCloseDetailedCards();
 
-				dispatch(toggleMapGridCardAtived());
 				mapControlsController.toggleMapGridCardAtived();
 			}
 
@@ -286,6 +284,7 @@ export function SpeedDialComponent(props) {
 		if (popupStateValues.expandedCard) {
 			handleFabClick();
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [expandedCard]);
 
 	return (

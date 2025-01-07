@@ -1,8 +1,9 @@
+import React, { useState, useEffect } from 'react';
+
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import QuestionIcon from '@material-ui/icons/Help';
 import XIcon from '@material-ui/icons/HighlightOff';
-import React, { useState, useEffect } from 'react';
 
 import GasFlameIcon from './components/svgIcons/GasFlameIcon';
 import OilDropIcon from './components/svgIcons/OilDropIcon';

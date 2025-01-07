@@ -1,4 +1,8 @@
-import { useMutation, useLazyQuery } from '@apollo/client';
+import React, { useState, useEffect, useContext, Fragment, useCallback } from 'react';
+import Avatar from 'react-avatar';
+import { useSelector, useDispatch } from 'react-redux';
+import ReactTimeAgo from 'react-time-ago';
+
 import { CircularProgress, Menu, MenuItem, Grid, Tooltip, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -6,17 +10,16 @@ import {
 	ThumbUpAltOutlined as ThumbUpAltOutlinedIcon,
 	ExpandMore as ExpandMoreIcon,
 } from '@material-ui/icons';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 import ru from 'javascript-time-ago/locale/ru';
 import moment from 'moment';
-import React, { useState, useEffect, useContext, Fragment, useCallback } from 'react';
-import Avatar from 'react-avatar';
-import { useSelector, useDispatch } from 'react-redux';
-import ReactTimeAgo from 'react-time-ago';
 
 import { CommonCommentText } from 'components/Shared/CommentComponent';
 import CommentField from 'components/Shared/components/Fields/CommentField';
+
 import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
 import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
 import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
@@ -24,7 +27,9 @@ import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
 import { GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { TOGGLECOMMENTREACTION } from 'graphQL/userMutationToggleCommentReaction';
+
 import { updatePinComments } from 'store/actions/commonActions';
+
 import { dateIsValid } from 'utils/helper';
 
 import { AppContext } from 'AppContext';

@@ -1,4 +1,8 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { Fragment, useEffect, useState, useContext } from 'react';
+import Avatar from 'react-avatar';
+import { useHistory } from 'react-router-dom';
+import ReactTimeAgo from 'react-time-ago';
+
 import { Grid, Typography } from '@material-ui/core';
 import { CircularProgress, Menu, MenuItem, TextField, InputAdornment, IconButton } from '@material-ui/core';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -9,29 +13,29 @@ import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import Tooltip from '@material-ui/core/Tooltip';
 import { LocalAtm } from '@material-ui/icons';
+import { DescriptionOutlined } from '@material-ui/icons';
 import ClearIcon from '@material-ui/icons/Clear';
+import FolderIcon from '@material-ui/icons/Folder';
+import ContactIcon from '@material-ui/icons/Group';
+import NotificationsIcon from '@material-ui/icons/Notifications';
+import FlowIcon from '@material-ui/icons/Repeat';
 import SearchIcon from '@material-ui/icons/Search';
-import React, { Fragment, useEffect, useState, useContext } from 'react';
 
-import { useHistory } from 'react-router-dom';
-import ArchiveIcon from 'components/Shared/svgIcons/archive';
-import MarkUnreadIcon from 'components/Shared/svgIcons/mark-unread';
-import Avatar from 'react-avatar';
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
+import { useLazyQuery, useMutation } from '@apollo/client';
+
+import Loader from 'components/Loaders';
+import { CommonCommentText } from 'components/Shared/CommentComponent';
+import ArchiveIcon from 'components/Shared/svgIcons/archive';
+import MarkUnreadIcon from 'components/Shared/svgIcons/mark-unread';
 import TractIcon from 'components/Shared/svgIcons/tract';
 import UnitIcon from 'components/Shared/svgIcons/unit';
 
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import FolderIcon from '@material-ui/icons/Folder';
-import ContactIcon from '@material-ui/icons/Group';
-import FlowIcon from '@material-ui/icons/Repeat';
-import { DescriptionOutlined } from '@material-ui/icons';
-
 import { ARCHIVE_ALL_MUTATIONS } from 'graphQL/useMutationArchiverAllMentions';
 import { UPDATE_NOTIFICATION_STATUS } from 'graphQL/useMutationUpdateNotificationStatus';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
@@ -40,11 +44,6 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { dateIsValid } from 'utils/helper';
 
 import { AppContext } from 'AppContext';
-
-import ReactTimeAgo from 'react-time-ago';
-
-import { CommonCommentText } from 'components/Shared/CommentComponent';
-import Loader from 'components/Loaders';
 
 const useStyles = makeStyles(theme => ({
 	header: {
@@ -296,7 +295,7 @@ const Notifications = () => {
 	const [updateNotificationStatus] = useMutation(UPDATE_NOTIFICATION_STATUS);
 
 	const [getNotifications, { data: allNotifications, loading, refetch: refetchAllNotifications }] = useLazyQuery(
-		GET_ES_SIMPLE_SEARCH,
+		GET_DB_DATA,
 		{ fetchPolicy: 'no-cache' }
 	);
 
@@ -332,7 +331,7 @@ const Notifications = () => {
 		if (allNotifications) {
 			// if notificationType is MENTION then comment key must exist in array
 			// {notificationType: "MENTION", comment: { $exists: true }}
-			const showNotifications = allNotifications?.getESSimpleSearch?.hits?.filter(notificationObj => {
+			const showNotifications = allNotifications?.getDbData?.hits?.filter(notificationObj => {
 				return (
 					notificationObj.notificationType !== 'MENTION' ||
 					(notificationObj.notificationType === 'MENTION' && notificationObj.comment !== undefined)
@@ -378,7 +377,7 @@ const Notifications = () => {
 		//   const clientHeight = list.clientHeight;
 		//   // Calculate the position where the user reaches the end of the list's content
 		//   const isAtEndOfList = scrollTop + clientHeight >= scrollHeight - 20;
-		//   if (allNotifications?.getESSimpleSearch?.hits?.length === 0) return;
+		//   if (allNotifications?.getDbData?.hits?.length === 0) return;
 		//   if (isAtEndOfList && !isFetching) {
 		//   }
 		// }

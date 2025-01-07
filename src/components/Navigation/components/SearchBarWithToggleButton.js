@@ -1,3 +1,6 @@
+import React from 'react';
+import { useLocation, useHistory } from 'react-router-dom';
+
 import { CircularProgress } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
@@ -5,9 +8,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import GridOnIcon from '@material-ui/icons/GridOn';
 import PostAddOutlinedIcon from '@material-ui/icons/PostAddOutlined';
-import React from 'react';
-import { useLocation } from 'react-router-dom';
-import { useHistory } from 'react-router-dom';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
@@ -16,7 +16,7 @@ import { popupController } from 'hookstate/popupStateController';
 import Search from './Search';
 import { AppContext } from '../../../AppContext';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		'& .MuiButtonGroup-root': {
 			width: '100%',
@@ -85,7 +85,6 @@ function GridIcon() {
 					mapControlsController.toggleMapGridCardAtived();
 					mapControlsController.updateState({
 						selectedDataset: { name: 'M1 Platform' },
-						expandedPanel: false,
 						layerGridCard: false,
 					});
 				}}

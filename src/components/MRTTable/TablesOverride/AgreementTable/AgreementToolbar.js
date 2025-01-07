@@ -1,8 +1,9 @@
-import { Button, ButtonGroup } from '@material-ui/core';
 import React, { memo } from 'react';
 
+import { Button, ButtonGroup } from '@material-ui/core';
+
 import MetaFieldList from 'components/MRTTable/Common/MetaData/MetaFieldList';
-import MetaField from 'components/Table/helpers/MetaField';
+import MetaField from 'utils/MetaField';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableController } from 'hookstate/tableController';

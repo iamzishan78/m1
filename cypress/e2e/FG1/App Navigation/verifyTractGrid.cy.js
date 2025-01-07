@@ -13,7 +13,7 @@ describe('Verify Tract Grid Spec', () => {
 		cy.get('#UnitsTable', { timeout: longTimeout }).should('be.visible');
 
 		cy.log('==== STEP: CLICK ON TRACT FROM SIDEBAR AND VERIFY TRACT GRID  ====');
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.get("[id='Tracts 101']").click();
 
 		cy.get('#TractTable', { timeout: longTimeout }).should('be.visible');

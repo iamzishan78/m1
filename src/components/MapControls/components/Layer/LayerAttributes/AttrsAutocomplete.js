@@ -1,6 +1,8 @@
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { Typography, TextField } from '@mui/material';
 import React from 'react';
+
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { Typography, TextField } from '@mui/material';
 
 // Autocomplete for showing summary fields in dropdown
 const AttrsAutocomplete = ({ options, selectedValue, setSelectedValue }) => {

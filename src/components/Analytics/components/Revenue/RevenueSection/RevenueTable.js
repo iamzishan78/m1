@@ -1,3 +1,6 @@
+import React from 'react';
+import CSVDownloader from 'react-csv-downloader';
+
 import { Grid, IconButton, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -7,13 +10,13 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
-import React from 'react';
-import CSVDownloader from 'react-csv-downloader';
 
-import { convertAnalyticsDataToCSV } from 'components/Shared/M1nTable/components/MUIDataTable/utils';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
-const useStyles = makeStyles(theme => ({
+import { TO_FIXED } from 'utils/consts';
+import { convertAnalyticsDataToCSV, isEven } from 'utils/helper';
+
+const useStyles = makeStyles(() => ({
 	root: {
 		// margin: "20px 0px",
 	},
@@ -83,12 +86,12 @@ export default function AcccessibleTable({ monthsInterval, items }) {
 
 	const formatRow = (item, value) => {
 		if (item.name === 'Adjustments') {
-			return `${vf_number(value.toFixed(2))}`;
+			return `${vf_number(value.toFixed(TO_FIXED))}`;
 		}
 		if (item.name === 'Net Revenue') {
-			return <span style={{ fontSize: '16px', fontWeight: '700' }}>{vf_number(value.toFixed(2))}</span>;
+			return <span style={{ fontSize: '16px', fontWeight: '700' }}>{vf_number(value.toFixed(TO_FIXED))}</span>;
 		}
-		return vf_number(value.toFixed(2));
+		return vf_number(value.toFixed(TO_FIXED));
 	};
 
 	return (
@@ -131,7 +134,7 @@ export default function AcccessibleTable({ monthsInterval, items }) {
 							</TableHead>
 							<TableBody>
 								{items.map((item, index) => (
-									<TableRow className={`${(index + 1) % 2 !== 0 ? classes.highlightedRows : ''}`} key={index}>
+									<TableRow className={`${isEven(index) ? classes.highlightedRows : ''}`} key={index}>
 										<TableCell scope="row" className={classes.leftCells}>
 											{item.name}
 										</TableCell>
@@ -175,7 +178,7 @@ export default function AcccessibleTable({ monthsInterval, items }) {
 							</TableHead>
 							<TableBody>
 								{items.map((item, index) => (
-									<TableRow className={`${(index + 1) % 2 !== 0 ? classes.highlightedRows : ''}`} key={index}>
+									<TableRow className={`${isEven(index) ? classes.highlightedRows : ''}`} key={index}>
 										{item.data &&
 											Object.values(item.data).map(value => (
 												<TableCell scope="row">{formatRow(item, value)}</TableCell>

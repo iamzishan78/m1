@@ -12,9 +12,25 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { getLayerKey } from 'hookstate/helpers';
 import { popupController } from 'hookstate/popupStateController';
 
+const MAX_COLOR_VALUE_HEX = 0xfffff;
+const COLOR_MULTIPLIER = 1000000;
+const SIXTEEN = 16;
+const SIX = 6;
+const OPACITY = 0.9;
+const WIDTH_FACTOR = 0.6;
+const FORTY = 40;
+const TWENTY = 20;
+const THREE = 3;
+const TWO = 2;
+const FOUR = 4;
+const FIVE = 5;
+const MAX_COLOR_VALUE = 251;
+const DEFAULT_COLOR_VALUE = 152;
+const MAX_COLOR_COMPONENT_VALUE = 255;
+
 export const random_hex_color_code = () => {
-	const n = (Math.random() * 0xfffff * 1000000).toString(16);
-	return `#${n.slice(0, 6)}`;
+	const n = (Math.random() * MAX_COLOR_VALUE_HEX * COLOR_MULTIPLIER).toString(SIXTEEN);
+	return `#${n.slice(0, SIX)}`;
 };
 
 export const getPointSourceFromFeatures = features =>
@@ -75,12 +91,12 @@ export const getShapeLabelProps = (shape, labelProps) => {
 
 	// Estimate text dimensions based on length
 	const textLength = label.length;
-	const maxTextWidth = bboxWidth * 0.9; // 90% of the bounding box width
-	const maxTextHeight = bboxHeight * 0.9; // 90% of the bounding box height
+	const maxTextWidth = bboxWidth * OPACITY; // 90% of the bounding box width
+	const maxTextHeight = bboxHeight * OPACITY; // 90% of the bounding box height
 
 	// Assuming a base size of 100 meters, adjust size based on the bounding box
 	const baseSize = 100;
-	const adjustedWidth = baseSize * (maxTextWidth / (textLength * baseSize * 0.6)); // 0.6 is an approximate width factor per character
+	const adjustedWidth = baseSize * (maxTextWidth / (textLength * baseSize * WIDTH_FACTOR)); // 0.6 is an approximate width factor per character
 	const adjustedHeight = baseSize * (maxTextHeight / baseSize);
 
 	// Return the smaller of the two adjusted sizes
@@ -99,7 +115,7 @@ export const makeGeoJSON = (mdata, labelProps) => ({
 	type: 'FeatureCollection',
 	features: mdata
 		.flatMap(feature => {
-			if (feature.hasOwnProperty('Geometry')) {
+			if (Object.prototype.hasOwnProperty.call(feature, 'Geometry')) {
 				return {
 					type: 'Feature',
 					properties: feature,
@@ -107,7 +123,7 @@ export const makeGeoJSON = (mdata, labelProps) => ({
 				};
 			}
 
-			if (feature.hasOwnProperty('geoJSON')) {
+			if (Object.prototype.hasOwnProperty.call(feature, 'geoJSON')) {
 				return {
 					type: 'Feature',
 					properties: feature,
@@ -197,7 +213,7 @@ export const filterUniqueFeatures = features => {
 
 export const pickDeckObjects = ({ x, y, radius, depth }) => {
 	if (!window.mapRef?.__deck) {
-		return;
+		return null;
 	}
 	let deckFeatures = window.mapRef?.__deck?.pickMultipleObjects({
 		x,
@@ -214,7 +230,7 @@ export const hexToRGB = hex => {
 	hex = hex.replace('#', '');
 
 	// Expand the shorthand hexadecimal form if needed
-	if (hex.length === 3) {
+	if (hex.length === THREE) {
 		hex = hex
 			.split('')
 			.map(char => char + char)
@@ -222,9 +238,9 @@ export const hexToRGB = hex => {
 	}
 
 	// Convert the hexadecimal to decimal values for red, green, and blue components
-	const r = parseInt(hex.substring(0, 2), 16);
-	const g = parseInt(hex.substring(2, 4), 16);
-	const b = parseInt(hex.substring(4, 6), 16);
+	const r = parseInt(hex.substring(0, TWO), SIXTEEN);
+	const g = parseInt(hex.substring(TWO, FOUR), SIXTEEN);
+	const b = parseInt(hex.substring(FOUR, SIX), SIXTEEN);
 
 	// Return the RGBA string
 	return `rgba(${r},${g},${b})`;
@@ -232,7 +248,7 @@ export const hexToRGB = hex => {
 
 export const getRGBA = (rgb, a) => {
 	if (!rgb) {
-		return [251, 152, 40, 255];
+		return [MAX_COLOR_VALUE, DEFAULT_COLOR_VALUE, FORTY, MAX_COLOR_COMPONENT_VALUE];
 	}
 
 	if (rgb.includes('#')) {
@@ -242,7 +258,7 @@ export const getRGBA = (rgb, a) => {
 	// Determine alpha value
 	let alpha = typeof a === 'number' ? a : undefined;
 
-	const concatIndex = rgb.indexOf('rgba') === -1 ? 4 : 5;
+	const concatIndex = rgb.indexOf('rgba') === -1 ? FOUR : FIVE;
 
 	let colorArray;
 	if (rgb.indexOf('rgb') === -1) {
@@ -260,18 +276,18 @@ export const getRGBA = (rgb, a) => {
 	}
 
 	// Convert alpha to 0-255 range if it's a fractional value
-	if (colorArray[3] < 1) {
-		colorArray[3] = Math.round((colorArray[3] || 1) * 255.0);
+	if (colorArray[THREE] < 1) {
+		colorArray[THREE] = Math.round((colorArray[THREE] || 1) * MAX_COLOR_COMPONENT_VALUE);
 	}
 
 	// Override alpha if explicitly provided
 	if (alpha !== undefined) {
-		colorArray[3] = Math.round(alpha * 255.0);
+		colorArray[THREE] = Math.round(alpha * MAX_COLOR_COMPONENT_VALUE);
 	}
 
 	// Default to full opacity if alpha is undefined
-	if (colorArray[3] === undefined) {
-		colorArray[3] = 255;
+	if (colorArray[THREE] === undefined) {
+		colorArray[THREE] = MAX_COLOR_COMPONENT_VALUE;
 	}
 
 	return colorArray;
@@ -287,8 +303,8 @@ export const divideBoundingBox = bbox => {
 	const [minX, minY, maxX, maxY] = bbox;
 
 	// Calculate center point
-	const centerX = (minX + maxX) / 2;
-	const centerY = (minY + maxY) / 2;
+	const centerX = (minX + maxX) / TWO;
+	const centerY = (minY + maxY) / TWO;
 
 	// Create new bounding boxes
 	const boxes = [
@@ -301,12 +317,12 @@ export const divideBoundingBox = bbox => {
 	if (isBBoxObj) {
 		return boxes.map(bbox => ({
 			top_left: {
-				lat: bbox[3],
+				lat: bbox[THREE],
 				lon: bbox[0],
 			},
 			bottom_right: {
 				lat: bbox[1],
-				lon: bbox[2],
+				lon: bbox[TWO],
 			},
 		}));
 	}
@@ -318,14 +334,11 @@ export const dividePolygon = polygon => {
 	// Calculate the centroid of the polygon
 	// Calculate the bounding box (bbox) of the polygon
 	const bbox = turf.bbox(polygon);
-	const minX = bbox[0];
-	const minY = bbox[1];
-	const maxX = bbox[2];
-	const maxY = bbox[3];
+	const [minX, minY, maxX, maxY] = bbox;
 
 	// Calculate the center point of the bounding box
-	const centerX = (minX + maxX) / 2;
-	const centerY = (minY + maxY) / 2;
+	const centerX = (minX + maxX) / TWO;
+	const centerY = (minY + maxY) / TWO;
 
 	// Create polygons for each quadrant
 	const topLeft = turf.polygon([
@@ -395,7 +408,7 @@ export const makeLabelGeoJsonFromStrings = data => ({
 	type: 'FeatureCollection',
 	features: data.map(feature => {
 		const geoJSON = JSON.parse(feature.geo_json);
-		if (geoJSON.geometry && geoJSON.geometry.coordinates[0].length >= 4) {
+		if (geoJSON.geometry && geoJSON.geometry.coordinates[0].length >= FOUR) {
 			const polygon = turf.polygon(geoJSON.geometry.coordinates);
 			const centroid = turf.centroid(polygon);
 			centroid.properties.AbstractName = geoJSON.properties.AbstractName;
@@ -451,6 +464,22 @@ export const getAdvancedSearch = (layerGeometry, mustQuery) => [
 	},
 ];
 
+export const extractUniqueFilters = filters => {
+	return filters.reduce((acc, filter) => {
+		const index = acc.findIndex(existingFilter => existingFilter.field === filter.field);
+
+		if (index !== -1) {
+			// Overwrite the existing filter with the new one (higher precedence)
+			acc[index] = filter;
+		} else {
+			// Add the filter if it doesn't exist
+			acc.push(filter);
+		}
+
+		return acc;
+	}, []);
+};
+
 // Query made generic to support in both TransferData Manager and layerStateController
 export const generateFileFilters = ({
 	fileLayer,
@@ -486,20 +515,20 @@ export const generateFileFilters = ({
 	};
 };
 
-export const extractUniqueFilters = filters => {
-	return filters.reduce((acc, filter) => {
-		const index = acc.findIndex(existingFilter => existingFilter.field === filter.field);
-
-		if (index !== -1) {
-			// Overwrite the existing filter with the new one (higher precedence)
-			acc[index] = filter;
-		} else {
-			// Add the filter if it doesn't exist
-			acc.push(filter);
-		}
-
-		return acc;
-	}, []);
+export const filterValidFilters = filters => {
+	if (filters) {
+		return filters.filter(filter => {
+			const value = filter.value;
+			return !(
+				value === null ||
+				value === undefined ||
+				(Array.isArray(value) && value.length === 0) ||
+				(typeof value === 'object' && Object.keys(value).length === 0)
+			);
+		});
+	} else {
+		return [];
+	}
 };
 
 // Utility for getting attribute based color
@@ -507,7 +536,7 @@ const getAttributeBasedColor = (attrFillColor, isColorEnabled) => {
 	// If fill color is an object
 	if (attrFillColor?.rgb) {
 		let fColor =
-			attrFillColor.rgb.length === 3
+			attrFillColor.rgb.length === THREE
 				? 'rgb(' + attrFillColor.rgb.join() + ')'
 				: 'rgba(' + attrFillColor.rgb.join() + ')';
 		let fColorOp = attrFillColor.alpha;
@@ -516,6 +545,7 @@ const getAttributeBasedColor = (attrFillColor, isColorEnabled) => {
 	if (attrFillColor) {
 		return isColorEnabled === false ? [0, 0, 0, 0] : getRGBA(attrFillColor, 1);
 	}
+	return [];
 };
 
 // Utility for getting layer stroke color
@@ -600,13 +630,24 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 	dbLayer.layerPaintProps?.forEach(prop => {
 		// Getting layer interation settings
 		const layerInteraction = dbLayer.layerSettings?.interaction;
+		const fillColor = prop.paintProps?.['fill-color'];
+		const fillOpacity = prop.paintProps?.['fill-opacity'];
+		const strokeWidth = prop.paintProps?.['strokeWidth'];
+		const fillStroke = prop.paintProps?.['fill-outline-color'] || prop.paintProps?.['line-color'];
+
+		const pointColor = prop.paintProps?.['circle-color'];
+		const pointOpacity = prop.paintProps?.['circle-opacity'];
+		const pointStroke = prop.paintProps?.['circle-stroke-color'] || prop.paintProps?.['line-color'];
+		const pointRadius = prop.paintProps?.['circle-radius'] || 1;
+		const pointWidth = prop.paintProps?.['circle-stroke-width'] || 1;
+
+		const lineColor = prop.paintProps?.['line-color'];
+		const lineOpaciity = prop.paintProps?.['line-opacity'];
+		const lineWidth = prop.paintProps?.['line-width'] || 1;
+
+		const getLineColor = getLayerFillColor(dbLayer, lineColor, lineOpaciity);
 		switch (prop.paintType) {
 			case 'fill':
-				const fillColor = prop.paintProps?.['fill-color'];
-				const fillOpacity = prop.paintProps?.['fill-opacity'];
-				const strokeWidth = prop.paintProps?.['strokeWidth'];
-				const fillStroke = prop.paintProps?.['fill-outline-color'] || prop.paintProps?.['line-color'];
-
 				// Setting fill and line color using utility functions
 				props.getFillColor = getLayerFillColor(dbLayer, fillColor, fillOpacity);
 				props.defaultColor = getRGBA(fillColor, fillOpacity);
@@ -622,24 +663,18 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 					if (area < 1000) {
 						return 1;
 					}
-					return strokeWidth || 20;
+					return strokeWidth || TWENTY;
 				};
 
 				break;
 
 			case 'circle':
-				const pointColor = prop.paintProps?.['circle-color'];
-				const pointOpacity = prop.paintProps?.['circle-opacity'];
-				const pointStroke = prop.paintProps?.['circle-stroke-color'] || prop.paintProps?.['line-color'];
-				const pointRadius = prop.paintProps?.['circle-radius'] || 1;
-				const pointWidth = prop.paintProps?.['circle-stroke-width'] || 1;
-
 				// Setting fill and line color using utility functions
 				props.getFillColor = getLayerFillColor(dbLayer, pointColor, pointOpacity);
 				props.defaultColor = getRGBA(pointColor, pointOpacity);
 				props.getLineColor = getLayerStrokeColor(dbLayer, pointStroke);
 
-				props.getPointRadius = pointRadius * 40;
+				props.getPointRadius = pointRadius * FORTY;
 				props.getLineWidth = feature => {
 					// Calculate area of the shape
 					const area = turf.area(feature);
@@ -651,22 +686,18 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 					if (area < 1000) {
 						return 1;
 					}
-					return pointWidth * 40;
+					return pointWidth * FORTY;
 				};
 
 				break;
 
 			case 'line':
-				const lineColor = prop.paintProps?.['line-color'];
-				const lineOpaciity = prop.paintProps?.['line-opacity'];
-				const lineWidth = prop.paintProps?.['line-width'] || 1;
-
-				props.getLineWidth = lineWidth * 40;
+				props.getLineWidth = lineWidth * FORTY;
 
 				// If fill color not enabled setting fill color to transparent
 				props.getFillColor =
 					layerInteraction.interactionDetail?.enablefillColor === false ? [0, 0, 0, 0] : props.getFillColor;
-				const getLineColor = getLayerFillColor(dbLayer, lineColor, lineOpaciity);
+
 				if (!props.getLineColor || !isEqual(getLineColor, props.getFillColor)) {
 					props.getLineColor =
 						layerInteraction.interactionDetail?.enableStrokeColor === false
@@ -683,7 +714,7 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 
 	if (labelProps && labelProps.visibility !== 'none') {
 		props.getTextSize = f => {
-			return 20
+			return 20;
 		};
 		// props.textMaxWidth = 5;
 		props.pointType = 'text';

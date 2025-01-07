@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import { isEmpty, pickBy } from 'lodash';
 
 import Loaders from 'components/Loaders';
@@ -12,6 +15,7 @@ import { UPDATE_CAMPAIGN } from 'graphQL/useMutationCampaign';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
+import { TO_FIXED } from 'utils/consts';
 import { copy } from 'utils/helper';
 
 const esIndex = 'campaigns_flat';
@@ -37,12 +41,12 @@ const onCustomKeyChange = async (client, row, value, item) => {
 				campaign,
 			},
 			mutation: UPDATE_CAMPAIGN,
-			refetchQueries: ['getESSimpleFilter'],
+			refetchQueries: ['getDbFilters'],
 		});
 
 		Loaders.successToast(loaderId, 'Updation Complete');
 		tableGlobalController.refetch();
-	} catch (err) {
+	} catch {
 		Loaders.errorToast(loaderId, 'Failed to Update');
 	}
 };
@@ -55,6 +59,7 @@ const CampaignMeta = {
 		pageSize: 50,
 	},
 	defaultSort: { field: 'flatSyncAt', order: 'desc' },
+	refetchQueries: ['getCampaignAnalytics'],
 	maxTableHeight: 'calc(100vh - 490px)',
 	onCustomKeyChange,
 	isInFiniteScroll: true,
@@ -93,12 +98,12 @@ const CampaignMeta = {
 		{
 			...CommonSchema.MONGO_ID,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'name.keyword',
-			accessorKey: 'name',
+			id: 'name',
 			header: 'Campaign Name',
 			Cell: ({ renderedCellValue, row }) => (
 				<div
@@ -118,14 +123,14 @@ const CampaignMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'status.keyword',
-			accessorKey: 'status',
+			id: 'status',
 			header: 'Campaign Stage',
 			isExternalFilter: true,
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'unitCount',
-			accessorKey: 'unitCount',
+			id: 'unitCount',
 			header: 'Units',
 			isSearchField: false,
 			type: 'number',
@@ -133,19 +138,19 @@ const CampaignMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'totalNra',
-			accessorKey: 'totalNra',
+			id: 'totalNra',
 			header: 'Total Unit NRA',
 			isSearchField: false,
 			type: 'number',
 			Cell: ({ row }) => {
 				const totalNra = row.getValue('totalNra');
-				return <>{totalNra || totalNra === 0 ? vf_number(totalNra.toFixed(2)) : ''}</>;
+				return <>{totalNra || totalNra === 0 ? vf_number(totalNra.toFixed(TO_FIXED)) : ''}</>;
 			},
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'tractCount',
-			accessorKey: 'tractCount',
+			id: 'tractCount',
 			header: 'Tracts',
 			isSearchField: false,
 			type: 'number',
@@ -153,7 +158,6 @@ const CampaignMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'owner.name.keyword',
-			accessorFn: row => row?.owner?.name,
 			id: 'owner.name',
 			header: 'Supervisor',
 			isExternalFilter: true,

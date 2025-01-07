@@ -1,4 +1,5 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useContext, useState, useMemo, useEffect } from 'react';
+
 import {
 	Typography,
 	Paper,
@@ -13,7 +14,8 @@ import {
 } from '@material-ui/core';
 import { Close as CloseIcon } from '@material-ui/icons';
 import { Autocomplete } from '@material-ui/lab';
-import React, { useContext, useState, useMemo, useEffect } from 'react';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { v4 as uuid } from 'uuid';
 
 import { ADDLAYER } from 'graphQL/useMutationAddLayer';

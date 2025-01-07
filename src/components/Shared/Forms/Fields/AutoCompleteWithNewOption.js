@@ -1,9 +1,11 @@
+import React from 'react';
+
 import { Typography, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
 import loadashFilter from 'lodash/filter';
-import React from 'react';
 
 const useStyles = makeStyles({
 	inputRoot: {

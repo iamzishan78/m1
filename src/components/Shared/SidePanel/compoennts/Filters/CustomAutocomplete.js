@@ -1,9 +1,12 @@
-import { makeStyles } from '@material-ui/core/styles';
-import CloseIcon from '@mui/icons-material/Close';
-import { Autocomplete, TextField, Chip, IconButton } from '@mui/material';
-import moment from 'moment';
 import React from 'react';
 import { useController } from 'react-hook-form';
+
+import { makeStyles } from '@material-ui/core/styles';
+
+import CloseIcon from '@mui/icons-material/Close';
+import { Autocomplete, TextField, Chip, IconButton } from '@mui/material';
+
+import moment from 'moment';
 
 /**
  * CustomAutocomplete component integrates MUI Autocomplete with react-hook-form using useController.
@@ -76,9 +79,8 @@ const CustomAutocomplete = ({
 	const classes = useStyles();
 
 	if (type === 'date') {
-		const handleDateChange = (index, value) => {
-			const updatedValue = [...(field.value || [])]; // Ensure the array is initialized
-			updatedValue[index] = value; // Update the specific index (0 for "from", 1 for "to")
+		const handleDateChange = (key, value) => {
+			const updatedValue = { ...field.value, [key]: value }; // Use `gte` or `lte` as keys
 			field.onChange(updatedValue);
 			onChange?.(updatedValue);
 		};
@@ -88,15 +90,15 @@ const CustomAutocomplete = ({
 				<TextField
 					type="date"
 					label={'Date From'}
-					value={field.value?.[0] || ''}
-					onChange={e => handleDateChange(0, e.target.value)}
+					value={field.value?.gte || ''}
+					onChange={e => handleDateChange('gte', e.target.value)}
 					InputLabelProps={{ shrink: true }}
 					InputProps={{
 						inputProps: {
 							max: moment().subtract(1, 'day').format('YYYY-MM-DD'),
 						},
-						endAdornment: field.value?.from && (
-							<IconButton onClick={() => handleDateChange('from', '')}>
+						endAdornment: field.value?.gte && (
+							<IconButton onClick={() => handleDateChange('gte', '')}>
 								<CloseIcon />
 							</IconButton>
 						),
@@ -110,15 +112,15 @@ const CustomAutocomplete = ({
 				<TextField
 					type="date"
 					label={'Date To'}
-					value={field.value?.[1] || ''}
-					onChange={e => handleDateChange(1, e.target.value)}
+					value={field.value?.lte || ''}
+					onChange={e => handleDateChange('lte', e.target.value)}
 					InputLabelProps={{ shrink: true }}
 					InputProps={{
 						inputProps: {
 							max: moment().format('YYYY-MM-DD'),
 						},
-						endAdornment: field.value?.to && (
-							<IconButton onClick={() => handleDateChange('to', '')}>
+						endAdornment: field.value?.lte && (
+							<IconButton onClick={() => handleDateChange('lte', '')}>
 								<CloseIcon />
 							</IconButton>
 						),
@@ -193,9 +195,9 @@ const CustomAutocomplete = ({
 		<Autocomplete
 			{...field}
 			multiple={multiple}
-			options={options}
+			options={options.filter(option => (multiple ? !field?.value?.includes(option) : true))}
 			onChange={(e, v, r) => {
-				onChange?.(e, v, r);
+				onChange?.(e, v, r, field?.value);
 				field.onChange(v);
 			}}
 			value={(multiple && typeof field?.value === 'string' ? [field?.value] : field?.value) || (multiple ? [] : '')}

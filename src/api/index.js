@@ -1,10 +1,12 @@
+import { Provider as ReduxProvider } from 'react-redux';
+
 import { BlockBlobClient } from '@azure/storage-blob';
 import { print } from 'graphql';
-import { Provider as ReduxProvider } from 'react-redux';
 
 import { getURL, getHeaders } from 'utils/helper';
 
 import GlobalApolloClientProvider from '../GlobalApolloClientProvider';
+
 class API {
 	failedResponse = error => {
 		const data = error.response && error.response.data ? error.response.data : {};

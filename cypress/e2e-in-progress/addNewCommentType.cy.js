@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 
 import { basic_timeouts } from '../../cypressUtils/data';
+
 const eachComment = '12345';
 describe('Add new Comment Type spec', () => {
 	it('passes', () => {
@@ -9,7 +10,7 @@ describe('Add new Comment Type spec', () => {
 
 		cy.viewport(1920, 1080);
 
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.visit('http://localhost:3000/land/agreements');
 
 		cy.checkAndLogin();

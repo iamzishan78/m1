@@ -1,9 +1,10 @@
+import React, { useContext } from 'react';
+
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Popover from '@material-ui/core/Popover';
 import { makeStyles } from '@material-ui/core/styles';
 import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded';
-import React, { useContext } from 'react';
 
 import { TitleOpinionContext } from '../TitleOpinionContext';
 import Modal from './Modal';

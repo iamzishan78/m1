@@ -30,7 +30,7 @@ Cypress.Commands.add('setMapData', ({ testId, value }) => {
 		timeout: basic_timeouts.midTimeout,
 	}).trigger('mouseover', { force: true });
 
-	cy.interceptAndWait(['getESSimpleFilter'], () => {
+	cy.interceptAndWait(['getDbFilters'], () => {
 		cy.wait(basic_timeouts.shorTimeout);
 		cy.get(`button[data-testid="edit-${testId}"]`).click();
 	});
@@ -107,7 +107,7 @@ describe('ShapeDetailCard Component', () => {
 	 */
 	it('Shape Owner Recalculate Works', () => {
 		// Intercepting API calls for fetching shape owner data and waiting for completion
-		cy.interceptAndWait(['getESSimpleSearch', 'shapeowners_flat'], () => {
+		cy.interceptAndWait(['getDbData', 'shapeowners_flat'], () => {
 			// Clicking on the 'Interest Owners' tab
 			cy.get('[data-testid="shape-detail-tab-Interest Owners"]').click();
 		});
@@ -129,7 +129,7 @@ describe('ShapeDetailCard Component', () => {
 		// Clicking on the 'Select All Button' button for recalculation
 		cy.get('[aria-label="Toggle select all"]').eq(0).click();
 
-		cy.interceptAndWait(['getESSimpleSearch', 'shapeowners_flat'], () => {
+		cy.interceptAndWait(['getDbData', 'shapeowners_flat'], () => {
 			// Clicking on the 'Recalculate' button
 			cy.get('[data-testid="recalculate"]').click();
 		});

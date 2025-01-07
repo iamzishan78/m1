@@ -1,5 +1,6 @@
-import { anyToDate } from '@amcharts/amcharts4/.internal/core/utils/Utils';
 import CircularProgress from '@material-ui/core/CircularProgress';
+
+import { anyToDate } from '@amcharts/amcharts4/.internal/core/utils/Utils';
 import _ from 'lodash';
 import moment from 'moment';
 

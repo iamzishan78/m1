@@ -1,52 +1,59 @@
-import React, { useMemo } from 'react';
-
+import React, { useContext, useMemo } from 'react';
 import MRTTable from 'components/MRTTable';
 import TabPanels from 'components/Shared/TabPanels';
-import TabButtons from 'components/Shared/TabPanels/TabButtons';
-import AssociatedWellsProductionTable from 'components/Table/Revenue/AssociatedWellsProductionTable';
-
 import { tableGlobalController } from 'hookstate/tableController';
+import { AppContext } from 'AppContext';
+import PropTypes from 'prop-types';
 
-const ValidationGrids = ({ associatedWellIds, propertyId }) => {
-	const setSelectedTab = tableGlobalController.setSelectedTab;
+const ValidationGrids = ({ propertyId }) => {
+	const [stateApp] = useContext(AppContext);
+
 	const {
 		stateValues: { tabKey: selectedTab },
 	} = tableGlobalController.useState(['tabKey']);
 
-	const Header = () => (
-		<TabButtons
-			labels={['Well Production', 'Sales vs Production Volumes']}
-			value={selectedTab}
-			setValue={n => {
-				setSelectedTab(n);
-			}}
-		/>
-	);
+	const defaultTabLabels = ['Sales vs Production Volumes'];
 
-	const SalesVolumeOverrideMeta = useMemo(
-		() => ({
+	const overrideMeta = useMemo(() => {
+		const tabLabels = stateApp.associatedWellIds ? ['Well Production', ...defaultTabLabels] : defaultTabLabels;
+
+		const salesVolumeMeta = {
 			defaultFilters: [{ field: 'property._id', value: propertyId }],
-			tabLabels: ['Well Production', 'Sales vs Production Volumes'],
-		}),
-		[propertyId]
-	);
+			tabLabels,
+		};
+
+		const wellProductionMeta = {
+			defaultFilters: [{ field: 'well._id', value: stateApp.associatedWellIds }],
+			tabLabels,
+		};
+
+		return { salesVolumeMeta, wellProductionMeta };
+	}, [propertyId, stateApp.associatedWellIds]);
 
 	return (
 		<div>
 			<TabPanels
+				key={overrideMeta.salesVolumeMeta.tabLabels[0]}
 				value={selectedTab}
 				panels={[
-					<AssociatedWellsProductionTable
-						targetLabel="propertyInterest"
-						parent="PropertyAssociatedWell"
-						header={<Header />}
-						associatedWellIds={associatedWellIds}
+					<MRTTable
+						key="WellProductionTable"
+						name="WellProductionTable"
+						overrideMeta={overrideMeta.wellProductionMeta}
 					/>,
-					<MRTTable name="SalesVolumeComparisonTable" overrideMeta={SalesVolumeOverrideMeta} />,
+					<MRTTable
+						key="SalesVolumeComparisonTable"
+						name="SalesVolumeComparisonTable"
+						overrideMeta={overrideMeta.salesVolumeMeta}
+					/>,
 				]}
 			/>
 		</div>
 	);
+};
+
+ValidationGrids.propTypes = {
+	propertyId: PropTypes.string.isRequired,
 };
 
 export default ValidationGrids;

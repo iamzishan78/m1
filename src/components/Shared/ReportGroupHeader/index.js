@@ -1,21 +1,24 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { Grid, Button, Select, MenuItem, TextField, Dialog, FormControl, InputLabel } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
 import React, { useState, useContext, useEffect, useCallback } from 'react';
 
-// actions
-import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import { Grid, Button, Select, MenuItem, TextField, Dialog, FormControl, InputLabel } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+
+import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 
 import { ADD_GRID_VIEW } from 'graphQL/useMutationAddGridView';
 import { UPDATE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 
+import { KEYBOARD_KEYS } from 'utils/consts';
+
 import { AppContext } from 'AppContext';
 
 import { copy } from '../functions';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	actionBar: ({ isBackground, noPadding }) => ({
 		padding: noPadding ? 0 : '10px 40px',
 		display: 'flex',
@@ -76,7 +79,6 @@ export default function ReportGroupHeader({
 				userId: stateApp.user.mongoId,
 			},
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const handleAddUpdateDelete = useCallback(
@@ -136,7 +138,6 @@ export default function ReportGroupHeader({
 				});
 			}
 			return config;
-			// eslint-disable-next-line react-hooks/exhaustive-deps
 		},
 		[esFilters, gridViews, config, reportingGroup]
 	);
@@ -171,7 +172,6 @@ export default function ReportGroupHeader({
 				action: () => setDeleteDialogOpen(true),
 			},
 		];
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [reportingGroup, handleAddUpdateDelete]);
 
 	return (
@@ -196,7 +196,7 @@ export default function ReportGroupHeader({
 							InputLabelProps={{ className: classes.textFieldLabel }}
 							onChange={e => setConfig({ ...config, name: e.target.value })}
 							onKeyDown={e => {
-								if (e.keyCode === 13) {
+								if (e.keyCode === KEYBOARD_KEYS.ENTER) {
 									e.preventDefault();
 									handleAddUpdateDelete();
 								}
@@ -272,15 +272,13 @@ export default function ReportGroupHeader({
 					fullWidth={false}
 					maxWidth="sm"
 				>
-					<DeleteConfirmationDialogContent
+					<DeleteConfirmationDialog
 						header={'Delete Report Group'}
 						onClose={setDeleteDialogOpen}
 						deleteFunc={() => handleAddUpdateDelete({ type: 'delete', name: reportingGroup })}
-						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
 					>
 						Do you want to delete this report group?
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 			)}
 		</>

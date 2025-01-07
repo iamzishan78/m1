@@ -1,39 +1,41 @@
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import UploadZone from './UploadZone';
-import Tooltip from '@material-ui/core/Tooltip';
-import joinAddress from 'components/Shared/valueformatters/join-address.js';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
-import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
-import GenericDateField from 'components/Shared/components/Fields/GenericDateFIeld';
-import DeleteIcon from '@material-ui/icons/Delete';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import { ADDDESCRIPTORFILE } from 'graphQL/useMutationAddDescriptorFile';
-import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
-import { BlockBlobClient } from '@azure/storage-blob';
-import { IconButton, TextField, withStyles } from '@material-ui/core';
-import { Typography, Grid } from '@material-ui/core';
+import React, { useEffect, useState, Fragment } from 'react';
+import { useDispatch } from 'react-redux';
+
+import { IconButton, TextField, withStyles, Typography, Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import DeleteIcon from '@material-ui/icons/Delete';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { BlockBlobClient } from '@azure/storage-blob';
 import _ from 'lodash';
 import loadashFilter from 'lodash/filter';
-import React, { useEffect, useState, Fragment } from 'react';
-import { useDispatch } from 'react-redux';
 
 import Loader from 'components/Loaders';
-
-// functions
+import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
+import GenericDateField from 'components/Shared/components/Fields/GenericDateFIeld';
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
-import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
+import joinAddress from 'components/Shared/valueformatters/join-address.js';
+
+import { ADDDESCRIPTORFILE } from 'graphQL/useMutationAddDescriptorFile';
+import { UPDATE_DOCUMENT } from 'graphQL/useMutationUpdateDocument';
+import { DOCUMENT_TYPE } from 'graphQL/useQueryDocumentType';
+import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
+import { BYTE, CREATED_STATUS } from 'utils/consts';
+
 import { showErrorMessage } from 'actions';
 
 import { createViewStateController, initialState } from './AddAndEditController';
+import UploadZone from './UploadZone';
 
 const filter = createFilterOptions();
 
@@ -259,11 +261,13 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 			const file_id = addFileData.addFileDescriptor.file.id;
 			const file_name = addFileData.addFileDescriptor.file.name;
 
+			const MBS = 4;
+
 			if (file_id) {
 				const blockBlobClient = new BlockBlobClient(uri);
 				blockBlobClient
 					.uploadBrowserData(inputFile, {
-						maxSingleShotSize: 4 * 1024 * 1024,
+						maxSingleShotSize: MBS * BYTE * BYTE,
 						blobHTTPHeaders: {
 							blobContentDisposition: `attachment; filename="${file_name}"`,
 						},
@@ -272,7 +276,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 						},
 					})
 					.then(res => {
-						if (res?._response?.status !== 201) {
+						if (res?._response?.status !== CREATED_STATUS) {
 							dispatch(showErrorMessage('Upload failed'));
 						}
 					})
@@ -484,7 +488,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 						</div>
 					</ListItem>
 
-					{metaColumns.map((meta, index) => {
+					{metaColumns.map(meta => {
 						return (
 							<Fragment key={meta?.name}>
 								{meta?.inputType === 'text' && (
@@ -671,7 +675,7 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 			}}
 			renderOption={option => {
 				if (option._id === 'newEntity') {
-					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+					return <Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>;
 				}
 
 				return (

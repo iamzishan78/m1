@@ -1,7 +1,9 @@
+import React, { useContext, useState, useEffect } from 'react';
+import { Droppable, Draggable } from 'react-beautiful-dnd';
+
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
-import { AppContext } from 'AppContext';
 import List from '@material-ui/core/List';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -12,8 +14,8 @@ import { createTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import DragIndicator from '@material-ui/icons/DragIndicator';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import React, { useContext, useState, useEffect } from 'react';
-import { Droppable, Draggable } from 'react-beautiful-dnd';
+
+import { AppContext } from 'AppContext';
 
 import LayerItem from './LayerItem';
 import { deepEqualObjects } from '../../../functions';

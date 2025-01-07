@@ -5,7 +5,7 @@ const columns = [{ name: 'M1neral System ID' }, { name: 'State' }, { name: 'Coun
 
 describe('UnitInterest Table', () => {
 	beforeEach(() => {
-		cy.interceptAndWait(['getESSimpleSearch', 'shapeowners_flat'], () => {
+		cy.interceptAndWait(['getDbData', 'shapeowners_flat'], () => {
 			cy.viewport(1600, 1200).mount(<MRTTable name="UnitInterestTable" />);
 		});
 	});

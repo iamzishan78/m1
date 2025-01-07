@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
@@ -37,41 +40,41 @@ const PropertyInterestDetailMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'owner.entityDetail.name.keyword',
-			accessorKey: 'owner.entityDetail.name',
+			id: 'owner.entityDetail.name',
 			header: 'Owner Name',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'interestType.keyword',
-			accessorKey: 'interestType',
+			id: 'interestType',
 			header: 'Interest Type',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'productType.keyword',
-			accessorKey: 'productType',
+			id: 'productType',
 			header: 'Product Type',
 		},
 
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'interestAmount',
-			accessorKey: 'interestAmount',
+			id: 'interestAmount',
 			header: 'Interest Amount',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'effectiveDate.keyword',
-			accessorKey: 'effectiveDate',
+			id: 'effectiveDate',
 			header: 'Effective Date',
 			type: 'date',
 			Cell: ({ row }) => {
@@ -82,7 +85,7 @@ const PropertyInterestDetailMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'endDate.keyword',
-			accessorKey: 'endDate',
+			id: 'endDate',
 			header: 'End Date',
 			type: 'date',
 			Cell: ({ row }) => {
@@ -93,14 +96,14 @@ const PropertyInterestDetailMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'status.keyword',
-			accessorKey: 'status',
+			id: 'status',
 			header: 'Status',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'costFree.keyword',
-			accessorKey: 'costFree',
+			id: 'costFree',
 			header: 'Cost Free?',
 		},
 

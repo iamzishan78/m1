@@ -1,12 +1,15 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useContext, useEffect, useState } from 'react';
+
 import { Button, Grid, IconButton, InputAdornment, InputLabel, TextField, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
 import CircularProgress from '@mui/material/CircularProgress';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import clsx from 'clsx';
 import _ from 'lodash';
-import React, { useContext, useEffect, useState } from 'react';
 
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
@@ -84,7 +87,7 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
 					shapeOwners: shapeOwnersData,
 					userId: stateApp.user.mongoId,
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
+				refetchQueries: ['getDbData', 'getESFilterList', 'getCustomLayer'],
 				awaitRefetchQueries: true,
 			});
 		} else if (stateApp?.addType === 'tractInterests') {
@@ -105,12 +108,7 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
 					variables: {
 						parcelOwner,
 					},
-					refetchQueries: [
-						'getparcelOwners',
-						'getContactParcelInterests',
-						'getContactParcelInterest',
-						'getESSimpleSearch',
-					],
+					refetchQueries: ['getparcelOwners', 'getDbData'],
 					awaitRefetchQueries: true,
 				});
 			});

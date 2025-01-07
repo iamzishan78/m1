@@ -1,11 +1,13 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useEffect, useState } from 'react';
+
 import { Grid, Typography } from '@material-ui/core';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useEffect, useState } from 'react';
+
+import { useLazyQuery } from '@apollo/client';
 
 import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 import { SHAPE_LAYER_SEARCH } from 'graphQL/useQueryShapeTypeSearch';

@@ -53,6 +53,9 @@ export const tableInitialState = {
 	isIncludeInactive: false,
 	gridView: {},
 	showTypes: false,
+	editedData: {},
+	validationErrors: {},
+	isCreateMode: false,
 };
 export const tableESState = {};
 export const tableGlobalState = hookstate({
@@ -321,6 +324,7 @@ export const layerFilters = hookstate(copy(layerFilterInitialState));
 /* -------------------------------------------------------------------------- */
 
 export const mapControlsInitialState = {
+	searchValue: '',
 	fileUploadedContent: null,
 	fileUploaded: null,
 	selectedControl: 'layer',

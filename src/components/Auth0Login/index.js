@@ -1,7 +1,8 @@
-import { useAuth0 } from '@auth0/auth0-react';
-import * as msal from '@azure/msal-browser';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+
+import { useAuth0 } from '@auth0/auth0-react';
+import * as msal from '@azure/msal-browser';
 
 import { msalConfig, tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
 

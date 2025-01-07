@@ -1,21 +1,22 @@
+import React, { useState, memo } from 'react';
+
 import { Dialog as MuiDialog } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useState, memo } from 'react';
-import { useHistory } from 'react-router-dom';
+
+import { useHookstate } from '@hookstate/core';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 
-import 'components/Transact/components/DealDialog/dialog.css';
 import { slidoutState } from 'hookstate/initialStates';
 import { slidoutStateController } from 'hookstate/slidoutStateController';
 
 import Dialog from './Dialog';
 import DialogHeader from './DialogHeader';
 
-import { useHookstate } from '@hookstate/core';
+import 'components/Transact/components/DealDialog/dialog.css';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	dealDetailRoot: {
 		'& .MuiDialog-paper': {
 			overflowY: 'hidden',
@@ -70,17 +71,15 @@ function Slideout({ isTransactPage, show }) {
 					fullWidth={false}
 					maxWidth="sm"
 				>
-					<DeleteConfirmationDialogContent
+					<DeleteConfirmationDialog
 						header={`Delete ${parentType.get()}`}
 						onClose={handleCloseDialog}
 						deleteFunc={() => {
 							formMode.set('delete');
 						}}
-						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
 					>
 						Do you want to delete the selected item?
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</MuiDialog>
 			)}
 			<div className={classes.dealDetailRoot}>

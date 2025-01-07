@@ -1,4 +1,6 @@
-import { useMutation } from '@apollo/client';
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import {
 	Grid,
 	ListItemText,
@@ -16,8 +18,8 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SearchIcon from '@material-ui/icons/Search';
-import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+
+import { useMutation } from '@apollo/client';
 
 //Contexts
 import { DocumentContextProvider, DocumentContext } from 'components/Document/DocumentContext';

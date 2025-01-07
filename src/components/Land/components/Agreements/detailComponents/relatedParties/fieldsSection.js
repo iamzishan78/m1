@@ -1,4 +1,6 @@
-import { useMutation } from '@apollo/client';
+import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import {
 	Grid,
 	Button,
@@ -18,9 +20,9 @@ import { DeleteOutline as DeleteIcon, MoreVert as MoreVertIcon } from '@material
 import AddIcon from '@material-ui/icons/Add';
 import ChatIcon from '@material-ui/icons/Chat';
 import { makeStyles } from '@material-ui/styles';
+
+import { useMutation } from '@apollo/client';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
-import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 
 import ContactPaginatedAutocomplete from 'components/Revenue/components/Common/ContactsPaginatedAutocomplete';

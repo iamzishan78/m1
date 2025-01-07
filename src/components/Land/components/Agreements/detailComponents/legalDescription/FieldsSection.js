@@ -1,9 +1,11 @@
+import React, { useEffect, useMemo } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+
 import { Grid, IconButton, InputAdornment, TextField, Typography } from '@material-ui/core';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import { makeStyles } from '@material-ui/styles';
+
 import { get } from 'lodash';
-import React, { useEffect, useMemo } from 'react';
-import { Controller, useForm } from 'react-hook-form';
 
 // Components
 const useStyles = makeStyles(theme => ({

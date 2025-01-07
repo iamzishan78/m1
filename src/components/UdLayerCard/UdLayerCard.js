@@ -1,4 +1,5 @@
-import { useApolloClient, useLazyQuery, useMutation } from '@apollo/client';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+
 import { CircularProgress, Dialog, Menu, MenuItem } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -8,8 +9,9 @@ import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import { Close, Delete, Layers, Sync } from '@material-ui/icons';
+
+import { useApolloClient, useLazyQuery, useMutation } from '@apollo/client';
 import $ from 'jquery';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
 
 import M1neral_headers, { getCustomFieldHeaders } from 'components/BulkUpload/jobHeaders';
 import { clearMapAndCloseShapeActionsPopup } from 'components/MapControls/commonHelper';
@@ -22,16 +24,14 @@ import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { GET_SHAPE_FEATURE } from 'graphQL/useQueryGetShapeFeature';
 
 import { drawController } from 'hookstate/drawStateController';
-import { mapControlsController } from 'hookstate/mapControlsController';
-import { popupController } from 'hookstate/popupStateController';
-import { layerRefs } from 'hookstate';
-
-import { mapStateController } from 'hookstate/mapStateController';
-
-import { history } from 'store';
-
 import { jobController } from 'hookstate/jobStateController';
 import { layerController } from 'hookstate/layerStateController';
+import { mapControlsController } from 'hookstate/mapControlsController';
+import { mapStateController } from 'hookstate/mapStateController';
+import { popupController } from 'hookstate/popupStateController';
+
+import { layerRefs } from 'hookstate';
+import { history } from 'store';
 
 import { AppContext } from '../../AppContext';
 

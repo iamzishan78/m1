@@ -1,17 +1,6 @@
-import TableRow from '@material-ui/core/TableRow';
-import LayerIcon from '@material-ui/icons/Layers';
+import React, { useState, useContext, useEffect, useRef } from 'react';
+
 import Button from '@material-ui/core/Button';
-
-import WellIcon from '../WellCard/components/svgIcons/WellIcon';
-import OwnershipIcon from '../WellCard/components/svgIcons/OwnershipIcon';
-import DescriptionIcon from '../WellCard/components/svgIcons/DescriptionIcon';
-// import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
-
-import ParcelsDetailCard from './ParcelsDetailCard';
-import { getParcelOriginalProperties } from './utils/GetParcelOriginalProps';
-
-// QUERIES
-import { useLazyQuery } from '@apollo/client';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
@@ -20,11 +9,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import React, { useState, useContext, useEffect, useRef } from 'react';
+import LayerIcon from '@material-ui/icons/Layers';
 
-// contexts
-import { getPolygonString } from 'components/Shared/functions';
+import { useLazyQuery } from '@apollo/client';
+
+import { copy, getPolygonString } from 'components/Shared/functions';
 
 import { GET_PARCELS_FILES_COUNT } from 'graphQL/useQueryGetParcelFiles';
 import { SHAPEWELLSCOUNT } from 'graphQL/useQueryShapeWellsCount';
@@ -32,10 +23,15 @@ import { SHAPEWELLSCOUNT } from 'graphQL/useQueryShapeWellsCount';
 import { globalStateController } from 'hookstate/globalStateController';
 import { popupController } from 'hookstate/popupStateController';
 
+import ParcelsDetailCard from './ParcelsDetailCard';
+import { getParcelOriginalProperties } from './utils/GetParcelOriginalProps';
 import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
 import { ExpandableCardContext } from '../ExpandableCard/ExpandableCardContext';
+import DescriptionIcon from '../WellCard/components/svgIcons/DescriptionIcon';
+import OwnershipIcon from '../WellCard/components/svgIcons/OwnershipIcon';
+import WellIcon from '../WellCard/components/svgIcons/WellIcon';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	card: {
 		borderStyle: 'none',
 		height: '100%',
@@ -111,7 +107,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-export default function ParcelCard(props) {
+export default function ParcelCard() {
 	const parcelPLSS = useRef(false);
 
 	// contexts
@@ -180,6 +176,9 @@ export default function ParcelCard(props) {
 			if (typeof shape === 'string') {
 				shape = JSON.parse(shape);
 			}
+			if (dataCustomLayer.customLayer.shapeJson) {
+				shape = copy(dataCustomLayer.customLayer.shapeJson);
+			}
 			setParcelObj({
 				...dataCustomLayer.customLayer,
 				shape: shape,
@@ -206,6 +205,7 @@ export default function ParcelCard(props) {
 			<div style={{ height: '100%', padding: '9px' }}>
 				<Card>
 					<CardActions classes={{ root: classes.cardAction }}>
+						{/* eslint-disable-next-line no-magic-numbers */}
 						<Button className={classes.button} onClick={() => handleOpenDetails(3)}>
 							<div className={classes.iconContainer}>
 								<WellIcon htmlColor="black" viewBox="0 0 36 31" fontSize="large" />
@@ -228,6 +228,7 @@ export default function ParcelCard(props) {
 								</Typography>
 							</div>
 						</Button>
+						{/* eslint-disable-next-line no-magic-numbers */}
 						<Button className={classes.button} onClick={() => handleOpenDetails(4)}>
 							<div className={classes.iconContainer}>
 								<DescriptionIcon htmlColor="black" viewBox="5 0 17 26" fontSize="large" />

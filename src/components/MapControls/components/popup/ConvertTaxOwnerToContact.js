@@ -1,3 +1,6 @@
+import React, { useEffect, useContext, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+
 import { makeStyles } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -8,8 +11,6 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Switch from '@material-ui/core/Switch';
-import React, { useEffect, useContext, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
 
 import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';

@@ -1,6 +1,7 @@
+import React, { useEffect, useState } from 'react';
+
 import Box from '@material-ui/core/Box';
 import Popover from '@material-ui/core/Popover';
-import React, { useEffect, useState } from 'react';
 
 export default function EditionPopover(props) {
 	const [anchorEl, setAnchorEl] = useState(null);

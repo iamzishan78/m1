@@ -1,6 +1,7 @@
+import React, { useContext } from 'react';
+
 import { Box, FormControlLabel, makeStyles, Checkbox } from '@material-ui/core';
 import MuiDialogContent from '@material-ui/core/DialogContent';
-import React, { useContext } from 'react';
 
 // component
 import { ProfileContext } from './ProfileContext';

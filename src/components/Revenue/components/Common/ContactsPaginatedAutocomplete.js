@@ -1,9 +1,10 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
-import get from 'lodash/get';
 import React, { useState, useEffect, useContext } from 'react';
 
+import { useLazyQuery, useMutation } from '@apollo/client';
+import get from 'lodash/get';
+
+import AutocompEntityNamesVirtualizeList from 'components/MRTTable/Common/Components/AutocompEntityNamesVirtualizeList';
 import { setStateIfDeepEqual } from 'components/Shared/functions';
-import AutocompEntityNamesVirtualizeList from 'components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
 
 import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
@@ -41,7 +42,7 @@ export default function ContactPaginatedDropdown({ nameAutValue, setNameAutValue
 
 	useEffect(() => {
 		if (allContacts?.paginatedContacts) {
-			setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map(el => el.node)]);
+			setMongoEntitiesArray([...(allContacts?.paginatedContacts?.edges?.map(el => el.node) || [])]);
 			setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
 		}
 		setIsNextPageLoading(false);
