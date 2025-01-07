@@ -98,7 +98,7 @@ const DealsMeta = {
 			name: 'owner.name',
 		},
 		{
-			...CommonSchema.NUMBER_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Notes',
 			id: 'notes',
 			name: 'notes',
