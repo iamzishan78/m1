@@ -358,6 +358,7 @@ function InputField({
 	const classes = useStyles();
 	const mapViewState = globalStateController.useState(['filters', 'mapView']);
 	const mapViewStateValues = mapViewState.stateValues;
+	const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView || {};
 
 	return (
 		<TextField
@@ -378,7 +379,6 @@ function InputField({
 			onKeyDown={event => {
 				event.stopPropagation();
 				if (event.key === 'Enter') {
-					const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView || {};
 					event.preventDefault();
 					if (editMapViewId) {
 						upsertMapView({
@@ -403,12 +403,12 @@ function InputField({
 							refetchQueries: ['getMapViews'],
 						});
 					}
-					if (showSaveAsNew) selectedMapView.name = viewName;
+					if (showSaveAsNew || selectedMapView?._id === editMapViewId) selectedMapView.name = viewName;
 					globalStateController.updateState({
 						mapView: {
 							...mapViewStateValues.mapView,
 							showViewModal: false,
-							...(showSaveAsNew && { selectedMapView: selectedMapView }),
+							...((showSaveAsNew || selectedMapView?._id === editMapViewId) && { selectedMapView: selectedMapView }),
 						},
 						viewChanged: true,
 					});
