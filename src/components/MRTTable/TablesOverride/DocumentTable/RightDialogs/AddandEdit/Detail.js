@@ -179,12 +179,6 @@ const useStyles = makeStyles({
 			marginBottom: 0,
 		},
 	},
-	linkLabel: {
-		fontWeight: 'bold',
-		fontSize: '14px',
-		display: 'block',
-		marginBottom: '5px',
-	}
 });
 
 const LightTooltip = withStyles(theme => ({
@@ -231,6 +225,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 	});
 
 	const [fileUpload, setFileUpload] = useState({ upload: false, fileExtension: null, fileInformation: '' });
+	const [url, setUrl] = useState({ isValid: false, value: null, error: false });
 	const [inputFile, setInputFile] = useState(null);
 	const [fileDownload, setFileDownload] = useState(false);
 
@@ -295,27 +290,8 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 				};
 
 				Loader.createToast('DocumentUpdating', 'Document Updating in Progress');
-				updateDocument({
-					variables: {
-						document,
-					},
-					refetchQueries: ['getParcelFiles', 'getParcelFilesCount'],
-					awaitRefetchQueries: true,
-				}).then(res => {
-					if (res?.data?.updateDocumentFile) {
-						const { success, message } = res.data.updateDocumentFile;
-						if (success) {
-							Loader.successToast('DocumentUpdating', message);
-						} else {
-							Loader.errorToast('DocumentUpdating', message);
-						}
-					} else {
-						Loader.errorToast('DocumentUpdating', 'Failed to Update Document');
-					}
-
-					tableGlobalController.refetch();
-				});
-
+			
+				saveDocument(document);
 				handleClose();
 			}
 		}
@@ -332,6 +308,34 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 			formController?.reset();
 		};
 	}, []);
+
+	useEffect(() => {
+		const value = url?.isValid ? url?.value : null
+		formState?.url?.set(value) 
+	}, [url])
+
+	const saveDocument = (document) => {
+		updateDocument({
+			variables: {
+				document,
+			},
+			refetchQueries: ['getParcelFiles', 'getParcelFilesCount'],
+			awaitRefetchQueries: true,
+		}).then(res => {
+			if (res?.data?.updateDocumentFile) {
+				const { success, message } = res.data.updateDocumentFile;
+				if (success) {
+					Loader.successToast('DocumentUpdating', message);
+				} else {
+					Loader.errorToast('DocumentUpdating', message);
+				}
+			} else {
+				Loader.errorToast('DocumentUpdating', 'Failed to Update Document');
+			}
+
+			tableGlobalController.refetch();
+		});
+	}
 
 	const uploadFile = () => {
 		Loader.createToast('FileUploading', 'File Uploading in Progress');
@@ -590,48 +594,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 
 				{!fileUpload?.fileExtension ? (
 					<div className={classes.Uploadcomp}>
-						<UploadZone userId={getUser?._id} fileId={selectedDocument?._id} setFileUpload={setFileUpload} title={'Upload Document'}/>
-						<Container>
-						<Box sx={{ display: 'flex', alignItems: 'center', my: 2 }}>
-								<Divider sx={{ flex: 1 }} />
-								<Typography
-								sx={{
-									mx: 2,
-									fontSize: '14px',
-									fontWeight: 'bold',
-									color: '#666',
-								}}
-								>
-								--------- OR ---------
-								</Typography>
-								<Divider sx={{ flex: 1 }} />
-							</Box>
-							{/* Drive Link Input */}
-							<div style={{ marginTop: '20px' }}>
-							<label className={classes.linkLabel}>{'Paste Link'}</label>
-								<input
-									type="text"
-									placeholder="Paste url link to an external document"
-									// value={driveLink}
-									onChange={(e) => {
-									// setDriveLink(e.target.value);
-									if (e.target.value 
-										// && 
-										// fileData
-									) {
-										setFileData(null); // Clear the uploaded file if a link is entered
-									}
-									}}
-									style={{
-									width: '100%',
-									padding: '8px',
-									borderRadius: '4px',
-									border: '1px solid #ccc',
-									}}
-								/>
-							</div>
-						</Container>
-							
+						<UploadZone userId={getUser?._id} fileId={selectedDocument?._id} setFileUpload={setFileUpload} title={'Upload Document'} setUrl={setUrl} url={url} />
 					</div>
 				) : null}
 				<div className={classes.dialogFooter}>
@@ -657,10 +620,13 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 						color="secondary"
 						size="medium"
 						disableElevation
-						disabled={!fileUpload?.upload}
+						disabled={!fileUpload?.upload && !url?.isValid }
 						onClick={() => {
 							if (fileUpload?.upload) {
 								uploadFile();
+							} else {
+								delete formStateValues.tableKey;
+								saveDocument(formStateValues);
 							}
 						}}
 						className={classes.footerButton}

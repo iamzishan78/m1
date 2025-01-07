@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-import { Container } from '@material-ui/core';
+import { Typography, Divider, Box, Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { DropzoneAreaBase } from 'material-ui-dropzone';
@@ -47,9 +47,15 @@ const useStyles = makeStyles(theme => ({
 	bold: {
 		fontWeight: 'bold',
 	},
+	linkLabel: {
+		fontWeight: 'bold',
+		fontSize: '14px',
+		display: 'block',
+		marginBottom: '5px',
+	}
 }));
 
-export default function UploadZone({ setFileUpload, relatedObjectType, customClass, title }) {
+export default function UploadZone({ setFileUpload, relatedObjectType, customClass, title, setUrl, url }) {
 	const handleFileInput = files => {
 		if (Array.isArray(files)) {
 			let fileName = files[0]?.file?.name;
@@ -60,13 +66,31 @@ export default function UploadZone({ setFileUpload, relatedObjectType, customCla
 		}
 	};
 
+	const validateUrl = (value) => {
+		// Regex for basic URL validation
+		const urlRegex = /^(https?:\/\/)?([\w\d-]+\.)+[\w-]+(\/[\w\d-._~:/?#[\]@!$&'()*+,;=]*)?$/;
+		return urlRegex.test(value);
+	  };
+
+	const handleUrlChange = (event) => {
+		const value = event.target.value;
+		setUrl({...url, value: value });
+	};
+
+	const handleUrlBlur = () => {
+		// Validate URL when the field loses focus
+		const error = url?.value && !validateUrl(url?.value) ? true : false;
+		const isValid = error ? false : true;
+		setUrl({ ...url, error: error, isValid: isValid });
+	};
+
 	const classes = useStyles();
 
 	return (
 		<>
 			<div className={customClass ? classes.root : null}>
 				<Container>
-					{title && <label className={classes.bold}>{title}</label> }
+					{title && <label className={classes.bold}>{title}</label>}
 					<DropzoneAreaBase
 						onAdd={handleFileInput}
 						showAlerts={relatedObjectType === 'Contact'}
@@ -75,6 +99,46 @@ export default function UploadZone({ setFileUpload, relatedObjectType, customCla
 						maxFileSize={104857600}
 						dropzoneClass={classes.dropzoneClassCRM}
 					></DropzoneAreaBase>
+
+					<Box sx={{ display: 'flex', alignItems: 'center', my: 2 }}>
+						<Divider sx={{ flex: 1 }} />
+						<Typography
+							sx={{
+								mx: 2,
+								fontSize: '14px',
+								fontWeight: 'bold',
+								color: '#666',
+							}}
+						>
+							--------- OR ---------
+						</Typography>
+						<Divider sx={{ flex: 1 }} />
+					</Box>
+					{/* Drive Link Input */}
+					<div style={{ marginTop: '20px' }}>
+						<label className={classes.linkLabel}>{'Paste Link'}</label>
+						<input
+							type="text"
+							placeholder="Paste url link to an external document"
+							value={url.value}
+							onChange={handleUrlChange}
+							style={{
+								width: '100%',
+								padding: '8px',
+								borderRadius: '4px',
+								border: '1px solid #ccc',
+							}}
+							onBlur={() =>
+								handleUrlBlur()
+							}
+						/>
+						    {/* Error Message */}
+							{url.error && (
+								<div style={{ color: 'red', marginTop: '8px', fontSize: '12px' }}>
+								Please enter a valid URL.
+								</div>
+							)}
+					</div>
 				</Container>
 			</div>
 		</>
