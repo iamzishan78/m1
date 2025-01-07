@@ -192,7 +192,7 @@ const tableESStateControllerHandler = state => ({
 		}
 
 		let _Schema = TableSchema;
-		if (!rest.isGeneric && !isClientSide && !rest.enableEditing) {
+		if (!rest.isGeneric && !isClientSide && !rest.enableEditing && !rest?.disableRowSelection) {
 			_Schema.unshift({
 				...CommonSchema.SELECT_SOME,
 				Header: () => <TableHeaderMoreOptions tableKey={tableKey} />,
