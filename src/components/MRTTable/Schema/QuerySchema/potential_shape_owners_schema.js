@@ -125,8 +125,10 @@ const PotentialShapeOwnersMeta = {
 				const Controller = tableController('PotentialShapeOwnersTable');
 				const { stateValues } = Controller.useState(['ownersWhoAreContact', 'data']);
 
-				const contact = stateValues.ownersWhoAreContact?.find(contact => contact?.globalOwner === row?.original?.id);
-				return <IsContactCell contactId={contact?._id || 'false'} rows={[row.original]} />;
+				const contactOwner = stateValues.ownersWhoAreContact?.find(
+					contact => contact?.globalOwner === row?.original?.id
+				);
+				return <IsContactCell contactId={contactOwner?.isContact || 'false'} rows={[row.original]} />;
 			},
 		},
 		{
