@@ -1,185 +1,178 @@
 /* eslint-disable no-undef */
-import MapProvider from 'components/Map/MapProvider';
-import { basic_timeouts } from '../../../cypressUtils/data';
 import { isEqual } from 'lodash';
 
+import MapProvider from 'components/Map/MapProvider';
+
+import { basic_timeouts } from '../../../cypressUtils/data';
+
 const colors = {
-  black: {
-    hex: '000000',
-    rgba: [0, 0, 0, 255],
-  },
-  white: {
-    hex: 'FFFFFF',
-    rgba: [255, 255, 255, 255],
-  },
-  blue: {
-    hex: '2C83AB',
-    rgba: [44, 131, 171, 255],
-  },
-  red: {
-    hex: 'ab2c63b7',
-    rgba: [171, 44, 99, 183],
-  },
+	black: {
+		hex: '000000',
+		rgba: [0, 0, 0, 255],
+	},
+	white: {
+		hex: 'FFFFFF',
+		rgba: [255, 255, 255, 255],
+	},
+	blue: {
+		hex: '2C83AB',
+		rgba: [44, 131, 171, 255],
+	},
+	red: {
+		hex: 'ab2c63b7',
+		rgba: [171, 44, 99, 183],
+	},
 };
 
 describe('Map Component Layer Settings', () => {
-  beforeEach(() => {
-    cy.interceptAndWait(['getAllLayerSettingsByUser'], () => {
-      cy.viewport(1800, 1200).mount(<MapProvider match={{ params: {} }} />);
-    });
-    
-    cy.waitUntilMapRefDefined().then(() => {
-      window.mapRef.jumpTo({
-        center: {
-          lng: -99.13764727392922,
-          lat: 31.819087912619537,
-        },
-        zoom: 10.5,
-      });
+	beforeEach(() => {
+		cy.interceptAndWait(['getAllLayerSettingsByUser'], () => {
+			cy.viewport(1800, 1200).mount(<MapProvider match={{ params: {} }} />);
+		});
 
-      cy.wait(basic_timeouts.shorTimeout);
-    });
-  });
+		cy.waitUntilMapRefDefined().then(() => {
+			window.mapRef.jumpTo({
+				center: {
+					lng: -99.13764727392922,
+					lat: 31.819087912619537,
+				},
+				zoom: 10.5,
+			});
 
-  it('User Layer Settings are updated', () => {
-    cy.updateAllUserLayersVisibility({ layersToShow: ['Land Grid'] });
-  });
+			cy.wait(basic_timeouts.shorTimeout);
+		});
+	});
 
-  it('Layer visibiility works', () => {
-    let unitLayer = window.mapRef.__deck.layerManager.layers.find(
-      l => l.props.type.layerName === 'GeoJsonLayer' && l.id.startsWith('Units_')
-    );
+	it('User Layer Settings are updated', () => {
+		cy.updateAllUserLayersVisibility({ layersToShow: ['Land Grid'] });
+	});
 
-    expect(!!unitLayer?.props?.visible).to.be.equal(false);
+	it('Layer visibiility works', () => {
+		let unitLayer = window.mapRef.__deck.layerManager.layers.find(
+			l => l.props.type.layerName === 'GeoJsonLayer' && l.id.startsWith('Units_')
+		);
 
-    cy.interceptAndWait(['UpdateLayerSettings'], () => {
-      cy.get(
-        '[data-testid="layer-Units"] [data-testid="layer-Units-toggle"]'
-      ).click();
-    });
+		expect(!!unitLayer?.props?.visible).to.be.equal(false);
 
-    cy.wait(100).then(() => {
-      unitLayer = window.mapRef.__deck.layerManager.layers.find(
-        l => l.constructor.layerName === 'GeoJsonLayer' && l.id.startsWith('Units_')
-      );
+		cy.interceptAndWait(['UpdateLayerSettings'], () => {
+			cy.get('[data-testid="layer-Units"] [data-testid="layer-Units-toggle"]').click();
+		});
 
-      expect(unitLayer.props.visible).to.be.equal(true);
-    });
-  });
+		cy.wait(100).then(() => {
+			unitLayer = window.mapRef.__deck.layerManager.layers.find(
+				l => l.constructor.layerName === 'GeoJsonLayer' && l.id.startsWith('Units_')
+			);
 
-  it('Layer text visibiility works', () => {
-    let unitTextLayer = window.mapRef.__deck.layerManager.layers.find(
-      l => l.constructor.layerName === 'TextLayer' && l.id.startsWith('Units_')
-    );
+			expect(unitLayer.props.visible).to.be.equal(true);
+		});
+	});
 
-    const isTextVisible = !!unitTextLayer?.props?.visible;
+	it('Layer text visibiility works', () => {
+		let unitTextLayer = window.mapRef.__deck.layerManager.layers.find(
+			l => l.constructor.layerName === 'TextLayer' && l.id.startsWith('Units_')
+		);
 
-    if (isTextVisible) {
-      cy.toggleLayerSettings({ shapeName: 'Units', type: 'text', isTrue: true });
-    }
+		const isTextVisible = !!unitTextLayer?.props?.visible;
 
-    cy.wait(1000);
+		if (isTextVisible) {
+			cy.toggleLayerSettings({ shapeName: 'Units', type: 'text', isTrue: true });
+		}
 
-    cy.toggleLayerSettings({ shapeName: 'Units', type: 'text', isTrue: false });
-  });
+		cy.wait(1000);
 
-  it('Layer pickable toggle works', () => {
-    let unitLayer = window.mapRef.__deck.layerManager.layers.find(
-      l => l.props.type.layerName === 'GeoJsonLayer' && l.id.startsWith('Units_')
-    );
+		cy.toggleLayerSettings({ shapeName: 'Units', type: 'text', isTrue: false });
+	});
 
-    const isLayerPickable = !!unitLayer?.props?.pickable;
+	it('Layer pickable toggle works', () => {
+		let unitLayer = window.mapRef.__deck.layerManager.layers.find(
+			l => l.props.type.layerName === 'GeoJsonLayer' && l.id.startsWith('Units_')
+		);
 
-    if (isLayerPickable) {
-      cy.toggleLayerSettings({ shapeName: 'Units', type: 'pickable', isTrue: true });
-    }
+		const isLayerPickable = !!unitLayer?.props?.pickable;
 
-    cy.wait(1000);
+		if (isLayerPickable) {
+			cy.toggleLayerSettings({ shapeName: 'Units', type: 'pickable', isTrue: true });
+		}
 
-    cy.toggleLayerSettings({ shapeName: 'Units', type: 'pickable', isTrue: false });
-  });
+		cy.wait(1000);
 
-  it('Layer Color Settings Work', () => {
-    // Clicking on layer settings for the specified shape
-    cy.get('[data-testid="layer-Units"] [data-testid="layer-settings"]').click();
+		cy.toggleLayerSettings({ shapeName: 'Units', type: 'pickable', isTrue: false });
+	});
 
-    // Waiting for 1 second
-    cy.wait(1000);
+	it('Layer Color Settings Work', () => {
+		// Clicking on layer settings for the specified shape
+		cy.get('[data-testid="layer-Units"] [data-testid="layer-settings"]').click();
 
-    // Finding the unit layer in the map reference
-    let unitLayer = window.mapRef.__deck.layerManager.layers.find(
-      l => l.props.type.layerName === 'GeoJsonLayer' && l.id.startsWith('Units_')
-    );
+		// Waiting for 1 second
+		cy.wait(1000);
 
-    // Check if the current fill color is blue
-    const isBlue = isEqual(colors.blue.rgba, unitLayer.props.getFillColor);
+		// Finding the unit layer in the map reference
+		let unitLayer = window.mapRef.__deck.layerManager.layers.find(
+			l => l.props.type.layerName === 'GeoJsonLayer' && l.id.startsWith('Units_')
+		);
 
-    // Clear the fill color input box and input a new color based on the previous color
-    cy.get('#fill-picker-box input#hex')
-      .clear()
-      .type(isBlue ? colors.red.hex : colors.blue.hex);
+		// Check if the current fill color is blue
+		const isBlue = isEqual(colors.blue.rgba, unitLayer.props.getFillColor);
 
-    // Intercepting and waiting for 'UpdateLayerSettings' event
-    cy.interceptAndWait(['UpdateLayerSettings'], () => {
-      // Clicking on close button
-      cy.get('[data-testid="close"]').click();
-    });
+		// Clear the fill color input box and input a new color based on the previous color
+		cy.get('#fill-picker-box input#hex')
+			.clear()
+			.type(isBlue ? colors.red.hex : colors.blue.hex);
 
-    // Waiting for 100 milliseconds and then asserting the visibility of the text layer
-    cy.wait(100).then(() => {
-      // Finding the unit layer in the map reference again after settings update
-      let unitLayer = window.mapRef.__deck.layerManager.layers.find(
-        l => l.props.type.layerName === 'GeoJsonLayer' && l.id.startsWith('Units_')
-      );
+		// Intercepting and waiting for 'UpdateLayerSettings' event
+		cy.interceptAndWait(['UpdateLayerSettings'], () => {
+			// Clicking on close button
+			cy.get('[data-testid="close"]').click();
+		});
 
-      // Assert whether the fill color of the unit layer has been changed as expected
-      expect(
-        isEqual(isBlue ? colors.red.rgba : colors.blue.rgba, unitLayer.props.getFillColor)
-      ).to.be.equal(true);
-    });
-  });
+		// Waiting for 100 milliseconds and then asserting the visibility of the text layer
+		cy.wait(100).then(() => {
+			// Finding the unit layer in the map reference again after settings update
+			let unitLayer = window.mapRef.__deck.layerManager.layers.find(
+				l => l.props.type.layerName === 'GeoJsonLayer' && l.id.startsWith('Units_')
+			);
 
-  it('Layer Stroke Color Settings Work', () => {
-    // Clicking on layer settings for the specified shape
-    cy.get('[data-testid="layer-Units"] [data-testid="layer-settings"]').click();
+			// Assert whether the fill color of the unit layer has been changed as expected
+			expect(isEqual(isBlue ? colors.red.rgba : colors.blue.rgba, unitLayer.props.getFillColor)).to.be.equal(true);
+		});
+	});
 
-    // Waiting for 1 second
-    cy.wait(1000);
+	it('Layer Stroke Color Settings Work', () => {
+		// Clicking on layer settings for the specified shape
+		cy.get('[data-testid="layer-Units"] [data-testid="layer-settings"]').click();
 
-    // Finding the unit layer in the map reference
-    let unitLayer = window.mapRef.__deck.layerManager.layers.find(
-      // Locate the layer with the specified properties
-      l => l.props.type.layerName === 'GeoJsonLayer' && l.id.startsWith('Units_')
-    );
+		// Waiting for 1 second
+		cy.wait(1000);
 
-    // Check if the current stroke color is black
-    const isBlack = isEqual(colors.black.rgba, unitLayer.props.getLineColor);
+		// Finding the unit layer in the map reference
+		let unitLayer = window.mapRef.__deck.layerManager.layers.find(
+			// Locate the layer with the specified properties
+			l => l.props.type.layerName === 'GeoJsonLayer' && l.id.startsWith('Units_')
+		);
 
-    // Clear the stroke color input box and input a new color based on the previous color
-    cy.get('#stroke-picker-box input#hex')
-      .clear()
-      .type(isBlack ? colors.white.hex : colors.black.hex);
+		// Check if the current stroke color is black
+		const isBlack = isEqual(colors.black.rgba, unitLayer.props.getLineColor);
 
-    // Intercepting and waiting for 'UpdateLayerSettings' event
-    cy.interceptAndWait(['UpdateLayerSettings'], () => {
-      // Clicking on close button
-      cy.get('[data-testid="close"]').click();
-    });
+		// Clear the stroke color input box and input a new color based on the previous color
+		cy.get('#stroke-picker-box input#hex')
+			.clear()
+			.type(isBlack ? colors.white.hex : colors.black.hex);
 
-    // Waiting for 100 milliseconds and then asserting the visibility of the text layer
-    cy.wait(100).then(() => {
-      // Finding the unit layer in the map reference again after settings update
-      let unitLayer = window.mapRef.__deck.layerManager.layers.find(
-        l => l.props.type.layerName === 'GeoJsonLayer' && l.id.startsWith('Units_')
-      );
+		// Intercepting and waiting for 'UpdateLayerSettings' event
+		cy.interceptAndWait(['UpdateLayerSettings'], () => {
+			// Clicking on close button
+			cy.get('[data-testid="close"]').click();
+		});
 
-      // Assert whether the stroke color of the unit layer has been changed as expected
-      expect(
-        isEqual(
-          isBlack ? colors.white.rgba : colors.black.rgba,
-          unitLayer.props.getLineColor
-        )
-      ).to.be.equal(true);
-    });
-  });
+		// Waiting for 100 milliseconds and then asserting the visibility of the text layer
+		cy.wait(100).then(() => {
+			// Finding the unit layer in the map reference again after settings update
+			let unitLayer = window.mapRef.__deck.layerManager.layers.find(
+				l => l.props.type.layerName === 'GeoJsonLayer' && l.id.startsWith('Units_')
+			);
+
+			// Assert whether the stroke color of the unit layer has been changed as expected
+			expect(isEqual(isBlack ? colors.white.rgba : colors.black.rgba, unitLayer.props.getLineColor)).to.be.equal(true);
+		});
+	});
 });

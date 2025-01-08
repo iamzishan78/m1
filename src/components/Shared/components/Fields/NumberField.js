@@ -1,49 +1,40 @@
-import React, { useState, useEffect } from "react";
-import { TextField } from "@material-ui/core";
+import React, { useEffect, useState } from 'react';
 
-const NumberField = (props) => {
-  const [value, setValue] = useState("");
+import { TextField } from '@material-ui/core';
 
-  useEffect(() => {
-    setValue(props?.value);
-    // props?.offClickHandler(props?.field?.key, props?.value);
-  }, [props?.value]);
+const NumberField = ({ value, defaultValue, id, field, fieldKey, index, onChange, ...props }) => {
+	const [fieldValue, setFieldValue] = useState(value || defaultValue || '');
 
-  return (
-    <TextField
-      id={props.id || `field-${props?.index}`}
-      variant="outlined"
-      margin="dense"
-      type="text"
-      fullWidth
-      InputProps={props.InputProps ? props.InputProps : {}}
-      InputLabelProps={{
-        shrink: true,
-      }}
-      onBlur={() => {
-        props?.offClickHandler(props?.field?.key, value);
-      }}
-      onChange={(e) => {
-        const val = (e.target.value || "").trim();
-        if (val) {
-          if (!isNaN(Number(val))) {
-            setValue(val);
-            if (props?.onChange) {
-              props.onChange(e, val);
-            }
-          }
-        } else {
-          setValue("");
-          if (props?.onChange) {
-            props.onChange(e, val);
-          }
-        }
-      }}
-      disabled={props?.field?.disabled}
-      value={value}
-      {...props.props}
-    />
-  );
+	useEffect(() => {
+		setFieldValue(value || defaultValue || '');
+	}, [value, defaultValue]);
+
+	const handleChange = e => {
+		const val = Number(e.target.value.trim());
+		if (!isNaN(val)) {
+			setFieldValue(val);
+			onChange?.(e, val);
+		}
+	};
+
+	return (
+		<TextField
+			id={id || `field-${index}`}
+			variant="outlined"
+			margin="dense"
+			type="number"
+			fullWidth
+			value={fieldValue}
+			InputProps={props.InputProps}
+			InputLabelProps={{ shrink: true }}
+			onBlur={() => {
+				props?.offClickHandler(fieldKey, fieldValue);
+			}}
+			onChange={handleChange}
+			disabled={field?.disabled}
+			{...props.props}
+		/>
+	);
 };
 
 export default NumberField;

@@ -1,7 +1,8 @@
 import { hookstate, useHookstate } from '@hookstate/core';
+import _, { isEqual } from 'lodash';
+
 import { hookStateController } from 'hookstate/hookStateController';
 import { tableController } from 'hookstate/tableController';
-import _ from 'lodash';
 
 export const gridViewStates = hookstate({});
 
@@ -11,27 +12,69 @@ const gridViewStatesControllerHandler = state => ({
 	initialize: (tableKey, allGridViews) => {
 		state.merge({
 			tableKey,
-			allGridViews
+			allGridViews,
 		});
 	},
 
-	gridViewApply: (selectedGridView) => {
-		if (!(!!selectedGridView)) return
-		const TableKey = state.tableKey?.get({ noproxy: true })
-		const Controller = tableController(TableKey)
+	gridViewApply: selectedGridView => {
+		if (!selectedGridView) {
+			return;
+		}
+
+		const TableKey = state.tableKey?.get({ noproxy: true });
+		const Controller = tableController(TableKey);
+
+		const TableSchema = Controller.getValue('defaultTableSchema');
+		const columnPinning = Controller.getValue('defaultColumnPinning');
+
+		const columns = TableSchema?.map(element => element.accessorKey || element.id);
+
+		const updatedGridViewOrdering = columns?.filter(column => selectedGridView.columnOrdering?.includes(column));
+		const updatedGridViewLeftPinning = columns?.filter(column =>
+			selectedGridView.columnPinning?.left?.includes(column)
+		);
+		const updatedGridViewRightPinning = columns?.filter(column =>
+			selectedGridView.columnPinning?.right?.includes(column)
+		);
+		const updatedGridViewPinning = { left: updatedGridViewLeftPinning };
+		if (selectedGridView.columnPinning?.right?.length > 0) {
+			updatedGridViewPinning.right = updatedGridViewRightPinning;
+		}
+
+		const updatedGridFilters = selectedGridView.filters?.filter(filter => columns.includes(filter.field)) || [];
+		const updatedGridSorting = selectedGridView.sorting?.filter(sort => columns.includes(sort.id)) || [];
+
+		const updatedGridColumns = columns?.map(column => {
+			const existingColumn = selectedGridView.columns?.find(col => col.name === column);
+			return existingColumn || { name: column, display: false };
+		});
+
+		const updatedGridView = {
+			...selectedGridView,
+			columns: updatedGridColumns,
+			columnOrdering: updatedGridViewOrdering,
+			columnPinning: updatedGridViewPinning,
+			filters: updatedGridFilters,
+			sorting: updatedGridSorting,
+		};
+
+		let viewToApply = selectedGridView;
+
+		// Only apply if the updated grid view is different
+		if (!isEqual(selectedGridView, updatedGridView) && selectedGridView.type !== 'Default') {
+			viewToApply = updatedGridView;
+		}
 
 		Controller.updateState({
 			gridView: {
-				selectedGridView: selectedGridView,
+				selectedGridView: viewToApply,
 				showViewModal: false,
 				showSaveAsNew: false,
 			},
 		});
 
-		const TableSchema = Controller.getValue('TableSchema')
-		const columnPinning = Controller.getValue('columnPinning')
-		if (selectedGridView?.columns) {
-			const columnstoShow = selectedGridView?.columns.reduce((acc, obj) => {
+		if (viewToApply?.columns) {
+			const columnstoShow = viewToApply?.columns.reduce((acc, obj) => {
 				acc[obj.name] = obj.display;
 				return acc;
 			}, {});
@@ -44,51 +87,53 @@ const gridViewStatesControllerHandler = state => ({
 			);
 			Controller.setColumnVisibility(defaultVisibility);
 		}
-		if (selectedGridView?.filters?.length) {
+		if (viewToApply?.filters?.length) {
 			Controller.setShowColumnFilters(true);
 			Controller.clearFilters();
-			Controller.setFilters(selectedGridView.filters)
+			Controller.setFilters(viewToApply.filters);
 		} else {
 			Controller.setShowColumnFilters(false);
 			Controller.clearFilters();
 		}
-		if (selectedGridView?.sorting) {
-			Controller.setSorting(selectedGridView?.sorting);
+		if (viewToApply?.sorting) {
+			Controller.setSorting(viewToApply?.sorting);
 		} else {
 			Controller.setSorting([]);
 		}
-		if (selectedGridView?.columnPinning) {
-			let filterLeftPinning = selectedGridView?.columnPinning?.left?.map(element => (element === "mrt-row-select" ? "over-ride-checkbox" : element));
-			const newColumnPinning = {
-				left: filterLeftPinning
-			}
-			Controller.setColumnPinning(
-				newColumnPinning,
-				columnPinning,
-				TableSchema
+		if (viewToApply?.columnPinning) {
+			let filterLeftPinning = viewToApply?.columnPinning?.left?.map(element =>
+				element === 'mrt-row-select' ? 'over-ride-checkbox' : element
 			);
+			if (!filterLeftPinning.includes('mrt-row-numbers')) {
+				filterLeftPinning.splice(1, 0, 'mrt-row-numbers');
+			}
+			const newColumnPinning = {
+				...viewToApply.columnPinning,
+				left: filterLeftPinning,
+			};
+			Controller.setColumnPinning(newColumnPinning, columnPinning, TableSchema);
 		} else {
-			const pinnedColumns = TableSchema?.filter(column => column.isPinned);
-			const pinnedFields = pinnedColumns?.map(column => column.id || column.accessorKey);
-			Controller.setColumnPinning(columnPinning, pinnedFields, TableSchema);
+			Controller.setColumnPinning(columnPinning, columnPinning, TableSchema);
 		}
-		if (selectedGridView?.columnOrdering) {
-			const newColumnOrder = selectedGridView?.columnOrdering?.map(element => (element === "mrt-row-select" ? "over-ride-checkbox" : element));
+		if (viewToApply?.columnOrdering) {
+			let newColumnOrder = viewToApply?.columnOrdering?.map(element =>
+				element === 'mrt-row-select' ? 'over-ride-checkbox' : element
+			);
+			if (!newColumnOrder.includes('mrt-row-numbers')) {
+				newColumnOrder.splice(1, 0, 'mrt-row-numbers');
+			}
 			Controller.setColumnOrdering(newColumnOrder);
 		} else {
 			const columnOrder = TableSchema.map(column => column.accessorKey || column.id);
-			const defaultColumnOrder = _.concat(['over-ride-checkbox', 'mrt-row-numbers'], _.slice(columnOrder, 1))
+			const defaultColumnOrder = _.concat(['over-ride-checkbox', 'mrt-row-numbers'], _.slice(columnOrder, 1));
 			Controller.setColumnOrdering(defaultColumnOrder);
 		}
-	}
-
+	},
 });
 
 export const gridViewStateController = TableKey => {
 	return {
 		...gridViewStatesControllerHandler(gridViewStates[TableKey]),
 		...hookStateController(gridViewStates[TableKey], {}),
-	}
+	};
 };
-
-

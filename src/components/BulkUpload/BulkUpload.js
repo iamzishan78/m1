@@ -1,22 +1,28 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { matchRoutes } from 'react-router-config';
-import { NavigationContext } from '../Navigation/NavigationContext';
-import { makeStyles } from '@material-ui/core/styles';
-import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Stepper from './components/stepper';
+import { useHistory } from 'react-router-dom';
+
 import { Menu, MenuItem } from '@material-ui/core';
-import M1neral_headers from './jobHeaders';
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
-import isEmpty from 'lodash/isEmpty';
-import { jobController } from 'hookstate/jobStateController';
-import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Link from '@material-ui/core/Link';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+
 import { useLazyQuery } from '@apollo/client';
+import isEmpty from 'lodash/isEmpty';
+
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+
+import { jobController } from 'hookstate/jobStateController';
+
+import { NavigationContext } from '../Navigation/NavigationContext';
+import Stepper from './components/stepper';
+import M1neral_headers, { getCustomFieldHeaders } from './jobHeaders';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -89,7 +95,9 @@ export default function BulkUpload(props) {
 		return filter;
 	});
 	let initialJob = jobs[0];
-	if (props.initialJobType) initialJob = jobs.find(job => job.type === props.initialJobType);
+	if (props.initialJobType) {
+		initialJob = jobs.find(job => job.type === props.initialJobType);
+	}
 	if (props?.match?.params?.type) {
 		initialJob = jobs.find(job => job.type.toLowerCase().includes(props.match.params.type.toLowerCase())) || jobs[0];
 	}
@@ -133,39 +141,7 @@ export default function BulkUpload(props) {
 	const reset_state = useCallback(() => {
 		let m1neralHeaders = M1neral_headers[selectedJob.type] || [];
 
-		let customFieldHeaders = [];
-
-		switch (selectedJob.type) {
-			case 'TRACTS':
-				customFieldHeaders = (metaDataRes?.getMetaData?.metaData || [])
-					.filter(md => md.category === 'Parcel')
-					.map(md => ({
-						...md,
-						actual_key: `parcel.custom_data.${md.name}`,
-					}));
-				break;
-
-			case 'UNITS':
-				customFieldHeaders = (metaDataRes?.getMetaData?.metaData || [])
-					.filter(md => md.category === 'Unit')
-					.map(md => ({
-						...md,
-						actual_key: `shape.custom_data.${md.name}`,
-					}));
-				break;
-
-			case 'CONTACTS':
-				customFieldHeaders = (metaDataRes?.getMetaData?.metaData || [])
-					.filter(md => md.category === 'Contacts')
-					.map(md => ({
-						...md,
-						actual_key: `entityDetail.custom_data.${md.name}`,
-					}));
-				break;
-
-			default:
-				break;
-		}
+		const customFieldHeaders = getCustomFieldHeaders(selectedJob.type, metaDataRes?.getMetaData?.metaData);
 
 		m1neralHeaders = [...m1neralHeaders, ...customFieldHeaders];
 

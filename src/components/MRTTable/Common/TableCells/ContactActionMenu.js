@@ -1,18 +1,25 @@
 import React, { memo, useState, useContext } from 'react';
-import Tooltip from '@material-ui/core/Tooltip';
+import { Link } from 'react-router-dom';
+
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
-import MoreVertOutlinedIcon from '@material-ui/icons/MoreVertOutlined';
-import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
 import Divider from '@material-ui/core/Divider';
-import TextSMS from '@material-ui/icons/TextsmsOutlined';
-import EmailIcon from '@material-ui/icons/Mail';
-import EventOutlinedIcon from '@material-ui/icons/EventOutlined';
-import AssignmentTurnedInOutlinedIcon from '@material-ui/icons/AssignmentTurnedInOutlined';
-import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 import { makeStyles } from '@material-ui/core/styles';
-import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import Tooltip from '@material-ui/core/Tooltip';
+import AssignmentTurnedInOutlinedIcon from '@material-ui/icons/AssignmentTurnedInOutlined';
+import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
+import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
+import EventOutlinedIcon from '@material-ui/icons/EventOutlined';
+import EmailIcon from '@material-ui/icons/Mail';
+import MoreVertOutlinedIcon from '@material-ui/icons/MoreVertOutlined';
+import TextSMS from '@material-ui/icons/TextsmsOutlined';
+
+import ContactPageOutlinedIcon from '@mui/icons-material/ContactPageOutlined';
+
 import AddActivityDialog from 'components/ContactDetailCard/components/AddActivityDialog';
+import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+
 import { tableGlobalController } from 'hookstate/tableController';
+
 import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(() => ({
@@ -27,6 +34,13 @@ const useStyles = makeStyles(() => ({
 	},
 	menuIcons: {
 		marginRight: '8px',
+	},
+	link: {
+		textDecoration: 'none',
+		color: 'inherit',
+		display: 'flex',
+		alignItems: 'center',
+		width: '100%',
 	},
 }));
 
@@ -53,9 +67,9 @@ function ContactActionMenu({ id, name, esIndex, dialogType }) {
 				contactId: [id],
 				userId: stateApp.user.mongoId,
 				deletedData: {
-					mainRecord: [id]
+					mainRecord: [id],
 				},
-				tableKey: "ContactTable",
+				tableKey: 'ContactTable',
 				esIndex,
 			},
 		});
@@ -88,6 +102,15 @@ function ContactActionMenu({ id, name, esIndex, dialogType }) {
 					open
 					onClose={closeMenu}
 				>
+					<MenuItem className={classes.actionMenuItem}>
+						<Link
+							to={`/contact/details/${id}/?tenant=${window.sessionStorage.getItem('tenantName')}`}
+							className={classes.link}
+						>
+							<ContactPageOutlinedIcon className={classes.menuIcons} />
+							Contact Details
+						</Link>
+					</MenuItem>
 					<MenuItem className={classes.actionMenuItem} onClick={() => handleActivity('call')}>
 						<CallOutlinedIcon className={classes.menuIcons} />
 						Add call log

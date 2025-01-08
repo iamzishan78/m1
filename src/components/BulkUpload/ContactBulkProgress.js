@@ -1,218 +1,251 @@
-import React, { useEffect, useRef, useMemo } from "react";
-import { useQuery, useApolloClient } from "@apollo/client";
-import { useMutation } from "@apollo/client";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useRef, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
-import { GET_JOBS_STATUS } from "graphQL/useQueryGetJobStatus";
-import Loader from "components/Loaders/serverLoader";
-import { setReduxKey } from "store/actions/commonActions";
-import useRefetchHelper from "components/Shared/Hooks/useRefetchHelper";
-import { jobController } from "hookstate/jobStateController";
-import { debounce } from "lodash";
-import { tableGlobalController } from "hookstate/tableController";
-import { globalStateController } from "hookstate/globalStateController";
+import { useQuery, useApolloClient } from '@apollo/client';
+import { useMutation } from '@apollo/client';
+import { debounce } from 'lodash';
+
+import Loader from 'components/Loaders/serverLoader';
+import useRefetchHelper from 'components/Shared/Hooks/useRefetchHelper';
+
+import { UPDATE_JOB } from 'graphQL/useMutationUpdateJob';
+import { GET_JOBS_STATUS } from 'graphQL/useQueryGetJobStatus';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { jobController } from 'hookstate/jobStateController';
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { setReduxKey } from 'store/actions/commonActions';
 
 const ContactBulkProgress = () => {
-  const bulkUpload = useSelector((state) => state.common.bulkUpload);
-  const refetchHelper = useRefetchHelper()
-  const refetchHelperDebounced = useMemo(() => debounce((requestPayload) => refetchHelper(requestPayload), 1000), []);
-  const { globalStateValues } = globalStateController.useState(['user'], 'globalStateValues');
-  const jobState = jobController.useState(['bulkUpload', 'storeJobOutput'], 'jobStateValues');
-  const { jobStateValues } = jobState
+	const bulkUpload = useSelector(state => state.common.bulkUpload);
+	const refetchHelper = useRefetchHelper();
+	const { globalStateValues } = globalStateController.useState(['user'], 'globalStateValues');
+	const jobState = jobController.useState(['bulkUpload', 'storeJobOutput'], 'jobStateValues');
+	const { jobStateValues } = jobState;
 
-  const dispatch = useDispatch();
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const refetchHelperDebounced = useMemo(() => debounce(requestPayload => refetchHelper(requestPayload), 1000), []);
 
-  const pollingStarted = useRef(false);
+	const dispatch = useDispatch();
 
-  const [updateJob] = useMutation(UPDATE_JOB, { refetchQueries: [GET_JOBS_STATUS] });
+	const pollingStarted = useRef(false);
 
-  const {
-    data: dataJobs,
-    startPolling,
-    stopPolling,
-    refetch,
-  } = useQuery(GET_JOBS_STATUS, {
-    variables: { userId: globalStateValues.user?.mongoId, showProgress: true },
-    skip: globalStateValues.user?.mongoId ? false : true,
-  });
+	const [updateJob] = useMutation(UPDATE_JOB, { refetchQueries: [GET_JOBS_STATUS] });
 
-  const client = useApolloClient();
+	const {
+		data: dataJobs,
+		startPolling,
+		stopPolling,
+		refetch,
+	} = useQuery(GET_JOBS_STATUS, {
+		variables: { userId: globalStateValues.user?.mongoId, showProgress: true },
+		skip: globalStateValues.user?.mongoId ? false : true,
+	});
 
-  const findQueries = (manager, name) => {
-    const matching = []
-    manager.queries.forEach((q) => {
-      if (q.observableQuery && (q.observableQuery.queryName === name)) {
-        matching.push(q)
-      }
-    })
-    return matching
-  }
+	const client = useApolloClient();
 
-  const refetchQueryByName = (name) => {
-    return Promise.all(findQueries(client.queryManager, name).map(q => q.observableQuery.refetch()))
-  }
+	const findQueries = (manager, name) => {
+		const matching = [];
+		manager.queries.forEach(q => {
+			if (q.observableQuery && q.observableQuery.queryName === name) {
+				matching.push(q);
+			}
+		});
+		return matching;
+	};
 
-  useEffect(() => {
-    if (globalStateValues.user) {
-      pollingStarted.current = false
-      stopPolling();
-      refetch();
-    }
-  }, [jobState.bulkUpload, bulkUpload]);
+	const refetchQueryByName = name => {
+		return Promise.all(findQueries(client.queryManager, name).map(q => q.observableQuery.refetch()));
+	};
 
-  useEffect(() => {
-    if (dataJobs?.getJobsStatus?.jobs?.length > 0) {
-      const pendingJobs = dataJobs.getJobsStatus.jobs.find(
-        (job) => job.status === "Created" || job.status === "Pending" || job.status === "Started"
-      );
-      if (pendingJobs && !pollingStarted.current) {
-        startPolling(3000);
-        pollingStarted.current = true
-        createOrUpdateToast("create");
-      } else {
-        if (!pendingJobs) {
-          stopPolling();
-        }
-        createOrUpdateToast("update");
-      }
-    } else {
-      stopPolling();
-    }
-  }, [dataJobs?.getJobsStatus]);
+	useEffect(() => {
+		if (globalStateValues.user) {
+			pollingStarted.current = false;
+			stopPolling();
+			refetch();
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [jobState.bulkUpload, bulkUpload]);
 
-  // useEffect hook to run side-effects when `dataJobs?.getJobsStatus` changes
-  useEffect(() => {
-    // Check if there are jobs in dataJobs and storeJobOutput exists in jobStateValues
-    if (dataJobs?.getJobsStatus?.jobs?.length > 0 && jobStateValues?.storeJobOutput) {
-      // Find the target job output that matches the stored jobId
-      const targetJobOutput = dataJobs.getJobsStatus.jobs.find(
-        (job) => job._id === jobStateValues?.storeJobOutput?.jobId
-      );
-      // Update job state with the found job output
-      jobController.updateState({ JobOutput: targetJobOutput?.jobOutput, isJobCompleted: targetJobOutput?.status === 'Completed', isJobFailed: targetJobOutput?.status === 'Failed' });
-    }
-  }, [dataJobs?.getJobsStatus]); // Dependency array to rerun the effect when dataJobs?.getJobsStatus changes
+	useEffect(() => {
+		if (dataJobs?.getJobsStatus?.jobs?.length > 0) {
+			const pendingJobs = dataJobs.getJobsStatus.jobs.find(
+				job => job.status === 'Created' || job.status === 'Pending' || job.status === 'Started'
+			);
+			if (pendingJobs && !pollingStarted.current) {
+				startPolling(3000);
+				pollingStarted.current = true;
+				createOrUpdateToast('create');
+			} else {
+				if (!pendingJobs) {
+					stopPolling();
+				}
+				createOrUpdateToast('update');
+			}
+		} else {
+			stopPolling();
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [dataJobs?.getJobsStatus]);
 
+	// useEffect hook to run side-effects when `dataJobs?.getJobsStatus` changes
+	useEffect(() => {
+		// Check if there are jobs in dataJobs and storeJobOutput exists in jobStateValues
+		if (dataJobs?.getJobsStatus?.jobs?.length > 0 && jobStateValues?.storeJobOutput) {
+			// Find the target job output that matches the stored jobId
+			const targetJobOutput = dataJobs.getJobsStatus.jobs.find(
+				job => job._id === jobStateValues?.storeJobOutput?.jobId
+			);
+			// Update job state with the found job output
+			jobController.updateState({
+				JobOutput: targetJobOutput?.jobOutput,
+				isJobCompleted: targetJobOutput?.status === 'Completed',
+				isJobFailed: targetJobOutput?.status === 'Failed',
+			});
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [dataJobs?.getJobsStatus]); // Dependency array to rerun the effect when dataJobs?.getJobsStatus changes
 
-  const onCloseToast = (jobId) => {
-    updateJob({
-      variables: {
-        job: {
-          _id: jobId,
-          closeToast: true,
-        },
-      },
-    });
-  };
+	const onCloseToast = jobId => {
+		updateJob({
+			variables: {
+				job: {
+					_id: jobId,
+					closeToast: true,
+				},
+			},
+		});
+	};
 
-  const downloadResults = async (job, onCloseToast) => {
-    if (job?.resultsPayload?.datasets) {
-      for (const dataset of job?.resultsPayload?.datasets) {
-        // job?.resultsPayload?.datasets.map(async (dataset) => {
-        let a = document.createElement("a");
-        a.href = dataset.uri;
-        a.download = dataset.fileName;
-        a.click();
+	const downloadResults = async (job, onCloseToast) => {
+		if (job?.resultsPayload?.datasets) {
+			for (const dataset of job?.resultsPayload?.datasets) {
+				// job?.resultsPayload?.datasets.map(async (dataset) => {
+				let a = document.createElement('a');
+				a.href = dataset.uri;
+				a.download = dataset.fileName;
+				a.click();
 
-        await new Promise((resolve) => setTimeout(resolve, 1 * 2000));
-      }
-      onCloseToast(job._id);
-    }
-  };
+				await new Promise(resolve => setTimeout(resolve, 1 * 2000));
+			}
+			onCloseToast(job._id);
+		}
+	};
 
-  // Function for creating and updated Job Toast
-  const createOrUpdateToast = (state) => {
-    const asyncOperations = ["commentsCreation"]; // Array of async operations
+	// Function for creating and updated Job Toast
+	const createOrUpdateToast = state => {
+		const asyncOperations = ['commentsCreation']; // Array of async operations
 
-    // Loop through jobs
-    for (let i = 0; i < dataJobs.getJobsStatus.jobs.length; i++) {
-      let progress = 0; // Initialize progress
-      // Extract job status, progress, totalProgress, requestPayload, and activitiesStatus
-      const { status, progress: jobProgress, totalProgress, requestPayload, activitiesStatus, name } = dataJobs.getJobsStatus.jobs[i];
-      // Extract lastMessage from activitiesStatus
-      const lastMessage = activitiesStatus[activitiesStatus.length - 1];
+		// Loop through jobs
+		for (let i = 0; i < dataJobs.getJobsStatus.jobs.length; i++) {
+			let progress = 0; // Initialize progress
+			// Extract job status, progress, totalProgress, requestPayload, and activitiesStatus
+			const {
+				status,
+				progress: jobProgress,
+				totalProgress,
+				requestPayload,
+				activitiesStatus,
+				name,
+			} = dataJobs.getJobsStatus.jobs[i];
+			// Extract lastMessage from activitiesStatus
+			const lastMessage = activitiesStatus[activitiesStatus.length - 1];
 
-      // Calculate progress percentage if jobProgress and totalProgress are available
-      if (jobProgress && totalProgress) {
-        progress = (jobProgress / totalProgress) * 100;
-      }
+			// Calculate progress percentage if jobProgress and totalProgress are available
+			if (jobProgress && totalProgress) {
+				progress = (jobProgress / totalProgress) * 100;
+			}
 
-      let message = ""; // Initialize message
+			let message = ''; // Initialize message
 
-      // Determine message based on job status
-      if (status === "Started" || status === "Pending") {
-        message = lastMessage; // Use last message for started or pending status
-      } else if (status === "Completed" && requestPayload?.async) {
-        if (requestPayload.refetch)
-          refetchHelperDebounced(requestPayload.refetch); // Debounced refetch if async operation is completed
-        message = lastMessage; // Use last message for completed async operation
-      } else {
-        if (status === "Completed")
-          dispatch(setReduxKey("contactsAdded", true)) // Dispatch action if status is completed
-        const type = dataJobs.getJobsStatus.jobs[i].type; // Extract job type
+			// Determine message based on job status
+			if (status === 'Started' || status === 'Pending') {
+				message = lastMessage; // Use last message for started or pending status
+			} else if (status === 'Completed' && requestPayload?.async) {
+				if (requestPayload.refetch) {
+					refetchHelperDebounced(requestPayload.refetch);
+				} // Debounced refetch if async operation is completed
+				message = lastMessage; // Use last message for completed async operation
+			} else {
+				if (status === 'Completed') {
+					dispatch(setReduxKey('contactsAdded', true));
+				} // Dispatch action if status is completed
+				const type = dataJobs.getJobsStatus.jobs[i].type; // Extract job type
 
-        // Determine message for different job types
-        if (name === 'idiCore') {
-          message = lastMessage;
-        }
-        else if (type === 'contacts') {
-          message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Contacts creation completed" : "Contacts creation failed";
-        } else if (type === 'PROPERTIES') {
-          message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Import successfully completed" : "Import Failed";
-        } else {
-          const labelType = ['checkDetails'].includes(type) ? 'Import' : 'Export'; // Determine label type based on job type
+				// Determine message for different job types
+				if (name === 'idiCore') {
+					message = lastMessage;
+					refetchHelper(['getContactPurchaseData']);
+				} else if (type === 'contacts') {
+					message =
+						status === 'Created'
+							? 'Waiting for job to start'
+							: status === 'Completed'
+								? 'Contacts creation completed'
+								: 'Contacts creation failed';
+				} else if (type === 'PROPERTIES') {
+					message =
+						status === 'Created'
+							? 'Waiting for job to start'
+							: status === 'Completed'
+								? 'Import successfully completed'
+								: 'Import Failed';
+				} else {
+					const labelType = ['checkDetails'].includes(type) ? 'Import' : 'Export'; // Determine label type based on job type
 
-          // Determine message for general job types
-          if (status === 'Created') {
-            message = 'Waiting for job to start';
-          } else if (status === 'Completed') {
-            message = `${asyncOperations.includes(type) ? 'Async operation' : labelType} successfully completed`;
-          } else if (status === 'Completed with errors') {
-            message = `${asyncOperations.includes(type) ? 'Async operation' : labelType} completed with errors`;
-          } else {
-            message = `${asyncOperations.includes(type) ? 'Async operation' : labelType} Failed`;
-          }
+					// Determine message for general job types
+					if (status === 'Created') {
+						message = 'Waiting for job to start';
+					} else if (status === 'Completed') {
+						message = `${asyncOperations.includes(type) ? 'Async operation' : labelType} successfully completed`;
+					} else if (status === 'Completed with errors') {
+						message = `${asyncOperations.includes(type) ? 'Async operation' : labelType} completed with errors`;
+					} else {
+						message = `${asyncOperations.includes(type) ? 'Async operation' : labelType} Failed`;
+					}
 
-          // Additional action for specific job type and status
-          if (
-            type === 'SHAPEOWNER' &&
-            (status === 'Completed' || status.includes('Completed'))
-          )
-            refetchHelper(['getCustomLayer']);
-        }
-        if (status === 'Completed with errors') message = status; // Update message for completed with errors status
-      }
+					// Additional action for specific job type and status
+					if (type === 'SHAPEOWNER' && (status === 'Completed' || status.includes('Completed'))) {
+						refetchHelper(['getCustomLayer']);
+					}
+				}
+				if (status === 'Completed with errors') {
+					message = status;
+				} // Update message for completed with errors status
+			}
 
-      // Create or update toast based on state
-      if (state === "create") {
-        if (status !== "Completed" && status !== "Failed") {
-          Loader.createToast(dataJobs.getJobsStatus.jobs[i]._id, message, progress, onCloseToast);
-        }
-      } else {
-        if (status === "Completed" || status === "Completed with errors") {
-          Loader.successToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast);
-          downloadResults(dataJobs.getJobsStatus.jobs[i], onCloseToast);
-          if (dataJobs.getJobsStatus.jobs[i].type === "contacts")
-            refetchQueryByName("checkIfOwnersAreContacts");
-          // Refetch when its the status is completed for the last job iteration
-          if (i === dataJobs.getJobsStatus.jobs.length - 1) {
-            const { progress: jobProgress, totalProgress } = dataJobs.getJobsStatus.jobs[i];
-            // Check if the current progress is equal to the total progress
-            if (jobProgress === totalProgress) {
-              tableGlobalController.refetch();
-            }
-          }
-        } else if (status === "Failed") {
-          Loader.errorToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast);
-        } else {
-          Loader.updateToast(dataJobs.getJobsStatus.jobs[i]._id, message, progress);
-        }
-      }
-    }
-  };
+			// Create or update toast based on state
+			if (state === 'create') {
+				if (status !== 'Completed' && status !== 'Failed') {
+					Loader.createToast(dataJobs.getJobsStatus.jobs[i]._id, message, progress, onCloseToast);
+				}
+			} else {
+				if (status === 'Completed' || status === 'Completed with errors') {
+					Loader.successToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast);
+					downloadResults(dataJobs.getJobsStatus.jobs[i], onCloseToast);
+					if (dataJobs.getJobsStatus.jobs[i].type === 'contacts') {
+						refetchQueryByName('checkIfOwnersAreContacts');
+					}
+					// Refetch when its the status is completed for the last job iteration
+					if (i === dataJobs.getJobsStatus.jobs.length - 1) {
+						const { progress: jobProgress, totalProgress } = dataJobs.getJobsStatus.jobs[i];
+						// Check if the current progress is equal to the total progress
+						if (jobProgress === totalProgress) {
+							tableGlobalController.refetch();
+							tableGlobalController.setSelectedTab(0);
+						}
+					}
+				} else if (status === 'Failed') {
+					Loader.errorToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast);
+				} else {
+					Loader.updateToast(dataJobs.getJobsStatus.jobs[i]._id, message, progress);
+				}
+			}
+		}
+	};
 
-  return <div></div>;
+	return <div></div>;
 };
 
 export default ContactBulkProgress;

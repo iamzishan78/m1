@@ -1,8 +1,13 @@
-import React, { memo } from 'react';
-import { useApolloClient } from '@apollo/client';
+import React from 'react';
+
 import { makeStyles } from '@material-ui/core/styles';
-import { tableController,  } from 'hookstate/tableController';
+
+import { useApolloClient } from '@apollo/client';
+import PropTypes from 'prop-types';
+
 import { BulkUpdate } from 'components/MRTTable/Common/CommonToolBarActions';
+
+import { tableController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(() => ({
 	disabledTopBarButtons: {
@@ -45,7 +50,8 @@ function UnitToolbar({ table, tableKey }) {
 		'customProps',
 	]);
 	const tableStateValues = tableState.stateValues;
-	const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
+	const isSomeRowsSelected =
+		table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
@@ -67,6 +73,8 @@ function UnitToolbar({ table, tableKey }) {
 			table,
 			tableKey,
 			selectedCampaign: tableStateValues.customProps?.campaign,
+			objectType: 'unit',
+			refetchQueries: ['getDbData'],
 		};
 	};
 
@@ -81,4 +89,9 @@ function UnitToolbar({ table, tableKey }) {
 	);
 }
 
-export default memo(UnitToolbar);
+UnitToolbar.propTypes = {
+	table: PropTypes.object.isRequired,
+	tableKey: PropTypes.string.isRequired,
+};
+
+export default UnitToolbar;

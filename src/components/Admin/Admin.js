@@ -1,27 +1,27 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Switch, Route, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { Switch, Route, useLocation } from 'react-router-dom';
+
+import AdminOperation from 'components/Admin/AdminOperation';
+import BulkDataEditing from 'components/Admin/components/BulkDataEditing';
+import QuickActionPanel from 'components/Land/components/QuickActionPanel';
+import AdminSettings from 'components/Shared/AdminSettings';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
 import { setActiveModule, toggleQuickActionsPanel } from 'store/actions/commonActions';
-import { AppContext } from 'AppContext';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
-
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import QuickActionPanel from 'components/Land/components/QuickActionPanel';
 
 import { AdminManagementRoutes } from 'utils/data';
-import Map from './components/Map';
-import AdminSettings from 'components/Shared/AdminSettings';
-import Flatten from 'components/Admin/Flatten';
-import Reindex from 'components/Admin/Reindex';
-import BulkDataEditing from 'components/Admin/components/BulkDataEditing';
+
+import { AppContext } from 'AppContext';
+
 import BulkDataEditingDetail from './components/BulkDataEditingDetail';
+import Map from './components/Map';
 
 const Components = {
 	Map,
 	AdminSettings,
-	Flatten,
-	Reindex,
+	AdminOperation,
 	BulkDataEditing,
 	BulkDataEditingDetail,
 };
@@ -68,8 +68,7 @@ export default function Admin() {
 	useEffect(() => {
 		const allPaths = JSON.parse(JSON.stringify(AdminManagementRoutes));
 		if (!isM1neralAddress(stateApp.user.email)) {
-			delete allPaths['FLATTENING'];
-			delete allPaths['REINDEX'];
+			delete allPaths['ADMINOPERATION'];
 		}
 		const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.CONTACTSUBMENU);
 		// const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.ANALYTICSSUBMENU);

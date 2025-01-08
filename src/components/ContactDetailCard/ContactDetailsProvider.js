@@ -1,15 +1,12 @@
-import React from "react";
+import React from 'react';
 
-import { ContactDetailsContextProvider } from "./ContactDetailsContext";
-import ContactDetailCard from './ContactDetailCard'
-
+import ContactDetailCard from './ContactDetailCard';
+import { ContactDetailsContextProvider } from './ContactDetailsContext';
 
 export default function ContactDetailsProvider(props) {
-  return (
-    <ContactDetailsContextProvider>
-      <ContactDetailCard>
-        {props.children}
-      </ContactDetailCard>
-    </ContactDetailsContextProvider>
-  );
+	return (
+		<ContactDetailsContextProvider>
+			<ContactDetailCard>{props.children}</ContactDetailCard>
+		</ContactDetailsContextProvider>
+	);
 }

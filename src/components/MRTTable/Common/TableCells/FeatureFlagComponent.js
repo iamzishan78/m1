@@ -1,5 +1,6 @@
-import { AppContext } from 'AppContext';
 import React, { useContext } from 'react';
+
+import { AppContext } from 'AppContext';
 
 export function FeatureFlag({ children, feature, noAccess, noCheck }) {
 	const [stateApp] = useContext(AppContext);

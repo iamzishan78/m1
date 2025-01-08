@@ -1,10 +1,10 @@
 import React from 'react';
-import { useQuery } from "@apollo/client";
-import gql from "graphql-tag";
+
+import { useQuery } from '@apollo/client';
+import gql from 'graphql-tag';
 
 export default function useQueryQuadChart(id) {
-
-  const QUADCHARTQUERY = gql`query {
+	const QUADCHARTQUERY = gql`query {
     quadChart(wellId:"${id}") {
             quadrant
             metric
@@ -14,9 +14,8 @@ export default function useQueryQuadChart(id) {
             value12 
             cumulative
     }
-  }`
-      const { data,loading, error} = useQuery(QUADCHARTQUERY);
-    
-      return {data,loading,error}
+  }`;
+	const { data, loading, error } = useQuery(QUADCHARTQUERY);
 
+	return { data, loading, error };
 }

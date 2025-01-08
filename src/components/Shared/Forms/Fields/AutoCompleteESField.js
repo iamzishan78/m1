@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
-
 // QUERIES
-import { useLazyQuery } from "@apollo/client";
-import loadashFilter from "lodash/filter";
+import React, { useState, useEffect } from 'react';
 
-import TextField from "@material-ui/core/TextField";
-import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import parse from "autosuggest-highlight/parse";
-import match from "autosuggest-highlight/match";
-import { Popper, Typography } from "@material-ui/core";
+import { Popper, Typography } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery } from '@apollo/client';
+import match from 'autosuggest-highlight/match';
+import parse from 'autosuggest-highlight/parse';
+import loadashFilter from 'lodash/filter';
 
 // const styles = (theme) => ({
 //   popper: {
@@ -28,188 +28,202 @@ import { Popper, Typography } from "@material-ui/core";
 //   );
 // };
 
-const AutoCompleteField = ({ placeholder, value, onChange, column, query, extendSearchQuery, esIndex, filters, variant, ...rest }) => {
-  const [open, setOpen] = useState(false);
-  const [options, setOptions] = useState([]);
-  // const [value, setValue] = useState({ key: value });
-  const [search, setSearch] = useState(value);
-  const { label, filterKey, type } = column;
-  const [getFilters, { data: filtersData, loading }] = useLazyQuery(query, { fetchPolicy: "no-cache" });
+const AutoCompleteField = ({
+	placeholder,
+	value,
+	onChange,
+	column,
+	query,
+	extendSearchQuery,
+	esIndex,
+	filters,
+	variant,
+	...rest
+}) => {
+	const [open, setOpen] = useState(false);
+	const [options, setOptions] = useState([]);
+	// const [value, setValue] = useState({ key: value });
+	const [search, setSearch] = useState(value);
+	const { label, filterKey, type } = column;
+	const [getFilters, { data: filtersData, loading }] = useLazyQuery(query, { fetchPolicy: 'no-cache' });
 
-  const filter = createFilterOptions();
+	const filter = createFilterOptions();
 
-  useEffect(() => {
-    getFiltersAction("");
-  }, []);
+	useEffect(() => {
+		getFiltersAction('');
+	}, []);
 
-  useEffect(() => {
-    if (filtersData) {
-      const keys = Object.keys(filtersData);
-      if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits)
-        setOptions(
-          filtersData[keys[0]].hits.map((hit) => ({
-            doc_count: hit.doc_count,
-            key: typeof hit.key === "string" ? [hit.key] : hit.key,
-            key_as_string: hit.key_as_string,
-          }))
-        );
-    }
-  }, [filtersData]);
+	useEffect(() => {
+		if (filtersData) {
+			const keys = Object.keys(filtersData);
+			if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits) {
+				setOptions(
+					filtersData[keys[0]].hits.map(hit => ({
+						doc_count: hit.doc_count,
+						key: typeof hit.key === 'string' ? [hit.key] : hit.key,
+						key_as_string: hit.key_as_string,
+					}))
+				);
+			}
+		}
+	}, [filtersData]);
 
-  const handleChange = (search) => {
-    setSearch(search);
-    getFiltersAction(search);
-  };
+	const handleChange = search => {
+		setSearch(search);
+		getFiltersAction(search);
+	};
 
-  const getFiltersAction = (search) => {
-    if (search) search = type === "number" ? search : search.includes('-') ? `"*${search}*"` : `*${search}*`;
-    getFilters({
-      variables: {
-        esIndex,
-        filters,
-        filterKeys: filterKey,
-        // filterKey: typeof filterKey === 'string' ? filterKey : undefined,
-        search,
-        extendSearchQuery,
-        size: 50,
-      },
-    });
-  };
+	const getFiltersAction = search => {
+		if (search) {
+			search = type === 'number' ? search : search.includes('-') ? `"*${search}*"` : `*${search}*`;
+		}
+		getFilters({
+			variables: {
+				esIndex,
+				filters,
+				filterKeys: filterKey,
+				// filterKey: typeof filterKey === 'string' ? filterKey : undefined,
+				search,
+				extendSearchQuery,
+				size: 50,
+			},
+		});
+	};
 
-  const PopperMy = (props) => {
-    return (
-      <Popper
-        {...props}
-        style={{ maxWidth: "fit-content", ...rest.style }}
-        placement="bottom-start"
-      />
-    );
-  };
+	const PopperMy = props => {
+		return <Popper {...props} style={{ maxWidth: 'fit-content', ...rest.style }} placement="bottom-start" />;
+	};
 
-  return (
-    <Autocomplete
-      id={`filter-autocomplete-${label || "es-field"}`}
-      PopperComponent={PopperMy}
-      open={open}
-      onOpen={() => {
-        setOpen(true);
-      }}
-      onClose={() => {
-        setOpen(false);
-      }}
-      value={value}
-      inputValue={search}
-      getOptionSelected={(option, value) => option?.key === value.key}
-      getOptionLabel={(option) => {
-        if (typeof option.key === "string") {
-          return option
-        } else {
-          // const spliteData = option?.key.split(" ");
-          const filterSpace = option?.key?.filter((item) => item !== '');
+	return (
+		<Autocomplete
+			id={`filter-autocomplete-${label || 'es-field'}`}
+			PopperComponent={PopperMy}
+			open={open}
+			onOpen={() => {
+				setOpen(true);
+			}}
+			onClose={() => {
+				setOpen(false);
+			}}
+			value={value}
+			inputValue={search}
+			getOptionSelected={(option, value) => option?.key === value.key}
+			getOptionLabel={option => {
+				if (typeof option.key === 'string') {
+					return option;
+				} else {
+					// const spliteData = option?.key.split(" ");
+					const filterSpace = option?.key?.filter(item => item !== '');
 
-          if (!filterSpace) return ''
+					if (!filterSpace) {
+						return '';
+					}
 
-          return `#-${filterSpace[0]}${filterSpace[1] ? ` - ${filterSpace[1]}` : ''}`
-        }
-      }}
-      onChange={(e, value, reason) => {
-        if (reason === "clear" || !value?.key) return setSearch("");
+					return `#-${filterSpace[0]}${filterSpace[1] ? ` - ${filterSpace[1]}` : ''}`;
+				}
+			}}
+			onChange={(e, value, reason) => {
+				if (reason === 'clear' || !value?.key) {
+					return setSearch('');
+				}
 
-        if (typeof value.key === "string") {
-          setSearch(value.key);
-          onChange(value.key);
-          return
-        }
-        const valuesLength = value.key.length;
-        // Starting selecting from last value which in agreement case it  would be shapelabel
-        const lastValue = value.key?.[valuesLength - 1];
-        const val = (lastValue && lastValue !== '') ? lastValue : (value.key.find(val => val !== '') || '');
-        const index = value.key.indexOf(val)
-        setSearch(val);
-        onChange(val, index >= 0 ? index : 0);
-      }}
-      fullWidth
-      autoHighlight
-      options={options}
-      loading={loading}
-      renderOption={(props, value) => {
-        if (props?.id === "newEntity") return <Typography style={{ color: "midnightblue" }}>Add '{props.key}'</Typography>;
-        const matches = match(props.key, value?.inputValue);
-        const parts = parse(props.key, matches);
+				if (typeof value.key === 'string') {
+					setSearch(value.key);
+					onChange(value.key);
+					return;
+				}
+				const valuesLength = value.key.length;
+				// Starting selecting from last value which in agreement case it  would be shapelabel
+				const lastValue = value.key?.[valuesLength - 1];
+				const val = lastValue && lastValue !== '' ? lastValue : value.key.find(val => val !== '') || '';
+				const index = value.key.indexOf(val);
+				setSearch(val);
+				onChange(val, index >= 0 ? index : 0);
+			}}
+			fullWidth
+			autoHighlight
+			options={options}
+			loading={loading}
+			renderOption={(props, value) => {
+				if (props?.id === 'newEntity') {
+					return <Typography style={{ color: 'midnightblue' }}>Add '{props.key}'</Typography>;
+				}
+				const matches = match(props.key, value?.inputValue);
+				const parts = parse(props.key, matches);
 
-        return (
-          <li {...props}>
-            <div>
-              {parts.map((part, index) => (
-                <span
-                  key={index}
-                  style={{
-                    fontWeight: part.highlight ? 700 : 400,
-                  }}
-                >
-                  {typeof part.text === "string" ? part.text : part.text?.join(" - ")}
-                </span>
-              ))}
-            </div>
-          </li>
-        );
-      }}
-      filterOptions={(options, params) => {
-        let inputValue = params.inputValue;
-        const filtered = filter(options, { ...params, inputValue });
+				return (
+					<li {...props}>
+						<div>
+							{parts.map((part, index) => (
+								<span
+									key={index}
+									style={{
+										fontWeight: part.highlight ? 700 : 400,
+									}}
+								>
+									{typeof part.text === 'string' ? part.text : part.text?.join(' - ')}
+								</span>
+							))}
+						</div>
+					</li>
+				);
+			}}
+			filterOptions={(options, params) => {
+				let inputValue = params.inputValue;
+				const filtered = filter(options, { ...params, inputValue });
 
-        const isExist = loadashFilter(filtered, (f) => {
-          return typeof f.key === "string" ? f.key === inputValue : f.key.includes(inputValue);
-        });
-        // Suggest the creation of a new value
-        if (inputValue !== "" && (!isExist || isExist.length === 0)) {
-          filtered.unshift({
-            id: "newEntity",
-            key: inputValue,
-          });
-        }
-        return filtered;
-      }}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          placeholder={placeholder}
-          variant={variant}
-          autoFocus={true}
-          label={label}
-          onChange={(e) => {
-            handleChange(e.target.value);
-          }}
-          onKeyDown={(e) => {
-            if (e.code === "Tab") {
-              // e.preventDefault();
-              // e.stopPropagation();
-              const ops = options.filter((op) => op.key.startsWith(search));
-              if (ops[0] && ops[0].key) {
-                onChange(ops[0].key);
-              }
-            }
-          }}
-          fullWidth
-          InputProps={{
-            ...params.InputProps,
-            endAdornment: (
-              <React.Fragment>
-                {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                {params.InputProps.endAdornment}
-              </React.Fragment>
-            ),
-          }}
-        />
-      )}
-      {...rest}
-    />
-  );
+				const isExist = loadashFilter(filtered, f => {
+					return typeof f.key === 'string' ? f.key === inputValue : f.key.includes(inputValue);
+				});
+				// Suggest the creation of a new value
+				if (inputValue !== '' && (!isExist || isExist.length === 0)) {
+					filtered.unshift({
+						id: 'newEntity',
+						key: inputValue,
+					});
+				}
+				return filtered;
+			}}
+			renderInput={params => (
+				<TextField
+					{...params}
+					placeholder={placeholder}
+					variant={variant}
+					autoFocus={true}
+					label={label}
+					onChange={e => {
+						handleChange(e.target.value);
+					}}
+					onKeyDown={e => {
+						if (e.code === 'Tab') {
+							// e.preventDefault();
+							// e.stopPropagation();
+							const ops = options.filter(op => op.key.startsWith(search));
+							if (ops[0] && ops[0].key) {
+								onChange(ops[0].key);
+							}
+						}
+					}}
+					fullWidth
+					InputProps={{
+						...params.InputProps,
+						endAdornment: (
+							<React.Fragment>
+								{loading ? <CircularProgress color="inherit" size={20} /> : null}
+								{params.InputProps.endAdornment}
+							</React.Fragment>
+						),
+					}}
+				/>
+			)}
+			{...rest}
+		/>
+	);
 };
 
 AutoCompleteField.defaultProps = {
-  variant: "standard",
-  placeholder: "",
+	variant: 'standard',
+	placeholder: '',
 };
 
 export default AutoCompleteField;

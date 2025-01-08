@@ -1,22 +1,28 @@
 import React, { useState, useEffect, useContext } from 'react';
-import Paper from '@material-ui/core/Paper';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { makeStyles } from '@material-ui/core/styles';
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
-import moment from 'moment';
-import { uniqueId } from 'lodash';
-import { useLazyQuery } from '@apollo/client';
 import { useHistory } from 'react-router-dom';
 
-import { GETALLACTIVITIES } from '../../graphQL/useQueryGetAllActivities';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { useLazyQuery } from '@apollo/client';
+import { uniqueId } from 'lodash';
+import moment from 'moment';
+
+import MRTTable from 'components/MRTTable';
+
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-import ActivitiesToolbar from './components/ActivitiesToolbar';
+
+import { tableController } from 'hookstate/tableController';
+
 import ActivitiesEvent from './components/ActivitiesEvent';
-import M1nTable from '../Shared/M1nTable/M1nTable';
+import ActivitiesModal from './components/ActivitiesModal';
+import ActivitiesToolbar from './components/ActivitiesToolbar';
+import { AppContext } from '../../AppContext';
+import { GETALLACTIVITIES } from '../../graphQL/useQueryGetAllActivities';
+
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './index.css';
-import ActivitiesModal from './components/ActivitiesModal';
-import { AppContext } from '../../AppContext';
 
 const localizer = momentLocalizer(moment);
 
@@ -73,11 +79,6 @@ const useStyles = makeStyles(theme => ({
 			backgroundColor: '#929292',
 			borderRadius: 10,
 		},
-		'& div': {
-			'&>.MuiPaper-root': {
-				'&>:nth-child(3)': { minHeight: 'calc(100vh - 265px) !important' },
-			},
-		},
 	},
 }));
 
@@ -116,10 +117,10 @@ const Activities = () => {
 	const classes = useStyles();
 	let history = useHistory();
 	const [getAllActivities, { data: activitiesData, loading: activitiesLoading }] = useLazyQuery(GETALLACTIVITIES, {
-		fetchPolicy: `network-only`,
+		fetchPolicy: 'network-only',
 	});
 	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
-		fetchPolicy: `network-only`,
+		fetchPolicy: 'network-only',
 	});
 
 	const [stateApp, setStateApp] = useContext(AppContext);
@@ -129,6 +130,7 @@ const Activities = () => {
 	const [activityFilterByType, setActivityFilterByType] = useState('all');
 	const [activityFilterByOwner, setActivityFilterByOwner] = useState('all');
 	const [activityFilterByTime, setActivityFilterByTime] = useState('all');
+	const activitiesGridState = tableController('ActivitiesTable').useState(['filters']).stateValues;
 	const [view, setView] = React.useState(Views.MONTH);
 
 	useEffect(() => {
@@ -137,6 +139,7 @@ const Activities = () => {
 				category: 'Expiration',
 			},
 		});
+		getAllMongoUsers();
 	}, []);
 
 	useEffect(() => {
@@ -153,8 +156,8 @@ const Activities = () => {
 		if (activitiesData) {
 			setEvents(
 				activitiesData?.activities?.map(act => {
-					const start = new Date(act.dateTime);
-					const end = act.endDateTime ? new Date(act.endDateTime) : start;
+					const start = new Date(Number(act.dateTime));
+					const end = act.endDateTime ? new Date(Number(act.endDateTime)) : start;
 					return {
 						id: uniqueId(),
 						...act,
@@ -177,13 +180,6 @@ const Activities = () => {
 			events.filter(e => getFilterCondition(e, activityFilterByType, activityFilterByTime, activityFilterByOwner))
 		);
 	}, [events, activityFilterByType, activityFilterByTime, activityFilterByOwner, view]);
-
-	const onModalClose = () => {
-		setStateApp(stateApp => ({
-			...stateApp,
-			activityDialog: false,
-		}));
-	};
 
 	const onModalOpen = () => {
 		setStateApp(stateApp => ({
@@ -210,14 +206,66 @@ const Activities = () => {
 		}
 	}, [stateApp.selectedActivityId]);
 
-	React.useEffect(() => {
-		getAllMongoUsers();
-	}, []);
+	useEffect(() => {
+		if (activitiesGridState) {
+			tableController('ActivitiesTable').clearFilters();
+			const filters = [];
+
+			if (activityFilterByType && activityFilterByType !== 'all') {
+				filters.push({ field: 'type.keyword', value: activityFilterByType });
+			}
+			if (activityFilterByType && activityFilterByOwner !== 'all') {
+				filters.push({ field: 'ownerId.keyword', value: activityFilterByOwner });
+			}
+			const today = moment().format('yyyy-MM-DD');
+			switch (activityFilterByTime) {
+				case 'upcoming':
+					filters.push({
+						field: 'dateTime',
+						value: {
+							gte: `${today}T00:00:00.000Z`,
+						},
+						type: 'range',
+					});
+					break;
+				case 'overdue':
+					filters.push({
+						field: 'endDateTime',
+						value: {
+							lte: `${today}T00:00:00.000Z`,
+						},
+						type: 'range',
+					});
+					filters.push({ field: 'isClosed', value: 'false' });
+					break;
+				case 'open':
+					filters.push({
+						field: 'isClosed',
+						value: 'false',
+					});
+					break;
+				case 'closed':
+					filters.push({
+						field: 'isClosed',
+						value: 'true',
+					});
+					break;
+
+				default:
+					break;
+			}
+			tableController('ExpirationsTable').setFilters(filters);
+		}
+	}, [activityFilterByType, activityFilterByOwner, activityFilterByTime]);
 
 	const onEventClick = event => {
 		window.history.pushState('', '', `/calendar/activities/${event._id}`);
 		setSelectedActivityId(event._id);
 		onModalOpen();
+	};
+
+	const overrideMeta = {
+		defaultFilters: [{ field: 'category.keyword', value: 'Expiration' }],
 	};
 
 	return (
@@ -241,6 +289,7 @@ const Activities = () => {
 							events={filteredEvents}
 							onEventClick={onEventClick}
 							mongoUsers={userLists?.allMongoUsers}
+							activities={activitiesData?.activities}
 							type="Expirations"
 						/>
 					) : (
@@ -262,11 +311,12 @@ const Activities = () => {
 									events={filteredEvents}
 									onEventClick={onEventClick}
 									mongoUsers={userLists?.allMongoUsers}
+									activities={activitiesData?.activities}
 									type="Expiration"
 								/>
 							</div>
 							<div className={classes.table}>
-								<M1nTable dense activities={filteredEvents} parent="Activities" />
+								<MRTTable name="ExpirationsTable" overrideMeta={overrideMeta} />
 							</div>
 						</div>
 					)}

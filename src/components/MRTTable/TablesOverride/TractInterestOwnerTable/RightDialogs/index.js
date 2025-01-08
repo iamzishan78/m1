@@ -1,8 +1,11 @@
 import React, { memo } from 'react';
-import { tableGlobalController } from 'hookstate/tableController';
-import AddParcelOwnerDialogContent from '../Dialog/AddParcelOwnerDialogContent';
+
 import ExportOwnersAndContacts from 'components/Shared/ExportOwnerAndContacts';
-import RecalculateSlideout from 'components/Table/Shape/RecalculateSlideout';
+import RecalculateSlideout from 'components/Common/RecalculateSlideout';
+
+import { tableGlobalController } from 'hookstate/tableController';
+
+import AddParcelOwnerDialogContent from '../Dialog/AddParcelOwnerDialogContent';
 
 function TractInterestTableDialogs() {
 	const { stateValues } = tableGlobalController.useState(['dialog']);

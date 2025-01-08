@@ -224,6 +224,17 @@ export const analyticsManagementRoutes = {
 		isDefault: true,
 		hideSearch: true,
 	},
+	AUDITING_REPORTING: {
+		featureFlag: 'CONTACTSUBMENU',
+		customTitle: 'Audit Reporting',
+		title: 'Audit Reporting',
+		link: '/analytics/audit',
+		component: 'AuditReporting',
+		value: 'Permits', // Need to change value
+		search: true,
+		isDefault: true,
+		hideSearch: false,
+	},
 	PRODUCTION: {
 		featureFlag: 'CONTACTSUBMENU',
 		title: 'Production by State/County',
@@ -234,16 +245,16 @@ export const analyticsManagementRoutes = {
 		isDefault: true,
 		hideSearch: true,
 	},
-	ADVANCED_SEARCH: {
-		featureFlag: 'CONTACTSUBMENU',
-		title: 'Advanced Search',
-		link: '/analytics/advancedSearch',
-		component: 'AdvancedSearch',
-		value: 'AdvancedSearch',
-		search: true,
-		isDefault: true,
-		hideSearch: true,
-	},
+	// ADVANCED_SEARCH: {
+	// 	featureFlag: 'CONTACTSUBMENU',
+	// 	title: 'Advanced Search',
+	// 	link: '/analytics/advancedSearch',
+	// 	component: 'AdvancedSearch',
+	// 	value: 'AdvancedSearch',
+	// 	search: true,
+	// 	isDefault: true,
+	// 	hideSearch: true,
+	// },
 	REVENUE_PROPERTY_DETAILS: {
 		featureFlag: 'CONTACTSUBMENU',
 		title: 'Revenue',
@@ -546,19 +557,11 @@ export const AdminManagementRoutes = {
 		isDefault: true,
 		showSettingString: true,
 	},
-	FLATTEN: {
+	ADMINOPERATION: {
 		featureFlag: 'AlWAYSSHOW',
-		title: 'Flatten',
-		link: '/admin/runFlattening',
-		component: 'Flatten',
-		noCheck: true,
-		showSettingString: false,
-	},
-	REINDEX: {
-		featureFlag: 'AlWAYSSHOW',
-		title: 'Reindex',
-		link: '/admin/runReindexing',
-		component: 'Reindex',
+		title: 'AdminOperation',
+		link: '/admin/adminOperation',
+		component: 'AdminOperation',
 		noCheck: true,
 		showSettingString: false,
 	},
@@ -658,11 +661,69 @@ export const AdminManagementRoutes = {
 	},
 };
 
+export const dataManagementRoutes = {
+	PlatformWells: {
+		featureFlag: 'DATA',
+		title: 'Platform Wells',
+		link: '/data/wells',
+		value: 'PlatformWells',
+		isDefault: true,
+		hideSearch: true,
+	},
+	Agreements: {
+		featureFlag: 'DATA',
+		title: 'Agreements',
+		link: '/data/agreements',
+		value: 'Agreements',
+		isDefault: true,
+		hideSearch: true,
+	},
+	Units: {
+		featureFlag: 'DATA',
+		title: 'Units',
+		link: '/data/units',
+		value: 'Units',
+		isDefault: true,
+		hideSearch: true,
+	},
+	Tracts: {
+		featureFlag: 'DATA',
+		title: 'Tracts',
+		link: '/data/tracts',
+		value: 'Tracts',
+		isDefault: true,
+		hideSearch: true,
+	},
+	MyWells: {
+		featureFlag: 'DATA',
+		title: 'My Wells',
+		link: '/data/mywells',
+		value: 'MyWells',
+		isDefault: true,
+		hideSearch: true,
+	},
+	ShapeFile: {
+		featureFlag: 'DATA',
+		title: 'Shape File',
+		link: '/data/shapefiles',
+		value: 'ShapeFile',
+		isDefault: true,
+		hideSearch: true,
+	},
+};
+
+export const paymentGridsInitialData = [
+	{ index: 0, value: 'payees', label: 'Payees', showCounts: true },
+	{ index: 0, value: 'billingParties', label: 'Billing Parties', showCounts: true },
+	{ index: 0, value: 'costAllocations', label: 'Cost Allocation', showCounts: true },
+];
+
 export const bypassTenants = [
 	'localhost',
 	// "m1Preview",
 	'm1dev',
-	'm1Staging',
+	'm1cypress',
+	'm1staging',
 	// "m1Production",
 	// "m1Development",
 	// "GHR",
@@ -672,7 +733,7 @@ export const bypassTenants = [
 	// "Republic",
 	// "Venator",
 	'Frontier',
-	// 'm1demo',
+	'm1demo',
 	// "Vector",
 	// "TableRock",
 	// "Providence",
@@ -685,4 +746,54 @@ export const OWNERTYPE = {
 	CORPORATION: 'CORPORATION',
 };
 
-export const MapFeatureTenants = ['m1dev', 'frontier', 'localhost']
+export const UserRole = {
+	OWNER: 'Owner',
+	ADMIN: 'Admin',
+	USER: 'User',
+};
+
+export const RolePrivilege = {
+	ADD_OR_EDIT: 'Add/Edit',
+	READ_ONLY: 'Read Only',
+};
+export const esIndexFilterKeyMap = {
+	contacts_flat: 'lastUpdateBy.name.keyword',
+	activities_flat: 'ownerName.keyword',
+	// Add other mappings as needed
+};
+
+export const baseTenantsMaps = () => {
+	const tenantId = window.sessionStorage?.getItem('tenantName').toLowerCase();
+	const defaultStyles = ['Satellite', 'Basic', 'Light', 'Outdoors']; // Default for most clients
+	const testNewStyles = [
+		...defaultStyles,
+		'Dark',
+		'Real Estate',
+		'Bubble',
+		'Standard Oil',
+		'Overcast',
+		'Mission Control',
+		'Sketch',
+		'Terminal',
+		'Blueprint',
+		'Pencil',
+		'Unicorn',
+		'Topography',
+	];
+
+	const tenantSpecificStyles = {
+		m1demo: testNewStyles,
+		m1dev: testNewStyles,
+		frontier: testNewStyles,
+		localhost: testNewStyles,
+	};
+
+	return tenantSpecificStyles[tenantId] || defaultStyles;
+};
+
+export const PaymentFeatureTenants = ['m1dev', 'frontier', 'localhost'];
+
+export const statusData = [
+	{ label: 'Not in Pay', value: 'NotInPay' },
+	{ label: 'In Pay', value: 'InPay' },
+];

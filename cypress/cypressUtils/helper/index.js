@@ -1,50 +1,54 @@
-import _ from "lodash";
+import _ from 'lodash';
 
 // This helper will match string with each key of object to check if string exists in object or not
 export const findInObject = (obj, stringToCheck) => {
-    const objectKeys = Object.keys(obj);
-    // eslint-disable-next-line array-callback-return
-    return objectKeys.some(function (key) {
+	const objectKeys = Object.keys(obj);
 
-        const objectValue = obj[key]
-        if (objectValue) {
-            if (typeof objectValue === 'string' && objectValue.toLowerCase().includes(stringToCheck.toLowerCase()))
-                return true
-            else if (typeof objectValue === 'object' && !_.isEmpty(objectValue) && findInObject(objectValue, stringToCheck))
-                return true
-            else if (Array.isArray(objectValue) && objectValue.some(data => findInObject(data, stringToCheck)))
-                return true
-        }
-    });
-}
+	return objectKeys.some(key => {
+		const objectValue = obj[key];
+		if (objectValue) {
+			if (typeof objectValue === 'string' && objectValue.toLowerCase().includes(stringToCheck.toLowerCase())) {
+				return true;
+			} else if (
+				typeof objectValue === 'object' &&
+				!_.isEmpty(objectValue) &&
+				findInObject(objectValue, stringToCheck)
+			) {
+				return true;
+			} else if (Array.isArray(objectValue) && objectValue.some(data => findInObject(data, stringToCheck))) {
+				return true;
+			}
+		}
+	});
+};
 
 export const isArraysEqual = (array1, array2) => {
-    array1 = Array.isArray(array1) ? array1 : [];
-    array2 = Array.isArray(array2) ? array2 : [];
-    return array1.length === array2.length && array1.every((el, ix) => el === array2[ix]);
-}
+	array1 = Array.isArray(array1) ? array1 : [];
+	array2 = Array.isArray(array2) ? array2 : [];
+	return array1.length === array2.length && array1.every((el, ix) => el === array2[ix]);
+};
 
 export const isSearchStringMatched = (searchString, variables) => {
-    const searchQuery = variables?.search?.query || variables?.search
+	const searchQuery = variables?.search?.query || variables?.search;
 
-    if (typeof searchQuery === 'string') {
+	if (typeof searchQuery === 'string') {
+		if (searchQuery.slice(-1) === '*') {
+			if (searchQuery.substring(0, 1) === '*') {
+				searchString = `*${searchString}*`;
+			} else {
+				searchString = `${searchString}*`;
+			}
+		} else if (searchQuery.substring(0, 1) === '*') {
+			searchString = `*${searchString}"`;
+		}
 
-        if (searchQuery.slice(-1) === "*") {
-            if (searchQuery.substring(0, 1) === '*')
-                searchString = `*${searchString}*`
-            else
-                searchString = `${searchString}*`
-        }
-        else if (searchQuery.substring(0, 1) === '*')
-            searchString = `*${searchString}"`
+		return searchQuery === searchString;
+	}
 
-        return searchQuery === searchString
-    }
+	return false;
+};
 
-    return false
-}
-
-export const camelize = (str) => {
-    var str2 = _.camelCase(str);
-    return str2
-}
+export const camelize = str => {
+	var str2 = _.camelCase(str);
+	return str2;
+};

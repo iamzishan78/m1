@@ -1,20 +1,31 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+
 import { Autocomplete, TextField } from '@mui/material';
+
 import { useLazyQuery } from '@apollo/client';
 import _, { debounce } from 'lodash';
+import PropTypes from 'prop-types';
+
+import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
+import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+import vf_number from 'components/Shared/valueformatters/vf_number';
+
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { tableController } from 'hookstate/tableController';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
-import vf_currency from 'components/Shared/valueformatters/vf_currency.js';
+
+const MIN_SEARCH_LENGTH = 700;
+const MIN_FILTER_LENGTH = 2;
 
 function ESAutoCompleteFilter({
 	tableKey,
 	esIndex,
+	modelName,
 	column: {
 		field,
 		label,
 		type,
+		subType,
 		custom,
 		defaultFilterOptions = [],
 		setFilterValue,
@@ -24,9 +35,12 @@ function ESAutoCompleteFilter({
 	},
 	extendSearchQuery,
 	multiple,
+	textFieldProps = {},
+	_value,
 }) {
-	if (isComposite) field = field.split(',');
+	const compositeFields = isComposite ? field.split(',') : [field];
 	const searchMode = type === 'date' ? 'FE' : 'BE';
+	const searchText = useRef('');
 	const searchMapping = {
 		FE: {
 			size: 10000,
@@ -40,25 +54,40 @@ function ESAutoCompleteFilter({
 		},
 	};
 
-	const [getFilters, { data: filtersData, loading }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
+	const [getFilters, { data: filtersData, loading }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 
 	const [options, setOptions] = useState([]);
 	const hasMore = useRef(true);
-	const searchText = useRef('');
 	const appendOptions = useRef(false);
 	const filtersRef = useRef(null);
 
-	const { searchFields, filters, defaultFilters, advanceSearch } = tableController(tableKey).getValues([
-		'searchFields',
-		'filters',
-		'defaultFilters',
-		'advanceSearch',
-	]);
+	if (isComposite && filterValue) {
+		filterValue = Array.isArray(filterValue) ? filterValue.join(' ') : filterValue;
+	}
 
 	const getFiltersAction = debounce(({ afterKey } = {}) => {
-		if (filtersData && multiple && filterValue?.length !== 0) return;
+		const { searchFields, filters, defaultFilters, advanceSearch, sorting, defaultSort, TableSchema } = tableController(
+			tableKey
+		).getValues([
+			'searchFields',
+			'filters',
+			'defaultFilters',
+			'advanceSearch',
+			'sorting',
+			'defaultSort',
+			'TableSchema',
+		]);
 
-		const filtersArray = [...filters, ...defaultFilters];
+		const sort = sorting[0]
+			? {
+					field:
+						sorting[0].field ||
+						TableSchema.find(val => (val.accessorKey || val.id) === sorting[0].id)?.name.split(',')[0],
+					order: sorting[0].desc ? 'desc' : 'asc',
+				}
+			: defaultSort;
+
+		const filtersArray = [...filters, ...defaultFilters].filter(filter => !compositeFields.includes(filter?.field));
 		const currentFilterRef = {
 			filters,
 			defaultFilters,
@@ -66,130 +95,90 @@ function ESAutoCompleteFilter({
 			afterKey,
 		};
 		if (!_.isEqual(currentFilterRef, filtersRef.current)) {
-			let search = '';
-			if (searchText.current) search = type === 'number' ? searchText.current : `*${searchText.current}*`;
+			const searchQuery = searchText.current
+				? type === 'number'
+					? searchText.current
+					: `*${searchText.current}*`
+				: '';
 			filtersRef.current = currentFilterRef;
+
 			getFilters({
 				variables: {
 					esIndex,
+					modelName,
 					index: esIndex,
 					filters:
 						typeof field === 'string'
 							? filtersArray.filter(filter => filter?.field !== field?.replace('.keyword', ''))
 							: filtersArray,
-					filterKeys: typeof field !== 'string' ? field : undefined,
-					filterKey: typeof field === 'string' ? field : undefined,
-					search: { query: extendSearchQuery, fields: searchFields, advanceSearch },
+					filterKeys: isComposite ? compositeFields : undefined,
+					filterKey: !isComposite ? field : undefined,
+					search: { query: tableController(tableKey).getGlobalFilter(), fields: searchFields, advanceSearch },
 					extendSearchQuery,
 					size: 10,
 					key_as_string: custom?.key_as_string,
 					multi_filter_keys: custom?.multi_filter_keys,
 					filterAggs: {
-						query: search,
-						field: typeof field === 'string' ? field : undefined,
-						fields: typeof field !== 'string' ? field : undefined,
+						query: searchQuery,
+						field: !isComposite ? field : undefined,
+						fields: isComposite ? compositeFields : undefined,
 						size: searchMapping[searchMode].size,
 						afterKey,
+						fieldType: type,
 					},
+					sort,
 				},
 			});
 		}
-	}, 700);
+	}, MIN_SEARCH_LENGTH);
 
 	useEffect(() => {
-		const hits = filtersData?.getESSimpleFilter?.hits;
+		const hits = filtersData?.getDbFilters?.hits;
 
-		if (!hits) return;
-
-		let options = hits.map(({ key }) => ({
-			label: Array.isArray(key) ? key.join(' ') : key,
-			value: key,
-		}));
-
-		if (type === 'date') {
-			options = hits.map(({ key_as_string, key }) => {
-				if (key_as_string) {
-					return {
-						label: formatDate(key_as_string),
-						value: key_as_string,
-					};
-				}
-				return {
-					label: key,
-					value: key,
-				};
-			});
-
-			options = _.uniqWith(options, (a, b) => a.label === b.label);
+		if (!hits) {
+			return;
 		}
 
-		options = options.filter(op => {
-			op.label = formatValue(op.label); // format value to show $ sign as prefix
-			return op.value;
+		let newOptions = hits.map(({ key_as_string, key }) => {
+			let value = key;
+			let label = key;
+
+			if (Array.isArray(value)) {
+				label = value.join(' ');
+			} else if (typeof value === 'object') {
+				label = value.name || '';
+			}
+
+			// 	case 'boolean':
+			// 	case 'defaultFiltersOptions':
+			// 		return defaultFilterOptions?.find(option => option?.value === value)?.label || value;
+
+			switch (subType || type) {
+				case 'date':
+					if (key_as_string) {
+						label = formatDate(key_as_string);
+						value = key_as_string;
+					}
+					break;
+				case 'price':
+					label = vf_currency_to_fixed(value, MIN_FILTER_LENGTH);
+					break;
+				case 'number':
+					label = vf_number(value, MIN_FILTER_LENGTH);
+					break;
+			}
+
+			return { label, value };
 		});
+		newOptions = _.uniqWith(newOptions, (a, b) => a.label === b.label).filter(op => op.value || op.value === 0);
 
 		if (appendOptions.current) {
 			appendOptions.current = false;
-			setOptions(prevOptions => [...prevOptions, ...options]);
-		} else setStateIfDeepEqual(setOptions, filterSelectOptions || options);
-	}, [filtersData, filterValue]);
-
-	// If we have orFilter then filterValue is null due to id mismatch
-	if (isComposite) {
-		const key = field[0].replace('.keyword', '');
-		const _field = filters.find(f => f?.field === key);
-		if (Array.isArray(_field?.value)) {
-			filterValue = _field.value.join(' ');
+			setOptions(prevOptions => [...prevOptions, ...newOptions]);
+		} else {
+			setStateIfDeepEqual(setOptions, filterSelectOptions || newOptions);
 		}
-	}
-
-	if (!filterValue || filterValue?.length === 0) {
-		const filter = filters.find(filter => filter?.field.includes(field));
-		if (filter) filterValue = filter?.value;
-	}
-
-	// Handle Filter Value is changed from Single Select to Multi Select and vice versa
-	if (multiple && typeof filterValue === 'string') {
-		filterValue = [];
-	} else if (!multiple && Array.isArray(filterValue)) {
-		filterValue = '';
-	} else if (multiple && !Array.isArray(filterValue)) {
-		filterValue = [];
-		tableController(tableKey).clearFilter(field.replace('.keyword', ''));
-	} else if (type === 'date' && (typeof filterValue === 'string' ? filterValue : filterValue.length)) {
-		if (typeof filterValue === 'string') {
-			filterValue = formatDate(filterValue);
-		} else if (typeof filterValue === 'object' && !Array.isArray(filterValue)) {
-			const formattedGte = formatDate(filterValue?.gte);
-			const formattedLte = formatDate(filterValue?.lte);
-			filterValue = `${formattedGte} to ${formattedLte}`;
-		} else if (Array.isArray(filterValue)) {
-			filterValue = filterValue.map(val => formatDate(val));
-		} else if (typeof filterValue === 'boolean' || type === 'defaultFiltersOptions') {
-			// If there are default filters, use them
-			const requiredFilterValue = defaultFilterOptions?.find(option => option?.value === filterValue)?.label;
-			filterValue = requiredFilterValue;
-		}
-	}
-	const id = Array.isArray(field) ? field.join(' ') : field;
-	// Filter out the options
-	const requiredOptions =
-		defaultFilterOptions?.length > 0
-			? defaultFilterOptions
-			: multiple
-				? options?.filter(item => !filterValue.includes(item.value))
-				: options;
-
-	// format value to show filter value & option with $ sign as prefix
-	const formatValue = value => {
-		if (
-			field === 'shapeJson.properties.uMaxUnitPricing.keyword' ||
-			field === 'shapeJson.properties.uUnitPricing.keyword'
-		) {
-			value = vf_currency(value);
-		}
-		return value;
-	};
+	}, [filtersData, filterValue, type, filterSelectOptions, field]);
 
 	const handleScroll = event => {
 		const bottom = event.target.scrollHeight - event.target.scrollTop === event.target.clientHeight;
@@ -199,14 +188,57 @@ function ESAutoCompleteFilter({
 		}
 	};
 
+	const handleChange = (e, option) => {
+		if (!option || option.length === 0) {
+			setFilterValue(null);
+			compositeFields.forEach(singleField =>
+				tableController(tableKey).clearFilter(singleField.replace('.keyword', ''))
+			);
+			return;
+		}
+
+		const getValue = option =>
+			typeof option === 'object' ? option.value : _.find(options, { label: option })?.value || option;
+		let newValue = multiple ? option.map(getValue) : getValue(option);
+
+		if (type === 'boolean') {
+			newValue = newValue === 'true';
+		}
+
+		setFilterValue(newValue);
+		compositeFields.forEach(singleField =>
+			tableController(tableKey).setFilter({
+				field: singleField.replace('.keyword', ''),
+				value: newValue,
+			})
+		);
+	};
+
 	return (
 		<Autocomplete
 			multiple={multiple}
-			id={`${id}-filter-autocomplete`}
-			options={requiredOptions}
+			id={`${compositeFields.join(' ')}-filter-autocomplete`}
+			options={
+				defaultFilterOptions?.length > 0
+					? defaultFilterOptions
+					: multiple
+						? options?.filter(item => !filterValue.includes(item.value))
+						: options
+			}
+			getOptionLabel={op => {
+				if (typeof op !== 'object') {
+					const foundOption = options.find(o => o?.value === op);
+
+					if (foundOption) {
+						op = foundOption;
+					}
+				}
+
+				return typeof op !== 'object' ? op : (op?.label ?? op?.name ?? '');
+			}}
 			loading={loading}
 			filterOptions={searchMapping[searchMode].filterOptions}
-			value={formatValue(filterValue)}
+			value={filterValue ?? _value}
 			renderInput={params => (
 				<TextField
 					{...params}
@@ -228,56 +260,35 @@ function ESAutoCompleteFilter({
 						searchText.current = e.target.value;
 						getFiltersAction();
 					}}
+					{...textFieldProps}
 				/>
 			)}
-			onChange={(e, option) => {
-				if (!option || option.length === 0) {
-					setFilterValue(null);
-					if (Array.isArray(field)) {
-						field.forEach(singleField => {
-							tableController(tableKey).clearFilter(singleField.replace('.keyword', ''));
-						});
-					} else {
-						tableController(tableKey).clearFilter(field.replace('.keyword', ''));
-					}
-					return;
-				}
-
-				let value = multiple
-					? option.map(option => {
-							if (typeof option === 'object') {
-								return option.value;
-							} else {
-								const foundOption = _.find(options, { label: option });
-								return foundOption ? foundOption.value : option;
-							}
-						})
-					: option.value;
-
-				if (type === 'date') {
-					value = formatDate(value);
-				}
-				setFilterValue(value);
-
-				if (Array.isArray(field)) {
-					field.forEach(singleField => {
-						tableController(tableKey).setFilter({
-							field: singleField.replace('.keyword', ''),
-							value,
-						});
-					});
-				} else {
-					tableController(tableKey).setFilter({
-						field: field.replace('.keyword', ''),
-						value,
-					});
-				}
-			}}
-			ListboxProps={{
-				onScroll: handleScroll,
-			}}
+			onChange={handleChange}
+			ListboxProps={{ onScroll: handleScroll }}
 		/>
 	);
 }
+
+ESAutoCompleteFilter.propTypes = {
+	tableKey: PropTypes.string.isRequired,
+	esIndex: PropTypes.string.isRequired,
+	modelName: PropTypes.string,
+	column: PropTypes.shape({
+		field: PropTypes.string.isRequired,
+		label: PropTypes.string.isRequired,
+		type: PropTypes.string.isRequired,
+		subType: PropTypes.string,
+		custom: PropTypes.object,
+		defaultFilterOptions: PropTypes.array,
+		setFilterValue: PropTypes.func,
+		filterValue: PropTypes.any,
+		filterSelectOptions: PropTypes.array,
+		isComposite: PropTypes.bool,
+	}).isRequired,
+	extendSearchQuery: PropTypes.func.isRequired,
+	multiple: PropTypes.bool.isRequired,
+	textFieldProps: PropTypes.object,
+	_value: PropTypes.any,
+};
 
 export default ESAutoCompleteFilter;

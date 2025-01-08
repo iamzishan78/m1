@@ -1,22 +1,6 @@
-import { hookstate } from '@hookstate/core';
-import { copy } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
 
-const initialState = {
-	activeStepNumber: 0,
-	csvDataToSend: [],
-	mappedHeadersFromCSV: [],
-	m1neralHeaders: [],
-	csvDataList: [],
-	transferData: null,
-	uploaderFormValues: {},
-	selectedShapeLayerOption: null,
-	bulkUpload: false,
-	jobType: null,
-	job: null,
-};
-
-export const jobState = hookstate(copy(initialState));
+import { jobInitialState, jobState } from './initialStates';
 
 const jobStateControllerHandler = () => ({
 	toggleBulkUpload: () => {
@@ -26,7 +10,9 @@ const jobStateControllerHandler = () => ({
 		jobState.activeStepNumber.set(jobState.activeStepNumber.get() + 1);
 	},
 	prevStep: () => {
-		if (jobState.activeStepNumber.get() === 0) return;
+		if (jobState.activeStepNumber.get() === 0) {
+			return;
+		}
 
 		jobState.activeStepNumber.set(jobState.activeStepNumber.get() - 1);
 	},
@@ -45,12 +31,16 @@ const jobStateControllerHandler = () => ({
 	onRowUpdate: (newData, oldData) => {
 		return new Promise((resolve, reject) => {
 			try {
-				if (!oldData) throw new Error('Old data not provided');
+				if (!oldData) {
+					throw new Error('Old data not provided');
+				}
 
 				const csvDataToSend = jobController.getValue('csvDataToSend');
 				const index = csvDataToSend.indexOf(oldData);
 
-				if (index === -1) throw new Error('Old data not found in csvDataToSend');
+				if (index === -1) {
+					throw new Error('Old data not found in csvDataToSend');
+				}
 
 				delete newData.reason;
 				delete newData.invalidKey;
@@ -85,5 +75,5 @@ const jobStateControllerHandler = () => ({
 
 export const jobController = {
 	...jobStateControllerHandler(jobState),
-	...hookStateController(jobState, initialState),
+	...hookStateController(jobState, jobInitialState),
 };

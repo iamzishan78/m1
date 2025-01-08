@@ -1,12 +1,17 @@
-import React, { useState, createContext } from "react";
-const UdLayerCardContext = createContext([{}, () => { }]);
+import React, { useState, createContext } from 'react';
 
-const UdLayerCardContextProvider = React.memo((props) => {
-    const [stateUdLayerCard, setStateUdLayerCard] = useState({
-        selectedUdLayer: {},
-        openUdLayerDetails: false,
-    });
-    return <UdLayerCardContext.Provider value={[stateUdLayerCard, setStateUdLayerCard]}>{props.children}</UdLayerCardContext.Provider>;
+const UdLayerCardContext = createContext([{}, () => {}]);
+
+const UdLayerCardContextProvider = React.memo(props => {
+	const [stateUdLayerCard, setStateUdLayerCard] = useState({
+		selectedUdLayer: {},
+		openUdLayerDetails: false,
+	});
+	return (
+		<UdLayerCardContext.Provider value={[stateUdLayerCard, setStateUdLayerCard]}>
+			{props.children}
+		</UdLayerCardContext.Provider>
+	);
 });
 
 UdLayerCardContext.whyDidYouRender = true;

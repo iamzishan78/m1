@@ -1,117 +1,131 @@
-import React, { useContext, useState } from "react";
-import { InputAdornment, TextField, IconButton, Tooltip } from "@material-ui/core";
-import { fade, makeStyles } from "@material-ui/core/styles";
-import SearchIcon from "@material-ui/icons/Search";
-import ClearIcon from "@material-ui/icons/Clear";
-import PostAddOutlinedIcon from "@material-ui/icons/PostAddOutlined";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import Typography from "@material-ui/core/Typography";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
-import Button from "@material-ui/core/Button";
-import { AppContext } from "../../../AppContext";
+import React, { useContext, useState, useEffect } from 'react';
 
-const useStyles = makeStyles((theme) => ({
-  search: {
-    position: "relative",
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
-    marginRight: theme.spacing(2),
-    width: "35%",
-    transition: "width 0.5s",
-    [theme.breakpoints.up("sm")]: {
-      marginLeft: 5,
-    },
-  },
+import { InputAdornment, TextField, IconButton, Tooltip } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import { fade, makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import ClearIcon from '@material-ui/icons/Clear';
+import PostAddOutlinedIcon from '@material-ui/icons/PostAddOutlined';
+import SearchIcon from '@material-ui/icons/Search';
 
-  toggleBtn: {
-    borderRadius: 5,
-    color: "grey",
-    transition: "200ms all",
-    "&:hover": {
-      backgroundColor: "#1CB6DA44",
-    },
-  },
+import { tableController } from 'hookstate/tableController';
 
-  activeBtn: {
-    color: "#1CB6DA",
-  },
+import { AppContext } from '../../../AppContext';
 
-  contactSearchField: {
-    color: "#fff",
+const useStyles = makeStyles(theme => ({
+	search: {
+		position: 'relative',
+		borderRadius: theme.shape.borderRadius,
+		backgroundColor: fade(theme.palette.common.white, 0.15),
+		marginRight: theme.spacing(2),
+		width: '35%',
+		transition: 'width 0.5s',
+		[theme.breakpoints.up('sm')]: {
+			marginLeft: 5,
+		},
+	},
 
-    "& .MuiInputBase-root": {
-      paddingRight: "6px !important",
-      paddingLeft: "6px !important",
-    },
+	toggleBtn: {
+		borderRadius: 5,
+		color: 'grey',
+		transition: '200ms all',
+		'&:hover': {
+			backgroundColor: '#1CB6DA44',
+		},
+	},
 
-    "& .MuiOutlinedInput-input": {
-      color: "grey",
-      paddingLeft: "7px !important",
-      "&::placeholder": {
-        color: "##ffffffc9",
-        textDecoration: "bold",
-      },
-      "&:-ms-input-placeholder": {
-        color: "##ffffffc9",
-      },
-      "&::-ms-input-placeholder": {
-        color: "##ffffffc9",
-      },
-    },
-  },
-  customWidth: {
-    "& div": {
-      width: "350px",
-    },
-  },
-  gridOnIcon: {
-    color: "#fff",
-    "&:hover ": {
-      backgroundColor: fade(theme.palette.common.white, 0.25),
-    },
-  },
+	activeBtn: {
+		color: '#1CB6DA',
+	},
+
+	contactSearchField: {
+		color: '#fff',
+
+		'& .MuiInputBase-root': {
+			paddingRight: '6px !important',
+			paddingLeft: '6px !important',
+		},
+
+		'& .MuiOutlinedInput-input': {
+			color: 'grey',
+			paddingLeft: '7px !important',
+			'&::placeholder': {
+				color: '##ffffffc9',
+				textDecoration: 'bold',
+			},
+			'&:-ms-input-placeholder': {
+				color: '##ffffffc9',
+			},
+			'&::-ms-input-placeholder': {
+				color: '##ffffffc9',
+			},
+		},
+	},
+	customWidth: {
+		'& div': {
+			width: '350px',
+		},
+	},
+	gridOnIcon: {
+		color: '#fff',
+		'&:hover ': {
+			backgroundColor: fade(theme.palette.common.white, 0.25),
+		},
+	},
 }));
 
 const DocumentSearch = () => {
-  const classes = useStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [search, setSearch] = useState("");
+	const classes = useStyles();
+	const [stateApp, setStateApp] = useContext(AppContext);
+	const [anchorEl, setAnchorEl] = React.useState(null);
+	const [search, setSearch] = useState('');
 
-  return (
-    <div className={classes.search}>
-      <TextField
-        value={search}
-        onChange={(e) => {
-          setSearch(e.target.value);
-          setTimeout(() => {
-            setStateApp((stateApp) => ({
-              ...stateApp,
-              documentSearchQuery: e.target.value,
-            }));
-          }, 500);
-        }}
-        style={{
-          margin: 0,
-          width: "100%",
-        }}
-        className={classes.contactSearchField}
-        margin="dense"
-        variant="outlined"
-        placeholder="Search for documents"
-        id="searchDocument"
-        InputProps={{
-          startAdornment: (
-            <InputAdornment>
-              <IconButton size="small">
-                <SearchIcon
-                  htmlColor="grey"
-                  aria-controls="customized-menu"
-                  aria-haspopup="true"
-                //onClick={(e) => setAnchorEl(e.currentTarget)}
-                />
-                {/* <div className="check">
+	// Set state of document table for searching
+	useEffect(() => {
+		tableController('DocumentTable').setGlobalFilter(search);
+	}, [search]);
+
+	return (
+		<>
+			<Typography variant="h5" style={{ color: 'black', fontWeight: 'bold', marginRight: '20px' }}>
+				Documents
+			</Typography>
+
+			<div className={classes.search}>
+				<TextField
+					value={search}
+					onChange={e => {
+						setSearch(e.target.value);
+						setTimeout(() => {
+							setStateApp(stateApp => ({
+								...stateApp,
+								documentSearchQuery: e.target.value,
+							}));
+						}, 500);
+					}}
+					style={{
+						margin: 0,
+						width: '100%',
+					}}
+					className={classes.contactSearchField}
+					margin="dense"
+					variant="outlined"
+					placeholder="Search for documents"
+					id="searchDocument"
+					InputProps={{
+						startAdornment: (
+							<InputAdornment>
+								<IconButton size="small">
+									<SearchIcon
+										htmlColor="grey"
+										aria-controls="customized-menu"
+										aria-haspopup="true"
+										//onClick={(e) => setAnchorEl(e.currentTarget)}
+									/>
+									{/* <div className="check">
                   <Menu
                     elevation={0}
                     className={classes.customWidth}
@@ -175,29 +189,29 @@ const DocumentSearch = () => {
                     </MenuItem>
                   </Menu>
                 </div> */}
-              </IconButton>
-            </InputAdornment>
-          ),
-          endAdornment: (
-            <>
-              <ButtonGroup variant="text">
-                <Tooltip title="Clear">
-                  <IconButton
-                    size="small"
-                    htmlColor="#fff"
-                    className={`${classes.toggleBtn} ${stateApp.activityDisplayType === "table" && classes.activeBtn}`}
-                    onClick={() => {
-                      setSearch("");
-                      setStateApp((stateApp) => ({
-                        ...stateApp,
-                        documentSearchQuery: "",
-                      }));
-                    }}
-                  >
-                    <ClearIcon />
-                  </IconButton>
-                </Tooltip>
-                {/* <Tooltip title="Add Document">
+								</IconButton>
+							</InputAdornment>
+						),
+						endAdornment: (
+							<>
+								<ButtonGroup variant="text">
+									<Tooltip title="Clear">
+										<IconButton
+											size="small"
+											htmlColor="#fff"
+											className={`${classes.toggleBtn} ${stateApp.activityDisplayType === 'table' && classes.activeBtn}`}
+											onClick={() => {
+												setSearch('');
+												setStateApp(stateApp => ({
+													...stateApp,
+													documentSearchQuery: '',
+												}));
+											}}
+										>
+											<ClearIcon />
+										</IconButton>
+									</Tooltip>
+									{/* <Tooltip title="Add Document">
                   <Button
                     className={classes.gridOnIcon}
                     onClick={() => {
@@ -207,13 +221,14 @@ const DocumentSearch = () => {
                     <PostAddOutlinedIcon />
                   </Button>
                 </Tooltip> */}
-              </ButtonGroup>
-            </>
-          ),
-        }}
-      />
-    </div>
-  );
+								</ButtonGroup>
+							</>
+						),
+					}}
+				/>
+			</div>
+		</>
+	);
 };
 
 export default DocumentSearch;

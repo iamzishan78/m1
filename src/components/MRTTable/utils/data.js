@@ -121,12 +121,13 @@ const mrtFilterOptions = [
 export const tableESSimpleFilterModes = mrtFilterOptions.reduce((acc, cur) => ({ ...acc, [cur.option]: cur }), {});
 
 export const tableESSimpleFilterModeOtions = {
-	string: ['fuzzy', 'contains', 'startsWith', 'endsWith'],
+	string: ['contains', 'startsWith', 'endsWith'],
 	equation: ['equals', 'notEquals'],
 	inclusive: ['between', 'betweenInclusive'],
 	comparison: ['greaterThan', 'greaterThanOrEqualTo', 'lessThan', 'lessThanOrEqualTo'],
 	vacancy: ['empty', 'notEmpty'],
 	custom: ['singleselect', 'multiselect'],
+	simpleCustom: ['singleselect'],
 };
 
 export const stringFilterOptions = [
@@ -134,6 +135,12 @@ export const stringFilterOptions = [
 	...tableESSimpleFilterModeOtions.equation,
 	...tableESSimpleFilterModeOtions.vacancy,
 	...tableESSimpleFilterModeOtions.custom,
+];
+export const simpleStringFilterOptions = [
+	...tableESSimpleFilterModeOtions.string,
+	...tableESSimpleFilterModeOtions.equation,
+	...tableESSimpleFilterModeOtions.vacancy,
+	...tableESSimpleFilterModeOtions.simpleCustom,
 ];
 
 export const numberFilterOptions = [
@@ -143,11 +150,33 @@ export const numberFilterOptions = [
 	...tableESSimpleFilterModeOtions.vacancy,
 	...tableESSimpleFilterModeOtions.custom,
 ];
+export const simpleNumberFilterOptions = [
+	...tableESSimpleFilterModeOtions.equation,
+	...tableESSimpleFilterModeOtions.inclusive,
+	...tableESSimpleFilterModeOtions.comparison,
+	...tableESSimpleFilterModeOtions.vacancy,
+];
+
+export const searchFilterOptions = [...tableESSimpleFilterModeOtions.string, ...tableESSimpleFilterModeOtions.equation];
 
 export const customFilterOptions = [...tableESSimpleFilterModeOtions.custom];
 
 export const dateFilterOptions = [
 	// 'betweenInclusive',
-	'greaterThanOrEqualTo', 'lessThanOrEqualTo',
+	'greaterThanOrEqualTo',
+	'lessThanOrEqualTo',
 	'singleselect',
+];
+export const simpleDateFilterOptions = [...tableESSimpleFilterModeOtions.simpleCustom];
+
+// Curreny keys
+export const currencyKeys = [
+	'shapeJson.properties.uMaxUnitPricing.keyword',
+	'shapeJson.properties.uUnitPricing.keyword',
+	'shapeJson.properties.uUnitPricingNMA.keyword',
+	'shapeJson.properties.uMaxUnitPricingNMA.keyword',
+	'shape.shapeJson.properties.uMaxUnitPricing.keyword',
+	'shape.shapeJson.properties.uUnitPricing.keyword',
+	'shape.shapeJson.properties.uUnitPricingNMA.keyword',
+	'shape.shapeJson.properties.uMaxUnitPricingNMA.keyword',
 ];

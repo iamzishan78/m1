@@ -1,12 +1,15 @@
 import React, { memo } from 'react';
+
 import { Grid, Dialog, FormLabel, Button, ButtonGroup } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles } from '@material-ui/core/styles';
+import CloseIcon from '@material-ui/icons/Close';
 import EditIcon from '@material-ui/icons/Edit';
+
 import { metaDataColumnStateController } from 'components/MRTTable/Common/MetaData/MetaDataColumnsController';
-import { tableController } from 'hookstate/tableController';
+
 import { globalStateController } from 'hookstate/globalStateController';
+import { tableController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(theme => ({
 	header: {

@@ -1,158 +1,176 @@
-import { InputAdornment } from "@material-ui/core";
-import { CurrencyFormatCustomWithoutPrefix } from "components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix";
+import { InputAdornment } from '@material-ui/core';
+
+import { CurrencyFormatCustomWithoutPrefix } from 'components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix';
 
 export const agreementTypes = [
-  { label: "Lease", value: "lease" },
-  { label: "Deed", value: "deed" },
-  { label: "Contract", value: "contract" },
-  { label: "Surface/ROW", value: "surface" },
+	{ label: 'Lease', value: 'lease' },
+	{ label: 'Deed', value: 'deed' },
+	{ label: 'Contract', value: 'contract' },
+	{ label: 'Surface/ROW', value: 'surface' },
+];
+
+export const paymentFieldsData = [
+	{ name: 'Payment Type', type: 'text', key: 'paymentType' },
+	{ name: 'Payee Address', type: 'startEndDateInput', key: 'dates' },
+	{ name: 'Frequency', type: 'text', key: 'frequency' },
+	{ name: 'Next Payment', type: 'text', key: 'nextPayment' },
+	{ name: 'Amount', type: 'text', key: 'amount' },
+	{ name: 'Company Share', type: 'text', key: 'companyShare' },
+	{ name: 'Responsible Party', type: 'text', key: 'responsibleParty' },
+	{ name: 'Assigned To', type: 'text', key: 'assignedTo' },
+	{ name: 'Payment Status', type: 'text', key: 'paymentStatus' },
+];
+
+export const costAllocationFieldsData = [
+	{ name: 'Cost Center', type: 'searchableProperties', key: 'costCenter' },
+	{ name: 'Cost Allocation', type: 'text', key: 'allocation' },
+	{ name: 'Cost Allocation Amount', type: 'text', key: 'amount' },
 ];
 
 export const agreementStatusOptions = [
-  { label: "Active", value: "ACTIVE" },
-  { label: "Inactive", value: "INACTIVE" }
+	{ label: 'Active', value: 'ACTIVE' },
+	{ label: 'Inactive', value: 'INACTIVE' },
 ];
 
-const fieldsList = (activeUser) => {
-  return [
-    {
-      label: "Agreement Number",
-      type: "text",
-      key: "agreementNumber",
-    },
-    {
-      label: "Agreement Name",
-      type: "text",
-      key: "agreementName",
-      disabled: activeUser.rolePrivileges === "READ_ONLY",
-    },
-    {
-      label: "Agreement Type",
-      type: "select",
-      options: agreementTypes,
-      formatValue: (value) =>
-        agreementTypes.find((at) => at.value === value)?.label || "",
-      key: "agreementType",
-      disabled: activeUser.rolePrivileges === "READ_ONLY",
-    },
-    {
-      label: "Agreement Subtype",
-      type: "autocomplete",
-      key: "agreementSubtype",
-    },
-    {
-      label: "Rights Type",
-      type: "autocomplete",
-      key: "rightsType",
-    },
-    {
-      label: "Agreement Status",
-      type: "autocomplete",
-      key: "agreementStatus",
-    },
-    {
-      label: "Lessor (Grantor)",
-      type: "text",
-      key: "grantor",
-    },
-    {
-      label: "Lessee (Grantee)",
-      type: "text",
-      key: "grantee",
-    },
-    {
-      label: "Agreement Date",
-      type: "date",
-      key: "agreementDate",
-    },
-    {
-      label: "Effective Date",
-      type: "date",
-      key: "effectiveDate",
-    },
-    {
-      label: "Primary Term (months)",
-      type: "number",
-      key: "agreementTerm",
-    },
-    {
-      label: "Expiration Date",
-      type: "date",
-      key: "expirationDate",
-    },
-    {
-      label: "Extension Term (months)",
-      type: "number",
-      key: "extensionTerm",
-    },
-    {
-      label: "Extension Expiration Date",
-      type: "date",
-      key: "extensionDate",
-    },
+const fieldsList = activeUser => {
+	return [
+		{
+			label: 'Agreement Number',
+			type: 'text',
+			key: 'agreementNumber',
+		},
+		{
+			label: 'Agreement Name',
+			type: 'text',
+			key: 'agreementName',
+			disabled: activeUser.rolePrivileges === 'READ_ONLY',
+		},
+		{
+			label: 'Agreement Type',
+			type: 'select',
+			options: agreementTypes,
+			formatValue: value => agreementTypes.find(at => at.value === value)?.label || '',
+			key: 'agreementType',
+			disabled: activeUser.rolePrivileges === 'READ_ONLY',
+		},
+		{
+			label: 'Agreement Subtype',
+			type: 'autocomplete',
+			key: 'agreementSubtype',
+		},
+		{
+			label: 'Rights Type',
+			type: 'autocomplete',
+			key: 'rightsType',
+		},
+		{
+			label: 'Agreement Status',
+			type: 'autocomplete',
+			key: 'agreementStatus',
+		},
+		{
+			label: 'Lessor (Grantor)',
+			type: 'text',
+			key: 'grantor',
+		},
+		{
+			label: 'Lessee (Grantee)',
+			type: 'text',
+			key: 'grantee',
+		},
+		{
+			label: 'Agreement Date',
+			type: 'date',
+			key: 'agreementDate',
+		},
+		{
+			label: 'Effective Date',
+			type: 'date',
+			key: 'effectiveDate',
+		},
+		{
+			label: 'Primary Term (months)',
+			type: 'number',
+			key: 'agreementTerm',
+		},
+		{
+			label: 'Expiration Date',
+			type: 'date',
+			key: 'expirationDate',
+		},
+		{
+			label: 'Extension Term (months)',
+			type: 'number',
+			key: 'extensionTerm',
+		},
+		{
+			label: 'Extension Expiration Date',
+			type: 'date',
+			key: 'extensionDate',
+		},
 
-    {
-      label: "Bonus Payment",
-      type: "text",
-      key: "bounusPayment",
-      // formatValue: (value) => (value ? `$ ${value}` : ""),
-      InputProps: {
-        startAdornment: <InputAdornment position="start">$</InputAdornment>,
-      },
-    },
-    {
-      label: "Agreement Royalty (%)",
-      type: "text",
-      key: "agmtRoyalty",
-      // formatValue: (value) => (value ? `$ ${value}` : ""),
-      InputProps: {
-        endAdornment: <InputAdornment position="positionEnd">%</InputAdornment>,
-      },
-    },
-    {
-      label: "Approval Status",
-      type: "autocomplete",
-      key: "approvalStatus",
-    },
-    {
-      label: "Acquisition ID",
-      type: "autocomplete",
-      key: "acquisitionID",
-    },
-    {
-      label: "Acquisition Date",
-      type: "date",
-      key: "acquisitionDate",
-    },
-    {
-      label: "Total Acquisition Cost",
-      type: "currency",
-      key: "totalAcquisitionCost",
-      InputProps: {
-        startAdornment: <InputAdornment position="start">$</InputAdornment>,
-        inputComponent: CurrencyFormatCustomWithoutPrefix,
-      },
-    },
-    {
-      label: "Prospect ID",
-      type: "autocomplete",
-      key: "prospectID",
-    },
-    {
-      label: "Company ID",
-      type: "autocomplete",
-      key: "internalCompany",
-    },
-    {
-      label: "State",
-      type: "state",
-      key: "state"
-    },
-    {
-      label: "County",
-      type: "county",
-      key: "county"
-    },
-  ];
-}
+		{
+			label: 'Bonus Payment',
+			type: 'text',
+			key: 'bounusPayment',
+			// formatValue: (value) => (value ? `$ ${value}` : ""),
+			InputProps: {
+				startAdornment: <InputAdornment position="start">$</InputAdornment>,
+			},
+		},
+		{
+			label: 'Agreement Royalty (%)',
+			type: 'text',
+			key: 'agmtRoyalty',
+			// formatValue: (value) => (value ? `$ ${value}` : ""),
+			InputProps: {
+				endAdornment: <InputAdornment position="positionEnd">%</InputAdornment>,
+			},
+		},
+		{
+			label: 'Approval Status',
+			type: 'autocomplete',
+			key: 'approvalStatus',
+		},
+		{
+			label: 'Acquisition ID',
+			type: 'autocomplete',
+			key: 'acquisitionID',
+		},
+		{
+			label: 'Acquisition Date',
+			type: 'date',
+			key: 'acquisitionDate',
+		},
+		{
+			label: 'Total Acquisition Cost',
+			type: 'currency',
+			key: 'totalAcquisitionCost',
+			InputProps: {
+				startAdornment: <InputAdornment position="start">$</InputAdornment>,
+				inputComponent: CurrencyFormatCustomWithoutPrefix,
+			},
+		},
+		{
+			label: 'Prospect ID',
+			type: 'autocomplete',
+			key: 'prospectID',
+		},
+		{
+			label: 'Company ID',
+			type: 'autocomplete',
+			key: 'internalCompany',
+		},
+		{
+			label: 'State',
+			type: 'state',
+			key: 'state',
+		},
+		{
+			label: 'County',
+			type: 'county',
+			key: 'county',
+		},
+	];
+};
 export default fieldsList;

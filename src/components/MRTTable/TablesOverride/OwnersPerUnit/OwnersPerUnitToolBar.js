@@ -1,17 +1,29 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
-import { useApolloClient } from '@apollo/client';
-import AutorenewIcon from '@mui/icons-material/Autorenew';
+
 import Button from '@material-ui/core/Button';
-import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { navController } from 'hookstate/navStateController';
+import { makeStyles } from '@material-ui/core/styles';
+
+import AutorenewIcon from '@mui/icons-material/Autorenew';
+
+import { useApolloClient } from '@apollo/client';
+import PropTypes from 'prop-types';
+
+import {
+	BulkUpdate,
+	ExportData,
+	ViewContactData,
+	openSideDialog,
+} from 'components/MRTTable/Common/CommonToolBarActions';
+import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown';
 import OwnerPerUnitTableDialogs from 'components/MRTTable/TablesOverride/OwnersPerUnit/RightDialogs';
-import { BulkUpdate, ExportData, ViewContactData, openSideDialog } from 'components/MRTTable/Common/CommonToolBarActions';
 import { NavigationContext } from 'components/Navigation/NavigationContext';
+
 import { globalStateController } from 'hookstate/globalStateController';
-import MetaField from "components/Table/helpers/MetaField";
+import { navController } from 'hookstate/navStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import MetaField from 'utils/MetaField';
 
 const useStyles = makeStyles(() => ({
 	disabledTopBarButtons: {
@@ -65,7 +77,8 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 		'defaultFilters',
 	]);
 	const tableStateValues = tableState.stateValues;
-	const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
+	const isSomeRowsSelected =
+		table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
@@ -110,7 +123,7 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 					},
 				});
 
-				setStateNav((state) => ({
+				setStateNav(state => ({
 					...state,
 					bulkUploadParcel: null,
 					bulkUploadFromMap: true,
@@ -130,9 +143,9 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 		const query = tableStateValues?.globalFilter ? `*${tableStateValues?.globalFilter}*` : '*';
 		const search = { fields: tableStateValues?.searchFields, query };
 
-		let sort = tableStateValues.defaultSort
+		let sort = tableStateValues.defaultSort;
 		if (tableStateValues?.sorting?.length) {
-			sort = { field: tableStateValues?.sorting?.[0].id, order: tableStateValues.sorting?.[0].desc ? 'desc' : 'asc', }
+			sort = { field: tableStateValues?.sorting?.[0].id, order: tableStateValues.sorting?.[0].desc ? 'desc' : 'asc' };
 		}
 
 		return {
@@ -166,7 +179,9 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 			total: tableStateValues?.data.total,
 			client,
 			table,
-			tableKey
+			tableKey,
+			objectType: 'contact',
+			refetchQueries: ['getESContacts'],
 		};
 	};
 
@@ -189,8 +204,8 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 					startIcon={<AutorenewIcon color="white" />}
 					className={classes.multiSelectionTopBarButtons}
 					disabled={false}
-					onClick={() => openSideDialog(
-						{
+					onClick={() =>
+						openSideDialog({
 							type: 'recalculate',
 							selectedRows,
 							isAllRowsSelected: sidePropsPass.isAllRowsSelected,
@@ -203,8 +218,8 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 							client,
 							table,
 							tableKey,
-						}
-					)}
+						})
+					}
 					data-testid="recalculate"
 				>
 					Recalculate
@@ -222,10 +237,16 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 			)}
 
 			<OwnerPerUnitTableDialogs />
-			{globalStateValues.showFieldModal && <MetaField columns={[]} category="Unit Interest Owners" tableKey={tableKey} />}
-
+			{globalStateValues.showFieldModal && (
+				<MetaField columns={[]} category="Unit Interest Owners" tableKey={tableKey} />
+			)}
 		</>
 	);
 }
 
-export default memo(OwnersPerUnitToolBar);
+OwnersPerUnitToolBar.propTypes = {
+	table: PropTypes.object.isRequired,
+	tableKey: PropTypes.string.isRequired,
+};
+
+export default OwnersPerUnitToolBar;

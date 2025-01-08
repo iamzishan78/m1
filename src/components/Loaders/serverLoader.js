@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
+import { toast } from 'react-toastify';
+
+import { Grid } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import { toast } from 'react-toastify';
-import { Grid } from '@material-ui/core';
+
 import { jobController } from 'hookstate/jobStateController';
 
 function CircularProgressWithLabel(props) {
@@ -95,12 +97,12 @@ export const successToast = (id, newMessage, onClose) => {
 		const { message, isOpen } = toastMeta[id];
 		let { toastId } = toastMeta[id];
 
-		if (isOpen)
+		if (isOpen) {
 			toast.update(toastId, {
 				className: 'Toastify__toast_success',
 				render: <CircularProgressWithLabel toastId={id} value={100} type="success" message={newMessage || message} />,
 			});
-		else {
+		} else {
 			toastId = toast(
 				<CircularProgressWithLabel toastId={id} value={100} type="success" message={newMessage || message} />,
 				getOptions(id, 'Toastify__toast_success', onClose)
@@ -120,12 +122,12 @@ export const errorToast = (id, newMessage, onClose) => {
 		const { message, progress, isOpen } = toastMeta[id];
 		let { toastId } = toastMeta[id];
 
-		if (isOpen)
+		if (isOpen) {
 			toast.update(toastId, {
 				className: 'Toastify__toast_error',
 				render: <CircularProgressWithLabel toastId={id} value={100} type="error" message={newMessage || message} />,
 			});
-		else {
+		} else {
 			toastId = toast(
 				<CircularProgressWithLabel toastId={id} value={progress} type="error" message={newMessage || message} />,
 				getOptions(id, 'Toastify__toast_error', onClose)

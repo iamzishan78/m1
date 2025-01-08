@@ -1,7 +1,11 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import { ErrorOutline } from '@material-ui/icons';
-import { formatDate } from 'components/Shared/functions';
+
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import { formatDate } from 'components/Shared/functions';
 
 const esIndex = 'checkdetailsinterestscomparison_flat';
 
@@ -20,13 +24,12 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.MONGO_ID,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'check.checkNumber.keyword',
-			accessorFn: row => row?.check?.checkNumber,
 			id: 'check.checkNumber',
 			isExternalFilter: true,
 			header: 'Check Number',
@@ -73,7 +76,6 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.number.keyword',
-			accessorFn: row => row?.property?.number,
 			id: 'property.number',
 			header: 'Operator Prop # / Property Number',
 			size: 400,
@@ -83,7 +85,6 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.internalID.keyword',
-			accessorFn: row => row?.property?.internalID,
 			id: 'property.internalID',
 			header: 'Company ID',
 		},
@@ -91,7 +92,6 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.prospectID.keyword',
-			accessorFn: row => row?.property?.prospectID,
 			id: 'property.prospectID',
 			header: 'Prospect ID',
 		},
@@ -99,7 +99,6 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.acquisitionID.keyword',
-			accessorFn: row => row?.property?.acquisitionID,
 			id: 'property.acquisitionID',
 			header: 'Acquisition ID',
 		},
@@ -107,7 +106,6 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.operator.keyword',
-			accessorFn: row => row?.property?.operator,
 			id: 'property.operator',
 			header: 'Operator',
 		},
@@ -115,7 +113,6 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.purchaser.name.keyword',
-			accessorFn: row => row?.property?.purchaser?.name,
 			id: 'property.purchaser.name',
 			header: 'Payor Name',
 		},
@@ -123,7 +120,6 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.interest.interestType.keyword',
-			accessorFn: row => row?.property?.interest?.interestType,
 			id: 'property.interest.interestType',
 			header: 'Interest Type',
 		},
@@ -131,7 +127,6 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.interest.interestAmount',
-			accessorFn: row => row?.property?.interest?.interestAmount,
 			id: 'property.interest.interestAmount',
 			header: 'Interest Amount',
 		},
@@ -139,31 +134,28 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.interest.effectiveDate',
-			accessorFn: row => row?.interest?.effectiveDate,
 			id: 'property.interest.effectiveDate',
 			header: 'Effective Date',
 			type: 'date',
 			Cell: ({ row }) => {
-				return <>{formatDate(row?.original?.property?.interest?.effectiveDate)}</>
+				return <>{formatDate(row?.original?.property?.interest?.effectiveDate)}</>;
 			},
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.interest.endDate',
-			accessorFn: row => row?.property?.interest?.endDate,
 			id: 'property.interest.endDate',
 			header: 'End Date',
 			type: 'date',
 			Cell: ({ row }) => {
-				return <>{formatDate(row?.original?.property?.interest?.endDate)}</>
+				return <>{formatDate(row?.original?.property?.interest?.endDate)}</>;
 			},
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.interest.status.keyword',
-			accessorFn: row => row?.property?.interest?.status,
 			id: 'property.interest.status',
 			header: 'status',
 		},
@@ -171,7 +163,6 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.interest.costFree.keyword',
-			accessorFn: row => row?.property?.interest?.costFree,
 			id: 'property.interest.costFree',
 			header: 'Cost Free',
 		},
@@ -179,44 +170,40 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'wells.apiNumber.keyword',
-			accessorFn: row => row?.wells?.apiNumber,
 			id: 'wells.apiNumber',
 			header: 'Well API',
 			Cell: ({ row }) => {
 				const apiNumbers = row?.original?.wells?.map(item => item.apiNumber) || [];
-				return (apiNumbers?.length && apiNumbers?.length > 1) ? "Multiple" : apiNumbers[0];
+				return apiNumbers?.length && apiNumbers?.length > 1 ? 'Multiple' : apiNumbers[0];
 			},
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'wells.wellName.keyword',
-			accessorFn: row => row?.wells?.wellName,
 			id: 'wells.wellName',
 			header: 'Well Name',
 			Cell: ({ row }) => {
 				const wellName = row?.original?.wells?.map(item => item.wellName) || [];
-				return (wellName?.length && wellName?.length > 1) ? "Multiple" : wellName[0];
+				return wellName?.length && wellName?.length > 1 ? 'Multiple' : wellName[0];
 			},
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'check.checkDate',
-			accessorFn: row => row?.check?.checkDate,
 			id: 'check.checkDate',
 			header: 'Check Date',
 			type: 'date',
 			isExternalFilter: true,
 			Cell: ({ row }) => {
-				return <>{formatDate(row?.original?.check?.checkDate)}</>
+				return <>{formatDate(row?.original?.check?.checkDate)}</>;
 			},
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.ownerNumber.keyword',
-			accessorFn: row => row?.property?.ownerNumber,
 			id: 'property.ownerNumber',
 			header: 'Owner Number',
 		},
@@ -224,7 +211,6 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property._owner.name.keyword',
-			accessorFn: row => row?.property?._owner?.name,
 			id: 'property._owner.name',
 			header: 'Owner',
 		},
@@ -232,19 +218,17 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'check.depositDate',
-			accessorFn: row => row?.check?.depositDate,
 			id: 'check.depositDate',
 			header: 'Deposit Date',
 			type: 'date',
 			Cell: ({ row }) => {
-				return <>{formatDate(row?.original?.check?.depositDate)}</>
+				return <>{formatDate(row?.original?.check?.depositDate)}</>;
 			},
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'check.checkAmount',
-			accessorFn: row => row?.check?.checkAmount,
 			id: 'check.checkAmount',
 			header: 'Check Amount',
 		},
@@ -252,7 +236,6 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'check.source.keyword',
-			accessorFn: row => row?.check?.source,
 			id: 'check.source',
 			header: 'Source',
 		},
@@ -260,7 +243,6 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'check.sourceId.keyword',
-			accessorFn: row => row?.check?.sourceId,
 			id: 'check.sourceId',
 			header: 'Source Id',
 		},
@@ -268,7 +250,6 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.name.keyword',
-			accessorFn: row => row?.property?.name,
 			id: 'property.name',
 			header: 'Property Name',
 		},
@@ -276,7 +257,6 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.state.keyword',
-			accessorFn: row => row?.property?.state,
 			id: 'property.state',
 			header: 'State',
 			isExternalFilter: true,
@@ -285,7 +265,6 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.county.keyword',
-			accessorFn: row => row?.property?.county,
 			id: 'property.county',
 			header: 'County',
 		},
@@ -293,32 +272,32 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'date',
-			accessorKey: 'date',
+			id: 'date',
 			header: 'Sales Date',
 			type: 'date',
 			Cell: ({ row }) => {
-				return <>{formatDate(row?.original?.date)}</>
+				return <>{formatDate(row?.original?.date)}</>;
 			},
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'product.keyword',
-			accessorKey: 'product',
+			id: 'product',
 			header: 'Product',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'disbursement',
-			accessorKey: 'disbursement',
+			id: 'disbursement',
 			header: 'Decimal Interest',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'check._id.keyword',
-			accessorKey: 'check._id',
+			id: 'check._id',
 			header: 'Check Id',
 			size: 300,
 		},
@@ -326,21 +305,21 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'differnce',
-			accessorKey: 'differnce',
+			id: 'differnce',
 			header: 'Difference',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'percentageDifference',
-			accessorKey: 'percentageDifference',
+			id: 'percentageDifference',
 			header: '% Difference',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'potentialGainLoss',
-			accessorKey: 'potentialGainLoss',
+			id: 'potentialGainLoss',
 			header: 'Potential Gain/Loss',
 			type: 'number',
 		},
@@ -348,7 +327,6 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.purchaserNumber.keyword',
-			accessorFn: row => row?.property?.purchaserNumber,
 			id: 'property.purchaserNumber',
 			header: 'Payor Prop #',
 		},
@@ -356,7 +334,6 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.status.keyword',
-			accessorFn: row => row?.property?.status,
 			id: 'property.status',
 			header: 'Pay Status',
 		},
@@ -364,77 +341,77 @@ const ComparisonMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'price',
-			accessorKey: 'price',
+			id: 'price',
 			header: 'Avg Price',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'grossPropertyVolume',
-			accessorKey: 'grossPropertyVolume',
+			id: 'grossPropertyVolume',
 			header: 'Prop Gross Volume',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'grossPropertyValue',
-			accessorKey: 'grossPropertyValue',
+			id: 'grossPropertyValue',
 			header: 'Prop Gross Revenue',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'grossOwnerVolume',
-			accessorKey: 'grossOwnerVolume',
+			id: 'grossOwnerVolume',
 			header: 'Gross Owner Volume',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'grossOwnerValue',
-			accessorKey: 'grossOwnerValue',
+			id: 'grossOwnerValue',
 			header: 'Owner Gross Revenue',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'ownerTax',
-			accessorKey: 'ownerTax',
+			id: 'ownerTax',
 			header: 'Owner Tax Amt',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'taxType.keyword',
-			accessorKey: 'taxType',
+			id: 'taxType',
 			header: 'Tax Type',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'ownerDeducts',
-			accessorKey: 'ownerDeducts',
+			id: 'ownerDeducts',
 			header: 'Deduct Amt',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'deductType.keyword',
-			accessorKey: 'deductType',
+			id: 'deductType',
 			header: 'Deduct Cd',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'netOwnerValue',
-			accessorKey: 'netOwnerValue',
+			id: 'netOwnerValue',
 			header: 'Owner Net Rev',
 		},
 
 		{
 			...CommonSchema.HIDDEN,
 			name: 'propertyId',
-			accessorKey: 'propertyId',
+			id: 'propertyId',
 		},
 	],
 };

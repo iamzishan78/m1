@@ -1,16 +1,17 @@
-// Importing necessary dependencies and components
+/* eslint-disable react/prop-types */
 import React from 'react';
-import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink.js';
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import { Warning as WarningIcon, CheckCircle } from '@material-ui/icons';
+
 import { makeStyles } from '@material-ui/core/styles';
+import { Warning as WarningIcon, CheckCircle, LocalAtm as CurrencyIcon } from '@material-ui/icons';
+
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
-import { LocalAtm as CurrencyIcon } from '@material-ui/icons';
-import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+
 // Define styles for tooltip
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	tooltip: {
 		position: 'absolute',
 		top: 15,
@@ -44,7 +45,7 @@ const RevenueStatementsMeta = {
 			name: 'All Revenue Statements',
 			type: 'Default',
 		},
-		handleDefaultView: (view, user) => {
+		handleDefaultView: view => {
 			return view;
 		},
 		cssOverride: {
@@ -55,23 +56,18 @@ const RevenueStatementsMeta = {
 	TableSchema: [
 		// Hidden columns
 		{
-			...CommonSchema.HIDDEN,
-			name: 'id',
-			accessorKey: 'id',
-		},
-		{
-			...CommonSchema.HIDDEN,
+			...CommonSchema.MONGO_ID,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 		// Column for Check Number with link
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'checkNumber.keyword',
-			accessorKey: 'checkNumber',
+			id: 'checkNumber',
 			header: 'Check Number',
 			// Cell rendering for Check Number column
-			Cell: ({ renderedCellValue, row }) => {
+			Cell: ({ row }) => {
 				const checkNumber = row?.original?.checkNumber;
 				const payor = row.getValue('payor.name');
 				return (
@@ -87,33 +83,28 @@ const RevenueStatementsMeta = {
 		},
 		// Column for Check Amount
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'checkAmount',
-			accessorFn: row => vf_currency_to_fixed(row?.checkAmount, 2), //Commma sperated checkamount after each thousand
 			id: 'checkAmount',
 			header: 'Check Amount',
-			isSearchField: false,
-			Cell: ({ row }) => <>{vf_currency_to_fixed(row?.original?.checkAmount, 2)}</>,
 		},
 		// Column for Check Date
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'checkDate',
-			accessorFn: row => row?.checkDate,
 			id: 'checkDate',
 			header: 'Check Date',
 			simple: true,
 			type: 'date',
 			isSearchField: false,
 			// Cell rendering for Check Date column
-			Cell: ({ renderedCellValue, row }) => {
+			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.checkDate)}</>;
 			},
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'payor.name.keyword',
-			accessorFn: row => row?.payor?.name,
 			id: 'payor.name',
 			header: 'Payor Name',
 		},
@@ -121,14 +112,12 @@ const RevenueStatementsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'payee.name.keyword',
-			accessorFn: row => row?.payee?.name,
 			id: 'payee.name',
 			header: 'Owner Name',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'payee.number.keyword',
-			accessorFn: row => row?.payee?.number,
 			id: 'payee.number',
 			header: 'Owner Number',
 		},
@@ -136,14 +125,13 @@ const RevenueStatementsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'depositDate',
-			accessorFn: row => row?.depositDate,
 			id: 'depositDate',
 			header: 'Deposit Date',
 			simple: true,
 			type: 'date',
 			isSearchField: false,
 			// Cell rendering for Deposit Date column
-			Cell: ({ renderedCellValue, row }) => {
+			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.depositDate)}</>;
 			},
 		},
@@ -151,7 +139,6 @@ const RevenueStatementsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'checkDetail.lines',
-			accessorFn: row => row?.checkDetail?.lines,
 			id: 'checkDetail.lines',
 			header: 'Lines',
 			isSearchField: false,
@@ -160,21 +147,18 @@ const RevenueStatementsMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'source.keyword',
-			accessorFn: row => row?.source,
 			id: 'source',
 			header: 'Source',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'sourceId.keyword',
-			accessorFn: row => row?.sourceId,
 			id: 'sourceId',
 			header: 'Source ID',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'approvalStatus.keyword',
-			accessorFn: row => row?.approvalStatus,
 			id: 'approvalStatus',
 			header: 'Approval Status',
 		},
@@ -208,7 +192,6 @@ const RevenueStatementsMeta = {
 		{
 			size: 220,
 			name: 'isAmountValidated',
-			accessorFn: row => row?.isAmountValidated,
 			id: 'isAmountValidated',
 			header: '',
 			enableColumnActions: false,

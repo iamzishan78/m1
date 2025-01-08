@@ -1,7 +1,9 @@
 import { FlatCompat } from '@eslint/eslintrc';
-import js from '@eslint/js';
-import react from 'eslint-plugin-react';
-import importPlugin from 'eslint-plugin-import';
+import pluginJs from '@eslint/js';
+import pluginImport from 'eslint-plugin-import';
+import pluginReact from 'eslint-plugin-react';
+import fs from 'fs';
+import globals from 'globals';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -12,10 +14,21 @@ const __dirname = path.dirname(__filename);
 // Create a compatibility layer for extending ESLint configurations
 const compat = new FlatCompat({
 	baseDirectory: __dirname,
-	recommendedConfig: js.configs.recommended,
-	allConfig: js.configs.all,
+	recommendedConfig: pluginJs.configs.recommended,
+	allConfig: pluginJs.configs.all,
 });
 
+const items = fs.readdirSync('./src');
+
+// Filter only folders
+const folders = items.filter(item => {
+	const itemPath = path.join('./src', item);
+	return fs.statSync(itemPath).isDirectory();
+});
+
+const builtinPatterns = ['react**', '@material-ui/**', '@mui/**'];
+
+/** @type {import('eslint').Linter.Config[]} */
 export default [
 	// Configuration to ignore specific file patterns and directories
 	{
@@ -31,29 +44,37 @@ export default [
 			'**/docs/',
 			'**/public/',
 			'**/svgIcons/',
+			'**/customEslintRules/*', // Ignore custom rule files
 		],
 	},
-	
+
 	// Extend configurations from recommended ESLint setups
-	...compat.extends('plugin:react/recommended', 'airbnb', 'prettier'),
+	...compat.extends('prettier'),
+
+	{ files: ['**/*.{js,mjs,cjs,jsx}'] },
+	{ languageOptions: { globals: globals.browser } },
+	{ languageOptions: { globals: globals.node } },
+	pluginJs.configs.recommended,
+	pluginReact.configs.flat.recommended,
 	{
-		// Define plugins used in the configuration
 		plugins: {
-			react,
-			import: importPlugin,
+			import: pluginImport,
 		},
-		
-		// Define language options
-		languageOptions: {
-			ecmaVersion: 'latest',
-			sourceType: 'module',
-			parserOptions: {
-				ecmaFeatures: {
-					jsx: true,
+	},
+	{
+		settings: {
+			react: {
+				version: 'detect', // React version. "detect" automatically picks the version you have installed.
+			},
+			'import/resolver': {
+				node: {
+					paths: ['src'],
+					extensions: ['.js', '.jsx', '.ts', '.tsx'],
+					moduleDirectory: ['node_modules', 'src/'],
 				},
 			},
 		},
-		
+
 		// Custom rules for the project
 		rules: {
 			'no-underscore-dangle': 'off', // Allow underscores in variable names
@@ -65,82 +86,113 @@ export default [
 			// 'no-promise-executor-return': 'off', // Allow return statements in promise constructors
 
 			// Disallow unsafe optional chaining.
-    		// Risk: Unsafe optional chaining can lead to runtime errors and unexpected behaviors if not used carefully.
+			// Risk: Unsafe optional chaining can lead to runtime errors and unexpected behaviors if not used carefully.
 			'no-unsafe-optional-chaining': 'error', //  unsafe optional chaining
-		
+
 			// Disallow `await` inside of loops to prevent sequential execution of asynchronous calls.
 			// Risk: Using `await` in a loop can lead to performance issues.
-			"no-await-in-loop": "error",
+			'no-await-in-loop': 'error',
 
 			// Disallow throwing literals as exceptions.
 			// Risk: Throwing literals can lead to uncaught exceptions that are difficult to debug.
-			"no-throw-literal": "error",
+			'no-throw-literal': 'error',
 
 			// Disallow duplicate imports from the same module.
 			// Risk: Duplicate imports can create confusion and lead to larger bundle sizes.
-			"no-duplicate-imports": "error",
+			'no-duplicate-imports': 'error',
 
 			// Disallow variable and function declarations in inner blocks.
 			// Risk: Inner declarations can lead to unexpected scoping issues.
-			"no-inner-declarations": "error",
+			'no-inner-declarations': 'error',
 
 			// Require `return` statements to either always or never specify values.
 			// Risk: Inconsistent return behavior can lead to bugs.
-			"consistent-return": "error",
+			'consistent-return': 'error',
 
 			// Enforce consistent brace style for all control statements.
 			// Risk: Inconsistent brace styles can lead to misunderstandings about block scope.
-			"curly": "error",
+			curly: 'error',
 
 			// Disallow unused variables.
 			// Risk: Unused variables clutter the code and can indicate logical errors.
-			"no-unused-vars": "error",
+			'no-unused-vars': 'error',
 
 			// Disallow the use of undeclared variables.
 			// Risk: Using undeclared variables can lead to runtime errors.
-			"no-undef": "error",
+			'no-undef': 'error',
 
 			// Disallow the use of variables before they are defined.
 			// Risk: This can lead to unexpected behavior and runtime errors.
-			"no-use-before-define": "error",
+			'no-use-before-define': 'error',
 
 			// Require error handling in callbacks.
 			// Risk: Ignoring errors can lead to unhandled exceptions.
-			"handle-callback-err": "error",
+			'handle-callback-err': 'error',
 
 			// Enforce the consistent use of either backticks, double, or single quotes.
 			// Risk: Inconsistent quote usage can lead to confusion.
-			"quotes": ["error", "single"], // Example: enforcing single quotes
+			quotes: ['error', 'single', { avoidEscape: true }], // Example: enforcing single quotes
 
 			// Disallow reassigning class members.
 			// Risk: Reassigning class members can lead to unexpected behavior.
-			"no-class-assign": "error",
+			'no-class-assign': 'error',
 
 			// Prefer arrow functions as callbacks.
 			// Risk: Using regular functions can lead to issues with `this` binding.
-			"prefer-arrow-callback": "error",
+			'prefer-arrow-callback': 'error',
 
 			// Disallow `new` expressions outside of assignments or comparisons.
 			// Risk: Using `new` without assignment can lead to ignored instances.
-			"no-new": "error",
+			'no-new': 'error',
 
 			// Disallow the use of `eval()`.
 			// Risk: Using `eval()` can lead to security vulnerabilities.
-			"no-eval": "error",
+			'no-eval': 'error',
 
 			// Enforce typechecking with PropTypes in React components.
 			// Risk: Not using PropTypes can lead to runtime errors.
-			"react/prop-types": "error",
+			'react/prop-types': 'error',
 
 			// Prevent using array indices as keys in React lists.
 			// Risk: Using array indices can lead to issues with component state.
-			"react/no-array-index-key": "error",
+			'react/no-array-index-key': 'error',
 
-            // Add no-magic-numbers rule
-            'no-magic-numbers/no-magic-numbers': ['error', {
-                ignore: [0, 1], // Allow these numbers if needed
-            }],
+			// Add no-magic-numbers rule
+			'no-magic-numbers': [
+				'error',
+				{
+					ignore: [0, 1, -1, 10, 100, 1000], // Allow these numbers if needed
+				},
+			],
 
+			'import/no-named-as-default': 'off',
+			'import/no-named-as-default-member': 'off',
+			'import/newline-after-import': 'error',
+
+			'import/order': [
+				'error',
+				{
+					groups: [['builtin', 'external'], ['internal'], ['parent', 'sibling', 'index'], ['unknown']],
+					pathGroups: [
+						...builtinPatterns.map(pattern => ({
+							pattern,
+							group: 'builtin',
+							position: 'before',
+						})),
+						...folders.map(folder => ({
+							pattern: `${folder}/**`,
+							group: 'internal',
+							position: 'before',
+						})),
+					],
+					pathGroupsExcludedImportTypes: ['builtin'],
+					'newlines-between': 'always',
+					alphabetize: {
+						order: 'asc',
+						caseInsensitive: true,
+					},
+				},
+			],
 		},
 	},
 ];

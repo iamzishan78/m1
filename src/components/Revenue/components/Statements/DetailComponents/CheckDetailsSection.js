@@ -1,33 +1,45 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import CheckDetailsTable from "components/Table/Revenue/CheckDetailsTable";
+import React from 'react';
+
+import { makeStyles } from '@material-ui/core/styles';
+
+import PropTypes from 'prop-types';
+
+import MRTTable from 'components/MRTTable';
 
 const useStyles = makeStyles(() => ({
-  sectionCard: {
-    padding: "20px 15px",
-    maxWidth: "100%",
-    margin: "0 auto",
-    background: "#ffffff",
-    borderBottonLeftRadius: 8,
-    borderBottomRightRadius: 8,
-  },
-  titleField: {
-    padding: 10,
-  },
-  titleText: {
-    textTransform: "uppercase",
-    margin: "5px 16px 10px",
-    fontWeight: "bold",
-  },
+	sectionCard: {
+		padding: '20px 15px',
+		maxWidth: '100%',
+		margin: '0 auto',
+		background: '#ffffff',
+		borderBottonLeftRadius: 8,
+		borderBottomRightRadius: 8,
+	},
 }));
 
 const CheckDetailsSection = ({ checkId }) => {
-  const classes = useStyles();
-  return (
-    <div className={`${classes.sectionCard} flex column justifyStart alignStart w-100`}>
-      <CheckDetailsTable parent="CheckDetailsTable" header="Check Details" checkId={checkId} />
-    </div>
-  );
+	const classes = useStyles();
+
+	return (
+		<div className={`${classes.sectionCard}`}>
+			<MRTTable
+				name={'CheckDetailsTable'}
+				overrideMeta={{
+					enableEditing: false,
+					defaultFilters: [
+						{
+							field: 'check._id.keyword',
+							value: checkId,
+						},
+					],
+				}}
+			/>
+		</div>
+	);
+};
+
+CheckDetailsSection.propTypes = {
+	checkId: PropTypes.string.isRequired,
 };
 
 export default CheckDetailsSection;

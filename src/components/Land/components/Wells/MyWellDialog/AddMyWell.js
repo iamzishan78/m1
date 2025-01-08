@@ -1,45 +1,26 @@
 import React, { useState, Fragment, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import moment from 'moment';
-import TextField from '@material-ui/core/TextField';
+import NumberFormat from 'react-number-format';
+
+import { Typography } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { Typography } from '@material-ui/core';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import parse from 'autosuggest-highlight/parse';
+import moment from 'moment';
 import PropTypes from 'prop-types';
-import NumberFormat from 'react-number-format';
+
+import { UPSERT_MY_WELL } from 'graphQL/useMutationUpsertMyWell';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+
+import { tableGlobalController } from 'hookstate/tableController';
+
 import { wellParams } from './helpers';
 import { addMyWellStyles as useStyles } from './styles';
-import { UPSERT_MY_WELL } from 'graphQL/useMutationUpsertMyWell';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { tableGlobalController } from 'hookstate/tableController';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 
-function NumberFormatCustom(props) {
-	const { inputRef, onChange, name, ...other } = props;
-
-	return (
-		<NumberFormat
-			{...other}
-			getInputRef={inputRef}
-			onValueChange={values => {
-				onChange({
-					target: {
-						name: props.name,
-						value: values.value,
-					},
-				});
-			}}
-		/>
-	);
-}
-
-NumberFormatCustom.propTypes = {
-	inputRef: PropTypes.func.isRequired,
-	name: PropTypes.string.isRequired,
-	onChange: PropTypes.func.isRequired,
-};
 function CurrencyFormatCustom(props) {
 	const { inputRef, onChange, name, ...other } = props;
 
@@ -77,22 +58,26 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 			tableGlobalController.refetch();
 		},
 	});
-	const [getESSimpleSearch] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+	const [getDbData] = useLazyQuery(GET_DB_DATA, {
 		fetchPolicy: 'no-cache',
 		onCompleted: wellsData => {
-			if (wellsData?.getESSimpleSearch?.hits) setFoundWells(wellsData.getESSimpleSearch.hits);
+			if (wellsData?.getDbData?.hits) {
+				setFoundWells(wellsData.getDbData.hits);
+			}
 		},
 	});
 
-	const { control, reset, getValues  } = useForm();
+	const { control, reset, getValues } = useForm();
 	useEffect(() => {
-		if (platformWell) reset(platformWell);
+		if (platformWell) {
+			reset(platformWell);
+		}
 	}, [platformWell, reset]);
 
 	useEffect(() => {
 		if (myWellData) {
 			const { wellData } = myWellData?.upsertMyWell?.myWell ?? {};
-			const globalWellId =  wellData?.Id ?? wellData?.id;
+			const globalWellId = wellData?.Id ?? wellData?.id;
 			if (globalWellId) {
 				handleWellDetail({ Id: globalWellId });
 			}
@@ -100,30 +85,30 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [myWellData]);
 
-	 // Function to check if saving is allowed based on the 'wellName' value
-	 const isSaveAllowed = (formData) => {
+	// Function to check if saving is allowed based on the 'wellName' value
+	const isSaveAllowed = formData => {
 		const wellName = formData.wellName;
 		// Check if 'wellName' is defined and not just whitespace after trimming
-	  return (wellName && wellName?.trim() !== '');
-	  };
+		return wellName && wellName?.trim() !== '';
+	};
 
-	const handleSave = (formData) => {
-		if (!isSaveAllowed(formData)) return   // Check if saving is allowed using the isSaveAllowed function.
+	const handleSave = formData => {
+		if (!isSaveAllowed(formData)) {
+			return;
+		} // Check if saving is allowed using the isSaveAllowed function.
 		const processedValues = {};
 		Object.entries(formData).forEach(([key, value]) => {
-		  const param = wellParams.find(p => (p.esKey ?? p.key) === key);
-		  if (param) {
-			// Handle date conversion if needed
-			processedValues[key] = param.type === 'date'
-			  ? new Date(value)
-			  : value;
-		  }
+			const param = wellParams.find(p => (p.esKey ?? p.key) === key);
+			if (param) {
+				// Handle date conversion if needed
+				processedValues[key] = param.type === 'date' ? new Date(value) : value;
+			}
 		});
 		upsertMyWell({
 			variables: {
-			  myWell: { ...platformWell, _id: platformWell.id, ...processedValues },
+				myWell: { ...platformWell, _id: platformWell.id, ...processedValues },
 			},
-			refetchQueries: ["getESSimpleSearch"],
+			refetchQueries: ['getDbData'],
 			awaitRefetchQueries: true,
 		});
 	};
@@ -193,7 +178,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 									label="Search for a well by name or API"
 									InputLabelProps={{ shrink: true }}
 									onChange={event => {
-										getESSimpleSearch({
+										getDbData({
 											variables: {
 												index: 'platformData:wells',
 												pagination: {
@@ -240,10 +225,10 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 									InputLabelProps={{ shrink: true }}
 									InputProps={{ 'data-testid': param.label }}
 									fullWidth
-									placeholder={param.key === 'wellName' ? "Click to enter Well Name" : ""} 
+									placeholder={param.key === 'wellName' ? 'Click to enter Well Name' : ''}
 									defaultValue=""
 									error={param.key === 'wellName' ? !params.value : false} // Mark field as error if validation fails
-									helperText={ !params.value ? (param.key === 'wellName' ? "Enter a Well name to get started" : "") : ""}
+									helperText={!params.value ? (param.key === 'wellName' ? 'Enter a Well name to get started' : '') : ''}
 									value={
 										param.type === 'text'
 											? params.value

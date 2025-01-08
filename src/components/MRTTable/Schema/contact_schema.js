@@ -1,23 +1,28 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
 import Avatar from 'react-avatar';
+
 import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
-import moment from 'moment';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
-import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
-import { formatDate } from 'components/Shared/functions';
-import Contact from 'components/Shared/svgIcons/contact';
-import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActionMenu';
-import ContactToolbar from 'components/MRTTable/TablesOverride/ContactTable/ContactToolbar';
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
-import Loaders from 'components/Loaders';
-import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact.js';
-import { copy } from 'utils/helper';
+
 import { isEmpty, pickBy } from 'lodash';
-import { globalStateController } from 'hookstate/globalStateController';
+
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
+import Loaders from 'components/Loaders';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActionMenu';
+import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import ContactToolbar from 'components/MRTTable/TablesOverride/ContactTable/ContactToolbar';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import Contact from 'components/Shared/svgIcons/contact';
+
+import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact.js';
+
 import { tableGlobalController } from 'hookstate/tableController';
+
+import { copy } from 'utils/helper';
 
 const esIndex = 'contacts_flat';
 
@@ -25,17 +30,12 @@ const onCustomKeyChange = async (client, row, value, item) => {
 	const loaderId = `upadting-${row?._id}`;
 
 	try {
-
 		// Starting update loader
-		const user = globalStateController.getValue('user');
 		Loaders.createToast(loaderId, 'Updation in Progress');
 
 		// Copying all custom data of user
 		const customData = copy(row?.custom_data) ?? {};
-		const filteredCustomData = pickBy(
-			customData,
-			value => value !== '' && !isEmpty(value)
-		);
+		const filteredCustomData = pickBy(customData, value => value !== '' && !isEmpty(value));
 
 		const contact = {
 			_id: row._id,
@@ -49,15 +49,16 @@ const onCustomKeyChange = async (client, row, value, item) => {
 		await client.mutate({
 			variables: {
 				contact,
-				ignoreResponse: true
+				ignoreResponse: true,
 			},
 			mutation: UPDATECONTACT,
+			refetchQueries: ['getDbFilters'],
 		});
 
 		// Updating loader for process completion
 		Loaders.successToast(loaderId, 'Updation Complete');
 		tableGlobalController.refetch();
-	} catch (err) {
+	} catch {
 		Loaders.errorToast(loaderId, 'Failed to Update');
 	}
 };
@@ -84,10 +85,7 @@ const ContactMeta = {
 			if (view?.name === 'My Contacts') {
 				view.filters[0].value = user.name;
 			}
-			if (view?.name === 'Recently Modified' || view.name === 'Recently Added') {
-				view.filters[0].value.range[view.filters[0].field].gte = moment().subtract(30, 'days').toISOString();
-				view.filters[0].value.range[view.filters[0].field].lte = moment().toISOString();
-			}
+
 			return view;
 		},
 		cssOverride: {
@@ -103,27 +101,26 @@ const ContactMeta = {
 		category: 'Contacts', // enable to show custom field inside unit grid
 	},
 	onCustomKeyChange,
-	search: {
-		fields: ["name^4", "_all"]
-	},
 	showAddContactButton: true,
 	TableSchema: [
 		{
 			...CommonSchema.MONGO_ID,
 			name: '_id',
-			accessorKey: '_id',
-			header: "M1neral Contact System ID",
+			id: '_id',
+			header: 'M1neral Contact System ID',
 			isHiddenFieldExport: true,
 		},
 
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'name.keyword',
-			accessorKey: 'name',
+			id: 'name',
 			header: 'Name',
 			size: 450,
 			Cell: ({ renderedCellValue, row }) => {
 				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
+
+				const NAME_SPLICE_LENGTH = 2;
 
 				return (
 					<div
@@ -135,12 +132,17 @@ const ContactMeta = {
 					>
 						{typeof renderedCellValue === 'string' && (
 							<Avatar
-								color={Avatar.getRandomColor(renderedCellValue, ['#b5d2f6', '#ade2e9', '#eaeaea', '#f2c1e2', '#d7d6fb'])}
+								color={Avatar.getRandomColor(renderedCellValue, [
+									'#b5d2f6',
+									'#ade2e9',
+									'#eaeaea',
+									'#f2c1e2',
+									'#d7d6fb',
+								])}
 								fgColor="#000"
-								name={renderedCellValue.split(' ').splice(0, 2).join(' ')}
+								name={renderedCellValue.split(' ').splice(0, NAME_SPLICE_LENGTH).join(' ')}
 								size="35"
 								round
-
 							/>
 						)}
 
@@ -154,7 +156,7 @@ const ContactMeta = {
 							}}
 						>
 							<ColumnWithLink
-								value={renderedCellValue}
+								value={renderedCellValue || 'N/A'}
 								link={`/contact/details/${row.getValue('_id')}`}
 								onClick={e => {
 									e.stopPropagation();
@@ -165,36 +167,29 @@ const ContactMeta = {
 									<MonetizationOnIcon
 										style={{
 											marginLeft: '10px',
-											color: "gray"
+											color: 'gray',
 										}}
-
 									/>
 								</FeatureFlag>
 							)}
 						</p>
 					</div>
-				)
+				);
 			},
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'entity',
-			accessorKey: 'entity',
-			hidden: true,
-		},
-
-		{
-			...CommonSchema.COMMON_COLUMN,
 			name: 'country',
-			accessorKey: 'country',
+			id: 'country',
+			header: 'Country',
 			hidden: true,
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'firstName.keyword',
-			accessorKey: 'firstName',
+			id: 'firstName',
 			header: 'First Name',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -203,7 +198,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'middleName.keyword',
-			accessorKey: 'middleName',
+			id: 'middleName',
 			header: 'Middle Name',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -213,7 +208,7 @@ const ContactMeta = {
 		// {
 		// 	...CommonSchema.COMMON_COLUMN,
 		// 	name: 'formerName.keyword',
-		// 	accessorKey: 'formerName',
+		// 	id: 'formerName',
 		// 	header: 'Also Known As',
 		// 	isHiddenFieldExport: true,
 		// 	hidden: true,
@@ -222,7 +217,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'lastName.keyword',
-			accessorKey: 'lastName',
+			id: 'lastName',
 			header: 'Last Name',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -231,7 +226,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'suffix.keyword',
-			accessorKey: 'suffix',
+			id: 'suffix',
 			header: 'Suffix',
 			hidden: true,
 		},
@@ -239,7 +234,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'companyName.keyword',
-			accessorKey: 'companyName',
+			id: 'companyName',
 			header: 'Company Name',
 			hidden: true,
 		},
@@ -247,23 +242,21 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'ownerType.keyword',
-			accessorKey: 'ownerType',
+			id: 'ownerType',
 			header: 'Entity Type',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'primaryAddress.keyword',
-			accessorKey: 'primaryAddress',
+			id: 'primaryAddress',
 			header: 'Primary Address',
-			size: 700,
-			isSearchField: false,
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'address1.keyword',
-			accessorKey: 'address1',
+			id: 'address1',
 			header: 'Primary Address 1',
 			hidden: true,
 		},
@@ -271,7 +264,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'address2.keyword',
-			accessorKey: 'address2',
+			id: 'address2',
 			header: 'Primary Address 2',
 			hidden: true,
 		},
@@ -279,7 +272,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'city.keyword',
-			accessorKey: 'city',
+			id: 'city',
 			header: 'City',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -288,7 +281,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'state.keyword',
-			accessorKey: 'state',
+			id: 'state',
 			header: 'State',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -296,8 +289,17 @@ const ContactMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'county.keyword',
+			id: 'county',
+			header: 'County',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'zip.keyword',
-			accessorKey: 'zip',
+			id: 'zip',
 			header: 'Zip',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -306,28 +308,30 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'melissaRowsCount',
-			accessorKey: 'melissaRowsCount',
+			id: 'melissaRowsCount',
+			header: 'Melissa Rows Count',
 			hidden: true,
+			isSearchField: false,
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'homePhone.keyword',
-			accessorKey: 'homePhone',
+			id: 'homePhone',
 			header: 'Primary Home Phone',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'mobilePhone.keyword',
-			accessorKey: 'mobilePhone',
+			id: 'mobilePhone',
 			header: 'Primary Mobile Phone',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'phone1.keyword',
-			accessorKey: 'phone1',
+			id: 'phone1',
 			header: 'Phone 1',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -336,7 +340,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'phone2.keyword',
-			accessorKey: 'phone2',
+			id: 'phone2',
 			header: 'Phone 2',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -345,7 +349,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'phone3.keyword',
-			accessorKey: 'phone3',
+			id: 'phone3',
 			header: 'Phone 3',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -354,7 +358,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'phone4.keyword',
-			accessorKey: 'phone4',
+			id: 'phone4',
 			header: 'Phone 4',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -363,17 +367,16 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'phone5.keyword',
-			accessorKey: 'phone5',
+			id: 'phone5',
 			header: 'Phone 5',
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
 
-
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'department.keyword',
-			accessorKey: 'department',
+			id: 'department',
 			header: 'Department',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -382,7 +385,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'title.keyword',
-			accessorKey: 'title',
+			id: 'title',
 			header: 'Title',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -391,28 +394,28 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'mobilephone2.keyword',
-			accessorKey: 'mobilephone2',
+			id: 'mobilephone2',
 			header: 'Mobile Phone 2',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'AltPhone.keyword',
-			accessorKey: 'AltPhone',
+			id: 'AltPhone',
 			header: 'Primary Work Phone',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'mobilephone3.keyword',
-			accessorKey: 'mobilephone3',
+			id: 'mobilephone3',
 			header: 'Mobile Phone 3',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'homePhone2.keyword',
-			accessorKey: 'homePhone2',
+			id: 'homePhone2',
 			header: 'Home Phone 2',
 			hidden: true,
 		},
@@ -420,7 +423,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'homePhone3.keyword',
-			accessorKey: 'homePhone3',
+			id: 'homePhone3',
 			header: 'Home Phone 3',
 			hidden: true,
 		},
@@ -428,7 +431,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'AltPhone2.keyword',
-			accessorKey: 'AltPhone2',
+			id: 'AltPhone2',
 			header: 'Work Phone 2',
 			hidden: true,
 		},
@@ -436,7 +439,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'AltPhone3.keyword',
-			accessorKey: 'AltPhone3',
+			id: 'AltPhone3',
 			header: 'Work Phone 3',
 			hidden: true,
 		},
@@ -444,22 +447,20 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'primaryEmail.keyword',
-			accessorKey: 'primaryEmail',
+			id: 'primaryEmail',
 			header: 'Primary Email',
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'account.keyword',
-			accessorKey: 'account',
+			id: 'account',
 			header: 'Account',
 		},
-
-
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'secondaryEmail.keyword',
-			accessorKey: 'secondaryEmail',
+			id: 'secondaryEmail',
 			header: 'Email 2',
 			hidden: true,
 		},
@@ -467,7 +468,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'linkedIn.keyword',
-			accessorKey: 'linkedIn',
+			id: 'linkedIn',
 			header: 'LinkedIn Profile',
 			hidden: true,
 		},
@@ -475,7 +476,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'facebook.keyword',
-			accessorKey: 'facebook',
+			id: 'facebook',
 			header: 'Facebook Profile',
 			hidden: true,
 		},
@@ -483,7 +484,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'twitter.keyword',
-			accessorKey: 'twitter',
+			id: 'twitter',
 			header: 'Twitter Profile',
 			hidden: true,
 		},
@@ -491,7 +492,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'jobTitle.keyword',
-			accessorKey: 'jobTitle',
+			id: 'jobTitle',
 			header: 'Job Title',
 			hidden: true,
 		},
@@ -499,7 +500,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'leadStage.keyword',
-			accessorKey: 'leadStage',
+			id: 'leadStage',
 			header: 'Lead Stage',
 			hidden: true,
 		},
@@ -507,7 +508,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'age.keyword',
-			accessorKey: 'age',
+			id: 'age',
 			header: 'Age',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -515,7 +516,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'bankruptcy.keyword',
-			accessorKey: 'bankruptcy',
+			id: 'bankruptcy',
 			header: 'Bankruptcy Flag ',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -523,7 +524,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'deceased.keyword',
-			accessorKey: 'deceased',
+			id: 'deceased',
 			header: 'Deceased Flag',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -531,7 +532,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'lien.keyword',
-			accessorKey: 'lien',
+			id: 'lien',
 			header: 'Lien Flag',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -540,7 +541,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'relatives.keyword',
-			accessorKey: 'relatives',
+			id: 'relatives',
 			header: 'Relative Names',
 			hidden: true,
 		},
@@ -548,7 +549,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'email3.keyword',
-			accessorKey: 'email3',
+			id: 'email3',
 			header: 'Email 3',
 			hidden: true,
 		},
@@ -556,21 +557,21 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'status.keyword',
-			accessorKey: 'status',
+			id: 'status',
 			header: 'Stage',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'contactStatus.keyword',
-			accessorKey: 'contactStatus',
+			id: 'contactStatus',
 			header: 'Status',
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'timeZone.keyword',
-			accessorKey: 'timeZone',
+			id: 'timeZone',
 			header: 'Time Zone',
 			hidden: true,
 		},
@@ -578,7 +579,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'territory.keyword',
-			accessorKey: 'territory',
+			id: 'territory',
 			header: 'Territory',
 			isHiddenFieldExport: true,
 			hidden: true,
@@ -586,20 +587,21 @@ const ContactMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'campaignName.keyword',
-			accessorKey: 'campaignName',
-			header: 'Campaign Name',
+			type: 'array',
+			name: 'campaigns',
+			id: 'campaigns',
+			header: 'Campaigns',
 			isHiddenFieldExport: true,
 			hidden: true,
 			Cell: ({ row }) => {
-				return <CampaignNameField value={row?.original?.campaignName?.[0]} fullWidth disabled />
+				return <CampaignField value={row?.original?.campaigns} fullWidth disabled />;
 			},
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'notes.keyword',
-			accessorKey: 'notes',
+			id: 'notes',
 			header: 'Comments',
 			hidden: true,
 		},
@@ -607,7 +609,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'website.keyword',
-			accessorKey: 'website',
+			id: 'website',
 			header: 'Website',
 			hidden: true,
 		},
@@ -615,7 +617,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'industryType.keyword',
-			accessorKey: 'industryType',
+			id: 'industryType',
 			header: 'Industry Type',
 			hidden: true,
 		},
@@ -623,17 +625,15 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'leadSource.keyword',
-			accessorKey: 'leadSource',
+			id: 'leadSource',
 			header: 'Lead Source',
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
 
-
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'interestSummary.wellInterestCount',
-			accessorFn: row => row?.interestSummary?.wellInterestCount,
 			id: 'interestSummary.wellInterestCount',
 			header: 'Well Interest Count',
 			isHiddenFieldExport: true,
@@ -644,7 +644,6 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'interestSummary.unitInterestCount',
-			accessorFn: row => row?.interestSummary?.unitInterestCount,
 			id: 'interestSummary.unitInterestCount',
 			header: 'Unit Interest Count',
 			hidden: true,
@@ -654,7 +653,6 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'interestSummary.unitNraSum',
-			accessorFn: row => row?.interestSummary?.unitNraSum,
 			id: 'interestSummary.unitNraSum',
 			header: 'Unit NRA',
 			hidden: true,
@@ -664,7 +662,6 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'interestSummary.tractInterestCount',
-			accessorFn: row => row?.interestSummary?.tractInterestCount,
 			id: 'interestSummary.tractInterestCount',
 			header: 'Tract Interest Count',
 			hidden: true,
@@ -674,14 +671,14 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'isPurchased',
-			accessorKey: 'isPurchased',
+			id: 'isPurchased',
 			header: 'Purchased Data Exists',
 			isSearchField: false,
 			filterSelectOptions: [
 				{ label: 'Yes', value: 'true' },
 				{ label: 'No', value: 'false' },
 			],
-			type: "boolean",
+			type: 'boolean',
 			Cell: ({ row }) => {
 				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
 
@@ -691,13 +688,12 @@ const ContactMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'contactOwners.name.keyword',
-			accessorFn: row => row?.contactOwners?.name,
 			id: 'contactOwners.name',
 			header: 'Contact Owner',
 			isExport: 'contactOwners[0].name',
 			Cell: ({ row }) => {
-				const name = row?.original?.contactOwners?.map(obj => obj.name)
-				return <p>{name?.[0]}</p>
+				const name = row?.original?.contactOwners?.map(obj => obj.name);
+				return <p>{name?.[0]}</p>;
 			},
 		},
 
@@ -710,7 +706,14 @@ const ContactMeta = {
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const targetSourceId = row.getValue('_id');
-				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'contact'} />;
+				return (
+					<TagCell
+						id={targetSourceId}
+						targetSourceId={targetSourceId}
+						tags={row?.original?.tags}
+						targetLabel={'contact'}
+					/>
+				);
 			},
 		},
 
@@ -724,7 +727,7 @@ const ContactMeta = {
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'actionMenu',
-			accessorKey: 'actionMenu',
+			id: 'actionMenu',
 			header: '',
 			size: 70,
 			Cell: ({ row }) => {

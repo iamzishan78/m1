@@ -1,589 +1,596 @@
-import React, { useState, useContext, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useForm } from "react-hook-form";
-import { useMutation, useLazyQuery } from "@apollo/client";
+import React, { useState, useContext, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+
 import {
-  Grid,
-  Typography,
-  IconButton,
-  Tab,
-  Tabs,
-  Dialog,
-  Breadcrumbs,
-  Link,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-} from "@material-ui/core";
-import { Delete as DeleteIcon, NavigateNext as NavigateNextIcon, MoreHoriz as MoreHorizIcon } from "@material-ui/icons/";
-import { makeStyles } from "@material-ui/core/styles";
+	Grid,
+	Typography,
+	IconButton,
+	Tab,
+	Tabs,
+	Dialog,
+	Breadcrumbs,
+	Link,
+	Menu,
+	MenuItem,
+	ListItemIcon,
+	ListItemText,
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import {
+	Delete as DeleteIcon,
+	NavigateNext as NavigateNextIcon,
+	MoreHoriz as MoreHorizIcon,
+} from '@material-ui/icons/';
 
-import { setFlowState, showErrorMessage, showSuccessMessage, showWarningMessage } from "actions";
-import RightDialog from "components/ContactDetailCard/components/RightDialog";
-import BaicInfoPanel from "components/Transact/components/PipelineCustomizeDialog/BasicInfo";
-import DealStagesPanel from "components/Transact/components/PipelineCustomizeDialog/Stages";
-import StageDetails from "components/Transact/components/PipelineCustomizeDialog/StageDetails";
-import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
-import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
-import { deepEqualObjects } from "components/Shared/functions";
+import { useMutation, useLazyQuery } from '@apollo/client';
 
-import { AppContext } from "AppContext";
-import { DEALSCOUNTINAPIPE } from "graphQL/useQueryNonDeletedDealsCountInAPipeline";
-import { UPDATEPIPELINES, UPDATE_PIPELINE } from "graphQL/useMutationUpdatePipelines";
-import { ADD_PIPELINE } from "graphQL/useMutationAddPipeline";
-import { ADDSTAGES } from "graphQL/useMutationAddStages";
-import { UPDATESTAGES } from "graphQL/useMutationUpdateStages";
-import { useHistory } from "react-router-dom";
+import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
+import { deepEqualObjects } from 'components/Shared/functions';
+import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+import BaicInfoPanel from 'components/Transact/components/PipelineCustomizeDialog/BasicInfo';
+import StageDetails from 'components/Transact/components/PipelineCustomizeDialog/StageDetails';
+import DealStagesPanel from 'components/Transact/components/PipelineCustomizeDialog/Stages';
+
+import { ADD_PIPELINE } from 'graphQL/useMutationAddPipeline';
+import { ADDSTAGES } from 'graphQL/useMutationAddStages';
+import { UPDATEPIPELINES, UPDATE_PIPELINE } from 'graphQL/useMutationUpdatePipelines';
+import { UPDATESTAGES } from 'graphQL/useMutationUpdateStages';
+import { DEALSCOUNTINAPIPE } from 'graphQL/useQueryNonDeletedDealsCountInAPipeline';
+
+import { setFlowState, showErrorMessage, showSuccessMessage, showWarningMessage } from 'actions';
+import { AppContext } from 'AppContext';
 
 const DIALOG_WIDTHS = {
-  BASIC: "450px",
-  LANES: "1100px",
+	BASIC: '450px',
+	LANES: '1100px',
 };
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    "& .MuiTabs-root": {
-      "& .MuiTabs-scroller": {
-        "& .MuiTabs-flexContainer": {
-          width: "320px",
-        },
-      },
-      "& .MuiTabs-indicator": {
-        marginLeft: "25px",
-        height: "5px",
-        width: "113px !important",
-        backgroundColor: "#1CB6DA",
-      },
-    },
-  },
-  stickyHeader: ({ width }) => ({
-    padding: "25px",
-    width: width,
-  }),
-  panelInfo: {},
-  deleteIcon: {
-    fill: theme.palette.secondary.main,
-    "&:hover": {
-      fill: "red",
-    },
-  },
-  menu: {
-    "& .MuiListItem-root": {
-      height: "35px",
-      "& .MuiListItemIcon-root": {
-        minWidth: "30px",
-        "& .MuiSvgIcon-root": {
-          fill: "red !important",
-        },
-      },
-    },
-  },
-  dialogActions: {
-    display: "flex",
-    justifyContent: "flex-end",
-    "& svg": {
-      fill: "#d9d9d9",
-      "&:hover": {
-        fill: "#b5b2b2",
-      },
-    },
-  },
+const useStyles = makeStyles(theme => ({
+	root: {
+		'& .MuiTabs-root': {
+			'& .MuiTabs-scroller': {
+				'& .MuiTabs-flexContainer': {
+					width: '320px',
+				},
+			},
+			'& .MuiTabs-indicator': {
+				marginLeft: '25px',
+				height: '5px',
+				width: '113px !important',
+				backgroundColor: '#1CB6DA',
+			},
+		},
+	},
+	stickyHeader: ({ width }) => ({
+		padding: '25px',
+		width: width,
+	}),
+	panelInfo: {},
+	deleteIcon: {
+		fill: theme.palette.secondary.main,
+		'&:hover': {
+			fill: 'red',
+		},
+	},
+	menu: {
+		'& .MuiListItem-root': {
+			height: '35px',
+			'& .MuiListItemIcon-root': {
+				minWidth: '30px',
+				'& .MuiSvgIcon-root': {
+					fill: 'red !important',
+				},
+			},
+		},
+	},
+	dialogActions: {
+		display: 'flex',
+		justifyContent: 'flex-end',
+		'& svg': {
+			fill: '#d9d9d9',
+			'&:hover': {
+				fill: '#b5b2b2',
+			},
+		},
+	},
 }));
 
 const FLOWLINE_CUSTOM_TABS = [
-  {
-    label: "Basic",
-    value: "basic",
-  },
-  {
-    label: "Lanes",
-    value: "lanes",
-  },
+	{
+		label: 'Basic',
+		value: 'basic',
+	},
+	{
+		label: 'Lanes',
+		value: 'lanes',
+	},
 ];
 
-const a11yProps = (index) => ({
-  id: `full-width-tab-${index}`,
-  "aria-controls": `full-width-tabpanel-${index}`,
+const a11yProps = index => ({
+	id: `full-width-tab-${index}`,
+	'aria-controls': `full-width-tabpanel-${index}`,
 });
 
-const PipelineCustomDialog = (props) => {
-  const history = useHistory();
-  const dispatch = useDispatch();
-  const [tab, setTab] = useState(0);
-  const [width, setDialogWidth] = useState(DIALOG_WIDTHS.BASIC);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [deleteFunc, setDeleteFunc] = useState(null);
-  const [stages, setStages] = useState([]);
-  const [flowErrors, setFlowErrors] = useState([]);
-  const [stagesError, setStageError] = useState(false);
-  const [selectedStageForDetail, setStage] = useState(null);
-  const [anchorEl, setAnchorEl] = useState();
-  const { control, reset, setValue, getValues, watch } = useForm("FLOWLINE_FORM");
+const PipelineCustomDialog = () => {
+	const history = useHistory();
+	const dispatch = useDispatch();
+	const [tab, setTab] = useState(0);
+	const [width, setDialogWidth] = useState(DIALOG_WIDTHS.BASIC);
+	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+	const [deleteFunc, setDeleteFunc] = useState(null);
+	const [stages, setStages] = useState([]);
+	const [flowErrors, setFlowErrors] = useState([]);
+	const [stagesError, setStageError] = useState(false);
+	const [selectedStageForDetail, setStage] = useState(null);
+	const [anchorEl, setAnchorEl] = useState();
+	const { control, reset, setValue, getValues, watch } = useForm('FLOWLINE_FORM');
 
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const { openPipeDialog, selectedPipe } = useSelector(({ Flow }) => Flow);
+	const [stateApp, setStateApp] = useContext(AppContext);
+	const { openPipeDialog, selectedPipe } = useSelector(({ Flow }) => Flow);
 
-  const [getDealsCountByPipeline, { data: dataDealsCountByPipeline }] = useLazyQuery(DEALSCOUNTINAPIPE, {
-    fetchPolicy: "network-only",
-  });
-  const [updatePipeline] = useMutation(UPDATE_PIPELINE);
-  const [updatePipelines] = useMutation(UPDATEPIPELINES);
-  const [addPipeline, { data, loading, called, client }] = useMutation(ADD_PIPELINE);
-  const [addStages] = useMutation(ADDSTAGES);
-  const [updateStages] = useMutation(UPDATESTAGES);
+	const [getDealsCountByPipeline, { data: dataDealsCountByPipeline }] = useLazyQuery(DEALSCOUNTINAPIPE, {
+		fetchPolicy: 'network-only',
+	});
+	const [updatePipeline] = useMutation(UPDATE_PIPELINE);
+	const [updatePipelines] = useMutation(UPDATEPIPELINES);
+	const [addPipeline, { data, loading, called, client }] = useMutation(ADD_PIPELINE);
+	const [addStages] = useMutation(ADDSTAGES);
+	const [updateStages] = useMutation(UPDATESTAGES);
 
-  const classes = useStyles({ width });
+	const classes = useStyles({ width });
 
-  useEffect(() => {
-    return () => reset({});
-  }, [reset]);
+	useEffect(() => {
+		return () => reset({});
+	}, [reset]);
 
-  useEffect(() => {
-    if (dataDealsCountByPipeline?.nonDeletedDealsCountInAPipeline) {
-      setStateApp((state) => ({
-        ...state,
-        uniuniversalCircularLoaderAct: false,
-      }));
-      if (dataDealsCountByPipeline.nonDeletedDealsCountInAPipeline.dealsCount > 0)
-        dispatch(showWarningMessage("There are deals associated to this flowline, please remove them first."));
-      else {
-        setDeleteDialogOpen("pipe");
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataDealsCountByPipeline]);
+	useEffect(() => {
+		if (dataDealsCountByPipeline?.nonDeletedDealsCountInAPipeline) {
+			setStateApp(state => ({
+				...state,
+				uniuniversalCircularLoaderAct: false,
+			}));
+			if (dataDealsCountByPipeline.nonDeletedDealsCountInAPipeline.dealsCount > 0) {
+				dispatch(showWarningMessage('There are deals associated to this flowline, please remove them first.'));
+			} else {
+				setDeleteDialogOpen('pipe');
+			}
+		}
+	}, [dataDealsCountByPipeline]);
 
-  useEffect(() => {
-    if (selectedStageForDetail) {
-      setDialogWidth(DIALOG_WIDTHS.LANES);
-    }
-  }, [selectedStageForDetail]);
+	useEffect(() => {
+		if (selectedStageForDetail) {
+			setDialogWidth(DIALOG_WIDTHS.LANES);
+		}
+	}, [selectedStageForDetail]);
 
-  useEffect(() => {
-    if (data?.addPipeline?.success && !loading && called) {
-      // When new Pipeline is added then select that pipline and mark popup window to not newPipe
-      history.push(`/flow/${data.addPipeline.pipeline._id}`)
-      setFlowState({
-        selectedPipe: data.addPipeline.pipeline
-      });
-      client.reFetchObservableQueries(["getPipelines", "getPipeline"]);
+	useEffect(() => {
+		if (data?.addPipeline?.success && !loading && called) {
+			// When new Pipeline is added then select that pipline and mark popup window to not newPipe
+			history.push(`/flow/${data.addPipeline.pipeline._id}`);
+			setFlowState({
+				selectedPipe: data.addPipeline.pipeline,
+			});
+			client.reFetchObservableQueries(['getPipelines', 'getPipeline']);
 
-      if (openPipeDialog === "newPipe")
-        dispatch(setFlowState({ openPipeDialog: true }))
-    }
-  }, [data, loading, called])
+			if (openPipeDialog === 'newPipe') {
+				dispatch(setFlowState({ openPipeDialog: true }));
+			}
+		}
+	}, [data, loading, called]);
 
-  const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
-  const handleMenuClose = () => setAnchorEl(null);
+	const handleMenuClick = event => setAnchorEl(event.currentTarget);
+	const handleMenuClose = () => setAnchorEl(null);
 
-  const handleChange = (event, tab) => {
-    if (tab === 0) {
-      setDialogWidth(DIALOG_WIDTHS.BASIC);
-    } else setDialogWidth(DIALOG_WIDTHS.LANES);
-    setTab(tab);
-  };
+	const handleChange = (event, tab) => {
+		if (tab === 0) {
+			setDialogWidth(DIALOG_WIDTHS.BASIC);
+		} else {
+			setDialogWidth(DIALOG_WIDTHS.LANES);
+		}
+		setTab(tab);
+	};
 
-  const handleClose = () => {
-    dispatch(
-      setFlowState({
-        openPipeDialog: false,
-      })
-    );
-  };
+	const handleClose = () => {
+		dispatch(
+			setFlowState({
+				openPipeDialog: false,
+			})
+		);
+	};
 
-  const handleDeletePipe = () => {
-    if (selectedPipe) {
-      setStateApp((state) => ({
-        ...state,
-        uniuniversalCircularLoaderAct: true,
-      }));
+	const handleDeletePipe = () => {
+		if (selectedPipe) {
+			setStateApp(state => ({
+				...state,
+				uniuniversalCircularLoaderAct: true,
+			}));
 
-      getDealsCountByPipeline({
-        variables: {
-          pipelinesIds: [selectedPipe?._id],
-        },
-      });
+			getDealsCountByPipeline({
+				variables: {
+					pipelinesIds: [selectedPipe?._id],
+				},
+			});
 
-      setDeleteFunc(() => () => {
-        updatePipelines({
-          variables: {
-            pipelines: [{ _id: selectedPipe._id, IsDeleted: true }],
-          },
-          refetchQueries: ["getPipelines"],
-          awaitRefetchQueries: true,
-        });
-        dispatch(
-          setFlowState({
-            openPipeDialog: false,
-            selectedPipe: null,
-            pipeToShow: null,
-          })
-        );
-      });
-    }
-  };
+			setDeleteFunc(() => () => {
+				updatePipelines({
+					variables: {
+						pipelines: [{ _id: selectedPipe._id, IsDeleted: true }],
+					},
+					refetchQueries: ['getPipelines'],
+					awaitRefetchQueries: true,
+				});
+				dispatch(
+					setFlowState({
+						openPipeDialog: false,
+						selectedPipe: null,
+						pipeToShow: null,
+					})
+				);
+			});
+		}
+	};
 
-  const handleCloseDeleteDialog = () => setDeleteDialogOpen(false);
+	const handleCloseDeleteDialog = () => setDeleteDialogOpen(false);
 
-  const handleSaveOrUpdate = (config = {}) => {
-    const { isClosing } = config;
-    const formStates = getValues();
-    formStates.IsDefault = formStates.IsDefault === undefined ? false : formStates.IsDefault;
-    if (!formStates.name) {
-      setFlowErrors((flowErrors) => ({ ...flowErrors, name: true }));
-      return;
-    }
+	const handleSaveOrUpdate = (config = {}) => {
+		const { isClosing } = config;
+		const formStates = getValues();
+		formStates.IsDefault = formStates.IsDefault === undefined ? false : formStates.IsDefault;
+		if (!formStates.name) {
+			setFlowErrors(flowErrors => ({ ...flowErrors, name: true }));
+			return;
+		}
 
-    let isValid = stages.length > 0 ? true : false;
-    for (let s = 0; s < stages.length; s += 1) {
-      if (!stages[s].name || stages[s].name === "") {
-        isValid = false;
-        break;
-      }
-    }
-    if (!isValid) {
-      setStageError(true);
-      handleChange(null, 1);
-      return;
-    }
+		let isValid = stages.length > 0 ? true : false;
+		for (let s = 0; s < stages.length; s += 1) {
+			if (!stages[s].name || stages[s].name === '') {
+				isValid = false;
+				break;
+			}
+		}
+		if (!isValid) {
+			setStageError(true);
+			handleChange(null, 1);
+			return;
+		}
 
-    if (openPipeDialog === "newPipe") {
-      // New flowline
-      addPipeline({
-        variables: {
-          pipeline: {
-            ...formStates,
-            stages,
-            userId: stateApp.user.mongoId,
-          },
-        },
-        refetchQueries: isClosing ? ["getPipelines", "getPipeline"] : [],
-        awaitRefetchQueries: !!isClosing,
-      });
-    } else if (selectedPipe) {
-      ////update
-      let stagesToUpdate = [];
+		if (openPipeDialog === 'newPipe') {
+			// New flowline
+			addPipeline({
+				variables: {
+					pipeline: {
+						...formStates,
+						stages,
+						userId: stateApp.user.mongoId,
+					},
+				},
+				refetchQueries: isClosing ? ['getPipelines', 'getPipeline'] : [],
+				awaitRefetchQueries: !!isClosing,
+			});
+		} else if (selectedPipe) {
+			////update
+			let stagesToUpdate = [];
 
-      let pipeToUpdate = { ...selectedPipe, ...formStates }; //// else update the ts
+			let pipeToUpdate = { ...selectedPipe, ...formStates }; //// else update the ts
 
-      let stagesToAdd = stages.filter((stage) => !stage._id);
-      let existingStages = stages.filter((stage) => stage._id);
+			let stagesToAdd = stages.filter(stage => !stage._id);
+			let existingStages = stages.filter(stage => stage._id);
 
-      for (let i = 0; i < existingStages.length; i++) {
-        const frontEndStage = { ...existingStages[i] };
-        for (let j = 0; j < selectedPipe.stages.length; j++) {
-          const dbStage = { ...selectedPipe.stages[j] };
-          if (dbStage._id === frontEndStage._id) {
-            if (!deepEqualObjects(dbStage, frontEndStage)) {
-              let stageToUpdate = {
-                _id: dbStage._id,
-                descriptorId: dbStage.descriptorId,
-              };
+			for (let i = 0; i < existingStages.length; i++) {
+				const frontEndStage = { ...existingStages[i] };
+				for (let j = 0; j < selectedPipe.stages.length; j++) {
+					const dbStage = { ...selectedPipe.stages[j] };
+					if (dbStage._id === frontEndStage._id) {
+						if (!deepEqualObjects(dbStage, frontEndStage)) {
+							let stageToUpdate = {
+								_id: dbStage._id,
+								descriptorId: dbStage.descriptorId,
+							};
 
-              //// checking if the descriptor position changed
-              if (dbStage.position !== frontEndStage.position) stageToUpdate.position = frontEndStage.position;
+							//// checking if the descriptor position changed
+							if (dbStage.position !== frontEndStage.position) {
+								stageToUpdate.position = frontEndStage.position;
+							}
 
-              //// checking if something change in the real stage object
-              delete dbStage.position;
-              delete frontEndStage.position;
-              if (!deepEqualObjects(dbStage, frontEndStage)) stageToUpdate = { ...stageToUpdate, ...frontEndStage };
+							//// checking if something change in the real stage object
+							delete dbStage.position;
+							delete frontEndStage.position;
+							if (!deepEqualObjects(dbStage, frontEndStage)) {
+								stageToUpdate = { ...stageToUpdate, ...frontEndStage };
+							}
 
-              ////
-              stagesToUpdate.push(stageToUpdate);
-            }
+							////
+							stagesToUpdate.push(stageToUpdate);
+						}
 
-            break;
-          }
-        }
-      }
+						break;
+					}
+				}
+			}
 
-      //// checking if some db stage was deleted
-      for (let j = 0; j < selectedPipe.stages.length; j++) {
-        const dbStage = { ...selectedPipe.stages[j] };
-        let found = false;
+			//// checking if some db stage was deleted
+			for (let j = 0; j < selectedPipe.stages.length; j++) {
+				const dbStage = { ...selectedPipe.stages[j] };
+				let found = false;
 
-        for (let i = 0; i < stages.length; i++) {
-          const frontEndStage = { ...stages[i] };
-          if (dbStage._id === frontEndStage._id) {
-            found = true;
-            break;
-          }
-        }
+				for (let i = 0; i < stages.length; i++) {
+					const frontEndStage = { ...stages[i] };
+					if (dbStage._id === frontEndStage._id) {
+						found = true;
+						break;
+					}
+				}
 
-        if (!found) stagesToUpdate.push({ _id: dbStage._id, IsDeleted: true });
-      }
+				if (!found) {
+					stagesToUpdate.push({ _id: dbStage._id, IsDeleted: true });
+				}
+			}
 
-      //// pipeToUpdate ////
-      //// stagesToAdd ////
-      //// stagesToUpdate ////
+			//// pipeToUpdate ////
+			//// stagesToAdd ////
+			//// stagesToUpdate ////
 
-      let success = true;
-      let allPromises = [];
+			let success = true;
+			let allPromises = [];
 
-      if (pipeToUpdate) {
-        if (pipeToUpdate.IsDefault) pipeToUpdate = { ...pipeToUpdate, position: 0 };
-        else {
-          pipeToUpdate = { ...pipeToUpdate, position: pipeToUpdate.projectPipelinePosition };
-        }
+			if (pipeToUpdate) {
+				if (pipeToUpdate.IsDefault) {
+					pipeToUpdate = { ...pipeToUpdate, position: 0 };
+				} else {
+					pipeToUpdate = { ...pipeToUpdate, position: pipeToUpdate.projectPipelinePosition };
+				}
 
-        allPromises.push(
-          new Promise((resolve, reject) => {
-            updatePipeline({
-              variables: {
-                pipeline: pipeToUpdate,
-              },
-              refetchQueries: ["getPipelines", "getPipeline"], //// separete latter to the end all promises
-              awaitRefetchQueries: true,
-            }).then((result) => {
-              const {
-                data: { updatePipeline },
-              } = result;
+				allPromises.push(
+					new Promise(resolve => {
+						updatePipeline({
+							variables: {
+								pipeline: pipeToUpdate,
+							},
+							refetchQueries: ['getPipelines', 'getPipeline'], //// separete latter to the end all promises
+							awaitRefetchQueries: true,
+						}).then(result => {
+							const {
+								data: { updatePipeline },
+							} = result;
 
-              if (updatePipeline?.success === false) success = false;
+							if (updatePipeline?.success === false) {
+								success = false;
+							}
 
-              resolve();
-            });
-          })
-        );
-      }
+							resolve();
+						});
+					})
+				);
+			}
 
-      if (stagesToAdd && stagesToAdd.length > 0)
-        allPromises.push(
-          new Promise((resolve) => {
-            addStages({
-              variables: {
-                stages: stagesToAdd,
-                pipelineId: selectedPipe._id,
-                userId: stateApp.user.mongoId,
-              },
-              refetchQueries: ["getPipelines", "getPipeline"], //// separete latter to the end all promises
-              awaitRefetchQueries: true,
-            }).then((result) => {
-              const {
-                data: { addStages },
-              } = result;
+			if (stagesToAdd && stagesToAdd.length > 0) {
+				allPromises.push(
+					new Promise(resolve => {
+						addStages({
+							variables: {
+								stages: stagesToAdd,
+								pipelineId: selectedPipe._id,
+								userId: stateApp.user.mongoId,
+							},
+							refetchQueries: ['getPipelines', 'getPipeline'], //// separete latter to the end all promises
+							awaitRefetchQueries: true,
+						}).then(result => {
+							const {
+								data: { addStages },
+							} = result;
 
-              if (addStages?.success === false) success = false;
+							if (addStages?.success === false) {
+								success = false;
+							}
 
-              resolve();
-            });
-          })
-        );
+							resolve();
+						});
+					})
+				);
+			}
 
-      if (stagesToUpdate && stagesToUpdate.length > 0)
-        allPromises.push(
-          new Promise((resolve, reject) => {
-            updateStages({
-              variables: {
-                stages: stagesToUpdate,
-              },
-              refetchQueries: ["getPipelines", "getPipeline"], //// separete latter to the end all promises
-              awaitRefetchQueries: true,
-            }).then((result) => {
-              const {
-                data: { updateStages },
-              } = result;
+			if (stagesToUpdate && stagesToUpdate.length > 0) {
+				allPromises.push(
+					new Promise(resolve => {
+						updateStages({
+							variables: {
+								stages: stagesToUpdate,
+							},
+							refetchQueries: ['getPipelines', 'getPipeline'], //// separete latter to the end all promises
+							awaitRefetchQueries: true,
+						}).then(result => {
+							const {
+								data: { updateStages },
+							} = result;
 
-              if (updateStages?.success === false) success = false;
+							if (updateStages?.success === false) {
+								success = false;
+							}
 
-              resolve();
-            });
-          })
-        );
+							resolve();
+						});
+					})
+				);
+			}
 
-      Promise.all(allPromises)
-        .then((values) => {
-          if (success === true) dispatch(showSuccessMessage("Flowline was successfully updated."));
-          else dispatch(showErrorMessage("An error occurred during the update."));
-        })
-        .catch((reason) => { });
-    }
-  };
+			Promise.all(allPromises)
+				.then(() => {
+					if (success === true) {
+						dispatch(showSuccessMessage('Flowline was successfully updated.'));
+					} else {
+						dispatch(showErrorMessage('An error occurred during the update.'));
+					}
+				})
+				.catch(() => {});
+		}
+	};
 
-  return (
-    <>
-      {openPipeDialog === "newPipe" || openPipeDialog ? (
-        <RightDialog
-          open={openPipeDialog === "newPipe" || openPipeDialog}
-          width={width}
-          handleClickDialogClose={() => {
-            handleSaveOrUpdate({ isClosing: true });
-            handleClose();
-          }}
-        >
-          <div className={classes.root}>
-            <div className={classes.stickyHeader}>
-              <Grid
-                container
-                justify="space-between"
-                direction="row"
-                display="flex"
-              >
-                <Grid item>
-                  <Typography
-                    variant="h5"
-                    style={{ float: "left", fontSize: "1.3rem" }}
-                  >
-                    {openPipeDialog === "newPipe"
-                      ? "New Flowline"
-                      : "Edit Flowline"}
-                  </Typography>
-                </Grid>
-                <Grid item xs={6} className={classes.dialogActions}>
-                  <IconButton
-                    size="small"
-                    component="span"
-                    style={{
-                      background: "transparent",
-                      paddingLeft: "10px",
-                      align: "center",
-                    }}
-                    onClick={handleMenuClick}
-                  >
-                    <MoreHorizIcon size="medium" />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    component="span"
-                    style={{
-                      background: "transparent",
-                      paddingLeft: "10px",
-                      align: "center",
-                    }}
-                    onClick={() => {
-                      handleClose();
-                      handleSaveOrUpdate({ isClosing: true });
-                    }}
-                  >
-                    <KeyboardTabBlackIcon />
-                  </IconButton>
-                  <Menu
-                    id="dealMenu"
-                    anchorEl={anchorEl}
-                    keepMounted
-                    open={Boolean(anchorEl)}
-                    onClose={handleMenuClose}
-                    className={classes.menu}
-                    getContentAnchorEl={null}
-                    anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-                    transformOrigin={{ vertical: "top", horizontal: "center" }}
-                  >
-                    <MenuItem onClick={handleDeletePipe}>
-                      <ListItemIcon>
-                        <DeleteIcon size="medium" />
-                      </ListItemIcon>
-                      <ListItemText>Delete</ListItemText>
-                    </MenuItem>
-                  </Menu>
-                </Grid>
-              </Grid>
-            </div>
-            {!selectedStageForDetail ? (
-              <>
-                <Tabs
-                  value={tab}
-                  onChange={handleChange}
-                  aria-label="simple tabs example"
-                  indicatorColor="primary"
-                  textColor="primary"
-                  variant="fullWidth"
-                >
-                  {FLOWLINE_CUSTOM_TABS.map((tab, index) => (
-                    <Tab label={tab.label} {...a11yProps(tab.value)} />
-                  ))}
-                </Tabs>
-                <div className={classes.panelInfo}>
-                  <div style={{ display: tab !== 0 ? "none" : "" }}>
-                    <BaicInfoPanel
-                      control={control}
-                      reset={reset}
-                      setValue={setValue}
-                      watch={watch}
-                      flowErrors={flowErrors}
-                      setFlowErrors={setFlowErrors}
-                    />
-                  </div>
-                  <div style={{ display: tab === 0 ? "none" : "" }}>
-                    <DealStagesPanel
-                      showWarningMessage={showWarningMessage}
-                      stages={stages}
-                      flowLineType={watch("flowLineType")}
-                      setStages={setStages}
-                      stagesError={stagesError}
-                      setStageError={setStageError}
-                      setStage={setStage}
-                      handleSaveOrUpdate={handleSaveOrUpdate}
-                    />
-                  </div>
-                </div>
-              </>
-            ) : (
-              <>
-                <div style={{ marginLeft: "23px" }}>
-                  <Breadcrumbs
-                    separator={<NavigateNextIcon fontSize="small" />}
-                    aria-label="breadcrumb"
-                  >
-                    <Link
-                      style={{
-                        marginLeft: "5px",
-                        fontSize: "16px",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => {
-                        setStage(null);
-                      }}
-                    >
-                      Lane
-                    </Link>
-                    <Typography
-                      style={{
-                        color: "#18AADD",
-                        fontSize: "16px",
-                        marginLeft: "5px",
-                      }}
-                    >
-                      {selectedStageForDetail.name}
-                    </Typography>
-                  </Breadcrumbs>
-                </div>
-                <StageDetails
-                  selectedStageForDetail={selectedStageForDetail}
-                  selectedPipe={selectedPipe}
-                />
-              </>
-            )}
-          </div>
-        </RightDialog>
-      ) : (
-        <></>
-      )}
-      {deleteDialogOpen && (
-        <Dialog
-          className={classes.dialog}
-          open={deleteDialogOpen ? true : false}
-          onClose={handleCloseDeleteDialog}
-          fullWidth={false}
-          maxWidth="sm"
-        >
-          <DeleteConfirmationDialogContent
-            header={
-              deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`
-            }
-            onClose={handleCloseDeleteDialog}
-            deleteFunc={deleteFunc ? deleteFunc : () => { }}
-            m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => { }}
-          >
-            {deleteDialogOpen === "pipe"
-              ? "Are you sure you want to delete the flowline?"
-              : "Are you sure you want to delete the stage?"}
-          </DeleteConfirmationDialogContent>
-        </Dialog>
-      )}
-    </>
-  );
+	return (
+		<>
+			{openPipeDialog === 'newPipe' || openPipeDialog ? (
+				<RightDialog
+					open={openPipeDialog === 'newPipe' || openPipeDialog}
+					width={width}
+					handleClickDialogClose={() => {
+						handleSaveOrUpdate({ isClosing: true });
+						handleClose();
+					}}
+				>
+					<div className={classes.root}>
+						<div className={classes.stickyHeader}>
+							<Grid container justify="space-between" direction="row" display="flex">
+								<Grid item>
+									<Typography variant="h5" style={{ float: 'left', fontSize: '1.3rem' }}>
+										{openPipeDialog === 'newPipe' ? 'New Flowline' : 'Edit Flowline'}
+									</Typography>
+								</Grid>
+								<Grid item xs={6} className={classes.dialogActions}>
+									<IconButton
+										size="small"
+										component="span"
+										style={{
+											background: 'transparent',
+											paddingLeft: '10px',
+											align: 'center',
+										}}
+										onClick={handleMenuClick}
+									>
+										<MoreHorizIcon size="medium" />
+									</IconButton>
+									<IconButton
+										size="small"
+										component="span"
+										style={{
+											background: 'transparent',
+											paddingLeft: '10px',
+											align: 'center',
+										}}
+										onClick={() => {
+											handleClose();
+											handleSaveOrUpdate({ isClosing: true });
+										}}
+									>
+										<KeyboardTabBlackIcon />
+									</IconButton>
+									<Menu
+										id="dealMenu"
+										anchorEl={anchorEl}
+										keepMounted
+										open={Boolean(anchorEl)}
+										onClose={handleMenuClose}
+										className={classes.menu}
+										getContentAnchorEl={null}
+										anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+										transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+									>
+										<MenuItem onClick={handleDeletePipe}>
+											<ListItemIcon>
+												<DeleteIcon size="medium" />
+											</ListItemIcon>
+											<ListItemText>Delete</ListItemText>
+										</MenuItem>
+									</Menu>
+								</Grid>
+							</Grid>
+						</div>
+						{!selectedStageForDetail ? (
+							<>
+								<Tabs
+									value={tab}
+									onChange={handleChange}
+									aria-label="simple tabs example"
+									indicatorColor="primary"
+									textColor="primary"
+									variant="fullWidth"
+								>
+									{FLOWLINE_CUSTOM_TABS.map(tab => (
+										<Tab label={tab.label} {...a11yProps(tab.value)} />
+									))}
+								</Tabs>
+								<div className={classes.panelInfo}>
+									<div style={{ display: tab !== 0 ? 'none' : '' }}>
+										<BaicInfoPanel
+											control={control}
+											reset={reset}
+											setValue={setValue}
+											watch={watch}
+											flowErrors={flowErrors}
+											setFlowErrors={setFlowErrors}
+										/>
+									</div>
+									<div style={{ display: tab === 0 ? 'none' : '' }}>
+										<DealStagesPanel
+											showWarningMessage={showWarningMessage}
+											stages={stages}
+											flowLineType={watch('flowLineType')}
+											setStages={setStages}
+											stagesError={stagesError}
+											setStageError={setStageError}
+											setStage={setStage}
+											handleSaveOrUpdate={handleSaveOrUpdate}
+										/>
+									</div>
+								</div>
+							</>
+						) : (
+							<>
+								<div style={{ marginLeft: '23px' }}>
+									<Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+										<Link
+											style={{
+												marginLeft: '5px',
+												fontSize: '16px',
+												cursor: 'pointer',
+											}}
+											onClick={() => {
+												setStage(null);
+											}}
+										>
+											Lane
+										</Link>
+										<Typography
+											style={{
+												color: '#18AADD',
+												fontSize: '16px',
+												marginLeft: '5px',
+											}}
+										>
+											{selectedStageForDetail.name}
+										</Typography>
+									</Breadcrumbs>
+								</div>
+								<StageDetails selectedStageForDetail={selectedStageForDetail} selectedPipe={selectedPipe} />
+							</>
+						)}
+					</div>
+				</RightDialog>
+			) : (
+				<></>
+			)}
+			{deleteDialogOpen && (
+				<Dialog
+					className={classes.dialog}
+					open={deleteDialogOpen ? true : false}
+					onClose={handleCloseDeleteDialog}
+					fullWidth={false}
+					maxWidth="sm"
+				>
+					<DeleteConfirmationDialog
+						header={deleteDialogOpen === 'pipe' ? 'Delete Flowline' : 'Delete Stage'}
+						onClose={handleCloseDeleteDialog}
+						deleteFunc={deleteFunc ? deleteFunc : () => {}}
+					>
+						{deleteDialogOpen === 'pipe'
+							? 'Are you sure you want to delete the flowline?'
+							: 'Are you sure you want to delete the stage?'}
+					</DeleteConfirmationDialog>
+				</Dialog>
+			)}
+		</>
+	);
 };
 
 export default PipelineCustomDialog;

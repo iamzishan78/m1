@@ -6,5 +6,6 @@ build
 
 cypress/screenshots
 cypress/videos
+deleteFiles.js
 
 package-lock.json

@@ -1,5 +1,5 @@
 import { BlockBlobClient } from '@azure/storage-blob';
-import { cloneDeep, initial, join, last, split } from 'lodash';
+import { cloneDeep, initial, join, keyBy, last, merge, split, values } from 'lodash';
 import moment from 'moment';
 
 export * from './deepEqual';
@@ -48,7 +48,9 @@ export function getSearchFields(Table, customMetaFields = []) {
 		) {
 			if (Array.isArray(row.esKey)) {
 				searchFields = [...searchFields, ...row.esKey];
-			} else if (row.esKey.includes('.keyword')) searchFields.push(row.esKey);
+			} else if (row.esKey.includes('.keyword')) {
+				searchFields.push(row.esKey);
+			}
 		}
 	});
 
@@ -75,19 +77,20 @@ export function capitalizeFirstLetter(string) {
 
 export function uploadFileData(file, fileContent) {
 	const url = file.uri;
-	const interal_key = file.internalKey;
+	const internal_key = file.internalKey;
 	const file_name = file.name;
-	// const content = JSON.stringify(fileContent.file);
+
 	return new Promise((resolve, reject) => {
 		const blockBlobClient = new BlockBlobClient(url);
 		blockBlobClient
-			.uploadBrowserData(fileContent.file, {
+			.uploadData(fileContent.file, {
 				maxSingleShotSize: 4 * 1024 * 1024,
 				blobHTTPHeaders: {
 					blobContentDisposition: `attachment; filename="${file_name}"`,
+					blobContentType: fileContent.fileType,
 				},
 				metadata: {
-					Internalkey: interal_key,
+					Internalkey: internal_key,
 				},
 			})
 			.then(response => {
@@ -114,11 +117,17 @@ export function replaceLinkId(link, path) {
 }
 
 export function customStartCaseString(str, isDate) {
-	if (!str) return '';
+	if (!str) {
+		return '';
+	}
 
-	if (isDate) return moment.parseZone(new Date(+str)).format('MM/DD/YY');
+	if (isDate) {
+		return moment.parseZone(new Date(+str)).format('MM/DD/YY');
+	}
 
-	if (str && str.split(' ').length < 2) return str;
+	if (str && str.split(' ').length < 2) {
+		return str;
+	}
 
 	return str
 		.split(' ')
@@ -155,7 +164,9 @@ export function getDateWithoutTime(dateTime) {
 		newDate.setMonth(Number(splittedDate[1]) - 1);
 		newDate.setDate(Number(splittedDate[2]));
 		return newDate;
-	} else return null;
+	} else {
+		return null;
+	}
 }
 
 export const getSelectedRowsFromProps = (props = {}) => {
@@ -165,7 +176,9 @@ export const getSelectedRowsFromProps = (props = {}) => {
 };
 
 export const formatDate = (date, simple = true) => {
-	if (!date) return '--';
+	if (!date) {
+		return '--';
+	}
 	return moment(date).format(simple ? 'MM/DD/YYYY' : 'MMMM D, YYYY');
 };
 
@@ -174,6 +187,13 @@ export const processInBatches = async (promises, batchSize) => {
 		const batch = promises.slice(i, i + batchSize);
 		await Promise.all(batch);
 	}
+};
+
+export const formatDateTime = date => {
+	if (!date) {
+		return '--';
+	}
+	return moment.parseZone(new Date(date)).format('M/D/YYYY, hh:mm A');
 };
 
 export const isValidDate = dateString => {
@@ -207,4 +227,15 @@ export const isDateFormat = inputString => {
 
 	// Check if the inputString matches the date format
 	return mmddyyy.test(inputString) || mmddyy.test(inputString);
+};
+
+export const mergeArrays = (arr1, arr2, uniqueField) => {
+	const keyedArr1 = keyBy(arr1, uniqueField);
+	const keyedArr2 = keyBy(arr2, uniqueField);
+
+	// Merge the keyed objects
+	const mergedKeyed = merge({}, keyedArr1, keyedArr2);
+
+	// Convert the merged object back to an array
+	return values(mergedKeyed);
 };

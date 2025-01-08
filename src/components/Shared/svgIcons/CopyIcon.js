@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react';
 
 function CopyIcon(props) {
-    return (
-        <svg id={props.id} xmlns="http://www.w3.org/2000/svg" height="21" width="21" viewBox="9 1 35 48">
-            <path d="M9 43.95q-1.2 0-2.1-.9-.9-.9-.9-2.1V10.8h3v30.15h23.7v3Zm6-6q-1.2 0-2.1-.9-.9-.9-.9-2.1v-28q0-1.2.9-2.1.9-.9 2.1-.9h22q1.2 0 2.1.9.9.9.9 2.1v28q0 1.2-.9 2.1-.9.9-2.1.9Zm0-3h22v-28H15v28Zm0 0v-28 28Z" />
-        </svg>
-    );
+	return (
+		<svg id={props.id} xmlns="http://www.w3.org/2000/svg" height="21" width="21" viewBox="9 1 35 48">
+			<path d="M9 43.95q-1.2 0-2.1-.9-.9-.9-.9-2.1V10.8h3v30.15h23.7v3Zm6-6q-1.2 0-2.1-.9-.9-.9-.9-2.1v-28q0-1.2.9-2.1.9-.9 2.1-.9h22q1.2 0 2.1.9.9.9.9 2.1v28q0 1.2-.9 2.1-.9.9-2.1.9Zm0-3h22v-28H15v28Zm0 0v-28 28Z" />
+		</svg>
+	);
 }
 
 export default CopyIcon;

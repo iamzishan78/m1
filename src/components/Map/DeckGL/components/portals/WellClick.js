@@ -1,9 +1,11 @@
 import { memo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+
 import { useApolloClient } from '@apollo/client';
 
-import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
+
 import { popupController } from 'hookstate/popupStateController';
 
 function WellClick() {
@@ -18,26 +20,30 @@ function WellClick() {
 
 	const getElasticWell = async paramId => {
 		const { data: well } = await client.query({
-			query: GET_ES_PAGINATED_LIST,
+			query: GET_DB_DATA,
 			variables: {
-				esIndex: 'platformData:wells',
+				index: 'platformData:wells',
 				pagination: {
 					first: 1,
 					keep_alive: '1micros',
 				},
-				search: `_id:${paramId.toLowerCase()}`,
-				filters: [],
+				filters: [
+					{
+						field: '_id',
+						value: paramId.toLowerCase(),
+					},
+				],
 				sort: [],
 			},
 		});
 		const { data: tenantWell } = await client.query({
 			query: TENANTWELL,
 			variables: {
-				globalWellId: well.getESPaginatedList.hits[0]?.id,
+				globalWellId: well.getDbData.hits[0]?.id,
 			},
 		});
 		return {
-			...well.getESPaginatedList.hits[0],
+			...well.getDbData.hits[0],
 			tenantWellId: tenantWell?.tenantWell?.tenantWellId,
 		};
 	};
@@ -46,7 +52,9 @@ function WellClick() {
 		(async () => {
 			const { selectedWellId: selectedWellIdVal, data } = popupController.getValues(['selectedWellId', 'data']);
 
-			if (!selectedWellIdVal) return;
+			if (!selectedWellIdVal) {
+				return;
+			}
 
 			const currentFeature = {};
 
@@ -54,11 +62,12 @@ function WellClick() {
 				currentFeature.properties = { ...data };
 				await new Promise(resolve => setTimeout(resolve, 0));
 			} else {
-				currentFeature.properties = { ...(await getElasticWell(selectedWellIdVal)) }
+				currentFeature.properties = { ...(await getElasticWell(selectedWellIdVal)) };
 			}
 
-			if (currentFeature?.properties?.Id)
+			if (currentFeature?.properties?.Id) {
 				currentFeature.properties.id = currentFeature.properties.Id;
+			}
 
 			if (currentFeature) {
 				popupController.createPopUp(currentFeature.properties, paramId);
@@ -71,15 +80,17 @@ function WellClick() {
 				if (data) {
 					currentFeature.properties = { ...(await getElasticWell(selectedWellIdVal)) };
 
-					if (popupController.getValue('data'))
+					if (popupController.getValue('data')) {
 						popupController.updateState({
 							selectedWell: currentFeature.properties,
-							data: undefined
+							data: undefined,
 						});
+					}
 				}
 			}
 		})();
-	}, [wellSelectedCoordinates, selectedWellId]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [wellSelectedCoordinates, selectedWellId, paramId]);
 
 	return null;
 }

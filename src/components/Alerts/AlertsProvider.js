@@ -1,20 +1,23 @@
-import React from 'react'
-import { AlertsContextProvider } from './AlertsContext'
-import { makeStyles } from '@material-ui/core/styles'
-import Alerts from './Alerts'
-import { createTheme, MuiThemeProvider } from '@material-ui/core/styles'
+import React from 'react';
+
+import { makeStyles } from '@material-ui/core/styles';
+import { createTheme, MuiThemeProvider } from '@material-ui/core/styles';
+
+import Alerts from './Alerts';
+import { AlertsContextProvider } from './AlertsContext';
+
 const useStyles = makeStyles(theme => ({
-  alertsWrapper: {
-    width: '100%',
-    height:'100%'
-  }
-}))
+	alertsWrapper: {
+		width: '100%',
+		height: '100%',
+	},
+}));
 
 export default function AlertsProvider(props) {
-  let classes = useStyles()
-  return (
-    <AlertsContextProvider>
-        <Alerts className={classes.alertsWrapper}>{props.children}</Alerts>
-    </AlertsContextProvider>
-  )
+	let classes = useStyles();
+	return (
+		<AlertsContextProvider>
+			<Alerts className={classes.alertsWrapper}>{props.children}</Alerts>
+		</AlertsContextProvider>
+	);
 }
