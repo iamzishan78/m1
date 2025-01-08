@@ -1,3 +1,4 @@
+/* eslint-disable no-magic-numbers */
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,6 +16,7 @@ import mapboxgl from 'mapbox-gl';
 import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from 'mapbox-gl-draw-circle';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import parseLinkHeader from 'parse-link-header';
+import PropTypes from 'prop-types';
 
 import { drawShapeStyles, findBoundsMap } from 'components/MapControls/commonHelper';
 import MapControls from 'components/MapControls/MapControls';
@@ -103,7 +105,7 @@ const useStyles = makeStyles(() => ({
 	footerLeftLogo: {
 		position: 'absolute',
 		bottom: '5px',
-		zIndex: '1',
+		zIndex: '2000',
 		left: '10px',
 	},
 	portal: {
@@ -942,6 +944,7 @@ function Map({
 					newMap.addImage('marker-icon', image, { sdf: true });
 				});
 				setTimeout(() => {
+					// eslint-disable-next-line no-new
 					new DeckGlLayer({
 						layerId: 'top_deck_layer',
 						type: 'ScatterplotLayer',
@@ -950,6 +953,7 @@ function Map({
 						},
 					});
 
+					// eslint-disable-next-line no-new
 					new DeckGlLayer({
 						layerId: 'first_deck_layer',
 						type: 'ScatterplotLayer',
@@ -1337,5 +1341,32 @@ function Map({
 		</div>
 	);
 }
+
+Map.propTypes = {
+	type: PropTypes.string.isRequired,
+	paramId: PropTypes.string,
+	expandedPanel: PropTypes.bool, // Boolean, defaults to true
+	mapControls: PropTypes.bool, // Boolean, defaults to true
+	openSpeedDial: PropTypes.bool, // Boolean, defaults to true
+	width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]), // Can be a string or number
+	hideShape: PropTypes.bool, // Boolean, defaults to false
+	layerPadding: PropTypes.oneOfType([
+		PropTypes.number,
+		PropTypes.shape({
+			top: PropTypes.number,
+			bottom: PropTypes.number,
+			left: PropTypes.number,
+			right: PropTypes.number,
+		}),
+	]), // Null or an object with padding values
+};
+
+Map.defaultProps = {
+	expandedPanel: true,
+	mapControls: true,
+	openSpeedDial: true,
+	hideShape: false,
+	layerPadding: null,
+};
 
 export default React.memo(Map);

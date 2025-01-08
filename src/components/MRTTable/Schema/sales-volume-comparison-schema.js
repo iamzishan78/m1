@@ -34,7 +34,7 @@ const SalesVolumeComparisonMeta = {
 		},
 		// Property Number column
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.number.keyword',
 			id: 'property.number',
 			header: 'Property Number',
@@ -42,7 +42,7 @@ const SalesVolumeComparisonMeta = {
 		},
 		// Well API Number column with custom cell rendering
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wells.apiNumber.keyword',
 			id: 'wells.apiNumber',
 			header: 'Well API',
@@ -53,7 +53,7 @@ const SalesVolumeComparisonMeta = {
 		},
 		// Well Name column with custom cell rendering
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wells.wellName.keyword',
 			id: 'wells.wellName',
 			header: 'Well Name',
@@ -64,7 +64,7 @@ const SalesVolumeComparisonMeta = {
 		},
 		// Sales Date column with custom cell rendering to format the date
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'date',
 			id: 'date',
 			header: 'Sales Date',
@@ -76,7 +76,7 @@ const SalesVolumeComparisonMeta = {
 		},
 		// Product column
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'product.keyword',
 			id: 'product',
 			header: 'Product',
@@ -84,7 +84,7 @@ const SalesVolumeComparisonMeta = {
 		},
 		// Reported Volume column
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'reportedVolume',
 			id: 'reportedVolume',
 			header: 'Reported Volume',
@@ -92,7 +92,7 @@ const SalesVolumeComparisonMeta = {
 		},
 		// Statement Volume column
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'grossPropertyVolume',
 			id: 'grossPropertyVolume',
 			header: 'Statement Volume',
@@ -100,7 +100,7 @@ const SalesVolumeComparisonMeta = {
 		},
 		// Report Date column
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wells.production.data.ReportDate',
 			id: 'wells.production.data.ReportDate',
 			header: 'Report Date',
@@ -108,21 +108,21 @@ const SalesVolumeComparisonMeta = {
 		},
 		// Oil Production column
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wells.production.data.allocatedOil',
 			id: 'wells.production.data.allocatedOil',
 			header: 'Oil Production',
 		},
 		// Gas Production column
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wells.production.data.allocatedGas',
 			id: 'wells.production.data.allocatedGas',
 			header: 'Gas Production',
 		},
 		// Over/Short column with custom cell rendering to display color-coded value
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'data.allocatedWater',
 			id: 'overShort',
 			header: 'Over/Short',
@@ -144,7 +144,7 @@ const SalesVolumeComparisonMeta = {
 		},
 		// % Difference column with custom cell rendering to display color-coded value
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'data.allocatedWater',
 			id: 'difference',
 			header: '% Difference',
@@ -166,7 +166,7 @@ const SalesVolumeComparisonMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'check.checkNumber.keyword',
 			header: 'Check Number',
 			id: 'check.checkNumber',

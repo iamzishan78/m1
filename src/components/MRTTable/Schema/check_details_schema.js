@@ -155,7 +155,7 @@ const CheckDetailsMeta = {
 		},
 		// Common columns
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.purchaserNumber.keyword',
 			id: 'property.purchaserNumber',
 			header: 'Payor Prop #',
@@ -163,7 +163,7 @@ const CheckDetailsMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.name.keyword',
 			id: 'property.name',
 			header: 'Property Name',
@@ -171,21 +171,21 @@ const CheckDetailsMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.number.keyword',
 			id: 'property.number',
 			header: 'Operator Prop #',
 			enableEditing: false,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.state.keyword',
 			id: 'property.state',
 			header: 'State',
 			enableEditing: false,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.county.keyword',
 			id: 'property.county',
 			header: 'County',
@@ -193,7 +193,7 @@ const CheckDetailsMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'date',
 			id: 'date',
 			header: 'Sales Date',
@@ -208,13 +208,13 @@ const CheckDetailsMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'product.keyword',
 			id: 'product',
 			header: 'Product',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString, { isSelect: true }),
 		},
 
 		{
@@ -228,13 +228,13 @@ const CheckDetailsMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'interestType.keyword',
 			id: 'interestType',
 			header: 'Type',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString, { isSelect: true }),
 		},
 
 		{
@@ -248,7 +248,7 @@ const CheckDetailsMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'grossPropertyVolume',
 			id: 'grossPropertyVolume',
 			header: 'Prop Gross Volume',
@@ -274,7 +274,7 @@ const CheckDetailsMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'grossOwnerVolume',
 			id: 'grossOwnerVolume',
 			header: 'Owner Volume',
@@ -310,13 +310,13 @@ const CheckDetailsMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'taxType.keyword',
 			id: 'taxType',
 			header: 'Tax Type',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString, { isSelect: true }),
 		},
 
 		{
@@ -330,7 +330,7 @@ const CheckDetailsMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'deductType.keyword',
 			id: 'deductType',
 			header: 'Deduct Cd',

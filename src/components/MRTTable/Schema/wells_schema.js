@@ -63,42 +63,42 @@ const WellsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			id: 'wellName',
 			header: 'Well Name',
 			name: 'wellName.keyword',
 			getFilterByServerSide: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 
 			id: 'state',
 			header: 'State',
 			name: 'state.keyword',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 
 			id: 'county',
 			header: 'County',
 			name: 'county.keyword',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 
 			id: 'wellType',
 			header: 'Well Type',
 			name: 'wellType.keyword',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 
 			id: 'wellStatus',
 			header: 'Well Status',
 			name: 'wellStatus.keyword',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 
 			id: 'operator',
 			header: 'Operator Name',
@@ -106,7 +106,7 @@ const WellsMeta = {
 			getFilterByServerSide: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 
 			id: 'wellBoreProfile',
 			header: 'Well Profile',

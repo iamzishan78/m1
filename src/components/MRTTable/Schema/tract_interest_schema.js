@@ -88,69 +88,69 @@ const TractInterestsMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.entityDetail.name.keyword',
 			id: 'contact.entityDetail.name',
 			header: 'Owner Name',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.shapeLabel.keyword',
 			id: 'shape.shapeJson.properties.shapeLabel',
 			header: 'Tract Name',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.State.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.State',
 			header: 'State',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.County.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.County',
 			header: 'County',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.surveyMerdian.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.surveyMerdian',
 			header: 'Survey/ Meridian',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.blockTownship.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.blockTownship',
 			header: 'Block/ Township',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.rangeSection.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.rangeSection',
 			header: 'Section/ Range',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.abstractNameShortName.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.abstractNameShortName',
 			header: 'Abstract/ Section',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.qtrQtrSelection.selectedQtr.keyword',
 			id: 'shape.qtrQtrSelection.selectedQtr',
 			header: 'QTR Calls',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.sdGrossAcres',
 			id: 'shape.shapeJson.properties.sdGrossAcres',
 			header: 'Gross Acres',
@@ -158,13 +158,13 @@ const TractInterestsMeta = {
 			isSearchField: false, // Don't pass in search fields
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'depthFrom.keyword',
 			id: 'depthFrom',
 			header: 'Depth From',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'depthTo.keyword',
 			id: 'depthTo',
 			header: 'Depth To',
@@ -177,7 +177,7 @@ const TractInterestsMeta = {
 			header: 'Mineral Interest',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'nonExecRightsOnly.keyword',
 			id: 'nonExecRightsOnly',
 			header: 'Non-Exec Rights Only',
@@ -195,7 +195,7 @@ const TractInterestsMeta = {
 			header: 'ORRI',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'net_acres',
 			id: 'net_acres',
 			header: 'Net Acres',
@@ -260,20 +260,20 @@ const TractInterestsMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.contactStatus.keyword',
 			id: 'contact.contactStatus',
 			header: 'Contact Status',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.status.keyword',
 			id: 'contact.status',
 			header: 'Contact Stage',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contactOwners.keyword',
 			id: 'contactOwners',
 			header: 'Contact Owner',
@@ -282,20 +282,20 @@ const TractInterestsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'leaseStatus.keyword',
 			id: 'leaseStatus',
 			header: 'Lease Status',
 		},
 
 		// {
-		//   ...CommonSchema.COMMON_COLUMN,
+		//   ...CommonSchema.STRING_COLUMN,
 		//   name: 'shape.shapeJson.properties.department.keyword',
 		//   id: 'shape.shapeJson.properties.department',
 		//   header: 'Department',
 		// },
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			type: 'array',
 			name: 'campaigns',
 			id: 'campaigns',
@@ -305,13 +305,13 @@ const TractInterestsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'campaignPriority.keyword',
 			id: 'campaignPriority',
 			header: 'Campaign Priority',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'deals.name.keyword',
 			id: 'deals.name',
 			isExport: 'deals', // esKey for export

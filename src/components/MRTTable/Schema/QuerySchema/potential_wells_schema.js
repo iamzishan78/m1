@@ -53,13 +53,13 @@ const PotentialWellsMeta = {
 			id: 'id',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'API',
 			id: 'api',
 			name: 'api',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Well Name',
 			id: 'wellName',
 			name: 'wellName',
