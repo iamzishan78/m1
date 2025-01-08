@@ -23,7 +23,7 @@ const DealsMeta = {
 			...CommonSchema.INITAIL_PINNED,
 			header: 'Deal Name',
 			id: 'name',
-			name: 'name',
+			name: 'name.keyword',
 		},
 		{
 			...CommonSchema.CURRENCY_COLUMN,

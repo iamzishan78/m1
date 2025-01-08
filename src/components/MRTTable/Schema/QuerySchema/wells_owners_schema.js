@@ -1,12 +1,15 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+/* eslint-disable react/prop-types */
+import React from 'react';
 
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import MapAddress from 'components/MRTTable/Common/TableCells/MapAddress';
 import IsContactCell from 'components/MRTTable/Common/TableCells/isContactIcone';
+import MapAddress from 'components/MRTTable/Common/TableCells/MapAddress';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import WellOwnersToolbar from 'components/MRTTable/TablesOverride/WellOwners/Toolbar';
 
-import { tableController } from 'hookstate/tableController';
 import { WELLOWNERSQUERY } from 'graphQL/useQueryWellOwners';
+
+import { tableController } from 'hookstate/tableController';
 
 const WellOwnersMeta = {
 	query: WELLOWNERSQUERY,
@@ -38,25 +41,25 @@ const WellOwnersMeta = {
 			name: 'globalOwnerId',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Name',
 			id: 'name',
 			name: 'name',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Entity',
 			id: 'ownershipType',
 			name: 'ownershipType',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Property Name',
 			id: 'propertyName',
 			name: 'propertyName',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Interest Type',
 			id: 'interestType',
 			name: 'interestType',
@@ -100,10 +103,10 @@ const WellOwnersMeta = {
 				const Controller = tableController('WellOwnersTable');
 				const { stateValues } = Controller.useState(['ownersWhoAreContact', 'data']);
 
-				const contact = stateValues.ownersWhoAreContact?.find(
+				const contactOwner = stateValues.ownersWhoAreContact?.find(
 					contact => contact?.globalOwner === row?.original?.globalOwnerId
 				);
-				return <IsContactCell contactId={contact?._id || 'false'} rows={[row.original]} />;
+				return <IsContactCell contactId={contactOwner?.isContact || 'false'} rows={[row.original]} />;
 			},
 		},
 		{

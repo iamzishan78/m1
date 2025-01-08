@@ -70,80 +70,80 @@ const TractMeta = {
 			),
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'state.keyword',
 			id: 'state',
 			header: 'State',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'county.keyword',
 			id: 'county',
 			header: 'county',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'meridian.keyword',
 			id: 'meridian',
 			header: 'Meridian',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'township.keyword',
 			id: 'township',
 			header: 'Township',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'range.keyword',
 			id: 'range',
 			header: 'Range',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'section.keyword',
 			id: 'section',
 			header: 'Section',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'altSurvey.keyword',
 			id: 'altSurvey',
 			header: 'Alt Survey',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'legalDescription.keyword',
 			id: 'legalDescription',
 			header: 'Full Legal Description',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeArea',
 			id: 'shapeArea',
 			header: 'Tract Calc. Acres',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'sdGrossAcres',
 			id: 'sdGrossAcres',
 			header: 'Tract Gross Acres',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'unitTractId.keyword',
 			id: 'unitTractId',
 			header: 'Unit Tract ID',
 			isSearchField: false,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'uAcres',
 			id: 'uAcres',
 			header: 'Unit Tract Acres',

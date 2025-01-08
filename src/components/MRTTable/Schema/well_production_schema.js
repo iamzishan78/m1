@@ -29,7 +29,7 @@ const WellProductionMeta = {
 			header: 'Well Id',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'data.ReportDate.keyword',
 			id: 'data.ReportDate',
 			header: 'Report Date',

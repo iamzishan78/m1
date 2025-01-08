@@ -107,7 +107,6 @@ export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValue
 				...baseFilter,
 				columnType: 'date',
 				type: 'advanced',
-				isKeyword: false,
 				searchType: 'betweenInclusive',
 			};
 		case 'range':
@@ -120,7 +119,6 @@ export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValue
 			return {
 				...baseFilter,
 				type: 'advanced',
-				isKeyword: true,
 				columnType: 'string',
 			};
 	}

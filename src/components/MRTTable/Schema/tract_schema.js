@@ -131,84 +131,84 @@ const TractMeta = {
 			),
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.originalProperties.State.keyword',
 			id: 'shapeJson.properties.originalProperties.State',
 			header: 'State',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.originalProperties.County.keyword',
 			id: 'shapeJson.properties.originalProperties.County',
 			header: 'County',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.originalProperties.surveyMerdian.keyword',
 			id: 'shapeJson.properties.originalProperties.surveyMerdian',
 			header: 'Survey/ Meridian',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.originalProperties.blockTownship.keyword',
 			id: 'shapeJson.properties.originalProperties.blockTownship',
 			header: 'Block/ Township',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.originalProperties.rangeSection.keyword',
 			id: 'shapeJson.properties.originalProperties.rangeSection',
 			header: 'Section/ Range',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.originalProperties.abstractNameShortName.keyword',
 			id: 'shapeJson.properties.originalProperties.abstractNameShortName',
 			header: 'Abstract/ Section',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.originalProperties.Grantee',
 			id: 'shapeJson.properties.originalProperties.Grantee',
 			header: 'Alt Survey',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.sdGrossAcres',
 			id: 'shapeJson.properties.sdGrossAcres',
 			header: 'Gross Acres',
 			isSearchField: false, // Don't pass in search fields
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.shapeArea.keyword',
 			id: 'shapeJson.properties.shapeArea',
 			header: 'Calc Acres',
 		},
 		// Added tract NRA column
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.netRoyalityAcres.calculatedNra',
 			id: 'shapeJson.properties.netRoyalityAcres.calculatedNra',
 			header: 'Tract NRA',
 			isSearchField: false, // Don't pass in search fields
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.execNetAcres',
 			id: 'shapeJson.properties.execNetAcres',
 			header: 'Exec Net Acres',
 			isSearchField: false, // Don't pass in search fields
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.nonExecNetAcres',
 			id: 'shapeJson.properties.nonExecNetAcres',
 			header: 'Non-Exec Net Acres',
@@ -243,13 +243,13 @@ const TractMeta = {
 			header: 'Max Pricing (per NRA)',
 		},
 		// {
-		// 	...CommonSchema.COMMON_COLUMN,
+		// 	...CommonSchema.STRING_COLUMN,
 		// 	name: 'shapeJson.properties.department.keyword',
 		// 	id: 'shapeJson.properties.department',
 		// 	header: 'Department',
 		// },
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			type: 'array',
 			name: 'shapeJson.properties.campaigns.keyword',
 			id: 'shapeJson.properties.campaigns',
@@ -261,13 +261,13 @@ const TractMeta = {
 		},
 		// Department column
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.department.keyword',
 			id: 'shapeJson.properties.department',
 			header: 'Department',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.ownerName.keyword',
 			id: 'shapeJson.properties.ownerName',
 			header: 'Owner',

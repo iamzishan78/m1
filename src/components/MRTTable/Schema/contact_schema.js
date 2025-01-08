@@ -179,7 +179,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'country',
 			id: 'country',
 			header: 'Country',
@@ -187,7 +187,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'firstName.keyword',
 			id: 'firstName',
 			header: 'First Name',
@@ -196,7 +196,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'middleName.keyword',
 			id: 'middleName',
 			header: 'Middle Name',
@@ -206,7 +206,7 @@ const ContactMeta = {
 
 		// // Make formerName to visibile in contact grid
 		// {
-		// 	...CommonSchema.COMMON_COLUMN,
+		// 	...CommonSchema.STRING_COLUMN,
 		// 	name: 'formerName.keyword',
 		// 	id: 'formerName',
 		// 	header: 'Also Known As',
@@ -215,7 +215,7 @@ const ContactMeta = {
 		// },
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'lastName.keyword',
 			id: 'lastName',
 			header: 'Last Name',
@@ -224,7 +224,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'suffix.keyword',
 			id: 'suffix',
 			header: 'Suffix',
@@ -232,7 +232,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'companyName.keyword',
 			id: 'companyName',
 			header: 'Company Name',
@@ -240,21 +240,21 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'ownerType.keyword',
 			id: 'ownerType',
 			header: 'Entity Type',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'primaryAddress.keyword',
 			id: 'primaryAddress',
 			header: 'Primary Address',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'address1.keyword',
 			id: 'address1',
 			header: 'Primary Address 1',
@@ -262,7 +262,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'address2.keyword',
 			id: 'address2',
 			header: 'Primary Address 2',
@@ -270,7 +270,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'city.keyword',
 			id: 'city',
 			header: 'City',
@@ -279,7 +279,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'state.keyword',
 			id: 'state',
 			header: 'State',
@@ -288,7 +288,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'county.keyword',
 			id: 'county',
 			header: 'County',
@@ -297,7 +297,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'zip.keyword',
 			id: 'zip',
 			header: 'Zip',
@@ -306,7 +306,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'melissaRowsCount',
 			id: 'melissaRowsCount',
 			header: 'Melissa Rows Count',
@@ -315,21 +315,21 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'homePhone.keyword',
 			id: 'homePhone',
 			header: 'Primary Home Phone',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'mobilePhone.keyword',
 			id: 'mobilePhone',
 			header: 'Primary Mobile Phone',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'phone1.keyword',
 			id: 'phone1',
 			header: 'Phone 1',
@@ -338,7 +338,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'phone2.keyword',
 			id: 'phone2',
 			header: 'Phone 2',
@@ -347,7 +347,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'phone3.keyword',
 			id: 'phone3',
 			header: 'Phone 3',
@@ -356,7 +356,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'phone4.keyword',
 			id: 'phone4',
 			header: 'Phone 4',
@@ -365,7 +365,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'phone5.keyword',
 			id: 'phone5',
 			header: 'Phone 5',
@@ -374,7 +374,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'department.keyword',
 			id: 'department',
 			header: 'Department',
@@ -383,7 +383,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'title.keyword',
 			id: 'title',
 			header: 'Title',
@@ -392,28 +392,28 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'mobilephone2.keyword',
 			id: 'mobilephone2',
 			header: 'Mobile Phone 2',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'AltPhone.keyword',
 			id: 'AltPhone',
 			header: 'Primary Work Phone',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'mobilephone3.keyword',
 			id: 'mobilephone3',
 			header: 'Mobile Phone 3',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'homePhone2.keyword',
 			id: 'homePhone2',
 			header: 'Home Phone 2',
@@ -421,7 +421,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'homePhone3.keyword',
 			id: 'homePhone3',
 			header: 'Home Phone 3',
@@ -429,7 +429,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'AltPhone2.keyword',
 			id: 'AltPhone2',
 			header: 'Work Phone 2',
@@ -437,7 +437,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'AltPhone3.keyword',
 			id: 'AltPhone3',
 			header: 'Work Phone 3',
@@ -445,20 +445,20 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'primaryEmail.keyword',
 			id: 'primaryEmail',
 			header: 'Primary Email',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'account.keyword',
 			id: 'account',
 			header: 'Account',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'secondaryEmail.keyword',
 			id: 'secondaryEmail',
 			header: 'Email 2',
@@ -466,7 +466,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'linkedIn.keyword',
 			id: 'linkedIn',
 			header: 'LinkedIn Profile',
@@ -474,7 +474,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'facebook.keyword',
 			id: 'facebook',
 			header: 'Facebook Profile',
@@ -482,7 +482,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'twitter.keyword',
 			id: 'twitter',
 			header: 'Twitter Profile',
@@ -490,7 +490,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'jobTitle.keyword',
 			id: 'jobTitle',
 			header: 'Job Title',
@@ -498,7 +498,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'leadStage.keyword',
 			id: 'leadStage',
 			header: 'Lead Stage',
@@ -506,7 +506,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'age.keyword',
 			id: 'age',
 			header: 'Age',
@@ -514,7 +514,7 @@ const ContactMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'bankruptcy.keyword',
 			id: 'bankruptcy',
 			header: 'Bankruptcy Flag ',
@@ -522,7 +522,7 @@ const ContactMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'deceased.keyword',
 			id: 'deceased',
 			header: 'Deceased Flag',
@@ -530,7 +530,7 @@ const ContactMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'lien.keyword',
 			id: 'lien',
 			header: 'Lien Flag',
@@ -539,7 +539,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'relatives.keyword',
 			id: 'relatives',
 			header: 'Relative Names',
@@ -547,7 +547,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'email3.keyword',
 			id: 'email3',
 			header: 'Email 3',
@@ -555,21 +555,21 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'status.keyword',
 			id: 'status',
 			header: 'Stage',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contactStatus.keyword',
 			id: 'contactStatus',
 			header: 'Status',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'timeZone.keyword',
 			id: 'timeZone',
 			header: 'Time Zone',
@@ -577,7 +577,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'territory.keyword',
 			id: 'territory',
 			header: 'Territory',
@@ -586,7 +586,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			type: 'array',
 			name: 'campaigns',
 			id: 'campaigns',
@@ -599,7 +599,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'notes.keyword',
 			id: 'notes',
 			header: 'Comments',
@@ -607,7 +607,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'website.keyword',
 			id: 'website',
 			header: 'Website',
@@ -615,7 +615,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'industryType.keyword',
 			id: 'industryType',
 			header: 'Industry Type',
@@ -623,7 +623,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'leadSource.keyword',
 			id: 'leadSource',
 			header: 'Lead Source',
@@ -632,7 +632,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'interestSummary.wellInterestCount',
 			id: 'interestSummary.wellInterestCount',
 			header: 'Well Interest Count',
@@ -642,7 +642,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'interestSummary.unitInterestCount',
 			id: 'interestSummary.unitInterestCount',
 			header: 'Unit Interest Count',
@@ -651,7 +651,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'interestSummary.unitNraSum',
 			id: 'interestSummary.unitNraSum',
 			header: 'Unit NRA',
@@ -660,7 +660,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'interestSummary.tractInterestCount',
 			id: 'interestSummary.tractInterestCount',
 			header: 'Tract Interest Count',
@@ -669,7 +669,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'isPurchased',
 			id: 'isPurchased',
 			header: 'Purchased Data Exists',
@@ -686,7 +686,7 @@ const ContactMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contactOwners.name.keyword',
 			id: 'contactOwners.name',
 			header: 'Contact Owner',

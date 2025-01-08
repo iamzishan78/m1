@@ -212,6 +212,11 @@ function ESAutoCompleteFilter({
 				value: newValue,
 			})
 		);
+
+		if (!_.isEmpty(searchText.current)) {
+			searchText.current = '';
+			getFiltersAction();
+		}
 	};
 
 	return (
