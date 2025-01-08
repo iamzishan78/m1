@@ -52,88 +52,88 @@ const UnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'relatedShape.shapeJson.properties.uNumber.keyword',
 			id: 'relatedShape.shapeJson.properties.uNumber',
 			header: 'Unit #',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'relatedShape.shapeJson.properties.originalProperties.State.keyword',
 			id: 'relatedShape.shapeJson.properties.originalProperties.State',
 			header: 'State',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'relatedShape.shapeJson.properties.originalProperties.County.keyword',
 			id: 'relatedShape.shapeJson.properties.originalProperties.County',
 			header: 'County',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'relatedShape.shapeJson.properties.originalProperties.surveyMerdian.keyword',
 			id: 'relatedShape.shapeJson.properties.originalProperties.surveyMerdian',
 			header: 'Survey/ Meridian',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'relatedShape.shapeJson.properties.originalProperties.blockTownship.keyword',
 			id: 'relatedShape.shapeJson.properties.originalProperties.blockTownship',
 			header: 'Block/ Township',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'relatedShape.shapeJson.properties.originalProperties.rangeSection.keyword',
 			id: 'relatedShape.shapeJson.properties.originalProperties.rangeSection',
 			header: 'Section/ Range',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'relatedShape.shapeJson.properties.originalProperties.abstractNameShortName.keyword',
 			id: 'relatedShape.shapeJson.properties.originalProperties.abstractNameShortName',
 			header: 'Abstract/ Section',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'relatedShape.shapeJson.properties.uAcres.keyword',
 			id: 'relatedShape.shapeJson.properties.uAcres',
 			header: 'Unit Acres',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'relatedShape.shapeJson.properties.uStatus.keyword',
 			id: 'relatedShape.shapeJson.properties.uStatus',
 			header: 'Unit Status',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'relatedShape.shapeJson.properties.uPrimaryOperator.keyword',
 			id: 'relatedShape.shapeJson.properties.uPrimaryOperator',
 			header: 'Current Operator',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'relatedShape.shapeJson.properties.uUnitPricing.keyword',
 			id: 'relatedShape.shapeJson.properties.uUnitPricing',
 			header: 'Target Price/Acre',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'relatedShape.shapeJson.properties.uMaxUnitPricing.keyword',
 			id: 'relatedShape.shapeJson.properties.uMaxUnitPricing',
 			header: 'Max Price/Acre',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'interestSummary.unitInterestCount',
 			id: 'interestSummary.unitInterestCount',
 			header: 'Owner Count',
@@ -141,7 +141,7 @@ const UnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			type: 'array',
 			name: 'relatedShape.shapeJson.properties.campaigns.keyword',
 			id: 'relatedShape.shapeJson.properties.campaigns',
@@ -155,21 +155,21 @@ const UnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'relatedShape.shapeJson.properties.qualifier.name.keyword',
 			id: 'relatedShape.shapeJson.properties.qualifier.name',
 			header: 'Qualifier',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'relatedShape.shapeJson.properties.reviewer.name.keyword',
 			id: 'relatedShape.shapeJson.properties.reviewer.name',
 			header: 'Reviewer',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: '_ts',
 			id: '_ts',
 			header: 'Last Updated',

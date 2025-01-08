@@ -90,7 +90,7 @@ const RevenueStatementsMeta = {
 		},
 		// Column for Check Date
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'checkDate',
 			id: 'checkDate',
 			header: 'Check Date',
@@ -103,27 +103,27 @@ const RevenueStatementsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'payor.name.keyword',
 			id: 'payor.name',
 			header: 'Payor Name',
 		},
 		// Columns for Payee details
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'payee.name.keyword',
 			id: 'payee.name',
 			header: 'Owner Name',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'payee.number.keyword',
 			id: 'payee.number',
 			header: 'Owner Number',
 		},
 		// Column for Deposit Date
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'depositDate',
 			id: 'depositDate',
 			header: 'Deposit Date',
@@ -137,7 +137,7 @@ const RevenueStatementsMeta = {
 		},
 		// Column for Check Detail Lines
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'checkDetail.lines',
 			id: 'checkDetail.lines',
 			header: 'Lines',
@@ -145,19 +145,19 @@ const RevenueStatementsMeta = {
 		},
 		// Columns for additional details
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'source.keyword',
 			id: 'source',
 			header: 'Source',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'sourceId.keyword',
 			id: 'sourceId',
 			header: 'Source ID',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'approvalStatus.keyword',
 			id: 'approvalStatus',
 			header: 'Approval Status',

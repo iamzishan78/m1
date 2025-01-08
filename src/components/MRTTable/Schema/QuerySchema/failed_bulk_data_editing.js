@@ -35,7 +35,7 @@ const FailedBulkDataEditingMeta = {
 	columnVirtualization: false,
 	TableSchema: [
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			size: 350,
 			enableColumnFilter: false,
 			header: 'Time Stamp',
@@ -43,7 +43,7 @@ const FailedBulkDataEditingMeta = {
 			name: 'timestamp',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			size: 800,
 			enableColumnFilter: false,
 			header: 'Description',

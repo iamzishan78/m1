@@ -142,7 +142,7 @@ const TractInterestOwnerMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.ownerType.keyword',
 			id: 'contact.ownerType',
 			header: 'Entity Type',
@@ -166,7 +166,7 @@ const TractInterestOwnerMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'nonExecRightsOnly.keyword',
 			id: 'nonExecRightsOnly',
 			header: 'Non-Exec Rights Only',
@@ -294,20 +294,20 @@ const TractInterestOwnerMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.contactStatus.keyword',
 			id: 'contact.contactStatus',
 			header: 'Contact Status',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.status.keyword',
 			id: 'contact.status',
 			header: 'Contact Stage',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contactOwners.keyword',
 			id: 'contactOwners',
 			header: 'Contact Owner',
@@ -317,7 +317,7 @@ const TractInterestOwnerMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			type: 'array',
 			name: 'campaigns',
 			id: 'campaigns',
@@ -328,28 +328,28 @@ const TractInterestOwnerMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'campaignPriority.keyword',
 			id: 'campaignPriority',
 			header: 'Campaign Priority',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'leaseStatus.keyword',
 			id: 'leaseStatus',
 			header: 'Lease Status',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'dataSource.keyword',
 			id: 'dataSource',
 			header: 'Data Source',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'deals.name.keyword',
 			id: 'deals.name',
 			isExport: 'dealsName',
@@ -379,7 +379,7 @@ const TractInterestOwnerMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'depthFrom.keyword',
 			id: 'depthFrom',
 			header: 'Depth From',
@@ -387,14 +387,14 @@ const TractInterestOwnerMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'depthTo.keyword',
 			id: 'depthTo',
 			header: 'Depth To',
 			isExternalFilter: false,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.isPurchased',
 			header: 'Purchased Data Exists',
 			filterSelectOptions: [

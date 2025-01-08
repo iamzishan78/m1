@@ -46,7 +46,7 @@ const ProductionWellsMeta = {
 			name: 'Id',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Date',
 			id: 'ReportDate',
 			name: 'ReportDate',

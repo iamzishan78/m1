@@ -33,14 +33,14 @@ const BulkDataEditingMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			id: 'type',
 			header: 'Job Type',
 			name: 'type.keyword',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Progress',
 			id: 'percentageProgress',
 			name: 'percentageProgress.keyword',
@@ -51,7 +51,7 @@ const BulkDataEditingMeta = {
 			header: 'Created By',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			id: 'status',
 			header: 'Job Status',
 			name: 'status.keyword',

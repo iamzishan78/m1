@@ -69,7 +69,7 @@ const RelatedPaymentsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'payments.payeeAddress.keyword',
 			id: 'payments.payeeAddress',
 			header: 'Payee Address',
@@ -85,7 +85,7 @@ const RelatedPaymentsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'payments.paymentAllocation.keyword',
 			id: 'payments.paymentAllocation',
 			header: 'Payment Allocation',
@@ -123,7 +123,7 @@ const RelatedPaymentsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'payments.status.keyword',
 			id: 'payments.status',
 			header: 'Status',

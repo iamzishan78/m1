@@ -100,7 +100,7 @@ const ContactDetailRelatedContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'address1.keyword',
 			id: 'address1',
 			header: 'Address',
@@ -108,27 +108,27 @@ const ContactDetailRelatedContactMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'mobilePhone.keyword',
 			id: 'mobilePhone',
 			header: 'Mobile Phone',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'homePhone.keyword',
 			id: 'homePhone',
 			header: 'Home Phone',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'primaryEmail.keyword',
 			id: 'primaryEmail',
 			header: 'Email',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'relatedContacts.relationshipType.keyword',
 			id: 'relatedContacts.relationshipType',
 			header: 'Relationship Type',
