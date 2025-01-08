@@ -19,8 +19,6 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
-import Button from '@material-ui/core/Button';
-import { MentionsInput, Mention } from 'react-mentions';
 
 import { useMutation, useLazyQuery, useQuery } from '@apollo/client';
 
@@ -39,65 +37,9 @@ import { COMMENTSBYOBJECTSIDS } from '../../graphQL/useQueryCommentsByObjectsIds
 // import value formatters
 import capitalizeFirstLetter from '../Shared/valueformatters/capitalize-first-letter.js';
 import CommentField from './components/Fields/CommentField';
-import classNames from './MentionsUser/mention.module.css'
+import MentionsUser from '../Shared/MentionsUser'
+import { tableGlobalController } from 'hookstate/tableController';
 
-
-export const defaultStyle =  {
-	control: {
-	  backgroundColor: "#fff",
-	  fontSize: 14,
-	  fontWeight: "normal",
-	},
-  
-	"&multiLine": {
-	  control: {
-		fontFamily: "monospace",
-		minHeight: 63,
-	  },
-	  highlighter: {
-		// padding: 9,
-		// border: "1px solid transparent",
-	  },
-	  input: {
-		padding: 9,
-		border: "1px solid silver",
-	  },
-	},
-  
-	"&singleLine": {
-	  display: "inline-block",
-	  width: 180,
-  
-	  highlighter: {
-		padding: 1,
-		border: "2px inset transparent",
-	  },
-	  input: {
-		padding: 1,
-		border: "2px inset",
-	  },
-	},
-  
-	suggestions: {
-	  list: {
-		backgroundColor: "white",
-		border: "1px solid rgba(0,0,0,0.15)",
-		fontSize: 14,
-	  },
-	  item: {
-		padding: "5px 15px",
-		borderBottom: "1px solid rgba(0,0,0,0.15)",
-		"&focused": {
-		  backgroundColor: "#cee4e5",
-		},
-	  },
-	},
-  };
-
-  export const defaultMentionStyle = {
-	// backgroundColor: "#cee4e5",
-	color: 'red'
-  };
 const AntSwitch = withStyles(theme => ({
 	root: {
 		width: 28,
@@ -311,7 +253,13 @@ export default function Comments(props) {
 		fetchPolicy: 'cache-first',
 	});
 
-	const [upsertComment] = useMutation(UPSERTCOMMENT);
+	const [upsertComment] = useMutation(UPSERTCOMMENT, 
+		{
+			onCompleted: () => {
+				tableGlobalController.refetch();
+			}
+		}
+	);
 	const [removeComment] = useMutation(REMOVECOMMENT);
 
 	///////////////////// START FETCHING COMMENTS DATA ////////////////////////////////////////////
@@ -531,8 +479,6 @@ export default function Comments(props) {
 	// const [isEdit, setIsEdit] = useState(false);
 	const [profilesInfo, setProfilesInfo] = useState({});
 	const [users, setUsers] = useState([]);
-	const [mentionUsers, setMentionUsers] = useState([]);
-	const [value, setValue] = useState('');
 	const [comment, setComment] = useState('');
 	const [showActions, setShowActions] = useState(false);
 	// const [editCommentId, setEditCommentId] = useState("");
@@ -557,18 +503,6 @@ export default function Comments(props) {
 	useEffect(() => {
 		if (profilesData?.data?.profileByEmail?.profiles) {
 			setProfilesInfo(profilesData.data.profileByEmail.profiles);
-			// Map the data into the format required by react-mentions
-			const mappedData = Object.keys(profilesData.data.profileByEmail.profiles).map((key) => {
-				const user = profilesData.data.profileByEmail.profiles[key];
-				return {
-					id: user._id, // Use _id as id
-					display: user.displayName || user.fullname, // Fallback to available fields
-					email: user.email, // Include email for additional use
-					profileImage: user.profileImage,
-					name: user.displayName || user.fullname || user.name
-				};
-			});
-			setMentionUsers(mappedData)
 		}
 	}, [profilesData]);
 
@@ -603,16 +537,6 @@ export default function Comments(props) {
 		setComment('');
 		// setEditCommentId("");
 	};
-	
-
-	const convertToUserIDFormat = (input) => {
-		// Regular expression to match @[Name](userID)
-		const regex = /@\[(.*?)\]\((.*?)\)/g;
-	  
-		// Replace each mention with the {{userID}} format
-		return input.replace(regex, (match, userName, userId) => `{{${userId}}}`);
-	  }
-	  
 
 	return (
 		<Card
@@ -682,103 +606,12 @@ export default function Comments(props) {
 						</FormGroup>
 					</Grid>
 					<Grid item xs={12}>
-						<MentionsInput
-							className={"mention"}
-							value={value}
-							// style={defaultStyle}
-
-							onChange={(e) => { 
-								setValue(e.target.value)
-								console.log(e.target.value)
-								const comment = convertToUserIDFormat(e.target.value);
-								setComment(comment)
-							}}
-							classNames={classNames}
-							placeholder="Add a question or post an update"
-
-							// style={{
-							// 	...defaultStyle,
-							// 	control: { fontSize: 14, padding: 10 },
-							// 	suggestions: {
-							// 		list: { border: '1px solid #ccc', backgroundColor: 'white', fontSize: 14 },
-							// 		item: { display: 'flex', alignItems: 'center' },
-							// 	},
-							// }}
-						>
-							<Mention
-								trigger="@"
-								data={mentionUsers}
-								className={classNames.mentions__mention}
-								displayTransform={(id, display) => `@${display}`}
-								forceSuggestionsAboveCursor={true}
-								// style={{
-								// 	backgroundColor: "#cee4e5",
-								// }}
-								// style={{ color: '#007bff' }} // Custom color for mentions
-								// style={defaultMentionStyle} 
-								renderSuggestion={(suggestion, search, highlightedDisplay, index, focused) => {
-									return (
-										(
-											<div
-												key={suggestion._id}
-												style={{
-													display: 'flex',
-													alignItems: 'center',
-													backgroundColor: focused ? 'rgba(0, 0, 0, 0.08)' : 'white',
-													cursor: 'pointer',
-													padding: '5px',
-													width: '100%'
-												}}
-											>
-												<IconButton style={{ padding: '0px' }}>
-													{suggestion?.profileImage ? (
-														<Avatar src={suggestion?.profileImage} size="25" round />
-													) : (
-														<Avatar name={suggestion.name} size="25" round />
-													)}
-												</IconButton>
-												<div 
-													style={{
-														marginLeft: '8px',
-													}}
-												>
-													<strong>{suggestion?.display}</strong>
-													{/* <div style={{ fontSize: 12, color: '#666' }}>{suggestion?.display}</div> */}
-												</div>
-											</div>
-										)
-									)
-								}}
-							/>
-						</MentionsInput>
-						<Button
-							className={classes.commentBtn}
-							variant="contained"
-							color="primary"
-							id="commentButton"
-							disabled={!comment || comment === ''}
-							data-testid={'comment-add-button'}
-							onClick={e => {
-								e.stopPropagation();
-								console.log("comment",comment)
-								updateComment({ comment, commentType: selectedCommentType });
-								setValue('')
-							}}
-						>
-							Comment
-						</Button>
-						{/* <CommentField
-							profilesInfo={profilesInfo}
-							users={users}
-							upsertComment={updateComment}
+						<MentionsUser
 							comment={comment}
 							setComment={setComment}
-							showActions={showActions}
-							setShowActions={setShowActions}
-							// setEditCommentId={setEditCommentId}
-							// isEdit={isEdit}
-							// setIsEdit={setIsEdit}
-						/> */}
+							updateComment={updateComment}
+							profilesInfo={profilesInfo}
+						/>
 					</Grid>
 				</Grid>
 			</CardActions>
