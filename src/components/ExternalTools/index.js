@@ -12,6 +12,7 @@ import { SYNC_DIALPAD } from 'graphQL/useMutationSyncDialpad';
 import { EXTERNAL_TOOL_EXISTS } from 'graphQL/useQueryExternalToolExists';
 
 import { adminOperationsController } from 'hookstate/adminOperationsController';
+import { jobController } from 'hookstate/jobStateController';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
 
@@ -95,6 +96,7 @@ const ExternalTools = () => {
 					dispatch(showErrorMessage('An error occured while syncing'));
 				} else {
 					dispatch(showSuccessMessage('Contacts will be synced shortly'));
+					jobController.toggleBulkUpload();
 				}
 			});
 		}

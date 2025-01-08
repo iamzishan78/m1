@@ -1,10 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, Fragment, useRef, useCallback } from 'react';
 import Avatar from 'react-avatar';
 import { useDispatch } from 'react-redux';
 import ReactTimeAgo from 'react-time-ago';
 
-import { CircularProgress, Menu, MenuItem, Tooltip } from '@material-ui/core';
+import { CircularProgress, Menu, MenuItem, Tab, Tabs, Tooltip } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
@@ -14,6 +13,8 @@ import {
 	ExpandMore as ExpandMoreIcon,
 } from '@material-ui/icons';
 
+import { Autocomplete, TextField } from '@mui/material';
+
 import { useMutation, useLazyQuery } from '@apollo/client';
 import DOMPurify from 'dompurify';
 import TimeAgo from 'javascript-time-ago';
@@ -21,14 +22,14 @@ import en from 'javascript-time-ago/locale/en';
 import ru from 'javascript-time-ago/locale/ru';
 import { get } from 'lodash';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import CommentField from 'components/Shared/components/Fields/CommentField';
 
 import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
 import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
 import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
-import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
-import { GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
+import { GET_PROFILES_IMAGES, GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { TOGGLECOMMENTREACTION } from 'graphQL/userMutationToggleCommentReaction';
 
@@ -40,7 +41,7 @@ import { updatePinComments } from 'store/actions/commonActions';
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	container: ({ isFileDetail }) => ({
 		backgroundColor: '#F6F8F9',
 		'& .MuiFormControl-marginDense': {
@@ -52,7 +53,7 @@ const useStyles = makeStyles(theme => ({
 		flexDirection: 'column',
 		justifyContent: 'flex-end',
 	}),
-	comment: ({ commentsHeight }) => ({
+	comment: () => ({
 		position: 'relative',
 		overflow: 'auto',
 		'& *': {
@@ -148,7 +149,38 @@ const useStyles = makeStyles(theme => ({
 		hyphens: 'auto',
 		margin: '0px !Important',
 	},
+	customTabs: {
+		display: 'flex',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		float: 'right',
+		marginBottom: 'auto',
+		paddingRight: '30px',
+		'& .MuiTab-root': {
+			minWidth: '60px',
+		},
+		'& .Mui-selected': {
+			color: '#18AADD',
+		},
+	},
+	autocomplete: {
+		flexShrink: '1',
+		marginTop: '10px',
+		marginRight: '-20px',
+		paddingLeft: '10px',
+	},
 }));
+
+const typeOptions = [
+	{ label: 'All', value: 'all' },
+	{ label: 'Call', value: 'call' },
+	{ label: 'Meeting', value: 'meeting' },
+	{ label: 'Task', value: 'task' },
+	{ label: 'Deadline', value: 'deadline' },
+	{ label: 'Email', value: 'email' },
+	{ label: 'Text Message', value: 'text_message' },
+	{ label: 'Mailer', value: 'mailer' },
+];
 
 function urlify(text) {
 	const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -162,9 +194,9 @@ export function getLikedPeoplesName(comment, myUserId) {
 	const { likedBy } = comment;
 	const names = (likedBy || []).map(user => {
 		if (user._id === myUserId) {
-			return <li>You</li>;
+			return <li key={user._id}>You</li>;
 		} else {
-			return <li>{user.name || user.displayName}</li>;
+			return <li key={user._id}>{user.name || user.displayName}</li>;
 		}
 	});
 
@@ -223,7 +255,7 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 													.substring(lastIndex, match.index)
 													.split('\n')
 													.map((text, idx) => (
-														<React.Fragment key={`text-${idx}`}>
+														<React.Fragment key={`text-${text}`}>
 															{idx > 0 && <br />}
 															{text}
 														</React.Fragment>
@@ -249,7 +281,7 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 												.substring(lastIndex)
 												.split('\n')
 												.map((text, idx) => (
-													<React.Fragment key={`end-text-${idx}`}>
+													<React.Fragment key={`end-text-${text}`}>
 														{idx > 0 && <br />}
 														{text}
 													</React.Fragment>
@@ -267,14 +299,18 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 						);
 					}
 
-					return <p className={classes.commentWords}>{splittedWord}</p>;
+					return (
+						<p key={splittedWord} className={classes.commentWords}>
+							{splittedWord}
+						</p>
+					);
 				} else {
 					// Process regular words, ensure spaces are correctly handled
 					const _word = index !== formatComment.length - 1 ? `${word}` : word;
 					const sanitizedData = () => ({
 						__html: DOMPurify.sanitize(urlify(_word)),
 					});
-					return <span className={classes.commentWords} dangerouslySetInnerHTML={sanitizedData()}></span>;
+					return <span key={_word} className={classes.commentWords} dangerouslySetInnerHTML={sanitizedData()}></span>;
 				}
 			})}
 		</div>
@@ -283,6 +319,9 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 
 export default function CommentComponent(props) {
 	const { targetSourceId, commentsHeight } = props;
+	const ACTIVITY_TAB = 2;
+	const MAX_COMMENTS = 7;
+
 	const classes = useStyles({
 		commentsHeight,
 		isFileDetail: props.targetLabel === 'file' || false,
@@ -306,6 +345,9 @@ export default function CommentComponent(props) {
 	const [showCommentActionId, setShowCommentActionId] = useState(null);
 	const [loadingComments, setLoadingComments] = useState(true);
 	const [scrollIntoView, setScrollIntoView] = useState(false);
+	const [tab, setTab] = useState(0);
+	const [activityType, setActivityType] = useState('all');
+
 	const commentContainerRef = useRef(null);
 
 	const [removeComment] = useMutation(REMOVECOMMENT);
@@ -323,6 +365,25 @@ export default function CommentComponent(props) {
 	const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(COMMENTSBYOBJECTIDQUERY, {
 		fetchPolicy: 'no-cache',
 	});
+
+	const sortArrayBasedOnTs = array => {
+		const compare = (a, b) => {
+			if (a.ts < b.ts) {
+				return -1;
+			}
+			if (b.ts < a.ts) {
+				return 1;
+			}
+
+			return 0;
+		};
+		if (!props.multipleIds) {
+			array.sort(compare);
+		}
+
+		return array;
+	};
+
 	useEffect(() => {
 		getAllMongoUsers();
 	}, [getAllMongoUsers]);
@@ -358,33 +419,43 @@ export default function CommentComponent(props) {
 	useEffect(() => {
 		let allComments = [];
 		if (dataComments && dataComments.commentsByObjectId) {
+			let activityData = [];
 			if (props.activityLog && props.activityLog.length > 0) {
-				let activityData = [];
-				props.activityLog.forEach(element => {
-					const timestamp = element?.createAt
-						? new Date(new Date(element.createAt).toUTCString()).getTime()
-						: new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime();
-					activityData.push({
-						user: { name: element.ownerName, email: element.ownerName },
-						activityData: element,
-						comment: element.notes,
-						outcome: element.outcome,
-						ts: timestamp,
-						isActivity: true,
-						isEdited: false,
-						public: true,
-						__typename: 'Comment',
+				props.activityLog
+					.filter(act => (activityType === 'all' ? true : act?.type === activityType))
+					.forEach(element => {
+						const timestamp = element?.createAt
+							? new Date(new Date(element.createAt).toUTCString()).getTime()
+							: new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime();
+						activityData.push({
+							user: { name: element.ownerName, email: element.ownerName },
+							activityData: element,
+							comment: element.notes,
+							outcome: element.outcome,
+							ts: timestamp,
+							isActivity: true,
+							isEdited: false,
+							public: true,
+							__typename: 'Comment',
+						});
 					});
-				});
 				allComments = dataComments.commentsByObjectId.concat(activityData);
 			} else {
 				allComments = sortArrayBasedOnTs([...dataComments.commentsByObjectId]);
 			}
 			allComments = sortArrayBasedOnTs(allComments);
-			setCommentsArray(allComments);
+
+			if (tab === 0) {
+				setCommentsArray(allComments);
+			} else if (tab === 1) {
+				allComments = sortArrayBasedOnTs([...dataComments.commentsByObjectId]);
+				setCommentsArray(allComments);
+			} else if (tab === ACTIVITY_TAB) {
+				setCommentsArray(activityData);
+			}
 		}
 		setLoadingComments(false);
-	}, [dataComments, props.activityLog]);
+	}, [dataComments, props.activityLog, tab, activityType]);
 
 	useEffect(() => {
 		setLoadingComments(false);
@@ -430,23 +501,6 @@ export default function CommentComponent(props) {
 		return pinnedComments;
 	}, [commentsArray]);
 
-	const sortArrayBasedOnTs = array => {
-		const compare = (a, b) => {
-			if (a.ts < b.ts) {
-				return -1;
-			}
-			if (b.ts < a.ts) {
-				return 1;
-			}
-
-			return 0;
-		};
-		if (!props.multipleIds) {
-			array.sort(compare);
-		}
-
-		return array;
-	};
 	const newCommentCleaner = value =>
 		value.trim()[value.trim().length - 1] === '.'
 			? value
@@ -618,7 +672,7 @@ export default function CommentComponent(props) {
 			},
 			refetchQueries: ['getCommentsByObjectId', 'getCommentsCounter', 'getCommentsByObjectsIds'],
 			awaitRefetchQueries: true,
-		}).then(result => {
+		}).then(() => {
 			setScrollIntoView(false);
 		});
 		setShowActions(false);
@@ -626,7 +680,8 @@ export default function CommentComponent(props) {
 	};
 
 	const getCount = () => {
-		let indexToShow = commentsArray.length > 5 ? commentsArray.length - 5 : 0;
+		const n = 5;
+		let indexToShow = commentsArray.length > n ? commentsArray.length - n : 0;
 		return indexToShow;
 	};
 
@@ -656,9 +711,9 @@ export default function CommentComponent(props) {
 		() => (
 			<>
 				{pinnedComments?.map(
-					(pinnedComment, key) =>
+					pinnedComment =>
 						pinnedComment?.user?.name && (
-							<Fragment key={key}>
+							<Fragment key={pinnedComment?._id}>
 								<Grid
 									id="commentsArea"
 									container
@@ -727,6 +782,47 @@ export default function CommentComponent(props) {
 	return (
 		<>
 			<div className={classes.container}>
+				{props.targetLabel === 'Contact' && (
+					<div className={classes.customTabs}>
+						<Tabs
+							variant="scrollable"
+							value={tab}
+							textColor="primary"
+							onChange={(e, newValue) => {
+								setTab(newValue);
+							}}
+						>
+							<Tab label="All" disabled={editCommentId} />
+							<Tab label="Comments" disabled={editCommentId} />
+							<Tab label="Activities" disabled={editCommentId} />
+						</Tabs>
+						{tab === ACTIVITY_TAB && (
+							<div>
+								<Autocomplete
+									id={'activity-Type'}
+									size="small"
+									disableClearable
+									className={classes.autocomplete}
+									options={typeOptions}
+									onChange={(e, option) => setActivityType(option.value)}
+									value={typeOptions.find(option => option.value === activityType) || null}
+									getOptionLabel={option => option.label}
+									getOptionSelected={(option, value) => option.value === value.value}
+									renderInput={params => (
+										<TextField
+											{...params}
+											size="small"
+											margin="dense"
+											variant="outlined"
+											label="Type"
+											InputLabelProps={{ shrink: true }}
+										/>
+									)}
+								/>
+							</div>
+						)}
+					</div>
+				)}
 				<div className={classes.comment} id="commentsContainer">
 					{!loadingComments ? (
 						<>
@@ -735,7 +831,7 @@ export default function CommentComponent(props) {
 								pinnedCommentsJsx
 							}
 
-							{!showAllComments && commentsArray.length > 7 && (
+							{!showAllComments && commentsArray.length > MAX_COMMENTS && (
 								<div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
 									<span
 										onClick={() => {
@@ -746,17 +842,17 @@ export default function CommentComponent(props) {
 									</span>
 								</div>
 							)}
-							{showAllComments && commentsArray.length > 7 && (
+							{showAllComments && commentsArray.length > MAX_COMMENTS && (
 								<div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
 									<span onClick={() => setShowAllComments(false)}>Hide Earlier Comments</span>
 								</div>
 							)}
 
 							{commentsArray.map((eachComment, index) => {
-								let indexToShow = commentsArray.length > 7 ? commentsArray.length - 7 : 0;
+								let indexToShow = commentsArray.length > MAX_COMMENTS ? commentsArray.length - MAX_COMMENTS : 0;
 								return (
 									eachComment?.user?.name && (
-										<Fragment key={index}>
+										<Fragment key={eachComment?._id}>
 											{(showAllComments || index >= indexToShow) && (
 												<Grid
 													id="commentsArea"
@@ -872,7 +968,7 @@ export default function CommentComponent(props) {
 																</div>
 															))}
 													</Grid>
-													{eachComment?.commentType?.commentType !== 'unitCreation' && (
+													{eachComment?.commentType?.commentType !== 'unitCreation' && !eachComment.isActivity && (
 														<Grid item style={{ maxWidth: '75px', padding: '0px' }}>
 															<IconButton onClick={() => callToggleCommentReactionMutation(eachComment)}>
 																<div
@@ -905,7 +1001,7 @@ export default function CommentComponent(props) {
 					)}
 					<div id="checkIf" ref={commentContainerRef} />
 				</div>
-				{!editCommentId && (
+				{!editCommentId && tab !== ACTIVITY_TAB && (
 					<div
 						style={{
 							paddingBottom: '20px',
@@ -969,7 +1065,7 @@ export const CommentText = ({ eachComment, users }) => {
 
 	return (
 		<div id={eachComment?._id} className={`${classes.whiteSpace}`}>
-			{formatComment.map((word, index) => {
+			{formatComment.map(word => {
 				if (word.includes('{{') && word.includes('}}')) {
 					const splittedWord = word.split(/\r?\n/);
 
@@ -984,16 +1080,16 @@ export const CommentText = ({ eachComment, users }) => {
 										let id = sWord.split('{{')[1];
 										id = id.split('}}')[0];
 										return (
-											<p className={`${classes.commentWords} blue`}>
+											<p key={id} className={`${classes.commentWords} blue`}>
 												{firstPart}@{users?.find(user => user._id === id)?.name}
 												{secondPart}{' '}
 											</p>
 										);
 									} else if (sWord === '') {
-										return <br />;
+										return <br key={''} />;
 									} else {
 										return (
-											<p className={classes.commentWords}>
+											<p key={sWord} className={classes.commentWords}>
 												{sWord} <br />{' '}
 											</p>
 										);
@@ -1003,9 +1099,17 @@ export const CommentText = ({ eachComment, users }) => {
 						);
 					}
 
-					return <p className={classes.commentWords}>{splittedWord}</p>;
+					return (
+						<p key={splittedWord} className={classes.commentWords}>
+							{splittedWord}
+						</p>
+					);
 				} else {
-					return <p className={classes.commentWords}>{word} </p>;
+					return (
+						<p key={word} className={classes.commentWords}>
+							{word}{' '}
+						</p>
+					);
 				}
 			})}
 		</div>
@@ -1058,7 +1162,7 @@ const ActionMenu = ({
 			>
 				<MenuItem
 					id="editComment"
-					onClick={event => {
+					onClick={() => {
 						setEditCommentId(eachComment?._id);
 						setEditComment(eachComment?.comment);
 						setShowActions(true);
@@ -1083,4 +1187,35 @@ const ActionMenu = ({
 			</Menu>
 		</>
 	);
+};
+
+CommonCommentText.propTypes = {
+	eachComment: PropTypes.object,
+	users: PropTypes.object,
+	isPinned: PropTypes.bool,
+};
+CommentText.propTypes = {
+	eachComment: PropTypes.object,
+	users: PropTypes.object,
+};
+
+CommentComponent.propTypes = {
+	targetSourceId: PropTypes.string,
+	commentsHeight: PropTypes.string,
+	targetLabel: PropTypes.string,
+	multipleIds: PropTypes.array,
+	activityLog: PropTypes.array,
+	setNewCommentId: PropTypes.func,
+	showCommentType: PropTypes.string,
+};
+ActionMenu.propTypes = {
+	pinToTop: PropTypes.func,
+	unpinFromTop: PropTypes.func,
+	showActions: PropTypes.func,
+	eachComment: PropTypes.object,
+	setEditCommentId: PropTypes.func,
+	setEditComment: PropTypes.func,
+	deleteComment: PropTypes.func,
+	setShowActions: PropTypes.func,
+	setIsEdit: PropTypes.func,
 };
