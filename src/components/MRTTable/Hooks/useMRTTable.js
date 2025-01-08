@@ -194,9 +194,6 @@ const useMRTTable = tableKey => {
 				},
 				onScroll: e => fetchMoreOnBottomReached?.(e.target),
 			},
-			...(isClientSide && {
-				filterFns, // adding label custom for filter mode
-			}),
 			localization: localizationOptions,
 			muiTableProps: {
 				ref: tableRef, // get access to the table element
@@ -215,6 +212,7 @@ const useMRTTable = tableKey => {
 						...(tableStateValues?.isInFiniteScroll && { enablePagination: false }),
 						selectAllMode: tableStateValues?.isSelectAllAllowed ? 'all' : 'page',
 						enableFacetedValues: tableStateValues?.enableFacetedValues,
+						filterFns, // adding label custom for filter mode
 					}
 				: {
 						onGroupingChange: groupingFunc => {
@@ -248,16 +246,24 @@ const useMRTTable = tableKey => {
 						manualSorting: true,
 						enableHiding: tableStateValues?.enableHiding,
 						manualFiltering: true,
-						onGlobalFilterChange: globalFilter => {
-							Controller.setGlobalFilter(globalFilter);
+						onGlobalFilterChange: globalFilterFunc => {
+							const globalFilter = tableState.globalFilter.get({ noproxy: true });
+
+							const newGlobalFilter =
+								typeof globalFilterFunc === 'function' ? globalFilterFunc(globalFilter) : globalFilterFunc;
+
+							Controller.setGlobalFilter(newGlobalFilter);
+
+							return newGlobalFilter;
 						},
 						onColumnPinningChange: pinningFunc => {
 							const { columnPinning, TableSchema } = tableState.get({ noproxy: true });
 
-							const newPinning =
-								pinningFunc.left || pinningFunc.right ? pinningFunc : pinningFunc(tableStateValues?.columnPinning);
+							const newPinning = typeof pinningFunc === 'function' ? pinningFunc(columnPinning) : pinningFunc;
 
 							Controller.setColumnPinning(newPinning, columnPinning, TableSchema);
+
+							return newPinning;
 						},
 						onRowSelectionChange: checkFunc => {
 							if (typeof checkFunc !== 'function') {
@@ -392,8 +398,14 @@ const useMRTTable = tableKey => {
 							});
 						},
 
-						onColumnOrderChange: ordering => {
-							Controller.setColumnOrdering(ordering);
+						onColumnOrderChange: orderingFunc => {
+							const ordering = tableState.ordering.get({ noproxy: true });
+
+							const newOrder = typeof orderingFunc === 'function' ? orderingFunc(ordering || []) : orderingFunc;
+
+							Controller.setColumnOrdering(newOrder);
+
+							return newOrder;
 						},
 
 						onColumnVisibilityChange: visibilityFunc => {
@@ -415,7 +427,16 @@ const useMRTTable = tableKey => {
 							Controller.setColumnVisibility(showColumns);
 						},
 						onShowColumnFiltersChange: showColumnFilterFunc => {
-							tableState.showColumnFilters.set(showColumnFilterFunc);
+							const showColumnFilters = tableState.showColumnFilters.get({ noproxy: true });
+
+							const newShowColumnFilters =
+								typeof showColumnFilterFunc === 'function'
+									? showColumnFilterFunc(showColumnFilters)
+									: showColumnFilterFunc;
+
+							tableState.showColumnFilters.set(newShowColumnFilters);
+
+							return newShowColumnFilters;
 						},
 						onSortingChange: sortingFunc => {
 							const sorting = tableState.sorting.get({ noproxy: true });
