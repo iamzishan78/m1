@@ -90,7 +90,7 @@ const CustomAutocomplete = ({
 				<TextField
 					type="date"
 					label={'Date From'}
-					value={field.value?.gte || ''}
+					value={field.value?.gte || '1970-01-01'}
 					onChange={e => handleDateChange('gte', e.target.value)}
 					InputLabelProps={{ shrink: true }}
 					InputProps={{
@@ -112,7 +112,7 @@ const CustomAutocomplete = ({
 				<TextField
 					type="date"
 					label={'Date To'}
-					value={field.value?.lte || ''}
+					value={field.value?.lte || moment().format('YYYY-MM-DD')}
 					onChange={e => handleDateChange('lte', e.target.value)}
 					InputLabelProps={{ shrink: true }}
 					InputProps={{

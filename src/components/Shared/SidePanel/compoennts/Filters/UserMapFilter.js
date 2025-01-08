@@ -194,7 +194,12 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 					? mapView.filterValues && isString
 						? [mapView.filterValues]
 						: mapView.filterValues
-					: mapView.filterValues,
+					: _filterType === 'date' && !mapView.filterValues
+						? {
+								gte: '1970-01-01',
+								lte: moment().format('YYYY-MM-DD'),
+							}
+						: mapView.filterValues,
 			};
 		});
 	};
@@ -335,7 +340,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 
 		// making datasets fields in the below code block
 		let datasets = globalStateController.getValue('datasets');
-		datasets = datasets.filter(dataset => dataset.sourceName !== 'M1 Platform');
+		datasets = datasets?.filter(dataset => dataset.sourceName !== 'M1 Platform');
 
 		let datasetsShapeNames = datasets.flatMap(dataset =>
 			dataset.categories.map(category => ({

@@ -226,7 +226,12 @@ const tableESStateControllerHandler = state => ({
 
 		const mapViewFilters = selectedMapViewFilters
 			.filter(view => view.dataSourceName === layerIdentifier)
-			.filter(view => view?.filterValues?.length > 0 || ['empty', 'notEmpty'].includes(view?.filterType))
+			.filter(
+				view =>
+					view?.filterValues?.length > 0 ||
+					['empty', 'notEmpty'].includes(view?.filterType) ||
+					(view?.filterValues?.gte && view?.filterValues?.lte)
+			)
 			.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues));
 
 		Object.keys(columnFilterModesFnRefs).forEach(key => delete columnFilterModesFnRefs[key]);
@@ -651,7 +656,7 @@ const tableESStateControllerHandler = state => ({
 								? existingFilter.filterType
 								: tableState?.esIndex === 'shapefile_flat' || typeof filter.value === 'object'
 									? 'multiselect'
-									: filter?.searchType,
+									: filter?.searchType || 'singleselect',
 
 						fieldName: filter.field,
 						filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
