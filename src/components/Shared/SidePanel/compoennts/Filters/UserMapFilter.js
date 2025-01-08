@@ -10,8 +10,6 @@ import _ from 'lodash';
 import moment from 'moment';
 import PropTypes from 'prop-types'; // Import PropTypes for prop validation
 
-
-
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } from 'components/MRTTable/utils/data';
@@ -25,7 +23,6 @@ import { tableController } from 'hookstate/tableController';
 
 import { customLayersFieldAccessors } from './consts';
 import CustomAutocomplete from './CustomAutocomplete';
-
 
 const TWO = 2;
 const FIVE_HUNDRED = 500;
@@ -352,8 +349,6 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 
 		const wellsFilterOptions = filterTypeOptions.filter(option => ['multiselect'].includes(option.value));
 
-		const selectedField = getSelectedField(mapView?.fieldName) || fieldName;
-
 		// Making filter options based on selected dataset
 		let requiredFilterOptions = [];
 		if (dataSourceName === 'Wells') {
@@ -397,16 +392,16 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 						v?.type
 							? null
 							: {
-								label: 'Multi Select',
-								value: 'multiselect',
-							}
+									label: 'Multi Select',
+									value: 'multiselect',
+								}
 					);
 					setValue(`mapViews.${index}.filterValues`, null);
 
 					if (tableKey) {
 						tableController(tableKey).clearFilter(
 							(previousValue?.value || previousValue)?.replace('.keyword', ''),
-							true,
+							true
 						);
 						tableController(tableKey).setFilterMode(
 							(fieldName?.value || fieldName)?.replace('.keyword', ''),
@@ -418,8 +413,8 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			},
 		];
 
-		const isDate = selectedField?.type === 'date';
-		const isRange = selectedField?.type === 'range';
+		const isDate = fieldName?.type === 'date';
+		const isRange = fieldName?.type === 'range';
 
 		if (!isDate && !isRange) {
 			fields.push({
@@ -442,7 +437,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				label: 'Filter Values',
 				options: filterValuesOptions || [], // Dynamic based on filter options
 				defaultValue: mapView?.filterValues, // Set default value if mapView is provided
-				type: selectedField?.type,
+				type: fieldName?.type,
 			});
 		}
 		return fields;
