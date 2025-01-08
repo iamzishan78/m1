@@ -442,7 +442,7 @@ const tableESStateControllerHandler = state => ({
 		switch (mode) {
 			case 'singleselect':
 				if (isClientSide) {
-					updatedColumnnSchema.filterVariant = 'select';
+					updatedColumnnSchema.filterVariant = 'autocomplete';
 				} else {
 					updatedColumnnSchema.Filter = columnSchema?.SingleSelect;
 				}
