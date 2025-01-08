@@ -332,6 +332,7 @@ const useMRTTable = tableKey => {
 										type: item?.type,
 										field: item?.field,
 										searchType: item?.searchType,
+										isMapViewFilter: item?.isMapViewFilter,
 										columnType: column?.type,
 									};
 
@@ -351,7 +352,7 @@ const useMRTTable = tableKey => {
 								const { mode, isKeyword } = tableState?.filterModes?.get({ noproxy: true })?.[filter.id] || {};
 
 								let { value } = filter;
-								const { type, oRFilter, columnType, searchType } = filter;
+								const { type, oRFilter, columnType, searchType, isMapViewFilter } = filter;
 								if (mode && typeof filter.value === 'string' && columnType !== 'date') {
 									value = isKeyword ? filter.value : +filter.value || 0;
 								}
@@ -368,6 +369,7 @@ const useMRTTable = tableKey => {
 									isKeyword,
 									value,
 									type,
+									isMapViewFilter,
 									oRFilter,
 									...(mode &&
 										!['multiselect', 'singleselect'].includes(mode) && {

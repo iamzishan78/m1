@@ -56,33 +56,33 @@ const TractPotentialUnitsMeta = {
 			),
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.uNumber.keyword',
 			id: 'shapeJson.properties.uNumber',
 			header: 'Unit Number',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.uType.keyword',
 			id: 'shapeJson.properties.uType',
 			header: 'Unit Type',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.uAcres.keyword',
 			id: 'shapeJson.properties.uAcres',
 			header: 'Unit Acres',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.uStatus.keyword',
 			id: 'shapeJson.properties.uStatus',
 			header: 'Unit Status',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.uPrimaryOperator.keyword',
 			id: 'shapeJson.properties.uPrimaryOperator',
 			header: 'Current Operator',
@@ -104,19 +104,19 @@ const TractPotentialUnitsMeta = {
 			size: 320,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.qualifier.name.keyword',
 			id: 'shapeJson.properties.qualifier.name',
 			header: 'Qualifier',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.reviewer.name.keyword',
 			id: 'shapeJson.properties.reviewer.name',
 			header: 'Reviewer',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			type: 'array',
 			name: 'shapeJson.properties.campaigns.keyword',
 			id: 'shapeJson.properties.campaigns',

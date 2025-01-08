@@ -314,7 +314,6 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 					}
 				}
 
-				// if (!tableController(tableKey))
 				ViewController.updateState({
 					selectedView: {
 						...selectedMapView,
@@ -392,7 +391,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				label: 'Field Name',
 				options: customLayersFieldAccessors[dataSourceName]?.keys || layer?.layerSchema || [], // Dynamic based on data source
 				defaultValue: mapView?.dataSourceName ? getSelectedField(mapView?.fieldName) || mapView?.fieldName : null, // Set default value if mapView is provided
-				onChange: (_, v) => {
+				onChange: (e, v, r, previousValue) => {
 					setValue(
 						`mapViews.${index}.filterType`,
 						v?.type
@@ -408,7 +407,6 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 						tableController(tableKey).clearFilter(
 							(previousValue?.value || previousValue)?.replace('.keyword', ''),
 							true,
-							false
 						);
 						tableController(tableKey).setFilterMode(
 							(fieldName?.value || fieldName)?.replace('.keyword', ''),

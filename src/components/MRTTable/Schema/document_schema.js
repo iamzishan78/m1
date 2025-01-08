@@ -144,28 +144,28 @@ const DocumentMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'documentNumber.keyword',
 			id: 'documentNumber',
 			header: 'File Number',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'documentName.keyword',
 			id: 'documentName',
 			header: 'File Description',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'documentType.keyword',
 			id: 'documentType',
 			header: 'File Type',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'documentDate',
 			id: 'documentDate',
 			header: 'File Date',
@@ -177,21 +177,21 @@ const DocumentMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'book.keyword',
 			id: 'book',
 			header: 'Book',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'page.keyword',
 			id: 'page',
 			header: 'Page',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'instrument.keyword',
 			id: 'instrument',
 			header: 'Instrument #',

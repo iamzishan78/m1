@@ -69,7 +69,7 @@ const RelatedBillingPartiesMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'billingParties.address.keyword',
 			id: 'billingParties.address',
 			header: 'Billing Party Address',
@@ -85,7 +85,7 @@ const RelatedBillingPartiesMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'billingParties.allocation.keyword',
 			id: 'billingParties.allocation',
 			header: 'Billing Party Allocation',
@@ -123,7 +123,7 @@ const RelatedBillingPartiesMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'billingParties.status.keyword',
 			id: 'billingParties.status',
 			header: 'Status',

@@ -55,7 +55,7 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 	const metaDataTableSchema = data.map((item, index) => {
 		const key = item?.esKey.replaceAll('.keyword', '');
 		return {
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			...item,
 			name: `${key}.keyword`,
 			id: key,
@@ -175,7 +175,7 @@ const tableESStateControllerHandler = state => ({
 		}
 
 		let _Schema = TableSchema;
-		if (!rest.isGeneric && !isClientSide && !rest.enableEditing) {
+		if (!rest.isGeneric && !isClientSide && !rest.enableEditing && !rest?.disableRowSelection) {
 			_Schema.unshift({
 				...CommonSchema.SELECT_SOME,
 				Header: () => <TableHeaderMoreOptions tableKey={tableKey} />,
@@ -663,7 +663,7 @@ const tableESStateControllerHandler = state => ({
 		return esFilters;
 	},
 
-	clearFilter: (field, updateMapView = true, viewChanged = true) => {
+	clearFilter: (field, updateMapView = true) => {
 		const filtersState = state.filters?.get({ noproxy: true });
 		const selecteView = viewStateController('MapView').getValue('selecteView');
 		const mapViewsFitlers = selecteView?.filters || [];

@@ -47,28 +47,28 @@ const PropertyRevenueDetailMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'check.payor.name.keyword',
 			id: 'check.payor.name',
 			header: 'Purchaser',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.purchaserNumber.keyword',
 			id: 'property.purchaserNumber',
 			header: 'Purhaser Property #',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.name.keyword',
 			id: 'property.name',
 			header: 'Property Name',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'check.checkDate',
 			id: 'check.checkDate',
 			header: 'Check Date',
@@ -80,7 +80,7 @@ const PropertyRevenueDetailMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'date',
 			id: 'date',
 			header: 'Sales Date',
@@ -92,7 +92,7 @@ const PropertyRevenueDetailMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'product.keyword',
 			id: 'product',
 			header: 'Product',
@@ -106,7 +106,7 @@ const PropertyRevenueDetailMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'interestType.keyword',
 			id: 'interestType',
 			header: 'Type',
@@ -120,7 +120,7 @@ const PropertyRevenueDetailMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'grossPropertyVolume',
 			id: 'grossPropertyVolume',
 			header: 'Prop Gross Volume',
@@ -140,7 +140,7 @@ const PropertyRevenueDetailMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'grossOwnerVolume',
 			id: 'grossOwnerVolume',
 			header: 'Owner Volume',
@@ -167,7 +167,7 @@ const PropertyRevenueDetailMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'taxType.keyword',
 			id: 'taxType',
 			header: 'Tax Type',
@@ -181,7 +181,7 @@ const PropertyRevenueDetailMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'deductType.keyword',
 			id: 'deductType',
 			header: 'Deduct Cd',

@@ -60,7 +60,7 @@ const RelatedPaymentsMeta = {
 			header: 'Payment Type',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'startDate',
 			id: 'startDate',
 			header: 'Start Date',
@@ -71,7 +71,7 @@ const RelatedPaymentsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'endDate',
 			id: 'endDate',
 			header: 'End Date',
@@ -82,13 +82,13 @@ const RelatedPaymentsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'frequency.keyword',
 			id: 'frequency',
 			header: 'Frequency',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'nextPayment',
 			id: 'nextPayment',
 			header: 'Next Payment',
@@ -99,7 +99,7 @@ const RelatedPaymentsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'amount.keyword',
 			id: 'amount',
 			type: 'number',
@@ -112,19 +112,19 @@ const RelatedPaymentsMeta = {
 			header: 'Company Share',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'responsibleParty.keyword',
 			id: 'responsibleParty',
 			header: 'Responsible Party',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'assignedTo.displayName.keyword',
 			id: 'assignedTo.displayName',
 			header: 'Assigned To',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'paymentStatus.keyword',
 			id: 'paymentStatus',
 			header: 'Payment Status',

@@ -1,7 +1,6 @@
 /* eslint-disable import/order */
 import _ from 'lodash';
 import React, { useContext, useState, useRef, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { useLazyQuery, useApolloClient, useQuery } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,6 +14,8 @@ import StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
 import * as turf from '@turf/turf';
 import gjv from 'geojson-validation';
 import parseLinkHeader from 'parse-link-header';
+import PropTypes from 'prop-types';
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
 // Internal imports
 import MapControls from 'components/MapControls/MapControls';
@@ -133,7 +134,7 @@ const useStyles = makeStyles(() => ({
 	footerLeftLogo: {
 		position: 'absolute',
 		bottom: '5px',
-		zIndex: '1',
+		zIndex: '2000',
 		left: '10px',
 	},
 	portal: {
@@ -1403,13 +1404,29 @@ function Map({
 
 Map.propTypes = {
 	type: PropTypes.string.isRequired,
-	paramId: PropTypes.string.isRequired,
-	expandedPanel: PropTypes.bool,
-	mapControls: PropTypes.bool,
-	openSpeedDial: PropTypes.bool,
-	width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-	hideShape: PropTypes.bool,
-	layerPadding: PropTypes.number,
+	paramId: PropTypes.string,
+	expandedPanel: PropTypes.bool, // Boolean, defaults to true
+	mapControls: PropTypes.bool, // Boolean, defaults to true
+	openSpeedDial: PropTypes.bool, // Boolean, defaults to true
+	width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]), // Can be a string or number
+	hideShape: PropTypes.bool, // Boolean, defaults to false
+	layerPadding: PropTypes.oneOfType([
+		PropTypes.number,
+		PropTypes.shape({
+			top: PropTypes.number,
+			bottom: PropTypes.number,
+			left: PropTypes.number,
+			right: PropTypes.number,
+		}),
+	]), // Null or an object with padding values
+};
+
+Map.defaultProps = {
+	expandedPanel: true,
+	mapControls: true,
+	openSpeedDial: true,
+	hideShape: false,
+	layerPadding: null,
 };
 
 export default React.memo(Map);
