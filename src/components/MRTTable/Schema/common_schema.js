@@ -286,8 +286,30 @@ export const CommonSchema = {
 		isSearchField: true,
 		enableSorting: true,
 		type: 'string',
-		filterVariant: 'select',
+		filterVariant: 'autocomplete',
+		muiFilterAutocompleteProps: {
+			getOptionLabel: option => {
+				return option.label || '';
+			},
+		},
 	},
+
+	SELECT_DATE_COLUMN: {
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: true,
+		isSearchField: true,
+		enableSorting: true,
+		type: 'date',
+		filterVariant: 'autocomplete',
+		muiFilterAutocompleteProps: {
+			getOptionLabel: option => {
+				return option.label ? formatDate(option.label) : '';
+			},
+		},
+	},
+
 	NUMBER_COLUMN: {
 		size: 250,
 		isPinned: false,

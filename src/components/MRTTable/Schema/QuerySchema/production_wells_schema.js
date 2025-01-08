@@ -1,11 +1,10 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
 
-import moment from 'moment';
-
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
 import { PRODUCTIONDETAILQUERY } from 'graphQL/useQueryProductionDetail';
+import { formatDate } from 'components/Shared/functions';
 
 const tableKey = 'ProductionWellsTable';
 
@@ -46,15 +45,13 @@ const ProductionWellsMeta = {
 			name: 'Id',
 		},
 		{
-			...CommonSchema.SELECT_STRING_COLUMN,
+			...CommonSchema.SELECT_DATE_COLUMN,
 			header: 'Date',
 			id: 'ReportDate',
 			name: 'ReportDate',
 			type: 'date',
 			Cell: ({ row }) => {
-				const value = row?.original?.ReportDate;
-				const displayValue = value ? moment(value).format('MM/YYYY') : '';
-				return <>{displayValue}</>;
+				return <>{formatDate(row?.original?.ReportDate)}</>;
 			},
 		},
 		{

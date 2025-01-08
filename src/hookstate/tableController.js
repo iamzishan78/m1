@@ -31,12 +31,19 @@ import { handleMRTSchema, handleVisiblityMenu } from './helpers';
 import { tableESState, tableGlobalState, tableInitialState } from './initialStates';
 
 function isDateFormat(inputString) {
-	// Regular expression for MM/DD/YYYY format
-	const mmddyyy = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)\d\d$/;
-	const mmddyy = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d\d$/;
+	try {
+		const date = new Date(inputString);
+		date.toISOString();
+	} catch {
+		return false;
+	}
+
+	// Regular expression for MM/DD/YYYY or MM/DD/YY format
+	const mmddyyyy = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{1,7}$/; // Allows 1 to 7 digits for the year
+	const mmddyy = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{2}$/; // Two-digit year format
 
 	// Check if the inputString matches the date format
-	return mmddyyy.test(inputString) || mmddyy.test(inputString);
+	return mmddyyyy.test(inputString) || mmddyy.test(inputString);
 }
 
 async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyChange, tableKey) {
@@ -410,7 +417,7 @@ const tableESStateControllerHandler = state => ({
 		switch (mode) {
 			case 'singleselect':
 				if (isClientSide) {
-					updatedColumnnSchema.filterVariant = 'select';
+					updatedColumnnSchema.filterVariant = 'autocomplete';
 				} else {
 					updatedColumnnSchema.Filter = columnSchema?.SingleSelect;
 				}
@@ -441,7 +448,6 @@ const tableESStateControllerHandler = state => ({
 		state.filterModes?.merge({
 			[column]: {
 				mode,
-				isKeyword: columnSchema.name.includes('.keyword'),
 			},
 		});
 
