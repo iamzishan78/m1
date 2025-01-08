@@ -142,32 +142,38 @@ const useMRTTable = tableKey => {
 				renderRowActions: EditRowActions(tableStateValues.onDelete),
 			}),
 
-			muiTableBodyRowProps: row => ({
-				onClick: e => {
-					const { className } = e.target;
-					if (
-						tableStateValues?.onClickedRow &&
-						(typeof className === 'object' ||
-							className?.includes('MuiTableCell-root') ||
-							className?.includes('row-click'))
-					) {
-						tableStateValues?.onClickedRow(row?.row?.original);
+			muiTableBodyRowProps: row => {
+				const { enableRowSelected } = tableState.get({ noproxy: true });
 
-						// set rowId to apply styling based on row selection
-						if (rowId && rowId === row?.row?.original._id) {
-							setRowId(null);
-						} else {
-							tableStateValues?.enableRowSelected && setRowId(row?.row?.original._id);
+				return {
+					onClick: e => {
+						const { onClickedRow, enableRowSelected } = tableState.get({ noproxy: true });
+
+						const { className } = e.target;
+						if (
+							onClickedRow &&
+							(typeof className === 'object' ||
+								className?.includes('MuiTableCell-root') ||
+								className?.includes('row-click'))
+						) {
+							onClickedRow(row?.row?.original);
+
+							// set rowId to apply styling based on row selection
+							if (rowId && rowId === row?.row?.original._id) {
+								setRowId(null);
+							} else {
+								enableRowSelected && setRowId(row?.row?.original._id);
+							}
 						}
-					}
-				},
-				sx: {
-					cursor: 'pointer',
-					...(rowId && tableStateValues?.enableRowSelected && rowId === row?.row?.original._id
-						? { border: '5px solid rgb(128 128 128 / 40%)' }
-						: {}),
-				},
-			}),
+					},
+					sx: {
+						cursor: 'pointer',
+						...(rowId && enableRowSelected && rowId === row?.row?.original._id
+							? { border: '5px solid rgb(128 128 128 / 40%)' }
+							: {}),
+					},
+				};
+			},
 			memoMode: 'cells',
 			columns: tableStateValues?.TableSchema,
 			data: tableStateValues?.data?.rows || [],
@@ -212,7 +218,9 @@ const useMRTTable = tableKey => {
 					}
 				: {
 						onGroupingChange: groupingFunc => {
-							const newGrouping = groupingFunc(tableStateValues.grouping);
+							const grouping = tableState.grouping.get({ noproxy: true });
+
+							const newGrouping = groupingFunc(grouping);
 							tableState.grouping.set(newGrouping);
 
 							if (newGrouping.length > 0) {
@@ -230,7 +238,9 @@ const useMRTTable = tableKey => {
 						...(!tableStateValues?.isInFiniteScroll && {
 							manualPagination: true,
 							onPaginationChange: paginationFunc => {
-								const newPagination = paginationFunc(tableStateValues.pagination);
+								const pagination = tableState.pagination.get({ noproxy: true });
+
+								const newPagination = paginationFunc(pagination);
 								tableState.pagination.set(newPagination);
 								return newPagination;
 							},
@@ -242,10 +252,12 @@ const useMRTTable = tableKey => {
 							Controller.setGlobalFilter(globalFilter);
 						},
 						onColumnPinningChange: pinningFunc => {
+							const { columnPinning, TableSchema } = tableState.get({ noproxy: true });
+
 							const newPinning =
 								pinningFunc.left || pinningFunc.right ? pinningFunc : pinningFunc(tableStateValues?.columnPinning);
 
-							Controller.setColumnPinning(newPinning, tableStateValues?.columnPinning, tableStateValues.TableSchema);
+							Controller.setColumnPinning(newPinning, columnPinning, TableSchema);
 						},
 						onRowSelectionChange: checkFunc => {
 							if (typeof checkFunc !== 'function') {
@@ -254,14 +266,17 @@ const useMRTTable = tableKey => {
 								return;
 							}
 
-							let newstate = checkFunc(tableStateValues?.rowSelection);
-							const allNumbers = _.range(0, tableStateValues?.pageSize);
+							const { rowSelection, pageSize, data, asyncRowSelection, isSubSetSelect } = tableState.get({
+								noproxy: true,
+							});
+
+							let newstate = checkFunc(rowSelection);
+							const allNumbers = _.range(0, pageSize);
 							const missingNumbers = _.difference(allNumbers, _.keys(newstate).map(Number));
-							const selectAll =
-								tableStateValues.data?.rows?.length === Object.keys(newstate)?.length && !missingNumbers.length;
+							const selectAll = data?.rows?.length === Object.keys(newstate)?.length && !missingNumbers.length;
 							if (selectAll) {
-								if (tableStateValues.asyncRowSelection) {
-									for (let i = 0; i < tableStateValues?.data?.rows?.length; i++) {
+								if (asyncRowSelection) {
+									for (let i = 0; i < data?.rows?.length; i++) {
 										newstate[i] = true;
 									}
 									Controller.setColumnCheck(newstate);
@@ -271,13 +286,13 @@ const useMRTTable = tableKey => {
 									});
 									return;
 								}
-								for (let i = 0; i < tableStateValues.data?.total; i++) {
+								for (let i = 0; i < data?.total; i++) {
 									newstate[i] = true;
 								}
 							}
 							let unselectAll = true;
 
-							for (let i = 0; i < tableStateValues?.data?.rows?.length; i++) {
+							for (let i = 0; i < data?.rows?.length; i++) {
 								if (newstate[i]) {
 									unselectAll = false;
 									break;
@@ -287,7 +302,7 @@ const useMRTTable = tableKey => {
 							if (unselectAll) {
 								Controller.setIsAllRowsSelected(false);
 								newstate = {};
-								if (tableStateValues?.isSubSetSelect) {
+								if (isSubSetSelect) {
 									Controller.updateState({
 										isSubSetSelect: null,
 									});
@@ -300,6 +315,7 @@ const useMRTTable = tableKey => {
 						},
 						onColumnFiltersChange: filtersFunc => {
 							const columnFilters = tableState.filters.get({ noproxy: true });
+							const TableSchema = tableState.TableSchema.get({ noproxy: true });
 
 							const formattedColumnFilters = (columnFilters || []).map(filter => ({
 								...filter,
@@ -320,9 +336,7 @@ const useMRTTable = tableKey => {
 
 							const result = [];
 							newFilters.forEach(item => {
-								const column = tableStateValues.TableSchema.find(
-									column => column.id === item.id || column.accessorKey === item.id
-								);
+								const column = TableSchema.find(column => column.id === item.id || column.accessorKey === item.id);
 								const idArray = item?.id?.split(',');
 								idArray.forEach(idValue => {
 									const newItem = {
@@ -384,7 +398,7 @@ const useMRTTable = tableKey => {
 
 						onColumnVisibilityChange: visibilityFunc => {
 							let showColumns;
-							const { columnVisibility, TableSchema } = tableStateValues;
+							const { columnVisibility, TableSchema } = tableState.get({ noproxy: true });
 							if (typeof visibilityFunc === 'function') {
 								showColumns = visibilityFunc(columnVisibility);
 							} else if (typeof visibilityFunc === 'object') {
@@ -404,19 +418,25 @@ const useMRTTable = tableKey => {
 							tableState.showColumnFilters.set(showColumnFilterFunc);
 						},
 						onSortingChange: sortingFunc => {
-							const newSorting = sortingFunc(tableStateValues.sorting);
+							const sorting = tableState.sorting.get({ noproxy: true });
+
+							const newSorting = sortingFunc(sorting);
 							tableState.sorting.set(newSorting);
 							return newSorting;
 						},
 						rowCount: tableStateValues?.data?.total,
 						renderToolbarInternalActions: tableStateValues.toolbarInternalActions
-							? ({ table }) => (
-									<ToolbarInternalActions
-										table={table}
-										toolbarInternalActions={tableStateValues.toolbarInternalActions}
-										enableHiding={tableStateValues.enableHiding}
-									/>
-								)
+							? ({ table }) => {
+									const { toolbarInternalActions, enableHiding } = tableState.get({ noproxy: true });
+
+									return (
+										<ToolbarInternalActions
+											table={table}
+											toolbarInternalActions={toolbarInternalActions}
+											enableHiding={enableHiding}
+										/>
+									);
+								}
 							: undefined,
 					}),
 		},
