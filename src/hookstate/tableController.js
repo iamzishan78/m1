@@ -466,7 +466,6 @@ const tableESStateControllerHandler = state => ({
 		state.filterModes?.merge({
 			[column]: {
 				mode,
-				isKeyword: columnSchema.name.includes('.keyword'),
 			},
 		});
 

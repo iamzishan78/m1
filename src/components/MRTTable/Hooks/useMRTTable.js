@@ -349,12 +349,12 @@ const useMRTTable = tableKey => {
 							Controller.syncFilters(result);
 
 							result.forEach(filter => {
-								const { mode, isKeyword } = tableState?.filterModes?.get({ noproxy: true })?.[filter.id] || {};
+								const { mode } = tableState?.filterModes?.get({ noproxy: true })?.[filter.id] || {};
 
 								let { value } = filter;
 								const { type, oRFilter, columnType, searchType, isMapViewFilter } = filter;
-								if (mode && typeof filter.value === 'string' && columnType !== 'date') {
-									value = isKeyword ? filter.value : +filter.value || 0;
+								if (mode && typeof filter.value === 'string') {
+									value = columnType === 'number' ? +filter.value || 0 : filter.value;
 								}
 								if (mode && tableESSimpleFilterModeOtions.inclusive.includes(mode)) {
 									value = filter.value.map(value => +value || 0);
@@ -366,7 +366,6 @@ const useMRTTable = tableKey => {
 									field: filter.id,
 									columnType,
 									searchType,
-									isKeyword,
 									value,
 									type,
 									isMapViewFilter,
@@ -375,8 +374,6 @@ const useMRTTable = tableKey => {
 										!['multiselect', 'singleselect'].includes(mode) && {
 											type: 'advanced',
 											searchType: mode,
-											isKeyword,
-											columnType,
 										}),
 								});
 							});

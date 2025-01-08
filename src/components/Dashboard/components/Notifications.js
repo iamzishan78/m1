@@ -309,7 +309,12 @@ const Notifications = () => {
 	useEffect(() => {
 		const filters = [{ field: 'receiverId', value: getUser?._id }];
 		if (tab === 0) {
-			filters.push({ field: 'state', value: 'ARCHIVED', type: 'advanced', searchType: 'notEquals', isKeyword: true });
+			filters.push({
+				field: 'state',
+				value: 'ARCHIVED',
+				type: 'advanced',
+				searchType: 'notEquals',
+			});
 		} else {
 			filters.push({ field: 'state', value: 'ARCHIVED' });
 		}

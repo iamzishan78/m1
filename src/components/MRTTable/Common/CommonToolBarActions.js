@@ -28,7 +28,6 @@ export const excludeFilters = (tableKey, total) => {
 			value: rows[missingNumbers[i]]?._id,
 			type: 'advanced',
 			searchType: 'notEquals',
-			isKeyword: true,
 		});
 	}
 	return excludedIds;
