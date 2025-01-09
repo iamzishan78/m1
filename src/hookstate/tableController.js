@@ -816,7 +816,8 @@ const tableESStateControllerHandler = state => ({
 	},
 
 	setFilters: filters => {
-		state.filters.set(filters);
+		const filtersState = state.filters?.get({ noproxy: true });
+		state.filters.set([...filters, ...filtersState.filter(filter => filter?.isMapViewFilter)]);
 	},
 
 	setIncludeInactive: isIncludeInactive => {

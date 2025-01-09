@@ -27,16 +27,8 @@ const ReportingGroupsMeta = {
 	maxTableHeight: 'calc(100vh - 300px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
-	isNotBreadcrumbView: true, // Flag to determine whether to display a simple Typography or a Breadcrumbs component. If true, Typography is rendered; if false, Breadcrumbs is rendered.
-	gridViewSettings: {
+	defaultHeader: {
 		label: 'Properties',
-		Icon: 'none',
-		cssOverride: {
-			top: '461px',
-			left: '40px',
-			marginLeft: '-25px',
-			maxHeight: '445px',
-		},
 	},
 	// Definition of table schema
 	TableSchema: [

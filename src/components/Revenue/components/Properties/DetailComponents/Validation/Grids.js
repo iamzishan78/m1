@@ -1,9 +1,13 @@
 import React, { useContext, useMemo } from 'react';
+
+import PropTypes from 'prop-types';
+
 import MRTTable from 'components/MRTTable';
 import TabPanels from 'components/Shared/TabPanels';
+
 import { tableGlobalController } from 'hookstate/tableController';
+
 import { AppContext } from 'AppContext';
-import PropTypes from 'prop-types';
 
 const ValidationGrids = ({ propertyId }) => {
 	const [stateApp] = useContext(AppContext);
