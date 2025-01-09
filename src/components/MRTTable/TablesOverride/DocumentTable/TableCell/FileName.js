@@ -82,6 +82,10 @@ function FileName({ docInfo }) {
 								}}
 								onClick={e => {
 									e.stopPropagation();
+									if (docExtention === 'url') {
+										window.open(docInfo?.fileName, '_blank');
+										return
+									}
 									window.history.pushState('', '', `/documents/${docInfo._id}/view`);
 									handleViewFile(docInfo._id);
 								}}

@@ -73,7 +73,7 @@ export default function UploadZone({ setFileUpload, relatedObjectType, customCla
 
 	const validateUrl = (value) => {
 		// Regex for basic URL validation
-		const urlRegex = /^(https?:\/\/)?([\w\d-]+\.)+[\w-]+(\/[\w\d-._~:/?#[\]@!$&'()*+,;=]*)?$/;
+		const urlRegex = /^https:\/\/([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[\w\d-._~:/?#[\]@!$&'()*+,;=]*)?$/;
 		return urlRegex.test(value);
 	  };
 
