@@ -17,7 +17,7 @@ function CommentCell({ rowNumber, value, id, targetLabel, hideShareCommentsToggl
 					e.stopPropagation();
 					tableGlobalController.updateState({
 						dialog: {
-							type: type,
+							type: type ? type :'comments',
 							value,
 							targetSourceId: id,
 							targetLabel,

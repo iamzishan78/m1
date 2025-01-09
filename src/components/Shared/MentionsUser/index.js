@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Avatar from 'react-avatar';
 
 import Button from '@material-ui/core/Button';
@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const MentionsUser = ({ comment, setComment, updateComment, profilesInfo }) => {
+const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, ...props }) => {
     const classes = useStyles();
     const [selectedCommentType, setSelectedCommentType] = useState('General');
     const [height, setHeight] = useState(40); // Initial height
@@ -57,6 +57,9 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo }) => {
     const handleFocus = () => {
         setIsCollapsed(false)
         setHeight(160); // Increase height on focus
+        if (props?.setIsCollapsed) {
+            props?.setIsCollapsed(false)
+        }
     };
 
     const handleBlur = () => {
@@ -65,7 +68,24 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo }) => {
         }
     };
 
-    useEffect(( ) => {
+    const handleApplyCSS = () => {
+        const mentionInput = document.getElementById("mention-input");
+        if (mentionInput) {
+            mentionInput.style.border = "none"; // Make border color transparent
+            mentionInput.style.outline = "none"; // Remove outline
+            mentionInput.style.left = "1.2px"; // Make border color transparent
+            mentionInput.style.top = "1.8px"; // Remove outline
+        }
+    };
+
+    useEffect(() => {
+        if (!props.isSaveAllowed) {
+            handleApplyCSS();
+        }
+    }, [props.isSaveAllowed])
+
+
+    useEffect(() => {
         if (isCollapsed) {
             setHeight(40); // Reset height on blur
         }
@@ -73,89 +93,93 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo }) => {
 
     return (
         <>
-        <ClickAwayListener
-            onClickAway={e => {
-                console.log("away fire")
-                setIsCollapsed(true);
-            }}
-        >
-            <MentionsInput
-                className={"mention"}
-                value={value}
-                onChange={(e) => {
-                    setValue(e.target.value)
-                    const comment = convertToUserIDFormat(e.target.value);
-                    setComment(comment)
+            <ClickAwayListener
+                onClickAway={e => {
+                    setIsCollapsed(true);
+                    if (props?.setIsCollapsed) {
+                        props?.setIsCollapsed(false)
+                    }
                 }}
-                classNames={classNames}
-                placeholder="Add a question or post an update"
-                style={{
-                    control: {
-                        height: `${height}px`, // Set dynamic height
-                        transition: "height 0.2s ease-in-out", // Smooth transition
-                    },
-                }}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
             >
-                <Mention
-                    trigger="@"
-                    data={mentionUsers}
-                    className={classNames.mentions__mention}
-                    displayTransform={(id, display) => `@${display}`}
-                    renderSuggestion={(suggestion, search, highlightedDisplay, index, focused) => {
-                        return (
-                            (
-                                <div
-                                    key={suggestion._id}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        backgroundColor: focused ? 'rgba(0, 0, 0, 0.08)' : 'white',
-                                        cursor: 'pointer',
-                                        padding: '5px',
-                                        width: '100%'
-                                    }}
-                                >
-                                    <IconButton style={{ padding: '0px' }}>
-                                        {suggestion?.profileImage ? (
-                                            <Avatar src={suggestion?.profileImage} size="25" round />
-                                        ) : (
-                                            <Avatar name={suggestion.name} size="25" round />
-                                        )}
-                                    </IconButton>
+                <MentionsInput
+                    id={'mention-input'}
+                    className={"mention"}
+                    value={value}
+                    onChange={(e) => {
+                        setValue(e.target.value)
+                        const comment = convertToUserIDFormat(e.target.value);
+                        setComment(comment)
+                    }}
+                    classNames={classNames}
+                    placeholder="Add a question or post an update"
+                    style={{
+                        control: {
+                            height: `${height}px`, // Set dynamic height
+                            transition: "height 0.2s ease-in-out", // Smooth transition
+                        },
+                    }}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                >
+                    <Mention
+                        trigger="@"
+                        data={mentionUsers}
+                        className={classNames.mentions__mention}
+                        displayTransform={(id, display) => `@${display}`}
+                        renderSuggestion={(suggestion, search, highlightedDisplay, index, focused) => {
+                            return (
+                                (
                                     <div
+                                        key={suggestion._id}
                                         style={{
-                                            marginLeft: '8px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            backgroundColor: focused ? 'rgba(0, 0, 0, 0.08)' : 'white',
+                                            cursor: 'pointer',
+                                            padding: '5px',
+                                            width: '100%'
                                         }}
                                     >
-                                        <strong>{suggestion?.display}</strong>
+                                        <IconButton style={{ padding: '0px' }}>
+                                            {suggestion?.profileImage ? (
+                                                <Avatar src={suggestion?.profileImage} size="25" round />
+                                            ) : (
+                                                <Avatar name={suggestion.name} size="25" round />
+                                            )}
+                                        </IconButton>
+                                        <div
+                                            style={{
+                                                marginLeft: '8px',
+                                            }}
+                                        >
+                                            <strong>{suggestion?.display}</strong>
+                                        </div>
                                     </div>
-                                </div>
+                                )
                             )
-                        )
+                        }}
+                    />
+                </MentionsInput>
+            </ClickAwayListener>
+            {props.isSaveAllowed && (
+                <Button
+                    className={classes.commentBtn}
+                    variant="contained"
+                    color="primary"
+                    id="commentButton"
+                    disabled={!comment || comment === ''}
+                    data-testid={'comment-add-button'}
+                    onClick={e => {
+                        e.stopPropagation();
+                        updateComment({ comment, commentType: selectedCommentType });
+                        setValue('');
+                        setIsCollapsed(false);
                     }}
-                />
-            </MentionsInput>
-        </ClickAwayListener>
-
-            <Button
-                className={classes.commentBtn}
-                variant="contained"
-                color="primary"
-                id="commentButton"
-                disabled={!comment || comment === ''}
-                data-testid={'comment-add-button'}
-                onClick={e => {
-                    e.stopPropagation();
-                    updateComment({ comment, commentType: selectedCommentType });
-                    setValue('');
-                    setIsCollapsed(false);
-                }}
-            >
-                Comment
-            </Button>
-            </>
+                >
+                    Comment
+                </Button>
+            )}
+        </>
     )
 }
 

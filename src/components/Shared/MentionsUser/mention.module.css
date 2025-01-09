@@ -62,7 +62,7 @@
 .mention__suggestions {
     width: 100% !important;
     left: 0px !important;
-    top: 140px !important;
+    top: 14px !important;
 	overflow: scroll;
 	height: 140px;
     z-index: 9999 !important;
