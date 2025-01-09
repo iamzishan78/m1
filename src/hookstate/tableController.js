@@ -237,8 +237,7 @@ const tableESStateControllerHandler = state => ({
 				isTable: true,
 				Icon: gridViewSettings.Icon,
 				label: gridViewSettings.label,
-				isNotBreadcrumbView: TableSchema.isNotBreadcrumbView || false,
-				...(defaultViewOverride && { defaultViewOverride }),
+				defaultViewOverride,
 			});
 
 			const selectedGridView = gridViewController.getValue('selectedView');

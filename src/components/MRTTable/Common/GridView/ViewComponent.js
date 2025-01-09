@@ -2,8 +2,7 @@ import React, { useState, memo } from 'react';
 
 import { Breadcrumbs, Typography, IconButton, Menu, MenuItem, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import { ExpandMore as ExpandMoreIcon, NavigateNext as NavigateNextIcon } from '@material-ui/icons';
 
 import PropTypes from 'prop-types';
 
@@ -56,23 +55,16 @@ const useStyles = makeStyles(() => ({
 }));
 
 function ViewComponent({ moduleName, buttonRef }) {
+	const [showIcon, setShowIcon] = useState(false);
+	const [anchorEl, setAnchorEl] = useState(null);
+
 	const ViewController = viewStateController(moduleName);
 	const { jsxEl: Icon } = ViewController.getValue('icon');
-
-	const { label, styleOverride, isNotBreadcrumbView } = ViewController.getValues([
-		'label',
-		'styleOverride',
-		'isNotBreadcrumbView',
-	]);
-
+	const { label, styleOverride } = ViewController.getValues(['label', 'styleOverride']);
 	const {
 		stateValues: { isLoading, selectedView },
 	} = ViewController.useState(['isLoading', 'selectedView']);
-
 	const classes = useStyles({ styleOverride });
-
-	const [showIcon, setShowIcon] = useState(false);
-	const [anchorEl, setAnchorEl] = useState(null);
 
 	return (
 		<div className={classes.root}>
@@ -88,67 +80,61 @@ function ViewComponent({ moduleName, buttonRef }) {
 				)}
 			</div>
 
-			{isNotBreadcrumbView ? (
+			<Breadcrumbs
+				separator={<NavigateNextIcon fontSize="small" className={classes.breadcrumbSeparator} />}
+				aria-label="breadcrumb"
+			>
 				<Typography className={classes.typography} color="inherit">
 					{label}
 				</Typography>
-			) : (
-				<Breadcrumbs
-					separator={<NavigateNextIcon fontSize="small" className={classes.breadcrumbSeparator} />}
-					aria-label="breadcrumb"
-				>
-					<Typography className={classes.typography} color="inherit">
-						{label}
-					</Typography>
-					<div>
-						<div
-							className={classes.viewContainer}
-							onClick={event => setAnchorEl(event.currentTarget)}
-							onFocus={() => setShowIcon(true)}
-							onMouseOver={() => setShowIcon(true)}
-							onMouseLeave={() => setShowIcon(false)}
-						>
-							<Typography>
-								<span className={selectedView?.isModified ? classes.italicText : ''}>{selectedView?.name}</span>
-							</Typography>
-							<span className={classes.expandIcon}>{showIcon && <ExpandMoreIcon />}</span>
-						</div>
-						<Menu
-							className={classes.menu}
-							id="menu"
-							anchorEl={anchorEl}
-							keepMounted
-							open={Boolean(anchorEl)}
-							onClose={() => setAnchorEl(null)}
-							getContentAnchorEl={null}
-							anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-							transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-						>
-							<MenuItem
-								className={classes.menuItem}
-								disabled={selectedView?.type === 'Default'}
-								onClick={() => {
-									setAnchorEl(null);
-									ViewController.updateState({ fetchViewSettings: true });
-									ViewController.updateView({
-										id: selectedView?._id,
-									});
-								}}
-							>
-								Update view
-							</MenuItem>
-							<MenuItem
-								onClick={() => {
-									setAnchorEl(null);
-									ViewController.updateState({ isViewOpen: true, fetchViewSettings: true });
-								}}
-							>
-								Save as new view
-							</MenuItem>
-						</Menu>
+				<div>
+					<div
+						className={classes.viewContainer}
+						onClick={event => setAnchorEl(event.currentTarget)}
+						onFocus={() => setShowIcon(true)}
+						onMouseOver={() => setShowIcon(true)}
+						onMouseLeave={() => setShowIcon(false)}
+					>
+						<Typography>
+							<span className={selectedView?.isModified ? classes.italicText : ''}>{selectedView?.name}</span>
+						</Typography>
+						<span className={classes.expandIcon}>{showIcon && <ExpandMoreIcon />}</span>
 					</div>
-				</Breadcrumbs>
-			)}
+					<Menu
+						className={classes.menu}
+						id="menu"
+						anchorEl={anchorEl}
+						keepMounted
+						open={Boolean(anchorEl)}
+						onClose={() => setAnchorEl(null)}
+						getContentAnchorEl={null}
+						anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+						transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+					>
+						<MenuItem
+							className={classes.menuItem}
+							disabled={selectedView?.type === 'Default'}
+							onClick={() => {
+								setAnchorEl(null);
+								ViewController.updateState({ fetchViewSettings: true });
+								ViewController.updateView({
+									id: selectedView?._id,
+								});
+							}}
+						>
+							Update view
+						</MenuItem>
+						<MenuItem
+							onClick={() => {
+								setAnchorEl(null);
+								ViewController.updateState({ isViewOpen: true, fetchViewSettings: true });
+							}}
+						>
+							Save as new view
+						</MenuItem>
+					</Menu>
+				</div>
+			</Breadcrumbs>
 		</div>
 	);
 }

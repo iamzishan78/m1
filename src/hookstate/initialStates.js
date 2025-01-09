@@ -491,7 +491,6 @@ export const viewInitialState = {
 	isTable: false,
 	icon: { jsxEl: null },
 	label: null,
-	isNotBreadcrumbView: false,
 	allViews: [],
 	selectedView: null,
 	isViewOpen: false,

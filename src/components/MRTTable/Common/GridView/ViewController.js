@@ -20,7 +20,6 @@ const viewStatesControllerHandler = state => ({
 		client,
 		allViews,
 		isTable = false,
-		isNotBreadcrumbView,
 		styleOverride = null,
 		defaultViewOverride = null,
 	}) => {
@@ -41,14 +40,15 @@ const viewStatesControllerHandler = state => ({
 			allViews,
 			isTable,
 			selectedView,
-			isNotBreadcrumbView,
 			icon: { jsxEl: Icon },
 			...(styleOverride && { styleOverride }),
 		});
 	},
 
 	applyView: selectedView => {
-		if (!selectedView) {return;}
+		if (!selectedView) {
+			return;
+		}
 
 		const { isTable = false, moduleName = '' } = state?.get({ noproxy: true }) ?? {};
 		const ViewController = viewStateController(moduleName);
@@ -84,28 +84,30 @@ const viewStatesControllerHandler = state => ({
 		const allViews = state.allViews?.get({ noproxy: true }) || [];
 		let updatedViews = [];
 
-		if (view._id) {
-			if (view.isDeleted) {
-				updatedViews = allViews.filter(existingView => existingView._id !== view._id);
-				if (view._id === state.selectedView?.get()._id) {
-					const userId = globalStateController.getValue('user').mongoId;
-					const moduleName = state.moduleName.get();
-					const viewController = viewStateController(moduleName);
+		if (view.isDeleted) {
+			updatedViews = allViews.filter(existingView => existingView._id !== view._id);
+			if (view._id === state.selectedView?.get()._id) {
+				const userId = globalStateController.getValue('user').mongoId;
+				const moduleName = state.moduleName.get();
+				const viewController = viewStateController(moduleName);
 
-					const userDefaultView = allViews?.find(view => view?.defaultDisplayBy?.includes(userId));
-					const defaultView = allViews?.find(view => view?.type === 'Default');
+				const userDefaultView = updatedViews?.find(view => view?.defaultDisplayBy?.includes(userId));
+				const defaultView = updatedViews?.find(view => view?.type === 'Default');
+				const selectedView = userDefaultView || defaultView || allViews?.[0] || null;
 
-					const selectedView = userDefaultView || defaultView || allViews?.[0] || null;
-
-					if (selectedView) {
-						viewController.applyView(selectedView);
-					}
-
-					viewController.updateState({ selectedView });
+				if (selectedView) {
+					viewController.applyView(selectedView);
 				}
-			} else {
-				updatedViews = allViews.map(prevView => (prevView._id === view._id ? { ...prevView, ...view } : prevView));
+
+				viewController.updateState({ selectedView });
 			}
+		} else if (view._id) {
+			if (view._id === state.selectedView?.get()._id) {
+				const selectedView = state.selectedView.get({ noproxy: true });
+				state.selectedView.set({ ...selectedView, ...view });
+			}
+
+			updatedViews = allViews.map(prevView => (prevView._id === view._id ? { ...prevView, ...view } : prevView));
 		} else {updatedViews = [...allViews, view];}
 
 		state.allViews.set(updatedViews);
@@ -159,7 +161,9 @@ const viewStatesControllerHandler = state => ({
 
 				await ViewController.fetchAllViews();
 				ViewController.updateState({ isLoading: false, fetchViewSettings: false });
-			} else {throw new Error('Apollo Client is undefined or invalid.');}
+			} else {
+				throw new Error('Apollo Client is undefined or invalid.');
+			}
 		} catch (error) {
 			console.log('Error: ', error);
 		}
@@ -173,9 +177,13 @@ const viewStatesControllerHandler = state => ({
 		let fieldsToUpdate = { user: userId, module };
 
 		const toggleUserInArray = arrayOfIds => {
-			if (arrayOfIds?.length && arrayOfIds?.includes(userId)) {return arrayOfIds?.filter(id => id !== userId);}
-			else if (arrayOfIds) {return [...arrayOfIds, userId];}
-			else {return [userId];}
+			if (arrayOfIds?.length && arrayOfIds?.includes(userId)) {
+				return arrayOfIds?.filter(id => id !== userId);
+			} else if (arrayOfIds) {
+				return [...arrayOfIds, userId];
+			} else {
+				return [userId];
+			}
 		};
 
 		const key = action === 'favourite' ? 'favouriteBy' : 'defaultDisplayBy';
