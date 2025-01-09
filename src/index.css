@@ -258,3 +258,13 @@ body {
 .MuiChip-root.MuiChip-filled.MuiChip-deletable {
 	border-radius: 4px !important;
 }
+
+/* Hide scrollbar for other browsers */
+.hide-scrollbar {
+    scrollbar-width: none; /* Firefox */
+}
+
+.hide-scrollbar {
+	padding: 0px !important;
+}
+

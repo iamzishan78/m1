@@ -110,6 +110,16 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
             const mentionInput = document.getElementById("mention-input");
             if (mentionInput) { 
                 mentionInput.style.lineHeight = "20px"; // Remove outline
+                mentionInput.classList.add("hide-scrollbar");
+                // Target the previous sibling element of mentionInput
+                const previousDiv = mentionInput.previousElementSibling;
+
+                // Apply scroll functionality and hide scrollbar
+                if (previousDiv) {
+                    previousDiv.style.overflow = "hidden";
+                    // Hide scrollbar using a class
+                    // previousDiv.classList.add("hide-scrollbar");
+                }
             }
         }
     }, [props.isSaveAllowed])
@@ -149,7 +159,9 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
                     style={{
                         input: {
                             height: `${height}px`,
-                            overflow: "auto",
+                            // overflow: "auto",
+                            overflow: "scroll",
+                            // padding: '0px !important'
                         },
                         highlighter: {
                             height: `${height}px`,
