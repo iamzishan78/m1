@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, ...props }) => {
+const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users, ...props }) => {
     const classes = useStyles();
     const [selectedCommentType, setSelectedCommentType] = useState('General');
     const [height, setHeight] = useState(40); // Initial height
@@ -53,6 +53,30 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, ...pro
         // Replace each mention with the {{userID}} format
         return input.replace(regex, (match, userName, userId) => `{{${userId}}}`);
     }
+
+    const convertBackToOriginalFormat = (input) => {
+        // Regular expression to match {{userID}}
+        const regex = /{{(.*?)}}/g;
+    
+        // Create user mapping from users data
+        const userMapping = Object.keys(profilesInfo).reduce((acc, key) => {
+            const user = profilesInfo[key];
+            acc[user._id] = {
+                name: user.displayName || user.name // Use displayName or name or fallback to 'Unknown'
+            };
+            return acc;
+        }, {});
+        // Replace each {{userID}} with the @[Name](userID) format
+        const newValue = input.replace(regex, (match, userId) => {
+            // Get the user's name using the userId from the mapping
+            const user = userMapping[userId];
+            
+            // If user is found, return the original format; otherwise, return the userId as is
+            return user ? `@[${user.name}](${userId})` : `{{${userId}}}`;
+        });
+
+        return newValue;
+    };
 
     const handleFocus = () => {
         setIsCollapsed(false)
@@ -90,6 +114,10 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, ...pro
             setHeight(40); // Reset height on blur
         }
     }, [isCollapsed])
+
+    useEffect(() => {
+        setValue(convertBackToOriginalFormat(comment))
+    }, [comment, users])
 
     return (
         <>
