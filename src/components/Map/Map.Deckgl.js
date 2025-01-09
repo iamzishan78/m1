@@ -134,7 +134,7 @@ const useStyles = makeStyles(() => ({
 	footerLeftLogo: {
 		position: 'absolute',
 		bottom: '5px',
-		zIndex: '2000',
+		zIndex: '1',
 		left: '10px',
 	},
 	portal: {
