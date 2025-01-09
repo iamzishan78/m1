@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
 
+import GavelIcon from '@material-ui/icons/Gavel';
+
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
@@ -17,6 +19,10 @@ const esIndex = 'runsheetinstrument_flat';
 const RunsheetMeta = {
 	esIndex,
 	pageSize: 50,
+	defaultHeader: {
+		label: 'RUNSHEET INSTRUMENTS',
+		Icon: GavelIcon,
+	},
 	pagination: {
 		pageIndex: 0,
 		pageSize: 50,
