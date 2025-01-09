@@ -22,34 +22,36 @@ const ValidationGrids = ({ propertyId }) => {
 			tabLabels,
 		};
 
-		const wellProductionMeta = {
-			defaultFilters: [{ field: 'well._id', value: stateApp.associatedWellIds }],
-			tabLabels,
-		};
+		const wellProductionMeta = stateApp.associatedWellIds
+			? {
+					defaultFilters: [{ field: 'well._id', value: stateApp.associatedWellIds }],
+					tabLabels,
+				}
+			: null;
 
 		return { salesVolumeMeta, wellProductionMeta };
 	}, [propertyId, stateApp.associatedWellIds]);
 
-	return (
-		<div>
-			<TabPanels
-				key={overrideMeta.salesVolumeMeta.tabLabels[0]}
-				value={selectedTab}
-				panels={[
-					<MRTTable
-						key="WellProductionTable"
-						name="WellProductionTable"
-						overrideMeta={overrideMeta.wellProductionMeta}
-					/>,
-					<MRTTable
-						key="SalesVolumeComparisonTable"
-						name="SalesVolumeComparisonTable"
-						overrideMeta={overrideMeta.salesVolumeMeta}
-					/>,
-				]}
-			/>
-		</div>
-	);
+	// Create panels dynamically based on the presence of associatedWellIds
+	const panels = useMemo(() => {
+		const panelsArray = [
+			<MRTTable
+				key="SalesVolumeComparisonTable"
+				name="SalesVolumeComparisonTable"
+				overrideMeta={overrideMeta.salesVolumeMeta}
+			/>,
+		];
+
+		if (overrideMeta.wellProductionMeta) {
+			panelsArray.unshift(
+				<MRTTable key="WellProductionTable" name="WellProductionTable" overrideMeta={overrideMeta.wellProductionMeta} />
+			);
+		}
+
+		return panelsArray;
+	}, [overrideMeta]);
+
+	return <TabPanels key={overrideMeta.salesVolumeMeta.tabLabels[0]} value={selectedTab} panels={panels} />;
 };
 
 ValidationGrids.propTypes = {

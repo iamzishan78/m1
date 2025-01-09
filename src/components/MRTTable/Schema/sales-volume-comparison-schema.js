@@ -48,7 +48,7 @@ const SalesVolumeComparisonMeta = {
 			header: 'Well API',
 			Cell: ({ row }) => {
 				const apiNumbers = row?.original?.wells?.map(item => item.apiNumber) || [];
-				return apiNumbers?.length && apiNumbers?.length > 1 ? 'Multiple' : apiNumbers[0];
+				return apiNumbers?.length && apiNumbers?.length > 1 ? 'Multiple' : apiNumbers[0] || '';
 			},
 		},
 		// Well Name column with custom cell rendering
@@ -59,7 +59,7 @@ const SalesVolumeComparisonMeta = {
 			header: 'Well Name',
 			Cell: ({ row }) => {
 				const wellName = row?.original?.wells?.map(item => item.wellName) || [];
-				return wellName?.length && wellName?.length > 1 ? 'Multiple' : wellName[0];
+				return wellName?.length && wellName?.length > 1 ? 'Multiple' : wellName[0] || '';
 			},
 		},
 		// Sales Date column with custom cell rendering to format the date
