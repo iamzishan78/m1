@@ -258,7 +258,7 @@ function MapGridCard(props) {
 
   const shapeFileTableOverride = useMemo(() => {
     // generic generateFileFilters used for files so that it remain consistent in all places.
-    if (mapControlsStateValues?.selectedLayer?.layerShapeName) {
+    if (mapControlsStateValues?.selectedLayer) {
       const fileQuery = generateFileFilters({ fileLayer: mapControlsStateValues.selectedLayer })
       tableGlobalController.reInitialized();
       return {
@@ -270,8 +270,8 @@ function MapGridCard(props) {
             marginRight: '0.5rem',
           },
         },
-        defaultFilters: fileQuery.variables.filters,
-        advanceSearch: fileQuery.variables.search.advanceSearch
+        defaultFilters: fileQuery?.variables?.filters || [],
+        advanceSearch: fileQuery?.variables?.search?.advanceSearch || []
       };
     } else {
       return {}
