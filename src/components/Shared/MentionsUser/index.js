@@ -99,12 +99,18 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
             mentionInput.style.outline = "none"; // Remove outline
             mentionInput.style.left = "1.2px"; // Make border color transparent
             mentionInput.style.top = "1.8px"; // Remove outline
+            mentionInput.style.lineHeight = "24px"; // Remove outline
         }
     };
 
     useEffect(() => {
         if (!props.isSaveAllowed) {
             handleApplyCSS();
+        } else {
+            const mentionInput = document.getElementById("mention-input");
+            if (mentionInput) { 
+                mentionInput.style.lineHeight = "20px"; // Remove outline
+            }
         }
     }, [props.isSaveAllowed])
 
@@ -141,6 +147,15 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
                     classNames={classNames}
                     placeholder="Add a question or post an update"
                     style={{
+                        input: {
+                            height: `${height}px`,
+                            overflow: "auto",
+                        },
+                        highlighter: {
+                            height: `${height}px`,
+                            overflow: "hidden",
+                            boxSizing: "border-box",
+                        },
                         control: {
                             height: `${height}px`, // Set dynamic height
                             transition: "height 0.2s ease-in-out", // Smooth transition

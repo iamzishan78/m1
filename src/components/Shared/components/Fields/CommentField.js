@@ -371,6 +371,7 @@ export default function DealComment({
 					)}
 				/> */}
 				<MentionsUser
+					users={users}
 					comment={comment}
 					setComment={setComment}
 					updateComment={upsertComment}

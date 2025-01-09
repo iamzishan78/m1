@@ -607,6 +607,7 @@ export default function Comments(props) {
 					</Grid>
 					<Grid item xs={12}>
 						<MentionsUser
+							users={users}
 							comment={comment}
 							setComment={setComment}
 							updateComment={updateComment}
