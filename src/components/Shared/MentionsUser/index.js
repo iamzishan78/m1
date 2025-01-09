@@ -153,7 +153,7 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
                         },
                         highlighter: {
                             height: `${height}px`,
-                            overflow: "hidden",
+                            overflow: "scroll",
                             boxSizing: "border-box",
                         },
                         control: {

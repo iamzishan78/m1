@@ -7,7 +7,7 @@
     width: 130px;
 }
 
-.mentions--singleLine .mentions__highlighter {
+/* .mentions--singleLine .mentions__highlighter {
     padding: 1px;
     border: 2px inset transparent;
 }
@@ -15,9 +15,9 @@
 .mentions--singleLine .mentions__input {
     padding: 1px;
     border: 2px inset;
-}
+} */
 
-.mentions--multiLine .mentions__control {
+/* .mentions--multiLine .mentions__control {
     font-family: monospace;
     font-size: 14pt;
 }
@@ -26,13 +26,13 @@
     border: 1px solid transparent;
     padding: 9px;
     min-height: 63px;
-}
+} */
 
-.mentions--multiLine .mentions__input {
+/* .mentions--multiLine .mentions__input {
     border: 1px solid silver;
     padding: 9px;
     outline: 0;
-}
+} */
 
 .mentions__suggestions__list {
     background-color: white;
