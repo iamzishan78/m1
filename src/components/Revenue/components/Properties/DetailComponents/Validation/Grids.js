@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import PropTypes from 'prop-types';
 
@@ -7,11 +7,7 @@ import TabPanels from 'components/Shared/TabPanels';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
-import { AppContext } from 'AppContext';
-
-const ValidationGrids = ({ propertyId }) => {
-	const [stateApp] = useContext(AppContext);
-
+const ValidationGrids = ({ propertyId, associatedWellIds }) => {
 	const {
 		stateValues: { tabKey: selectedTab },
 	} = tableGlobalController.useState(['tabKey']);
@@ -19,22 +15,23 @@ const ValidationGrids = ({ propertyId }) => {
 	const defaultTabLabels = ['Sales vs Production Volumes'];
 
 	const overrideMeta = useMemo(() => {
-		const tabLabels = stateApp.associatedWellIds ? ['Well Production', ...defaultTabLabels] : defaultTabLabels;
+		const tabLabels = associatedWellIds?.length > 0 ? ['Well Production', ...defaultTabLabels] : defaultTabLabels;
 
 		const salesVolumeMeta = {
 			defaultFilters: [{ field: 'property._id', value: propertyId }],
 			tabLabels,
 		};
 
-		const wellProductionMeta = stateApp.associatedWellIds
-			? {
-					defaultFilters: [{ field: 'well._id', value: stateApp.associatedWellIds }],
-					tabLabels,
-				}
-			: null;
+		const wellProductionMeta =
+			associatedWellIds?.length > 0
+				? {
+						defaultFilters: [{ field: 'well._id', value: associatedWellIds }],
+						tabLabels,
+					}
+				: null;
 
 		return { salesVolumeMeta, wellProductionMeta };
-	}, [propertyId, stateApp.associatedWellIds]);
+	}, [propertyId, associatedWellIds]);
 
 	// Create panels dynamically based on the presence of associatedWellIds
 	const panels = useMemo(() => {
