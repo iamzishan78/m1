@@ -676,8 +676,9 @@ const tableESStateControllerHandler = state => ({
 
 	clearFilter: (field, updateMapView = true) => {
 		const filtersState = state.filters?.get({ noproxy: true });
-		const selecteView = viewStateController('MapView').getValue('selecteView');
-		const mapViewsFitlers = selecteView?.filters || [];
+		const selectedView = viewStateController('MapView').getValue('selectedView');
+		const mapViewsFitlers = selectedView?.filters || [];
+
 		if (
 			mapViewsFitlers.find(({ fieldName }) => (fieldName?.value || fieldName)?.replace('.keyword', '') === field) &&
 			updateMapView
@@ -689,7 +690,7 @@ const tableESStateControllerHandler = state => ({
 			if (tableState?.layerIdentifier) {
 				viewStateController('MapView').updateState({
 					selectedView: {
-						...selecteView,
+						...selectedView,
 						filters: [
 							...mapViewsFitlers.filter(
 								({ dataSourceName, fieldName }) =>
