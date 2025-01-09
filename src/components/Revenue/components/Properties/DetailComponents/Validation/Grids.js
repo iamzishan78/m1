@@ -43,14 +43,14 @@ const ValidationGrids = ({ propertyId, associatedWellIds }) => {
 			/>,
 		];
 
-		if (overrideMeta.wellProductionMeta) {
+		if (associatedWellIds?.length > 0) {
 			panelsArray.unshift(
 				<MRTTable key="WellProductionTable" name="WellProductionTable" overrideMeta={overrideMeta.wellProductionMeta} />
 			);
 		}
 
 		return panelsArray;
-	}, [overrideMeta]);
+	}, [overrideMeta, associatedWellIds]);
 
 	return <TabPanels key={overrideMeta.salesVolumeMeta.tabLabels[0]} value={selectedTab} panels={panels} />;
 };
