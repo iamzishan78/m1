@@ -303,11 +303,6 @@ export const CommonSchema = {
 		enableSorting: true,
 		type: 'date',
 		filterVariant: 'autocomplete',
-		muiFilterAutocompleteProps: {
-			getOptionLabel: option => {
-				return option.label ? formatDate(option.label) : '';
-			},
-		},
 	},
 
 	NUMBER_COLUMN: {

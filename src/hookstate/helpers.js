@@ -16,12 +16,14 @@ import {
 	stringFilterOptions,
 } from 'components/MRTTable/utils/data';
 import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
+import { formatDate } from 'components/Shared/functions';
 import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 import { tableController } from 'hookstate/tableController';
 
 import { SMALL_TIMEOUT } from 'utils/consts';
+
 
 export const handleVisiblityMenu = () => {
 	const interval2 = setInterval(() => {
@@ -138,7 +140,21 @@ export const handleMRTSchema = ({
 					break;
 			}
 
-			schemaColumn.accessorFn = row => get(row, schemaColumn.id) ?? defaultValue;
+			schemaColumn.accessorFn = row => {
+				let value = get(row, schemaColumn.id) ?? defaultValue;
+
+				if (isClientSide) {
+					switch (schemaColumn.type) {
+						case 'date':
+							value = formatDate(value);
+							break;
+
+						default:
+							break;
+					}
+				}
+				return value;
+			};
 		}
 
 		if (schemaColumn.header && !schemaColumn.showInLast) {

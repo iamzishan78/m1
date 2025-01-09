@@ -1,3 +1,5 @@
+import React from 'react';
+
 const mrtFilterOptions = [
 	{
 		option: 'fuzzy',
@@ -58,6 +60,18 @@ const mrtFilterOptions = [
 		symbol: '≥',
 		label: 'Greater Than or Equal To',
 		divider: false,
+	},
+	{
+		option: 'dateGreaterThanOrEqualTo',
+		symbol: '≥',
+		label: 'Greater Than or Equal To',
+		divider: false,
+	},
+	{
+		option: 'dateLessThanOrEqualTo',
+		symbol: '≤',
+		label: 'Less Than or Equal To',
+		divider: true,
 	},
 	{
 		option: 'lessThan',
@@ -167,7 +181,8 @@ export const dateFilterOptions = [
 	'lessThanOrEqualTo',
 	'singleselect',
 ];
-export const simpleDateFilterOptions = [...tableESSimpleFilterModeOtions.simpleCustom];
+
+export const simpleDateFilterOptions = ['singleselect', 'dateGreaterThanOrEqualTo', 'dateLessThanOrEqualTo'];
 
 // Curreny keys
 export const currencyKeys = [
