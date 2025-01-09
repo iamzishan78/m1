@@ -108,14 +108,12 @@ function LayerStyling() {
 			selectedLayer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability ||
 			selectedLayer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor ||
 			selectedLayer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor !== enableStrokeColor ||
-			!_.isEqual(selectedLayer.layerSettings?.attributeBasedColors, attributeBasedColors) ||
-			!_.isEqual(selectedLayer.layerSettings?.attributeBasedStrokeColors, attributeBasedStrokeColors) ||
 			selectedLayer.layerSettings?.selectedAttribute?.label !== selectedValue?.label ||
 			selectedLayer.layerSettings?.selectedStrokeAttribute?.label !== selectedStrokeValue?.label
 		) {
 			let { currentLayer } = handleLayerChange();
 			const currentLayers = [...hookStateAppLayers];
-			const index = currentLayers.findIndex(l => l._id === currentLayer._id);
+			const index = currentLayers.findIndex(l => l.layerId === currentLayer.layerId);
 			currentLayers[index] = currentLayer;
 
 			const debouncedUpdate = _.debounce(() => {
@@ -125,10 +123,20 @@ function LayerStyling() {
 					variables: {
 						settings: {
 							_id: currentLayer._id,
+							user: stateApp.user.mongoId,
+							layer: selectedLayer.layerId,
 							layerPaintProps: currentLayer.layerPaintProps,
 							layerSettings: currentLayer.layerSettings,
 						},
 					},
+					refetchQueries: ['getAllLayerSettingsByUser'],
+					awaitRefetchQueries: true,
+				}).then(({ data }) => {
+					if (data?.updateUserLayerSettings?.res && !currentLayer._id) {
+						mapControlsController.updateState({
+							selectedLayer: { ...selectedLayer, _id: data.updateUserLayerSettings.res._id },
+						});
+					}
 				});
 				layerController.resetBounds(selectedLayer?.identifier);
 			}, 250); // Adjust the debounce delay as needed

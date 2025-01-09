@@ -326,7 +326,6 @@ const layerStateControllerHandler = state => {
 
 			return boundingState;
 		} catch (err) {
-			debugger;
 			if (polygonFilter) showError('Invalid Shape');
 			console.log('🚀 ~ file: layerStateController.js:285 ~ handleBounds ~ err:', err.message);
 			return boundingStateVal;

@@ -9,7 +9,6 @@ import { GET_LAYER_GROUPS } from 'graphQL/useQueryLayerGroup';
 import { useLazyQuery } from '@apollo/client';
 import { Box, CircularProgress } from '@material-ui/core';
 import { globalStateController } from 'hookstate/globalStateController';
-import { deepEqual } from 'components/Shared/functions';
 
 const getEmptyGroupAndLayer = (group, type) => {
 	if (type === 'layer')
@@ -84,7 +83,7 @@ const SortableLayer = ({ mongoId, search }) => {
 									visiable: item.layerSettings.visiable,
 									depth: 1,
 									type: 'layer',
-									id: item._id,
+									id: item.layerId,
 								});
 							});
 						}
@@ -99,7 +98,7 @@ const SortableLayer = ({ mongoId, search }) => {
 								name: item.layerName === 'Parcels' ? 'Tracts' : item.layerName,
 								depth: 0,
 								type: 'layer',
-								id: item._id,
+								id: item.layerId,
 							});
 						}
 					}
@@ -140,11 +139,11 @@ const SortableLayer = ({ mongoId, search }) => {
 	}, [layers, layerGroupData?.getLayerGroups]);
 
 	useEffect(() => {
-		if (search)
+		if (search) {
 			setLayerMap(
 				stateValues.panelItems.filter(i => (i.layerName ?? i.name).toLowerCase().includes(search.toLowerCase()))
 			);
-		else {
+		} else {
 			setLayerMap(stateValues.panelItems);
 		}
 	}, [panelItems, search]);

@@ -1,6 +1,7 @@
 import { hookStateController } from 'hookstate/hookStateController';
 import { bypassTenants, simpleAuthBypass } from 'utils/data';
 import { globalInitialState, globalState } from './initialStates';
+import update from 'immutability-helper';
 
 const globalStateControllerHandler = state => ({
 	setLayerLoading: (type, value) => {
@@ -18,6 +19,42 @@ const globalStateControllerHandler = state => ({
 			globalStateController.updateState({ ...bypass, tenant });
 		}
 	},
+
+	generateUpdateFn: (layers, value, currentLayers, field) => {
+		const updatefn = {};
+		layers.forEach(layer => {
+			if (layer.type === 'group') {
+				layer.layers.forEach(l => {
+					const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === l.identifier);
+					if (layerIndex !== -1) {
+						if (field === 'showable') {
+							updatefn[layerIndex] = { layerSettings: { [field]: { $set: value } } };
+						} else {
+							updatefn[layerIndex] = { [field]: { $set: value } };
+						}
+					}
+				});
+			} else {
+				const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === layer.identifier);
+				if (layerIndex !== -1) {
+					if (field === 'showable') {
+						updatefn[layerIndex] = { layerSettings: { [field]: { $set: value } } };
+					} else {
+						updatefn[layerIndex] = { [field]: { $set: value } };
+					}
+				}
+			}
+		});
+		return updatefn;
+	},
+
+	updateProjectedLayers: ({ layer, value, field }) => {
+		const projectedLayers = globalState.projectedLayers.get({ noproxy: true });
+		const updatefn = globalStateController.generateUpdateFn([layer], value, projectedLayers, field);
+
+		globalStateController.updateState({ projectedLayers: update(projectedLayers, updatefn) });
+	},
+
 	isAuth0Bypass: () => state.bypassType.get({ noproxy: true }) === 'Auth0Bypass',
 	isBypassTenant: tenant => bypassTenants.map(t => t.toLowerCase()).includes(tenant.toLowerCase()),
 	handleMyWellTestCase: (globalWellId, mongoWellId) => {

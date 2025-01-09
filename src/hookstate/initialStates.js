@@ -8,6 +8,7 @@ import { simpleAuthBypass } from 'utils/data';
 /* -------------------------------------------------------------------------- */
 export const globalInitialState = {
 	layers: [],
+	projectedLayers: [],
 	panelItems: [],
 	emptyGroups: [],
 	globalSearch: '',

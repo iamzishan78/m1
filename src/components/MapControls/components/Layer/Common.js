@@ -2,7 +2,7 @@ import { FormControl, Input, InputAdornment } from '@material-ui/core';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { v4 as uuid } from 'uuid';
 import { copy } from 'components/Shared/functions';
-import _, { set } from 'lodash';
+import { set } from 'lodash';
 import { useState, useEffect } from 'react';
 import { ColorBox } from 'material-ui-color';
 
@@ -191,8 +191,6 @@ export const useLayerStyle = layer => {
 			layer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability ||
 			layer.layerSettings?.interaction?.interactionDetail?.enablefillColor !== enablefillColor ||
 			layer.layerSettings?.interaction?.interactionDetail?.enableStrokeColor !== enableStrokeColor ||
-			!_.isEqual(layer.layerSettings?.attributeBasedColors, attributeBasedColors) ||
-			!_.isEqual(layer.layerSettings?.attributeBasedStrokeColors, attributeBasedStrokeColors) ||
 			layer.layerSettings?.selectedAttribute?.label !== selectedValue?.label ||
 			layer.layerSettings?.selectedStrokeAttribute?.label !== selectedStrokeValue?.label
 		) {
