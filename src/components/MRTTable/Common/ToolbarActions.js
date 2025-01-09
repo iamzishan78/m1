@@ -1,15 +1,12 @@
 import React, { useEffect } from 'react';
 
-
-
-import { Typography } from '@material-ui/core';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import { ToggleButton, IconButton, Tooltip } from '@mui/material';
+import { IconButton, Tooltip, ToggleButton } from '@mui/material';
 
 import _ from 'lodash';
-import PropTypes from 'prop-types'; // Import PropTypes
+import PropTypes from 'prop-types';
 
 import GridView from 'components/MRTTable/Common/GridView';
 import TabHeader from 'components/MRTTable/Common/TabHeader';
@@ -18,6 +15,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 import { excludeFilters } from './CommonToolBarActions';
+import TableHeader from './TableHeader';
 
 function ToolbarActions({ table, tableKey, children }) {
 	const tableState = tableController(tableKey).useCompleteState();
@@ -146,11 +144,12 @@ function ToolbarActions({ table, tableKey, children }) {
 					alignItems: 'center',
 				}}
 			>
-				<Typography variant="h5" style={{ fontWeight: 'bold', marginRight: '5px' }}>
-					{tableStateValues.tableHeading}
-				</Typography>
 				<TabHeader labels={tableStateValues.tabLabels} />
 				{tableStateValues.gridViewSettings && !isSomethingSelected && <GridView moduleName={tableKey} />}
+
+				{tableStateValues.defaultHeader && !tableStateValues.gridViewSettings && (
+					<TableHeader {...tableStateValues.defaultHeader} />
+				)}
 			</div>
 			<div style={{ display: 'flex', gap: '0.5rem', marginLeft: '0.5rem' }}>
 				<div
