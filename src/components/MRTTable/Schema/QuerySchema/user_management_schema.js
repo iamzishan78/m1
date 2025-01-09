@@ -3,7 +3,6 @@ import React from 'react';
 
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import UserManagementToolbar from 'components/MRTTable/TablesOverride/UserManagementTable/UserManagementToolbar';
-import { formatDate } from 'components/Shared/functions';
 
 import { GET_ALL_USERS } from 'graphQL/userManagement';
 
@@ -85,7 +84,6 @@ const UserManagementMeta = {
 			header: 'Last Login',
 			id: 'lastLogin',
 			name: 'lastLogin',
-			accessorFn: row => formatDate(row?.lastLogin),
 		},
 	],
 };

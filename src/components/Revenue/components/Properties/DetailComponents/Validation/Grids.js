@@ -1,13 +1,13 @@
-import React, { useContext, useMemo } from 'react';
-import MRTTable from 'components/MRTTable';
-import TabPanels from 'components/Shared/TabPanels';
-import { tableGlobalController } from 'hookstate/tableController';
-import { AppContext } from 'AppContext';
+import React, { useMemo } from 'react';
+
 import PropTypes from 'prop-types';
 
-const ValidationGrids = ({ propertyId }) => {
-	const [stateApp] = useContext(AppContext);
+import MRTTable from 'components/MRTTable';
+import TabPanels from 'components/Shared/TabPanels';
 
+import { tableGlobalController } from 'hookstate/tableController';
+
+const ValidationGrids = ({ propertyId, associatedWellIds }) => {
 	const {
 		stateValues: { tabKey: selectedTab },
 	} = tableGlobalController.useState(['tabKey']);
@@ -15,41 +15,44 @@ const ValidationGrids = ({ propertyId }) => {
 	const defaultTabLabels = ['Sales vs Production Volumes'];
 
 	const overrideMeta = useMemo(() => {
-		const tabLabels = stateApp.associatedWellIds ? ['Well Production', ...defaultTabLabels] : defaultTabLabels;
+		const tabLabels = associatedWellIds?.length > 0 ? ['Well Production', ...defaultTabLabels] : defaultTabLabels;
 
 		const salesVolumeMeta = {
 			defaultFilters: [{ field: 'property._id', value: propertyId }],
 			tabLabels,
 		};
 
-		const wellProductionMeta = {
-			defaultFilters: [{ field: 'well._id', value: stateApp.associatedWellIds }],
-			tabLabels,
-		};
+		const wellProductionMeta =
+			associatedWellIds?.length > 0
+				? {
+						defaultFilters: [{ field: 'well._id', value: associatedWellIds }],
+						tabLabels,
+					}
+				: null;
 
 		return { salesVolumeMeta, wellProductionMeta };
-	}, [propertyId, stateApp.associatedWellIds]);
+	}, [propertyId, associatedWellIds]);
 
-	return (
-		<div>
-			<TabPanels
-				key={overrideMeta.salesVolumeMeta.tabLabels[0]}
-				value={selectedTab}
-				panels={[
-					<MRTTable
-						key="WellProductionTable"
-						name="WellProductionTable"
-						overrideMeta={overrideMeta.wellProductionMeta}
-					/>,
-					<MRTTable
-						key="SalesVolumeComparisonTable"
-						name="SalesVolumeComparisonTable"
-						overrideMeta={overrideMeta.salesVolumeMeta}
-					/>,
-				]}
-			/>
-		</div>
-	);
+	// Create panels dynamically based on the presence of associatedWellIds
+	const panels = useMemo(() => {
+		const panelsArray = [
+			<MRTTable
+				key="SalesVolumeComparisonTable"
+				name="SalesVolumeComparisonTable"
+				overrideMeta={overrideMeta.salesVolumeMeta}
+			/>,
+		];
+
+		if (associatedWellIds?.length > 0) {
+			panelsArray.unshift(
+				<MRTTable key="WellProductionTable" name="WellProductionTable" overrideMeta={overrideMeta.wellProductionMeta} />
+			);
+		}
+
+		return panelsArray;
+	}, [overrideMeta, associatedWellIds]);
+
+	return <TabPanels key={overrideMeta.salesVolumeMeta.tabLabels[0]} value={selectedTab} panels={panels} />;
 };
 
 ValidationGrids.propTypes = {
