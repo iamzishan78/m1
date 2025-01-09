@@ -340,12 +340,13 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		let datasets = globalStateController.getValue('datasets');
 		datasets = datasets?.filter(dataset => dataset.sourceName !== 'M1 Platform');
 
-		let datasetsShapeNames = datasets.flatMap(dataset =>
-			dataset.categories.map(category => ({
-				label: `[${dataset.name}] - ${category.layerShapeName}`,
-				value: `${dataset.file}_${category.layerShapeName}`,
-			}))
-		);
+		let datasetsShapeNames =
+			datasets?.flatMap(dataset =>
+				dataset.categories.map(category => ({
+					label: `[${dataset.name}] - ${category.layerShapeName}`,
+					value: `${dataset.file}_${category.layerShapeName}`,
+				}))
+			) || [];
 
 		const m1LayersOptions = Object.keys(customLayersFieldAccessors).map(layer => ({ label: layer, value: layer }));
 
