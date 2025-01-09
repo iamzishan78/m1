@@ -43,8 +43,8 @@ const PotentialWellsMeta = {
 	CustomToolBar: PotentialWellToolbar,
 	isClientSide: true,
 	isSelectAllAllowed: true,
-	isDeleteAllowed: false,
-	isExportAllowed: false,
+	isDeleteDisabled: true,
+	isExportDisabled: true,
 	enableFacetedValues: true,
 	TableSchema: [
 		{
@@ -53,13 +53,13 @@ const PotentialWellsMeta = {
 			id: 'id',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'API',
 			id: 'api',
 			name: 'api',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Well Name',
 			id: 'wellName',
 			name: 'wellName',

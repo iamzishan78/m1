@@ -1,49 +1,66 @@
-import React, { memo, useEffect } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 
 import { useApolloClient } from '@apollo/client';
 import { MaterialReactTable } from 'material-react-table';
 import PropTypes from 'prop-types';
+
+import { copy } from 'components/Shared/functions';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 import { SCHEMA } from './Schema';
 import Table from './Table';
-import { copy } from '../Shared/functions/index';
 
 function MRTTable({ tableKey, name, overrideMeta = {} }) {
 	const client = useApolloClient();
-	const meta = SCHEMA[name];
-	const extendedMeta = {
-		...copy(meta),
-		...overrideMeta,
-		...globalStateController.getValue('cypress')?.mrtOverrideMeta,
-	};
-	tableKey = tableKey || name; // table key should be different if two tables with same name exist in same screen.
-	const Controller = tableController(tableKey);
+	const [extendedMeta, setExtendedMeta] = useState(null); // State for extended meta
+	const Controller = tableController(tableKey || name); // Default table key is the name
 	const { reInitialized } = tableGlobalController.useState(['reInitialized']);
-
 	const { stateValues } = Controller.useState(['initialized']);
 
 	useEffect(() => {
-		(async () => {
-			await Controller.initialize(tableKey, extendedMeta, client);
-		})();
+		// Dynamically load the schema
+		const loadSchema = async () => {
+			try {
+				const schemaModule = await SCHEMA[name](); // Dynamically import the schema
+				const schema = schemaModule.default; // Access the default export from the dynamic import
+				const metaCopy = {
+					...copy(schema),
+					...overrideMeta,
+					...globalStateController.getValue('cypress')?.mrtOverrideMeta,
+				};
+				setExtendedMeta(metaCopy);
+				await Controller.initialize(tableKey || name, metaCopy, client);
+			} catch (error) {
+				console.error(`Failed to load schema for ${name}:`, error);
+			}
+		};
+		loadSchema();
 
 		return () => {
 			Controller.reset();
 		};
 	}, [reInitialized]);
 
-	if (!stateValues.initialized) {
+	if (!extendedMeta || !stateValues.initialized) {
 		return (
 			<MaterialReactTable
-				columns={extendedMeta.TableSchema.filter(column => !column.hidden).map(column => ({
-					id: column.id,
-					accessorKey: column.accessorKey,
-					header: column.header,
-					size: column.size,
-				}))}
+				columns={
+					extendedMeta?.TableSchema?.filter(column => !column.hidden).map(column => ({
+						id: column.id,
+						accessorKey: column.accessorKey,
+						header: column.header,
+						size: column.size,
+					})) || [
+						{
+							id: ' ',
+							accessorKey: ' ',
+							header: '',
+							size: 450,
+						},
+					]
+				}
 				data={[]}
 				state={{
 					isLoading: true,
@@ -55,7 +72,7 @@ function MRTTable({ tableKey, name, overrideMeta = {} }) {
 		);
 	}
 
-	return <Table tableKey={tableKey} />;
+	return <Table tableKey={tableKey || name} />;
 }
 
 // Define prop types for MRTTable

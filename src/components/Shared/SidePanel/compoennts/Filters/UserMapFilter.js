@@ -77,10 +77,10 @@ export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValue
 			filterValue = ' '; // empty value for empty/notEmpty filters
 			break;
 		case 'date':
-			filterValue = [
-				formatDate(filterValues?.[0] || '1970-01-01'),
-				formatDate(filterValues?.[1] || moment().format('YYYY-MM-DD')),
-			];
+			filterValue = {
+				gte: filterValues?.gte || '1970-01-01',
+				lte: filterValues?.lte || moment().format('YYYY-MM-DD'),
+			};
 			break;
 		case 'range':
 			filterValue = [filterValues?.[0], filterValues?.[1]];
@@ -106,7 +106,7 @@ export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValue
 			return {
 				...baseFilter,
 				columnType: 'date',
-				isKeyword: false,
+				type: 'advanced',
 				searchType: 'betweenInclusive',
 			};
 		case 'range':
@@ -119,7 +119,6 @@ export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValue
 			return {
 				...baseFilter,
 				type: 'advanced',
-				isKeyword: true,
 				columnType: 'string',
 			};
 	}
@@ -155,6 +154,11 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 
 	const layers = globalStateController.getValue('layers');
 
+	const tableKey = Object.keys(tableESState).find(key => {
+		const tableState = tableESState[key].get({ noproxy: true });
+		return tableState?.layerIdentifier === dataSourceName;
+	});
+
 	const [debouncedFilterValues, setDebouncedFilterValues] = useState(filterValues); // New state for debounced filter values
 
 	// Debounce the filter values
@@ -188,7 +192,12 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 					? mapView.filterValues && isString
 						? [mapView.filterValues]
 						: mapView.filterValues
-					: mapView.filterValues,
+					: _filterType === 'date' && !mapView.filterValues
+						? {
+								gte: '1970-01-01',
+								lte: moment().format('YYYY-MM-DD'),
+							}
+						: mapView.filterValues,
 			};
 		});
 	};
@@ -265,10 +274,6 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			const mapViewFilters = getMapViewFilters();
 			// Upsert the map view data to the GraphQL API
 			if (canUpdateMapView) {
-				const tableKey = Object.keys(tableESState).find(key => {
-					const tableState = tableESState[key].get({ noproxy: true });
-					return tableState?.layerIdentifier === dataSourceName;
-				});
 				const tableState = tableESState[tableKey]?.get({ noproxy: true });
 
 				const formattedFilter = getFormattedFilterBasedOnType(
@@ -333,14 +338,15 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 
 		// making datasets fields in the below code block
 		let datasets = globalStateController.getValue('datasets');
-		datasets = datasets.filter(dataset => dataset.sourceName !== 'M1 Platform');
+		datasets = datasets?.filter(dataset => dataset.sourceName !== 'M1 Platform');
 
-		let datasetsShapeNames = datasets.flatMap(dataset =>
-			dataset.categories.map(category => ({
-				label: `[${dataset.name}] - ${category.layerShapeName}`,
-				value: `${dataset.file}_${category.layerShapeName}`,
-			}))
-		);
+		let datasetsShapeNames =
+			datasets?.flatMap(dataset =>
+				dataset.categories.map(category => ({
+					label: `[${dataset.name}] - ${category.layerShapeName}`,
+					value: `${dataset.file}_${category.layerShapeName}`,
+				}))
+			) || [];
 
 		const m1LayersOptions = Object.keys(customLayersFieldAccessors).map(layer => ({ label: layer, value: layer }));
 
@@ -387,7 +393,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				label: 'Field Name',
 				options: customLayersFieldAccessors[dataSourceName]?.keys || layer?.layerSchema || [], // Dynamic based on data source
 				defaultValue: mapView?.dataSourceName ? getSelectedField(mapView?.fieldName) || mapView?.fieldName : null, // Set default value if mapView is provided
-				onChange: (e, v, r) => {
+				onChange: (e, v, r, previousValue) => {
 					setValue(
 						`mapViews.${index}.filterType`,
 						v?.type
@@ -398,6 +404,19 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 								}
 					);
 					setValue(`mapViews.${index}.filterValues`, null);
+
+					if (tableKey) {
+						tableController(tableKey).clearFilter(
+							(previousValue?.value || previousValue)?.replace('.keyword', ''),
+							true,
+							false
+						);
+						tableController(tableKey).setFilterMode(
+							(fieldName?.value || fieldName)?.replace('.keyword', ''),
+							'singleselect',
+							false
+						);
+					}
 				}, // Reset other fields on change
 			},
 		];
@@ -441,11 +460,6 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		mapViewFilters = mapViewFilters.filter((_, i) => i !== index);
 
 		remove(index); // Set the filter cleared state to true
-
-		const tableKey = Object.keys(tableESState).find(key => {
-			const tableState = tableESState[key].get({ noproxy: true });
-			return tableState?.layerIdentifier === dataSourceName;
-		});
 
 		tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
 		tableController(tableKey).setFilterMode(

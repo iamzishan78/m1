@@ -1,4 +1,5 @@
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import { formatDate } from 'components/Shared/functions';
 
 const esIndex = 'mywellproduction_flats';
 
@@ -15,7 +16,6 @@ const WellProductionMeta = {
 	isInFiniteScroll: true,
 	columnVirtualization: false,
 	isDeleteDisabled: true,
-	isExportDisabled: true,
 	TableSchema: [
 		{
 			...CommonSchema.MONGO_ID,
@@ -29,10 +29,15 @@ const WellProductionMeta = {
 			header: 'Well Id',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'data.ReportDate.keyword',
 			id: 'data.ReportDate',
 			header: 'Report Date',
+			type: 'date',
+			isSearchField: false,
+			Cell: ({ row }) => {
+				return <>{formatDate(row.original?.data?.ReportDate)}</>;
+			},
 		},
 
 		{

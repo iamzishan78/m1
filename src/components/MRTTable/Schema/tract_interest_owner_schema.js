@@ -21,7 +21,7 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 const esIndex = 'shapeowners_flat';
 
 const onClickedRow = selectedRow => {
-	const Controller = tableController('TractPerUnitTable');
+	const Controller = tableController('TractInterestOwnerTable');
 	const { customLayer } = Controller.getValue('customProps');
 	tableGlobalController.updateState({
 		dialog: {
@@ -33,7 +33,7 @@ const onClickedRow = selectedRow => {
 	});
 };
 
-const TractPerUnitMeta = {
+const TractInterestOwnerMeta = {
 	esIndex,
 	pageSize: 25,
 	pagination: {
@@ -142,7 +142,7 @@ const TractPerUnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.ownerType.keyword',
 			id: 'contact.ownerType',
 			header: 'Entity Type',
@@ -153,7 +153,7 @@ const TractPerUnitMeta = {
 			name: 'surface_interest',
 			id: 'surface_interest',
 			header: 'Surface Interest',
-			...CommonSchema.AGGREGATED_FOOTER('surface_interest', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('surface_interest', 'TractInterestOwnerTable'),
 		},
 
 		{
@@ -162,11 +162,11 @@ const TractPerUnitMeta = {
 			name: 'mineral_interest',
 			id: 'mineral_interest',
 			header: 'Mineral Interest',
-			...CommonSchema.AGGREGATED_FOOTER('mineral_interest', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('mineral_interest', 'TractInterestOwnerTable'),
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'nonExecRightsOnly.keyword',
 			id: 'nonExecRightsOnly',
 			header: 'Non-Exec Rights Only',
@@ -179,7 +179,7 @@ const TractPerUnitMeta = {
 			name: 'royalty_interest',
 			id: 'royalty_interest',
 			header: 'Royalty Interest (Lease)',
-			...CommonSchema.AGGREGATED_FOOTER('royalty_interest', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('royalty_interest', 'TractInterestOwnerTable'),
 		},
 
 		{
@@ -188,7 +188,7 @@ const TractPerUnitMeta = {
 			id: 'orri',
 			header: 'ORRI',
 			isSearchField: false,
-			...CommonSchema.AGGREGATED_FOOTER('orri', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('orri', 'TractInterestOwnerTable'),
 		},
 
 		// {
@@ -203,7 +203,7 @@ const TractPerUnitMeta = {
 			name: 'operating_rights',
 			id: 'operating_rights',
 			header: 'Working Interest',
-			...CommonSchema.AGGREGATED_FOOTER('operating_rights', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('operating_rights', 'TractInterestOwnerTable'),
 		},
 
 		{
@@ -218,14 +218,14 @@ const TractPerUnitMeta = {
 			name: 'net_acres',
 			id: 'net_acres',
 			header: 'Net Acres',
-			...CommonSchema.AGGREGATED_FOOTER('net_acres', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('net_acres', 'TractInterestOwnerTable'),
 		},
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'company_net_acres',
 			id: 'company_net_acres',
 			header: 'Co Net Acres',
-			...CommonSchema.AGGREGATED_FOOTER('company_net_acres', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('company_net_acres', 'TractInterestOwnerTable'),
 		},
 
 		{
@@ -233,7 +233,7 @@ const TractPerUnitMeta = {
 			name: 'nra',
 			id: 'nra',
 			header: 'NRA',
-			...CommonSchema.AGGREGATED_FOOTER('nra', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('nra', 'TractInterestOwnerTable'),
 		},
 
 		{
@@ -294,20 +294,20 @@ const TractPerUnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.contactStatus.keyword',
 			id: 'contact.contactStatus',
 			header: 'Contact Status',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.status.keyword',
 			id: 'contact.status',
 			header: 'Contact Stage',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contactOwners.keyword',
 			id: 'contactOwners',
 			header: 'Contact Owner',
@@ -317,7 +317,7 @@ const TractPerUnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			type: 'array',
 			name: 'campaigns',
 			id: 'campaigns',
@@ -328,28 +328,28 @@ const TractPerUnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'campaignPriority.keyword',
 			id: 'campaignPriority',
 			header: 'Campaign Priority',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'leaseStatus.keyword',
 			id: 'leaseStatus',
 			header: 'Lease Status',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'dataSource.keyword',
 			id: 'dataSource',
 			header: 'Data Source',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'deals.name.keyword',
 			id: 'deals.name',
 			isExport: 'dealsName',
@@ -379,7 +379,7 @@ const TractPerUnitMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'depthFrom.keyword',
 			id: 'depthFrom',
 			header: 'Depth From',
@@ -387,14 +387,14 @@ const TractPerUnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'depthTo.keyword',
 			id: 'depthTo',
 			header: 'Depth To',
 			isExternalFilter: false,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.isPurchased',
 			header: 'Purchased Data Exists',
 			filterSelectOptions: [
@@ -468,4 +468,4 @@ const TractPerUnitMeta = {
 	],
 };
 
-export default TractPerUnitMeta;
+export default TractInterestOwnerMeta;

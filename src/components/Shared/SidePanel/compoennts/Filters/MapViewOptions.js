@@ -171,6 +171,10 @@ function MapViewOptions({ tableKey, allMapViews, defaultView }) {
 			}
 		}
 
+		if (view?.isCurrent) {
+			_allMapViews = _allMapViews?.map(v => (v?._id === view?._id ? v : { ...v, isCurrent: false }));
+		}
+
 		let mapView = { ...data };
 		if (data.isDeleted === true && prevMapView?.selectedMapView?._id === data._id) {
 			mapView = _allMapViews.find(view => view.isCurrent) || defaultView;
@@ -245,24 +249,42 @@ function MapViewOptions({ tableKey, allMapViews, defaultView }) {
 							Standard
 						</AccordionSummary>
 						<AccordionDetails className={classes.details}>
-							{[defaultView].map(
-								view =>
-									view.type === 'Default' && (
+							{[defaultView].map(view => {
+								if (view.type === 'Default' && selectedTab === 'views') {
+									// Show the default view when the tab is default
+									return (
 										<View
+											key={view.id} // Add a key if needed
 											view={view}
 											handleMapViewChange={handleMapViewChange}
-											// setEditGridView={setEditGridView}
 											setViewName={setViewName}
-											// updateGridView={updateGridView}
 											userId={getUser?._id}
-											// updateFavouriteGridView={updateFavouriteGridView}
 											onClick={handleClick}
 											tableKey={tableKey}
 											defaultView={defaultView}
 											module={module}
 										/>
-									)
-							)}
+									);
+								} else if (view.type === 'Default' && selectedTab === 'favorites') {
+									// Show the default view if it is a favourite when the tab is favourites
+									if (view.isFavourite) {
+										return (
+											<View
+												key={view.id} // Add a key if needed
+												view={view}
+												handleMapViewChange={handleMapViewChange}
+												setViewName={setViewName}
+												userId={getUser?._id}
+												onClick={handleClick}
+												tableKey={tableKey}
+												defaultView={defaultView}
+												module={module}
+											/>
+										);
+									}
+								}
+								return null; // Don't render anything for other conditions
+							})}
 						</AccordionDetails>
 					</Accordion>
 				</div>
@@ -281,6 +303,7 @@ function MapViewOptions({ tableKey, allMapViews, defaultView }) {
 							{mapViewStateValues?.mapView?.showSaveAsNew && (
 								<InputField
 									setEditMapView={setEditMapView}
+									showSaveAsNew={true}
 									viewName={viewName}
 									setViewName={setViewName}
 									upsertMapView={upsertMapView}
@@ -327,10 +350,19 @@ function MapViewOptions({ tableKey, allMapViews, defaultView }) {
 
 export default memo(MapViewOptions);
 
-function InputField({ editMapViewId, viewName, setViewName, upsertMapView, setEditMapView, defaultView }) {
+function InputField({
+	editMapViewId,
+	viewName,
+	setViewName,
+	upsertMapView,
+	setEditMapView,
+	defaultView,
+	showSaveAsNew,
+}) {
 	const classes = useStyles();
 	const mapViewState = globalStateController.useState(['filters', 'mapView']);
 	const mapViewStateValues = mapViewState.stateValues;
+	const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView || {};
 
 	return (
 		<TextField
@@ -351,7 +383,6 @@ function InputField({ editMapViewId, viewName, setViewName, upsertMapView, setEd
 			onKeyDown={event => {
 				event.stopPropagation();
 				if (event.key === 'Enter') {
-					const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView || {};
 					event.preventDefault();
 					if (editMapViewId) {
 						upsertMapView({
@@ -376,8 +407,13 @@ function InputField({ editMapViewId, viewName, setViewName, upsertMapView, setEd
 							refetchQueries: ['getMapViews'],
 						});
 					}
+					if (showSaveAsNew || selectedMapView?._id === editMapViewId) selectedMapView.name = viewName;
 					globalStateController.updateState({
-						mapView: { ...mapViewStateValues.mapView, showViewModal: false },
+						mapView: {
+							...mapViewStateValues.mapView,
+							showViewModal: false,
+							...((showSaveAsNew || selectedMapView?._id === editMapViewId) && { selectedMapView: selectedMapView }),
+						},
 						viewChanged: true,
 					});
 				}
@@ -428,7 +464,7 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 					<StarIcon
 						style={{ marginTop: '5px' }}
 						onClick={() => {
-							handleMapViewChange({ ...view, isFavourite: false, userId });
+							handleMapViewChange({ ...view, isFavourite: false, userId }, false);
 						}}
 					/>
 				)}
@@ -436,7 +472,7 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 					<BookmarkIcon
 						style={{ marginTop: '5px' }}
 						onClick={() => {
-							handleMapViewChange({ ...view, isCurrent: false, userId });
+							handleMapViewChange({ ...view, isCurrent: false, userId }, false);
 						}}
 					/>
 				)}

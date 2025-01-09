@@ -44,8 +44,8 @@ const PotentialShapeOwnersMeta = {
 	CustomToolBar: PotentialShapeOwnersToolbar,
 	isClientSide: true,
 	isSelectAllAllowed: true,
-	isDeleteAllowed: false,
-	isExportAllowed: false,
+	isDeleteDisabled: true,
+	isExportDisabled: true,
 	enableFacetedValues: true,
 	TableSchema: [
 		{
@@ -59,37 +59,37 @@ const PotentialShapeOwnersMeta = {
 			id: 'entity',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Name',
 			id: 'name',
 			name: 'name',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Entity Type',
 			id: 'ownershipType',
 			name: 'ownershipType',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Street Address',
 			id: 'StreetAddress',
 			name: 'StreetAddress',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'City',
 			id: 'City',
 			name: 'City',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'State',
 			id: 'State',
 			name: 'State',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Zip Code',
 			id: 'Zip',
 			name: 'Zip',
@@ -125,8 +125,10 @@ const PotentialShapeOwnersMeta = {
 				const Controller = tableController('PotentialShapeOwnersTable');
 				const { stateValues } = Controller.useState(['ownersWhoAreContact', 'data']);
 
-				const contact = stateValues.ownersWhoAreContact?.find(contact => contact?.globalOwner === row?.original?.id);
-				return <IsContactCell contactId={contact?._id || 'false'} rows={[row.original]} />;
+				const contactOwner = stateValues.ownersWhoAreContact?.find(
+					contact => contact?.globalOwner === row?.original?.id
+				);
+				return <IsContactCell contactId={contactOwner?.isContact || 'false'} rows={[row.original]} />;
 			},
 		},
 		{

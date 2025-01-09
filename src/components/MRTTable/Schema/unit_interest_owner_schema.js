@@ -64,7 +64,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 };
 
 const onClickedRow = selectedRow => {
-	const Controller = tableController('OwnersPerUnitTable');
+	const Controller = tableController('UnitInterestOwnerTable');
 	const { customLayer } = Controller.getValue('customProps');
 	tableGlobalController.updateState({
 		dialog: {
@@ -79,7 +79,7 @@ const onClickedRow = selectedRow => {
 	});
 };
 
-const OwnersPerUnitMeta = {
+const UnitInterestOwnerMeta = {
 	esIndex,
 	pageSize: 25,
 	pagination: {
@@ -184,7 +184,7 @@ const OwnersPerUnitMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.entityDetail.currentAddress.keyword',
 			id: 'contact.entityDetail.currentAddress',
 			header: 'Current Address',
@@ -192,7 +192,7 @@ const OwnersPerUnitMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.entityDetail.primaryAddress.keyword',
 			id: 'contact.entityDetail.primaryAddress',
 			header: 'Primary Address',
@@ -200,7 +200,7 @@ const OwnersPerUnitMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.uName.keyword',
 			id: 'shape.shapeJson.properties.uName',
 			header: 'Unit Name',
@@ -208,7 +208,7 @@ const OwnersPerUnitMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.uNumber.keyword',
 			id: 'shape.shapeJson.properties.uNumber',
 			header: 'Unit #',
@@ -216,7 +216,7 @@ const OwnersPerUnitMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.StateAbbreviation.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.StateAbbreviation',
 			header: 'State',
@@ -224,7 +224,7 @@ const OwnersPerUnitMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.County.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.County',
 			header: 'County',
@@ -232,7 +232,7 @@ const OwnersPerUnitMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.uAcres.keyword',
 			id: 'shape.shapeJson.properties.uAcres',
 			header: 'Unit Acres',
@@ -240,7 +240,7 @@ const OwnersPerUnitMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.ownerType.keyword',
 			id: 'contact.ownerType',
 			header: 'Entity Type',
@@ -251,7 +251,7 @@ const OwnersPerUnitMeta = {
 			name: 'working_interest',
 			id: 'working_interest',
 			header: 'Working Interest',
-			...CommonSchema.AGGREGATED_FOOTER('working_interest', 'OwnersPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('working_interest', 'UnitInterestOwnerTable'),
 		},
 
 		{
@@ -259,7 +259,7 @@ const OwnersPerUnitMeta = {
 			name: 'royalty_interest',
 			id: 'royalty_interest',
 			header: 'Royalty Interest',
-			...CommonSchema.AGGREGATED_FOOTER('royalty_interest', 'OwnersPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('royalty_interest', 'UnitInterestOwnerTable'),
 		},
 
 		{
@@ -267,7 +267,7 @@ const OwnersPerUnitMeta = {
 			name: 'orri',
 			id: 'orri',
 			header: 'ORRI',
-			...CommonSchema.AGGREGATED_FOOTER('orri', 'OwnersPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('orri', 'UnitInterestOwnerTable'),
 		},
 
 		{
@@ -275,14 +275,14 @@ const OwnersPerUnitMeta = {
 			name: 'nri',
 			id: 'nri',
 			header: 'NRI',
-			...CommonSchema.AGGREGATED_FOOTER('nri', 'OwnersPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('nri', 'UnitInterestOwnerTable'),
 		},
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'net_acres',
 			id: 'net_acres',
 			header: 'Net Acres',
-			...CommonSchema.AGGREGATED_FOOTER('net_acres', 'OwnersPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('net_acres', 'UnitInterestOwnerTable'),
 		},
 
 		{
@@ -290,11 +290,11 @@ const OwnersPerUnitMeta = {
 			name: 'nra',
 			id: 'nra',
 			header: 'NRA',
-			...CommonSchema.AGGREGATED_FOOTER('nra', 'OwnersPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('nra', 'UnitInterestOwnerTable'),
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'unitTractId.keyword',
 			id: 'unitTractId',
 			header: 'Unit Tract ID',
@@ -305,7 +305,7 @@ const OwnersPerUnitMeta = {
 			name: 'tractAcres',
 			id: 'tractAcres',
 			header: 'Unit Tract Acres',
-			...CommonSchema.AGGREGATED_FOOTER('tractAcres', 'OwnersPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('tractAcres', 'UnitInterestOwnerTable'),
 		},
 
 		{
@@ -357,23 +357,28 @@ const OwnersPerUnitMeta = {
 			id: 'actual_offer_price',
 			header: 'Actual Offer Price',
 		},
-
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
+			name: 'closed_price',
+			id: 'closed_price',
+			header: 'Closed Price',
+		},
+		{
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.contactStatus.keyword',
 			id: 'contact.contactStatus',
 			header: 'Contact Status',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.status.keyword',
 			id: 'contact.status',
 			header: 'Contact Stage',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.homePhone.keyword',
 			id: 'contact.homePhone',
 			header: 'Contact Home Phone 1',
@@ -381,7 +386,7 @@ const OwnersPerUnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.mobilePhone.keyword',
 			id: 'contact.mobilePhone',
 			header: 'Contact Mobile Phone 1',
@@ -389,7 +394,7 @@ const OwnersPerUnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contactOwners.keyword',
 			id: 'contactOwners',
 			header: 'Contact Owner',
@@ -398,7 +403,7 @@ const OwnersPerUnitMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			type: 'array',
 			name: 'campaigns',
 			id: 'campaigns',
@@ -409,13 +414,13 @@ const OwnersPerUnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'campaignPriority.keyword',
 			id: 'campaignPriority',
 			header: 'Campaign Priority 1',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.reviewer.name.keyword',
 			id: 'shape.shapeJson.properties.reviewer.name',
 			header: 'Reviewer',
@@ -424,7 +429,7 @@ const OwnersPerUnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.qualifier.name.keyword',
 			id: 'shape.shapeJson.properties.qualifier.name',
 			header: 'Qualifier',
@@ -432,14 +437,14 @@ const OwnersPerUnitMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'dataSource.keyword',
 			id: 'dataSource',
 			header: 'Data Source',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'taxYear',
 			type: 'number',
 			id: 'taxYear',
@@ -448,7 +453,7 @@ const OwnersPerUnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'deals.name.keyword',
 			id: 'deals.name',
 			header: 'Associated Deals',
@@ -478,7 +483,7 @@ const OwnersPerUnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.isPurchased',
 			header: 'Purchased Data Exists',
 			id: 'contact.isPurchased',
@@ -550,4 +555,4 @@ const OwnersPerUnitMeta = {
 	],
 };
 
-export default OwnersPerUnitMeta;
+export default UnitInterestOwnerMeta;

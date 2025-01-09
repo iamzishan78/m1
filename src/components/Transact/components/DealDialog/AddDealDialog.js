@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext, Fragment, useCallback } from 'react';
-import NumberFormat from 'react-number-format';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
@@ -60,32 +59,11 @@ import ExistingDeal from './ExistingDeal';
 import AssociatedFlowDealDetails from '../AssociatedFlowDealDetails';
 
 import './dialog.css';
+import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
 
 const THREE = 3;
 const FIVE = 5;
 const FOURTY = 40;
-
-function NumberFormatCustom(props) {
-	const { inputRef, onChange, ...other } = props;
-
-	return (
-		<NumberFormat
-			{...other}
-			getInputRef={inputRef}
-			onValueChange={values => {
-				onChange({
-					target: {
-						name: props.name,
-						value: values.value,
-					},
-				});
-			}}
-			thousandSeparator
-			isNumericString
-			prefix="$"
-		/>
-	);
-}
 
 const formatIt = mdata => {
 	return {
@@ -169,12 +147,6 @@ export const useDealMapFlyto = mapReady => {
 	}, [dataDealShapes, stateApp.transactBarView, mapReady]);
 
 	return { handleFlyto };
-};
-
-NumberFormatCustom.propTypes = {
-	inputRef: PropTypes.func.isRequired,
-	name: PropTypes.string.isRequired,
-	onChange: PropTypes.func.isRequired,
 };
 
 const useStyles = makeStyles(theme => ({
@@ -901,6 +873,7 @@ function AddDealDialog(props) {
 								refetchQueries: ['getPipeline', 'getContactDeals', 'getContactSummary'],
 								awaitRefetchQueries: true,
 							}).then(() => {
+								tableGlobalController.refetch();
 								resolve();
 							});
 						})
@@ -979,6 +952,7 @@ function AddDealDialog(props) {
 					awaitRefetchQueries: true,
 				}).then(result => {
 					finishCreatingDeal(result?.data);
+					tableGlobalController.refetch();
 				});
 			}
 		}
@@ -1674,7 +1648,7 @@ function AddDealDialog(props) {
 																		setLabel(e.target.value);
 																	}}
 																	InputProps={{
-																		inputComponent: NumberFormatCustom,
+																		inputComponent: CurrencyFormatCustom,
 																		classes: {
 																			root: classes.customDataTextInputRoot,
 																			focused: classes.focused,
@@ -1703,7 +1677,7 @@ function AddDealDialog(props) {
 																		setClosedPrice(e.target.value);
 																	}}
 																	InputProps={{
-																		inputComponent: NumberFormatCustom,
+																		inputComponent: CurrencyFormatCustom,
 																		classes: {
 																			root: classes.customDataTextInputRoot,
 																			focused: classes.focused,

@@ -1,14 +1,15 @@
 const presetReact = require('@babel/preset-react').default;
 const presetCRA = require('babel-preset-react-app');
 const CracoEsbuildPlugin = require('craco-esbuild');
+const path = require('path');
 const { ProvidePlugin } = require('webpack');
 
 module.exports = {
 	babel: {
-		loaderOptions: (babelLoaderOptions, { env, paths }) => {
+		loaderOptions: babelLoaderOptions => {
 			const origBabelPresetReactAppIndex = babelLoaderOptions.presets.findIndex(preset => {
-				return preset[0].includes('babel-preset-react-app')
-			})
+				return preset[0].includes('babel-preset-react-app');
+			});
 
 			if (origBabelPresetReactAppIndex === -1) {
 				return babelLoaderOptions;
@@ -23,7 +24,11 @@ module.exports = {
 					importSource: '@welldone-software/why-did-you-render',
 				});
 				return babelPresetReactAppResult;
+<<<<<<< HEAD
 			}
+=======
+			};
+>>>>>>> 4219236ae3c20fcb9d1b3c42cb3379665a770a40
 
 			babelLoaderOptions.presets[origBabelPresetReactAppIndex] = overridenBabelPresetReactApp;
 
@@ -31,18 +36,31 @@ module.exports = {
 		},
 	},
 	eslint: {
+<<<<<<< HEAD
 		enable: false
 	},
 	webpack: {
 		configure: (webpackConfig, { env, paths, ...rest }) => {
+=======
+		enable: false,
+	},
+	webpack: {
+		configure: webpackConfig => {
+>>>>>>> 4219236ae3c20fcb9d1b3c42cb3379665a770a40
 			webpackConfig.entry = process.env.CYPRESS === 'true' ? './src/cypress.js' : './src/index.js';
 			// Add Babel loader for specific modules
 			webpackConfig.module.rules.push({
 				test: /\.js$/,
 				include: [
+<<<<<<< HEAD
 					/node_modules\/@mui\/x-date-pickers/, // For previous issue
 					/node_modules\/@tanstack\/virtual-core/, // For this issue
 					/node_modules\/@mui\/utils/, // Include @mui/utils
+=======
+					path.resolve('node_modules/@mui/x-date-pickers'),
+					path.resolve('node_modules/@tanstack/virtual-core'),
+					path.resolve('node_modules/@mui/utils'),
+>>>>>>> 4219236ae3c20fcb9d1b3c42cb3379665a770a40
 				],
 				use: {
 					loader: 'babel-loader',
@@ -67,6 +85,7 @@ module.exports = {
 			}),
 		],
 	},
+<<<<<<< HEAD
 	plugins: [{
 		plugin: CracoEsbuildPlugin,
 		options: {
@@ -90,3 +109,30 @@ module.exports = {
 		}
 	}]
 };
+=======
+	plugins: [
+		{
+			plugin: CracoEsbuildPlugin,
+			options: {
+				esbuildLoaderOptions: {
+					// Optional. Defaults to auto-detect loader.
+					loader: 'jsx', // Set the value to 'tsx' if you use typescript
+					target: 'es2018',
+				},
+				esbuildMinimizerOptions: {
+					// Optional. Defaults to:
+					target: 'es2018',
+					css: true, // if true, OptimizeCssAssetsWebpackPlugin will also be replaced by esbuild.
+				},
+				skipEsbuildJest: true, // Optional. Set to true if you want to use babel for jest tests,
+				esbuildJestOptions: {
+					loaders: {
+						'.ts': 'ts',
+						'.tsx': 'tsx',
+					},
+				},
+			},
+		},
+	],
+};
+>>>>>>> 4219236ae3c20fcb9d1b3c42cb3379665a770a40

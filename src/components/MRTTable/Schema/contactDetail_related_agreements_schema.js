@@ -91,41 +91,41 @@ const ContactDetailRelatedAgreementMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.agreementName.keyword',
 			id: 'shapeJson.properties.agreementName',
 			header: 'Agreement Name',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.agreementType.keyword',
 			id: 'shapeJson.properties.agreementType',
 			header: 'Agmt Type',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.agreementSubtype.keyword',
 			id: 'shapeJson.properties.agreementSubtype',
 			header: 'Agmt Subtype',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.grantee.keyword',
 			id: 'shapeJson.properties.grantee',
 			header: 'Grantee',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.grantor.keyword',
 			id: 'shapeJson.properties.grantor',
 			header: 'Grantor',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.agreementDate',
 			id: 'shapeJson.properties.agreementDate',
 			type: 'date',
@@ -138,7 +138,7 @@ const ContactDetailRelatedAgreementMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.effectiveDate',
 			id: 'shapeJson.properties.effectiveDate',
 			type: 'date',
@@ -151,7 +151,7 @@ const ContactDetailRelatedAgreementMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.expirationDate',
 			id: 'shapeJson.properties.expirationDate',
 			type: 'date',
@@ -164,7 +164,7 @@ const ContactDetailRelatedAgreementMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.extensionDate',
 			id: 'shapeJson.properties.extensionDate',
 			type: 'date',
@@ -177,7 +177,7 @@ const ContactDetailRelatedAgreementMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.agreementStatus.keyword',
 			id: 'shapeJson.properties.agreementStatus',
 			header: 'Status',
@@ -192,6 +192,7 @@ const ContactDetailRelatedAgreementMeta = {
 						targetSourceId={targetSourceId}
 						tags={row?.original?.tags}
 						targetLabel={'agreement'}
+						tableKey={'RelatedAgreementTable'}
 					/>
 				);
 			},
@@ -200,7 +201,14 @@ const ContactDetailRelatedAgreementMeta = {
 			...CommonSchema.COMMENTS,
 			Cell: ({ renderedCellValue, row }) => {
 				const id = row.getValue('_id');
-				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'agreement'} />;
+				return (
+					<CommentCell
+						id={id}
+						value={renderedCellValue.length}
+						targetLabel={'agreement'}
+						tableKey={'RelatedAgreementTable'}
+					/>
+				);
 			},
 		},
 	],

@@ -130,7 +130,6 @@ export default function ParcelCard() {
 	});
 	const documentCount = dataParcelFiles?.getParcelFilesCount || 0;
 	const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
-	// console.log('🚀 ~ ParcelCard ~ dataCustomLayer:', dataCustomLayer);
 
 	const selectedParcel = popupState?.stateValues?.selectedParcel;
 
@@ -142,8 +141,6 @@ export default function ParcelCard() {
 
 	useEffect(() => {
 		if (selectedParcel) {
-			console.log(selectedParcel.id);
-
 			getCustomLayer({
 				variables: {
 					id: selectedParcel.id,

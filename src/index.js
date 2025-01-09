@@ -1,5 +1,3 @@
-import './wdyr';
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -13,7 +11,6 @@ import 'components/MRTTable/Common/common.css';
 import * as serviceWorker from './serviceWorker';
 
 import 'react-toastify/dist/ReactToastify.min.css';
-
 
 ReactDOM.render(
 	<JotaiProvider>
