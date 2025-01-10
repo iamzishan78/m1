@@ -175,7 +175,9 @@ const CheckDetailsMeta = {
 			name: 'property.number.keyword',
 			id: 'property.number',
 			header: 'Operator Prop #',
-			enableEditing: false,
+
+			validate: validateRequiredString,
+			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString, { isSelect: true }),
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
