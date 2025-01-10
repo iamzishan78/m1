@@ -1,13 +1,18 @@
 import React, { memo, useEffect, useState } from 'react';
-import { Button, Typography } from '@material-ui/core';
-import { tableGlobalController } from 'hookstate/tableController';
-import GavelIcon from '@material-ui/icons/Gavel';
-import ParcelInstrument from 'components/ParcelsDetailCard/ParcelInstrument';
-import { getIdFromPath } from 'utils/helper';
 import { useHistory } from 'react-router-dom';
 
+import { Button } from '@material-ui/core';
+
+import PropTypes from 'prop-types';
+
+import ParcelInstrument from 'components/ParcelsDetailCard/ParcelInstrument';
+
+import { tableGlobalController } from 'hookstate/tableController';
+
+import { getIdFromPath } from 'utils/helper';
+
 // This component is used in the RelatedPaymentsTable component for the toolbar
-function RunsheetToolbar({ table, tableKey }) {
+function RunsheetToolbar({ table }) {
 	const history = useHistory();
 	const customLayerId = getIdFromPath(history.location.pathname);
 	const [showSlider, setShowSlider] = useState(false);
@@ -29,45 +34,28 @@ function RunsheetToolbar({ table, tableKey }) {
 
 	return (
 		<>
-			<Typography
-				variant="h6"
-				component="h1"
-				style={{ fontWeight: 'bold', margin: '5px 0px 0px 10px', position: 'absolute', left: '0' }}
+			<Button
+				variant="contained"
+				color="primary"
+				onClick={() => {
+					setShowSlider(true);
+				}}
+				disabled={selectedRows.length}
 			>
-				<div style={{ display: 'flex' }}>
-					<GavelIcon />
-					<span
-						style={{
-							marginTop: '-3px',
-							marginLeft: '8px',
-						}}
-					>
-						RUNSHEET INSTRUMENTS
-					</span>
-				</div>
-			</Typography>
-			<>
-				<Button
-					variant="contained"
-					color="primary"
-					onClick={() => {
-						setShowSlider(true);
-					}}
-					disabled={selectedRows.length}
-				>
-					+ ADD Instrument
-				</Button>
-				{showSlider && (
-					<ParcelInstrument
-						parcelId={customLayerId}
-						setShowSlider={setShowSlider}
-						selectedInstrument={selectedInstrument}
-						setSelectedInstrument={setSelectedInstrument}
-					/>
-				)}
-			</>
+				+ ADD Instrument
+			</Button>
+			{showSlider && (
+				<ParcelInstrument
+					parcelId={customLayerId}
+					setShowSlider={setShowSlider}
+					selectedInstrument={selectedInstrument}
+					setSelectedInstrument={setSelectedInstrument}
+				/>
+			)}
 		</>
 	);
 }
+
+RunsheetToolbar.propTypes = { table: PropTypes.object };
 
 export default memo(RunsheetToolbar);

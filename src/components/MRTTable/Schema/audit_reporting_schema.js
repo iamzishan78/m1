@@ -71,7 +71,7 @@ const AuditReportingMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			id: 'entityType.keyword',
 			header: 'Entity Type',
 			Cell: ({ renderedCellValue }) => {

@@ -76,7 +76,7 @@ const UnitInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.entityDetail.currentAddress.keyword',
 			id: 'contact.entityDetail.currentAddress',
 			header: 'Current Address',
@@ -85,7 +85,7 @@ const UnitInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.entityDetail.primaryAddress.keyword',
 			id: 'contact.entityDetail.primaryAddress',
 			header: 'Primary Address - Full',
@@ -94,7 +94,7 @@ const UnitInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.entityDetail.address1.keyword',
 			id: 'contact.entityDetail.address1',
 			header: 'Primary Address 1',
@@ -103,7 +103,7 @@ const UnitInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.entityDetail.address2.keyword',
 			id: 'contact.entityDetail.address2',
 			header: 'Primary Address 2',
@@ -112,7 +112,7 @@ const UnitInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.entityDetail.city.keyword',
 			id: 'contact.entityDetail.city',
 			header: 'Primary Address City',
@@ -121,7 +121,7 @@ const UnitInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.entityDetail.state.keyword',
 			id: 'contact.entityDetail.state',
 			header: 'Primary Address State',
@@ -130,7 +130,7 @@ const UnitInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.entityDetail.zip.keyword',
 			id: 'contact.entityDetail.zip',
 			header: 'Primary Address Zip Code',
@@ -139,73 +139,73 @@ const UnitInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.uName.keyword',
 			id: 'shape.shapeJson.properties.uName',
 			header: 'Unit Name',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.uNumber.keyword',
 			id: 'shape.shapeJson.properties.uNumber',
 			header: 'Unit #',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.State.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.State',
 			header: 'State',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.County.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.County',
 			header: 'County',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.surveyMerdian.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.surveyMerdian',
 			header: 'Survey/ Meridian',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.blockTownship.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.blockTownship',
 			header: 'Block/ Township',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.rangeSection.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.rangeSection',
 			header: 'Section/ Range',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.abstractNameShortName.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.abstractNameShortName',
 			header: 'Abstract/ Section',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.uAcres.keyword',
 			id: 'shape.shapeJson.properties.uAcres',
 			header: 'Unit Acres',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'unitTractId.keyword',
 			id: 'unitTractId',
 			header: 'Unit Tract ID',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'tractAcres',
 			id: 'tractAcres',
 			header: 'Unit Tract Acres',
@@ -213,7 +213,7 @@ const UnitInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'working_interest',
 			id: 'working_interest',
 			header: 'WI',
@@ -221,7 +221,7 @@ const UnitInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'royalty_interest',
 			id: 'royalty_interest',
 			header: 'RI',
@@ -229,7 +229,7 @@ const UnitInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'orri',
 			id: 'orri',
 			header: 'ORRI',
@@ -237,14 +237,14 @@ const UnitInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'nri',
 			id: 'nri',
 			header: 'NRI',
 			isSearchField: false,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'net_acres',
 			id: 'net_acres',
 			header: 'Net Acres',
@@ -252,7 +252,7 @@ const UnitInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'nra',
 			id: 'nra',
 			header: 'NRA',
@@ -291,28 +291,28 @@ const UnitInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.contactStatus.keyword',
 			id: 'contact.contactStatus',
 			header: 'Contact Status',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contactOwners.keyword',
 			id: 'contactOwners',
 			header: 'Contact Owner',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.status.keyword',
 			id: 'contact.status',
 			header: 'Stage',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			type: 'array',
 			name: 'campaigns',
 			id: 'campaigns',
@@ -323,27 +323,27 @@ const UnitInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'campaignPriority.keyword',
 			id: 'campaignPriority',
 			header: 'Campaign Priority',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.reviewer.name.keyword',
 			id: 'shape.shapeJson.properties.reviewer.name',
 			header: 'Reviewer',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.qualifier.name.keyword',
 			id: 'shape.shapeJson.properties.qualifier.name',
 			header: 'Qualifier',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'deals.name.keyword',
 			id: 'deals.name',
 			header: 'Associated Deals',
@@ -371,13 +371,13 @@ const UnitInterestMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'dataSource.keyword',
 			id: 'dataSource',
 			header: 'Data Source',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'taxYear',
 			type: 'number',
 			id: 'taxYear',

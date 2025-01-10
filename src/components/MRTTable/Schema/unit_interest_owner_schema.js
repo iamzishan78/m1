@@ -184,7 +184,7 @@ const UnitInterestOwnerMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.entityDetail.currentAddress.keyword',
 			id: 'contact.entityDetail.currentAddress',
 			header: 'Current Address',
@@ -192,7 +192,7 @@ const UnitInterestOwnerMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.entityDetail.primaryAddress.keyword',
 			id: 'contact.entityDetail.primaryAddress',
 			header: 'Primary Address',
@@ -200,7 +200,7 @@ const UnitInterestOwnerMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.uName.keyword',
 			id: 'shape.shapeJson.properties.uName',
 			header: 'Unit Name',
@@ -208,7 +208,7 @@ const UnitInterestOwnerMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.uNumber.keyword',
 			id: 'shape.shapeJson.properties.uNumber',
 			header: 'Unit #',
@@ -216,7 +216,7 @@ const UnitInterestOwnerMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.StateAbbreviation.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.StateAbbreviation',
 			header: 'State',
@@ -224,7 +224,7 @@ const UnitInterestOwnerMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.County.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.County',
 			header: 'County',
@@ -232,7 +232,7 @@ const UnitInterestOwnerMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.uAcres.keyword',
 			id: 'shape.shapeJson.properties.uAcres',
 			header: 'Unit Acres',
@@ -240,7 +240,7 @@ const UnitInterestOwnerMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.ownerType.keyword',
 			id: 'contact.ownerType',
 			header: 'Entity Type',
@@ -294,7 +294,7 @@ const UnitInterestOwnerMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'unitTractId.keyword',
 			id: 'unitTractId',
 			header: 'Unit Tract ID',
@@ -364,21 +364,21 @@ const UnitInterestOwnerMeta = {
 			header: 'Closed Price',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.contactStatus.keyword',
 			id: 'contact.contactStatus',
 			header: 'Contact Status',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.status.keyword',
 			id: 'contact.status',
 			header: 'Contact Stage',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.homePhone.keyword',
 			id: 'contact.homePhone',
 			header: 'Contact Home Phone 1',
@@ -386,7 +386,7 @@ const UnitInterestOwnerMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.mobilePhone.keyword',
 			id: 'contact.mobilePhone',
 			header: 'Contact Mobile Phone 1',
@@ -394,7 +394,7 @@ const UnitInterestOwnerMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contactOwners.keyword',
 			id: 'contactOwners',
 			header: 'Contact Owner',
@@ -403,7 +403,7 @@ const UnitInterestOwnerMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			type: 'array',
 			name: 'campaigns',
 			id: 'campaigns',
@@ -414,13 +414,13 @@ const UnitInterestOwnerMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'campaignPriority.keyword',
 			id: 'campaignPriority',
 			header: 'Campaign Priority 1',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.reviewer.name.keyword',
 			id: 'shape.shapeJson.properties.reviewer.name',
 			header: 'Reviewer',
@@ -429,7 +429,7 @@ const UnitInterestOwnerMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.qualifier.name.keyword',
 			id: 'shape.shapeJson.properties.qualifier.name',
 			header: 'Qualifier',
@@ -437,14 +437,14 @@ const UnitInterestOwnerMeta = {
 			hidden: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'dataSource.keyword',
 			id: 'dataSource',
 			header: 'Data Source',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'taxYear',
 			type: 'number',
 			id: 'taxYear',
@@ -453,7 +453,7 @@ const UnitInterestOwnerMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'deals.name.keyword',
 			id: 'deals.name',
 			header: 'Associated Deals',
@@ -483,7 +483,7 @@ const UnitInterestOwnerMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.isPurchased',
 			header: 'Purchased Data Exists',
 			id: 'contact.isPurchased',

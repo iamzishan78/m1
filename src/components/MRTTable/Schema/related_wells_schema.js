@@ -59,66 +59,66 @@ const RelatedWellsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Lease Number',
 			name: 'leaseId.keyword',
 			id: 'leaseId',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Lease Name',
 			name: 'lease.keyword',
 			id: 'lease',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Operator',
 			name: 'operator.keyword',
 			id: 'operator',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Well Type',
 			name: 'wellType.keyword',
 			id: 'wellType',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'WellBore Profile',
 			name: 'wellBoreProfile.keyword',
 			id: 'wellBoreProfile',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Well Status',
 			name: 'wellStatus.keyword',
 			id: 'wellStatus',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Last 12 (BOE)',
 			name: 'lastTwelveMonthBOE.keyword',
 			accessorKey: 'lastTwelveMonthBOE',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'MD (ft)',
 			name: 'measuredDepth.keyword',
 			accessorKey: 'measuredDepth',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Lateral Length (ft)',
 			name: 'lateralLength.keyword',
 			accessorKey: 'lateralLength',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Last 12 (BOE)',
 			name: 'lastTwelveMonthBOE',
 			id: 'lastTwelveMonthBOE',

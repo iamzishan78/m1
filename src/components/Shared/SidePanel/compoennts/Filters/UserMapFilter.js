@@ -107,7 +107,6 @@ export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValue
 				...baseFilter,
 				columnType: 'date',
 				type: 'advanced',
-				isKeyword: false,
 				searchType: 'betweenInclusive',
 			};
 		case 'range':
@@ -120,7 +119,6 @@ export const getFormattedFilterBasedOnType = (filterType, fieldName, filterValue
 			return {
 				...baseFilter,
 				type: 'advanced',
-				isKeyword: true,
 				columnType: 'string',
 			};
 	}
@@ -156,11 +154,6 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 
 	const layers = globalStateController.getValue('layers');
 
-	const tableKey = Object.keys(tableESState).find(key => {
-		const tableState = tableESState[key].get({ noproxy: true });
-		return tableState?.layerIdentifier === dataSourceName;
-	});
-
 	const [debouncedFilterValues, setDebouncedFilterValues] = useState(filterValues); // New state for debounced filter values
 
 	// Debounce the filter values
@@ -194,7 +187,12 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 					? mapView.filterValues && isString
 						? [mapView.filterValues]
 						: mapView.filterValues
-					: mapView.filterValues,
+					: _filterType === 'date' && !mapView.filterValues
+						? {
+								gte: '1970-01-01',
+								lte: moment().format('YYYY-MM-DD'),
+							}
+						: mapView.filterValues,
 			};
 		});
 	};
@@ -271,6 +269,10 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			const mapViewFilters = getMapViewFilters();
 			// Upsert the map view data to the GraphQL API
 			if (canUpdateMapView) {
+				const tableKey = Object.keys(tableESState).find(key => {
+					const tableState = tableESState[key].get({ noproxy: true });
+					return tableState?.layerIdentifier === dataSourceName;
+				});
 				const tableState = tableESState[tableKey]?.get({ noproxy: true });
 
 				const formattedFilter = getFormattedFilterBasedOnType(
@@ -335,14 +337,15 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 
 		// making datasets fields in the below code block
 		let datasets = globalStateController.getValue('datasets');
-		datasets = datasets.filter(dataset => dataset.sourceName !== 'M1 Platform');
+		datasets = datasets?.filter(dataset => dataset.sourceName !== 'M1 Platform');
 
-		let datasetsShapeNames = datasets.flatMap(dataset =>
-			dataset.categories.map(category => ({
-				label: `[${dataset.name}] - ${category.layerShapeName}`,
-				value: `${dataset.file}_${category.layerShapeName}`,
-			}))
-		);
+		let datasetsShapeNames =
+			datasets?.flatMap(dataset =>
+				dataset.categories.map(category => ({
+					label: `[${dataset.name}] - ${category.layerShapeName}`,
+					value: `${dataset.file}_${category.layerShapeName}`,
+				}))
+			) || [];
 
 		const m1LayersOptions = Object.keys(customLayersFieldAccessors).map(layer => ({ label: layer, value: layer }));
 
@@ -369,6 +372,10 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		if (dataSourceName && !(customLayersFieldAccessors[dataSourceName]?.keys || layer?.layerSchema)) {
 			return [];
 		}
+		const tableKey = Object.keys(tableESState).find(key => {
+			const tableState = tableESState[key].get({ noproxy: true });
+			return tableState?.layerIdentifier === dataSourceName;
+		});
 
 		const fields = [
 			{
@@ -455,14 +462,17 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 
 		mapViewFilters = mapViewFilters.filter((_, i) => i !== index);
 
-		remove(index); // Set the filter cleared state to true
-
+		const tableKey = Object.keys(tableESState).find(key => {
+			const tableState = tableESState[key].get({ noproxy: true });
+			return tableState?.layerIdentifier === dataSourceName;
+		});
 		tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false);
 		tableController(tableKey).setFilterMode(
 			(fieldName?.value || fieldName)?.replace('.keyword', ''),
 			'singleselect',
 			false
 		);
+		remove(index); // Set the filter cleared state to true
 		resetForm({
 			mapViews: mapViewFilters || [],
 		});

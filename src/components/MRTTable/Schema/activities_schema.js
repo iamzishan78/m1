@@ -64,7 +64,7 @@ const ActivitiesMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'type.keyword',
 			id: 'type',
 			header: 'Type',
@@ -74,7 +74,7 @@ const ActivitiesMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'dateTime',
 			id: 'dateTime',
 			header: 'Start Date',
@@ -86,7 +86,7 @@ const ActivitiesMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'endDateTime',
 			id: 'endDateTime',
 			header: 'End Date',
@@ -98,31 +98,31 @@ const ActivitiesMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'outcome.keyword',
 			id: 'outcome',
 			header: 'Outcome',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'deal.name.keyword',
 			id: 'deal.name',
 			header: 'Deal Name',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contactName.keyword',
 			id: 'contactName',
 			header: 'Contact Name',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'owner.name.keyword',
 			id: 'owner.name',
 			header: 'Activity Owner',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			enableColumnFilter: false,
 			isExport: false,
 			enableSorting: false,
@@ -134,7 +134,7 @@ const ActivitiesMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'isClosed',
 			esKey: 'isClosed',
 			id: 'isClosed',

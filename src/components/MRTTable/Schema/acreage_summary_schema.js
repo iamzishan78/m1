@@ -53,26 +53,26 @@ const AcreageSummaryMeta = {
 			id: '_id',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'state.keyword',
 			id: 'state',
 			header: 'State',
 			isGrouped: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'county.keyword',
 			id: 'county',
 			header: 'County',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.prospectID.keyword',
 			id: 'shape.shapeJson.properties.prospectID',
 			header: 'Prospect',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.report.devReportGrossAcres',
 			type: 'number',
 			id: 'shape.shapeJson.properties.report.devReportGrossAcres',
@@ -81,7 +81,7 @@ const AcreageSummaryMeta = {
 			...CommonSchema.AGGREGATED_FOOTER('shape.shapeJson.properties.report.devReportGrossAcres', 'AcreageSummaryTable'),
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.report.devReportNet',
 			type: 'number',
 			id: 'shape.shapeJson.properties.report.devReportNet',
@@ -90,7 +90,7 @@ const AcreageSummaryMeta = {
 			...CommonSchema.AGGREGATED_FOOTER('shape.shapeJson.properties.report.devReportNet', 'AcreageSummaryTable'),
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.report.devCompanyNetAcres',
 			type: 'number',
 			id: 'shape.shapeJson.properties.report.devCompanyNetAcres',
@@ -99,7 +99,7 @@ const AcreageSummaryMeta = {
 			...CommonSchema.AGGREGATED_FOOTER('shape.shapeJson.properties.report.devCompanyNetAcres', 'AcreageSummaryTable'),
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.report.undevReportGrossAcres',
 			type: 'number',
 			id: 'shape.shapeJson.properties.report.undevReportGrossAcres',
@@ -111,7 +111,7 @@ const AcreageSummaryMeta = {
 			),
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.report.undevReportNet',
 			type: 'number',
 			id: 'shape.shapeJson.properties.report.undevReportNet',
@@ -120,7 +120,7 @@ const AcreageSummaryMeta = {
 			...CommonSchema.AGGREGATED_FOOTER('shape.shapeJson.properties.report.undevReportNet', 'AcreageSummaryTable'),
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.report.undevCompanyNetAcres',
 			type: 'number',
 			id: 'shape.shapeJson.properties.report.undevCompanyNetAcres',
@@ -132,7 +132,7 @@ const AcreageSummaryMeta = {
 			),
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.report.reportGrossAcres',
 			type: 'number',
 			id: 'shape.shapeJson.properties.report.reportGrossAcres',
@@ -141,7 +141,7 @@ const AcreageSummaryMeta = {
 			...CommonSchema.AGGREGATED_FOOTER('shape.shapeJson.properties.report.reportGrossAcres', 'AcreageSummaryTable'),
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.report.reportNet',
 			type: 'number',
 			id: 'shape.shapeJson.properties.report.reportNet',
@@ -150,7 +150,7 @@ const AcreageSummaryMeta = {
 			...CommonSchema.AGGREGATED_FOOTER('shape.shapeJson.properties.report.reportNet', 'AcreageSummaryTable'),
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.report.companyNetAcres',
 			type: 'number',
 			id: 'shape.shapeJson.properties.report.companyNetAcres',

@@ -27,16 +27,8 @@ const ReportingGroupsMeta = {
 	maxTableHeight: 'calc(100vh - 300px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
-	isNotBreadcrumbView: true, // Flag to determine whether to display a simple Typography or a Breadcrumbs component. If true, Typography is rendered; if false, Breadcrumbs is rendered.
-	gridViewSettings: {
+	defaultHeader: {
 		label: 'Properties',
-		Icon: 'none',
-		cssOverride: {
-			top: '461px',
-			left: '40px',
-			marginLeft: '-25px',
-			maxHeight: '445px',
-		},
 	},
 	// Definition of table schema
 	TableSchema: [
@@ -116,7 +108,7 @@ const ReportingGroupsMeta = {
 		},
 		// Columns for Well API Number and Well Name
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wells.apiNumber.keyword',
 			id: 'wells.apiNumber',
 			header: 'Well API#',
@@ -130,7 +122,7 @@ const ReportingGroupsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wells.wellName.keyword',
 			id: 'wells.wellName',
 			header: 'Well Name',
@@ -145,54 +137,54 @@ const ReportingGroupsMeta = {
 		},
 		// Columns for Property details
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'purchaserNumber.keyword',
 			header: 'Payor Prop #',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'purchaser.name.keyword',
 			id: 'purchaser.name',
 			header: 'Purchaser',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'purchaser.name.keyword',
 			id: 'purchaser.name',
 			header: 'Payor',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'number.keyword',
 			id: 'number',
 			header: 'Operator Prop #',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'operator.name.keyword',
 			id: 'operator.name',
 			header: 'Operator',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'state.keyword',
 			id: 'state',
 			header: 'State',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'county.keyword',
 			id: 'county',
 			header: 'County',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'description.keyword',
 			id: 'description',
 			header: 'Property Description',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'status.keyword',
 			id: 'status',
 			header: 'Pay Status',
@@ -210,13 +202,13 @@ const ReportingGroupsMeta = {
 		},
 		// Columns for last check details
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'lastCheck.checkNumber.keyword',
 			id: 'lastCheck.checkNumber',
 			header: 'Last Check#',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'lastCheck.checkDate',
 			id: 'lastCheck.checkDate',
 			header: 'Last Check',
@@ -230,43 +222,43 @@ const ReportingGroupsMeta = {
 		},
 		// Columns for additional property details
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'prospectID.keyword',
 			id: 'prospectID',
 			header: 'Prospect',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'acquisitionID.keyword',
 			id: 'acquisitionID',
 			header: 'Acquisition ID',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'internalID.keyword',
 			id: 'internalID',
 			header: 'Accounting Ref ID',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'internalCompany.keyword',
 			id: 'internalCompany',
 			header: 'Internal Company',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'owner.name.keyword',
 			id: 'owner.name',
 			header: 'Owner Name',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'source.keyword',
 			id: 'source',
 			header: 'Source',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'approvalStatus.keyword',
 			id: 'approvalStatus',
 			header: 'Status',

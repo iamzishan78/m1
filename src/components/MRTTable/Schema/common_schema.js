@@ -112,7 +112,7 @@ export const CommonSchema = {
 		enableColumnDragging: false,
 		size: 350,
 	},
-	COMMON_COLUMN: {
+	STRING_COLUMN: {
 		size: 250,
 		isPinned: false,
 		hidden: false,
@@ -278,7 +278,7 @@ export const CommonSchema = {
 			return <>{!value ? `$${value}` : vf_currency_to_fixed(value, CURRENCY_TO_FIXED)}</>;
 		},
 	},
-	STRING_COLUMN: {
+	SELECT_STRING_COLUMN: {
 		size: 250,
 		isPinned: false,
 		hidden: false,
@@ -286,8 +286,25 @@ export const CommonSchema = {
 		isSearchField: true,
 		enableSorting: true,
 		type: 'string',
-		filterVariant: 'select',
+		filterVariant: 'autocomplete',
+		muiFilterAutocompleteProps: {
+			getOptionLabel: option => {
+				return option.label || '';
+			},
+		},
 	},
+
+	SELECT_DATE_COLUMN: {
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: true,
+		isSearchField: true,
+		enableSorting: true,
+		type: 'date',
+		filterVariant: 'autocomplete',
+	},
+
 	NUMBER_COLUMN: {
 		size: 250,
 		isPinned: false,

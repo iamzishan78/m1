@@ -101,14 +101,14 @@ const AgreementMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.agreementName.keyword',
 			id: 'shape.shapeJson.properties.agreementName',
 			header: 'Agreement Name',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.agreementType.keyword',
 			id: 'shape.shapeJson.properties.agreementType',
 			header: 'Type',
@@ -119,49 +119,49 @@ const AgreementMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.agreementSubtype.keyword',
 			id: 'shape.shapeJson.properties.agreementSubtype',
 			header: 'Agreement Subtype',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.stateDetails.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.stateDetails',
 			header: 'State',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.County.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.County',
 			header: 'County',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.rightsType.keyword',
 			id: 'shape.shapeJson.properties.rightsType',
 			header: 'Rights',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.grantor.keyword',
 			id: 'shape.shapeJson.properties.grantor',
 			header: 'Grantor (Party 1)',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.grantee.keyword',
 			id: 'shape.shapeJson.properties.grantee',
 			header: 'Grantee (Party 2)',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.agreementDate',
 			id: 'shape.shapeJson.properties.agreementDate',
 			type: 'date',
@@ -174,7 +174,7 @@ const AgreementMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.effectiveDate.keyword',
 			id: 'shape.shapeJson.properties.effectiveDate',
 			header: 'Efftv Date',
@@ -186,14 +186,14 @@ const AgreementMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.agreementTerm.keyword',
 			id: 'shape.shapeJson.properties.agreementTerm',
 			header: 'Primary Term (Mo)',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.expirationDate.keyword',
 			id: 'shape.shapeJson.properties.expirationDate',
 			header: 'Exp Date',
@@ -205,14 +205,14 @@ const AgreementMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.extensionTerm.keyword',
 			id: 'shape.shapeJson.properties.extensionTerm',
 			header: 'Extension Term (Mo)',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.extensionDate.keyword',
 			id: 'shape.shapeJson.properties.extensionDate',
 			header: 'Extension Exp Date',
@@ -224,28 +224,28 @@ const AgreementMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.bounusPayment.keyword',
 			id: 'shape.shapeJson.properties.bounusPayment',
 			header: 'Bonus Payment',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.agmtRoyalty.keyword',
 			id: 'shape.shapeJson.properties.agmtRoyalty',
 			header: 'Agmt Royalty(%)',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.agreementStatus.keyword',
 			id: 'shape.shapeJson.properties.agreementStatus',
 			header: 'Status',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.acquisitionID.keyword',
 			id: 'shape.shapeJson.properties.acquisitionID',
 			header: 'Acquisition ID',
@@ -253,7 +253,7 @@ const AgreementMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.acquisitionDate',
 			id: 'shape.shapeJson.properties.acquisitionDate',
 			header: 'Acquisition Date',
@@ -265,14 +265,14 @@ const AgreementMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.prospectID.keyword',
 			id: 'shape.shapeJson.properties.prospectID',
 			header: 'Prospect',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.recordedDate.keyword',
 			id: 'shape.shapeJson.properties.recordedDate',
 			header: 'Recorded Date',
@@ -284,7 +284,7 @@ const AgreementMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.recordedBook.keyword',
 			id: 'shape.shapeJson.properties.recordedBook',
 			header: 'Book',
@@ -292,7 +292,7 @@ const AgreementMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.recordedPage.keyword',
 			id: 'shape.shapeJson.properties.recordedPage',
 			header: 'Page',
@@ -300,42 +300,42 @@ const AgreementMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.recordedInstrumentNumber.keyword',
 			id: 'shape.shapeJson.properties.recordedInstrumentNumber',
 			header: 'Instrument #',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.reportGrossAcres.keyword',
 			id: 'shape.shapeJson.properties.reportGrossAcres',
 			header: 'Report Gross',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.grossAcres.keyword',
 			id: 'shape.shapeJson.properties.grossAcres',
 			header: 'Gross',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.netAcres.keyword',
 			id: 'shape.shapeJson.properties.netAcres',
 			header: 'Net',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.companyNetAcres.keyword',
 			id: 'shape.shapeJson.properties.companyNetAcres',
 			header: 'Company Net',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.netRoyalty.keyword',
 			id: 'shape.shapeJson.properties.netRoyalty',
 			header: 'NRA',
