@@ -47,6 +47,8 @@ const useMRTTable = tableKey => {
 		}),
 		...(isClientSide && {
 			filterSingleselect: 'Single Select', // adding label custom for filter mode
+			filterDateGreaterThanOrEqualTo: 'Greater Than or Equal To',
+			filterDateLessThanOrEqualTo: 'Less Than or Equal To',
 		}),
 	};
 
@@ -54,6 +56,24 @@ const useMRTTable = tableKey => {
 		// custom implementation for Single Select
 		singleselect: (row, id, filterValue) => {
 			return row.getValue(id) === filterValue;
+		},
+		// custom implementation for date comparison
+		dateGreaterThanOrEqualTo: (row, id, filterValue) => {
+			const rowValue = row.getValue(id);
+
+			const rowDate = new Date(rowValue);
+			const filterDate = new Date(filterValue);
+
+			return rowDate >= filterDate;
+		},
+		// custom implementation for date comparison
+		dateLessThanOrEqualTo: (row, id, filterValue) => {
+			const rowValue = row.getValue(id);
+
+			const rowDate = new Date(rowValue);
+			const filterDate = new Date(filterValue);
+
+			return rowDate <= filterDate;
 		},
 	};
 

@@ -15,6 +15,7 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { BlockBlobClient } from '@azure/storage-blob';
 import _ from 'lodash';
 import loadashFilter from 'lodash/filter';
+import PropTypes from 'prop-types';
 
 import Loader from 'components/Loaders';
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
@@ -30,7 +31,7 @@ import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
-import { BYTE, CREATED_STATUS } from 'utils/consts';
+import { CREATED_STATUS, ONE_MB } from 'utils/consts';
 
 import { showErrorMessage } from 'actions';
 
@@ -267,7 +268,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 				const blockBlobClient = new BlockBlobClient(uri);
 				blockBlobClient
 					.uploadBrowserData(inputFile, {
-						maxSingleShotSize: MBS * BYTE * BYTE,
+						maxSingleShotSize: MBS * ONE_MB,
 						blobHTTPHeaders: {
 							blobContentDisposition: `attachment; filename="${file_name}"`,
 						},
@@ -735,4 +736,16 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 			{...other}
 		/>
 	);
+};
+
+DocumentDetails.propTypes = {
+	selectedDocument: PropTypes.object,
+	handleClose: PropTypes.func.isRequired,
+	tableKey: PropTypes.string.isRequired,
+};
+
+DocumentType.propTypes = {
+	setDocumentType: PropTypes.func.isRequired,
+	value: PropTypes.string,
+	documentTypes: PropTypes.object,
 };

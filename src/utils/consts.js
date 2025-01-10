@@ -18,7 +18,9 @@ export const KEYBOARD_KEYS = {
 	CAPITAL_N: 78,
 };
 
-export const BYTE = 1024;
+export const ONE_BYTE = 1024;
+
+export const ONE_MB = 1 * ONE_BYTE * ONE_BYTE;
 
 export const SUCCESS_STATUS = 200;
 export const CREATED_STATUS = 201;
