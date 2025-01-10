@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import { Grid, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import { useLazyQuery, useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import PropTypes from 'prop-types';
 
 import Loader from 'components/Loaders';
@@ -14,37 +14,35 @@ import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 import { tableGlobalController } from 'hookstate/tableController';
 
 function UpdateProperty(props) {
-	// Initial states
 	const [propertiesNumbers, setPropertiesNumbers] = useState([]);
 
-	// Queries
-	const [getDbFilters, { loading }] = useLazyQuery(GET_DB_FILTERS, {
-		fetchPolicy: 'no-cache',
-	});
-
-	// Mutations
 	const [upsertCheckProperties] = useMutation(UPSERT_CHECK_PROPERTY);
 
-	useEffect(() => {
-		getDbFilters({
-			variables: {
-				index: 'checkdetails_flat',
-				filters: [{ field: 'property.IsDeleted', value: false }],
-				filterKey: 'property.number.keyword',
-				filterAggs: {
-					query: '',
-					field: 'property.number.keyword',
-					size: 10000,
-				},
+	const { loading } = useQuery(GET_DB_FILTERS, {
+		variables: {
+			index: 'properties_flat',
+			filters: [],
+			filterKey: 'number',
+			search: {
+				fields: [],
+				advanceSearch: [],
 			},
-			onCompleted: res => {
-				if (res) {
-					const propertiesNumbers = res?.getDbFilters?.hits?.map(obj => obj.key);
-					setPropertiesNumbers(propertiesNumbers);
-				}
+			size: 1,
+			filterAggs: {
+				query: '',
+				field: 'number',
+				size: 10000,
+				fieldType: 'string',
 			},
-		});
-	}, []);
+		},
+		fetchPolicy: 'no-cache',
+		onCompleted: res => {
+			if (res) {
+				const propertiesNumbers = res?.getDbFilters?.hits?.map(obj => obj.key);
+				setPropertiesNumbers(propertiesNumbers);
+			}
+		},
+	});
 
 	// handle selected record update
 	const handleChecksUpdate = async propertyNumber => {
@@ -58,7 +56,7 @@ function UpdateProperty(props) {
 					checksIds,
 				},
 			}).then(res => {
-				const { success } = res;
+				const success = res?.data?.upsertCheckProperty?.success;
 				if (success) {
 					Loader.successToast('checks-updation', 'Checks updated successfully');
 				} else {
