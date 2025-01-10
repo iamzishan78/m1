@@ -95,11 +95,19 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
     const handleApplyCSS = () => {
         const mentionInput = document.getElementById("mention-input");
         if (mentionInput) {
+            mentionInput.classList.add("hide-scrollbar");
             mentionInput.style.border = "none"; // Make border color transparent
             mentionInput.style.outline = "none"; // Remove outline
-            mentionInput.style.left = "1.2px"; // Make border color transparent
-            mentionInput.style.top = "1.8px"; // Remove outline
+            mentionInput.style.width = 'calc(100% - 25px) important'; // Remove outline
             mentionInput.style.lineHeight = "24px"; // Remove outline
+            const previousDiv = mentionInput.previousElementSibling;
+
+            // Apply scroll functionality and hide scrollbar
+            if (previousDiv) {
+                previousDiv.style.overflow = "hidden";
+                previousDiv.style.width = 'calc(100% - 25px) !important'; // Remove outline
+                previousDiv.style.border = 'none';
+            }
         }
     };
 
@@ -117,8 +125,6 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
                 // Apply scroll functionality and hide scrollbar
                 if (previousDiv) {
                     previousDiv.style.overflow = "hidden";
-                    // Hide scrollbar using a class
-                    // previousDiv.classList.add("hide-scrollbar");
                 }
             }
         }
@@ -159,9 +165,7 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
                     style={{
                         input: {
                             height: `${height}px`,
-                            // overflow: "auto",
                             overflow: "scroll",
-                            // padding: '0px !important'
                         },
                         highlighter: {
                             height: `${height}px`,

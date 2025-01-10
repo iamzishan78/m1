@@ -2,11 +2,20 @@
     /* margin: 1em 0; */
 }
 
-.mentions--singleLine .mentions__control {
+/* .mentions--singleLine .mentions__control {
     display: inline-block;
     width: 130px;
+} */
+
+/* .mentions--singleLine .mentions__highlighter {
+    padding: 1px;
+    border: 2px inset transparent;
 }
 
+.mentions--singleLine .mentions__input {
+    padding: 1px;
+    border: 2px inset;
+} */
 /* .mentions--singleLine .mentions__highlighter {
     padding: 1px;
     border: 2px inset transparent;
@@ -28,6 +37,22 @@
     min-height: 63px;
 } */
 
+/* .mentions--multiLine .mentions__control {
+    font-family: monospace;
+    font-size: 14pt;
+}
+
+.mentions--multiLine .mentions__highlighter {
+    border: 1px solid transparent;
+    padding: 9px;
+    min-height: 63px;
+}
+
+.mentions--multiLine .mentions__input {
+    border: 1px solid silver;
+    padding: 9px;
+    outline: 0;
+} */
 /* .mentions--multiLine .mentions__input {
     border: 1px solid silver;
     padding: 9px;
@@ -54,8 +79,8 @@
     z-index: 1;
     color: #3fc0df;
     pointer-events: none;
-    left: 2px;
-    top: 2px;
+    /* left: 2px;
+    top: 2px; */
     line-height: 1;
     height: initial;
     text-shadow: 1px 1px 1px white, 1px 1px 1px white, -1px 1px 1px white, -1px 1px 1px white;
@@ -93,4 +118,31 @@
 
 #mention-input ~ div {
     height: inherit !important;
+    /* overflow: scroll !important; */
 }
+
+#mention-input {
+    width: 583px !important;
+}
+
+/* Hide scrollbar for WebKit browsers (e.g., Chrome, Safari) */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* #mention-input-textarea::-webkit-scrollbar {
+    width: 2em;
+    height: 2em;
+}
+
+#mention-input-textarea::-webkit-scrollbar-button {
+    background: #ccc;
+}
+
+#mention-input-textarea::-webkit-scrollbar-track-piece {
+    background: #888;
+}
+
+#mention-input-textarea::-webkit-scrollbar-thumb {
+    background: #FFF;
+} */
