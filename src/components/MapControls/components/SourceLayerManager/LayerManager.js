@@ -688,193 +688,93 @@ export default function AddLayer(props) {
 															layerName = FEATURES.USERTAGSLAYER;
 														}
 														return (
-															<Accordion key={layerName}>
-																<AccordionSummary
-																	// expandIcon={<ExpandMoreIcon />}
-																	aria-controls="panel1a-content"
-																	id="panel1a-header"
-																	style={{ paddingLeft: 0, marginTop: 0, marginBottom: 0 }}
-																	onClick={() => {
-																		const _index = openUDLayers.findIndex(l => l === index);
-																		if (_index === -1) {
-																			setUDLayersStates([...openUDLayers, index]);
-																		} else {
-																			setUDLayersStates(openUDLayers.filter(l => l !== index));
-																		}
-																	}}
-																>
-																	<StyledListItem>
-																		<Checkbox
-																			checked={!!layer.layers.find(l => l.layerSettings.showable)}
-																			color="dark gray"
-																			onClick={event => event.stopPropagation()}
-																			onChange={() => changeShowAble(layer)}
-																			inputProps={{ 'aria-label': 'primary checkbox' }}
-																		/>
-																		{/* Group */}
-																		<EditableTextField
-																			onChange={changeLayerName}
-																			item={layer}
-																			name={layer.name}
-																			isEditable={false}
-																			showExpandIcon
-																			openUd={openUDLayers.includes(index)}
-																			openEditField={
-																				layer?.id === actionItem?.group?.id && actionItem?.type === 'editName'
-																			}
-																		/>
-																		{checkIfDeleteAllow(layer) && (
-																			<MoreHorizIcon
-																				aria-controls={'source-menu'}
-																				className={'moreIcon ' + classes.moreIcon}
-																				onClick={e => {
-																					e.stopPropagation();
-																					handleClick(e);
-																					setActionItem({ group: layer });
-																				}}
-																			/>
-																		)}
-																	</StyledListItem>
-																</AccordionSummary>
-																<Box paddingLeft={2} paddingRight={2}>
-																	<List className={classes.list}>
-																		{layer.layers.map(groupLayer => (
-																			<StyledListItem key={groupLayer.layerName} ContainerComponent="li">
-																				<Checkbox
-																					checked={groupLayer.layerSettings.showable}
-																					color="dark gray"
-																					onChange={() => changeShowAble(groupLayer)}
-																					inputProps={{ 'aria-label': 'primary checkbox' }}
-																				/>
-																				{/* Group Layer */}
-																				<EditableTextField
-																					onChange={changeLayerName}
-																					item={groupLayer}
-																					name={groupLayer.layerName}
-																					isEditable={false}
-																					openEditField={
-																						groupLayer?.layerId === actionItem?.layer?.layerId &&
-																						actionItem?.type === 'editName'
-																					}
-																				/>
-																				{checkIfDeleteAllow(groupLayer) && (
-																					<MoreHorizIcon
-																						aria-controls={'source-menu'}
-																						className={'moreSourceIcon ' + classes.moreSourceIcon}
-																						onClick={e => {
-																							e.stopPropagation();
-																							handleClick(e);
-																							setActionItem({ layer: groupLayer });
-																						}}
-																					/>
-																				)}
-																			</StyledListItem>
-																		))}
-																	</List>
-																</Box>
-															</Accordion>
-														);
-													}
-													//// remove the (layer.identifier!="Tracked Owners") if statement to show the tracked owers layer
-													if (layer.identifier !== 'Tracked Owners') {
-														if (layer.layerName === 'Tracked Wells' || layer.layerName === 'User Tags') {
-															let layerName = '';
-															if (props?.data?.layerName === 'Tracked Wells') {
-																layerName = FEATURES.TRACKEDWELLSLAYER;
-															} else if (props?.data?.layerName === 'User Tags') {
-																layerName = FEATURES.USERTAGSLAYER;
-															}
-															return (
-																<FeatureFlag key={layerName} feature={layerName}>
-																	<StyledListItem key={layerName} ContainerComponent="li">
-																		<Checkbox
-																			checked={layer.layerSettings.showable}
-																			color="dark gray"
-																			onChange={() => changeShowAble(layer)}
-																			inputProps={{ 'aria-label': 'primary checkbox' }}
-																		/>
-																		<ListItemText id={labelId} primary={layer.layerName} />
-																	</StyledListItem>
-																</FeatureFlag>
-															);
-														} else {
-															return (
-																<StyledListItem key={layer?.layerId} ContainerComponent="li">
+															<FeatureFlag key={layerName} feature={layerName}>
+																<StyledListItem key={layerName} ContainerComponent="li">
 																	<Checkbox
 																		checked={layer.layerSettings.showable}
 																		color="dark gray"
 																		onChange={() => changeShowAble(layer)}
 																		inputProps={{ 'aria-label': 'primary checkbox' }}
 																	/>
-																	{layer.layerType === 'file layer' || checkIfcustomLayerCopy(layer) ? (
-																		<>
-																			{/* Layer */}
-																			<EditableTextField
-																				onChange={changeLayerName}
-																				item={layer}
-																				name={layer.layerName}
-																				isEditable={false}
-																				openEditField={
-																					layer?.layerId === actionItem?.layer?.layerId &&
-																					actionItem?.type === 'editName'
-																				}
-																			/>
-
-																			{checkIfDeleteAllow(layer) && (
-																				<MoreHorizIcon
-																					aria-controls={'source-menu'}
-																					className={'moreSourceIcon ' + classes.moreSourceIcon}
-																					onClick={e => {
-																						e.stopPropagation();
-																						handleClick(e);
-																						setActionItem({ layer });
-																					}}
-																				/>
-																			)}
-																		</>
-																	) : (
-																		<ListItemText
-																			id={labelId}
-																			primary={layer.layerName === 'Parcels' ? 'Tracts' : layer.layerName}
-																		/>
-																	)}
-
-																	{layer.layerName === 'Units' && (
-																		<FeatureFlag feature={FEATURES.UNITIMPORT}>
-																			<ListItemSecondaryAction>
-																				<IconButton
-																					edge="end"
-																					size="small"
-																					onClick={() => {
-																						history.push('/bulkupload/units');
-																					}}
-																				>
-																					<UploadIcon opacity="1.0" small />
-																				</IconButton>
-																			</ListItemSecondaryAction>
-																		</FeatureFlag>
-																	)}
-
-																	{layer.layerName === 'Parcels' && (
-																		<FeatureFlag feature={FEATURES.TRACTIMPORT}>
-																			<ListItemSecondaryAction>
-																				<IconButton
-																					edge="end"
-																					size="small"
-																					onClick={() => {
-																						history.push('/bulkupload/tracts');
-																					}}
-																				>
-																					<UploadIcon opacity="1.0" small />
-																				</IconButton>
-																			</ListItemSecondaryAction>
-																		</FeatureFlag>
-																	)}
+																	<ListItemText id={labelId} primary={layer.layerName} />
 																</StyledListItem>
-															);
-														}
+															</FeatureFlag>
+														);
+													} else {
+														return (
+															<StyledListItem key={layer?.layerId} ContainerComponent="li">
+																<Checkbox
+																	checked={layer.layerSettings.showable}
+																	color="dark gray"
+																	onChange={() => changeShowAble(layer)}
+																	inputProps={{ 'aria-label': 'primary checkbox' }}
+																/>
+																{layer.layerType === 'file layer' || checkIfcustomLayerCopy(layer) ? (
+																	<>
+																		{/* Layer */}
+																		<EditableTextField
+																			onChange={changeLayerName}
+																			item={layer}
+																			name={layer.layerName}
+																			isEditable={false}
+																			openEditField={
+																				layer?.layerId === actionItem?.layer?.layerId && actionItem?.type === 'editName'
+																			}
+																		/>
+
+																		{checkIfDeleteAllow(layer) && (
+																			<MoreHorizIcon
+																				aria-controls={'source-menu'}
+																				className={'moreSourceIcon ' + classes.moreSourceIcon}
+																				onClick={e => {
+																					e.stopPropagation();
+																					handleClick(e);
+																					setActionItem({ layer });
+																				}}
+																			/>
+																		)}
+																	</>
+																) : (
+																	<ListItemText
+																		id={labelId}
+																		primary={layer.layerName === 'Parcels' ? 'Tracts' : layer.layerName}
+																	/>
+																)}
+
+																{layer.layerName === 'Units' && (
+																	<FeatureFlag feature={FEATURES.UNITIMPORT}>
+																		<ListItemSecondaryAction>
+																			<IconButton
+																				edge="end"
+																				size="small"
+																				onClick={() => {
+																					history.push('/bulkupload/units');
+																				}}
+																			>
+																				<UploadIcon opacity="1.0" small />
+																			</IconButton>
+																		</ListItemSecondaryAction>
+																	</FeatureFlag>
+																)}
+
+																{layer.layerName === 'Parcels' && (
+																	<FeatureFlag feature={FEATURES.TRACTIMPORT}>
+																		<ListItemSecondaryAction>
+																			<IconButton
+																				edge="end"
+																				size="small"
+																				onClick={() => {
+																					history.push('/bulkupload/tracts');
+																				}}
+																			>
+																				<UploadIcon opacity="1.0" small />
+																			</IconButton>
+																		</ListItemSecondaryAction>
+																	</FeatureFlag>
+																)}
+															</StyledListItem>
+														);
 													}
-													return null;
 												}
 												return null;
 											})}
