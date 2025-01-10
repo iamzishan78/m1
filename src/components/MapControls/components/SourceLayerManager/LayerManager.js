@@ -188,7 +188,10 @@ export default function AddLayer(props) {
 		useLazyQuery(ALLLAYERSETTINGSBYUSER);
 	const [getLayerById] = useLazyQuery(GETLAYERBYID);
 	const [layerData, setLayerData] = useState(null);
-	const { globalStateValues } = globalStateController.useState(['layers', 'projectedLayers'], 'globalStateValues');
+	const { globalStateValues } = globalStateController.useState(['layers'], 'globalStateValues');
+	const {
+		layerStateValues: { projectedLayers },
+	} = layerController.useState(['projectedLayers'], 'layerStateValues');
 	const [openM1, setOpenM1] = React.useState(true);
 	const [isOpenUserDefinedLayers, setIsOpenUserDefinedLayers] = React.useState(true);
 	const [currentLayers, setCurrentLayers] = React.useState([]);
@@ -202,8 +205,7 @@ export default function AddLayer(props) {
 	const [actionItem, setActionItem] = React.useState(null);
 	useEffect(() => {
 		if (layerStates?.allLayerSettingsByUser?.length > 0) {
-			console.log('layerStates', layerStates);
-			globalStateController.updateState({ projectedLayers: layerStates.allLayerSettingsByUser });
+			layerController.updateState({ projectedLayers: layerStates.allLayerSettingsByUser });
 		}
 	}, [layerStates]);
 
@@ -325,7 +327,7 @@ export default function AddLayer(props) {
 		const isReplace = typeof changeValue !== 'undefined';
 		const value = isReplace ? changeValue : !layers.some(l => l.layerSettings?.showable);
 		if (layers?.filter(row => row?.layerSettings?.showable === true).length < layer_limit) {
-			const updatefn = globalStateController.generateUpdateFn(layers, value, currentLayers, 'showable');
+			const updatefn = layerController.generateUpdateFn(layers, value, currentLayers, 'showable');
 
 			const updatedLayers = update(currentLayers, updatefn);
 			setCurrentLayers(updatedLayers);
@@ -384,7 +386,7 @@ export default function AddLayer(props) {
 	};
 
 	const changeShowAble = async layer => {
-		globalStateController.updateProjectedLayers({ layer, field: 'showable', value: !layer?.layerSettings?.showable });
+		layerController.updateProjectedLayers({ layer, field: 'showable', value: !layer?.layerSettings?.showable });
 		const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === layer.identifier);
 		let updatedLayer;
 		if (layerIndex === -1) {
@@ -405,8 +407,8 @@ export default function AddLayer(props) {
 
 	const changeLayerName = (layer, name) => {
 		const field = layer.type === 'group' ? 'groupName' : 'layerName';
-		globalStateController.updateProjectedLayers({ layer, value: name, field });
-		const updatefn = globalStateController.generateUpdateFn([layer], name, currentLayers, field);
+		layerController.updateProjectedLayers({ layer, value: name, field });
+		const updatefn = layerController.generateUpdateFn([layer], name, currentLayers, field);
 		const updatedLayers = update(currentLayers, updatefn);
 		setCurrentLayers(updatedLayers);
 		handleCurrentLayersChange(updatedLayers);
@@ -429,7 +431,7 @@ export default function AddLayer(props) {
 	};
 
 	const UdLayers = React.useMemo(() => {
-		const layers = globalStateValues.projectedLayers?.filter(layer => layer.layerCategory === 'UD layer' || layer.file);
+		const layers = projectedLayers?.filter(layer => layer.layerCategory === 'UD layer' || layer.file);
 		const groupHandled = [];
 		for (let index = 0; index < layers.length; index++) {
 			const UdLayer = layers[index];
@@ -449,11 +451,11 @@ export default function AddLayer(props) {
 		return layers.filter(
 			UdLayer => !((UdLayer.layerType === 'file layer' || UdLayer.groupName === 'Agreements') && UdLayer.groupId)
 		);
-	}, [globalStateValues.projectedLayers]);
+	}, [projectedLayers]);
 
 	const M1Layers = React.useMemo(() => {
-		return globalStateValues.projectedLayers?.filter(layer => layer.layerCategory === 'M1 Layer');
-	}, [globalStateValues.projectedLayers]);
+		return projectedLayers?.filter(layer => layer.layerCategory === 'M1 Layer');
+	}, [projectedLayers]);
 	const checkAllLayers = (layers, layerType) => {
 		let check = true;
 		if (layers) {

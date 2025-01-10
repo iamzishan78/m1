@@ -10,7 +10,6 @@ import { simpleAuthBypass } from 'utils/data';
 /* -------------------------------------------------------------------------- */
 export const globalInitialState = {
 	layers: [],
-	projectedLayers: [],
 	panelItems: [],
 	emptyGroups: [],
 	globalSearch: '',
@@ -71,6 +70,7 @@ export const tableGlobalState = hookstate({
 /* -------------------------------------------------------------------------- */
 
 export const layerStateInitialState = {
+	projectedLayers: [],
 	client: null,
 	history: null,
 	boundingStates: null,
