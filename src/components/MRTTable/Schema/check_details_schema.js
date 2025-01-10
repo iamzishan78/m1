@@ -94,7 +94,7 @@ const CheckDetailsMeta = {
 
 		const defaultValue = {};
 
-		const keys = ['property', 'check'];
+		const keys = ['check'];
 
 		keys.forEach(key => {
 			set(defaultValue, key, get(row, key));
@@ -133,7 +133,8 @@ const CheckDetailsMeta = {
 			id: 'property.name',
 			header: 'Property',
 			Cell: ({ row }) => {
-				const value = `${row?.original?.property?.purchaserNumber || ''} - ${row?.original?.property?.name || ''}`;
+				const value = `${row?.original?.property?.purchaserNumber || ''} - ${row?.original?.property?.name || row?.original?.property?.number || ''}`;
+
 				return row?.original?.property?.IsDeleted ? (
 					<p style={{ display: 'flex', alignItems: 'center' }}>
 						{value}
@@ -182,6 +183,19 @@ const CheckDetailsMeta = {
 				type: 'text',
 				validate: validateRequiredString,
 				isSelect: true,
+				onChange: (value, id, rowData, rowId) => {
+					const TableSchema = tableController('CheckDetailsTable').getValue('TableSchema');
+
+					const column = TableSchema.find(c => c.id === id);
+
+					const { originals } = column;
+
+					const property = originals.find(property => property.number === value);
+
+					set(rowData, 'property', property);
+
+					tableController('CheckDetailsTable').setEditedData(rowId, rowData);
+				},
 			}),
 		},
 		{

@@ -330,7 +330,7 @@ export const CommonSchema = {
 export const validateRequiredString = value => (!value?.length ? 'Required' : undefined);
 
 export const editFieldProps =
-	({ tableKey, type, validate, isSelect = false, required = true }) =>
+	({ tableKey, type, validate, isSelect = false, required = true, onChange }) =>
 	({ cell, row }) => {
 		const Controller = tableController(tableKey);
 
@@ -353,6 +353,8 @@ export const editFieldProps =
 
 			Controller.setValidationErrors(row.id, cell.column.id, validationError);
 			Controller.setEditedData(row.id, rowData);
+
+			onChange?.(target.value, cell.column.id, rowData, row.id);
 		};
 
 		return {
