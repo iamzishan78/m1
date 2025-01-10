@@ -198,7 +198,7 @@ const useMRTTable = tableKey => {
 			columns: tableStateValues?.TableSchema,
 			data: tableStateValues?.data?.rows || [],
 			enableRowNumbers: true,
-			rowNumberDisplayMode: 'original',
+			rowNumberDisplayMode: 'static',
 			muiToolbarAlertBannerProps: tableStateValues?.isError
 				? {
 						color: 'error',
