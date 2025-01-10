@@ -177,7 +177,12 @@ const CheckDetailsMeta = {
 			header: 'Operator Prop #',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString, { isSelect: true }),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'text',
+				validate: validateRequiredString,
+				isSelect: true,
+			}),
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
@@ -206,7 +211,11 @@ const CheckDetailsMeta = {
 			},
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'date', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'date',
+				validate: validateRequiredString,
+			}),
 		},
 
 		{
@@ -216,7 +225,12 @@ const CheckDetailsMeta = {
 			header: 'Product',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString, { isSelect: true }),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'text',
+				validate: validateRequiredString,
+				isSelect: true,
+			}),
 		},
 
 		{
@@ -226,7 +240,11 @@ const CheckDetailsMeta = {
 			header: 'Decimal Interest',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'number',
+				validate: validateRequiredString,
+			}),
 		},
 
 		{
@@ -236,7 +254,12 @@ const CheckDetailsMeta = {
 			header: 'Type',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString, { isSelect: true }),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'text',
+				validate: validateRequiredString,
+				isSelect: true,
+			}),
 		},
 
 		{
@@ -246,7 +269,11 @@ const CheckDetailsMeta = {
 			header: 'Avg Price',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'number',
+				validate: validateRequiredString,
+			}),
 		},
 
 		{
@@ -262,7 +289,11 @@ const CheckDetailsMeta = {
 			},
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'number',
+				validate: validateRequiredString,
+			}),
 		},
 
 		{
@@ -272,7 +303,11 @@ const CheckDetailsMeta = {
 			header: 'Prop Gross Revenue',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'number',
+				validate: validateRequiredString,
+			}),
 		},
 
 		{
@@ -288,7 +323,11 @@ const CheckDetailsMeta = {
 			},
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'number',
+				validate: validateRequiredString,
+			}),
 		},
 
 		{
@@ -298,7 +337,11 @@ const CheckDetailsMeta = {
 			header: 'Owner Gross Revenue',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'number',
+				validate: validateRequiredString,
+			}),
 		},
 
 		{
@@ -308,7 +351,11 @@ const CheckDetailsMeta = {
 			header: 'Owner Tax Amt',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'number',
+				validate: validateRequiredString,
+			}),
 		},
 
 		{
@@ -318,7 +365,12 @@ const CheckDetailsMeta = {
 			header: 'Tax Type',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString, { isSelect: true }),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'text',
+				validate: validateRequiredString,
+				isSelect: true,
+			}),
 		},
 
 		{
@@ -328,7 +380,11 @@ const CheckDetailsMeta = {
 			header: 'Deduct Amt',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'number',
+				validate: validateRequiredString,
+			}),
 		},
 
 		{
@@ -338,7 +394,11 @@ const CheckDetailsMeta = {
 			header: 'Deduct Cd',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'text',
+				validate: validateRequiredString,
+			}),
 		},
 
 		{
@@ -348,7 +408,11 @@ const CheckDetailsMeta = {
 			header: 'Owner Net Rev',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'number',
+				validate: validateRequiredString,
+			}),
 		},
 		{
 			...CommonSchema.HIDDEN,

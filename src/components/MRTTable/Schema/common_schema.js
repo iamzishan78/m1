@@ -330,7 +330,7 @@ export const CommonSchema = {
 export const validateRequiredString = value => (!value?.length ? 'Required' : undefined);
 
 export const editFieldProps =
-	(tableKey, type, validate, { isSelect = false, required = true } = {}) =>
+	({ tableKey, type, validate, isSelect = false, required = true }) =>
 	({ cell, row }) => {
 		const Controller = tableController(tableKey);
 
