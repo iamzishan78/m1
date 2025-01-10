@@ -429,11 +429,12 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				label: 'Filter Type',
 				options: requiredFilterOptions,
 				defaultValue: filterTypeOptions.find(filterTypeOption => filterTypeOption.value === mapView?.filterType), // Set default value if mapView is provided
-				onChange: () => {
-					Object.keys(tableESState).map(tableKey =>
-						tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false)
-					);
+				onChange: (e, v, r, previousValue) => {
 					setValue(`mapViews.${index}.filterValues`, null);
+					if (!['empty', 'notEmpty'].includes(v?.value) && !['empty', 'notEmpty'].includes(previousValue?.value))
+						Object.keys(tableESState).map(tableKey =>
+							tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false)
+						);
 				}, // Reset other fields on change
 			});
 		}
