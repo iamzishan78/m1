@@ -66,6 +66,9 @@ const gridViewStatesControllerHandler = state => ({
 		}
 
 		Controller.updateState({
+			initialGridView: {
+				selectedGridView: viewToApply,
+			},
 			gridView: {
 				selectedGridView: viewToApply,
 				showViewModal: false,
