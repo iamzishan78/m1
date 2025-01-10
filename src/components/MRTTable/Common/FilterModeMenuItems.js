@@ -15,6 +15,7 @@ function FilterModeMenuItems({ option, tableKey, name, onSelectFilterMode, contr
 			onClick={() => {
 				const isBetween = previousFilter.includes('between');
 				const isSingleMulti = ['singleselect', 'multiselect'].includes(mode.option);
+				const isEmptyNotEmpty = ['empty', 'notEmpty'].includes(mode.option);
 				const isPrevSingleMulti = ['singleselect', 'multiselect'].includes(previousFilter);
 
 				if (isBetween && isSingleMulti) {
@@ -28,7 +29,7 @@ function FilterModeMenuItems({ option, tableKey, name, onSelectFilterMode, contr
 					onSelectFilterMode(mode.option);
 				}
 
-				if (isSingleMulti || isPrevSingleMulti) {
+				if ((isSingleMulti || isPrevSingleMulti) && !isEmptyNotEmpty) {
 					controller(tableKey).clearFilter(name);
 				}
 
