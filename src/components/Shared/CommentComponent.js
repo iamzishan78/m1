@@ -13,14 +13,12 @@ import {
 	ExpandMore as ExpandMoreIcon,
 } from '@material-ui/icons';
 
-import { Autocomplete, TextField } from '@mui/material';
-
-import { useMutation, useLazyQuery } from '@apollo/client';
+import { useMutation, useLazyQuery, useQuery } from '@apollo/client';
 import DOMPurify from 'dompurify';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 import ru from 'javascript-time-ago/locale/ru';
-import { get } from 'lodash';
+import { get, uniqBy } from 'lodash';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 
@@ -29,6 +27,7 @@ import CommentField from 'components/Shared/components/Fields/CommentField';
 import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
 import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
 import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
+import { GET_COMMENT_TYPES } from 'graphQL/useQueryCommentType';
 import { GET_PROFILES_IMAGES, GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { TOGGLECOMMENTREACTION } from 'graphQL/userMutationToggleCommentReaction';
@@ -37,6 +36,8 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { slidoutState } from 'hookstate/initialStates';
 
 import { updatePinComments } from 'store/actions/commonActions';
+
+import CommentsAutoComplete from './CommentsAutoComplete';
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
@@ -236,7 +237,6 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 						return (
 							<>
 								{splittedWord.map(sWord => {
-									console.log('sWord', sWord);
 									const idRegex = /\{\{(.*?)\}\}/g;
 									let match;
 									let parts = [];
@@ -347,6 +347,8 @@ export default function CommentComponent(props) {
 	const [scrollIntoView, setScrollIntoView] = useState(false);
 	const [tab, setTab] = useState(0);
 	const [activityType, setActivityType] = useState('all');
+	const [commentTypes, setCommentTypes] = useState([]);
+	const [commentType, setCommentType] = useState('All');
 
 	const commentContainerRef = useRef(null);
 
@@ -365,6 +367,20 @@ export default function CommentComponent(props) {
 	const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(COMMENTSBYOBJECTIDQUERY, {
 		fetchPolicy: 'no-cache',
 	});
+
+	const { data: commentResponse } = useQuery(GET_COMMENT_TYPES);
+
+	useEffect(() => {
+		if (commentResponse && Array.isArray(commentResponse.commentsType)) {
+			const commentsType = commentResponse.commentsType;
+			const uniqueCommonType = uniqBy(commentsType, e => {
+				return e.commentType;
+			});
+			const formattedOptions = uniqueCommonType.map(c => ({ label: c.commentType, value: c.commentType }));
+			formattedOptions.push({ label: 'All', value: 'All' });
+			setCommentTypes(formattedOptions);
+		}
+	}, [commentResponse]);
 
 	const sortArrayBasedOnTs = array => {
 		const compare = (a, b) => {
@@ -449,13 +465,18 @@ export default function CommentComponent(props) {
 				setCommentsArray(allComments);
 			} else if (tab === 1) {
 				allComments = sortArrayBasedOnTs([...dataComments.commentsByObjectId]);
+				if (commentType !== 'All') {
+					allComments = allComments.filter(
+						c => c?.commentType?.commentType === commentType || c?.commentType === commentType
+					);
+				}
 				setCommentsArray(allComments);
 			} else if (tab === ACTIVITY_TAB) {
 				setCommentsArray(activityData);
 			}
 		}
 		setLoadingComments(false);
-	}, [dataComments, props.activityLog, tab, activityType]);
+	}, [dataComments, props.activityLog, tab, activityType, commentType]);
 
 	useEffect(() => {
 		setLoadingComments(false);
@@ -798,26 +819,19 @@ export default function CommentComponent(props) {
 						</Tabs>
 						{tab === ACTIVITY_TAB && (
 							<div>
-								<Autocomplete
-									id={'activity-Type'}
-									size="small"
-									disableClearable
-									className={classes.autocomplete}
+								<CommentsAutoComplete
 									options={typeOptions}
-									onChange={(e, option) => setActivityType(option.value)}
+									onChange={value => setActivityType(value)}
 									value={typeOptions.find(option => option.value === activityType) || null}
-									getOptionLabel={option => option.label}
-									getOptionSelected={(option, value) => option.value === value.value}
-									renderInput={params => (
-										<TextField
-											{...params}
-											size="small"
-											margin="dense"
-											variant="outlined"
-											label="Type"
-											InputLabelProps={{ shrink: true }}
-										/>
-									)}
+								/>
+							</div>
+						)}
+						{tab === 1 && (
+							<div>
+								<CommentsAutoComplete
+									options={commentTypes}
+									onChange={value => setCommentType(value)}
+									value={commentTypes?.find(option => option.value === commentType) || null}
 								/>
 							</div>
 						)}
