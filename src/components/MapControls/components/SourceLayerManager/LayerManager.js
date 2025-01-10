@@ -304,6 +304,14 @@ export default function AddLayer(props) {
 					variables: {
 						manySettings: layersSettingsToUpdate,
 					},
+				}).then(({ data }) => {
+					if (data?.updateManyUserLayerSettings?.res?.length && !layersSettingsToUpdate._id) {
+						const res = data.updateManyUserLayerSettings.res.pop();
+						const updatedLayer = currentLayers.find(l => l.layerId === res.layer);
+						updatedLayer._id = res._id;
+
+						globalStateController.updateState({ layers: currentLayers });
+					}
 				});
 			}
 		}
