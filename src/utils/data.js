@@ -664,6 +664,7 @@ export const bypassTenants = [
 	'm1dev',
 	'm1cypress',
 	'm1Staging',
+	'wildbasin',
 	// "m1Production",
 	// "m1Development",
 	// "GHR",
