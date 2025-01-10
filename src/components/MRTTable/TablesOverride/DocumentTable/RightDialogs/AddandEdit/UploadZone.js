@@ -110,11 +110,12 @@ export default function UploadZone({ setFileUpload, relatedObjectType, customCla
 					<Box sx={{ display: 'flex', alignItems: 'center', my: 2 }}>
 						<Divider sx={{ flex: 1 }} />
 						<Typography
-							sx={{
+							style={{
 								mx: 2,
 								fontSize: '14px',
 								fontWeight: 'bold',
 								color: '#666',
+								fontFamily: 'Poppins'
 							}}
 						>
 							--------- OR ---------

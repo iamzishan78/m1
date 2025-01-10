@@ -554,7 +554,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 							<IconButton
 								size="small"
 								onClick={() => {
-									if (selectedDocument?._id && !selectedDocument?.url) {
+									if (selectedDocument?._id) {
 										replaceFile(selectedDocument?._id);
 									} else {
 										setFileUpload({ upload: false, fileExtension: null, fileInformation: '' });
