@@ -405,6 +405,15 @@ function InputField({
 								},
 							},
 							refetchQueries: ['getMapViews'],
+						}).then(res => {
+							globalStateController.updateState({
+								mapView: {
+									...mapViewStateValues.mapView,
+									showViewModal: false,
+									selectedMapView: res?.data?.upsertMapView?.mapView,
+								},
+								viewChanged: true,
+							});
 						});
 					}
 					if (showSaveAsNew || selectedMapView?._id === editMapViewId) selectedMapView.name = viewName;
