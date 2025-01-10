@@ -350,15 +350,7 @@ const useMRTTable = tableKey => {
 
 							const _newFilters = filtersFunc(formattedColumnFilters);
 
-							const newFilters = _.values(
-								_.merge(
-									_.keyBy(_newFilters, 'id'),
-									_.keyBy(
-										formattedColumnFilters.filter(filter => filter.isMapViewFilter),
-										'id'
-									)
-								)
-							);
+							const newFilters = _newFilters;
 
 							const result = [];
 							newFilters.forEach(item => {
