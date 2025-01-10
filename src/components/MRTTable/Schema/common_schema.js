@@ -352,9 +352,12 @@ export const editFieldProps =
 			set(rowData, cell.column.id, target.value);
 
 			Controller.setValidationErrors(row.id, cell.column.id, validationError);
-			Controller.setEditedData(row.id, rowData);
 
-			onChange?.(target.value, cell.column.id, rowData, row.id);
+			if (onChange) {
+				onChange(target.value, cell.column.id, rowData, row.id);
+			} else {
+				Controller.setEditedData(row.id, rowData);
+			}
 		};
 
 		return {
