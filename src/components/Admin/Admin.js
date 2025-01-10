@@ -1,20 +1,22 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Switch, Route, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { Switch, Route, useLocation } from 'react-router-dom';
 
-import { setActiveModule, toggleQuickActionsPanel } from 'store/actions/commonActions';
-import { AppContext } from 'AppContext';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
-
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import QuickActionPanel from 'components/Land/components/QuickActionPanel';
-
-import { AdminManagementRoutes } from 'utils/data';
-import Map from './components/Map';
-import AdminSettings from 'components/Shared/AdminSettings';
 import AdminOperation from 'components/Admin/AdminOperation';
 import BulkDataEditing from 'components/Admin/components/BulkDataEditing';
+import QuickActionPanel from 'components/Land/components/QuickActionPanel';
+import AdminSettings from 'components/Shared/AdminSettings';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+
+import { setActiveModule, toggleQuickActionsPanel } from 'store/actions/commonActions';
+
+import { AdminManagementRoutes } from 'utils/data';
+
+import { AppContext } from 'AppContext';
+
 import BulkDataEditingDetail from './components/BulkDataEditingDetail';
+import Map from './components/Map';
 
 const Components = {
 	Map,

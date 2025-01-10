@@ -1,6 +1,8 @@
 import React from 'react';
+
 import { IconButton, Tooltip } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
+
 import {
 	MRT_ShowHideColumnsButton as MRTShowHideColumnsButton,
 	MRT_ToggleFiltersButton as MRTToggleFiltersButton,
@@ -8,7 +10,9 @@ import {
 } from 'material-react-table';
 
 const ToolbarInternalActions = ({ table, toolbarInternalActions, enableHiding }) => {
-	if (!table || !toolbarInternalActions) return null;
+	if (!table || !toolbarInternalActions) {
+		return null;
+	}
 
 	return (
 		<div style={toolbarInternalActions.style}>

@@ -1,15 +1,19 @@
 import React from 'react';
+
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
 import { makeStyles } from '@material-ui/core/styles';
 
-const Transition = React.forwardRef(function Transition(props, ref) {
+import PropTypes from 'prop-types';
+
+const Transition = React.forwardRef((props, ref) => {
 	return <Slide direction="left" ref={ref} {...props} />;
 });
+Transition.displayName = 'Transition';
 
-export default function AlertDialogSlide(props) {
-	const useStyles = makeStyles(theme => ({
+function AlertDialogSlide(props) {
+	const useStyles = makeStyles(() => ({
 		dialog: {
 			'& .MuiDialog-paper': {
 				position: 'fixed',
@@ -57,7 +61,7 @@ export default function AlertDialogSlide(props) {
 			onClose={props.handleClickDialogClose}
 			aria-labelledby="alert-dialog-slide-title"
 			aria-describedby="alert-dialog-slide-description"
-			style={{ zIndex: 1301, border: '4px solid green', inset: 'unset' }}
+			style={{ zIndex: 1300, border: '4px solid green', inset: 'unset' }}
 			hideBackdrop={!!props.hideBackdrop}
 		>
 			{props.header && <DialogTitle id="alert-dialog-slide-title">{props.header}</DialogTitle>}
@@ -66,3 +70,19 @@ export default function AlertDialogSlide(props) {
 		</Dialog>
 	);
 }
+
+AlertDialogSlide.propTypes = {
+	top: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+	hiddenOverflow: PropTypes.bool,
+	noBorder: PropTypes.bool,
+	open: PropTypes.bool,
+	disableEnforceFocus: PropTypes.bool,
+	handleClickDialogClose: PropTypes.func,
+	hideBackdrop: PropTypes.bool,
+	header: PropTypes.node,
+	children: PropTypes.node,
+};
+
+export default AlertDialogSlide;

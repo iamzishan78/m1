@@ -1,4 +1,4 @@
-import filterConsts from 'components/Table/TableAddDialog/Common/filterConsts';
+import filterConsts from 'components/Common/TableAddDialog/Common/filterConsts';
 
 const tableData = [
 	{

@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/styles';
-import { useLazyQuery } from '@apollo/client';
 import { useHistory } from 'react-router-dom';
+
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/styles';
+
+import { useLazyQuery } from '@apollo/client';
+
+import { CONTACT } from 'graphQL/useQueryContact';
+import { CONTACTDEALS } from 'graphQL/useQueryContactDeals';
+
+import { globalStateController } from 'hookstate/globalStateController';
 
 import DealsDetailCard from './DealsDetailCard';
-import { CONTACTDEALS } from 'graphQL/useQueryContactDeals';
-import { CONTACT } from 'graphQL/useQueryContact';
-import { globalStateController } from 'hookstate/globalStateController';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -50,7 +54,9 @@ export default function ContactDocumentsCard(props) {
 		if (!loading && deals?.contactDeals) {
 			const all = [];
 			deals.contactDeals.forEach(card => {
-				if (!card.isDeleted) all.push(card);
+				if (!card.isDeleted) {
+					all.push(card);
+				}
 			});
 			setAllDeals(all);
 		}
@@ -62,9 +68,13 @@ export default function ContactDocumentsCard(props) {
 			let won = [];
 			let others = [];
 			allDeals.forEach(card => {
-				if (card.status === 'lost') lost.push(card);
-				else if (card.status === 'won') won.push(card);
-				else others.push(card);
+				if (card.status === 'lost') {
+					lost.push(card);
+				} else if (card.status === 'won') {
+					won.push(card);
+				} else {
+					others.push(card);
+				}
 			});
 
 			setWonDeals(won);

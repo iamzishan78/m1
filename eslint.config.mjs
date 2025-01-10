@@ -1,10 +1,11 @@
 import { FlatCompat } from '@eslint/eslintrc';
-import js from '@eslint/js';
-import react from 'eslint-plugin-react';
-import importPlugin from 'eslint-plugin-import';
+import pluginJs from '@eslint/js';
+import pluginImport from 'eslint-plugin-import';
+import pluginReact from 'eslint-plugin-react';
+import fs from 'fs';
+import globals from 'globals';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import customEslintRules from './customEslintRules';
 
 // Determine the current file and directory paths
 const __filename = fileURLToPath(import.meta.url);
@@ -13,10 +14,21 @@ const __dirname = path.dirname(__filename);
 // Create a compatibility layer for extending ESLint configurations
 const compat = new FlatCompat({
 	baseDirectory: __dirname,
-	recommendedConfig: js.configs.recommended,
-	allConfig: js.configs.all,
+	recommendedConfig: pluginJs.configs.recommended,
+	allConfig: pluginJs.configs.all,
 });
 
+const items = fs.readdirSync('./src');
+
+// Filter only folders
+const folders = items.filter(item => {
+	const itemPath = path.join('./src', item);
+	return fs.statSync(itemPath).isDirectory();
+});
+
+const builtinPatterns = ['react**', '@material-ui/**', '@mui/**'];
+
+/** @type {import('eslint').Linter.Config[]} */
 export default [
 	// Configuration to ignore specific file patterns and directories
 	{
@@ -37,29 +49,34 @@ export default [
 	},
 
 	// Extend configurations from recommended ESLint setups
-	...compat.extends('plugin:react/recommended', 'airbnb', 'prettier'),
-	{
-		// Define plugins used in the configuration
-		plugins: {
-			react,
-			import: importPlugin,
-			'custom-rules': customEslintRules, // Use your custom plugin
-		},
+	...compat.extends('prettier'),
 
-		// Define language options
-		languageOptions: {
-			ecmaVersion: 'latest',
-			sourceType: 'module',
-			parserOptions: {
-				ecmaFeatures: {
-					jsx: true,
+	{ files: ['**/*.{js,mjs,cjs,jsx}'] },
+	{ languageOptions: { globals: globals.browser } },
+	{ languageOptions: { globals: globals.node } },
+	pluginJs.configs.recommended,
+	pluginReact.configs.flat.recommended,
+	{
+		plugins: {
+			import: pluginImport,
+		},
+	},
+	{
+		settings: {
+			react: {
+				version: 'detect', // React version. "detect" automatically picks the version you have installed.
+			},
+			'import/resolver': {
+				node: {
+					paths: ['src'],
+					extensions: ['.js', '.jsx', '.ts', '.tsx'],
+					moduleDirectory: ['node_modules', 'src/'],
 				},
 			},
 		},
 
 		// Custom rules for the project
 		rules: {
-			'custom-rules.no-idi-core': 'error', // Enable the custom rule
 			'no-underscore-dangle': 'off', // Allow underscores in variable names
 			// 'no-plusplus': 'off', // Allow ++ and -- operators
 			'global-require': 'off', // Allow require() statements anywhere
@@ -114,7 +131,7 @@ export default [
 
 			// Enforce the consistent use of either backticks, double, or single quotes.
 			// Risk: Inconsistent quote usage can lead to confusion.
-			quotes: ['error', 'single'], // Example: enforcing single quotes
+			quotes: ['error', 'single', { avoidEscape: true }], // Example: enforcing single quotes
 
 			// Disallow reassigning class members.
 			// Risk: Reassigning class members can lead to unexpected behavior.
@@ -141,10 +158,39 @@ export default [
 			'react/no-array-index-key': 'error',
 
 			// Add no-magic-numbers rule
-			'no-magic-numbers/no-magic-numbers': [
+			'no-magic-numbers': [
 				'error',
 				{
-					ignore: [0, 1], // Allow these numbers if needed
+					ignore: [0, 1, -1, 10, 100, 1000], // Allow these numbers if needed
+				},
+			],
+
+			'import/no-named-as-default': 'off',
+			'import/no-named-as-default-member': 'off',
+			'import/newline-after-import': 'error',
+
+			'import/order': [
+				'error',
+				{
+					groups: [['builtin', 'external'], ['internal'], ['parent', 'sibling', 'index'], ['unknown']],
+					pathGroups: [
+						...builtinPatterns.map(pattern => ({
+							pattern,
+							group: 'builtin',
+							position: 'before',
+						})),
+						...folders.map(folder => ({
+							pattern: `${folder}/**`,
+							group: 'internal',
+							position: 'before',
+						})),
+					],
+					pathGroupsExcludedImportTypes: ['builtin'],
+					'newlines-between': 'always',
+					alphabetize: {
+						order: 'asc',
+						caseInsensitive: true,
+					},
 				},
 			],
 		},

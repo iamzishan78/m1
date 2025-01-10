@@ -1,23 +1,27 @@
 import React, { memo, useEffect, useState } from 'react';
-import { get } from 'lodash';
-import { makeStyles } from '@material-ui/core/styles';
-import { Grid, TextField, InputAdornment, Select, MenuItem, IconButton, Tooltip } from '@material-ui/core';
-import { Clear, ErrorOutline } from '@material-ui/icons';
-import moment from 'moment';
-import debounce from 'lodash/debounce';
-import orderBy from 'lodash/orderBy';
-
 import { Controller, useForm } from 'react-hook-form';
-import { useMutation, useQuery, useLazyQuery } from '@apollo/client';
-import { UPDATE_CHECK_DATA } from 'graphQL/useMutationUpdateCheck';
-import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
 import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router-dom';
-import { showInfoMessage } from 'actions';
-import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+
+import { Grid, TextField, InputAdornment, Select, MenuItem, IconButton, Tooltip } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { Clear, ErrorOutline } from '@material-ui/icons';
+
+import { useMutation, useQuery, useLazyQuery } from '@apollo/client';
+import { get } from 'lodash';
+import debounce from 'lodash/debounce';
+import orderBy from 'lodash/orderBy';
+import moment from 'moment';
+
 import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
+import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
 import { CurrencyFormatCustomWithoutPrefix } from 'components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix';
+
+import { UPDATE_CHECK_DATA } from 'graphQL/useMutationUpdateCheck';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
+
+import { showInfoMessage } from 'actions';
 
 const formatter = new Intl.NumberFormat('en-US', {
 	style: 'currency',
@@ -31,7 +35,7 @@ const useStyles = makeStyles(() => ({
 			margin: 0,
 		},
 		'& .MuiFilledInput-root, & .MuiSelect-select.MuiSelect-select': {
-			background: `none!important`,
+			background: 'none!important',
 		},
 	},
 	titleText: {
@@ -44,7 +48,7 @@ const useStyles = makeStyles(() => ({
 		'& .MuiOutlinedInput-root': {
 			paddingTop: 0,
 			paddingBottom: 0,
-			height: `46px !important`,
+			height: '46px !important',
 			borderRadius: '6px !important',
 		},
 	},
@@ -150,7 +154,9 @@ function HeaderFunction(props) {
 	const isEqualCheckAmount = checkAmount => {
 		const totalNetOwnerValue = get(aggsData, 'getDbAggs.aggregations.totalNetOwnerValue[0].totalNetOwnerValue');
 
-		if (isNaN(totalNetOwnerValue) || isNaN(checkAmount)) return true;
+		if (isNaN(totalNetOwnerValue) || isNaN(checkAmount)) {
+			return true;
+		}
 
 		const totalSum = formatter.format(totalNetOwnerValue || 0);
 		const fCheckAmount = formatter.format(checkAmount || 0);
@@ -220,9 +226,14 @@ function HeaderFunction(props) {
 										value={searchOperator}
 										variant="outlined"
 										setValue={value => {
-											if (value?._id) params.onChange({ _id: value._id, name: value.name });
-											else params.onChange({});
-											if (value?._id === 'newEntity') delete value._id;
+											if (value?._id) {
+												params.onChange({ _id: value._id, name: value.name });
+											} else {
+												params.onChange({});
+											}
+											if (value?._id === 'newEntity') {
+												delete value._id;
+											}
 											handleUpdateCheck({
 												payor: {
 													...check.payor,
@@ -235,7 +246,7 @@ function HeaderFunction(props) {
 											setSearchOperator(value);
 										}}
 										options={payorList?.map(payor => ({
-											_id: get(payor, `original[0]._id`),
+											_id: get(payor, 'original[0]._id'),
 											name: payor.key,
 										}))}
 									/>
@@ -351,8 +362,11 @@ function HeaderFunction(props) {
 										nameAutValue={value}
 										withContactCard={true}
 										setNameAutValue={value => {
-											if (value?._id) onChange({ _id: value._id, name: value.name });
-											else onChange({});
+											if (value?._id) {
+												onChange({ _id: value._id, name: value.name });
+											} else {
+												onChange({});
+											}
 											handleUpdateCheck({
 												payee: {
 													...check.payee,

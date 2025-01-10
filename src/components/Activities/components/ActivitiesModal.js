@@ -1,49 +1,47 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
-import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
-import { Grid } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import moment from 'moment';
-import get from 'lodash/get';
-import { useLazyQuery, useMutation } from '@apollo/client';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
 import { useHistory } from 'react-router-dom';
 
-import { AppContext } from '../../../AppContext';
-import { CircularProgress, Dialog, DialogTitle } from '@material-ui/core';
-import ExpandableCardProvider from '../../ExpandableCard/ExpandableCardProvider';
-
+import { Grid, CircularProgress, Dialog, DialogTitle, TextField } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import CallIcon from '@material-ui/icons/Call';
-import MeetingIcon from '@material-ui/icons/Group';
-import TaskIcon from '@material-ui/icons/WatchLater';
-import DeadlineIcon from '@material-ui/icons/Flag';
-import EmailIcon from '@material-ui/icons/Email';
 import ContactMailIcon from '@material-ui/icons/ContactMail';
-import TextMsgIcon from '@material-ui/icons/Textsms';
-
 import DocumentIcon from '@material-ui/icons/DescriptionOutlined';
+import EmailIcon from '@material-ui/icons/Email';
+import DeadlineIcon from '@material-ui/icons/Flag';
+import MeetingIcon from '@material-ui/icons/Group';
+import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import PersonIcon from '@material-ui/icons/Person';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
-import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
-// import Checkbox from "@material-ui/core/Checkbox";
-// import FormControlLabel from "@material-ui/core/FormControlLabel";
-import AutocompEntityNamesVirtualizeList from '../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
-import { setStateIfDeepEqual } from '../../Shared/functions';
-import { Calendar, momentLocalizer } from 'react-big-calendar';
-import ActivitiesEvent from './ActivitiesEvent';
-import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
-import { ADDCONTACT } from '../../../graphQL/useMutationAddContact';
-import { OPENDEALS } from '../../../graphQL/useQueryOpenDeals';
+import TextMsgIcon from '@material-ui/icons/Textsms';
+import TaskIcon from '@material-ui/icons/WatchLater';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { GETMONGOUSERS } from '../../../graphQL/useQueryGetUsers';
-import Typography from '@material-ui/core/Typography';
-import { ADDACTIVITY, DELETEACTIVITY, UPDATEACTIVITY } from '../../../graphQL/useMutationActivity';
-import { workspaceTenantName } from 'components/Shared/functions';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+import clsx from 'clsx';
+import get from 'lodash/get';
+import moment from 'moment';
+
 import AutoCompleteAddNewField from 'components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField';
 import { outcomeOptions } from 'components/ContactDetailCard/components/FieldContent/helper';
+import { workspaceTenantName } from 'components/Shared/functions';
+
 import { tableGlobalController } from 'hookstate/tableController';
 
-const useStyles = makeStyles(theme => ({
+import ActivitiesEvent from './ActivitiesEvent';
+import { AppContext } from '../../../AppContext';
+import { ADDACTIVITY, DELETEACTIVITY, UPDATEACTIVITY } from '../../../graphQL/useMutationActivity';
+import { ADDCONTACT } from '../../../graphQL/useMutationAddContact';
+import { GETMONGOUSERS } from '../../../graphQL/useQueryGetUsers';
+import { OPENDEALS } from '../../../graphQL/useQueryOpenDeals';
+import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
+import ExpandableCardProvider from '../../ExpandableCard/ExpandableCardProvider';
+import AutocompEntityNamesVirtualizeList from '../../MRTTable/Common/Components/AutocompEntityNamesVirtualizeList';
+import { setStateIfDeepEqual } from '../../Shared/functions';
+
+const useStyles = makeStyles(() => ({
 	dialogExpCard: {
 		'& .MuiDialog-paperScrollPaper': {
 			height: '100%',
@@ -218,6 +216,14 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 	const [errors, setErrors] = useState({ ...initialErrors });
 	const [users, setUsers] = useState([]);
 	const { selectedActivity } = stateApp;
+	const [nameAutValue, setNameAutValue] = useState({ name: '', _id: null });
+	const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
+	const [nameAutInputValue, NameAutInputValue] = useState('');
+	const setNameAutInputValue = newState => {
+		setStateIfDeepEqual(NameAutInputValue, newState);
+	};
+	const [hasNextPage, setHasNextPage] = useState(true);
+	const [isNextPageLoading, setIsNextPageLoading] = useState(false);
 
 	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
 		fetchPolicy: 'cache-and-network',
@@ -238,12 +244,46 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 		}
 	}, [userLists]);
 
+	const clearFields = () => {
+		setAddNew(true);
+		setNotes('');
+		setOwner({
+			name: stateApp.user.fullname || stateApp.user.email,
+			id: stateApp.user.mongoId,
+		});
+		setNameAutValue({ name: '', _id: null });
+		setDealId(null);
+		setActivityType('');
+		setActivityName('');
+		setClosed(false);
+		setStartDate(getCurrentDate());
+		setCalenderDate(new Date());
+		setEndDate(getCurrentDate());
+		setStartTime('08:00');
+		setEndTime('08:00');
+		setNameAutInputValue('');
+	};
+
+	const onModalClose = () => {
+		if (history.location.pathname !== '/contacts/activityDashboard') {
+			window.history.pushState('', '', '/calendar/activities');
+		}
+
+		clearFields();
+		setSelectedActivityId(null);
+		setStateApp(stateApp => ({
+			...stateApp,
+			activityDialog: false,
+			selectedActivity: null,
+		}));
+	};
+
 	const [addActivityMutation, { loading: addLoading }] = useMutation(ADDACTIVITY, {
 		onCompleted: () => {
 			onModalClose();
 			tableGlobalController.refetch(); // refech mrttable rows
 		},
-		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
+		refetchQueries: ['getAllActivities', 'getDbData'],
 		awaitRefetchQueries: true,
 	});
 
@@ -252,7 +292,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 			onModalClose();
 			tableGlobalController.refetch(); // refech mrttable rows
 		},
-		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
+		refetchQueries: ['getAllActivities', 'getDbData'],
 		awaitRefetchQueries: true,
 	});
 
@@ -261,7 +301,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 			onModalClose();
 			tableGlobalController.refetch(); // refech mrttable rows
 		},
-		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
+		refetchQueries: ['getAllActivities', 'getDbData'],
 		awaitRefetchQueries: true,
 	});
 
@@ -273,15 +313,6 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 		}
 	);
 	const [addContact, { data: addContactData }] = useMutation(ADDCONTACT);
-
-	const [nameAutValue, setNameAutValue] = useState({ name: '', _id: null });
-	const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
-	const [nameAutInputValue, NameAutInputValue] = useState('');
-	const setNameAutInputValue = newState => {
-		setStateIfDeepEqual(NameAutInputValue, newState);
-	};
-	const [hasNextPage, setHasNextPage] = useState(true);
-	const [isNextPageLoading, setIsNextPageLoading] = useState(false);
 
 	useEffect(() => {
 		//will also run during initial mount
@@ -307,7 +338,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 
 	useEffect(() => {
 		if (allContacts?.paginatedContacts) {
-			setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map(el => el.node)]);
+			setMongoEntitiesArray([...(allContacts?.paginatedContacts?.edges?.map(el => el.node) || [])]);
 			setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
 		}
 		setIsNextPageLoading(false);
@@ -379,40 +410,6 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 		}
 	}, [dealsData]);
 
-	const onModalClose = () => {
-		if (history.location.pathname !== '/contacts/activityDashboard') {
-			window.history.pushState('', '', `/calendar/activities`);
-		}
-
-		clearFields();
-		setSelectedActivityId(null);
-		setStateApp(stateApp => ({
-			...stateApp,
-			activityDialog: false,
-			selectedActivity: null,
-		}));
-	};
-
-	const clearFields = () => {
-		setAddNew(true);
-		setNotes('');
-		setOwner({
-			name: stateApp.user.fullname || stateApp.user.email,
-			id: stateApp.user.mongoId,
-		});
-		setNameAutValue({ name: '', _id: null });
-		setDealId(null);
-		setActivityType('');
-		setActivityName('');
-		setClosed(false);
-		setStartDate(getCurrentDate());
-		setCalenderDate(new Date());
-		setEndDate(getCurrentDate());
-		setStartTime('08:00');
-		setEndTime('08:00');
-		setNameAutInputValue('');
-	};
-
 	const updateErrors = () => {
 		let activityTypeErr = false;
 		let activityNameErr = false;
@@ -422,13 +419,27 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 		let endTimeErr = false;
 		let ownerErr = false;
 
-		if (!activityType || activityType.length === 0) activityTypeErr = true;
-		if (!activityName || activityName.length === 0) activityNameErr = true;
-		if (!startDate) startDataErr = true;
-		if (!startTime) startTimeErr = true;
-		if (!endDate) endDateErr = true;
-		if (!endTime) endTimeErr = true;
-		if (!owner.id) ownerErr = true;
+		if (!activityType || activityType.length === 0) {
+			activityTypeErr = true;
+		}
+		if (!activityName || activityName.length === 0) {
+			activityNameErr = true;
+		}
+		if (!startDate) {
+			startDataErr = true;
+		}
+		if (!startTime) {
+			startTimeErr = true;
+		}
+		if (!endDate) {
+			endDateErr = true;
+		}
+		if (!endTime) {
+			endTimeErr = true;
+		}
+		if (!owner.id) {
+			ownerErr = true;
+		}
 
 		const dateTime = mergeDateAndTime(startDate, startTime);
 		const endDateTime = mergeDateAndTime(endDate, endTime);
@@ -454,7 +465,9 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 	};
 
 	const addActivity = async () => {
-		if (updateErrors()) return;
+		if (updateErrors()) {
+			return;
+		}
 
 		const dateTime = mergeDateAndTime(startDate, startTime);
 		const endDateTime = mergeDateAndTime(endDate, endTime);
@@ -483,7 +496,9 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 	};
 
 	const updateActivity = async () => {
-		if (updateErrors()) return;
+		if (updateErrors()) {
+			return;
+		}
 
 		const dateTime = mergeDateAndTime(startDate, startTime);
 		const endDateTime = mergeDateAndTime(endDate, endTime);
@@ -518,6 +533,8 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 		});
 	};
 
+	const dealValue = openDeals.find(deal => deal._id === dealId) || null;
+
 	const handleOnDealClick = () => {
 		const { _id: stageId, pipeline } = dealValue.stage;
 		const dealId = dealValue._id;
@@ -526,7 +543,6 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 
 	const handleOnContactView = () => `/contact/details/${nameAutValue._id}?tenant=${workspaceTenantName()}`;
 
-	const dealValue = openDeals.find(deal => deal._id === dealId) || null;
 	return (
 		<Dialog
 			className={classes.dialogExpCard}
@@ -908,8 +924,11 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 										color="primary"
 										variant="contained"
 										onClick={() => {
-											if (addNew) addActivity();
-											else updateActivity();
+											if (addNew) {
+												addActivity();
+											} else {
+												updateActivity();
+											}
 										}}
 									>
 										{(addLoading || updateLoading) && (

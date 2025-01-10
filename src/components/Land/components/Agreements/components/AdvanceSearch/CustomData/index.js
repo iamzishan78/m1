@@ -1,11 +1,15 @@
 import React, { useContext, useState, useEffect, useMemo } from 'react';
+
 import { Grid, TextField } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import FormControl from '@material-ui/core/FormControl';
-import { AppContext } from 'AppContext';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
 import { useLazyQuery } from '@apollo/client';
-import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 import _ from 'lodash';
+
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+
+import { AppContext } from 'AppContext';
 
 const AutoCompleteDropdown = ({ options, onChange, loading, label, value }) => {
 	return (
@@ -67,10 +71,13 @@ export default function CustomDataFilters(props) {
 			const filterKey = `shapeJson.properties.custom_data.${selectedKey}`;
 			const landCustomDataFilters = [...stateApp.landSearchFilters.customData];
 			const _index = landCustomDataFilters.findIndex(f => f.field.startsWith('shapeJson.properties.custom_data'));
-			if (_index === -1 && selectedValue !== null)
+			if (_index === -1 && selectedValue !== null) {
 				landCustomDataFilters.push({ field: filterKey, value: selectedValue });
-			else if (selectedValue !== null) landCustomDataFilters[_index].value = selectedValue;
-			else if (_index !== -1) landCustomDataFilters.splice(_index, 1);
+			} else if (selectedValue !== null) {
+				landCustomDataFilters[_index].value = selectedValue;
+			} else if (_index !== -1) {
+				landCustomDataFilters.splice(_index, 1);
+			}
 
 			setSelectedKey(landCustomDataFilters?.[0]?.field?.split?.('.')[3]);
 			setSelectedValue(landCustomDataFilters?.[0]?.value);

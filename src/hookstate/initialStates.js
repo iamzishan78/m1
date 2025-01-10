@@ -1,6 +1,8 @@
 import { hookstate } from '@hookstate/core';
-import { copy } from 'components/Shared/functions';
+
 import { ROUTES } from 'components/Shared/FeatureFlag/common';
+import { copy } from 'components/Shared/functions';
+
 import { simpleAuthBypass } from 'utils/data';
 
 /* -------------------------------------------------------------------------- */
@@ -49,21 +51,18 @@ export const tableInitialState = {
 	columnPinning: {
 		left: [],
 	},
+	isIncludeInactive: false,
+	gridView: {},
+	showTypes: false,
+	editedData: {},
+	validationErrors: {},
+	isCreateMode: false,
 };
 export const tableESState = {};
 export const tableGlobalState = hookstate({
 	refetch: false,
-	reInitialized: false,
-});
-
-/* -------------------------------------------------------------------------- */
-/*                           Simple Table Controller                          */
-/* -------------------------------------------------------------------------- */
-
-export const simpleTableState = {};
-export const simpleTableGlobalState = hookstate({
-	refetch: false,
 	refetchAdditionalQueries: false,
+	reInitialized: false,
 	tabKey: 0,
 });
 
@@ -326,6 +325,7 @@ export const layerFilters = hookstate(copy(layerFilterInitialState));
 /* -------------------------------------------------------------------------- */
 
 export const mapControlsInitialState = {
+	searchValue: '',
 	fileUploadedContent: null,
 	fileUploaded: null,
 	selectedControl: 'layer',

@@ -1,9 +1,12 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+
+import { TO_FIXED } from 'utils/consts';
+
 import RelatedBillingPartiesToolbar from '../TablesOverride/RelatedBillingPartiesTable/RelatedBillingPartiesToolbar';
-import { tableGlobalController } from 'hookstate/tableController';
-import { getArrayValue } from '../utils/helper';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
-import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 
 const esIndex = 'contacts_flat';
 
@@ -18,25 +21,24 @@ const RelatedBillingPartiesMeta = {
 	maxTableHeight: 'calc(100vh - 550px)',
 	CustomToolBar: RelatedBillingPartiesToolbar,
 	isInFiniteScroll: true,
-	columnReordering: false,
 	isGeneric: false,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
-			accessorKey: 'id',
+			id: 'id',
 		},
 		{
 			...CommonSchema.HIDDEN,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'billingParties.name.keyword',
-			accessorFn: row => row?.billingParties?.name,
 			id: 'billingParties.name',
 			header: 'Billing Party Name',
+			isArrayKey: true,
 			handleArrayExport: {
 				esType: 'array',
 				// field in data array that will be matched
@@ -47,8 +49,7 @@ const RelatedBillingPartiesMeta = {
 				actualKey: 'name',
 			},
 			Cell: ({ row }) => {
-				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
-				const value = getArrayValue(row.original.billingParties, 'name', paymentId, 'paymentId');
+				const value = row.original?.billingParties?.name || '';
 				return (
 					<div
 						style={{
@@ -68,11 +69,11 @@ const RelatedBillingPartiesMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'billingParties.address.keyword',
-			accessorFn: row => row?.billingParties?.address,
 			id: 'billingParties.address',
 			header: 'Billing Party Address',
+			isArrayKey: true,
 			handleArrayExport: {
 				esType: 'array',
 				// field in data array that will be matched
@@ -82,18 +83,14 @@ const RelatedBillingPartiesMeta = {
 				// field that needs to be exported from matched object
 				actualKey: 'address',
 			},
-			Cell: ({ row }) => {
-				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
-				return getArrayValue(row.original.billingParties, 'address', paymentId, 'paymentId');
-			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'billingParties.allocation.keyword',
-			accessorFn: row => row?.billingParties?.allocation,
 			id: 'billingParties.allocation',
 			header: 'Billing Party Allocation',
 			type: 'number',
+			isArrayKey: true,
 			handleArrayExport: {
 				esType: 'array',
 				// field in data array that will be matched
@@ -104,18 +101,17 @@ const RelatedBillingPartiesMeta = {
 				actualKey: 'allocation',
 			},
 			Cell: ({ row }) => {
-				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
-				const value = getArrayValue(row.original.billingParties, 'allocation', paymentId, 'paymentId');
-				return value ? `${Number(value).toFixed(2)}%` : value === 0 ? `0%` : '';
+				const value = row.original?.billingParties?.allocation;
+				return value ? `${Number(value).toFixed(TO_FIXED)}%` : value === 0 ? '0%' : '';
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'billingParties.amount.keyword',
-			accessorFn: row => row?.billingParties?.amount,
 			id: 'billingParties.amount',
 			header: 'Billing Party Amount',
 			type: 'number',
+			isArrayKey: true,
 			handleArrayExport: {
 				esType: 'array',
 				// field in data array that will be matched
@@ -125,18 +121,13 @@ const RelatedBillingPartiesMeta = {
 				// field that needs to be exported from matched object
 				actualKey: 'amount',
 			},
-			Cell: ({ row }) => {
-				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
-				const value = getArrayValue(row.original.billingParties, 'amount', paymentId, 'paymentId');
-				return value ? vf_currency_to_fixed(parseFloat(value), 2) : value === 0 ? `$0` : '';
-			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'billingParties.status.keyword',
-			accessorFn: row => row?.billingParties?.status,
 			id: 'billingParties.status',
 			header: 'Status',
+			isArrayKey: true,
 			handleArrayExport: {
 				esType: 'array',
 				// field in data array that will be matched
@@ -145,10 +136,6 @@ const RelatedBillingPartiesMeta = {
 				referenceValueKey: 'paymentId',
 				// field that needs to be exported from matched object
 				actualKey: 'status',
-			},
-			Cell: ({ row }) => {
-				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
-				return getArrayValue(row.original.billingParties, 'status', paymentId, 'paymentId');
 			},
 		},
 	],

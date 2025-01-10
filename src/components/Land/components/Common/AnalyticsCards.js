@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { makeStyles } from '@material-ui/styles';
 import { Grid, Card, CardContent, Typography } from '@material-ui/core';
 import { Warning as WarningIcon } from '@material-ui/icons';
+import { makeStyles } from '@material-ui/styles';
+
 import { useLazyQuery } from '@apollo/client';
+import { get } from 'lodash';
 
 import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
-import { get } from 'lodash';
 
 export const useStyles = makeStyles(() => ({
 	root: {},
@@ -56,7 +57,9 @@ export default function AnalyticsCards({
 
 	// Function to format card points in K(thousand)
 	const formCardPointValue = value => {
-		if (!value) return 0;
+		if (!value) {
+			return 0;
+		}
 		return (
 			(Math.round((value + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) +
 			'K'

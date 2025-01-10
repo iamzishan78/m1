@@ -1,19 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState, useContext } from 'react';
-import { Grid, TextField } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
-import { useLazyQuery } from '@apollo/client';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import moment from 'moment';
-import get from 'lodash/get';
-
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import { getFilters } from 'components/Table/Activities/ActivitiesTable';
-import { AppContext } from 'AppContext';
-import { CUSTOM_DATES } from 'utils/data';
 import { useSelector } from 'react-redux';
-import { handleCustomDateTypeChange } from 'utils/helper';
+
+import { Grid, TextField } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { makeStyles } from '@material-ui/styles';
+
+import { useLazyQuery } from '@apollo/client';
+import get from 'lodash/get';
+import moment from 'moment';
+
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+
+import { CUSTOM_DATES } from 'utils/data';
 import { esIndexFilterKeyMap } from 'utils/data';
+import { getActivityAnalyticsFilters, handleCustomDateTypeChange } from 'utils/helper';
+
+import { AppContext } from 'AppContext';
+
 import { getActivityFilters } from './ActivitiesDashboard';
 
 const useStyles = makeStyles(theme => ({
@@ -79,7 +83,9 @@ export default function CustomDatesActivities({
 	const classes = useStyles();
 	const { activeModule } = useSelector(({ common }) => common);
 	useEffect(() => {
-		if (minDate) handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+		if (minDate) {
+			handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [minDate]);
 
@@ -251,12 +257,12 @@ const CampaignFilter = ({
 	const [stateApp] = useContext(AppContext);
 	const [search, setSearch] = useState('');
 
-	const [getCampaign, { data: filtersData }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
+	const [getCampaign, { data: filtersData }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 
 	const getAllFilters = () => {
 		let rangeFilters = [];
 		if (!tableFilters.find(filter => filter.type === 'range')) {
-			rangeFilters = getFilters(appliedFilters);
+			rangeFilters = getActivityAnalyticsFilters(appliedFilters);
 			if (esIndex === 'activities_flat') {
 				rangeFilters = getActivityFilters(appliedFilters);
 			}
@@ -305,11 +311,11 @@ const CampaignFilter = ({
 			}}
 			value={value}
 			inputValue={search?.toString()}
-			options={get(filtersData, 'getESSimpleFilter.hits', [])
+			options={get(filtersData, 'getDbFilters.hits', [])
 				.map(d => d.key)
 				.filter(Boolean)}
 			getOptionLabel={op => op?.name || ''}
-			getOptionSelected={(op, value) => op?.name === value?.name}
+			getOptionSelected={(op, value) => op?.name === value?.name || ''}
 			renderInput={params => (
 				<TextField
 					{...params}
@@ -344,7 +350,7 @@ const QualifierFilter = ({
 	const [stateApp] = useContext(AppContext);
 	const [search, setSearch] = useState('');
 
-	const [getQualifiers, { data: filtersData }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
+	const [getQualifiers, { data: filtersData }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 
 	const getAllFilters = () => {
 		let rangeFilters = [];
@@ -352,7 +358,7 @@ const QualifierFilter = ({
 			if (esIndex === 'contacts_flat') {
 				appliedFilters.filter = 'audit';
 			}
-			rangeFilters = getFilters(appliedFilters);
+			rangeFilters = getActivityAnalyticsFilters(appliedFilters);
 			if (esIndex === 'activities_flat') {
 				rangeFilters = getActivityFilters(appliedFilters);
 			}
@@ -406,9 +412,9 @@ const QualifierFilter = ({
 			}}
 			value={value}
 			inputValue={search?.toString()}
-			options={get(filtersData, 'getESSimpleFilter.hits', [])}
+			options={get(filtersData, 'getDbFilters.hits', [])}
 			getOptionSelected={(option, value) => option.key === value}
-			getOptionLabel={option => option?.key?.toString().replace(/^,|,$/gm, '')}
+			getOptionLabel={option => option?.key?.toString().replace(/^,|,$/gm, '') || ''}
 			renderInput={params => (
 				<TextField
 					{...params}

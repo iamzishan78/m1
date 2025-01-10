@@ -1,10 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react';
+
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import QuestionIcon from '@material-ui/icons/Help';
 import XIcon from '@material-ui/icons/HighlightOff';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
 const useStyles = makeStyles(theme => ({
 	iconContainer: {

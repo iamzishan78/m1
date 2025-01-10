@@ -48,7 +48,9 @@ export function getSearchFields(Table, customMetaFields = []) {
 		) {
 			if (Array.isArray(row.esKey)) {
 				searchFields = [...searchFields, ...row.esKey];
-			} else if (row.esKey.includes('.keyword')) searchFields.push(row.esKey);
+			} else if (row.esKey.includes('.keyword')) {
+				searchFields.push(row.esKey);
+			}
 		}
 	});
 
@@ -115,11 +117,17 @@ export function replaceLinkId(link, path) {
 }
 
 export function customStartCaseString(str, isDate) {
-	if (!str) return '';
+	if (!str) {
+		return '';
+	}
 
-	if (isDate) return moment.parseZone(new Date(+str)).format('MM/DD/YY');
+	if (isDate) {
+		return moment.parseZone(new Date(+str)).format('MM/DD/YY');
+	}
 
-	if (str && str.split(' ').length < 2) return str;
+	if (str && str.split(' ').length < 2) {
+		return str;
+	}
 
 	return str
 		.split(' ')
@@ -156,7 +164,9 @@ export function getDateWithoutTime(dateTime) {
 		newDate.setMonth(Number(splittedDate[1]) - 1);
 		newDate.setDate(Number(splittedDate[2]));
 		return newDate;
-	} else return null;
+	} else {
+		return null;
+	}
 }
 
 export const getSelectedRowsFromProps = (props = {}) => {
@@ -166,7 +176,9 @@ export const getSelectedRowsFromProps = (props = {}) => {
 };
 
 export const formatDate = (date, simple = true) => {
-	if (!date) return '--';
+	if (!date) {
+		return '--';
+	}
 	return moment(date).format(simple ? 'MM/DD/YYYY' : 'MMMM D, YYYY');
 };
 
@@ -178,7 +190,9 @@ export const processInBatches = async (promises, batchSize) => {
 };
 
 export const formatDateTime = date => {
-	if (!date) return '--';
+	if (!date) {
+		return '--';
+	}
 	return moment.parseZone(new Date(date)).format('M/D/YYYY, hh:mm A');
 };
 

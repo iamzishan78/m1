@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect, useContext, useMemo } from 'react';
-import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { debounce } from 'lodash';
-import { makeStyles, withStyles } from '@material-ui/styles';
+import { useHistory } from 'react-router-dom';
+
 import {
 	CircularProgress,
 	Dialog,
@@ -23,28 +22,33 @@ import {
 	Delete as DeleteIcon,
 	MoreHoriz as MoreHorizIcon,
 } from '@material-ui/icons';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-import Tags from 'components/Shared/Tagger';
-import MetaField from 'components/Table/helpers/MetaField';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { GETCHECK } from 'graphQL/useQueryCheck';
-import { REMOVE_CHECKS } from 'graphQL/useMutationRemoveChecks';
-import { UPSERT_USER_DESCRIPTOR } from 'graphQL/useMutationUserDescriptor';
-import { UPDATE_CHECK_DATA } from 'graphQL/useMutationUpdateCheck';
-import { AppContext } from 'AppContext';
+import { makeStyles, withStyles } from '@material-ui/styles';
 
-// Components
-import HeaderSection from './HeaderSection';
-import SummarySection from './SummarySection';
-import CheckDetailsSection from './CheckDetailsSection';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { debounce } from 'lodash';
+
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
+import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
 import NavHeader from 'components/Revenue/components/Common/NavHeader';
 import DocViewer from 'components/Shared/DocViewer';
-import LineItem from './/LineItem';
-import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
+import Tags from 'components/Shared/Tagger';
+
+import { REMOVE_CHECKS } from 'graphQL/useMutationRemoveChecks';
+import { UPDATE_CHECK_DATA } from 'graphQL/useMutationUpdateCheck';
+import { UPSERT_USER_DESCRIPTOR } from 'graphQL/useMutationUserDescriptor';
+import { GETCHECK } from 'graphQL/useQueryCheck';
+
+import MetaField from 'utils/MetaField';
 
 import { setRevenueKey } from 'actions';
+import { AppContext } from 'AppContext';
 
-const useStyles = makeStyles(theme => ({
+import LineItem from './/LineItem';
+import CheckDetailsSection from './CheckDetailsSection';
+import HeaderSection from './HeaderSection';
+import SummarySection from './SummarySection';
+
+const useStyles = makeStyles(() => ({
 	detailHeader: {
 		backgroundColor: '#fff',
 		padding: '20px 27px 0px 45px',
@@ -222,7 +226,6 @@ export default function DetailComponents(props) {
 	const history = useHistory();
 	const previousRoute = history.pathHistory[1];
 	const isLineItem = history.location.pathname.includes('/line-item');
-	const checkId = getIdFromPath();
 
 	const classes = useStyles({ ...props, collapse });
 	// queries
@@ -235,12 +238,14 @@ export default function DetailComponents(props) {
 
 	// mutations
 	const [removeChecks] = useMutation(REMOVE_CHECKS, {
-		refetchQueries: ['getESPaginatedList'],
+		refetchQueries: ['getDbData'],
 		awaitRefetchQueries: true,
 	});
 
 	useEffect(() => {
-		if (getCheckResult?.getCheck?.check) setChecksFlatData(getCheckResult.getCheck.check);
+		if (getCheckResult?.getCheck?.check) {
+			setChecksFlatData(getCheckResult.getCheck.check);
+		}
 	}, [getCheckResult]);
 
 	const handleDeleteCancel = () => {
@@ -251,10 +256,13 @@ export default function DetailComponents(props) {
 
 	function getIdFromPath() {
 		let pathname = history.location.pathname;
-		if (pathname.slice(-1) === '/') pathname = pathname.substring(0, pathname.length - 1);
+		if (pathname.slice(-1) === '/') {
+			pathname = pathname.substring(0, pathname.length - 1);
+		}
 
 		return pathname.replace('/line-item', '').split('/')[pathname.replace('/line-item', '').split('/').length - 1];
 	}
+	const checkId = getIdFromPath();
 
 	const handleDeleteAccept = () => {
 		// Check Document Logic goes here
@@ -272,9 +280,9 @@ export default function DetailComponents(props) {
 	};
 
 	useEffect(() => {
-		if (getCheckResult?.getCheck?.check)
+		if (getCheckResult?.getCheck?.check) {
 			dispatch(setRevenueKey('statements', { ...statements, activeStatement: getCheckResult?.getCheck?.check }));
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		}
 	}, [getCheckResult, dispatch]);
 
 	useEffect(() => {
@@ -301,22 +309,26 @@ export default function DetailComponents(props) {
 		};
 	}, []);
 
+	const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
+
 	const handleScroll = e => {
 		if (!isButtonScroll) {
 			const { scrollTop } = e.target;
-			if (scrollTop <= 270 && tab !== 0) setTab(0);
-			else if (scrollTop > 270 && scrollTop <= 470 && tab !== 1) setTab(1);
-			else if (scrollTop > 470 && tab !== 2) setTab(2);
+			if (scrollTop <= 270 && tab !== 0) {
+				setTab(0);
+			} else if (scrollTop > 270 && scrollTop <= 470 && tab !== 1) {
+				setTab(1);
+			} else if (scrollTop > 470 && tab !== 2) {
+				setTab(2);
+			}
 		}
 		handleEndScroll();
 	};
 
-	const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
-
 	const handleMenuClick = event => setAnchorEl(event.currentTarget);
 
 	const onUpdateMetaData = data => {
-		if (data.owner)
+		if (data.owner) {
 			updateOwner({
 				variables: {
 					descriptorObject: data.owner,
@@ -325,7 +337,7 @@ export default function DetailComponents(props) {
 					relatedObjectType: 'Check',
 				},
 			});
-		else {
+		} else {
 			updateCheck({
 				variables: {
 					check: { _id: checksFlatData._id, ...data },
@@ -339,15 +351,13 @@ export default function DetailComponents(props) {
 	return (
 		<>
 			<Dialog open={openDeleteConfirmDialog} onClose={handleDeleteCancel} style={{ zIndex: 99999999999 }}>
-				<DeleteConfirmationDialogContent
+				<DeleteConfirmationDialog
 					header="Delete Statement"
 					onClose={handleDeleteCancel}
 					deleteFunc={handleDeleteAccept}
-					m1nSelectedRowsIds={[document._id]}
-					setM1nSelectedRowsIndexes={() => {}}
 				>
 					Do you want to delete the selected statement?
-				</DeleteConfirmationDialogContent>
+				</DeleteConfirmationDialog>
 			</Dialog>
 			<Dialog open={loader} style={{ zIndex: 99999999999 }}>
 				<DialogTitle id="alert-dialog-title">

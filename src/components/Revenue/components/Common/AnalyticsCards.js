@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { get } from 'lodash';
-import { makeStyles } from '@material-ui/styles';
 import { Grid, Card, CardContent, Typography, CircularProgress, IconButton } from '@material-ui/core';
 import { Warning as WarningIcon } from '@material-ui/icons';
+import { makeStyles } from '@material-ui/styles';
+
 import { useLazyQuery } from '@apollo/client';
+import { get } from 'lodash';
 
 import FilterIcon from 'components/Common/SvgIcons/Filter';
+
 import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles(() => ({

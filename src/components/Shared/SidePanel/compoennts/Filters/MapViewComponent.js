@@ -1,10 +1,14 @@
 import React, { useState, memo } from 'react';
+
 import { Breadcrumbs, Typography, IconButton, Menu, MenuItem } from '@material-ui/core';
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { useMutation } from '@apollo/client';
-import { UPSERT_MAP_VIEW } from 'graphQL/useMutationUpsertMapView';
 import { CircularProgress } from '@material-ui/core';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+
+import { useMutation } from '@apollo/client';
+
+import { UPSERT_MAP_VIEW } from 'graphQL/useMutationUpsertMapView';
+
 import { globalStateController } from 'hookstate/globalStateController';
 
 function MapViewComponent({ Icon, label, fetchMapViews, defaultView }) {
@@ -28,7 +32,7 @@ function MapViewComponent({ Icon, label, fetchMapViews, defaultView }) {
 		setAnchorEl(event.currentTarget);
 	};
 
-	const handleUpdateClick = async () => {
+	const handleUpdateClick = async (isFetchMapViews = false) => {
 		try {
 			setIsLoading(true);
 
@@ -46,6 +50,7 @@ function MapViewComponent({ Icon, label, fetchMapViews, defaultView }) {
 
 			setIsLoading(false);
 			handleClose();
+			if (isFetchMapViews) fetchMapViews();
 		} catch (error) {
 			setIsLoading(false);
 		}
@@ -128,7 +133,7 @@ function MapViewComponent({ Icon, label, fetchMapViews, defaultView }) {
 					>
 						<MenuItem
 							style={{ width: '250px' }}
-							onClick={handleUpdateClick}
+							onClick={() => handleUpdateClick(true)}
 							disabled={(selectedMapView?.type || defaultView?.type) === 'Default'}
 						>
 							Update view
@@ -137,7 +142,12 @@ function MapViewComponent({ Icon, label, fetchMapViews, defaultView }) {
 							onClick={() => {
 								handleClose();
 								globalStateController.updateState({
-									mapView: { ...mapViewStateValues.mapView, showViewModal: true, showSaveAsNew: true },
+									mapView: {
+										...mapViewStateValues.mapView,
+										selectedMapView: { ...mapViewStateValues.mapView.selectedMapView, type: 'Custom' },
+										showViewModal: true,
+										showSaveAsNew: true,
+									},
 								});
 							}}
 						>

@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+
 import Comments from './Comment';
 
 const CommentDialog = props => {
@@ -8,6 +9,7 @@ const CommentDialog = props => {
 			targetSourceId={props.targetSourceId}
 			targetLabel={props.targetLabel}
 			hideShareCommentsToggle={props.hideShareCommentsToggle}
+			refetch={props.refetch}
 		/>
 	);
 };

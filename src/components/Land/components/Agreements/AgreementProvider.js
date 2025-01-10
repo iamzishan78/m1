@@ -1,7 +1,9 @@
 import React from 'react';
-import { AgreementContextProvider } from './AgreementContext';
+
 import { makeStyles } from '@material-ui/core/styles';
+
 import Agreement from '.';
+import { AgreementContextProvider } from './AgreementContext';
 import { DrawerContextProvider } from './detailComponents/DrawerContext';
 
 const useStyles = makeStyles(() => ({

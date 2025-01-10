@@ -1,4 +1,7 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react';
+import Avatar from 'react-avatar';
+import { useHistory } from 'react-router-dom';
+
 import {
 	Grid,
 	ListItemIcon,
@@ -14,27 +17,32 @@ import {
 	AccordionSummary,
 	AccordionDetails,
 } from '@material-ui/core';
-import get from 'lodash/get';
-import Avatar from 'react-avatar';
-import SearchIcon from '@material-ui/icons/Search';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import AddIcon from '@material-ui/icons/Add';
-import { useHistory } from 'react-router-dom';
-import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
-import PhoneIphoneIcon from '@material-ui/icons/PhoneIphone';
-import DomainOutlinedIcon from '@material-ui/icons/DomainOutlined';
-import AutocompEntityNamesVirtualizeList from 'components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
-import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
-import { ADDCONTACT } from 'graphQL/useMutationAddContact';
-import { AppContext } from '../../AppContext';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import CloseIcon from '@material-ui/icons/Close';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { REMOVEDEALDESCRIPTOR } from '../../graphQL/useMutationRemoveDealDescriptor';
+import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import AddIcon from '@material-ui/icons/Add';
+import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
+import CloseIcon from '@material-ui/icons/Close';
+import DomainOutlinedIcon from '@material-ui/icons/DomainOutlined';
 import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import PhoneIphoneIcon from '@material-ui/icons/PhoneIphone';
+import SearchIcon from '@material-ui/icons/Search';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+import get from 'lodash/get';
+
+import AutocompEntityNamesVirtualizeList from 'components/MRTTable/Common/Components/AutocompEntityNamesVirtualizeList';
+
+import { ADDCONTACT } from 'graphQL/useMutationAddContact';
+import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
+
+import { SMALL_TIMEOUT } from 'utils/consts';
+
+import { AppContext } from '../../AppContext';
+import { REMOVEDEALDESCRIPTOR } from '../../graphQL/useMutationRemoveDealDescriptor';
+
 import './Contact.css';
 
 const useStyles = makeStyles(theme => ({
@@ -138,6 +146,28 @@ export default function Contacts(props) {
 	const [addNewContact, { data: addContactData }] = useMutation(ADDCONTACT);
 	const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
 
+	const GettingContacts = useCallback(() => {
+		const getContactNames = contacts => {
+			return contacts.map(value => {
+				if (get(value, 'relatedObject.entityDetail.name')) {
+					return value.relatedObject.entityDetail.name;
+				} else if (get(value, 'name')) {
+					return value.name;
+				} else {
+					return 'Empty';
+				}
+			});
+		};
+
+		let contactnames;
+		if (stateApp.activeDeal?.contacts?.length) {
+			contactnames = getContactNames(stateApp.activeDeal.contacts);
+		} else if (props?.stateAppKey && stateApp[props.stateAppKey]?.contacts?.length) {
+			contactnames = getContactNames(stateApp[props.stateAppKey].contacts);
+		}
+		setContacts(contactnames);
+	}, [stateApp.activeDeal?.contacts]);
+
 	const handleAccordionChange = panel => (event, isExpanded) => {
 		setExpandedPanel(isExpanded ? panel : false);
 	};
@@ -178,7 +208,7 @@ export default function Contacts(props) {
 	useEffect(() => {
 		if (allContactList?.paginatedContacts && allContactList?.paginatedContacts?.edges[0]) {
 			if (filteredContacts && filteredContacts.length > 0) {
-				let filterData = filteredContacts.map((dataMap, index) => {
+				let filterData = filteredContacts.map(dataMap => {
 					if (dataMap === allContactList?.paginatedContacts?.edges[0].node.name) {
 						contactDetail = {
 							_id: dataMap._id,
@@ -247,15 +277,17 @@ export default function Contacts(props) {
 						uniqueIds.push(element.id);
 						return true;
 					}
+
+					return false;
 				});
 				setFilteredContacts(unique);
 			}
 		}
 	}, [allContactList]);
 
-	const loadNextPage = async pageVariables => {
+	const loadNextPage = async () => {
 		setIsNextPageLoading(true);
-		fetchMorePaginatedContacts(528487);
+		fetchMorePaginatedContacts();
 	};
 
 	useEffect(() => {
@@ -264,28 +296,6 @@ export default function Contacts(props) {
 		);
 		setFilteredContacts(filtered);
 	}, [search, contacts]);
-
-	const GettingContacts = useCallback(() => {
-		const getContactNames = contacts => {
-			return contacts.map(value => {
-				if (get(value, 'relatedObject.entityDetail.name')) {
-					return value.relatedObject.entityDetail.name;
-				} else if (get(value, 'name')) {
-					return value.name;
-				} else {
-					return 'Empty';
-				}
-			});
-		};
-
-		let contactnames;
-		if (stateApp.activeDeal?.contacts?.length) {
-			contactnames = getContactNames(stateApp.activeDeal.contacts);
-		} else if (props?.stateAppKey && stateApp[props.stateAppKey]?.contacts?.length) {
-			contactnames = getContactNames(stateApp[props.stateAppKey].contacts);
-		}
-		setContacts(contactnames);
-	}, [stateApp.activeDeal?.contacts]);
 
 	useEffect(() => {
 		GettingContacts();
@@ -381,7 +391,7 @@ export default function Contacts(props) {
 									onBlur={() =>
 										setTimeout(() => {
 											setSearchState(false);
-										}, 300)
+										}, SMALL_TIMEOUT)
 									}
 									onChange={evt => setSearch(evt.target.value)}
 								/>

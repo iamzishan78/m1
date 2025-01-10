@@ -1,16 +1,19 @@
 import React, { useContext } from 'react';
-import styled from 'styled-components';
-import { AppContext } from '../../../AppContext';
-import { makeStyles } from '@material-ui/core/styles';
+
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
+import { makeStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
 import RateReviewIcon from '@material-ui/icons/RateReviewOutlined';
 import ScreenShareIcon from '@material-ui/icons/ScreenShareOutlined';
+
+import styled from 'styled-components';
+
+import { AppContext } from '../../../AppContext';
 
 const M1neralLogo = props => (
 	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 11320 2490" className={props.className}>

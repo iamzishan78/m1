@@ -1,12 +1,14 @@
 import React, { useContext, useEffect } from 'react';
-import { TitleOpinionContext } from '../TitleOpinionContext';
+
+import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import { Grid } from '@material-ui/core';
-import { KeyboardDatePicker } from '@material-ui/pickers';
-import stateNamesAb from '../../Navigation/components/Utils/USAStates';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import { KeyboardDatePicker } from '@material-ui/pickers';
+
 import useQueryCountiesByState from '../../../graphQL/useQueryCountiesByState';
+import stateNamesAb from '../../Navigation/components/Utils/USAStates';
+import { TitleOpinionContext } from '../TitleOpinionContext';
 
 const useStyles = makeStyles(theme => ({
 	root: {

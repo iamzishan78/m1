@@ -1,15 +1,18 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+
 import { InputAdornment, TextField, IconButton, Tooltip, Grid, Typography, Button } from '@material-ui/core';
 import { fade, makeStyles } from '@material-ui/core/styles';
-import SearchIcon from '@material-ui/icons/Search';
+import { Add } from '@material-ui/icons';
 import ClearIcon from '@material-ui/icons/Clear';
-import { useSelector } from 'react-redux';
+import SearchIcon from '@material-ui/icons/Search';
+
 import { debounce } from 'lodash';
 
-import { AppContext } from 'AppContext';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
-import { Add } from '@material-ui/icons';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	search: {

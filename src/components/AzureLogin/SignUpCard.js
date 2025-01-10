@@ -1,11 +1,14 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { AppContext } from '../../AppContext';
-import { makeStyles } from '@material-ui/core/styles';
-import { Card, Typography } from '@material-ui/core';
-import NewUserCard from './NewUserCard';
-import styled from 'styled-components';
-import RenderSignUpControls from './RenderSignUpControls';
 import { Link } from 'react-router-dom';
+
+import { Card, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+
+import styled from 'styled-components';
+
+import NewUserCard from './NewUserCard';
+import RenderSignUpControls from './RenderSignUpControls';
+import { AppContext } from '../../AppContext';
 
 const localStyles = makeStyles(theme => ({
 	myRoot: {

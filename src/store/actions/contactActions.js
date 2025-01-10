@@ -2,7 +2,6 @@ import {
 	GET_CONTACT_CAMPAIGN,
 	CONVERT_TAX_OWNER_TO_CONTACT,
 	TOGGLE_CONTACT_ACTIONS_PANEL,
-	SET_ACTIVE_MODULE_CONTACT,
 	CONVERT_MULTIPLE_OWNER_TO_CONTACT,
 } from 'store/type';
 
@@ -23,12 +22,6 @@ export const toggleContactActionsPanel = state => ({
 	payload: state,
 });
 
-export const setActiveModuleContact = payload => {
-	return {
-		type: SET_ACTIVE_MODULE_CONTACT,
-		payload,
-	};
-};
 export const convertMultipleOwnerToContactAction = {
 	STARTED: payload => ({ type: CONVERT_MULTIPLE_OWNER_TO_CONTACT.STARTED, payload }),
 	FULLFILLED: payload => ({ type: CONVERT_MULTIPLE_OWNER_TO_CONTACT.FULLFILLED, payload }),

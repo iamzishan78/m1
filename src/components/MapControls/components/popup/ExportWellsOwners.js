@@ -1,23 +1,26 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Drawer from '@material-ui/core/Drawer';
-import Button from '@material-ui/core/Button';
-import Switch from '@material-ui/core/Switch';
 import { makeStyles } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
-import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
-
-import { AppContext } from 'AppContext';
-import { getMapFilters, jsonToCSV, wellsToCSV } from 'utils/helper';
-import { NavigationContext } from 'components/Navigation/NavigationContext';
+import Drawer from '@material-ui/core/Drawer';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import Switch from '@material-ui/core/Switch';
 
 import { useApolloClient } from '@apollo/client';
+
+import { NavigationContext } from 'components/Navigation/NavigationContext';
+import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+
 import { drawController } from 'hookstate/drawStateController';
+
+import { getMapFilters, jsonToCSV, wellsToCSV } from 'utils/helper';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -92,7 +95,6 @@ const ExportWellsOwners = ({
 				userId: user.mongoId,
 			});
 		}
-		// eslint-disable-next-line
 	}, [includeFilter]);
 
 	useEffect(() => {
@@ -106,7 +108,6 @@ const ExportWellsOwners = ({
 				search,
 			});
 		}
-		// eslint-disable-next-line
 	}, [
 		includeFilter,
 		stateNav.operatorName,

@@ -1,12 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import SearchIcon from '@material-ui/icons/Search';
+import React, { useCallback, useEffect, useState } from 'react';
+
 import { Grid, Typography } from '@material-ui/core';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import SearchIcon from '@material-ui/icons/Search';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
 import { useLazyQuery } from '@apollo/client';
-import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
+import debounce from 'lodash/debounce';
+
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+
 const useStyles = makeStyles({
 	inputRoot: {
 		// backgroundColor: "#ffffff",
@@ -19,35 +24,54 @@ const useStyles = makeStyles({
 		},
 	},
 });
+
+const debouncedSearch = debounce((getDbData, searchTerm) => {
+	getDbData({
+		variables: {
+			index: 'documents_flat',
+			pagination: {
+				first: 50,
+				keep_alive: '1micros',
+			},
+			search: {
+				query: searchTerm ? `${searchTerm}*` : '',
+				fields: ['name.keyword'],
+			},
+		},
+	});
+}, 300);
+
 const AutoCompleteDocumentList = ({ onSelect, search, setSearch }) => {
+	const classes = useStyles();
 	const [documents, setDocuments] = useState([]);
 	const [value, setValue] = useState({ name: '', _id: null });
-	const [getESPaginatedList, { data: documentData }] = useLazyQuery(GET_ES_PAGINATED_LIST);
+	const [getDbData, { data: documentData }] = useLazyQuery(GET_DB_DATA);
+
+	const handleSearch = useCallback(searchTerm => debouncedSearch(getDbData, searchTerm), [getDbData]);
+
 	useEffect(() => {
-		getESPaginatedList({
-			variables: {
-				esIndex: 'documents_flat',
-				pagination: {
-					first: 50,
-					keep_alive: '1micros',
-				},
-				search: search ? `${search}*` : '',
-			},
-		});
-	}, [search]);
+		handleSearch(search);
+	}, [search, handleSearch]);
+
 	useEffect(() => {
-		if (documentData?.getESPaginatedList?.hits) {
-			setDocuments(documentData?.getESPaginatedList?.hits);
+		if (documentData?.getDbData?.hits) {
+			setDocuments(documentData?.getDbData?.hits);
 		}
 	}, [documentData]);
+
 	const onInputChange = e => {
 		setSearch(e.target.value);
 	};
+
+	const onBlur = () => {
+		setSearch('');
+	};
+
 	const onChange = value => {
 		setValue(value);
 		onSelect(value);
 	};
-	const classes = useStyles();
+
 	return (
 		<Autocomplete
 			id="searchDocumentList"
@@ -62,8 +86,11 @@ const AutoCompleteDocumentList = ({ onSelect, search, setSearch }) => {
 				if (option.inputValue) {
 					return option.name;
 				}
-				if (option?.name) return option.name;
-				else return '';
+				if (option?.name) {
+					return option.name;
+				} else {
+					return '';
+				}
 			}}
 			filterOptions={(options, value) => {
 				return options;
@@ -90,6 +117,7 @@ const AutoCompleteDocumentList = ({ onSelect, search, setSearch }) => {
 			onChange={(event, newValue) => {
 				onChange(newValue);
 			}}
+			onBlur={onBlur}
 			renderInput={params => (
 				<TextField
 					margin="dense"

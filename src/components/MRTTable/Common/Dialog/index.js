@@ -1,27 +1,35 @@
 import React, { memo } from 'react';
+
 import Dialog from '@material-ui/core/Dialog';
+
 import { useMutation } from '@apollo/client';
-import ExportContactsPurchaseAndOwners from 'components/MRTTable/Common/Dialog/ExportContactsPurchaseAndOwners';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
+import PropTypes from 'prop-types';
+
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
-import BuyContactsInfoDialogContent from 'components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
-import DeleteConfirmationDialogContent from './ConfirmationDialog/DeleteConfirmationDialog';
-import { GRID_GENERIC_REMOVE } from 'graphQL/useMutationCommonGridRemove';
 import Loader from 'components/Loaders';
-import CommentDialog from './CommentDialog';
-import TagDialog from './TagDialog';
-import ExportConfirmationDialog from './ConfirmationDialog/ExportConfirmation';
+import BuyContactsInfoDialogContent from 'components/MRTTable/Common/Components/BuyContactsInfoDialogContent';
+import ExportContactsPurchaseAndOwners from 'components/MRTTable/Common/Dialog/ExportContactsPurchaseAndOwners';
+
+import { GRID_GENERIC_REMOVE } from 'graphQL/useMutationCommonGridRemove';
+
 import { globalStateController } from 'hookstate/globalStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
+
+import CommentDialog from './CommentDialog';
+import DeleteConfirmationDialog from './ConfirmationDialog/DeleteConfirmationDialog';
+import ExportConfirmationDialog from './ConfirmationDialog/ExportConfirmationDialog';
+import TagDialog from './TagDialog';
 
 function AllDialogs(props) {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
 	const { type, ...rest } = stateValues.dialog || {};
-	const tableKey = rest?.tableKey;
+	const tableKey = rest?.tableKey || props.tableKey;
 
 	const {
-		stateValues: { refetchQueries },
-	} = tableController(props.tableKey).useState(['refetchQueries']);
+		stateValues: { refetchQueries, isClientSide },
+	} = tableController(props.tableKey).useState(['refetchQueries', 'isClientSide']);
 
 	const [gridGenericRemove] = useMutation(GRID_GENERIC_REMOVE, {
 		awaitRefetchQueries: true,
@@ -44,6 +52,12 @@ function AllDialogs(props) {
 	};
 
 	const deleteFunc = async dataToDelete => {
+		if (rest.deleteType === 'row') {
+			rest.deleteFunc?.(dataToDelete);
+
+			return;
+		}
+
 		Loader.createToast('deletion', 'Deletion in Progress');
 		const user = globalStateController.getValue('user');
 		const testCase = globalStateController.getValue('testCase');
@@ -63,9 +77,14 @@ function AllDialogs(props) {
 			res => {
 				if (res?.data?.gridGenericRemove) {
 					const { success, message } = res.data.gridGenericRemove;
-					if (success) Loader.successToast('deletion', message);
-					else Loader.errorToast('deletion', message);
-				} else Loader.errorToast('deletion', 'Failed to delete row (s)');
+					if (success) {
+						Loader.successToast('deletion', message);
+					} else {
+						Loader.errorToast('deletion', message);
+					}
+				} else {
+					Loader.errorToast('deletion', 'Failed to delete row (s)');
+				}
 				tableGlobalController.refetch();
 			},
 			() => {
@@ -81,16 +100,24 @@ function AllDialogs(props) {
 		}
 	};
 
+	if (rest?.tableKey && rest?.tableKey !== props?.tableKey) return null;
+
 	return (
 		<>
 			{type === 'tags' && (
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={false}>
-					<TagDialog {...rest} />
+					<TagDialog
+						{...rest}
+						refetch={isClientSide ? tableGlobalController.refetchAdditionalQueries : tableGlobalController.refetch}
+					/>
 				</Dialog>
 			)}
 			{type === 'comments' && (
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
-					<CommentDialog {...rest} />
+					<CommentDialog
+						{...rest}
+						refetch={isClientSide ? tableGlobalController.refetchAdditionalQueries : tableGlobalController.refetch}
+					/>
 				</Dialog>
 			)}
 
@@ -140,6 +167,7 @@ function AllDialogs(props) {
 					tableKey={tableKey}
 					header={rest.header}
 					onClose={handleCloseDialog}
+					controller={props.controller}
 				>
 					{`Do you want to Export ${rest.isSomeRowsSelected ? 'Selected Row (s)' : ' Complete Grid'} ?`}
 				</ExportConfirmationDialog>
@@ -147,18 +175,35 @@ function AllDialogs(props) {
 
 			{type === 'deleteGrid' && (
 				<Dialog open onClose={handleCloseDialog} maxWidth="xs">
-					<DeleteConfirmationDialogContent
+					<DeleteConfirmationDialog
 						header="Delete row (s)"
 						onClose={handleCloseDialog}
 						deleteFunc={deleteFunc}
 						deletedData={rest?.deletedData}
 					>
 						{`Do you want to delete the selected row ${rest?.Ids?.length > 1 ? 's' : ''}?`}
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
+			)}
+
+			{type === 'multipleOwnerToContact' && (
+				<MultipleOwnerToContactDrawerContainer
+					jobType={rest?.jobType}
+					jobName={rest?.jobName}
+					onClose={handleCloseDialog}
+					rows={rest?.rows}
+					onSuccess={() => {}}
+					setRows={() => {}}
+				/>
 			)}
 		</>
 	);
 }
+
+AllDialogs.propTypes = {
+	tableKey: PropTypes.string.isRequired,
+	columns: PropTypes.array,
+	controller: PropTypes.object,
+};
 
 export default memo(AllDialogs);

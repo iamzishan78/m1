@@ -1,9 +1,11 @@
 /* eslint-disable no-undef */
 import MRTTable from 'components/MRTTable';
-import { basic_timeouts } from '../../../cypress/cypressUtils/data';
+
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
-import ldata from '../../fixtures/ldata.json';
+
+import { basic_timeouts } from '../../../cypress/cypressUtils/data';
 import { headers } from '../../cypressUtils/cypressHeaders';
+import ldata from '../../fixtures/ldata.json';
 
 const updateContactPayload = {
 	operationName: 'UpdateContact',
@@ -33,7 +35,7 @@ describe('Campaign Contact Table', () => {
 			headers: headers,
 			body: updateContactPayload,
 		}).then(response => {
-			cy.interceptAndWait(['getESSimpleSearch', 'contacts_flat'], () => {
+			cy.interceptAndWait(['getDbData', 'contacts_flat'], () => {
 				cy.viewport(1600, 1200).mount(
 					<MRTTable
 						name="CampaignContactTable"
@@ -52,7 +54,7 @@ describe('Campaign Contact Table', () => {
 	});
 
 	it('checks default filter is not missing in job', () => {
-		cy.get(`[data-testid="over-ride-select-all-div"] input`).click();
+		cy.get('[data-testid="over-ride-select-all-div"] input').click();
 		cy.get('.MuiButtonBase-root[data-testid="export-contact-and-purchse-icon-button"]').click();
 
 		cy.interceptAndWait(

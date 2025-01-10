@@ -1,5 +1,5 @@
-import { MapboxLayer } from '@deck.gl/mapbox';
 import { GeoJsonLayer, ScatterplotLayer, LineLayer, PolygonLayer, TextLayer } from '@deck.gl/layers';
+import { MapboxLayer } from '@deck.gl/mapbox';
 import { isEqual } from 'lodash';
 
 const Layers = {
@@ -50,7 +50,9 @@ export default class DeckGlLayer {
 	constructor({ layerId, type, beforeLayer, props }) {
 		const { component, defaultProps } = Layers[type] || {};
 
-		if (!component) return;
+		if (!component) {
+			return;
+		}
 
 		const layer = new MapboxLayer({
 			...defaultProps,
@@ -70,10 +72,14 @@ export default class DeckGlLayer {
 
 	static moveLayer = (layerId, beforeLayer) => {
 		setTimeout(() => {
-			if (!window.mapRef?.getLayer(layerId)) return;
+			if (!window.mapRef?.getLayer(layerId)) {
+				return;
+			}
 
 			if (beforeLayer) {
-				if (window.mapRef?.getLayer(beforeLayer)) window.mapRef?.moveLayer(layerId, beforeLayer);
+				if (window.mapRef?.getLayer(beforeLayer)) {
+					window.mapRef?.moveLayer(layerId, beforeLayer);
+				}
 				return;
 			}
 
@@ -83,7 +89,9 @@ export default class DeckGlLayer {
 
 	static moveLayerToTop = layerId => {
 		setTimeout(() => {
-			if (!window.mapRef?.getLayer(layerId)) return;
+			if (!window.mapRef?.getLayer(layerId)) {
+				return;
+			}
 
 			window.mapRef?.moveLayer(layerId);
 		}, 100);
@@ -91,29 +99,38 @@ export default class DeckGlLayer {
 
 	addLayer = (layer = this.layer) => {
 		setTimeout(() => {
-			if (!layer || window.mapRef?.getLayer(this.layerId)) return;
+			if (!layer || window.mapRef?.getLayer(this.layerId)) {
+				return;
+			}
 			window.mapRef?.addLayer(layer);
 		}, 0);
 	};
 
 	static removeLayer = layerId => {
-		if (!window.mapRef?.getLayer(layerId)) return;
+		if (!window.mapRef?.getLayer(layerId)) {
+			return;
+		}
 
 		window.mapRef?.removeLayer(layerId);
 	};
 
 	static updateLayer = (updatedProps, layer) => {
-		if (!layer || !layer.setProps) return;
+		if (!layer || !layer.setProps) {
+			return;
+		}
 
 		const propsToUpdate = {};
 
 		Object.entries(updatedProps).forEach(([key, value]) => {
-			if (!isEqual(layer.props[key], value)) propsToUpdate[key] = value;
+			if (!isEqual(layer.props[key], value)) {
+				propsToUpdate[key] = value;
+			}
 		});
 
-		if (Object.keys(propsToUpdate).length > 0)
+		if (Object.keys(propsToUpdate).length > 0) {
 			layer.setProps({
 				...propsToUpdate,
 			});
+		}
 	};
 }

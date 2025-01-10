@@ -1,22 +1,25 @@
 import React, { useCallback, useEffect } from 'react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { useSelector } from 'react-redux';
+
+import { MenuItem, Select } from '@material-ui/core';
+import Checkbox from '@material-ui/core/Checkbox';
 import Paper from '@material-ui/core/Paper';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Checkbox from '@material-ui/core/Checkbox';
-import { anyToDate } from '@amcharts/amcharts4/.internal/core/utils/Utils';
 // queries
-import { MenuItem, Select } from '@material-ui/core';
-import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
-import { useSelector } from 'react-redux';
+
+import { anyToDate } from '@amcharts/amcharts4/.internal/core/utils/Utils';
+
 import { NavigationContext } from 'components/Navigation/NavigationContext';
+
 import { jobController } from 'hookstate/jobStateController';
-// import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
-// import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
+
+import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
 
 const useStyles = makeStyles({
 	root: {
@@ -223,7 +226,7 @@ export default function M1neralHeaders() {
 						return_obj['parcel.orri'],
 						workspaceSettings
 					);
-					if (!!!return_obj['parcel.nra']) {
+					if (!return_obj['parcel.nra']) {
 						return_obj['parcel.nra'] = nra;
 						return_obj['parcel.isOverridden'] = true;
 					} else {
@@ -252,8 +255,12 @@ export default function M1neralHeaders() {
 				}
 				//// mandatory fields
 
-				if (!return_obj['leadSource']) return_obj['leadSource'] = createLeadSource();
-				if (!return_obj['status']) return_obj['status'] = 'Lead';
+				if (!return_obj['leadSource']) {
+					return_obj['leadSource'] = createLeadSource();
+				}
+				if (!return_obj['status']) {
+					return_obj['status'] = 'Lead';
+				}
 
 				if (!return_obj['entityDetail.name']) {
 					if (return_obj['entityDetail.firstName'] && return_obj['entityDetail.lastName']) {

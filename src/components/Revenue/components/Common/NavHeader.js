@@ -1,11 +1,13 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { makeStyles } from '@material-ui/styles';
+import { useHistory } from 'react-router-dom';
+
 import { Typography, Grid, Breadcrumbs } from '@material-ui/core';
-import { NavigateNext as NavigateNextIcon } from '@material-ui/icons';
-import queryString from 'query-string';
 import Link from '@material-ui/core/Link';
+import { NavigateNext as NavigateNextIcon } from '@material-ui/icons';
+import { makeStyles } from '@material-ui/styles';
+
+import queryString from 'query-string';
 
 // Components
 import ProfileMenu from 'components/Profile/ProfileMenu';
@@ -93,7 +95,9 @@ export default function DetailComponents(props) {
 							<Typography
 								className={classes.title}
 								onClick={() => {
-									if (onClickFunc) onClickFunc();
+									if (onClickFunc) {
+										onClickFunc();
+									}
 								}}
 							>
 								{title}

@@ -1,10 +1,13 @@
 import React from 'react';
+
 import { MenuItem, Box } from '@mui/material';
 
-import { tableController } from 'hookstate/tableController';
+import PropTypes from 'prop-types';
+
 import { tableESSimpleFilterModes } from '../utils/data';
+
 let previousFilter = '';
-function FilterModeMenuItems({ option, tableKey, name, onSelectFilterMode }) {
+function FilterModeMenuItems({ option, tableKey, name, onSelectFilterMode, controller }) {
 	const mode = tableESSimpleFilterModes[option];
 	return (
 		<MenuItem
@@ -12,23 +15,25 @@ function FilterModeMenuItems({ option, tableKey, name, onSelectFilterMode }) {
 			onClick={() => {
 				const isBetween = previousFilter.includes('between');
 				const isSingleMulti = ['singleselect', 'multiselect'].includes(mode.option);
+				const isPrevSingleMulti = ['singleselect', 'multiselect'].includes(previousFilter);
 
 				if (isBetween && isSingleMulti) {
-					tableController(tableKey).setFilterMode(name, 'equals');
+					controller(tableKey).setFilterMode(name, 'equals');
 					setTimeout(() => {
-						tableController(tableKey).setFilterMode(name, mode.option);
+						controller(tableKey).setFilterMode(name, mode.option);
 						onSelectFilterMode(mode.option);
 					}, 0);
 				} else {
-					tableController(tableKey).setFilterMode(name, mode.option);
+					controller(tableKey).setFilterMode(name, mode.option);
 					onSelectFilterMode(mode.option);
 				}
 
-				if (isSingleMulti) tableController(tableKey).clearFilter(name);
+				if (isSingleMulti || isPrevSingleMulti) {
+					controller(tableKey).clearFilter(name);
+				}
 
 				previousFilter = mode.option;
 			}}
-			// selected={option === filterOption}
 			sx={{
 				alignItems: 'center',
 				display: 'flex',
@@ -43,5 +48,13 @@ function FilterModeMenuItems({ option, tableKey, name, onSelectFilterMode }) {
 		</MenuItem>
 	);
 }
+
+FilterModeMenuItems.propTypes = {
+	option: PropTypes.string.isRequired, // The key to access the mode in tableESSimpleFilterModes
+	tableKey: PropTypes.string.isRequired, // The key identifying the table
+	name: PropTypes.string.isRequired, // The name of the filter field
+	onSelectFilterMode: PropTypes.func.isRequired, // Callback when a filter mode is selected
+	controller: PropTypes.func.isRequired, // Function to manage filter state
+};
 
 export default FilterModeMenuItems;

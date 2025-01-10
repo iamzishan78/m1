@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo } from 'react';
-import { get } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
-import { makeStyles } from '@material-ui/styles';
-import AutorenewIcon from '@material-ui/icons/Autorenew';
+
 import { Grid, IconButton, InputAdornment, TextField, Typography } from '@material-ui/core';
+import AutorenewIcon from '@material-ui/icons/Autorenew';
+import { makeStyles } from '@material-ui/styles';
+
+import { get } from 'lodash';
 
 // Components
 const useStyles = makeStyles(theme => ({
@@ -112,13 +114,18 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
 	}, [agreementDetails]);
 
 	const offClickHandler = (key, value) => {
-		if (agreementDetails[key] === value) return;
+		if (agreementDetails[key] === value) {
+			return;
+		}
 		const fieldValue = {
 			overridden: parseFloat(value) !== parseFloat(calculatedValues[key]),
 			value,
 		};
-		if (tractOwners) updateAgreement(key, fieldValue, key);
-		else updateAgreement(key, value);
+		if (tractOwners) {
+			updateAgreement(key, fieldValue, key);
+		} else {
+			updateAgreement(key, value);
+		}
 	};
 
 	const handleKeyDown = e => {

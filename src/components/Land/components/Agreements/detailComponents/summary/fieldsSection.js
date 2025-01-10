@@ -1,8 +1,8 @@
 import React, { useEffect, useState, Fragment, useContext } from 'react';
-import { get } from 'lodash';
-import uniqBy from 'lodash/uniqBy';
-import { useLazyQuery } from '@apollo/client';
 import { Controller } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+
 import {
 	Grid,
 	TextField,
@@ -14,34 +14,39 @@ import {
 	makeStyles,
 	InputAdornment,
 } from '@material-ui/core';
-import AutorenewIcon from '@material-ui/icons/Autorenew';
-import { useStyles as summaryStyles } from '../style';
 import AddIcon from '@material-ui/icons/Add';
+import AutorenewIcon from '@material-ui/icons/Autorenew';
 import CreateTwoToneIcon from '@material-ui/icons/CreateTwoTone';
-import fieldsData from './data';
 import EditIcon from '@material-ui/icons/Edit';
 
-import keys from 'components/Shared/SpreadsheetGrid/kit/keymap';
-import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
-import MetaField from 'components/Table/helpers/MetaField';
-import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
-import { copy } from 'utils/helper';
+import { useLazyQuery } from '@apollo/client';
+import { get } from 'lodash';
+import uniqBy from 'lodash/uniqBy';
 
-import { AppContext } from 'AppContext';
-import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
-import NumberField from 'components/Shared/components/Fields/NumberField';
-
-import { useHistory } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { showInfoMessage } from 'actions';
-import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
-import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
+import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
 import CountyField from 'components/Revenue/components/Properties/DetailComponents/County';
-import { popupController } from 'hookstate/popupStateController';
+import StateField from 'components/Revenue/components/Properties/DetailComponents/State';
+import { getCustomMetaFields } from 'components/Shared/Agreement/helpers';
 import CustomTextField from 'components/Shared/components/Fields/CustomTextField';
 import DateField from 'components/Shared/components/Fields/DateField';
+import NumberField from 'components/Shared/components/Fields/NumberField';
+import AutoCompleteTypeComponent from 'components/Shared/Forms/Fields/AutoCompleteType';
 
-const useStyles = makeStyles(theme => ({
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+
+import { popupController } from 'hookstate/popupStateController';
+
+import { KEYBOARD_KEYS, TO_FIXED } from 'utils/consts';
+import { copy } from 'utils/helper';
+import MetaField from 'utils/MetaField';
+
+import { showInfoMessage } from 'actions';
+import { AppContext } from 'AppContext';
+
+import { useStyles as summaryStyles } from '../style';
+import fieldsData from './data';
+
+const useStyles = makeStyles(() => ({
 	valueOveridden: {
 		'& .MuiInputBase-input': {
 			color: '#01B0F0 !important',
@@ -77,12 +82,13 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 
 	useEffect(() => {
 		document.addEventListener('keydown', onGlobalKeyDown, false);
-		document.addEventListener('blur', e => {});
+		document.addEventListener('blur', () => {});
 	}, []);
 
 	useEffect(() => {
-		if (agreementDetails?._id && !agreementDetails?.agreementNumber)
+		if (agreementDetails?._id && !agreementDetails?.agreementNumber) {
 			dispatch(showInfoMessage('Agreement Number is required'));
+		}
 	}, [agreementDetails?._id, agreementDetails?.agreementNumber, dispatch]);
 
 	useEffect(() => {
@@ -99,7 +105,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 	}, [stateApp.user?.mongoId, getMetaData]);
 
 	useEffect(() => {
-		return history.listen(location => {
+		return history.listen(() => {
 			if (!agreementDetails?.agreementNumber) {
 				popupController.updateState({
 					selectedShape: null,
@@ -124,12 +130,14 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 	const onGlobalKeyDown = e => {
 		const id = e?.target?.id;
 
-		if (e.keyCode === keys.TAB) {
+		if (e.keyCode === KEYBOARD_KEYS.TAB) {
 			if (e.shiftKey) {
 				if (!document.getElementById(`field-${Number(id.split('-')[1]) - 1}`)) {
 					e.preventDefault();
 					return;
-				} else document.getElementById(`field-${Number(id.split('-')[1])}`).focus();
+				} else {
+					document.getElementById(`field-${Number(id.split('-')[1])}`).focus();
+				}
 			}
 		}
 	};
@@ -137,7 +145,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 	const addAgreementCustomData = data => {
 		const customData = copy(agreementDetails.custom_data) ?? {};
 		data.forEach(d => {
-			if (!customData[d.name]) customData[d.name] = null;
+			if (!customData[d.name]) {
+				customData[d.name] = null;
+			}
 		});
 		updateAgreement('custom_data', customData);
 	};
@@ -368,7 +378,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 												<TextField
 													{...props}
 													id={`field-${field.key}`}
-													value={parseFloat(props.value).toFixed(2)}
+													value={parseFloat(props.value).toFixed(TO_FIXED)}
 													className={
 														isAcquisitionCostOverridden ? overrideClasses.valueOveridden : overrideClasses.valueNormal
 													}
@@ -378,14 +388,14 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 													inputRef={props.ref}
 													onWheel={e => e.target.blur()}
 													onChange={e => {
-														const toFixedValue = parseFloat(e.target.value).toFixed(2);
+														const toFixedValue = parseFloat(e.target.value).toFixed(TO_FIXED);
 														const calculatedAcquisitionCost = parseFloat(
 															agreementDetails?.calculated?.totalAcquisitionCost || 0
-														).toFixed(2);
+														).toFixed(TO_FIXED);
 														props.onChange(toFixedValue);
 														setIsAcquisitionCostOverridden(toFixedValue !== calculatedAcquisitionCost);
 													}}
-													onBlur={e =>
+													onBlur={() =>
 														offClickHandler(field.key, {
 															value: Number(props.value),
 															overridden: isAcquisitionCostOverridden,
@@ -401,7 +411,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 																		onClick={() => {
 																			const totalAcquisitionCost = parseFloat(
 																				agreementDetails?.calculated?.totalAcquisitionCost || 0
-																			).toFixed(2);
+																			).toFixed(TO_FIXED);
 																			props.onChange(totalAcquisitionCost);
 																			offClickHandler(field.key, {
 																				value: Number(totalAcquisitionCost),

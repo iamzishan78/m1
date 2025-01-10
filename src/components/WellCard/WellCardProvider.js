@@ -1,7 +1,7 @@
 import React from 'react';
-import { WellCardContextProvider } from './WellCardContext';
 
 import WellCard from './WellCard';
+import { WellCardContextProvider } from './WellCardContext';
 
 function WellCardProvider(props) {
 	return (

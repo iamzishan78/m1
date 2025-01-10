@@ -1,15 +1,19 @@
 import React, { useEffect, useContext } from 'react';
-import { Grid, TextField } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
-import { useLazyQuery } from '@apollo/client';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import moment from 'moment';
-import get from 'lodash/get';
 
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import { AppContext } from 'AppContext';
+import { Grid, TextField } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { makeStyles } from '@material-ui/styles';
+
+import { useLazyQuery } from '@apollo/client';
+import get from 'lodash/get';
+import moment from 'moment';
+
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+
 import { CUSTOM_DATES } from 'utils/data';
 import { copy, getFilters, handleCustomDateTypeChange } from 'utils/helper';
+
+import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	actionBar: {
@@ -64,7 +68,9 @@ export default function CustomDatesActivities({
 }) {
 	const classes = useStyles();
 	useEffect(() => {
-		if (minDate) handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+		if (minDate) {
+			handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [minDate]);
 
@@ -200,7 +206,7 @@ export default function CustomDatesActivities({
 const CampaignStatusFilter = ({ esIndex, tableFilters, appliedFilters, searchFields, setAppliedFilters }) => {
 	const [stateApp] = useContext(AppContext);
 
-	const [getCampaign, { data: filtersData }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
+	const [getCampaign, { data: filtersData }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 
 	useEffect(() => {
 		const filterKey = 'status.keyword';
@@ -243,7 +249,9 @@ const CampaignStatusFilter = ({ esIndex, tableFilters, appliedFilters, searchFie
 
 				filters = filters.filter(filter => filter.field !== 'status.keyword');
 
-				if (reason === 'clear' || !selectedValue?.key) return setAppliedFilters(filters);
+				if (reason === 'clear' || !selectedValue?.key) {
+					return setAppliedFilters(filters);
+				}
 
 				filters.push({ field: 'status.keyword', value: selectedValue.key });
 
@@ -251,7 +259,7 @@ const CampaignStatusFilter = ({ esIndex, tableFilters, appliedFilters, searchFie
 			}}
 			value={appliedFilters.status}
 			// inputValue={search?.toString()}
-			options={get(filtersData, 'getESSimpleFilter.hits', []).filter(d => d.key)}
+			options={get(filtersData, 'getDbFilters.hits', []).filter(d => d.key)}
 			getOptionSelected={(option, value) => option.key === value}
 			getOptionLabel={option => option?.key?.toString().replace(/^,|,$/gm, '')}
 			renderInput={params => (
@@ -276,7 +284,7 @@ const CampaignStatusFilter = ({ esIndex, tableFilters, appliedFilters, searchFie
 const SupervisorFilter = ({ esIndex, tableFilters, appliedFilters, searchFields, setAppliedFilters }) => {
 	const [stateApp] = useContext(AppContext);
 
-	const [getQualifiers, { data: filtersData }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
+	const [getQualifiers, { data: filtersData }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 
 	useEffect(() => {
 		const filterKey = 'owner.name.keyword';
@@ -319,7 +327,9 @@ const SupervisorFilter = ({ esIndex, tableFilters, appliedFilters, searchFields,
 
 				filters = filters.filter(filter => filter.field !== 'owner.name.keyword');
 
-				if (reason === 'clear' || !selectedValue?.key) return setAppliedFilters(filters);
+				if (reason === 'clear' || !selectedValue?.key) {
+					return setAppliedFilters(filters);
+				}
 
 				filters.push({ field: 'owner.name.keyword', value: selectedValue.key });
 
@@ -327,7 +337,7 @@ const SupervisorFilter = ({ esIndex, tableFilters, appliedFilters, searchFields,
 			}}
 			value={appliedFilters.status}
 			// inputValue={search?.toString()}
-			options={get(filtersData, 'getESSimpleFilter.hits', [])}
+			options={get(filtersData, 'getDbFilters.hits', [])}
 			getOptionSelected={(option, value) => option.key === value}
 			getOptionLabel={option => option?.key?.toString().replace(/^,|,$/gm, '')}
 			renderInput={params => (

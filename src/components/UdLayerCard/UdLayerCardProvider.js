@@ -1,7 +1,7 @@
 import React from 'react';
-import { UdLayerCardContextProvider } from './UdLayerCardContext';
 
 import UdLayerCard from './UdLayerCard';
+import { UdLayerCardContextProvider } from './UdLayerCardContext';
 
 function UdLayerCardProvider(props) {
 	return (

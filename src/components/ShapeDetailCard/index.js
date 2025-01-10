@@ -1,10 +1,12 @@
 import React from 'react';
-import UnitCard from 'components/ShapeDetailCard/Unit/UnitCard';
+
+import { drawBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 import ParcelCard from 'components/ParcelsDetailCard/ParcelCard';
 import AgreementCard from 'components/ShapeDetailCard/Agreement/AgreementCard';
+import UnitCard from 'components/ShapeDetailCard/Unit/UnitCard';
 import { agreementLayers } from 'components/Shared/functions/shapeLayer';
+
 import { popupController } from 'hookstate/popupStateController';
-import { drawBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
 export default function ShapeCardProvider(props) {
 	const popupState = popupController.useState(['selectedShape', 'selectedParcel']);

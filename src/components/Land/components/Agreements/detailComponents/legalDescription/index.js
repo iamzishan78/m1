@@ -1,16 +1,22 @@
-import React, { useState, useEffect, useRef } from 'react';
-import _ from 'underscore';
+import React, { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { makeStyles } from '@material-ui/styles';
+
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
+import { makeStyles } from '@material-ui/styles';
+
+import PropTypes from 'prop-types';
+import _ from 'underscore';
+
+import RelatedTractsTable from 'components/Common/RelatedTables/Tracts';
+import AgreementLegalDescriptionFields from 'components/Land/components/Agreements/detailComponents/legalDescription/FieldsSection';
+
+import { tableController } from 'hookstate/tableController';
+
 import { useStyles as customStyles } from '../style';
 
-import AgreementLegalDescriptionFields from 'components/Land/components/Agreements/detailComponents/legalDescription/FieldsSection';
-import AgreementOwnersTractsTable from 'components/Table/Agreement/AgreementOwnersTractsTable';
-
 // Components
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		padding: '10px 25px',
 	},
@@ -60,25 +66,34 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-export default function LagalDescription({ agreementDetails, uniObj, updateAgreement }) {
+export default function LagalDescription({ agreementDetails, agreementId, uniObj, updateAgreement }) {
 	const classes = useStyles();
 	const customClasses = customStyles();
-	const [tractOwners, setTractOwners] = useState();
 	const { reset } = useForm();
-	const [tractsNumber, setTractsNumber] = useState(0);
+	const tableState = tableController('RelatedTractsTable').useState(['data']).stateValues;
 
 	useEffect(() => {
-		if (!_.isEmpty(agreementDetails)) reset(agreementDetails);
+		if (!_.isEmpty(agreementDetails)) {
+			reset(agreementDetails);
+		}
 	}, [reset, agreementDetails]);
 
-	// const offClickHandler = (key, value) => updateAgreement(key, value);
-
-	// const handleKeyDown = (e) => {
-	//   console.log(e.keyCode);
-	//   if (e.keyCode === 38 || e.keyCode === 40) {
-	//     e.preventDefault();
-	//   }
-	// };
+	const RelatedTractsOverrideMeta = useMemo(
+		() => ({
+			defaultHeader: {
+				label: 'Related Tracts',
+			},
+			maxTableHeight: 'calc(50vh - 100px)',
+			defaultFilters: [{ field: 'shape._id', value: agreementId }],
+			customProps: { customLayer: agreementDetails?.customLayer, shapeType: 'Agreement' },
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: agreementId },
+			},
+			customValue: { parentRecord: agreementId },
+		}),
+		[agreementId]
+	);
 
 	return (
 		<div className={classes.root}>
@@ -89,14 +104,14 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
 							<ExpandMoreIcon fontSize="large" />
 						</IconButton>
 					}
-					onClick={e => {}}
+					onClick={() => {}}
 				>
 					<Grid container direction="row" justify="space-between" alignItems="center">
 						<Grid item xs={6} className={classes.accordionHeading}>
 							<Typography variant="h5" className={customClasses.titleText}>
 								Legal Description
 							</Typography>
-							<Chip color="info" label={tractsNumber} />
+							<Chip color="info" label={tableState?.data?.total} />
 						</Grid>
 					</Grid>
 				</AccordionSummary>
@@ -106,22 +121,16 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
 							<AgreementLegalDescriptionFields
 								agreementDetails={agreementDetails}
 								updateAgreement={updateAgreement}
-								tractOwners={tractOwners}
+								tractOwners={tableState?.data?.rows}
 							/>
 						</Grid>
 						{uniObj && (
-							<Grid item xs={12} style={{ padding: '35px 20px 0px 0px' }}>
-								<AgreementOwnersTractsTable
-									id="AgreementOwnersTractsTable"
-									setRecord={setTractOwners}
-									customLayer={uniObj}
+							<Grid item xs={12} style={{ padding: '35px 50px 0px 0px' }}>
+								<RelatedTractsTable
+									id="relatedTractsTable"
+									overrideMeta={RelatedTractsOverrideMeta}
 									shapeType="Agreement"
-									header={'Tracts'}
-									setTractsNumber={setTractsNumber}
-									dense
-									commentType="Ownership"
-									targetLabel="Tract"
-									portal={'#agreementDetailsDrawer'}
+									customLayer={uniObj}
 								/>
 							</Grid>
 						)}
@@ -131,3 +140,10 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
 		</div>
 	);
 }
+
+LagalDescription.propTypes = {
+	agreementDetails: PropTypes.object,
+	agreementId: PropTypes.string,
+	uniObj: PropTypes.object,
+	updateAgreement: PropTypes.func,
+};

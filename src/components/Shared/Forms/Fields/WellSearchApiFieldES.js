@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { useLazyQuery } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { useLocation } from 'react-router-dom';
+
 import { Typography } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import FormControl from '@material-ui/core/FormControl';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
+import { useLazyQuery } from '@apollo/client';
 import debounce from 'lodash/debounce';
 
 // Queries
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
-import { useLocation } from 'react-router-dom';
+
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles(theme => ({
 	secondaryText: {
@@ -33,12 +35,12 @@ function WellSearchApiField(props) {
 	const [selectedWell, setSelectedWell] = useState(null);
 	const [focused, setFocused] = useState(false);
 
-	const [getESSimpleSearch, { data: constDataWells }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: 'no-cache' });
+	const [getDbData, { data: constDataWells }] = useLazyQuery(GET_DB_DATA, { fetchPolicy: 'no-cache' });
 	// searching wells
 	const callWellESSearch = React.useMemo(
 		() =>
 			debounce((request, callback) => {
-				getESSimpleSearch({
+				getDbData({
 					variables: {
 						index: 'platformData:wells',
 						pagination: {
@@ -59,7 +61,7 @@ function WellSearchApiField(props) {
 
 	// setting the wells in set
 	useEffect(() => {
-		const allESWell = constDataWells?.getESSimpleSearch?.hits;
+		const allESWell = constDataWells?.getDbData?.hits;
 		setFoundWells(allESWell);
 	}, [constDataWells]);
 

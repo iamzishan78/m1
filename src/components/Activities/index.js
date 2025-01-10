@@ -2,10 +2,12 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Switch, Route, useLocation } from 'react-router-dom';
 
-import QuickActionPanel from './QuickActionPanel';
-import { toggleQuickActionsPanel, setActiveModule } from 'store/actions/commonActions';
 import * as Components from 'components/Activities/Components';
 import { replaceLinkId } from 'components/Shared/functions';
+
+import { toggleQuickActionsPanel, setActiveModule } from 'store/actions/commonActions';
+
+import QuickActionPanel from './QuickActionPanel';
 import './index.css';
 
 const SIDE_PANEL_MENU_ITEMS_LIST = {

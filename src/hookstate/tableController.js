@@ -1,59 +1,50 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
+
 import { hookstate } from '@hookstate/core';
 import _, { get, isEqual, isEmpty, pull } from 'lodash';
-import { copy, deepEqual, formatDate } from 'components/Shared/functions';
-import { hookStateController } from 'hookstate/hookStateController';
-import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import { globalStateController } from 'hookstate/globalStateController';
-import ReactSelectField from 'components/MRTTable/Common/MetaData/ReactSelectField';
+
+import { extractUniqueFilters, filterValidFilters } from 'components/Map/DeckGL/helpers/common';
+import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController';
 import CustomFieldText from 'components/MRTTable/Common/MetaData/CustomFieldText';
 import { metaDataColumnStateController } from 'components/MRTTable/Common/MetaData/MetaDataColumnsController';
-import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
-import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController';
-import { formatGridViewToMRT } from 'components/MRTTable/utils/helper';
-import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
+import ReactSelectField from 'components/MRTTable/Common/MetaData/ReactSelectField';
 import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
-import { handleMRTSchema, handleVisiblityMenu } from './helpers';
-import { validateUrl } from 'utils/helper';
-import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
-import { extractUniqueFilters } from 'components/Map/DeckGL/helpers/common';
+import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import { columnFilterModesFnRefs } from 'components/MRTTable/utils/filterModeMenu';
+import { formatGridViewToMRT } from 'components/MRTTable/utils/helper';
+import { copy, deepEqual, formatDate } from 'components/Shared/functions';
+import { defaultHandleDefaultView } from 'components/Shared/GridView';
 import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
+import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
+
+import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
+import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { hookStateController } from 'hookstate/hookStateController';
+
+import { compareObjects, validateUrl } from 'utils/helper';
+
+import { handleMRTSchema, handleVisiblityMenu } from './helpers';
+import { tableESState, tableGlobalState, tableInitialState } from './initialStates';
 
 function isDateFormat(inputString) {
-	// Regular expression for MM/DD/YYYY format
-	const mmddyyy = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)\d\d$/;
-	const mmddyy = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d\d$/;
+	try {
+		const date = new Date(inputString);
+		date.toISOString();
+	} catch {
+		return false;
+	}
+
+	// Regular expression for MM/DD/YYYY or MM/DD/YY format
+	const mmddyyyy = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{1,7}$/; // Allows 1 to 7 digits for the year
+	const mmddyy = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{2}$/; // Two-digit year format
 
 	// Check if the inputString matches the date format
-	return mmddyyy.test(inputString) || mmddyy.test(inputString);
+	return mmddyyyy.test(inputString) || mmddyy.test(inputString);
 }
-
-const initialState = {
-	defaultFilters: [],
-	customProps: [],
-	filters: [],
-	sorting: [],
-	searchFields: [],
-	groupedField: {},
-	grouping: [],
-	footerProps: [],
-	ExternalFilter: [],
-	defaultSort: {},
-	columnOrdering: [],
-	columnPinning: {
-		left: [],
-	},
-	isIncludeInactive: false,
-	gridView: {},
-	showTypes: false,
-};
-
-export const tableESState = {};
-export const tableGlobalState = hookstate({
-	refetch: false,
-	reInitialized: false,
-});
 
 async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyChange, tableKey) {
 	const _user = globalStateController.getValue('user');
@@ -71,7 +62,7 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 	const metaDataTableSchema = data.map((item, index) => {
 		const key = item?.esKey.replaceAll('.keyword', '');
 		return {
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			...item,
 			name: `${key}.keyword`,
 			id: key,
@@ -104,12 +95,15 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 				}
 
 				if (item?.type === 'text') {
-					if (validateUrl(value))
+					const MAX_TEXT_SIZE = 40;
+
+					if (validateUrl(value)) {
 						return (
 							<a href={value} target="_blank" rel="noreferrer">
-								{value?.length > 40 ? value?.slice(0, 40) + '...' : value}
+								{value?.length > MAX_TEXT_SIZE ? value?.slice(0, MAX_TEXT_SIZE) + '...' : value}
 							</a>
 						);
+					}
 					return (
 						<CustomFieldText
 							value={value}
@@ -157,7 +151,9 @@ async function fetchGridViews(client, module, tableKey, gridViewOverride) {
 	let defaultDisplay = allGridViews?.find(obj => obj.name === gridViewOverride);
 
 	// If no override is found or provided, attempt to find a default grid view for the user.
-	if (!defaultDisplay) defaultDisplay = allGridViews?.find(obj => obj.defaultDisplayBy?.includes(user?._id));
+	if (!defaultDisplay) {
+		defaultDisplay = allGridViews?.find(obj => obj.defaultDisplayBy?.includes(user?._id));
+	}
 
 	// Return the determined default or overridden grid view configuration.
 	return defaultDisplay;
@@ -169,6 +165,7 @@ const tableESStateControllerHandler = state => ({
 		{
 			esIndex,
 			layerIdentifier,
+			layerSchema,
 			pageSize,
 			defaultSort,
 			isIncludeInactive,
@@ -178,8 +175,10 @@ const tableESStateControllerHandler = state => ({
 			defaultFlterMode,
 			defaultFilters,
 			customProps = {},
+			isClientSide = false,
+			modelName,
 			isSelectAllAllowed = true,
-			isSelectall,
+			isAllRowsSelected,
 			search,
 			fetchMetaData,
 			onCustomKeyChange,
@@ -190,21 +189,25 @@ const tableESStateControllerHandler = state => ({
 			enableHiding = true,
 			refetchQueries = [],
 			globalFilter,
+			excludeFields,
 			...rest
 		},
 		client
 	) => {
-		if (state.TableSchema.get()) return;
+		if (state.TableSchema.get()) {
+			return;
+		}
 
 		let _Schema = TableSchema;
-		if (!rest.isGeneric)
+		if (!rest.isGeneric && !isClientSide && !rest.enableEditing && !rest?.disableRowSelection) {
 			_Schema.unshift({
 				...CommonSchema.SELECT_SOME,
 				Header: () => <TableHeaderMoreOptions tableKey={tableKey} />,
 				Cell: ({ row }) => {
+					// eslint-disable-next-line no-use-before-define
 					const tableState = tableController(tableKey).useState(['mrtTableRef']);
 					const tableStateValues = tableState.stateValues;
-					// eslint-disable-next-line react/jsx-pascal-case
+
 					return (
 						<MRTSelectCheckboxOverRide
 							row={row}
@@ -215,6 +218,7 @@ const tableESStateControllerHandler = state => ({
 					);
 				},
 			});
+		}
 
 		if (fetchMetaData) {
 			_Schema = await fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyChange, tableKey);
@@ -224,14 +228,20 @@ const tableESStateControllerHandler = state => ({
 
 		let gridView = {};
 
-		const mapView = globalStateController.getValue('mapView');
-		const { filters } = mapView?.selectedMapView || {};
-		const selectedMapViewFilters = filters || [];
+		const mapView = globalStateController.getValue('mapView') || {};
+		const selectedMapViewFilters = mapView.selectedMapView?.filters || [];
 
-		const dataSourceViews = selectedMapViewFilters?.filter(view => view.dataSourceName === layerIdentifier);
-		const mapViewFilters =
-			dataSourceViews?.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)) ||
-			[];
+		const mapViewFilters = selectedMapViewFilters
+			.filter(view => view.dataSourceName === layerIdentifier)
+			.filter(
+				view =>
+					view?.filterValues?.length > 0 ||
+					['empty', 'notEmpty'].includes(view?.filterType) ||
+					(view?.filterValues?.gte && view?.filterValues?.lte)
+			)
+			.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues));
+
+		Object.keys(columnFilterModesFnRefs).forEach(key => delete columnFilterModesFnRefs[key]);
 
 		if (gridViewSettings) {
 			// Fetch user-specific or default grid views based on provided settings and overrides.
@@ -240,9 +250,20 @@ const tableESStateControllerHandler = state => ({
 			// Format the fetched grid view for use with a specific grid view library or framework, assumed to be Material-UI's React Table (MRT).
 			formatedGridView = formatGridViewToMRT(userDefaultDisplay);
 
+			let selectedGridView =
+				isDefaultGridView || !userDefaultDisplay ? gridViewSettings.defaultView : userDefaultDisplay;
+
+			if (selectedGridView?.type === 'Default') {
+				selectedGridView = defaultHandleDefaultView(selectedGridView);
+				if (gridViewSettings.handleDefaultView) {
+					const user = globalStateController.getValue('user');
+					selectedGridView = gridViewSettings.handleDefaultView(selectedGridView, user);
+				}
+			}
+
 			// Setup the gridView object with the selected grid view configuration and some flags for UI control.
 			gridView = {
-				selectedGridView: isDefaultGridView || !userDefaultDisplay ? gridViewSettings.defaultView : userDefaultDisplay,
+				selectedGridView,
 				showViewModal: false,
 				showSaveAsNew: false,
 			};
@@ -261,10 +282,14 @@ const tableESStateControllerHandler = state => ({
 			_Schema,
 			tableKey,
 			esIndex,
+			modelName,
 			defaultFlterMode,
 			search,
 			columnVirtualization,
 			globalFilter,
+			layerIdentifier,
+			isClientSide,
+			excludeFields,
 		});
 
 		// Set default pinning and ordering
@@ -286,42 +311,36 @@ const tableESStateControllerHandler = state => ({
 			defaultColumnsOrdering?.unshift('actionMenu');
 			defaultColumnsPinning?.left?.unshift('actionMenu');
 		}
-		const formattedmapViewsFilters = mapViewFilters.map(filter => ({
-			...filter,
-			field: filter.field.replace('.keyword', ''),
-			value: filter.value,
-		}));
 
-		const combinedFilters = formatedGridView?.filters
-			? [...formatedGridView.filters, ...formattedmapViewsFilters]
-			: [...formattedmapViewsFilters];
+		if (rest?.disableRowSelection) {
+			pull(defaultColumnsOrdering, 'over-ride-checkbox');
+			pull(defaultColumnsPinning.left, 'over-ride-checkbox');
+		}
 
-		state.merge({
+		const formattedMapViewFilters = mapViewFilters
+			.map(({ field, value, ...rest }) => ({
+				...rest,
+				field: field.replace('.keyword', ''),
+				value,
+			}))
+			.filter(({ value }) => Boolean(value));
+
+		const combinedFilters = [...(formatedGridView?.filters || []), ...formattedMapViewFilters];
+
+		let stateToUpdate = {
 			...rest,
-			refetchQueries,
-			defaultFlterMode,
-			search,
 			initialized: true,
 			tableKey,
-			esIndex,
-			fetchMetaData,
-			gridViewSettings,
-			gridView,
 			pageSize,
-			isSelectall: false,
-			isSelectAllAllowed,
-			showColumnFilters: formatedGridView?.filters ? true : false,
+			isClientSide,
+			modelName,
 			data: { rows: [], total: 0 },
 			isLoading: false,
 			isFetching: false,
 			isError: false,
-			defaultFilters: defaultFilters || state?.defaultFilters?.get({ noproxy: true }) || [],
 			customProps: isEmpty(state?.customProps?.get({ noproxy: true }))
 				? customProps
 				: state?.customProps?.get({ noproxy: true }),
-			filters: extractUniqueFilters(combinedFilters),
-			layerIdentifier,
-			sorting: formatedGridView?.sorting ? formatedGridView.sorting : [],
 			rowSelection: {},
 			searchFields,
 			isInFiniteScroll,
@@ -332,88 +351,182 @@ const tableESStateControllerHandler = state => ({
 			grouping: groupedField ? [groupedField] : [],
 			footerProps: [],
 			ExternalFilter,
-			columnVisibility: formatedGridView?.columnVisibility ? formatedGridView.columnVisibility : columnVisibility,
 			defaultSort,
-			isIncludeInactive,
 			filterModes,
-			density,
-			advanceSearch,
-			enableHiding,
-			columnOrdering: formatedGridView?.columnOrdering ? formatedGridView.columnOrdering : defaultColumnsOrdering,
-			columnPinning: formatedGridView?.columnPinning ? formatedGridView.columnPinning : defaultColumnsPinning,
-		});
+			commentsCounter: [],
+			tagsList: [],
+			isTrackedList: [],
+		};
 
-		if (mapViewFilters.length > 0) tableController(tableKey).setShowColumnFilters(true);
-		mapViewFilters?.forEach(filter => {
-			tableController(tableKey).setFilterMode(filter?.field.replace('.keyword', ''), filter.searchType);
-		});
+		const _defaultFilters = defaultFilters || state?.defaultFilters?.get({ noproxy: true }) || [];
+		if (isClientSide) {
+			stateToUpdate = {
+				...stateToUpdate,
+				isSelectAllAllowed: isSelectAllAllowed || false,
+				isAllRowsSelected: isAllRowsSelected || false,
+				showColumnFilters: false,
+				defaultFilters: filterValidFilters(_defaultFilters),
+				filters: [],
+				sorting: [],
+				columnVisibility,
+				columnOrdering: defaultColumnsOrdering,
+				columnPinning: defaultColumnsPinning,
+			};
+		} else {
+			stateToUpdate = {
+				...stateToUpdate,
+				refetchQueries,
+				defaultFlterMode,
+				search,
+				esIndex,
+				fetchMetaData,
+				gridViewSettings,
+				gridView,
+				isSelectall: false,
+				isSelectAllAllowed,
+				isAllRowsSelected,
+				showColumnFilters: formatedGridView?.filters ? true : false,
+				defaultFilters: filterValidFilters(_defaultFilters),
+				filters: filterValidFilters(extractUniqueFilters(combinedFilters)),
+				layerIdentifier,
+				layerSchema,
+				sorting: formatedGridView?.sorting ? formatedGridView.sorting : [],
+				columnVisibility: formatedGridView?.columnVisibility ? formatedGridView.columnVisibility : columnVisibility,
+				isIncludeInactive,
+				density,
+				advanceSearch,
+				enableHiding,
+				columnOrdering: formatedGridView?.columnOrdering ? formatedGridView.columnOrdering : defaultColumnsOrdering,
+				columnPinning: formatedGridView?.columnPinning ? formatedGridView.columnPinning : defaultColumnsPinning,
+			};
+		}
+
+		// Set default state referneces
+		stateToUpdate = {
+			...stateToUpdate,
+			defaultTableSchema: _TableSchema,
+			defaultColumnsOrdering: defaultColumnsOrdering,
+			defaultColumnPinning: defaultColumnsPinning,
+		};
+
+		if (!isClientSide) {
+			stateToUpdate.columnVisibility['mrt-row-select'] = false;
+		}
+
+		state.merge(stateToUpdate);
+
+		if (mapViewFilters.length > 0) {
+			// eslint-disable-next-line no-use-before-define
+			tableController(tableKey).setShowColumnFilters(true);
+		}
+		if (customLayersFieldAccessors[layerIdentifier]) {
+			mapViewFilters?.forEach(filter => {
+				// eslint-disable-next-line no-use-before-define
+				tableController(tableKey).setFilterMode(filter?.field.replace('.keyword', ''), filter.searchType);
+			});
+		}
 	},
 
-	setFilterMode: (column, mode) => {
+	updateCustomProps: customProps => {
+		const currentState = state.customProps.get({ noproxy: true });
+		const updatedState = {
+			...currentState,
+			...customProps,
+		};
+
+		if (!isEqual(currentState, updatedState)) {
+			state.customProps.set(updatedState);
+		}
+	},
+
+	setInitialFilterMode: (columnSchema, mode, column) => {
+		const isClientSide = state.isClientSide.get();
+
+		const updatedColumnnSchema = {};
+
+		switch (mode) {
+			case 'singleselect':
+				if (isClientSide) {
+					updatedColumnnSchema.filterVariant = 'autocomplete';
+				} else {
+					updatedColumnnSchema.Filter = columnSchema?.SingleSelect;
+				}
+				break;
+
+			case 'multiselect':
+				if (isClientSide) {
+					updatedColumnnSchema.filterVariant = 'text';
+				} // 'multi-select'
+				else {
+					updatedColumnnSchema.Filter = columnSchema?.MultiSelect;
+				}
+				break;
+
+			default:
+				if (isClientSide) {
+					updatedColumnnSchema.filterVariant = 'text';
+				} else {
+					updatedColumnnSchema.Filter = null;
+				}
+				break;
+		}
+
+		if (!columnSchema?.name) {
+			return updatedColumnnSchema;
+		}
+
+		state.filterModes?.merge({
+			[column]: {
+				mode,
+			},
+		});
+
+		return updatedColumnnSchema;
+	},
+	setFilterMode: (column, mode, callSelectFilterMode = true) => {
 		const index = state.TableSchema?.get({ noproxy: true })?.findIndex(
 			element => element.accessorKey === column || element.id === column
 		);
 		const columnSchema = state.TableSchema?.[index]?.get({
 			noproxy: true,
 		});
+		const tableKey = state.tableKey.get();
 
-		if (mode === 'singleselect') {
-			state.TableSchema?.[index]?.merge({
-				Filter: columnSchema?.SingleSelect,
-			});
-		} else if (mode === 'multiselect') {
-			state.TableSchema?.[index]?.merge({
-				Filter: columnSchema?.MultiSelect,
-			});
-		} else if (columnSchema?.Filter) {
-			state.TableSchema?.[index]?.merge({ Filter: null });
+		// eslint-disable-next-line no-use-before-define
+		const updatedColumnnSchema = tableController(tableKey).setInitialFilterMode(columnSchema, mode, column);
+
+		state.TableSchema?.[index]?.merge(updatedColumnnSchema);
+
+		if (callSelectFilterMode) {
+			columnFilterModesFnRefs?.[tableKey]?.[column]?.onSelectFilterMode(mode);
 		}
-
-		if (!columnSchema?.name) return;
-		state.filterModes?.merge({
-			[column]: {
-				mode,
-				isKeyword: columnSchema.name.includes('.keyword'),
-			},
-		});
-
-		const columnFilterModesFnRefs = globalStateController.getValue('columnFilterModesFnRefs');
-
-		columnFilterModesFnRefs?.[state.tableKey.get({ noproxy: true })]?.[column]?.(mode);
 	},
+
 	setSelectAll: value => {
 		state.isSelectall.set(value);
 	},
 
 	setColumnVisibility: visibility => {
-		if (!deepEqual(state.columnVisibility?.get({ noproxy: true }), visibility)) state.columnVisibility?.set(visibility);
+		const isClientSide = state.isClientSide.get();
+
+		if (!deepEqual(state.columnVisibility?.get({ noproxy: true }), visibility)) {
+			if (!isClientSide) {
+				visibility['mrt-row-select'] = false;
+			}
+
+			state.columnVisibility?.set(visibility);
+		}
 	},
 
 	setColumnPinning: (columnPinning, oldPinning, TableSchema) => {
 		if (!deepEqual(state.columnPinning?.get({ noproxy: true }), columnPinning)) {
-			let size = 0;
-			columnPinning.left.forEach(pin => {
-				if (pin === 'mrt-row-numbers') {
-					size += 60;
-				} else if (pin === 'mrt-row-select') {
-					size += 0;
-				} else {
-					size += state.TableSchema.get({ noproxy: true }).find(
-						column => column.id === pin || column.accessorKey === pin
-					)?.size;
-				}
-			});
-			const tableCss = {
-				...state.tableCss?.get({ noproxy: true }),
-				...(state.columnVirtualization.get()
-					? { '& .MuiTableRow-root>:nth-child(2)': { marginLeft: `-${size}px !important` } }
-					: {}),
-			};
 			state.columnPinning?.set(columnPinning);
 
 			let changeTableSchema = false;
 			columnPinning.left.forEach(col => {
-				if (oldPinning.left.find(l => l === col)) return;
+				if (oldPinning.left.find(l => l === col)) {
+					return;
+				}
 				TableSchema.forEach(column => {
 					if (column.id === col) {
 						column.enableResizing = false;
@@ -426,7 +539,9 @@ const tableESStateControllerHandler = state => ({
 			});
 
 			oldPinning.left.forEach(col => {
-				if (columnPinning.left.find(l => l === col)) return;
+				if (columnPinning.left.find(l => l === col)) {
+					return;
+				}
 				TableSchema.forEach(column => {
 					if (column.id === col) {
 						column.enableResizing = true;
@@ -437,18 +552,27 @@ const tableESStateControllerHandler = state => ({
 					}
 				});
 			});
-			if (changeTableSchema) state.TableSchema.set(TableSchema);
-			state.tableCss?.set(tableCss);
+			if (changeTableSchema) {
+				state.TableSchema.set(TableSchema);
+			}
 		}
 		handleVisiblityMenu();
 	},
 
 	setColumnOrdering: order => {
-		if (!deepEqual(state.columnOrdering?.get({ noproxy: true }), order)) state.columnOrdering?.set(order);
+		const isClientSide = state.isClientSide.get();
+
+		const updatedOrder = isClientSide ? order : order.filter(col => col !== 'mrt-row-select');
+
+		if (!deepEqual(state.columnOrdering?.get({ noproxy: true }), updatedOrder)) {
+			state.columnOrdering?.set(updatedOrder);
+		}
 	},
 
 	setColumnCheck: rowCheck => {
-		if (!deepEqual(state.rowSelection?.get({ noproxy: true }), rowCheck)) state.rowSelection?.set(rowCheck);
+		if (!deepEqual(state.rowSelection?.get({ noproxy: true }), rowCheck)) {
+			state.rowSelection?.set(rowCheck);
+		}
 	},
 
 	setPagination: pagination =>
@@ -463,6 +587,9 @@ const tableESStateControllerHandler = state => ({
 		const TableSchema = state.TableSchema.get({ noproxy: true }) || [];
 		const filter = copy(_filter);
 		const column = TableSchema?.find(column => column.id === filter.field || column.accessorKey === filter.field);
+		if (column?.isArrayKey) {
+			filter.isArrayKey = true;
+		}
 		if (column?.type === 'date') {
 			filter.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 			if (filter.type !== 'advanced' || (filter.type === 'advanced' && !filter.searchType)) {
@@ -471,14 +598,18 @@ const tableESStateControllerHandler = state => ({
 				filter.columnType = 'date';
 			} else {
 				if (Array.isArray(filter.value)) {
-					if (!isDateFormat(filter.value[0]) || !isDateFormat(filter.value[1])) return;
+					if (!isDateFormat(filter.value[0]) || !isDateFormat(filter.value[1])) {
+						return;
+					}
 
 					const date1 = new Date(filter.value[0]);
 					const date2 = new Date(filter.value[1]);
 
 					filter.value = [formatDate(date1.toISOString()), formatDate(date2.toISOString())];
 				} else {
-					if (!isDateFormat(filter.value)) return;
+					if (!isDateFormat(filter.value)) {
+						return;
+					}
 					const date = new Date(filter.value);
 					filter.value = formatDate(date.toISOString());
 				}
@@ -492,8 +623,9 @@ const tableESStateControllerHandler = state => ({
 				filtersState.find(({ field }) => field === filter.field),
 				filter
 			)
-		)
+		) {
 			return;
+		}
 
 		const mapView = globalStateController.getValue('mapView');
 		const mapViewsFitlers = mapView?.selectedMapView?.filters || [];
@@ -501,16 +633,17 @@ const tableESStateControllerHandler = state => ({
 		const tableState = state.get({
 			noproxy: true,
 		});
-
 		if (tableState?.layerIdentifier) {
-			const currentIdentifier = customLayersFieldAccessors[tableState?.layerIdentifier];
-
+			const identifierMapViewSchema =
+				customLayersFieldAccessors[tableState?.layerIdentifier]?.keys || tableState?.layerSchema;
 			if (
-				currentIdentifier &&
-				currentIdentifier.keys?.find(key => key.value.replace('.keyword', '') === filter.field.replace('.keyword', ''))
+				identifierMapViewSchema &&
+				identifierMapViewSchema?.find(key => key.value.replace('.keyword', '') === filter.field.replace('.keyword', ''))
 			) {
 				const existingFilter = mapViewsFitlers.find(
-					({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') === filter.field
+					({ fieldName, filterType }) =>
+						(fieldName?.value || fieldName).replace('.keyword', '') === filter.field &&
+						filterType === filter?.searchType
 				);
 
 				const isValuesEqual = _.isEqual(
@@ -519,7 +652,22 @@ const tableESStateControllerHandler = state => ({
 				);
 				const isNonValuesFilter = ['empty', 'notEmpty'].includes(filter.searchType);
 
-				if (!(isValuesEqual || isNonValuesFilter)) {
+				const updateMapFilter = isNonValuesFilter && existingFilter?.filterType === filter?.searchType;
+				if (!(isValuesEqual || updateMapFilter)) {
+					const newFilter = {
+						dataSourceName: tableState?.layerIdentifier,
+						filterType: tableState?.filterModes[filter.field.replace('.keyword', '')]?.mode
+							? tableState.filterModes[filter.field.replace('.keyword', '')]?.mode
+							: existingFilter?.filterType
+								? existingFilter.filterType
+								: tableState?.esIndex === 'shapefile_flat' || typeof filter.value === 'object'
+									? 'multiselect'
+									: filter?.searchType || 'singleselect',
+
+						fieldName: filter.field,
+						filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
+					};
+
 					globalStateController.updateState({
 						viewChanged: true,
 						mapView: {
@@ -529,19 +677,11 @@ const tableESStateControllerHandler = state => ({
 								...mapView?.selectedMapView,
 								filters: [
 									...mapViewsFitlers.filter(
-										({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') !== filter.field
+										({ fieldName, dataSourceName }) =>
+											(fieldName?.value || fieldName).replace('.keyword', '') !== filter.field ||
+											dataSourceName !== tableState?.layerIdentifier
 									),
-									{
-										dataSourceName: tableState?.layerIdentifier,
-										filterType:
-											tableState?.filterModes[filter.field.replace('.keyword', '')]?.mode ||
-											existingFilter?.filterType ||
-											tableState?.esIndex === 'shapefile_flat'
-												? 'multiselect'
-												: 'singleselect',
-										fieldName: filter.field,
-										filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
-									},
+									newFilter,
 								],
 							},
 						},
@@ -562,21 +702,24 @@ const tableESStateControllerHandler = state => ({
 		return esFilters;
 	},
 
-	clearFilter: field => {
+	clearFilter: (field, updateMapView = true, viewChanged = true) => {
 		const filtersState = state.filters?.get({ noproxy: true });
 		const mapView = globalStateController.getValue('mapView');
 		const mapViewsFitlers = mapView?.selectedMapView?.filters || [];
-		if (mapViewsFitlers.find(({ fieldName }) => (fieldName?.value || fieldName).replace('.keyword', '') === field)) {
+		if (
+			mapViewsFitlers.find(({ fieldName }) => (fieldName?.value || fieldName)?.replace('.keyword', '') === field) &&
+			updateMapView
+		) {
 			const tableState = state.get({
 				noproxy: true,
 			});
 
-			if (tableState?.layerIdentifier)
+			if (tableState?.layerIdentifier) {
 				globalStateController.updateState({
-					viewChanged: true,
+					viewChanged,
 					mapView: {
 						...mapView,
-						viewChanged: true,
+						viewChanged,
 						selectedMapView: {
 							...mapView?.selectedMapView,
 							filters: [
@@ -589,9 +732,12 @@ const tableESStateControllerHandler = state => ({
 						},
 					},
 				});
+			}
 		}
 
-		if (!filtersState.find(filter => filter.field === field)) return;
+		if (!filtersState.find(filter => filter.field === field)) {
+			return;
+		}
 
 		state.filters?.set(filtersState.filter(filter => filter.field !== field));
 	},
@@ -599,7 +745,9 @@ const tableESStateControllerHandler = state => ({
 	clearFilters: () => {
 		const filtersState = state.filters?.get({ noproxy: true });
 
-		if (!filtersState?.length === 0) return;
+		if (!filtersState?.length === 0) {
+			return;
+		}
 
 		state.filters?.set(filtersState.filter(filter => filter.isMapViewFilter));
 	},
@@ -607,7 +755,9 @@ const tableESStateControllerHandler = state => ({
 	syncFilters: filters => {
 		const filtersState = state.filters?.get({ noproxy: true });
 
-		if (filtersState.length <= filters.length) return;
+		if (filtersState.length <= filters.length) {
+			return;
+		}
 
 		const filterKeys = filters.map(filter => filter.id);
 
@@ -622,7 +772,7 @@ const tableESStateControllerHandler = state => ({
 			.filter(filter => !filterKeys.includes(filter.field.replace(/.keyword/, 'g', '')))
 			.map(filter => filter.field);
 
-		if (tableState?.layerIdentifier)
+		if (tableState?.layerIdentifier) {
 			globalStateController.updateState({
 				viewChanged: true,
 				mapView: {
@@ -640,18 +790,25 @@ const tableESStateControllerHandler = state => ({
 					},
 				},
 			});
+		}
 
 		state.filters?.set(filtersState.filter(filter => !keysToClear.includes(filter.field)));
 	},
 
 	setIsAllRowsSelected: value => {
-		if (!state.isSelectAllAllowed.get()) return;
+		if (!state.isSelectAllAllowed.get()) {
+			return;
+		}
 
-		if (!isEqual(value, state.isAllRowsSelected.get())) state.isAllRowsSelected.set(value);
+		if (!isEqual(value, state.isAllRowsSelected.get())) {
+			state.isAllRowsSelected.set(value);
+		}
 	},
 
 	setShowColumnFilters: value => {
-		if (!isEqual(value, state.showColumnFilters.get())) state.showColumnFilters.set(value);
+		if (!isEqual(value, state.showColumnFilters.get())) {
+			state.showColumnFilters.set(value);
+		}
 	},
 
 	setSorting: sorting => {
@@ -659,7 +816,8 @@ const tableESStateControllerHandler = state => ({
 	},
 
 	setFilters: filters => {
-		state.filters.set(filters);
+		const filtersState = state.filters?.get({ noproxy: true });
+		state.filters.set([...filters, ...filtersState.filter(filter => filter?.isMapViewFilter)]);
 	},
 
 	setIncludeInactive: isIncludeInactive => {
@@ -684,7 +842,9 @@ const tableESStateControllerHandler = state => ({
 			orderKeys = orderKeys || ['_id', 'id', 'name', 'flatSyncAt', '_ts'];
 			excludedKeys = excludedKeys || ['isDeleted', 'IsDeleted', 'sort'];
 
-			if (nestedKey) excludedKeys.push(nestedKey);
+			if (nestedKey) {
+				excludedKeys.push(nestedKey);
+			}
 
 			let keys = [];
 
@@ -736,11 +896,14 @@ const tableESStateControllerHandler = state => ({
 			defaultFlterMode,
 			search,
 			columnVirtualization,
+			layerIdentifier,
 		} = state.get({
 			noproxy: true,
 		});
 
-		if (!isGeneric || rows?.length === 0) return genericState;
+		if (!isGeneric || rows?.length === 0) {
+			return genericState;
+		}
 
 		const keys = getGenericKeys(orderKeys, excludedKeys, nestedKey);
 
@@ -761,6 +924,7 @@ const tableESStateControllerHandler = state => ({
 			defaultFlterMode,
 			search,
 			columnVirtualization,
+			layerIdentifier,
 		});
 
 		genericState.TableSchema = _TableSchema;
@@ -775,13 +939,59 @@ const tableESStateControllerHandler = state => ({
 
 		return genericState;
 	},
+
+	setEditedData: (rowId, editedRow) => {
+		const tableKey = state.tableKey.get();
+		const data = state.data.get({ noproxy: true });
+
+		const currentRow = data.rows.find(r => r._id === rowId);
+
+		const changed = compareObjects(editedRow, currentRow);
+
+		if (changed) {
+			const editedData = state.editedData.get({ noproxy: true });
+			state.editedData.set({
+				...editedData,
+				[rowId]: editedRow,
+			});
+		} else {
+			// eslint-disable-next-line no-use-before-define
+			tableController(tableKey).clearEditedRow(rowId);
+		}
+	},
+	setValidationErrors: (rowId, columnId, validationError) => {
+		const validationErrors = state.validationErrors.get({ noproxy: true });
+
+		state.validationErrors.set({
+			...validationErrors,
+			[rowId]: {
+				...validationErrors[rowId],
+				[columnId]: validationError,
+			},
+		});
+	},
+	clearEditedRow: rowId => {
+		state.editedData.merge({
+			[rowId]: undefined,
+		});
+		state.validationErrors.merge({
+			[rowId]: undefined,
+		});
+	},
+	clearEditing: () => {
+		state.editedData.set({});
+		state.validationErrors.merge({});
+		state.isCreateMode.merge(false);
+	},
 });
 
 export const tableController = TableKey => {
-	if (!tableESState[TableKey]) tableESState[TableKey] = hookstate(copy(initialState));
+	if (!tableESState[TableKey]) {
+		tableESState[TableKey] = hookstate(copy(tableInitialState));
+	}
 	return {
 		...tableESStateControllerHandler(tableESState[TableKey]),
-		...hookStateController(tableESState[TableKey], copy(initialState)),
+		...hookStateController(tableESState[TableKey], copy(tableInitialState)),
 	};
 };
 
@@ -789,8 +999,16 @@ const tableGlobalControllerHandler = state => ({
 	refetch: () => {
 		state.refetch.set(!state.refetch.get({ noproxy: true }));
 	},
+	refetchAdditionalQueries: () => {
+		state.refetchAdditionalQueries.set(!state.refetchAdditionalQueries.get({ noproxy: true }));
+	},
 	reInitialized: () => {
 		state.reInitialized.set(!state.reInitialized.get({ noproxy: true }));
+	},
+	setSelectedTab: tab => {
+		if (tab !== state.tabKey.get()) {
+			state.tabKey.set(tab);
+		}
 	},
 });
 

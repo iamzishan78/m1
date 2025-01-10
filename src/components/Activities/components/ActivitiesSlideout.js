@@ -1,17 +1,22 @@
 import React, { useContext, useState, useEffect, useMemo } from 'react';
-import { useLazyQuery, useMutation } from '@apollo/client';
 
+import Badge from '@material-ui/core/Badge';
+import HomeIcon from '@material-ui/icons/HomeOutlined';
+import IdentityIcon from '@material-ui/icons/PermIdentity';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { useHookstate } from '@hookstate/core';
+
+import Slideout from 'components/Shared/Slideout';
+
+import { REMOVECOMMONDESCRIPTOR } from 'graphQL/useMutationRemoveCommonDescriptor';
+import { UPSERTCOMMONDESCRIPTOR } from 'graphQL/useMutationUpsertCommonDescriptor';
+
+import { slidoutState } from 'hookstate/initialStates';
+
+import ActivityForm from './ActivityForm';
 import { AppContext } from '../../../AppContext';
 import { GETMONGOUSERS } from '../../../graphQL/useQueryGetUsers';
-import Badge from '@material-ui/core/Badge';
-import IdentityIcon from '@material-ui/icons/PermIdentity';
-import HomeIcon from '@material-ui/icons/HomeOutlined';
-import Slideout from 'components/Shared/Slideout';
-import ActivityForm from './ActivityForm';
-import { UPSERTCOMMONDESCRIPTOR } from 'graphQL/useMutationUpsertCommonDescriptor';
-import { REMOVECOMMONDESCRIPTOR } from 'graphQL/useMutationRemoveCommonDescriptor';
-import { slidoutState } from 'hookstate/initialStates';
-import { useHookstate } from '@hookstate/core';
 import ObligationForm from '../ObligationForm';
 
 export default function ActivitiesSlideout({ activityId, setSelectedActivityId, getContactsForActivity, type = '' }) {

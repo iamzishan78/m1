@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import MapProvider from 'components/Map/MapProvider'; // Importing the MapProvider component for testing
+
 import { basic_timeouts } from '../../cypressUtils/data'; // Importing basic timeouts from the data file for test waits
 
 // Test suite for the Map Unit Detail Component
@@ -22,7 +23,7 @@ describe('Map Unit Detail Component', () => {
 
 	it('Add well to unit works', () => {
 		// Clicking on the Wells tab to view well details
-		cy.get(`[data-testid="shape-detail-tab-Wells"]`, {
+		cy.get('[data-testid="shape-detail-tab-Wells"]', {
 			timeout: basic_timeouts.midTimeout,
 		}).click({ force: true });
 
@@ -56,15 +57,15 @@ describe('Map Unit Detail Component', () => {
 	it('Well card opens from unit well table link', () => {
 		cy.wait(15000);
 		// Clicking on the Wells tab to view well details
-		cy.interceptAndWait(['getESPaginatedList'], () => {
-			cy.get(`[data-testid="shape-detail-tab-Wells"]`, {
+		cy.interceptAndWait(['getDbData'], () => {
+			cy.get('[data-testid="shape-detail-tab-Wells"]', {
 				timeout: basic_timeouts.midTimeout,
 			}).click({ force: true });
 		});
 
 		// Intercepting and waiting for the getTenantWell request, then clicking on the first well link in the table
 		cy.interceptAndWait(['getTenantWell'], () => {
-			cy.get(`[data-testid='column-with-link']`, {
+			cy.get("[data-testid='column-with-link']", {
 				timeout: basic_timeouts.midTimeout,
 			})
 				.eq(0)
@@ -72,7 +73,7 @@ describe('Map Unit Detail Component', () => {
 		});
 
 		// Asserting that the well card exists after clicking on the well link
-		cy.get(`[data-testid="well-card"]`, {
+		cy.get('[data-testid="well-card"]', {
 			timeout: basic_timeouts.midTimeout,
 		}).should('exist');
 	});

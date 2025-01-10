@@ -1,13 +1,16 @@
 import React, { useEffect, useContext, useState } from 'react';
-import { AppContext } from '../../AppContext';
-import { makeStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import { useLazyQuery } from '@apollo/client';
-import Tooltip from '@material-ui/core/Tooltip';
+
 import Badge from '@material-ui/core/Badge';
-import ChatIcon from '@material-ui/icons/Chat';
-import Comments from './Comments';
 import Dialog from '@material-ui/core/Dialog';
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
+import ChatIcon from '@material-ui/icons/Chat';
+
+import { useLazyQuery } from '@apollo/client';
+
+import Comments from './Comments';
+import { AppContext } from '../../AppContext';
 import { COMMENTSCOUNTER } from '../../graphQL/useQueryCommentsCounter';
 
 export default function CommentsWithIcon(props) {

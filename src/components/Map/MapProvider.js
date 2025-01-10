@@ -1,4 +1,5 @@
 import React from 'react';
+
 import Map from './Map.Deckgl';
 // import ErrorBoundaryComponent from 'components/Shared/ErrorBoundary/ErrorBoundary'
 

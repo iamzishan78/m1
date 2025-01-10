@@ -1,8 +1,8 @@
 // monitor.js
-const { triggerAzurePipeline } = require('./triggerAzurePipeline.js');
-const { UpsertCypressLog } = require('./upsertCypressLog.js');
 const { GetCypressLog } = require('./getCypressLog.js');
 const { ResetPipeline } = require('./resetPipeline.js');
+const { triggerAzurePipeline } = require('./triggerAzurePipeline.js');
+const { UpsertCypressLog } = require('./upsertCypressLog.js');
 
 const monitorPipeline = ({ getCypressProcess, specs }) => {
 	const {

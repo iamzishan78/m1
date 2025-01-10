@@ -1,34 +1,36 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { set } from 'lodash';
-import { makeStyles } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
-import GavelIcon from '@material-ui/icons/Gavel';
-import LocationIcon from '@material-ui/icons/Place';
-import Grid from '@material-ui/core/Grid';
-import { useDispatch, useSelector } from 'react-redux';
-import TabPanels from 'components/Shared/TabPanels';
-import TabButtons from 'components/Shared/TabPanels/TabButtons';
-import Tags from 'components/Shared/Tagger';
-import SuggestedTaxOwnersTable from 'components/Table/TaxOwners/SuggestedTaxOwnersTable';
-import AssociatedWellsParcelTable from 'components/Table/Wells/AssociatedWellsParcelTable';
-import RelatedDetailsDocumentTable from 'components/Table/Documents/RelatedDetailsDocumentTable';
-import Taps from '../Shared/Taps';
-import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
-import { UPDATECUSTOMLAYER } from '../../graphQL/useMutationUpdateCustomLayer';
-import ParcelSummary from './ParcelSummary';
-import { copy } from 'utils/helper';
-import { popupController } from 'hookstate/popupStateController';
+import PropTypes from 'prop-types';
+
+import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
+import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
+import { DrawerContextProvider } from 'components/Land/components/Agreements/detailComponents/DrawerContext';
 import MRTTable from 'components/MRTTable';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import ParcelAgreementTable from 'components/Table/Parcel/ParcelAgreementTable';
-import { showSuccessMessage, showErrorMessage } from 'actions';
-import { jobController } from 'hookstate/jobStateController';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+import TabPanels from 'components/Shared/TabPanels';
+import Tags from 'components/Shared/Tagger';
+
 import { globalStateController } from 'hookstate/globalStateController';
+import { jobController } from 'hookstate/jobStateController';
 import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
+import { popupController } from 'hookstate/popupStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { copy } from 'utils/helper';
+
+import { showSuccessMessage, showErrorMessage } from 'actions';
+
+import ParcelSummary from './ParcelSummary';
+import { UPDATECUSTOMLAYER } from '../../graphQL/useMutationUpdateCustomLayer';
+import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
+import Taps from '../Shared/Taps';
 
 const useStyles = makeStyles(theme => ({
 	grid: {
@@ -212,7 +214,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const setSelectedTab = simpleTableGlobalController.setSelectedTab;
+const setSelectedTab = tableGlobalController.setSelectedTab;
 
 export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	const classes = useStyles();
@@ -220,12 +222,12 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	const [parcelObj, setParcelObj] = useState();
 	const [properties, setProperties] = useState();
 
-	const tractPerUnitGridState = tableController('TractPerUnitTable').useState(['data']).stateValue;
+	const tractOwnerGridState = tableController('TractInterestOwnerTable').useState(['data']).stateValue;
 	const tractUnitsGridState = tableController('TractUnitsTable').useState(['data']).stateValues;
 	const tractPotentialUnitsState = tableController('TractPotentialUnitsTable').useState(['data']).stateValues;
 	const {
 		stateValues: { tabKey: selectedTab },
-	} = simpleTableGlobalController.useState(['tabKey']);
+	} = tableGlobalController.useState(['tabKey']);
 
 	const contactsAdded = useSelector(state => state?.common?.contactsAdded);
 	const [updateCustomLayer, { data: updatedParcel, loading: updatingParcel }] = useMutation(UPDATECUSTOMLAYER);
@@ -242,7 +244,9 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	}, []);
 
 	useEffect(() => {
-		if (contactsAdded) setSelectedTab(0);
+		if (contactsAdded) {
+			setSelectedTab(0);
+		}
 	}, [contactsAdded]);
 
 	useEffect(() => {
@@ -264,6 +268,9 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 			let shape = copy(dataCustomLayer.customLayer.shape);
 			if (typeof shape === 'string') {
 				shape = JSON.parse(shape);
+			}
+			if (dataCustomLayer.customLayer.shapeJson) {
+				shape = copy(dataCustomLayer.customLayer.shapeJson);
 			}
 			const data = {
 				...dataCustomLayer.customLayer,
@@ -292,9 +299,9 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 
 			setProperties(shape.properties);
 		}
-	}, [dataCustomLayer, tractPerUnitGridState?.data, tractUnitsGridState?.data, tractPotentialUnitsState?.data]);
+	}, [dataCustomLayer, tractOwnerGridState?.data, tractUnitsGridState?.data, tractPotentialUnitsState?.data]);
 
-	const overrideMeta = useMemo(
+	const tractOwnerOverrideMeta = useMemo(
 		() => ({
 			tabLabels: ['Tract Ownership', 'Potential Ownership'],
 			defaultFilters: [
@@ -307,7 +314,15 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 		[parcelObj]
 	);
 
-	const overrideMetaTractUnits = useMemo(
+	const potentialShapeOwnersOverrideMeta = useMemo(
+		() => ({
+			tabLabels: ['Tract Ownership', 'Potential Ownership'],
+			customProps: { customLayer: parcelObj },
+		}),
+		[parcelObj]
+	);
+
+	const tractUnitsOverrideMeta = useMemo(
 		() => ({
 			tabLabels: ['Related Units', 'Potential Units'],
 			defaultFilters: [{ field: 'parcel._id', value: parcelObj?._id }],
@@ -316,7 +331,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 		[parcelObj]
 	);
 
-	const overrideMetaTractPotentialUnits = useMemo(
+	const tractPotentialUnitsOverrideMeta = useMemo(
 		() => ({
 			tabLabels: ['Related Units', 'Potential Units'],
 			defaultFilters: [
@@ -333,7 +348,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	);
 
 	// Table overridden meta
-	const RelatedAgreementOverrideMeta = useMemo(
+	const relatedAgreementOverrideMeta = useMemo(
 		() => ({
 			defaultFilters: [
 				{ field: 'tract.tractId', value: parcelObj?._id },
@@ -347,6 +362,20 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 			fetchMetaData: null,
 		}),
 		[parcelObj]
+	);
+
+	const relatedWellsOverrideMeta = useMemo(
+		() => ({
+			maxTableHeight: 'calc(50vh - 100px)',
+			defaultFilters: [{ field: 'shape._id', value: parcelObj?._id }],
+			customProps: { customLayer: parcelObj, shapeType: 'Parcel' },
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: parcelObj?._id },
+			},
+			customValue: { parentRecord: parcelObj?._id },
+		}),
+		[parcelObj?._id]
 	);
 
 	useEffect(() => {
@@ -433,137 +462,111 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 		});
 	};
 
-	function Header() {
-		return (
-			<TabButtons
-				labels={['Tract Ownership', 'Potential Ownership']}
-				value={selectedTab}
-				setValue={n => {
-					setSelectedTab(n);
-				}}
-			/>
-		);
-	}
+	const relatedDocumentsOverrideMeta = useMemo(
+		() => ({
+			maxTableHeight: 'calc(50vh - 100px)',
+			gridViewSettings: null,
+			fetchMetaData: null,
+			defaultFilters: [{ field: 'shapeObj._id', value: parcelObj?._id }],
+			deletedKeys: {
+				mainRecord: { key: '_id' },
+				parentRecord: { value: parcelObj?._id },
+			},
+			customValue: { parentRecord: parcelObj?._id },
+		}),
+		[parcelObj?._id]
+	);
 
-	function DocumentHeader() {
-		return (
-			<div className={classes.documentHeader}>
-				<DescriptionOutlinedIcon />
-				<span>ASSOCIATED DOCUMENTS</span>
-			</div>
-		);
-	}
-
-	function RunsheetHeader() {
-		return (
-			<div className={classes.documentHeader}>
-				<GavelIcon />
-				<span>RUNSHEET INSTRUMENTS</span>
-			</div>
-		);
-	}
-
-	function WellHeader() {
-		return (
-			<div className={classes.documentHeader}>
-				<LocationIcon />
-				<span>ASSOCIATED WELLS</span>
-			</div>
-		);
-	}
+	const runsheetOverrideMeta = useMemo(
+		() => ({
+			maxTableHeight: 'calc(50vh - 100px)',
+			defaultFilters: [
+				{ field: 'customLayerId', value: parcelObj?._id },
+				{ field: 'isRunsheetInstrument', value: 'true' },
+			],
+		}),
+		[parcelObj?._id]
+	);
 
 	return parcelObj ? (
-		<Grid item sm={12} container className={classes.gridWidthScroll}>
-			<Grid item xs={12} style={{ padding: '10px 15px 0px 15px' }} className={classes.border}>
-				<div className={classes.tags}>
-					<Tags width="100%" targetSourceId={id} targetLabel="parcel" publicLeftBottom hideCheckBox />
-				</div>
+		<DrawerContextProvider>
+			<Grid item sm={12} container className={classes.gridWidthScroll}>
+				<Grid item xs={12} style={{ padding: '10px 15px 0px 15px' }} className={classes.border}>
+					<div className={classes.tags}>
+						<Tags width="100%" targetSourceId={id} targetLabel="parcel" publicLeftBottom hideCheckBox />
+					</div>
+				</Grid>
+				<Grid item sm={12}>
+					<Taps
+						tabLabels={['Summary', 'Interest Owners', 'Runsheet', 'Wells', 'Units', 'Agreements', 'Documents']}
+						openTabIdex={selectTabIndex}
+						tabPanels={[
+							<div key="Summary" style={{ overflow: 'overlay', maxHeight: 'calc(100vh - 285px)', overflowX: 'hidden' }}>
+								<ParcelSummary
+									id={id}
+									customLayer={copy(parcelObj)}
+									properties={properties}
+									setProperties={setProperties}
+									updateProperties={updateProperties}
+									updateCustomProperties={updateCustomProperties}
+									updating={updatingParcel}
+								/>
+							</div>,
+							<TabPanels
+								key="Interest Owners"
+								value={selectedTab}
+								panels={[
+									<MRTTable
+										key="TractInterestOwnerTable"
+										name="TractInterestOwnerTable"
+										overrideMeta={tractOwnerOverrideMeta}
+									/>,
+									<MRTTable
+										key="PotentialShapeOwnersTable"
+										name="PotentialShapeOwnersTable"
+										overrideMeta={potentialShapeOwnersOverrideMeta}
+									/>,
+								]}
+							/>,
+							<MRTTable key="Runsheet" name="RunsheetTable" overrideMeta={runsheetOverrideMeta} />,
+							<div key="Wells" className={classes.subContent}>
+								<RelatedWellsTable
+									id="relatedWellsTable"
+									overrideMeta={relatedWellsOverrideMeta}
+									shapeType="Parcel"
+									customLayer={copy(parcelObj)}
+								/>
+							</div>,
+							<TabPanels
+								key="Units"
+								value={selectedTab}
+								panels={[
+									<MRTTable key="TractUnitsTable" name="TractUnitsTable" overrideMeta={tractUnitsOverrideMeta} />,
+									<MRTTable
+										key="TractPotentialUnitsTable"
+										name="TractPotentialUnitsTable"
+										overrideMeta={tractPotentialUnitsOverrideMeta}
+									/>,
+								]}
+							/>,
+							<MRTTable
+								key="Agreements"
+								name="ShapeDetailAgreementTable"
+								overrideMeta={relatedAgreementOverrideMeta}
+							/>,
+							<div key="Documents" className={`${classes.subContent} ${classes.parcelDocument}`}>
+								<RelatedDocumentsTable
+									id="relatedDocumentsTable"
+									moduleId={parcelObj?._id}
+									overrideMeta={relatedDocumentsOverrideMeta}
+									relatedObjectType="Parcel"
+								/>
+							</div>,
+						]}
+					/>
+				</Grid>
 			</Grid>
-			<Grid item sm={12}>
-				<Taps
-					tabLabels={['Summary', 'Interest Owners', 'Runsheet', 'Wells', 'Units', 'Agreements', 'Documents']}
-					openTabIdex={selectTabIndex}
-					tabPanels={[
-						<div style={{ overflow: 'overlay', maxHeight: 'calc(100vh - 285px)', overflowX: 'hidden' }}>
-							<ParcelSummary
-								id={id}
-								customLayer={copy(parcelObj)}
-								properties={properties}
-								setProperties={setProperties}
-								updateProperties={updateProperties}
-								updateCustomProperties={updateCustomProperties}
-								updating={updatingParcel}
-							/>
-						</div>,
-						<TabPanels
-							value={selectedTab}
-							panels={[
-								<div>
-									<MRTTable name="TractPerUnitTable" overrideMeta={overrideMeta} />
-								</div>,
-								<div className={classes.subContent}>
-									<SuggestedTaxOwnersTable
-										jobType="PARCELINTERESTS"
-										jobName="Converting potential owner to parcel owner"
-										customLayer={copy(parcelObj)}
-										parent="potentialOwnersPerParcel"
-										targetLabel="well"
-										header={<Header />}
-										setSelectedTab={setSelectedTab}
-										dense
-									/>
-								</div>,
-							]}
-						/>,
-						<div className={classes.subContent}>
-							<ParcelAgreementTable
-								esIndex="runsheetinstrument_flat"
-								parent="ownersPerParcel"
-								targetLabel="parcelRunsheet"
-								customLayer={copy(parcelObj)}
-								dense
-								header={<RunsheetHeader />}
-								isCheckboxSticky={true}
-							/>
-						</div>,
-						<div className={classes.subContent}>
-							<AssociatedWellsParcelTable
-								customLayer={copy(parcelObj)}
-								parent="associatedWellsPerParcel"
-								targetLabel="well"
-								header={<WellHeader />}
-								isCheckboxSticky={true}
-								showTracks
-							/>
-						</div>,
-						<TabPanels
-							value={selectedTab}
-							panels={[
-								<div>
-									<MRTTable name="TractUnitsTable" overrideMeta={overrideMetaTractUnits} />
-								</div>,
-								<div>
-									<MRTTable name="TractPotentialUnitsTable" overrideMeta={overrideMetaTractPotentialUnits} />
-								</div>,
-							]}
-						/>,
-						<div>
-							<MRTTable name="ShapeDetailAgreementTable" overrideMeta={RelatedAgreementOverrideMeta} />
-						</div>,
-						<div className={`${classes.subContent} ${classes.parcelDocument}`}>
-							<RelatedDetailsDocumentTable
-								customLayer={copy(parcelObj)}
-								relatedObjectType="Parcel"
-								parent="associatedDocumentsPerParcel"
-								targetLabel="documents"
-								header={<DocumentHeader />}
-								dense
-							/>
-						</div>,
-					]}
-				/>
-			</Grid>
-		</Grid>
+		</DrawerContextProvider>
 	) : (
 		<div
 			style={{
@@ -577,3 +580,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 		</div>
 	);
 }
+
+ParcelsDetailCard.propTypes = {
+	id: PropTypes.string.isRequired,
+	selectTabIndex: PropTypes.number.isRequired,
+};

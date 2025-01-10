@@ -34,7 +34,7 @@ describe('Quick Actions And Searching Spec', () => {
 		cy.removeFilter('Lead');
 		cy.removeFilter('Prospect');
 
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 
 		cy.selectQuickAction('Leads 101', 'Lead', true);
 		cy.wait(10000);
@@ -46,29 +46,29 @@ describe('Quick Actions And Searching Spec', () => {
 		cy.wait(10000);
 
 		cy.log('==== STEP: TEST Exact Match ====');
-		cy.gridSearch('STATEWIDE MINERALS', 'getESSimpleSearch');
+		cy.gridSearch('STATEWIDE MINERALS', 'getDbData');
 
 		cy.log('==== STEP: SEARCH jacob in CONTACT ====');
-		cy.gridSearch('jacob', 'getESSimpleSearch').then(response => {
+		cy.gridSearch('jacob', 'getDbData').then(response => {
 			cy.wait(2000);
 			cy.getTableCell('Name', 3).click();
 
 			cy.wait(5000);
-			cy.interceptApi('getESSimpleSearch');
+			cy.interceptApi('getDbData');
 			cy.get('.MuiBreadcrumbs-li', { timeout: longTimeout }).contains('Contacts').should('be.visible').click();
 
 			cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout });
 
-			cy.interceptApi('getESSimpleSearch');
+			cy.interceptApi('getDbData');
 
 			cy.selectQuickAction('Leads 101', 'Lead', true);
 
 			cy.log('==== STEP: SEARCH GoodwillDD in CONTACT ====');
-			cy.gridSearch('GoodwillDD', 'getESSimpleSearch');
+			cy.gridSearch('GoodwillDD', 'getDbData');
 
 			cy.wait(1000);
 
-			cy.interceptApi('getESSimpleSearch', { searchString: 'Goodwill' });
+			cy.interceptApi('getDbData', { searchString: 'Goodwill' });
 			cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').type(
 				'{backspace}{backspace}'
 			);

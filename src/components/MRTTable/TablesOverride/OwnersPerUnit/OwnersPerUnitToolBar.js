@@ -1,22 +1,29 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
-import { useApolloClient } from '@apollo/client';
-import AutorenewIcon from '@mui/icons-material/Autorenew';
+
 import Button from '@material-ui/core/Button';
-import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { navController } from 'hookstate/navStateController';
-import OwnerPerUnitTableDialogs from 'components/MRTTable/TablesOverride/OwnersPerUnit/RightDialogs';
+import { makeStyles } from '@material-ui/core/styles';
+
+import AutorenewIcon from '@mui/icons-material/Autorenew';
+
+import { useApolloClient } from '@apollo/client';
+import PropTypes from 'prop-types';
+
 import {
 	BulkUpdate,
 	ExportData,
 	ViewContactData,
 	openSideDialog,
 } from 'components/MRTTable/Common/CommonToolBarActions';
+import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown';
+import OwnerPerUnitTableDialogs from 'components/MRTTable/TablesOverride/OwnersPerUnit/RightDialogs';
 import { NavigationContext } from 'components/Navigation/NavigationContext';
+
 import { globalStateController } from 'hookstate/globalStateController';
-import MetaField from 'components/Table/helpers/MetaField';
+import { navController } from 'hookstate/navStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import MetaField from 'utils/MetaField';
 
 const useStyles = makeStyles(() => ({
 	disabledTopBarButtons: {
@@ -237,4 +244,9 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 	);
 }
 
-export default memo(OwnersPerUnitToolBar);
+OwnersPerUnitToolBar.propTypes = {
+	table: PropTypes.object.isRequired,
+	tableKey: PropTypes.string.isRequired,
+};
+
+export default OwnersPerUnitToolBar;

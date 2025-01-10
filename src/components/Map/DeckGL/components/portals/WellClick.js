@@ -1,10 +1,12 @@
 import { memo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+
 import { useApolloClient } from '@apollo/client';
 
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
+
 import { popupController } from 'hookstate/popupStateController';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 
 function WellClick() {
 	const { paramId } = useParams();
@@ -18,7 +20,7 @@ function WellClick() {
 
 	const getElasticWell = async paramId => {
 		const { data: well } = await client.query({
-			query: GET_ES_SIMPLE_SEARCH,
+			query: GET_DB_DATA,
 			variables: {
 				index: 'platformData:wells',
 				pagination: {
@@ -37,11 +39,11 @@ function WellClick() {
 		const { data: tenantWell } = await client.query({
 			query: TENANTWELL,
 			variables: {
-				globalWellId: well.getESSimpleSearch.hits[0]?.id,
+				globalWellId: well.getDbData.hits[0]?.id,
 			},
 		});
 		return {
-			...well.getESSimpleSearch.hits[0],
+			...well.getDbData.hits[0],
 			tenantWellId: tenantWell?.tenantWell?.tenantWellId,
 		};
 	};
@@ -50,7 +52,9 @@ function WellClick() {
 		(async () => {
 			const { selectedWellId: selectedWellIdVal, data } = popupController.getValues(['selectedWellId', 'data']);
 
-			if (!selectedWellIdVal) return;
+			if (!selectedWellIdVal) {
+				return;
+			}
 
 			const currentFeature = {};
 
@@ -61,7 +65,9 @@ function WellClick() {
 				currentFeature.properties = { ...(await getElasticWell(selectedWellIdVal)) };
 			}
 
-			if (currentFeature?.properties?.Id) currentFeature.properties.id = currentFeature.properties.Id;
+			if (currentFeature?.properties?.Id) {
+				currentFeature.properties.id = currentFeature.properties.Id;
+			}
 
 			if (currentFeature) {
 				popupController.createPopUp(currentFeature.properties, paramId);
@@ -74,11 +80,12 @@ function WellClick() {
 				if (data) {
 					currentFeature.properties = { ...(await getElasticWell(selectedWellIdVal)) };
 
-					if (popupController.getValue('data'))
+					if (popupController.getValue('data')) {
 						popupController.updateState({
 							selectedWell: currentFeature.properties,
 							data: undefined,
 						});
+					}
 				}
 			}
 		})();

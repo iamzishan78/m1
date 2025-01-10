@@ -3,14 +3,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { Grid, Typography } from '@material-ui/core';
+
 import { useMutation } from '@apollo/client';
 
+import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown';
 import RevenueSearch from 'components/Navigation/components/RevenueSearch';
 import { SIDE_PANEL_MENU_ITEMS_LIST } from 'components/Revenue/Revenue';
-import { ADD_PROPERTY } from 'graphQL/useMutationAddProperty';
-import { ADD_CHECK_DATA } from 'graphQL/useMutationAddCheck';
-import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
 import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
+
+import { ADD_CHECK_DATA } from 'graphQL/useMutationAddCheck';
+import { ADD_PROPERTY } from 'graphQL/useMutationAddProperty';
+
 import { setRevenueKey } from 'actions';
 
 export default function RevenueAppBar(props) {
@@ -22,13 +25,17 @@ export default function RevenueAppBar(props) {
 
 	const [addProperty] = useMutation(ADD_PROPERTY, {
 		onCompleted: data => {
-			if (data?.addProperty?.property) history.push(`/revenue/property/details/${data.addProperty.property._id}`);
+			if (data?.addProperty?.property) {
+				history.push(`/revenue/property/details/${data.addProperty.property._id}`);
+			}
 		},
 	});
 
 	const [addCheck] = useMutation(ADD_CHECK_DATA, {
 		onCompleted: data => {
-			if (data?.addCheck?.newCheck) history.push(`/revenue/statement/details/${data.addCheck.newCheck._id}`);
+			if (data?.addCheck?.newCheck) {
+				history.push(`/revenue/statement/details/${data.addCheck.newCheck._id}`);
+			}
 		},
 	});
 
@@ -36,7 +43,7 @@ export default function RevenueAppBar(props) {
 		return [
 			{
 				isShow: false,
-				text: `Add Statement`,
+				text: 'Add Statement',
 				action: () => {
 					addCheck({ variables: { check: { source: 'Manual Entry' } } });
 				},
@@ -49,14 +56,13 @@ export default function RevenueAppBar(props) {
 				},
 			},
 		];
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeModule]);
 
 	const PropertyStatementAction = React.useMemo(() => {
 		return [
 			{
 				isShow: false,
-				text: `+ Add Property`,
+				text: '+ Add Property',
 				action: () => {
 					addProperty({
 						variables: {
@@ -76,7 +82,6 @@ export default function RevenueAppBar(props) {
 				},
 			},
 		];
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeModule]);
 
 	return (

@@ -1,7 +1,9 @@
 /* eslint-disable no-undef */
-import MapProvider from 'components/Map/MapProvider';
-import { basic_timeouts } from '../../../cypressUtils/data';
 import { isEqual } from 'lodash';
+
+import MapProvider from 'components/Map/MapProvider';
+
+import { basic_timeouts } from '../../../cypressUtils/data';
 
 const colors = {
 	black: {

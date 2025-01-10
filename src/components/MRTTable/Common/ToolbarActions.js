@@ -1,14 +1,21 @@
 import React, { useEffect } from 'react';
-import { ToggleButton } from '@mui/material';
+
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
-import { IconButton, Tooltip } from '@mui/material';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import GridView from 'components/MRTTable/Common/GridView';
-import TabHeader from 'components/MRSimpleTable/Common/TabHeader';
-import { globalStateController } from 'hookstate/globalStateController';
-import { excludeFilters } from './CommonToolBarActions';
+
+import { IconButton, Tooltip, ToggleButton } from '@mui/material';
+
 import _ from 'lodash';
+import PropTypes from 'prop-types';
+
+import GridView from 'components/MRTTable/Common/GridView';
+import TabHeader from 'components/MRTTable/Common/TabHeader';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { excludeFilters } from './CommonToolBarActions';
+import TableHeader from './TableHeader';
 
 function ToolbarActions({ table, tableKey, children }) {
 	const tableState = tableController(tableKey).useCompleteState();
@@ -26,12 +33,12 @@ function ToolbarActions({ table, tableKey, children }) {
 		tableStateValues?.isSelectAllAllowed &&
 		isAllRowsSelected &&
 		Object.keys(tableStateValues?.rowSelection)?.length === tableStateValues.data?.total
-	)
+	) {
 		tableController(tableKey).setIsAllRowsSelected(isAllRowsSelected);
+	}
 
 	useEffect(() => {
 		tableController(tableKey).setMrtTableRef(table);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const handleExport = () => {
@@ -86,9 +93,15 @@ function ToolbarActions({ table, tableKey, children }) {
 					selectedRows?.length > 0
 						? selectedRows.map(item => {
 								let val;
-								if (originalKey) val = _.get(item, originalKey);
-								if (func) val = func(val);
-								if (value) val = value;
+								if (originalKey) {
+									val = _.get(item, originalKey);
+								}
+								if (func) {
+									val = func(val);
+								}
+								if (value) {
+									val = value;
+								}
 								return val;
 							})
 						: null;
@@ -135,6 +148,9 @@ function ToolbarActions({ table, tableKey, children }) {
 				{tableStateValues.gridViewSettings && !isSomethingSelected && (
 					<GridView tableKey={tableKey} {...tableStateValues.gridViewSettings} />
 				)}
+				{tableStateValues.defaultHeader && !tableStateValues.gridViewSettings && (
+					<TableHeader {...tableStateValues.defaultHeader} />
+				)}
 			</div>
 			<div style={{ display: 'flex', gap: '0.5rem', marginLeft: '0.5rem' }}>
 				<div
@@ -179,7 +195,7 @@ function ToolbarActions({ table, tableKey, children }) {
 					</IconButton>
 				)}
 
-				{isSomethingSelected && !!!tableStateValues.isDeleteDisabled && (
+				{isSomethingSelected && !tableStateValues.isDeleteDisabled && (
 					<IconButton aria-label="delete" data-testid="delete-icon-button" onClick={() => handleDelete()}>
 						<Tooltip title="Delete">
 							<DeleteIcon />
@@ -190,5 +206,7 @@ function ToolbarActions({ table, tableKey, children }) {
 		</div>
 	);
 }
+
+ToolbarActions.propTypes = { table: PropTypes.object, tableKey: PropTypes.string, children: PropTypes.object };
 
 export default ToolbarActions;

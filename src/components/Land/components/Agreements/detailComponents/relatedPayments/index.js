@@ -1,14 +1,18 @@
 import React, { useMemo } from 'react';
-import { makeStyles } from '@material-ui/styles';
+
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
-import { useStyles as customStyles } from '../style';
+import { makeStyles } from '@material-ui/styles';
 
-import MultiGridsComponent from 'components/Shared/MultiGridsComponent';
-import { paymentGridsInitialData } from 'utils/data';
-import { detailCardController } from 'hookstate/detailCardController';
 import MRTTable from 'components/MRTTable';
+import MultiGridsComponent from 'components/Shared/MultiGridsComponent';
+
+import { detailCardController } from 'hookstate/detailCardController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { paymentGridsInitialData } from 'utils/data';
+
+import { useStyles as customStyles } from '../style';
 
 const useStyles = makeStyles(theme => ({
 	root: {

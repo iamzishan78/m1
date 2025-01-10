@@ -20,6 +20,6 @@ describe('SnapGrid Search Units Spec', () => {
 		cy.log(`==== STEP:Search UNIT BY NAME ${searchStrings} IN SNAPGRID ====`);
 		cy.get('.MuiTypography-displayBlock').contains('Units').click();
 		cy.get('#MapGridUnitTable', { timeout: longTimeout }).should('be.visible');
-		cy.gridSearch(searchStrings, 'getESSimpleSearch', '#mapGridCardSearch-basic');
+		cy.gridSearch(searchStrings, 'getDbData', '#mapGridCardSearch-basic');
 	});
 });

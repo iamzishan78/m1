@@ -1,20 +1,24 @@
+import React, { useContext, useState } from 'react';
+import { SortableContainer, SortableElement } from 'react-sortable-hoc';
+
 import { Grid } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
+
 import arrayMove from 'array-move';
-import React, { useContext, useState } from 'react';
-import { SortableContainer, SortableElement } from 'react-sortable-hoc';
+
 import { DashboardContext } from '../DashboardContext';
-import ProdCard from './ProdCard';
 import CardWrapper from './CardTemplate';
+import Notepad from './Notepad';
+import Notifications from './Notifications';
+import People from './People';
+import PermitsCard from './PermitsCard';
+import ProdCard from './ProdCard';
 //import TwitterCard from "./TwitterCard";
-import StockCard from './StockCard';
 import RigsCard from './RigsCard';
 import RSSFeed from './RssFeed';
-import Notifications from './Notifications';
-import PermitsCard from './PermitsCard';
+import StockCard from './StockCard';
 import Tasks from './Tasks';
-import Notepad from './Notepad';
 import TrackTaskCard from './TrackTaskCard';
 
 const useStyles = makeStyles(() => ({
@@ -83,6 +87,7 @@ const CardGrid = () => {
 		// { el: <PermitsCard title={6} />, size: "2x", key: 3 },
 		// { el: <ProdCard title={1} />, size: "2x", key: 4 },
 		{ el: <TrackTaskCard title={3} />, size: '2x', key: 5 },
+		{ el: <People title={9} />, size: '2x', key: 9 },
 		{ el: <Notepad title={8} />, size: '2x', key: 8 },
 		// { el: <TwitterCard title={2} />, size: "x", key: 6 },
 		{ el: <RSSFeed title={4} />, size: '2x', key: 7 },

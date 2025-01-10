@@ -1,7 +1,7 @@
 import React from 'react';
-import { WellProdChartContextProvider } from './WellProdChartContext';
 
 import WellProdChart from './WellProdChart';
+import { WellProdChartContextProvider } from './WellProdChartContext';
 
 function WellProdChartProvider(props) {
 	return (

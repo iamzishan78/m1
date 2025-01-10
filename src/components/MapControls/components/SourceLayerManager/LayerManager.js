@@ -1,51 +1,53 @@
 import React, { useContext, useState, useEffect } from 'react';
-import update from 'immutability-helper';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
-import { AppContext } from 'AppContext';
-import { Typography } from '@material-ui/core';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Dialog from '@material-ui/core/Dialog';
-import Checkbox from '@material-ui/core/Checkbox';
-import { Collapse } from '@material-ui/core';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import { copy, deepEqual, deepEqualObjects } from 'components/Shared/functions';
-import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
-import { ALLLAYERSETTINGSBYUSER } from 'graphQL/useQueryAllLayerSettingsByUser';
-import { useMutation } from '@apollo/client';
-import { IconButton } from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import DeleteConfirmationDialog from '../DeleteConfirmationDialog';
-import Box from '@material-ui/core/Box';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+
+import { Popper, Grow, Paper, MenuList, MenuItem, Typography, Collapse, IconButton } from '@material-ui/core';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
-import UploadIcon from 'components/Shared/svgIcons/uploadIcon';
-import EditableTextField from 'components/Shared/components/Fields/EditableTextField';
-import { truncate } from 'components/Shared/functions';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import { Popper, Grow, Paper, MenuList, MenuItem } from '@material-ui/core';
-import EditIcon from '@material-ui/icons/Edit';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import Dialog from '@material-ui/core/Dialog';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { Close as ClearButton } from '@material-ui/icons';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
-import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
-import { useHistory } from 'react-router-dom';
+import { useMutation, useLazyQuery } from '@apollo/client';
+import update from 'immutability-helper';
+import { sortBy } from 'lodash';
+import PropTypes from 'prop-types';
+
+import EditableTextField from 'components/Shared/components/Fields/EditableTextField';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+import { copy, deepEqual, deepEqualObjects, truncate } from 'components/Shared/functions';
+import UploadIcon from 'components/Shared/svgIcons/uploadIcon';
 
-import { showInfoMessage } from 'actions';
-import { useDispatch } from 'react-redux';
-import Button from '@material-ui/core/Button';
+import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
+import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
+import { ALLLAYERSETTINGSBYUSER } from 'graphQL/useQueryAllLayerSettingsByUser';
+import { GETLAYERBYID } from 'graphQL/useQueryLayerById';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
-import { useLazyQuery } from '@apollo/client';
-import { GETLAYERBYID } from 'graphQL/useQueryLayerById';
-import { sortBy } from 'lodash';
 
+import { showInfoMessage } from 'actions';
+import { AppContext } from 'AppContext';
+
+import DeleteConfirmationDialog from '../DeleteConfirmationDialog';
+
+const paddingLeft = 6;
 const useStyles = makeStyles(theme => ({
 	subHeaderItem: {
 		backgroundColor: '#011133 !important',
@@ -58,8 +60,8 @@ const useStyles = makeStyles(theme => ({
 		borderRadius: '8px',
 	},
 	nested: {
-		paddingLeft: theme.spacing(6),
-		paddingRight: theme.spacing(6),
+		paddingLeft: theme.spacing(paddingLeft),
+		paddingRight: theme.spacing(paddingLeft),
 	},
 	disabledLayerTitle: {
 		'& span': { color: 'rgb(127, 149, 199) !important' },
@@ -173,6 +175,8 @@ const StyledListItem = withStyles(theme => ({
 	},
 }))(ListItem);
 
+const THIRTY = 30;
+
 export default function AddLayer(props) {
 	const dispatch = useDispatch();
 	const classes = useStyles();
@@ -231,11 +235,6 @@ export default function AddLayer(props) {
 	};
 
 	useEffect(() => {
-		checkAllLayers(M1Layers, 'M1');
-		checkAllLayers(UdLayers, 'UD');
-	}, [currentLayers]);
-
-	useEffect(() => {
 		if (!deepEqual(currentLayers, globalStateValues.layers)) {
 			setCurrentLayers(copy(globalStateValues.layers));
 		}
@@ -245,7 +244,7 @@ export default function AddLayer(props) {
 		setAnchorEl(event.currentTarget);
 	};
 
-	const handleMenuClose = e => {
+	const handleMenuClose = () => {
 		setAnchorEl(null);
 	};
 
@@ -268,6 +267,47 @@ export default function AddLayer(props) {
 	}
 
 	useOnClickOutside({ current: anchorEl }, handleMenuClose);
+
+	const handleApplyChange = currentLayers => {
+		if (!deepEqual(currentLayers, globalStateValues.layers)) {
+			const layersToUpdate = [];
+			const layersSettingsToUpdate = [];
+			for (let i = 0; i < currentLayers.length; i++) {
+				if (!deepEqualObjects(currentLayers[i], globalStateValues.layers[i])) {
+					layersSettingsToUpdate.push({
+						_id: currentLayers[i]._id,
+						user: stateApp.user._id,
+						layer: currentLayers[i].layerId,
+						layerSettings: currentLayers[i].layerSettings,
+						layerPaintProps: currentLayers[i].layerPaintProps,
+					});
+					layersToUpdate.push({
+						_id: currentLayers[i].layerId,
+						layerName: currentLayers[i].layerName,
+						groupName: currentLayers[i].groupName,
+					});
+				}
+			}
+
+			// //// saving to stateApp
+			updateStateLayers([...currentLayers]);
+
+			//// saving to mongo
+			if (layersToUpdate.length > 0) {
+				updateManyLayer({
+					variables: {
+						layers: layersToUpdate,
+					},
+				});
+
+				updateManyUserLayerSettings({
+					variables: {
+						manySettings: layersSettingsToUpdate,
+					},
+				});
+			}
+		}
+	};
 
 	const handleCurrentLayersChange = updatedLayers => {
 		handleApplyChange(updatedLayers);
@@ -306,22 +346,6 @@ export default function AddLayer(props) {
 		}
 		setLayerData(null);
 	}, [currentLayers]);
-
-	const checkAllLayers = (layers, layerType) => {
-		let check = true;
-		if (layers) {
-			for (let index = 0; index < layers.length; index++) {
-				if (layers[index].type === 'group') {
-					if (layers[index].layers.find(layer => layer.layerSettings.showable === false)) check = false;
-				} else if (layers[index].layerSettings.showable === false) {
-					check = false;
-				}
-			}
-		}
-		if (layerType === 'M1') {
-			setSelectAllMinerallayers(check);
-		}
-	};
 
 	const handleCheckAllLayers = (layers, value, layerType) => {
 		const updatedLayers = layers.map(layer => {
@@ -380,62 +404,21 @@ export default function AddLayer(props) {
 		handleCurrentLayersChange(updatedLayers);
 	};
 
-	const handleApplyChange = currentLayers => {
-		if (!deepEqual(currentLayers, globalStateValues.layers)) {
-			const layersToUpdate = [];
-			const layersSettingsToUpdate = [];
-			for (let i = 0; i < currentLayers.length; i++) {
-				if (!deepEqualObjects(currentLayers[i], globalStateValues.layers[i])) {
-					layersSettingsToUpdate.push({
-						_id: currentLayers[i]._id,
-						user: stateApp.user._id,
-						layer: currentLayers[i].layerId,
-						layerSettings: currentLayers[i].layerSettings,
-						layerPaintProps: currentLayers[i].layerPaintProps,
-					});
-					layersToUpdate.push({
-						_id: currentLayers[i].layerId,
-						layerName: currentLayers[i].layerName,
-						groupName: currentLayers[i].groupName,
-					});
-				}
-			}
-
-			// //// saving to stateApp
-			updateStateLayers([...currentLayers]);
-
-			//// saving to mongo
-			if (layersToUpdate.length > 0) {
-				updateManyLayer({
-					variables: {
-						layers: layersToUpdate,
-					},
-				});
-
-				updateManyUserLayerSettings({
-					variables: {
-						manySettings: layersSettingsToUpdate,
-					},
-				});
-			}
-		}
-	};
-
 	const checkIfDeleteAllow = layer => {
-		if (layer.name === 'Agreements' || layer.groupName === 'Agreements') return false;
+		if (layer.name === 'Agreements' || layer.groupName === 'Agreements') {
+			return false;
+		}
 		return true;
 	};
 
 	const checkIfcustomLayerCopy = layer => {
 		const customLayers = ['Units', 'Parcels', 'Tracts', 'Agreements', 'Deeds', 'Leases', 'Contracts', 'Surfaces'];
-		if (customLayers.includes(layer.identifier)) return false;
+		if (customLayers.includes(layer.identifier)) {
+			return false;
+		}
 		// Checking if layer.layerName starts with any customLayers
 		return customLayers.some(customLayer => layer.identifier.startsWith(customLayer));
 	};
-
-	const M1Layers = React.useMemo(() => {
-		return globalStateValues.projectedLayers?.filter(layer => layer.layerCategory === 'M1 Layer');
-	}, [globalStateValues.projectedLayers]);
 
 	const UdLayers = React.useMemo(() => {
 		const layers = globalStateValues.projectedLayers?.filter(layer => layer.layerCategory === 'UD layer' || layer.file);
@@ -459,6 +442,33 @@ export default function AddLayer(props) {
 			UdLayer => !((UdLayer.layerType === 'file layer' || UdLayer.groupName === 'Agreements') && UdLayer.groupId)
 		);
 	}, [globalStateValues.projectedLayers]);
+
+	const M1Layers = React.useMemo(() => {
+		return globalStateValues.projectedLayers?.filter(layer => layer.layerCategory === 'M1 Layer');
+	}, [globalStateValues.projectedLayers]);
+	const checkAllLayers = (layers, layerType) => {
+		let check = true;
+		if (layers) {
+			for (let index = 0; index < layers.length; index++) {
+				if (layers[index].type === 'group') {
+					if (layers[index].layers.find(layer => layer.layerSettings.showable === false)) {
+						check = false;
+					}
+				} else if (layers[index].layerSettings.showable === false) {
+					check = false;
+				}
+			}
+		}
+		if (layerType === 'M1') {
+			setSelectAllMinerallayers(check);
+		}
+	};
+
+	useEffect(() => {
+		checkAllLayers(M1Layers, 'M1');
+		checkAllLayers(UdLayers, 'UD');
+	}, [currentLayers]);
+
 	return (
 		<ClickAwayListener onClickAway={() => {}}>
 			<>
@@ -487,7 +497,7 @@ export default function AddLayer(props) {
 										checked={selectAllMinerallayers}
 										color="darkgray"
 										onClick={e => e.stopPropagation()}
-										onChange={e => {
+										onChange={() => {
 											handleCheckAllLayers(M1Layers, !selectAllMinerallayers, 'M1');
 										}}
 										inputProps={{ 'aria-label': 'primary checkbox' }}
@@ -505,21 +515,21 @@ export default function AddLayer(props) {
 											const labelId = `m1layer-list-label-${index}`;
 											if (layer.layerName === 'Recent Submitted Permits') {
 												return (
-													<FeatureFlag feature={FEATURES.RECENTPERMITLAYER}>
-														<StyledListItem key={index} ContainerComponent="li">
+													<FeatureFlag key={layer.layerName} feature={FEATURES.RECENTPERMITLAYER}>
+														<StyledListItem key={labelId} ContainerComponent="li">
 															<Checkbox
 																checked={layer.layerSettings.showable}
 																color="dark gray"
 																onChange={() => changeShowAble(layer)}
 																inputProps={{ 'aria-label': 'primary checkbox' }}
 															/>
-															<ListItemText id={labelId} primary={truncate(layer.layerName, 30)} />
+															<ListItemText id={labelId} primary={truncate(layer.layerName, THIRTY)} />
 														</StyledListItem>
 													</FeatureFlag>
 												);
 											} else if (layer.layerName !== 'Recent Submitted Permits') {
 												return (
-													<StyledListItem key={index} ContainerComponent="li">
+													<StyledListItem key={layer.layerNam} ContainerComponent="li">
 														<Checkbox
 															checked={layer.layerSettings.showable}
 															color="dark gray"
@@ -529,11 +539,15 @@ export default function AddLayer(props) {
 														{/* Override layer manager name of Wells */}
 														<ListItemText
 															id={labelId}
-															primary={layer.layerName === 'Wells' ? 'Platform Wells' : truncate(layer.layerName, 30)}
+															primary={
+																layer.layerName === 'Wells' ? 'Platform Wells' : truncate(layer.layerName, THIRTY)
+															}
 														/>
 													</StyledListItem>
 												);
-											} else return null;
+											} else {
+												return null;
+											}
 										})}
 									</List>
 								</Collapse>
@@ -577,7 +591,7 @@ export default function AddLayer(props) {
 												const labelId = `udlayer-list-label-${index}`;
 												if (layer.type === 'group') {
 													return (
-														<Accordion>
+														<Accordion key={labelId}>
 															<AccordionSummary
 																// expandIcon={<ExpandMoreIcon />}
 																aria-controls="panel1a-content"
@@ -585,8 +599,11 @@ export default function AddLayer(props) {
 																style={{ paddingLeft: 0, marginTop: 0, marginBottom: 0 }}
 																onClick={() => {
 																	const _index = openUDLayers.findIndex(l => l === index);
-																	if (_index === -1) setUDLayersStates([...openUDLayers, index]);
-																	else setUDLayersStates(openUDLayers.filter(l => l !== index));
+																	if (_index === -1) {
+																		setUDLayersStates([...openUDLayers, index]);
+																	} else {
+																		setUDLayersStates(openUDLayers.filter(l => l !== index));
+																	}
 																}}
 															>
 																<StyledListItem>
@@ -594,7 +611,7 @@ export default function AddLayer(props) {
 																		checked={!!layer.layers.find(l => l.layerSettings.showable)}
 																		color="dark gray"
 																		onClick={event => event.stopPropagation()}
-																		onChange={e => changeShowAble(layer)}
+																		onChange={() => changeShowAble(layer)}
 																		inputProps={{ 'aria-label': 'primary checkbox' }}
 																	/>
 																	{/* Group */}
@@ -624,8 +641,8 @@ export default function AddLayer(props) {
 															</AccordionSummary>
 															<Box paddingLeft={2} paddingRight={2}>
 																<List className={classes.list}>
-																	{layer.layers.map((groupLayer, index) => (
-																		<StyledListItem key={index} ContainerComponent="li">
+																	{layer.layers.map(groupLayer => (
+																		<StyledListItem key={groupLayer.layerName} ContainerComponent="li">
 																			<Checkbox
 																				checked={groupLayer.layerSettings.showable}
 																				color="dark gray"
@@ -671,93 +688,193 @@ export default function AddLayer(props) {
 															layerName = FEATURES.USERTAGSLAYER;
 														}
 														return (
-															<FeatureFlag feature={layerName}>
-																<StyledListItem key={index} ContainerComponent="li">
+															<Accordion key={layerName}>
+																<AccordionSummary
+																	// expandIcon={<ExpandMoreIcon />}
+																	aria-controls="panel1a-content"
+																	id="panel1a-header"
+																	style={{ paddingLeft: 0, marginTop: 0, marginBottom: 0 }}
+																	onClick={() => {
+																		const _index = openUDLayers.findIndex(l => l === index);
+																		if (_index === -1) {
+																			setUDLayersStates([...openUDLayers, index]);
+																		} else {
+																			setUDLayersStates(openUDLayers.filter(l => l !== index));
+																		}
+																	}}
+																>
+																	<StyledListItem>
+																		<Checkbox
+																			checked={!!layer.layers.find(l => l.layerSettings.showable)}
+																			color="dark gray"
+																			onClick={event => event.stopPropagation()}
+																			onChange={() => changeShowAble(layer)}
+																			inputProps={{ 'aria-label': 'primary checkbox' }}
+																		/>
+																		{/* Group */}
+																		<EditableTextField
+																			onChange={changeLayerName}
+																			item={layer}
+																			name={layer.name}
+																			isEditable={false}
+																			showExpandIcon
+																			openUd={openUDLayers.includes(index)}
+																			openEditField={
+																				layer?.id === actionItem?.group?.id && actionItem?.type === 'editName'
+																			}
+																		/>
+																		{checkIfDeleteAllow(layer) && (
+																			<MoreHorizIcon
+																				aria-controls={'source-menu'}
+																				className={'moreIcon ' + classes.moreIcon}
+																				onClick={e => {
+																					e.stopPropagation();
+																					handleClick(e);
+																					setActionItem({ group: layer });
+																				}}
+																			/>
+																		)}
+																	</StyledListItem>
+																</AccordionSummary>
+																<Box paddingLeft={2} paddingRight={2}>
+																	<List className={classes.list}>
+																		{layer.layers.map(groupLayer => (
+																			<StyledListItem key={groupLayer.layerName} ContainerComponent="li">
+																				<Checkbox
+																					checked={groupLayer.layerSettings.showable}
+																					color="dark gray"
+																					onChange={() => changeShowAble(groupLayer)}
+																					inputProps={{ 'aria-label': 'primary checkbox' }}
+																				/>
+																				{/* Group Layer */}
+																				<EditableTextField
+																					onChange={changeLayerName}
+																					item={groupLayer}
+																					name={groupLayer.layerName}
+																					isEditable={false}
+																					openEditField={
+																						groupLayer?.layerId === actionItem?.layer?.layerId &&
+																						actionItem?.type === 'editName'
+																					}
+																				/>
+																				{checkIfDeleteAllow(groupLayer) && (
+																					<MoreHorizIcon
+																						aria-controls={'source-menu'}
+																						className={'moreSourceIcon ' + classes.moreSourceIcon}
+																						onClick={e => {
+																							e.stopPropagation();
+																							handleClick(e);
+																							setActionItem({ layer: groupLayer });
+																						}}
+																					/>
+																				)}
+																			</StyledListItem>
+																		))}
+																	</List>
+																</Box>
+															</Accordion>
+														);
+													}
+													//// remove the (layer.identifier!="Tracked Owners") if statement to show the tracked owers layer
+													if (layer.identifier !== 'Tracked Owners') {
+														if (layer.layerName === 'Tracked Wells' || layer.layerName === 'User Tags') {
+															let layerName = '';
+															if (props?.data?.layerName === 'Tracked Wells') {
+																layerName = FEATURES.TRACKEDWELLSLAYER;
+															} else if (props?.data?.layerName === 'User Tags') {
+																layerName = FEATURES.USERTAGSLAYER;
+															}
+															return (
+																<FeatureFlag key={layerName} feature={layerName}>
+																	<StyledListItem key={layerName} ContainerComponent="li">
+																		<Checkbox
+																			checked={layer.layerSettings.showable}
+																			color="dark gray"
+																			onChange={() => changeShowAble(layer)}
+																			inputProps={{ 'aria-label': 'primary checkbox' }}
+																		/>
+																		<ListItemText id={labelId} primary={layer.layerName} />
+																	</StyledListItem>
+																</FeatureFlag>
+															);
+														} else {
+															return (
+																<StyledListItem key={layer?.layerId} ContainerComponent="li">
 																	<Checkbox
 																		checked={layer.layerSettings.showable}
 																		color="dark gray"
 																		onChange={() => changeShowAble(layer)}
 																		inputProps={{ 'aria-label': 'primary checkbox' }}
 																	/>
-																	<ListItemText id={labelId} primary={layer.layerName} />
-																</StyledListItem>
-															</FeatureFlag>
-														);
-													} else {
-														return (
-															<StyledListItem key={index} ContainerComponent="li">
-																<Checkbox
-																	checked={layer.layerSettings.showable}
-																	color="dark gray"
-																	onChange={() => changeShowAble(layer)}
-																	inputProps={{ 'aria-label': 'primary checkbox' }}
-																/>
-																{layer.layerType === 'file layer' || checkIfcustomLayerCopy(layer) ? (
-																	<>
-																		{/* Layer */}
-																		<EditableTextField
-																			onChange={changeLayerName}
-																			item={layer}
-																			name={layer.layerName}
-																			isEditable={false}
-																			openEditField={
-																				layer?.layerId === actionItem?.layer?.layerId && actionItem?.type === 'editName'
-																			}
-																		/>
-
-																		{checkIfDeleteAllow(layer) && (
-																			<MoreHorizIcon
-																				aria-controls={'source-menu'}
-																				className={'moreSourceIcon ' + classes.moreSourceIcon}
-																				onClick={e => {
-																					e.stopPropagation();
-																					handleClick(e);
-																					setActionItem({ layer });
-																				}}
+																	{layer.layerType === 'file layer' || checkIfcustomLayerCopy(layer) ? (
+																		<>
+																			{/* Layer */}
+																			<EditableTextField
+																				onChange={changeLayerName}
+																				item={layer}
+																				name={layer.layerName}
+																				isEditable={false}
+																				openEditField={
+																					layer?.layerId === actionItem?.layer?.layerId &&
+																					actionItem?.type === 'editName'
+																				}
 																			/>
-																		)}
-																	</>
-																) : (
-																	<ListItemText
-																		id={labelId}
-																		primary={layer.layerName === 'Parcels' ? 'Tracts' : layer.layerName}
-																	/>
-																)}
 
-																{layer.layerName === 'Units' && (
-																	<FeatureFlag feature={FEATURES.UNITIMPORT}>
-																		<ListItemSecondaryAction>
-																			<IconButton
-																				edge="end"
-																				size="small"
-																				onClick={() => {
-																					history.push(`/bulkupload/units`);
-																				}}
-																			>
-																				<UploadIcon opacity="1.0" small />
-																			</IconButton>
-																		</ListItemSecondaryAction>
-																	</FeatureFlag>
-																)}
+																			{checkIfDeleteAllow(layer) && (
+																				<MoreHorizIcon
+																					aria-controls={'source-menu'}
+																					className={'moreSourceIcon ' + classes.moreSourceIcon}
+																					onClick={e => {
+																						e.stopPropagation();
+																						handleClick(e);
+																						setActionItem({ layer });
+																					}}
+																				/>
+																			)}
+																		</>
+																	) : (
+																		<ListItemText
+																			id={labelId}
+																			primary={layer.layerName === 'Parcels' ? 'Tracts' : layer.layerName}
+																		/>
+																	)}
 
-																{layer.layerName === 'Parcels' && (
-																	<FeatureFlag feature={FEATURES.TRACTIMPORT}>
-																		<ListItemSecondaryAction>
-																			<IconButton
-																				edge="end"
-																				size="small"
-																				onClick={() => {
-																					history.push(`/bulkupload/tracts`);
-																				}}
-																			>
-																				<UploadIcon opacity="1.0" small />
-																			</IconButton>
-																		</ListItemSecondaryAction>
-																	</FeatureFlag>
-																)}
-															</StyledListItem>
-														);
+																	{layer.layerName === 'Units' && (
+																		<FeatureFlag feature={FEATURES.UNITIMPORT}>
+																			<ListItemSecondaryAction>
+																				<IconButton
+																					edge="end"
+																					size="small"
+																					onClick={() => {
+																						history.push('/bulkupload/units');
+																					}}
+																				>
+																					<UploadIcon opacity="1.0" small />
+																				</IconButton>
+																			</ListItemSecondaryAction>
+																		</FeatureFlag>
+																	)}
+
+																	{layer.layerName === 'Parcels' && (
+																		<FeatureFlag feature={FEATURES.TRACTIMPORT}>
+																			<ListItemSecondaryAction>
+																				<IconButton
+																					edge="end"
+																					size="small"
+																					onClick={() => {
+																						history.push('/bulkupload/tracts');
+																					}}
+																				>
+																					<UploadIcon opacity="1.0" small />
+																				</IconButton>
+																			</ListItemSecondaryAction>
+																		</FeatureFlag>
+																	)}
+																</StyledListItem>
+															);
+														}
 													}
+													return null;
 												}
 												return null;
 											})}
@@ -824,3 +941,8 @@ export default function AddLayer(props) {
 		</ClickAwayListener>
 	);
 }
+
+AddLayer.propTypes = {
+	search: PropTypes.string,
+	data: PropTypes.object,
+};

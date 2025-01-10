@@ -20,24 +20,26 @@ import 'cypress-wait-until';
 import './cypress.css';
 import './commands';
 import '../component/MRT/commands';
-import '../component/TableESHOC/commands';
-import '../component/M1nTable/commands';
 import '../component/Jobs/commands';
 import '../component/Map/Draw/commands';
 import '../component/Map/LayerManager/commands';
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
-import { mount } from 'cypress/react';
+import React from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
-import Providers from 'Providers';
+import { ConnectedRouter } from 'connected-react-router';
+import { mount } from 'cypress/react';
+
 import { globalStateController } from 'hookstate/globalStateController';
+
+import Providers from 'Providers';
+import { history } from 'store';
+
 import { userData } from '../data';
 import ldata from '../fixtures/ldata.json';
-import { ConnectedRouter } from 'connected-react-router';
-import { history } from 'store';
 
 // Adds a new command 'mount' to Cypress for mounting a React component with custom global state and providers.
 Cypress.Commands.add('mount', (component, { disableContactBulkProgress, testCase, spec, mrtOverrideMeta } = {}) => {

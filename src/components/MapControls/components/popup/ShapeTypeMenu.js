@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+
 import { FormControl, InputLabel, ListItem, ListItemText, Menu, MenuItem, Select } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/styles';
-import AutoCompleteESShapeLayer from 'components/Shared/Forms/Fields/AutoCompleteESShapeLayer';
+
 import { SHAPE_TYPE } from 'components/Navigation/components/Utils/consts';
+import AutoCompleteESShapeLayer from 'components/Shared/Forms/Fields/AutoCompleteESShapeLayer';
 
 const useStyles = makeStyles({
 	selectedType: {
@@ -146,7 +148,9 @@ const ShapeTypeMenu = ({
 			{selectedType === 'existing' && (
 				<div
 					onKeyDown={e => {
-						if (e.key === 'n' || e.key === 'N') e.stopPropagation();
+						if (e.key === 'n' || e.key === 'N') {
+							e.stopPropagation();
+						}
 					}}
 				>
 					<FormControl variant="outlined" fullWidth className={shapeActionClasses.inputField} size="small">

@@ -1,21 +1,28 @@
 import React, { memo, useCallback, useEffect, useMemo, useContext } from 'react';
 import { Flipper } from 'react-flip-toolkit';
-import { Box, Paper } from '@material-ui/core';
-import update from 'immutability-helper';
-
 import Sortly, { findDescendants, findParent } from 'react-sortly';
-import LayerItem from './LayerItem';
+
+import { Box, Paper } from '@material-ui/core';
+
+import { useMutation } from '@apollo/client';
+import update from 'immutability-helper';
+import PropTypes from 'prop-types';
+
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
+
 import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
+import { UPDATEUSERLAYERMETA } from 'graphQL/useMutationupdateLayersMeta';
 import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
-import { useMutation } from '@apollo/client';
-import { AppContext } from 'AppContext';
-import { useStyles } from '../style';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
-import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
-import { UPDATEUSERLAYERMETA } from 'graphQL/useMutationupdateLayersMeta';
+
+import { AppContext } from 'AppContext';
+
+import { useStyles } from '../style';
+import LayerItem from './LayerItem';
 
 const FileTree = ({ layerMap, panelItems }) => {
 	const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
@@ -79,7 +86,9 @@ const FileTree = ({ layerMap, panelItems }) => {
 				}
 			});
 			setItems(update(previousLayers, updateFn));
-		} else setItems(currentLayers);
+		} else {
+			setItems(currentLayers);
+		}
 	};
 
 	useEffect(() => {
@@ -156,7 +165,6 @@ const FileTree = ({ layerMap, panelItems }) => {
 					manySettings: layersToUpdate.map(layer => ({ _id: layer._id, layerSettings: layer.layerSettings })),
 				},
 			});
-			// eslint-disable-next-line react-hooks/exhaustive-deps
 		},
 		[items]
 	);
@@ -262,11 +270,8 @@ const FileTree = ({ layerMap, panelItems }) => {
 				},
 				refetchQueries: ['getAllLayerSettingsByUser'],
 				awaitRefetchQueries: true,
-			}).then(({ data }) => {
-				if (data?.updateUserLayersMeta) {
-				}
 			});
-			// eslint-disable-next-line react-hooks/exhaustive-deps
+			return null;
 		},
 		[items]
 	);
@@ -294,7 +299,6 @@ const FileTree = ({ layerMap, panelItems }) => {
 					},
 				},
 			});
-			// eslint-disable-next-line react-hooks/exhaustive-deps
 		},
 		[items, panelItems]
 	);
@@ -359,6 +363,11 @@ const FileTree = ({ layerMap, panelItems }) => {
 			</Paper>
 		</Box>
 	);
+};
+FileTree.propTypes = {
+	layerMap: PropTypes.array.isRequired,
+	panelItems: PropTypes.array.isRequired,
+	data: PropTypes.object,
 };
 
 export default memo(FileTree);

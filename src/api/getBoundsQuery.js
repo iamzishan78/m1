@@ -1,25 +1,27 @@
 import { get } from 'lodash';
+import { v4 as uuid } from 'uuid';
+
 import { dividePolygon, makeGeoJSONFromStrings } from 'components/Map/DeckGL/helpers/common';
 import { copy, getPolygonString, processInBatches } from 'components/Shared/functions';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
-import { GET_ES_SIMPLE_WELLS } from 'graphQL/useQueryESSimpleSearchWells';
+import { agreementLayerIdentifiers } from 'components/Shared/functions/shapeLayer';
+
+import { ABSTRACTGEOQUERY } from 'graphQL/useQueryAbstractGeo';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+import { PLSSSECONDDIVISIONGEO } from 'graphQL/useQueryPLSSSecondDivisionGeo';
+import { RECENT_SUBMITTED_PERMITS_QUERY } from 'graphQL/useQueryRecentSubmittedPermits';
+
 import { globalStateController } from 'hookstate/globalStateController';
 import { layerController } from 'hookstate/layerStateController';
-import { v4 as uuid } from 'uuid';
-import { agreementLayerIdentifiers } from 'components/Shared/functions/shapeLayer';
-import { RECENT_SUBMITTED_PERMITS_QUERY } from 'graphQL/useQueryRecentSubmittedPermits';
-import { ABSTRACTGEOQUERY } from 'graphQL/useQueryAbstractGeo';
-import { PLSSSECONDDIVISIONGEO } from 'graphQL/useQueryPLSSSecondDivisionGeo';
 
 const queries = {
 	Wells: {
-		queryString: GET_ES_SIMPLE_WELLS,
-		getterKey: 'data.getESSimpleWells',
+		queryString: GET_DB_DATA,
+		getterKey: 'data.getDbData',
 		isWellsQuery: true,
 	},
 	search: {
-		queryString: GET_ES_SIMPLE_SEARCH,
-		getterKey: 'data.getESSimpleSearch',
+		queryString: GET_DB_DATA,
+		getterKey: 'data.getDbData',
 	},
 	'Recent Submitted Permits': {
 		queryString: RECENT_SUBMITTED_PERMITS_QUERY,
@@ -45,7 +47,9 @@ const handleQuery = (queryHandler, onData) => {
 	const { queryString, getterKey, isLandGridQuery } = queries[queryHandler.identifier] || queries['search'];
 
 	const client = layerController.getValue('client');
-	if (!client) return;
+	if (!client) {
+		return;
+	}
 
 	return new Promise(async (resolve, reject) => {
 		const query = client.watchQuery({
@@ -109,17 +113,25 @@ const getBoundsQuery = async ({
 		identifier?.toLowerCase().includes(layer.toLowerCase())
 	);
 
-	if (!filters && !isLandGridQuery) return;
+	if (!filters && !isLandGridQuery) {
+		return;
+	}
 
-	if (!queryHandlers[layerId]) queryHandlers[layerId] = [];
+	if (!queryHandlers[layerId]) {
+		queryHandlers[layerId] = [];
+	}
 
 	queryHandlers[layerId].forEach(queryHandler => {
-		if (!queryHandler.finished) queryHandler.observable.unsubscribe();
+		if (!queryHandler.finished) {
+			queryHandler.observable.unsubscribe();
+		}
 	});
 
 	const { polygon, lastBounds } = boundingState || {};
 
-	if (!polygon) return;
+	if (!polygon) {
+		return;
+	}
 
 	globalStateController.setLayerLoading(layerId, true);
 	let geoPolygons = [polygon];
@@ -140,9 +152,11 @@ const getBoundsQuery = async ({
 	geoPolygons.forEach(geoPolygon => {
 		const { variables = {} } = copy(filters || {});
 
-		if (isAgreementLayer)
+		if (isAgreementLayer) {
 			variables.filters = filters.variables.filters.map(filter => {
-				if (filter.field !== 'shapeJson.properties.type.keyword') return filter;
+				if (filter.field !== 'shapeJson.properties.type.keyword') {
+					return filter;
+				}
 				return {
 					field: 'layer.keyword',
 					value: agreementLayerIdentifiers
@@ -151,10 +165,13 @@ const getBoundsQuery = async ({
 						.replace(/s$/, ''),
 				};
 			});
+		}
 
 		if (isLandGridQuery) {
 			const polygonString = getPolygonString(geoPolygon);
-			if (polygonString) variables.polygon = polygonString;
+			if (polygonString) {
+				variables.polygon = polygonString;
+			}
 		} else {
 			variables.filters.push({
 				type: 'geo_intersects',
@@ -184,6 +201,15 @@ const getBoundsQuery = async ({
 				name: 1,
 				fileId: 1,
 				type: 1,
+				'properties.layerShapeName': 1,
+			});
+		} else if (isWellsQuery) {
+			Object.assign(variables.project, {
+				api: 1,
+				id: 1,
+				wellName: 1,
+				wellType: 1,
+				wellStatus: 1,
 			});
 		} else {
 			Object.assign(variables.project, {
@@ -233,14 +259,18 @@ const getBoundsQuery = async ({
 		if (!queryHandler.finished) {
 			const promise = handleQuery(queryHandler, onData);
 			newPromises.push(promise);
-		} else queryHandler.observable.unsubscribe();
+		} else {
+			queryHandler.observable.unsubscribe();
+		}
 
 		return !queryHandler.finished;
 	});
 	await processInBatches(newPromises, 10);
 
 	queryHandlers[layerId] = queryHandlers[layerId].filter(queryHandler => {
-		if (queryHandler.finished) queryHandler.observable.unsubscribe();
+		if (queryHandler.finished) {
+			queryHandler.observable.unsubscribe();
+		}
 
 		return !queryHandler.finished;
 	});

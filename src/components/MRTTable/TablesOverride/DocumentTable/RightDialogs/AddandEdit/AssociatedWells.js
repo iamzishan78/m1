@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+
 import {
 	Grid,
 	ListItemText,
@@ -11,12 +12,14 @@ import {
 	Tooltip,
 	InputBase,
 } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import IconButton from '@material-ui/core/IconButton';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import SearchIcon from '@material-ui/icons/Search';
+
+import { useMutation } from '@apollo/client';
 
 //Contexts
 import { DocumentContextProvider, DocumentContext } from 'components/Document/DocumentContext';
@@ -25,11 +28,11 @@ import { DocumentContextProvider, DocumentContext } from 'components/Document/Do
 import WellSearchApiFieldES from 'components/Shared/Forms/Fields/WellSearchApiFieldES';
 
 // Hooks
-import { useMutation } from '@apollo/client';
 
 // Mutations
-import { DELETEWELLFROMFILEDESCRIPTOR } from 'graphQL/useMutationDeleteWellFromFileDescriptor';
 import { ADD_WELL_TO_FILE_DESCRIPTOR } from 'graphQL/useMutationAddWellToFileDescriptor';
+import { DELETEWELLFROMFILEDESCRIPTOR } from 'graphQL/useMutationDeleteWellFromFileDescriptor';
+
 import { globalStateController } from 'hookstate/globalStateController';
 
 const useStyles = makeStyles(theme => ({
@@ -152,12 +155,13 @@ const AssociatedWellsList = ({ title, selectedDocument }) => {
 
 	// Fetching wells from descriptor
 	useEffect(() => {
-		if (selectedDocument)
+		if (selectedDocument) {
 			getWellsFromDocument({
 				variables: {
 					descriptorObject: selectedDocument._id,
 				},
 			});
+		}
 	}, []);
 
 	// delete well from File Descriptor

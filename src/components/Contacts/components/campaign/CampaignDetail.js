@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { debounce, get } from 'lodash';
-import { isEmpty } from 'underscore';
-import { useDispatch } from 'react-redux';
-import { useMutation, useLazyQuery } from '@apollo/client';
 import { useForm, Controller } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 import { useParams, useHistory } from 'react-router-dom';
-import { withStyles } from '@material-ui/styles';
+
 import {
 	Typography,
 	Button,
@@ -22,24 +19,29 @@ import {
 	CircularProgress,
 } from '@material-ui/core';
 import { InfoOutlined as InfoOutlinedIcon, MoreHoriz as MoreHorizIcon, Delete as DeleteIcon } from '@material-ui/icons';
+import { withStyles } from '@material-ui/styles';
 
-// Components
-import NavHeader from 'components/Land/components/Common/NavHeader';
+import { useMutation, useLazyQuery } from '@apollo/client';
+import { debounce, get } from 'lodash';
+import { isEmpty } from 'underscore';
+
 import CampaignHeader from 'components/Contacts/components/campaign/CampaignHeaderSection';
 import CampaignRelatedGrids from 'components/Contacts/components/campaign/CampaignRelatedGrids';
-import Tags from 'components/Shared/Tagger';
+import NavHeader from 'components/Land/components/Common/NavHeader';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import DocViewer from 'components/Shared/DocViewer';
+import Tags from 'components/Shared/Tagger';
 
-// Queries & Mutations
 import { UPDATE_CAMPAIGN } from 'graphQL/useMutationCampaign';
-
 import { GET_CAMPAIGN } from 'graphQL/useQueryCampaign';
-import { useStyles } from './styles';
-import { showInfoMessage } from 'actions';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+
 import { globalStateController } from 'hookstate/globalStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { showInfoMessage } from 'actions';
+
+import { useStyles } from './styles';
 
 const StyledTabs = withStyles({
 	root: {
@@ -87,7 +89,9 @@ const StyledTab = withStyles(theme => ({
 const CampaignDetail = ({ viewDoc }) => {
 	const { stateValues } = globalStateController.useState(['testCase']);
 	let { campaignId } = useParams();
-	if (stateValues?.testCase?.campaignId) campaignId = stateValues?.testCase?.campaignId;
+	if (stateValues?.testCase?.campaignId) {
+		campaignId = stateValues?.testCase?.campaignId;
+	}
 	const history = useHistory();
 	const dispatch = useDispatch();
 	const [metaCollapse, setMetaCollapse] = useState(true);
@@ -120,18 +124,19 @@ const CampaignDetail = ({ viewDoc }) => {
 	// const campaign = useMemo(() => get(campaignData, "getCampaign", {}), [campaignData]);
 
 	useEffect(() => {
-		if (campaignId)
+		if (campaignId) {
 			getCampaign({
 				variables: {
 					campaignId,
 				},
 			});
+		}
 	}, [campaignId, getCampaign]);
 
 	useEffect(() => {
-		if (campaignContactTableStateValues.isCampaignRefetch || CampaignUnitTableValues.isCampaignRefetch)
+		if (campaignContactTableStateValues.isCampaignRefetch || CampaignUnitTableValues.isCampaignRefetch) {
 			refetchCampaign();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		}
 	}, [globalStateValues?.refetch]);
 
 	useEffect(() => {
@@ -159,8 +164,6 @@ const CampaignDetail = ({ viewDoc }) => {
 				history.goBack();
 			}
 		};
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const updateCampaignInformation = (key, value) => {
@@ -200,18 +203,24 @@ const CampaignDetail = ({ viewDoc }) => {
 
 	const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
 
-	const handleScroll = e => {
+	const handleScroll = () => {
 		if (!isButtonScroll) {
 			let activeTab = 0;
-			if (getRelativePosition('header-div') < 5) activeTab = 0;
-			if (getRelativePosition('detail-div') < 30) activeTab = 1;
+			if (getRelativePosition('header-div') < 5) {
+				activeTab = 0;
+			}
+			if (getRelativePosition('detail-div') < 30) {
+				activeTab = 1;
+			}
 
-			if (tab !== activeTab) setTab(activeTab);
+			if (tab !== activeTab) {
+				setTab(activeTab);
+			}
 		}
 		handleEndScroll();
 	};
 
-	if (!campaignData && loading)
+	if (!campaignData && loading) {
 		return (
 			<div
 				style={{
@@ -230,6 +239,7 @@ const CampaignDetail = ({ viewDoc }) => {
 				/>
 			</div>
 		);
+	}
 
 	return (
 		<NavHeader title={campaignName}>
@@ -264,7 +274,7 @@ const CampaignDetail = ({ viewDoc }) => {
 														notchedOutline: classes.notchedOutline,
 													},
 												}}
-												onFocus={e => {
+												onFocus={() => {
 													// Set focus on the input element when the TextField is clicked
 													inputRef.current && inputRef.current.focus();
 												}}
@@ -405,15 +415,13 @@ const CampaignDetail = ({ viewDoc }) => {
 				</MenuItem>
 			</Menu>
 			<Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)} fullWidth={true} maxWidth={'sm'}>
-				<DeleteConfirmationDialogContent
-					header={`Delete Campaign`}
+				<DeleteConfirmationDialog
+					header={'Delete Campaign'}
 					onClose={() => setOpenDeleteDialog(false)}
 					deleteFunc={() => updateCampaignInformation('isDeleted', true)}
-					m1nSelectedRowsIds={[campaign.current?._id]}
-					setM1nSelectedRowsIndexes={() => {}}
 				>
-					{`Do you want to delete this campaign?`}
-				</DeleteConfirmationDialogContent>
+					{'Do you want to delete this campaign?'}
+				</DeleteConfirmationDialog>
 			</Dialog>
 		</NavHeader>
 	);

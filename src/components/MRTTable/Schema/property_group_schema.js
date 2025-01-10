@@ -1,14 +1,17 @@
-// Importing necessary dependencies and components
-import { ErrorOutline } from '@material-ui/icons';
+/* eslint-disable react/prop-types */
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+
+import { ErrorOutline } from '@material-ui/icons';
+
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import WellIcon from '../../../components/Shared/svgIcons/well.js';
-import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink.js';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
-import { LocalAtm as CurrencyIcon } from '@material-ui/icons';
+
+import WellIcon from '../../../components/Shared/svgIcons/well.js';
+
 // Elasticsearch index for properties
 const esIndex = 'properties_flat';
 
@@ -24,16 +27,8 @@ const ReportingGroupsMeta = {
 	maxTableHeight: 'calc(100vh - 300px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
-	isNotBreadcrumbView: true, // Flag to determine whether to display a simple Typography or a Breadcrumbs component. If true, Typography is rendered; if false, Breadcrumbs is rendered.
-	gridViewSettings: {
+	defaultHeader: {
 		label: 'Properties',
-		Icon: 'none',
-		cssOverride: {
-			top: '461px',
-			left: '40px',
-			marginLeft: '-25px',
-			maxHeight: '445px',
-		},
 	},
 	// Definition of table schema
 	TableSchema: [
@@ -41,19 +36,19 @@ const ReportingGroupsMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
-			accessorKey: 'id',
+			id: 'id',
 		},
 		// Allow M1neral System ID to export in Grid
 		{
 			...CommonSchema.MONGO_ID,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 		// Column for Property with link
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'purchaserNumber.keyword',
-			accessorKey: 'purchaserNumber',
+			id: 'purchaserNumber',
 			header: 'Property',
 			// Cell rendering for Property column
 			Cell: ({ row }) => {
@@ -105,7 +100,6 @@ const ReportingGroupsMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: 'name.keyword',
-			accessorFn: row => row?.name,
 			header: 'Property Name',
 			id: 'name',
 			isSearchField: true,
@@ -114,91 +108,84 @@ const ReportingGroupsMeta = {
 		},
 		// Columns for Well API Number and Well Name
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wells.apiNumber.keyword',
-			accessorFn: row => row?.wells,
 			id: 'wells.apiNumber',
 			header: 'Well API#',
 			isExport: 'apiNumber',
 			Cell: ({ renderedCellValue }) => {
-				if (renderedCellValue?.length > 0)
+				if (renderedCellValue?.length > 0) {
 					return renderedCellValue?.length > 1 ? 'MULTIPLE' : renderedCellValue[0].apiNumber;
-				else return '';
+				} else {
+					return '';
+				}
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wells.wellName.keyword',
-			accessorFn: row => row?.wells,
 			id: 'wells.wellName',
 			header: 'Well Name',
 			isExport: 'wellName',
 			Cell: ({ renderedCellValue }) => {
-				if (renderedCellValue?.length > 0)
+				if (renderedCellValue?.length > 0) {
 					return renderedCellValue?.length > 1 ? 'MULTIPLE' : renderedCellValue[0].wellName;
-				else return '';
+				} else {
+					return '';
+				}
 			},
 		},
 		// Columns for Property details
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'purchaserNumber.keyword',
-			accessorFn: row => row?.purchaserNumber,
 			header: 'Payor Prop #',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'purchaser.name.keyword',
-			accessorFn: row => row?.purchaser?.name,
 			id: 'purchaser.name',
 			header: 'Purchaser',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'purchaser.name.keyword',
-			accessorFn: row => row?.purchaser?.name,
 			id: 'purchaser.name',
 			header: 'Payor',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'number.keyword',
-			accessorFn: row => row?.number,
 			id: 'number',
 			header: 'Operator Prop #',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'operator.name.keyword',
-			accessorFn: row => row?.operator?.name,
 			id: 'operator.name',
 			header: 'Operator',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'state.keyword',
-			accessorFn: row => row?.state,
 			id: 'state',
 			header: 'State',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'county.keyword',
-			accessorFn: row => row?.county,
 			id: 'county',
 			header: 'County',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'description.keyword',
-			accessorFn: row => row?.description,
 			id: 'description',
 			header: 'Property Description',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'status.keyword',
-			accessorFn: row => row?.status,
 			id: 'status',
 			header: 'Pay Status',
 			type: 'defaultFiltersOptions',
@@ -208,23 +195,21 @@ const ReportingGroupsMeta = {
 			],
 			// Cell rendering for Pay Status column
 			Cell: ({ row }) => {
-				const { status } = row?.original;
+				const { status } = row.original;
 				const formattedStatus = status ? (status === 'InPay' ? 'In Pay' : 'Not in Pay') : '';
 				return <div>{formattedStatus}</div>;
 			},
 		},
 		// Columns for last check details
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'lastCheck.checkNumber.keyword',
-			accessorFn: row => row?.lastCheck?.checkNumber,
 			id: 'lastCheck.checkNumber',
 			header: 'Last Check#',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'lastCheck.checkDate',
-			accessorFn: row => row?.lastCheck?.checkDate,
 			id: 'lastCheck.checkDate',
 			header: 'Last Check',
 			simple: true,
@@ -237,51 +222,44 @@ const ReportingGroupsMeta = {
 		},
 		// Columns for additional property details
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'prospectID.keyword',
-			accessorFn: row => row?.prospectID,
 			id: 'prospectID',
 			header: 'Prospect',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'acquisitionID.keyword',
-			accessorFn: row => row?.acquisitionID,
 			id: 'acquisitionID',
 			header: 'Acquisition ID',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'internalID.keyword',
-			accessorFn: row => row?.internalID,
 			id: 'internalID',
 			header: 'Accounting Ref ID',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'internalCompany.keyword',
-			accessorFn: row => row?.internalCompany,
 			id: 'internalCompany',
 			header: 'Internal Company',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'owner.name.keyword',
-			accessorFn: row => row?.owner?.name,
 			id: 'owner.name',
 			header: 'Owner Name',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'source.keyword',
-			accessorFn: row => row?.source,
 			id: 'source',
 			header: 'Source',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'approvalStatus.keyword',
-			accessorFn: row => row?.approvalStatus,
 			id: 'approvalStatus',
 			header: 'Status',
 		},

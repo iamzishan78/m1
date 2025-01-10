@@ -1,29 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { MuiThemeProvider, createTheme } from '@material-ui/core/styles';
-import { AppProvider, setApolloHeaders } from './AppContext';
-import GlobalApolloClientProvider from './GlobalApolloClientProvider';
-import { toast, ToastContainer } from 'react-toastify';
-//components
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import ContactBulkProgress from './components/BulkUpload/ContactBulkProgress';
-// pick a date util library
-import MomentUtils from '@date-io/moment';
-import { CircularProgress } from '@material-ui/core';
-
-//graphQL - queries in ./graphQL example usage in ./components/Maps.js
-import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
-import { HttpLink } from 'apollo-link-http';
-import { BatchHttpLink } from 'apollo-link-batch-http';
-import { split } from 'apollo-link';
-import { relayStylePagination } from './graphQL/apolloPaginationSchemes.js';
-// import ProfileProvider from "./components/Profile/ProfileProvider";
-// import ProfileDetailsProvider from "./components/Profile/ProfileDetailsProvider";
-import Notifications from './components/Notifications/Notifications';
-//redux
 import { Provider as ReduxProvider } from 'react-redux';
-import configureStore from './store';
+import { toast, ToastContainer } from 'react-toastify';
+
+import { CircularProgress } from '@material-ui/core';
+import { MuiThemeProvider, createTheme } from '@material-ui/core/styles';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+
+import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
+import MomentUtils from '@date-io/moment';
+import { split } from 'apollo-link';
+import { BatchHttpLink } from 'apollo-link-batch-http';
+import { HttpLink } from 'apollo-link-http';
+import PropTypes from 'prop-types';
+
 import { globalStateController } from 'hookstate/globalStateController';
+
 import { getSession } from 'utils/user';
+
+import { AppProvider, setApolloHeaders } from './AppContext';
+import ContactBulkProgress from './components/BulkUpload/ContactBulkProgress';
+import Notifications from './components/Notifications/Notifications';
+import GlobalApolloClientProvider from './GlobalApolloClientProvider';
+import { relayStylePagination } from './graphQL/apolloPaginationSchemes.js';
+import configureStore from './store';
 
 // user management
 const store = configureStore(/ provide initial state if any /);
@@ -92,32 +94,16 @@ const theme = createTheme({
 	},
 });
 
-function Providers({ children, headersData }) {
+function Providers({ children }) {
 	const [apolloClient, setApolloClient] = useState(null);
+
 	useEffect(() => {
+		globalStateController.updateState({ client: apolloClient });
+		// eslint-disable-next-line no-new
 		new GlobalApolloClientProvider(apolloClient);
 	}, [apolloClient]);
 
 	const { stateValues } = globalStateController.useState(['apolloClientEndpoint', 'user', 'cypress']);
-
-	useEffect(() => {
-		if (stateValues.apolloClientEndpoint) {
-			const authToken = globalStateController.getValue('x_zumo_auth') || stateValues?.user?.authToken;
-			const accessToken = globalStateController.getValue('access_token') || stateValues?.user?.accessToken;
-			updateApolloClient(stateValues.apolloClientEndpoint, authToken, accessToken);
-		} else {
-			updateApolloClient();
-		}
-	}, [stateValues.apolloClientEndpoint, stateValues?.user]);
-
-	// useEffect(() => {
-	//   let draggableArea = document.getElementById("root");
-	//   if (window.location.pathname === "/" || window.location.pathname.startsWith("/map/")) {
-	//     draggableArea.style.overflow = "hidden";
-	//   } else {
-	//     draggableArea.style.overflow = "visible";
-	//   }
-	// }, [stateApp]);
 
 	const updateApolloClient = (endpoint, token, idToken) => {
 		const session = getSession();
@@ -128,8 +114,12 @@ function Providers({ children, headersData }) {
 		}
 
 		let fetchOptions = { headers: [] };
-		if (token) fetchOptions.headers['X-ZUMO-AUTH'] = token;
-		if (idToken) fetchOptions.headers['X-MS-TOKEN-AAD-ID-TOKEN'] = idToken;
+		if (token) {
+			fetchOptions.headers['X-ZUMO-AUTH'] = token;
+		}
+		if (idToken) {
+			fetchOptions.headers['X-MS-TOKEN-AAD-ID-TOKEN'] = idToken;
+		}
 		const cypress = globalStateController.getValue('cypress');
 		if (cypress) {
 			fetchOptions.headers['CYPRESS'] = 'true';
@@ -165,13 +155,13 @@ function Providers({ children, headersData }) {
 				},
 			});
 
-			setApolloClient((state, props) => {
+			setApolloClient(() => {
 				return client;
 			});
 		}
 
 		if (apolloClient && endpoint) {
-			setApolloClient((state, props) => {
+			setApolloClient(state => {
 				const httpLink = new HttpLink({ uri: endpoint, headers: {}, ...fetchOptions });
 				const httpBatchLink = new BatchHttpLink({
 					uri: endpoint,
@@ -187,6 +177,16 @@ function Providers({ children, headersData }) {
 		}
 	};
 
+	useEffect(() => {
+		if (stateValues.apolloClientEndpoint) {
+			const authToken = globalStateController.getValue('x_zumo_auth') || stateValues?.user?.authToken;
+			const accessToken = globalStateController.getValue('access_token') || stateValues?.user?.accessToken;
+			updateApolloClient(stateValues.apolloClientEndpoint, authToken, accessToken);
+		} else {
+			updateApolloClient();
+		}
+	}, [stateValues.apolloClientEndpoint, stateValues?.user]);
+
 	return (
 		<ReduxProvider store={store}>
 			<Notifications />
@@ -199,8 +199,10 @@ function Providers({ children, headersData }) {
             </FeatureFlag> */}
 						<MuiThemeProvider theme={theme}>
 							<MuiPickersUtilsProvider utils={MomentUtils}>
-								{!stateValues?.cypress?.disableContactBulkProgress && <ContactBulkProgress />}
-								{children}
+								<LocalizationProvider dateAdapter={AdapterDayjs}>
+									{!stateValues?.cypress?.disableContactBulkProgress && <ContactBulkProgress />}
+									{children}
+								</LocalizationProvider>
 							</MuiPickersUtilsProvider>
 						</MuiThemeProvider>
 					</ApolloProvider>
@@ -211,5 +213,9 @@ function Providers({ children, headersData }) {
 		</ReduxProvider>
 	);
 }
+
+Providers.propTypes = {
+	children: PropTypes.node.isRequired, // Ensures `children` is a valid React node and required
+};
 
 export default Providers;

@@ -1,7 +1,9 @@
 import React, { memo } from 'react';
+
 import { globalStateController } from 'hookstate/globalStateController';
-import Portals from './components/portals';
+
 import LayerManager from './components/LayerManager';
+import Portals from './components/portals';
 
 function DeckGLComponent({ hideShape }) {
 	return (
@@ -17,7 +19,9 @@ const DeckGLComponentMemo = React.memo(DeckGLComponent);
 
 function DeckGL({ hideShape }) {
 	const { stateValues } = globalStateController.useState(['mapReady']);
-	if (!stateValues.mapReady || !window.mapRef) return null;
+	if (!stateValues.mapReady || !window.mapRef) {
+		return null;
+	}
 
 	return <DeckGLComponentMemo hideShape={hideShape} mapId={window?.mapRef?._mapId} />;
 }

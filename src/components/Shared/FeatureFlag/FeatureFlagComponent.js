@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { globalStateController } from 'hookstate/globalStateController';
 
 export function FeatureFlag({ children, feature, noAccess, noCheck }) {

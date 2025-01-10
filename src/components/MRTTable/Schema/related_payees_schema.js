@@ -1,10 +1,13 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import RelatedPayeesToolbar from '../TablesOverride/RelatedPayeesTable/RelatedPayeesToolbar';
-import { getArrayValue } from '../utils/helper';
-import { tableGlobalController } from 'hookstate/tableController';
-import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+/* eslint-disable react/prop-types */
+import React from 'react';
+
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+
+import { TO_FIXED } from 'utils/consts';
+
+import RelatedPayeesToolbar from '../TablesOverride/RelatedPayeesTable/RelatedPayeesToolbar';
 
 const esIndex = 'contacts_flat';
 
@@ -19,24 +22,23 @@ const RelatedPaymentsMeta = {
 	maxTableHeight: 'calc(100vh - 550px)',
 	CustomToolBar: RelatedPayeesToolbar,
 	isInFiniteScroll: true,
-	columnReordering: false,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
-			accessorKey: 'id',
+			id: 'id',
 		},
 		{
 			...CommonSchema.HIDDEN,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'payments.payeeName.keyword',
-			accessorFn: row => row?.payments?.payeeName,
 			id: 'payments.payeeName',
 			header: 'Payee Name',
+			isArrayKey: true,
 			handleArrayExport: {
 				esType: 'array',
 				// field in data array that will be matched
@@ -47,8 +49,7 @@ const RelatedPaymentsMeta = {
 				actualKey: 'payeeName',
 			},
 			Cell: ({ row }) => {
-				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
-				const value = getArrayValue(row.original.payments, 'payeeName', paymentId, 'paymentId');
+				const value = row.original?.payments?.payeeName || '';
 				return (
 					<div
 						style={{
@@ -68,11 +69,11 @@ const RelatedPaymentsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'payments.payeeAddress.keyword',
-			accessorFn: row => row?.payments?.payeeAddress,
 			id: 'payments.payeeAddress',
 			header: 'Payee Address',
+			isArrayKey: true,
 			handleArrayExport: {
 				esType: 'array',
 				// field in data array that will be matched
@@ -82,18 +83,14 @@ const RelatedPaymentsMeta = {
 				// field that needs to be exported from matched object
 				actualKey: 'payeeAddress',
 			},
-			Cell: ({ row }) => {
-				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
-				return getArrayValue(row.original.payments, 'payeeAddress', paymentId, 'paymentId');
-			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'payments.paymentAllocation.keyword',
-			accessorFn: row => row?.payments?.paymentAllocation,
 			id: 'payments.paymentAllocation',
 			header: 'Payment Allocation',
 			type: 'number',
+			isArrayKey: true,
 			handleArrayExport: {
 				esType: 'array',
 				// field in data array that will be matched
@@ -104,18 +101,17 @@ const RelatedPaymentsMeta = {
 				actualKey: 'paymentAllocation',
 			},
 			Cell: ({ row }) => {
-				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
-				const value = getArrayValue(row.original.payments, 'paymentAllocation', paymentId, 'paymentId');
-				return value ? `${Number(value).toFixed(2)}%` : value === 0 ? `0%` : '';
+				const value = row.original?.payments?.paymentAllocation;
+				return value ? `${Number(value).toFixed(TO_FIXED)}%` : value === 0 ? '0%' : '';
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'payments.paymentAmount.keyword',
-			accessorFn: row => row?.payments?.paymentAmount,
 			id: 'payments.paymentAmount',
 			header: 'Payment Amount',
 			type: 'number',
+			isArrayKey: true,
 			handleArrayExport: {
 				esType: 'array',
 				// field in data array that will be matched
@@ -125,18 +121,13 @@ const RelatedPaymentsMeta = {
 				// field that needs to be exported from matched object
 				actualKey: 'paymentAmount',
 			},
-			Cell: ({ row }) => {
-				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
-				const value = getArrayValue(row.original.payments, 'paymentAmount', paymentId, 'paymentId');
-				return value ? vf_currency_to_fixed(parseFloat(value), 2) : value === 0 ? `$0` : '';
-			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'payments.status.keyword',
-			accessorFn: row => row?.payments?.status,
 			id: 'payments.status',
 			header: 'Status',
+			isArrayKey: true,
 			handleArrayExport: {
 				esType: 'array',
 				// field in data array that will be matched
@@ -145,10 +136,6 @@ const RelatedPaymentsMeta = {
 				referenceValueKey: 'paymentId',
 				// field that needs to be exported from matched object
 				actualKey: 'status',
-			},
-			Cell: ({ row }) => {
-				const { paymentId } = tableGlobalController.getValue('paymentMultiGrid');
-				return getArrayValue(row.original.payments, 'status', paymentId, 'paymentId');
 			},
 		},
 		{

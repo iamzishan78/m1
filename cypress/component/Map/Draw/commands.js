@@ -1,15 +1,20 @@
 /* eslint-disable no-undef */
 import { capitalize, isEqual } from 'lodash';
-import { basic_timeouts } from '../../../cypressUtils/data';
+
 import { copy } from 'components/Shared/functions';
+
 import { popupController } from 'hookstate/popupStateController';
+
+import { basic_timeouts } from '../../../cypressUtils/data';
 
 // Custom Cypress command to open a shape on the map
 Cypress.Commands.add('openShape', ({ x, y, callback, newCustomLayer }) => {
 	let jsonLayer;
 	let popupStateVal;
 
-	if (newCustomLayer.shapeJson) jsonLayer = copy(newCustomLayer.shapeJson);
+	if (newCustomLayer.shapeJson) {
+		jsonLayer = copy(newCustomLayer.shapeJson);
+	}
 
 	jsonLayer.layer = { id: newCustomLayer.layer };
 	jsonLayer.id = newCustomLayer._id;
@@ -108,11 +113,15 @@ Cypress.Commands.add('drawShape', ({ drawType, points }) => {
 
 			// Iterating over each point to draw the polygon
 			points.forEach((point, index) => {
-				if (index > 0) canvas.trigger('mousemove', point.x, point.y); // Moving mouse to draw next point
+				if (index > 0) {
+					canvas.trigger('mousemove', point.x, point.y);
+				} // Moving mouse to draw next point
 
 				canvas.click(point.x, point.y); // Clicking to add a point
 
-				if (index === points.length - 1) canvas.click(point.x, point.y); // Clicking on the last point to complete the polygon
+				if (index === points.length - 1) {
+					canvas.click(point.x, point.y);
+				} // Clicking on the last point to complete the polygon
 			});
 
 			break;

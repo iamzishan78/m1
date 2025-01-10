@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useHistory, useLocation } from 'react-router-dom';
-import clsx from 'clsx';
-import get from 'lodash/get';
-import { makeStyles } from '@material-ui/core/styles';
+
 import {
+	IconButton,
 	Menu,
 	MenuItem,
 	ListItemIcon,
@@ -14,26 +13,28 @@ import {
 	CircularProgress,
 } from '@material-ui/core';
 import Drawer from '@material-ui/core/Drawer';
+import { makeStyles } from '@material-ui/core/styles';
+import DeleteIcon from '@material-ui/icons/Delete';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import RightActionsPanel from './RightActionsPanel';
+
+import { useMutation, useApolloClient } from '@apollo/client';
+import clsx from 'clsx';
+import get from 'lodash/get';
+
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import CloseIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
-import { IconButton } from '@material-ui/core';
-// import DeleteIcon from "@material-ui/icons/Delete";
-import { useApolloClient } from '@apollo/client';
-import DeleteIcon from '@material-ui/icons/Delete';
-import { useMutation } from '@apollo/client';
+import { DELETE_MY_WELL } from 'graphQL/useMutationDeleteMyWell';
 import { GET_MY_WELL_BY_GLOBAL_ID } from 'graphQL/useQueryMyWellByGlobalId';
 import { WELL_SUMMARY_WITH_HEADER } from 'graphQL/useQueryWellWithHeader';
-import { DELETE_MY_WELL } from 'graphQL/useMutationDeleteMyWell';
+
+import { globalStateController } from 'hookstate/globalStateController';
 import { tableGlobalController } from 'hookstate/tableController';
 
-// Components
 import AddMyWell from './AddMyWell';
-import RevenueProperties from './RevenueProperties';
 import Agreements from './Agreements';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
-import { globalStateController } from 'hookstate/globalStateController';
+import RevenueProperties from './RevenueProperties';
+import RightActionsPanel from './RightActionsPanel';
 
 const useStyles = makeStyles({
 	drawer: {
@@ -175,8 +176,12 @@ export default function MyWellDialog() {
 	const location = useLocation();
 	const params = new URLSearchParams(location.search);
 	let mongoWellId = params.get('mongoWellId');
-	if (stateValues?.testCase?.globalWellId) globalWellId = stateValues?.testCase?.globalWellId;
-	if (stateValues?.testCase?.mongoWellId) mongoWellId = stateValues?.testCase?.mongoWellId;
+	if (stateValues?.testCase?.globalWellId) {
+		globalWellId = stateValues?.testCase?.globalWellId;
+	}
+	if (stateValues?.testCase?.mongoWellId) {
+		mongoWellId = stateValues?.testCase?.mongoWellId;
+	}
 
 	const history = useHistory();
 	const client = useApolloClient();
@@ -188,7 +193,7 @@ export default function MyWellDialog() {
 		},
 	});
 
-	const toggleDrawer = (anchor, open) => event => {
+	const toggleDrawer = () => event => {
 		if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
 			return;
 		}
@@ -202,9 +207,13 @@ export default function MyWellDialog() {
 
 	const dialogTitle = useMemo(() => {
 		if (activePanel === 'Add New Well') {
-			if (globalWellId) return 'Update Well Details';
+			if (globalWellId) {
+				return 'Update Well Details';
+			}
 			return activePanel;
-		} else return 'Well Details';
+		} else {
+			return 'Well Details';
+		}
 	}, [activePanel, globalWellId]);
 
 	const handleWellDetail = async well => {
@@ -228,7 +237,9 @@ export default function MyWellDialog() {
 			const promises = await Promise.all([wellHeader, myWell]);
 			const { data: dataWell } = promises[0];
 			let platformWellData = {};
-			if (dataWell?.wellSummaryWithHeaderDetails) platformWellData = { ...dataWell.wellSummaryWithHeaderDetails };
+			if (dataWell?.wellSummaryWithHeaderDetails) {
+				platformWellData = { ...dataWell.wellSummaryWithHeaderDetails };
+			}
 			const { data: wellDataResp } = promises[1];
 			platformWellData = {
 				...platformWellData,
@@ -245,7 +256,6 @@ export default function MyWellDialog() {
 			platformWellData.completionDate = platformWellData.CompletionDate;
 
 			setPlatformWell(platformWellData);
-			return platformWellData;
 		}
 	};
 
@@ -264,7 +274,7 @@ export default function MyWellDialog() {
 				myWellId: platformWell?._id || platformWell?.tenantWellId,
 			},
 		}).then(
-			res => {
+			() => {
 				tableGlobalController.refetch(); // refetch the MRTtable data
 			},
 			() => {
@@ -282,15 +292,13 @@ export default function MyWellDialog() {
 					onClose={() => setOpenDeleteConfirmDialog(false)}
 					style={{ zIndex: 99999999999 }}
 				>
-					<DeleteConfirmationDialogContent
+					<DeleteConfirmationDialog
 						header="Delete Document"
 						onClose={() => setOpenDeleteConfirmDialog(false)}
 						deleteFunc={handleDeleteAccept}
-						m1nSelectedRowsIds={[document._id]}
-						setM1nSelectedRowsIndexes={() => {}}
 					>
 						Do you want to delete the selected my well?
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 				<Dialog open={loading} style={{ zIndex: 99999999999 }}>
 					<DialogTitle id="alert-dialog-title">

@@ -1,5 +1,6 @@
 import { get } from 'lodash';
 
+// eslint-disable-next-line no-unused-vars
 const onClickedRow = selectedRow => {};
 
 const GenericMeta = {
@@ -16,6 +17,7 @@ const GenericMeta = {
 	isGeneric: true,
 	density: 'compact',
 	TableSchema: [],
+	// eslint-disable-next-line no-unused-vars
 	generateSchema: (keys, rows) =>
 		keys.map(key => ({
 			size: 250,
@@ -26,7 +28,7 @@ const GenericMeta = {
 			enableSorting: false,
 			type: 'string',
 			name: key,
-			accessorKey: key,
+			id: key,
 			accessorFn: row => {
 				let value = get(row, key);
 

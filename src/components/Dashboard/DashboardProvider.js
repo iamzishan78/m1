@@ -1,9 +1,12 @@
 import React from 'react';
-import { DashboardContextProvider } from './DashboardContext';
+
 import { makeStyles } from '@material-ui/core/styles';
-import Dashboard from './Dashboard';
-import { ProfileContextProvider } from 'components/Profile/ProfileContext';
+
 import InitializeProfile from 'components/Profile/InitializeProfileContext';
+import { ProfileContextProvider } from 'components/Profile/ProfileContext';
+
+import Dashboard from './Dashboard';
+import { DashboardContextProvider } from './DashboardContext';
 
 const useStyles = makeStyles(theme => ({
 	dashboardWrapper: {

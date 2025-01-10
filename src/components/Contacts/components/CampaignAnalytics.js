@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { get } from 'lodash';
-import { useLazyQuery } from '@apollo/client';
-import { makeStyles } from '@material-ui/styles';
+
 import { Grid, Card, CardContent, Typography } from '@material-ui/core';
-import vf_number from 'components/Shared/valueformatters/vf_number';
+import { makeStyles } from '@material-ui/styles';
+
+import { useLazyQuery } from '@apollo/client';
+import { get } from 'lodash';
+import PropTypes from 'prop-types';
+
+import vf_number, { vf_number_to_precision } from 'components/Shared/valueformatters/vf_number';
 
 // Queries
 import { GET_CAMPAIGN_ANALYTICS } from 'graphQL/useQueryCampaignAnalytics';
-import { getFilters } from 'utils/helper';
+
+import { getActivityAnalyticsFilters } from 'utils/helper';
 
 const useStyles = makeStyles(() => ({
 	card: { borderRadius: '8px' },
@@ -49,15 +54,17 @@ const useStyles = makeStyles(() => ({
 export default function CampaignAnalytics({ appliedFilters, contactSearchQuery }) {
 	const classes = useStyles();
 	const [analyticsData, setAnalyticsData] = useState({});
+	const precision = 9;
 
-	const [getCampaignAnalytics] = useLazyQuery(GET_CAMPAIGN_ANALYTICS, {
+	const [getCampaignAnalytics, { data }] = useLazyQuery(GET_CAMPAIGN_ANALYTICS, {
 		fetchPolicy: 'no-cache',
-		onCompleted: data => {
-			if (data?.campaignAnalytics) {
-				setAnalyticsData(data?.campaignAnalytics);
-			}
-		},
 	});
+
+	useEffect(() => {
+		if (data?.campaignAnalytics) {
+			setAnalyticsData(data?.campaignAnalytics);
+		}
+	}, [data]);
 
 	// Wrap non-empty query with '*' to use a contains expression; otherwise, use '*'
 	const query = contactSearchQuery ? `*${contactSearchQuery}*` : '*';
@@ -69,10 +76,9 @@ export default function CampaignAnalytics({ appliedFilters, contactSearchQuery }
 					fields: ['name.keyword', 'status.keyword', 'owner.name.keyword', 'tags.tag.keyword'],
 					query,
 				},
-				filters: getFilters(appliedFilters),
+				filters: getActivityAnalyticsFilters(appliedFilters),
 			},
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [contactSearchQuery, appliedFilters, getCampaignAnalytics]);
 
 	return (
@@ -132,7 +138,7 @@ export default function CampaignAnalytics({ appliedFilters, contactSearchQuery }
 							Total NRA
 						</Typography>
 						<Typography variant="h6" component="div" className={classes.cardNumberTypography}>
-							{vf_number(Math.round(get(analyticsData, 'totalNra', 0)))}
+							{vf_number_to_precision(get(analyticsData, 'totalNra'), precision)}
 						</Typography>
 					</CardContent>
 				</Card>
@@ -140,3 +146,8 @@ export default function CampaignAnalytics({ appliedFilters, contactSearchQuery }
 		</Grid>
 	);
 }
+
+CampaignAnalytics.propTypes = {
+	appliedFilters: PropTypes.object.isRequired,
+	contactSearchQuery: PropTypes.string.isRequired,
+};

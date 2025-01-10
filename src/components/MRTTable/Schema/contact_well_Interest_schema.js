@@ -1,7 +1,11 @@
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import WellInterestToolBar from 'components/MRTTable/TablesOverride/ContactDetailWellInterestTable/WellInterestToolbar';
+
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 const esIndex = 'wellinterests_flat';
@@ -35,77 +39,77 @@ const ContactWellInterestMeta = {
 		{
 			...CommonSchema.MONGO_ID,
 			name: 'wellId',
-			accessorKey: 'wellId',
+			id: 'wellId',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'API',
 			name: 'well.apiNumber.keyword',
-			accessorKey: 'well.apiNumber',
+			id: 'well.apiNumber',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Well Name',
 			name: 'well.wellName.keyword',
-			accessorKey: 'well.wellName',
+			id: 'well.wellName',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'County',
 			name: 'well.county.keyword',
-			accessorKey: 'well.county',
+			id: 'well.county',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Lease',
 			name: 'well.leaseDescription.keyword',
-			accessorKey: 'well.leaseDescription',
+			id: 'well.leaseDescription',
 		},
 
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			header: 'Lease Acres',
 			name: 'well.leaseAcres',
-			accessorKey: 'well.leaseAcres',
+			id: 'well.leaseAcres',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Interest Owner',
 			name: 'interestOwner.keyword',
-			accessorKey: 'interestOwner',
+			id: 'interestOwner',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Type',
 			name: 'type.keyword',
-			accessorKey: 'type',
+			id: 'type',
 		},
 
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			header: 'Amount',
 			name: 'interest.keyword',
-			accessorKey: 'interest',
+			id: 'interest',
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			header: 'Tax Value',
 			name: 'value',
-			accessorKey: 'value',
+			id: 'value',
 		},
 
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			header: 'NRA',
 			name: 'nra',
-			accessorKey: 'nra',
+			id: 'nra',
 		},
 
 		{

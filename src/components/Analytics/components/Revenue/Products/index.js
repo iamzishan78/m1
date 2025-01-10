@@ -1,7 +1,8 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/styles';
+
 import { Grid, Typography } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/styles';
 
 import DonutChart from './DonutChart';
 import ProductTable from './ProductTable';

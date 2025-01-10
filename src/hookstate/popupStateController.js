@@ -1,17 +1,22 @@
 import mapboxgl from 'mapbox-gl';
-import { hookStateController } from 'hookstate/hookStateController';
+
 import { findBoundsMap } from 'components/MapControls/commonHelper';
 import {
 	drawBoundary,
 	drawWellBoundary,
 	drawPlaceBoundary,
 } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
-import { layerController } from './layerStateController';
+
+import { hookStateController } from 'hookstate/hookStateController';
+
 import { popupInitialState, popupState } from './initialStates';
+import { layerController } from './layerStateController';
 
 const popupStateControllerHandler = state => ({
 	createPopUp: (currentFeature, paramId) => {
-		if (!window.mapRef || !currentFeature?.longitude || !currentFeature?.latitude) return;
+		if (!window.mapRef || !currentFeature?.longitude || !currentFeature?.latitude) {
+			return;
+		}
 
 		const coordinates = [currentFeature.longitude, currentFeature.latitude];
 
@@ -23,7 +28,7 @@ const popupStateControllerHandler = state => ({
 		new mapboxgl.Popup({ offset: 0, closeOnClick: false })
 			.setLngLat(coordinates)
 			.setMaxWidth('none')
-			.setHTML(`<div id="popupContainer"></div>`)
+			.setHTML('<div id="popupContainer"></div>')
 			.addTo(window.mapRef);
 
 		// eslint-disable-next-line no-use-before-define
@@ -32,7 +37,9 @@ const popupStateControllerHandler = state => ({
 		});
 	},
 	createUDPopUp: currentFeature => {
-		if (!window.mapRef) return;
+		if (!window.mapRef) {
+			return;
+		}
 
 		let coordinates = currentFeature.shapeCenter;
 		if (typeof currentFeature.shapeCenter === 'string') {
@@ -42,12 +49,13 @@ const popupStateControllerHandler = state => ({
 		if (popUps[0]) {
 			popUps[0].remove();
 		}
-		if (coordinates)
+		if (coordinates) {
 			new mapboxgl.Popup({ offset: 0, closeOnClick: false })
 				.setLngLat(coordinates)
 				.setMaxWidth('none')
-				.setHTML(`<div id="popupContainer"></div>`)
+				.setHTML('<div id="popupContainer"></div>')
 				.addTo(window.mapRef);
+		}
 	},
 	fitParcelBounds: () => findBoundsMap([popupState?.selectedParcel?.get({ noproxy: true })?.feature], window.mapRef),
 	fitWellBounds: wellFeature => {

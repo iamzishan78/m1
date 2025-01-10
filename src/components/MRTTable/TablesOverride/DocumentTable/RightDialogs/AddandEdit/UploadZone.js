@@ -1,7 +1,9 @@
 import React from 'react';
-import { DropzoneAreaBase } from 'material-ui-dropzone';
-import { makeStyles } from '@material-ui/core/styles';
+
 import { Container } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { DropzoneAreaBase } from 'material-ui-dropzone';
 
 const useStyles = makeStyles(theme => ({
 	root: {

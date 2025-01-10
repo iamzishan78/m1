@@ -28,7 +28,7 @@ describe('Contact Data Updates Spec', () => {
 
 		cy.viewport(1400, 900);
 
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.visit('http://localhost:3000/contacts');
 		cy.reload();
 		cy.checkAndLogin();
@@ -37,10 +37,12 @@ describe('Contact Data Updates Spec', () => {
 		cy.wait(3000);
 
 		cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
-			const hits = response.response.body.data.getESSimpleSearch.hits;
+			const hits = response.response.body.data.getDbData.hits;
 			const contactToUpdate = hits.find(hit => hit.name === contactObj.name.value);
 
-			if (!contactToUpdate) throw new Error('Sample contact not found, Run addContact spec first!!!');
+			if (!contactToUpdate) {
+				throw new Error('Sample contact not found, Run addContact spec first!!!');
+			}
 
 			const indexOfSampleContact = hits.findIndex(hit => hit._id === contactToUpdate._id) + 1;
 
@@ -80,8 +82,11 @@ describe('Contact Data Updates Spec', () => {
 			cy.get('#userList-option-0', { timeout: longTimeout })
 				.invoke('text')
 				.then(contact => {
-					if (searchContact === contact) cy.get('#userList-option-0', { timeout: longTimeout }).click();
-					else throw new Error(`User list searching is not working as expected`);
+					if (searchContact === contact) {
+						cy.get('#userList-option-0', { timeout: longTimeout }).click();
+					} else {
+						throw new Error('User list searching is not working as expected');
+					}
 				});
 		});
 	});
