@@ -69,8 +69,8 @@ export const ifGenericShapeSource = source => {
 	);
 };
 
-const genericShapeIdentifiers = ['Units', 'Agreements', 'Contracts', 'Deeds', 'Leases', 'Surfaces'];
-const defaultIdentifiers = [...genericShapeIdentifiers, 'Parcels', 'Interests'];
+const genericShapeIdentifiers = ['Parcels', 'Units', 'Agreements', 'Contracts', 'Deeds', 'Leases', 'Surfaces'];
+const defaultIdentifiers = [...genericShapeIdentifiers, 'Interests'];
 
 export const ifGenericShapeIdentifier = identifier => genericShapeIdentifiers.includes(identifier);
 export const ifDefaultIdentifier = identifier => defaultIdentifiers.includes(identifier);
@@ -202,6 +202,7 @@ export const calculateLandArea = selectedFeature => {
 			return `${formatNumber(Math.round(distanceInMiles * 100) / 100)} miles`;
 		}
 	}
+	return null
 };
 
 export const parseUserDefinedLayerFeature = (feature, layer) => {
