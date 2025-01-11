@@ -91,14 +91,14 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 				navController.updateState({
 					bulkUploadShape: null,
 					bulkUploadFromMap: true,
-					bulkUploadParcel: popupController.getValue('selectedParcel'),
+					bulkUploadParcel: popupController.getValue('selectedShape'),
 				});
 
 				setStateNav(state => ({
 					...state,
 					bulkUploadShape: null,
 					bulkUploadFromMap: true,
-					bulkUploadParcel: popupController.getValue('selectedParcel'),
+					bulkUploadParcel: popupController.getValue('selectedShape'),
 				}));
 				history.push('/bulkupload');
 			},
