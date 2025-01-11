@@ -53,8 +53,8 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const getFilterVariables = field => ({
-	index: 'checkdetails_flat',
+const getFilterVariables = (field, index = 'checkdetails_flat', type) => ({
+	index,
 	filters: [],
 	filterKey: field,
 	search: {
@@ -67,6 +67,7 @@ const getFilterVariables = field => ({
 		field,
 		size: 10000,
 		fieldType: 'string',
+		type,
 	},
 });
 
@@ -98,13 +99,19 @@ export default function LineItem({ checkId }) {
 		variables: getFilterVariables('interestType'),
 		fetchPolicy: 'no-cache',
 	});
+	const { data: propertiesData } = useQuery(GET_DB_FILTERS, {
+		variables: getFilterVariables('number', 'properties_flat', 'withOriginal'),
+		fetchPolicy: 'no-cache',
+	});
 
 	useEffect(() => {
 		const taxTypes = taxTypesData?.getDbFilters?.hits?.map(hit => hit.key);
 		const products = productsData?.getDbFilters?.hits?.map(hit => hit.key);
 		const interestTypes = interestTypesData?.getDbFilters?.hits?.map(hit => hit.key);
+		const properties = propertiesData?.getDbFilters?.hits?.map(hit => hit.key);
+		const propertyOriginals = propertiesData?.getDbFilters?.hits?.map(hit => hit.original?.[0]);
 
-		if (!taxTypes || !products || !interestTypes) {
+		if (!taxTypes || !products || !interestTypes || !properties) {
 			return;
 		}
 
@@ -121,11 +128,15 @@ export default function LineItem({ checkId }) {
 				if (column.id === 'interestType') {
 					column.editSelectOptions = interestTypes;
 				}
+				if (column.id === 'property.number') {
+					column.editSelectOptions = properties;
+					column.originals = propertyOriginals;
+				}
 
 				return column;
 			}),
 		});
-	}, [taxTypesData, productsData, interestTypesData]);
+	}, [taxTypesData, productsData, interestTypesData, propertiesData]);
 
 	return (
 		<div className={classes.root}>

@@ -896,14 +896,19 @@ export const fuzzySearch = (items, query, queryKey = 'name') => {
 
 
 export const formatLayerForMap = (layer) => {
-	let jsonLayer = JSON.parse(layer.customLayer.shape);
+	let jsonLayer = layer.customLayer.shapeJson
 	if (layer.customLayer.shapeJson) {
 		jsonLayer = copy(layer.customLayer.shapeJson);
+	}
+	if (!jsonLayer?.properties?.type && layer?.customLayer?.layer !== 'parcel') {
+		jsonLayer.properties.type = layer.customLayer.layer
+	}
+	if (!jsonLayer?.properties?.sdType && layer?.customLayer?.layer === 'parcel') {
+		jsonLayer.properties.sdType = layer.customLayer.layer
 	}
 
 	jsonLayer.layer = { id: layer.customLayer.layer };
 	jsonLayer.id = layer.customLayer._id;
-
 	return {
 		jsonLayer,
 		feature: {
