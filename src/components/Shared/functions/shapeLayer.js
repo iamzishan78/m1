@@ -24,7 +24,7 @@ export const showIfUserDefinedLayer = () => {
 };
 
 export const layersWithSelectedShapeKey = () => {
-	const layers = ['units', 'agreements', 'contracts', 'deeds', 'leases', 'surfaces'];
+	const layers = ['units', 'agreements', 'contracts', 'deeds', 'leases', 'surfaces', 'parcels'];
 	const keys = {};
 	layers.forEach(key => {
 		keys[key] = 'selectedShape';
@@ -158,15 +158,15 @@ export const modifyExandableCardStyle = selectedShape => {
 		backgroundColor = 'white';
 		headerIcons = {
 			'& .MuiIconButton-colorPrimary , & .MuiToggleButton-root, & .MuiSvgIcon-colorSecondary, & .MuiIconButton-label ':
-				{
-					// "&:hover": {
-					//   backgroundColor: 'rgba(0, 0, 0, 0.08) !important'
-					// },
-					color: '#7f7f7f !important',
-					svg: {
-						fill: '#7f7f7f !important',
-					},
+			{
+				// "&:hover": {
+				//   backgroundColor: 'rgba(0, 0, 0, 0.08) !important'
+				// },
+				color: '#7f7f7f !important',
+				svg: {
+					fill: '#7f7f7f !important',
 				},
+			},
 			'& .MuiIconButton-root, & .MuiButtonBase-root': {
 				'&:hover': {
 					backgroundColor: 'rgba(0, 0, 0, 0.08) !important',

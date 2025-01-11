@@ -23,7 +23,7 @@ import { mapControlsController } from 'hookstate/mapControlsController';
 import { popupController } from 'hookstate/popupStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
-import { copy } from 'utils/helper';
+import { copy, formatLayerForMap } from 'utils/helper';
 
 import { showSuccessMessage, showErrorMessage } from 'actions';
 
@@ -216,7 +216,7 @@ const useStyles = makeStyles(theme => ({
 
 const setSelectedTab = tableGlobalController.setSelectedTab;
 
-export default function ParcelsDetailCard({ id, selectTabIndex }) {
+export default function ParcelsDetailCard({ id, selectTabIndex, dataCustomLayer }) {
 	const classes = useStyles();
 	const dispatch = useDispatch();
 	const [parcelObj, setParcelObj] = useState();
@@ -232,11 +232,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	const contactsAdded = useSelector(state => state?.common?.contactsAdded);
 	const [updateCustomLayer, { data: updatedParcel, loading: updatingParcel }] = useMutation(UPDATECUSTOMLAYER);
 
-	const [getCustomLayer, { data: dataCustomLayer, refetch: refetchCustomLayer }] = useLazyQuery(CUSTOMLAYER);
-
-	const globalState = tableGlobalController.useState(['refetch']);
-	const globalStateValues = globalState.stateValues;
-
 	useEffect(() => {
 		mapControlsController.updateState({
 			mapGridCardActivated: false,
@@ -250,21 +245,10 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 	}, [contactsAdded]);
 
 	useEffect(() => {
-		refetchCustomLayer();
-	}, [globalStateValues.refetch, refetchCustomLayer]);
-
-	useEffect(() => {
-		if (id) {
-			getCustomLayer({
-				variables: {
-					id,
-				},
-			});
-		}
-	}, [getCustomLayer, id]);
-
-	useEffect(() => {
 		if (dataCustomLayer && dataCustomLayer.customLayer) {
+			popupController.updateState({
+				selectedShape: formatLayerForMap(dataCustomLayer).feature
+			})
 			let shape = copy(dataCustomLayer.customLayer.shape);
 			if (typeof shape === 'string') {
 				shape = JSON.parse(shape);
@@ -390,13 +374,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 				feature.properties.id = customLayer._id;
 				feature.layer = { id: 'parcel' };
 				popupController.updateState({
-					selectedParcel: { ...feature.properties, feature },
+					selectedShape: { ...feature.properties, feature },
 				});
-
-				window.setStateApp(state => ({
-					...state,
-					selectedParcel: { ...feature.properties, feature },
-				}));
 			} else {
 				dispatch(showErrorMessage('Failed to update parcel'));
 			}
@@ -419,7 +398,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 
 		if (field === 'shapeLabel') {
 			popupController.updateState({
-				selectedParcel: { ...popupController.getValue('selectedParcel'), shapeLabel: value },
+				selectedShape: { ...popupController.getValue('selectedShape'), shapeLabel: value },
 			});
 			customLayer.name = value;
 		}

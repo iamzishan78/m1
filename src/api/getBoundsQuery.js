@@ -218,6 +218,8 @@ const getBoundsQuery = async ({
 				'shapeJson.properties.shapeSubTitle': 1,
 				'shapeJson.properties.shapeLabel': 1,
 				'shapeJson.properties.layerType': 1,
+				'shapeJson.properties.sdType': 1,
+				'shapeJson.properties.layerSubType': 1,
 				'shapeJson.properties.type': 1,
 				'shapeJson.properties.uName': 1,
 				'shapeJson.properties.agreementName': 1,

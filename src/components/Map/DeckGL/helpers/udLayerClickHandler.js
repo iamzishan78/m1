@@ -45,7 +45,7 @@ const udLayerClickHandler = (feature, stateLayer) => {
 	} else if (feature.identifier === 'Parcels') {
 		popupStateVal = {
 			expandedCard: true,
-			selectedParcel: { ...feature.properties, feature: selectedUserDefinedLayer },
+			selectedShape: { ...feature.properties, feature: selectedUserDefinedLayer },
 		};
 	} else if (isAoi) {
 		let drawStateVal;
