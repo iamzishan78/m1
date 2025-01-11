@@ -319,7 +319,6 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 
 	const RelatedDealsOverrideMeta = useMemo(() => {
 		return {
-			disableRowSelection: true,
 			maxTableHeight: 'calc(50vh - 260px)',
 			defaultFilters: [{ field: 'relatedContacts._id', value: contactData._id }],
 			excludeFields: ['createBy', 'createAt', 'lastUpdateBy', 'lastUpdateAt'],

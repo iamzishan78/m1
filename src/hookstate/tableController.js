@@ -404,6 +404,7 @@ const tableESStateControllerHandler = state => ({
 		// Set default state referneces
 		stateToUpdate = {
 			...stateToUpdate,
+			initialGridView: gridView,
 			defaultTableSchema: _TableSchema,
 			defaultColumnsOrdering: defaultColumnsOrdering,
 			defaultColumnPinning: defaultColumnsPinning,

@@ -384,19 +384,14 @@ const drawStateControllerHandler = state => {
 		feature.id = customLayer._id;
 		feature.properties.id = customLayer._id;
 		feature.layer = { id: customLayer.layer };
-		let key;
-		if (feature?.properties?.sdType === 'parcel') {
-			key = 'selectedParcel';
-		} else {
-			key = 'selectedShape';
-		}
+
 		feature = { ...feature.properties, feature };
 
 		findBoundsMap([feature], window.mapRef);
 		drawBoundary(feature);
 		actionClose(dispatch);
 		popupController.updateState({
-			[key]: feature,
+			selectedShape: feature,
 			expandedCard: true,
 			popupOpen: false,
 		});
@@ -474,7 +469,7 @@ const drawStateControllerHandler = state => {
 					shapeEdit: false,
 				});
 			}
-		} catch (err) {}
+		} catch (err) { }
 	};
 
 	const actionShowWellsAndOwners = dispatch => {
@@ -683,9 +678,8 @@ const drawStateControllerHandler = state => {
 		if (abstractShape?.properties?.County && state) {
 			if (layerType === 'unit') {
 				if (abstractShape.properties.State === 'TX') {
-					shapeSubtitle = `${abstractShape?.properties?.County}, ${
-						state || ''
-					} - ${blockTownship}${section ? `, SEC ${section}` : ''}`;
+					shapeSubtitle = `${abstractShape?.properties?.County}, ${state || ''
+						} - ${blockTownship}${section ? `, SEC ${section}` : ''}`;
 				} else {
 					shapeSubtitle = `${abstractShape?.properties?.County}, ${state || ''} - ${shapeName}`;
 				}
@@ -819,8 +813,8 @@ const drawStateControllerHandler = state => {
 
 		const isShapeResizeMode = shapeTypeLayers.includes(
 			featureToEdit?.properties?.layerType ||
-				featureToEdit?.properties?.sdType ||
-				featureToEdit?.properties?.layerSubType
+			featureToEdit?.properties?.sdType ||
+			featureToEdit?.properties?.layerSubType
 		);
 
 		let drawFeature = null;
