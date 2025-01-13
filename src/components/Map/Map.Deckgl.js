@@ -1,47 +1,49 @@
-/* eslint-disable import/order */
-import _ from 'lodash';
+/* eslint-disable no-magic-numbers */
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import React, { useContext, useState, useRef, useEffect } from 'react';
-import { useLazyQuery, useApolloClient, useQuery } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+
+import { makeStyles } from '@material-ui/core/styles';
 import MapIcon from '@material-ui/icons/Map';
-import mapboxgl from 'mapbox-gl';
-import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from 'mapbox-gl-draw-circle';
-import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
+
+import { useLazyQuery, useApolloClient, useQuery } from '@apollo/client';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import StaticMode from '@mapbox/mapbox-gl-draw-static-mode';
 import * as turf from '@turf/turf';
 import gjv from 'geojson-validation';
+import _ from 'lodash';
+import mapboxgl from 'mapbox-gl';
+import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from 'mapbox-gl-draw-circle';
+import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import parseLinkHeader from 'parse-link-header';
 import PropTypes from 'prop-types';
-import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
-// Internal imports
+import { drawShapeStyles, findBoundsMap } from 'components/MapControls/commonHelper';
 import MapControls from 'components/MapControls/MapControls';
 import SpeedDialComponent from 'components/MapControls/SpeedDialComponent';
-import { drawShapeStyles, findBoundsMap } from 'components/MapControls/commonHelper';
+import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import { layersWithSelectedShapeKey } from 'components/Shared/functions/shapeLayer';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
-import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 
-// Hookstate imports
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
+import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
+
 import { drawController } from 'hookstate/drawStateController';
 import { globalStateController } from 'hookstate/globalStateController';
-import { layerController } from 'hookstate/layerStateController';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { layerRefs } from 'hookstate';
+import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 import { mapStateController } from 'hookstate/mapStateController';
 import { navController } from 'hookstate/navStateController';
 import { popupController } from 'hookstate/popupStateController';
 
-// Parent imports
 import { baseTenantsMaps } from 'utils/data';
 import { convertToTitleCase } from 'utils/helper';
 
-// Sibling imports
-import { copy } from '../Shared/functions';
+import { layerRefs } from 'hookstate';
+
 import HugeRequest from './components/HugeRequest';
 import DeckGL from './DeckGL';
 import onRightClick from './DeckGL/helpers/onRightClick';
@@ -49,6 +51,9 @@ import DefaultFiltersTest from './filtersDefaultTest';
 import { setMainMapState } from '../../actions';
 import { SRMode } from './MapBoxDrawRotate/index';
 import { AppContext } from '../../AppContext';
+import { ALLLAYERSETTINGSBYUSER } from '../../graphQL/useQueryAllLayerSettingsByUser';
+import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
+import { copy } from '../Shared/functions';
 import ZoomFault from './components/ZoomFault';
 import { extractUniqueFilters, getClickedFeature } from './DeckGL/helpers/common';
 import DeckGlLayer from './DeckGL/helpers/DeckGlLayer';
@@ -57,45 +62,13 @@ import udLayerClickHandler from './DeckGL/helpers/udLayerClickHandler';
 import MarkerIcon from './sprites/marker-icon.png';
 import {
 	drawBoundary,
-	drawPlaceBoundary,
 	drawWellBoundary,
+	drawPlaceBoundary,
 } from '../MapControls/components/DrawShapes/drawShapesHelpers';
 import MapGridCardProvider from '../MapGridCard/MapGridProvider';
 
-// GraphQL imports
-import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
-import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
-import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
-import { ALLLAYERSETTINGSBYUSER } from 'graphQL/useQueryAllLayerSettingsByUser';
-import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
-
-// Constants
-const LATITUDE_UPPER_BOUND = 90;
-const LATITUDE_LOWER_BOUND = -90;
-const LONGITUDE_UPPER_BOUND = 180;
-const LONGITUDE_LOWER_BOUND = -180;
-const LATITUDE_PRECISION = 0.005;
-const LONGITUDE_PRECISION = 0.005;
-const HIGHER_PRECISION = 0.08;
-const LATITUDE_MAX_THRESHOLD = LATITUDE_UPPER_BOUND - LATITUDE_PRECISION;
-const LATITUDE_MIN_THRESHOLD = LATITUDE_LOWER_BOUND + LATITUDE_PRECISION;
-const LONGITUDE_MAX_THRESHOLD = LONGITUDE_UPPER_BOUND - LONGITUDE_PRECISION;
-const LONGITUDE_MIN_THRESHOLD = LONGITUDE_LOWER_BOUND + LONGITUDE_PRECISION;
-const BOUND_ADJUSTMENT = 0.03; // Adjustment for latitude and longitude bounds
-const PADDING_TOP = 100;
-const PADDING_BOTTOM = 200;
-const PADDING_LEFT = 10;
-const PADDING_RIGHT = 100;
-const STATIC_EASING = 1; // Easing function always returns 1 for this scenario
-const MAX_GEOMETRY_LENGTH = 20000;
-const HALF_SEC_INTERVAL = 500;
-const TWO_HUNDERD_FIFTY = 250;
-const ZERO = 0;
-const ONE = 1;
-const TWO = 2;
-const THREE = 3;
-const TWENTY = 20;
-const SEVENTY = 70;
+import './Map.css';
+import './popup.css';
 
 const useStyles = makeStyles(() => ({
 	mapWrapper: {
@@ -252,7 +225,6 @@ function Map({
 			});
 		},
 	});
-
 	/// //end/////////temporary
 
 	const fitOverBounds = () => {
@@ -262,39 +234,19 @@ function Map({
 		const longDif = maxLong - minLong;
 
 		if (latDif === 0) {
-			maxLat =
-				maxLat + LATITUDE_PRECISION > LATITUDE_UPPER_BOUND ? LATITUDE_MAX_THRESHOLD : maxLat + LATITUDE_PRECISION;
-
-			minLat =
-				minLat - LATITUDE_PRECISION < LATITUDE_LOWER_BOUND ? LATITUDE_MIN_THRESHOLD : minLat - LATITUDE_PRECISION;
+			maxLat = maxLat + 0.005 > 90 ? 89.995 : maxLat + 0.005;
+			minLat = minLat - 0.005 < -90 ? -89.995 : minLat - 0.005;
 		} else {
-			maxLat =
-				maxLat + latDif * HIGHER_PRECISION > LATITUDE_UPPER_BOUND
-					? LATITUDE_MAX_THRESHOLD
-					: maxLat + latDif * HIGHER_PRECISION;
-
-			minLat =
-				minLat - latDif * HIGHER_PRECISION < LATITUDE_LOWER_BOUND
-					? LATITUDE_MIN_THRESHOLD
-					: minLat - latDif * HIGHER_PRECISION;
+			maxLat = maxLat + latDif * 0.08 > 90 ? 89.995 : maxLat + latDif * 0.08;
+			minLat = minLat - latDif * 0.08 < -90 ? -89.995 : minLat - latDif * 0.08;
 		}
 
 		if (longDif === 0) {
-			maxLong =
-				maxLong + LONGITUDE_PRECISION > LONGITUDE_UPPER_BOUND ? LONGITUDE_MAX_THRESHOLD : maxLong + LONGITUDE_PRECISION;
-
-			minLong =
-				minLong - LONGITUDE_PRECISION < LONGITUDE_LOWER_BOUND ? LONGITUDE_MIN_THRESHOLD : minLong - LONGITUDE_PRECISION;
+			maxLong = maxLong + 0.005 > 180 ? 179.995 : maxLong + 0.005;
+			minLong = minLong - 0.005 < -180 ? -179.995 : minLong - 0.005;
 		} else {
-			maxLong =
-				maxLong + longDif * HIGHER_PRECISION > LONGITUDE_UPPER_BOUND
-					? LONGITUDE_MAX_THRESHOLD
-					: maxLong + longDif * HIGHER_PRECISION;
-
-			minLong =
-				minLong - longDif * HIGHER_PRECISION < LONGITUDE_LOWER_BOUND
-					? LONGITUDE_MIN_THRESHOLD
-					: minLong - longDif * HIGHER_PRECISION;
+			maxLong = maxLong + longDif * 0.08 > 180 ? 179.995 : maxLong + latDif * 0.08;
+			maxLong = maxLong - longDif * 0.08 < -180 ? -179.995 : maxLong - latDif * 0.08;
 		}
 
 		return {
@@ -497,18 +449,10 @@ function Map({
 		const bbox = turf.bbox(combined);
 		window.mapRef.fitBounds(
 			[
-				[bbox[0] - BOUND_ADJUSTMENT, bbox[1] - BOUND_ADJUSTMENT], // Southwest coordinates
-				[bbox[0] + BOUND_ADJUSTMENT, bbox[1] + BOUND_ADJUSTMENT], // Northeast coordinates
+				[bbox[0] - 0.03, bbox[1] - 0.03], // Southwest coordinates
+				[bbox[0] + 0.03, bbox[1] + 0.03], // Northeast coordinates
 			],
-			{
-				padding: {
-					top: PADDING_TOP,
-					bottom: PADDING_BOTTOM,
-					left: PADDING_LEFT,
-					right: PADDING_RIGHT,
-				},
-				easing: () => STATIC_EASING,
-			}
+			{ padding: { top: 100, bottom: 200, left: 10, right: 100 }, easing: () => 1 }
 		);
 
 		const layers = globalStateController.getValue('layers');
@@ -800,7 +744,7 @@ function Map({
 				id: feature.id,
 			})?.geometryLength;
 			const newGeometryLength = Math.round(turf.length(feature.geometry, { units: 'feet' }), 0);
-			if (newGeometryLength > MAX_GEOMETRY_LENGTH && !(geometryLength >= newGeometryLength)) {
+			if (newGeometryLength > 20000 && !(geometryLength >= newGeometryLength)) {
 				map.setFeatureState(
 					{
 						source: 'wellsVT',
@@ -982,7 +926,7 @@ function Map({
 					});
 					clearInterval(interval);
 				}
-			}, HALF_SEC_INTERVAL);
+			}, 500);
 
 			newMap.on('load', () => {
 				window.mapRef = null; // Remove the existing map instance to avoid rendering multiple maps
@@ -1022,7 +966,7 @@ function Map({
 							data: [],
 						},
 					});
-				}, TWO_HUNDERD_FIFTY);
+				}, 250);
 
 				// FOR aoi_labels
 				newMap.addSource('aoi_label_source', {
@@ -1084,8 +1028,8 @@ function Map({
 	}, [filterDrawing]);
 
 	useEffect(() => {
-		if (draw && navStateValues.filterDrawing?.length === TWO) {
-			const feature = navStateValues.filterDrawing[ONE];
+		if (draw && navStateValues.filterDrawing?.length === 2) {
+			const feature = navStateValues.filterDrawing[1];
 			setDrawingFilterFeatureId(feature.id);
 			draw.delete(feature.id);
 			draw.add(feature);
@@ -1183,10 +1127,10 @@ function Map({
 					if (gjv.valid(shape)) {
 						const bbox = turf.bbox(shape);
 						return {
-							minLong: bbox[ZERO],
-							minLat: bbox[ONE],
-							maxLong: bbox[TWO],
-							maxLat: bbox[THREE],
+							minLong: bbox[0],
+							minLat: bbox[1],
+							maxLong: bbox[2],
+							maxLat: bbox[3],
 						};
 					}
 					return null;
@@ -1308,10 +1252,10 @@ function Map({
 				if (gjv.valid(shape)) {
 					const bbox = turf.bbox(shape);
 					return {
-						minLong: bbox[ZERO],
-						minLat: bbox[ONE],
-						maxLong: bbox[TWO],
-						maxLat: bbox[THREE],
+						minLong: bbox[0],
+						minLat: bbox[1],
+						maxLong: bbox[2],
+						maxLat: bbox[3],
 					};
 				}
 				return null;
@@ -1354,11 +1298,11 @@ function Map({
 		if (map && mapStateValues.toggle3d) {
 			if (mapStateValues.toggle3d === true) {
 				if (map.getPitch() === 0 && map.getBearing() === 0) {
-					map.setPitch(SEVENTY);
-					map.setBearing(TWENTY);
+					map.setPitch(70);
+					map.setBearing(20);
 				} else {
-					map.setPitch(ZERO);
-					map.setBearing(ZERO);
+					map.setPitch(0);
+					map.setBearing(0);
 				}
 				mapStateController.updateState({
 					mapVars: {

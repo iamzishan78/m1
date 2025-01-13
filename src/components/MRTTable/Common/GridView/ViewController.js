@@ -11,8 +11,6 @@ import { hookStateController } from 'hookstate/hookStateController';
 import { viewInitialState, viewStates } from 'hookstate/initialStates';
 import { tableController } from 'hookstate/tableController';
 
-
-
 const viewStatesControllerHandler = state => ({
 	initialize: ({
 		Icon,
@@ -59,7 +57,11 @@ const viewStatesControllerHandler = state => ({
 			tableController(TableKey).applyGridView(selectedView);
 		}
 
-		ViewController.updateState({ isLoading: false, isViewOpen: false });
+		ViewController.updateState({
+			isLoading: false,
+			isViewOpen: false,
+			shouldSyncView: true,
+		});
 	},
 
 	fetchAllViews: async () => {
@@ -108,7 +110,9 @@ const viewStatesControllerHandler = state => ({
 			}
 
 			updatedViews = allViews.map(prevView => (prevView._id === view._id ? { ...prevView, ...view } : prevView));
-		} else {updatedViews = [...allViews, view];}
+		} else {
+			updatedViews = [...allViews, view];
+		}
 
 		state.allViews.set(updatedViews);
 	},

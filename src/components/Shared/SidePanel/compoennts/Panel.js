@@ -60,6 +60,7 @@ import {
 } from './style';
 import { AppContext } from '../../../../AppContext';
 import { deepEqualObjects } from '../../functions';
+import { customLayersFieldAccessors } from './Filters/consts';
 
 const layerIcons = [
 	{
@@ -224,10 +225,9 @@ const StyledSecondaryMenu = () => {
 };
 
 function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems }) {
-	const ViewController = viewStateController('MapView');
 	const {
 		stateValues: { selectedView },
-	} = ViewController.useState(['selectedView']);
+	} = viewStateController('MapView').useState(['selectedView']);
 	const { selectedControl, expandedPanel, mapControlsStateValues } = mapControlsController.useState(
 		['selectedControl', 'expandedPanel'],
 		'mapControlsStateValues'
@@ -238,7 +238,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 		['filters', 'layerSettingsLoading', 'datasets'],
 		'globalStateValues'
 	);
-	// const layers = globalStateController.getValue('layers');
+	const layers = globalStateController.getValue('layers');
 
 	const [stateApp] = useContext(AppContext);
 	const [totalHitMapCount, setTotalHitMapCount] = useState(null);
@@ -255,7 +255,15 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 	const [tab, setTab] = useState(0);
 
 	const totalFilterCount =
-		navStateValues.geographyFilterCount + navStateValues.wellFilterCount + (selectedView?.filters?.length || 0);
+		navStateValues.geographyFilterCount +
+		navStateValues.wellFilterCount +
+		(selectedView?.filters?.filter(filter => {
+			const fileId = filter?.dataSourceName?.substring(0, filter?.dataSourceName?.indexOf('_'));
+			const layerShapeName = filter?.dataSourceName?.substring(filter?.dataSourceName?.indexOf('_') + 1);
+			const layer = layers.find(l => l.file === fileId && l.layerShapeName === layerShapeName);
+			const dataSourceExists = filter?.dataSourceName && (customLayersFieldAccessors[filter?.dataSourceName] || layer);
+			return (filter?.filterValues || ['empty', 'notEmpty'.includes(filter?.filterType)]) && dataSourceExists;
+		})?.length || 0);
 
 	useEffect(() => {
 		setTotalHitMapCount(stateApp.checkedHeats.length);

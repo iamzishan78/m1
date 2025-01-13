@@ -24,7 +24,6 @@ import { tableController } from 'hookstate/tableController';
 
 import { SMALL_TIMEOUT } from 'utils/consts';
 
-
 export const handleVisiblityMenu = () => {
 	const interval2 = setInterval(() => {
 		const elements = document.querySelectorAll('ul[role="menu"] .MuiFormControlLabel-label');

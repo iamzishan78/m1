@@ -469,7 +469,6 @@ const tableESStateControllerHandler = state => ({
 		const updatedColumnnSchema = tableController(tableKey).setInitialFilterMode(columnSchema, mode, column);
 
 		state.TableSchema?.[index]?.merge(updatedColumnnSchema);
-		const columnFilterModesFnRefs = globalStateController.getValue('columnFilterModesFnRefs');
 
 		if (callSelectFilterMode) {
 			columnFilterModesFnRefs?.[tableKey]?.[column]?.onSelectFilterMode(mode);
@@ -642,7 +641,7 @@ const tableESStateControllerHandler = state => ({
 						filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
 					};
 
-					const myNewMapViewFilters = [
+					const updatedMapViewFilters = [
 						...mapViewsFitlers.filter(
 							({ fieldName, dataSourceName }) =>
 								(fieldName?.value || fieldName).replace('.keyword', '') !== filter.field ||
@@ -652,9 +651,10 @@ const tableESStateControllerHandler = state => ({
 					];
 
 					viewStateController('MapView').updateState({
+						shouldSyncView: true,
 						selectedView: {
 							...selectedView,
-							filters: myNewMapViewFilters,
+							filters: updatedMapViewFilters,
 						},
 					});
 				}
@@ -673,7 +673,7 @@ const tableESStateControllerHandler = state => ({
 		return esFilters;
 	},
 
-	clearFilter: (field, updateMapView = true) => {
+	clearFilter: (field, updateMapView = true, shouldSyncView = true) => {
 		const filtersState = state.filters?.get({ noproxy: true });
 		const selectedView = viewStateController('MapView').getValue('selectedView');
 		const mapViewsFitlers = selectedView?.filters || [];
@@ -688,6 +688,7 @@ const tableESStateControllerHandler = state => ({
 
 			if (tableState?.layerIdentifier) {
 				viewStateController('MapView').updateState({
+					shouldSyncView,
 					selectedView: {
 						...selectedView,
 						filters: [
@@ -741,6 +742,7 @@ const tableESStateControllerHandler = state => ({
 
 		if (tableState?.layerIdentifier) {
 			viewStateController('MapView').updateState({
+				shouldSyncView: true,
 				selectedView: {
 					...selectedView,
 					filters: [

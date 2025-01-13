@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useCallback, useContext, useEffect } from 'react';
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 
 import {
@@ -172,8 +172,8 @@ const LayerFilters = () => {
 	const [stateNav, setStateNav] = useContext(NavigationContext);
 
 	const {
-		stateValues: { selectedView },
-	} = viewStateController('MapView').useState(['selectedView']);
+		stateValues: { selectedView, shouldSyncView },
+	} = viewStateController('MapView').useState(['selectedView', 'shouldSyncView']);
 	const { navStateValues } = navController.useState(['geographyFilterCount', 'wellFilterCount'], 'navStateValues');
 	const layers = globalStateController.getValue('layers');
 
@@ -188,13 +188,42 @@ const LayerFilters = () => {
 		name: 'mapViews', // This refers to the array in the form's state
 	});
 
+	// Memoize resetForm to avoid unnecessary re-creation
+	const resetForm = useCallback(
+		values => {
+			formMethods.reset(values);
+		},
+		[formMethods]
+	);
+
 	useEffect(() => {
 		if (selectedView) {
-			formMethods.reset({
+			resetForm({
 				mapViews: selectedView?.filters || [],
 			});
 		}
-	}, [JSON.stringify(selectedView?.filters)]);
+	}, []);
+
+	useEffect(() => {
+		if (shouldSyncView === false) {return;}
+
+		if (selectedView) {
+			resetForm({
+				mapViews: selectedView?.filters || [],
+			});
+			viewStateController('MapView').updateState({
+				shouldSyncView: false,
+			});
+		}
+	}, [shouldSyncView]);
+
+	// useEffect(() => {
+	// 	if (selectedView) {
+	// 		formMethods.reset({
+	// 			mapViews: selectedView?.filters || [],
+	// 		});
+	// 	}
+	// }, [JSON.stringify(selectedView?.filters)]);
 
 	const resetFilters = (params, additionalParamsToReset = {}) => {
 		const geoFiltersToReset = {};
@@ -324,18 +353,12 @@ const LayerFilters = () => {
 								const layer = layers.find(l => l.file === fileId && l.layerShapeName === layerShapeName);
 
 								// Skip rendering if no custom layers field accessor or no matching layer found
-								if (!customLayersFieldAccessors[mapView?.dataSourceName] && !layer) { return null; }
+								if (!customLayersFieldAccessors[mapView?.dataSourceName] && !layer) {return null;}
 							}
 
 							// Render the UserMapFilter component if the checks pass
 							return (
-								<UserMapFilter
-									key={mapView.id}
-									mapView={mapView}
-									index={index}
-									remove={remove}
-									resetForm={formMethods.reset}
-								/>
+								<UserMapFilter key={mapView.id} mapView={mapView} index={index} remove={remove} resetForm={resetForm} />
 							);
 						})}
 					</div>

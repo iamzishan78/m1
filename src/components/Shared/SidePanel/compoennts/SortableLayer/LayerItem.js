@@ -1,8 +1,8 @@
-// Builtin and external imports
 import React, { useState } from 'react';
 import { Flipped } from 'react-flip-toolkit';
 import { useSelector } from 'react-redux';
 import { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
+
 
 import { Box, Grid, ListItemIcon, FormControlLabel, Switch } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
@@ -24,7 +24,6 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
 import { mapStateController } from 'hookstate/mapStateController';
 
-// Parent and sibling imports
 import LayerControls from './LayerControls';
 import { getLayerColor } from '../common';
 

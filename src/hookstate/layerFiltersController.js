@@ -106,10 +106,7 @@ const layerFiltersControllerHandler = state => ({
 		return filters?.firstLayer;
 	},
 	clearWellsFilters: () => {
-		 
 		const { variables } = layerFiltersController.getValue('Wells');
-
-		 
 		layerFiltersController.setVariables('Wells', {
 			...variables,
 			filters: [],

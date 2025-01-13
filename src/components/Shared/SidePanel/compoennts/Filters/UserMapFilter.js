@@ -133,8 +133,6 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 	const classes = useStyles(); // Apply custom styles
 	const { control, setValue, watch } = useFormContext(); // Get form control methods
 
-	const ViewController = viewStateController('MapView');
-
 	const [searchText, setSearchText] = useState('');
 
 	const debouncedSetSearchText = useMemo(() => {
@@ -275,9 +273,13 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 	// Effect to log filter values when they change
 	useEffect(() => {
 		if (dataSourceName) {
-			const selectedMapView = ViewController.getValue('selectedView');
-			const canUpdateMapView = dataSourceName && (fieldName?.value || fieldName) && filterType;
+			const selectedMapView = viewStateController('MapView').getValue('selectedView');
+
 			const selectedField = getSelectedField(fieldName?.value || fieldName);
+
+			const canUpdateMapView =
+				dataSourceName && selectedField?.value && (filterType || ['date', 'range'].includes(selectedField?.type));
+
 			const mapViewFilters = getMapViewFilters();
 			// Upsert the map view data to the GraphQL API
 			if (canUpdateMapView) {
@@ -313,12 +315,13 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 					}
 				}
 
-				ViewController.updateState({
-					selectedView: {
-						...selectedMapView,
-						filters: mapViewFilters,
-					},
-				});
+				if (!tableKey)
+					{viewStateController('MapView').updateState({
+						selectedView: {
+							...selectedMapView,
+							filters: mapViewFilters,
+						},
+					});}
 				layerFiltersController.updateLayerFiltersFromMapViews(dataSourceName, mapViewFilters);
 			}
 		}
@@ -351,6 +354,8 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		const shapeFileOptions = filterTypeOptions.filter(option => ['singleselect', 'multiselect'].includes(option.value));
 
 		const wellsFilterOptions = filterTypeOptions.filter(option => ['multiselect'].includes(option.value));
+
+		const selectedField = getSelectedField(mapView?.fieldName) || fieldName;
 
 		// Making filter options based on selected dataset
 		let requiredFilterOptions = [];
@@ -408,7 +413,8 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 					if (tableKey) {
 						tableController(tableKey).clearFilter(
 							(previousValue?.value || previousValue)?.replace('.keyword', ''),
-							true
+							true,
+							false
 						);
 						tableController(tableKey).setFilterMode(
 							(fieldName?.value || fieldName)?.replace('.keyword', ''),
@@ -420,8 +426,8 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			},
 		];
 
-		const isDate = fieldName?.type === 'date';
-		const isRange = fieldName?.type === 'range';
+		const isDate = selectedField?.type === 'date';
+		const isRange = selectedField?.type === 'range';
 
 		if (!isDate && !isRange) {
 			fields.push({
@@ -432,9 +438,9 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				onChange: (e, v, r, previousValue) => {
 					setValue(`mapViews.${index}.filterValues`, null);
 					if (!['empty', 'notEmpty'].includes(v?.value) && !['empty', 'notEmpty'].includes(previousValue?.value))
-						Object.keys(tableESState).map(tableKey =>
+						{Object.keys(tableESState).map(tableKey =>
 							tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false)
-						);
+						);}
 				}, // Reset other fields on change
 			});
 		}
@@ -445,7 +451,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				label: 'Filter Values',
 				options: filterValuesOptions || [], // Dynamic based on filter options
 				defaultValue: mapView?.filterValues, // Set default value if mapView is provided
-				type: fieldName?.type,
+				type: selectedField?.type,
 			});
 		}
 		return fields;
@@ -453,7 +459,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 
 	// Function to clear the filter when the clear button is clicked
 	const clearFilter = () => {
-		const selectedMapView = ViewController.getValue('selectedView');
+		const selectedMapView = viewStateController('MapView').getValue('selectedView');
 		let mapViewFilters = getMapViewFilters();
 
 		mapViewFilters = mapViewFilters.filter((_, i) => i !== index);
@@ -473,7 +479,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			mapViews: mapViewFilters || [],
 		});
 
-		ViewController.updateState({
+		viewStateController('MapView').updateState({
 			selectedView: {
 				...selectedMapView,
 				filters: mapViewFilters,
@@ -497,20 +503,20 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			{autocompleteFields.map(field => (
 				<Box mb={2} key={field?.name}>
 					<CustomAutocomplete
-						defaultValue={field?.defaultValue} // Set default value if mapView is provided
-						onChange={field?.onChange} // Triggered when the field value changes
-						name={field?.name}
-						type={field?.type}
+						defaultValue={field.defaultValue} // Set default value if mapView is provided
+						onChange={field.onChange} // Triggered when the field value changes
+						name={field.name}
+						type={field.type}
 						control={control} // Form control passed for managing input state
-						options={field?.options}
-						label={field?.label}
+						options={field.options}
+						label={field.label}
 						className={classes.autoComplete} // Apply custom autocomplete styles
 						isTextFieldOnly={
-							searchFilterOptions.includes(filterType?.value || filterType) && field?.label === 'Filter Values'
+							searchFilterOptions.includes(filterType?.value || filterType) && field.label === 'Filter Values'
 						}
 						searchText={searchText}
 						handleChange={handleChange}
-						multiple={field?.label === 'Filter Values' && (filterType?.value || filterType) === 'multiselect'}
+						multiple={field.label === 'Filter Values' && (filterType?.value || filterType) === 'multiselect'}
 					/>
 				</Box>
 			))}

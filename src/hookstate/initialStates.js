@@ -500,5 +500,6 @@ export const viewInitialState = {
 		color: {},
 	},
 	isLoading: false,
+	shouldSyncView: true,
 };
 export const viewStates = {};
