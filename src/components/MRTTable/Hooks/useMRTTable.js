@@ -393,6 +393,11 @@ const useMRTTable = tableKey => {
 								if (columnType === 'date') {
 									value = filter.value;
 								}
+								// set value to empty if it is a blank space
+								if (['notEmpty', 'empty'].some(m => m === mode) && filter.value === ' ') {
+									value = '';
+								}
+
 								Controller.setFilter({
 									field: filter.id,
 									columnType,
