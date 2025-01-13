@@ -120,16 +120,22 @@ const UnitMeta = {
 			name: 'name.keyword',
 			id: 'name',
 			header: 'Unit Name',
-			Cell: ({ renderedCellValue, row }) => (
-				<div
-					style={{
-						display: 'flex',
-						alignItems: 'center',
-					}}
-				>
-					<ColumnWithLink value={renderedCellValue} link={`/map/units/${row.getValue('_id')}`} />
-				</div>
-			),
+			Cell: ({ renderedCellValue, row }) => {
+				const id = row.original._id; // Get unit id
+				const comments = row.original.comments || []; // Get unit comments
+				return (
+					<div
+						style={{
+							display: 'flex',
+							alignItems: 'center',
+						}}
+					>
+						<ColumnWithLink value={renderedCellValue} link={`/map/units/${id}`} />
+						{/* Added comment icon with unit name */}
+						<CommentCell id={id} value={comments?.length} targetLabel={'unit'} />
+					</div>
+				);
+			},
 		},
 
 		{
