@@ -230,7 +230,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 	const { mapStateValues } = mapStateController.useState(['mapVars', 'defaultMapVars'], 'mapStateValues');
 	const { navStateValues } = navController.useState(['geographyFilterCount', 'wellFilterCount'], 'navStateValues');
 	const { globalStateValues } = globalStateController.useState(
-		['filters', 'mapView', 'allMapViews', 'layerSettingsLoading'],
+		['filters', 'mapView', 'allMapViews', 'layerSettingsLoading', 'datasets'],
 		'globalStateValues'
 	);
 	const layers = globalStateController.getValue('layers');
@@ -509,7 +509,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
 											<Tab
 												icon={action.icon}
 												{...a11yProps(index)}
-												onClick={() => mapControlsController.updateState({ selectedControl: action.action })}
+												onClick={() =>
+													globalStateValues.datasets &&
+													mapControlsController.updateState({ selectedControl: action.action })
+												}
 											/>
 										))}
 										{totalHitMapCount !== 0 && (

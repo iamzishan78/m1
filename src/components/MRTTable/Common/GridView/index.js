@@ -10,6 +10,7 @@ import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableController } from 'hookstate/tableController';
+import { isEqual } from 'lodash';
 
 function GridView({ tableKey, defaultView, handleDefaultView, Icon, label, module }) {
 	const { user } = globalStateController.useState(['user']);
@@ -21,6 +22,7 @@ function GridView({ tableKey, defaultView, handleDefaultView, Icon, label, modul
 	const tableState = Controller.useState([
 		'TableSchema',
 		'gridView',
+		'initialGridView',
 		'esIndex',
 		'columnPinning',
 		'sorting',
@@ -33,7 +35,9 @@ function GridView({ tableKey, defaultView, handleDefaultView, Icon, label, modul
 
 	useEffect(() => {
 		const selectedGridView = tableStateValues?.gridView?.selectedGridView;
-		gridViewStateController(tableKey).gridViewApply(selectedGridView);
+		const initialGridView = tableStateValues?.initialGridView?.selectedGridView;
+
+		if (!isEqual(selectedGridView, initialGridView)) gridViewStateController(tableKey).gridViewApply(selectedGridView);
 	}, [tableState.stateValues?.gridView?.selectedGridView]);
 
 	async function fetchGridViews() {

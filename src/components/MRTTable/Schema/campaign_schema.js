@@ -59,6 +59,7 @@ const CampaignMeta = {
 		pageSize: 50,
 	},
 	defaultSort: { field: 'flatSyncAt', order: 'desc' },
+	refetchQueries: ['getCampaignAnalytics'],
 	maxTableHeight: 'calc(100vh - 490px)',
 	onCustomKeyChange,
 	isInFiniteScroll: true,
@@ -120,14 +121,14 @@ const CampaignMeta = {
 			),
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'status.keyword',
 			id: 'status',
 			header: 'Campaign Stage',
 			isExternalFilter: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'unitCount',
 			id: 'unitCount',
 			header: 'Units',
@@ -135,7 +136,7 @@ const CampaignMeta = {
 			type: 'number',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'totalNra',
 			id: 'totalNra',
 			header: 'Total Unit NRA',
@@ -147,7 +148,7 @@ const CampaignMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'tractCount',
 			id: 'tractCount',
 			header: 'Tracts',
@@ -155,7 +156,7 @@ const CampaignMeta = {
 			type: 'number',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'owner.name.keyword',
 			id: 'owner.name',
 			header: 'Supervisor',

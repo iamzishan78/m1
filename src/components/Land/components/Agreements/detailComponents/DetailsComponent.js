@@ -59,6 +59,7 @@ import { AppContext } from 'AppContext';
 import { DrawerContext } from './DrawerContext';
 import RelatedDocumets from './relatedDocuments';
 import RelatedPayments from './relatedPayments';
+import { popupController } from 'hookstate/popupStateController';
 
 const useStyles = makeStyles(() => ({
 	mapProvider: {
@@ -185,9 +186,9 @@ const useStyles = makeStyles(() => ({
 			},
 		},
 	},
-	tabsDetailContainer: () => ({
+	tabsDetailContainer: ({ drawer }) => ({
 		padding: 20,
-		width: '100%',
+		width: drawer ? 'calc(100% - 644px)' : '100%',
 	}),
 	menuIcon: {
 		marginLeft: 10,
@@ -321,10 +322,10 @@ export function DetailComponents(props) {
 			shape.id = dataCustomLayer.customLayer._id;
 			shape.properties.id = dataCustomLayer.customLayer._id;
 			shape.layer = { id: dataCustomLayer.customLayer.layer };
-			setStateApp(state => ({
-				...state,
+			popupController.updateState({
 				selectedShape: { ...shape.properties, shape },
-			}));
+			});
+
 			dispatch(
 				setLandReduxKey('agreement', {
 					activeAgreement: {
@@ -599,7 +600,7 @@ export function DetailComponents(props) {
 								className={classes.metaButton}
 								onClick={handleMetaToggle}
 							>
-								Metadata
+								Meta Data
 							</Button>
 							<IconButton size="small" component="span" className={classes.menuIcon} onClick={handleMenuClick}>
 								<MoreHorizIcon id="moreHorizIcon" size="medium" />

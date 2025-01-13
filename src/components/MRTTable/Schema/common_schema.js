@@ -112,7 +112,7 @@ export const CommonSchema = {
 		enableColumnDragging: false,
 		size: 350,
 	},
-	COMMON_COLUMN: {
+	STRING_COLUMN: {
 		size: 250,
 		isPinned: false,
 		hidden: false,
@@ -162,11 +162,7 @@ export const CommonSchema = {
 		header: 'User',
 		size: 250,
 		filter: true,
-		isSearchField: false,
 		type: 'string',
-		Cell: ({ row }) => {
-			return <>{row.original?.user?.name}</>;
-		},
 	},
 	CREATED_BY: {
 		name: 'createBy.name',
@@ -176,9 +172,6 @@ export const CommonSchema = {
 		filter: true,
 		isSearchField: false,
 		type: 'string',
-		Cell: ({ row }) => {
-			return <>{row.original?.createBy?.name}</>;
-		},
 	},
 	CREATED_DATE: {
 		name: 'createAt',
@@ -200,9 +193,6 @@ export const CommonSchema = {
 		filter: true,
 		isSearchField: false,
 		type: 'string',
-		Cell: ({ row }) => {
-			return <>{row.original?.lastUpdateBy?.name}</>;
-		},
 	},
 	LAST_UPDATED_DATE: {
 		name: 'lastUpdateAt',
@@ -288,7 +278,7 @@ export const CommonSchema = {
 			return <>{!value ? `$${value}` : vf_currency_to_fixed(value, CURRENCY_TO_FIXED)}</>;
 		},
 	},
-	STRING_COLUMN: {
+	SELECT_STRING_COLUMN: {
 		size: 250,
 		isPinned: false,
 		hidden: false,
@@ -296,8 +286,25 @@ export const CommonSchema = {
 		isSearchField: true,
 		enableSorting: true,
 		type: 'string',
-		filterVariant: 'select',
+		filterVariant: 'autocomplete',
+		muiFilterAutocompleteProps: {
+			getOptionLabel: option => {
+				return option.label || '';
+			},
+		},
 	},
+
+	SELECT_DATE_COLUMN: {
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: true,
+		isSearchField: true,
+		enableSorting: true,
+		type: 'date',
+		filterVariant: 'autocomplete',
+	},
+
 	NUMBER_COLUMN: {
 		size: 250,
 		isPinned: false,
@@ -323,7 +330,7 @@ export const CommonSchema = {
 export const validateRequiredString = value => (!value?.length ? 'Required' : undefined);
 
 export const editFieldProps =
-	(tableKey, type, validate, required = true) =>
+	({ tableKey, type, validate, isSelect = false, required = true, onChange }) =>
 	({ cell, row }) => {
 		const Controller = tableController(tableKey);
 
@@ -336,19 +343,28 @@ export const editFieldProps =
 		const [value, setValue] = useState(cell.getValue());
 
 		const onBlur = event => {
-			const validationError = validate?.(event.currentTarget.value);
+			const target = isSelect ? event.target : event.currentTarget;
+
+			const validationError = validate?.(target.value);
 
 			const rowData = editedData[row.id] || {};
 
-			set(rowData, cell.column.id, event.currentTarget.value);
+			set(rowData, cell.column.id, target.value);
 
 			Controller.setValidationErrors(row.id, cell.column.id, validationError);
-			Controller.setEditedData(row.id, rowData);
+
+			if (onChange) {
+				onChange(target.value, cell.column.id, rowData, row.id);
+			} else {
+				Controller.setEditedData(row.id, rowData);
+			}
 		};
 
 		return {
 			type,
 			required,
+
+			select: isSelect,
 
 			...(type === 'date' && { value: moment(value).format('yyyy-MM-DD') }),
 
@@ -356,9 +372,11 @@ export const editFieldProps =
 			helperText: errorText,
 			//store edited user in state to be saved later
 			onChange: e => {
-				setValue(e.currentTarget.value);
+				const target = isSelect ? e.target : e.currentTarget;
 
-				if (type === 'date') {
+				setValue(target.value);
+
+				if (type === 'date' || isSelect) {
 					onBlur(e);
 				}
 			},

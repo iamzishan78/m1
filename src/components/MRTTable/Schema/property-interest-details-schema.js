@@ -51,14 +51,14 @@ const PropertyInterestDetailMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'interestType.keyword',
 			id: 'interestType',
 			header: 'Interest Type',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'productType.keyword',
 			id: 'productType',
 			header: 'Product Type',
@@ -72,7 +72,7 @@ const PropertyInterestDetailMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'effectiveDate.keyword',
 			id: 'effectiveDate',
 			header: 'Effective Date',
@@ -83,7 +83,7 @@ const PropertyInterestDetailMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'endDate.keyword',
 			id: 'endDate',
 			header: 'End Date',
@@ -94,14 +94,14 @@ const PropertyInterestDetailMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'status.keyword',
 			id: 'status',
 			header: 'Status',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'costFree.keyword',
 			id: 'costFree',
 			header: 'Cost Free?',

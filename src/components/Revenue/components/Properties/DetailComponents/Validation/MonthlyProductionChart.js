@@ -13,7 +13,14 @@ import { GET_ASSOCIATED_WELL_PRODUCTION_DATA } from 'graphQL/useQueryAssociatedW
 import { AppContext } from 'AppContext';
 import PropTypes from 'prop-types';
 
-const ValidationChart = ({ filter, propertyId, wellProductionData, setWellProductionData, propertiesIds }) => {
+const ValidationChart = ({
+	filter,
+	propertyId,
+	wellProductionData,
+	setWellProductionData,
+	propertiesIds,
+	setAssociatedWellIds,
+}) => {
 	const [, setStateApp] = useContext(AppContext);
 	const [, setStateWellCard] = useContext(WellCardContext);
 	const [, setStateWellProdChart] = useContext(WellProdChartContext);
@@ -101,6 +108,7 @@ const ValidationChart = ({ filter, propertyId, wellProductionData, setWellProduc
 					});
 				}
 			});
+			setAssociatedWellIds(wellIds);
 			setStateApp(stateApp => ({
 				...stateApp,
 				associatedWellIds: wellIds,

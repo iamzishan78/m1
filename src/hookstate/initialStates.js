@@ -413,7 +413,6 @@ export const popupInitialState = {
 	layerSelectionPopup: false,
 	selectedUserDefinedLayer: null,
 	selectedShape: null,
-	selectedParcel: null,
 	selectedShapeFile: null,
 	selectedWell: null,
 	selectedWellId: null,

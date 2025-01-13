@@ -23,6 +23,7 @@ import { tableController } from 'hookstate/tableController';
 import { SMALL_TIMEOUT } from 'utils/consts';
 
 import { globalStateController } from './globalStateController';
+import { formatDate } from 'components/Shared/functions';
 
 export const handleVisiblityMenu = () => {
 	const interval2 = setInterval(() => {
@@ -139,7 +140,21 @@ export const handleMRTSchema = ({
 					break;
 			}
 
-			schemaColumn.accessorFn = row => get(row, schemaColumn.id, defaultValue);
+			schemaColumn.accessorFn = row => {
+				let value = get(row, schemaColumn.id) ?? defaultValue;
+
+				if (isClientSide) {
+					switch (schemaColumn.type) {
+						case 'date':
+							value = formatDate(value);
+							break;
+
+						default:
+							break;
+					}
+				}
+				return value;
+			};
 		}
 
 		if (schemaColumn.header && !schemaColumn.showInLast) {
@@ -173,6 +188,7 @@ export const handleMRTSchema = ({
 					options,
 					tableKey,
 					name: schemaColumn.accessorKey || schemaColumn.id,
+					schemaColumn,
 					controller: tableController,
 					layerIdentifier,
 				});
@@ -180,7 +196,7 @@ export const handleMRTSchema = ({
 
 			const updatedFilterModes = tableController(tableKey).setInitialFilterMode(
 				schemaColumn,
-				'singleselect',
+				schemaColumn.type === 'number' ? 'equals' : 'singleselect',
 				schemaColumn.id
 			);
 
@@ -285,6 +301,7 @@ export const handleMRTSchema = ({
 				options,
 				tableKey,
 				name: schemaColumn.accessorKey || schemaColumn.id,
+				schemaColumn,
 				controller: tableController,
 				layerIdentifier,
 			});

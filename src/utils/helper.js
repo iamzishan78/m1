@@ -116,18 +116,18 @@ export const formatTaxOwners = (owners, formData) => {
 			...(owners[i].isContact
 				? { _id: owners[i].isContact }
 				: {
-						isPrimary: owners[i].isPrimary,
-						'entityDetail.name': newFullName,
-						'entityDetail.firstName': firstName,
-						'entityDetail.lastName': lastName,
-						'entityDetail.middleName': middleName,
-						'entityDetail.address1': owners[i].StreetAddress,
-						'entityDetail.city': owners[i].City,
-						'entityDetail.state': owners[i].State,
-						'entityDetail.zip': owners[i].Zip,
-						ownerType: owners[i].OwnerType,
-						'entityDetail.globalOwner': owners[i].globalOwnerId,
-					}),
+					isPrimary: owners[i].isPrimary,
+					'entityDetail.name': newFullName,
+					'entityDetail.firstName': firstName,
+					'entityDetail.lastName': lastName,
+					'entityDetail.middleName': middleName,
+					'entityDetail.address1': owners[i].StreetAddress,
+					'entityDetail.city': owners[i].City,
+					'entityDetail.state': owners[i].State,
+					'entityDetail.zip': owners[i].Zip,
+					ownerType: owners[i].OwnerType,
+					'entityDetail.globalOwner': owners[i].globalOwnerId,
+				}),
 
 			// parcel interests
 			...(owners[i].parcel && {
@@ -364,13 +364,13 @@ export const getMapFilters = (stateNav, searchInput, gridPolygonString, format) 
 	const termsFilters =
 		format === 'simple'
 			? getTermsFilters({
-					wellType: stateNav.typeName,
-					operator: stateNav.operatorName,
-					wellStatus: stateNav.statusName,
-					wellBoreProfile: stateNav.profileName,
-					state: stateNav.stateName ? [stateNav.stateName] : [],
-					county: stateNav.countyName ? [stateNav.countyName] : [],
-				})
+				wellType: stateNav.typeName,
+				operator: stateNav.operatorName,
+				wellStatus: stateNav.statusName,
+				wellBoreProfile: stateNav.profileName,
+				state: stateNav.stateName ? [stateNav.stateName] : [],
+				county: stateNav.countyName ? [stateNav.countyName] : [],
+			})
 			: [];
 
 	const rangeFilters = getRangeFilters(
@@ -892,4 +892,29 @@ export const fuzzySearch = (items, query, queryKey = 'name') => {
 		return found;
 	}, []);
 	return ret;
+};
+
+
+export const formatLayerForMap = (layer) => {
+	let jsonLayer = layer.customLayer.shapeJson
+	if (layer.customLayer.shapeJson) {
+		jsonLayer = copy(layer.customLayer.shapeJson);
+	}
+	if (!jsonLayer?.properties?.type && layer?.customLayer?.layer !== 'parcel') {
+		jsonLayer.properties.type = layer.customLayer.layer
+	}
+	if (!jsonLayer?.properties?.sdType && layer?.customLayer?.layer === 'parcel') {
+		jsonLayer.properties.sdType = layer.customLayer.layer
+	}
+
+	jsonLayer.layer = { id: layer.customLayer.layer };
+	jsonLayer.id = layer.customLayer._id;
+	return {
+		jsonLayer,
+		feature: {
+			...jsonLayer.properties,
+			feature: jsonLayer,
+			id: layer.customLayer._id,
+		}
+	}
 };

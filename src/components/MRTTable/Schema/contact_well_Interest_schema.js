@@ -43,28 +43,28 @@ const ContactWellInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'API',
 			name: 'well.apiNumber.keyword',
 			id: 'well.apiNumber',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Well Name',
 			name: 'well.wellName.keyword',
 			id: 'well.wellName',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'County',
 			name: 'well.county.keyword',
 			id: 'well.county',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Lease',
 			name: 'well.leaseDescription.keyword',
 			id: 'well.leaseDescription',
@@ -78,14 +78,14 @@ const ContactWellInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Interest Owner',
 			name: 'interestOwner.keyword',
 			id: 'interestOwner',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Type',
 			name: 'type.keyword',
 			id: 'type',

@@ -46,66 +46,66 @@ const RelatedTractsMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'tract.state.keyword',
 			id: 'tract.state',
 			header: 'State',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'tract.county.keyword',
 			id: 'tract.county',
 			header: 'County',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'tract.basin.keyword',
 			id: 'tract.basin',
 			header: 'Basin',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'tract.field.keyword',
 			id: 'tract.field',
 			header: 'Field',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'tract.survey.keyword',
 			id: 'tract.survey',
 			header: 'Survey/ Meridian',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'tract.block.keyword',
 			id: 'tract.block',
 			header: 'Block/ Township',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'tract.section.keyword',
 			id: 'tract.section',
 			header: 'Section/ Range',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'tract.abstract.keyword',
 			id: 'tract.abstract',
 			header: 'Abstract/ Section',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'tract.qtr.keyword',
 			id: 'tract.qtr',
 			header: 'QTR Calls',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.entityDetail.name.keyword',
 			id: 'contact.entityDetail.name',
 			header: 'Name',
@@ -146,7 +146,7 @@ const RelatedTractsMeta = {
 			header: 'Working Interest',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'tract.sdGrossAcres.keyword',
 			id: 'tract.sdGrossAcres',
 			header: 'Gross Acres',
@@ -182,37 +182,37 @@ const RelatedTractsMeta = {
 			header: 'Acquisition Cost',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'depthFrom.keyword',
 			id: 'depthFrom',
 			header: 'Depth From',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'depthTo.keyword',
 			id: 'depthTo',
 			header: 'Depth To',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'tractStatus.keyword',
 			id: 'tractStatus',
 			header: 'Tract Status',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.department.keyword',
 			id: 'shape.shapeJson.properties.department',
 			header: 'Department',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'mapStatus.keyword',
 			id: 'mapStatus',
 			header: 'Map Status',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'countAcres.keyword',
 			id: 'countAcres',
 			header: 'Count Acres',
@@ -222,7 +222,14 @@ const RelatedTractsMeta = {
 			Cell: ({ renderedCellValue, row }) => {
 				const id = row.getValue('_id');
 				const targetLabel = 'parcel';
-				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={targetLabel} />;
+				return (
+					<CommentCell
+						id={id}
+						value={renderedCellValue.length}
+						targetLabel={targetLabel}
+						tableKey={'RelatedTractsTable'}
+					/>
+				);
 			},
 		},
 	],

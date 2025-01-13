@@ -72,62 +72,62 @@ const RelatedlUnitInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.State.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.State',
 			header: 'State',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.County.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.County',
 			header: 'County',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.surveyMerdian.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.surveyMerdian',
 			header: 'Survey/ Meridian',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.blockTownship.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.blockTownship',
 			header: 'Block/ Township',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.rangeSection.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.rangeSection',
 			header: 'Section/ Range',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.originalProperties.abstractNameShortName.keyword',
 			id: 'shape.shapeJson.properties.originalProperties.abstractNameShortName',
 			header: 'Abstract/ Section',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.entityDetail.name.keyword',
 			id: 'contact.entityDetail.name',
 			header: 'Owner Name',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'taxYear',
 			id: 'taxYear',
 			isSearchField: false,
 			header: 'Tax Year',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'dataSource.keyword',
 			id: 'dataSource',
 			header: 'Data Source',
@@ -163,13 +163,13 @@ const RelatedlUnitInterestMeta = {
 			header: 'NRA',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'unitTractId.keyword',
 			id: 'unitTractId',
 			header: 'Unit Tract ID',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'tractAcres',
 			id: 'tractAcres',
 			header: 'Unit Tract Acres',
@@ -200,13 +200,13 @@ const RelatedlUnitInterestMeta = {
 			header: 'Closed Price',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shape.shapeJson.properties.description.keyword',
 			id: 'shape.shapeJson.properties.description',
 			header: 'Unit description',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			type: 'array',
 			name: 'campaigns',
 			id: 'campaigns',
@@ -216,13 +216,13 @@ const RelatedlUnitInterestMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'campaignPriority.keyword',
 			id: 'campaignPriority',
 			header: 'Campaign Priority',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.ownerType.keyword',
 			id: 'contact.ownerType',
 			header: 'Owner Type',
@@ -231,7 +231,7 @@ const RelatedlUnitInterestMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'deals.name.keyword',
 			id: 'deals.name',
 			header: 'Associated Deals',
@@ -270,6 +270,7 @@ const RelatedlUnitInterestMeta = {
 						targetSourceId={targetSourceId}
 						tags={row?.original?.tags}
 						targetLabel={'Unit Ownership'}
+						tableKey={'RelatedUnitInterestTable'}
 					/>
 				);
 			},
@@ -279,7 +280,14 @@ const RelatedlUnitInterestMeta = {
 			...CommonSchema.COMMENTS,
 			Cell: ({ renderedCellValue, row }) => {
 				const id = row.getValue('ownerEntity');
-				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'Unit Ownership'} />;
+				return (
+					<CommentCell
+						id={id}
+						value={renderedCellValue.length}
+						targetLabel={'Unit Ownership'}
+						tableKey={'RelatedUnitInterestTable'}
+					/>
+				);
 			},
 		},
 	],

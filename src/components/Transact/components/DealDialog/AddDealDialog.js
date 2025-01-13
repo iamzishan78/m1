@@ -873,6 +873,7 @@ function AddDealDialog(props) {
 								refetchQueries: ['getPipeline', 'getContactDeals', 'getContactSummary'],
 								awaitRefetchQueries: true,
 							}).then(() => {
+								tableGlobalController.refetch();
 								resolve();
 							});
 						})
@@ -951,6 +952,7 @@ function AddDealDialog(props) {
 					awaitRefetchQueries: true,
 				}).then(result => {
 					finishCreatingDeal(result?.data);
+					tableGlobalController.refetch();
 				});
 			}
 		}

@@ -3,7 +3,6 @@ import React from 'react';
 
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import UserManagementToolbar from 'components/MRTTable/TablesOverride/UserManagementTable/UserManagementToolbar';
-import { formatDate } from 'components/Shared/functions';
 
 import { GET_ALL_USERS } from 'graphQL/userManagement';
 
@@ -45,19 +44,19 @@ const UserManagementMeta = {
 			id: 'id',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Name',
 			id: 'displayName',
 			name: 'displayName',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'User Email',
 			id: 'email',
 			name: 'email',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Role',
 			id: 'role',
 			name: 'role',
@@ -69,7 +68,7 @@ const UserManagementMeta = {
 			},
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Role Privileges',
 			id: 'rolePrivileges',
 			name: 'rolePrivileges',
@@ -81,11 +80,10 @@ const UserManagementMeta = {
 			},
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Last Login',
 			id: 'lastLogin',
 			name: 'lastLogin',
-			accessorFn: row => formatDate(row?.lastLogin),
 		},
 	],
 };

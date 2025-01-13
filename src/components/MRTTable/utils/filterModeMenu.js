@@ -8,7 +8,7 @@ import FilterModeMenuItems from '../Common/FilterModeMenuItems';
 export const columnFilterModesFnRefs = {};
 
 const filterModeMenu =
-	({ options, tableKey, name, controller, layerIdentifier }) =>
+	({ options, tableKey, name, schemaColumn, controller, layerIdentifier }) =>
 	({ onSelectFilterMode }) => {
 		const selectedMapView = globalStateController.getValue('mapView')?.selectedMapView;
 		const mapViewFilter = selectedMapView?.filters?.find(
@@ -16,22 +16,31 @@ const filterModeMenu =
 		);
 		const isClientSide = tableController(tableKey).getValue('isClientSide');
 
-		const filterType = isClientSide ? 'singleselect' : mapViewFilter?.filterType;
+		const filterType = isClientSide
+			? schemaColumn.type === 'number'
+				? 'equals'
+				: 'singleselect'
+			: mapViewFilter?.filterType;
 
 		if (!columnFilterModesFnRefs?.[tableKey]) {
 			columnFilterModesFnRefs[tableKey] = {};
 		}
 
 		// Checks if filter mode is applied already or not
+		let intiated = null;
 		if (filterType && !columnFilterModesFnRefs?.[tableKey]?.[name]?.intiated) {
+			intiated = true;
+			const isSingleMulti = ['singleselect', 'multiselect'].includes(filterType);
 			columnFilterModesFnRefs[tableKey] = {
 				...columnFilterModesFnRefs[tableKey],
 				[name]: {
 					onSelectFilterMode,
-					intiated: true,
+					intiated,
 				},
 			};
-			onSelectFilterMode(filterType);
+			if (!isSingleMulti || isClientSide) {
+				onSelectFilterMode(filterType);
+			}
 		}
 
 		return options.map(option => (

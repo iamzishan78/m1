@@ -4,83 +4,47 @@ import { Grid, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import Loader from 'components/Loaders';
 
 import { UPSERT_CHECK_PROPERTY } from 'graphQL/useMutationCheckPropertyUpdate';
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
-import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
 function UpdateProperty(props) {
 	// Initial states
 	const [propertiesNumbers, setPropertiesNumbers] = useState([]);
-	const [totalProperties, setTotalProperties] = useState(0);
-	const [query, setQuery] = useState('');
 
 	// Queries
 	const [getDbFilters, { loading }] = useLazyQuery(GET_DB_FILTERS, {
-		fetchPolicy: 'no-cache',
-	});
-	const [getDbData] = useLazyQuery(GET_DB_DATA, {
 		fetchPolicy: 'no-cache',
 	});
 
 	// Mutations
 	const [upsertCheckProperties] = useMutation(UPSERT_CHECK_PROPERTY);
 
-	// useEffects
 	useEffect(() => {
-		(async () => {
-			await new Promise((resolve, reject) => {
-				getDbData({
-					variables: {
-						index: 'checkdetails_flat',
-						filters: [{ field: 'property.IsDeleted', value: false }],
-						pagination: {
-							getAllData: true,
-						},
-					},
-					onCompleted: res => {
-						if (res) {
-							const { total } = res?.getDbData;
-							setTotalProperties(total);
-						}
-					},
-					onError: error => reject(error),
-				});
-			});
-		})();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		getDbFilters({
+			variables: {
+				index: 'checkdetails_flat',
+				filters: [{ field: 'property.IsDeleted', value: false }],
+				filterKey: 'property.number.keyword',
+				filterAggs: {
+					query: '',
+					field: 'property.number.keyword',
+					size: 10000,
+				},
+			},
+			onCompleted: res => {
+				if (res) {
+					const propertiesNumbers = res?.getDbFilters?.hits?.map(obj => obj.key);
+					setPropertiesNumbers(propertiesNumbers);
+				}
+			},
+		});
 	}, []);
-
-	useEffect(() => {
-		(async () => {
-			await new Promise((resolve, reject) => {
-				getDbFilters({
-					variables: {
-						index: 'checkdetails_flat',
-						filters: [{ field: 'property.IsDeleted', value: false }],
-						filterKey: 'property.number.keyword',
-						filterAggs: {
-							query,
-							field: 'property.number.keyword',
-							size: totalProperties,
-						},
-					},
-					onCompleted: res => {
-						if (res) {
-							const propertiesNumbers = res?.getDbFilters?.hits?.map(obj => obj.key);
-							setPropertiesNumbers(propertiesNumbers);
-						}
-					},
-					onError: error => reject(error),
-				});
-			});
-		})();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [totalProperties, query]);
 
 	// handle selected record update
 	const handleChecksUpdate = async propertyNumber => {
@@ -125,7 +89,6 @@ function UpdateProperty(props) {
 							variant="outlined"
 							placeholder=""
 							style={{ backgroundColor: 'white', color: 'black' }}
-							onChange={e => setQuery(e.target.value)}
 						/>
 					)}
 					disableListWrap
@@ -135,5 +98,10 @@ function UpdateProperty(props) {
 		</div>
 	);
 }
+
+UpdateProperty.propTypes = {
+	selectedRows: PropTypes.array.isRequired,
+	resetRows: PropTypes.func.isRequired,
+};
 
 export default UpdateProperty;
