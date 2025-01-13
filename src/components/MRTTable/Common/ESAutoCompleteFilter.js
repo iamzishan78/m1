@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 
 import { useLazyQuery } from '@apollo/client';
-import _, { debounce } from 'lodash';
+import _, { debounce, isEqual } from 'lodash';
 import PropTypes from 'prop-types';
 
 import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
@@ -188,8 +188,8 @@ function ESAutoCompleteFilter({
 		}
 	};
 
-	const handleChange = (e, option) => {
-		if (!option || option.length === 0) {
+	const handleChange = (e, value) => {
+		if (!value || value.length === 0) {
 			setFilterValue(null);
 			compositeFields.forEach(singleField =>
 				tableController(tableKey).clearFilter(singleField.replace('.keyword', ''))
@@ -197,9 +197,8 @@ function ESAutoCompleteFilter({
 			return;
 		}
 
-		const getValue = option =>
-			typeof option === 'object' ? option.value : _.find(options, { label: option })?.value || option;
-		let newValue = multiple ? option.map(getValue) : getValue(option);
+		const getValue = option => option?.value || _.find(options, { label: option })?.value || option;
+		let newValue = multiple ? value.map(getValue) : getValue(value);
 
 		if (type === 'boolean') {
 			newValue = newValue === 'true';
@@ -227,7 +226,7 @@ function ESAutoCompleteFilter({
 				defaultFilterOptions?.length > 0
 					? defaultFilterOptions
 					: multiple
-						? options?.filter(item => !filterValue.includes(item.value))
+						? options?.filter(item => !filterValue.find(value => isEqual(value, item.value)))
 						: options
 			}
 			getOptionLabel={op => {
