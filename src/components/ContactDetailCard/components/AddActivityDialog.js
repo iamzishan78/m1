@@ -1,830 +1,781 @@
-import React, { useState, useEffect, useContext } from "react";
-import clsx from "clsx";
-import { useLazyQuery, useMutation } from "@apollo/client";
-import moment from "moment";
-import { useDispatch } from "react-redux";
-import { showErrorMessage, showSuccessMessage } from "actions";
-import { Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import { Dialog, CircularProgress } from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import DeleteIcon from "@material-ui/icons/Delete";
+import React, { useState, useEffect, useContext } from 'react';
+import { useDispatch } from 'react-redux';
+
+import { Menu, MenuItem, ListItemIcon, ListItemText, Dialog, CircularProgress } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import DeleteIcon from '@material-ui/icons/Delete';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
-import Select from "@material-ui/core/Select";
-import Grid from "@material-ui/core/Grid";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import { AppContext } from "AppContext";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
-import { ADDACTIVITY, UPDATEACTIVITY } from "graphQL/useMutationActivity";
-import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import { OPENDEALS } from "graphQL/useQueryOpenDeals";
-import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
-import { DELETEACTIVITY } from "graphQL/useMutationActivity";
-import { outcomeOptions } from "./FieldContent/helper";
-import AutoCompleteAddNewField from "./FieldContent/AutoCompleteAddNewField";
+import { useLazyQuery, useMutation } from '@apollo/client';
+import clsx from 'clsx';
+import moment from 'moment';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    "&  .MuiPaper-root": {
-      maxWidth: "400px",
-      padding: "25px",
-    },
-  },
-  dialogTitle: {
-    textAlign: "center",
-  },
-  dialogContentText: {
-    textAlign: "center",
-  },
-  inputField: {
-    marginBottom: "30px",
-  },
-  inputFieldDateRoot: {
-    "& .MuiDialog-root": {
-      zIndex: 99999,
-    },
-  },
-  inputFieldDate: {
-    marginBottom: "30px",
-    "& .MuiInputBase-input": {
-      paddingTop: "10.5px",
-      paddingBottom: "10.5px",
-    },
-  },
-  progress: {
-    marginLeft: "30px",
-    verticalAlign: "middle",
-  },
-  dialogFooter: { display: "flex", justifyContent: "flex-start" },
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 
-  label: {
-    backgroundColor: "white",
-  },
+import { ADDACTIVITY, UPDATEACTIVITY, DELETEACTIVITY } from 'graphQL/useMutationActivity';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+import { OPENDEALS } from 'graphQL/useQueryOpenDeals';
 
-  closeIcon: {
-    color: theme.palette.secondary.main,
-  },
-  shrinkLabel: {
-    backgroundColor: "#fff !important",
-    padding: "0 6px",
-  },
-  notes: {
-    backgroundColor: "#FFFCDC",
-    display: "block",
-    width: "100%",
-    marginBottom: "20px",
+import { tableGlobalController } from 'hookstate/tableController';
 
-    "& .MuiOutlinedInput-root": {
-      width: "100%",
-    },
-  },
+import { showErrorMessage, showSuccessMessage } from 'actions';
+import { AppContext } from 'AppContext';
 
-  inputField: {
-    height: 41,
-    marginBottom: "20px",
+import AutoCompleteAddNewField from './FieldContent/AutoCompleteAddNewField';
+import { outcomeOptions } from './FieldContent/helper';
 
-    "& .MuiOutlinedInput-root": {
-      height: 41,
-    },
-  },
-  error: {
-    border: "2px solid red !important",
-  },
-  dateTimeRow: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    columnGap: "16px",
-  },
-  dateTimeField: {
-    height: 41,
-    width: "100%",
-    marginBottom: "20px",
+const useStyles = makeStyles(theme => ({
+	root: {
+		'&  .MuiPaper-root': {
+			maxWidth: '400px',
+			padding: '25px',
+		},
+	},
+	dialogTitle: {
+		textAlign: 'center',
+	},
+	dialogContentText: {
+		textAlign: 'center',
+	},
+	inputFieldDateRoot: {
+		'& .MuiDialog-root': {
+			zIndex: 99999,
+		},
+	},
+	inputFieldDate: {
+		marginBottom: '30px',
+		'& .MuiInputBase-input': {
+			paddingTop: '10.5px',
+			paddingBottom: '10.5px',
+		},
+	},
+	progress: {
+		marginLeft: '30px',
+		verticalAlign: 'middle',
+	},
+	dialogFooter: { display: 'flex', justifyContent: 'flex-start' },
 
-    "& .MuiInputBase-root": {
-      height: "100%",
-    },
-  },
-  marginLeft: {
-    marginLeft: 6,
-  },
-  btnGroup: {
-    width: 400,
-    display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-  dialog: {
-    zIndex: "99999 !important",
-  },
-  menu: {
-    "& .MuiListItem-root": {
-      "& .MuiListItemIcon-root": {
-        minWidth: "30px",
-        "& .MuiSvgIcon-root": {
-          fill: "red !important",
-        },
-      },
-    },
-  },
+	label: {
+		backgroundColor: 'white',
+	},
+
+	closeIcon: {
+		color: theme.palette.secondary.main,
+	},
+	shrinkLabel: {
+		backgroundColor: '#fff !important',
+		padding: '0 6px',
+	},
+	notes: {
+		backgroundColor: '#FFFCDC',
+		display: 'block',
+		width: '100%',
+		marginBottom: '20px',
+
+		'& .MuiOutlinedInput-root': {
+			width: '100%',
+		},
+	},
+
+	inputField: {
+		height: 41,
+		marginBottom: '20px',
+
+		'& .MuiOutlinedInput-root': {
+			height: 41,
+		},
+	},
+	error: {
+		border: '2px solid red !important',
+	},
+	dateTimeRow: {
+		display: 'grid',
+		gridTemplateColumns: '1fr 1fr',
+		columnGap: '16px',
+	},
+	dateTimeField: {
+		height: 41,
+		width: '100%',
+		marginBottom: '20px',
+
+		'& .MuiInputBase-root': {
+			height: '100%',
+		},
+	},
+	marginLeft: {
+		marginLeft: 6,
+	},
+	btnGroup: {
+		width: 400,
+		display: 'flex',
+		justifyContent: 'flex-end',
+		alignItems: 'center',
+	},
+	dialog: {
+		zIndex: '99999 !important',
+	},
+	menu: {
+		'& .MuiListItem-root': {
+			'& .MuiListItemIcon-root': {
+				minWidth: '30px',
+				'& .MuiSvgIcon-root': {
+					fill: 'red !important',
+				},
+			},
+		},
+	},
 }));
 
 const initialErrors = {
-  activityType: false,
-  activityName: false,
-  startDate: false,
-  startTime: false,
-  endDate: false,
-  endTime: false,
-  owner: false,
+	activityType: false,
+	activityName: false,
+	startDate: false,
+	startTime: false,
+	endDate: false,
+	endTime: false,
+	owner: false,
 };
 
 const getCurrentDate = () => {
-  const d = new Date().toISOString();
-  return d.slice(0, d.indexOf("T"));
+	const d = new Date().toISOString();
+	return d.slice(0, d.indexOf('T'));
+};
+
+const getCurrentTime = () => {
+	const now = new Date();
+	const hours = now.getHours().toString().padStart(2, '0');
+	const minutes = now.getMinutes().toString().padStart(2, '0');
+	return `${hours}:${minutes}`;
 };
 
 const mergeDateAndTime = (d, t) => {
-  return `${d}T${t}`;
+	return `${d}T${t}`;
 };
 const activityStatus = [
-  {
-    key: 'Open',
-    value: false
-  },
-  {
-    key: "Completed",
-    value: true
-  }
-]
+	{
+		key: 'Open',
+		value: false,
+	},
+	{
+		key: 'Completed',
+		value: true,
+	},
+];
 function AddActivityDialog(props) {
-  const classes = useStyles();
-  const { selectedActivity, onClose, contactData, defaultActivityType } = props;
+	const classes = useStyles();
+	const { selectedActivity, onClose, contactData, defaultActivityType, actionActivityData } = props;
+	const { activity_name, activity_type, activity_outcome, activity_notes, activity_status } = actionActivityData || {};
 
-  const [stateApp] = useContext(AppContext);
-  const dispatch = useDispatch();
+	const [stateApp] = useContext(AppContext);
+	const dispatch = useDispatch();
 
-  const [addNew, setAddNew] = useState(true);
-  const [activityType, setActivityType] = useState(defaultActivityType || "call");
-  const [activityName, setActivityName] = useState("");
-  const [closed, setClosed] = useState(activityStatus[0]);
-  const [startDate, setStartDate] = useState(getCurrentDate());
-  const [endDate, setEndDate] = useState(getCurrentDate());
-  const [startTime, setStartTime] = useState("08:00");
-  const [endTime, setEndTime] = useState("08:00");
-  const [notes, setNotes] = useState("");
-  const [owner, setOwner] = useState({ name: "", id: null });
-  const [dealId, setDealId] = useState(null);
-  const [errors, setErrors] = useState({ ...initialErrors });
-  const [users, setUsers] = useState([]);
-  const [anchorEl, setAnchorEl] = useState();
-  const [outcome, setOutcome] = useState();
+	const [addNew, setAddNew] = useState(true);
+	const [activityType, setActivityType] = useState(activity_type || defaultActivityType || 'call'); // set default activity type
+	const [activityName, setActivityName] = useState(activity_name || ''); // set default activity name
+	const [closed, setClosed] = useState(activity_status || activityStatus[0]); // set default activity status
+	const [startDate, setStartDate] = useState(getCurrentDate());
+	const [endDate, setEndDate] = useState(getCurrentDate());
+	const [startTime, setStartTime] = useState(getCurrentTime() || '08:00');
+	const [endTime, setEndTime] = useState(getCurrentTime() || '08:00');
+	const [notes, setNotes] = useState(activity_notes || ''); // set default activity notes
+	const [owner, setOwner] = useState({ name: '', id: null });
+	const [dealId, setDealId] = useState(null);
+	const [errors, setErrors] = useState({ ...initialErrors });
+	const [users, setUsers] = useState([]);
+	const [anchorEl, setAnchorEl] = useState();
+	const [outcome, setOutcome] = useState(activity_outcome || ''); // set default activity outcome
 
-  const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
-    fetchPolicy: "no-cache",
-  });
+	const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
+		fetchPolicy: 'no-cache',
+	});
 
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [deleteActivityMutation, { loading: deleteLoading }] = useMutation(
-    DELETEACTIVITY,
-    {
-      refetchQueries: ["getContact", "getAllActivities", "getContactSummary"],
-      awaitRefetchQueries: true,
-    }
-  );
+	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+	const [deleteActivityMutation] = useMutation(DELETEACTIVITY, {
+		refetchQueries: ['getContact', 'getAllActivities', 'getContactSummary'],
+		awaitRefetchQueries: true,
+	});
 
-  const openConfirmationDialog = () => {
-    setDeleteDialogOpen(true);
-  };
-  const handleCloseDialog = () => {
-    setDeleteDialogOpen(false);
-  };
+	const openConfirmationDialog = () => {
+		setDeleteDialogOpen(true);
+	};
+	const handleCloseDialog = () => {
+		setDeleteDialogOpen(false);
+	};
 
-  useEffect(() => {
-    setActivityType(defaultActivityType || "call");
-  }, [defaultActivityType]);
+	useEffect(() => {
+		setActivityType(defaultActivityType || 'call');
+	}, [defaultActivityType]);
 
-  useEffect(() => {
-    getAllMongoUsers();
-  }, []);
+	useEffect(() => {
+		getAllMongoUsers();
+	}, []);
 
-  useEffect(() => {
-    if (userLists && userLists.allMongoUsers) {
-      setUsers(
-        userLists.allMongoUsers.map((user) => ({
-          value: user._id,
-          text: user.name,
-        }))
-      );
-    }
-  }, [userLists]);
+	useEffect(() => {
+		if (userLists && userLists.allMongoUsers) {
+			setUsers(
+				userLists.allMongoUsers.map(user => ({
+					value: user._id,
+					text: user.name,
+				}))
+			);
+		}
+	}, [userLists]);
 
-  const [openDeals, setOpenDeals] = useState([]);
-  const [getOpenDeals, { loading: tloading, data: dealsData }] = useLazyQuery(
-    OPENDEALS,
-    {
-      fetchPolicy: "network-only",
-    }
-  );
+	const [openDeals, setOpenDeals] = useState([]);
+	const [getOpenDeals, { data: dealsData }] = useLazyQuery(OPENDEALS, {
+		fetchPolicy: 'network-only',
+	});
 
-  useEffect(() => {
-    if (stateApp.user && stateApp.user.mongoId) {
-      getOpenDeals();
-    }
-  }, [stateApp.user]);
+	useEffect(() => {
+		if (stateApp.user && stateApp.user.mongoId) {
+			getOpenDeals();
+		}
+	}, [stateApp.user]);
 
-  useEffect(() => {
-    if (dealsData) {
-      setOpenDeals(dealsData?.openDeals?.deals);
-    }
-  }, [dealsData]);
+	useEffect(() => {
+		if (dealsData) {
+			setOpenDeals(dealsData?.openDeals?.deals);
+		}
+	}, [dealsData]);
 
-  const [addActivityMutation, { loading: addLoading }] = useMutation(
-    ADDACTIVITY,
-    {
-      refetchQueries: [
-        "getContact",
-        "getAllActivities",
-        "getMelissaRecordsCountForContactIds",
-      ],
-      awaitRefetchQueries: true,
-    }
-  );
+	const [addActivityMutation, { loading: addLoading }] = useMutation(ADDACTIVITY, {
+		refetchQueries: ['getContact', 'getAllActivities', 'getMelissaRecordsCountForContactIds', 'getDbData'],
+		awaitRefetchQueries: true,
+		onCompleted: () => {
+			tableGlobalController.refetch();
+		},
+	});
 
-  const [updateActivityMutation, { loading: updateLoading }] = useMutation(
-    UPDATEACTIVITY,
-    {
-      refetchQueries: [
-        "getContact",
-        "getAllActivities",
-        "getMelissaRecordsCountForContactIds",
-      ],
-      awaitRefetchQueries: true,
-    }
-  );
+	const [updateActivityMutation, { loading: updateLoading }] = useMutation(UPDATEACTIVITY, {
+		refetchQueries: ['getContact', 'getAllActivities', 'getMelissaRecordsCountForContactIds'],
+		awaitRefetchQueries: true,
+	});
 
-  const loading = addLoading || updateLoading;
+	const loading = addLoading || updateLoading;
 
-  useEffect(() => {
-    if (selectedActivity) {
-      setAddNew(false);
-      setNotes(selectedActivity.notes);
-      setOwner({
-        name: selectedActivity.ownerName,
-        id: selectedActivity.ownerId,
-      });
-      setDealId(selectedActivity.dealId);
-      setActivityType(selectedActivity.type);
-      setActivityName(selectedActivity.name);
-      setClosed(selectedActivity.isClosed ? activityStatus[1] : activityStatus[0]);
-      setOutcome(outcome);
+	useEffect(() => {
+		if (selectedActivity) {
+			setAddNew(false);
+			setNotes(selectedActivity.notes);
+			setOwner({
+				name: selectedActivity.ownerName,
+				id: selectedActivity.ownerId,
+			});
+			setDealId(selectedActivity.dealId);
+			setActivityType(selectedActivity.type);
+			setActivityName(selectedActivity.name);
+			setClosed(selectedActivity.isClosed ? activityStatus[1] : activityStatus[0]);
+			setOutcome(outcome);
 
-      setStartDate(
-        moment
-          .parseZone(new Date(selectedActivity.dateTime))
-          .format("yyyy-MM-DD")
-      );
-      setStartTime(
-        moment.parseZone(new Date(selectedActivity.dateTime)).format("HH:mm")
-      );
+			setStartDate(moment.parseZone(new Date(selectedActivity.dateTime)).format('yyyy-MM-DD'));
+			setStartTime(moment.parseZone(new Date(selectedActivity.dateTime)).format('HH:mm'));
 
-      setEndDate(
-        moment
-          .parseZone(new Date(selectedActivity.endDateTime))
-          .format("yyyy-MM-DD")
-      );
-      setEndTime(
-        moment.parseZone(new Date(selectedActivity.endDateTime)).format("HH:mm")
-      );
-    } else {
-      setAddNew(true);
-      setClosed(activityStatus[0]);
-      setNotes("");
-      setOwner({
-        name: stateApp.user.fullname || stateApp.user.displayName,
-        id: stateApp.user.mongoId,
-      });
-      setDealId(null);
-      setActivityType(defaultActivityType || "call");
-      setActivityName("");
-      setStartDate(getCurrentDate());
-      setEndDate(getCurrentDate());
-      setStartTime("08:00");
-      setEndTime("08:00");
-    }
-  }, [selectedActivity]);
+			setEndDate(moment.parseZone(new Date(selectedActivity.endDateTime)).format('yyyy-MM-DD'));
+			setEndTime(moment.parseZone(new Date(selectedActivity.endDateTime)).format('HH:mm'));
+		} else {
+			setAddNew(true);
+			setClosed(activity_status || activityStatus[0]); // set activity status
+			setNotes(activity_notes || ''); // set activity notes
+			setOwner({
+				name: stateApp.user.fullname || stateApp.user.displayName,
+				id: stateApp.user.mongoId,
+			});
+			setDealId(null);
+			setActivityType(activity_type || defaultActivityType || 'call'); // set activity type
+			setActivityName(activity_name || ''); // set activity name
+			setStartDate(getCurrentDate());
+			setEndDate(getCurrentDate());
+			setStartTime(getCurrentTime() || '08:00'); // set activity start time
+			setEndTime(getCurrentTime() || '08:00'); // set activity end time
+		}
+	}, [selectedActivity]);
 
-  const onModalClose = () => {
-    onClose();
-  };
+	const onModalClose = () => {
+		onClose();
+	};
 
-  const updateErrors = () => {
-    let activityTypeErr = false;
-    let activityNameErr = false;
-    let startDataErr = false;
-    let startTimeErr = false;
-    let endDateErr = false;
-    let endTimeErr = false;
-    let ownerErr = false;
+	const updateErrors = () => {
+		let activityTypeErr = false;
+		let activityNameErr = false;
+		let startDataErr = false;
+		let startTimeErr = false;
+		let endDateErr = false;
+		let endTimeErr = false;
+		let ownerErr = false;
 
-    if (!activityType || activityType.length === 0) activityTypeErr = true;
-    if (!activityName || activityName.length === 0) activityNameErr = true;
-    if (!startDate) startDataErr = true;
-    if (!startTime) startTimeErr = true;
-    if (!endDate) endDateErr = true;
-    if (!endTime) endTimeErr = true;
-    if (!owner.id) ownerErr = true;
+		if (!activityType || activityType.length === 0) {
+			activityTypeErr = true;
+		}
+		if (!activityName || activityName.length === 0) {
+			activityNameErr = true;
+		}
+		if (!startDate) {
+			startDataErr = true;
+		}
+		if (!startTime) {
+			startTimeErr = true;
+		}
+		if (!endDate) {
+			endDateErr = true;
+		}
+		if (!endTime) {
+			endTimeErr = true;
+		}
+		if (!owner.id) {
+			ownerErr = true;
+		}
 
-    const dateTime = mergeDateAndTime(startDate, startTime);
-    const endDateTime = mergeDateAndTime(endDate, endTime);
+		const dateTime = mergeDateAndTime(startDate, startTime);
+		const endDateTime = mergeDateAndTime(endDate, endTime);
 
-    if (moment(endDateTime).isBefore(dateTime)) {
-      startDataErr = true;
-      startTimeErr = true;
-      endDateErr = true;
-      endTimeErr = true;
-    }
+		if (moment(endDateTime).isBefore(dateTime)) {
+			startDataErr = true;
+			startTimeErr = true;
+			endDateErr = true;
+			endTimeErr = true;
+		}
 
-    setErrors({
-      activityType: activityTypeErr,
-      activityName: activityNameErr,
-      startDate: startDataErr,
-      startTime: startTimeErr,
-      endDate: endDateErr,
-      endTime: endTimeErr,
-      owner: ownerErr,
-    });
+		setErrors({
+			activityType: activityTypeErr,
+			activityName: activityNameErr,
+			startDate: startDataErr,
+			startTime: startTimeErr,
+			endDate: endDateErr,
+			endTime: endTimeErr,
+			owner: ownerErr,
+		});
 
-    return (
-      activityNameErr ||
-      activityTypeErr ||
-      startDataErr ||
-      startTimeErr ||
-      endDateErr ||
-      endTimeErr ||
-      ownerErr
-    );
-  };
+		return activityNameErr || activityTypeErr || startDataErr || startTimeErr || endDateErr || endTimeErr || ownerErr;
+	};
 
-  const addActivity = async () => {
-    if (updateErrors()) return;
+	const addActivity = async () => {
+		if (updateErrors()) {
+			return;
+		}
 
-    const dateTime = mergeDateAndTime(startDate, startTime);
-    const endDateTime = mergeDateAndTime(endDate, endTime);
-    await addActivityMutation({
-      variables: {
-        activity: {
-          type: activityType,
-          name: activityName,
-          notes,
-          ownerId: owner.id,
-          ownerName: owner.name,
-          contactId: contactData?._id,
-          contactName: contactData?.name,
-          dealId,
-          outcome,
-          dateTime: new Date(dateTime).toUTCString(),
-          endDateTime: new Date(endDateTime).toUTCString(),
-          isClosed: closed?.value,
-          user: stateApp.user._id,
-          createdBy: stateApp?.user?._id,
-          tenant: window.sessionStorage.getItem("tenantName")
-        },
-      },
-      refetchQueries: ["getContact"],
-    });
+		const dateTime = mergeDateAndTime(startDate, startTime);
+		const endDateTime = mergeDateAndTime(endDate, endTime);
+		await addActivityMutation({
+			variables: {
+				activity: {
+					type: activityType,
+					name: activityName,
+					notes,
+					ownerId: owner.id,
+					ownerName: owner.name,
+					contactId: contactData?._id,
+					contactName: contactData?.name,
+					dealId,
+					outcome,
+					dateTime: new Date(dateTime).toUTCString(),
+					endDateTime: new Date(endDateTime).toUTCString(),
+					isClosed: closed?.value,
+					user: stateApp.user._id,
+					createdBy: stateApp?.user?._id,
+					tenant: window.sessionStorage.getItem('tenantName'),
+				},
+			},
+			refetchQueries: ['getContact'],
+		});
 
-    onModalClose();
-  };
+		onModalClose();
+	};
 
-  const updateActivity = async () => {
-    if (updateErrors()) return;
+	const updateActivity = async () => {
+		if (updateErrors()) {
+			return;
+		}
 
-    const dateTime = mergeDateAndTime(startDate, startTime);
-    const endDateTime = mergeDateAndTime(endDate, endTime);
+		const dateTime = mergeDateAndTime(startDate, startTime);
+		const endDateTime = mergeDateAndTime(endDate, endTime);
 
-    await updateActivityMutation({
-      variables: {
-        activity: {
-          _id: selectedActivity._id,
-          type: activityType,
-          name: activityName,
-          dateTime: new Date(dateTime).toUTCString(),
-          endDateTime: new Date(endDateTime).toUTCString(),
-          notes,
-          outcome,
-          ownerId: owner.id,
-          ownerName: owner.name,
-          contactId: contactData?._id,
-          contactName: contactData?.name,
-          dealId,
-          isClosed: closed.value,
-          user: stateApp.user._id,
-          createdBy: stateApp?.user?._id,
-        },
-      },
-    });
+		await updateActivityMutation({
+			variables: {
+				activity: {
+					_id: selectedActivity._id,
+					type: activityType,
+					name: activityName,
+					dateTime: new Date(dateTime).toUTCString(),
+					endDateTime: new Date(endDateTime).toUTCString(),
+					notes,
+					outcome,
+					ownerId: owner.id,
+					ownerName: owner.name,
+					contactId: contactData?._id,
+					contactName: contactData?.name,
+					dealId,
+					isClosed: closed.value,
+					user: stateApp.user._id,
+					createdBy: stateApp?.user?._id,
+				},
+			},
+		});
 
-    onModalClose();
-  };
+		onModalClose();
+	};
 
-  const deleteFunc = async () => {
-    try {
-      setIsDeleting(true);
-      await deleteActivityMutation({
-        variables: {
-          id: selectedActivity._id,
-        },
-      }).then((result) => {
-        const {
-          data: { deleteActivity },
-        } = result;
-        if (deleteActivity?.success === true) {
-          dispatch(showSuccessMessage("The Activity was successfully deleted."));
-          onModalClose();
-        } else dispatch(showErrorMessage("An error occurred."));
-      });
-      setIsDeleting(false);
-    } catch {
-      setIsDeleting(false);
-    }
-  };
+	const deleteFunc = async () => {
+		await deleteActivityMutation({
+			variables: {
+				id: selectedActivity._id,
+			},
+		}).then(result => {
+			const {
+				data: { deleteActivity },
+			} = result;
+			if (deleteActivity?.success === true) {
+				dispatch(showSuccessMessage('The Activity was successfully deleted.'));
+				onModalClose();
+			} else {
+				dispatch(showErrorMessage('An error occurred.'));
+			}
+		});
+	};
 
-  const handleMenuClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+	const handleMenuClick = event => {
+		setAnchorEl(event.currentTarget);
+	};
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+	const handleMenuClose = () => {
+		setAnchorEl(null);
+	};
 
-  return (
-    <div style={{ padding: "30px" }}>
-      {deleteDialogOpen && (
-        <Dialog
-          className={classes.dialog}
-          open={deleteDialogOpen ? true : false}
-          onClose={handleCloseDialog}
-          fullWidth={false}
-          maxWidth="sm"
-        >
-          <DeleteConfirmationDialogContent
-            header={`Delete Activity`}
-            onClose={handleCloseDialog}
-            deleteFunc={deleteFunc}
-            m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => { }}
-          >
-            Do you want to delete the selected Activity?
-          </DeleteConfirmationDialogContent>
-        </Dialog>
-      )}
-      <Grid item xs={12} style={{ minHeight: "35px" }}>
-        <div style={{ justifyContent: "space-between", display: "flex" }}>
-          <h4 style={{ margin: "0 0 30px 0", float: "left", fontSize: "1.1rem" }}>
-            {addNew ? "Activity Details" : 'Recent Activities'}
-          </h4>
-          <div>
-            <IconButton
-              size="small"
-              component="span"
-              disabled={addLoading || updateLoading}
-              style={{
-                background: "transparent",
-                paddingLeft: "10px",
-                align: "center",
-              }}
-              onClick={handleMenuClick}
-            >
-              <MoreHorizIcon size="medium" />
-            </IconButton>
-            <Menu
-              id="dealMenu"
-              anchorEl={anchorEl}
-              keepMounted
-              open={Boolean(anchorEl)}
-              onClose={handleMenuClose}
-              className={classes.menu}
-              getContentAnchorEl={null}
-              anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-              transformOrigin={{ vertical: "top", horizontal: "center" }}
-            >
-              <MenuItem onClick={openConfirmationDialog}>
-                <ListItemIcon>
-                  <DeleteIcon size="medium" />
-                </ListItemIcon>
-                <ListItemText>Delete</ListItemText>
-              </MenuItem>
-            </Menu>
-            <IconButton
-              onClick={onModalClose}
-              size="small"
-              style={{ float: "right", top: "-5px" }}
-            >
-              <KeyboardTabIcon fontSize="large" />
-            </IconButton>
-          </div>
-        </div>
-      </Grid>
-      <Grid></Grid>
-      <TextField
-        className={clsx(
-          classes.inputField,
-          activityName === "" && errors.activityName && classes.error
-        )}
-        fullWidth
-        type="text"
-        variant="outlined"
-        label="Activity Name"
-        InputLabelProps={{ shrink: true }}
-        value={activityName}
-        onChange={(e) => setActivityName(e.target.value)}
-        disabled={loading}
-        data-testid='activity-name-field'
-      />
-      <FormControl
-        variant="outlined"
-        fullWidth
-        className={clsx(
-          classes.inputField,
-          (activityType === "" || !activityType) &&
-          errors.activityType &&
-          classes.error
-        )}
-        size="small"
-      >
-        <InputLabel id="activity-type-label" className={classes.label}>
-          Activity Type
-        </InputLabel>
-        <Select
-          native
-          labelId="activity-type-label"
-          id="activity-type-input"
-          value={activityType}
-          onChange={(e) => {
-            setActivityType(e.target.value);
-          }}
-          fullWidth
-          label="Activity Type"
-          disabled={loading}
-        >
-          <option aria-label="None" value="" />
-          <option value={"call"}>Call</option>
-          <option value={"text_message"}>Text Message</option>
-          <option value={"email"}>Email</option>
-          <option value={"mailer"}>Mailer</option>
-          <option value={"meeting"}>Meeting</option>
-          <option value={"task"}>Task</option>
-          <option value={"deadline"}>Deadline</option>
+	return (
+		<div style={{ padding: '30px' }}>
+			{deleteDialogOpen && (
+				<Dialog
+					className={classes.dialog}
+					open={deleteDialogOpen ? true : false}
+					onClose={handleCloseDialog}
+					fullWidth={false}
+					maxWidth="sm"
+				>
+					<DeleteConfirmationDialog header={'Delete Activity'} onClose={handleCloseDialog} deleteFunc={deleteFunc}>
+						Do you want to delete the selected Activity?
+					</DeleteConfirmationDialog>
+				</Dialog>
+			)}
+			<Grid item xs={12} style={{ minHeight: '35px' }}>
+				<div style={{ justifyContent: 'space-between', display: 'flex' }}>
+					<h4 style={{ margin: '0 0 30px 0', float: 'left', fontSize: '1.1rem' }}>
+						{addNew ? 'Activity Details' : 'Recent Activities'}
+					</h4>
+					<div>
+						<IconButton
+							size="small"
+							component="span"
+							disabled={addLoading || updateLoading}
+							style={{
+								background: 'transparent',
+								paddingLeft: '10px',
+								align: 'center',
+							}}
+							onClick={handleMenuClick}
+						>
+							<MoreHorizIcon size="medium" />
+						</IconButton>
+						<Menu
+							id="dealMenu"
+							anchorEl={anchorEl}
+							keepMounted
+							open={Boolean(anchorEl)}
+							onClose={handleMenuClose}
+							className={classes.menu}
+							getContentAnchorEl={null}
+							anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+							transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+						>
+							<MenuItem onClick={openConfirmationDialog}>
+								<ListItemIcon>
+									<DeleteIcon size="medium" />
+								</ListItemIcon>
+								<ListItemText>Delete</ListItemText>
+							</MenuItem>
+						</Menu>
+						<IconButton onClick={onModalClose} size="small" style={{ float: 'right', top: '-5px' }}>
+							<KeyboardTabIcon fontSize="large" />
+						</IconButton>
+					</div>
+				</div>
+			</Grid>
+			<Grid></Grid>
+			<TextField
+				className={clsx(classes.inputField, activityName === '' && errors.activityName && classes.error)}
+				fullWidth
+				type="text"
+				variant="outlined"
+				label="Activity Name"
+				InputLabelProps={{ shrink: true }}
+				value={activityName}
+				onChange={e => setActivityName(e.target.value)}
+				disabled={loading}
+				data-testid="activity-name-field"
+			/>
+			<FormControl
+				variant="outlined"
+				fullWidth
+				className={clsx(
+					classes.inputField,
+					(activityType === '' || !activityType) && errors.activityType && classes.error
+				)}
+				size="small"
+			>
+				<InputLabel id="activity-type-label" className={classes.label}>
+					Activity Type
+				</InputLabel>
+				<Select
+					native
+					labelId="activity-type-label"
+					id="activity-type-input"
+					value={activityType}
+					onChange={e => {
+						setActivityType(e.target.value);
+					}}
+					fullWidth
+					label="Activity Type"
+					disabled={loading}
+				>
+					<option aria-label="None" value="" />
+					<option value={'call'}>Call</option>
+					<option value={'text_message'}>Text Message</option>
+					<option value={'email'}>Email</option>
+					<option value={'mailer'}>Mailer</option>
+					<option value={'meeting'}>Meeting</option>
+					<option value={'task'}>Task</option>
+					<option value={'deadline'}>Deadline</option>
+				</Select>
+			</FormControl>
+			<FormControl
+				variant="outlined"
+				fullWidth
+				className={clsx(
+					classes.inputField,
+					(activityType === '' || !activityType) && errors.activityType && classes.error
+				)}
+				size="small"
+			>
+				<AutoCompleteAddNewField
+					queryParams={{
+						esIndex: 'activities_flat',
+						filterKey: 'outcome.keyword',
+						size: 50,
+					}}
+					onChange={data => {
+						setOutcome(data.name);
+					}}
+					defaultOptions={outcomeOptions}
+					value={outcome}
+					inputProps={{ variant: 'outlined', size: 'small', label: 'Outcome' }}
+				/>
+			</FormControl>
+			<div className={classes.dateTimeRow}>
+				<TextField
+					className={clsx(classes.dateTimeField, !startDate && errors.startDate && classes.error)}
+					value={startDate}
+					label="Start Date"
+					InputLabelProps={{ shrink: true }}
+					type="date"
+					variant="outlined"
+					onChange={e => {
+						setStartDate(e.target.value);
+						setEndDate(e.target.value);
+					}}
+				/>
+				<TextField
+					className={clsx(classes.dateTimeField, !startTime && errors.startTime && classes.error)}
+					value={startTime}
+					type="time"
+					variant="outlined"
+					onChange={e => {
+						setStartTime(e.target.value);
+						setEndTime(e.target.value);
+					}}
+				/>
+			</div>
+			<div className={classes.dateTimeRow}>
+				<TextField
+					className={clsx(classes.dateTimeField, !endDate && errors.endDate && classes.error)}
+					value={endDate}
+					type="date"
+					label="End Date"
+					InputLabelProps={{ shrink: true }}
+					variant="outlined"
+					onChange={e => {
+						setEndDate(e.target.value);
+					}}
+				/>
+				<TextField
+					className={clsx(classes.dateTimeField, !endTime && errors.endTime && classes.error)}
+					value={endTime}
+					type="time"
+					variant="outlined"
+					onChange={e => {
+						setEndTime(e.target.value);
+					}}
+				/>
+			</div>
+			<TextField
+				multiline
+				fullWidth
+				rows={6}
+				variant="outlined"
+				placeholder="Activity Notes"
+				InputLabelProps={{ shrink: true }}
+				value={notes}
+				className={clsx(classes.notes)}
+				onChange={e => {
+					setNotes(e.target.value);
+				}}
+			/>
+			<TextField
+				fullWidth
+				className={clsx(classes.inputField)}
+				disabled
+				variant="outlined"
+				label="Contact Name"
+				InputLabelProps={{ shrink: true }}
+				value={contactData?.name}
+			/>
+			<Autocomplete
+				options={openDeals}
+				onChange={(e, deal) => {
+					setDealId(deal?._id);
+				}}
+				value={openDeals?.find(deal => deal._id === dealId) || null}
+				getOptionSelected={option => option.id === dealId}
+				getOptionLabel={option => option.name}
+				renderOption={option => {
+					return (
+						<Grid container spacing={0}>
+							<Grid container item xs={12} alignItems="center">
+								<Grid item xs>
+									<span style={{ fontWeight: 400 }}>{option.name}</span>
 
+									<Typography variant="body2" color="textSecondary">
+										{option.label}
+									</Typography>
+								</Grid>
+							</Grid>
+						</Grid>
+					);
+				}}
+				renderInput={params => (
+					<TextField
+						className={clsx(classes.inputField)}
+						margin="dense"
+						{...params}
+						InputLabelProps={{ shrink: true }}
+						label="Associated Deal"
+						variant="outlined"
+					/>
+				)}
+			/>
+			<Autocomplete
+				className={clsx(!owner.id && errors.owner && classes.error)}
+				options={users.filter(u => u.text)}
+				onChange={(e, user) => {
+					setOwner({ name: user?.text, id: user?.value });
+				}}
+				value={users.find(user => user.value === owner.id) || null}
+				getOptionLabel={option => option.text}
+				getOptionSelected={option => option.value === owner.id}
+				renderInput={params => (
+					<TextField
+						className={clsx(classes.inputField)}
+						margin="dense"
+						{...params}
+						variant="outlined"
+						InputLabelProps={{ shrink: true }}
+						label="Activity Owner"
+					/>
+				)}
+			/>
+			<TextField
+				label="Activity Created By"
+				className={clsx(
+					// classes.fieldWidth,
+					classes.inputField,
+					activityName === '' && errors.activityName && classes.error
+				)}
+				disabled
+				fullWidth
+				InputProps={{ readOnly: true }}
+				value={stateApp?.user?.name}
+				margin="dense"
+				variant="outlined"
+			/>
+			<Autocomplete
+				className={clsx(!owner.id && errors.owner && classes.error)}
+				options={activityStatus}
+				onChange={(event, newValue) => {
+					setClosed(newValue);
+				}}
+				value={activityStatus.find(item => item?.value === closed?.value) || null}
+				getOptionLabel={option => option.key}
+				renderInput={params => (
+					<TextField
+						className={clsx(classes.inputField)}
+						margin="dense"
+						{...params}
+						variant="outlined"
+						InputLabelProps={{ shrink: true }}
+						label="Activity Status"
+					/>
+				)}
+			/>
 
-        </Select>
-      </FormControl>
-      <FormControl
-        variant="outlined"
-        fullWidth
-        className={clsx(
-          classes.inputField,
-          (activityType === "" || !activityType) &&
-          errors.activityType &&
-          classes.error
-        )}
-        size="small"
-      >
-        <AutoCompleteAddNewField
-          queryParams={{
-            esIndex: "contacts_flat",
-            filterKey: "outcome.keyword",
-            size: 50,
-          }}
-          onChange={(data) => {
-            setOutcome(data.name)
-          }}
-          defaultOptions={outcomeOptions}
-          value={outcome}
-          inputProps={{ variant: "outlined", size: "small", label: "Outcome" }}
-        />
-      </FormControl>
-      <div className={classes.dateTimeRow}>
-        <TextField
-          className={clsx(
-            classes.dateTimeField,
-            !startDate && errors.startDate && classes.error
-          )}
-          value={startDate}
-          label="Start Date"
-          InputLabelProps={{ shrink: true }}
-          type="date"
-          variant="outlined"
-          onChange={(e) => {
-            setStartDate(e.target.value);
-            setEndDate(e.target.value);
-          }}
-        />
-        <TextField
-          className={clsx(
-            classes.dateTimeField,
-            !startTime && errors.startTime && classes.error
-          )}
-          value={startTime}
-          type="time"
-          variant="outlined"
-          onChange={(e) => {
-            setStartTime(e.target.value);
-            setEndTime(e.target.value);
-          }}
-        />
-      </div>
-      <div className={classes.dateTimeRow}>
-        <TextField
-          className={clsx(
-            classes.dateTimeField,
-            !endDate && errors.endDate && classes.error
-          )}
-          value={endDate}
-          type="date"
-          label="End Date"
-          InputLabelProps={{ shrink: true }}
-          variant="outlined"
-          onChange={(e) => {
-            setEndDate(e.target.value);
-          }}
-        />
-        <TextField
-          className={clsx(
-            classes.dateTimeField,
-            !endTime && errors.endTime && classes.error
-          )}
-          value={endTime}
-          type="time"
-          variant="outlined"
-          onChange={(e) => {
-            setEndTime(e.target.value);
-          }}
-        />
-      </div>
-      <TextField
-        multiline
-        fullWidth
-        rows={6}
-        variant="outlined"
-        placeholder="Activity Notes"
-        InputLabelProps={{ shrink: true }}
-        value={notes}
-        className={clsx(classes.notes)}
-        onChange={(e) => {
-          setNotes(e.target.value);
-        }}
-      />
-      <TextField
-        fullWidth
-        className={clsx(classes.inputField)}
-        disabled
-        variant="outlined"
-        label="Contact Name"
-        InputLabelProps={{ shrink: true }}
-        value={contactData?.name}
-      />
-      <Autocomplete
-        options={openDeals}
-        onChange={(e, deal) => {
-          setDealId(deal?._id);
-        }}
-        value={openDeals?.find((deal) => deal._id === dealId) || null}
-        getOptionSelected={(option) => option.id === dealId}
-        getOptionLabel={(option) => option.name}
-        renderOption={(option) => {
-          return (
-            <Grid container spacing={0}>
-              <Grid container item xs={12} alignItems="center">
-                <Grid item xs>
-                  <span style={{ fontWeight: 400 }}>{option.name}</span>
+			<div className={classes.btnGroup} style={{ width: '100%' }}>
+				{/*<FormControlLabel*/}
+				{/*  enabled*/}
+				{/*  control={*/}
+				{/*    <Checkbox*/}
+				{/*      checked={closed}*/}
+				{/*      onChange={(e,activity) => setClosed(activity)}*/}
+				{/*      color="primary"*/}
+				{/*    />*/}
+				{/*  }*/}
+				{/*  label="Mark as done"*/}
+				{/*/>*/}
+				<Button
+					className={classes.marginLeft}
+					variant="contained"
+					onClick={() => {
+						onModalClose();
+					}}
+					disabled={loading}
+				>
+					Cancel
+				</Button>
 
-                  <Typography variant="body2" color="textSecondary">
-                    {option.label}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Grid>
-          );
-        }}
-        renderInput={(params) => (
-          <TextField
-            className={clsx(classes.inputField)}
-            margin="dense"
-            {...params}
-            InputLabelProps={{ shrink: true }}
-            label="Associated Deal"
-            variant="outlined"
-          />
-        )}
-      />
-      <Autocomplete
-        className={clsx(!owner.id && errors.owner && classes.error)}
-        options={users.filter(u => u.text)}
-        onChange={(e, user) => {
-          setOwner({ name: user?.text, id: user?.value });
-        }}
-        value={users.find((user) => user.value === owner.id) || null}
-        getOptionLabel={(option) => option.text}
-        getOptionSelected={(option) => option.value === owner.id}
-        renderInput={(params) => (
-          <TextField
-            className={clsx(classes.inputField)}
-            margin="dense"
-            {...params}
-            variant="outlined"
-            InputLabelProps={{ shrink: true }}
-            label="Activity Owner"
-          />
-        )}
-      />
-      <TextField
-        label="Activity Created By"
-        className={clsx(
-          // classes.fieldWidth,
-          classes.inputField,
-          activityName === "" && errors.activityName && classes.error
-        )}
-        disabled
-        fullWidth
-        InputProps={{ readOnly: true }}
-        value={stateApp?.user?.name}
-        margin="dense" variant="outlined"
-      />
-      <Autocomplete
-        className={clsx(!owner.id && errors.owner && classes.error)}
-        options={activityStatus}
-        onChange={(event, newValue) => {
-          setClosed(newValue)
-        }}
-        value={activityStatus.find((item) => item?.value === closed?.value) || null}
-        getOptionLabel={(option) => option.key}
-        renderInput={(params) => (
-          <TextField
-            className={clsx(classes.inputField)}
-            margin="dense"
-            {...params}
-            variant="outlined"
-            InputLabelProps={{ shrink: true }}
-            label="Activity Status"
-          />
-        )}
-      />
-
-      <div className={classes.btnGroup} style={{ width: "100%" }}>
-        {/*<FormControlLabel*/}
-        {/*  enabled*/}
-        {/*  control={*/}
-        {/*    <Checkbox*/}
-        {/*      checked={closed}*/}
-        {/*      onChange={(e,activity) => setClosed(activity)}*/}
-        {/*      color="primary"*/}
-        {/*    />*/}
-        {/*  }*/}
-        {/*  label="Mark as done"*/}
-        {/*/>*/}
-        <Button
-          className={classes.marginLeft}
-          variant="contained"
-          onClick={() => {
-            onModalClose();
-          }}
-          disabled={loading}
-        >
-          Cancel
-        </Button>
-
-        <Button
-          disabled={loading}
-          className={classes.marginLeft}
-          color="primary"
-          variant="contained"
-          onClick={() => {
-            if (addNew) addActivity();
-            else updateActivity();
-          }}
-        >
-          {(addLoading || updateLoading) && (
-            <CircularProgress
-              style={{ marginRight: 8 }}
-              color="#fff"
-              size={20}
-            />
-          )}
-          {addNew ? "Add" : "Save"}
-        </Button>
-      </div>
-    </div>
-  );
+				<Button
+					disabled={loading}
+					className={classes.marginLeft}
+					color="primary"
+					variant="contained"
+					onClick={() => {
+						if (addNew) {
+							addActivity();
+						} else {
+							updateActivity();
+						}
+					}}
+				>
+					{(addLoading || updateLoading) && <CircularProgress style={{ marginRight: 8 }} color="#fff" size={20} />}
+					{addNew ? 'Add' : 'Save'}
+				</Button>
+			</div>
+		</div>
+	);
 }
 
 export default AddActivityDialog;

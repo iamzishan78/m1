@@ -1,22 +1,23 @@
-import { hookstate, useHookstate } from "@hookstate/core";
-import { hookStateController } from "hookstate/hookStateController";
+import { hookstate, useHookstate } from '@hookstate/core';
+
+import { hookStateController } from 'hookstate/hookStateController';
 
 export const metaDataColumnState = hookstate({});
 
 export const useMetaColumnsStates = () => useHookstate(metaDataColumnState);
 
-const metaColumnsControllerHandler = (state) => ({
-  initialize: (tableKey, metaColumns) => {
-    state.merge({
-      tableKey,
-      metaColumns,
-    });
-  },
+const metaColumnsControllerHandler = state => ({
+	initialize: (tableKey, metaColumns) => {
+		state.merge({
+			tableKey,
+			metaColumns,
+		});
+	},
 });
 
-export const metaDataColumnStateController = (TableKey) => {
-  return {
-    ...metaColumnsControllerHandler(metaDataColumnState[TableKey]),
-    ...hookStateController(metaDataColumnState[TableKey], {}),
-  };
+export const metaDataColumnStateController = TableKey => {
+	return {
+		...metaColumnsControllerHandler(metaDataColumnState[TableKey]),
+		...hookStateController(metaDataColumnState[TableKey], {}),
+	};
 };

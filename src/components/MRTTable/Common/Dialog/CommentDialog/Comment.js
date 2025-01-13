@@ -1,37 +1,41 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { useMutation, useLazyQuery, useQuery } from '@apollo/client';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
+import Avatar from 'react-avatar';
+
+import { CircularProgress } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
+import Divider from '@material-ui/core/Divider';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
-import TextField from '@material-ui/core/TextField';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Avatar from 'react-avatar';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
-import { CircularProgress } from '@material-ui/core';
-import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
-import Grid from '@material-ui/core/Grid';
-import Divider from '@material-ui/core/Divider';
+import TextField from '@material-ui/core/TextField';
 import CloseIcon from '@material-ui/icons/Close';
-import CommentType from 'components/Shared/components/Comment/CommentType';
+import DeleteIcon from '@material-ui/icons/Delete';
+
+import { useMutation, useLazyQuery, useQuery } from '@apollo/client';
+
 import { CommonCommentText } from 'components/Shared/CommentComponent';
-import { AppContext } from 'AppContext';
-import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
-import { COMMENTSBYOBJECTSIDS } from 'graphQL/useQueryCommentsByObjectsIds';
-import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
-import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
-import { tableGlobalController } from 'hookstate/tableController';
+import CommentType from 'components/Shared/components/Comment/CommentType';
 
 // import value formatters
 import capitalizeFirstLetter from 'components/Shared/valueformatters/capitalize-first-letter';
+
+import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
+import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
+import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
+import { COMMENTSBYOBJECTSIDS } from 'graphQL/useQueryCommentsByObjectsIds';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+
+import { AppContext } from 'AppContext';
 
 const AntSwitch = withStyles(theme => ({
 	root: {
@@ -254,33 +258,44 @@ export default function Comments(props) {
 				},
 			});
 		}
-	}, [props.targetSourceId, props.multipleIds]);
+	}, [props.targetSourceId, props.multipleIds, getCommentsByObjectId, getCommentsByObjectsIds, stateApp.user.mongoId]);
 
-	const sortArrayBasedOnTs = array => {
-		const compare = (a, b) => {
-			if (a.ts > b.ts) return -1;
-			if (b.ts > a.ts) return 1;
+	const sortArrayBasedOnTs = useCallback(
+		array => {
+			const compare = (a, b) => {
+				if (a.ts > b.ts) {
+					return -1;
+				}
+				if (b.ts > a.ts) {
+					return 1;
+				}
 
-			return 0;
-		};
+				return 0;
+			};
 
-		if (!props.multipleIds) array.sort(compare);
+			if (!props.multipleIds) {
+				array.sort(compare);
+			}
 
-		return array;
-	};
+			return array;
+		},
+		[props.multipleIds]
+	);
 
 	useEffect(() => {
 		if (dataComments && dataComments.commentsByObjectId) {
 			setCommentsArray(sortArrayBasedOnTs([...dataComments.commentsByObjectId]));
 		}
 		setLoadingComments(false);
-	}, [dataComments]);
+	}, [dataComments, sortArrayBasedOnTs]);
 
 	useEffect(() => {
 		if (dataCommentsMultiIds && dataCommentsMultiIds.commentsByObjectsIds) {
 			const checkIfUserMatch = user => {
 				for (let i = 0; i < user.length; i++) {
-					if (user[i]._id !== stateApp.user.mongoId) return false;
+					if (user[i]._id !== stateApp.user.mongoId) {
+						return false;
+					}
 				}
 				return user[0];
 			};
@@ -303,7 +318,7 @@ export default function Comments(props) {
 			setCommentsArray(sortArrayBasedOnTs(comments));
 		}
 		setLoadingComments(false);
-	}, [dataCommentsMultiIds, publicComment]);
+	}, [dataCommentsMultiIds, props.multipleIds?.length, publicComment, sortArrayBasedOnTs, stateApp.user?.mongoId]);
 
 	/// ////////////////// INSERTING NEW COMMENT ///////////////////////////////////////////////
 
@@ -315,6 +330,7 @@ export default function Comments(props) {
 						if (line.trim() !== '.') {
 							return line.trim();
 						}
+						return undefined;
 					})
 					.join('\n')
 			: `${value
@@ -323,6 +339,7 @@ export default function Comments(props) {
 						if (line.trim() !== '.') {
 							return line.trim();
 						}
+						return undefined;
 					})
 					.join('\n')}.`;
 
@@ -338,20 +355,19 @@ export default function Comments(props) {
 					objectType: props.targetLabel,
 					commentType: selectedCommentType,
 					pin: false,
-					tenant: window.sessionStorage.getItem("tenantName")
+					tenant: window.sessionStorage.getItem('tenantName'),
 				},
 			},
 			refetchQueries: [
 				'getCommentsByObjectId',
 				'getCommentsCounter',
 				'getCommentsByObjectsIds',
-				'getESPaginatedList',
-				'getESSimpleSearch',
+				'getDbData',
 				...props.refetchQueries,
 			],
 			awaitRefetchQueries: true,
 		});
-		tableGlobalController.refetch();
+		props.refetch?.();
 		setLoading(false);
 	};
 
@@ -379,7 +395,7 @@ export default function Comments(props) {
 
 	const handleDeleteClick = async comment => {
 		setLoading(true);
-		if (!props.multipleIds)
+		if (!props.multipleIds) {
 			await removeComment({
 				variables: {
 					commentId: comment._id,
@@ -388,13 +404,12 @@ export default function Comments(props) {
 					'getCommentsByObjectId',
 					'getCommentsCounter',
 					'getCommentsByObjectsIds',
-					'getESPaginatedList',
-					'getESSimpleSearch',
+					'getDbData',
 					...props.refetchQueries,
 				],
 				awaitRefetchQueries: true,
 			});
-		else {
+		} else {
 			for (let i = 0; i < comment.ids.length; i++) {
 				await removeComment({
 					variables: {
@@ -404,30 +419,29 @@ export default function Comments(props) {
 						'getCommentsByObjectId',
 						'getCommentsCounter',
 						'getCommentsByObjectsIds',
-						'getESPaginatedList',
-						'getESSimpleSearch',
+						'getDbData',
 						...props.refetchQueries,
 					],
 					awaitRefetchQueries: true,
 				});
 			}
 		}
-		tableGlobalController.refetch();
+		props.refetch?.();
 		setLoading(false);
 	};
 
 	/// /////////////////////////////////////////////////////////////////////////////////////
 
 	const textFieldHandleChange = e => {
-		if (e.target.value[e.target.value.length - 1] !== `\\`) {
-			if (e.target.value[e.target.value.length - 1] !== `\n`) {
+		if (e.target.value[e.target.value.length - 1] !== '\\') {
+			if (e.target.value[e.target.value.length - 1] !== '\n') {
 				setTextValue(
 					e.target.value
 						.split('\n')
 						.map(line => capitalizeFirstLetter(line))
 						.join('\n')
 				);
-			} else if (e.target.value[e.target.value.length - 2] !== `\n`) {
+			} else if (e.target.value[e.target.value.length - 2] !== '\n') {
 				setTextValue(`${textValue}.\n`);
 			}
 		}
@@ -455,7 +469,7 @@ export default function Comments(props) {
 					props.detailCard || props.handleRightDialogClose
 						? {
 								padding: '23px 23px 8px 23px',
-						  }
+							}
 						: {}
 				}
 			>
@@ -476,7 +490,9 @@ export default function Comments(props) {
 							) : (
 								<IconButton
 									onClick={e => {
-										if (props.handleRightDialogClose) props.handleRightDialogClose(e);
+										if (props.handleRightDialogClose) {
+											props.handleRightDialogClose(e);
+										}
 									}}
 									size="small"
 									style={{ float: 'right', top: '-5px', right: '-5px' }}
@@ -486,30 +502,32 @@ export default function Comments(props) {
 							)}
 						</Grid>
 					)}
-					{
-					props.hideSharedCommentCheck ? null :
-					<Grid item xs={12} style={{ marginBottom: '8px' }}>
-						<FormGroup style={{ display: 'block' }}>
-							{(props.detailCard || props.handleRightDialogClose) && (
-								<h4 className={classes.sharedCommentLabel}>Share comments</h4>
-							)}
-							<FormControlLabel
-								className={`${classes.switchButtom} ${!publicComment ? classes.switchTextDeselected : ''}`}
-								control={
-									<AntSwitch
-										checked={publicComment}
-										onChange={() => {
-											setPublicComment(!publicComment);
-										}}
-										name="checkedC"
-									/>
-								}
-								label={!props.detailCard && !props.handleRightDialogClose ? 'Shared' : ''}
-								labelPlacement="start"
-							/>
-						</FormGroup>
-					</Grid>
-					}
+					{!props.hideShareCommentsToggle && (
+						<Grid item xs={12} style={{ marginBottom: '8px' }} data-testid="shared-comment-section">
+							<FormGroup style={{ display: 'block' }}>
+								{(props.detailCard || props.handleRightDialogClose) && (
+									<h4 className={classes.sharedCommentLabel} data-testid="share-comments-label">
+										Share comments
+									</h4>
+								)}
+								<FormControlLabel
+									className={`${classes.switchButtom} ${!publicComment ? classes.switchTextDeselected : ''}`}
+									control={
+										<AntSwitch
+											checked={publicComment}
+											onChange={() => {
+												setPublicComment(!publicComment);
+											}}
+											name="checkedC"
+											data-testid="share-comments-switch"
+										/>
+									}
+									label={!props.detailCard && !props.handleRightDialogClose ? 'Shared' : ''}
+									labelPlacement="start"
+								/>
+							</FormGroup>
+						</Grid>
+					)}
 					<Grid item xs={12}>
 						<TextField
 							className={`${classes.textInput} ${emptyInput ? classes.emptyInput : ''}`}
@@ -566,8 +584,8 @@ export default function Comments(props) {
 							props.detailCard
 								? ((publicComment && comment.public) ||
 										(!publicComment && !comment.public && stateApp?.user?.email === comment?.user?.email)) &&
-								  (commentsDisplayedCount += 1) &&
-								  (props.top && props.top < commentsDisplayedCount ? null : (
+									(commentsDisplayedCount += 1) &&
+									(props.top && props.top < commentsDisplayedCount ? null : (
 										/// / ListItem ////
 										<div key={index}>
 											{commentsDisplayedCount !== 1 && (
@@ -610,9 +628,9 @@ export default function Comments(props) {
 												Delete
 											</h5>
 										</div>
-								  ))
+									))
 								: /// / ListItem  End ////
-								  ((publicComment && comment.public) ||
+									((publicComment && comment.public) ||
 										(!publicComment && stateApp.user.email === comment?.user?.email && !comment.public)) && (
 										<ListItem key={index} className={classes.listItem} alignItems="flex-start">
 											<ListItemAvatar className={classes.avatar}>
@@ -642,7 +660,7 @@ export default function Comments(props) {
 																day: '2-digit',
 																hour: '2-digit',
 																minute: '2-digit',
-														  }).format(comment.ts)}`
+															}).format(comment.ts)}`
 												}`}
 											/>
 											<ListItemSecondaryAction>
@@ -651,7 +669,7 @@ export default function Comments(props) {
 												</IconButton>
 											</ListItemSecondaryAction>
 										</ListItem>
-								  )
+									)
 						)}
 					</List>
 				) : (

@@ -1,213 +1,223 @@
-import React, { useState } from "react";
-import { withStyles, makeStyles } from "@material-ui/core/styles";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import Checkbox from "@material-ui/core/Checkbox";
-import DragIndicator from "@material-ui/icons/DragIndicator";
+import React, { useState } from 'react';
 
-import ListItem from "@material-ui/core/ListItem";
-import CancelOutlinedIcon from "@material-ui/icons/CancelOutlined";
-import ClickIcon from "../../../svgIcons/cursor-click.js";
-import UserDefined from "../../../svgIcons/user-defined.js";
-import ColorControl from "../../../svgIcons/color-control.js";
-import { Tooltip, FormControlLabel, Switch } from "@material-ui/core";
-import { UPDATELAYERSETTINGS } from "graphQL/useMutationUpdateLayerSettings";
-import { useMutation } from "@apollo/client";
-import Box from "@material-ui/core/Box";
-import { deepEqualObjects } from "../../../functions";
-import { mapControlsController } from "hookstate/mapControlsController.js";
-import { ifLayerHaveData } from "../common.js";
-import { layerController } from "hookstate/layerStateController.js";
+import { Tooltip, FormControlLabel, Switch } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Checkbox from '@material-ui/core/Checkbox';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
+import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined';
+import DragIndicator from '@material-ui/icons/DragIndicator';
 
-const useStyles = makeStyles((theme) => ({
-  list: {
-    padding: 0,
-  },
-  disabledLayerTitle: {
-    "& span": { color: "rgb(127, 149, 199) !important" },
-  },
+import { useMutation } from '@apollo/client';
+
+import { UPDATELAYERSETTINGS } from 'graphQL/useMutationUpdateLayerSettings';
+
+import { layerController } from 'hookstate/layerStateController.js';
+import { mapControlsController } from 'hookstate/mapControlsController.js';
+
+import { deepEqualObjects } from '../../../functions';
+import ColorControl from '../../../svgIcons/color-control.js';
+import ClickIcon from '../../../svgIcons/cursor-click.js';
+import UserDefined from '../../../svgIcons/user-defined.js';
+import { ifLayerHaveData } from '../common.js';
+
+const useStyles = makeStyles(theme => ({
+	list: {
+		padding: 0,
+	},
+	disabledLayerTitle: {
+		'& span': { color: 'rgb(127, 149, 199) !important' },
+	},
 }));
 
 function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateApp, setStateApp }) {
-  const [hoverItemIndex, setHoverItem] = useState(-1);
+	const [hoverItemIndex, setHoverItem] = useState(-1);
 
-  layerController.useState(['wellListFromSearch']);
+	layerController.useState(['wellListFromSearch']);
 
-  const classes = useStyles();
+	const classes = useStyles();
 
-  const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
+	const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
 
-  const handleToggleInteraction = (layer, index) => () => {
-    const currentLayers = [];
-    const updatedLayer = {
-      ...layer,
-      layerSettings: {
-        ...layer.layerSettings,
-        interaction: {
-          ...layer.layerSettings.interaction,
-          interactionDetail: {
-            hover: !layer.layerSettings.interaction.interactionDetail.hover,
-            click: !layer.layerSettings.interaction.interactionDetail.click,
-          },
-        },
-      },
-    };
+	const handleToggleInteraction = (layer, index) => () => {
+		const currentLayers = [];
+		const updatedLayer = {
+			...layer,
+			layerSettings: {
+				...layer.layerSettings,
+				interaction: {
+					...layer.layerSettings.interaction,
+					interactionDetail: {
+						hover: !layer.layerSettings.interaction.interactionDetail.hover,
+						click: !layer.layerSettings.interaction.interactionDetail.click,
+					},
+				},
+			},
+		};
 
-    //// saving to stateApp
-    currentLayers[index] = updatedLayer;
-    setStateApp((stateApp) => ({ ...stateApp, layers: [...currentLayers] }));
+		//// saving to stateApp
+		currentLayers[index] = updatedLayer;
+		setStateApp(stateApp => ({ ...stateApp, layers: [...currentLayers] }));
 
-    //// saving to mongo
-    updateLayerSettings({
-      variables: {
-        settings: {
-          _id: updatedLayer._id,
-          layerSettings: updatedLayer.layerSettings,
-        },
-      },
-    });
-  };
+		//// saving to mongo
+		updateLayerSettings({
+			variables: {
+				settings: {
+					_id: updatedLayer._id,
+					layerSettings: updatedLayer.layerSettings,
+				},
+			},
+		});
+	};
 
-  const defaultProps = {
-    borderLeft: 4,
-  };
+	const defaultProps = {
+		borderLeft: 4,
+	};
 
-  const StyledListItem = withStyles((theme) => ({
-    root: {
-      fontFamily: "Poppins",
-      "&:hover": {
-        background: "#506187",
-      },
-      // backgroundColor: "#040e24",
-      "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-        color: theme.palette.common.white,
-      },
-      "& .MuiListItemText-primary svg": {
-        marginLeft: "5px",
-        verticalAlign: "middle",
-      },
-    },
-  }))(ListItem);
+	const StyledListItem = withStyles(theme => ({
+		root: {
+			fontFamily: 'Poppins',
+			'&:hover': {
+				background: '#506187',
+			},
+			// backgroundColor: "#040e24",
+			'& .MuiListItemIcon-root, & .MuiListItemText-primary': {
+				color: theme.palette.common.white,
+			},
+			'& .MuiListItemText-primary svg': {
+				marginLeft: '5px',
+				verticalAlign: 'middle',
+			},
+		},
+	}))(ListItem);
 
-  const handleColorPicker = (layer) => {
-    mapControlsController.updateState({ selectedLayerControl: layer })
-  };
+	const handleColorPicker = layer => {
+		mapControlsController.updateState({ selectedLayerControl: layer });
+	};
 
-  const getLayerName = (layer) => {
-    if (type === "marketplace") {
-      return layer.layerName;
-    }
-    if (type !== "layer") return layer.name;
+	const getLayerName = layer => {
+		if (type === 'marketplace') {
+			return layer.layerName;
+		}
+		if (type !== 'layer') {
+			return layer.name;
+		}
 
-    if (layer.layerCategory == "M1 Layer") {
-      return layer.layerName;
-    } else {
-      return (
-        <>
-          <span>{layer.layerName}</span>
-          <UserDefined />
-        </>
-      );
-    }
-  };
+		if (layer.layerCategory == 'M1 Layer') {
+			return layer.layerName;
+		} else {
+			return (
+				<>
+					<span>{layer.layerName}</span>
+					<UserDefined />
+				</>
+			);
+		}
+	};
 
-  const getLayerControls = (layer, labelId, index) => {
-    const control1 = layer.layerSettings.colorable && (
-      <div
-        style={{
-          paddingRight: !layer.layerSettings.interaction.interactionAble ? "40" : "",
-        }}
-      >
-        <ListItemIcon onClick={() => handleColorPicker(layer)}>
-          <Tooltip title="Layer Styling">
-            <ColorControl />
-          </Tooltip>
-        </ListItemIcon>
-      </div>
-    );
+	const getLayerControls = (layer, labelId, index) => {
+		const control1 = layer.layerSettings.colorable && (
+			<div
+				style={{
+					paddingRight: !layer.layerSettings.interaction.interactionAble ? '40' : '',
+				}}
+			>
+				<ListItemIcon onClick={() => handleColorPicker(layer)}>
+					<Tooltip title="Layer Styling">
+						<ColorControl />
+					</Tooltip>
+				</ListItemIcon>
+			</div>
+		);
 
-    const control2 = layer.layerSettings.interaction.interactionAble && (
-      <div
-        style={{
-          paddingRight: 20,
-          height: "42px",
-          width: "42px",
-        }}
-      >
-        <Checkbox
-          icon={<CancelOutlinedIcon htmlColor={!ifLayerHaveData(layer) ? "rgb(127, 149, 199)" : "#12abe0"} />}
-          checkedIcon={<ClickIcon color={!ifLayerHaveData(layer) ? "rgb(127, 149, 199)" : "#12abe0"} />}
-          edge="start"
-          checked={layer.layerSettings.interaction.interactionDetail.click}
-          tabIndex={-1}
-          disableRipple
-          inputProps={{
-            "aria-labelledby": labelId,
-          }}
-          onChange={handleToggleInteraction(layer, index)}
-        />
-      </div>
-    );
+		const control2 = layer.layerSettings.interaction.interactionAble && (
+			<div
+				style={{
+					paddingRight: 20,
+					height: '42px',
+					width: '42px',
+				}}
+			>
+				<Checkbox
+					icon={<CancelOutlinedIcon htmlColor={!ifLayerHaveData(layer) ? 'rgb(127, 149, 199)' : '#12abe0'} />}
+					checkedIcon={<ClickIcon color={!ifLayerHaveData(layer) ? 'rgb(127, 149, 199)' : '#12abe0'} />}
+					edge="start"
+					checked={layer.layerSettings.interaction.interactionDetail.click}
+					tabIndex={-1}
+					disableRipple
+					inputProps={{
+						'aria-labelledby': labelId,
+					}}
+					onChange={handleToggleInteraction(layer, index)}
+				/>
+			</div>
+		);
 
-    return (
-      <>
-        {control1}
-        {control2}
-      </>
-    );
-  };
+		return (
+			<>
+				{control1}
+				{control2}
+			</>
+		);
+	};
 
-  const getLayerChecked = ({ layer, index }) => {
-    if (type === "layer" && layer) {
-      return layer.layerSettings.visiable !== false;
-    } else if (type === "base" && typeof index === "number" && stateApp.checkedBaseLayers) {
-      return stateApp.checkedBaseLayers.indexOf(index) !== -1;
-    } else if (type === "heatMaps" && typeof index === "number" && stateApp.checkedHeats) {
-      return stateApp.checkedHeats.indexOf(index) !== -1;
-    } else {
-      return false;
-    }
-  };
+	const getLayerChecked = ({ layer, index }) => {
+		if (type === 'layer' && layer) {
+			return layer.layerSettings.visiable !== false;
+		} else if (type === 'base' && typeof index === 'number' && stateApp.checkedBaseLayers) {
+			return stateApp.checkedBaseLayers.indexOf(index) !== -1;
+		} else if (type === 'heatMaps' && typeof index === 'number' && stateApp.checkedHeats) {
+			return stateApp.checkedHeats.indexOf(index) !== -1;
+		} else {
+			return false;
+		}
+	};
 
-  const checkIfNoLayerData = (layer) => {
-    return type === "layer" && !ifLayerHaveData(layer);
-  };
+	const checkIfNoLayerData = layer => {
+		return type === 'layer' && !ifLayerHaveData(layer);
+	};
 
-  return (
-    <Box
-      // borderColor={getLayerColor(layer, type, colors)}
-      {...defaultProps}
-      ref={provided.innerRef}
-      {...provided.draggableProps}
-      onMouseEnter={() => type === "base" && setHoverItem(index)}
-      onMouseLeave={() => type === "base" && setHoverItem(null)}
-    >
-      <StyledListItem ContainerComponent="li">
-        {type === "heatMaps" || hoverItemIndex === index ? (
-          <ListItemIcon {...provided.dragHandleProps}>
-            <DragIndicator />
-          </ListItemIcon>
-        ) : (
-          <ListItemIcon />
-        )}
-        <ListItemText id={labelId} primary={getLayerName(layer)} className={checkIfNoLayerData(layer) ? classes.disabledLayerTitle : ""} />
-        {type === "layer" && layer.layerSettings.colorable && getLayerControls(layer, labelId, index)}
-        <FormControlLabel
-          control={
-            <Switch
-              size="small"
-              disabled={checkIfNoLayerData(layer) ? classes.disabledLayerTitle : ""}
-              checked={getLayerChecked({
-                layer,
-                index,
-              })}
-              onChange={() => handleToggle({ layer, index })}
-            />
-          }
-        />
-      </StyledListItem>
-    </Box>
-  );
+	return (
+		<Box
+			// borderColor={getLayerColor(layer, type, colors)}
+			{...defaultProps}
+			ref={provided.innerRef}
+			{...provided.draggableProps}
+			onMouseEnter={() => type === 'base' && setHoverItem(index)}
+			onMouseLeave={() => type === 'base' && setHoverItem(null)}
+		>
+			<StyledListItem ContainerComponent="li">
+				{type === 'heatMaps' || hoverItemIndex === index ? (
+					<ListItemIcon {...provided.dragHandleProps}>
+						<DragIndicator />
+					</ListItemIcon>
+				) : (
+					<ListItemIcon />
+				)}
+				<ListItemText
+					id={labelId}
+					primary={getLayerName(layer)}
+					className={checkIfNoLayerData(layer) ? classes.disabledLayerTitle : ''}
+				/>
+				{type === 'layer' && layer.layerSettings.colorable && getLayerControls(layer, labelId, index)}
+				<FormControlLabel
+					control={
+						<Switch
+							size="small"
+							disabled={checkIfNoLayerData(layer) ? classes.disabledLayerTitle : ''}
+							checked={getLayerChecked({
+								layer,
+								index,
+							})}
+							onChange={() => handleToggle({ layer, index })}
+						/>
+					}
+				/>
+			</StyledListItem>
+		</Box>
+	);
 }
 
 export default React.memo(LayerItem, deepEqualObjects);

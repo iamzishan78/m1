@@ -1,7 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const ADD_CHECK_DATA = gql`
-  mutation addCheck($check: JSON) {
-    addCheck(check: $check)
-  }
+	mutation addCheck($check: JSON) {
+		addCheck(check: $check)
+	}
 `;

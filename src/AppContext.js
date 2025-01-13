@@ -1,300 +1,315 @@
-import React, { useState, createContext, useEffect } from "react";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { MSALObj, tenantsCredentials } from "./components/Login/AADAuthConfig";
-import { MSALB2CObj, B2CTenantCredentials } from "./components/Login/AADB2CAuthConfig";
-import { useDispatch } from "react-redux";
-import { setMapGridCardState } from "./actions";
-import { heatLayers, baseMapLayers } from "./LayerConfig";
-import { globalStateController } from 'hookstate/globalStateController';
-import { popupController } from "hookstate/popupStateController";
+import React, { useState, createContext, useEffect } from 'react';
+
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 import queryString from 'query-string';
-import { apolloClientEndpointDev, isDev } from "utils/helper";
 
-const AppContext = createContext([{}, () => { }]);
+import { globalStateController } from 'hookstate/globalStateController';
+import { popupController } from 'hookstate/popupStateController';
 
-const AppProvider = (props) => {
-  const [stateApp, setStateApp] = useState({
-    myMSALObj: null,
-    myMSALB2CObj: null,
+import { apolloClientEndpointDev, isDev } from 'utils/helper';
 
-    baseMapLayers: baseMapLayers, // move to a map context -- will be changed with mepler anyways
-    heatLayers: heatLayers, // move to a map context -- will be changed with mepler anyways
-    apolloClientEndpoint: "",
-    apolloClientFetchOptions: null,
-    graphqlScope: null, /// potentially login context?
-    user: globalStateController.getValue('user') || null, /// potenitally login context or maybe a specific user context??
-    signUpUserType: null, /// potenitally login context or maybe a specific user context??
-    wellDetailCardOpen: null, // move to map data card context
-    wellDetailCardTabIndex: null,
-    parcelDetailCardOpen: false, // move to map data card context
-    trackedwells: null, // move to a grid context or query context
-    trackedOwnerWells: null, // move to a grid context or query context
-    selectedWell: null, // move to a selected object context (maybe flyto)
-    selectedWellId: null, // move to a selected object context (maybe flyto)
-    selectedAbstracts: [], // move to a selected object context (maybe flyto)
-    selectedParcel: null, // move to a selected object context (maybe flyto)
+import { MSALObj, tenantsCredentials } from './components/AzureLogin/AADAuthConfig';
+import { MSALB2CObj, B2CTenantCredentials } from './components/AzureLogin/AADB2CAuthConfig';
+import { heatLayers, baseMapLayers } from './LayerConfig';
 
-    // States for permits
-    selectedPermit: null,
-    selectedPermitDetails: null,
-    selectedPermitId: null,
-    permitSelectedCoordinates: [],
+const AppContext = createContext([{}, () => {}]);
 
-    selectedAoi: null,
+const AppProvider = props => {
+	const [stateApp, setStateApp] = useState({
+		myMSALObj: null,
+		myMSALB2CObj: null,
 
-    customLayers: [],
+		baseMapLayers: baseMapLayers, // move to a map context -- will be changed with mepler anyways
+		heatLayers: heatLayers, // move to a map context -- will be changed with mepler anyways
+		apolloClientEndpoint: '',
+		apolloClientFetchOptions: null,
+		graphqlScope: null, /// potentially login context?
+		user: globalStateController.getValue('user') || null, /// potenitally login context or maybe a specific user context??
+		signUpUserType: null, /// potenitally login context or maybe a specific user context??
+		wellDetailCardOpen: null, // move to map data card context
+		wellDetailCardTabIndex: null,
+		parcelDetailCardOpen: false, // move to map data card context
+		trackedwells: null, // move to a grid context or query context
+		trackedOwnerWells: null, // move to a grid context or query context
+		selectedWell: null, // move to a selected object context (maybe flyto)
+		selectedWellId: null, // move to a selected object context (maybe flyto)
+		selectedAbstracts: [], // move to a selected object context (maybe flyto)
+		selectedParcel: null, // move to a selected object context (maybe flyto)
 
-    // should be in a draw context
-    editDraw: false,
-    isDrawing: false,
-    shapeEdit: false,
-    showDrawShapesPopup: false,
-    showShapeActionsPopup: false,
+		// States for permits
+		selectedPermit: null,
+		selectedPermitDetails: null,
+		selectedPermitId: null,
+		permitSelectedCoordinates: [],
 
-    openDrawShapesControl: false,
+		selectedAoi: null,
 
-    editLayer: true,
-    selectedOwner: null,
-    owners: null,
-    popupOpen: false, //map used in flyto
-    expandedCard: false, // probably need in a map card context
-    flyTo: null, //map used in flyto
-    fitBounds: null, //map used in fitBounds
-    selectedTitleOpinionId: null,
-    selectedUserDefinedLayer: null,
-    featureOrMapShape: {},
-    filters: [], // map filter context
-    filtersMockDb: null,
-    filtersAdd: null,
-    filtersOnOff: null,
-    filtersDefaultOnoff: null,
-    filterSelectAllAbstract: false,
-    selectedContact: null,
-    trackedWellArray: [],
-    // userSnap: false,
+		customLayers: [],
 
-    // MAP CONTEXT vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-    mapStyles: [],
-    wellSelectedCoordinates: [],
-    universalCircularLoaderAct: false, //// set it to true to show a loader in the center of the viewport
+		// should be in a draw context
+		editDraw: false,
+		isDrawing: false,
+		shapeEdit: false,
+		showDrawShapesPopup: false,
+		showShapeActionsPopup: false,
 
-    //Map State
-    mapCircularLoaderAct: false,
-    mapboxglAccessToken: "pk.eyJ1IjoibTFuZXJhbCIsImEiOiJja2V6MHd2bnQwYzRqMnlwaTV6ejU2cTMyIn0.ghyrh-G8uQtyg4N4VcfTOw",
-    selectedWellApi: null,
-    layers: null,
-    searchLayerIndex: null,
-    trackedOwnersLayerIndex: null,
-    trackedWellsLayerIndex: null,
-    tagsLayerIndex: null,
-    checkedLayers: [2, 5],
-    wellsLayerIndex: null,
-    checkedHeats: [],
-    checkedBaseLayers: [0, 1, 2, 3, 4],
-    checkedUserDefinedLayers: [],
-    checkedFileLayers: [],
-    tempCheckedUserDefinedLayer: null,
-    checkedUserDefinedLayersInteraction: [0, 1, 2, 3, 4, 5, 6],
-    checkedFileLayersInteraction: [],
-    editingUserDefinedLayers: [],
-    checkedLayersInteraction: [0, 1, 2],
-    selectedLayerId: null,
-    openWellDetails: false,
-    sourceLoaded: false,
-    map: null, // move to a map context
-    draw: null,
-    zoomFault: null,
-    hugeRequest: null,
-    currentFeature: undefined,
-    landGridListFromSearch: [],
-    wellListFromTagsFilter: [],
-    viewportWells: null,
-    minZoomToQueryViewport: 12.5,
-    activateWellDetailsFromTable: false,
-    contactUpdated: null,
-    currentContatcAtivities: [],
-    dealDisplayType: "board",
-    activityDisplayType: "calendar",
-    prevAOIVisible: false,
-    prevParcelVisible: false,
-    prevBasinVisible: false,
-    DocumentDrawer: false,
-    selectedDocument: {},
-    transactBarView: "Deal",
-    multiSelectLandGrids: false,
-    isAbstractedLayersPolygon: false,
-    contactSearchQuery: "",
-    activitySearchQuery: "",
-    documentSearchQuery: "",
-    isContactSearching: false,
-    landSearchQuery: "",
-    isLandSearching: false,
-    viewDoc: null,
-    pdfView: null,
-    selectedAgreement: null,
-    selectedMeta: null,
-    selectedView: null,
-    revenueSearchQuery: "",
-    filtersData: [],
-    shapeEditMode: "",
-    landSearchFilters: {
-      provisions: [],
-      customData: [],
-      relatedWells: [],
-      relatedAgreements: [],
-      relatedDocuments: [],
-    },
+		openDrawShapesControl: false,
 
-    toggleLayersActivity: (identifier, activityValue) => {
-      if (identifier) {
-        let res;
-        setStateApp((stateApp) => {
-          if (stateApp.layers && Array.isArray(stateApp.layers)) {
-            const currentLayers = [...stateApp.layers];
-            const index = currentLayers.findIndex((l) => l.identifier === identifier);
+		editLayer: true,
+		owners: null,
+		popupOpen: false, //map used in flyto
+		expandedCard: false, // probably need in a map card context
+		flyTo: null, //map used in flyto
+		fitBounds: null, //map used in fitBounds
+		selectedTitleOpinionId: null,
+		selectedUserDefinedLayer: null,
+		featureOrMapShape: {},
+		filters: [], // map filter context
+		filtersMockDb: null,
+		filtersAdd: null,
+		filtersOnOff: null,
+		filtersDefaultOnoff: null,
+		filterSelectAllAbstract: false,
+		selectedContact: null,
+		trackedWellArray: [],
+		// userSnap: false,
 
-            if (index === -1) return stateApp
+		// MAP CONTEXT vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+		mapStyles: [],
+		wellSelectedCoordinates: [],
+		universalCircularLoaderAct: false, //// set it to true to show a loader in the center of the viewport
 
-            const updatedLayer = {
-              ...currentLayers[index],
-              layerSettings: {
-                ...currentLayers[index].layerSettings,
-                visiable: activityValue !== undefined ? activityValue : !currentLayers[index].layerSettings.visiable,
-              },
-            };
-            res = updatedLayer.layerSettings.visiable;
+		//Map State
+		mapCircularLoaderAct: false,
+		mapboxglAccessToken: 'pk.eyJ1IjoibTFuZXJhbCIsImEiOiJja2V6MHd2bnQwYzRqMnlwaTV6ejU2cTMyIn0.ghyrh-G8uQtyg4N4VcfTOw',
+		selectedWellApi: null,
+		layers: null,
+		searchLayerIndex: null,
+		trackedOwnersLayerIndex: null,
+		trackedWellsLayerIndex: null,
+		tagsLayerIndex: null,
+		checkedLayers: [2, 5],
+		wellsLayerIndex: null,
+		checkedHeats: [],
+		checkedBaseLayers: [0, 1, 2, 3, 4],
+		checkedUserDefinedLayers: [],
+		checkedFileLayers: [],
+		tempCheckedUserDefinedLayer: null,
+		checkedUserDefinedLayersInteraction: [0, 1, 2, 3, 4, 5, 6],
+		checkedFileLayersInteraction: [],
+		editingUserDefinedLayers: [],
+		checkedLayersInteraction: [0, 1, 2],
+		openWellDetails: false,
+		sourceLoaded: false,
+		map: null, // move to a map context
+		draw: null,
+		zoomFault: null,
+		hugeRequest: null,
+		currentFeature: undefined,
+		landGridListFromSearch: [],
+		wellListFromTagsFilter: [],
+		viewportWells: null,
+		minZoomToQueryViewport: 12.5,
+		activateWellDetailsFromTable: false,
+		contactUpdated: null,
+		currentContatcAtivities: [],
+		dealDisplayType: 'board',
+		activityDisplayType: 'calendar',
+		prevAOIVisible: false,
+		prevParcelVisible: false,
+		prevBasinVisible: false,
+		DocumentDrawer: false,
+		selectedDocument: {},
+		transactBarView: 'Deal',
+		multiSelectLandGrids: false,
+		isAbstractedLayersPolygon: false,
+		contactSearchQuery: '',
+		activitySearchQuery: '',
+		documentSearchQuery: '',
+		isContactSearching: false,
+		landSearchQuery: '',
+		isLandSearching: false,
+		viewDoc: null,
+		pdfView: null,
+		selectedAgreement: null,
+		selectedMeta: null,
+		selectedView: null,
+		revenueSearchQuery: '',
+		filtersData: [],
+		shapeEditMode: '',
+		landSearchFilters: {
+			provisions: [],
+			customData: [],
+			relatedWells: [],
+			relatedAgreements: [],
+			relatedDocuments: [],
+		},
 
-            //// saving to stateApp
-            currentLayers[index] = updatedLayer;
+		toggleLayersActivity: (identifier, activityValue) => {
+			if (identifier) {
+				let res;
+				setStateApp(stateApp => {
+					if (stateApp.layers && Array.isArray(stateApp.layers)) {
+						const currentLayers = [...stateApp.layers];
+						const index = currentLayers.findIndex(l => l.identifier === identifier);
 
-            return {
-              ...stateApp,
-              layers: [...currentLayers],
-              toggleLayerActivityValue: activityValue,
-              mapCircularLoaderAct: false,
-            };
-          }
-        });
-        return res;
-      }
-    },
+						if (index === -1) {
+							return stateApp;
+						}
 
-    selectedShape: popupController.getValue('selectedShape'),
-  });
+						const updatedLayer = {
+							...currentLayers[index],
+							layerSettings: {
+								...currentLayers[index].layerSettings,
+								visiable: activityValue !== undefined ? activityValue : !currentLayers[index].layerSettings.visiable,
+							},
+						};
+						res = updatedLayer.layerSettings.visiable;
 
-  window.setStateApp = setStateApp;
+						//// saving to stateApp
+						currentLayers[index] = updatedLayer;
 
-  const dispatch = useDispatch();
+						return {
+							...stateApp,
+							layers: [...currentLayers],
+							toggleLayerActivityValue: activityValue,
+							mapCircularLoaderAct: false,
+						};
+					}
+				});
+				return res;
+			}
+		},
 
-  useEffect(() => {
-    async function wait() {
-      const query = queryString.parse(window.location.search);
+		selectedShape: popupController.getValue('selectedShape'),
+	});
 
-      let tenantName = window.sessionStorage.getItem('tenantName');
+	window.setStateApp = setStateApp;
 
-      if (query.tenant && globalStateController.isBypassTenant(query.tenant)) tenantName = query.tenant || tenantName;
+	useEffect(() => {
+		async function wait() {
+			const query = queryString.parse(window.location.search);
 
-      let tenant = tenantsCredentials(tenantName);
-      if (tenant) {
-        window.sessionStorage.setItem('tenantName', tenantName);
+			let tenantName = window.sessionStorage.getItem('tenantName');
 
-        tenant.apolloOriginalClientEndpoint = tenant.apolloClientEndpoint;
-        tenant.apolloClientEndpoint = isDev && tenantName === "localhost" ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
-        let myMSALObjInt = MSALObj(tenant);
-        globalStateController.updateState({ apolloClientEndpoint: tenant.apolloClientEndpoint })
-        setStateApp((state, props) => {
-          return {
-            ...state,
-            myMSALObj: myMSALObjInt,
-            apolloOriginalClientEndpoint: tenant.apolloOriginalClientEndpoint,
-            apolloClientEndpoint: tenant.apolloClientEndpoint,
-            graphqlScope: tenant.graphqlScope,
-          };
-        });
-      } else {
-        setStateApp((state, props) => {
-          return { ...state, myMSALObj: false };
-        });
-      }
+			if (query.tenant && globalStateController.isBypassTenant(query.tenant)) {
+				tenantName = query.tenant || tenantName;
+			}
 
-      let B2CTenantName = window.sessionStorage.getItem("B2CTenantName");
+			let tenant = tenantsCredentials(tenantName);
+			if (tenant) {
+				window.sessionStorage.setItem('tenantName', tenantName);
 
-      if (B2CTenantName) {
-        let tenant = B2CTenantCredentials(B2CTenantName);
-        if (tenant) {
-          let myMSALB2CObjInt = MSALB2CObj(tenant.tenantId, tenant.clientId);
-          setStateApp((state, props) => {
-            return {
-              ...state,
-              myMSALB2CObj: myMSALB2CObjInt,
-              apolloClientEndpoint: tenant.apolloClientEndpoint,
-            };
-          });
-        }
-      } else {
-        setStateApp((state, props) => {
-          return { ...state, myMSALB2CObj: false };
-        });
-      }
-    }
-    wait();
-  }, []);
+				tenant.apolloOriginalClientEndpoint = tenant.apolloClientEndpoint;
+				tenant.apolloClientEndpoint =
+					isDev && tenantName === 'localhost' ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
+				let myMSALObjInt = MSALObj(tenant);
+				globalStateController.updateState({ apolloClientEndpoint: tenant.apolloClientEndpoint });
+				setStateApp((state, props) => {
+					return {
+						...state,
+						myMSALObj: myMSALObjInt,
+						apolloOriginalClientEndpoint: tenant.apolloOriginalClientEndpoint,
+						apolloClientEndpoint: tenant.apolloClientEndpoint,
+						graphqlScope: tenant.graphqlScope,
+					};
+				});
+			} else {
+				setStateApp((state, props) => {
+					return { ...state, myMSALObj: false };
+				});
+			}
 
-  useEffect(() => {
-    dispatch(
-      setMapGridCardState({
-        trackedDataCount:
-          (!stateApp.owners || !stateApp.owners.length ? 0 : stateApp.owners.length) +
-          (!stateApp.trackedwells || !stateApp.trackedwells.length ? 0 : stateApp.trackedwells.length),
-      })
-    );
-  }, [stateApp.owners, stateApp.trackedwells]);
+			let B2CTenantName = window.sessionStorage.getItem('B2CTenantName');
 
-  useEffect(() => {
-    globalStateController.updateState({ user: stateApp.user });
-  }, [stateApp.user]);
-  useEffect(() => {
-    popupController.updateState({ selectedParcel: stateApp.selectedParcel });
-  }, [stateApp.selectedParcel]);
+			if (B2CTenantName) {
+				let tenant = B2CTenantCredentials(B2CTenantName);
+				if (tenant) {
+					let myMSALB2CObjInt = MSALB2CObj(tenant.tenantId, tenant.clientId);
+					setStateApp((state, props) => {
+						return {
+							...state,
+							myMSALB2CObj: myMSALB2CObjInt,
+							apolloClientEndpoint: tenant.apolloClientEndpoint,
+						};
+					});
+				}
+			} else {
+				setStateApp((state, props) => {
+					return { ...state, myMSALB2CObj: false };
+				});
+			}
+		}
+		wait();
+	}, []);
 
-  const { globalState } = globalStateController.useState(['universalLoader'], 'globalState')
+	useEffect(() => {
+		globalStateController.updateState({ user: stateApp.user });
+	}, [stateApp.user]);
+	useEffect(() => {
+		popupController.updateState({ selectedParcel: stateApp.selectedParcel });
+	}, [stateApp.selectedParcel]);
 
-  return (
-    <AppContext.Provider value={[stateApp, setStateApp]}>
-      {props.children}
-      {(stateApp.universalCircularLoaderAct || globalState.universalLoader) && (
-        <div
-          style={{
-            position: "fixed",
-            top: "0",
-            left: "0",
-            height: "100vh",
-            width: "100vw",
-            zIndex: "10000000000",
-          }}
-        >
-          <CircularProgress
-            style={{
-              position: "fixed",
-              top: "calc(50vh - 16px)",
-              left: "calc(50vw - 40px)",
-              color: "#12ABE0",
-            }}
-            size={80}
-            disableShrink
-          />
-        </div>
-      )}
-    </AppContext.Provider>
-  );
+	const { globalState } = globalStateController.useState(['universalLoader'], 'globalState');
+
+	return (
+		<AppContext.Provider value={[stateApp, setStateApp]}>
+			{props.children}
+			{(stateApp.universalCircularLoaderAct || globalState.universalLoader) && (
+				<div
+					style={{
+						position: 'fixed',
+						top: '0',
+						left: '0',
+						height: '100vh',
+						width: '100vw',
+						zIndex: '10000000000',
+					}}
+				>
+					<>
+						<CircularProgress
+							style={{
+								position: 'fixed',
+								top: 'calc(50vh - 16px)',
+								left: 'calc(50vw - 40px)',
+								color: '#12ABE0',
+							}}
+							size={80}
+							disableShrink
+						/>
+
+						{globalState.universalLoader.text && (
+							<h3
+								style={{
+									position: 'fixed',
+									top: 'calc(50vh + 64px)',
+									left: 'calc(50vw - 64px)',
+									...globalState.universalLoader.textStyles,
+								}}
+							>
+								{globalState.universalLoader.text}
+							</h3>
+						)}
+					</>
+				</div>
+			)}
+		</AppContext.Provider>
+	);
 };
 
 const setApolloHeaders = (config, authToken, idToken) => {
-  if (!config) config = {};
-  if (!config.headers) config.headers = {};
-  config.headers["X-ZUMO-AUTH"] = authToken;
-  if (isDev || globalStateController.getValue('bypassLogin')) config.headers["X-MS-TOKEN-AAD-ID-TOKEN"] = idToken;
-  return config;
+	if (!config) {
+		config = {};
+	}
+	if (!config.headers) {
+		config.headers = {};
+	}
+	config.headers['X-ZUMO-AUTH'] = authToken;
+	if (isDev || globalStateController.getValue('bypassLogin')) {
+		config.headers['X-MS-TOKEN-AAD-ID-TOKEN'] = idToken;
+	}
+	return config;
 };
 
 export { AppContext, AppProvider, setApolloHeaders, apolloClientEndpointDev };

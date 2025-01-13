@@ -1,9 +1,12 @@
-import { bboxPolygon, booleanWithin, difference, union } from '@turf/turf';
 import { useEffect, useRef, useState } from 'react';
 
+import { bboxPolygon, booleanWithin, difference, union } from '@turf/turf';
+
 export const convertBBoxToPolygon = bounds => {
-	if (!bounds) return null;
-	return bboxPolygon([bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()])
+	if (!bounds) {
+		return null;
+	}
+	return bboxPolygon([bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]);
 };
 
 const useOnMouseMoveWells = ({ layerState, minZoomLevel = 7 }) => {
@@ -11,23 +14,25 @@ const useOnMouseMoveWells = ({ layerState, minZoomLevel = 7 }) => {
 	const previousBounds = useRef();
 	const map = window.mapRef;
 	const moveend = () => {
-		if (!layerState || !layerState?.layerSettings?.visiable) return;
+		if (!layerState || !layerState?.layerSettings?.visiable) {
+			return;
+		}
 
 		const zoom = map?.getZoom();
 		let newPolygon = convertBBoxToPolygon(map?.getBounds());
 
-		const isOutside = previousBounds.current
-			? !booleanWithin(newPolygon, previousBounds.current)
-			: true;
+		const isOutside = previousBounds.current ? !booleanWithin(newPolygon, previousBounds.current) : true;
 		const show = zoom > minZoomLevel;
 		if (isOutside) {
 			if (previousBounds.current) {
 				newPolygon = difference(newPolygon, previousBounds.current);
 			}
 			if (show) {
-				if (previousBounds.current)
+				if (previousBounds.current) {
 					previousBounds.current = union(previousBounds.current, newPolygon);
-				else previousBounds.current = newPolygon;
+				} else {
+					previousBounds.current = newPolygon;
+				}
 			}
 		}
 

@@ -1,44 +1,44 @@
-import React from "react";
-import { ExpandableCardContextProvider } from "./ExpandableCardContext";
+import React from 'react';
 
-import ExpandableCard from "./ExpandableCard";
+import ExpandableCard from './ExpandableCard';
+import { ExpandableCardContextProvider } from './ExpandableCardContext';
 
 function ExpandableCardProvider(props) {
-  return (
-    <ExpandableCardContextProvider handleCloseExpandableCard={props.handleCloseExpandableCard}>
-      <ExpandableCard
-        expanded={props.expanded}
-        handleCloseExpandableCard={props.handleCloseExpandableCard}
-        component={props.component}
-        title={props.title}
-        parent={props.parent}
-        subTitle={props.subTitle}
-        mouseX={props.mouseX}
-        mouseY={props.mouseY}
-        position={props.position}
-        zIndex={props.zIndex}
-        cardLeft={props.cardLeft}
-        cardTop={props.cardTop}
-        cardWidth={props.cardWidth}
-        cardHeight={props.cardHeight}
-        cardWidthExpanded={props.cardWidthExpanded}
-        cardHeightExpanded={props.cardHeightExpanded}
-        source={props.source}
-        sourceSourceId={props.sourceSourceId}
-        sourceName={props.sourceName}
-        sourceLabel={props.sourceLabel}
-        target={props.target}
-        targetSourceId={props.targetSourceId}
-        targetName={props.targetName}
-        targetLabel={props.targetLabel}
-        Api={props.Api}
-        noTrackAvailable={props.noTrackAvailable}
-        handleDelete={props.handleDelete}
-        deleteCustomLayer={props.deleteCustomLayer}
-        deleteParcel={props.deleteParcel}
-      />
-    </ExpandableCardContextProvider>
-  );
+	return (
+		<ExpandableCardContextProvider handleCloseExpandableCard={props.handleCloseExpandableCard}>
+			<ExpandableCard
+				expanded={props.expanded}
+				handleCloseExpandableCard={props.handleCloseExpandableCard}
+				component={props.component}
+				title={props.title}
+				parent={props.parent}
+				subTitle={props.subTitle}
+				mouseX={props.mouseX}
+				mouseY={props.mouseY}
+				position={props.position}
+				zIndex={props.zIndex}
+				cardLeft={props.cardLeft}
+				cardTop={props.cardTop}
+				cardWidth={props.cardWidth}
+				cardHeight={props.cardHeight}
+				cardWidthExpanded={props.cardWidthExpanded}
+				cardHeightExpanded={props.cardHeightExpanded}
+				source={props.source}
+				sourceSourceId={props.sourceSourceId}
+				sourceName={props.sourceName}
+				sourceLabel={props.sourceLabel}
+				target={props.target}
+				targetSourceId={props.targetSourceId}
+				targetName={props.targetName}
+				targetLabel={props.targetLabel}
+				Api={props.Api}
+				noTrackAvailable={props.noTrackAvailable}
+				handleDelete={props.handleDelete}
+				deleteCustomLayer={props.deleteCustomLayer}
+				deleteParcel={props.deleteParcel}
+			/>
+		</ExpandableCardContextProvider>
+	);
 }
 
 ExpandableCardProvider.whyDidYouRender = true;

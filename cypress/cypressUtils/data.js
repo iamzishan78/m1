@@ -1,99 +1,103 @@
 export const loginCredential = {
-    email: "support@m1neral.com",
-    passsword: "M1neral2022!"
-}
+	email: 'support@m1neral.com',
+	passsword: 'M1neral2022!',
+};
 
 export const baseUrls = {
-    m1production: "https://m1productiongraphql.azurewebsites.net/api/m1graph?code=8bcIQeGYGoL2XgLZ-O2sWhN7qKU3iMPpw_qboLviLIZWAzFuTQgpgQ==",
-    m1staging: "https://m1staginggraphql.azurewebsites.net/api/m1graph?code=n2edloVOIkMy6q4v_Lk8HM9p--sbgpxu1B6nfbc1CUHsAzFuwKCm0w==",
-    frontier: 'https://frontiergraphql.azurewebsites.net/api/m1graph?code=YsPcQQgq00Crh7NQGAgdKuQ1CNnU3uqsH3DZueYOZ2fbAzFugbo9Mw==',
-    m1cypress: 'https://cypressgraphql.azurewebsites.net/api/m1graph?code=t8n2GMsIp7aC2bypwvPMTcGsR4aSoGFTqm7lIqzba9QYAzFuEWpnzg==',
-    localhost: "http://localhost:7071/api/m1graph"
-}
+	m1production:
+		'https://m1productiongraphql.azurewebsites.net/api/m1graph?code=8bcIQeGYGoL2XgLZ-O2sWhN7qKU3iMPpw_qboLviLIZWAzFuTQgpgQ==',
+	m1staging:
+		'https://m1staginggraphql.azurewebsites.net/api/m1graph?code=n2edloVOIkMy6q4v_Lk8HM9p--sbgpxu1B6nfbc1CUHsAzFuwKCm0w==',
+	frontier:
+		'https://frontiergraphql.azurewebsites.net/api/m1graph?code=YsPcQQgq00Crh7NQGAgdKuQ1CNnU3uqsH3DZueYOZ2fbAzFugbo9Mw==',
+	m1cypress:
+		'https://cypressgraphql.azurewebsites.net/api/m1graph?code=t8n2GMsIp7aC2bypwvPMTcGsR4aSoGFTqm7lIqzba9QYAzFuEWpnzg==',
+	localhost: 'http://localhost:7071/api/m1graph',
+};
 
 export const authMe = {
-    m1production: "https://m1productiongraphql.azurewebsites.net/.auth/me",
-    m1staging: "https://m1staginggraphql.azurewebsites.net/.auth/me",
-    frontier: 'https://frontiergraphql.azurewebsites.net/.auth/me',
-    m1cypress: "https://cypressgraphql.azurewebsites.net/.auth/me",
-    localhost: "https://m1productiongraphql.azurewebsites.net/.auth/me"
-}
+	m1production: 'https://m1productiongraphql.azurewebsites.net/.auth/me',
+	m1staging: 'https://m1staginggraphql.azurewebsites.net/.auth/me',
+	frontier: 'https://frontiergraphql.azurewebsites.net/.auth/me',
+	m1cypress: 'https://cypressgraphql.azurewebsites.net/.auth/me',
+	localhost: 'https://m1productiongraphql.azurewebsites.net/.auth/me',
+};
+
+export const authURL = 'https://m1neral.auth0.com/oauth/token';
 
 export const basic_timeouts = {
-    shorTimeout: 5 * 1000,
-    midTimeout: 10 * 1000,
-    partialLongTimeout: 20 * 1000,
-    longTimeout: 100 * 1000,
-    midExtraLongTimeout: 500 * 1000,
-    extraTimeout: 1500 * 1000
-}
+	shorTimeout: 5 * 1000,
+	midTimeout: 10 * 1000,
+	partialLongTimeout: 20 * 1000,
+	longTimeout: 100 * 1000,
+	midExtraLongTimeout: 500 * 1000,
+	extraTimeout: 1500 * 1000,
+};
 
 export const retries = {
-    fiveTries: { retries: { runMode: 5, openMode: 2 } }
-}
+	fiveTries: { retries: { runMode: 5, openMode: 2 } },
+};
 
 export const documentObj = {
-    fileNumber: "99934034",
-    fileName: "Cydoc et el",
-    fileAddress: "cypress/files/sample.pdf"
-}
+	fileNumber: '99934034',
+	fileName: 'Cydoc et el',
+	fileAddress: 'cypress/files/sample.pdf',
+};
 
 // Contact Grid Cypress Data
 export const contactObj = {
-    name: { value: "Jacob Steave Kyle", id: "" },
-    firstName: { value: "Jacob", id: "#field-1" },
-    middleName: { value: "Steave", id: "#field-2" },
-    lastName: { value: "Kyle", id: "#field-3" },
-    enityType: { value: "individual", id: "" },
-    mobilePhone: { value: "083822883392", id: "#field-12" },
-    homePhone: { value: "084933994403", id: "#field-11" },
-    primaryEmail: { value: "cyp@m1neral.com", id: "#field-15" },
-    address1: { value: "minCity, address 1", id: "#field-4" },
-    address2: { value: "minCity, address 2", id: "#field-5" },
-    city: { value: "Ytic", id: "#field-6" },
-    state: { value: "La", id: "#field-7" },
-    zip: { value: "7323", id: "#field-8" },
-    country: { value: "Yrtnuoc", id: "" },
-    contactOwner: { value: "Jacob", id: "" },
-    fileAddress: "cypress/files/sample.pdf"
-}
+	name: { value: 'Jacob Steave Kyle', id: '' },
+	firstName: { value: 'Jacob', id: '#field-1' },
+	middleName: { value: 'Steave', id: '#field-2' },
+	lastName: { value: 'Kyle', id: '#field-3' },
+	enityType: { value: 'individual', id: '' },
+	mobilePhone: { value: '083822883392', id: '#field-12' },
+	homePhone: { value: '084933994403', id: '#field-11' },
+	primaryEmail: { value: 'cyp@m1neral.com', id: '#field-15' },
+	address1: { value: 'minCity, address 1', id: '#field-4' },
+	address2: { value: 'minCity, address 2', id: '#field-5' },
+	city: { value: 'Ytic', id: '#field-6' },
+	state: { value: 'La', id: '#field-7' },
+	zip: { value: '7323', id: '#field-8' },
+	country: { value: 'Yrtnuoc', id: '' },
+	contactOwner: { value: 'Jacob', id: '' },
+	fileAddress: 'cypress/files/sample.pdf',
+};
 
 export const associatedDataList = [
-    { name: 'Unit Interests', operationName: "getESPaginatedList", verifyElementId: "unitInterestTable" },
-    { name: 'Well Interests', operationName: "getPaginatedContactWellInterests", verifyElementId: "wellInterestsTable" },
-    { name: 'Tract Interests', operationName: "getContactParcelInterest", verifyElementId: "tractInterestTable" },
-    { name: 'Tax Roll Interests', operationName: "getContactTaxRollInterests", verifyElementId: "taxInterestsTable" },
-    { name: 'Activities', operationName: "getESSimpleSearch", verifyElementId: "activitiesInterestsTable" },
-    { name: 'Documents', operationName: "viewFiles", verifyElementId: "viewDocuments" }
-]
+	{ name: 'Unit Interests', operationName: 'getDbData', verifyElementId: 'unitInterestTable' },
+	{ name: 'Well Interests', operationName: 'getDbData', verifyElementId: 'wellInterestsTable' },
+	{ name: 'Tax Roll Interests', operationName: 'getContactTaxRollInterests', verifyElementId: 'taxInterestsTable' },
+	{ name: 'Activities', operationName: 'getDbData', verifyElementId: 'activitiesInterestsTable' },
+	{ name: 'Documents', operationName: 'viewFiles', verifyElementId: 'viewDocuments' },
+];
 
 // Agreement Grid Cypress Data
 export const agreementObj = {
-    agreementNumber: { value: "984512", id: "#field-agreementNumber" },
-    agreementName: { value: "Cypress Agreement", id: "#field-agreementName" },
-    agreementType: { value: "Lease", id: "#field-agreementType" },
-    agreementSubtype: { value: "Deed", id: "#field-agreementSubtype" },
-    rightsType: { value: "Oil & Gas", id: "#field-rightsType" },
-    agreementStatus: { value: "Active", id: "#field-agreementStatus" },
-    Lessee: { value: "Donnie Kerr", id: "#field-grantee" },
-    agreementDate: { value: "2022-01-01", id: "#field-agreementDate" },
-    effectiveDate: { value: "2022-01-01", id: "#field-effectiveDate" },
-    agreementTerm: { value: "3", id: "#field-agreementTerm" },
-    expirationDate: { value: "2022-01-01", id: "#field-expirationDate" },
-    extensionDate: { value: "2022-01-04", id: "#field-extensionDate" },
-    bounusPayment: { value: "1000", id: "#field-bounusPayment" },
-    acquisitionID: { value: "103 - Meiners", id: "#field-acquisitionID" },
-    acquisitionDate: { value: "2022-01-01", id: "#field-acquisitionDate" },
-    totalAcquisitionCost: { value: "101", id: "#field-totalAcquisitionCost" },
-    Prospect: { value: "100 - Delta", id: "#field-prospectID" },
-    internalCompany: { value: "924 - M1neral", id: "#field-internalCompany" },
-    state: { value: "TEXAS", id: "#field-state" },
-    county: { value: "NOLAN", id: "#field-county" },
+	agreementNumber: { value: '984512', id: '#field-agreementNumber' },
+	agreementName: { value: 'Cypress Agreement', id: '#field-agreementName' },
+	agreementType: { value: 'Lease', id: '#field-agreementType' },
+	agreementSubtype: { value: 'Deed', id: '#field-agreementSubtype' },
+	rightsType: { value: 'Oil & Gas', id: '#field-rightsType' },
+	agreementStatus: { value: 'Active', id: '#field-agreementStatus' },
+	Lessee: { value: 'Donnie Kerr', id: '#field-grantee' },
+	agreementDate: { value: '2022-01-01', id: '#field-agreementDate' },
+	effectiveDate: { value: '2022-01-01', id: '#field-effectiveDate' },
+	agreementTerm: { value: '3', id: '#field-agreementTerm' },
+	expirationDate: { value: '2022-01-01', id: '#field-expirationDate' },
+	extensionDate: { value: '2022-01-04', id: '#field-extensionDate' },
+	bounusPayment: { value: '1000', id: '#field-bounusPayment' },
+	acquisitionID: { value: '103 - Meiners', id: '#field-acquisitionID' },
+	acquisitionDate: { value: '2022-01-01', id: '#field-acquisitionDate' },
+	totalAcquisitionCost: { value: '101', id: '#field-totalAcquisitionCost' },
+	Prospect: { value: '100 - Delta', id: '#field-prospectID' },
+	internalCompany: { value: '924 - M1neral', id: '#field-internalCompany' },
+	state: { value: 'TEXAS', id: '#field-state' },
+	county: { value: 'NOLAN', id: '#field-county' },
 
-    description: { value: "An agreement generated by Cypress", id: "#outlined-multiline-static" },
-    Approver: { value: "jacob", id: "#userList" },
-    approvalStatus: { value: "Approved", id: "#status-simple-select-outlined-label" },
+	description: { value: 'An agreement generated by Cypress', id: '#outlined-multiline-static' },
+	Approver: { value: 'jacob', id: '#userList' },
+	approvalStatus: { value: 'Approved', id: '#status-simple-select-outlined-label' },
 
-    file: { address: "cypress/files/sample.pdf", fileId: "[id='sample.pdf']" }
-}
-
+	file: { address: 'cypress/files/sample.pdf', fileId: "[id='sample.pdf']" },
+};

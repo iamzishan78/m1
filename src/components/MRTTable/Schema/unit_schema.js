@@ -1,18 +1,27 @@
-import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map';
-import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
-import UnitIcon from 'components/Shared/svgIcons/unit';
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import _ from 'lodash';
-import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
-import vf_currency from "components/Shared/valueformatters/vf_currency.js";
-import vf_number from 'components/Shared/valueformatters/vf_number';
+
+import CampaignField from 'components/ContactDetailCard/components/FieldContent/CampaignField';
 import Loader from 'components/Loaders';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import UnitToolbar from 'components/MRTTable/TablesOverride/UnitTable/UnitToolbar';
+import UnitIcon from 'components/Shared/svgIcons/unit';
+import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+import vf_number from 'components/Shared/valueformatters/vf_number';
+
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+
 import { globalStateController } from 'hookstate/globalStateController';
-import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { tableGlobalController } from 'hookstate/tableController';
-import { copy } from "utils/helper";
+
+import { CURRENCY_TO_FIXED } from 'utils/consts';
+import { copy } from 'utils/helper';
 
 const esIndex = 'shapes_flat';
 
@@ -21,10 +30,10 @@ const onCustomKeyChange = async (client, row, value, item) => {
 
 	try {
 		Loader.createToast(loaderId, 'Updation in Progress');
-		const user = globalStateController.getValue('user')
+		const user = globalStateController.getValue('user');
 
 		const customData = copy(row?.shapeJson?.properties?.custom_data) ?? {};
-		const filteredCustomData = _.pickBy(customData, (value) => value !== "" && !_.isEmpty(value));
+		const filteredCustomData = _.pickBy(customData, value => value !== '' && !_.isEmpty(value));
 
 		const shapeJson = {
 			...row?.shapeJson,
@@ -33,9 +42,9 @@ const onCustomKeyChange = async (client, row, value, item) => {
 				custom_data: {
 					...filteredCustomData,
 					[item.name]: value,
-				}
+				},
 			},
-		}
+		};
 
 		await client.mutate({
 			variables: {
@@ -47,10 +56,11 @@ const onCustomKeyChange = async (client, row, value, item) => {
 				},
 			},
 			mutation: UPDATECUSTOMLAYER,
+			refetchQueries: ['getDbFilters'],
 		});
 		Loader.successToast(loaderId, 'Updation Complete');
 		tableGlobalController.refetch();
-	} catch (err) {
+	} catch {
 		Loader.errorToast(loaderId, 'Updation in Complete');
 	}
 };
@@ -58,6 +68,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 const UnitMeta = {
 	esIndex,
 	pageSize: 50,
+	CustomToolBar: UnitToolbar, // Add custom toolbar for showing bulkupdate button
 	pagination: {
 		pageIndex: 0,
 		pageSize: 50,
@@ -94,19 +105,20 @@ const UnitMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
-			accessorKey: 'id',
+			id: 'id',
+			header: 'ID',
 		},
 
 		{
 			...CommonSchema.MONGO_ID,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'name.keyword',
-			accessorKey: 'name',
+			id: 'name',
 			header: 'Unit Name',
 			Cell: ({ renderedCellValue, row }) => (
 				<div
@@ -121,60 +133,56 @@ const UnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.uNumber.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uNumber,
 			id: 'shapeJson.properties.uNumber',
 			header: 'Unit #',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.originalProperties.State.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.State,
+			accessorFn: row =>
+				row?.shapeJson?.properties?.originalProperties?.State || // Use either state of stateAbbreviation
+				row?.shapeJson?.properties?.originalProperties?.StateAbbreviation,
 			id: 'shapeJson.properties.originalProperties.State',
 			header: 'State',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.originalProperties.County.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.County,
 			id: 'shapeJson.properties.originalProperties.County',
 			header: 'County',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.originalProperties.surveyMerdian.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.surveyMerdian,
 			id: 'shapeJson.properties.originalProperties.surveyMerdian',
 			header: 'Survey/ Meridian',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.originalProperties.blockTownship.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.blockTownship,
 			id: 'shapeJson.properties.originalProperties.blockTownship',
 			header: 'Block/ Township',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.originalProperties.rangeSection.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.rangeSection,
 			id: 'shapeJson.properties.originalProperties.rangeSection',
 			header: 'Section/ Range',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.originalProperties.abstractNameShortName.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.abstractNameShortName,
 			id: 'shapeJson.properties.originalProperties.abstractNameShortName',
 			header: 'Abstract/ Section',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.uAcres.keyword',
 			accessorFn: row => vf_number(row?.shapeJson?.properties?.uAcres),
 			id: 'shapeJson.properties.uAcres',
@@ -183,85 +191,91 @@ const UnitMeta = {
 
 		{
 			// Total unit NRA column
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.netRoyalityAcres.unitNra.keyword',
 			accessorFn: row => vf_number(row?.shapeJson?.properties?.netRoyalityAcres?.unitNra),
-			header: 'Total Unit NRA'
+			id: 'shapeJson.properties.netRoyalityAcres.unitNra',
+			header: 'Total Unit NRA',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.uStatus.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uStatus,
 			id: 'shapeJson.properties.uStatus',
 			header: 'Unit Status',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.uPrimaryOperator.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uPrimaryOperator,
 			id: 'shapeJson.properties.uPrimaryOperator',
 			header: 'Current Operator',
 		},
 
-		//added Total Unit Interest column from here 
+		//added Total Unit Interest column from here
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.totalUnitInterest.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.totalUnitInterest,
 			id: 'shapeJson.properties.totalUnitInterest',
 			header: 'Total Unit Interest',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.uUnitPricing.keyword',
-			accessorFn: row => vf_currency(row?.shapeJson?.properties?.uUnitPricing), // format value with $ sign 
+			accessorFn: row => vf_currency_to_fixed(row?.shapeJson?.properties?.uUnitPricing, CURRENCY_TO_FIXED), // format value with $ sign
+			subType: 'price',
 			id: 'shapeJson.properties.uUnitPricing',
 			header: 'Target Price/Acre',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.uMaxUnitPricing.keyword',
-			accessorFn: row => vf_currency(row?.shapeJson?.properties?.uMaxUnitPricing), // format value with $ sign
+			accessorFn: row => vf_currency_to_fixed(row?.shapeJson?.properties?.uMaxUnitPricing, CURRENCY_TO_FIXED), // format value with $ sign
+			subType: 'price',
 			id: 'shapeJson.properties.uMaxUnitPricing',
 			header: 'Max Price/Acre',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'interestSummary.unitInterestCount',
-			accessorKey: 'interestSummary.unitInterestCount',
+			id: 'interestSummary.unitInterestCount',
 			header: 'Owner Count',
 			isSearchField: false,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'shapeJson.properties.campaignName.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.campaignName,
-			id: 'shapeJson.properties.campaignName',
-			header: 'Campaign Name',
+			...CommonSchema.STRING_COLUMN,
+			type: 'array',
+			name: 'shapeJson.properties.campaigns.keyword',
+			id: 'shapeJson.properties.campaigns',
+			header: 'Campaigns',
 			size: 270,
-			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
+			Cell: ({ row }) => {
+				return <CampaignField value={row?.original?.shapeJson?.properties?.campaigns} fullWidth disabled />;
+			},
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.qualifier.name.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.qualifier?.name,
 			id: 'shapeJson.properties.qualifier.name',
 			header: 'Qualifier',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.reviewer.name.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.reviewer?.name,
 			id: 'shapeJson.properties.reviewer.name',
 			header: 'Reviewer',
+		},
+		{
+			...CommonSchema.STRING_COLUMN,
+			name: 'shapeJson.properties.ownerName.keyword',
+			id: 'shapeJson.properties.ownerName',
+			header: 'Owner',
 		},
 
 		CommonSchema.CREATED_BY,
@@ -273,7 +287,14 @@ const UnitMeta = {
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const targetSourceId = row.getValue('_id');
-				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'unit'} />;
+				return (
+					<TagCell
+						id={targetSourceId}
+						targetSourceId={targetSourceId}
+						tags={row?.original?.tags}
+						targetLabel={'unit'}
+					/>
+				);
 			},
 		},
 
@@ -281,20 +302,20 @@ const UnitMeta = {
 			...CommonSchema.COMMENTS,
 			Cell: ({ renderedCellValue, row }) => {
 				const id = row.getValue('_id');
-				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'unit'} />;
+				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'unit'} rowNumber={row?.index} />;
 			},
 		},
 
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'coordinates',
-			accessorKey: 'coordinates',
+			id: 'coordinates',
 			header: '',
 			size: 70,
 			Cell: ({ row }) => {
 				const id = row.getValue('_id');
 
-				return <FlyToMap id={id} type='unit' />;
+				return <FlyToMap id={id} type="unit" />;
 			},
 			isHiddenFieldExport: true, // Hide location field from the export csv
 			hidden: true, // Hide location field from the export

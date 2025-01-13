@@ -1,193 +1,195 @@
-import React, { useState, useContext } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import TextField from "@material-ui/core/TextField";
-import { NavigationContext } from "../NavigationContext";
-import FilterOwnerCount from "./FilterOwnerCount";
-import Grid from "@material-ui/core/Grid";
-import FilterOwnerConfidence from "./FilterOwnerConfidence";
+import React, { useState, useContext } from 'react';
+
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { NavigationContext } from '../NavigationContext';
+import FilterOwnerConfidence from './FilterOwnerConfidence';
+import FilterOwnerCount from './FilterOwnerCount';
 
 // import FilterOwnerInterestSum from "./FilterOwnerInterestSum";
 
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    color: "black",
-  },
+const useStyles = makeStyles(theme => ({
+	formControl: {
+		color: 'black',
+	},
 }));
 
-const interestList = ["OVERRIDE ROYALTY", "PRODUCTION PAYMENT", "ROYALTY INTEREST", "WORKING INTEREST"];
+const interestList = ['OVERRIDE ROYALTY', 'PRODUCTION PAYMENT', 'ROYALTY INTEREST', 'WORKING INTEREST'];
 
 const ownerTypesList = [
-  "CORPORATIONS",
-  "EDUCATIONAL INSTITUTIONS",
-  "GOVERNMENTAL BODIES",
-  "INDIVIDUALS",
-  "NON PROFITS",
-  "RELIGIOUS INSTITUTIONS",
-  "TRUSTS",
-  "UNKNOWN",
+	'CORPORATIONS',
+	'EDUCATIONAL INSTITUTIONS',
+	'GOVERNMENTAL BODIES',
+	'INDIVIDUALS',
+	'NON PROFITS',
+	'RELIGIOUS INSTITUTIONS',
+	'TRUSTS',
+	'UNKNOWN',
 ];
 
 export default function FilterFormOwner() {
-  const classes = useStyles();
-  const [stateNav, setStateNav] = useContext(NavigationContext);
+	const classes = useStyles();
+	const [stateNav, setStateNav] = useContext(NavigationContext);
 
-  // there is an opportunity to break these out into seperate components
-  // instead of including it on a form.
+	// there is an opportunity to break these out into seperate components
+	// instead of including it on a form.
 
-  const setFilterInterest = (interestNames) => {
-    let filter;
-    let filters = [];
-    let check;
-    if (interestNames) {
-      check = interestNames.map((val) => val);
-      check.forEach((option) => {
-        if (option === "ROYALTY INTEREST") {
-          filters.push(["get", "interestTypeRoyaltyInterest"]);
-        }
-        if (option === "OVERRIDE ROYALTY") {
-          filters.push(["get", "interestTypeOverrideRoyalty"]);
-        }
-        if (option === "WORKING INTEREST") {
-          filters.push(["get", "interestTypeWorkingInterest"]);
-        }
-        if (option === "PRODUCTION PAYMENT") {
-          filters.push(["get", "interestTypeProductionPayment"]);
-        }
-      });
-      if (filters && filters.length > 0) {
-        filters.unshift("any");
-        filter = filters;
-        setStateNav((stateNav) => ({
-          ...stateNav,
-          filterAllInterestTypes: filter,
-        }));
-      } else {
-        filter = null;
-        setStateNav((stateNav) => ({
-          ...stateNav,
-          filterAllInterestTypes: filter,
-        }));
-      }
-    }
-  };
+	const setFilterInterest = interestNames => {
+		let filter;
+		let filters = [];
+		let check;
+		if (interestNames) {
+			check = interestNames.map(val => val);
+			check.forEach(option => {
+				if (option === 'ROYALTY INTEREST') {
+					filters.push(['get', 'interestTypeRoyaltyInterest']);
+				}
+				if (option === 'OVERRIDE ROYALTY') {
+					filters.push(['get', 'interestTypeOverrideRoyalty']);
+				}
+				if (option === 'WORKING INTEREST') {
+					filters.push(['get', 'interestTypeWorkingInterest']);
+				}
+				if (option === 'PRODUCTION PAYMENT') {
+					filters.push(['get', 'interestTypeProductionPayment']);
+				}
+			});
+			if (filters && filters.length > 0) {
+				filters.unshift('any');
+				filter = filters;
+				setStateNav(stateNav => ({
+					...stateNav,
+					filterAllInterestTypes: filter,
+				}));
+			} else {
+				filter = null;
+				setStateNav(stateNav => ({
+					...stateNav,
+					filterAllInterestTypes: filter,
+				}));
+			}
+		}
+	};
 
-  const setFilterOwnerType = (ownerTypeNames) => {
-    let filter;
-    let filters = [];
-    let check;
-    if (ownerTypeNames) {
-      check = ownerTypeNames.map((val) => val);
-      check.forEach((option) => {
-        if (option === "RELIGIOUS INSTITUTIONS") {
-          filters.push(["get", "ownershipTypeReligiousInstitutions"]);
-        }
-        if (option === "GOVERNMENTAL BODIES") {
-          filters.push(["get", "ownershipTypeGovernmentalBodies"]);
-        }
-        if (option === "NON PROFITS") {
-          filters.push(["get", "ownershipTypeNonProfits"]);
-        }
-        if (option === "TRUSTS") {
-          filters.push(["get", "ownershipTypeTrusts"]);
-        }
-        if (option === "CORPORATIONS") {
-          filters.push(["get", "ownershipTypeCorporations"]);
-        }
-        if (option === "EDUCATIONAL INSTITUTIONS") {
-          filters.push(["get", "ownershipTypeEducationalInstitutions"]);
-        }
-        if (option === "INDIVIDUALS") {
-          filters.push(["get", "ownershipTypeIndividuals"]);
-        }
-        if (option === "UNKNOWN") {
-          filters.push(["get", "ownershipTypeUnknown"]);
-        }
-      });
-      if (filters && filters.length > 0) {
-        filters.unshift("any");
-        filter = filters;
-        setStateNav((stateNav) => ({
-          ...stateNav,
-          filterAllOwnershipTypes: filter,
-        }));
-      } else {
-        filter = null;
-        setStateNav((stateNav) => ({
-          ...stateNav,
-          filterAllOwnershipTypes: filter,
-        }));
-      }
-    }
-  };
+	const setFilterOwnerType = ownerTypeNames => {
+		let filter;
+		let filters = [];
+		let check;
+		if (ownerTypeNames) {
+			check = ownerTypeNames.map(val => val);
+			check.forEach(option => {
+				if (option === 'RELIGIOUS INSTITUTIONS') {
+					filters.push(['get', 'ownershipTypeReligiousInstitutions']);
+				}
+				if (option === 'GOVERNMENTAL BODIES') {
+					filters.push(['get', 'ownershipTypeGovernmentalBodies']);
+				}
+				if (option === 'NON PROFITS') {
+					filters.push(['get', 'ownershipTypeNonProfits']);
+				}
+				if (option === 'TRUSTS') {
+					filters.push(['get', 'ownershipTypeTrusts']);
+				}
+				if (option === 'CORPORATIONS') {
+					filters.push(['get', 'ownershipTypeCorporations']);
+				}
+				if (option === 'EDUCATIONAL INSTITUTIONS') {
+					filters.push(['get', 'ownershipTypeEducationalInstitutions']);
+				}
+				if (option === 'INDIVIDUALS') {
+					filters.push(['get', 'ownershipTypeIndividuals']);
+				}
+				if (option === 'UNKNOWN') {
+					filters.push(['get', 'ownershipTypeUnknown']);
+				}
+			});
+			if (filters && filters.length > 0) {
+				filters.unshift('any');
+				filter = filters;
+				setStateNav(stateNav => ({
+					...stateNav,
+					filterAllOwnershipTypes: filter,
+				}));
+			} else {
+				filter = null;
+				setStateNav(stateNav => ({
+					...stateNav,
+					filterAllOwnershipTypes: filter,
+				}));
+			}
+		}
+	};
 
-  const handleChangeInterest = (event) => {
-    setFilterInterest(event);
-    setStateNav((stateNav) => ({
-      ...stateNav,
-      interestName: event,
-    }));
-  };
+	const handleChangeInterest = event => {
+		setFilterInterest(event);
+		setStateNav(stateNav => ({
+			...stateNav,
+			interestName: event,
+		}));
+	};
 
-  const handleChangeOwnerType = (event) => {
-    setFilterOwnerType(event);
-    setStateNav((stateNav) => ({
-      ...stateNav,
-      ownerTypeName: event,
-    }));
-  };
+	const handleChangeOwnerType = event => {
+		setFilterOwnerType(event);
+		setStateNav(stateNav => ({
+			...stateNav,
+			ownerTypeName: event,
+		}));
+	};
 
-  return (
-    <Grid container item spacing={2} style={{ padding: "8px", width: "100%", margin: "0" }}>
-      <Grid item sm={12}>
-        <Autocomplete
-          ChipProps={{ color: "secondary" }}
-          className={classes.formControl}
-          defaultValue={stateNav.interestName}
-          value={stateNav.interestName}
-          onChange={(event, newValue) => {
-            handleChangeInterest(newValue);
-          }}
-          multiple
-          options={interestList.map((option) => option)}
-          renderInput={(params) => (
-            <form autoComplete="off">
-              <TextField {...params} variant="outlined" label="Interest Types" placeholder="" fullWidth={true} />
-            </form>
-          )}
-          disableListWrap
-        />
-      </Grid>
-      <Grid item sm={12}>
-        <Autocomplete
-          ChipProps={{ color: "secondary" }}
-          className={classes.formControl}
-          defaultValue={stateNav.ownerTypeName}
-          value={stateNav.ownerTypeName}
-          onChange={(event, newValue) => {
-            handleChangeOwnerType(newValue);
-          }}
-          multiple
-          options={ownerTypesList.map((option) => option)}
-          renderInput={(params) => (
-            <form autoComplete="off">
-              <TextField {...params} variant="outlined" label="Owner Types" placeholder="" fullWidth={true} />
-            </form>
-          )}
-          disableListWrap
-        />
-      </Grid>
+	return (
+		<Grid container item spacing={2} style={{ padding: '8px', width: '100%', margin: '0' }}>
+			<Grid item sm={12}>
+				<Autocomplete
+					ChipProps={{ color: 'secondary' }}
+					className={classes.formControl}
+					defaultValue={stateNav.interestName}
+					value={stateNav.interestName}
+					onChange={(event, newValue) => {
+						handleChangeInterest(newValue);
+					}}
+					multiple
+					options={interestList.map(option => option)}
+					renderInput={params => (
+						<form autoComplete="off">
+							<TextField {...params} variant="outlined" label="Interest Types" placeholder="" fullWidth={true} />
+						</form>
+					)}
+					disableListWrap
+				/>
+			</Grid>
+			<Grid item sm={12}>
+				<Autocomplete
+					ChipProps={{ color: 'secondary' }}
+					className={classes.formControl}
+					defaultValue={stateNav.ownerTypeName}
+					value={stateNav.ownerTypeName}
+					onChange={(event, newValue) => {
+						handleChangeOwnerType(newValue);
+					}}
+					multiple
+					options={ownerTypesList.map(option => option)}
+					renderInput={params => (
+						<form autoComplete="off">
+							<TextField {...params} variant="outlined" label="Owner Types" placeholder="" fullWidth={true} />
+						</form>
+					)}
+					disableListWrap
+				/>
+			</Grid>
 
-      <FilterOwnerCount />
+			<FilterOwnerCount />
 
-      <Grid item sm={12}>
-        <FilterOwnerConfidence />
-        {/* {renderFMW} */}
-      </Grid>
+			<Grid item sm={12}>
+				<FilterOwnerConfidence />
+				{/* {renderFMW} */}
+			</Grid>
 
-      {/* TEMPORARY COMMENT OUT BELOW
+			{/* TEMPORARY COMMENT OUT BELOW
       FEATURE WORKS AND WILL HELP WITH M1 LOCAL DEBUGGING
       <Grid item sm={12}><FilterOwnerInterestSum/> </Grid>*/}
-    </Grid>
-  );
+		</Grid>
+	);
 }

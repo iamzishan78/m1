@@ -7,7 +7,7 @@ trigger:
   - staging/*
 
 pool:
-  vmImage: "ubuntu-latest"
+  vmImage: 'ubuntu-latest'
 
 variables:
   NODE_OPTIONS: --max_old_space_size=32768
@@ -15,36 +15,36 @@ variables:
 steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: "21.7.3"
-    displayName: "Install Node.js"
+      versionSpec: '21.7.3'
+    displayName: 'Install Node.js'
 
   - script: |
       yarn install
-    displayName: "Yarn Install"
+    displayName: 'Yarn Install'
 
   - script: |
       echo $NODE_OPTIONS
       yarn build
     failOnStderr: true
-    displayName: "Prepare binaries"
+    displayName: 'Prepare binaries'
 
   ## Copy the client to the staging directory
   - task: CopyFiles@2
     inputs:
-      sourceFolder: "build"
-      contents: "**/*"
-      targetFolder: "$(Build.ArtifactStagingDirectory)"
+      sourceFolder: 'build'
+      contents: '**/*'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
       cleanTargetFolder: true
 
   ## Archive the files into a zip file for publishing
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: $(Build.ArtifactStagingDirectory)
-      archiveType: "zip"
-      archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
       includeRootFolder: false
 
   ## Publish the zip file
   - task: PublishBuildArtifacts@1
     inputs:
-      pathtoPublish: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"
+      pathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'

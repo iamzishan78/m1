@@ -1,12 +1,19 @@
 import React, { memo } from 'react';
-import RightDialog from 'components/ContactDetailCard/components/RightDialog';
-import { tableGlobalController } from 'hookstate/tableController';
-import AddContactDialogContent from 'components/MRTTable/TablesOverride/ContactTable/RightDialogs/addContact';
-import MergeContactDrawer from 'components/Shared/M1nTable/components/SubComponents/MergeContactDrawer';
-import SendMailersDialogContent from 'components/Shared/M1nTable/components/SubComponents/SendMailersDialogContent';
 
-function ContactTableDialogs() {
+import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import MergeContactDrawer from 'components/MRTTable/Common/Components/MergeContactDrawer';
+import SendMailersDialogContent from 'components/MRTTable/Common/Components/SendMailersDialogContent';
+import AddContactDialogContent from 'components/MRTTable/TablesOverride/ContactTable/RightDialogs/addContact';
+
+import { globalStateController } from 'hookstate/globalStateController';
+import { tableGlobalController } from 'hookstate/tableController';
+
+import MetaField from 'utils/MetaField';
+
+function ContactTableDialogs({ tableKey }) {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
+	const { globalStateValues } = globalStateController.useState(['showFieldModal'], 'globalStateValues');
+
 	const { type, ...rest } = stateValues.dialog || {};
 
 	const handleCloseDialog = () => {
@@ -42,6 +49,9 @@ function ContactTableDialogs() {
 					/>
 				</RightDialog>
 			)}
+
+			{/* Added Meta data field Component in Contact Grid */}
+			{globalStateValues.showFieldModal && <MetaField columns={[]} category="Contacts" tableKey={tableKey} />}
 		</>
 	);
 }

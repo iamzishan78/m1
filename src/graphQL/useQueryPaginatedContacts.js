@@ -1,75 +1,75 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const PAGINATEDCONTACTSQUERY = gql`
-  query getPaginatedContacts(
-    $pagination: PaginationInput = { first: 25, after: null }
-    $sort: ContactSortInput = {}
-    $filters: [FilterInput] = []
-    $search: String
-    $pageOverride: Int
-  ) {
-    paginatedContacts(
-      pagination: $pagination
-      sort: $sort
-      filters: $filters
-      search: $search
-      pageOverride: $pageOverride
-    ) {
-      totalCount
-      edges {
-        node {
-          _id
-          entity
-          name
-          contactOwner
-          address1
-          address2
-          city
-          country
-          state
-          zip
-          isPurchased
-          title
-          firstName
-          lastName
-          middleName
-          suffix
-          mobilePhone
-          homePhone
-          AltPhone
-          primaryEmail
-          owners
-          leadSource
-          companyName
-          lastUpdateAt
-          lastUpdateBy {
-            name
-          }
-          age
-          relatives
-          homePhone2
-          homePhone3
-          mobilephone2
-          mobilephone3
-          AltPhone2
-          AltPhone3
-          email3
-          status
-          ownerType
-          hasAuthority
-          doNotDisturb
-          timeZone
-          notes
-          website
-          industryType
-          campaignName
-          contactStatus
-        }
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-    }
-  }
+	query getPaginatedContacts(
+		$pagination: PaginationInput = { first: 25, after: null }
+		$sort: ContactSortInput = {}
+		$filters: [FilterInput] = []
+		$search: String
+		$pageOverride: Int
+	) {
+		paginatedContacts(
+			pagination: $pagination
+			sort: $sort
+			filters: $filters
+			search: $search
+			pageOverride: $pageOverride
+		) {
+			totalCount
+			edges {
+				node {
+					_id
+					entity
+					name
+					contactOwner
+					address1
+					address2
+					city
+					country
+					state
+					zip
+					isPurchased
+					title
+					firstName
+					lastName
+					middleName
+					suffix
+					mobilePhone
+					homePhone
+					AltPhone
+					primaryEmail
+					owners
+					leadSource
+					companyName
+					lastUpdateAt
+					lastUpdateBy {
+						name
+					}
+					age
+					relatives
+					homePhone2
+					homePhone3
+					mobilephone2
+					mobilephone3
+					AltPhone2
+					AltPhone3
+					email3
+					status
+					ownerType
+					hasAuthority
+					doNotDisturb
+					timeZone
+					notes
+					website
+					industryType
+					campaigns
+					contactStatus
+				}
+			}
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+		}
+	}
 `;

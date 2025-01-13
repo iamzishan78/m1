@@ -1,50 +1,75 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import Button from '@material-ui/core/Button';
-import EditIcon from '@material-ui/icons/Edit';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import EditIcon from '@material-ui/icons/Edit';
+
+import _ from 'lodash';
+
 import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
+import { getAllData } from 'components/MRTTable/utils/GetAllData';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import RequestPageIcon from 'components/Shared/svgIcons/request_page';
+
 import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { getAllData } from 'components/MRTTable/utils/GetAllData';
-import _ from 'lodash';
 
 export const excludeFilters = (tableKey, total) => {
 	const rowSelection = tableController(tableKey).getValue('rowSelection');
 	const { rows, total: rangeTotal } = tableController(tableKey).getValue('data');
-	total = total ? total : rangeTotal
+	total = total ? total : rangeTotal;
 	const allNumbers = _.range(0, total);
 	const missingNumbers = _.difference(allNumbers, _.keys(rowSelection).map(Number));
 
-	const excludedIds = []
+	const excludedIds = [];
 	for (let i = 0; i < missingNumbers.length; i++) {
-		excludedIds.push({ field: '_id', value: rows[missingNumbers[i]]._id, type: "advanced", searchType: "notEquals", isKeyword: true },)
+		excludedIds.push({
+			field: '_id',
+			value: rows[missingNumbers[i]]?._id,
+			type: 'advanced',
+			searchType: 'notEquals',
+		});
 	}
-	return excludedIds
-}
+	return excludedIds;
+};
 
-export const openSideExportDialog = ({ _selectedRows, search, filters, sort, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType }) => {
-	let excludedIds = []
-	const includedIds = []
+export const openSideExportDialog = ({
+	_selectedRows,
+	search,
+	filters,
+	sort,
+	total,
+	isAllRowsSelected,
+	esIndex,
+	table,
+	tableKey,
+	type,
+	contactIdKey,
+	shapeType,
+	...rest
+}) => {
+	let excludedIds = [];
+	const includedIds = [];
 	const isSubSetSelect = tableController(tableKey).getValue('isSubSetSelect');
 
 	if (isAllRowsSelected) {
-		excludedIds = excludeFilters(tableKey)
+		excludedIds = excludeFilters(tableKey);
 
-		total = total - excludedIds.length
-		isAllRowsSelected = excludedIds.length ? false : isAllRowsSelected
-	} else if (!!isSubSetSelect) {
-		excludedIds = excludeFilters(tableKey, isSubSetSelect?.total)
-		total = isSubSetSelect?.total - excludedIds?.length
+		total = total - excludedIds.length;
+		isAllRowsSelected = excludedIds.length ? false : isAllRowsSelected;
+	} else if (isSubSetSelect) {
+		excludedIds = excludeFilters(tableKey, isSubSetSelect?.total);
+		total = isSubSetSelect?.total - excludedIds?.length;
 	} else {
-		total = _selectedRows.length
-		const value = []
+		total = _selectedRows.length;
+		const value = [];
 		for (let i = 0; i < _selectedRows.length; i++) {
-			value.push(_selectedRows[i]._id)
+			value.push(_selectedRows[i]._id);
 		}
-		includedIds.push({ field: '_id', value })
+		includedIds.push({ field: '_id', value });
 	}
 
-	const allFilters = [...filters, ...excludedIds, ...includedIds]
+	const allFilters = [...filters, ...excludedIds, ...includedIds];
 	tableGlobalController.updateState({
 		dialog: {
 			type,
@@ -57,48 +82,50 @@ export const openSideExportDialog = ({ _selectedRows, search, filters, sort, tot
 			contactIdKey,
 			shapeType,
 			open: true,
+			_selectedRows,
+			...rest,
 		},
 	});
 	table.resetRowSelection();
 };
 
-export const openSideDialog = async (
-	{
-		type,
-		selectedRows,
-		isAllRowsSelected,
-		search,
-		sorting,
-		defaultSort,
-		esIndex,
-		filters,
-		total,
-		client,
-		table,
-		tableKey,
-		props = {},
-		selectedCampaign,
-	}
-) => {
+export const openSideDialog = async ({
+	type,
+	selectedRows,
+	isAllRowsSelected,
+	search,
+	sorting,
+	defaultSort,
+	esIndex,
+	filters,
+	total,
+	client,
+	table,
+	tableKey,
+	props = {},
+	selectedCampaign,
+	objectType,
+	refetchQueries,
+}) => {
 	let showRows = selectedRows;
 	const isSubSetSelect = tableController(tableKey).getValue('isSubSetSelect');
 	tableGlobalController.updateState({
 		dialog: {
 			type,
 			selectedRows: [],
-			...props
+			...props,
 		},
 	});
 
 	if (isAllRowsSelected) {
-		const excludedIds = excludeFilters(tableKey)
-		const allFilters = [...filters, ...excludedIds]
-		const newTotaltotal = total - excludedIds?.length
+		const excludedIds = excludeFilters(tableKey);
+		const allFilters = [...filters, ...excludedIds];
+		const newTotaltotal = total - excludedIds?.length;
 		showRows = await getAllData(search, sorting, defaultSort, esIndex, allFilters, newTotaltotal, client);
-	} else if (!!isSubSetSelect) {
-		const excludedIds = excludeFilters(tableKey, isSubSetSelect?.total)
-		const allFilters = [...filters, ...excludedIds]
-		const total = isSubSetSelect?.total - excludedIds?.length
+	} else if (isSubSetSelect) {
+		const excludedIds = excludeFilters(tableKey, isSubSetSelect?.total);
+		const allFilters = [...filters, ...excludedIds];
+		const total = isSubSetSelect?.total - excludedIds?.length;
 		showRows = await getAllData(search, sorting, defaultSort, esIndex, allFilters, total, client);
 	}
 	tableGlobalController.updateState({
@@ -108,10 +135,14 @@ export const openSideDialog = async (
 			tableKey,
 			...props,
 			selectedCampaign,
+			objectType,
+			refetchQueries,
 		},
 	});
 
-	if (table.getIsAllRowsSelected()) table.toggleAllRowsSelected();
+	if (table.getIsAllRowsSelected()) {
+		table.toggleAllRowsSelected();
+	}
 
 	table.resetRowSelection();
 };
@@ -131,6 +162,8 @@ export function BulkUpdate({
 	table,
 	tableKey,
 	selectedCampaign,
+	objectType,
+	refetchQueries,
 }) {
 	return (
 		<Button
@@ -139,23 +172,23 @@ export function BulkUpdate({
 			className={isSomethingSelected ? classes.selectTopBarButtons : classes.disabledTopBarButtons}
 			disabled={!isSomethingSelected}
 			onClick={() =>
-				openSideDialog(
-					{
-						type: 'asign',
-						selectedRows,
-						isAllRowsSelected,
-						search,
-						sorting,
-						defaultSort,
-						esIndex,
-						filters,
-						total,
-						client,
-						table,
-						tableKey,
-						selectedCampaign
-					}
-				)
+				openSideDialog({
+					type: 'asign',
+					selectedRows,
+					isAllRowsSelected,
+					search,
+					sorting,
+					defaultSort,
+					esIndex,
+					filters,
+					total,
+					client,
+					table,
+					tableKey,
+					selectedCampaign,
+					objectType,
+					refetchQueries,
+				})
 			}
 			data-testid="bulk-update"
 		>
@@ -164,14 +197,45 @@ export function BulkUpdate({
 	);
 }
 
-export function ExportData({ classes, _selectedRows, search, filters, sort, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType }) {
+export function ExportData({
+	classes,
+	_selectedRows,
+	search,
+	filters,
+	sort,
+	total,
+	isAllRowsSelected,
+	esIndex,
+	table,
+	tableKey,
+	type,
+	contactIdKey,
+	shapeType,
+	...rest
+}) {
 	return (
 		<Button
 			color="secondary"
 			startIcon={<CloudDownloadIcon color="white" />}
 			className={classes.selectTopBarButtons}
 			data-testid="export-contact-and-purchse-icon-button"
-			onClick={() => openSideExportDialog({ search, _selectedRows, filters, sort, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType })}
+			onClick={() =>
+				openSideExportDialog({
+					search,
+					_selectedRows,
+					filters,
+					sort,
+					total,
+					isAllRowsSelected,
+					esIndex,
+					table,
+					tableKey,
+					type,
+					contactIdKey,
+					shapeType,
+					...rest,
+				})
+			}
 		>
 			Export
 		</Button>
@@ -191,7 +255,7 @@ export function ViewContactData({
 	total,
 	client,
 	table,
-	tableKey
+	tableKey,
 }) {
 	return (
 		<FeatureFlag feature={FEATURES.IDICORE}>
@@ -201,22 +265,20 @@ export function ViewContactData({
 				className={isSomethingSelected ? classes.selectTopBarButtons : classes.disabledTopBarButtons}
 				disabled={!isSomethingSelected}
 				onClick={() =>
-					openSideDialog(
-						{
-							type: 'buyContactsInfoData',
-							selectedRows,
-							isAllRowsSelected,
-							search,
-							sorting,
-							defaultSort,
-							esIndex,
-							filters,
-							total,
-							client,
-							table,
-							tableKey
-						}
-					)
+					openSideDialog({
+						type: 'buyContactsInfoData',
+						selectedRows,
+						isAllRowsSelected,
+						search,
+						sorting,
+						defaultSort,
+						esIndex,
+						filters,
+						total,
+						client,
+						table,
+						tableKey,
+					})
 				}
 			>
 				Contact Data

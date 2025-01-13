@@ -1,7 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const CONTACT_SUMMARY = gql`
-  query getContactSummary($contactId: ID) {
-    contactSummary(contactId: $contactId)
-  }
+	query getContactSummary($contactId: ID) {
+		contactSummary(contactId: $contactId)
+	}
 `;

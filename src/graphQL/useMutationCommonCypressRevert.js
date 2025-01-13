@@ -8,3 +8,12 @@ export const REVERTCYPRESSDELETE = gql`
 		}
 	}
 `;
+
+export const DELETE_CYPRESS_CUSTOM_LAYERS = gql`
+	mutation deleteCypressCustomLayers($geometry: JSON!, $shapeTypes: [String]!) {
+		deleteCypressCustomLayers(geometry: $geometry, shapeTypes: $shapeTypes) {
+			success
+			message
+		}
+	}
+`;

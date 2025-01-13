@@ -1,7 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const GET_IDICORE_DATA = gql`
-  mutation getIdiCoreData($tenantId: String, $persons: [JSON], $featureId: String) {
-    getIdiCoreData(tenantId: $tenantId, persons: $persons, featureId: $featureId)
-  }
+	mutation getIdiCoreData($tenantId: String, $persons: [JSON], $featureId: String) {
+		getIdiCoreData(tenantId: $tenantId, persons: $persons, featureId: $featureId)
+	}
 `;

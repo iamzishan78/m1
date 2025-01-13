@@ -1,122 +1,120 @@
-import { copy } from "components/Shared/functions";
-import { landColumns } from "./COMMON";
-import { addAfterLabel, removeByLabel } from "./helper";
-import SHAPEOWNER from "./SHAPEOWNER";
+import { copy } from 'components/Shared/functions';
 
-const fields = JSON.parse(JSON.stringify(SHAPEOWNER))
-fields.splice(SHAPEOWNER.length - 1, 1)
+import { landColumns } from './COMMON';
+import { addAfterLabel, removeByLabel } from './helper';
+import SHAPEOWNER from './SHAPEOWNER';
 
+const fields = JSON.parse(JSON.stringify(SHAPEOWNER));
+fields.splice(SHAPEOWNER.length - 1, 1);
 
 const unit = [
-    ...copy(landColumns),
-    ...copy(fields),
-    {
-        label: "Tags",
-        mapped_key: "",
-        required: false,
-        actual_key: "landgrid.tags"
-    },
+	...copy(landColumns),
+	...copy(fields),
+	{
+		label: 'Tags',
+		mapped_key: '',
+		required: false,
+		actual_key: 'landgrid.tags',
+	},
 ];
 
-removeByLabel(unit, 'Shape Type')
-removeByLabel(unit, 'Shape Name')
+removeByLabel(unit, 'Shape Type');
+removeByLabel(unit, 'Shape Name');
 
-unit.forEach((row) => {
-    row.label = row.label.replace('Shape', 'Unit')
-})
+unit.forEach(row => {
+	row.label = row.label.replace('Shape', 'Unit');
+});
 
 addAfterLabel(unit, 'Unit Id', {
-    label: "Unit Name",
-    mapped_key: "",
-    required: true,
-    actual_key: "shape.name",
-})
+	label: 'Unit Name',
+	mapped_key: '',
+	required: true,
+	actual_key: 'shape.name',
+});
 
 addAfterLabel(unit, 'Unit Name', {
-    label: "Unit Number",
-    mapped_key: "",
-    required: true,
-    actual_key: "shape.uNumber",
-})
+	label: 'Unit Number',
+	mapped_key: '',
+	required: true,
+	actual_key: 'shape.uNumber',
+});
 
 addAfterLabel(unit, 'Unit Number', {
-    label: "Unit Acres",
-    mapped_key: "",
-    required: true,
-    actual_key: "shape.uAcres",
-})
+	label: 'Unit Acres',
+	mapped_key: '',
+	required: true,
+	actual_key: 'shape.uAcres',
+});
 
 addAfterLabel(unit, 'Unit Acres', {
-    label: "Current Operator",
-    mapped_key: "",
-    required: true,
-    actual_key: "shape.uPrimaryOperator",
-})
-
-
+	label: 'Current Operator',
+	mapped_key: '',
+	required: true,
+	actual_key: 'shape.uPrimaryOperator',
+});
 
 addAfterLabel(unit, 'Unit Acres', {
-    label: "Target Price",
-    mapped_key: "",
-    required: true,
-    actual_key: "shape.uUnitPricing",
-})
+	label: 'Target Price',
+	mapped_key: '',
+	required: true,
+	actual_key: 'shape.uUnitPricing',
+});
 
 addAfterLabel(unit, 'Target Price', {
-    label: "Max Price",
-    mapped_key: "",
-    actual_key: "shape.uMaxUnitPricing",
-})
+	label: 'Max Price',
+	mapped_key: '',
+	actual_key: 'shape.uMaxUnitPricing',
+});
 
 addAfterLabel(unit, 'Max Price', {
-    label: "Unit Campaign",
-    mapped_key: "",
-    actual_key: "shape.campaignName",
-})
+	label: 'Unit Campaign',
+	mapped_key: '',
+	actual_key: 'shape.campaignName',
+});
 
 addAfterLabel(unit, 'Unit Campaign', {
-    label: "Qualifier",
-    mapped_key: "",
-    actual_key: "shape.qualifier",
-})
+	label: 'Qualifier',
+	mapped_key: '',
+	actual_key: 'shape.qualifier',
+});
 
 addAfterLabel(unit, 'Qualifier', {
-    label: "Description",
-    mapped_key: "",
-    actual_key: "shape.description",
-})
+	label: 'Description',
+	mapped_key: '',
+	actual_key: 'shape.description',
+});
 
 addAfterLabel(unit, 'Overriding Royalty', {
-    label: "Net Revenue Interest",
-    mapped_key: "",
-    actual_key: "shape.nri"
-})
+	label: 'Net Revenue Interest',
+	mapped_key: '',
+	actual_key: 'shape.nri',
+});
 addAfterLabel(unit, 'Net Royalty Acres', {
-    label: "Unit Tract ID",
-    mapped_key: "",
-    required: false,
-    actual_key: "unitTractId",
-})
+	label: 'Unit Tract ID',
+	mapped_key: '',
+	required: false,
+	actual_key: 'unitTractId',
+});
 
 addAfterLabel(unit, 'Unit Tract ID', {
-    label: "Tract Acres",
-    mapped_key: "",
-    required: false,
-    actual_key: "tractAcres",
-})
+	label: 'Tract Acres',
+	mapped_key: '',
+	required: false,
+	actual_key: 'tractAcres',
+});
 
 addAfterLabel(unit, 'Tract Acres', {
-    label: "Net Acres",
-    mapped_key: "",
-    required: false,
-    actual_key: "net_acres",
-})
+	label: 'Net Acres',
+	mapped_key: '',
+	required: false,
+	actual_key: 'net_acres',
+});
 
 addAfterLabel(unit, 'Net Acres', {
-    label: "Data Source",
-    mapped_key: "",
-    required: false,
-    actual_key: "dataSource",
-})
+	label: 'Data Source',
+	mapped_key: '',
+	required: false,
+	actual_key: 'dataSource',
+});
 
 export default unit;

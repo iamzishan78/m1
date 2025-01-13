@@ -1,15 +1,14 @@
-import React from "react";
-import { ActivitiesContextProvider } from "./ActivitiesContext";
-import Calendar from ".";
+import React from 'react';
+
+import Calendar from '.';
+import { ActivitiesContextProvider } from './ActivitiesContext';
 
 export function ActivitiesProvider(props) {
-  return (
-    <ActivitiesContextProvider>
-      <Calendar>
-        {props.children}
-      </Calendar>
-    </ActivitiesContextProvider>
-  );
+	return (
+		<ActivitiesContextProvider>
+			<Calendar>{props.children}</Calendar>
+		</ActivitiesContextProvider>
+	);
 }
 
 export default ActivitiesProvider;

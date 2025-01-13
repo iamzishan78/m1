@@ -1,6 +1,7 @@
+import DeckGlLayer from 'components/Map/DeckGL/helpers/DeckGlLayer';
+
 import { drawController } from 'hookstate/drawStateController';
 import { popupController } from 'hookstate/popupStateController';
-import DeckGlLayer from 'components/Map/DeckGL/helpers/DeckGlLayer'
 
 const onAbstactLayerClick = (feature, action, sourceId) => {
 	if (!feature) {
@@ -12,9 +13,10 @@ const onAbstactLayerClick = (feature, action, sourceId) => {
 
 	const selectedAbstracts = drawController.getValue('selectedAbstracts');
 
-	let drawStateToUpdate
-	if (window.mapRef?.getLayer("Land Grid_selection"))
-		window.mapRef.removeLayer("Land Grid_selection");
+	let drawStateToUpdate;
+	if (window.mapRef?.getLayer('Land Grid_selection')) {
+		window.mapRef.removeLayer('Land Grid_selection');
+	}
 
 	let requiredAbstracts = [];
 
@@ -37,8 +39,8 @@ const onAbstactLayerClick = (feature, action, sourceId) => {
 	}
 
 	new DeckGlLayer({
-		layerId: "Land Grid_selection",
-		type: "GeoJsonLayer",
+		layerId: 'Land Grid_selection',
+		type: 'GeoJsonLayer',
 		props: {
 			data: requiredAbstracts,
 			pickable: true,
@@ -48,25 +50,26 @@ const onAbstactLayerClick = (feature, action, sourceId) => {
 		},
 	});
 
-	if (drawStateToUpdate)
+	if (drawStateToUpdate) {
 		drawController.updateState(drawStateToUpdate);
+	}
 	popupController.updateState({
 		popupOpen: false,
-	})
+	});
 };
 
-const landgridLayerClickHandler = (feature) => {
-	if (!feature) return;
+const landgridLayerClickHandler = feature => {
+	if (!feature) {
+		return;
+	}
 	const drawMode = window.drawRef.getMode();
-	if (drawMode.includes('draw') || drawMode.includes('drag')) return;
+	if (drawMode.includes('draw') || drawMode.includes('drag')) {
+		return;
+	}
 
 	const selectedAbstracts = drawController.getValue('selectedAbstracts');
-	const isFeatureSelected = selectedAbstracts.find((abstract) => abstract?.properties?.Id === feature?.properties?.Id)
-	if (
-		window.event.ctrlKey ||
-		window.event.metaKey ||
-		drawController.getValue('multiSelectLandGrids')
-	) {
+	const isFeatureSelected = selectedAbstracts.find(abstract => abstract?.properties?.Id === feature?.properties?.Id);
+	if (window.event.ctrlKey || window.event.metaKey || drawController.getValue('multiSelectLandGrids')) {
 		if (isFeatureSelected) {
 			onAbstactLayerClick(feature, 'remove');
 		} else {

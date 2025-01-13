@@ -1,17 +1,27 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { useApolloClient } from '@apollo/client';
-import { makeStyles } from '@material-ui/core/styles';
+
 import Button from '@material-ui/core/Button';
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import { makeStyles } from '@material-ui/core/styles';
+
 import AutorenewIcon from '@mui/icons-material/Autorenew';
-import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { navController } from 'hookstate/navStateController';
+
+import { useApolloClient } from '@apollo/client';
+import PropTypes from 'prop-types';
+
+import {
+	BulkUpdate,
+	ViewContactData,
+	openSideDialog,
+	ExportData,
+} from 'components/MRTTable/Common/CommonToolBarActions';
+import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown';
 import TractInterestTableDialogs from 'components/MRTTable/TablesOverride/TractInterestOwnerTable/RightDialogs';
-import { popupController } from 'hookstate/popupStateController';
-import { BulkUpdate, ViewContactData, openSideDialog, ExportData } from 'components/MRTTable/Common/CommonToolBarActions';
 import { NavigationContext } from 'components/Navigation/NavigationContext';
+
+import { navController } from 'hookstate/navStateController';
+import { popupController } from 'hookstate/popupStateController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(() => ({
 	disabledTopBarButtons: {
@@ -84,7 +94,7 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 					bulkUploadParcel: popupController.getValue('selectedParcel'),
 				});
 
-				setStateNav((state) => ({
+				setStateNav(state => ({
 					...state,
 					bulkUploadShape: null,
 					bulkUploadFromMap: true,
@@ -95,7 +105,8 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 		},
 	];
 
-	const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
+	const isSomeRowsSelected =
+		table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
@@ -115,7 +126,9 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 			total: tableStateValues?.data.total,
 			client,
 			table,
-			tableKey
+			tableKey,
+			objectType: 'contact',
+			refetchQueries: ['getESContacts'],
 		};
 	};
 
@@ -123,9 +136,9 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 		const query = tableStateValues?.globalFilter ? `*${tableStateValues?.globalFilter}*` : '*';
 		const search = { fields: tableStateValues?.searchFields, query };
 
-		let sort = tableStateValues.defaultSort
+		let sort = tableStateValues.defaultSort;
 		if (tableStateValues?.sorting?.length) {
-			sort = { field: tableStateValues?.sorting?.[0].id, order: tableStateValues.sorting?.[0].desc ? 'desc' : 'asc', }
+			sort = { field: tableStateValues?.sorting?.[0].id, order: tableStateValues.sorting?.[0].desc ? 'desc' : 'asc' };
 		}
 
 		return {
@@ -155,8 +168,8 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 					startIcon={<AutorenewIcon color="white" />}
 					className={classes.selectTopBarButtons}
 					disabled={false}
-					onClick={() => openSideDialog(
-						{
+					onClick={() =>
+						openSideDialog({
 							type: 'recalculate',
 							selectedRows,
 							isAllRowsSelected: sidePropsPass.isAllRowsSelected,
@@ -169,8 +182,8 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 							client,
 							table,
 							tableKey,
-						}
-					)}
+						})
+					}
 					data-testid="recalculate"
 				>
 					Recalculate
@@ -189,9 +202,7 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 				<BulkUpdate isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} />
 			)}
 
-			{isSomethingSelected && (
-				<ExportData classes={classes} {...exportPropsPass} />
-			)}
+			{isSomethingSelected && <ExportData classes={classes} {...exportPropsPass} />}
 
 			{isSomethingSelected && (
 				<ViewContactData isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} />
@@ -200,4 +211,9 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 	);
 }
 
-export default memo(TractInterestOwnerToolBar);
+TractInterestOwnerToolBar.propTypes = {
+	table: PropTypes.object.isRequired,
+	tableKey: PropTypes.string.isRequired,
+};
+
+export default TractInterestOwnerToolBar;

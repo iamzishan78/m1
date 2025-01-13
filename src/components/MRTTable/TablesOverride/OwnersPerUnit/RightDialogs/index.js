@@ -1,7 +1,9 @@
 import React, { memo } from 'react';
-import { tableGlobalController } from 'hookstate/tableController';
+
 import AddUnitOwnerDialogContent from 'components/MRTTable/TablesOverride/OwnersPerUnit/RightDialogs/AddUnitOwnerDialogContent';
-import RecalculateSlideout from 'components/Table/Shape/RecalculateSlideout';
+import RecalculateSlideout from 'components/Common/RecalculateSlideout';
+
+import { tableGlobalController } from 'hookstate/tableController';
 
 function OwnerPerUnitTableDialogs() {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
@@ -35,7 +37,7 @@ function OwnerPerUnitTableDialogs() {
 					shapeType={rest?.shapeType}
 					selectedRow={rest?.selectedRow}
 					onClose={handleCloseDialog}
-					metaDataCategory={"Unit Interest Owners"}
+					metaDataCategory={'Unit Interest Owners'}
 				/>
 			)}
 

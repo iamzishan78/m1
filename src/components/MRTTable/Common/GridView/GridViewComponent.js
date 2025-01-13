@@ -1,16 +1,20 @@
 import React, { useState, memo } from 'react';
-import { Breadcrumbs, Typography, IconButton, Menu, MenuItem } from '@material-ui/core';
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { useMutation } from '@apollo/client';
-import { tableController } from 'hookstate/tableController';
-import { UPDATE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
-import { CircularProgress } from '@material-ui/core';
 
-function GridViewComponent({ Icon, label, tableKey, fetchGridViews }) {
-	const [updateGridView, { data }] = useMutation(UPDATE_GRID_VIEW, {
+import { Breadcrumbs, Typography, IconButton, Menu, MenuItem, CircularProgress } from '@material-ui/core';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+
+import { useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
+
+import { UPDATE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
+
+import { tableController } from 'hookstate/tableController';
+
+function GridViewComponent({ Icon, buttonRef, label, tableKey, fetchGridViews }) {
+	const [updateGridView] = useMutation(UPDATE_GRID_VIEW, {
 		onCompleted: () => {
-			fetchGridViews()
+			fetchGridViews();
 		},
 	});
 	const [showIcon, setShowIcon] = useState(false);
@@ -24,7 +28,7 @@ function GridViewComponent({ Icon, label, tableKey, fetchGridViews }) {
 		'sorting',
 		'groupedField',
 		'columnPinning',
-		'columnOrdering'
+		'columnOrdering',
 	]);
 	const tableStateValues = tableState.stateValues;
 	const selectedGridView = tableStateValues?.gridView?.selectedGridView;
@@ -71,6 +75,7 @@ function GridViewComponent({ Icon, label, tableKey, fetchGridViews }) {
 	return (
 		<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left' }}>
 			<IconButton
+				ref={buttonRef}
 				onClick={() =>
 					Controller.updateState({
 						gridView: { ...tableStateValues.gridView, showViewModal: !tableStateValues.gridView?.showViewModal },
@@ -154,5 +159,13 @@ function GridViewComponent({ Icon, label, tableKey, fetchGridViews }) {
 		</div>
 	);
 }
+
+GridViewComponent.propTypes = {
+	Icon: PropTypes.object,
+	buttonRef: PropTypes.object,
+	label: PropTypes.string,
+	tableKey: PropTypes.string,
+	fetchGridViews: PropTypes.func,
+};
 
 export default memo(GridViewComponent);

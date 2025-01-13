@@ -1,11 +1,11 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const ARCHIVE_ALL_MUTATIONS = gql`
-  mutation archiveAllMentions{
-    archiveAllMentions{
-      success
-      message
-      error
-    }
-  }
+	mutation archiveAllMentions {
+		archiveAllMentions {
+			success
+			message
+			error
+		}
+	}
 `;

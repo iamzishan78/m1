@@ -1,47 +1,42 @@
-import { hookstate } from '@hookstate/core';
-import { copy } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
-import { bypassTenants } from 'utils/data';
 
-const initialState = {
-	layers: [],
-	panelItems: [],
-	emptyGroups: [],
-	universalLoader: false,
-	layerLoading: {},
-	user: null,
-	apolloClientEndpoint: null,
-	x_zumo_auth: null,
-	cypress: null,
-	testCase: null,
-	bypassLogin: false,
-};
+import { bypassTenants, simpleAuthBypass } from 'utils/data';
 
-export const globalState = hookstate(copy(initialState));
+import { globalInitialState, globalState } from './initialStates';
 
-const globalStateControllerHandler = () => ({
+const globalStateControllerHandler = state => ({
 	setLayerLoading: (type, value) => {
-		if (value !== globalState.layerLoading.get()[type])
+		if (value !== globalState.layerLoading.get()[type]) {
 			globalState.layerLoading.set({
 				...globalState.layerLoading.get(),
 				[type]: value,
 			});
+		}
 	},
-	setBypassLogin: tenant => globalState.bypassLogin.set(bypassTenants.includes(tenant)),
+	setBypassLogin: tenant => {
+		const bypass = simpleAuthBypass
+			? { bypassLogin: true, bypassType: 'SimpleBypass' }
+			: { bypassLogin: bypassTenants.includes(tenant.name), bypassType: 'Auth0Bypass' };
+		if (bypass.bypassLogin) {
+			globalStateController.updateState({ ...bypass, tenant });
+		}
+	},
+	isAuth0Bypass: () => state.bypassType.get({ noproxy: true }) === 'Auth0Bypass',
 	isBypassTenant: tenant => bypassTenants.map(t => t.toLowerCase()).includes(tenant.toLowerCase()),
 	handleMyWellTestCase: (globalWellId, mongoWellId) => {
-		if (globalStateController.getValue('cypress'))
+		if (globalStateController.getValue('cypress')) {
 			globalStateController.updateState({
 				testCase: {
 					name: 'MyWellsNameUpdate',
 					globalWellId,
-					mongoWellId
+					mongoWellId,
 				},
 			});
-	}
+		}
+	},
 });
 
 export const globalStateController = {
 	...globalStateControllerHandler(globalState),
-	...hookStateController(globalState, initialState),
+	...hookStateController(globalState, globalInitialState),
 };

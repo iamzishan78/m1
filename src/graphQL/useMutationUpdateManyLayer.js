@@ -1,7 +1,7 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const UPDATE_MANY_LAYER = gql`
-  mutation updateManyLayer($layers: [LayerInput]) {
-    updateManyLayer(layers: $layers)
-  }
+	mutation updateManyLayer($layers: [LayerInput], $layerGroupId: ID) {
+		updateManyLayer(layers: $layers, layerGroupId: $layerGroupId)
+	}
 `;
