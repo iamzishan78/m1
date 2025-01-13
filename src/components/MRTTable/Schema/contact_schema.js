@@ -13,6 +13,7 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActionMenu';
 import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import OwnerTypeCell from '../Common/TableCells/OwnerTypeCell';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import ContactToolbar from 'components/MRTTable/TablesOverride/ContactTable/ContactToolbar';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
@@ -692,8 +693,8 @@ const ContactMeta = {
 			header: 'Contact Owner',
 			isExport: 'contactOwners[0].name',
 			Cell: ({ row }) => {
-				const name = row?.original?.contactOwners?.map(obj => obj.name);
-				return <p>{name?.[0]}</p>;
+				let contactOwner = row?.original?.contactOwners?.[0];
+				return <OwnerTypeCell contactOwner={contactOwner} />;
 			},
 		},
 

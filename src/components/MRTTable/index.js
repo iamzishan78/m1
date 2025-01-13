@@ -20,6 +20,13 @@ function MRTTable({ tableKey, name, overrideMeta = {} }) {
 	const { stateValues } = Controller.useState(['initialized']);
 
 	useEffect(() => {
+		(async () => {
+			// Initializing global states
+			await tableGlobalController.initializeGlobalStates(client);
+		})();
+	}, []);
+
+	useEffect(() => {
 		// Dynamically load the schema
 		const loadSchema = async () => {
 			try {
