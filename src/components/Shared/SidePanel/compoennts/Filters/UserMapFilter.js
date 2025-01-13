@@ -315,13 +315,14 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 					}
 				}
 
-				if (!tableKey)
-					{viewStateController('MapView').updateState({
+				if (!tableKey) {
+					viewStateController('MapView').updateState({
 						selectedView: {
 							...selectedMapView,
 							filters: mapViewFilters,
 						},
-					});}
+					});
+				}
 				layerFiltersController.updateLayerFiltersFromMapViews(dataSourceName, mapViewFilters);
 			}
 		}
@@ -354,8 +355,6 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 		const shapeFileOptions = filterTypeOptions.filter(option => ['singleselect', 'multiselect'].includes(option.value));
 
 		const wellsFilterOptions = filterTypeOptions.filter(option => ['multiselect'].includes(option.value));
-
-		const selectedField = getSelectedField(mapView?.fieldName) || fieldName;
 
 		// Making filter options based on selected dataset
 		let requiredFilterOptions = [];
@@ -426,8 +425,8 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			},
 		];
 
-		const isDate = selectedField?.type === 'date';
-		const isRange = selectedField?.type === 'range';
+		const isDate = fieldName?.type === 'date';
+		const isRange = fieldName?.type === 'range';
 
 		if (!isDate && !isRange) {
 			fields.push({
@@ -437,10 +436,11 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				defaultValue: filterTypeOptions.find(filterTypeOption => filterTypeOption.value === mapView?.filterType), // Set default value if mapView is provided
 				onChange: (e, v, r, previousValue) => {
 					setValue(`mapViews.${index}.filterValues`, null);
-					if (!['empty', 'notEmpty'].includes(v?.value) && !['empty', 'notEmpty'].includes(previousValue?.value))
-						{Object.keys(tableESState).map(tableKey =>
+					if (!['empty', 'notEmpty'].includes(v?.value) && !['empty', 'notEmpty'].includes(previousValue?.value)) {
+						Object.keys(tableESState).map(tableKey =>
 							tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false)
-						);}
+						);
+					}
 				}, // Reset other fields on change
 			});
 		}
@@ -451,7 +451,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				label: 'Filter Values',
 				options: filterValuesOptions || [], // Dynamic based on filter options
 				defaultValue: mapView?.filterValues, // Set default value if mapView is provided
-				type: selectedField?.type,
+				type: fieldName?.type,
 			});
 		}
 		return fields;
