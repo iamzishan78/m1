@@ -803,40 +803,38 @@ export default function CommentComponent(props) {
 	return (
 		<>
 			<div className={classes.container}>
-				{props.targetLabel === 'Contact' && (
-					<div className={classes.customTabs}>
-						<Tabs
-							variant="scrollable"
-							value={tab}
-							textColor="primary"
-							onChange={(e, newValue) => {
-								setTab(newValue);
-							}}
-						>
-							<Tab label="All" disabled={editCommentId} />
-							<Tab label="Comments" disabled={editCommentId} />
-							<Tab label="Activities" disabled={editCommentId} />
-						</Tabs>
-						{tab === ACTIVITY_TAB && (
-							<div>
-								<CommentsAutoComplete
-									options={typeOptions}
-									onChange={value => setActivityType(value)}
-									value={typeOptions.find(option => option.value === activityType) || null}
-								/>
-							</div>
-						)}
-						{tab === 1 && (
-							<div>
-								<CommentsAutoComplete
-									options={commentTypes}
-									onChange={value => setCommentType(value)}
-									value={commentTypes?.find(option => option.value === commentType) || null}
-								/>
-							</div>
-						)}
-					</div>
-				)}
+				<div className={classes.customTabs}>
+					<Tabs
+						variant="scrollable"
+						value={tab}
+						textColor="primary"
+						onChange={(e, newValue) => {
+							setTab(newValue);
+						}}
+					>
+						<Tab label="All" disabled={editCommentId} />
+						<Tab label="Comments" disabled={editCommentId} />
+						<Tab label="Activities" disabled={editCommentId} />
+					</Tabs>
+					{tab === ACTIVITY_TAB && (
+						<div>
+							<CommentsAutoComplete
+								options={typeOptions}
+								onChange={value => setActivityType(value)}
+								value={typeOptions.find(option => option.value === activityType) || null}
+							/>
+						</div>
+					)}
+					{tab === 1 && (
+						<div>
+							<CommentsAutoComplete
+								options={commentTypes}
+								onChange={value => setCommentType(value)}
+								value={commentTypes?.find(option => option.value === commentType) || null}
+							/>
+						</div>
+					)}
+				</div>
 				<div className={classes.comment} id="commentsContainer">
 					{!loadingComments ? (
 						<>

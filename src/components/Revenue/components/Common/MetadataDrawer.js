@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/styles';
 
 import { useLazyQuery } from '@apollo/client';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import AddDialogeUploadZone from 'components/ContactDetailCard/components/AddDialogUploadZone';
 import CommentComponent from 'components/Shared/CommentComponent';
@@ -18,6 +19,8 @@ import { GETRECENTCONTACTFILES } from 'graphQL/useQueryGetContactFiles';
 import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 
 import { AppContext } from 'AppContext';
+
+const THEME_SPACING = 3;
 
 const useStyles = makeStyles(theme => ({
 	titleText: {
@@ -70,8 +73,8 @@ const useStyles = makeStyles(theme => ({
 		marginBottom: '7px',
 	},
 	dealOwnerAvatar: {
-		width: theme.spacing(3),
-		height: theme.spacing(3),
+		width: theme.spacing(THEME_SPACING),
+		height: theme.spacing(THEME_SPACING),
 		color: '#fff',
 		fontSize: '0.6rem',
 		backgroundColor: '#4880F6',
@@ -163,6 +166,7 @@ export default function MetadataDrawer(props) {
 		fetchPolicy: 'cache-and-network',
 		onCompleted: ({ getFileDescriptors }) => {
 			let allActive = true;
+			const DEFAULT_COUNTER = 40;
 
 			if (getFileDescriptors) {
 				for (let i = 0; i < getFileDescriptors.length; i++) {
@@ -174,7 +178,7 @@ export default function MetadataDrawer(props) {
 			}
 
 			if (!allActive) {
-				if (fileRequestCounter <= 40) {
+				if (fileRequestCounter <= DEFAULT_COUNTER) {
 					let waitBeforeRequestAgain = setTimeout(() => {
 						setFileRequestCounter(fileRequestCounter + 1);
 						getRecentFiles({
@@ -449,8 +453,7 @@ export default function MetadataDrawer(props) {
 				</div>
 				<div
 					style={{
-						flex: '1 1 auto',
-						overflow: 'hidden',
+						height: '500px',
 					}}
 				>
 					<CommentComponent
@@ -479,4 +482,27 @@ MetadataDrawer.defaultProps = {
 	isOwner: true,
 	isSource: true,
 	data: {},
+};
+
+MetadataDrawer.propTypes = {
+	setCollapse: PropTypes.func,
+	onUpdate: PropTypes.func,
+	targetSourceId: PropTypes.string,
+	targetLabel: PropTypes.string,
+	viewAllDocuments: PropTypes.func,
+	ownerTitle: PropTypes.string,
+	showDescription: PropTypes.string,
+	ownerPlaceHolder: PropTypes.string,
+	isApproval: PropTypes.bool,
+	isOwner: PropTypes.bool,
+	isSource: PropTypes.bool,
+	data: PropTypes.array,
+	shapeType: PropTypes.string,
+	descriptionKey: PropTypes.string,
+	documentsTitle: PropTypes.string,
+	title: PropTypes.string,
+	shapeData: PropTypes.array,
+	showCommentType: PropTypes.bool,
+	menuComponent: PropTypes.bool,
+	activityLog: PropTypes.array,
 };

@@ -21,10 +21,11 @@ import MapProvider from 'components/Map/MapProvider';
 import { findBoundsMap } from 'components/MapControls/commonHelper';
 import { drawBoundaries } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
+import CommentComponent from 'components/Shared/CommentComponent';
 import Documents from 'components/Shared/Documents';
+import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
 import { getRandomColor } from 'components/Shared/functions/ui';
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';
-import DealComments from 'components/Transact/components/DealComments';
 import DealDialogHeader from 'components/Transact/components/DealDialog/DealDialogHeader';
 import Drawer from 'components/Transact/components/Drawer';
 import { TransactContext } from 'components/Transact/TransactContext';
@@ -59,7 +60,6 @@ import ExistingDeal from './ExistingDeal';
 import AssociatedFlowDealDetails from '../AssociatedFlowDealDetails';
 
 import './dialog.css';
-import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
 
 const THREE = 3;
 const FIVE = 5;
@@ -1848,11 +1848,13 @@ function AddDealDialog(props) {
 								</div>
 							)}
 							{['Deal', 'Map'].includes(stateApp.transactBarView) && (
-								<div style={{ marginTop: 2 }}>
-									<DealComments
+								<div style={{ marginTop: 2, height: '40vh', width: '25vw' }}>
+									<CommentComponent
 										setNewCommentId={setNewCommentId}
 										targetLabel="deal"
 										targetSourceId={stateApp.activeDeal?.cardId}
+										activityLog={stateApp?.activeDeal?.activity}
+										showCommentType
 									/>
 								</div>
 							)}

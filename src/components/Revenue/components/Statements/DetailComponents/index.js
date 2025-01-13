@@ -175,12 +175,15 @@ const StyledTabs = withStyles({
 	},
 })(Tabs);
 
+const THEME_SPACING = 4;
+const CHECK_TAB = 2;
+
 const StyledTab = withStyles(theme => ({
 	root: {
 		textTransform: 'uppercase',
 		minWidth: 72,
 		fontWeight: theme.typography.fontWeightRegular,
-		marginRight: theme.spacing(4),
+		marginRight: theme.spacing(THEME_SPACING),
 		fontFamily: [
 			'-apple-system',
 			'BlinkMacSystemFont',
@@ -226,6 +229,16 @@ export default function DetailComponents(props) {
 	const history = useHistory();
 	const previousRoute = history.pathHistory[1];
 	const isLineItem = history.location.pathname.includes('/line-item');
+
+	function getIdFromPath() {
+		let pathname = history.location.pathname;
+		if (pathname.slice(-1) === '/') {
+			pathname = pathname.substring(0, pathname.length - 1);
+		}
+
+		return pathname.replace('/line-item', '').split('/')[pathname.replace('/line-item', '').split('/').length - 1];
+	}
+
 	const checkId = getIdFromPath();
 
 	const classes = useStyles({ ...props, collapse });
@@ -254,15 +267,6 @@ export default function DetailComponents(props) {
 		setOpenDeleteConfirmDialog(false);
 		setAnchorEl(false);
 	};
-
-	function getIdFromPath() {
-		let pathname = history.location.pathname;
-		if (pathname.slice(-1) === '/') {
-			pathname = pathname.substring(0, pathname.length - 1);
-		}
-
-		return pathname.replace('/line-item', '').split('/')[pathname.replace('/line-item', '').split('/').length - 1];
-	}
 
 	const handleDeleteAccept = () => {
 		// Check Document Logic goes here
@@ -309,21 +313,24 @@ export default function DetailComponents(props) {
 		};
 	}, []);
 
+	const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
+
 	const handleScroll = e => {
 		if (!isButtonScroll) {
 			const { scrollTop } = e.target;
-			if (scrollTop <= 270 && tab !== 0) {
+			const HEADER_SCROLL = 270;
+			const SUMMARY_SCROLL = 470;
+
+			if (scrollTop <= HEADER_SCROLL && tab !== 0) {
 				setTab(0);
-			} else if (scrollTop > 270 && scrollTop <= 470 && tab !== 1) {
+			} else if (scrollTop > HEADER_SCROLL && scrollTop <= SUMMARY_SCROLL && tab !== 1) {
 				setTab(1);
-			} else if (scrollTop > 470 && tab !== 2) {
-				setTab(2);
+			} else if (scrollTop > SUMMARY_SCROLL && tab !== CHECK_TAB) {
+				setTab(CHECK_TAB);
 			}
 		}
 		handleEndScroll();
 	};
-
-	const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
 
 	const handleMenuClick = event => setAnchorEl(event.currentTarget);
 
@@ -439,7 +446,7 @@ export default function DetailComponents(props) {
 											<SummarySection checkId={checkId} />
 										</div>
 										<div style={{ backgroundColor: '#f3f3f3', height: 24 }} />
-										<div className={classes.table} ref={tab === 2 ? selectedTabRef : null}>
+										<div className={classes.table} ref={tab === CHECK_TAB ? selectedTabRef : null}>
 											<CheckDetailsSection checkId={checkId} />
 										</div>
 									</div>
@@ -469,6 +476,7 @@ export default function DetailComponents(props) {
 										isApproval={true}
 										ownerTitle="Approver"
 										ownerPlaceHolder="Assign Approver"
+										showCommentType
 									/>
 								</div>
 							)}
