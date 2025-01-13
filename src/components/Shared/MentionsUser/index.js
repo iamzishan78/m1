@@ -101,12 +101,12 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
             mentionInput.style.width = 'calc(100% - 25px) important'; // Remove outline
             mentionInput.style.lineHeight = "24px"; // Remove outline
             const previousDiv = mentionInput.previousElementSibling;
-
             // Apply scroll functionality and hide scrollbar
             if (previousDiv) {
                 previousDiv.style.overflow = "hidden";
-                previousDiv.style.width = 'calc(100% - 25px) !important'; // Remove outline
-                previousDiv.style.border = 'none';
+                previousDiv.style.width = "calc(100% - 25px) !important"; // Remove outline
+                previousDiv.style.border = "none";
+                previousDiv.style.setProperty("line-height", "24px", "important");
             }
         }
     };
@@ -125,6 +125,7 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
                 // Apply scroll functionality and hide scrollbar
                 if (previousDiv) {
                     previousDiv.style.overflow = "hidden";
+                    previousDiv.style.setProperty("line-height", "20px", "important");
                 }
             }
         }
