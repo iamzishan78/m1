@@ -4,6 +4,8 @@ import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, 
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
 
+import PropTypes from 'prop-types';
+
 import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
 import MRTTable from 'components/MRTTable';
 
@@ -11,8 +13,7 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 
 import { useStyles as customStyles } from '../style';
 
-// Components
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		padding: '10px 25px',
 	},
@@ -83,7 +84,6 @@ export default function LagalDescription({ uniObj, agreementId }) {
 			},
 			customValue: { parentRecord: agreementId },
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[agreementId]
 	);
 
@@ -96,7 +96,7 @@ export default function LagalDescription({ uniObj, agreementId }) {
 							<ExpandMoreIcon fontSize="large" />
 						</IconButton>
 					}
-					onClick={e => {}}
+					onClick={() => {}}
 				>
 					<Grid container direction="row" justify="space-between" alignItems="center">
 						<Grid item xs={6} className={classes.accordionHeading}>
@@ -126,7 +126,7 @@ export default function LagalDescription({ uniObj, agreementId }) {
 											tabLabels: ['Agreement Wells', 'Potential Wells'],
 											customProps: {
 												customLayer: uniObj,
-												shapeType: 'Unit',
+												shapeType: 'Agreement',
 											},
 										}}
 									/>
@@ -139,3 +139,8 @@ export default function LagalDescription({ uniObj, agreementId }) {
 		</div>
 	);
 }
+
+LagalDescription.propTypes = {
+	uniObj: PropTypes.object,
+	agreementId: PropTypes.string.isRequired,
+};
