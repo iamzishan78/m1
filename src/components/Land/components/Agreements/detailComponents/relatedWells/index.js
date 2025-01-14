@@ -66,7 +66,7 @@ const useStyles = makeStyles(() => ({
 export default function LagalDescription({ uniObj, agreementId }) {
 	const classes = useStyles();
 	const customClasses = customStyles();
-	const tableState = tableController('RelatedWellsTable').useState(['data']).stateValues;
+	const { stateValues } = tableController('RelatedWellsTable').useState(['data', 'isLoading']);
 
 	const [totalWels, setTotalWells] = useState(0);
 
@@ -90,12 +90,12 @@ export default function LagalDescription({ uniObj, agreementId }) {
 	);
 
 	useEffect(() => {
-		if (!tableState?.data) {
+		if (!stateValues.data || stateValues.isLoading) {
 			return;
 		}
 
-		setTotalWells(tableState?.data?.total);
-	}, [tableState?.data?.total]);
+		setTotalWells(stateValues.data.total);
+	}, [stateValues.data, stateValues.isLoading]);
 
 	return (
 		<div className={classes.root}>
