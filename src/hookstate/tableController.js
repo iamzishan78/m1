@@ -405,6 +405,7 @@ const tableESStateControllerHandler = state => ({
 		// Set default state referneces
 		stateToUpdate = {
 			...stateToUpdate,
+			initialGridView: gridView,
 			defaultTableSchema: _TableSchema,
 			defaultColumnsOrdering: defaultColumnsOrdering,
 			defaultColumnPinning: defaultColumnsPinning,
@@ -744,13 +745,17 @@ const tableESStateControllerHandler = state => ({
 	},
 
 	clearFilters: () => {
+		const tableKey = state.tableKey.get();
 		const filtersState = state.filters?.get({ noproxy: true });
 
-		if (!filtersState?.length === 0) {
+		if (filtersState?.length === 0) {
 			return;
 		}
 
-		state.filters?.set(filtersState.filter(filter => filter.isMapViewFilter));
+		filtersState.forEach(filter => {
+			tableController(tableKey).clearFilter(filter?.field);
+			tableController(tableKey).setFilterMode(filter?.field?.replace('.keyword', ''), 'singleselect', false);
+		});
 	},
 
 	syncFilters: filters => {
@@ -817,8 +822,12 @@ const tableESStateControllerHandler = state => ({
 	},
 
 	setFilters: filters => {
-		const filtersState = state.filters?.get({ noproxy: true });
-		state.filters.set([...filters, ...filtersState.filter(filter => filter?.isMapViewFilter)]);
+		const tableKey = state.tableKey.get();
+		filters.forEach(filter => {
+			const searchType = Array.isArray(filter?.value) ? 'multiselect' : 'singleselect';
+			tableController(tableKey).setFilterMode(filter?.field?.replace('.keyword', ''), filter?.searchType || searchType);
+			tableController(tableKey).setFilter(filter);
+		});
 	},
 
 	setIncludeInactive: isIncludeInactive => {

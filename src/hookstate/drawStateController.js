@@ -384,19 +384,14 @@ const drawStateControllerHandler = state => {
 		feature.id = customLayer._id;
 		feature.properties.id = customLayer._id;
 		feature.layer = { id: customLayer.layer };
-		let key;
-		if (feature?.properties?.sdType === 'parcel') {
-			key = 'selectedParcel';
-		} else {
-			key = 'selectedShape';
-		}
+
 		feature = { ...feature.properties, feature };
 
 		findBoundsMap([feature], window.mapRef);
 		drawBoundary(feature);
 		actionClose(dispatch);
 		popupController.updateState({
-			[key]: feature,
+			selectedShape: feature,
 			expandedCard: true,
 			popupOpen: false,
 		});

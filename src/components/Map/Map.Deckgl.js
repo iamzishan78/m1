@@ -38,7 +38,7 @@ import { navController } from 'hookstate/navStateController';
 import { popupController } from 'hookstate/popupStateController';
 
 import { baseTenantsMaps } from 'utils/data';
-import { convertToTitleCase } from 'utils/helper';
+import { convertToTitleCase, formatLayerForMap } from 'utils/helper';
 
 import { layerRefs } from 'hookstate';
 
@@ -376,7 +376,7 @@ function Map({
 	};
 
 	async function getCustomLayer(paramId) {
-		const keys = { parcels: 'selectedParcel', ...layersWithSelectedShapeKey(), wells: 'selectedWell' };
+		const keys = { ...layersWithSelectedShapeKey(), wells: 'selectedWell' };
 		const { data: layer } = await client.query({
 			query: CUSTOMLAYER,
 			variables: {
@@ -401,13 +401,7 @@ function Map({
 				}
 			}
 
-			let jsonLayer = JSON.parse(layer.customLayer.shape);
-			if (layer.customLayer.shapeJson) {
-				jsonLayer = copy(layer.customLayer.shapeJson);
-			}
-
-			jsonLayer.layer = { id: layer.customLayer.layer };
-			jsonLayer.id = layer.customLayer._id;
+			const { jsonLayer, feature } = formatLayerForMap(layer);
 
 			const interval = setInterval(() => {
 				if (window.mapRef) {
@@ -416,12 +410,7 @@ function Map({
 
 					layerController.updateState({ clickedFeature: { object: { id: paramId } } });
 					popupController.updateState({
-						[keys[type]]: {
-							...jsonLayer.properties,
-							feature: jsonLayer,
-							id: layer.customLayer._id,
-						},
-						...(type === 'parcels' ? { selectedShape: null } : {}),
+						[keys[type]]: feature,
 						popupOpen: false,
 						expandedCard: true,
 						customLayerId: layer.customLayer._id,

@@ -57,7 +57,7 @@ const popupStateControllerHandler = state => ({
 				.addTo(window.mapRef);
 		}
 	},
-	fitParcelBounds: () => findBoundsMap([popupState?.selectedParcel?.get({ noproxy: true })?.feature], window.mapRef),
+	fitParcelBounds: () => findBoundsMap([popupState?.selectedShape?.get({ noproxy: true })?.feature], window.mapRef),
 	fitWellBounds: wellFeature => {
 		const selectedWell = wellFeature || popupState?.selectedWell?.get({ noproxy: true });
 

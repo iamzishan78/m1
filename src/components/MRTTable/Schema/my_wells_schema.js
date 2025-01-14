@@ -52,7 +52,7 @@ const MyWellsMeta = {
 			name: 'wellData.wellName.keyword',
 			id: 'wellData.wellName',
 			header: 'Well Name',
-			Cell: ({ row }) => (
+			Cell: ({ renderedCellValue, row }) => (
 				<div
 					style={{
 						display: 'flex',
@@ -60,7 +60,7 @@ const MyWellsMeta = {
 					}}
 				>
 					<ColumnWithLink
-						value={row?.original?.wellData?.wellName}
+						value={renderedCellValue}
 						link={`/land/well/details/${row?.original?.wellData?.Id}?mongoWellId=${row?.original?._id}`}
 						onClickForTestCase={() => {
 							globalStateController.handleMyWellTestCase(row?.original?.wellData?.Id, row?.original?._id);

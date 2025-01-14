@@ -242,7 +242,7 @@ function ESAutoCompleteFilter({
 			}}
 			loading={loading}
 			filterOptions={searchMapping[searchMode].filterOptions}
-			value={filterValue ?? _value}
+			value={multiple ? (typeof filterValue === 'string' ? [filterValue] : filterValue) : (filterValue ?? _value)}
 			renderInput={params => (
 				<TextField
 					{...params}

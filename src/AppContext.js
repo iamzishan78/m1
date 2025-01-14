@@ -35,7 +35,6 @@ const AppProvider = props => {
 		selectedWell: null, // move to a selected object context (maybe flyto)
 		selectedWellId: null, // move to a selected object context (maybe flyto)
 		selectedAbstracts: [], // move to a selected object context (maybe flyto)
-		selectedParcel: null, // move to a selected object context (maybe flyto)
 
 		// States for permits
 		selectedPermit: null,
@@ -245,9 +244,6 @@ const AppProvider = props => {
 	useEffect(() => {
 		globalStateController.updateState({ user: stateApp.user });
 	}, [stateApp.user]);
-	useEffect(() => {
-		popupController.updateState({ selectedParcel: stateApp.selectedParcel });
-	}, [stateApp.selectedParcel]);
 
 	const { globalState } = globalStateController.useState(['universalLoader'], 'globalState');
 
