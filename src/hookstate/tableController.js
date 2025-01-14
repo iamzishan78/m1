@@ -11,9 +11,10 @@ import { metaDataColumnStateController } from 'components/MRTTable/Common/MetaDa
 import ReactSelectField from 'components/MRTTable/Common/MetaData/ReactSelectField';
 import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { columnFilterModesFnRefs } from 'components/MRTTable/utils/filterModeMenu';
-import { formatGridViewToMRT } from 'components/MRTTable/utils/helper';
+import { formatGridViewToMRT, removeSpaces } from 'components/MRTTable/utils/helper';
 import { copy, deepEqual, formatDate } from 'components/Shared/functions';
 import { defaultHandleDefaultView } from 'components/Shared/GridView';
 import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
@@ -128,6 +129,61 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 	return newTableSchema;
 }
 
+// Funtion for fetching dynamic grids schema
+async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) {
+	// Fetch dynamic grid schema
+	const result = await client.query({
+		variables: {},
+		query: fetchDynamicSchema.query,
+	});
+
+	// Fetch dynamic grid columns
+	const columns =
+		result?.data?.getAllCustomAssetInfo?.res?.find(model => model.tableName === fetchDynamicSchema.tableName)
+			?.modelKeys || [];
+
+	// Create dynamic grid schema
+	const dynamicTableSchema = columns.map(item => {
+		return {
+			...CommonSchema.COMMON_COLUMN,
+			name: item.keyType === 'String' ? `${item.mappingKey}.keyword` : item.mappingKey,
+			accessorKey: item.mappingKey,
+			id: item.mappingKey,
+			header: item?.label,
+			type: item?.keyType,
+			size: 350,
+			isPinned: !!item?.isControlColumn,
+			Cell: ({ renderedCellValue, row }) => {
+				if (!!item?.isControlColumn) {
+					const model = removeSpaces(fetchDynamicSchema.tableName);
+					return (
+						<ColumnWithLink
+							value={renderedCellValue}
+							link={`/${model}/details/${row.getValue('_id')}`}
+							onClick={e => {
+								e.stopPropagation();
+							}}
+						/>
+					);
+				} else {
+					return <>{renderedCellValue}</>;
+				}
+			},
+		};
+	});
+
+	const _Schema = [
+		...TableSchema,
+		...dynamicTableSchema,
+		CommonSchema.CREATED_BY,
+		CommonSchema.CREATED_DATE,
+		CommonSchema.LAST_UPDATED_BY,
+		CommonSchema.LAST_UPDATED_DATE,
+	];
+
+	return _Schema;
+}
+
 async function fetchGridViews(client, module, tableKey, gridViewOverride) {
 	// Retrieve the current user's information from a global state controller.
 	const user = globalStateController.getValue('user');
@@ -191,6 +247,8 @@ const tableESStateControllerHandler = state => ({
 			refetchQueries = [],
 			globalFilter,
 			excludeFields,
+			fetchDynamicSchema,
+			assetName,
 			...rest
 		},
 		client
@@ -219,6 +277,10 @@ const tableESStateControllerHandler = state => ({
 					);
 				},
 			});
+		}
+
+		if (fetchDynamicSchema) {
+			_Schema = await fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, tableKey);
 		}
 
 		if (fetchMetaData) {
@@ -331,6 +393,8 @@ const tableESStateControllerHandler = state => ({
 		let stateToUpdate = {
 			...rest,
 			initialized: true,
+			fetchDynamicSchema,
+			assetName,
 			tableKey,
 			pageSize,
 			isClientSide,

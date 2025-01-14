@@ -79,3 +79,9 @@ export const getArrayValue = (array, valueKey, id, idKey) => {
 		}
 	}
 };
+
+// Helper for replacing spaces with underscore
+export const removeSpacesAndLowercase = key => key?.replace(/\s+/g, '_')?.toLowerCase();
+
+// Helper for removing spaces
+export const removeSpaces = key => key?.replace(/\s+/g, '').toLowerCase();

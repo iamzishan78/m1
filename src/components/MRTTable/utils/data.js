@@ -1,3 +1,5 @@
+import React from 'react';
+
 const mrtFilterOptions = [
 	{
 		option: 'fuzzy',
@@ -192,4 +194,19 @@ export const currencyKeys = [
 	'shape.shapeJson.properties.uUnitPricing.keyword',
 	'shape.shapeJson.properties.uUnitPricingNMA.keyword',
 	'shape.shapeJson.properties.uMaxUnitPricingNMA.keyword',
+];
+
+export const entityCreationOptions = [
+	{ label: 'Draw on Map', value: 'onMap' },
+	{ label: 'Add with RightDialog', value: 'RightDialog' },
+];
+
+export const entityKeyTypes = [
+	{ label: 'String', value: 'String' },
+	{ label: 'JSON', value: 'JSON' },
+	{ label: 'Number', value: 'Number' },
+	{ label: 'Date', value: 'Date' },
+	{ label: 'User', value: 'User' },
+	// { label: 'Tags', value: 'Tags' },
+	// { label: 'Comments', value: 'Comments' }, // In future we need to add these association support
 ];

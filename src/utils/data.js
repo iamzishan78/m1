@@ -659,6 +659,14 @@ export const AdminManagementRoutes = {
 		isDefault: true,
 		isExcluded: true,
 	},
+	ASSET_MANAGEMENT: {
+		featureFlag: 'AlWAYSSHOW',
+		title: 'Asset Management',
+		link: '/admin/assetmanagement',
+		component: 'AssetManagement',
+		noCheck: true,
+		showSettingString: false,
+	},
 };
 
 export const dataManagementRoutes = {

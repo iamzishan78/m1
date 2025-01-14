@@ -24,7 +24,7 @@ import TagDialog from './TagDialog';
 
 function AllDialogs(props) {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
-	const { type, ...rest } = stateValues.dialog || {};
+	const { type, assetName, ...rest } = stateValues.dialog || {};
 	const tableKey = rest?.tableKey || props.tableKey;
 
 	const {
@@ -67,6 +67,7 @@ function AllDialogs(props) {
 		gridGenericRemove({
 			variables: {
 				tableKey,
+				assetName,
 				deletedData: dataToDelete,
 				userId: user?.mongoId,
 				ESVariables: rest?.ESVariables,
