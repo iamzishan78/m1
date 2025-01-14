@@ -81,6 +81,7 @@ const FileTree = ({ layerMap, panelItems }) => {
 							layerName: { $set: current.layerName },
 							name: { $set: current.name },
 							position: { $set: current.position },
+							_id: { $set: current._id },
 						};
 					}
 				}

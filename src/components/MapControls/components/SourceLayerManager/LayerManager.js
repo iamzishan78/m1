@@ -31,7 +31,7 @@ import PropTypes from 'prop-types';
 import EditableTextField from 'components/Shared/components/Fields/EditableTextField';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import { copy, deepEqual, deepEqualObjects, truncate } from 'components/Shared/functions';
+import { copy, deepEqual, truncate } from 'components/Shared/functions';
 import UploadIcon from 'components/Shared/svgIcons/uploadIcon';
 
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
@@ -183,7 +183,7 @@ export default function AddLayer(props) {
 	let history = useHistory();
 	const layer_limit = 50;
 
-	const [stateApp] = useContext(AppContext);
+	const [stateApp, setStateApp] = useContext(AppContext);
 	const [getAllLayerSettingsByUser, { data: layerStates, loading: layerSettingsLoading }] =
 		useLazyQuery(ALLLAYERSETTINGSBYUSER);
 	const [getLayerById] = useLazyQuery(GETLAYERBYID);
@@ -232,7 +232,7 @@ export default function AddLayer(props) {
 	}, []);
 
 	const updateStateLayers = currentLayers => {
-		stateApp.layers = currentLayers;
+		setStateApp({ ...stateApp, layers: currentLayers });
 		globalStateController.updateState({ layers: currentLayers });
 	};
 
@@ -270,57 +270,46 @@ export default function AddLayer(props) {
 
 	useOnClickOutside({ current: anchorEl }, handleMenuClose);
 
-	const handleApplyChange = currentLayers => {
-		if (!deepEqual(currentLayers, globalStateValues.layers)) {
-			const layersToUpdate = [];
-			const layersSettingsToUpdate = [];
-			for (let i = 0; i < currentLayers.length; i++) {
-				if (!deepEqualObjects(currentLayers[i], globalStateValues.layers[i])) {
-					layersSettingsToUpdate.push({
-						_id: currentLayers[i]._id,
-						user: stateApp.user._id,
-						layer: currentLayers[i].layerId,
-						layerSettings: currentLayers[i].layerSettings,
-						layerPaintProps: currentLayers[i].layerPaintProps,
-					});
-					layersToUpdate.push({
-						_id: currentLayers[i].layerId,
-						layerName: currentLayers[i].layerName,
-						groupName: currentLayers[i].groupName,
-					});
+	const handleApplyChange = (currentLayer, currentLayers) => {
+		const layersToUpdate = [];
+		const layersSettingsToUpdate = [];
+		layersSettingsToUpdate.push({
+			_id: currentLayer._id,
+			user: stateApp.user._id,
+			layer: currentLayer.layerId,
+			layerSettings: currentLayer.layerSettings,
+			layerPaintProps: currentLayer.layerPaintProps,
+		});
+		layersToUpdate.push({
+			_id: currentLayer.layerId,
+			layerName: currentLayer.layerName,
+			groupName: currentLayer.groupName,
+		});
+
+		// //// saving to stateApp
+		updateStateLayers([...currentLayers]);
+
+		//// saving to mongo
+		if (layersToUpdate.length > 0) {
+			updateManyLayer({
+				variables: {
+					layers: layersToUpdate,
+				},
+			});
+
+			updateManyUserLayerSettings({
+				variables: {
+					manySettings: layersSettingsToUpdate,
+				},
+			}).then(({ data }) => {
+				if (data?.updateManyUserLayerSettings?.res?.length && !layersSettingsToUpdate._id) {
+					const res = data.updateManyUserLayerSettings.res.pop();
+					const updatedLayer = currentLayers.find(l => l.layerId === res.layer);
+					updatedLayer._id = res._id;
+					updateStateLayers([...currentLayers]);
 				}
-			}
-
-			// //// saving to stateApp
-			updateStateLayers([...currentLayers]);
-
-			//// saving to mongo
-			if (layersToUpdate.length > 0) {
-				updateManyLayer({
-					variables: {
-						layers: layersToUpdate,
-					},
-				});
-
-				updateManyUserLayerSettings({
-					variables: {
-						manySettings: layersSettingsToUpdate,
-					},
-				}).then(({ data }) => {
-					if (data?.updateManyUserLayerSettings?.res?.length && !layersSettingsToUpdate._id) {
-						const res = data.updateManyUserLayerSettings.res.pop();
-						const updatedLayer = currentLayers.find(l => l.layerId === res.layer);
-						updatedLayer._id = res._id;
-
-						globalStateController.updateState({ layers: currentLayers });
-					}
-				});
-			}
+			});
 		}
-	};
-
-	const handleCurrentLayersChange = updatedLayers => {
-		handleApplyChange(updatedLayers);
 	};
 
 	const handleLayerSettingChange = (layers, changeValue) => {
@@ -340,8 +329,9 @@ export default function AddLayer(props) {
 					layerController.handleDeckLayer({ ...layer, layerSettings: { ...layer.layerSettings, showable: value } });
 				}
 			});
-
-			handleCurrentLayersChange(updatedLayers);
+			const updatedIndex = Object.keys(updatefn)?.pop(); // Get the index (key) from the updatefn object
+			const updatedLayer = updatedLayers[updatedIndex];
+			handleApplyChange(updatedLayer, updatedLayers);
 		} else {
 			dispatch(showInfoMessage('Cannot add additional layer. Number of active layers cannot exceed ' + layer_limit));
 		}
@@ -358,8 +348,8 @@ export default function AddLayer(props) {
 	}, [currentLayers]);
 
 	const handleCheckAllLayers = (layers, value, layerType) => {
+		let updatefn = {};
 		const updatedLayers = layers.map(layer => {
-			const updatefn = {};
 			if (layer.type === 'group') {
 				layer.layers.forEach(l => {
 					const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === l.identifier);
@@ -381,8 +371,9 @@ export default function AddLayer(props) {
 		if (layerType === 'M1') {
 			setSelectAllMinerallayers(value);
 		}
-
-		handleCurrentLayersChange(currentLayers);
+		const updatedIndex = Object.keys(updatefn)?.pop(); // Get the index (key) from the updatefn object
+		const updatedLayer = result[updatedIndex];
+		handleApplyChange(updatedLayer, currentLayers);
 	};
 
 	const changeShowAble = async layer => {
@@ -405,13 +396,31 @@ export default function AddLayer(props) {
 		handleLayerSettingChange([layer]);
 	};
 
-	const changeLayerName = (layer, name) => {
+	const changeLayerName = async (layer, name) => {
 		const field = layer.type === 'group' ? 'groupName' : 'layerName';
 		layerController.updateProjectedLayers({ layer, value: name, field });
-		const updatefn = layerController.generateUpdateFn([layer], name, currentLayers, field);
-		const updatedLayers = update(currentLayers, updatefn);
+		const layerIndex = currentLayers.findIndex(clayer => clayer.layerId === layer.layerId);
+		let layersToUpdate = currentLayers;
+		let layerUpdated;
+		if (layerIndex === -1) {
+			layerUpdated = await getLayerById({
+				variables: {
+					layerId: layer.layerId,
+					userId: stateApp.user._id,
+				},
+			});
+		}
+		if (layerUpdated?.data?.layerById && layerIndex === -1) {
+			setCurrentLayers(prevLayers => {
+				layersToUpdate = sortBy([...prevLayers, layerUpdated.data.layerById], 'position');
+			});
+		}
+		const updatefn = layerController.generateUpdateFn([layer], name, layersToUpdate, field);
+		const updatedLayers = update(layersToUpdate, updatefn);
 		setCurrentLayers(updatedLayers);
-		handleCurrentLayersChange(updatedLayers);
+		const updatedIndex = Object.keys(updatefn)?.pop(); // Get the index (key) from the updatefn object
+		const updatedLayer = updatedLayers[updatedIndex];
+		handleApplyChange(updatedLayer, updatedLayers);
 	};
 
 	const checkIfDeleteAllow = layer => {

@@ -4,8 +4,7 @@ import { Grid, IconButton, Divider, FormControlLabel, Switch, Tooltip, ClickAway
 import { Close as CloseIcon } from '@material-ui/icons';
 import GridOnIcon from '@material-ui/icons/GridOn';
 
-import { Typography } from '@mui/material';
-import { Slider, TextField, Box } from '@mui/material';
+import { Typography, Slider, TextField, Box } from '@mui/material';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import _ from 'lodash';
@@ -97,7 +96,6 @@ function LayerStyling() {
 				},
 			});
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -106,7 +104,6 @@ function LayerStyling() {
 
 	useEffect(() => {
 		const hookStateAppLayers = globalStateController.getValue('layers');
-
 		if (
 			(hookStateAppLayers &&
 				selectedLayer &&
@@ -126,6 +123,7 @@ function LayerStyling() {
 			const index = currentLayers.findIndex(l => l.layerId === currentLayer.layerId);
 			currentLayers[index] = currentLayer;
 
+			const TWOFIFTY = 250;
 			const debouncedUpdate = _.debounce(() => {
 				globalStateController.updateState({ layers: currentLayers });
 				layerController.handleDeckLayer(currentLayer, true);
@@ -149,7 +147,7 @@ function LayerStyling() {
 					}
 				});
 				layerController.resetBounds(selectedLayer?.identifier);
-			}, 250); // Adjust the debounce delay as needed
+			}, TWOFIFTY); // Adjust the debounce delay as needed
 
 			debouncedUpdate();
 
@@ -157,14 +155,12 @@ function LayerStyling() {
 				debouncedUpdate.cancel(); // Clean up on unmount or dependencies change
 			};
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		return null;
 	}, [
 		layerClickability,
 		layerLabelVisibility,
 		enablefillColor,
 		enableStrokeColor,
-		attributeBasedColors,
-		attributeBasedStrokeColors,
 		selectedValue,
 		selectedStrokeValue,
 		strokeWidth,
@@ -179,7 +175,6 @@ function LayerStyling() {
 			selectedLayer.layerShapeName = selectedLayer.layerShapeName || selectedLayer.layerCategory;
 			layerFeaturesCount({ variables: { fileId: selectedLayer.file, layerShapeName: selectedLayer.layerShapeName } });
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [mapControlStates.selectedLayer.file, layerFeaturesCount]);
 
 	const handleClose = () => {
@@ -292,7 +287,7 @@ function LayerStyling() {
 									control={
 										<Switch
 											checked={layerClickability}
-											onChange={e => setLayerClickability(!layerClickability)}
+											onChange={() => setLayerClickability(!layerClickability)}
 											size="small"
 											data-testid="layer-pickability-toggle"
 										/>
@@ -316,7 +311,7 @@ function LayerStyling() {
 										control={
 											<Switch
 												checked={enablefillColor}
-												onChange={e => setEnableFillColor(!enablefillColor)}
+												onChange={() => setEnableFillColor(!enablefillColor)}
 												size="small"
 												data-testid="layer-fill-toggle"
 											/>
@@ -355,7 +350,7 @@ function LayerStyling() {
 											control={
 												<Switch
 													checked={enableStrokeColor}
-													onChange={e => setEnableStrokeColor(!enableStrokeColor)}
+													onChange={() => setEnableStrokeColor(!enableStrokeColor)}
 													size="small"
 													data-testid="layer-stroke-toggle"
 												/>
