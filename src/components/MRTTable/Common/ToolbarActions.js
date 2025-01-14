@@ -4,6 +4,7 @@ import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import { IconButton, Tooltip, ToggleButton } from '@mui/material';
+import { Typography } from '@material-ui/core';
 
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -39,7 +40,7 @@ function ToolbarActions({ table, tableKey, children }) {
 
 	useEffect(() => {
 		tableController(tableKey).setMrtTableRef(table);
-	}, []);
+	}, [tableKey]);
 
 	const handleExport = () => {
 		tableGlobalController.updateState({
@@ -93,15 +94,9 @@ function ToolbarActions({ table, tableKey, children }) {
 					selectedRows?.length > 0
 						? selectedRows.map(item => {
 								let val;
-								if (originalKey) {
-									val = _.get(item, originalKey);
-								}
-								if (func) {
-									val = func(val);
-								}
-								if (value) {
-									val = value;
-								}
+								if (originalKey) val = _.get(item, originalKey);
+								if (func) val = func(val);
+								if (value) val = value;
 								return val;
 							})
 						: null;
@@ -118,6 +113,8 @@ function ToolbarActions({ table, tableKey, children }) {
 				userId: getUser?._id,
 				ESVariables,
 				isSelectAll: !!tableStateValues?.isAllRowsSelected || (tableStateValues?.isSubSetSelect ? true : false),
+				assetName: tableStateValues?.assetName,
+				associatedAssetName: tableStateValues?.associatedAssetName,
 			},
 		});
 
@@ -144,6 +141,9 @@ function ToolbarActions({ table, tableKey, children }) {
 					alignItems: 'center',
 				}}
 			>
+				<Typography variant="h5" style={{ fontWeight: 'bold', marginRight: '5px' }}>
+					{tableStateValues.tableHeading}
+				</Typography>
 				<TabHeader labels={tableStateValues.tabLabels} />
 				{tableStateValues.gridViewSettings && !isSomethingSelected && (
 					<GridView tableKey={tableKey} {...tableStateValues.gridViewSettings} />

@@ -1005,7 +1005,6 @@ export const CommentText = ({ eachComment, users }) => {
 
 					return <p className={classes.commentWords}>{splittedWord}</p>;
 				} else {
-					return <p className={classes.commentWords}>{word} </p>;
 				}
 			})}
 		</div>

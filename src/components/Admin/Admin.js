@@ -6,6 +6,7 @@ import AdminOperation from 'components/Admin/AdminOperation';
 import BulkDataEditing from 'components/Admin/components/BulkDataEditing';
 import QuickActionPanel from 'components/Land/components/QuickActionPanel';
 import AdminSettings from 'components/Shared/AdminSettings';
+import AssetManagement from 'components/Admin/components/AssetManagement';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
@@ -24,10 +25,19 @@ const Components = {
 	AdminOperation,
 	BulkDataEditing,
 	BulkDataEditingDetail,
+	AssetManagement,
 };
 
 function isM1neralAddress(email) {
 	return email.endsWith('@m1neral.com');
+}
+
+function isTestEnv() {
+	let tenantName = window.sessionStorage.getItem('tenantName');
+
+	let validTenants = ['frontier', 'm1development', 'localhost'];
+	let isValidTenant = validTenants.map(tenant => tenant.toLowerCase()).includes(tenantName.toLowerCase());
+	return isValidTenant;
 }
 
 export default function Admin() {
@@ -48,7 +58,6 @@ export default function Admin() {
 		if (option) {
 			dispatch(setActiveModule(option));
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [location.pathname]);
 
 	const handlePanelStateChange = state => {
@@ -69,6 +78,10 @@ export default function Admin() {
 		const allPaths = JSON.parse(JSON.stringify(AdminManagementRoutes));
 		if (!isM1neralAddress(stateApp.user.email)) {
 			delete allPaths['ADMINOPERATION'];
+		}
+
+		if (!isTestEnv()) {
+			delete allPaths['ASSET_MANAGEMENT'];
 		}
 		const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.CONTACTSUBMENU);
 		// const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.ANALYTICSSUBMENU);
@@ -106,7 +119,7 @@ export default function Admin() {
 				actions={sidePanelOptions}
 			>
 				{Object.values(allowedPaths).map(option => (
-					<Switch>
+					<Switch key={option.title}>
 						<Route exact path={option.link} component={Components[option.component]} />
 					</Switch>
 				))}

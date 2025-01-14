@@ -16,6 +16,9 @@ import { formatLayerForMap } from 'utils/helper';
 const UnitDetailCard = React.lazy(() => import('./Unit/UnitDetailCard'));
 const AgreementDetailCard = React.lazy(() => import('./Agreement/AgreementDetailCard'));
 const ParcelsDetailCard = React.lazy(() => import('components/ParcelsDetailCard/ParcelsDetailCard'));
+const GenericDetailCard = React.lazy(
+	() => import('components/Shared/components/common/DetailCard/Cards/GenericDetail')
+);
 
 const useStyles = makeStyles(() => ({
 	card: {
@@ -96,6 +99,8 @@ export default function ShapeCardProvider({ type }) {
 					</Card>
 				</div>
 			)}
+
+			{popupVals?.selectedShape?.isGenericAssetShape && <GenericDetailCard />}
 		</>
 	);
 }
