@@ -36,6 +36,8 @@ import { layerController } from './layerStateController';
 import { mapControlsController } from './mapControlsController';
 import { navController } from './navStateController';
 import { popupController } from './popupStateController';
+import { removeSpaces } from 'components/MRTTable/utils/helper';
+import { detailCardController } from './detailCardController';
 
 const drawStateControllerHandler = state => {
 	/* --------------------------- DrawShapes Actions --------------------------- */
@@ -384,19 +386,14 @@ const drawStateControllerHandler = state => {
 		feature.id = customLayer._id;
 		feature.properties.id = customLayer._id;
 		feature.layer = { id: customLayer.layer };
-		let key;
-		if (feature?.properties?.sdType === 'parcel') {
-			key = 'selectedParcel';
-		} else {
-			key = 'selectedShape';
-		}
+
 		feature = { ...feature.properties, feature };
 
 		findBoundsMap([feature], window.mapRef);
 		drawBoundary(feature);
 		actionClose(dispatch);
 		popupController.updateState({
-			[key]: feature,
+			selectedShape: feature,
 			expandedCard: true,
 			popupOpen: false,
 		});
@@ -758,6 +755,102 @@ const drawStateControllerHandler = state => {
 		});
 	};
 
+	const updateAssetLayerFeature = (dispatch, assetShape) => {
+		let feature = copy(assetShape.shapeJson);
+
+		feature.id = assetShape._id;
+		feature.properties.id = assetShape._id;
+		feature.layer = { id: assetShape.layer };
+		const key = 'selectedShape';
+		feature = { ...feature.properties, ...feature };
+
+		findBoundsMap([feature], window.mapRef);
+		drawBoundary(feature);
+		actionClose(dispatch);
+		popupController.updateState({
+			[key]: feature,
+			expandedCard: true,
+			popupOpen: false,
+		});
+	};
+
+	const saveAndOpenMapAssetShapeDetail = (addRecordInRunTimeModel, dispatch, history, abstractData, currentAsset) => {
+		const user = globalStateController.getValue('user');
+		const { currentFeature } = drawController.getValues(['currentFeature']);
+
+		if (!user?._id) return;
+
+		const abstractShape = getAbstractGeoSource(abstractData, currentFeature);
+		let shapeSubtitle = '';
+		const shapeName = getParcelAndShapeName(abstractShape);
+		const state = abstractShape?.properties?.State || abstractShape?.properties?.StateAbbreviation;
+
+		if (abstractShape?.properties?.County && state) {
+			shapeSubtitle = `${abstractShape?.properties?.County}, ${state}`;
+		}
+
+		let properties = {
+			shapeName,
+			assetName: currentAsset?.tableName,
+		};
+
+		const featureId = hat();
+		const layer = removeSpaces(currentAsset?.tableName);
+
+		const newShapeFeature = {
+			id: featureId,
+			type: 'Feature',
+			geometry: abstractShape.geometry,
+			properties: {
+				isGenericAssetShape: true,
+				originalProperties: abstractShape.properties,
+				shapeSubtitle,
+				shapeLabel: shapeName,
+				type: layer,
+				...properties,
+				shapeArea: calculateLandArea(abstractShape),
+				shapeCenter: calculateShapeCenter(abstractShape.geometry),
+				id: featureId,
+			},
+		};
+
+		const mapAssetShapeData = {
+			assetShape: {
+				shapeJson: newShapeFeature,
+				isGenericAssetShape: true,
+				shape: JSON.stringify(newShapeFeature),
+				layer,
+				shapeName,
+				assetName: currentAsset?.tableName,
+				user: user._id,
+			},
+		};
+
+		addRecordInRunTimeModel({
+			variables: { tableName: currentAsset?.tableName, record: mapAssetShapeData },
+		}).then(result => {
+			if (!result?.data?.addRecordInRunTimeModel?.success) {
+				dispatch(showErrorMessage(result?.data?.addRecordInRunTimeModel?.message));
+				return;
+			}
+			jobController.toggleBulkUpload();
+
+			const asset = result?.data?.addRecordInRunTimeModel?.asset;
+			detailCardController.updateState({ currentAssetRecord: asset });
+
+			const assetId = asset._id;
+			const type = asset?.assetShape?.shapeJson?.properties?.type;
+
+			if (assetId && type) {
+				let newPath = `/map/${type}/${assetId}`;
+				history.location.pathname !== newPath && history.replace(newPath);
+			}
+
+			updateAssetLayerFeature(dispatch, { ...asset.assetShape, _id: assetId });
+			layerController.resetBounds(asset.assetShape?.layer);
+		});
+	};
+
 	const updateAndOpenShapeDetail = (updateCustomLayer, dispatch, history, abstractData, layerData) => {
 		const { currentFeature } = drawController.getValues(['currentFeature']);
 
@@ -937,6 +1030,7 @@ const drawStateControllerHandler = state => {
 		updateAndOpenShapeDetail,
 		confirmShapeEditing,
 		applyFilter,
+		saveAndOpenMapAssetShapeDetail,
 		/* --- ShapeActionsPopup Actions -- */
 
 		setShowDataCard: showDataCard => state.merge({ showDataCard }),

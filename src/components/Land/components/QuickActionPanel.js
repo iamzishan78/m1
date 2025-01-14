@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
-import { IconButton } from '@material-ui/core';
-import { Divider, Grid, Typography, Drawer } from '@material-ui/core';
-import ListItemText from '@material-ui/core/ListItemText';
+import { Divider, Grid, Typography, Drawer, IconButton, ListItemText } from '@material-ui/core';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -34,7 +32,8 @@ export default function QuickActionsPanel({
 	};
 
 	useEffect(() => {
-		if (location.pathname.includes('agreement/details')) {
+		const isCustomAssetDetailPage = /^\/land\/customAsset\/[^/]+\/details/.test(location.pathname);
+		if (location.pathname.includes('agreement/details') || isCustomAssetDetailPage) {
 			handlePanelStateChange(false);
 			setSideBarPanel(true);
 		} else {

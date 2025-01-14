@@ -198,7 +198,7 @@ const useMRTTable = tableKey => {
 			columns: tableStateValues?.TableSchema,
 			data: tableStateValues?.data?.rows || [],
 			enableRowNumbers: true,
-			rowNumberDisplayMode: 'original',
+			rowNumberDisplayMode: 'static',
 			muiToolbarAlertBannerProps: tableStateValues?.isError
 				? {
 						color: 'error',
@@ -393,6 +393,11 @@ const useMRTTable = tableKey => {
 								if (columnType === 'date') {
 									value = filter.value;
 								}
+								// set value to empty if it is a blank space
+								if (['notEmpty', 'empty'].some(m => m === mode) && filter.value === ' ') {
+									value = '';
+								}
+
 								Controller.setFilter({
 									field: filter.id,
 									columnType,

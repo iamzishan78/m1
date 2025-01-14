@@ -12,18 +12,21 @@ import { metaDataColumnStateController } from 'components/MRTTable/Common/MetaDa
 import ReactSelectField from 'components/MRTTable/Common/MetaData/ReactSelectField';
 import MRTSelectCheckboxOverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
+import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { columnFilterModesFnRefs } from 'components/MRTTable/utils/filterModeMenu';
-import { formatGridViewToMRT } from 'components/MRTTable/utils/helper';
+import { formatGridViewToMRT, removeSpaces } from 'components/MRTTable/utils/helper';
 import { copy, deepEqual, formatDate } from 'components/Shared/functions';
 import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+import { GET_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { hookStateController } from 'hookstate/hookStateController';
+import { detailCardController } from './detailCardController';
 
 import { compareObjects, validateUrl } from 'utils/helper';
 
@@ -62,9 +65,10 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 
 	const metaDataTableSchema = data.map((item, index) => {
 		const key = item?.esKey.replaceAll('.keyword', '');
+
 		return {
-			...CommonSchema.STRING_COLUMN,
 			...item,
+			...CommonSchema.STRING_COLUMN,
 			name: `${key}.keyword`,
 			id: key,
 			accessorFn: row => get(row, key),
@@ -128,7 +132,98 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 	return newTableSchema;
 }
 
-async function fetchGridViews(client, module) {
+// Funtion for fetching dynamic grids schema
+async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) {
+	// Fetch dynamic grid schema
+	const result = await client.query({
+		variables: fetchDynamicSchema.variables,
+		query: GET_CUSTOM_ASSET_INFO,
+	});
+
+	// Fetch dynamic grid columns
+	const customAsset = result?.data?.getCustomAssetInfo?.asset;
+	let columns = customAsset?.modelKeys || [];
+
+	let associatedModel = {};
+	if (fetchDynamicSchema.isAssociatedModel) {
+		associatedModel = customAsset.associatedModels.find(
+			model => model.modelName === fetchDynamicSchema.associatedModel
+		);
+		columns = associatedModel?.modelKeys || [];
+	}
+
+	// Create dynamic grid schema
+	const dynamicTableSchema = columns
+		.filter(column => !!column?.isGridDisplayed)
+		.map((item, index) => {
+			let key, modelName;
+			if (fetchDynamicSchema.isAssociatedModel) {
+				key = `${fetchDynamicSchema?.associationKey || 'relatedObject'}.${item.mappingKey}`;
+				modelName = fetchDynamicSchema.associatedModel;
+			} else {
+				key = item.mappingKey;
+				modelName = fetchDynamicSchema.tableName;
+			}
+
+			if (item.keyType === 'user') {
+				key = `${key}.name`;
+			}
+
+			const model = removeSpaces(modelName);
+
+			return {
+				...CommonSchema.COMMON_COLUMN,
+				name: ['string', 'user'].includes(item.keyType) ? `${key}.keyword` : key,
+				accessorKey: key,
+				id: key,
+				header: item?.label,
+				type: item?.keyType,
+				size: 350,
+				isPinned: !!item?.isControlColumn,
+				Cell: ({ renderedCellValue, row }) => {
+					if (!!item?.isControlColumn) {
+						const id = fetchDynamicSchema.isAssociatedModel
+							? row?.original?.[fetchDynamicSchema?.associationKey]?._id
+							: row.getValue('_id');
+						return (
+							<ColumnWithLink
+								value={renderedCellValue}
+								link={`/land/customAsset/${model}/details/${id}`}
+								onClick={e => {
+									e.stopPropagation();
+									detailCardController.setBottomSelectedTab(0);
+								}}
+							/>
+						);
+					} else {
+						let value = item.keyType === 'date' ? formatDate(renderedCellValue) : renderedCellValue;
+						return <>{value}</>;
+					}
+				},
+			};
+		});
+
+	// Filter dummy columns
+	const originalTableSchema = TableSchema.filter(column => !column.isDummy);
+
+	let _Schema = [...originalTableSchema, ...dynamicTableSchema];
+
+	if (!fetchDynamicSchema.isAssociatedModel) {
+		_Schema = [
+			..._Schema,
+			CommonSchema.OWNER,
+			CommonSchema.CREATED_BY,
+			CommonSchema.CREATED_DATE,
+			CommonSchema.LAST_UPDATED_BY,
+			CommonSchema.LAST_UPDATED_DATE,
+		];
+	}
+
+	return _Schema;
+}
+
+async function fetchGridViews(client, module, tableKey, gridViewOverride) {
+	// Retrieve the current user's information from a global state controller.
 	const user = globalStateController.getValue('user');
 
 	const result = await client.query({
@@ -174,6 +269,9 @@ const tableESStateControllerHandler = state => ({
 			refetchQueries = [],
 			globalFilter,
 			excludeFields,
+			fetchDynamicSchema,
+			assetName,
+			associatedAssetName,
 			...rest
 		},
 		client
@@ -201,6 +299,10 @@ const tableESStateControllerHandler = state => ({
 					);
 				},
 			});
+		}
+
+		if (fetchDynamicSchema) {
+			_Schema = await fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema, tableKey);
 		}
 
 		if (fetchMetaData) {
@@ -307,6 +409,9 @@ const tableESStateControllerHandler = state => ({
 		let stateToUpdate = {
 			...rest,
 			initialized: true,
+			fetchDynamicSchema,
+			assetName,
+			associatedAssetName,
 			tableKey,
 			pageSize,
 			isClientSide,
@@ -381,6 +486,7 @@ const tableESStateControllerHandler = state => ({
 		// Set default state referneces
 		stateToUpdate = {
 			...stateToUpdate,
+			initialGridView: gridView,
 			defaultTableSchema: _TableSchema,
 			defaultColumnsOrdering: defaultColumnsOrdering,
 			defaultColumnPinning: defaultColumnsPinning,
@@ -712,13 +818,17 @@ const tableESStateControllerHandler = state => ({
 	},
 
 	clearFilters: () => {
+		const tableKey = state.tableKey.get();
 		const filtersState = state.filters?.get({ noproxy: true });
 
-		if (!filtersState?.length === 0) {
+		if (filtersState?.length === 0) {
 			return;
 		}
 
-		state.filters?.set(filtersState.filter(filter => filter.isMapViewFilter));
+		filtersState.forEach(filter => {
+			tableController(tableKey).clearFilter(filter?.field);
+			tableController(tableKey).setFilterMode(filter?.field?.replace('.keyword', ''), 'singleselect', false);
+		});
 	},
 
 	syncFilters: filters => {
@@ -781,8 +891,12 @@ const tableESStateControllerHandler = state => ({
 	},
 
 	setFilters: filters => {
-		const filtersState = state.filters?.get({ noproxy: true });
-		state.filters.set([...filters, ...filtersState.filter(filter => filter?.isMapViewFilter)]);
+		const tableKey = state.tableKey.get();
+		filters.forEach(filter => {
+			const searchType = Array.isArray(filter?.value) ? 'multiselect' : 'singleselect';
+			tableController(tableKey).setFilterMode(filter?.field?.replace('.keyword', ''), filter?.searchType || searchType);
+			tableController(tableKey).setFilter(filter);
+		});
 	},
 
 	setIncludeInactive: isIncludeInactive => {

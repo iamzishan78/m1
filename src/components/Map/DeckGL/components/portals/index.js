@@ -29,7 +29,6 @@ function Portals({ hideShape }) {
 		'selectedWell',
 		'selectedShape',
 		'selectedPermit',
-		'selectedParcel',
 		'expandedCard',
 		'popupOpen',
 		'selectedUserDefinedLayer',
@@ -40,19 +39,15 @@ function Portals({ hideShape }) {
 
 	const popupVals = popupState.stateValues;
 
-	const commonSahpeSubTitle = useMemo(() => {
+	const commonShapeSubTitle = useMemo(() => {
 		const getSubtitle = ({ County = '', State = '' } = {}) => `${County}, ${State}`.trim();
 
 		if (popupVals.selectedShape?.originalProperties) {
 			return getSubtitle(popupVals.selectedShape.originalProperties);
 		}
 
-		if (popupVals.selectedParcel?.originalProperties) {
-			return getSubtitle(popupVals.selectedParcel.originalProperties);
-		}
-
 		return '';
-	}, [popupVals.selectedShape, popupVals.selectedParcel]);
+	}, [popupVals.selectedShape]);
 
 	const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
 
@@ -88,7 +83,7 @@ function Portals({ hideShape }) {
 
 	// 	if (!popupVals.popupOpen || drawState.stateValues.shapeEdit) return;
 
-	// 	drawBoundary(popupVals.selectedShape || popupVals.selectedParcel || popupVals.selectedUserDefinedLayer);
+	// 	drawBoundary(popupVals.selectedShape || popupVals.selectedUserDefinedLayer);
 
 	// 	if (popupVals.selectedWell)
 	// 		drawWellBoundary([
@@ -102,7 +97,6 @@ function Portals({ hideShape }) {
 			!popupVals.selectedWell &&
 			// !popupVals.selectedShape &&
 			// !popupVals.selectedPermit &&
-			// !popupVals.selectedParcel &&
 			!popupVals.selectedUserDefinedLayer
 		) {
 			return;
@@ -119,7 +113,6 @@ function Portals({ hideShape }) {
 		popupVals.selectedWell,
 		// popupState.selectedShape,
 		// popupState.selectedPermit,
-		// popupState.selectedParcel,
 		popupVals.selectedUserDefinedLayer,
 		popupVals.expandedCard,
 	]);
@@ -150,29 +143,27 @@ function Portals({ hideShape }) {
 					/>
 				</div>
 			)}
-			{(popupVals.selectedShape?.shapeLabel || popupVals.selectedParcel?.shapeLabel) &&
-				popupVals.expandedCard &&
-				!hideShape && (
-					<div /* className={classes.draggable} */>
-						<ExpandableCardProvider
-							expanded
-							handleCloseExpandableCard={popupController.reset}
-							component={<ShapeDetailCard type={popupVals?.selectedShape?.type || popupVals?.selectedParcel?.type} />}
-							title={popupVals?.selectedShape?.shapeLabel || popupVals.selectedParcel?.shapeLabel}
-							subTitle={commonSahpeSubTitle}
-							parent="map"
-							position="relative"
-							cardTop={0}
-							cardLeft={0}
-							zIndex={99}
-							cardWidthExpanded="50vw"
-							cardHeightExpanded="calc(100vh - 64px)"
-							targetSourceId={popupVals.selectedShape?.id || popupVals.selectedParcel?.id}
-							targetLabel={popupVals.selectedShape?.type || 'parcel'}
-							deleteCustomLayer={deleteCustomLayer}
-						/>
-					</div>
-				)}
+			{popupVals.selectedShape?.shapeLabel && popupVals.expandedCard && !hideShape && (
+				<div /* className={classes.draggable} */>
+					<ExpandableCardProvider
+						expanded
+						handleCloseExpandableCard={popupController.reset}
+						component={<ShapeDetailCard type={popupVals?.selectedShape?.type || popupVals?.selectedShape?.sdType} />}
+						title={popupVals?.selectedShape?.shapeLabel}
+						subTitle={commonShapeSubTitle}
+						parent="map"
+						position="relative"
+						cardTop={0}
+						cardLeft={0}
+						zIndex={99}
+						cardWidthExpanded="50vw"
+						cardHeightExpanded="calc(100vh - 64px)"
+						targetSourceId={popupVals.selectedShape?.id}
+						targetLabel={popupVals?.selectedShape?.type || popupVals?.selectedShape?.sdType}
+						deleteCustomLayer={deleteCustomLayer}
+					/>
+				</div>
+			)}
 			{popupVals.selectedPermit && popupVals.selectedPermit.hasOwnProperty('Lease') && (
 				<PortalD id="popupContainer">
 					{!popupVals.expandedCard && (

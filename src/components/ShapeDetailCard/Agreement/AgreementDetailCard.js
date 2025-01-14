@@ -54,8 +54,8 @@ export default function AgreementDetailCard(props) {
 	const classes = detailCardStyles();
 	const history = useHistory();
 	const showSummary = true;
+	const { dataCustomLayer } = props;
 
-	const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
 	const [getAgreementProvisions, { data: agreementProvisions }] = useLazyQuery(GET_AGREEMENT_PROVISIONS);
 	const [getStandardProvisions, { data: dataStandardProvisions = [] }] = useLazyQuery(GET_STANDARD_PROVISIONS);
 
@@ -77,7 +77,6 @@ export default function AgreementDetailCard(props) {
 	useEffect(() => {
 		if (props.id) {
 			getStandardProvisions();
-			getCustomLayer({ variables: { id: props.id } });
 			getAgreementProvisions({ variables: { agreementId: props.id } });
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps

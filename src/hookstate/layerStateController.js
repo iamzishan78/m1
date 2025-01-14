@@ -700,8 +700,7 @@ const layerStateControllerHandler = state => {
 			polygonFilter
 		);
 
-		let pickable =
-			dbLayer.layerSettings.interaction?.interactionAble && dbLayer.layerSettings.interaction?.interactionDetail?.click;
+		let pickable = dbLayer.layerSettings.interaction?.interactionDetail?.click;
 		if (deckGlLandGridIdentifiers.includes(dbLayer?.identifier)) {
 			pickable = true;
 		}
