@@ -168,6 +168,7 @@ export default function LineItem({ checkId }) {
 								value: checkId,
 							},
 						],
+						isExportDisabled: true,
 					}}
 				/>
 			</div>
