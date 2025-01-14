@@ -12,6 +12,7 @@ import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_curre
 import { tableController } from 'hookstate/tableController';
 
 import { CURRENCY_TO_FIXED, INTEREST_TO_FIXED } from 'utils/consts';
+import OwnerTypeCell from '../Common/TableCells/OwnerTypeCell';
 
 export const CommonSchema = {
 	COMMENTS: {
@@ -172,6 +173,11 @@ export const CommonSchema = {
 		filter: true,
 		isSearchField: false,
 		type: 'string',
+		Cell: ({ row }) => {
+			// Passing contact owner in common component
+			let contactOwner = row.original?.createBy;
+			return <OwnerTypeCell contactOwner={contactOwner} />;
+		},
 	},
 	CREATED_DATE: {
 		name: 'createAt',
@@ -193,6 +199,11 @@ export const CommonSchema = {
 		filter: true,
 		isSearchField: false,
 		type: 'string',
+		Cell: ({ row }) => {
+			// Passing contact owner in common component
+			let contactOwner = row.original?.lastUpdateBy;
+			return <OwnerTypeCell contactOwner={contactOwner} />;
+		},
 	},
 	LAST_UPDATED_DATE: {
 		name: 'lastUpdateAt',
@@ -330,7 +341,7 @@ export const CommonSchema = {
 export const validateRequiredString = value => (!value?.length ? 'Required' : undefined);
 
 export const editFieldProps =
-	(tableKey, type, validate, { isSelect = false, required = true } = {}) =>
+	({ tableKey, type, validate, isSelect = false, required = true, onChange }) =>
 	({ cell, row }) => {
 		const Controller = tableController(tableKey);
 
@@ -352,7 +363,12 @@ export const editFieldProps =
 			set(rowData, cell.column.id, target.value);
 
 			Controller.setValidationErrors(row.id, cell.column.id, validationError);
-			Controller.setEditedData(row.id, rowData);
+
+			if (onChange) {
+				onChange(target.value, cell.column.id, rowData, row.id);
+			} else {
+				Controller.setEditedData(row.id, rowData);
+			}
 		};
 
 		return {

@@ -28,6 +28,7 @@ import { hookStateController } from 'hookstate/hookStateController';
 import { compareObjects, validateUrl } from 'utils/helper';
 
 import { handleMRTSchema, handleVisiblityMenu } from './helpers';
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { tableESState, tableGlobalState, tableInitialState } from './initialStates';
 
 function isDateFormat(inputString) {
@@ -1004,6 +1005,16 @@ const tableGlobalControllerHandler = state => ({
 	},
 	reInitialized: () => {
 		state.reInitialized.set(!state.reInitialized.get({ noproxy: true }));
+	},
+	initializeGlobalStates: async client => {
+		// Populating users state in tableGlobalController
+		const users = state.users.get({ noproxy: true });
+		if (users && users.length > 0) return;
+		const result = await client.query({
+			variables: {},
+			query: GETMONGOUSERS,
+		});
+		state.users.set(result?.data?.allMongoUsers);
 	},
 	setSelectedTab: tab => {
 		if (tab !== state.tabKey.get()) {
