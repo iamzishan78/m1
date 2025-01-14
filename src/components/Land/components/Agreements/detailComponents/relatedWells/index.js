@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
@@ -68,6 +68,8 @@ export default function LagalDescription({ uniObj, agreementId }) {
 	const customClasses = customStyles();
 	const tableState = tableController('RelatedWellsTable').useState(['data']).stateValues;
 
+	const [totalWels, setTotalWells] = useState(0);
+
 	const {
 		stateValues: { tabKey: selectedTab },
 	} = tableGlobalController.useState(['tabKey']);
@@ -87,6 +89,14 @@ export default function LagalDescription({ uniObj, agreementId }) {
 		[agreementId]
 	);
 
+	useEffect(() => {
+		if (!tableState?.data) {
+			return;
+		}
+
+		setTotalWells(tableState?.data?.total);
+	}, [tableState?.data?.total]);
+
 	return (
 		<div className={classes.root}>
 			<Accordion className={classes.accordionRoot} defaultExpanded={true}>
@@ -103,7 +113,7 @@ export default function LagalDescription({ uniObj, agreementId }) {
 							<Typography variant="h5" className={customClasses.titleText}>
 								Related Wells
 							</Typography>
-							<Chip color="info" label={tableState?.data?.total} />
+							<Chip color="info" label={totalWels} />
 						</Grid>
 					</Grid>
 				</AccordionSummary>
