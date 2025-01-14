@@ -453,40 +453,20 @@ function ExpandableCard(props) {
 				}}
 			>
 				{selectedShape ? (
-					<Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
-						{!selectedShape?.isGenericAssetShape && (
-							<Grid item>
-								<Avatar color="#1a2341">
-									<FolderIcon fontColor="#1a2341" />
-								</Avatar>
-							</Grid>
-						)}
-						<Grid item>
-							<Box className="name">
-								{title.length > 70 ? `${title.substr(0, 75).toUpperCase()}...` : title.toUpperCase()}
-							</Box>
-							{!selectedShape?.isGenericAssetShape && <Box className="description">{subTitle}</Box>}
-							{selectedShape.type === 'unit' && <Box className="type">Unit</Box>}
-							{selectedShape.type === 'agreement' && (
-								<Box className="type">
-									{agreementTypes.find(at => at.value === selectedShape?.agreementType)?.label || ''}
-								</Box>
-							)}
-						</Grid>
-					</Grid>
-				) : (
 					<>
 						<Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
-							<Grid item>
-								<Avatar color="#1a2341">
-									<FolderIcon fontColor="#1a2341" />
-								</Avatar>
-							</Grid>
+							{!selectedShape?.isGenericAssetShape && (
+								<Grid item>
+									<Avatar color="#1a2341">
+										<FolderIcon fontColor="#1a2341" />
+									</Avatar>
+								</Grid>
+							)}
 							<Grid item>
 								<Box className="name">
 									{title.length > 70 ? `${title.substr(0, 75).toUpperCase()}...` : title.toUpperCase()}
 								</Box>
-								<Box className="description">{subTitle}</Box>
+								{!selectedShape?.isGenericAssetShape && <Box className="description">{subTitle}</Box>}
 								{targetLabel === 'unit' && <Box className="type">Unit</Box>}
 								{targetLabel === 'agreement' && (
 									<Box className="type">
