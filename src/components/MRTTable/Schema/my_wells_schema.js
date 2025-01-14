@@ -52,7 +52,7 @@ const MyWellsMeta = {
 			name: 'wellData.wellName.keyword',
 			id: 'wellData.wellName',
 			header: 'Well Name',
-			Cell: ({ row }) => (
+			Cell: ({ renderedCellValue, row }) => (
 				<div
 					style={{
 						display: 'flex',
@@ -60,7 +60,7 @@ const MyWellsMeta = {
 					}}
 				>
 					<ColumnWithLink
-						value={row?.original?.wellData?.wellName}
+						value={renderedCellValue}
 						link={`/land/well/details/${row?.original?.wellData?.Id}?mongoWellId=${row?.original?._id}`}
 						onClickForTestCase={() => {
 							globalStateController.handleMyWellTestCase(row?.original?.wellData?.Id, row?.original?._id);
@@ -76,13 +76,13 @@ const MyWellsMeta = {
 			),
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wellData.api.keyword',
 			id: 'wellData.api',
 			header: 'API',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'properties.internalID.keyword',
 			id: 'properties.internalID',
 			header: 'Internal ID',
@@ -91,7 +91,7 @@ const MyWellsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'properties.name.keyword',
 			id: 'properties.name',
 			header: 'Property Name',
@@ -100,79 +100,79 @@ const MyWellsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wellData.operator.keyword',
 			id: 'wellData.operator',
 			header: 'Operator',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wellData.wellType.keyword',
 			id: 'wellData.wellType',
 			header: 'Well Type',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wellData.wellBoreProfile.keyword',
 			id: 'wellData.wellBoreProfile',
 			header: 'Well Profile',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wellData.wellStatus.keyword',
 			id: 'wellData.wellStatus',
 			header: 'Well Status',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wellData.basin.keyword',
 			id: 'wellData.basin',
 			header: 'Basin',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wellData.field.keyword',
 			id: 'wellData.field',
 			header: 'Field',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wellData.state.keyword',
 			id: 'wellData.state',
 			header: 'State',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wellData.county.keyword',
 			id: 'wellData.county',
 			header: 'County',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wellData.GrId1.keyword',
 			id: 'wellData.GrId1',
 			header: 'Survey',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wellData.GrId2.keyword',
 			id: 'wellData.GrId2',
 			header: 'Block/Twsp',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wellData.GrId3.keyword',
 			id: 'wellData.GrId3',
 			header: 'Sec/Range',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wellData.GrId4.keyword',
 			id: 'wellData.GrId4',
 			header: 'Abstract/Sec',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wellData.PermitDate',
 			id: 'wellData.PermitDate',
 			header: 'Permit Date',
@@ -183,7 +183,7 @@ const MyWellsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wellData.SpudDate',
 			id: 'wellData.SpudDate',
 			header: 'Spud Date',
@@ -194,7 +194,7 @@ const MyWellsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wellData.CompletionDate',
 			id: 'wellData.CompletionDate',
 			header: 'Completion Date',
@@ -205,7 +205,7 @@ const MyWellsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wellData.FirstProdDate',
 			id: 'wellData.FirstProdDate',
 			header: 'First Prod Date',
@@ -216,34 +216,34 @@ const MyWellsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wellData.measuredDepth',
 			id: 'wellData.measuredDepth',
 			header: 'Measured Depth',
 			isSearchField: false,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wellData.TrueVerticalDepth.keyword',
 			id: 'wellData.TrueVerticalDepth',
 			header: 'TVD',
 			isSearchField: false,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wellData.lateralLength.keyword',
 			id: 'wellData.lateralLength',
 			header: 'Lateral Length',
 			isSearchField: false,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'wellData.primaryFormation.keyword',
 			id: 'wellData.primaryFormation',
 			header: 'Formation',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'properties.status.keyword',
 			id: 'properties.status',
 			header: 'Pay Status',
@@ -252,7 +252,7 @@ const MyWellsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'properties.divOrderStatus.keyword',
 			id: 'properties.divOrderStatus',
 			header: 'DO Status',
@@ -261,7 +261,7 @@ const MyWellsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'propertyDescriptor.interestType.keyword',
 			id: 'propertyDescriptor.interestType',
 			header: 'Interest Type',
@@ -271,7 +271,7 @@ const MyWellsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'propertyDescriptor.interestAmount.keyword',
 			id: 'propertyDescriptor.interestAmount',
 			header: 'Interest Amount',
@@ -282,7 +282,7 @@ const MyWellsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'propertyDescriptor.effectiveDate',
 			id: 'propertyDescriptor.effectiveDate',
 			header: 'Effective Date',
@@ -298,7 +298,7 @@ const MyWellsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'propertyDescriptor.costFree.keyword',
 			id: 'propertyDescriptor.costFree',
 			header: 'Cost Free',
@@ -308,7 +308,7 @@ const MyWellsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'properties.internalCompany.keyword',
 			id: 'properties.internalCompany',
 			header: 'Internal Company',
@@ -317,7 +317,7 @@ const MyWellsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'properties.acquisitionID.keyword',
 			id: 'properties.acquisitionID',
 			header: 'Acquisition',
@@ -326,7 +326,7 @@ const MyWellsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'properties.prospectID.keyword',
 			id: 'properties.prospectID',
 			header: 'Prospect',

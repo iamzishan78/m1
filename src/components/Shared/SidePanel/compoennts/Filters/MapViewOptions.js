@@ -171,6 +171,10 @@ function MapViewOptions({ tableKey, allMapViews, defaultView }) {
 			}
 		}
 
+		if (view?.isCurrent) {
+			_allMapViews = _allMapViews?.map(v => (v?._id === view?._id ? v : { ...v, isCurrent: false }));
+		}
+
 		let mapView = { ...data };
 		if (data.isDeleted === true && prevMapView?.selectedMapView?._id === data._id) {
 			mapView = _allMapViews.find(view => view.isCurrent) || defaultView;
@@ -401,6 +405,15 @@ function InputField({
 								},
 							},
 							refetchQueries: ['getMapViews'],
+						}).then(res => {
+							globalStateController.updateState({
+								mapView: {
+									...mapViewStateValues.mapView,
+									showViewModal: false,
+									selectedMapView: res?.data?.upsertMapView?.mapView,
+								},
+								viewChanged: true,
+							});
 						});
 					}
 					if (showSaveAsNew || selectedMapView?._id === editMapViewId) selectedMapView.name = viewName;
@@ -468,7 +481,7 @@ function View({ onClick, view, setEditMapView, setViewName, userId, defaultView,
 					<BookmarkIcon
 						style={{ marginTop: '5px' }}
 						onClick={() => {
-							handleMapViewChange({ ...view, isCurrent: false, userId });
+							handleMapViewChange({ ...view, isCurrent: false, userId }, false);
 						}}
 					/>
 				)}

@@ -259,7 +259,7 @@ export default function DrawShapes() {
 	const [upsertCustomLayer, { data: customLayerInsertedData }] = useMutation(UPSERTCUSTOMLAYER);
 
 	const { mapReady, globalStateValues } = globalStateController.useState(['mapReady'], 'globalStateValues');
-	const popupState = popupController.useState(['selectedUserDefinedLayer', 'selectedParcel', 'selectedShape']);
+	const popupState = popupController.useState(['selectedUserDefinedLayer', , 'selectedShape']);
 	const drawState = drawController.useState([
 		'showShapeActionsPopup',
 		'currentFeature',
@@ -290,7 +290,7 @@ export default function DrawShapes() {
 
 	useEffect(() => {
 		const { showShapeActionsPopup } = drawStateValues;
-		const { selectedUserDefinedLayer, selectedParcel, selectedShape } = popupState.stateValues;
+		const { selectedUserDefinedLayer, selectedShape } = popupState.stateValues;
 
 		if (!selectedUserDefinedLayer) {
 			return;
@@ -303,7 +303,7 @@ export default function DrawShapes() {
 			selectedAoi: isAOI ? selectedUserDefinedLayer : null,
 		});
 
-		if (isAOI && showShapeActionsPopup && !selectedParcel && !selectedShape) {
+		if (isAOI && showShapeActionsPopup && !selectedShape) {
 			drawController.setShowDataCard(true);
 		}
 	}, [popupState.selectedUserDefinedLayer]);

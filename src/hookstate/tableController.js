@@ -31,12 +31,19 @@ import { handleMRTSchema, handleVisiblityMenu } from './helpers';
 import { tableESState, tableGlobalState, tableInitialState } from './initialStates';
 
 function isDateFormat(inputString) {
-	// Regular expression for MM/DD/YYYY format
-	const mmddyyy = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)\d\d$/;
-	const mmddyy = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d\d$/;
+	try {
+		const date = new Date(inputString);
+		date.toISOString();
+	} catch {
+		return false;
+	}
+
+	// Regular expression for MM/DD/YYYY or MM/DD/YY format
+	const mmddyyyy = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{1,7}$/; // Allows 1 to 7 digits for the year
+	const mmddyy = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{2}$/; // Two-digit year format
 
 	// Check if the inputString matches the date format
-	return mmddyyy.test(inputString) || mmddyy.test(inputString);
+	return mmddyyyy.test(inputString) || mmddyy.test(inputString);
 }
 
 async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyChange, tableKey) {
@@ -55,7 +62,7 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 	const metaDataTableSchema = data.map((item, index) => {
 		const key = item?.esKey.replaceAll('.keyword', '');
 		return {
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			...item,
 			name: `${key}.keyword`,
 			id: key,
@@ -226,7 +233,12 @@ const tableESStateControllerHandler = state => ({
 
 		const mapViewFilters = selectedMapViewFilters
 			.filter(view => view.dataSourceName === layerIdentifier)
-			.filter(view => view?.filterValues?.length > 0 || ['empty', 'notEmpty'].includes(view?.filterType))
+			.filter(
+				view =>
+					view?.filterValues?.length > 0 ||
+					['empty', 'notEmpty'].includes(view?.filterType) ||
+					(view?.filterValues?.gte && view?.filterValues?.lte)
+			)
 			.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues));
 
 		Object.keys(columnFilterModesFnRefs).forEach(key => delete columnFilterModesFnRefs[key]);
@@ -392,6 +404,7 @@ const tableESStateControllerHandler = state => ({
 		// Set default state referneces
 		stateToUpdate = {
 			...stateToUpdate,
+			initialGridView: gridView,
 			defaultTableSchema: _TableSchema,
 			defaultColumnsOrdering: defaultColumnsOrdering,
 			defaultColumnPinning: defaultColumnsPinning,
@@ -435,7 +448,7 @@ const tableESStateControllerHandler = state => ({
 		switch (mode) {
 			case 'singleselect':
 				if (isClientSide) {
-					updatedColumnnSchema.filterVariant = 'select';
+					updatedColumnnSchema.filterVariant = 'autocomplete';
 				} else {
 					updatedColumnnSchema.Filter = columnSchema?.SingleSelect;
 				}
@@ -466,7 +479,6 @@ const tableESStateControllerHandler = state => ({
 		state.filterModes?.merge({
 			[column]: {
 				mode,
-				isKeyword: columnSchema.name.includes('.keyword'),
 			},
 		});
 
@@ -651,7 +663,7 @@ const tableESStateControllerHandler = state => ({
 								? existingFilter.filterType
 								: tableState?.esIndex === 'shapefile_flat' || typeof filter.value === 'object'
 									? 'multiselect'
-									: filter?.searchType,
+									: filter?.searchType || 'singleselect',
 
 						fieldName: filter.field,
 						filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
@@ -732,13 +744,17 @@ const tableESStateControllerHandler = state => ({
 	},
 
 	clearFilters: () => {
+		const tableKey = state.tableKey.get();
 		const filtersState = state.filters?.get({ noproxy: true });
 
-		if (!filtersState?.length === 0) {
+		if (filtersState?.length === 0) {
 			return;
 		}
 
-		state.filters?.set(filtersState.filter(filter => filter.isMapViewFilter));
+		filtersState.forEach(filter => {
+			tableController(tableKey).clearFilter(filter?.field);
+			tableController(tableKey).setFilterMode(filter?.field?.replace('.keyword', ''), 'singleselect', false);
+		});
 	},
 
 	syncFilters: filters => {
@@ -805,7 +821,12 @@ const tableESStateControllerHandler = state => ({
 	},
 
 	setFilters: filters => {
-		state.filters.set(filters);
+		const tableKey = state.tableKey.get();
+		filters.forEach(filter => {
+			const searchType = Array.isArray(filter?.value) ? 'multiselect' : 'singleselect';
+			tableController(tableKey).setFilterMode(filter?.field?.replace('.keyword', ''), filter?.searchType || searchType);
+			tableController(tableKey).setFilter(filter);
+		});
 	},
 
 	setIncludeInactive: isIncludeInactive => {

@@ -38,7 +38,7 @@ const filterModeMenu =
 					intiated,
 				},
 			};
-			if (!isSingleMulti) {
+			if (!isSingleMulti || isClientSide) {
 				onSelectFilterMode(filterType);
 			}
 		}

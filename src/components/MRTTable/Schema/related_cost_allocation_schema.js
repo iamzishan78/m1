@@ -57,13 +57,13 @@ const RelatedCostAllocationsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'name.keyword',
 			id: 'name',
 			header: 'Property Name',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'costAllocations.allocation.keyword',
 			id: 'costAllocations.allocation',
 			header: 'Cost Allocation',

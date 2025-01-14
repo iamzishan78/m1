@@ -109,13 +109,18 @@ export default function AcccessibleTable({ monthsInterval, items }) {
 						<Table className={classes.table} aria-label="caption table">
 							<TableHead>
 								<TableRow>
-									<TableCell style={{ paddingLeft: 0 }}>
+									<TableCell
+										style={{ paddingLeft: 0, width: '-webkit-fill-available' }}
+										component="th"
+										className={`${classes.nameCell} ${classes.headerCell}`}
+									>
 										<CSVDownloader
 											datas={convertAnalyticsDataToCSV(items, monthsInterval)}
 											filename={'Revenue'}
 											type="link"
+											style={{ position: 'relative', left: '15px', width: '30px' }}
 										>
-											<IconButton style={{ display: 'flex', padding: '0 0 0 15px' }}>
+											<IconButton style={{ display: 'flex', padding: '0px' }}>
 												<Tooltip title="Download CSV" aria-label="add">
 													<CloudDownloadIcon />
 												</Tooltip>

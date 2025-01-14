@@ -199,7 +199,7 @@ function ESAutoCompleteFilter({
 
 		const getValue = option =>
 			typeof option === 'object' ? option.value : _.find(options, { label: option })?.value || option;
-		let newValue = multiple ? option.map(getValue) : getValue(option);
+		let newValue = multiple ? option?.map(getValue) || [] : getValue(option);
 
 		if (type === 'boolean') {
 			newValue = newValue === 'true';
@@ -212,6 +212,11 @@ function ESAutoCompleteFilter({
 				value: newValue,
 			})
 		);
+
+		if (!_.isEmpty(searchText.current)) {
+			searchText.current = '';
+			getFiltersAction();
+		}
 	};
 
 	return (
@@ -238,7 +243,7 @@ function ESAutoCompleteFilter({
 			}}
 			loading={loading}
 			filterOptions={searchMapping[searchMode].filterOptions}
-			value={filterValue ?? _value}
+			value={multiple ? (typeof filterValue === 'string' ? [filterValue] : filterValue) : (filterValue ?? _value)}
 			renderInput={params => (
 				<TextField
 					{...params}
