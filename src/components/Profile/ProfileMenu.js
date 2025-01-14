@@ -7,13 +7,10 @@ import { NavigationContext } from "components/Navigation/NavigationContext";
 
 import { useAuth0 } from '@auth0/auth0-react';
 
-// contexts
 import { AppContext } from "AppContext";
-//@material-ui components
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 
-//icons
 import ProfileProvider from "components/Profile/ProfileProvider";
 import UserManagementProvider from "components/UserManagement/UserManagementProvider";
 
@@ -95,7 +92,7 @@ export default function UserProfile() {
   const { isAuthenticated, logout } = useAuth0();
 
   const handleLogout = async () => {
-    const currentAccounts = stateApp.myMSALObj.getAllAccounts();
+    const currentAccounts = stateApp.myMSALObj?.getAllAccounts();
     const currentAccount =
       currentAccounts && currentAccounts.length === 1
         ? currentAccounts[0]
@@ -120,7 +117,7 @@ export default function UserProfile() {
     localStorage.clear();
 
     if (currentAccount) {
-      stateApp.myMSALObj.logout(logoutRequest);
+      stateApp.myMSALObj?.logout(logoutRequest);
     }
 
     window.location.replace(window.location.origin);
