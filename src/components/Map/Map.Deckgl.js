@@ -36,6 +36,7 @@ import { mapControlsController } from 'hookstate/mapControlsController';
 import { mapStateController } from 'hookstate/mapStateController';
 import { navController } from 'hookstate/navStateController';
 import { popupController } from 'hookstate/popupStateController';
+import { detailCardController } from 'hookstate/detailCardController';
 
 import { baseTenantsMaps } from 'utils/data';
 import { convertToTitleCase } from 'utils/helper';
@@ -140,6 +141,10 @@ function Map({
 		'mapStateValues'
 	);
 	const { wellListFromSearch, layerStateValues } = layerController.useState(['wellListFromSearch'], 'layerStateValues');
+	const {
+		stateValues: { currentAssetRecord },
+	} = detailCardController.useState(['currentAssetRecord'], 'stateValues');
+
 	const [stateApp, setStateApp] = useContext(AppContext);
 
 	const client = useApolloClient();
@@ -460,14 +465,15 @@ function Map({
 
 	useEffect(() => {
 		const clickedFeature = layerController.getValue('clickedFeature');
+		const isGenericAsset = currentAssetRecord?.assetShape?.isGenericAssetShape;
 		if (paramId && clickedFeature?.object?.id !== paramId) {
 			try {
 				if (type === 'wells') {
 					getElasticWell(paramId);
-				} else {
+				} else if (!isGenericAsset) {
 					getCustomLayer(paramId);
 				}
-			} catch {
+			} catch (e) {
 				history.push('/');
 			}
 		}

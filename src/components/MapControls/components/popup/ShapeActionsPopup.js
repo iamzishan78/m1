@@ -33,6 +33,7 @@ import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
 import { ABSTRACTGEOQUERY } from 'graphQL/useQueryAbstractGeo';
 import { ALL_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
+import { ADD_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
 
 import { drawController } from 'hookstate/drawStateController';
 import { globalStateController } from 'hookstate/globalStateController';
@@ -140,6 +141,11 @@ const ShapeActionsPopup = props => {
 		},
 	});
 
+	const [addRecordInRunTimeModel] = useMutation(ADD_RECORD_IN_RUN_TIME_MODEL, {
+		fetchPolicy: 'no-cache',
+		awaitRefetchQueries: true,
+	});
+
 	const addShapeToLayerButton = useRef();
 
 	useEffect(() => {
@@ -228,7 +234,7 @@ const ShapeActionsPopup = props => {
 	useEffect(() => {
 		// Get all custom assets
 		getAllCustomAsset();
-	}, []);
+	}, [getAllCustomAsset]);
 
 	useEffect(() => {
 		if (allCustomAsset) {
@@ -251,6 +257,12 @@ const ShapeActionsPopup = props => {
 	const saveAndOpenParcelDetail = useCallback(
 		() => drawController.saveAndOpenParcelDetail(upsertCustomLayer, dispatch, history, abstractData),
 		[upsertCustomLayer, dispatch, history, abstractData]
+	);
+
+	const saveAndOpenMapAssetShapeDetail = useCallback(
+		(...props) =>
+			drawController.saveAndOpenMapAssetShapeDetail(addRecordInRunTimeModel, dispatch, history, abstractData, ...props),
+		[addRecordInRunTimeModel, dispatch, history, abstractData]
 	);
 
 	const deleteAOI = () => {
@@ -352,8 +364,11 @@ const ShapeActionsPopup = props => {
 					<MenuItem
 						key={option._id}
 						value={option.tableName}
-						onClick={() => {
-							console.log('option', option.tableName);
+						onClick={e => {
+							e.stopPropagation();
+							globalStateController.updateState({ currentAsset: option });
+							clearSelectedAbstracts();
+							saveAndOpenMapAssetShapeDetail(option);
 						}}
 					>
 						{option.tableName}

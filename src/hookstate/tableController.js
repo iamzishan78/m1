@@ -22,9 +22,11 @@ import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compo
 
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+import { GET_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { hookStateController } from 'hookstate/hookStateController';
+import { detailCardController } from './detailCardController';
 
 import { compareObjects, validateUrl } from 'utils/helper';
 
@@ -63,9 +65,10 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 
 	const metaDataTableSchema = data.map((item, index) => {
 		const key = item?.esKey.replaceAll('.keyword', '');
+
 		return {
-			...CommonSchema.STRING_COLUMN,
 			...item,
+			...CommonSchema.STRING_COLUMN,
 			name: `${key}.keyword`,
 			id: key,
 			accessorFn: row => get(row, key),
@@ -133,53 +136,88 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) {
 	// Fetch dynamic grid schema
 	const result = await client.query({
-		variables: {},
-		query: fetchDynamicSchema.query,
+		variables: fetchDynamicSchema.variables,
+		query: GET_CUSTOM_ASSET_INFO,
 	});
 
 	// Fetch dynamic grid columns
-	const columns =
-		result?.data?.getAllCustomAssetInfo?.res?.find(model => model.tableName === fetchDynamicSchema.tableName)
-			?.modelKeys || [];
+	const customAsset = result?.data?.getCustomAssetInfo?.asset;
+	let columns = customAsset?.modelKeys || [];
+
+	let associatedModel = {};
+	if (fetchDynamicSchema.isAssociatedModel) {
+		associatedModel = customAsset.associatedModels.find(
+			model => model.modelName === fetchDynamicSchema.associatedModel
+		);
+		columns = associatedModel?.modelKeys || [];
+	}
 
 	// Create dynamic grid schema
-	const dynamicTableSchema = columns.map(item => {
-		return {
-			...CommonSchema.COMMON_COLUMN,
-			name: item.keyType === 'String' ? `${item.mappingKey}.keyword` : item.mappingKey,
-			accessorKey: item.mappingKey,
-			id: item.mappingKey,
-			header: item?.label,
-			type: item?.keyType,
-			size: 350,
-			isPinned: !!item?.isControlColumn,
-			Cell: ({ renderedCellValue, row }) => {
-				if (!!item?.isControlColumn) {
-					const model = removeSpaces(fetchDynamicSchema.tableName);
-					return (
-						<ColumnWithLink
-							value={renderedCellValue}
-							link={`/${model}/details/${row.getValue('_id')}`}
-							onClick={e => {
-								e.stopPropagation();
-							}}
-						/>
-					);
-				} else {
-					return <>{renderedCellValue}</>;
-				}
-			},
-		};
-	});
+	const dynamicTableSchema = columns
+		.filter(column => !!column?.isGridDisplayed)
+		.map((item, index) => {
+			let key, modelName;
+			if (fetchDynamicSchema.isAssociatedModel) {
+				key = `${fetchDynamicSchema?.associationKey || 'relatedObject'}.${item.mappingKey}`;
+				modelName = fetchDynamicSchema.associatedModel;
+			} else {
+				key = item.mappingKey;
+				modelName = fetchDynamicSchema.tableName;
+			}
 
-	const _Schema = [
-		...TableSchema,
-		...dynamicTableSchema,
-		CommonSchema.CREATED_BY,
-		CommonSchema.CREATED_DATE,
-		CommonSchema.LAST_UPDATED_BY,
-		CommonSchema.LAST_UPDATED_DATE,
-	];
+			if (item.keyType === 'user') {
+				key = `${key}.name`;
+			}
+
+			const model = removeSpaces(modelName);
+
+			return {
+				...CommonSchema.COMMON_COLUMN,
+				name: ['string', 'user'].includes(item.keyType) ? `${key}.keyword` : key,
+				accessorKey: key,
+				id: key,
+				header: item?.label,
+				type: item?.keyType,
+				size: 350,
+				isPinned: !!item?.isControlColumn,
+				Cell: ({ renderedCellValue, row }) => {
+					if (!!item?.isControlColumn) {
+						const id = fetchDynamicSchema.isAssociatedModel
+							? row?.original?.[fetchDynamicSchema?.associationKey]?._id
+							: row.getValue('_id');
+						return (
+							<ColumnWithLink
+								value={renderedCellValue}
+								link={`/land/customAsset/${model}/details/${id}`}
+								onClick={e => {
+									e.stopPropagation();
+									detailCardController.setBottomSelectedTab(0);
+								}}
+							/>
+						);
+					} else {
+						let value = item.keyType === 'date' ? formatDate(renderedCellValue) : renderedCellValue;
+						return <>{value}</>;
+					}
+				},
+			};
+		});
+
+	// Filter dummy columns
+	const originalTableSchema = TableSchema.filter(column => !column.isDummy);
+
+	let _Schema = [...originalTableSchema, ...dynamicTableSchema];
+
+	if (!fetchDynamicSchema.isAssociatedModel) {
+		_Schema = [
+			..._Schema,
+			CommonSchema.OWNER,
+			CommonSchema.CREATED_BY,
+			CommonSchema.CREATED_DATE,
+			CommonSchema.LAST_UPDATED_BY,
+			CommonSchema.LAST_UPDATED_DATE,
+		];
+	}
 
 	return _Schema;
 }
@@ -249,6 +287,7 @@ const tableESStateControllerHandler = state => ({
 			excludeFields,
 			fetchDynamicSchema,
 			assetName,
+			associatedAssetName,
 			...rest
 		},
 		client
@@ -395,6 +434,7 @@ const tableESStateControllerHandler = state => ({
 			initialized: true,
 			fetchDynamicSchema,
 			assetName,
+			associatedAssetName,
 			tableKey,
 			pageSize,
 			isClientSide,

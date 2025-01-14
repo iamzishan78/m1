@@ -10,7 +10,7 @@ import Loader from 'components/Loaders';
 import BuyContactsInfoDialogContent from 'components/MRTTable/Common/Components/BuyContactsInfoDialogContent';
 import ExportContactsPurchaseAndOwners from 'components/MRTTable/Common/Dialog/ExportContactsPurchaseAndOwners';
 
-import { GRID_GENERIC_REMOVE } from 'graphQL/useMutationCommonGridRemove';
+import { REMOVECOMMONGRIDFUNCTIONALITY } from 'graphQL/useMutationCommonGridRemove';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
@@ -24,14 +24,14 @@ import TagDialog from './TagDialog';
 
 function AllDialogs(props) {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
-	const { type, assetName, ...rest } = stateValues.dialog || {};
+	const { type, assetName, associatedAssetName, ...rest } = stateValues.dialog || {};
 	const tableKey = rest?.tableKey || props.tableKey;
 
 	const {
 		stateValues: { refetchQueries, isClientSide },
 	} = tableController(props.tableKey).useState(['refetchQueries', 'isClientSide']);
 
-	const [gridGenericRemove] = useMutation(GRID_GENERIC_REMOVE, {
+	const [gridGenericRemove] = useMutation(REMOVECOMMONGRIDFUNCTIONALITY, {
 		awaitRefetchQueries: true,
 		refetchQueries,
 	});
@@ -67,7 +67,8 @@ function AllDialogs(props) {
 		gridGenericRemove({
 			variables: {
 				tableKey,
-				assetName,
+				mainAssetName: assetName,
+				associatedAssetName,
 				deletedData: dataToDelete,
 				userId: user?.mongoId,
 				ESVariables: rest?.ESVariables,

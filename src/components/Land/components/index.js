@@ -5,3 +5,5 @@ export { default as DynamicAssetGrid } from 'components/Land/components/DynamicA
 export { default as Wells } from 'components/Land/components/Wells';
 export { default as AgreementDetails } from 'components/Land/components/Agreements/detailComponents';
 export { default as AdvancedSearch } from 'components/Land/components/AdvancedSearch';
+export { default as GenericDetailCardContainer } from 'components/Shared/components/common/DetailCard/Containers/GenericDetailCard';
+export { default as DocumentsCardContainer } from 'components/Shared/components/common/DetailCard/Containers/DocumentCard';

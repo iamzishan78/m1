@@ -1,29 +1,37 @@
 import React, { memo } from 'react';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { useMutation } from '@apollo/client';
+import { useHistory } from 'react-router-dom';
+
 import Button from '@material-ui/core/Button';
-import DynamicAssetTableDialogs from 'components/MRTTable/TablesOverride/DynamicAssetGrid/RightDialogs/index';
+import { tableController } from 'hookstate/tableController';
+import { removeSpaces } from 'components/MRTTable/utils/helper';
+import { ADD_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
 import PropTypes from 'prop-types';
 
-const keysToRemove = [
-	'over-ride-checkbox',
-	'_id',
-	'lastUpdateBy.name.keyword',
-	'createBy.name.keyword',
-	'createAt',
-	'lastUpdateAt',
-];
-
 function DynamicAssetGridToolBar({ tableKey }) {
+	const history = useHistory();
 	const Controller = tableController(tableKey);
-	const tableState = Controller.useState(['rowSelection', 'fetchDynamicSchema', 'TableSchema']);
+	const tableState = Controller.useState(['fetchDynamicSchema']);
 	const tableStateValues = tableState.stateValues;
 
+	const [addAndUpdateInRunTimeModel] = useMutation(ADD_RECORD_IN_RUN_TIME_MODEL, {
+		onCompleted: data => {
+			const addedRecord = data?.addRecordInRunTimeModel?.asset || {};
+			if (addedRecord && addedRecord?._id) {
+				const model = removeSpaces(tableStateValues.fetchDynamicSchema.tableName);
+				history.push(`/land/customAsset/${model}/details/${addedRecord?._id}`);
+			}
+		},
+		fetchPolicy: 'no-cache',
+		awaitRefetchQueries: true,
+	});
+
 	const handleClick = () => {
-		tableGlobalController.updateState({
-			dialog: {
-				type: 'addAndUpdateInRunTimeModel',
-				columns: tableStateValues.TableSchema.filter(column => !keysToRemove.includes(column.name)),
+		addAndUpdateInRunTimeModel({
+			variables: {
 				tableName: tableStateValues.fetchDynamicSchema.tableName,
+				record: {},
 			},
 		});
 	};
@@ -32,12 +40,11 @@ function DynamicAssetGridToolBar({ tableKey }) {
 			<Button variant="contained" color="primary" onClick={handleClick}>
 				{`+ ADD ${tableStateValues.fetchDynamicSchema.tableName}`}
 			</Button>
-			<DynamicAssetTableDialogs />
 		</>
 	);
 }
 
-DynamicForm.propTypes = {
+DynamicAssetGridToolBar.propTypes = {
 	tableKey: PropTypes.string.isRequired,
 };
 

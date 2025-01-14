@@ -91,12 +91,12 @@ export default function Land() {
 		} else if (option) {
 			dispatch(setActiveModule(option));
 		}
-	}, [location.pathname, dispatch]);
+	}, [location.pathname, dispatch, sidePanelMenuList]);
 
 	useEffect(() => {
 		// Get all custom assets
 		getAllCustomAsset();
-	}, []);
+	}, [getAllCustomAsset]);
 
 	useEffect(() => {
 		if (allCustomAsset) {
@@ -105,13 +105,35 @@ export default function Land() {
 			// Set dynamic assets in side panel
 			setSidePanelMenuList(prevList => {
 				const newList = { ...prevList };
-				dynamicAsset.forEach(item => {
+				dynamicAsset?.forEach(item => {
 					const key = item.tableName.replace(/\s+/g, '_').toUpperCase();
 					newList[key] = {
 						featureFlag: 'LANDMODULE',
 						title: item.tableName,
-						link: `/land/${removeSpaces(item.tableName)}`,
+						link: `/land/customAsset/${removeSpaces(item.tableName)}`,
 						component: 'DynamicAssetGrid',
+					};
+
+					newList[`${key}_DETAIL`] = {
+						featureFlag: 'LANDMODULE',
+						link: `/land/customAsset/:tableName/details/:id`,
+						component: 'GenericDetailCardContainer',
+						value: 'GenericDetailCardContainer',
+						hideSearch: true,
+						isDefault: true,
+						isExcluded: true,
+						parent: key,
+					};
+
+					newList[`${key}_DETAIL_DOCUMENTS`] = {
+						featureFlag: 'LANDMODULE',
+						link: `/land/customAsset/:tableName/details/:id/documents`,
+						component: 'DocumentsCardContainer',
+						value: 'DocumentsCardContainer',
+						hideSearch: true,
+						isDefault: true,
+						isExcluded: true,
+						parent: `${key}_DETAIL`,
 					};
 				});
 				return newList;

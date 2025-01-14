@@ -179,6 +179,20 @@ export const CommonSchema = {
 			return <OwnerTypeCell contactOwner={contactOwner} />;
 		},
 	},
+	OWNER: {
+		name: 'owner.name.keyword',
+		accessorKey: 'owner.name',
+		header: 'Owner',
+		size: 250,
+		filter: true,
+		isSearchField: false,
+		type: 'string',
+		Cell: ({ row }) => {
+			// Passing contact owner in common component
+			let contactOwner = row.original?.owner;
+			return <OwnerTypeCell contactOwner={contactOwner} />;
+		},
+	},
 	CREATED_DATE: {
 		name: 'createAt',
 		id: 'createAt',

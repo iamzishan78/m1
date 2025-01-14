@@ -4,6 +4,7 @@ import { drawBoundary } from 'components/MapControls/components/DrawShapes/drawS
 import ParcelCard from 'components/ParcelsDetailCard/ParcelCard';
 import AgreementCard from 'components/ShapeDetailCard/Agreement/AgreementCard';
 import UnitCard from 'components/ShapeDetailCard/Unit/UnitCard';
+import GenericDetailCard from 'components/Shared/components/common/DetailCard/Cards/GenericDetail';
 import { agreementLayers } from 'components/Shared/functions/shapeLayer';
 
 import { popupController } from 'hookstate/popupStateController';
@@ -25,6 +26,8 @@ export default function ShapeCardProvider(props) {
 			{agreementLayers.includes(popupVals?.selectedShape?.type) && (
 				<AgreementCard closeCard={handleCloseCard} selectedShape={popupVals.selectedShape} />
 			)}
+
+			{popupVals?.selectedShape?.isGenericAssetShape && <GenericDetailCard />}
 		</>
 	);
 }

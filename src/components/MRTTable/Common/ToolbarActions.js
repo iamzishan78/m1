@@ -40,7 +40,7 @@ function ToolbarActions({ table, tableKey, children }) {
 
 	useEffect(() => {
 		tableController(tableKey).setMrtTableRef(table);
-	}, []);
+	}, [tableKey]);
 
 	const handleExport = () => {
 		tableGlobalController.updateState({
@@ -94,15 +94,9 @@ function ToolbarActions({ table, tableKey, children }) {
 					selectedRows?.length > 0
 						? selectedRows.map(item => {
 								let val;
-								if (originalKey) {
-									val = _.get(item, originalKey);
-								}
-								if (func) {
-									val = func(val);
-								}
-								if (value) {
-									val = value;
-								}
+								if (originalKey) val = _.get(item, originalKey);
+								if (func) val = func(val);
+								if (value) val = value;
 								return val;
 							})
 						: null;
@@ -120,6 +114,7 @@ function ToolbarActions({ table, tableKey, children }) {
 				ESVariables,
 				isSelectAll: !!tableStateValues?.isAllRowsSelected || (tableStateValues?.isSubSetSelect ? true : false),
 				assetName: tableStateValues?.assetName,
+				associatedAssetName: tableStateValues?.associatedAssetName,
 			},
 		});
 

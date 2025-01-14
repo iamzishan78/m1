@@ -9,9 +9,14 @@ import { UPSERT_CUSTOM_ASSET_INFO } from 'graphQL/useMutationUpsertCustomAssetIn
 import DynamicForm from '../Forms/DynamicForm';
 import { entityCreationOptions } from 'components/MRTTable/utils/data';
 import { useStyles } from './styles';
+import { useDispatch } from 'react-redux';
+import { showInfoMessage } from 'actions';
 
 function CustomAssetEntityDialog() {
 	const classes = useStyles();
+
+	const dispatch = useDispatch();
+
 	const defaultFields = [
 		{
 			_id: '',
@@ -41,6 +46,9 @@ function CustomAssetEntityDialog() {
 
 	const isCreateMode = type === 'addCustomAsset';
 
+	// Check if any field has isControlColumn set to true
+	const hasControlColumnSelected = fields.some(field => field.isControlColumn === true);
+
 	const [storeCustomAsset, { data }] = useMutation(UPSERT_CUSTOM_ASSET_INFO, {
 		onCompleted: () => {
 			tableGlobalController.refetch();
@@ -68,6 +76,11 @@ function CustomAssetEntityDialog() {
 	};
 
 	const onSubmit = data => {
+		if (!hasControlColumnSelected) {
+			dispatch(showInfoMessage('Control column selection is required'));
+			return;
+		}
+
 		const toastType = isCreateMode ? 'create' : 'update';
 		Loader.createToast(toastType, `${toastType} Entity in Progress`);
 		handleClose();
