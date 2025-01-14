@@ -299,6 +299,8 @@ const FileTree = ({ layerMap, panelItems }) => {
 						layerPaintProps: layer.layerPaintProps,
 					},
 				},
+				refetchQueries: ['getAllLayerSettingsByUser'],
+				awaitRefetchQueries: true,
 			});
 		},
 		[items, panelItems]
