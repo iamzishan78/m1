@@ -10,7 +10,7 @@ import { popupController } from 'hookstate/popupStateController';
 import queryString from 'query-string';
 import { apolloClientEndpointDev, isDev } from 'utils/helper';
 
-const AppContext = createContext([{}, () => {}]);
+const AppContext = createContext([{}, () => { }]);
 
 const AppProvider = props => {
 	const [stateApp, setStateApp] = useState({
@@ -190,20 +190,17 @@ const AppProvider = props => {
 		async function wait() {
 			const query = queryString.parse(window.location.search);
 
-			let tenantName = window.sessionStorage.getItem('tenantName');
-
-			const isBypassTenant = query.tenant && globalStateController.isBypassTenant(query.tenant);
-
-			if (isBypassTenant) tenantName = query.tenant || tenantName;
+			let tenantName = query.tenant || window.sessionStorage.getItem('tenantName') || '';
+			const isBypassTenant = globalStateController.isBypassTenant(tenantName);
 
 			let tenant = tenantsCredentials(tenantName);
 			if (tenant) {
 				window.sessionStorage.setItem('tenantName', tenantName);
-
 				tenant.apolloOriginalClientEndpoint = tenant.apolloClientEndpoint;
 				tenant.apolloClientEndpoint =
 					isDev && tenantName === 'localhost' ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
-				let myMSALObjInt = MSALObj(tenant, isBypassTenant);
+
+				let myMSALObjInt = isBypassTenant ? null : MSALObj(tenant);
 				globalStateController.updateState({ apolloClientEndpoint: tenant.apolloClientEndpoint });
 				setStateApp((state, props) => {
 					return {

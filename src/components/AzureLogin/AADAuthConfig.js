@@ -45,8 +45,7 @@ export const msalConfig = tenant => {
 	};
 };
 
-export const MSALObj = (tenant, isBypassTenant) =>
-	isBypassTenant ? null : new msal.PublicClientApplication(msalConfig(tenant));
+export const MSALObj = (tenant) => new msal.PublicClientApplication(msalConfig(tenant))
 
 export const loginRequest = graphqlScope => {
 	return {
