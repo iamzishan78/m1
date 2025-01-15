@@ -205,7 +205,9 @@ const LayerFilters = () => {
 	}, []);
 
 	useEffect(() => {
-		if (shouldSyncView === false) {return;}
+		if (shouldSyncView === false) {
+			return;
+		}
 
 		if (selectedView) {
 			resetForm({
@@ -216,14 +218,6 @@ const LayerFilters = () => {
 			});
 		}
 	}, [shouldSyncView]);
-
-	// useEffect(() => {
-	// 	if (selectedView) {
-	// 		formMethods.reset({
-	// 			mapViews: selectedView?.filters || [],
-	// 		});
-	// 	}
-	// }, [JSON.stringify(selectedView?.filters)]);
 
 	const resetFilters = (params, additionalParamsToReset = {}) => {
 		const geoFiltersToReset = {};
@@ -353,7 +347,9 @@ const LayerFilters = () => {
 								const layer = layers.find(l => l.file === fileId && l.layerShapeName === layerShapeName);
 
 								// Skip rendering if no custom layers field accessor or no matching layer found
-								if (!customLayersFieldAccessors[mapView?.dataSourceName] && !layer) {return null;}
+								if (!customLayersFieldAccessors[mapView?.dataSourceName] && !layer) {
+									return null;
+								}
 							}
 
 							// Render the UserMapFilter component if the checks pass

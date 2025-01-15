@@ -82,24 +82,28 @@ function ViewItem({ moduleName, view }) {
 		}
 	};
 
-	return allowEdit || !view ? (
-		<TextField
-			key="fieldContentInput"
-			id="fieldContentInput"
-			className={classes.textField}
-			variant="outlined"
-			size="small"
-			autoComplete="nope"
-			fullWidth
-			label={null}
-			value={viewName}
-			placeholder={'View Name'}
-			helperText="Return to save"
-			autoFocus
-			onChange={event => setViewName(event.target.value)}
-			onKeyDown={handleTextInput}
-		/>
-	) : (
+	if (allowEdit || !view) {
+		return (
+			<TextField
+				key="fieldContentInput"
+				id="fieldContentInput"
+				className={classes.textField}
+				variant="outlined"
+				size="small"
+				autoComplete="nope"
+				fullWidth
+				label={null}
+				value={viewName}
+				placeholder={'View Name'}
+				helperText="Return to save"
+				autoFocus
+				onChange={event => setViewName(event.target.value)}
+				onKeyDown={handleTextInput}
+			/>
+		);
+	}
+
+	return (
 		<div
 			className={classes.viewContainer}
 			onFocus={() => setShowActions(true)}
