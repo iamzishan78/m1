@@ -10,6 +10,7 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 import { useApolloClient } from '@apollo/client';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 
 import { excludeFilters } from 'components/MRTTable/Common/CommonToolBarActions';
 
@@ -19,7 +20,7 @@ import { execCommonAsyncExportJobAction } from 'store/actions/commonActions';
 
 import { Modals } from '../../../../../styles/Modal';
 
-export default function ExportConfirmationDialog({ table, tableKey, header, onClose, children, controller }) {
+function ExportConfirmationDialog({ table, tableKey, header, onClose, children, controller }) {
 	const dispatch = useDispatch();
 	const client = useApolloClient();
 	const modalClass = Modals();
@@ -49,7 +50,8 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 		let filteredTableSchema = tableStateValues?.TableSchema.filter(obj => {
 			const accessorKey = obj?.accessorKey || obj?.id;
 			return (
-				(filteredColumns[accessorKey] === true && !obj.hasOwnProperty('enableColumnFilter')) || obj?.isHiddenFieldExport
+				(filteredColumns[accessorKey] === true && !Object.prototype.hasOwnProperty.call(obj, 'enableColumnFilter')) ||
+				obj?.isHiddenFieldExport
 			);
 		});
 
@@ -106,6 +108,7 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 					search,
 					filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters, ...excludedIds],
 					esIndex: tableStateValues.esIndex,
+					modelName: tableStateValues.modelName,
 					extraExportValues: tableStateValues?.customProps?.exportValues,
 					columns: filteredTableSchema,
 					sortOrder,
@@ -152,3 +155,14 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 		</Dialog>
 	);
 }
+
+ExportConfirmationDialog.propTypes = {
+	table: PropTypes.object.isRequired,
+	tableKey: PropTypes.string.isRequired,
+	header: PropTypes.string.isRequired,
+	onClose: PropTypes.func.isRequired,
+	children: PropTypes.node.isRequired,
+	controller: PropTypes.object.isRequired,
+};
+
+export default ExportConfirmationDialog;

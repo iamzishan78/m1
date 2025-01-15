@@ -4,7 +4,7 @@ import { Button, ButtonGroup } from '@material-ui/core';
 import PostAddIcon from '@material-ui/icons/PostAdd';
 
 import MetaFieldList from 'components/MRTTable/Common/MetaData/MetaFieldList';
-import MetaField from 'components/Table/helpers/MetaField';
+import MetaField from 'utils/MetaField';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { slidoutStateController } from 'hookstate/slidoutStateController';

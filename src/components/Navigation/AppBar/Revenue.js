@@ -6,9 +6,9 @@ import { Grid, Typography } from '@material-ui/core';
 
 import { useMutation } from '@apollo/client';
 
+import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown';
 import RevenueSearch from 'components/Navigation/components/RevenueSearch';
 import { SIDE_PANEL_MENU_ITEMS_LIST } from 'components/Revenue/Revenue';
-import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
 import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
 
 import { ADD_CHECK_DATA } from 'graphQL/useMutationAddCheck';
@@ -56,7 +56,6 @@ export default function RevenueAppBar(props) {
 				},
 			},
 		];
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeModule]);
 
 	const PropertyStatementAction = React.useMemo(() => {
@@ -83,7 +82,6 @@ export default function RevenueAppBar(props) {
 				},
 			},
 		];
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeModule]);
 
 	return (

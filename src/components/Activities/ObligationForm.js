@@ -215,7 +215,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
 			onModalClose();
 			tableGlobalController.refetch();
 		},
-		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
+		refetchQueries: ['getAllActivities', 'getDbData'],
 		awaitRefetchQueries: true,
 	});
 
@@ -225,7 +225,7 @@ export default function ObligationForm({ setSelectedActivityId }) {
 			globalState.universalLoader.set(false);
 			tableGlobalController.refetch();
 		},
-		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
+		refetchQueries: ['getAllActivities', 'getDbData'],
 		awaitRefetchQueries: true,
 	});
 

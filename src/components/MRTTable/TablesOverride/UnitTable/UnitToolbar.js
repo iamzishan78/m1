@@ -1,8 +1,9 @@
-import React, { memo } from 'react';
+import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
 import { useApolloClient } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import { BulkUpdate } from 'components/MRTTable/Common/CommonToolBarActions';
 
@@ -73,7 +74,7 @@ function UnitToolbar({ table, tableKey }) {
 			tableKey,
 			selectedCampaign: tableStateValues.customProps?.campaign,
 			objectType: 'unit',
-			refetchQueries: ['getESSimpleSearch'],
+			refetchQueries: ['getDbData'],
 		};
 	};
 
@@ -88,4 +89,9 @@ function UnitToolbar({ table, tableKey }) {
 	);
 }
 
-export default memo(UnitToolbar);
+UnitToolbar.propTypes = {
+	table: PropTypes.object.isRequired,
+	tableKey: PropTypes.string.isRequired,
+};
+
+export default UnitToolbar;

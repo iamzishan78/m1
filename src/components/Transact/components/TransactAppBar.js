@@ -1,23 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { Typography, AppBar, Button, ButtonGroup, Tooltip, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { Launch } from '@material-ui/icons';
 import Add from '@material-ui/icons/Add';
 import SettingsIcon from '@material-ui/icons/Settings';
 
+import PropTypes from 'prop-types';
+
+import { tableController } from 'hookstate/tableController';
+
 import { setFlowState } from 'actions';
+import { AppContext } from 'AppContext';
 
 import PipelineCustomDialog from './PipelineCustomizeDialog';
-import vf_currency from '../../Shared/valueformatters/vf_currency.js';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		minHeight: '50px',
 		maxHeight: '72px',
 		backgroundColor: '#fff',
-		padding: '0 16px 10px',
+		padding: '0 16px 0',
 	},
 	top: {
 		display: 'flex',
@@ -168,39 +171,12 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const sumDeals = (lanes, status) => {
-	let sumAmount = 0;
-	let sumCount = 0;
-
-	lanes.forEach(deal => {
-		deal.cards.forEach(card => {
-			if (card.metadata.status === status && !card.metadata.IsDeleted) {
-				if (card.label && !isNaN(card.label)) {
-					sumAmount += card.label;
-				}
-				// parseFloat(card.label.split("$").join("").split(",").join(""));
-				sumCount++;
-			}
-		});
-	});
-	return { count: sumCount, amount: vf_currency(sumAmount) };
-};
-
-const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
+const TransactAppBar = ({ dealFilter, setDealFilter }) => {
+	const [stateApp, setStateApp] = useContext(AppContext);
 	const classes = useStyles();
 	const dispatch = useDispatch();
 	const { pipeToShow, selectedPipe, openPipeDialog } = useSelector(({ Flow }) => Flow);
-	const [openDeals, setOpenDeals] = useState({ count: 0, amount: '$0' });
-	const [wonDeals, setWonDeals] = useState({ count: 0, amount: '$0' });
-	const [lostDeals, setLostDeals] = useState({ count: 0, amount: '$0' });
-
-	useEffect(() => {
-		if (pipeToShow?.lanes) {
-			setOpenDeals(sumDeals(pipeToShow.lanes, 'open'));
-			setWonDeals(sumDeals(pipeToShow.lanes, 'won'));
-			setLostDeals(sumDeals(pipeToShow.lanes, 'lost'));
-		}
-	}, [pipeToShow]);
+	const Controller = tableController('DealsTable');
 
 	const handleClickAddDeal = () => {
 		setStateApp(stateApp => ({
@@ -243,16 +219,19 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
 								</IconButton>
 							</Tooltip>
 						</div>
-						<div>
-							<Button
-								disableRipple={!pipeToShow}
-								onClick={pipeToShow ? handleClickAddDeal : null}
-								className={pipeToShow ? classes.newDealAction : classes.newDealActionDisabled}
-								startIcon={<Add />}
-							>
-								{selectedPipe?.flowLineType === 'general' ? 'New Task' : 'Add Deal'}
-							</Button>
-						</div>
+						{stateApp.dealDisplayType !== 'table' && (
+							<div>
+								<Button
+									disableRipple={!pipeToShow}
+									onClick={pipeToShow ? handleClickAddDeal : null}
+									className={pipeToShow ? classes.newDealAction : classes.newDealActionDisabled}
+									startIcon={<Add />}
+								>
+									{selectedPipe?.flowLineType === 'general' ? 'New Task' : 'Add Deal'}
+								</Button>
+							</div>
+						)}
+
 						<ButtonGroup style={{ minHeight: 36 }}>
 							{(selectedPipe?.flowLineType === 'general'
 								? ['all', 'open', 'closed']
@@ -262,7 +241,14 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
 									key={filter + '_button_filter'}
 									size="small"
 									className={`${classes.filterToggleBtn} ${dealFilter === filter && classes.activeBtn}`}
-									onClick={() => setDealFilter(filter)}
+									onClick={() => {
+										setDealFilter(filter);
+										if (filter === 'all') {
+											Controller.clearFilter('status');
+										} else {
+											Controller.setFilter({ field: 'status', value: filter });
+										}
+									}}
 								>
 									{filter.capitalize()}
 								</Button>
@@ -274,6 +260,11 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
 			</AppBar>
 		</>
 	);
+};
+
+TransactAppBar.propTypes = {
+	dealFilter: PropTypes.string.isRequired,
+	setDealFilter: PropTypes.func.isRequired,
 };
 
 export default TransactAppBar;

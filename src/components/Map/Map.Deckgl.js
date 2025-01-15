@@ -1,3 +1,4 @@
+/* eslint-disable no-magic-numbers */
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,15 +16,15 @@ import mapboxgl from 'mapbox-gl';
 import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from 'mapbox-gl-draw-circle';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import parseLinkHeader from 'parse-link-header';
+import PropTypes from 'prop-types';
 
 import { drawShapeStyles, findBoundsMap } from 'components/MapControls/commonHelper';
 import MapControls from 'components/MapControls/MapControls';
 import SpeedDialComponent from 'components/MapControls/SpeedDialComponent';
 import { layersWithSelectedShapeKey } from 'components/Shared/functions/shapeLayer';
-import { convertToTitleCase } from 'components/Shared/M1nTable/components/MUIDataTable/utils';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
 import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
 
@@ -37,6 +38,7 @@ import { navController } from 'hookstate/navStateController';
 import { popupController } from 'hookstate/popupStateController';
 
 import { baseTenantsMaps } from 'utils/data';
+import { convertToTitleCase, formatLayerForMap } from 'utils/helper';
 
 import { layerRefs } from 'hookstate';
 
@@ -335,7 +337,7 @@ function Map({
 
 	const getElasticWell = async paramId => {
 		const { data: well } = await client.query({
-			query: GET_ES_SIMPLE_SEARCH,
+			query: GET_DB_DATA,
 			variables: {
 				index: 'platformData:wells',
 				pagination: {
@@ -351,7 +353,7 @@ function Map({
 				sort: [],
 			},
 		});
-		const wellFeature = { ...well.getESSimpleSearch.hits[0] };
+		const wellFeature = { ...well.getDbData.hits[0] };
 		if (wellFeature?.Id) {
 			wellFeature.id = wellFeature.Id;
 		}
@@ -374,7 +376,7 @@ function Map({
 	};
 
 	async function getCustomLayer(paramId) {
-		const keys = { parcels: 'selectedParcel', ...layersWithSelectedShapeKey(), wells: 'selectedWell' };
+		const keys = { ...layersWithSelectedShapeKey(), wells: 'selectedWell' };
 		const { data: layer } = await client.query({
 			query: CUSTOMLAYER,
 			variables: {
@@ -399,13 +401,7 @@ function Map({
 				}
 			}
 
-			let jsonLayer = JSON.parse(layer.customLayer.shape);
-			if (layer.customLayer.shapeJson) {
-				jsonLayer = copy(layer.customLayer.shapeJson);
-			}
-
-			jsonLayer.layer = { id: layer.customLayer.layer };
-			jsonLayer.id = layer.customLayer._id;
+			const { jsonLayer, feature } = formatLayerForMap(layer)
 
 			const interval = setInterval(() => {
 				if (window.mapRef) {
@@ -414,12 +410,7 @@ function Map({
 
 					layerController.updateState({ clickedFeature: { object: { id: paramId } } });
 					popupController.updateState({
-						[keys[type]]: {
-							...jsonLayer.properties,
-							feature: jsonLayer,
-							id: layer.customLayer._id,
-						},
-						...(type === 'parcels' ? { selectedShape: null } : {}),
+						[keys[type]]: feature,
 						popupOpen: false,
 						expandedCard: true,
 						customLayerId: layer.customLayer._id,
@@ -465,7 +456,7 @@ function Map({
 				} else {
 					getCustomLayer(paramId);
 				}
-			} catch (e) {
+			} catch {
 				history.push('/');
 			}
 		}
@@ -942,6 +933,7 @@ function Map({
 					newMap.addImage('marker-icon', image, { sdf: true });
 				});
 				setTimeout(() => {
+					// eslint-disable-next-line no-new
 					new DeckGlLayer({
 						layerId: 'top_deck_layer',
 						type: 'ScatterplotLayer',
@@ -950,6 +942,7 @@ function Map({
 						},
 					});
 
+					// eslint-disable-next-line no-new
 					new DeckGlLayer({
 						layerId: 'first_deck_layer',
 						type: 'ScatterplotLayer',
@@ -1106,7 +1099,7 @@ function Map({
 						}
 					);
 				}
-			} catch (e) {
+			} catch {
 				//
 			}
 		}
@@ -1337,5 +1330,32 @@ function Map({
 		</div>
 	);
 }
+
+Map.propTypes = {
+	type: PropTypes.string.isRequired,
+	paramId: PropTypes.string,
+	expandedPanel: PropTypes.bool, // Boolean, defaults to true
+	mapControls: PropTypes.bool, // Boolean, defaults to true
+	openSpeedDial: PropTypes.bool, // Boolean, defaults to true
+	width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]), // Can be a string or number
+	hideShape: PropTypes.bool, // Boolean, defaults to false
+	layerPadding: PropTypes.oneOfType([
+		PropTypes.number,
+		PropTypes.shape({
+			top: PropTypes.number,
+			bottom: PropTypes.number,
+			left: PropTypes.number,
+			right: PropTypes.number,
+		}),
+	]), // Null or an object with padding values
+};
+
+Map.defaultProps = {
+	expandedPanel: true,
+	mapControls: true,
+	openSpeedDial: true,
+	hideShape: false,
+	layerPadding: null,
+};
 
 export default React.memo(Map);

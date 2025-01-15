@@ -90,14 +90,14 @@ const InterestDetailForm = props => {
 		onCompleted: () => {
 			props.onClose();
 		},
-		refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
+		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
 	const [updatePropertyInterest] = useMutation(UPDATE_PROPERTY_INTEREST, {
 		onCompleted: () => {
 			props.onClose();
 		},
-		refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
+		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
 

@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map';
 import IsTracked from 'components/MRTTable/Common/TableCells/IsTracked';
@@ -18,7 +21,7 @@ const PotentialWellsMeta = {
 		const { customLayer } = tableMeta?.customProps || {};
 
 		if (!customLayer) {
-			return;
+			return null;
 		}
 
 		const polygon = getPolygonString(customLayer?.shape);
@@ -40,72 +43,69 @@ const PotentialWellsMeta = {
 	CustomToolBar: PotentialWellToolbar,
 	isClientSide: true,
 	isSelectAllAllowed: true,
-	isDeleteAllowed: false,
-	isExportAllowed: false,
+	isDeleteDisabled: true,
+	isExportDisabled: true,
 	enableFacetedValues: true,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
 			id: 'id',
-			accessorFn: row => row?.id,
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'API',
 			id: 'api',
 			name: 'api',
-			accessorFn: row => row?.api,
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Well Name',
 			id: 'wellName',
 			name: 'wellName',
-			accessorFn: row => row?.wellName,
 		},
 
 		{
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Lease Number',
 			id: 'leaseId',
 			name: 'leaseId',
-			accessorFn: row => row?.leaseId,
 		},
 		{
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Lease Name',
 			id: 'lease',
 			name: 'lease',
-			accessorFn: row => row?.lease,
 		},
 		{
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Operator',
 			id: 'operator',
 			name: 'operator',
-			accessorFn: row => row?.operator,
 		},
 		{
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Type',
 			id: 'wellType',
 			name: 'wellType',
-			accessorFn: row => row?.wellType,
 		},
 		{
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Profile',
 			id: 'wellBoreProfile',
 			name: 'wellBoreProfile',
-			accessorFn: row => row?.wellBoreProfile,
 		},
 		{
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Status',
 			id: 'wellStatus',
 			name: 'wellStatus',
-			accessorFn: row => row?.wellStatus,
 		},
 		{
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Global Well',
 			id: 'globalWell',
 			name: 'globalWell',
-			accessorFn: row => row?.globalWell,
 		},
 		{
 			...CommonSchema.TAGS,
@@ -152,7 +152,7 @@ const PotentialWellsMeta = {
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'coordinates',
-			accessorKey: 'coordinates',
+			id: 'coordinates',
 			header: '',
 			size: 70,
 			Cell: ({ row }) => {

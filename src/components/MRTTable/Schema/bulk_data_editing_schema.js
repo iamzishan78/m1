@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import BulkDataEditingToolBar from 'components/MRTTable/TablesOverride/BulkDataEditing/Toolbar';
 
@@ -12,7 +15,7 @@ const BulkDataEditingMeta = {
 	},
 	isInFiniteScroll: true,
 	isDeleteDisabled: true,
-	isExportDisabled: true,
+	// isExportDisabled: true,
 	CustomToolBar: BulkDataEditingToolBar,
 	maxTableHeight: 'calc(100vh - 200px)',
 	defaultSort: { field: 'ts', order: 'desc' },
@@ -20,31 +23,27 @@ const BulkDataEditingMeta = {
 		{
 			...CommonSchema.MONGO_ID,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 		{
 			...CommonSchema.INITAIL_PINNED,
 			id: 'name',
 			header: 'Job Name',
 			name: 'name.keyword',
-			accessorFn: row => row?.name,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			id: 'type',
 			header: 'Job Type',
 			name: 'type.keyword',
-			accessorFn: row => row?.type,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			header: 'Progress',
 			id: 'percentageProgress',
-			accessorKey: 'percentageProgress',
 			name: 'percentageProgress.keyword',
-			accessorFn: row => row?.percentageProgress,
 		},
 		CommonSchema.CREATED_DATE,
 		{
@@ -52,10 +51,9 @@ const BulkDataEditingMeta = {
 			header: 'Created By',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			id: 'status',
 			header: 'Job Status',
-			accessorKey: 'status',
 			name: 'status.keyword',
 			Cell: ({ renderedCellValue }) => (
 				<span

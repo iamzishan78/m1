@@ -145,6 +145,7 @@ export default function AddUnitOwnerDialogContent({
 
 	useEffect(() => {
 		if (selectedRow) {
+			selectedRow.name = selectedRow?.contact?.entityDetail?.name || selectedRow?.name;
 			const filteredSelectedRow = _.pick(selectedRow, Object.keys(unitInterestOwnerState));
 			const rowData = _.merge({}, unitInterestOwnerState, filteredSelectedRow);
 
@@ -260,7 +261,7 @@ export default function AddUnitOwnerDialogContent({
 					shapeOwners: shapeOwner,
 					userId: getUser?._id,
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
+				refetchQueries: ['getDbData', 'getESFilterList', 'getCustomLayer'],
 				awaitRefetchQueries: true,
 			});
 		} else {
@@ -279,7 +280,7 @@ export default function AddUnitOwnerDialogContent({
 					shapeType: props.shapeType,
 					shapeOwner,
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
+				refetchQueries: ['getDbData', 'getESFilterList', 'getCustomLayer'],
 				awaitRefetchQueries: true,
 			});
 		}

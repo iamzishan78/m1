@@ -1,4 +1,4 @@
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 export const getAllData = async (search, sorting, defaultSort, esIndex, filters, total, client) => {
 	let sortOrder;
@@ -38,7 +38,7 @@ export const getAllData = async (search, sorting, defaultSort, esIndex, filters,
 		queryPromises.push(
 			client.query({
 				...pageESVariables,
-				query: GET_ES_SIMPLE_SEARCH,
+				query: GET_DB_DATA,
 			})
 		);
 	} while (iter * max < total);
@@ -46,7 +46,7 @@ export const getAllData = async (search, sorting, defaultSort, esIndex, filters,
 	const queryResults = await Promise.all(queryPromises);
 
 	queryResults.forEach(result => {
-		const hits = result?.data?.getESSimpleSearch?.hits || [];
+		const hits = result?.data?.getDbData?.hits || [];
 		selectedData = [...selectedData, ...hits];
 	});
 

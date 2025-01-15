@@ -6,5 +6,9 @@
 		"source.fixAll": "explicit"
 	},
 	"spellright.language": ["en"],
-	"spellright.documentTypes": ["markdown", "latex", "plaintext"]
+	"spellright.documentTypes": [
+		"markdown",
+		"latex",
+		"plaintext"
+	]
 }

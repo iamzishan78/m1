@@ -9,7 +9,7 @@ describe('Open Revenue Property Detail Card  Spec', () => {
 
 		cy.viewport(1400, 900);
 
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.visit('http://localhost:3000/revenue/properties');
 
 		cy.checkAndLogin();
@@ -21,11 +21,11 @@ describe('Open Revenue Property Detail Card  Spec', () => {
 				cy.log('==== STEP: OPEN TAGGER ====');
 				cy.wrap($row).click();
 
-				cy.interceptApi('getESSimpleSearch');
+				cy.interceptApi('getDbData');
 
 				cy.verifyApiResponse('@getESSimpleSearchApi').then(response => {
-					cy.log(JSON.stringify(response.response.body.data.getESSimpleSearch.hits[0].property));
-					let { internalID, number } = response?.response?.body?.data?.getESSimpleSearch?.hits?.[0]?.property || {};
+					cy.log(JSON.stringify(response.response.body.data.getDbData.hits[0].property));
+					let { internalID, number } = response?.response?.body?.data?.getDbData?.hits?.[0]?.property || {};
 
 					if (internalID || number) {
 						cy.log('Navigating Back');

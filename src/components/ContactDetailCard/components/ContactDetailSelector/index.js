@@ -9,6 +9,7 @@ import { useLazyQuery } from '@apollo/client';
 import { get } from 'lodash';
 import sortBy from 'lodash/sortBy';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import RelatedDocumentsTable from 'components/Common/RelatedTables/Documents';
 import RelatedTractInterestTable from 'components/Common/RelatedTables/Tracts/tractInterests';
@@ -201,6 +202,7 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 
 	const contactWellInterestOverride = useMemo(
 		() => ({
+			maxTableHeight: 'calc(50vh - 120px)',
 			defaultFilters: [{ field: 'contact._id', value: contactData._id || '' }],
 			customProps: {
 				contactId: contactData._id,
@@ -293,15 +295,15 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 	const RelatedDocumentsOverrideMeta = useMemo(
 		() => ({
 			maxTableHeight: 'calc(50vh - 100px)',
+			gridViewSettings: null,
+			fetchMetaData: null,
 			defaultFilters: [{ field: 'contacts._id', value: contactData?._id }],
 			deletedKeys: {
 				mainRecord: { key: '_id' },
 				parentRecord: { value: contactData?._id },
 			},
 			customValue: { parentRecord: contactData?._id },
-			columnReordering: false,
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[contactData?._id]
 	);
 
@@ -312,9 +314,16 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 			},
 			refetchQueries: ['getContactSummary'],
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[contactData?._id]
 	);
+
+	const RelatedDealsOverrideMeta = useMemo(() => {
+		return {
+			maxTableHeight: 'calc(50vh - 260px)',
+			defaultFilters: [{ field: 'relatedContacts._id', value: contactData._id }],
+			excludeFields: ['createBy', 'createAt', 'lastUpdateBy', 'lastUpdateAt'],
+		};
+	}, [contactData._id]);
 
 	return (
 		<div className={classes.card}>
@@ -330,7 +339,7 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 								{contactDetailInitialData.map(row => {
 									const Icon = row.Icon;
 									return (
-										<FeatureFlag feature={row.feature} noCheck={!row.feature}>
+										<FeatureFlag key={row?.index} feature={row.feature} noCheck={!row.feature}>
 											<ListItem
 												button
 												selected={row.value === searchTapValue.value}
@@ -353,7 +362,7 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 						</Grid>
 
 						<Grid item md={10} style={{ padding: '0px' }}>
-							<div style={{ position: 'relative' }} classes={classes.gridTables}>
+							<div style={{ position: 'relative' }}>
 								{searchTapValue.value === 'contactInformation' && (
 									<ContactDetailedInfo
 										user={stateApp.user}
@@ -380,7 +389,12 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 										overrideMeta={relatedTractInterestOverride}
 									/>
 								)}
-								{searchTapValue.value === 'deals' && <ContactDealsProvider />}
+								{searchTapValue.value === 'deals' && (
+									<>
+										<ContactDealsProvider />
+										<MRTTable name="RelatedDealsTable" overrideMeta={RelatedDealsOverrideMeta} />
+									</>
+								)}
 								{searchTapValue.value === 'documents' && (
 									<DrawerContextProvider>
 										<RelatedDocumentsTable
@@ -405,5 +419,11 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 		</div>
 	);
 }
+
+MapGridCard.propTypes = {
+	contactData: PropTypes.object.isRequired,
+	purchaseData: PropTypes.object.isRequired,
+	handleQuickActionActivity: PropTypes.func.isRequired,
+};
 
 export default MapGridCard;

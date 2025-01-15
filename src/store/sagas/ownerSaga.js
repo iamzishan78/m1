@@ -5,7 +5,8 @@ import { getPolygonString } from 'components/Shared/functions';
 
 import { CREATE_JOB } from 'graphQL/useMutationCreateJob';
 import { INITIALIZE_EXPORT_JOB } from 'graphQL/useMutationinitializeExportJob';
-import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
+import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { OWNERS_BY_WELL_IDS } from 'graphQL/useQueryOwnersByWellIds';
 import { SHAPE_OWNERS } from 'graphQL/useQueryPaginatedShapeOwners';
 import { SHAPEOWNERSCOUNT, SHAPEOWNERSINTERESTCOUNT } from 'graphQL/useQueryShapeOwnersCount';
@@ -63,10 +64,10 @@ function* getShapeOwnersAndWells(action) {
 		const { client, currentFeature } = action.payload;
 
 		const shapeWellCount = yield client.query({
-			query: GET_ES_PAGINATED_LIST,
+			query: GET_DB_DATA_TOTAL,
 			variables: {
-				esIndex: 'platformData:wells',
-				polygon: currentFeature?.geometry,
+				index: 'platformData:wells',
+				filters: [{ type: 'geo_intersects', field: 'geoJSON', value: currentFeature?.geometry }],
 				pagination: {
 					first: 0,
 					after: null,
@@ -86,7 +87,7 @@ function* getShapeOwnersAndWells(action) {
 			variables: {
 				polygon: currentFeature?.geometry,
 				pagination: {
-					first: get(shapeWellCount, 'data.getESPaginatedList.total', 0),
+					first: get(shapeWellCount, 'data.getDbDataTotal.data', 0),
 					after: null,
 				},
 			},
@@ -100,8 +101,8 @@ function* getShapeOwnersAndWells(action) {
 				shapeCount: get(shapeOwnerCount, 'data.shapeOwnersCount', 0),
 				// shapeOwnersInterest: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds',[]),
 				shapeInterestCount: get(shapeOwnerInterestCount, 'data.shapeOwnersInterestCount', 0),
-				// wells: get(wells, 'data.data.getESPaginatedList.hits', []),
-				wellsCount: get(shapeWellCount, 'data.getESPaginatedList.total', 0),
+				// wells: get(wells, 'data.data.getDbData.hits', []),
+				wellsCount: get(shapeWellCount, 'data.getDbDataTotal.data', 0),
 			})
 		);
 	} catch (error) {
@@ -112,29 +113,26 @@ function* getShapeOwnersAndWells(action) {
 function* getMapFilterShapeOwnersAndCount(action) {
 	try {
 		const { currentFeature, filters, search } = action.payload;
-
-		const wellsCount = yield call(Api.query, GET_ES_PAGINATED_LIST, {
-			esIndex: 'platformData:wells',
+		const wellsCount = yield call(Api.query, GET_DB_DATA_TOTAL, {
+			index: 'platformData:wells',
 			search,
-			filters,
-			polygon: currentFeature?.geometry,
+			filters: [...(filters || []), { type: 'geo_intersects', field: 'geoJSON', value: currentFeature?.geometry }],
 			pagination: {
 				first: 0,
 				after: null,
 			},
 		});
 
-		const wells = yield call(Api.query, GET_ES_PAGINATED_LIST, {
-			esIndex: 'platformData:wells',
+		const wells = yield call(Api.query, GET_DB_DATA, {
+			index: 'platformData:wells',
 			search,
-			filters,
-			polygon: currentFeature?.geometry,
+			filters: [...(filters || []), { type: 'geo_intersects', field: 'geoJSON', value: currentFeature?.geometry }],
 			pagination: {
-				first: get(wellsCount, 'data.getESPaginatedList.total', 0),
+				first: get(wellsCount, 'data.getDbDataTotal.data', 0),
 				after: null,
 			},
 		});
-		const wellIds = get(wells, 'data.getESPaginatedList.hits', []).map(well => well.Id);
+		const wellIds = get(wells, 'data.getDbData.hits', []).map(well => well.Id);
 
 		let taxOwners = [];
 
@@ -173,12 +171,11 @@ function* getMapFilterShapeOwnersAndWells(action) {
 		// })
 
 		const shapeWellCount = yield client.query({
-			query: GET_ES_PAGINATED_LIST,
+			query: GET_DB_DATA_TOTAL,
 			variables: {
-				esIndex: 'platformData:wells',
+				index: 'platformData:wells',
 				search,
-				filters,
-				polygon: currentFeature?.geometry,
+				filters: [...(filters || []), { type: 'geo_intersects', field: 'geoJSON', value: currentFeature?.geometry }],
 				pagination: {
 					first: 0,
 					after: null,
@@ -202,7 +199,7 @@ function* getMapFilterShapeOwnersAndWells(action) {
 				filters,
 				polygon: currentFeature?.geometry,
 				pagination: {
-					first: get(shapeWellCount, 'data.getESPaginatedList.total', 0),
+					first: get(shapeWellCount, 'data.getDbDataTotal.data', 0),
 					after: null,
 				},
 			},
@@ -216,8 +213,8 @@ function* getMapFilterShapeOwnersAndWells(action) {
 				shapeCount: get(shapeOwnerCount, 'data.shapeOwnersCount', 0),
 				// shapeOwnersInterest: get(taxOwnersInterest, 'data.data.ownersInterestByWellIds',[]),
 				shapeInterestCount: get(shapeOwnerInterestCount, 'data.shapeOwnersInterestCount', 0),
-				// wells: get(wells, 'data.data.getESPaginatedList.hits', []),
-				wellsCount: get(shapeWellCount, 'data.getESPaginatedList.total', 0),
+				// wells: get(wells, 'data.data.getDbData.hits', []),
+				wellsCount: get(shapeWellCount, 'data.getDbDataTotal.data', 0),
 			})
 		);
 	} catch (error) {

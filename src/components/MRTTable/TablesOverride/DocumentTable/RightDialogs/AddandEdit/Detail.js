@@ -1,8 +1,7 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { IconButton, TextField, withStyles } from '@material-ui/core';
-import { Typography, Grid } from '@material-ui/core';
+import { IconButton, TextField, withStyles, Typography, Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -16,13 +15,12 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { BlockBlobClient } from '@azure/storage-blob';
 import _ from 'lodash';
 import loadashFilter from 'lodash/filter';
+import PropTypes from 'prop-types';
 
 import Loader from 'components/Loaders';
+import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
 import GenericDateField from 'components/Shared/components/Fields/GenericDateFIeld';
-
-// functions
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
-import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
 import { ADDDESCRIPTORFILE } from 'graphQL/useMutationAddDescriptorFile';
@@ -32,6 +30,8 @@ import { VIEWFILESQUERY } from 'graphQL/useQueryViewFile';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import { CREATED_STATUS, ONE_MB } from 'utils/consts';
 
 import { showErrorMessage } from 'actions';
 
@@ -262,11 +262,13 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 			const file_id = addFileData.addFileDescriptor.file.id;
 			const file_name = addFileData.addFileDescriptor.file.name;
 
+			const MBS = 4;
+
 			if (file_id) {
 				const blockBlobClient = new BlockBlobClient(uri);
 				blockBlobClient
 					.uploadBrowserData(inputFile, {
-						maxSingleShotSize: 4 * 1024 * 1024,
+						maxSingleShotSize: MBS * ONE_MB,
 						blobHTTPHeaders: {
 							blobContentDisposition: `attachment; filename="${file_name}"`,
 						},
@@ -275,7 +277,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 						},
 					})
 					.then(res => {
-						if (res?._response?.status !== 201) {
+						if (res?._response?.status !== CREATED_STATUS) {
 							dispatch(showErrorMessage('Upload failed'));
 						}
 					})
@@ -487,7 +489,7 @@ export default function DocumentDetails({ selectedDocument, handleClose, tableKe
 						</div>
 					</ListItem>
 
-					{metaColumns.map((meta, index) => {
+					{metaColumns.map(meta => {
 						return (
 							<Fragment key={meta?.name}>
 								{meta?.inputType === 'text' && (
@@ -674,7 +676,7 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 			}}
 			renderOption={option => {
 				if (option._id === 'newEntity') {
-					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+					return <Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>;
 				}
 
 				return (
@@ -734,4 +736,16 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 			{...other}
 		/>
 	);
+};
+
+DocumentDetails.propTypes = {
+	selectedDocument: PropTypes.object,
+	handleClose: PropTypes.func.isRequired,
+	tableKey: PropTypes.string.isRequired,
+};
+
+DocumentType.propTypes = {
+	setDocumentType: PropTypes.func.isRequired,
+	value: PropTypes.string,
+	documentTypes: PropTypes.object,
 };

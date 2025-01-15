@@ -3,7 +3,7 @@ import MRTTable from 'components/MRTTable';
 
 describe('Campaign Table', () => {
 	beforeEach(() => {
-		cy.interceptAndWait(['getESSimpleSearch', 'campaigns_flat'], () => {
+		cy.interceptAndWait(['getDbData', 'campaigns_flat'], () => {
 			cy.viewport(1600, 1200).mount(<MRTTable name="CampaignTable" />);
 		});
 	});

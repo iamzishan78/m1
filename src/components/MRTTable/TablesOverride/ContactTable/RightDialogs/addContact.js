@@ -99,13 +99,13 @@ export default function AddContactDialogContent(props) {
 		// got required contact values
 		const contact = extractValueRecursively({
 			...formStateValues,
-			ownerType: formStateValues?.ownerType ? formStateValues?.ownerType?.value : null,
+			ownerType: formStateValues?.ownerType ?? null,
 			createBy: getUser?._id,
 			lastUpdateBy: getUser?._id,
 		});
 		await addContact({
 			variables: { contact },
-			refetchQueries: ['getPaginatedContacts', 'getContact', 'getESContacts', 'getESSimpleSearch'],
+			refetchQueries: ['getPaginatedContacts', 'getContact', 'getESContacts', 'getDbData'],
 			awaitRefetchQueries: true,
 		});
 		tableGlobalController.refetch();

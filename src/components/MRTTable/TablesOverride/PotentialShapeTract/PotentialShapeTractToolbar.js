@@ -1,8 +1,9 @@
-import React, { memo } from 'react';
+import React from 'react';
 
 import { Button, ButtonGroup } from '@material-ui/core';
 
 import { useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import { ADD_TRACTS_TOA_SHAPE } from 'graphQL/useMutationAddTractsToAShape';
 
@@ -13,11 +14,12 @@ function PotentialShapeTractToolbar({ tableKey, table }) {
 		onCompleted: () => {
 			tableController(tableKey).updateState({
 				isLoading: false,
+				isFetching: false,
 			});
 
 			tableGlobalController.setSelectedTab(0);
 		},
-		refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
+		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
 	const Controller = tableController(tableKey);
@@ -57,7 +59,7 @@ function PotentialShapeTractToolbar({ tableKey, table }) {
 
 		table.resetRowSelection();
 		tableController(tableKey).updateState({
-			isLoading: true,
+			isFetching: true,
 		});
 
 		addShapeTract({
@@ -89,4 +91,9 @@ function PotentialShapeTractToolbar({ tableKey, table }) {
 	);
 }
 
-export default memo(PotentialShapeTractToolbar);
+PotentialShapeTractToolbar.propTypes = {
+	table: PropTypes.object.isRequired,
+	tableKey: PropTypes.string.isRequired,
+};
+
+export default PotentialShapeTractToolbar;

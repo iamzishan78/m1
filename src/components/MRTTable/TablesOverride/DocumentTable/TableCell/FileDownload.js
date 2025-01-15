@@ -36,14 +36,16 @@ function FileDownload({ id }) {
 				alignItems: 'center',
 			}}
 		>
-			<IconButton
-				onClick={e => {
-					e.stopPropagation();
-					handleViewFile(id);
-				}}
-			>
-				<GetAppIcon />
-			</IconButton>
+			{id && (
+				<IconButton
+					onClick={e => {
+						e.stopPropagation();
+						handleViewFile(id);
+					}}
+				>
+					<GetAppIcon />
+				</IconButton>
+			)}
 		</div>
 	);
 }

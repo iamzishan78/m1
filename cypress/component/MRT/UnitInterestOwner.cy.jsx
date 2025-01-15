@@ -1,4 +1,7 @@
+/* eslint-disable no-magic-numbers */
 /* eslint-disable no-undef */
+import React from 'react';
+
 import _ from 'lodash';
 
 import MRTTable from 'components/MRTTable';
@@ -9,11 +12,11 @@ let responseHits;
 describe('Unit Interest Owners Table', () => {
 	beforeEach(() => {
 		cy.interceptAndWait(
-			['getESSimpleSearch', 'shapeowners_flat'],
+			['getDbData', 'shapeowners_flat'],
 			alias => {
 				cy.viewport(1600, 1200).mount(
 					<MRTTable
-						name="OwnersPerUnitTable"
+						name="UnitInterestOwnerTable"
 						overrideMeta={{
 							defaultFilters: [
 								{
@@ -28,12 +31,12 @@ describe('Unit Interest Owners Table', () => {
 						}}
 					/>,
 					{
-						spec: 'OwnersPerUnitTable',
+						spec: 'UnitInterestOwnerTable',
 					}
 				);
 
 				cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
-					responseHits = response.response.body.data.getESSimpleSearch.hits;
+					responseHits = response.response.body.data.getDbData.hits;
 				});
 			},
 			{ wait: false }

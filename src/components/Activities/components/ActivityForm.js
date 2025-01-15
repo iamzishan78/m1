@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useState, useEffect, useRef } from 'react';
 
 import { FormControl, Grid } from '@material-ui/core';
@@ -13,6 +12,7 @@ import moment from 'moment';
 
 import AutoCompleteAddNewField from 'components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField';
 import { outcomeOptions } from 'components/ContactDetailCard/components/FieldContent/helper';
+import AutocompEntityNamesVirtualizeList from 'components/MRTTable/Common/Components/AutocompEntityNamesVirtualizeList';
 import DateField from 'components/Shared/Slideout/FieldComponents/DateField';
 import DescriptionField from 'components/Shared/Slideout/FieldComponents/DescriptionField';
 import OwnerField from 'components/Shared/Slideout/FieldComponents/OwnerField';
@@ -20,8 +20,7 @@ import SearchableSelectField from 'components/Shared/Slideout/FieldComponents/se
 import SimpleTextField from 'components/Shared/Slideout/FieldComponents/SimpleTextfield';
 import SingleSelectField from 'components/Shared/Slideout/FieldComponents/singleSelectField';
 
-import { slidoutState } from 'hookstate/initialStates';
-import { globalState } from 'hookstate/initialStates';
+import { slidoutState, globalState } from 'hookstate/initialStates';
 import { slidoutStateController } from 'hookstate/slidoutStateController';
 import { tableGlobalController } from 'hookstate/tableController';
 
@@ -33,9 +32,8 @@ import { GETMONGOUSERS } from '../../../graphQL/useQueryGetUsers';
 import { OPENDEALS } from '../../../graphQL/useQueryOpenDeals';
 import { PAGINATEDCONTACTSQUERY } from '../../../graphQL/useQueryPaginatedContacts';
 import { setStateIfDeepEqual } from '../../Shared/functions';
-import AutocompEntityNamesVirtualizeList from '../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	dialogExpCard: {
 		'& .MuiDialog-paperScrollPaper': {
 			height: '100%',
@@ -192,6 +190,15 @@ export default function ActivityForm({ setSelectedActivityId }) {
 	const [stateApp] = useContext(AppContext);
 	const [users, setUsers] = useState([]);
 	const { selectedActivity } = slidoutState;
+	const [addContact, { data: addContactData }] = useMutation(ADDCONTACT);
+	const [nameAutInputValue, NameAutInputValue] = useState('');
+	const setNameAutInputValue = newState => {
+		setStateIfDeepEqual(NameAutInputValue, newState);
+	};
+	const [hasNextPage, setHasNextPage] = useState(true);
+	const [isNextPageLoading, setIsNextPageLoading] = useState(false);
+
+	const [openDeals, setOpenDeals] = useState([]);
 
 	const activityName = useHookstate(slidoutState.title).get({ noproxy: true });
 	const formMode = useHookstate(slidoutState.formMode);
@@ -219,13 +226,45 @@ export default function ActivityForm({ setSelectedActivityId }) {
 		}
 	}, [userLists]);
 
+	const clearFields = () => {
+		slidoutStateController.updateNewEntity(true);
+		notes.set('');
+		owner.set({
+			name: stateApp.user.fullname || stateApp.user.email,
+			id: stateApp.user.mongoId,
+		});
+		setNameAutValue({ name: '', _id: null });
+		dealId.set(null);
+		activityType.set('');
+		slidoutStateController.updateTitle('');
+		status.set(false);
+		startDate.set(getCurrentDate());
+		endDate.set(getCurrentDate());
+		startTime.set('08:00');
+		endTime.set('08:00');
+		setNameAutInputValue('');
+		outcome.set('');
+	};
+
+	const onModalClose = () => {
+		if (window.location.pathname.startsWith('/calendar/activities')) {
+			window.history.pushState('', '', '/calendar/activities');
+		}
+
+		clearFields();
+		setSelectedActivityId(null);
+		slidoutState.selectedActivity.set(null);
+		slidoutStateController.hideSlideout();
+		slidoutState.newComments.set([]);
+	};
+
 	const [addActivityMutation] = useMutation(ADDACTIVITY, {
 		onCompleted: () => {
 			onModalClose();
 			globalState.universalLoader.set(false);
 			tableGlobalController.refetch();
 		},
-		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
+		refetchQueries: ['getAllActivities', 'getDbData'],
 		awaitRefetchQueries: true,
 	});
 
@@ -235,7 +274,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 			globalState.universalLoader.set(false);
 			tableGlobalController.refetch();
 		},
-		refetchQueries: ['getAllActivities', 'getESSimpleSearch'],
+		refetchQueries: ['getAllActivities', 'getDbData'],
 		awaitRefetchQueries: true,
 	});
 
@@ -245,7 +284,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 			slidoutStateController.updateEntityLoading(false);
 			tableGlobalController.refetch();
 		},
-		refetchQueries: ['getAllActivities', 'getESSimpleSearch', 'getContactSummary'],
+		refetchQueries: ['getAllActivities', 'getDbData', 'getContactSummary'],
 		awaitRefetchQueries: true,
 	});
 
@@ -256,15 +295,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 			nextFetchPolicy: 'cache-first',
 		}
 	);
-	const [addContact, { data: addContactData }] = useMutation(ADDCONTACT);
-	const [nameAutInputValue, NameAutInputValue] = useState('');
-	const setNameAutInputValue = newState => {
-		setStateIfDeepEqual(NameAutInputValue, newState);
-	};
-	const [hasNextPage, setHasNextPage] = useState(true);
-	const [isNextPageLoading, setIsNextPageLoading] = useState(false);
 
-	const [openDeals, setOpenDeals] = useState([]);
 	const [getOpenDeals, { data: dealsData }] = useLazyQuery(OPENDEALS, {
 		fetchPolicy: 'cache-and-network',
 	});
@@ -304,7 +335,7 @@ export default function ActivityForm({ setSelectedActivityId }) {
 
 	useEffect(() => {
 		if (allContacts?.paginatedContacts) {
-			setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map(el => el.node)]);
+			setMongoEntitiesArray([...(allContacts?.paginatedContacts?.edges?.map(el => el.node) || [])]);
 			setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
 		}
 		setIsNextPageLoading(false);
@@ -369,54 +400,6 @@ export default function ActivityForm({ setSelectedActivityId }) {
 			setOpenDeals(dealsData?.openDeals?.deals);
 		}
 	}, [dealsData]);
-
-	useEffect(() => {
-		if (formMode.get()) {
-			if (formMode.get() === 'update') {
-				if (!selectedActivity.get()) {
-					addActivity();
-				} else {
-					updateActivity();
-				}
-			} else if (formMode.get() === 'delete') {
-				deleteActivity();
-			}
-			formMode.set('');
-			slidoutStateController.hideSlideout();
-		}
-	}, [formMode.get()]);
-
-	const onModalClose = () => {
-		if (window.location.pathname.startsWith('/calendar/activities')) {
-			window.history.pushState('', '', '/calendar/activities');
-		}
-
-		clearFields();
-		setSelectedActivityId(null);
-		slidoutState.selectedActivity.set(null);
-		slidoutStateController.hideSlideout();
-		slidoutState.newComments.set([]);
-	};
-
-	const clearFields = () => {
-		slidoutStateController.updateNewEntity(true);
-		notes.set('');
-		owner.set({
-			name: stateApp.user.fullname || stateApp.user.email,
-			id: stateApp.user.mongoId,
-		});
-		setNameAutValue({ name: '', _id: null });
-		dealId.set(null);
-		activityType.set('');
-		slidoutStateController.updateTitle('');
-		status.set(false);
-		startDate.set(getCurrentDate());
-		endDate.set(getCurrentDate());
-		startTime.set('08:00');
-		endTime.set('08:00');
-		setNameAutInputValue('');
-		outcome.set('');
-	};
 
 	const addActivity = async () => {
 		if (!activityName || activityName.trim().length === 0) {
@@ -486,6 +469,22 @@ export default function ActivityForm({ setSelectedActivityId }) {
 			},
 		});
 	};
+
+	useEffect(() => {
+		if (formMode.get()) {
+			if (formMode.get() === 'update') {
+				if (!selectedActivity.get()) {
+					addActivity();
+				} else {
+					updateActivity();
+				}
+			} else if (formMode.get() === 'delete') {
+				deleteActivity();
+			}
+			formMode.set('');
+			slidoutStateController.hideSlideout();
+		}
+	}, [formMode.get()]);
 
 	return (
 		<div className={classes.inputFieldRoot}>

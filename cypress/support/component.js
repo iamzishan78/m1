@@ -20,14 +20,13 @@ import 'cypress-wait-until';
 import './cypress.css';
 import './commands';
 import '../component/MRT/commands';
-import '../component/TableESHOC/commands';
-import '../component/M1nTable/commands';
 import '../component/Jobs/commands';
 import '../component/Map/Draw/commands';
 import '../component/Map/LayerManager/commands';
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
+import React from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 

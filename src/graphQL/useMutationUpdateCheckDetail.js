@@ -5,3 +5,9 @@ export const UPDATE_CHECK_DETAIL = gql`
 		updateCheckDetail(checkDetail: $checkDetail)
 	}
 `;
+
+export const UPDATE_CHECK_DETAILS = gql`
+	mutation updateCheckDetails($checkDetails: [JSON]) {
+		updateCheckDetails(checkDetails: $checkDetails)
+	}
+`;

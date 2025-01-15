@@ -21,7 +21,7 @@ export const BillingPartiesRightDialog = () => {
 	const { paymentId } = paymentMultiGrid || {};
 
 	const [addBillingPartyContactDescriptor] = useMutation(ADD_BILLING_PARTY_CONTACT_DESCRIPTOR, {
-		refetchQueries: ['getESSimpleSearch', 'getAgreementPaymentSummary'],
+		refetchQueries: ['getDbData', 'getAgreementPaymentSummary'],
 		awaitRefetchQueries: true,
 	});
 

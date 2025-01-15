@@ -9,10 +9,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import EditIcon from '@material-ui/icons/Edit';
 
 import { copy } from 'components/Shared/functions';
-import { BulletPointMeta } from 'components/Table/helpers/BulletPointMeta';
-import { ChipMeta } from 'components/Table/helpers/ChipMeta';
 
 import { globalStateController } from 'hookstate/globalStateController';
+
+import { BulletPointMeta } from 'utils/BulletPointMeta';
+import { ChipMeta } from 'utils/ChipMeta';
 
 const useStyles = makeStyles(theme => ({
 	myClass: {

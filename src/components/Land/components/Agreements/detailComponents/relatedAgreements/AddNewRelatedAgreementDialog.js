@@ -174,7 +174,7 @@ const AddNewRelatedAgreementDialog = props => {
 				relatedObjectType: 'Agreement',
 				isDeleted: false,
 			},
-			refetchQueries: ['getESSimpleSearch'],
+			refetchQueries: ['getDbData'],
 			awaitRefetchQueries: true,
 		});
 	};

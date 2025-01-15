@@ -62,13 +62,6 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
 	//   component: "AdvancedSearch",
 	//   hideSearch: true,
 	// },
-	// REPORTING_GROUPS: {
-	//   featureFlag: "LANDREPORTINGGROUPS",
-	//   title: "Reporting Groups",
-	//   link: "/land/reporting-groups",
-	//   component: "ReportingGroups",
-	//   hideSearch: true,
-	// },
 };
 
 export default function Land() {
@@ -106,6 +99,7 @@ export default function Land() {
 			<Switch>
 				{Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map(option => (
 					<Route
+						key={option.title}
 						exact
 						path={SIDE_PANEL_MENU_ITEMS_LIST[option].link}
 						component={Components[SIDE_PANEL_MENU_ITEMS_LIST[option].component]}

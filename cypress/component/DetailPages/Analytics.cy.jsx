@@ -8,7 +8,7 @@ import { RevenuePropertyDetails } from 'components/Revenue/components';
 describe('AnalyticsSection', () => {
 	beforeEach(() => {
 		cy.interceptAndWait(
-			['getESSimpleSearch'],
+			['getDbData'],
 			alias => {
 				cy.viewport(1600, 1200).mount(<MRTTable name="PropertyIntrestTable" />, {
 					spec: 'PropertyIntrestTableSpec',

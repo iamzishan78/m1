@@ -14,37 +14,13 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 
 import { UPSERT_MY_WELL } from 'graphQL/useMutationUpsertMyWell';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
 import { wellParams } from './helpers';
 import { addMyWellStyles as useStyles } from './styles';
 
-function NumberFormatCustom(props) {
-	const { inputRef, onChange, name, ...other } = props;
-
-	return (
-		<NumberFormat
-			{...other}
-			getInputRef={inputRef}
-			onValueChange={values => {
-				onChange({
-					target: {
-						name: props.name,
-						value: values.value,
-					},
-				});
-			}}
-		/>
-	);
-}
-
-NumberFormatCustom.propTypes = {
-	inputRef: PropTypes.func.isRequired,
-	name: PropTypes.string.isRequired,
-	onChange: PropTypes.func.isRequired,
-};
 function CurrencyFormatCustom(props) {
 	const { inputRef, onChange, name, ...other } = props;
 
@@ -82,11 +58,11 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 			tableGlobalController.refetch();
 		},
 	});
-	const [getESSimpleSearch] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+	const [getDbData] = useLazyQuery(GET_DB_DATA, {
 		fetchPolicy: 'no-cache',
 		onCompleted: wellsData => {
-			if (wellsData?.getESSimpleSearch?.hits) {
-				setFoundWells(wellsData.getESSimpleSearch.hits);
+			if (wellsData?.getDbData?.hits) {
+				setFoundWells(wellsData.getDbData.hits);
 			}
 		},
 	});
@@ -132,7 +108,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 			variables: {
 				myWell: { ...platformWell, _id: platformWell.id, ...processedValues },
 			},
-			refetchQueries: ['getESSimpleSearch'],
+			refetchQueries: ['getDbData'],
 			awaitRefetchQueries: true,
 		});
 	};
@@ -202,7 +178,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
 									label="Search for a well by name or API"
 									InputLabelProps={{ shrink: true }}
 									onChange={event => {
-										getESSimpleSearch({
+										getDbData({
 											variables: {
 												index: 'platformData:wells',
 												pagination: {

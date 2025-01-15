@@ -106,7 +106,7 @@ function AgreementUnitDialog(props) {
 				Loaders.errorToast('ageement-unit-creation', data.addRelatedShape.message);
 			}
 		},
-		refetchQueries: ['getESSimpleSearch', 'getESFilterList'],
+		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
 
@@ -120,7 +120,7 @@ function AgreementUnitDialog(props) {
 				descriptorObject: props.shapeId,
 				relatedObject: selectedShapeLayer._id,
 			},
-			refetchQueries: ['getESSimpleSearch', 'getCustomLayer'],
+			refetchQueries: ['getDbData', 'getCustomLayer'],
 			awaitRefetchQueries: true,
 		});
 		tableGlobalController.refetch();

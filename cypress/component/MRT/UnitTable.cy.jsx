@@ -30,7 +30,7 @@ const countyColumn = {
 
 describe('Unit Table', () => {
 	beforeEach(() => {
-		cy.interceptAndWait(['getESSimpleSearch', 'shapes_flat'], () => {
+		cy.interceptAndWait(['getDbData', 'shapes_flat'], () => {
 			cy.viewport(1600, 1200).mount(<MRTTable name="UnitTable" />);
 		});
 	});
@@ -122,9 +122,9 @@ describe('Unit Table', () => {
 	});
 
 	it('Open Bulk Update for Unit Grid', () => {
-		// Intercept and wait for a specific API call ('getESSimpleSearch') and perform actions after the call is made
+		// Intercept and wait for a specific API call ('getDbData') and perform actions after the call is made
 		cy.interceptAndWait(
-			['getESSimpleSearch'],
+			['getDbData'],
 			alias => {
 				// Set the viewport size to simulate a desktop environment
 				cy.viewport(1600, 1200).mount(
@@ -144,7 +144,7 @@ describe('Unit Table', () => {
 				// Wait for the API call to finish with a custom timeout and process the response
 				cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
 					// Store the hits from the API response for later assertions or usage
-					responseHits = response.response.body.data.getESSimpleSearch.hits;
+					responseHits = response.response.body.data.getDbData.hits;
 				});
 			},
 			{ wait: false } // Do not automatically wait for the intercepted request
@@ -184,9 +184,9 @@ describe('Unit Table', () => {
 
 	// Define a test case to verify the Campaign Name Bulk Update functionality
 	it('Tags Bulk Update Works', () => {
-		// Intercept and wait for a specific API call ('getESSimpleSearch') and perform actions after the call is made
+		// Intercept and wait for a specific API call ('getDbData') and perform actions after the call is made
 		cy.interceptAndWait(
-			['getESSimpleSearch'],
+			['getDbData'],
 			alias => {
 				// Set the viewport size to simulate a desktop environment
 				cy.viewport(1600, 1200).mount(
@@ -200,7 +200,7 @@ describe('Unit Table', () => {
 				// Wait for the API call to finish with a custom timeout and process the response
 				cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
 					// Store the hits from the API response for later assertions or usage
-					responseHits = response.response.body.data.getESSimpleSearch.hits;
+					responseHits = response.response.body.data.getDbData.hits;
 				});
 			},
 			{ wait: false } // Do not automatically wait for the intercepted request
@@ -238,7 +238,7 @@ describe('Unit Table', () => {
 		// Wait for 5 seconds, possibly to allow for UI updates or transitions
 		cy.wait(5000);
 
-		// Intercept and wait for the 'getESSimpleSearch' API call again after clicking the action button to submit the update
+		// Intercept and wait for the 'getDbData' API call again after clicking the action button to submit the update
 		cy.get('[data-testid="action-button"]', { timeout: 5000 }).click({ force: true });
 
 		cy.interceptAndWait(
@@ -254,9 +254,9 @@ describe('Unit Table', () => {
 	});
 
 	it('Campaign Name Bulk Update Works', () => {
-		// Intercept and wait for a specific API call ('getESSimpleSearch') and perform actions after the call is made
+		// Intercept and wait for a specific API call ('getDbData') and perform actions after the call is made
 		cy.interceptAndWait(
-			['getESSimpleSearch'],
+			['getDbData'],
 			alias => {
 				// Set the viewport size to simulate a desktop environment
 				cy.viewport(1600, 1200).mount(
@@ -271,7 +271,7 @@ describe('Unit Table', () => {
 				// Wait for the API call to finish with a custom timeout and process the response
 				cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
 					// Store the hits from the API response for later assertions or usage
-					responseHits = response.response.body.data.getESSimpleSearch.hits;
+					responseHits = response.response.body.data.getDbData.hits;
 				});
 			},
 			{ wait: false } // Do not automatically wait for the intercepted request
@@ -311,7 +311,7 @@ describe('Unit Table', () => {
 			.eq(0)
 			.invoke('text')
 			.then(campaignName => {
-				// Intercept and wait for the 'getESSimpleSearch' API call again after clicking the action button to submit the update
+				// Intercept and wait for the 'getDbData' API call again after clicking the action button to submit the update
 				cy.interceptAndWait(['updateShapes'], () => {
 					cy.get('[data-testid="action-button"]', { timeout: 5000 }).click();
 				});

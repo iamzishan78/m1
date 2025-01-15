@@ -19,7 +19,7 @@ import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import { snapGridSideBarData } from 'components/MapGridCard/components/data';
 import { truncate } from 'components/Shared/functions';
 
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 
 import { jobController } from 'hookstate/jobStateController';
@@ -127,11 +127,11 @@ export default function TransferDataManager(props) {
 		// common generateFileFilters in all places to avoid query issues in future
 		const fileQuery = generateFileFilters({ fileLayer: selectedSourceCategory, pagination: { first: 5, after: null } });
 		const sourceData = await client.query({
-			query: GET_ES_SIMPLE_SEARCH,
+			query: GET_DB_DATA,
 			...fileQuery,
 		});
 		let columns = [];
-		sourceData.data.getESSimpleSearch.hits.forEach(hit => {
+		sourceData.data.getDbData.hits.forEach(hit => {
 			const currentColumns = Object.keys(hit.properties);
 			if (currentColumns.length > columns.length) {
 				columns = currentColumns;

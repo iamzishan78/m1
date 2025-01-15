@@ -34,10 +34,10 @@ import RelatedWells from 'components/Land/components/Agreements/detailComponents
 import Summary from 'components/Land/components/Agreements/detailComponents/summary';
 import NavHeader from 'components/Land/components/Common/NavHeader';
 import MapProvider from 'components/Map/MapProvider';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
 import DocViewer from 'components/Shared/DocViewer';
 import { copy } from 'components/Shared/functions';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import MapImgViewIcon from 'components/Shared/svgIcons/MapImgViewIcon';
 import Tags from 'components/Shared/Tagger';
 
@@ -56,15 +56,12 @@ import { PaymentFeatureTenants } from 'utils/data';
 import { setLandReduxKey } from 'actions';
 import { AppContext } from 'AppContext';
 
-// Components
-
-// import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
-
 import { DrawerContext } from './DrawerContext';
 import RelatedDocumets from './relatedDocuments';
 import RelatedPayments from './relatedPayments';
+import { popupController } from 'hookstate/popupStateController';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	mapProvider: {
 		position: 'relative',
 		zIndex: '9999',
@@ -191,7 +188,7 @@ const useStyles = makeStyles(theme => ({
 	},
 	tabsDetailContainer: ({ drawer }) => ({
 		padding: 20,
-		width: '100%',
+		width: drawer ? 'calc(100% - 644px)' : '100%',
 	}),
 	menuIcon: {
 		marginLeft: 10,
@@ -325,10 +322,10 @@ export function DetailComponents(props) {
 			shape.id = dataCustomLayer.customLayer._id;
 			shape.properties.id = dataCustomLayer.customLayer._id;
 			shape.layer = { id: dataCustomLayer.customLayer.layer };
-			setStateApp(state => ({
-				...state,
+			popupController.updateState({
 				selectedShape: { ...shape.properties, shape },
-			}));
+			});
+
 			dispatch(
 				setLandReduxKey('agreement', {
 					activeAgreement: {
@@ -338,7 +335,6 @@ export function DetailComponents(props) {
 				})
 			);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dataCustomLayer?.customLayer]);
 
 	useEffect(() => {
@@ -380,10 +376,9 @@ export function DetailComponents(props) {
 			});
 			detailCardController.updateState({ customLayer: null });
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	const updateAgreement = (field, value, isCustom) => {
+	const updateAgreement = (field, value) => {
 		if (agreementDetails[field] === value) {
 			return;
 		}
@@ -605,7 +600,7 @@ export function DetailComponents(props) {
 								className={classes.metaButton}
 								onClick={handleMetaToggle}
 							>
-								Metadata
+								Meta Data
 							</Button>
 							<IconButton size="small" component="span" className={classes.menuIcon} onClick={handleMenuClick}>
 								<MoreHorizIcon id="moreHorizIcon" size="medium" />
@@ -700,7 +695,11 @@ export function DetailComponents(props) {
 							</div>
 							<div style={{ backgroundColor: '#f3f3f3 !important', height: 24 }} />
 							<div id="related-wells-div" className={classes.tabDetailSection} ref={el => sectionsRef.current.push(el)}>
-								<RelatedWells uniObj={uniObj} shapeSummaryDetails={dataShapeSummaryDetails?.shapeSummaryDetails} />
+								<RelatedWells
+									agreementId={agreementId}
+									uniObj={uniObj}
+									shapeSummaryDetails={dataShapeSummaryDetails?.shapeSummaryDetails}
+								/>
 							</div>
 							<div style={{ backgroundColor: '#f3f3f3 !important', height: 24 }} />
 							<div id="related-docs-div" className={classes.tabDetailSection} ref={el => sectionsRef.current.push(el)}>
@@ -775,15 +774,13 @@ export function DetailComponents(props) {
 			 * Delete Custom Layer confirmation dialog
 			 * */}
 			{openDialog && (
-				<DeleteConfirmationDialogContent
+				<DeleteConfirmationDialog
 					header="Delete Agreement"
 					onClose={() => setOpenDialog(false)}
 					deleteFunc={handleDeleteAgreement}
-					m1nSelectedRowsIds={null}
-					setM1nSelectedRowsIndexes={() => {}}
 				>
 					Are you sure you want to delete this agreement?
-				</DeleteConfirmationDialogContent>
+				</DeleteConfirmationDialog>
 			)}
 		</NavHeader>
 	);

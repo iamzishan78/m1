@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useMemo, useRef } from 'react';
+import React, { useContext, useEffect, useState, useMemo } from 'react';
 
 import {
 	Grid,
@@ -27,9 +27,9 @@ import SearchIcon from '@material-ui/icons/Search';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import _ from 'lodash';
 
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 import { AppContext } from 'AppContext';
 
@@ -45,7 +45,7 @@ export default function LinkWithIcon(props) {
 	const [inputSearchValue, setSearchValue] = useState('');
 	const [showAll, setShow] = useState(false);
 	const [showSearchOptions, setShowOptions] = useState(false);
-	const [stateApp, setStateApp] = useContext(AppContext);
+	const [stateApp] = useContext(AppContext);
 	const [processingPlatformOwners, setProcessingOwners] = useState([]);
 	const [isDeleteGlobalOwnerDialog, setGlobalOwnerDialog] = useState({
 		state: false,
@@ -57,7 +57,7 @@ export default function LinkWithIcon(props) {
 	});
 	const [unlinkGlobalOwners] = useMutation(UNLINK_GLOBAL_OWNER);
 	const [linkTaxOwners] = useMutation(LINK_PLATFORM_OWNER);
-	const [getESSimpleSearch, { data: esSearchData, loading }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+	const [getDbData, { data: esSearchData, loading }] = useLazyQuery(GET_DB_DATA, {
 		fetchPolicy: 'no-cache',
 	});
 
@@ -142,7 +142,7 @@ export default function LinkWithIcon(props) {
 
 	const debouncedSearch = useMemo(() => {
 		return _.debounce((search, showAll) => {
-			getESSimpleSearch({
+			getDbData({
 				variables: {
 					index: 'platformData:globalowner',
 					pagination: {
@@ -328,7 +328,7 @@ export default function LinkWithIcon(props) {
 												<Grid item xs={6}>
 													<Typography color={'primary'}>PLATFORM OWNERS</Typography>
 												</Grid>
-												{!_.isEmpty(esSearchData?.getESSimpleSearch?.hits) && (
+												{!_.isEmpty(esSearchData?.getDbData?.hits) && (
 													<Grid
 														item
 														xs={6}
@@ -356,7 +356,7 @@ export default function LinkWithIcon(props) {
 													<CircularProgress color="secondary" />
 												</Grid>
 											)}
-											{esSearchData?.getESSimpleSearch?.hits?.map(taxOwner => (
+											{esSearchData?.getDbData?.hits?.map(taxOwner => (
 												<ListGlobalOwners
 													taxOwner={taxOwner}
 													onClick={() => {
@@ -372,7 +372,7 @@ export default function LinkWithIcon(props) {
 													isLoading={processingPlatformOwners.includes(taxOwner.globalOwnerId)}
 												/>
 											))}
-											{!loading && _.isEmpty(esSearchData?.getESSimpleSearch?.hits) && (
+											{!loading && _.isEmpty(esSearchData?.getDbData?.hits) && (
 												<Grid container justifyContent="center">
 													<Typography>No platform owners found.</Typography>
 												</Grid>
@@ -459,15 +459,13 @@ export default function LinkWithIcon(props) {
 				fullWidth={false}
 				maxWidth="sm"
 			>
-				<DeleteConfirmationDialogContent
+				<DeleteConfirmationDialog
 					header="Remove Global Owner"
 					onClose={() => setGlobalOwnerDialog(state => ({ ...state, state: false }))}
 					deleteFunc={handleRemoveGlobalOwner}
-					m1nSelectedRowsIds={null}
-					setM1nSelectedRowsIndexes={() => {}}
 				>
 					Are you sure you want to remove this Global Owner?
-				</DeleteConfirmationDialogContent>
+				</DeleteConfirmationDialog>
 			</Dialog>
 		</React.Fragment>
 	);

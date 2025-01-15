@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import CheckIcon from '@material-ui/icons/LocalAtm';
 
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
@@ -46,17 +49,16 @@ const ObligationsMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
-			accessorKey: 'id',
+			id: 'id',
 		},
 		{
 			...CommonSchema.HIDDEN,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'name.keyword',
-			accessorFn: row => row?.name,
 			id: 'name',
 			header: 'Name',
 			Cell: ({ renderedCellValue }) => {
@@ -64,86 +66,76 @@ const ObligationsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'type.keyword',
-			accessorFn: row => row?.type,
 			id: 'type',
 			header: 'Type',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'dateTime',
-			accessorFn: row => row?.dateTime,
 			id: 'dateTime',
 			header: 'Start Date',
 			simple: true,
 			type: 'date',
-			Cell: ({ renderedCellValue, row }) => {
+			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.dateTime)}</>;
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'endDateTime',
-			accessorFn: row => row?.endDateTime,
 			id: 'endDateTime',
 			header: 'End Date',
 			simple: true,
 			type: 'date',
-			Cell: ({ renderedCellValue, row }) => {
+			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.endDateTime)}</>;
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'owner.name.keyword',
-			accessorFn: row => row?.owner?.name,
 			id: 'owner.name',
 			header: 'Activity Owner',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'frequency.keyword',
-			accessorFn: row => row?.frequency,
 			id: 'frequency',
 			header: 'Frequency',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'applicable.keyword',
-			accessorFn: row => row?.applicable,
 			id: 'applicable',
 			header: 'Applicable',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'value.keyword',
-			accessorFn: row => row?.value,
 			id: 'value',
 			header: 'Value',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'responsibleParty.keyword',
-			accessorFn: row => row?.responsibleParty,
 			id: 'responsibleParty',
 			header: 'Responsible Party',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'status.keyword',
-			accessorFn: row => row?.status,
 			id: 'status',
 			header: 'Status',
-			Cell: ({ renderedCellValue, row }) => {
+			Cell: ({ row }) => {
 				return <>{statusOptions[row?.original?.status] || row?.original?.status}</>;
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'isClosed',
 			esKey: 'isClosed',
-			accessorFn: row => row?.isClosed,
 			id: 'isClosed',
 			header: 'Completed?',
 			type: 'boolean',
@@ -162,12 +154,11 @@ const ObligationsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			enableColumnFilter: false,
 			enableSorting: false,
 			isExport: false,
 			name: 'notes',
-			accessorFn: row => row?.notes,
 			id: 'notes',
 			header: 'Notes',
 			Cell: ({ renderedCellValue }) => {

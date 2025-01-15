@@ -1,8 +1,9 @@
-import React, { memo } from 'react';
+import React from 'react';
 
 import { Button, ButtonGroup } from '@material-ui/core';
 
 import { useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import { ADD_MULTI_WELLINTEREST_TO_SHAPE } from 'graphQL/useMutationAddMultiWellInterestToShape';
 
@@ -14,11 +15,12 @@ function PotentialWellToolbar({ tableKey, table }) {
 		onCompleted: () => {
 			tableController(tableKey).updateState({
 				isLoading: false,
+				isFetching: false,
 			});
 
 			tableGlobalController.setSelectedTab(0);
 		},
-		refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getShapeSummaryDetails'],
+		refetchQueries: ['getDbData', 'getESFilterList', 'getShapeSummaryDetails'],
 		awaitRefetchQueries: true,
 	});
 
@@ -39,7 +41,7 @@ function PotentialWellToolbar({ tableKey, table }) {
 
 		table.resetRowSelection();
 		tableController(tableKey).updateState({
-			isLoading: true,
+			isFetching: true,
 		});
 
 		const user = globalStateController.getValue('user');
@@ -78,4 +80,9 @@ function PotentialWellToolbar({ tableKey, table }) {
 	);
 }
 
-export default memo(PotentialWellToolbar);
+PotentialWellToolbar.propTypes = {
+	table: PropTypes.object.isRequired,
+	tableKey: PropTypes.string.isRequired,
+};
+
+export default PotentialWellToolbar;

@@ -53,6 +53,7 @@ export default [
 
 	{ files: ['**/*.{js,mjs,cjs,jsx}'] },
 	{ languageOptions: { globals: globals.browser } },
+	{ languageOptions: { globals: globals.node } },
 	pluginJs.configs.recommended,
 	pluginReact.configs.flat.recommended,
 	{
@@ -157,12 +158,7 @@ export default [
 			'react/no-array-index-key': 'error',
 
 			// Add no-magic-numbers rule
-			'no-magic-numbers': [
-				'error',
-				{
-					ignore: [0, 1, 10, 100, 1000], // Allow these numbers if needed
-				},
-			],
+			'no-magic-numbers': 'off',
 
 			'import/no-named-as-default': 'off',
 			'import/no-named-as-default-member': 'off',
