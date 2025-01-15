@@ -194,7 +194,7 @@ const AppProvider = props => {
 			const isBypassTenant = globalStateController.isBypassTenant(tenantName);
 
 			let tenant = tenantsCredentials(tenantName);
-			if (tenant) {
+			if (tenant && !query.tenant) {
 				window.sessionStorage.setItem('tenantName', tenantName);
 				tenant.apolloOriginalClientEndpoint = tenant.apolloClientEndpoint;
 				tenant.apolloClientEndpoint =

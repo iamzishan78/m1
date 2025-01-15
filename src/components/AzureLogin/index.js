@@ -307,7 +307,6 @@ const Login = (props) => {
       history.push(history.location.pathname)
       return;
     }
-
     if (tenant) {
       setSigningIn(true);
       setLoadingSigInButton(true);
@@ -650,12 +649,11 @@ const Login = (props) => {
           <BypassSignInCard
             ready={loadingSigInButton}
             handleAADSignIn={handleBypassAADSignIn}
-            tenant={!stateApp.myMSALObj ? queryString.parse(props.location.search).tenant : undefined}
+            tenant={queryString.parse(props.location.search)?.tenant}
           /> :
           <SignInCard
             ready={loadingSigInButton}
             handleAADSignIn={handleAADSignIn}
-            tenant={!stateApp.myMSALObj ? queryString.parse(props?.location?.search).tenant : undefined}
           />
         }
       </div>
