@@ -1,6 +1,7 @@
-import { makeStyles } from '@material-ui/core/styles';
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
+
+import { makeStyles } from '@material-ui/core/styles';
 
 import CodeMapping from 'components/Shared/AdminSettings/CodeMapping';
 import Validations from 'components/Shared/AdminSettings/Validations';

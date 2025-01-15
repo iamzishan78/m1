@@ -1,3 +1,6 @@
+import React, { useEffect, useState } from 'react';
+import CSVDownloader from 'react-csv-downloader';
+
 import { Box, Grid, IconButton, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -9,13 +12,13 @@ import TableRow from '@material-ui/core/TableRow';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropRight from '@material-ui/icons/ArrowRight';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
-import React, { useEffect, useState } from 'react';
-import CSVDownloader from 'react-csv-downloader';
 
-import { convertAnalyticsDataToCSV } from 'components/Shared/M1nTable/components/MUIDataTable/utils';
 import vf_number from 'components/Shared/valueformatters/vf_number';
 
-const useStyles = makeStyles(theme => ({
+import { TO_FIXED } from 'utils/consts';
+import { convertAnalyticsDataToCSV, isEven } from 'utils/helper';
+
+const useStyles = makeStyles(() => ({
 	root: {
 		// margin: "20px 0px",
 	},
@@ -93,7 +96,7 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
 	};
 
 	const displayValue = value => {
-		return value ? <span>{vf_number(value.toFixed(2))}</span> : <span>-</span>;
+		return value ? <span>{vf_number(value.toFixed(TO_FIXED))}</span> : <span>-</span>;
 	};
 
 	const [csvItems, setCsvItems] = useState(items);
@@ -123,13 +126,14 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
 						<Table className={classes.table} aria-label="caption table">
 							<TableHead>
 								<TableRow>
-									<TableCell style={{ paddingLeft: 0 }}>
+									<TableCell style={{ paddingLeft: 0, width: '-webkit-fill-available' }} component="th" className={`${classes.nameCell} ${classes.headerCell}`}>
 										<CSVDownloader
 											datas={convertAnalyticsDataToCSV(csvItems, monthsInterval)}
 											filename={'Adjustments'}
 											type="link"
+											style={{ position: 'relative',  left: '15px', width: '30px'   }}
 										>
-											<IconButton style={{ display: 'flex', padding: '0 0 0 15px' }}>
+											<IconButton style={{ display: 'flex', padding: '0px',}}>
 												<Tooltip title="Download CSV" aria-label="add">
 													<CloudDownloadIcon />
 												</Tooltip>
@@ -148,7 +152,7 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
 							</TableHead>
 							<TableBody>
 								{items.map((item, index) => (
-									<TableRow key={item.name + index}>
+									<TableRow key={item.name}>
 										<TableCell scope="row" className={classes.leftCells}>
 											<Box>
 												<span style={{ display: 'flex' }}>
@@ -167,13 +171,12 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
 												</span>
 												<span style={{ display: 'grid', marginLeft: '25px', fontWeight: '200' }}>
 													{' '}
-													{selectedItems[index] &&
-														Object.keys(item.breakDown).map(key => (key ? <span>{key}</span> : <span>-</span>))}
+													{selectedItems[index] && Object.keys(item.breakDown).map(key => <span>{key || '-'}</span>)}
 												</span>
 											</Box>
 										</TableCell>
 										<TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-											<span>{item.total.toFixed(2)}</span>
+											<span>{item.total.toFixed(TO_FIXED)}</span>
 											<span style={{ display: 'grid' }}>
 												{' '}
 												{selectedItems[index] && Object.values(item.breakDown).map(value => displayValue(value))}
@@ -213,7 +216,7 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
 							</TableHead>
 							<TableBody>
 								{items.map((item, index) => (
-									<TableRow className={`${(index + 1) % 2 !== 0 ? classes.highlightedRows : ''}`} key={index}>
+									<TableRow className={`${isEven(index) ? classes.highlightedRows : ''}`} key={index}>
 										{monthsInterval.map(month => (
 											<TableCell scope="row">
 												<span>{displayValue(item.data[month]?.total)}</span>

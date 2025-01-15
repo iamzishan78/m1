@@ -1,5 +1,6 @@
-import { TextField } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
+
+import { TextField } from '@material-ui/core';
 
 const NumberField = ({ value, defaultValue, id, field, fieldKey, index, onChange, ...props }) => {
 	const [fieldValue, setFieldValue] = useState(value || defaultValue || '');

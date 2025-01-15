@@ -1,3 +1,5 @@
+import React, { useContext } from 'react';
+
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import List from '@material-ui/core/List';
@@ -8,7 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import RateReviewIcon from '@material-ui/icons/RateReviewOutlined';
 import ScreenShareIcon from '@material-ui/icons/ScreenShareOutlined';
-import React, { useContext } from 'react';
+
 import styled from 'styled-components';
 
 import { AppContext } from '../../../AppContext';

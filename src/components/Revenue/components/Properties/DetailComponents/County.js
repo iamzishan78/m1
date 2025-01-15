@@ -1,4 +1,5 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useState, useEffect } from 'react';
+
 import { InputAdornment } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
@@ -6,7 +7,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useState, useEffect } from 'react';
+
+import { useLazyQuery } from '@apollo/client';
 
 import { COUNTIES } from 'graphQL/useQueryCountiesBySta';
 

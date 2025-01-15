@@ -1,7 +1,8 @@
-import { useAuth0 } from '@auth0/auth0-react';
-import * as msal from '@azure/msal-browser';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+
+import { useAuth0 } from '@auth0/auth0-react';
+import * as msal from '@azure/msal-browser';
 
 import { msalConfig, tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
 
@@ -159,7 +160,8 @@ const Auth0Login = props => {
 			const tenantName = window.sessionStorage.getItem('tenantName');
 			let tenant = tenantsCredentials(tenantName);
 
-			myMSALObj = new msal.PublicClientApplication(msalConfig(tenant));
+			const isBypassTenant = tenantName && globalStateController.isBypassTenant(tenantName);
+			myMSALObj = isBypassTenant ? null : new msal.PublicClientApplication(msalConfig(tenant));
 
 			globalStateController.updateState({
 				myMSALObj,
@@ -199,7 +201,6 @@ const Auth0Login = props => {
 
 			handleLogin(loginRes, userMapSettings);
 		})();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isLoading, isAuthenticated]);
 
 	return null;

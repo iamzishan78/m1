@@ -1,4 +1,5 @@
-import { useMutation } from '@apollo/client';
+import React, { useEffect, useState, memo, useMemo } from 'react';
+
 import {
 	TextField,
 	InputAdornment,
@@ -15,7 +16,8 @@ import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import SearchIcon from '@material-ui/icons/Search';
 import StarIcon from '@material-ui/icons/Star';
-import React, { useEffect, useState, memo, useMemo } from 'react';
+
+import { useMutation } from '@apollo/client';
 
 import { defaultHandleDefaultView } from 'components/Shared/GridView';
 import LeftDialog from 'components/Shared/LeftDialog';
@@ -173,13 +175,6 @@ function GridViewOptions({
 		Controller.updateState({
 			gridView: { ...tableStateValues.gridView, selectedGridView: data, showViewModal: false },
 		});
-		setTimeout(() => {
-			data.filters?.forEach(filter => {
-				if (filter.searchType) {
-					Controller.setFilterMode(filter?.field.replace('.keyword', ''), filter.searchType);
-				}
-			});
-		}, 0);
 	};
 
 	// Apply stylinng dynamically for mainn grid

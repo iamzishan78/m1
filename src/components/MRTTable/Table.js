@@ -1,24 +1,18 @@
-import { MaterialReactTable } from 'material-react-table';
 import React, { memo } from 'react';
-
-// Importing React and memo for component optimization by memoizing the Table component.
 import { ErrorBoundary } from 'react-error-boundary';
 
-import AllDialogs from 'components/MRTTable/Common/Dialog';
-import useTableESSimple from 'components/MRTTable/Hooks/useTableESSimple';
-// Custom hook to handle table setup and state for the ElasticSearch Simple table.
-// Importing a component that handles dialogs for the table.
+import { MaterialReactTable } from 'material-react-table';
+import PropTypes from 'prop-types';
 
-// Importing ErrorBoundary to catch and handle errors in the component tree.
+import AllDialogs from 'components/MRTTable/Common/Dialog';
+import useMRTTable from 'components/MRTTable/Hooks/useMRTTable';
 import MRTFallback from 'components/MRTTable/MRTFallBack';
 
-// Importing a fallback component to render when an error occurs.
-// Importing the MaterialReactTable component to render the table.
 import { tableController } from 'hookstate/tableController';
 
 function Table({ tableKey }) {
 	// Functional component Table accepts tableKey as props.
-	const { tableProps, tablePropsState, classes } = useTableESSimple(tableKey);
+	const { tableProps, tablePropsState, classes } = useMRTTable(tableKey);
 	// Destructuring the table properties, state, and CSS classes from the custom hook.
 
 	return (
@@ -43,6 +37,11 @@ function Table({ tableKey }) {
 		</ErrorBoundary>
 	);
 }
+
+// Define prop types for the Table component
+Table.propTypes = {
+	tableKey: PropTypes.string.isRequired, // tableKey is a required string
+};
 
 export default memo(Table);
 // Exporting the Table component wrapped in memo to prevent unnecessary re-renders.

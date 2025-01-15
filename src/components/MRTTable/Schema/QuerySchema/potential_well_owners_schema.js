@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import IsContactCell from 'components/MRTTable/Common/TableCells/isContactIcone';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
@@ -18,7 +21,7 @@ const PotentialWellOwnersMeta = {
 		const { customLayer, year, filterByWells } = tableMeta?.customProps || {};
 
 		if (!customLayer) {
-			return;
+			return null;
 		}
 
 		const polygon = getPolygonString(customLayer?.shape);
@@ -38,117 +41,102 @@ const PotentialWellOwnersMeta = {
 			userId: user._id,
 		};
 	},
-	getDataFromRes: res => res?.data?.paginatedShapeWellOwners?.edges || [],
-	getIdsFromRows: rows => rows?.map(row => row.node?.id) || [],
+	getDataFromRes: res => res?.data?.paginatedShapeWellOwners?.edges?.map(edge => edge.node) || [],
+	getIdsFromRows: rows => rows?.map(row => row?.id) || [],
 	CustomToolBar: PotentialWellOwnersToolbar,
 	isClientSide: true,
 	isSelectAllAllowed: true,
-	isDeleteAllowed: false,
-	isExportAllowed: false,
+	isDeleteDisabled: true,
+	isExportDisabled: true,
 	enableFacetedValues: true,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
-			accessorKey: 'id',
-			accessorFn: row => row?.node?.id,
+			id: 'id',
 		},
 		{
 			...CommonSchema.HIDDEN,
 			name: 'entity',
-			accessorKey: 'entity',
-			accessorFn: row => row?.node?.entity,
+			id: 'entity',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Api Number',
-			accessorKey: 'api',
+			id: 'api',
 			name: 'api',
-			accessorFn: row => row?.node?.api,
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Well Name',
-			accessorKey: 'wellName',
+			id: 'wellName',
 			name: 'wellName',
-			accessorFn: row => row?.node?.wellName,
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Lease',
-			accessorKey: 'lease',
+			id: 'lease',
 			name: 'lease',
-			accessorFn: row => row?.node?.lease,
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Lease Number',
-			accessorKey: 'leaseNumber',
+			id: 'leaseNumber',
 			name: 'leaseNumber',
-			accessorFn: row => row?.node?.leaseNumber,
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Owner Name',
-			accessorKey: 'name',
+			id: 'name',
 			name: 'name',
-			accessorFn: row => row?.node?.name,
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Entity Type',
-			accessorKey: 'ownershipType',
+			id: 'ownershipType',
 			name: 'ownershipType',
-			accessorFn: row => row?.node?.ownershipType,
-		},
-		{
-			...CommonSchema.COMMON_COLUMN,
-			header: 'Owner Address',
-			accessorKey: 'StreetAddress',
-			name: 'StreetAddress',
-			accessorFn: row => row?.node?.StreetAddress,
-		},
-		{
-			...CommonSchema.COMMON_COLUMN,
-			header: 'City',
-			accessorKey: 'City',
-			name: 'City',
-			accessorFn: row => row?.node?.City,
-		},
-		{
-			...CommonSchema.COMMON_COLUMN,
-			header: 'State',
-			accessorKey: 'State',
-			name: 'State',
-			accessorFn: row => row?.node?.State,
-		},
-		{
-			...CommonSchema.COMMON_COLUMN,
-			header: 'Zip',
-			accessorKey: 'Zip',
-			name: 'Zip',
-			accessorFn: row => row?.node?.Zip,
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
+			header: 'Owner Address',
+			id: 'StreetAddress',
+			name: 'StreetAddress',
+		},
+		{
+			...CommonSchema.STRING_COLUMN,
+			header: 'City',
+			id: 'City',
+			name: 'City',
+		},
+		{
+			...CommonSchema.STRING_COLUMN,
+			header: 'State',
+			id: 'State',
+			name: 'State',
+		},
+		{
+			...CommonSchema.STRING_COLUMN,
+			header: 'Zip',
+			id: 'Zip',
+			name: 'Zip',
+		},
+		{
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Type',
-			accessorKey: 'interestType',
+			id: 'interestType',
 			name: 'interestType',
-			accessorFn: row => row?.node?.interestType,
 		},
 		{
 			...CommonSchema.NUMBER_COLUMN,
 			header: 'Interest',
-			accessorKey: 'ownershipPercentage',
+			id: 'ownershipPercentage',
 			name: 'ownershipPercentage',
-			accessorFn: row => row?.node?.ownershipPercentage,
 		},
 		{
 			...CommonSchema.NUMBER_COLUMN,
 			header: 'Tax Value',
-			accessorKey: 'appraisedValue',
+			id: 'appraisedValue',
 			name: 'appraisedValue',
-			accessorFn: row => row?.node?.appraisedValue,
 		},
 		{
 			...CommonSchema.TAGS,
@@ -169,7 +157,7 @@ const PotentialWellOwnersMeta = {
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'isContact',
-			accessorKey: 'isContact',
+			id: 'isContact',
 			Cell: ({ row }) => {
 				return <IsContactCell contactId={'false'} rows={[row.original.node]} />;
 			},

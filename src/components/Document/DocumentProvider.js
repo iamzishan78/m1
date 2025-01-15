@@ -1,5 +1,6 @@
-import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
+
+import { makeStyles } from '@material-ui/core/styles';
 
 import Document from './Document';
 import { DocumentContextProvider } from './DocumentContext';

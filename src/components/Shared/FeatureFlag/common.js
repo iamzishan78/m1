@@ -24,6 +24,7 @@ export const FEATURES = {
 	TRACKEDWELLSLAYER: 'showTrackedWellsLayer',
 	USERTAGSLAYER: 'showUserTagsLayer',
 	SEARCHLAYER: 'showSearchLayer',
+	DATA: 'dataModule',
 };
 
 export const ROUTES = {
@@ -86,6 +87,12 @@ export const ROUTES = {
 		module: 'AdminSettings',
 		route: {
 			startsWith: ['/admin'],
+		},
+	},
+	DATA: {
+		module: 'dataModule',
+		route: {
+			startsWith: ['/data'],
 		},
 	},
 };

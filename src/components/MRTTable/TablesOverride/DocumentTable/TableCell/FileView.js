@@ -1,8 +1,10 @@
-import { useLazyQuery } from '@apollo/client';
-import { IconButton } from '@material-ui/core';
-import PageviewIcon from '@material-ui/icons/Pageview';
 import React, { memo, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+
+import { IconButton } from '@material-ui/core';
+import PageviewIcon from '@material-ui/icons/Pageview';
+
+import { useLazyQuery } from '@apollo/client';
 
 import PdfViewer from 'components/MRTTable/TablesOverride/DocumentTable/TableCell/PDFView';
 

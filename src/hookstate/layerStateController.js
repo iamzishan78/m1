@@ -1,6 +1,7 @@
+import { NotificationManager } from 'react-notifications';
+
 import { booleanWithin, difference, union, booleanIntersects, bboxPolygon } from '@turf/turf';
 import { debounce } from 'lodash';
-import { NotificationManager } from 'react-notifications';
 import { v4 as uuid } from 'uuid';
 
 import getBoundsQuery from 'api/getBoundsQuery';
@@ -673,8 +674,7 @@ const layerStateControllerHandler = state => {
 			polygonFilter
 		);
 
-		let pickable =
-			dbLayer.layerSettings.interaction?.interactionAble && dbLayer.layerSettings.interaction?.interactionDetail?.click;
+		let pickable = dbLayer.layerSettings.interaction?.interactionDetail?.click;
 		if (deckGlLandGridIdentifiers.includes(dbLayer?.identifier)) {
 			pickable = true;
 		}

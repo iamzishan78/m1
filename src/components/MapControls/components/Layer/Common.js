@@ -1,8 +1,10 @@
+import { useState, useEffect } from 'react';
+
 import { FormControl, Input, InputAdornment } from '@material-ui/core';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
+
 import _, { set } from 'lodash';
 import { ColorBox } from 'material-ui-color';
-import { useState, useEffect } from 'react';
 import { v4 as uuid } from 'uuid';
 
 import { copy } from 'components/Shared/functions';

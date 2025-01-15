@@ -1,4 +1,7 @@
-import { useMutation, useLazyQuery } from '@apollo/client';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+
 import { Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -6,11 +9,11 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
+
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
 import _, { get, isString } from 'lodash';
-import React, { useEffect, useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import { extractValueRecursively } from 'components/MRTTable/utils/helper';
@@ -142,6 +145,7 @@ export default function AddUnitOwnerDialogContent({
 
 	useEffect(() => {
 		if (selectedRow) {
+			selectedRow.name = selectedRow?.contact?.entityDetail?.name || selectedRow?.name;
 			const filteredSelectedRow = _.pick(selectedRow, Object.keys(unitInterestOwnerState));
 			const rowData = _.merge({}, unitInterestOwnerState, filteredSelectedRow);
 
@@ -257,7 +261,7 @@ export default function AddUnitOwnerDialogContent({
 					shapeOwners: shapeOwner,
 					userId: getUser?._id,
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
+				refetchQueries: ['getDbData', 'getESFilterList', 'getCustomLayer'],
 				awaitRefetchQueries: true,
 			});
 		} else {
@@ -276,7 +280,7 @@ export default function AddUnitOwnerDialogContent({
 					shapeType: props.shapeType,
 					shapeOwner,
 				},
-				refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
+				refetchQueries: ['getDbData', 'getESFilterList', 'getCustomLayer'],
 				awaitRefetchQueries: true,
 			});
 		}

@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import CheckIcon from '@material-ui/icons/Check';
 
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
@@ -38,17 +41,16 @@ const ExpirationsMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
-			accessorKey: 'id',
+			id: 'id',
 		},
 		{
 			...CommonSchema.HIDDEN,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'name.keyword',
-			accessorFn: row => row?.name,
 			id: 'name',
 			header: 'Name',
 			Cell: ({ renderedCellValue }) => {
@@ -56,62 +58,55 @@ const ExpirationsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'type.keyword',
-			accessorFn: row => row?.type,
 			id: 'type',
 			header: 'Type',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'dateTime',
-			accessorFn: row => row?.dateTime,
 			id: 'dateTime',
 			header: 'Start Date',
 			simple: true,
 			type: 'date',
-			Cell: ({ renderedCellValue, row }) => {
+			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.dateTime)}</>;
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'endDateTime',
-			accessorFn: row => row?.endDateTime,
 			id: 'endDateTime',
 			header: 'End Date',
 			simple: true,
 			type: 'date',
-			Cell: ({ renderedCellValue, row }) => {
+			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.endDateTime)}</>;
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'deal.name.keyword',
-			accessorFn: row => row?.deal?.name,
 			id: 'deal.name',
 			header: 'Deal Name',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contactName.keyword',
-			accessorFn: row => row?.contactName,
 			id: 'contactName',
 			header: 'Contact Name',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'owner.name.keyword',
-			accessorFn: row => row?.owner?.name,
 			id: 'owner.name',
 			header: 'Activity Owner',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'isClosed',
 			esKey: 'isClosed',
-			accessorFn: row => row?.isClosed,
 			id: 'isClosed',
 			header: 'Completed?',
 			type: 'boolean',
@@ -130,12 +125,11 @@ const ExpirationsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			enableColumnFilter: false,
 			isExport: false,
 			enableSorting: false,
 			name: 'notes',
-			accessorFn: row => row?.notes,
 			id: 'notes',
 			header: 'Notes',
 			Cell: ({ renderedCellValue }) => {

@@ -1,5 +1,6 @@
-import { useLazyQuery } from '@apollo/client';
-import { useAuth0 } from '@auth0/auth0-react';
+import React, { useState, useContext, useEffect } from 'react';
+import Avatar from 'react-avatar';
+
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
@@ -8,12 +9,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import CheckIcon from '@material-ui/icons/Check';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
-import React, { useState, useContext, useEffect } from 'react';
-import Avatar from 'react-avatar';
+
+import { useLazyQuery } from '@apollo/client';
+import { useAuth0 } from '@auth0/auth0-react';
 
 import { NavigationContext } from 'components/Navigation/NavigationContext';
-
-// contexts
 import ProfileProvider from 'components/Profile/ProfileProvider';
 import UserManagementProvider from 'components/UserManagement/UserManagementProvider';
 
@@ -21,11 +21,7 @@ import { GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
 
 import { AppContext } from 'AppContext';
 
-//@material-ui components
-
-//icons
-
-export const useStyles = makeStyles(theme => ({
+export const useStyles = makeStyles(() => ({
 	userMenu: {
 		'& .MuiPaper-rounded': {
 			borderRadius: '0px',
@@ -96,7 +92,7 @@ export default function UserProfile() {
 	const { isAuthenticated, logout } = useAuth0();
 
 	const handleLogout = async () => {
-		const currentAccounts = stateApp.myMSALObj.getAllAccounts();
+		const currentAccounts = stateApp.myMSALObj?.getAllAccounts();
 		const currentAccount =
 			currentAccounts && currentAccounts.length === 1
 				? currentAccounts[0]
@@ -122,7 +118,7 @@ export default function UserProfile() {
 		localStorage.clear();
 
 		if (currentAccount) {
-			stateApp.myMSALObj.logout(logoutRequest);
+			stateApp.myMSALObj?.logout(logoutRequest);
 		}
 
 		window.location.replace(window.location.origin);

@@ -1,4 +1,5 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useState, useEffect, useContext } from 'react';
+
 import {
 	CircularProgress,
 	Dialog,
@@ -22,83 +23,28 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import parse from 'autosuggest-highlight/parse';
-import PropTypes from 'prop-types';
-import React, { useState, useEffect, useContext } from 'react';
-import NumberFormat from 'react-number-format';
 
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import parse from 'autosuggest-highlight/parse';
+
+import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 
 import { ADDWELLINTEREST } from 'graphQL/useMutationAddWellInterest';
 import { UPDATEWELLINTEREST } from 'graphQL/useMutationUpdateWellInterest';
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { INTERESTOWNERTYPESQUERY } from 'graphQL/useQueryInterestOwnerTypes';
 import { INTERESTTYPESQUERY } from 'graphQL/useQueryInterestTypes';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
 
-// contexts
 import { tableGlobalController } from 'hookstate/tableController';
 
+import { INTEREST_TO_FIXED } from 'utils/consts';
+
 import { AppContext } from 'AppContext';
+import { CurrencyFormatCustom, NumberFormatCustom } from 'components/Shared/Forms/Formatting/NumberFormatCustom';
 
-import RightDialog from '../../../../ContactDetailCard/components/RightDialog';
-
-function NumberFormatCustom(props) {
-	const { inputRef, onChange, name, ...other } = props;
-
-	return (
-		<NumberFormat
-			{...other}
-			getInputRef={inputRef}
-			onValueChange={values => {
-				onChange({
-					target: {
-						name: props.name,
-						value: values.value,
-					},
-				});
-			}}
-			// thousandSeparator
-			// isNumericString
-			// prefix="$"
-		/>
-	);
-}
-
-NumberFormatCustom.propTypes = {
-	inputRef: PropTypes.func.isRequired,
-	name: PropTypes.string.isRequired,
-	onChange: PropTypes.func.isRequired,
-};
-function CurrencyFormatCustom(props) {
-	const { inputRef, onChange, name, ...other } = props;
-
-	return (
-		<NumberFormat
-			{...other}
-			getInputRef={inputRef}
-			onValueChange={values => {
-				onChange({
-					target: {
-						name: props.name,
-						value: values.value,
-					},
-				});
-			}}
-			thousandSeparator
-			isNumericString
-			prefix="$"
-		/>
-	);
-}
-
-CurrencyFormatCustom.propTypes = {
-	inputRef: PropTypes.func.isRequired,
-	name: PropTypes.string.isRequired,
-	onChange: PropTypes.func.isRequired,
-};
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	dialogFooter: {
 		display: 'flex',
 		justifyContent: 'flex-end',
@@ -168,12 +114,7 @@ function AddWellInterestDialog(props) {
 			handleClose();
 			refetchTable();
 		},
-		refetchQueries: [
-			'getContactWells',
-			'getContactWellCardDetail',
-			'getESSimpleSearch',
-			'getContactWellInterestsFilterOptions',
-		],
+		refetchQueries: ['getContactWells', 'getContactWellCardDetail', 'getDbData'],
 		awaitRefetchQueries: true,
 	});
 	const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, {
@@ -182,15 +123,15 @@ function AddWellInterestDialog(props) {
 			setLoading(false);
 			handleClose();
 		},
-		refetchQueries: ['getContactWells', 'getESSimpleSearch', 'getContactWellInterestsFilterOptions'],
+		refetchQueries: ['getContactWells', 'getDbData'],
 		awaitRefetchQueries: true,
 	});
 
-	const [getESSimpleSearch] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+	const [getDbData] = useLazyQuery(GET_DB_DATA, {
 		fetchPolicy: 'no-cache',
 		onCompleted: wellsData => {
-			if (wellsData?.getESSimpleSearch?.hits) {
-				setFoundWells(wellsData.getESSimpleSearch.hits);
+			if (wellsData?.getDbData?.hits) {
+				setFoundWells(wellsData.getDbData.hits);
 			}
 		},
 	});
@@ -228,7 +169,6 @@ function AddWellInterestDialog(props) {
 
 		setFormLeaseName(leaseToSet);
 		setFormLeaseAcres(leaseAcresToSet);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dataTenantWell]);
 
 	useEffect(() => {
@@ -281,8 +221,8 @@ function AddWellInterestDialog(props) {
 
 	const formatRoyaltyAcres = royaltyAcres => {
 		const decimals = royaltyAcres.toString().split('.');
-		if (decimals[1] && decimals[1].length > 8) {
-			royaltyAcres = royaltyAcres.toFixed(8);
+		if (decimals[1] && decimals[1].length > INTEREST_TO_FIXED) {
+			royaltyAcres = royaltyAcres.toFixed(INTEREST_TO_FIXED);
 		}
 		return Number(royaltyAcres);
 	};
@@ -291,7 +231,7 @@ function AddWellInterestDialog(props) {
 		if (initializing || leaseAcres == null || interest == null) {
 			return;
 		}
-		setFormRoyaltyAcres(formatRoyaltyAcres(leaseAcres * interest * 8));
+		setFormRoyaltyAcres(formatRoyaltyAcres(leaseAcres * interest * INTEREST_TO_FIXED));
 	};
 
 	const handleValidate = () => {
@@ -323,12 +263,7 @@ function AddWellInterestDialog(props) {
 						nra: formRoyaltyAcres,
 					},
 				},
-				refetchQueries: [
-					'getContactWells',
-					'getESSimpleSearch',
-					'getContactWellInterestsFilterOptions',
-					'getContactSummary',
-				],
+				refetchQueries: ['getContactWells', 'getDbData', 'getContactSummary'],
 				awaitRefetchQueries: true,
 			});
 		} else {
@@ -349,13 +284,7 @@ function AddWellInterestDialog(props) {
 						nra: formRoyaltyAcres,
 					},
 				},
-				refetchQueries: [
-					'getContactWells',
-					'getContactWellCardDetail',
-					'getESSimpleSearch',
-					'getContactWellInterestsFilterOptions',
-					'getContactSummary',
-				],
+				refetchQueries: ['getContactWells', 'getContactWellCardDetail', 'getDbData', 'getContactSummary'],
 				awaitRefetchQueries: true,
 			});
 		}
@@ -381,7 +310,7 @@ function AddWellInterestDialog(props) {
 						isDeleted: true,
 					},
 				},
-				refetchQueries: ['getContactWells', 'getESSimpleSearch', 'getContactWellInterestsFilterOptions'],
+				refetchQueries: ['getContactWells', 'getDbData'],
 				awaitRefetchQueries: true,
 			});
 		} catch {
@@ -403,15 +332,9 @@ function AddWellInterestDialog(props) {
 					fullWidth={false}
 					maxWidth="sm"
 				>
-					<DeleteConfirmationDialogContent
-						header={'Delete Well Interest'}
-						onClose={handleCloseDialog}
-						deleteFunc={deleteFunc}
-						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
-					>
+					<DeleteConfirmationDialog header={'Delete Well Interest'} onClose={handleCloseDialog} deleteFunc={deleteFunc}>
 						Do you want to delete the selected well interest?
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 			)}
 			<RightDialog open={props.open} handleClickDialogClose={handleClose} width={props.width}>
@@ -481,7 +404,7 @@ function AddWellInterestDialog(props) {
 										});
 								}}
 								value={selectedWell}
-								getOptionLabel={(option, value) => option.WellName}
+								getOptionLabel={option => option.WellName}
 								filterOptions={x => x}
 								renderOption={option => {
 									const parts = parse(option.WellName, []);
@@ -536,7 +459,7 @@ function AddWellInterestDialog(props) {
 										label="Search for a well by name or API"
 										InputLabelProps={{ shrink: true }}
 										onChange={event => {
-											getESSimpleSearch({
+											getDbData({
 												variables: {
 													index: 'platformData:wells',
 													pagination: {
@@ -721,7 +644,7 @@ function AddWellInterestDialog(props) {
 											id="royality-acres"
 											inputComponent={NumberFormatCustom}
 											className={
-												formRoyaltyAcres !== formatRoyaltyAcres(formInterestAmount * formLeaseAcres * 8)
+												formRoyaltyAcres !== formatRoyaltyAcres(formInterestAmount * formLeaseAcres * INTEREST_TO_FIXED)
 													? classes.royaltyAcres
 													: ''
 											}
@@ -731,11 +654,14 @@ function AddWellInterestDialog(props) {
 											endAdornment={
 												<InputAdornment position="end" style={{ position: 'absolute', right: '-3px' }}>
 													{formRoyaltyAcres !== '' &&
-														formRoyaltyAcres !== formatRoyaltyAcres(formInterestAmount * formLeaseAcres * 8) && (
+														formRoyaltyAcres !==
+															formatRoyaltyAcres(formInterestAmount * formLeaseAcres * INTEREST_TO_FIXED) && (
 															<IconButton
 																aria-label="toggle royality-acres"
 																onClick={() =>
-																	setFormRoyaltyAcres(formatRoyaltyAcres(formInterestAmount * formLeaseAcres * 8))
+																	setFormRoyaltyAcres(
+																		formatRoyaltyAcres(formInterestAmount * formLeaseAcres * INTEREST_TO_FIXED)
+																	)
 																}
 															>
 																<AutorenewIcon />

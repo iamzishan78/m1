@@ -1,7 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { Menu, MenuItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import { Dialog, CircularProgress } from '@material-ui/core';
+import React, { useState, useEffect, useContext } from 'react';
+import { useDispatch } from 'react-redux';
+
+import { Menu, MenuItem, ListItemIcon, ListItemText, Dialog, CircularProgress } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
@@ -15,13 +15,14 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import clsx from 'clsx';
 import moment from 'moment';
-import React, { useState, useEffect, useContext } from 'react';
-import { useDispatch } from 'react-redux';
 
-import { ADDACTIVITY, UPDATEACTIVITY } from 'graphQL/useMutationActivity';
-import { DELETEACTIVITY } from 'graphQL/useMutationActivity';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
+
+import { ADDACTIVITY, UPDATEACTIVITY, DELETEACTIVITY } from 'graphQL/useMutationActivity';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { OPENDEALS } from 'graphQL/useQueryOpenDeals';
 
@@ -32,7 +33,6 @@ import { AppContext } from 'AppContext';
 
 import AutoCompleteAddNewField from './FieldContent/AutoCompleteAddNewField';
 import { outcomeOptions } from './FieldContent/helper';
-import DeleteConfirmationDialogContent from '../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -249,7 +249,7 @@ function AddActivityDialog(props) {
 	}, [dealsData]);
 
 	const [addActivityMutation, { loading: addLoading }] = useMutation(ADDACTIVITY, {
-		refetchQueries: ['getContact', 'getAllActivities', 'getMelissaRecordsCountForContactIds', 'getESSimpleSearch'],
+		refetchQueries: ['getContact', 'getAllActivities', 'getMelissaRecordsCountForContactIds', 'getDbData'],
 		awaitRefetchQueries: true,
 		onCompleted: () => {
 			tableGlobalController.refetch();
@@ -460,15 +460,9 @@ function AddActivityDialog(props) {
 					fullWidth={false}
 					maxWidth="sm"
 				>
-					<DeleteConfirmationDialogContent
-						header={'Delete Activity'}
-						onClose={handleCloseDialog}
-						deleteFunc={deleteFunc}
-						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
-					>
+					<DeleteConfirmationDialog header={'Delete Activity'} onClose={handleCloseDialog} deleteFunc={deleteFunc}>
 						Do you want to delete the selected Activity?
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 			)}
 			<Grid item xs={12} style={{ minHeight: '35px' }}>

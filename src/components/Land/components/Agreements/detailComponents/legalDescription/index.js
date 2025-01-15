@@ -1,8 +1,11 @@
+import React, { useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
-import React, { useEffect, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+
+import PropTypes from 'prop-types';
 import _ from 'underscore';
 
 import RelatedTractsTable from 'components/Common/RelatedTables/Tracts';
@@ -13,7 +16,7 @@ import { tableController } from 'hookstate/tableController';
 import { useStyles as customStyles } from '../style';
 
 // Components
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		padding: '10px 25px',
 	},
@@ -77,7 +80,9 @@ export default function LagalDescription({ agreementDetails, agreementId, uniObj
 
 	const RelatedTractsOverrideMeta = useMemo(
 		() => ({
-			tableHeading: 'Related Tracts',
+			defaultHeader: {
+				label: 'Related Tracts',
+			},
 			maxTableHeight: 'calc(50vh - 100px)',
 			defaultFilters: [{ field: 'shape._id', value: agreementId }],
 			customProps: { customLayer: agreementDetails?.customLayer, shapeType: 'Agreement' },
@@ -86,9 +91,7 @@ export default function LagalDescription({ agreementDetails, agreementId, uniObj
 				parentRecord: { value: agreementId },
 			},
 			customValue: { parentRecord: agreementId },
-			columnReordering: false,
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[agreementId]
 	);
 
@@ -101,7 +104,7 @@ export default function LagalDescription({ agreementDetails, agreementId, uniObj
 							<ExpandMoreIcon fontSize="large" />
 						</IconButton>
 					}
-					onClick={e => {}}
+					onClick={() => {}}
 				>
 					<Grid container direction="row" justify="space-between" alignItems="center">
 						<Grid item xs={6} className={classes.accordionHeading}>
@@ -137,3 +140,10 @@ export default function LagalDescription({ agreementDetails, agreementId, uniObj
 		</div>
 	);
 }
+
+LagalDescription.propTypes = {
+	agreementDetails: PropTypes.object,
+	agreementId: PropTypes.string,
+	uniObj: PropTypes.object,
+	updateAgreement: PropTypes.func,
+};

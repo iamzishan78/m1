@@ -1,10 +1,12 @@
-import { useMutation, useLazyQuery } from '@apollo/client';
+import React, { useContext, useState, useEffect } from 'react';
+
 import { CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import MyLocationIcon from '@material-ui/icons/MyLocation';
 import ToggleButton from '@material-ui/lab/ToggleButton';
-import React, { useContext, useState, useEffect } from 'react';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
 
 import { AppContext } from '../../AppContext';
 import { TOGGLETRACK } from '../../graphQL/useMutationToggleCreateRemoveTrack';
@@ -84,7 +86,7 @@ export default function TrackToggleButton(props) {
 						trackOn: props.targetSourceId.toLowerCase(),
 					},
 				},
-				refetchQueries: ['tracksByObjectType', 'trackByObjectId', 'tracksWell'], ////add all queries for components with track icons////
+				refetchQueries: ['trackByObjectId'], ////add all queries for components with track icons////
 				awaitRefetchQueries: true,
 			});
 		} else {
@@ -101,7 +103,7 @@ export default function TrackToggleButton(props) {
 								trackOn: props.multipleIds[i].toLowerCase(),
 							},
 						},
-						refetchQueries: ['tracksByObjectType', 'trackByObjectId', 'tracksWell'], ////add all queries for components with track icons////
+						refetchQueries: ['trackByObjectId'], ////add all queries for components with track icons////
 						awaitRefetchQueries: true,
 					});
 				}

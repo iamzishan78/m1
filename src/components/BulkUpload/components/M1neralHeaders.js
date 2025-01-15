@@ -1,4 +1,6 @@
-import { anyToDate } from '@amcharts/amcharts4/.internal/core/utils/Utils';
+import React, { useCallback, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+
 import { MenuItem, Select } from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox';
 import Paper from '@material-ui/core/Paper';
@@ -10,17 +12,14 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 // queries
-import React, { useCallback, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+
+import { anyToDate } from '@amcharts/amcharts4/.internal/core/utils/Utils';
 
 import { NavigationContext } from 'components/Navigation/NavigationContext';
 
 import { jobController } from 'hookstate/jobStateController';
 
 import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
-
-// import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
-// import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 
 const useStyles = makeStyles({
 	root: {

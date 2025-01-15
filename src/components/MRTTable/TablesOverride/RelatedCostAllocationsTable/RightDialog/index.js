@@ -1,6 +1,7 @@
+import React from 'react';
+
 import { useMutation } from '@apollo/client';
 import { toNumber } from 'lodash';
-import React from 'react';
 
 import AddNewRelatedData from 'components/Land/components/Common/AddNewRelatedData';
 
@@ -20,7 +21,7 @@ export const CostAllocationRightDialog = () => {
 	const { paymentId } = paymentMultiGrid || {};
 
 	const [addPaymentPropertyDescriptor] = useMutation(ADD_PAYMENT_PROPERTY_DESCRIPTOR, {
-		refetchQueries: ['getESSimpleSearch', 'getAgreementPaymentSummary'],
+		refetchQueries: ['getDbData', 'getAgreementPaymentSummary'],
 		awaitRefetchQueries: true,
 	});
 

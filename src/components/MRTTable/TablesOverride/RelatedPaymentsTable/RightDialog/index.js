@@ -1,6 +1,7 @@
+import React, { useContext } from 'react';
+
 import { useMutation } from '@apollo/client';
 import { get, toNumber } from 'lodash';
-import React, { useContext } from 'react';
 
 import AddNewRelatedData from 'components/Land/components/Common/AddNewRelatedData';
 
@@ -28,11 +29,11 @@ export const PaymentRightDialog = () => {
 	const relatedObjectId = get(agreementDetailsValues, 'customLayer._id');
 
 	const [addPayment] = useMutation(ADD_PAYMENT, {
-		refetchQueries: ['getESSimpleSearch'],
+		refetchQueries: ['getDbData'],
 		awaitRefetchQueries: true,
 	});
 	const [updatePayment] = useMutation(UPDATE_PAYMENT, {
-		refetchQueries: ['getESSimpleSearch'],
+		refetchQueries: ['getDbData'],
 		awaitRefetchQueries: true,
 	});
 

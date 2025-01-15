@@ -1,5 +1,6 @@
-import { Button, ButtonGroup } from '@material-ui/core';
 import React, { memo } from 'react';
+
+import { Button, ButtonGroup } from '@material-ui/core';
 
 import PropertyInterestDetaillDialog from 'components/MRTTable/TablesOverride/PropertyInterestDetailTable/RightDialogs';
 

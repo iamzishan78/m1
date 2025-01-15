@@ -1,3 +1,5 @@
+import React, { useContext } from 'react';
+
 import {
 	Grid,
 	Typography,
@@ -11,8 +13,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { ExpandMore } from '@material-ui/icons';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
 import { get } from 'lodash';
-import React, { useContext } from 'react';
 import _ from 'underscore';
 
 import CustomAvatar from 'components/Shared/ui/CustomAvatar';
@@ -228,7 +230,7 @@ function DealStageDetail({
 							/>
 						</Grid>
 						<Grid item xl={12} sm={12} style={{ margin: '10px 0px 10px 0px' }}>
-							<DealSubtasks tasks={settings.tasks} users={users} />
+							<DealSubtasks tasks={settings.tasks} users={users} currentStage={settings._id} />
 						</Grid>
 						<NewSubtask index={index} activeDeal={activeDeal} relatedObject={settings._id} />
 					</Grid>

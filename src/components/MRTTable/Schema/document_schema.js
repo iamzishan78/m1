@@ -1,4 +1,8 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
+
 import moment from 'moment';
 
 import Loaders from 'components/Loaders';
@@ -49,7 +53,7 @@ const onCustomKeyChange = async (client, row, value, item) => {
 
 		Loaders.successToast(loaderId, 'Updation Complete');
 		tableGlobalController.refetch();
-	} catch (err) {
+	} catch {
 		Loaders.errorToast(loaderId, 'Updation in Complete');
 	}
 };
@@ -74,12 +78,14 @@ const DocumentMeta = {
 			type: 'Default',
 		},
 		handleDefaultView: (view, user) => {
+			const TOTAL_DAYS = 30;
+
 			if (view.name === 'My Documents') {
 				view.filters[0].value = user._id;
 			}
 			if (view.name === 'Recently Modified' || view.name === 'Recently Added') {
 				view.filters[0].type = 'range';
-				view.filters[0].value.range[view.filters[0].field].gte = moment().subtract(30, 'days').toISOString();
+				view.filters[0].value.range[view.filters[0].field].gte = moment().subtract(TOTAL_DAYS, 'days').toISOString();
 				view.filters[0].value.range[view.filters[0].field].lte = moment().toISOString();
 			}
 			return view;
@@ -97,21 +103,18 @@ const DocumentMeta = {
 			value: 'jobs',
 			type: 'advanced',
 			searchType: 'notEquals',
-			isKeyword: true,
 		},
 		{
 			field: 'isLayerFile',
 			value: true,
 			type: 'advanced',
 			searchType: 'notEquals',
-			isKeyword: true,
 		},
 		{
 			field: 'isDatasetFile',
 			value: true,
 			type: 'advanced',
 			searchType: 'notEquals',
-			isKeyword: true,
 		},
 	],
 	maxTableHeight: 'calc(100vh - 200px)',
@@ -124,13 +127,13 @@ const DocumentMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'name.keyword',
-			accessorKey: 'name',
+			id: 'name',
 			header: 'File Name',
 			Cell: ({ row }) => {
 				return <FileName docInfo={row?.original} />;
@@ -138,30 +141,30 @@ const DocumentMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'documentNumber.keyword',
-			accessorKey: 'documentNumber',
+			id: 'documentNumber',
 			header: 'File Number',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'documentName.keyword',
-			accessorKey: 'documentName',
+			id: 'documentName',
 			header: 'File Description',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'documentType.keyword',
-			accessorKey: 'documentType',
+			id: 'documentType',
 			header: 'File Type',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'documentDate',
-			accessorKey: 'documentDate',
+			id: 'documentDate',
 			header: 'File Date',
 			type: 'date',
 			isSearchField: false, // donn't include in search fields
@@ -171,30 +174,30 @@ const DocumentMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'book.keyword',
-			accessorKey: 'book',
+			id: 'book',
 			header: 'Book',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'page.keyword',
-			accessorKey: 'page',
+			id: 'page',
 			header: 'Page',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'instrument.keyword',
-			accessorKey: 'instrument',
+			id: 'instrument',
 			header: 'Instrument #',
 		},
 
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'actionMenu',
-			accessorKey: 'actionMenu',
+			id: 'actionMenu',
 			header: ' ',
 			size: 70,
 			Cell: ({ row }) => {
@@ -205,7 +208,7 @@ const DocumentMeta = {
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'actionMenu2',
-			accessorKey: 'actionMenu2',
+			id: 'actionMenu2',
 			header: ' ',
 			size: 70,
 			Cell: ({ row }) => {

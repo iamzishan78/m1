@@ -1,7 +1,10 @@
+import React, { useEffect, useMemo, useState } from 'react';
+
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
-import React, { useMemo } from 'react';
+
+import PropTypes from 'prop-types';
 
 import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
 import MRTTable from 'components/MRTTable';
@@ -10,8 +13,7 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 
 import { useStyles as customStyles } from '../style';
 
-// Components
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		padding: '10px 25px',
 	},
@@ -61,10 +63,12 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-export default function LagalDescription({ uniObj }) {
+export default function LagalDescription({ uniObj, agreementId }) {
 	const classes = useStyles();
 	const customClasses = customStyles();
-	const tableState = tableController('RelatedWellsTable').useState(['data']).stateValues;
+	const { stateValues } = tableController('RelatedWellsTable').useState(['data', 'isLoading']);
+
+	const [totalWels, setTotalWells] = useState(0);
 
 	const {
 		stateValues: { tabKey: selectedTab },
@@ -74,18 +78,24 @@ export default function LagalDescription({ uniObj }) {
 		() => ({
 			tabLabels: ['Agreement Wells', 'Potential Wells'],
 			maxTableHeight: 'calc(50vh - 100px)',
-			defaultFilters: [{ field: 'shape._id', value: uniObj?._id }],
+			defaultFilters: [{ field: 'shape._id', value: agreementId }],
 			customProps: { customLayer: uniObj, shapeType: 'Agreement' },
 			deletedKeys: {
 				mainRecord: { key: '_id' },
-				parentRecord: { value: uniObj?._id },
+				parentRecord: { value: agreementId },
 			},
-			customValue: { parentRecord: uniObj?._id },
-			columnReordering: false,
+			customValue: { parentRecord: agreementId },
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[uniObj?._id]
+		[agreementId]
 	);
+
+	useEffect(() => {
+		if (!stateValues.data || stateValues.isLoading) {
+			return;
+		}
+
+		setTotalWells(stateValues.data.total);
+	}, [stateValues.data, stateValues.isLoading]);
 
 	return (
 		<div className={classes.root}>
@@ -96,14 +106,14 @@ export default function LagalDescription({ uniObj }) {
 							<ExpandMoreIcon fontSize="large" />
 						</IconButton>
 					}
-					onClick={e => {}}
+					onClick={() => {}}
 				>
 					<Grid container direction="row" justify="space-between" alignItems="center">
 						<Grid item xs={6} className={classes.accordionHeading}>
 							<Typography variant="h5" className={customClasses.titleText}>
 								Related Wells
 							</Typography>
-							<Chip color="info" label={tableState?.data?.total} />
+							<Chip color="info" label={totalWels} />
 						</Grid>
 					</Grid>
 				</AccordionSummary>
@@ -126,7 +136,7 @@ export default function LagalDescription({ uniObj }) {
 											tabLabels: ['Agreement Wells', 'Potential Wells'],
 											customProps: {
 												customLayer: uniObj,
-												shapeType: 'Unit',
+												shapeType: 'Agreement',
 											},
 										}}
 									/>
@@ -139,3 +149,8 @@ export default function LagalDescription({ uniObj }) {
 		</div>
 	);
 }
+
+LagalDescription.propTypes = {
+	uniObj: PropTypes.object,
+	agreementId: PropTypes.string.isRequired,
+};

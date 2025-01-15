@@ -1,4 +1,5 @@
-import { useMutation, useLazyQuery } from '@apollo/client';
+import React, { useContext, useState, useEffect } from 'react';
+
 import { CircularProgress } from '@material-ui/core';
 import Chip from '@material-ui/core/Chip';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -9,7 +10,8 @@ import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 import ClearIcon from '@material-ui/icons/Clear';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useContext, useState, useEffect } from 'react';
+
+import { useMutation, useLazyQuery } from '@apollo/client';
 
 import { AppContext } from '../../AppContext';
 import { REMOVETAG } from '../../graphQL/useMutationRemoveTag';
@@ -299,10 +301,7 @@ export default function Tags(props) {
 						'getObjectsFromTagsArray',
 						'getWellsIdsFromTagsArray',
 						'getOwnersIdsFromTagsArray',
-						'getContactsFilterOptions',
-						'getContactWellInterestsFilterOptions',
-						'getESPaginatedList',
-						'getESSimpleSearch',
+						'getDbData',
 					],
 					awaitRefetchQueries: true,
 				});
@@ -327,10 +326,7 @@ export default function Tags(props) {
 							'getWellsIdsFromTagsArray',
 							'getOwnersIdsFromTagsArray',
 							'getTagsByObjectsIds',
-							'getContactsFilterOptions',
-							'getContactWellInterestsFilterOptions',
-							'getESPaginatedList',
-							'getESSimpleSearch',
+							'getDbData',
 						],
 						awaitRefetchQueries: true,
 					});
@@ -370,9 +366,7 @@ export default function Tags(props) {
 					'getOwnersIdsFromTagsArray',
 					'getTagsByObjectsIds',
 					'getPaginatedContacts',
-					'getContactsFilterOptions',
-					'getESPaginatedList',
-					'getESSimpleSearch',
+					'getDbData',
 				],
 				awaitRefetchQueries: true,
 			});
@@ -395,9 +389,7 @@ export default function Tags(props) {
 						'getOwnersIdsFromTagsArray',
 						'getTagsByObjectsIds',
 						'getPaginatedContacts',
-						'getContactsFilterOptions',
-						'getESPaginatedList',
-						'getESSimpleSearch',
+						'getDbData',
 					],
 					awaitRefetchQueries: true,
 				});

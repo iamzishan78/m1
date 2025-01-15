@@ -1,16 +1,18 @@
-import { useMutation } from '@apollo/client';
-import { Breadcrumbs, Typography, IconButton, Menu, MenuItem } from '@material-ui/core';
-import { CircularProgress } from '@material-ui/core';
+import React, { useState, memo } from 'react';
+
+import { Breadcrumbs, Typography, IconButton, Menu, MenuItem, CircularProgress } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import React, { useState, memo } from 'react';
+
+import { useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import { UPDATE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
 
 import { tableController } from 'hookstate/tableController';
 
 function GridViewComponent({ Icon, buttonRef, label, tableKey, fetchGridViews }) {
-	const [updateGridView, { data }] = useMutation(UPDATE_GRID_VIEW, {
+	const [updateGridView] = useMutation(UPDATE_GRID_VIEW, {
 		onCompleted: () => {
 			fetchGridViews();
 		},
@@ -27,11 +29,9 @@ function GridViewComponent({ Icon, buttonRef, label, tableKey, fetchGridViews })
 		'groupedField',
 		'columnPinning',
 		'columnOrdering',
-		'isNotBreadcrumbView',
 	]);
 	const tableStateValues = tableState.stateValues;
 	const selectedGridView = tableStateValues?.gridView?.selectedGridView;
-	const isNotBreadcrumbView = tableStateValues?.isNotBreadcrumbView || false; // MetaData for the table use for show and hide Breadcrumb in the toolbar
 
 	const handleClose = () => {
 		setAnchorEl(null);
@@ -85,7 +85,7 @@ function GridViewComponent({ Icon, buttonRef, label, tableKey, fetchGridViews })
 				<Icon />
 			</IconButton>
 
-			{isNotBreadcrumbView ? (
+			<Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
 				<Typography
 					style={{
 						marginLeft: '10px',
@@ -95,81 +95,77 @@ function GridViewComponent({ Icon, buttonRef, label, tableKey, fetchGridViews })
 				>
 					{label}
 				</Typography>
-			) : (
-				<Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-					<Typography
+				<div>
+					<div
 						style={{
-							marginLeft: '10px',
+							display: 'flex',
+							color: '#18AADD',
 							fontSize: '16px',
+							cursor: 'pointer',
 						}}
-						color="inherit"
+						onClick={event => handleClick(event)}
+						onFocus={() => setShowIcon(true)}
+						onMouseOver={() => setShowIcon(true)}
+						onMouseLeave={() => setShowIcon(false)}
 					>
-						{label}
-					</Typography>
-					<div>
-						<div
+						<Typography>
+							<span style={selectedGridView?.isModified ? { 'font-style': 'italic' } : {}}>
+								{selectedGridView?.name}
+							</span>
+						</Typography>
+						<span
 							style={{
-								display: 'flex',
+								height: '0px',
 								color: '#18AADD',
 								fontSize: '16px',
 								cursor: 'pointer',
 							}}
-							onClick={event => handleClick(event)}
-							onFocus={() => setShowIcon(true)}
-							onMouseOver={() => setShowIcon(true)}
-							onMouseLeave={() => setShowIcon(false)}
 						>
-							<Typography>
-								<span style={selectedGridView?.isModified ? { 'font-style': 'italic' } : {}}>
-									{selectedGridView?.name}
-								</span>
-							</Typography>
-							<span
-								style={{
-									height: '0px',
-									color: '#18AADD',
-									fontSize: '16px',
-									cursor: 'pointer',
-								}}
-							>
-								{showIcon && <ExpandMoreIcon />}
-							</span>
-							<span>{isLoading && <CircularProgress size={24} />}</span>
-						</div>
-						<Menu
-							style={{ zIndex: '1305' }}
-							id="menu"
-							anchorEl={anchorEl}
-							keepMounted
-							open={Boolean(anchorEl)}
-							onClose={handleClose}
-							getContentAnchorEl={null}
-							anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-							transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-						>
-							<MenuItem
-								style={{ width: '250px' }}
-								onClick={handleUpdateClick}
-								disabled={selectedGridView?.type === 'Default' || selectedGridView?.name === 'All Contacts'}
-							>
-								Update view
-							</MenuItem>
-							<MenuItem
-								onClick={() => {
-									handleClose();
-									Controller.updateState({
-										gridView: { ...tableStateValues.gridView, showViewModal: true, showSaveAsNew: true },
-									});
-								}}
-							>
-								Save as new view
-							</MenuItem>
-						</Menu>
+							{showIcon && <ExpandMoreIcon />}
+						</span>
+						<span>{isLoading && <CircularProgress size={24} />}</span>
 					</div>
-				</Breadcrumbs>
-			)}
+					<Menu
+						style={{ zIndex: '1305' }}
+						id="menu"
+						anchorEl={anchorEl}
+						keepMounted
+						open={Boolean(anchorEl)}
+						onClose={handleClose}
+						getContentAnchorEl={null}
+						anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+						transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+					>
+						<MenuItem
+							style={{ width: '250px' }}
+							onClick={handleUpdateClick}
+							disabled={selectedGridView?.type === 'Default' || selectedGridView?.name === 'All Contacts'}
+						>
+							Update view
+						</MenuItem>
+						<MenuItem
+							onClick={() => {
+								handleClose();
+								Controller.updateState({
+									gridView: { ...tableStateValues.gridView, showViewModal: true, showSaveAsNew: true },
+								});
+							}}
+						>
+							Save as new view
+						</MenuItem>
+					</Menu>
+				</div>
+			</Breadcrumbs>
 		</div>
 	);
 }
+
+GridViewComponent.propTypes = {
+	Icon: PropTypes.object,
+	buttonRef: PropTypes.object,
+	label: PropTypes.string,
+	tableKey: PropTypes.string,
+	fetchGridViews: PropTypes.func,
+};
 
 export default memo(GridViewComponent);

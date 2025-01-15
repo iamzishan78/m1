@@ -1,7 +1,18 @@
-import { useMutation } from '@apollo/client';
-import { Collapse } from '@material-ui/core';
-import { Typography, Divider, MenuItem, Popper, ClickAwayListener, MenuList, Paper, Grow } from '@material-ui/core';
-import { IconButton } from '@material-ui/core';
+import React, { useContext, useState, useEffect, Fragment, useCallback, useMemo, memo } from 'react';
+import { useHistory } from 'react-router-dom';
+
+import {
+	Collapse,
+	Typography,
+	Divider,
+	MenuItem,
+	Popper,
+	ClickAwayListener,
+	MenuList,
+	Paper,
+	Grow,
+	IconButton,
+} from '@material-ui/core';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Box from '@material-ui/core/Box';
@@ -14,25 +25,22 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
-
-// cra webpack hack to call this a png to get included in bundle
-
 import { Close as ClearButton } from '@material-ui/icons';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+
+import { useMutation } from '@apollo/client';
 import update from 'immutability-helper';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
-import React, { useContext, useState, useEffect, Fragment, useCallback, useMemo, memo } from 'react';
-import { useHistory } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import EditableTextField from 'components/Shared/components/Fields/EditableTextField';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
-import { truncate } from 'components/Shared/functions';
-import { copy, deepEqual, deepEqualObjects } from 'components/Shared/functions';
+import { truncate, copy, deepEqual, deepEqualObjects } from 'components/Shared/functions';
 import UploadIcon from 'components/Shared/svgIcons/uploadIcon';
 
 import { UPDATE_DATASET } from 'graphQL/useMutationDataset';
@@ -48,6 +56,8 @@ import { AppContext } from 'AppContext';
 
 import DeleteSourceAndCategoryConfirmationDialog from './DeleteSourceAndCategoryConfirmationDialog';
 
+const SPACING = 6;
+
 const useStyles = makeStyles(theme => ({
 	subHeaderItem: {
 		backgroundColor: '#011133 !important',
@@ -60,8 +70,8 @@ const useStyles = makeStyles(theme => ({
 		borderRadius: '8px',
 	},
 	nested: {
-		paddingLeft: theme.spacing(6),
-		paddingRight: theme.spacing(6),
+		paddingLeft: theme.spacing(SPACING),
+		paddingRight: theme.spacing(SPACING),
 	},
 	disabledLayerTitle: {
 		'& span': { color: 'rgb(127, 149, 199) !important' },
@@ -213,19 +223,6 @@ function useOnClickOutside(ref, handler) {
 	}, [ref, handler]);
 }
 
-const SourceManagerMemo = memo(SourceManager);
-export default function SourceManagerContainer(props) {
-	const [stateApp, setStateApp] = useContext(AppContext);
-
-	const setStateAppCallback = useCallback(setStateApp, [setStateApp]);
-	const stateAppMemo = useMemo(
-		() => ({ layers: stateApp.layers, user: stateApp.user }),
-		[stateApp.user, stateApp.layers]
-	);
-
-	return <SourceManagerMemo {...props} stateApp={stateAppMemo} setStateApp={setStateAppCallback} />;
-}
-
 function SourceManager(props) {
 	const classes = useStyles();
 	let history = useHistory();
@@ -305,13 +302,6 @@ function SourceManager(props) {
 		return check;
 	}, [M1Layers]);
 
-	const handleCurrentLayersChange = () => {
-		setCurrentLayers(currentLayers => {
-			handleApplyChange(currentLayers);
-			return currentLayers;
-		});
-	};
-
 	const handleApplyChange = currentLayers => {
 		if (!deepEqual(currentLayers, globalStateValues.layers)) {
 			const layersToUpdate = [];
@@ -348,6 +338,13 @@ function SourceManager(props) {
 				});
 			}
 		}
+	};
+
+	const handleCurrentLayersChange = () => {
+		setCurrentLayers(currentLayers => {
+			handleApplyChange(currentLayers);
+			return currentLayers;
+		});
 	};
 
 	// Common function added to change Layer showable key
@@ -430,6 +427,9 @@ function SourceManager(props) {
 		mapControlsController.updateState({
 			layerAddControl: 'addGroup',
 			fileUploaded: { file: fileData, fileName, fileNameParsed, fileType },
+			addLayer: false,
+			manageSourceLayer: false,
+			manageLayer: false,
 		});
 	}
 
@@ -444,7 +444,7 @@ function SourceManager(props) {
 		setAnchorEl(event.currentTarget);
 	};
 
-	const handleMenuClose = e => {
+	const handleMenuClose = () => {
 		setAnchorEl(null);
 	};
 
@@ -481,8 +481,8 @@ function SourceManager(props) {
 		<div id="sourceManagerDiv" style={{ height: '100%', display: 'flex', width: '100%' }}>
 			<DropzoneAreaBase
 				onAdd={handleFileInput}
-				onDelete={fileObj => {}}
-				onAlert={(message, variant) => {}}
+				onDelete={() => {}}
+				onAlert={() => {}}
 				filesLimit={1}
 				maxFileSize={104857600}
 				dropzoneClass={classes.dropzoneClass}
@@ -525,7 +525,7 @@ function SourceManager(props) {
 											checked={selectAllMineralSources}
 											color="darkgray"
 											onClick={e => e.stopPropagation()}
-											onChange={e => {
+											onChange={() => {
 												handleLayerSettingChange(M1Layers, !selectAllMineralSources);
 											}}
 											inputProps={{ 'aria-label': 'primary checkbox' }}
@@ -549,7 +549,7 @@ function SourceManager(props) {
 
 												if (layer.type === 'group') {
 													return (
-														<Accordion>
+														<Accordion key={`group-${layer.name}`}>
 															<AccordionSummary
 																// expandIcon={<ExpandMoreIcon />}
 																aria-controls="panel1a-content"
@@ -568,7 +568,7 @@ function SourceManager(props) {
 																	checked={!!layer.layers.find(l => l.layerSettings?.showable)}
 																	color="dark gray"
 																	onClick={event => event.stopPropagation()}
-																	onChange={e => handleLayerSettingChange([layer])}
+																	onChange={() => handleLayerSettingChange([layer])}
 																	inputProps={{ 'aria-label': 'primary checkbox' }}
 																/>
 																<EditableTextField
@@ -597,8 +597,8 @@ function SourceManager(props) {
 															</AccordionSummary>
 															<Box paddingLeft={2} paddingRight={2}>
 																<List className={classes.list}>
-																	{layer.layers?.map((groupLayer, index) => (
-																		<StyledListItem key={index} ContainerComponent="li">
+																	{layer.layers?.map(groupLayer => (
+																		<StyledListItem key={groupLayer.layerName} ContainerComponent="li">
 																			<Checkbox
 																				checked={groupLayer?.layerSettings?.showable}
 																				color="dark gray"
@@ -635,7 +635,7 @@ function SourceManager(props) {
 												}
 
 												return (
-													<StyledListItem key={index} ContainerComponent="li">
+													<StyledListItem key={layer._id} ContainerComponent="li">
 														<Checkbox
 															checked={layer.layerSettings.showable}
 															color="dark gray"
@@ -651,7 +651,8 @@ function SourceManager(props) {
 																	? 'Tracts'
 																	: layer.layerName === 'Wells'
 																		? 'Platform Wells'
-																		: truncate(layer.layerName, 30)
+																		: // eslint-disable-next-line no-magic-numbers
+																			truncate(layer.layerName, 30)
 															}
 														/>
 
@@ -717,8 +718,8 @@ function SourceManager(props) {
 											?.filter(layer => {
 												return !props.search || layer.name?.toLowerCase().includes(props.search);
 											})
-											?.map((dataset, index) => (
-												<Fragment key={index}>
+											?.map(dataset => (
+												<Fragment key={dataset._id}>
 													{dataset.sourceName !== 'M1 Platform' ? (
 														<>
 															{' '}
@@ -766,10 +767,14 @@ function SourceManager(props) {
 															</StyledListItem2>
 															<Collapse in={openDataSets[dataset.sourceName]} timeout="auto" unmountOnExit>
 																<List className={classes.list} data-testid={`source-ul-${dataset.sourceName}`}>
-																	{dataset.categories?.map((layer, index) => {
+																	{dataset.categories?.map(layer => {
 																		// const labelId = `m1layer-list-label-${index}`;
 																		return (
-																			<StyledListItem key={index} ContainerComponent="li" style={{ padding: 10 }}>
+																			<StyledListItem
+																				key={layer.layerName || layer.name}
+																				ContainerComponent="li"
+																				style={{ padding: 10 }}
+																			>
 																				<EditableTextField
 																					onChange={datasetNameChange}
 																					item={layer}
@@ -862,4 +867,23 @@ function SourceManager(props) {
 			)}
 		</div>
 	);
+}
+
+SourceManager.propTypes = {
+	stateApp: PropTypes.object,
+	search: PropTypes.string,
+};
+
+const SourceManagerMemo = memo(SourceManager);
+
+export default function SourceManagerContainer(props) {
+	const [stateApp, setStateApp] = useContext(AppContext);
+
+	const setStateAppCallback = useCallback(setStateApp, [setStateApp]);
+	const stateAppMemo = useMemo(
+		() => ({ layers: stateApp.layers, user: stateApp.user }),
+		[stateApp.user, stateApp.layers]
+	);
+
+	return <SourceManagerMemo {...props} stateApp={stateAppMemo} setStateApp={setStateAppCallback} />;
 }

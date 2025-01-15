@@ -22,7 +22,7 @@ describe('Add and Remove Tags Grid Spec', () => {
 
 		cy.viewport(1400, 900);
 
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.visit('http://localhost:3000/contacts');
 
 		cy.checkAndLogin();
@@ -30,7 +30,7 @@ describe('Add and Remove Tags Grid Spec', () => {
 		cy.get('#addButton', { timeout: longTimeout }).should('be.visible');
 
 		cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
-			const firstHit = response.response.body.data.getESSimpleSearch.hits[0];
+			const firstHit = response.response.body.data.getDbData.hits[0];
 
 			let contactName = firstHit.name;
 
@@ -63,14 +63,14 @@ describe('Add and Remove Tags Grid Spec', () => {
 				cy.wait(3000);
 				cy.get('.MuiChip-label', { timeout: longTimeout }).contains(tagName).siblings().click();
 
-				cy.interceptApi('getESSimpleSearch');
+				cy.interceptApi('getDbData');
 				cy.log('==== STEP: CLICK ON A BREADCRUM ====');
 				cy.get('.MuiTypography-root').contains('Contacts').click();
 				cy.get('#addButton', { timeout: longTimeout }).should('be.visible');
 				tagName = 'Test Tag2';
 
 				cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
-					const thirdHit = response.response.body.data.getESSimpleSearch.hits[2];
+					const thirdHit = response.response.body.data.getDbData.hits[2];
 					contactName = thirdHit.name;
 
 					cy.wait(3000);
@@ -90,7 +90,7 @@ describe('Add and Remove Tags Grid Spec', () => {
 					cy.wait(5000);
 					cy.get('.MuiChip-label', { timeout: longTimeout }).contains(tagName).should('be.visible');
 
-					cy.interceptApi('getESSimpleSearch');
+					cy.interceptApi('getDbData');
 					cy.log('==== STEP: CLICK ON A BREADCRUM ====');
 					cy.get('.MuiTypography-root').contains('Contacts').click();
 					cy.get('#addButton', { timeout: longTimeout }).should('be.visible');
@@ -98,7 +98,7 @@ describe('Add and Remove Tags Grid Spec', () => {
 					cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout });
 
 					cy.log(`==== STEP: SEARCH FOR CONTACT : ${contactName} ====`);
-					cy.gridSearch(contactName, 'getESSimpleSearch');
+					cy.gridSearch(contactName, 'getDbData');
 
 					cy.getTableCell('Tags', 1).then($tagger => {
 						cy.log('==== STEP: SCROLL TO TOP RIGHT ====');

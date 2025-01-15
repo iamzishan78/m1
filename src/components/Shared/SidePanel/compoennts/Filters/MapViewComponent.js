@@ -1,9 +1,11 @@
-import { useMutation } from '@apollo/client';
+import React, { useState, memo } from 'react';
+
 import { Breadcrumbs, Typography, IconButton, Menu, MenuItem } from '@material-ui/core';
 import { CircularProgress } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import React, { useState, memo } from 'react';
+
+import { useMutation } from '@apollo/client';
 
 import { UPSERT_MAP_VIEW } from 'graphQL/useMutationUpsertMapView';
 
@@ -30,7 +32,7 @@ function MapViewComponent({ Icon, label, fetchMapViews, defaultView }) {
 		setAnchorEl(event.currentTarget);
 	};
 
-	const handleUpdateClick = async () => {
+	const handleUpdateClick = async (isFetchMapViews = false) => {
 		try {
 			setIsLoading(true);
 
@@ -48,6 +50,7 @@ function MapViewComponent({ Icon, label, fetchMapViews, defaultView }) {
 
 			setIsLoading(false);
 			handleClose();
+			if (isFetchMapViews) fetchMapViews();
 		} catch (error) {
 			setIsLoading(false);
 		}
@@ -130,7 +133,7 @@ function MapViewComponent({ Icon, label, fetchMapViews, defaultView }) {
 					>
 						<MenuItem
 							style={{ width: '250px' }}
-							onClick={handleUpdateClick}
+							onClick={() => handleUpdateClick(true)}
 							disabled={(selectedMapView?.type || defaultView?.type) === 'Default'}
 						>
 							Update view

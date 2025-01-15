@@ -1,22 +1,25 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useState, useContext, useEffect } from 'react';
+
 import { Grid, FormControl, TextField, Switch, FormControlLabel } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/styles';
-import React, { useState, useContext, useEffect } from 'react';
 
-import CustomFieldSelect from 'components/Shared/M1nTable/components/SubComponents/CustomFieldSelect';
-import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
+import { useLazyQuery, useMutation } from '@apollo/client';
+
+import CustomFieldSelect from 'components/MRTTable/Common/Components/CustomFieldSelect';
+import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
 import LongIcon from 'components/Shared/svgIcons/LongIcon';
-import MetaField from 'components/Table/helpers/MetaField';
 
 import { UPDATE_META_DATA } from 'graphQL/useMutationUpdateMetaData';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
+
+import MetaField from 'utils/MetaField';
 
 import { AppContext } from 'AppContext';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	actionBar: ({ isBackground }) => ({
 		padding: '10px 25px',
 		display: 'flex',
@@ -131,10 +134,10 @@ const CodeMapping = ({ settingsFor }) => {
 	const [showEmpty, setShowEmpty] = useState(false);
 	const [mappingType, setMappingType] = useState(mappingTypeOptions[settingsFor][0]);
 
-	const [updateMetaData, {}] = useMutation(UPDATE_META_DATA);
+	const [updateMetaData] = useMutation(UPDATE_META_DATA);
 	const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
-	const [getUniqueType, { data: uniqueType }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
+	const [getUniqueType, { data: uniqueType }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 
 	useEffect(() => {
 		if (metaDataRes?.getMetaData) {
@@ -151,8 +154,8 @@ const CodeMapping = ({ settingsFor }) => {
 	}, [getMetaData]);
 
 	useEffect(() => {
-		if (uniqueType?.getESSimpleFilter) {
-			const data = uniqueType?.getESSimpleFilter?.hits?.map(hit => hit.key)?.filter(data => data);
+		if (uniqueType?.getDbFilters) {
+			const data = uniqueType?.getDbFilters?.hits?.map(hit => hit.key)?.filter(data => data);
 			setCodes(data);
 		}
 	}, [uniqueType]);

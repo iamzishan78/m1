@@ -1,5 +1,6 @@
-import { useLazyQuery } from '@apollo/client';
 import React, { useState, createContext, useEffect } from 'react';
+
+import { useLazyQuery } from '@apollo/client';
 
 // Queries
 import { GET_AGREEMENTS_FROM_DOCUMENTS } from 'graphQL/useQueryGetAgreementsFromDocument';

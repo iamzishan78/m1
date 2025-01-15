@@ -1,11 +1,13 @@
+import React, { useState, useEffect } from 'react';
+import Avatar from 'react-avatar';
+
 import { ClickAwayListener, Grid, TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
 import $ from 'jquery';
-import React, { useState, useEffect } from 'react';
-import Avatar from 'react-avatar';
 
 import CommentType from 'components/Shared/components/Comment/CommentType';
 

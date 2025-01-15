@@ -1,13 +1,16 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useEffect, useMemo, useState } from 'react';
+
 import { Paper } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+
 import { TextField } from '@mui/material';
-import React, { useEffect, useMemo, useState } from 'react';
+
+import { useLazyQuery } from '@apollo/client';
 
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import { generateRandomColor } from 'components/MapControls/commonHelper';
 
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { getLayerKey } from 'hookstate/helpers';
 
@@ -91,7 +94,7 @@ const AttrsValuesDropdown = ({
 	const [selectedOption, setSelectedOption] = useState('');
 
 	// Getting values against the summary field keys
-	const [getFiltersList, { data: filtersData }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
+	const [getFiltersList, { data: filtersData }] = useLazyQuery(GET_DB_FILTERS, { fetchPolicy: 'no-cache' });
 
 	useEffect(() => {
 		let esIndex = selectedLayer.layerType === 'file layer' ? 'shapefile_flat' : 'shapes_flat';
@@ -133,12 +136,10 @@ const AttrsValuesDropdown = ({
 
 	// Making dropdown options with colors
 	const attroptions = useMemo(() => {
-		if (!filtersData?.getESSimpleFilter?.hits || !selectedValue?.label) {
+		if (!filtersData?.getDbFilters?.hits || !selectedValue?.label) {
 			return [];
 		}
-		const filterKeys = filtersData.getESSimpleFilter.hits
-			.map(hit => hit?.key)
-			.filter(key => key && key.toString().trim());
+		const filterKeys = filtersData.getDbFilters.hits.map(hit => hit?.key).filter(key => key && key.toString().trim());
 
 		filterKeys.unshift('');
 

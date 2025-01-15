@@ -1,12 +1,14 @@
-import { Grid, Typography, FormControl, InputLabel, InputBase, Button } from '@material-ui/core';
-import { withStyles } from '@material-ui/styles';
 import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+
+import { Grid, Typography, FormControl, InputLabel, InputBase, Button } from '@material-ui/core';
+import { withStyles } from '@material-ui/styles';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { mapStateController } from 'hookstate/mapStateController';
 
 import { useStyles } from './style';
+
 const BootstrapInput = withStyles(theme => ({
 	root: {
 		'label + &': {

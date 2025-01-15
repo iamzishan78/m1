@@ -1,5 +1,6 @@
-import gql from 'graphql-tag';
 import React from 'react';
+
+import gql from 'graphql-tag';
 
 export const PRODUCTIONDETAILQUERY = gql`
 	query getExternalProductionDetail($id: String, $pageSize: String) {

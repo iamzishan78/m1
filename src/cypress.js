@@ -1,9 +1,10 @@
-import './wdyr';
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 
 import './index.css';
+import { ConnectedRouter } from 'connected-react-router';
+
+import Providers from 'Providers';
 import { history } from 'store';
 
 import AzureLogin from './components/AzureLogin';
@@ -11,9 +12,6 @@ import 'components/Common/MRTable/common.css';
 import * as serviceWorker from './serviceWorker';
 
 import 'react-toastify/dist/ReactToastify.min.css';
-import Providers from 'Providers';
-
-import { ConnectedRouter } from 'connected-react-router';
 
 ReactDOM.render(
 	<Providers>

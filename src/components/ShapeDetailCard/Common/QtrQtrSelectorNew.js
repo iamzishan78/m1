@@ -1,11 +1,13 @@
-import { useMutation } from '@apollo/client';
+import React, { useState, useEffect, useContext, useRef } from 'react';
+
 import { Box, FormControlLabel, Switch, Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useState, useEffect, useContext, useRef } from 'react';
+
+import { useMutation } from '@apollo/client';
 
 import { drawShapeLayerToggle, findBoundsMap } from 'components/MapControls/commonHelper';
 import {
@@ -13,7 +15,7 @@ import {
 	drawBoundary,
 	getRotateAbleShapeFromSelectedQuarters,
 } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
-import SmallTXQtr from 'components/Shared/M1nTable/components/SubComponents/AddParcelToEntityDialogContent/ParcelStep/components/SmallTXQtr';
+import SmallTXQtr from 'components/MRTTable/Common/Components/SmallTXQtr';
 
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 
@@ -159,7 +161,6 @@ export default function QtrQtrSelectorNew({ layerData }) {
 		return () => {
 			window.drawRef?.deleteAll();
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [stateApp.map, drawState.currentFeature]);
 
 	useEffect(() => {
@@ -308,7 +309,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
 					className={`${classes.qrt1} ${
 						layerData.state !== 'TXtemporaryRemoved' &&
 						qtrQtr &&
-						Object.entries(qtrQtr).every(([key, value]) => {
+						Object.entries(qtrQtr).every(([, value]) => {
 							return value;
 						})
 							? classes.backgrounSecondaryQrt1
@@ -321,7 +322,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
 					onClick={() => {
 						if (layerData.state !== 'TXtemporaryRemovedtemporaryRemoved' && qtrQtr) {
 							if (
-								Object.entries(qtrQtr).every(([key, value]) => {
+								Object.entries(qtrQtr).every(([, value]) => {
 									return value;
 								})
 							) {

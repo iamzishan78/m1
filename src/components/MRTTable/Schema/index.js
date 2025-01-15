@@ -1,128 +1,73 @@
-import AcreageDetilsMeta from './acreage_details_schema';
-import AcreageSummaryMeta from './acreage_summary_schema';
-import ActivitiesMeta from './activities_schema';
-import ActivityMeta from './activity_schema';
-import AgreementRelatedUnitsMeta from './agreement_relatedUnits_schema';
-import AgreementMeta from './agreement_schema';
-import AuditReportingMeta from './audit_reporting_schema';
-import BulkDataEditingMeta from './bulk_data_editing_schema';
-import CampaignMeta from './campaign_schema';
-import ComparisonMeta from './comparison_schema';
-import ContactMeta from './contact_schema';
-import ContactWellInterestMeta from './contact_well_Interest_schema';
-import ContactDetailRelatedAgreementMeta from './contactDetail_related_agreements_schema';
-import ContactDetailRelatedContactMeta from './contactDetail_related_contacts_schema';
-import DocumentMeta from './document_schema';
-import ExhibitAMeta from './exhibit_a_schema';
-import ExpirationsMeta from './expirations_schema';
-import GenericMeta from './generic-schema';
-import TaxOwnerMeta from './map-grid-tax-owner-schema';
-import MyWellsMeta from './my_wells_schema';
-import ObligationsMeta from './obligations_schema';
-import OwnersPerUnitMeta from './ownersperunit-schema';
-import PropertiesMeta from './properties_schema';
-import PropertyInterestDetailMeta from './property-interest-details-schema';
-import PropertyRevenueDetailMeta from './property-revenue-details-schema';
-import ReportingGroupsMeta from './property_group_schema';
-import PropertyIntrestMeta from './property_interest_schema';
-import PotentialShapeOwnersMeta from './QuerySchema/potential_shape_owners_schema';
-import PotentialWellOwnersMeta from './QuerySchema/potential_well_owners_schema';
-import PotentialWellsMeta from './QuerySchema/potential_wells_schema';
-import PropertiesRevenueMeta from './QuerySchema/properties_revenue_schema';
-import TaxRollInterestsMeta from './QuerySchema/tax_roll_interests_schema';
-import UserManagementMeta from './QuerySchema/user_management_schema';
-import RelatedBillingPartiesMeta from './related_billing_parties_schema';
-import RelatedCostAllocationsMeta from './related_cost_allocation_schema';
-import RelatedPayeesMeta from './related_payees_schema';
-import RelatedPaymentsMeta from './related_payments_schema';
-import RelatedTractInterestMeta from './related_tract_interest_schema';
-import RelatedTractsMeta from './related_tracts_schema';
-import RelatedlUnitInterestMeta from './related_unit_interests_schema';
-import RelatedWellsMeta from './related_wells_schema';
-import RevenueCheckDetailMeta from './revenue_checkdetail_schema';
-import RevenueStatementsMeta from './revenue_statements_schema';
-import SalesVolumeComparisonMeta from './sales-volume-comparison-schema';
-import ShapeDetailAgreementMeta from './shapeDetail_agreement_schema';
-import ShapesFilesGenericMeta from './shapefiles_generic_schema';
-import TractPerUnitMeta from './tract_interest_owner_schema';
-import TractInterestsMeta from './tract_interest_schema';
-import TractPotentialUnitsMeta from './tract_potential_units_schema';
-import TractMeta from './tract_schema';
-import TractUnitsMeta from './tract_units_schema';
-import UnitInterestMeta from './unit_interest_schema';
-import UnitRelatedAgreementMeta from './unit_relatedAgreements_schema';
-import UnitMeta from './unit_schema';
-import UnitTractsMeta from './unit_tract_schema';
-import WellsMeta from './wells_schema';
-
 export const SCHEMA = {
-	ActivityTable: ActivityMeta,
-	ContactTable: ContactMeta,
-	ContactWellInterestTable: ContactWellInterestMeta,
-	CampaignContactTable: ContactMeta,
-	ComparisonTable: ComparisonMeta,
-	PropertyIntrestTable: PropertyIntrestMeta,
-	OwnersPerUnitTable: OwnersPerUnitMeta, // unit detail => Interest owner grid schema
-	TractPerUnitTable: TractPerUnitMeta, // tract detail => Interest owner grid schema
-	TractsTable: TractMeta,
-	AgreementTable: AgreementMeta,
-	UnitTable: UnitMeta,
-	CampaignUnitTable: UnitMeta,
-	UnitInterestTable: UnitInterestMeta,
-	CampaignUnitInterestTable: UnitInterestMeta,
-	TractUnitsTable: TractUnitsMeta,
-	TractPotentialUnitsTable: TractPotentialUnitsMeta,
-	CampaignTable: CampaignMeta,
-	CampaignTractTable: TractMeta,
-	CampaignTractInterestTable: TractInterestsMeta,
-	GenericTable: GenericMeta,
-	ShapesFilesGenericTable: ShapesFilesGenericMeta,
-	PropertiesTable: PropertiesMeta, //main property Grid => /revenue/properties
-	RevenueStatementsTable: RevenueStatementsMeta, // Revenue Statement grid => revenue/statements
-	RevenueCheckDetailTable: RevenueCheckDetailMeta,
-	UnitTractTable: UnitTractsMeta, // UnitDetailCard => tracts
-	MyWellsTable: MyWellsMeta,
-	RevenuePropertiesTable: ReportingGroupsMeta,
-	WellsTable: WellsMeta,
-	TaxOwnerTable: TaxOwnerMeta,
-	SalesVolumeComparisonTable: SalesVolumeComparisonMeta, // Sales Volume comparison grid => analytrics/revenue
-	DocumentTable: DocumentMeta, // Documnet table schema
-	RelatedDocumentTable: DocumentMeta, // RelatedDocument table schema
-	AcreageSummaryTable: AcreageSummaryMeta,
-	ExhibitATable: ExhibitAMeta,
-	AcreageDetailsTable: AcreageDetilsMeta,
-	ActivitiesTable: ActivitiesMeta,
-	ExpirationsTable: ExpirationsMeta,
-	ObligationsTable: ObligationsMeta,
-	// Payments grids
-	RelatedPaymentsTable: RelatedPaymentsMeta,
-	RelatedPayeesTable: RelatedPayeesMeta,
-	RelatedCostAllocationsTable: RelatedCostAllocationsMeta,
-	RelatedBillingPartiesTable: RelatedBillingPartiesMeta,
-	// Added related shape grids
-	ShapeDetailAgreementTable: ShapeDetailAgreementMeta,
-	AgreementRelatedUnitsTable: AgreementRelatedUnitsMeta,
-	UnitRelatedAgreementTable: UnitRelatedAgreementMeta,
-	TractInterestsTable: TractInterestsMeta, // Tracts Interest schema
-	RelatedUnitInterestTable: RelatedlUnitInterestMeta,
-	RelatedTractInterestTable: RelatedTractInterestMeta,
-	RelatedAgreementTable: ContactDetailRelatedAgreementMeta,
-	ContactDetailAgreementsTable: ContactDetailRelatedAgreementMeta,
-	PropertyRelatedAgreementTable: ContactDetailRelatedAgreementMeta, //property detail =>  related agreement grid
-	ContactDetailActivitiesTable: ActivitiesMeta,
-	ContactDetailContactsTable: ContactDetailRelatedContactMeta,
-	PropertyInterestDetailTable: PropertyInterestDetailMeta, //property detail =>  interest detail grid
-	PropertyRevenueDetailTable: PropertyRevenueDetailMeta, //property detail =>  revenue detail grid
-	RelatedTractsTable: RelatedTractsMeta,
-	RelatedWellsTable: RelatedWellsMeta,
-	AuditReportingTable: AuditReportingMeta, // Revenue Statement grid => revenue/statements
-	BulkDataEditingTable: BulkDataEditingMeta,
-
-	// Query Tables
-	PotentialWellOwnersTable: PotentialWellOwnersMeta,
-	UserManagementTable: UserManagementMeta,
-	PropertiesRevenueTable: PropertiesRevenueMeta, // analytics > revenue > revenue  by month
-	TaxRollInterestsTable: TaxRollInterestsMeta,
-	PotentialWellsTable: PotentialWellsMeta,
-	PotentialShapeOwnersTable: PotentialShapeOwnersMeta,
+	ContactTable: () => import('./contact_schema'),
+	ContactWellInterestTable: () => import('./contact_well_Interest_schema'),
+	CampaignContactTable: () => import('./contact_schema'),
+	ComparisonTable: () => import('./comparison_schema'),
+	PropertyIntrestTable: () => import('./property_interest_schema'),
+	UnitInterestOwnerTable: () => import('./unit_interest_owner_schema'),
+	TractInterestOwnerTable: () => import('./tract_interest_owner_schema'),
+	TractsTable: () => import('./tract_schema'),
+	AgreementTable: () => import('./agreement_schema'),
+	UnitTable: () => import('./unit_schema'),
+	CampaignUnitTable: () => import('./unit_schema'),
+	UnitInterestTable: () => import('./unit_interest_schema'),
+	CampaignUnitInterestTable: () => import('./unit_interest_schema'),
+	TractUnitsTable: () => import('./tract_units_schema'),
+	TractPotentialUnitsTable: () => import('./tract_potential_units_schema'),
+	CampaignTable: () => import('./campaign_schema'),
+	CampaignTractTable: () => import('./tract_schema'),
+	CampaignTractInterestTable: () => import('./tract_interest_schema'),
+	GenericTable: () => import('./generic-schema'),
+	ShapesFilesGenericTable: () => import('./shapefiles_generic_schema'),
+	PropertiesTable: () => import('./properties_schema'),
+	RevenueStatementsTable: () => import('./revenue_statements_schema'),
+	RevenueCheckDetailTable: () => import('./revenue_checkdetail_schema'),
+	UnitTractTable: () => import('./unit_tract_schema'),
+	MyWellsTable: () => import('./my_wells_schema'),
+	RevenuePropertiesTable: () => import('./property_group_schema'),
+	WellsTable: () => import('./wells_schema'),
+	TaxOwnerTable: () => import('./map-grid-tax-owner-schema'),
+	SalesVolumeComparisonTable: () => import('./sales-volume-comparison-schema'),
+	DocumentTable: () => import('./document_schema'),
+	RelatedDocumentTable: () => import('./document_schema'),
+	AcreageSummaryTable: () => import('./acreage_summary_schema'),
+	ExhibitATable: () => import('./exhibit_a_schema'),
+	AcreageDetailsTable: () => import('./acreage_details_schema'),
+	ActivitiesTable: () => import('./activities_schema'),
+	ExpirationsTable: () => import('./expirations_schema'),
+	ObligationsTable: () => import('./obligations_schema'),
+	RelatedPaymentsTable: () => import('./related_payments_schema'),
+	RelatedPayeesTable: () => import('./related_payees_schema'),
+	RelatedCostAllocationsTable: () => import('./related_cost_allocation_schema'),
+	RelatedBillingPartiesTable: () => import('./related_billing_parties_schema'),
+	ShapeDetailAgreementTable: () => import('./shapeDetail_agreement_schema'),
+	AgreementRelatedUnitsTable: () => import('./agreement_relatedUnits_schema'),
+	UnitRelatedAgreementTable: () => import('./unit_relatedAgreements_schema'),
+	TractInterestsTable: () => import('./tract_interest_schema'),
+	RelatedUnitInterestTable: () => import('./related_unit_interests_schema'),
+	RelatedTractInterestTable: () => import('./related_tract_interest_schema'),
+	RelatedAgreementTable: () => import('./contactDetail_related_agreements_schema'),
+	ContactDetailAgreementsTable: () => import('./contactDetail_related_agreements_schema'),
+	PropertyRelatedAgreementTable: () => import('./contactDetail_related_agreements_schema'),
+	ContactDetailActivitiesTable: () => import('./activities_schema'),
+	ContactDetailContactsTable: () => import('./contactDetail_related_contacts_schema'),
+	PropertyInterestDetailTable: () => import('./property-interest-details-schema'),
+	PropertyRevenueDetailTable: () => import('./property-revenue-details-schema'),
+	RelatedTractsTable: () => import('./related_tracts_schema'),
+	RelatedWellsTable: () => import('./related_wells_schema'),
+	AuditReportingTable: () => import('./audit_reporting_schema'),
+	BulkDataEditingTable: () => import('./bulk_data_editing_schema'),
+	CheckDetailsTable: () => import('./check_details_schema'),
+	RunsheetTable: () => import('./runsheet_schema'),
+	DealsTable: () => import('./deals_schema'),
+	RelatedDealsTable: () => import('./deals_schema'),
+	PotentialWellOwnersTable: () => import('./QuerySchema/potential_well_owners_schema'),
+	UserManagementTable: () => import('./QuerySchema/user_management_schema'),
+	TaxRollInterestsTable: () => import('./QuerySchema/tax_roll_interests_schema'),
+	PotentialWellsTable: () => import('./QuerySchema/potential_wells_schema'),
+	PotentialShapeOwnersTable: () => import('./QuerySchema/potential_shape_owners_schema'),
+	ProductionWellsTable: () => import('./QuerySchema/production_wells_schema'),
+	WellProductionTable: () => import('./well_production_schema'),
+	FailedBulkDataEditingTable: () => import('./QuerySchema/failed_bulk_data_editing'),
+	WellOwnersTable: () => import('./QuerySchema/wells_owners_schema'),
 };

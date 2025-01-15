@@ -1,6 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useMutation, useLazyQuery, useApolloClient } from '@apollo/client';
-import { BlockBlobClient } from '@azure/storage-blob';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
+import { matchRoutes } from 'react-router-config';
+import { useHistory } from 'react-router-dom';
+
 import { Checkbox } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Step from '@material-ui/core/Step';
@@ -8,14 +12,12 @@ import StepConnector from '@material-ui/core/StepConnector';
 import StepLabel from '@material-ui/core/StepLabel';
 import Stepper from '@material-ui/core/Stepper';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+
+import { useMutation, useLazyQuery, useApolloClient } from '@apollo/client';
+import { BlockBlobClient } from '@azure/storage-blob';
 import clsx from 'clsx';
 import { set, get } from 'lodash';
 import PropTypes from 'prop-types';
-import React, { useEffect, useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
-import { matchRoutes } from 'react-router-config';
-import { useHistory } from 'react-router-dom';
 
 import { getDateWithoutTime } from 'components/Shared/functions';
 

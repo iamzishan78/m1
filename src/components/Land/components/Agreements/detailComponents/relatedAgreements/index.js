@@ -1,7 +1,8 @@
+import React, { useMemo } from 'react';
+
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
-import React, { useMemo } from 'react';
 
 import MRTTable from 'components/MRTTable';
 import RelatedAgreementToolbar from 'components/MRTTable/TablesOverride/RelatedAgreementTable/RelatedAgreementToolbar';
@@ -92,7 +93,6 @@ const RelatedAgreements = props => {
 				parentRecord: { value: uniObj?._id },
 			},
 			customValue: { parentRecord: uniObj?._id },
-			columnReordering: false,
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[uniObj?._id]

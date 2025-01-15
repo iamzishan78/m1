@@ -1,11 +1,14 @@
-import { useMutation } from '@apollo/client';
-import Dialog from '@material-ui/core/Dialog';
 import React, { memo } from 'react';
+
+import Dialog from '@material-ui/core/Dialog';
+
+import { useMutation } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import Loader from 'components/Loaders';
+import BuyContactsInfoDialogContent from 'components/MRTTable/Common/Components/BuyContactsInfoDialogContent';
 import ExportContactsPurchaseAndOwners from 'components/MRTTable/Common/Dialog/ExportContactsPurchaseAndOwners';
-import BuyContactsInfoDialogContent from 'components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
 
 import { GRID_GENERIC_REMOVE } from 'graphQL/useMutationCommonGridRemove';
 
@@ -49,6 +52,12 @@ function AllDialogs(props) {
 	};
 
 	const deleteFunc = async dataToDelete => {
+		if (rest.deleteType === 'row') {
+			rest.deleteFunc?.(dataToDelete);
+
+			return;
+		}
+
 		Loader.createToast('deletion', 'Deletion in Progress');
 		const user = globalStateController.getValue('user');
 		const testCase = globalStateController.getValue('testCase');
@@ -90,6 +99,8 @@ function AllDialogs(props) {
 			});
 		}
 	};
+
+	if (rest?.tableKey && rest?.tableKey !== props?.tableKey) return null;
 
 	return (
 		<>
@@ -188,5 +199,11 @@ function AllDialogs(props) {
 		</>
 	);
 }
+
+AllDialogs.propTypes = {
+	tableKey: PropTypes.string.isRequired,
+	columns: PropTypes.array,
+	controller: PropTypes.object,
+};
 
 export default memo(AllDialogs);

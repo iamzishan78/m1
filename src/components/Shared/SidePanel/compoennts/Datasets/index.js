@@ -1,4 +1,6 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { memo, useCallback, useContext, useEffect, useMemo } from 'react';
+import { useDispatch } from 'react-redux';
+
 import { Typography } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -7,8 +9,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import GridOnIcon from '@material-ui/icons/GridOn';
 import LayersIcon from '@material-ui/icons/Layers';
 import { makeStyles } from '@material-ui/styles';
-import React, { memo, useCallback, useContext, useEffect, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 
 import { snapGridSideBarData } from 'components/MapGridCard/components/data';
 import { copy } from 'components/Shared/functions';

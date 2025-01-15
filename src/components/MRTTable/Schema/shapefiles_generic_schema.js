@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import { get } from 'lodash';
 
 import { drawBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
@@ -6,6 +9,10 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
 import { popupController } from 'hookstate/popupStateController';
 
+const COLUMN_SIZE = 250;
+const ID_COLUMN_SIZE = 150;
+
+// eslint-disable-next-line no-unused-vars
 const onClickedRow = selectedRow => {};
 
 const ShapesFilesGenericMeta = {
@@ -32,14 +39,15 @@ const ShapesFilesGenericMeta = {
 	generateSchema: (keys, rows) => {
 		const baseKeys = ['_id', 'id', 'geometry'];
 
-		keys.splice(3, 0, 'actions');
+		keys.splice(baseKeys.length, 0, 'actions');
+
 		return keys.map(key => {
 			if (key === 'actions') {
 				return {
 					...CommonSchema.ACTION_COLUMN,
 					showInLast: false,
 					name: 'coordinates',
-					accessorKey: 'coordinates',
+					id: 'coordinates',
 					header: '',
 					size: 70,
 					Cell: ({ row }) => {
@@ -83,7 +91,7 @@ const ShapesFilesGenericMeta = {
 			}
 
 			return {
-				size: ['id', 'ID'].includes(key) ? 150 : 250,
+				size: ['id', 'ID'].includes(key) ? ID_COLUMN_SIZE : COLUMN_SIZE,
 				isPinned: false,
 				hidden: key === '_id',
 				filter,

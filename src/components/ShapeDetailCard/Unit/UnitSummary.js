@@ -1,4 +1,5 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useEffect, useState } from 'react';
+
 import { Button } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
@@ -6,8 +7,10 @@ import AddIcon from '@material-ui/icons/Add';
 import GavelIcon from '@material-ui/icons/Gavel';
 import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
 import PersonIcon from '@material-ui/icons/Person';
+
+import { useLazyQuery } from '@apollo/client';
+
 // import TodayOutlinedIcon from '@material-ui/icons/TodayOutlined';
-import React, { useEffect, useState } from 'react';
 
 import QtrQtrSelectorNew from 'components/ShapeDetailCard/Common/QtrQtrSelectorNew';
 import SummaryTable from 'components/ShapeDetailCard/Common/SummaryTable';
@@ -16,7 +19,7 @@ import { summaryStyles } from 'components/ShapeDetailCard/style';
 import CommentComponent from 'components/Shared/CommentComponent';
 import ExpandableSearch from 'components/Shared/Forms/Fields/ExpandableSearch';
 import WellIcon from 'components/Shared/svgIcons/well';
-import MetaField from 'components/Table/helpers/MetaField';
+import MetaField from 'utils/MetaField';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';

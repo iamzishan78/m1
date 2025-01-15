@@ -1,6 +1,8 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
-import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
@@ -38,31 +40,28 @@ const RelatedPaymentsMeta = {
 	maxTableHeight: 'calc(100vh - 550px)',
 	CustomToolBar: RelatedPaymentsToolbar,
 	isInFiniteScroll: true,
-	columnReordering: false,
 	enableRowSelected: true,
 	hasMultiGrids: true,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
-			accessorKey: 'id',
+			id: 'id',
 		},
 		{
 			...CommonSchema.HIDDEN,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'paymentType.keyword',
-			accessorFn: row => row?.paymentType,
 			id: 'paymentType',
 			header: 'Payment Type',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'startDate',
-			accessorFn: row => row?.startDate,
 			id: 'startDate',
 			header: 'Start Date',
 			type: 'date',
@@ -72,9 +71,8 @@ const RelatedPaymentsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'endDate',
-			accessorFn: row => row?.endDate,
 			id: 'endDate',
 			header: 'End Date',
 			type: 'date',
@@ -84,16 +82,14 @@ const RelatedPaymentsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'frequency.keyword',
-			accessorFn: row => row?.frequency,
 			id: 'frequency',
 			header: 'Frequency',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'nextPayment',
-			accessorFn: row => row?.nextPayment,
 			id: 'nextPayment',
 			header: 'Next Payment',
 			type: 'date',
@@ -103,47 +99,33 @@ const RelatedPaymentsMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'amount.keyword',
-			accessorFn: row => row?.amount,
 			id: 'amount',
 			type: 'number',
 			header: 'Amount',
-			Cell: ({ row }) => {
-				const value = row?.original?.amount;
-				return value ? vf_currency_to_fixed(parseFloat(value), 2) : value === 0 ? '$0' : '';
-			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.CURRENCY_COLUMN,
 			name: 'companyShare.keyword',
-			accessorFn: row => row?.companyShare,
 			id: 'companyShare',
 			header: 'Company Share',
-			type: 'number',
-			Cell: ({ row }) => {
-				const value = row?.original?.companyShare;
-				return value ? vf_currency_to_fixed(parseFloat(value), 2) : value === 0 ? '$0' : '';
-			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'responsibleParty.keyword',
-			accessorFn: row => row?.responsibleParty,
 			id: 'responsibleParty',
 			header: 'Responsible Party',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'assignedTo.displayName.keyword',
-			accessorFn: row => row?.assignedTo?.displayName,
 			id: 'assignedTo.displayName',
 			header: 'Assigned To',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'paymentStatus.keyword',
-			accessorFn: row => row?.paymentStatus,
 			id: 'paymentStatus',
 			header: 'Payment Status',
 		},

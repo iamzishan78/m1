@@ -1,3 +1,5 @@
+import React from 'react';
+
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -5,7 +7,6 @@ import Paper from '@material-ui/core/Paper';
 import Select from '@material-ui/core/Select';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { createTheme } from '@material-ui/core/styles';
-import React from 'react';
 
 import { scrollbarStyle } from 'styles/common';
 

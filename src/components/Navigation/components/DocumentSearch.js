@@ -1,3 +1,5 @@
+import React, { useContext, useState, useEffect } from 'react';
+
 import { InputAdornment, TextField, IconButton, Tooltip } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
@@ -8,7 +10,6 @@ import Typography from '@material-ui/core/Typography';
 import ClearIcon from '@material-ui/icons/Clear';
 import PostAddOutlinedIcon from '@material-ui/icons/PostAddOutlined';
 import SearchIcon from '@material-ui/icons/Search';
-import React, { useContext, useState, useEffect } from 'react';
 
 import { tableController } from 'hookstate/tableController';
 

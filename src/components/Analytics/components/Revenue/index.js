@@ -1,11 +1,13 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useSelector } from 'react-redux';
+
 import { Grid, Divider, Tab, Tabs, TextField, Box } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles, withStyles } from '@material-ui/styles';
+
+import { useLazyQuery } from '@apollo/client';
 import sortBy from 'lodash/sortBy';
 import moment from 'moment';
-import React, { useEffect, useState, useCallback } from 'react';
-import { useSelector } from 'react-redux';
 
 import DetailTabsSection from 'components/Analytics/components/Revenue/DetailTabsSection';
 import MRTTable from 'components/MRTTable';
@@ -15,14 +17,13 @@ import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
 
 import { GET_CHECK_DETAILS_DATA } from 'graphQL/useQueryCheckDetailsData';
 import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from 'graphQL/useQueryGetPortfolioGrossRevenueSummary';
 
 import { tableController } from 'hookstate/tableController';
 
 import AcquisitionIdDropdown from './AcquisitionIdDropdown';
 import AnalyticsCards from './Analytics';
-import CheckDetailsSection from './CheckDetailsSection';
 import PurchasersDropdown from './PurchasersDropdown';
 import SalesVolumeComparisonSection from './SalesVolumeComparisonSection';
 
@@ -46,14 +47,6 @@ const useStyles = makeStyles(theme => ({
 	divider: {
 		height: '10px',
 		backgroundColor: '#f3f3f3',
-	},
-
-	sectionCard: {
-		'& div': {
-			'&>.MuiPaper-root': {
-				'&>:nth-child(3)': { minHeight: 'calc(100vh - 265px) !important', maxHeight: '35vh' },
-			},
-		},
 	},
 
 	revenueTableInfContainer: {
@@ -159,11 +152,11 @@ export default function RevenueAnalytics(props) {
 		fetchPolicy: 'no-cache',
 	});
 
-	const [getCheckNumbers] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
+	const [getCheckNumbers] = useLazyQuery(GET_DB_FILTERS, {
 		fetchPolicy: 'no-cache',
 	});
 
-	const [getPropertyNumbers] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
+	const [getPropertyNumbers] = useLazyQuery(GET_DB_FILTERS, {
 		fetchPolicy: 'no-cache',
 	});
 
@@ -179,7 +172,7 @@ export default function RevenueAnalytics(props) {
 					filterKey: 'property.number.keyword',
 					filterAggs: { query: '', field: 'property.number.keyword', size: getTableStateValues()?.data?.total || 0 },
 				},
-				onCompleted: res => resolve(res?.getESSimpleFilter?.hits),
+				onCompleted: res => resolve(res?.getDbFilters?.hits),
 				onError: error => reject(error),
 			});
 		});
@@ -192,7 +185,7 @@ export default function RevenueAnalytics(props) {
 					filterKey: 'check.checkNumber.keyword',
 					filterAggs: { query: '', field: 'check.checkNumber.keyword', size: getTableStateValues()?.data?.total || 0 },
 				},
-				onCompleted: res => resolve(res?.getESSimpleFilter?.hits),
+				onCompleted: res => resolve(res?.getDbFilters?.hits),
 				onError: error => reject(error),
 			});
 		});
@@ -442,7 +435,7 @@ export default function RevenueAnalytics(props) {
 
 			{tabs[tab] === 'Check Details' && (
 				<Box sx={{ padding: '1em', marginLeft: '1em' }}>
-					<MRTTable name="PropertyRevenueDetailTable" overrideMeta={{
+					<MRTTable name="RevenueCheckDetailTable" overrideMeta={{
 						maxTableHeight: 'calc(100vh - 300px)',
 						isDeleteDisabled: true,
 						isNotBreadcrumbView: true, 

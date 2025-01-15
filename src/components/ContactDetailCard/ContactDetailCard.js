@@ -1,5 +1,9 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { Grid, IconButton, Tabs, Tab, Menu, MenuItem, Badge, CircularProgress } from '@material-ui/core';
+import React, { useContext, useState, useEffect } from 'react';
+import Avatar from 'react-avatar';
+import { useSelector, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+
+import { Grid, IconButton, Menu, MenuItem, Badge, CircularProgress } from '@material-ui/core';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -15,33 +19,32 @@ import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import TwitterIcon from '@material-ui/icons/Twitter';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { get } from 'lodash';
-import React, { useContext, useState, useEffect } from 'react';
-import Avatar from 'react-avatar';
-import { useSelector, useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 import { toggleRightColumn } from 'actions/ContactDetailCard';
 
+import BuyContactsInfoDialogContent from 'components/MRTTable/Common/Components/BuyContactsInfoDialogContent';
 import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
 import DocViewer from 'components/Shared/DocViewer';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 import OpenCorporatesIcon from 'components/Shared/svgIcons/OpenCorporatesIcon';
 import RequestPageIcon from 'components/Shared/svgIcons/request_page';
-import MetaField from 'components/Table/helpers/MetaField';
 import PipelinesFetchHoc from 'components/Transact/components/Common/PipelinesFetchHoc';
 import AddDealDialog from 'components/Transact/components/DealDialog/AddDealDialog';
 
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 import { CONTACT_PURCHASE_DATA } from 'graphQL/useQueryContactPurchaseData';
 import { LASTMELISSARECORD } from 'graphQL/useQueryGetMelissaRecords';
-import { TRANSACTIONDATA } from 'graphQL/useQueryTransactionData';
 
 import { globalStateController } from 'hookstate/globalStateController';
 
+import { SMALL_TIMEOUT } from 'utils/consts';
 import { OWNERTYPE } from 'utils/data';
 import { getOpenCorporatesUrl } from 'utils/helper';
+import MetaField from 'utils/MetaField';
 
 import { AppContext } from 'AppContext';
 
@@ -55,7 +58,6 @@ import AddActivityDialog from '../ContactDetailCard/components/AddActivityDialog
 import SummaryFields from '../ContactDetailedInfo/components/SummaryFields';
 import { NavigationContext } from '../Navigation/NavigationContext';
 import Comments from '../Shared/Comments';
-import BuyContactsInfoDialogContent from '../Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
 import Tags from '../Shared/Tagger';
 
 const useStyles = makeStyles(theme => ({
@@ -390,49 +392,6 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const StyledTabs = withStyles({
-	root: {
-		textTransform: 'capitalize',
-	},
-	indicator: {
-		backgroundColor: '#12abe0',
-		height: '5px',
-	},
-})(Tabs);
-
-const StyledTab = withStyles(theme => ({
-	root: {
-		textTransform: 'uppercase',
-		minWidth: 72,
-		fontWeight: theme.typography.fontWeightRegular,
-		marginRight: theme.spacing(4),
-		fontFamily: [
-			'-apple-system',
-			'BlinkMacSystemFont',
-			'"Segoe UI"',
-			'Roboto',
-			'"Helvetica Neue"',
-			'Arial',
-			'sans-serif',
-			'"Apple Color Emoji"',
-			'"Segoe UI Emoji"',
-			'"Segoe UI Symbol"',
-		].join(','),
-		'&:hover': {
-			color: 'black',
-			opacity: 1,
-		},
-		'&$selected': {
-			color: 'black',
-			fontWeight: theme.typography.fontWeightMedium,
-		},
-		'&:focus': {
-			color: 'black',
-		},
-	},
-	selected: {},
-}))(props => <Tab disableRipple {...props} />);
-
 function ContactDetailCard(props) {
 	// contexts
 	const [stateApp, setStateApp] = useContext(AppContext);
@@ -446,12 +405,9 @@ function ContactDetailCard(props) {
 	const classes = useStyles({ ...props, shrinkRightColumn });
 	const [openDialog, setOpenDialog] = useState(false);
 	const [anchorEl, setAnchorEl] = useState(null);
-	const [transactData, setTransactData] = useState();
-	const [transactId, setTransactId] = useState();
 	const [contactData, setContactData] = useState(null);
 	const [rightDialogOpen, setRightDialogOpen] = useState(false);
 	const [showExpandableCard, setShowExpandableCard] = useState(false);
-	const [expCardSubComponent, setExpCardSubComponent] = useState(null);
 	const [showShrinkColumnContent, setShowShrinkColumnContent] = useState(false);
 	const [showActivityDialog, setActivityDialog] = useState(null);
 	const [purchaseData, setPurchaseData] = useState([]);
@@ -459,12 +415,8 @@ function ContactDetailCard(props) {
 	// Fetching global stateValues
 	const { globalStateValues } = globalStateController.useState(['showFieldModal'], 'globalStateValues');
 
-	const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(null);
-
 	const [getContact, { data }] = useLazyQuery(CONTACT);
 	const [getContactPurchaseData, { data: contactPurchaseData }] = useLazyQuery(CONTACT_PURCHASE_DATA);
-
-	const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(TRANSACTIONDATA);
 
 	const [getLastMelissaRecord] = useLazyQuery(LASTMELISSARECORD, {
 		fetchPolicy: 'network-only',
@@ -473,7 +425,7 @@ function ContactDetailCard(props) {
 
 	const handleClick = event => setAnchorEl(event.currentTarget);
 
-	const handleClose = event => setAnchorEl(null);
+	const handleClose = () => setAnchorEl(null);
 
 	const handleClickRightDialogClose = e => {
 		e.preventDefault();
@@ -512,7 +464,7 @@ function ContactDetailCard(props) {
 	useEffect(() => {
 		setTimeout(() => {
 			setShowShrinkColumnContent(shrinkRightColumn);
-		}, 300);
+		}, SMALL_TIMEOUT);
 	}, [shrinkRightColumn]);
 
 	useEffect(() => {
@@ -551,16 +503,6 @@ function ContactDetailCard(props) {
 		}
 	}, [data, stateApp.contactUpdated]);
 
-	useEffect(() => {
-		if (stateApp.user && stateApp.user.mongoId) {
-			getTransactionData({
-				variables: {
-					userId: stateApp.user.mongoId,
-				},
-			});
-		}
-	}, [stateApp.user]);
-
 	const StyleBadge = withStyles({
 		badge: {
 			transform: 'unset',
@@ -572,13 +514,6 @@ function ContactDetailCard(props) {
 			borderRadius: '50%',
 		},
 	})(props => <Badge {...props} />);
-
-	useEffect(() => {
-		if (tData && tData.transactionData && tData.transactionData.allData) {
-			setTransactData(tData.transactionData.allData);
-			setTransactId(tData.transactionData._id);
-		}
-	}, [tData, tLoading]);
 
 	useEffect(() => {
 		return () => {
@@ -597,12 +532,6 @@ function ContactDetailCard(props) {
 			return true;
 		}
 		return !!stateNav.contactFromMap;
-	};
-
-	const ExtenstionGetter = name => {
-		let fileExtension = name?.slice(name.lastIndexOf('.') + 1)?.toLowerCase();
-
-		return fileExtension;
 	};
 
 	const getName = contact => {
@@ -909,7 +838,7 @@ function ContactDetailCard(props) {
 								<FeatureFlag feature={FEATURES.IDICORE}>
 									<MenuItem
 										className={classes.userMenuItem}
-										onClick={e => {
+										onClick={() => {
 											if (!contactData.firstName || !contactData.lastName || !contactData.address1) {
 												handleExpandClick('contactDataMissing');
 											} else {
@@ -923,7 +852,7 @@ function ContactDetailCard(props) {
 								</FeatureFlag>
 								<MenuItem
 									className={classes.userMenuItem}
-									onClick={e => {
+									onClick={() => {
 										handleClose();
 										handleExpandClick('deleteConfirmation');
 									}}
@@ -1058,18 +987,8 @@ function ContactDetailCard(props) {
 									>
 										{contactData.name}
 									</Link>
-									<Typography
-										style={{
-											color: '#18AADD',
-											fontSize: '16px',
-											marginLeft: '5px',
-										}}
-									>
-										{expCardSubComponentTitle}
-									</Typography>
 								</Breadcrumbs>
 							</Toolbar>
-							{expCardSubComponent}
 						</div>
 					</Dialog>
 				)}

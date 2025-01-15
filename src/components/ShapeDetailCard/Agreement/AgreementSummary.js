@@ -1,4 +1,6 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+
 import { Box, Button, Typography } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
@@ -6,8 +8,8 @@ import AddIcon from '@material-ui/icons/Add';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+
+import { useLazyQuery } from '@apollo/client';
 
 import Acreage from 'components/Land/components/Agreements/detailComponents/summary/Acreage';
 import SummaryTable from 'components/ShapeDetailCard/Common/SummaryTable';
@@ -17,7 +19,7 @@ import CommentComponent from 'components/Shared/CommentComponent';
 import ExpandableSearch from 'components/Shared/Forms/Fields/ExpandableSearch';
 import TractIcon from 'components/Shared/svgIcons/tract';
 import WellIcon from 'components/Shared/svgIcons/well';
-import MetaField from 'components/Table/helpers/MetaField';
+import MetaField from 'utils/MetaField';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';

@@ -1,4 +1,6 @@
-import { useApolloClient, useMutation } from '@apollo/client';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+
 import { Box, Checkbox, FormControlLabel } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -8,8 +10,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { CheckBox, CheckBoxOutlineBlank } from '@material-ui/icons';
-import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+
+import { useApolloClient, useMutation } from '@apollo/client';
 import { v4 as uuid } from 'uuid';
 
 import { getFileExtension, uploadFileData } from 'components/Shared/functions';

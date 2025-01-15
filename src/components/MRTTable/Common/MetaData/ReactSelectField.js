@@ -1,13 +1,15 @@
+import React, { useState, useEffect, useRef } from 'react';
+
 import { Tooltip, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/lab/es/internal/svg-icons/ArrowDropDown';
-import React, { useState, useEffect, useRef } from 'react';
 
 import SelectField from 'components/MRTTable/Common/MetaData/SelectField';
-import { BulletPointMeta } from 'components/Table/helpers/BulletPointMeta';
-import { ChipMeta } from 'components/Table/helpers/ChipMeta';
-import { getMetaCss } from 'components/Table/helpers/getMetaCss';
+
+import { BulletPointMeta } from 'utils/BulletPointMeta';
+import { ChipMeta } from 'utils/ChipMeta';
+import { getMetaCss } from 'utils/getMetaCss';
 
 const useStyles = makeStyles(theme => ({
 	root: {

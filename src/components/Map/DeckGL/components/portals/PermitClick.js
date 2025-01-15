@@ -1,10 +1,11 @@
-import { useApolloClient, useLazyQuery } from '@apollo/client';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
+import { useApolloClient, useLazyQuery } from '@apollo/client';
+
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
 
-import { GET_ES_PAGINATED_LIST } from 'graphQL/useQueryESPaginatedList';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 import { PERMITDETAILQUERY } from 'graphQL/useQueryRecentPermitDetails';
 import { TENANTWELL } from 'graphQL/useQueryTenantWell';
 
@@ -25,9 +26,9 @@ const PermitClick = () => {
 
 	const getElasticWell = async paramId => {
 		const { data: well } = await client.query({
-			query: GET_ES_PAGINATED_LIST,
+			query: GET_DB_DATA,
 			variables: {
-				esIndex: 'platformData:wells',
+				index: 'platformData:wells',
 				pagination: {
 					first: 1,
 					keep_alive: '1micros',
@@ -40,11 +41,11 @@ const PermitClick = () => {
 		const { data: tenantWell } = await client.query({
 			query: TENANTWELL,
 			variables: {
-				globalWellId: well.getESPaginatedList.hits[0]?.id,
+				globalWellId: well.getDbData.hits[0]?.id,
 			},
 		});
 		return {
-			...well.getESPaginatedList.hits[0],
+			...well.getDbData.hits[0],
 			tenantWellId: tenantWell?.tenantWell?.tenantWellId,
 		};
 	};

@@ -1,3 +1,5 @@
+import React, { useEffect, useContext, useState, memo } from 'react';
+
 import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles';
 import AspectRatioOutlinedIcon from '@material-ui/icons/AspectRatioOutlined';
@@ -8,7 +10,6 @@ import LayersIcon from '@material-ui/icons/Layers';
 import MenuIcon from '@material-ui/icons/Menu';
 import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
-import React, { useEffect, useContext, useState, memo } from 'react';
 
 import { drawController } from 'hookstate/drawStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';

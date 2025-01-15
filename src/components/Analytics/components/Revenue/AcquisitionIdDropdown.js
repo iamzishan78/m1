@@ -1,8 +1,10 @@
-import { useApolloClient } from '@apollo/client';
-import { FormControl, Grid, InputLabel, MenuItem, Select, makeStyles } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 
-import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import { FormControl, Grid, InputLabel, MenuItem, Select, makeStyles } from '@material-ui/core';
+
+import { useApolloClient } from '@apollo/client';
+
+import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 const useStyles = makeStyles(theme => ({
 	actionBar: ({ isBackground, noPadding }) => ({
@@ -55,7 +57,7 @@ const AcquisitionIdDropdown = ({
 			const filters = esFilters.filter(filter => !['acquisitionID.keyword'].includes(filter.field));
 
 			const acquisitionResult = await client.query({
-				query: GET_ES_SIMPLE_FILTER,
+				query: GET_DB_FILTERS,
 				variables: {
 					esIndex: 'properties_flat',
 					index: 'properties_flat',
@@ -75,7 +77,7 @@ const AcquisitionIdDropdown = ({
 				},
 			});
 
-			setOptions(acquisitionResult?.data?.getESSimpleFilter?.hits?.filter(hit => !!hit.key));
+			setOptions(acquisitionResult?.data?.getDbFilters?.hits?.filter(hit => !!hit.key));
 		})();
 	}, [client, esFilters]);
 

@@ -13,7 +13,7 @@ describe('Contact Functional Updates Spec', () => {
 
 		cy.viewport(1400, 900);
 		// cy.log('[green](http://example.com)')
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.visit('http://localhost:3000/contacts');
 		cy.reload();
 		cy.checkAndLogin();
@@ -22,7 +22,7 @@ describe('Contact Functional Updates Spec', () => {
 		cy.wait(3000);
 
 		cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
-			const hits = response.response.body.data.getESSimpleSearch.hits;
+			const hits = response.response.body.data.getDbData.hits;
 			const contactToUpdate = hits.find(hit => hit.name === contactObj.name.value);
 
 			if (!contactToUpdate) {

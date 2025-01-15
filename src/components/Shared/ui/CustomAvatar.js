@@ -1,6 +1,8 @@
-import { makeStyles } from '@material-ui/core/styles';
-import { get } from 'lodash';
 import React, { useContext } from 'react';
+
+import { makeStyles } from '@material-ui/core/styles';
+
+import { get } from 'lodash';
 
 import { getRandomColor } from 'components/Shared/functions/ui.js';
 import { TransactContext } from 'components/Transact/TransactContext';

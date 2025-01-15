@@ -1,3 +1,8 @@
+import React, { useState } from 'react';
+import { Flipped } from 'react-flip-toolkit';
+import { useSelector } from 'react-redux';
+import { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
+
 import { Box, Grid, ListItemIcon } from '@material-ui/core';
 import { FormControlLabel } from '@material-ui/core';
 import { Switch } from '@material-ui/core';
@@ -9,18 +14,16 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import { makeStyles } from '@material-ui/styles';
+
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { Badge, IconButton } from '@mui/material';
-import React, { useState } from 'react';
-import { Flipped } from 'react-flip-toolkit';
-import { useSelector } from 'react-redux';
-import { useDrag, useDrop, useIsClosestDragging } from 'react-sortly';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { mapStateController } from 'hookstate/mapStateController';
 
 import LayerControls from './LayerControls';
 import { getLayerColor } from '../common';
+import { mapControlsController } from 'hookstate/mapControlsController';
 
 const useStyles = makeStyles(theme => ({
 	root: props => ({
@@ -117,7 +120,7 @@ const LayerItem = React.memo(props => {
 		mapStateController.moved();
 	};
 
-	const layerFilters = mapView?.selectedMapView?.filters.filter(filter => {
+	const layerFilters = mapView?.selectedMapView?.filters?.filter(filter => {
 		const { dataSourceName } = filter || {};
 
 		// In case of shape files
@@ -198,6 +201,7 @@ const LayerItem = React.memo(props => {
 								{layerFilters?.length ? (
 									<IconButton>
 										<Badge
+											onClick={() => mapControlsController.updateState({ selectedControl: 'filter' })}
 											badgeContent={layerFilters?.length}
 											color="primary"
 											overlap="circular"

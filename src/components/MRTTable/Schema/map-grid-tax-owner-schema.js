@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
@@ -29,12 +32,12 @@ const TaxOwnerMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
-			accessorKey: 'id',
+			id: 'id',
 		},
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'ownerName.keyword',
-			accessorKey: 'ownerName',
+			id: 'ownerName',
 			header: 'Name',
 			getFilterByServerSide: true,
 			Cell: ({ renderedCellValue, row }) => {
@@ -55,45 +58,45 @@ const TaxOwnerMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'ownerType.keyword',
-			accessorKey: 'ownerType',
+			id: 'ownerType',
 			header: 'Owner Type',
 			getFilterByServerSide: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'streetAddress.keyword',
-			accessorKey: 'streetAddress',
+			id: 'streetAddress',
 			header: 'Street Address',
 			getFilterByServerSide: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'city.keyword',
-			accessorKey: 'city',
+			id: 'city',
 			header: 'City',
 			getFilterByServerSide: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'state.keyword',
-			accessorKey: 'state',
+			id: 'state',
 			header: 'State',
 			getFilterByServerSide: true,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'zip.keyword',
-			accessorKey: 'zip',
+			id: 'zip',
 			header: 'Zip Code',
 			getFilterByServerSide: true,
 		},
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'iscontact',
-			accessorKey: 'iscontact',
-			Cell: ({ _, row }) => {
+			id: 'iscontact',
+			Cell: ({ row }) => {
 				return <IsContactCell id={row?.original?.id} selectedRow={row?.original} />;
 			},
 		},
@@ -109,7 +112,7 @@ const TaxOwnerMeta = {
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'coordinates',
-			accessorKey: 'coordinates',
+			id: 'coordinates',
 			header: '',
 			size: 70,
 			Cell: ({ row }) => {

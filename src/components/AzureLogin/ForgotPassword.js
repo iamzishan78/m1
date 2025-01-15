@@ -1,7 +1,8 @@
-import { Card, TextField, Button } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+
+import { Card, TextField, Button } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
 import { validateData } from './loginHelpers';
 

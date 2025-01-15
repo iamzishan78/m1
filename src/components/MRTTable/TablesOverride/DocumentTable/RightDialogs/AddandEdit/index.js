@@ -1,8 +1,10 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { memo, useEffect, useMemo, useState } from 'react';
+
 import Badge from '@material-ui/core/Badge';
 import HomeIcon from '@material-ui/icons/HomeOutlined';
 import InfoOutlined from '@material-ui/icons/InfoOutlined';
-import React, { memo, useEffect, useMemo, useState } from 'react';
+
+import { useLazyQuery } from '@apollo/client';
 
 import Slideout from 'components/MRTTable/Common/Slideout';
 import WellIcon from 'components/Shared/svgIcons/well';

@@ -1,12 +1,14 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useMemo, useState, useEffect } from 'react';
+
 import { Button, DialogContent, DialogActions, CircularProgress } from '@material-ui/core';
 import { Typography, TextField, Grid, FormControl } from '@material-ui/core';
 import FolderIcon from '@material-ui/icons/Folder';
 import { makeStyles } from '@material-ui/styles';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import parse from 'autosuggest-highlight/parse';
 import { get } from 'lodash';
 import moment from 'moment';
-import React, { useMemo, useState, useEffect } from 'react';
 
 import { agreementTypes } from 'components/Land/components/Agreements/detailComponents/summary/data';
 import Loader from 'components/Loaders';
@@ -178,7 +180,7 @@ const AddNewRelatedAgreementDialog = ({ customLayerId, handleClose, parentType, 
 				relatedObjectType: 'Agreement',
 				isDeleted: false,
 			},
-			refetchQueries: ['getESSimpleSearch'],
+			refetchQueries: ['getDbData'],
 			awaitRefetchQueries: true,
 		});
 	};

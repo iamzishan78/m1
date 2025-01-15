@@ -1,6 +1,7 @@
-import { Menu, MenuItem, Button, ButtonGroup } from '@material-ui/core';
 import React, { memo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+
+import { Menu, MenuItem, Button, ButtonGroup } from '@material-ui/core';
 
 import { rawJobs } from 'components/BulkUpload/BulkUpload';
 import { NavigationContext } from 'components/Navigation/NavigationContext';

@@ -1,5 +1,6 @@
-import { bboxPolygon, booleanWithin, difference, union } from '@turf/turf';
 import { useEffect, useRef, useState } from 'react';
+
+import { bboxPolygon, booleanWithin, difference, union } from '@turf/turf';
 
 export const convertBBoxToPolygon = bounds => {
 	if (!bounds) {

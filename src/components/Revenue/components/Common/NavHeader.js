@@ -1,11 +1,13 @@
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+
 import { Typography, Grid, Breadcrumbs } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { NavigateNext as NavigateNextIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
+
 import queryString from 'query-string';
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 // Components
 import ProfileMenu from 'components/Profile/ProfileMenu';

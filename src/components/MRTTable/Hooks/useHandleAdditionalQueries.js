@@ -1,6 +1,7 @@
+import { useEffect } from 'react';
+
 import { useApolloClient } from '@apollo/client';
 import { isEqual } from 'lodash';
-import { useEffect } from 'react';
 
 import { COMMENTSCOUNTER } from 'graphQL/useQueryCommentsCounter';
 import { IFARECONTACTS } from 'graphQL/useQueryIfOwnersAreContacts';
@@ -10,7 +11,7 @@ import { IS_TRACKED_BY_IDS } from 'graphQL/useQueryTrackByObjectId';
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableGlobalController } from 'hookstate/tableController';
 
-const useHandleAdditionalQueries = ({ Controller, tableKey, tableState, tableStateValues }) => {
+const useHandleAdditionalQueries = ({ Controller, tableState, tableStateValues }) => {
 	const { stateValues } = Controller.useState(['alreadyCheckedOwnersLength']);
 	const { stateValues: ownersStateValues } = Controller.useState(['ownersWhoAreContact']);
 	const client = useApolloClient();
@@ -26,14 +27,13 @@ const useHandleAdditionalQueries = ({ Controller, tableKey, tableState, tableSta
 
 		const rows = tableStateValues?.data?.rows.slice(stateValues?.alreadyCheckedOwnersLength ?? 0);
 
-		const idsArray = rows.map(row => row.id);
+		const idsArray = rows.map(row => row.globalOwnerId);
 
 		if (!idsArray || idsArray.length === 0) {
 			return;
 		}
 
 		Controller.updateState({
-			isLoading: true,
 			isFetching: true,
 			isError: false,
 		});
@@ -45,7 +45,7 @@ const useHandleAdditionalQueries = ({ Controller, tableKey, tableState, tableSta
 
 		if (res?.data?.ifAreContacts) {
 			Controller.updateState({
-				ownersWhoAreContact: [...ownersArray, ...res?.data?.ifAreContacts],
+				ownersWhoAreContact: [...ownersArray, ...res.data.ifAreContacts],
 				alreadyCheckedOwnersLength: tableStateValues?.data?.rows?.length,
 				isLoading: false,
 				isFetching: false,
@@ -159,7 +159,6 @@ const useHandleAdditionalQueries = ({ Controller, tableKey, tableState, tableSta
 		if (additionalQueries.includes('isTracked')) {
 			callIsTrackedQuery();
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState.data, tableState.additionalQueries, refetchAdditionalQueries]);
 };
 

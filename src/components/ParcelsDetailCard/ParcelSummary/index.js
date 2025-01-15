@@ -1,4 +1,6 @@
-import { useLazyQuery } from '@apollo/client';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+
 import { Button } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import InputBase from '@material-ui/core/InputBase';
@@ -9,12 +11,12 @@ import GavelIcon from '@material-ui/icons/Gavel';
 import InsertDriveFileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
 import PersonIcon from '@material-ui/icons/Person';
 import SearchIcon from '@material-ui/icons/Search';
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+
+import { useLazyQuery } from '@apollo/client';
 
 import SummaryTable from 'components/ShapeDetailCard/Common/SummaryTable';
 import CommentComponent from 'components/Shared/CommentComponent';
-import MetaField from 'components/Table/helpers/MetaField';
+import MetaField from 'utils/MetaField';
 
 import { GET_META_DATA } from 'graphQL/useQueryGetMetaData';
 import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';

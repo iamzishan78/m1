@@ -1,6 +1,15 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
-import { Typography, Grid } from '@material-ui/core';
-import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+
+import {
+	Typography,
+	Grid,
+	CircularProgress,
+	Dialog,
+	DialogTitle,
+	IconButton,
+	TextField,
+	withStyles,
+} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
@@ -12,15 +21,16 @@ import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import clsx from 'clsx';
 import loadashFilter from 'lodash/filter';
 import { grey600, grey400 } from 'material-ui/styles/colors';
-import React, { useEffect, useState } from 'react';
 
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import GenericDateField from 'components/Shared/components/Fields/GenericDateFIeld';
 import AutoCompleteDocumentList from 'components/Shared/Forms/Fields/AutoCompleteDocumentList';
 import get_file_icon from 'components/Shared/functions/get_file_icon.js';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 import joinAddress from 'components/Shared/valueformatters/join-address.js';
 
@@ -220,7 +230,7 @@ export default function RelatedFile(props) {
 		fetchPolicy: 'no-cache',
 	});
 	const [addFile] = useMutation(CREATEDESCRIPTORFILE, {
-		refetchQueries: ['getRecentContactFiles', 'getParcelFiles', 'shapeSummaryDetails', 'getESSimpleSearch'], // refetch table data on adding new documents
+		refetchQueries: ['getRecentContactFiles', 'getParcelFiles', 'shapeSummaryDetails', 'getDbData'], // refetch table data on adding new documents
 		awaitRefetchQueries: true,
 	});
 
@@ -258,7 +268,6 @@ export default function RelatedFile(props) {
 				variables: { fileIds: ID },
 			});
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [fileData]);
 
 	useEffect(() => {
@@ -311,7 +320,6 @@ export default function RelatedFile(props) {
 				setNewDocument(documentInitial);
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [stateApp.selectedDocument]);
 
 	const UpDatefileFN = () => {
@@ -339,7 +347,7 @@ export default function RelatedFile(props) {
 					fileId: fileId || newDocument.fileId,
 				},
 			},
-			refetchQueries: ['getParcelFiles', 'getESSimpleSearch'],
+			refetchQueries: ['getParcelFiles', 'getDbData'],
 			awaitRefetchQueries: true,
 		}).then(() => {
 			if (props.relatedObjectId && props.relatedObjectType && selectedType === 'new') {
@@ -367,7 +375,7 @@ export default function RelatedFile(props) {
 				relatedObjectType: props.relatedObjectType,
 			},
 			// add queries to refetch
-			refetchQueries: ['getParcelFiles', 'getESSimpleSearch'],
+			refetchQueries: ['getParcelFiles', 'getDbData'],
 			awaitRefetchQueries: true,
 		}).then(() => {
 			props.setShowDocumentSlider('');
@@ -406,7 +414,7 @@ export default function RelatedFile(props) {
 						isDeleted: true,
 					},
 				},
-				refetchQueries: ['getDocuments', 'shapeSummaryDetails', 'getESSimpleSearch'],
+				refetchQueries: ['getDocuments', 'shapeSummaryDetails', 'getDbData'],
 				awaitRefetchQueries: true,
 			}).then(() => {
 				setStateApp({
@@ -1083,15 +1091,13 @@ export default function RelatedFile(props) {
 		<div>
 			<Drawer anchor={'right'} open={true}>
 				<Dialog open={openDeleteConfirmDialog} onClose={handleDeleteCancel} style={{ zIndex: 99999999999 }}>
-					<DeleteConfirmationDialogContent
+					<DeleteConfirmationDialog
 						header="Delete Document"
 						onClose={handleDeleteCancel}
 						deleteFunc={handleDeleteAccept}
-						m1nSelectedRowsIds={[document._id]}
-						setM1nSelectedRowsIndexes={() => {}}
 					>
 						Do you want to delete the selected documents?
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 				<Dialog open={loader} style={{ zIndex: 99999999999 }}>
 					<DialogTitle id="alert-dialog-title">
@@ -1158,7 +1164,7 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
 			}}
 			renderOption={option => {
 				if (option._id === 'newEntity') {
-					return <Typography style={{ color: 'midnightblue' }}>Add '{option.name}'</Typography>;
+					return <Typography style={{ color: 'midnightblue' }}>Add &apos;{option.name}&apos;</Typography>;
 				}
 
 				return (

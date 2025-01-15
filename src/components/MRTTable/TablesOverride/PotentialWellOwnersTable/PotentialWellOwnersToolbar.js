@@ -1,6 +1,7 @@
-import { debounce } from 'lodash';
 import React from 'react';
 import { useSelector } from 'react-redux';
+
+import { debounce } from 'lodash';
 
 import { addTrailingZeros } from 'components/Shared/functions';
 import SelectFilter from 'components/Shared/ui/SelectFilter';

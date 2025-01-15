@@ -87,12 +87,12 @@ describe('Add Contact Spec', () => {
 		cy.interceptApi('AddContact');
 
 		cy.log('==== STEP: CLICK ON ADD BUTTON ====');
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 		cy.get('#addContactButton').click();
 
 		cy.verifyApiResponse('@AddContactApi', { responseTimeout: longTimeout });
 		cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
-			const hits = response.response.body.data.getESSimpleSearch.hits;
+			const hits = response.response.body.data.getDbData.hits;
 			const recentlyAdded = hits.find(hit => hit.primaryEmail === contactObj.primaryEmail.value);
 
 			console.log(hits);

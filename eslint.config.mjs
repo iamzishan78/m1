@@ -26,6 +26,8 @@ const folders = items.filter(item => {
 	return fs.statSync(itemPath).isDirectory();
 });
 
+const builtinPatterns = ['react**', '@material-ui/**', '@mui/**'];
+
 /** @type {import('eslint').Linter.Config[]} */
 export default [
 	// Configuration to ignore specific file patterns and directories
@@ -51,6 +53,7 @@ export default [
 
 	{ files: ['**/*.{js,mjs,cjs,jsx}'] },
 	{ languageOptions: { globals: globals.browser } },
+	{ languageOptions: { globals: globals.node } },
 	pluginJs.configs.recommended,
 	pluginReact.configs.flat.recommended,
 	{
@@ -128,7 +131,7 @@ export default [
 
 			// Enforce the consistent use of either backticks, double, or single quotes.
 			// Risk: Inconsistent quote usage can lead to confusion.
-			quotes: ['error', 'single'], // Example: enforcing single quotes
+			quotes: ['error', 'single', { avoidEscape: true }], // Example: enforcing single quotes
 
 			// Disallow reassigning class members.
 			// Risk: Reassigning class members can lead to unexpected behavior.
@@ -155,25 +158,28 @@ export default [
 			'react/no-array-index-key': 'error',
 
 			// Add no-magic-numbers rule
-			'no-magic-numbers': [
-				'error',
-				{
-					ignore: [0, 1], // Allow these numbers if needed
-				},
-			],
+			'no-magic-numbers': 'off',
 
 			'import/no-named-as-default': 'off',
 			'import/no-named-as-default-member': 'off',
+			'import/newline-after-import': 'error',
 
 			'import/order': [
 				'error',
 				{
-					groups: [['builtin', 'external'], ['internal'], ['parent', 'sibling', 'index']],
-					pathGroups: folders.map(folder => ({
-						pattern: `${folder}/**`,
-						group: 'internal',
-						position: 'before',
-					})),
+					groups: [['builtin', 'external'], ['internal'], ['parent', 'sibling', 'index'], ['unknown']],
+					pathGroups: [
+						...builtinPatterns.map(pattern => ({
+							pattern,
+							group: 'builtin',
+							position: 'before',
+						})),
+						...folders.map(folder => ({
+							pattern: `${folder}/**`,
+							group: 'internal',
+							position: 'before',
+						})),
+					],
 					pathGroupsExcludedImportTypes: ['builtin'],
 					'newlines-between': 'always',
 					alphabetize: {

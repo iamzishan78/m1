@@ -1,12 +1,14 @@
-import { useMutation } from '@apollo/client';
+import React, { useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+
 import { makeStyles } from '@material-ui/core';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import CloseIcon from '@material-ui/icons/Close';
+
+import { useMutation } from '@apollo/client';
 import { get } from 'lodash';
-import React, { useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
 
 import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
 
@@ -257,7 +259,7 @@ export default function DrawShapes() {
 	const [upsertCustomLayer, { data: customLayerInsertedData }] = useMutation(UPSERTCUSTOMLAYER);
 
 	const { mapReady, globalStateValues } = globalStateController.useState(['mapReady'], 'globalStateValues');
-	const popupState = popupController.useState(['selectedUserDefinedLayer', 'selectedParcel', 'selectedShape']);
+	const popupState = popupController.useState(['selectedUserDefinedLayer', , 'selectedShape']);
 	const drawState = drawController.useState([
 		'showShapeActionsPopup',
 		'currentFeature',
@@ -288,7 +290,7 @@ export default function DrawShapes() {
 
 	useEffect(() => {
 		const { showShapeActionsPopup } = drawStateValues;
-		const { selectedUserDefinedLayer, selectedParcel, selectedShape } = popupState.stateValues;
+		const { selectedUserDefinedLayer, selectedShape } = popupState.stateValues;
 
 		if (!selectedUserDefinedLayer) {
 			return;
@@ -301,7 +303,7 @@ export default function DrawShapes() {
 			selectedAoi: isAOI ? selectedUserDefinedLayer : null,
 		});
 
-		if (isAOI && showShapeActionsPopup && !selectedParcel && !selectedShape) {
+		if (isAOI && showShapeActionsPopup && !selectedShape) {
 			drawController.setShowDataCard(true);
 		}
 	}, [popupState.selectedUserDefinedLayer]);

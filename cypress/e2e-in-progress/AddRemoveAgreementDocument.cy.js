@@ -13,7 +13,7 @@ describe('Add Agreement Spec', () => {
 
 		cy.get("[title='Assets']", { timeout: longTimeout }).should('be.visible').click();
 		cy.get('#quickActionPanel').contains('Agreements').click();
-		cy.interceptApi('getESSimpleSearch');
+		cy.interceptApi('getDbData');
 
 		cy.verifyApiResponse('@getESSimpleSearchApi').then(() => {
 			cy.getTableCell('Agreement', 1).then($tableCell => {
@@ -46,7 +46,7 @@ describe('Add Agreement Spec', () => {
 					cy.get('#existinTab', { timeout: shorTimeout }).click();
 					cy.get('#seletExistingDoc').click().type('demo_png.png');
 					cy.get('.MuiAutocomplete-popper ul li').first().trigger('click');
-					cy.interceptApiByIndex('getESSimpleSearch', 'documents_flat');
+					cy.interceptApiByIndex('getDbData', 'documents_flat');
 
 					cy.get('#addFile').click();
 					cy.verifyApiResponse('@AddDescriptorFileApi').then(response2 => {
@@ -62,7 +62,7 @@ describe('Add Agreement Spec', () => {
 							cy.get('#deleteButton').click();
 							cy.wait(shorTimeout);
 							cy.verifyApiResponse('@getESSimpleSearchApi').then(result => {
-								const filesIds = result.response?.body?.data?.getESSimpleSearch?.hits?.map(file => file.fileId);
+								const filesIds = result.response?.body?.data?.getDbData?.hits?.map(file => file.fileId);
 
 								cy.log('-*--* fileIDS -*-*-', filesIds);
 								cy.log('-*--* fileID1, fileID2 -*-*-', fileId1, fileId2);

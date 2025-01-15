@@ -1,9 +1,13 @@
-import { useApolloClient } from '@apollo/client';
+import React from 'react';
+import { useHistory } from 'react-router-dom';
+
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
+
 import AutorenewIcon from '@mui/icons-material/Autorenew';
-import React, { memo } from 'react';
-import { useHistory } from 'react-router-dom';
+
+import { useApolloClient } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 import {
 	BulkUpdate,
@@ -11,14 +15,15 @@ import {
 	ViewContactData,
 	openSideDialog,
 } from 'components/MRTTable/Common/CommonToolBarActions';
+import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown';
 import OwnerPerUnitTableDialogs from 'components/MRTTable/TablesOverride/OwnersPerUnit/RightDialogs';
 import { NavigationContext } from 'components/Navigation/NavigationContext';
-import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
-import MetaField from 'components/Table/helpers/MetaField';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { navController } from 'hookstate/navStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
+
+import MetaField from 'utils/MetaField';
 
 const useStyles = makeStyles(() => ({
 	disabledTopBarButtons: {
@@ -239,4 +244,9 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 	);
 }
 
-export default memo(OwnersPerUnitToolBar);
+OwnersPerUnitToolBar.propTypes = {
+	table: PropTypes.object.isRequired,
+	tableKey: PropTypes.string.isRequired,
+};
+
+export default OwnersPerUnitToolBar;

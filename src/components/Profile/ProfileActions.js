@@ -1,16 +1,19 @@
-import { useMutation } from '@apollo/client';
+import React, { useContext } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import { CircularProgress } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import { withStyles } from '@material-ui/core/styles';
-import React, { useContext } from 'react';
-import { useHistory } from 'react-router-dom';
+
+import { useMutation } from '@apollo/client';
 
 import { ProfileContext } from './ProfileContext';
 import { AppContext } from '../../AppContext';
 import { UPSERTPROFILE } from '../../graphQL/useMutationUpsertProfile';
 import { GETPROFILE } from '../../graphQL/useQueryGetProfile';
 import { NavigationContext } from '../Navigation/NavigationContext';
+
 const DialogActions = withStyles(theme => ({
 	root: {
 		margin: 0,

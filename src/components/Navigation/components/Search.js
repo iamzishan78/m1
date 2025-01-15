@@ -1,4 +1,6 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import React, { useCallback, useContext, useEffect, useMemo } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+
 import { CircularProgress } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -16,10 +18,10 @@ import HistoryIcon from '@material-ui/icons/History';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import PersonIcon from '@material-ui/icons/Person';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import { useLazyQuery, useMutation } from '@apollo/client';
 import parse from 'autosuggest-highlight/parse';
 import debounce from 'lodash/debounce';
-import React, { useCallback, useContext, useEffect, useMemo } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
 
 import { platformDataInitialData } from 'components/MapGridCard/components/data';
 import SearchByTypeSelectField from 'components/MapGridCard/components/SearchByTypeSelectField';
@@ -28,7 +30,7 @@ import TractIcon from 'components/Shared/svgIcons/tract';
 import UnitIcon from 'components/Shared/svgIcons/unit';
 import capitalizeFirstLetter from 'components/Shared/valueformatters/capitalize-first-letter';
 
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
 
 import { layerController } from 'hookstate/layerStateController';
 import { mapControlsController } from 'hookstate/mapControlsController';
@@ -394,7 +396,7 @@ function Search({ stateApp, setStateApp, isDocument }) {
 	const [getOwnerWells, { data: dataOwnerWells }] = useLazyQuery(OWNERSLATSLONS);
 	const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(OPERATORSLATSLONS);
 	const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
-	const [getLandGridGeom, { data: dataLandGridGeom }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: 'no-cache' });
+	const [getLandGridGeom, { data: dataLandGridGeom }] = useLazyQuery(GET_DB_DATA, { fetchPolicy: 'no-cache' });
 	const [getContactsWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
 	const [getSearchHistory, { data: searchHistoryData }] = useLazyQuery(USERSEARCHHISTORY);
 
@@ -443,7 +445,7 @@ function Search({ stateApp, setStateApp, isDocument }) {
 		}
 	}, [searchHistoryList]);
 
-	const [getESSimpleSearch, { data: esSearchData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: 'no-cache' });
+	const [getDbData, { data: esSearchData }] = useLazyQuery(GET_DB_DATA, { fetchPolicy: 'no-cache' });
 	//////////// Search History End//////////////////
 	const startPaginationAt = 25;
 
@@ -478,7 +480,7 @@ function Search({ stateApp, setStateApp, isDocument }) {
 		() =>
 			debounce(request => {
 				const { esIndex, search, searchFields, filter } = esCallData[searchOption] || { search: () => {} };
-				getESSimpleSearch({
+				getDbData({
 					variables: {
 						index: esIndex,
 						pagination: {
@@ -499,10 +501,10 @@ function Search({ stateApp, setStateApp, isDocument }) {
 
 	useEffect(() => {
 		let newOptions = [];
-		if (esSearchData?.getESSimpleSearch?.hits) {
+		if (esSearchData?.getDbData?.hits) {
 			const { formatOptions } = esCallData[searchOption];
 			newOptions = [
-				...esSearchData.getESSimpleSearch.hits.map(result => {
+				...esSearchData.getDbData.hits.map(result => {
 					return formatOptions(result);
 				}),
 			];
@@ -664,17 +666,17 @@ function Search({ stateApp, setStateApp, isDocument }) {
 
 	//// getting land grid geom ////
 	useEffect(() => {
-		if (dataLandGridGeom && dataLandGridGeom?.getESSimpleSearch?.hits) {
-			if (dataLandGridGeom?.getESSimpleSearch?.hits?.length !== 0) {
+		if (dataLandGridGeom && dataLandGridGeom?.getDbData?.hits) {
+			if (dataLandGridGeom?.getDbData?.hits?.length !== 0) {
 				setStateApp(stateApp =>
-					dataLandGridGeom?.getESSimpleSearch?.hits?.length === 1
+					dataLandGridGeom?.getDbData?.hits?.length === 1
 						? {
 								...stateApp,
 								selectedWell: null,
 								fitBounds: true,
 								searchLoader: false,
 								landGridListFromSearch: [
-									...dataLandGridGeom?.getESSimpleSearch?.hits?.map(hit => ({
+									...dataLandGridGeom?.getDbData?.hits?.map(hit => ({
 										...hit,
 										shape: JSON.stringify({ geometry: hit?.geoJSON, properties: {} }),
 									})),

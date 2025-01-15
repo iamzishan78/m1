@@ -1,7 +1,8 @@
+import React, { useEffect, useState } from 'react';
+
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import AspectRatioIcon from '@material-ui/icons/AspectRatio';
-import React, { useEffect, useState } from 'react';
 
 import { SRCenter } from 'components/Map/MapBoxDrawRotate';
 import { drawShapeLayerToggle } from 'components/MapControls/commonHelper';

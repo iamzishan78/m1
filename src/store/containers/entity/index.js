@@ -1,4 +1,5 @@
 import { connect } from 'react-redux';
+
 import { bindActionCreators } from 'redux';
 
 import ConvertOwnerToContact from 'components/Revenue/components/Properties/DetailComponents/ConvertOwnerToContact';

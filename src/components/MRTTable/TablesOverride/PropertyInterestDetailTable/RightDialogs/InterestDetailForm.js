@@ -1,13 +1,15 @@
-import { useMutation } from '@apollo/client';
+import React, { useEffect } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { useHistory } from 'react-router-dom';
+
 import { Typography, Grid, TextField, MenuItem, Select, Button, IconButton } from '@material-ui/core';
 import { Clear } from '@material-ui/icons';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/styles';
+
+import { useMutation } from '@apollo/client';
 import loadashFilter from 'lodash/filter';
 import moment from 'moment';
-import React, { useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { useHistory } from 'react-router-dom';
 
 import ContactPaginatedAutocomplete from 'components/Revenue/components/Common/ContactsPaginatedAutocomplete';
 import { getDateWithoutTime } from 'components/Shared/functions';
@@ -88,7 +90,7 @@ const InterestDetailForm = ({ selectedInterest, propertyOwnerContact, onClose })
 			onClose();
 			tableGlobalController.refetch();
 		},
-		refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
+		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
 	const [updatePropertyInterest, { loading: updateLoading }] = useMutation(UPDATE_PROPERTY_INTEREST, {
@@ -96,7 +98,7 @@ const InterestDetailForm = ({ selectedInterest, propertyOwnerContact, onClose })
 			onClose();
 			tableGlobalController.refetch();
 		},
-		refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList'],
+		refetchQueries: ['getDbData', 'getESFilterList'],
 		awaitRefetchQueries: true,
 	});
 
