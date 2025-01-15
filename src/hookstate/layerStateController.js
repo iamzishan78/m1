@@ -1,4 +1,4 @@
-/* eslint-disable no-magic-numbers */
+ 
 import { NotificationManager } from 'react-notifications';
 
 import { booleanWithin, difference, union, booleanIntersects, bboxPolygon } from '@turf/turf';
@@ -402,7 +402,7 @@ const layerStateControllerHandler = state => {
 	};
 
 	const updateLayers = (layerId, updatedState, type) => {
-		window.mapRef?.__deck?.layerManager?.layers?.forEach?.(layer => {
+		window?.deckOverlay?._deck?.layerManager?.layers?.forEach?.(layer => {
 			if (!layer.id.includes(layerId)) {
 				return;
 			}
@@ -618,6 +618,7 @@ const layerStateControllerHandler = state => {
 					pickable,
 					visible,
 					position,
+					// zIndex: 9999999999,
 				},
 			});
 

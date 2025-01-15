@@ -51,7 +51,6 @@ const transformFields = input => {
 class M1neralGeojsonLayer extends CompositeLayer {
 	renderLayers() {
 		const [geojsonProps, textProps] = transformFields(this.props);
-		console.log(geojsonProps, textProps);
 		// GeoJsonLayer
 		const geoJsonLayer = new GeoJsonLayer({
 			...geojsonProps,
@@ -69,7 +68,7 @@ class M1neralGeojsonLayer extends CompositeLayer {
 				return centroid.geometry.coordinates;
 			},
 			collisionEnabled: true,
-			extensions: [new CollisionFilterExtension()]
+			extensions: [new CollisionFilterExtension()],
 		});
 
 		return [geoJsonLayer, textLayer];

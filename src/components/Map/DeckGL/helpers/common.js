@@ -1,4 +1,3 @@
-import { CollisionFilterExtension } from '@deck.gl/extensions';
 import * as turf from '@turf/turf';
 import hexRgb from 'hex-rgb';
 import _, { isEqual } from 'lodash';
@@ -212,10 +211,10 @@ export const filterUniqueFeatures = features => {
 };
 
 export const pickDeckObjects = ({ x, y, radius, depth }) => {
-	if (!window.mapRef?.__deck) {
+	if (!window?.deckOverlay?._deck) {
 		return null;
 	}
-	let deckFeatures = window.mapRef?.__deck?.pickMultipleObjects({
+	let deckFeatures = window?.deckOverlay?._deck?.pickMultipleObjects({
 		x,
 		y,
 		radius,
@@ -713,7 +712,7 @@ export function getGeoJsonLayerProps(dbLayer, labelProps) {
 	});
 
 	if (labelProps && labelProps.visibility !== 'none') {
-		props.getTextSize = f => {
+		props.getTextSize = () => {
 			return 20;
 		};
 		// props.textMaxWidth = 5;

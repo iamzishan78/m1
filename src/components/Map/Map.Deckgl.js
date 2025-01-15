@@ -1,4 +1,4 @@
-/* eslint-disable no-magic-numbers */
+ 
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -855,12 +855,12 @@ function Map({
 			const interval = setInterval(() => {
 				let isDragging = false;
 				let isDrawing = false;
-				if (newMap.__deck) {
+				if (window?.deckOverlay?._deck) {
 					window.mapRef?.on('draw.actionable', () => {
 						// console.log(window.drawRef?.getMode())
 						isDrawing = !['direct_select', 'simple_select'].includes(window.drawRef?.getMode());
 					});
-					newMap.__deck?.setProps({
+					window.deckOverlay._deck?.setProps({
 						onDragStart: () => {
 							isDragging = true;
 						},
@@ -918,6 +918,8 @@ function Map({
 				window.drawRef = null; //  Remove the existing map instance to avoid rendering multiple maps
 				window.mapRef = newMap;
 				window.drawRef = Draw;
+				// Initializing overlay
+				DeckGlLayer.initializeOverlay();
 				layerController.resetMapStates(true);
 
 				setStateApp(state => ({
