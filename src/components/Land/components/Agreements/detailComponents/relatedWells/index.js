@@ -1,15 +1,18 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
 
+import { useQuery } from '@apollo/client';
 import PropTypes from 'prop-types';
 
 import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
 import MRTTable from 'components/MRTTable';
 
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
+
+import { tableGlobalController } from 'hookstate/tableController';
 
 import { useStyles as customStyles } from '../style';
 
@@ -66,13 +69,23 @@ const useStyles = makeStyles(() => ({
 export default function LagalDescription({ uniObj, agreementId }) {
 	const classes = useStyles();
 	const customClasses = customStyles();
-	const { stateValues } = tableController('RelatedWellsTable').useState(['data', 'isLoading']);
 
 	const [totalWels, setTotalWells] = useState(0);
 
 	const {
 		stateValues: { tabKey: selectedTab },
 	} = tableGlobalController.useState(['tabKey']);
+
+	useQuery(GET_DB_DATA_TOTAL, {
+		variables: {
+			index: 'shapewellinterests_flat',
+			filters: [{ field: 'shape._id', value: agreementId }],
+		},
+		fetchPolicy: 'no-cache',
+		onCompleted: res => {
+			setTotalWells(res?.getDbDataTotal?.data ?? 0);
+		},
+	});
 
 	const RelatedWellsOverrideMeta = useMemo(
 		() => ({
@@ -88,14 +101,6 @@ export default function LagalDescription({ uniObj, agreementId }) {
 		}),
 		[agreementId]
 	);
-
-	useEffect(() => {
-		if (!stateValues.data || stateValues.isLoading) {
-			return;
-		}
-
-		setTotalWells(stateValues.data.total);
-	}, [stateValues.data, stateValues.isLoading]);
 
 	return (
 		<div className={classes.root}>
