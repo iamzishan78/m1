@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
 import { tableGlobalController } from 'hookstate/tableController';
-import { ButtonGroup, Button } from '@material-ui/core';
 import CustomAssetEntityDialog from '../Popups/CustomAssetEntityDialog';
 import PropTypes from 'prop-types';
+import ToolbarButton from 'components/Shared/ui/ToolbarButton';
 
 function AssetCustomEntitiesToolbar({ tableKey }) {
 	const addCustomAssetHandler = () => {
@@ -19,18 +19,7 @@ function AssetCustomEntitiesToolbar({ tableKey }) {
 
 	return (
 		<>
-			<ButtonGroup variant="contained" style={{ height: '40px' }} color="primary" aria-label="split button">
-				<Button
-					id="addCustomAssetEntity"
-					color="primary"
-					size="small"
-					aria-label="select merge strategy"
-					aria-haspopup="menu"
-					onClick={addCustomAssetHandler}
-				>
-					Create New Asset
-				</Button>
-			</ButtonGroup>
+			<ToolbarButton label={'+ ADD NEW ASSET'} onClick={addCustomAssetHandler} />
 
 			<CustomAssetEntityDialog />
 		</>

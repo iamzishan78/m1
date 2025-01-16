@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 
 import { useMutation } from '@apollo/client';
 import { useHistory } from 'react-router-dom';
@@ -11,15 +11,21 @@ import PropTypes from 'prop-types';
 
 function DynamicAssetGridToolBar({ tableKey }) {
 	const history = useHistory();
+	const [tableName, setTableName] = useState('');
+
 	const Controller = tableController(tableKey);
 	const tableState = Controller.useState(['fetchDynamicSchema']);
 	const tableStateValues = tableState.stateValues;
+
+	useEffect(() => {
+		setTableName(tableStateValues.fetchDynamicSchema.tableName);
+	}, [tableStateValues.fetchDynamicSchema.tableName]);
 
 	const [addAndUpdateInRunTimeModel] = useMutation(ADD_RECORD_IN_RUN_TIME_MODEL, {
 		onCompleted: data => {
 			const addedRecord = data?.addRecordInRunTimeModel?.asset || {};
 			if (addedRecord && addedRecord?._id) {
-				const model = removeSpaces(tableStateValues.fetchDynamicSchema.tableName);
+				const model = removeSpaces(tableName);
 				history.push(`/land/customAsset/${model}/details/${addedRecord?._id}`);
 			}
 		},
@@ -30,7 +36,7 @@ function DynamicAssetGridToolBar({ tableKey }) {
 	const handleClick = () => {
 		addAndUpdateInRunTimeModel({
 			variables: {
-				tableName: tableStateValues.fetchDynamicSchema.tableName,
+				tableName,
 				record: {},
 			},
 		});
@@ -38,7 +44,7 @@ function DynamicAssetGridToolBar({ tableKey }) {
 	return (
 		<>
 			<Button variant="contained" color="primary" onClick={handleClick}>
-				{`+ ADD ${tableStateValues.fetchDynamicSchema.tableName}`}
+				{`+ ADD ${tableName}`}
 			</Button>
 		</>
 	);

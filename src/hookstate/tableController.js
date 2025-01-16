@@ -172,7 +172,7 @@ async function fetchDynamicTableSchema(client, fetchDynamicSchema, TableSchema) 
 			const model = removeSpaces(modelName);
 
 			return {
-				...CommonSchema.COMMON_COLUMN,
+				...CommonSchema.STRING_COLUMN,
 				name: ['string', 'user'].includes(item.keyType) ? `${key}.keyword` : key,
 				accessorKey: key,
 				id: key,
