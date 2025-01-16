@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Switch, Route, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
+import ExternalTools from 'components/ExternalTools';
+
 import { setActiveModule, toggleQuickActionsPanel } from 'store/actions/commonActions';
 import { AppContext } from 'AppContext';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
@@ -24,6 +26,7 @@ const Components = {
 	Reindex,
 	BulkDataEditing,
 	BulkDataEditingDetail,
+	ExternalTools,
 };
 
 function isM1neralAddress(email) {
