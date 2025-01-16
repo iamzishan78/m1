@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-use-before-define */
 import React from 'react';
@@ -117,6 +118,10 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 							}}
 						/>
 					);
+				}
+
+				if (item?.type === 'date') {
+					return <>{formatDate(value)}</>;
 				}
 
 				return <>{value}</>;
@@ -417,7 +422,7 @@ const tableESStateControllerHandler = state => ({
 			isClientSide,
 			modelName,
 			data: { rows: [], total: 0 },
-			isLoading: false,
+			isLoading: true,
 			isFetching: false,
 			isError: false,
 			customProps: isEmpty(state?.customProps?.get({ noproxy: true }))

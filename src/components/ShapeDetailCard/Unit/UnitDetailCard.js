@@ -34,6 +34,7 @@ import { getShapeSubtitle } from '../helper';
 import { detailCardStyles } from '../style';
 import UnitSummary from './UnitSummary';
 import { globalStateController } from 'hookstate/globalStateController';
+import { LOD_YEAR } from 'utils/consts';
 
 const setSelectedTab = tableGlobalController.setSelectedTab;
 
@@ -318,7 +319,7 @@ export default function UnitDetailCard({ id, dataCustomLayer }) {
 											tabLabels: ['Unit Ownership', 'Potential Ownership'],
 											customProps: {
 												customLayer: uniObj,
-												year: 2023,
+												year: LOD_YEAR,
 												filterByWells: false,
 											},
 										}}
