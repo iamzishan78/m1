@@ -47,8 +47,8 @@ const ReportingGroupsMeta = {
 		// Column for Property with link
 		{
 			...CommonSchema.INITAIL_PINNED,
-			name: 'purchaserNumber.keyword',
-			id: 'purchaserNumber',
+			name: 'name.keyword',
+			id: 'name',
 			header: 'Property',
 			// Cell rendering for Property column
 			Cell: ({ row }) => {
@@ -97,15 +97,6 @@ const ReportingGroupsMeta = {
 				);
 			},
 		},
-		{
-			...CommonSchema.HIDDEN,
-			name: 'name.keyword',
-			header: 'Property Name',
-			id: 'name',
-			isSearchField: true,
-			isHiddenFieldExport: true,
-			hidden: true,
-		},
 		// Columns for Well API Number and Well Name
 		{
 			...CommonSchema.STRING_COLUMN,
@@ -139,6 +130,7 @@ const ReportingGroupsMeta = {
 		{
 			...CommonSchema.STRING_COLUMN,
 			name: 'purchaserNumber.keyword',
+			id: 'purchaserNumber',
 			header: 'Payor Prop #',
 		},
 		{

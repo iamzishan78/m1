@@ -60,8 +60,8 @@ const PropertiesMeta = {
 		// Column for Property with link
 		{
 			...CommonSchema.INITAIL_PINNED,
-			name: 'purchaserNumber.keyword',
-			id: 'purchaserNumber',
+			name: 'name.keyword',
+			id: 'name',
 			header: 'Property',
 			// Cell rendering for Property column
 			Cell: ({ row }) => {
@@ -138,12 +138,6 @@ const PropertiesMeta = {
 					return '';
 				}
 			},
-		},
-		// Columns for Property details
-		{
-			...CommonSchema.HIDDEN,
-			name: 'name.keyword',
-			id: 'name',
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
