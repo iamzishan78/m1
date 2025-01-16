@@ -214,16 +214,14 @@ function ESAutoCompleteFilter({
 		}
 	};
 
+	const optionsToShow = defaultFilterOptions?.length > 0 ? defaultFilterOptions : options;
+
 	return (
 		<Autocomplete
 			multiple={multiple}
 			id={`${compositeFields.join(' ')}-filter-autocomplete`}
 			options={
-				defaultFilterOptions?.length > 0
-					? defaultFilterOptions
-					: multiple
-						? options?.filter(item => !filterValue.find(value => isEqual(value, item.value)))
-						: options
+				multiple ? optionsToShow?.filter(item => !filterValue.find(value => isEqual(value, item.value))) : optionsToShow
 			}
 			getOptionLabel={op => {
 				if (typeof op !== 'object') {
