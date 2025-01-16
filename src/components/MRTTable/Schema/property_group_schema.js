@@ -50,6 +50,7 @@ const ReportingGroupsMeta = {
 			name: 'name.keyword',
 			id: 'name',
 			header: 'Property',
+			size: 450,
 			// Cell rendering for Property column
 			Cell: ({ row }) => {
 				const history = useHistory();
