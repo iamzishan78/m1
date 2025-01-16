@@ -145,9 +145,8 @@ function ToolbarActions({ table, tableKey, children }) {
 					{tableStateValues.tableHeading}
 				</Typography>
 				<TabHeader labels={tableStateValues.tabLabels} />
-				{tableStateValues.gridViewSettings && !isSomethingSelected && (
-					<GridView tableKey={tableKey} {...tableStateValues.gridViewSettings} />
-				)}
+				{tableStateValues.gridViewSettings && !isSomethingSelected && <GridView moduleName={tableKey} />}
+
 				{tableStateValues.defaultHeader && !tableStateValues.gridViewSettings && (
 					<TableHeader {...tableStateValues.defaultHeader} />
 				)}
@@ -207,6 +206,10 @@ function ToolbarActions({ table, tableKey, children }) {
 	);
 }
 
-ToolbarActions.propTypes = { table: PropTypes.object, tableKey: PropTypes.string, children: PropTypes.object };
+ToolbarActions.propTypes = {
+	table: PropTypes.object.isRequired,
+	tableKey: PropTypes.string.isRequired,
+	children: PropTypes.node,
+};
 
 export default ToolbarActions;

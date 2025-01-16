@@ -1,11 +1,12 @@
 /* eslint-disable react/prop-types */
+/* eslint-disable no-use-before-define */
 import React from 'react';
 
 import { hookstate } from '@hookstate/core';
 import _, { get, isEqual, isEmpty, pull } from 'lodash';
 
 import { extractUniqueFilters, filterValidFilters } from 'components/Map/DeckGL/helpers/common';
-import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController';
+import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import CustomFieldText from 'components/MRTTable/Common/MetaData/CustomFieldText';
 import { metaDataColumnStateController } from 'components/MRTTable/Common/MetaData/MetaDataColumnsController';
 import ReactSelectField from 'components/MRTTable/Common/MetaData/ReactSelectField';
@@ -16,7 +17,6 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { columnFilterModesFnRefs } from 'components/MRTTable/utils/filterModeMenu';
 import { formatGridViewToMRT, removeSpaces } from 'components/MRTTable/utils/helper';
 import { copy, deepEqual, formatDate } from 'components/Shared/functions';
-import { defaultHandleDefaultView } from 'components/Shared/GridView';
 import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
@@ -226,7 +226,6 @@ async function fetchGridViews(client, module, tableKey, gridViewOverride) {
 	// Retrieve the current user's information from a global state controller.
 	const user = globalStateController.getValue('user');
 
-	// Execute a GraphQL query to fetch grid views for the specified module and user ID.
 	const result = await client.query({
 		variables: {
 			module,
@@ -235,23 +234,8 @@ async function fetchGridViews(client, module, tableKey, gridViewOverride) {
 		query: GET_GRID_VIEWS,
 	});
 
-	// Extract the grid views from the query result.
 	const allGridViews = result?.data?.getGridViews?.gridViews;
-
-	// Initialize the grid view state controller with the fetched grid views for the specified table.
-	const gridViewController = gridViewStateController(tableKey);
-	gridViewController?.initialize(tableKey, allGridViews);
-
-	// Attempt to find a grid view that matches the override name, if provided.
-	let defaultDisplay = allGridViews?.find(obj => obj.name === gridViewOverride);
-
-	// If no override is found or provided, attempt to find a default grid view for the user.
-	if (!defaultDisplay) {
-		defaultDisplay = allGridViews?.find(obj => obj.defaultDisplayBy?.includes(user?._id));
-	}
-
-	// Return the determined default or overridden grid view configuration.
-	return defaultDisplay;
+	return allGridViews;
 }
 
 const tableESStateControllerHandler = state => ({
@@ -280,7 +264,7 @@ const tableESStateControllerHandler = state => ({
 			gridViewSettings,
 			density = 'comfortable',
 			advanceSearch = [],
-			isDefaultGridView,
+			// isDefaultGridView,
 			enableHiding = true,
 			refetchQueries = [],
 			globalFilter,
@@ -302,7 +286,6 @@ const tableESStateControllerHandler = state => ({
 				...CommonSchema.SELECT_SOME,
 				Header: () => <TableHeaderMoreOptions tableKey={tableKey} />,
 				Cell: ({ row }) => {
-					// eslint-disable-next-line no-use-before-define
 					const tableState = tableController(tableKey).useState(['mrtTableRef']);
 					const tableStateValues = tableState.stateValues;
 
@@ -330,8 +313,8 @@ const tableESStateControllerHandler = state => ({
 
 		let gridView = {};
 
-		const mapView = globalStateController.getValue('mapView') || {};
-		const selectedMapViewFilters = mapView.selectedMapView?.filters || [];
+		const selectedView = viewStateController('MapView').getValue('selectedView');
+		const selectedMapViewFilters = selectedView?.filters || [];
 
 		const mapViewFilters = selectedMapViewFilters
 			.filter(view => view.dataSourceName === layerIdentifier)
@@ -347,28 +330,22 @@ const tableESStateControllerHandler = state => ({
 
 		if (gridViewSettings) {
 			// Fetch user-specific or default grid views based on provided settings and overrides.
-			const userDefaultDisplay = await fetchGridViews(client, gridViewSettings.module, tableKey, rest.gridViewOverride);
+			const allGridViews = await fetchGridViews(client, gridViewSettings.module);
+			const defaultViewOverride = allGridViews?.find(obj => obj.name === rest.gridViewOverride);
 
-			// Format the fetched grid view for use with a specific grid view library or framework, assumed to be Material-UI's React Table (MRT).
-			formatedGridView = formatGridViewToMRT(userDefaultDisplay);
+			const gridViewController = viewStateController(tableKey);
+			gridViewController?.initialize({
+				client,
+				allViews: allGridViews,
+				isTable: true,
+				Icon: gridViewSettings.Icon,
+				label: gridViewSettings.label,
+				defaultViewOverride,
+			});
 
-			let selectedGridView =
-				isDefaultGridView || !userDefaultDisplay ? gridViewSettings.defaultView : userDefaultDisplay;
-
-			if (selectedGridView?.type === 'Default') {
-				selectedGridView = defaultHandleDefaultView(selectedGridView);
-				if (gridViewSettings.handleDefaultView) {
-					const user = globalStateController.getValue('user');
-					selectedGridView = gridViewSettings.handleDefaultView(selectedGridView, user);
-				}
-			}
-
-			// Setup the gridView object with the selected grid view configuration and some flags for UI control.
-			gridView = {
-				selectedGridView,
-				showViewModal: false,
-				showSaveAsNew: false,
-			};
+			const selectedGridView = gridViewController.getValue('selectedView');
+			formatedGridView = formatGridViewToMRT(selectedGridView);
+			gridView = { selectedGridView };
 		}
 		const {
 			_TableSchema,
@@ -522,12 +499,10 @@ const tableESStateControllerHandler = state => ({
 		state.merge(stateToUpdate);
 
 		if (mapViewFilters.length > 0) {
-			// eslint-disable-next-line no-use-before-define
 			tableController(tableKey).setShowColumnFilters(true);
 		}
 		if (customLayersFieldAccessors[layerIdentifier]) {
 			mapViewFilters?.forEach(filter => {
-				// eslint-disable-next-line no-use-before-define
 				tableController(tableKey).setFilterMode(filter?.field.replace('.keyword', ''), filter.searchType);
 			});
 		}
@@ -598,7 +573,6 @@ const tableESStateControllerHandler = state => ({
 		});
 		const tableKey = state.tableKey.get();
 
-		// eslint-disable-next-line no-use-before-define
 		const updatedColumnnSchema = tableController(tableKey).setInitialFilterMode(columnSchema, mode, column);
 
 		state.TableSchema?.[index]?.merge(updatedColumnnSchema);
@@ -733,8 +707,8 @@ const tableESStateControllerHandler = state => ({
 			return;
 		}
 
-		const mapView = globalStateController.getValue('mapView');
-		const mapViewsFitlers = mapView?.selectedMapView?.filters || [];
+		const selectedView = viewStateController('MapView').getValue('selectedView');
+		const mapViewsFitlers = selectedView?.filters || [];
 
 		const tableState = state.get({
 			noproxy: true,
@@ -774,22 +748,20 @@ const tableESStateControllerHandler = state => ({
 						filterValues: typeof filter.value === 'string' ? [filter.value] : filter.value,
 					};
 
-					globalStateController.updateState({
-						viewChanged: true,
-						mapView: {
-							...mapView,
-							viewChanged: true,
-							selectedMapView: {
-								...mapView?.selectedMapView,
-								filters: [
-									...mapViewsFitlers.filter(
-										({ fieldName, dataSourceName }) =>
-											(fieldName?.value || fieldName).replace('.keyword', '') !== filter.field ||
-											dataSourceName !== tableState?.layerIdentifier
-									),
-									newFilter,
-								],
-							},
+					const updatedMapViewFilters = [
+						...mapViewsFitlers.filter(
+							({ fieldName, dataSourceName }) =>
+								(fieldName?.value || fieldName).replace('.keyword', '') !== filter.field ||
+								dataSourceName !== tableState?.layerIdentifier
+						),
+						newFilter,
+					];
+
+					viewStateController('MapView').updateState({
+						shouldSyncView: true,
+						selectedView: {
+							...selectedView,
+							filters: updatedMapViewFilters,
 						},
 					});
 				}
@@ -808,10 +780,11 @@ const tableESStateControllerHandler = state => ({
 		return esFilters;
 	},
 
-	clearFilter: (field, updateMapView = true, viewChanged = true) => {
+	clearFilter: (field, updateMapView = true, shouldSyncView = true) => {
 		const filtersState = state.filters?.get({ noproxy: true });
-		const mapView = globalStateController.getValue('mapView');
-		const mapViewsFitlers = mapView?.selectedMapView?.filters || [];
+		const selectedView = viewStateController('MapView').getValue('selectedView');
+		const mapViewsFitlers = selectedView?.filters || [];
+
 		if (
 			mapViewsFitlers.find(({ fieldName }) => (fieldName?.value || fieldName)?.replace('.keyword', '') === field) &&
 			updateMapView
@@ -821,21 +794,17 @@ const tableESStateControllerHandler = state => ({
 			});
 
 			if (tableState?.layerIdentifier) {
-				globalStateController.updateState({
-					viewChanged,
-					mapView: {
-						...mapView,
-						viewChanged,
-						selectedMapView: {
-							...mapView?.selectedMapView,
-							filters: [
-								...mapViewsFitlers.filter(
-									({ dataSourceName, fieldName }) =>
-										(fieldName?.value || fieldName).replace('.keyword', '') !== field ||
-										dataSourceName !== tableState?.layerIdentifier
-								),
-							],
-						},
+				viewStateController('MapView').updateState({
+					shouldSyncView,
+					selectedView: {
+						...selectedView,
+						filters: [
+							...mapViewsFitlers.filter(
+								({ dataSourceName, fieldName }) =>
+									(fieldName?.value || fieldName).replace('.keyword', '') !== field ||
+									dataSourceName !== tableState?.layerIdentifier
+							),
+						],
 					},
 				});
 			}
@@ -871,8 +840,8 @@ const tableESStateControllerHandler = state => ({
 
 		const filterKeys = filters.map(filter => filter.id);
 
-		const mapView = globalStateController.getValue('mapView');
-		const mapViewsFitlers = mapView?.selectedMapView?.filters || [];
+		const selectedView = viewStateController('MapView').getValue('selectedView');
+		const mapViewsFitlers = selectedView?.filters || [];
 
 		const tableState = state.get({
 			noproxy: true,
@@ -883,21 +852,17 @@ const tableESStateControllerHandler = state => ({
 			.map(filter => filter.field);
 
 		if (tableState?.layerIdentifier) {
-			globalStateController.updateState({
-				viewChanged: true,
-				mapView: {
-					...mapView,
-					viewChanged: true,
-					selectedMapView: {
-						...mapView?.selectedMapView,
-						filters: [
-							...mapViewsFitlers.filter(
-								({ dataSourceName, fieldName }) =>
-									!keysToClear.includes((fieldName?.value || fieldName).replace('.keyword', '')) ||
-									dataSourceName !== tableState?.layerIdentifier
-							),
-						],
-					},
+			viewStateController('MapView').updateState({
+				shouldSyncView: true,
+				selectedView: {
+					...selectedView,
+					filters: [
+						...mapViewsFitlers.filter(
+							({ dataSourceName, fieldName }) =>
+								!keysToClear?.includes((fieldName?.value || fieldName)?.replace('.keyword', '')) ||
+								dataSourceName !== tableState?.layerIdentifier
+						),
+					],
 				},
 			});
 		}
@@ -1069,10 +1034,10 @@ const tableESStateControllerHandler = state => ({
 				[rowId]: editedRow,
 			});
 		} else {
-			// eslint-disable-next-line no-use-before-define
 			tableController(tableKey).clearEditedRow(rowId);
 		}
 	},
+
 	setValidationErrors: (rowId, columnId, validationError) => {
 		const validationErrors = state.validationErrors.get({ noproxy: true });
 
@@ -1084,6 +1049,7 @@ const tableESStateControllerHandler = state => ({
 			},
 		});
 	},
+
 	clearEditedRow: rowId => {
 		state.editedData.merge({
 			[rowId]: undefined,
@@ -1092,10 +1058,104 @@ const tableESStateControllerHandler = state => ({
 			[rowId]: undefined,
 		});
 	},
+
 	clearEditing: () => {
 		state.editedData.set({});
 		state.validationErrors.merge({});
 		state.isCreateMode.merge(false);
+	},
+
+	applyGridView: slectedView => {
+		const tableKey = state.tableKey.get();
+		const Controller = tableController(tableKey);
+
+		const TableSchema = Controller.getValue('TableSchema');
+		const columnPinning = Controller.getValue('columnPinning');
+		if (slectedView?.columns) {
+			const columnstoShow = slectedView?.columns.reduce((acc, obj) => {
+				acc[obj.name] = obj.display;
+				return acc;
+			}, {});
+
+			Controller.setColumnVisibility(columnstoShow);
+		} else {
+			const defaultVisibility = TableSchema?.reduce(
+				(acc, cur) => ({ ...acc, [cur.accessorKey || cur.id]: !cur?.hidden }),
+				{}
+			);
+			Controller.setColumnVisibility(defaultVisibility);
+		}
+		if (slectedView?.filters?.length) {
+			Controller.setShowColumnFilters(true);
+			Controller.clearFilters();
+			for (const filter of slectedView?.filters || []) {
+				Controller.setFilter(filter);
+			}
+			// Controller.syncFilters(slectedView.filters);
+			// Controller.setFilters(slectedView.filters);
+		} else {
+			Controller.setShowColumnFilters(false);
+			Controller.clearFilters();
+		}
+		if (slectedView?.sorting) {
+			Controller.setSorting(slectedView?.sorting);
+		} else {
+			Controller.setSorting([]);
+		}
+		if (slectedView?.columnPinning?.left?.length) {
+			let filterLeftPinning = slectedView?.columnPinning?.left?.map(element =>
+				element === 'mrt-row-select' ? 'over-ride-checkbox' : element
+			);
+			const newColumnPinning = {
+				left: filterLeftPinning,
+			};
+			Controller.setColumnPinning(newColumnPinning, columnPinning, TableSchema);
+		} else {
+			const pinnedColumns = TableSchema?.filter(column => column.isPinned);
+			const pinnedFields = pinnedColumns?.map(column => column.id || column.accessorKey);
+			Controller.setColumnPinning(columnPinning, pinnedFields, TableSchema);
+		}
+		if (slectedView?.columnOrdering) {
+			const newColumnOrder = slectedView?.columnOrdering?.map(element =>
+				element === 'mrt-row-select' ? 'over-ride-checkbox' : element
+			);
+			Controller.setColumnOrdering(newColumnOrder);
+		} else {
+			const columnOrder = TableSchema.map(column => column.accessorKey || column.id);
+			const defaultColumnOrder = _.concat(['over-ride-checkbox', 'mrt-row-numbers'], _.slice(columnOrder, 1));
+			Controller.setColumnOrdering(defaultColumnOrder);
+		}
+	},
+
+	getGridViewProperties: () => {
+		const tableKey = state.tableKey.get();
+		const Controller = tableController(tableKey);
+		const tableStateValues = Controller.getValues([
+			'filters',
+			'sorting',
+			'groupedField',
+			'columnPinning',
+			'columnOrdering',
+			'columnVisibility',
+		]);
+
+		return {
+			filters: tableStateValues?.filters,
+			columns: Object.entries(tableStateValues?.columnVisibility).map(([name, display]) => ({
+				name,
+				display,
+			})),
+			sorting: tableStateValues?.sorting,
+			columnPinning: tableStateValues?.columnPinning,
+			groupedField: tableStateValues?.groupedField || [],
+			columnOrdering: tableStateValues?.columnOrdering || [],
+		};
+	},
+
+	getModuleName: () => {
+		const tableKey = state.tableKey.get();
+		const { module } = tableController(tableKey).getValue('gridViewSettings');
+		return module;
 	},
 });
 
