@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 /* eslint-disable react/prop-types */
 import React from 'react';
 
@@ -114,6 +115,10 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 					);
 				}
 
+				if (item?.type === 'date') {
+					return <>{formatDate(value)}</>;
+				}
+
 				return <>{value}</>;
 			},
 		};
@@ -204,7 +209,6 @@ const tableESStateControllerHandler = state => ({
 				...CommonSchema.SELECT_SOME,
 				Header: () => <TableHeaderMoreOptions tableKey={tableKey} />,
 				Cell: ({ row }) => {
-					// eslint-disable-next-line no-use-before-define
 					const tableState = tableController(tableKey).useState(['mrtTableRef']);
 					const tableStateValues = tableState.stateValues;
 
@@ -335,7 +339,7 @@ const tableESStateControllerHandler = state => ({
 			isClientSide,
 			modelName,
 			data: { rows: [], total: 0 },
-			isLoading: false,
+			isLoading: true,
 			isFetching: false,
 			isError: false,
 			customProps: isEmpty(state?.customProps?.get({ noproxy: true }))
@@ -417,12 +421,10 @@ const tableESStateControllerHandler = state => ({
 		state.merge(stateToUpdate);
 
 		if (mapViewFilters.length > 0) {
-			// eslint-disable-next-line no-use-before-define
 			tableController(tableKey).setShowColumnFilters(true);
 		}
 		if (customLayersFieldAccessors[layerIdentifier]) {
 			mapViewFilters?.forEach(filter => {
-				// eslint-disable-next-line no-use-before-define
 				tableController(tableKey).setFilterMode(filter?.field.replace('.keyword', ''), filter.searchType);
 			});
 		}
@@ -493,7 +495,6 @@ const tableESStateControllerHandler = state => ({
 		});
 		const tableKey = state.tableKey.get();
 
-		// eslint-disable-next-line no-use-before-define
 		const updatedColumnnSchema = tableController(tableKey).setInitialFilterMode(columnSchema, mode, column);
 
 		state.TableSchema?.[index]?.merge(updatedColumnnSchema);
@@ -964,7 +965,6 @@ const tableESStateControllerHandler = state => ({
 				[rowId]: editedRow,
 			});
 		} else {
-			// eslint-disable-next-line no-use-before-define
 			tableController(tableKey).clearEditedRow(rowId);
 		}
 	},

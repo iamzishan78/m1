@@ -160,7 +160,8 @@ const Auth0Login = props => {
 			const tenantName = window.sessionStorage.getItem('tenantName');
 			let tenant = tenantsCredentials(tenantName);
 
-			myMSALObj = new msal.PublicClientApplication(msalConfig(tenant));
+			const isBypassTenant = tenantName && globalStateController.isBypassTenant(tenantName);
+			myMSALObj = isBypassTenant ? null : new msal.PublicClientApplication(msalConfig(tenant));
 
 			globalStateController.updateState({
 				myMSALObj,
@@ -200,7 +201,6 @@ const Auth0Login = props => {
 
 			handleLogin(loginRes, userMapSettings);
 		})();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isLoading, isAuthenticated]);
 
 	return null;

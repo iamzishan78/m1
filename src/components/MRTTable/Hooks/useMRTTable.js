@@ -160,6 +160,12 @@ const useMRTTable = tableKey => {
 				onCreatingRowCancel: tableStateValues.onCreatingRowCancel,
 				onCreatingRowSave: tableStateValues.onCreatingRowSave,
 				renderRowActions: EditRowActions(tableStateValues.onDelete),
+				enableSorting: false, // Disable sorting
+				enableFilters: false, // Disable filtering
+				enableColumnActions: false, // Disable column actions menu
+				enableGlobalFilter: false, // Disable global filtering (search)
+				enableRowSelection: false, // Disable row selection
+				enableColumnDragging: false, // Disable row ordering
 			}),
 
 			muiTableBodyRowProps: row => {
@@ -392,10 +398,6 @@ const useMRTTable = tableKey => {
 								}
 								if (columnType === 'date') {
 									value = filter.value;
-								}
-								// set value to empty if it is a blank space
-								if (['notEmpty', 'empty'].some(m => m === mode) && filter.value === ' ') {
-									value = '';
 								}
 
 								Controller.setFilter({
