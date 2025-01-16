@@ -46,6 +46,22 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
         }
     }, [profilesInfo]);
 
+    useEffect(() => {
+        if (props?.placeholder) {
+            return;
+        }
+        const helperTextElement = document.querySelector(".input-helper-text");
+        if (value.length > 0) {
+            if (helperTextElement) {
+                helperTextElement.classList.add("fill");
+            }
+        } else {
+            if (helperTextElement) {
+                helperTextElement.classList.remove("fill");
+            }
+        }
+    }, [value])
+
     const convertToUserIDFormat = (input) => {
         // Regular expression to match @[Name](userID)
         const regex = /@\[(.*?)\]\((.*?)\)/g;
@@ -107,6 +123,7 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
                 previousDiv.style.width = "calc(100% - 25px) !important"; // Remove outline
                 previousDiv.style.border = "none";
                 previousDiv.style.setProperty("line-height", "24px", "important");
+                previousDiv.style.setProperty("padding", "4px 0px 0px 4px", "!important;");
             }
         }
     };
@@ -126,7 +143,20 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
                 if (previousDiv) {
                     previousDiv.style.overflow = "hidden";
                     previousDiv.style.setProperty("line-height", "20px", "important");
+                    previousDiv.style.setProperty("padding", "4px 0px 0px 4px", "!important;");
                 }
+
+                // Check if the span already exists
+                if (!document.querySelector(".input-helper-text")) {
+                    // Create a new <span> element
+                    const newSpan = document.createElement("span");
+                    newSpan.className = "input-helper-text"; // Add a class to the span
+                    newSpan.textContent = "Comments"; // Add text content
+
+                    // Insert the <span> after the input box
+                    mentionInput.parentNode.insertBefore(newSpan, mentionInput.nextSibling);    
+                }
+                
             }
         }
     }, [props.isSaveAllowed])
@@ -162,7 +192,7 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
                         setComment(comment)
                     }}
                     classNames={classNames}
-                    placeholder="Add a question or post an update"
+                    placeholder={props?.placeholder || ''}
                     style={{
                         input: {
                             height: `${height}px`,
