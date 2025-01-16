@@ -83,7 +83,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		const tableMeta = tableState.get({ noproxy: true });
 		const pagination = _pagination || tableMeta.pagination;
-		const { TableSchema } = tableMeta;
+		const { TableSchema, fetchDynamicSchema } = tableMeta;
 		const isElasticIndex = tableStateValues?.esIndex?.includes('platformData:');
 
 		if (!TableSchema) {
@@ -148,6 +148,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			sort,
 			filters,
 			parent: tableStateValues.tableKey,
+			isDynamicAsset: !!fetchDynamicSchema?.tableName,
 		};
 
 		// Update layer filters if filter layer type is defined

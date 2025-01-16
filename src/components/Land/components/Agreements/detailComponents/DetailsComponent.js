@@ -59,6 +59,7 @@ import { AppContext } from 'AppContext';
 import { DrawerContext } from './DrawerContext';
 import RelatedDocumets from './relatedDocuments';
 import RelatedPayments from './relatedPayments';
+import { popupController } from 'hookstate/popupStateController';
 
 const useStyles = makeStyles(() => ({
 	mapProvider: {
@@ -321,10 +322,10 @@ export function DetailComponents(props) {
 			shape.id = dataCustomLayer.customLayer._id;
 			shape.properties.id = dataCustomLayer.customLayer._id;
 			shape.layer = { id: dataCustomLayer.customLayer.layer };
-			setStateApp(state => ({
-				...state,
+			popupController.updateState({
 				selectedShape: { ...shape.properties, shape },
-			}));
+			});
+
 			dispatch(
 				setLandReduxKey('agreement', {
 					activeAgreement: {

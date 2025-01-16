@@ -25,17 +25,10 @@ Cypress.Commands.add('openShape', ({ x, y, callback, newCustomLayer }) => {
 		id: newCustomLayer._id,
 	};
 
-	if (jsonLayer.properties.sdType === 'parcel') {
-		popupStateVal = {
-			expandedCard: true,
-			selectedParcel: selectedShape,
-		};
-	} else {
-		popupStateVal = {
-			expandedCard: true,
-			selectedShape,
-		};
-	}
+	popupStateVal = {
+		expandedCard: true,
+		selectedShape,
+	};
 
 	// Opening the side dialog
 	popupController.setState(popupStateVal);

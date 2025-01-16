@@ -70,6 +70,28 @@ export default function DetailComponents(props) {
 							>
 								{title || '-'}
 							</Typography>
+							{history.location.pathname.includes('/detailedInformation') && (
+								<Typography
+									style={{
+										color: '#18AADD',
+										fontSize: '16px',
+										marginLeft: '5px',
+									}}
+								>
+									Detailed Information
+								</Typography>
+							)}
+							{history.location.pathname.includes('/documents') && (
+								<Typography
+									style={{
+										color: '#18AADD',
+										fontSize: '16px',
+										marginLeft: '5px',
+									}}
+								>
+									Documents
+								</Typography>
+							)}
 						</Breadcrumbs>
 					</Grid>
 					<Grid item>

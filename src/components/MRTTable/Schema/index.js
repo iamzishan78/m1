@@ -70,4 +70,7 @@ export const SCHEMA = {
 	WellProductionTable: () => import('./well_production_schema'),
 	FailedBulkDataEditingTable: () => import('./QuerySchema/failed_bulk_data_editing'),
 	WellOwnersTable: () => import('./QuerySchema/wells_owners_schema'),
+	DynamicAssetTable: () => import('./dynamic_asset_schema'),
+	CustomAssetEntitiesTable: () => import('./asset_custom_entities_schema'),
+	CustomAssetTable: () => import('./custom_asset_schema'),
 };

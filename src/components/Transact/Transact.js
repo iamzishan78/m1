@@ -39,9 +39,6 @@ import DocViewer from '../Shared/DocViewer';
 import vf_currency from '../Shared/valueformatters/vf_currency.js';
 import vf_number from '../Shared/valueformatters/vf_number.js';
 
-
-
-
 const THREE = 3;
 const FOUR = 4;
 const SIX = 6;

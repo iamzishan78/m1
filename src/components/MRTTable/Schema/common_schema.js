@@ -12,6 +12,7 @@ import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_curre
 import { tableController } from 'hookstate/tableController';
 
 import { CURRENCY_TO_FIXED, INTEREST_TO_FIXED } from 'utils/consts';
+import OwnerTypeCell from '../Common/TableCells/OwnerTypeCell';
 
 export const CommonSchema = {
 	COMMENTS: {
@@ -172,6 +173,25 @@ export const CommonSchema = {
 		filter: true,
 		isSearchField: false,
 		type: 'string',
+		Cell: ({ row }) => {
+			// Passing contact owner in common component
+			let contactOwner = row.original?.createBy;
+			return <OwnerTypeCell contactOwner={contactOwner} />;
+		},
+	},
+	OWNER: {
+		name: 'owner.name.keyword',
+		accessorKey: 'owner.name',
+		header: 'Owner',
+		size: 250,
+		filter: true,
+		isSearchField: false,
+		type: 'string',
+		Cell: ({ row }) => {
+			// Passing contact owner in common component
+			let contactOwner = row.original?.owner;
+			return <OwnerTypeCell contactOwner={contactOwner} />;
+		},
 	},
 	CREATED_DATE: {
 		name: 'createAt',
@@ -193,6 +213,11 @@ export const CommonSchema = {
 		filter: true,
 		isSearchField: false,
 		type: 'string',
+		Cell: ({ row }) => {
+			// Passing contact owner in common component
+			let contactOwner = row.original?.lastUpdateBy;
+			return <OwnerTypeCell contactOwner={contactOwner} />;
+		},
 	},
 	LAST_UPDATED_DATE: {
 		name: 'lastUpdateAt',
