@@ -43,6 +43,7 @@ import AdminProvider from 'components/Admin/AdminProvider';
 import { globalStateController } from 'hookstate/globalStateController';
 import Providers from 'Providers';
 import { useAuth0 } from '@auth0/auth0-react';
+import { deleteSession } from 'utils/user';
 
 const PrivateRoute = ({ component, ...options }) => {
 	const user = globalStateController.getValue('user');
@@ -53,17 +54,14 @@ const PrivateRoute = ({ component, ...options }) => {
 	const apolloClient = useApolloClient();
 
 	if (user && Date.parse(user.authTokenExpires) < Date.now()) {
-		sessionStorage.clear();
-		window.location.replace(window.location.origin);
-		// setStateApp((stateApp) => ({ ...stateApp, user: null }));
-		// setStateNav((stateNav) => ({ ...stateNav, defaultOn: false }));
+		deleteSession();
 	}
 
 	const finalComponent =
 		user &&
-		(Date.parse(user.authTokenExpires) > Date.now() || (globalStateController.isAuth0Bypass() && isAuthenticated)) &&
-		apolloClient &&
-		userSessionIsLoaded
+			(Date.parse(user.authTokenExpires) > Date.now() || (globalStateController.isAuth0Bypass() && isAuthenticated)) &&
+			apolloClient &&
+			userSessionIsLoaded
 			? component
 			: globalStateController.isAuth0Bypass()
 				? Auth0Login

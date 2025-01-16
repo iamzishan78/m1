@@ -20,6 +20,7 @@ import { useLazyQuery } from "@apollo/client";
 
 import CheckIcon from "@material-ui/icons/Check";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
+import { deleteSession } from "utils/user";
 
 export const useStyles = makeStyles((theme) => ({
   userMenu: {
@@ -113,14 +114,11 @@ export default function UserProfile() {
       });
 
     setAnchorEl(null);
-    sessionStorage.clear();
-    localStorage.clear();
 
     if (currentAccount) {
-      stateApp.myMSALObj?.logout(logoutRequest);
+      stateApp?.myMSALObj?.logout(logoutRequest);
     }
-
-    window.location.replace(window.location.origin);
+    deleteSession();
   };
 
   const handleProfileMenuOpen = (event) => setAnchorEl(event.currentTarget);
