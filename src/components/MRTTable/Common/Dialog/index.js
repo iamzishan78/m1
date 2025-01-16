@@ -116,7 +116,7 @@ function AllDialogs(props) {
 			)}
 			{type === "commentsWithTags" && (
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
-					<Comments {...rest} hideSharedCommentCheck={props.hideSharedCommentCheck} containsComments={true}
+					<Comments {...rest} hideSharedCommentCheck={props.hideSharedCommentCheck} containsComments={true} isHelperTextAllow={true} isSaveAllowed={false}
 						refetch={isClientSide ? tableGlobalController.refetchAdditionalQueries : tableGlobalController.refetch}
 					/>
 				</Dialog>
