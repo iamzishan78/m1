@@ -257,6 +257,7 @@ export default function Comments(props) {
 		{
 			onCompleted: () => {
 				tableGlobalController.refetch();
+				props.refetch?.();
 			}
 		}
 	);
@@ -613,6 +614,7 @@ export default function Comments(props) {
 							updateComment={updateComment}
 							profilesInfo={profilesInfo}
 							isSaveAllowed={true}
+							placeholder={props.placeholder}
 						/>
 					</Grid>
 				</Grid>

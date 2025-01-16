@@ -20,7 +20,6 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 
 import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
 
-import CommentDialog from './CommentDialog';
 import DeleteConfirmationDialog from './ConfirmationDialog/DeleteConfirmationDialog';
 import ExportConfirmationDialog from './ConfirmationDialog/ExportConfirmationDialog';
 import TagDialog from './TagDialog';
@@ -115,18 +114,11 @@ function AllDialogs(props) {
 					/>
 				</Dialog>
 			)}
-			{type === 'comments' && (
-				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
-					<CommentDialog
-						{...rest}
-						refetch={isClientSide ? tableGlobalController.refetchAdditionalQueries : tableGlobalController.refetch}
-					/>
-				</Dialog>
-			)}
-
 			{type === "commentsWithTags" && (
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
-					<Comments {...rest} hideSharedCommentCheck={props.hideSharedCommentCheck} containsComments={true}/>								
+					<Comments {...rest} hideSharedCommentCheck={props.hideSharedCommentCheck} containsComments={true}
+						refetch={isClientSide ? tableGlobalController.refetchAdditionalQueries : tableGlobalController.refetch}
+					/>
 				</Dialog>
 			)}
 			{type === 'convertContactSlideout' && (

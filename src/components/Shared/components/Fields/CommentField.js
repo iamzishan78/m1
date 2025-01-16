@@ -378,6 +378,7 @@ export default function DealComment({
 					profilesInfo={profilesInfo}
 					setIsCollapsed={setIsCollapsed}
 					isSaveAllowed={false}
+					placeholder={'Add a question or post an update'}
 				/>
 				{!isCollapsed && (
 					<>
