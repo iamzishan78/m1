@@ -96,7 +96,8 @@ function AssetAssociationDialog() {
 		}
 
 		const toastType = isCreateMode ? 'create' : 'update';
-		Loader.createToast(toastType, `${toastType} Entity Association in Progress`);
+		const capitalizedToastType = toastType.charAt(0).toUpperCase() + toastType.slice(1);
+		Loader.createToast(toastType, `${capitalizedToastType} Entity Association in Progress`);
 		handleClose();
 
 		const { associatedModels = [], fields } = data;
@@ -127,7 +128,7 @@ function AssetAssociationDialog() {
 				if (success) {
 					Loader.successToast(toastType, message);
 				} else Loader.errorToast(toastType, message);
-			} else Loader.errorToast(toastType, `Failed to ${toastType} entity association`);
+			} else Loader.errorToast(toastType, `Failed to ${capitalizedToastType} Entity Association`);
 		});
 	};
 

@@ -82,7 +82,8 @@ function CustomAssetEntityDialog() {
 		}
 
 		const toastType = isCreateMode ? 'create' : 'update';
-		Loader.createToast(toastType, `${toastType} Entity in Progress`);
+		const capitalizedToastType = toastType.charAt(0).toUpperCase() + toastType.slice(1);
+		Loader.createToast(toastType, `${capitalizedToastType} Entity in Progress`);
 		handleClose();
 
 		storeCustomAsset({
@@ -97,7 +98,7 @@ function CustomAssetEntityDialog() {
 				if (success) {
 					Loader.successToast(toastType, message);
 				} else Loader.errorToast(toastType, message);
-			} else Loader.errorToast(toastType, `Failed to ${toastType} entity`);
+			} else Loader.errorToast(toastType, `Failed to ${capitalizedToastType} Entity`);
 		});
 	};
 
