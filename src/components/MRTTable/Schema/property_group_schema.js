@@ -180,7 +180,6 @@ const ReportingGroupsMeta = {
 			name: 'status.keyword',
 			id: 'status',
 			header: 'Pay Status',
-			type: 'defaultFiltersOptions',
 			defaultFilterOptions: [
 				{ label: 'In Pay', value: 'InPay' },
 				{ label: 'Not in Pay', value: 'NotInPay' },

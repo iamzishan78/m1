@@ -186,7 +186,6 @@ const PropertiesMeta = {
 			name: 'status.keyword',
 			id: 'status',
 			header: 'Pay Status',
-			type: 'defaultFiltersOptions',
 			defaultFilterOptions: [
 				{ label: 'In Pay', value: 'inpay' },
 				{ label: 'Not in Pay', value: 'notinpay' },

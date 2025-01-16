@@ -149,10 +149,6 @@ function ESAutoCompleteFilter({
 				label = value.name || '';
 			}
 
-			// 	case 'boolean':
-			// 	case 'defaultFiltersOptions':
-			// 		return defaultFilterOptions?.find(option => option?.value === value)?.label || value;
-
 			switch (subType || type) {
 				case 'date':
 					if (key_as_string) {
