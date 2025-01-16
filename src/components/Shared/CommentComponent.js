@@ -8,7 +8,7 @@ import React, {
 import { get } from "lodash";
 import Avatar from "react-avatar";
 import Grid from "@material-ui/core/Grid";
-import { CircularProgress, Menu, MenuItem, Tooltip } from "@material-ui/core";
+import { CircularProgress, Menu, MenuItem, Tab, Tabs, Tooltip, } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import { useMutation, useLazyQuery } from "@apollo/client";
@@ -26,6 +26,7 @@ import { UPSERTCOMMENT } from "graphQL/useMutationUpsertComment";
 import { REMOVECOMMENT } from "graphQL/useMutationRemoveComment";
 import { COMMENTSBYOBJECTIDQUERY } from "graphQL/useQueryCommentsByObjectId";
 import CommentField from "components/Shared/components/Fields/CommentField";
+import { Autocomplete, TextField } from '@mui/material';
 
 import ReactTimeAgo from "react-time-ago";
 import TimeAgo from "javascript-time-ago";
@@ -35,6 +36,8 @@ import moment from "moment";
 import DOMPurify from "dompurify";
 import { TOGGLECOMMENTREACTION } from "graphQL/userMutationToggleCommentReaction";
 import { globalStateController } from "hookstate/globalStateController";
+import CommentsAutoComplete from './CommentsAutoComplete';
+
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
@@ -146,7 +149,38 @@ const useStyles = makeStyles((theme) => ({
     wordBreak: "break-word",
     hyphens: "auto",
   },
+  customTabs: {
+		display: 'flex',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		float: 'right',
+		marginBottom: 'auto',
+		paddingRight: '30px',
+		'& .MuiTab-root': {
+			minWidth: '60px',
+		},
+		'& .Mui-selected': {
+			color: '#18AADD',
+		},
+	},
+	autocomplete: {
+		flexShrink: '1',
+		marginTop: '10px',
+		marginRight: '-20px',
+		paddingLeft: '10px',
+	},
 }));
+
+const typeOptions = [
+	{ label: 'All', value: 'all' },
+	{ label: 'Call', value: 'call' },
+	{ label: 'Meeting', value: 'meeting' },
+	{ label: 'Task', value: 'task' },
+	{ label: 'Deadline', value: 'deadline' },
+	{ label: 'Email', value: 'email' },
+	{ label: 'Text Message', value: 'text_message' },
+	{ label: 'Mailer', value: 'mailer' },
+];
 
 function urlify(text) {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -270,6 +304,10 @@ export default function CommentComponent(props) {
   const [scrollIntoView, setScrollIntoView] = useState(false);
   const [pinComments, setPinComments] = useState({ isPinned: false });
   const commentContainerRef = useRef(null);
+  const [tab, setTab] = useState(0);
+	const [activityType, setActivityType] = useState('all');
+	const [commentTypes, setCommentTypes] = useState([]);
+	const [commentType, setCommentType] = useState('All');
 
   const [removeComment] = useMutation(REMOVECOMMENT);
   const [upsertComment, { data: newlyAddedComment }] =
@@ -289,6 +327,21 @@ export default function CommentComponent(props) {
     COMMENTSBYOBJECTIDQUERY,
     { fetchPolicy: "no-cache", nextFetchPolicy: "cache-and-network" }
   );
+
+  const { data: commentResponse } = useQuery(GET_COMMENT_TYPES);
+
+  useEffect(() => {
+		if (commentResponse && Array.isArray(commentResponse.commentsType)) {
+			const commentsType = commentResponse.commentsType;
+			const uniqueCommonType = uniqBy(commentsType, e => {
+				return e.commentType;
+			});
+			const formattedOptions = uniqueCommonType.map(c => ({ label: c.commentType, value: c.commentType }));
+			formattedOptions.push({ label: 'All', value: 'All' });
+			setCommentTypes(formattedOptions);
+		}
+	}, [commentResponse]);
+
   useEffect(() => {
     getAllMongoUsers();
   }, [getAllMongoUsers]);
@@ -326,15 +379,25 @@ export default function CommentComponent(props) {
     if (dataComments && dataComments.commentsByObjectId) {
       if (props.activityLog && props.activityLog.length > 0) {
         let activityData = [];
-        props.activityLog.forEach((element) => {
+        props.activityLog
+        .filter(act => (activityType === 'all' ? true : act?.type === activityType))
+        .forEach(element => {
+
+          const timestamp = element?.createAt
+          ? new Date(new Date(element.createAt).toUTCString()).getTime()
+          : new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime();
+
+        const user = element.isExternal
+          ? { name: 'Dialpad' }
+          : { name: element.ownerName, email: element.ownerName };
+
+
           activityData.push({
-            user: { name: element.ownerName, email: element.ownerName },
+            user,
             activityData: element,
             comment: element.notes,
             outcome: element.outcome,
-            ts: new Date(
-              element._ts.includes("GMT") ? element._ts : Number(element._ts)
-            ).getTime(),
+            ts: timestamp,
             isActivity: true,
             isEdited: false,
             public: true,
@@ -346,10 +409,22 @@ export default function CommentComponent(props) {
         allComments = sortArrayBasedOnTs([...dataComments.commentsByObjectId]);
       }
       allComments = sortArrayBasedOnTs(allComments);
-      setCommentsArray(allComments);
+      if (tab === 0) {
+				setCommentsArray(allComments);
+			} else if (tab === 1) {
+				allComments = sortArrayBasedOnTs([...dataComments.commentsByObjectId]);
+				if (commentType !== 'All') {
+					allComments = allComments.filter(
+						c => c?.commentType?.commentType === commentType || c?.commentType === commentType
+					);
+				}
+				setCommentsArray(allComments);
+			} else if (tab === 2) {
+				setCommentsArray(activityData);
+			}
     }
     setLoadingComments(false);
-  }, [dataComments, props.activityLog]);
+  }, [dataComments, props.activityLog, tab, activityType, commentType]);
 
   useEffect(() => {
     setLoadingComments(false);
@@ -743,6 +818,38 @@ export default function CommentComponent(props) {
   return (
     <>
       <div className={classes.container}>
+      <div className={classes.customTabs}>
+					<Tabs
+						variant="scrollable"
+						value={tab}
+						textColor="primary"
+						onChange={(e, newValue) => {
+							setTab(newValue);
+						}}
+					>
+						<Tab label="All" disabled={editCommentId} />
+						<Tab label="Comments" disabled={editCommentId} />
+						<Tab label="Activities" disabled={editCommentId} />
+					</Tabs>
+					{tab === ACTIVITY_TAB && (
+						<div>
+							<CommentsAutoComplete
+								options={typeOptions}
+								onChange={value => setActivityType(value)}
+								value={typeOptions.find(option => option.value === activityType) || null}
+							/>
+						</div>
+					)}
+					{tab === 1 && (
+						<div>
+							<CommentsAutoComplete
+								options={commentTypes}
+								onChange={value => setCommentType(value)}
+								value={commentTypes?.find(option => option.value === commentType) || null}
+							/>
+						</div>
+					)}
+				</div>
         <div className={classes.comment} id="commentsContainer">
           {!loadingComments ? (
             <>

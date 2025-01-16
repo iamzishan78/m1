@@ -860,6 +860,7 @@ function ContactDetailCard(props) {
                 }}
                 activityLog={contactData.activityLog}
                 isSource={false}
+                showCommentType
               />
 
               <Menu

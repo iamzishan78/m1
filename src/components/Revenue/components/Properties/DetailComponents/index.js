@@ -474,6 +474,7 @@ export default function DetailComponents(props) {
                 setStateApp={setStateApp}
                 ownerTitle="Approver"
                 isApproval={true}
+                showCommentType
               />
             ) : (
               <AddNewRelatedAgreementDialog
