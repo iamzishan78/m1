@@ -443,8 +443,13 @@ export default function CommentComponent(props) {
 						const timestamp = element?.createAt
 							? new Date(new Date(element.createAt).toUTCString()).getTime()
 							: new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime();
+
+						const user = element.isExternal
+							? { name: 'Dialpad' }
+							: { name: element.ownerName, email: element.ownerName };
+
 						activityData.push({
-							user: { name: element.ownerName, email: element.ownerName },
+							user,
 							activityData: element,
 							comment: element.notes,
 							outcome: element.outcome,

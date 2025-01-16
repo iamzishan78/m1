@@ -5,14 +5,17 @@ import { Button, Grid, makeStyles } from '@material-ui/core';
 
 import { TextField } from '@mui/material';
 
-import { useLazyQuery, useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 
 import { ADD_EXTERNAL_TOOL } from 'graphQL/useMutationAddExternalTool';
 import { SYNC_DIALPAD } from 'graphQL/useMutationSyncDialpad';
+import { ALL_EXTERNAL_TOOLS } from 'graphQL/useQueryAllExternalTools';
 import { EXTERNAL_TOOL_EXISTS } from 'graphQL/useQueryExternalToolExists';
 
 import { adminOperationsController } from 'hookstate/adminOperationsController';
 import { jobController } from 'hookstate/jobStateController';
+
+import { getURL } from 'utils/helper';
 
 import { showErrorMessage, showSuccessMessage } from 'actions';
 
@@ -38,6 +41,12 @@ const useStyles = makeStyles(() => ({
 	endAdorment: {
 		marginRight: '-20px',
 	},
+	tab: {
+		border: '1px solid green',
+		marginRight: '8px',
+		padding: '3px 20px',
+		color: 'green',
+	},
 }));
 
 const formFields = [
@@ -55,6 +64,7 @@ const ExternalTools = () => {
 	const [addExternalTool] = useMutation(ADD_EXTERNAL_TOOL);
 	const [syncDialpad] = useMutation(SYNC_DIALPAD);
 	const [externalToolExists] = useLazyQuery(EXTERNAL_TOOL_EXISTS);
+	const { data: allTools } = useQuery(ALL_EXTERNAL_TOOLS);
 
 	const {
 		adminOperationsState: { apiKeys },
@@ -64,8 +74,13 @@ const ExternalTools = () => {
 		if (!value) {
 			return;
 		}
+		const url = getURL();
 
-		addExternalTool({ variables: { toolName: fieldName, apikey: value } }).then(({ data }) => {
+		addExternalTool({
+			variables: { toolName: fieldName, apikey: value, webhookUrl: url },
+			refetchQueries: ['allExternalTools'],
+			awaitRefetchQueries: true,
+		}).then(({ data }) => {
 			if (!data?.addExternalTool) {
 				dispatch(showErrorMessage('An error occured while saving Api Ky'));
 			} else if (!data.addExternalTool?.success) {
@@ -80,7 +95,6 @@ const ExternalTools = () => {
 	};
 
 	const handleSync = async toolName => {
-		console.log('toolName', toolName);
 		const { data } = await externalToolExists({ variables: { toolName } });
 
 		if (!data?.externalToolExists) {
@@ -129,6 +143,9 @@ const ExternalTools = () => {
 									{field.buttonLabel}
 								</Button>
 							</Grid>
+							{allTools?.allExternalTools?.find(tool => tool.toolName === field.name) && (
+								<span className={`${classes.tab}`}>Api key saved</span>
+							)}
 						</>
 					</Grid>
 				))}
