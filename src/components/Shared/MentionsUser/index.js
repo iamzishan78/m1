@@ -18,6 +18,20 @@ const useStyles = makeStyles(theme => ({
         zIndex: '999',
         marginTop: '10px'
     },
+    helperText: {
+        fontSize: '10px',
+        color: '#6e6e6e',
+        margin: '0',
+        textAlign: 'right',
+        float: 'right',
+        marginLeft: '10px',
+        '& span': {
+            fontWeight: 'bold',
+        },
+        '& .redColor': {
+            color: 'rgb(240, 89, 89) !important',
+        },
+    },
 }));
 
 const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users, ...props }) => {
@@ -27,7 +41,7 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
     const [mentionUsers, setMentionUsers] = useState([]);
     const [value, setValue] = useState('');
     const [isCollapsed, setIsCollapsed] = useState(true);
-
+    const [emptyInput, setEmptyInput] = useState(false);
 
     useEffect(() => {
         if (profilesInfo) {
@@ -54,6 +68,8 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
         if (value.length > 0) {
             if (helperTextElement) {
                 helperTextElement.classList.add("fill");
+                setEmptyInput(false)
+                highlightError(false);
             }
         } else {
             if (helperTextElement) {
@@ -73,7 +89,7 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
     const convertBackToOriginalFormat = (input) => {
         // Regular expression to match {{userID}}
         const regex = /{{(.*?)}}/g;
-    
+
         // Create user mapping from users data
         const userMapping = Object.keys(profilesInfo).reduce((acc, key) => {
             const user = profilesInfo[key];
@@ -86,7 +102,7 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
         const newValue = input.replace(regex, (match, userId) => {
             // Get the user's name using the userId from the mapping
             const user = userMapping[userId];
-            
+
             // If user is found, return the original format; otherwise, return the userId as is
             return user ? `@[${user.name}](${userId})` : `{{${userId}}}`;
         });
@@ -106,13 +122,14 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
         if (isCollapsed) {
             setHeight(40); // Reset height on blur
         }
+        setEmptyInput(false);
+        highlightError(false);
     };
 
     const handleApplyCSS = () => {
         const mentionInput = document.getElementById("mention-input");
         if (mentionInput) {
             mentionInput.classList.add("hide-scrollbar");
-            mentionInput.style.border = "none"; // Make border color transparent
             mentionInput.style.outline = "none"; // Remove outline
             mentionInput.style.width = 'calc(100% - 25px) important'; // Remove outline
             mentionInput.style.lineHeight = "24px"; // Remove outline
@@ -121,19 +138,46 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
             if (previousDiv) {
                 previousDiv.style.overflow = "hidden";
                 previousDiv.style.width = "calc(100% - 25px) !important"; // Remove outline
-                previousDiv.style.border = "none";
                 previousDiv.style.setProperty("line-height", "24px", "important");
-                previousDiv.style.setProperty("padding", "4px 0px 0px 4px", "!important;");
+                previousDiv.style.padding = "4px 0px 0px 4px";
+            }
+
+            if (!props?.isHelperTextAllow) {
+                mentionInput.style.border = "none"; // Make border color transparent
+                previousDiv.style.border = "none";
             }
         }
     };
+
+    const addHelperText = () => {
+        const mentionInput = document.getElementById("mention-input");
+        // Check if the span already exists
+        if (!document.querySelector(".input-helper-text")) {
+            // Create a new <span> element
+            const newSpan = document.createElement("span");
+            newSpan.className = "input-helper-text"; // Add a class to the span
+            newSpan.textContent = "Comments"; // Add text content
+
+            // Insert the <span> after the input box
+            mentionInput.parentNode.insertBefore(newSpan, mentionInput.nextSibling);
+        }
+    }
+
+    const highlightError = (isError) => {
+        const mentionInput = document.getElementById("mention-input");
+        const previousDiv = mentionInput.previousElementSibling;
+        const color = isError ? "red" : 'black'
+        mentionInput.style.borderColor = color; // Make border color transparent
+        previousDiv.style.border = color;
+    }
+
 
     useEffect(() => {
         if (!props.isSaveAllowed) {
             handleApplyCSS();
         } else {
             const mentionInput = document.getElementById("mention-input");
-            if (mentionInput) { 
+            if (mentionInput) {
                 mentionInput.style.lineHeight = "20px"; // Remove outline
                 mentionInput.classList.add("hide-scrollbar");
                 // Target the previous sibling element of mentionInput
@@ -143,21 +187,13 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
                 if (previousDiv) {
                     previousDiv.style.overflow = "hidden";
                     previousDiv.style.setProperty("line-height", "20px", "important");
-                    previousDiv.style.setProperty("padding", "4px 0px 0px 4px", "!important;");
+                    previousDiv.style.padding = "4px 0px 0px 4px";
                 }
-
-                // Check if the span already exists
-                if (!document.querySelector(".input-helper-text")) {
-                    // Create a new <span> element
-                    const newSpan = document.createElement("span");
-                    newSpan.className = "input-helper-text"; // Add a class to the span
-                    newSpan.textContent = "Comments"; // Add text content
-
-                    // Insert the <span> after the input box
-                    mentionInput.parentNode.insertBefore(newSpan, mentionInput.nextSibling);    
-                }
-                
             }
+        }
+
+        if (props.isHelperTextAllow) {
+            addHelperText();
         }
     }, [props.isSaveAllowed])
 
@@ -171,6 +207,26 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
     useEffect(() => {
         setValue(convertBackToOriginalFormat(comment))
     }, [comment, users])
+
+    const handleKeyPress = (e) => {
+        // Detect Enter key
+        if (e.key === 'Enter' && props?.isHelperTextAllow) {
+            if (e.shiftKey) {
+                // Allow new line when Shift + Enter is pressed
+                return;
+            } else {
+                e.preventDefault(); // Prevent default Enter behavior (e.g., new line or form submission)
+                if (!value?.length) {
+                    setEmptyInput(true);
+                    highlightError(true);
+                    return
+                }
+                // On Enter, save the data
+                updateComment({ comment, commentType: selectedCommentType });
+                e.preventDefault(); // Prevent form submission or other default behavior
+            }
+        }
+    }
 
     return (
         <>
@@ -210,6 +266,7 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
                     }}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
+                    onKeyDown={handleKeyPress}
                 >
                     <Mention
                         trigger="@"
@@ -251,6 +308,22 @@ const MentionsUser = ({ comment, setComment, updateComment, profilesInfo, users,
                     />
                 </MentionsInput>
             </ClickAwayListener>
+            {emptyInput ? (
+                <Grid item xs={12}>
+                    <p className={classes.helperText}>
+                        <span className="redColor">Required Field</span>
+                    </p>
+                </Grid>
+            ) : props?.isHelperTextAllow ? (
+                <Grid item xs={12}>
+                    <p className={classes.helperText}>
+                        <span>Shift+Enter</span> to add a new line
+                    </p>
+                    <p className={classes.helperText}>
+                        <span>Enter</span> to save
+                    </p>
+                </Grid>
+            ) : null}
             {props.isSaveAllowed && (
                 <Button
                     className={classes.commentBtn}

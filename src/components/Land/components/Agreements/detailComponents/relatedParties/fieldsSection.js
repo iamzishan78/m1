@@ -361,6 +361,8 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
 							targetLabel="contact"
 							refetchQueries={['getRelatedParties']}
 							placeholder={"Add a question or post an update"}
+							isSaveAllowed={true}
+							isHelperTextAllow={false}
 						/>
 					)}
 				</Dialog>

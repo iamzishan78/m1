@@ -613,8 +613,9 @@ export default function Comments(props) {
 							setComment={setComment}
 							updateComment={updateComment}
 							profilesInfo={profilesInfo}
-							isSaveAllowed={true}
+							isSaveAllowed={props?.isSaveAllowed}
 							placeholder={props.placeholder}
+							isHelperTextAllow={props.isHelperTextAllow}
 						/>
 					</Grid>
 				</Grid>
