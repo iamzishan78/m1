@@ -220,7 +220,7 @@ export const handleMRTSchema = ({
 								defaultFilterOptions: column.columnDef.defaultFilterOptions,
 								setFilterValue: column.setFilterValue,
 								filterSelectOptions: column.columnDef.filterSelectOptions,
-								filterValue: column?.getFilterValue() || '',
+								filterValue: column?.getFilterValue() ?? '',
 							}}
 							extendSearchQuery={globalFilter}
 							multiple={false}
