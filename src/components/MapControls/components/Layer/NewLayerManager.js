@@ -29,7 +29,7 @@ import { AppContext } from 'AppContext';
 import { ColorPickerStyledBox, useLayerStyle, WidthPicker } from './Common';
 import { getDefaultSettings } from '../SourceLayerManager/fileUploadHelper';
 
-function NewLayerManager(props) {
+function NewLayerManager() {
 	const [stateApp] = useContext(AppContext);
 	const sourceProps = '' + uuid() + '_source';
 
@@ -62,6 +62,10 @@ function NewLayerManager(props) {
 	const [selectCategory, setCategory] = useState();
 
 	const { globalStateValues } = globalStateController.useState(['datasets'], 'globalStateValues');
+
+	const handleClose = () => {
+		mapControlsController.updateState({ manageLayer: false });
+	};
 
 	const createLayer = () => {
 		const layerType = source.name === 'M1 Platform' ? 'data layer' : 'file layer';
@@ -103,10 +107,6 @@ function NewLayerManager(props) {
 		}).then(() => {
 			handleClose();
 		});
-	};
-
-	const handleClose = () => {
-		mapControlsController.updateState({ manageLayer: false });
 	};
 
 	useEffect(() => {
@@ -216,7 +216,7 @@ function NewLayerManager(props) {
 										control={
 											<Switch
 												checked={layerClickability}
-												onChange={e => setLayerClickability(!layerClickability)}
+												onChange={() => setLayerClickability(!layerClickability)}
 												size="small"
 											/>
 										}
@@ -274,7 +274,7 @@ function NewLayerManager(props) {
 										autoFocus
 										onClick={createLayer}
 										color="primary"
-										disabled={!source || !selectCategory || !layerName}
+										disabled={!source || !selectCategory || !layerName?.trim()}
 									>
 										Create layer
 									</Button>
