@@ -67,26 +67,17 @@ export default function LagalDescription({ uniObj, agreementId }) {
 	const classes = useStyles();
 	const customClasses = customStyles();
 
-	const [totalWels, setTotalWells] = useState(0);
-
 	const {
 		stateValues: { tabKey: selectedTab },
 	} = tableGlobalController.useState(['tabKey']);
 
-	const relatedWellTableState =
-		tableController('RelatedWellsTable')?.useState(['data', 'isLoading'])?.stateValues || {};
-	const potentialWellTableState =
-		tableController('PotentialWellsTable')?.useState(['data', 'isLoading'])?.stateValues || {};
-
-	const tableStateValues = selectedTab ? potentialWellTableState : relatedWellTableState; // Use the correct table state based on the selected tab
-
-	useEffect(() => {
-		if (!tableStateValues.data || tableStateValues.isLoading) {
-			return;
-		}
-
-		setTotalWells(tableStateValues.data.total);
-	}, [tableStateValues.data, tableStateValues.isLoading]);
+	const { data: response } = useQuery(GET_DB_DATA_TOTAL, {
+		variables: {
+			index: 'shapewellinterests_flat',
+			filters: [{ field: 'shape._id', value: agreementId }],
+		},
+		fetchPolicy: 'no-cache',
+	});
 
 	const RelatedWellsOverrideMeta = useMemo(
 		() => ({
@@ -119,7 +110,7 @@ export default function LagalDescription({ uniObj, agreementId }) {
 							<Typography variant="h5" className={customClasses.titleText}>
 								Related Wells
 							</Typography>
-							<Chip color="info" label={totalWels} />
+							<Chip color="info" label={response?.getDbDataTotal?.data} />
 						</Grid>
 					</Grid>
 				</AccordionSummary>
