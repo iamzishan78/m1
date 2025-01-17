@@ -288,7 +288,7 @@ const SummarySection = ({ checkId }) => {
 				{ name: 'Gross Revenue', value: `${revSummary?.grossRevenue[0]?.grossRevenue?.toFixed(2)}` },
 				{
 					name: 'Adjustments',
-					value: `${(revSummary?.ownerDeducts[0]?.ownerDeducts + revSummary?.ownerTax[0].ownerTax)?.toFixed(2)}`,
+					value: `${(revSummary?.ownerDeducts[0]?.ownerDeducts + revSummary?.ownerTax[0]?.ownerTax)?.toFixed(2)}`,
 				},
 				{ name: 'Net Revenue', value: `${revSummary?.netOwnerValue[0]?.netOwnerValue?.toFixed(2)}` },
 				{
