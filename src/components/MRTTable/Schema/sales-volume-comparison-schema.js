@@ -93,7 +93,7 @@ const SalesVolumeComparisonMeta = {
 		},
 		// Statement Volume column
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.NUMBER_COLUMN,
 			name: 'grossPropertyVolume',
 			id: 'grossPropertyVolume',
 			header: 'Statement Volume',
