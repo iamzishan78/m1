@@ -19,7 +19,7 @@ const PotentialOwnersToolbar = ({ table, tableKey }) => {
 	const isSomeRowsSelected = table.getIsSomeRowsSelected();
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
-	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original.node);
+	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 
 	const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
 

@@ -23,9 +23,17 @@ export default function vf_currency(value) {
 }
 
 export function vf_currency_to_fixed(value, toFixed) {
-	// Ensure the value has the correct number of decimal places before formatting
-	const fixedValue = value.toFixed(toFixed);
-  
+	if (!value) return null;
+
+	const numericValue = parseFloat(value);
+
+	if (isNaN(numericValue)) {
+		console.error(`Invalid value provided: ${value}`);
+		return null;
+	}
+
+	const fixedValue = numericValue.toFixed(toFixed);
+
 	var formatter = new Intl.NumberFormat('en-US', {
 		style: 'currency',
 		currency: 'USD',
