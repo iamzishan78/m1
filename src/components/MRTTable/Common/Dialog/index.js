@@ -73,6 +73,7 @@ function AllDialogs(props) {
 				isSelectAll: rest?.isSelectAll,
 				cypressDelete: testCase?.cypressDelete,
 			},
+			refetchQueries: ['getDbData', 'getDbDataTotal'],
 		}).then(
 			res => {
 				if (res?.data?.gridGenericRemove) {
