@@ -5,13 +5,13 @@ import React, {
   useRef,
   useCallback,
 } from "react";
-import { get } from "lodash";
+import { get, uniqBy } from "lodash";
 import Avatar from "react-avatar";
 import Grid from "@material-ui/core/Grid";
 import { CircularProgress, Menu, MenuItem, Tab, Tabs, Tooltip, } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
-import { useMutation, useLazyQuery } from "@apollo/client";
+import { useMutation, useLazyQuery, useQuery } from "@apollo/client";
 import {
   ThumbUp as ThumbUpIcon,
   ThumbUpAltOutlined as ThumbUpAltOutlinedIcon,
@@ -37,6 +37,7 @@ import DOMPurify from "dompurify";
 import { TOGGLECOMMENTREACTION } from "graphQL/userMutationToggleCommentReaction";
 import { globalStateController } from "hookstate/globalStateController";
 import CommentsAutoComplete from './CommentsAutoComplete';
+import { GET_COMMENT_TYPES } from "graphQL/useQueryCommentType";
 
 
 TimeAgo.addDefaultLocale(en);
@@ -377,8 +378,8 @@ export default function CommentComponent(props) {
   useEffect(() => {
     let allComments = [];
     if (dataComments && dataComments.commentsByObjectId) {
+      let activityData = [];
       if (props.activityLog && props.activityLog.length > 0) {
-        let activityData = [];
         props.activityLog
         .filter(act => (activityType === 'all' ? true : act?.type === activityType))
         .forEach(element => {
@@ -831,7 +832,7 @@ export default function CommentComponent(props) {
 						<Tab label="Comments" disabled={editCommentId} />
 						<Tab label="Activities" disabled={editCommentId} />
 					</Tabs>
-					{tab === ACTIVITY_TAB && (
+					{tab === 2 && (
 						<div>
 							<CommentsAutoComplete
 								options={typeOptions}
