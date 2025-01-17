@@ -31,36 +31,36 @@ const useStyles = makeStyles(() => ({
 const provisionFilters = [
 	{
 		label: 'Type',
-		filterKey: 'provisions.type.keyword',
+		filterKey: 'provisions.type',
 		searchFields: ['provisions.type'],
 	},
 	{
 		label: 'Applicable',
 		filterKey: 'provisions.applicable',
 		searchFields: ['provisions.applicable'],
-		customOnChange: value => (value ? value : null),
+		customOnChange: value => (value ? (value === 'Yes' ? true : false) : null),
 		custom: {
 			key_as_string: true,
 			formatedFilterOptions: [
 				{
 					label: 'Yes',
-					value: 'true',
+					value: true,
 				},
 				{
 					label: 'No',
-					value: 'false',
+					value: false,
 				},
 			],
 		},
 	},
 	{
 		label: 'Provision Value',
-		filterKey: 'provisions.value.keyword',
+		filterKey: 'provisions.value',
 		searchFields: ['provisions.value'],
 	},
 	{
 		label: 'Party Name',
-		filterKey: 'provisions.partyName.keyword',
+		filterKey: 'provisions.partyName',
 		searchFields: ['provisions.partyName'],
 	},
 ];
@@ -80,7 +80,7 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
 		onChange,
 		query: GET_DB_FILTERS,
 		searchFields: filter.searchFields,
-		filters: [{ field: 'shapeJson.properties.type.keyword', value: 'agreement' }, ...appliedFilters],
+		filters: [{ field: 'shapeJson.properties.type', value: 'agreement' }, ...appliedFilters],
 		extendSearchQuery: '',
 		custom: filter.custom,
 	};
@@ -125,15 +125,14 @@ export default function ProvisionsFilters() {
 	const changeLandProvisions = React.useMemo(
 		() =>
 			debounce((request, callback) => {
-				const { filterKey } = callback;
-				const type = 'array';
+				let { filterKey } = callback;
 				const landProvisionsFilters = [...(stateApp.landSearchFilters?.provisions || [])];
 				const _index =
 					Array.isArray(landProvisionsFilters) && landProvisionsFilters?.length > 0
 						? landProvisionsFilters.findIndex(f => f.field === filterKey)
 						: -1;
-				if (_index === -1 && request[0] !== null) {
-					landProvisionsFilters.push({ field: filterKey, value: request[0], type });
+				if (_index === -1 && request[0] != null) {
+					landProvisionsFilters.push({ field: filterKey, value: request[0], isArrayKey: true });
 				} else if (request.length > 0 && request[0] !== null) {
 					landProvisionsFilters[_index].value = request[0];
 				} else if (_index !== -1) {
