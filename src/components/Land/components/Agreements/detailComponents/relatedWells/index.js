@@ -1,18 +1,15 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
 
-import { useQuery } from '@apollo/client';
 import PropTypes from 'prop-types';
 
 import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
 import MRTTable from 'components/MRTTable';
 
-import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
-
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 import { useStyles as customStyles } from '../style';
 
@@ -76,16 +73,20 @@ export default function LagalDescription({ uniObj, agreementId }) {
 		stateValues: { tabKey: selectedTab },
 	} = tableGlobalController.useState(['tabKey']);
 
-	useQuery(GET_DB_DATA_TOTAL, {
-		variables: {
-			index: 'shapewellinterests_flat',
-			filters: [{ field: 'shape._id', value: agreementId }],
-		},
-		fetchPolicy: 'no-cache',
-		onCompleted: res => {
-			setTotalWells(res?.getDbDataTotal?.data ?? 0);
-		},
-	});
+	const relatedWellTableState =
+		tableController('RelatedWellsTable')?.useState(['data', 'isLoading'])?.stateValues || {};
+	const potentialWellTableState =
+		tableController('PotentialWellsTable')?.useState(['data', 'isLoading'])?.stateValues || {};
+
+	const tableStateValues = selectedTab ? potentialWellTableState : relatedWellTableState; // Use the correct table state based on the selected tab
+
+	useEffect(() => {
+		if (!tableStateValues.data || tableStateValues.isLoading) {
+			return;
+		}
+
+		setTotalWells(tableStateValues.data.total);
+	}, [tableStateValues.data, tableStateValues.isLoading]);
 
 	const RelatedWellsOverrideMeta = useMemo(
 		() => ({
