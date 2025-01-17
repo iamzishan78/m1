@@ -3,10 +3,6 @@ export const getPolygonString = feature => {
 		return feature;
 	}
 
-	if (feature.type === 'Feature') {
-		return getPolygonString(feature.geometry);
-	}
-
 	let polygonString = '';
 	if (feature?.geometry) {
 		if (feature.geometry.type === 'MultiPolygon') {
