@@ -44,7 +44,11 @@ function Wells({ defaultFilters = [] }) {
 
 	return (
 		<div className={classes.root}>
-			<WellsFilters filters={wellTableState.filters} setFilters={tableController('MyWellsTable').setFilters} />
+			<WellsFilters
+				filters={wellTableState.filters}
+				setFilters={tableController('MyWellsTable').setFilters}
+				clearFilter={tableController('MyWellsTable').clearFilter}
+			/>
 			<div className={classes.custom} style={{ padding: '0rem 1.5rem 0rem 1.5rem' }}>
 				<MRTTable name="MyWellsTable" />
 			</div>

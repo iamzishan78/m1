@@ -193,7 +193,7 @@ function ESAutoCompleteFilter({
 			return;
 		}
 
-		const getValue = option => option?.value || _.find(options, { label: option })?.value || option;
+		const getValue = option => option?.value ?? _.find(options, { label: option })?.value ?? option;
 		let newValue = multiple ? value.map(getValue) || [] : getValue(value);
 
 		if (type === 'boolean') {
@@ -230,9 +230,9 @@ function ESAutoCompleteFilter({
 					if (foundOption) {
 						op = foundOption;
 					}
+					return op;
 				}
-
-				return typeof op !== 'object' ? op : (op?.label ?? op?.name ?? '');
+				return op?.label ?? op?.name ?? '';
 			}}
 			loading={loading}
 			filterOptions={searchMapping[searchMode].filterOptions}
