@@ -11,7 +11,8 @@ import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_curre
 
 import { tableController } from 'hookstate/tableController';
 
-import { CURRENCY_TO_FIXED, INTEREST_TO_FIXED } from 'utils/consts';
+import { CURRENCY_TO_FIXED, INTEREST_TO_FIXED, TO_FIXED } from 'utils/consts';
+import vf_number from 'components/Shared/valueformatters/vf_number';
 
 const ACTION_COLUMN = {
 	header: ' ',
@@ -279,6 +280,15 @@ export const CommonSchema = {
 		enableSorting: true,
 		type: 'number',
 		filterVariant: 'equals',
+		Cell: ({ row, column }) => {
+			const value = row.getValue(column.id);
+
+			if (!value && value !== 0) {
+				return null;
+			}
+
+			return <>{vf_number(value, TO_FIXED)}</>;
+		},
 	},
 	CUMULATIVE_FOOTER: (field, tableKey, toFixed = INTEREST_TO_FIXED) => ({
 		Footer: () => {
