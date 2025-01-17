@@ -13,11 +13,11 @@ import DetailTabsSection from 'components/Analytics/components/Revenue/DetailTab
 import MRTTable from 'components/MRTTable';
 import CustomDates from 'components/Revenue/components/Common/CustomDates';
 import LastCheckDateFilter from 'components/Revenue/components/Common/LastCheckDateFilter';
+import { copy, deepEqual } from 'components/Shared/functions';
 import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
 
 import { GET_CHECK_DETAILS_DATA } from 'graphQL/useQueryCheckDetailsData';
-import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
-import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
+import { GET_DB_MIN_VALUE, GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from 'graphQL/useQueryGetPortfolioGrossRevenueSummary';
 
 import { tableController } from 'hookstate/tableController';
@@ -132,7 +132,7 @@ export default function RevenueAnalytics(props) {
 		'filters',
 		'data',
 	]).stateValues; // get StateValues for SalesVolumeComparisonTable
-	const [esFilters, setEsFilters] = useState(tableController('ComparisonTable').getExternalFilter());
+	const [esFilters, setEsFilters] = useState(tableController(TableKey).getExternalFilter());
 
 	const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 166px)' };
 	const [getDbMinValue] = useLazyQuery(GET_DB_MIN_VALUE, {
@@ -321,26 +321,36 @@ export default function RevenueAnalytics(props) {
 
 	const setESFilters = useCallback(
 		newFilter => {
-			if (newFilter.length === 0) {
-				tableController(TableKey).clearFilters(); // clear filter from the table state
-				// tableController(TableKey).setFilters([{ field: 'isMisMatchedInterest', value: true, type: 'term' }]);
+		let filterToAdd = []
+		// Check if `isMisMatchedInterest` exists in newFilter
+		const isMisMatchedInterestPresent = newFilter.some(filter => filter.field === 'isMisMatchedInterest');
+		// Always add the `isMisMatchedInterest` filter if not present in newFilter
+		if (!isMisMatchedInterestPresent) {
+		  filterToAdd.push({ field: 'isMisMatchedInterest', value: true, type: 'term' });
+		}
+		if (newFilter.length === 0) {
+		  tableController(TableKey).clearFilters(); // clear filter from the table state
+		  tableController(TableKey).setFilters(filterToAdd);
+		} else {
+		  tableController(TableKey).clearFilters(); // clear filter from the table state
+		
+		  newFilter.forEach(filter => {
+			const { field, value, type, columnType, searchType } = filter;
+			if (columnType === 'date') {
+				const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+				filterToAdd.push({ field, value, type, searchType, columnType, timezone });   // If 'type' is present, add an object with field, value, and type to filterToAdd
+			} else if (type) { // Check if the filter has a 'type' property
+			  filterToAdd.push({ field, value, type });   // If 'type' is present, add an object with field, value, and type to filterToAdd
 			} else {
-				let filterToAdd = [];
-				newFilter.forEach(filter => {
-					const { field, value, type, filterType } = filter;
-					if (filterType === 'date') {
-						filterToAdd.push({ field, value, type: 'advanced', searchType: 'betweenInclusive', columnType: 'date' });
-					} else if (field === 'isMisMatchedInterest') {
-						filterToAdd.push({ field, value, type });
-					} else {
-						filterToAdd.push({ field, value });
-					}
-				});
-				tableController(TableKey).setFilters(filterToAdd);
+			  filterToAdd.push({ field, value });    // If 'type' is not present, add an object with only field and value to filterToAdd
 			}
-		},
-		[TableKey]
-	);
+		  });
+		  tableController(TableKey).setFilters(filterToAdd); 
+		}
+		if (!deepEqual(copy(esFilters), copy(filterToAdd))) { // prevent from unnecessary re rendering 
+		  setEsFilters(filterToAdd);
+		}
+	}, [TableKey]);
 
 	return (
 		<>
@@ -360,6 +370,7 @@ export default function RevenueAnalytics(props) {
 					<Grid item xs md={2} style={{ marginTop: '2px', minWidth: '395px' }}>
 						<Autocomplete
 							size="small"
+							value={comparisonReport} // Controlled value
 							onChange={(event, newValue) => setComparisonReport(newValue)}
 							options={['Check Detail Comparison', 'Sales Volume vs Reported Production']}
 							renderInput={params => (
@@ -434,15 +445,29 @@ export default function RevenueAnalytics(props) {
 			)}
 
 			{tabs[tab] === 'Check Details' && (
-				<div>
-					<MRTTable name={'RevenueCheckDetailTable'} />
-				</div>
+				<Box sx={{ padding: '1em', marginLeft: '1em' }}>
+					<MRTTable name="PropertyRevenueDetailTable" overrideMeta={{
+						maxTableHeight: 'calc(100vh - 300px)',
+						isDeleteDisabled: true,
+						isNotBreadcrumbView: true, 
+						gridViewSettings: {
+							label: 'Check Details',
+							Icon: 'none',
+							cssOverride: {
+								top: '138px',
+								left: '40px',
+								marginLeft: '-25px',
+							},
+						},
+					}}
+					/>
+				</Box>
 			)}
 
 			{tabs[tab] === 'Comparisons' && (
 				<>
 					<LastCheckDateFilter
-						field="check.checkDate"
+					   	field="check.checkDate"
 						esIndex={'checkdetailsinterestscomparison_flat'}
 						esFilters={esFilters}
 						setESFilters={setESFilters}
@@ -453,6 +478,7 @@ export default function RevenueAnalytics(props) {
 						extraFitlers={['propertyGroup', 'checkNumber', 'propertyNumber']}
 						stateESKey="property."
 						isComparisonReport={true}
+						tableKey={TableKey}
 					/>
 					{comparisonReport === 'Sales Volume vs Reported Production' ? (
 						<SalesVolumeComparisonSection

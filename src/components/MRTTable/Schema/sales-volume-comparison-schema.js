@@ -13,8 +13,9 @@ const SalesVolumeComparisonMeta = {
 		pageIndex: 0,
 		pageSize: 25,
 	},
-	maxTableHeight: 'calc(100vh - 540px)',
-	height: '767px',
+	defaultSort: { field: 'flatSyncAt', order: 'desc' },
+	maxTableHeight: 'calc(100vh - 440px)',
+	height: '540px',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
 	isDeleteDisabled: true, // Disable delete functionality
@@ -92,7 +93,7 @@ const SalesVolumeComparisonMeta = {
 		},
 		// Statement Volume column
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.NUMBER_COLUMN,
 			name: 'grossPropertyVolume',
 			id: 'grossPropertyVolume',
 			header: 'Statement Volume',
@@ -168,6 +169,7 @@ const SalesVolumeComparisonMeta = {
 		{
 			...CommonSchema.STRING_COLUMN,
 			name: 'check.checkNumber.keyword',
+			accessorKey: 'check.checkNumber',
 			header: 'Check Number',
 			id: 'check.checkNumber',
 			isExternalFilter: true,

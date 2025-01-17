@@ -5,15 +5,16 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 
 import debounce from 'lodash/debounce';
+import PropTypes from 'prop-types';
 
-import { copy } from 'components/Shared/functions';
 import { AutoCompleteFilter } from 'components/Common/AutoCompleteFilter';
+import { copy } from 'components/Shared/functions';
 
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { AppContext } from 'AppContext';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	gridItem: {
 		display: 'flex',
 		flexDirection: 'column',
@@ -37,7 +38,7 @@ const provisionFilters = [
 		label: 'Applicable',
 		filterKey: 'provisions.applicable',
 		searchFields: ['provisions.applicable'],
-		customOnChange: value => (value ? (value === 'Yes' ? true : false) : null),
+		customOnChange: value => (value ? value : null),
 		custom: {
 			key_as_string: true,
 			formatedFilterOptions: [
@@ -93,7 +94,24 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
 	);
 };
 
-export default function ProvisionsFilters(props) {
+// Define prop types for AutoCompleteDropdown
+AutoCompleteDropdown.propTypes = {
+	classes: PropTypes.object.isRequired,
+	onChange: PropTypes.func.isRequired,
+	filter: PropTypes.shape({
+		label: PropTypes.string.isRequired,
+		filterKey: PropTypes.string.isRequired,
+		type: PropTypes.string,
+		searchFields: PropTypes.arrayOf(PropTypes.string).isRequired,
+		custom: PropTypes.object,
+		getOptionLabel: PropTypes.func,
+	}).isRequired,
+	filterList: PropTypes.array.isRequired,
+	index: PropTypes.number.isRequired,
+	appliedFilters: PropTypes.array.isRequired,
+};
+
+export default function ProvisionsFilters() {
 	const classes = useStyles();
 	const [stateApp, setStateApp] = useContext(AppContext);
 	const [filterList, setFilterList] = useState([[], [], [], []]);
@@ -102,15 +120,18 @@ export default function ProvisionsFilters(props) {
 		if (stateApp.landSearchFilters?.provisions?.length === 0 && filterList.find(fl => fl.length !== 0)) {
 			setFilterList([[], [], [], []]);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [stateApp.landSearchFilters?.provisions]);
 
 	const changeLandProvisions = React.useMemo(
 		() =>
-			debounce((request, callback, index) => {
-				const { filterKey, type } = callback;
-				const landProvisionsFilters = [...stateApp.landSearchFilters?.provisions];
-				const _index = landProvisionsFilters.findIndex(f => f.field === filterKey);
+			debounce((request, callback) => {
+				const { filterKey } = callback;
+				const type = 'array';
+				const landProvisionsFilters = [...(stateApp.landSearchFilters?.provisions || [])];
+				const _index =
+					Array.isArray(landProvisionsFilters) && landProvisionsFilters?.length > 0
+						? landProvisionsFilters.findIndex(f => f.field === filterKey)
+						: -1;
 				if (_index === -1 && request[0] !== null) {
 					landProvisionsFilters.push({ field: filterKey, value: request[0], type });
 				} else if (request.length > 0 && request[0] !== null) {
@@ -142,7 +163,7 @@ export default function ProvisionsFilters(props) {
 	return (
 		<Grid container item spacing={2} style={{ padding: '8px', width: '100%', margin: '0' }}>
 			{provisionFilters.map((filter, index) => (
-				<Grid item key={index} sm={12} className={classes.gridItem}>
+				<Grid item key={JSON.stringify(filter)} sm={12} className={classes.gridItem}>
 					<AutoCompleteDropdown
 						classes={classes}
 						onChange={(request, top, callback) => onFilterChange(request, callback, filter, index)}

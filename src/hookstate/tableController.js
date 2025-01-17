@@ -296,13 +296,15 @@ const tableESStateControllerHandler = state => ({
 			excludeFields,
 		});
 
+		const rowSelectId = isClientSide ? 'mrt-row-select' : 'over-ride-checkbox';
+
 		// Set default pinning and ordering
-		const defaultColumnsOrdering = ['over-ride-checkbox', 'mrt-row-numbers', ...columnOrder];
+		const defaultColumnsOrdering = [rowSelectId, 'mrt-row-numbers', ...columnOrder];
 		const defaultColumnsPinning = {
 			left: [
 				...(pinnedFields.length > 0
-					? _.concat(['over-ride-checkbox', 'mrt-row-numbers'], _.slice(pinnedFields, 1))
-					: ['over-ride-checkbox', 'mrt-row-numbers']),
+					? _.concat([rowSelectId, 'mrt-row-numbers'], _.slice(pinnedFields, 1))
+					: [rowSelectId, 'mrt-row-numbers']),
 			],
 		};
 
@@ -317,8 +319,8 @@ const tableESStateControllerHandler = state => ({
 		}
 
 		if (rest?.disableRowSelection) {
-			pull(defaultColumnsOrdering, 'over-ride-checkbox');
-			pull(defaultColumnsPinning.left, 'over-ride-checkbox');
+			pull(defaultColumnsOrdering, rowSelectId);
+			pull(defaultColumnsPinning.left, rowSelectId);
 		}
 
 		const formattedMapViewFilters = mapViewFilters
