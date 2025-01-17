@@ -39,9 +39,6 @@ import DocViewer from '../Shared/DocViewer';
 import vf_currency from '../Shared/valueformatters/vf_currency.js';
 import vf_number from '../Shared/valueformatters/vf_number.js';
 
-
-
-
 const THREE = 3;
 const FOUR = 4;
 const SIX = 6;
@@ -174,13 +171,13 @@ const useStyles = makeStyles(theme => ({
 		backgroundColor: '#4880F6',
 		padding: '0.5em',
 	},
-	content: {
+	content: ({ transactBarShowGrid }) => ({
 		flexGrow: 1,
 		top: '64px',
-		left: '425px!important',
+		left: transactBarShowGrid ? '' : '425px!important',
 		position: 'absolute',
-		width: 'calc(100% - 425px)',
-	},
+		width: transactBarShowGrid ? '100%' : 'calc(100% - 425px)',
+	}),
 }));
 
 const formatDate = date => moment.parseZone(new Date(date)).format('MM/DD/YY');
@@ -205,7 +202,7 @@ const Transact = () => {
 	});
 
 	const [dealFilter, setDealFilter] = useState('all');
-	const classes = useStyles({ dealDialog: stateApp.dealDialog });
+	const classes = useStyles({ dealDialog: stateApp.dealDialog, transactBarShowGrid: stateApp.transactBarShowGrid });
 	const cardColors = useRef({});
 
 	// const [getPipelines, { data: pipelinesData }] = useLazyQuery(GETPIPELINES);
@@ -728,7 +725,7 @@ const Transact = () => {
 			{/**
 			 * Here goes the Side Panel for Flowlines
 			 */}
-			<SidePanel />
+			{!stateApp.transactBarShowGrid && <SidePanel />}
 
 			<main className={classes.content}>
 				<TransactAppBar dealFilter={dealFilter} setDealFilter={setDealFilter} setStateApp={setStateApp} />
