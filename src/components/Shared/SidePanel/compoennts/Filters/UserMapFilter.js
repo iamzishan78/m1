@@ -129,7 +129,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 	const { control, setValue, watch } = useFormContext(); // Get form control methods
 
 	const [searchText, setSearchText] = useState('');
-
+	const [immediateSearchText, setImmediateSearchText] = useState('');
 	const debouncedSetSearchText = useMemo(() => {
 		return _.debounce(value => {
 			setSearchText(value);
@@ -138,6 +138,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 	}, []);
 
 	const handleChange = e => {
+		setImmediateSearchText(e?.target?.value || '');
 		debouncedSetSearchText(e?.target?.value || '');
 	};
 	// Lazy query to fetch filter list from the GraphQL API when required
@@ -158,6 +159,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 
 	// Debounce the filter values
 	useEffect(() => {
+		console.log(filterValues);
 		const handler = setTimeout(() => {
 			setDebouncedFilterValues(filterValues);
 		}, 1500); // Delay of 1500ms
@@ -519,7 +521,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 						isTextFieldOnly={
 							searchFilterOptions.includes(filterType?.value || filterType) && field.label === 'Filter Values'
 						}
-						searchText={searchText}
+						searchText={immediateSearchText}
 						handleChange={handleChange}
 						multiple={field.label === 'Filter Values' && (filterType?.value || filterType) === 'multiselect'}
 						isSearch={field.isSearch}

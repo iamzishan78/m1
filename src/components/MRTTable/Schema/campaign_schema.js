@@ -9,13 +9,11 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CampaignIcon from 'components/Shared/svgIcons/campaign';
-import vf_number from 'components/Shared/valueformatters/vf_number';
 
 import { UPDATE_CAMPAIGN } from 'graphQL/useMutationCampaign';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
-import { TO_FIXED } from 'utils/consts';
 import { copy } from 'utils/helper';
 
 const esIndex = 'campaigns_flat';
@@ -128,32 +126,25 @@ const CampaignMeta = {
 			isExternalFilter: true,
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.NUMBER_COLUMN,
 			name: 'unitCount',
 			id: 'unitCount',
 			header: 'Units',
 			isSearchField: false,
-			type: 'number',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.NUMBER_COLUMN,
 			name: 'totalNra',
 			id: 'totalNra',
 			header: 'Total Unit NRA',
 			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => {
-				const totalNra = row.getValue('totalNra');
-				return <>{totalNra || totalNra === 0 ? vf_number(totalNra.toFixed(TO_FIXED)) : ''}</>;
-			},
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.NUMBER_COLUMN,
 			name: 'tractCount',
 			id: 'tractCount',
 			header: 'Tracts',
 			isSearchField: false,
-			type: 'number',
 		},
 		{
 			...CommonSchema.STRING_COLUMN,

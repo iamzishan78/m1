@@ -43,9 +43,9 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const WellsFilters = ({ filters, setFilters }) => {
+const WellsFilters = ({ filters, setFilters, clearFilter }) => {
 	const classes = useStyles();
-	const onChange = (filter, index, column, esKey) => {
+	const onChange = (filter, index, column, esKey, clear) => {
 		let allFilters = JSON.parse(JSON.stringify(filters));
 		if (allFilters.length > 0) {
 			const index = allFilters.findIndex(f => f.field === column.filterKey);
@@ -58,6 +58,10 @@ const WellsFilters = ({ filters, setFilters }) => {
 			allFilters.push({ field: column.filterKey, value: column.filterList[0] });
 		}
 		allFilters = allFilters.filter(filter => filter.value);
+		if (clear && clearFilter) {
+			clearFilter(column.filterKey);
+			allFilters = allFilters.filter(filter => filter.field === column.filterKey);
+		}
 		setFilters(allFilters);
 	};
 
