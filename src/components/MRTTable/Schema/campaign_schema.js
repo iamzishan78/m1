@@ -100,7 +100,7 @@ const CampaignMeta = {
 		},
 		{
 			...CommonSchema.INITAIL_PINNED,
-			name: 'name.keyword',
+			name: 'name',
 			id: 'name',
 			header: 'Campaign Name',
 			Cell: ({ renderedCellValue, row }) => (
@@ -120,7 +120,7 @@ const CampaignMeta = {
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
-			name: 'status.keyword',
+			name: 'status',
 			id: 'status',
 			header: 'Campaign Stage',
 			isExternalFilter: true,
@@ -148,7 +148,7 @@ const CampaignMeta = {
 		},
 		{
 			...CommonSchema.STRING_COLUMN,
-			name: 'owner.name.keyword',
+			name: 'owner.name',
 			id: 'owner.name',
 			header: 'Supervisor',
 			isExternalFilter: true,
