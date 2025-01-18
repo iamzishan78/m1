@@ -876,8 +876,12 @@ function Map({
 						onDragEnd: () => {
 							isDragging = false;
 						},
-						getCursor: ({ isHovering }) =>
-							isDrawing ? 'crosshair' : isDragging ? 'grabbing' : isHovering ? 'pointer' : 'grab',
+						getCursor: ({ isHovering }) => {
+							const value = isDrawing ? 'crosshair' : isDragging ? 'grabbing' : isHovering ? 'pointer' : 'grab';
+							if (window?.mapRef?.getCanvas?.()?.style?.cursor !== value)
+								window.mapRef.getCanvas().style.cursor = value;
+							return value;
+						},
 						onClick: ({ x, y, coordinate }, { rightButton, srcEvent }) => {
 							const drawMode = window.drawRef?.getMode();
 

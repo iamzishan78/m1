@@ -174,8 +174,8 @@ export const drawBoundary = (selectedUserDefinedLayer, layer_Id) => {
 
 	const layerId = layer_Id || 'boundary-layer';
 
-	if (window.mapRef.getLayer(layerId)) {
-		window.mapRef.removeLayer(layerId);
+	if (DeckGlLayer.getLayer(layerId)) {
+		DeckGlLayer.removeLayer(layerId);
 	}
 
 	if (selectedUserDefinedLayer?.geometry) {

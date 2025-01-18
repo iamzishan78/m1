@@ -1,6 +1,6 @@
 import { ScatterplotLayer, LineLayer, PolygonLayer, TextLayer } from '@deck.gl/layers';
 import { MapboxOverlay } from '@deck.gl/mapbox';
-import { isEqual } from 'lodash';
+import { isEqual, orderBy } from 'lodash';
 
 import M1neralGeojsonLayer from './M1neralGeojsonLayer';
 
@@ -68,12 +68,29 @@ export default class DeckGlOverlay {
 	};
 
 	static setProps = layers => {
-		const allLayers = [...layers];
-		allLayers.sort((layerA, layerB) => layerA.props.position > layerB.props.position);
+		let allLayers = [...layers];
+
+		allLayers = orderBy(allLayers, ['props.position'], ['asc']);
+
 		allLayers.forEach(layer => {
 			layer.props.data = DeckGlOverlay.dataRef[layer.id];
 		});
 		window.deckOverlay.setProps({ layers: allLayers });
+	};
+
+	static getLayer = layerId => {
+		if (!window.deckOverlay) {
+			throw new Error('DeckOverlay is not initialized.');
+		}
+
+		const layers = window?.deckOverlay?._props?.layers || [];
+		const foundLayer = layers.find(layer => layer.id === layerId);
+
+		if (!foundLayer) {
+			// console.warn(`Layer with id '${layerId}' not found.`);
+		}
+
+		return foundLayer;
 	};
 
 	static addLayer = ({ layerId, type, props }) => {
@@ -92,6 +109,7 @@ export default class DeckGlOverlay {
 		const currentLayers = window.deckOverlay?._props?.layers || [];
 		currentLayers.push(newLayer);
 		DeckGlOverlay.setProps(currentLayers);
+		return newLayer;
 	};
 
 	static moveLayer = (layerId, beforeLayer) => {
