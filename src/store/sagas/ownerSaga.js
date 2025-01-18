@@ -30,6 +30,7 @@ import {
 
 import { showErrorMessage } from 'actions';
 import Api from 'api';
+import { LOD_YEAR } from 'utils/consts';
 
 function* getShapeOwnersAndCount(action) {
 	try {
@@ -139,7 +140,7 @@ function* getMapFilterShapeOwnersAndCount(action) {
 		if (wellIds?.length > 0) {
 			taxOwners = yield call(Api.query, OWNERS_BY_WELL_IDS, {
 				wellIds: wellIds,
-				selectedYear: '2023',
+				selectedYear: `${LOD_YEAR}`,
 			});
 		}
 

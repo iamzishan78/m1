@@ -190,11 +190,8 @@ const AppProvider = props => {
 		async function wait() {
 			const query = queryString.parse(window.location.search);
 
-			let tenantName = window.sessionStorage.getItem('tenantName');
-
-			if (query.tenant && globalStateController.isBypassTenant(query.tenant)) {
-				tenantName = query.tenant || tenantName;
-			}
+			let tenantName = query.tenant || window.sessionStorage.getItem('tenantName') || '';
+			const isBypassTenant = globalStateController.isBypassTenant(tenantName);
 
 			let tenant = tenantsCredentials(tenantName);
 			if (tenant) {
@@ -203,7 +200,8 @@ const AppProvider = props => {
 				tenant.apolloOriginalClientEndpoint = tenant.apolloClientEndpoint;
 				tenant.apolloClientEndpoint =
 					isDev && tenantName === 'localhost' ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
-				let myMSALObjInt = MSALObj(tenant);
+
+				let myMSALObjInt = isBypassTenant ? null : MSALObj(tenant);
 				globalStateController.updateState({ apolloClientEndpoint: tenant.apolloClientEndpoint });
 				setStateApp((state, props) => {
 					return {

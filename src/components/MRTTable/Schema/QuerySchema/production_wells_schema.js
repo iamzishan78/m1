@@ -1,6 +1,3 @@
-/* eslint-disable react/prop-types */
-import React from 'react';
-
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
 import { PRODUCTIONDETAILQUERY } from 'graphQL/useQueryProductionDetail';

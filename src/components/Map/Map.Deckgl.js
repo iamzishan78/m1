@@ -1,10 +1,10 @@
- 
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
+import MapIcon from '@material-ui/icons/Map';
 
 import { useLazyQuery, useApolloClient, useQuery } from '@apollo/client';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
@@ -21,12 +21,13 @@ import PropTypes from 'prop-types';
 import { drawShapeStyles, findBoundsMap } from 'components/MapControls/commonHelper';
 import MapControls from 'components/MapControls/MapControls';
 import SpeedDialComponent from 'components/MapControls/SpeedDialComponent';
+import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import { layersWithSelectedShapeKey } from 'components/Shared/functions/shapeLayer';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 import { GET_DB_DATA } from 'graphQL/useQueryDbQuery';
+import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 import { LAYERSETTINGSBYUSER } from 'graphQL/useQueryLayerSettingsByUser';
-import { GET_MAP_VIEWS } from 'graphQL/useQueryMapView';
 
 import { drawController } from 'hookstate/drawStateController';
 import { globalStateController } from 'hookstate/globalStateController';
@@ -36,6 +37,7 @@ import { mapControlsController } from 'hookstate/mapControlsController';
 import { mapStateController } from 'hookstate/mapStateController';
 import { navController } from 'hookstate/navStateController';
 import { popupController } from 'hookstate/popupStateController';
+import { detailCardController } from 'hookstate/detailCardController';
 
 import { baseTenantsMaps } from 'utils/data';
 import { convertToTitleCase, formatLayerForMap } from 'utils/helper';
@@ -140,6 +142,10 @@ function Map({
 		'mapStateValues'
 	);
 	const { wellListFromSearch, layerStateValues } = layerController.useState(['wellListFromSearch'], 'layerStateValues');
+	const {
+		stateValues: { currentAssetRecord },
+	} = detailCardController.useState(['currentAssetRecord'], 'stateValues');
+
 	const [stateApp, setStateApp] = useContext(AppContext);
 
 	const client = useApolloClient();
@@ -204,23 +210,25 @@ function Map({
 		useLazyQuery(ALLLAYERSETTINGSBYUSER);
 
 	// Query to fetch map views from the GraphQL API
-	useQuery(GET_MAP_VIEWS, {
+	useQuery(GET_GRID_VIEWS, {
 		variables: {
 			userId: globalStateController.getValue('user').mongoId,
+			module: 'MapView',
 		},
 		onCompleted: data => {
-			const mapViews = data?.getMapViews?.mapViews;
-			const currentMapView = mapViews?.find(view => view.isCurrent);
-			if (!globalStateController.getValue('mapView')?.selectedMapView) {
-				globalStateController.updateState({
-					mapView: {
-						selectedMapView: currentMapView,
-					},
-				});
-			}
+			const allViews = data?.getGridViews?.gridViews;
+			viewStateController('MapView').initialize({
+				client,
+				allViews,
+				Icon: MapIcon,
+				label: 'Map',
+				styleOverride: {
+					bgColor: { backgroundColor: '#0E111A' },
+					color: { color: 'white' },
+				},
+			});
 		},
 	});
-
 	/// //end/////////temporary
 
 	const fitOverBounds = () => {
@@ -449,14 +457,15 @@ function Map({
 
 	useEffect(() => {
 		const clickedFeature = layerController.getValue('clickedFeature');
+		const isGenericAsset = currentAssetRecord?.assetShape?.isGenericAssetShape;
 		if (paramId && clickedFeature?.object?.id !== paramId) {
 			try {
 				if (type === 'wells') {
 					getElasticWell(paramId);
-				} else {
+				} else if (!isGenericAsset) {
 					getCustomLayer(paramId);
 				}
-			} catch {
+			} catch (e) {
 				history.push('/');
 			}
 		}
@@ -488,7 +497,7 @@ function Map({
 			globalState.layers.set(layers);
 			stateApp.layers = layers;
 
-			const mapViewFilters = globalStateController.getValue('mapView')?.selectedMapView?.filters || [];
+			const mapViewFilters = viewStateController('MapView').getValue('selectedView')?.filters || [];
 			// for of loop on mapViewFilters
 			for (const filter of mapViewFilters) {
 				const dataSource = filter?.dataSourceName;

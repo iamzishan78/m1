@@ -499,7 +499,7 @@ export const generateFileFilters = ({
 
 	const advanceSearch = getAdvancedSearch(fileLayer.layerGeometry, mustQuery);
 
-	const filters = [{ field: 'fileId', value: [fileLayer.file, fileLayer.originalFile] }];
+	const filters = [{ field: 'fileId', value: [fileLayer.file, fileLayer.originalFile].filter(Boolean) }];
 
 	return {
 		variables: {

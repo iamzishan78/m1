@@ -1,7 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-
 import {
 	Avatar,
 	Box,
@@ -193,8 +192,8 @@ function ExpandableCard(props) {
 			transition: 'height 0.1s',
 			background: '#fff',
 			padding: '0 !important',
-			overflow: 'auto',
-			// overflowY:'hidden',
+			overflowX: 'hidden',
+			overflowY: 'auto',
 			'&::-webkit-scrollbar': {
 				width: '0.4em',
 			},
@@ -284,8 +283,9 @@ function ExpandableCard(props) {
 
 	//  UseEffects
 	useEffect(() => {
-		setTitle(props.title);
-	}, [props.title, props.targetLabel]);
+		const shapeTitle = selectedShape?.assetName || props.title;
+		setTitle(shapeTitle);
+	}, [props.title, props.targetLabel, selectedShape?.assetName]);
 
 	useEffect(() => {
 		const searchParams = new URLSearchParams(window.location.search?.replace('?', ''));
@@ -455,16 +455,18 @@ function ExpandableCard(props) {
 				{selectedShape ? (
 					<>
 						<Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
-							<Grid item>
-								<Avatar color="#1a2341">
-									<FolderIcon fontColor="#1a2341" />
-								</Avatar>
-							</Grid>
+							{!selectedShape?.isGenericAssetShape && (
+								<Grid item>
+									<Avatar color="#1a2341">
+										<FolderIcon fontColor="#1a2341" />
+									</Avatar>
+								</Grid>
+							)}
 							<Grid item>
 								<Box className="name">
 									{title.length > 70 ? `${title.substr(0, 75).toUpperCase()}...` : title.toUpperCase()}
 								</Box>
-								<Box className="description">{subTitle}</Box>
+								{!selectedShape?.isGenericAssetShape && <Box className="description">{subTitle}</Box>}
 								{targetLabel === 'unit' && <Box className="type">Unit</Box>}
 								{targetLabel === 'agreement' && (
 									<Box className="type">

@@ -1,11 +1,9 @@
-import React, { useEffect, useState, Fragment, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { Menu, MenuItem, Grid } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import Modal from '@material-ui/core/Modal';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import AddBox from '@material-ui/icons/AddBox';
@@ -34,6 +32,8 @@ import ConvertContact from 'components/Shared/svgIcons/convert_contact';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
 import { ABSTRACTGEOQUERY } from 'graphQL/useQueryAbstractGeo';
+import { ALL_CUSTOM_ASSET_INFO } from 'graphQL/useQueryAllCustomAssetInfo';
+import { ADD_RECORD_IN_RUN_TIME_MODEL } from 'graphQL/useMutationRunTimeModel';
 
 import { drawController } from 'hookstate/drawStateController';
 import { globalStateController } from 'hookstate/globalStateController';
@@ -89,6 +89,12 @@ const ShapeActionsPopup = props => {
 	const [agreementAnchorEl, setAgreementAnchorEl] = useState(null);
 	const [tractAnchorEl, setTractAnchorEl] = useState(null);
 	const [unitAnchorEl, setUnitAnchorEl] = useState(null);
+	const [mapCreationAsset, setMapCreationAsset] = useState([]);
+
+	// Query for fetching all custom assets
+	const [getAllCustomAsset, { data: allCustomAsset }] = useLazyQuery(ALL_CUSTOM_ASSET_INFO, {
+		fetchPolicy: 'no-cache',
+	});
 
 	const [getAbstractGeo, { data: abstractData }] = useLazyQuery(ABSTRACTGEOQUERY);
 	const [upsertCustomLayer, { data: customLayerInsertedData }] = useMutation(UPSERTCUSTOMLAYER, {
@@ -133,6 +139,11 @@ const ShapeActionsPopup = props => {
 			// dwarController.updateSelectedLayerFeature(dispatch,customLayer);
 			globalStateController.updateState({ reFetchLayer: customLayer });
 		},
+	});
+
+	const [addRecordInRunTimeModel] = useMutation(ADD_RECORD_IN_RUN_TIME_MODEL, {
+		fetchPolicy: 'no-cache',
+		awaitRefetchQueries: true,
 	});
 
 	const addShapeToLayerButton = useRef();
@@ -220,6 +231,19 @@ const ShapeActionsPopup = props => {
 		}
 	}, [drawState.currentFeature]);
 
+	useEffect(() => {
+		// Get all custom assets
+		getAllCustomAsset();
+	}, [getAllCustomAsset]);
+
+	useEffect(() => {
+		if (allCustomAsset) {
+			// Set map assets
+			const asset = allCustomAsset?.getAllCustomAssetInfo?.res?.filter(item => item.creationPlace === 'onMap');
+			setMapCreationAsset(asset);
+		}
+	}, [allCustomAsset]);
+
 	const saveAndOpenShapeDetail = useCallback(
 		(...props) => drawController.saveAndOpenShapeDetail(upsertCustomLayer, dispatch, history, abstractData, ...props),
 		[upsertCustomLayer, dispatch, history, abstractData]
@@ -233,6 +257,12 @@ const ShapeActionsPopup = props => {
 	const saveAndOpenParcelDetail = useCallback(
 		() => drawController.saveAndOpenParcelDetail(upsertCustomLayer, dispatch, history, abstractData),
 		[upsertCustomLayer, dispatch, history, abstractData]
+	);
+
+	const saveAndOpenMapAssetShapeDetail = useCallback(
+		(...props) =>
+			drawController.saveAndOpenMapAssetShapeDetail(addRecordInRunTimeModel, dispatch, history, abstractData, ...props),
+		[addRecordInRunTimeModel, dispatch, history, abstractData]
 	);
 
 	const deleteAOI = () => {
@@ -328,6 +358,22 @@ const ShapeActionsPopup = props => {
 				>
 					Unit Boundary
 				</MenuItem>
+
+				{/* Dynamic related map assets */}
+				{mapCreationAsset.map(option => (
+					<MenuItem
+						key={option._id}
+						value={option.tableName}
+						onClick={e => {
+							e.stopPropagation();
+							globalStateController.updateState({ currentAsset: option });
+							clearSelectedAbstracts();
+							saveAndOpenMapAssetShapeDetail(option);
+						}}
+					>
+						{option.tableName}
+					</MenuItem>
+				))}
 			</Menu>
 
 			<Menu
