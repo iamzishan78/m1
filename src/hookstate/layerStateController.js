@@ -2,6 +2,7 @@
 import { NotificationManager } from 'react-notifications';
 
 import { booleanWithin, difference, union, booleanIntersects, bboxPolygon } from '@turf/turf';
+import update from 'immutability-helper';
 import { debounce } from 'lodash';
 import { v4 as uuid } from 'uuid';
 
@@ -915,6 +916,40 @@ const layerStateControllerHandler = state => {
 			window.mapRef?.remove();
 			window.mapRef = null;
 			window.drawRef = null;
+		},
+		generateUpdateFn: (layers, value, currentLayers, field) => {
+			const updatefn = {};
+			layers.forEach(layer => {
+				if (layer.type === 'group') {
+					layer.layers.forEach(l => {
+						const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === l.identifier);
+						if (layerIndex !== -1) {
+							if (field === 'showable') {
+								updatefn[layerIndex] = { layerSettings: { [field]: { $set: value } } };
+							} else {
+								updatefn[layerIndex] = { [field]: { $set: value } };
+							}
+						}
+					});
+				} else {
+					const layerIndex = currentLayers.findIndex(clayer => clayer.identifier === layer.identifier);
+					if (layerIndex !== -1) {
+						if (field === 'showable') {
+							updatefn[layerIndex] = { layerSettings: { [field]: { $set: value } } };
+						} else {
+							updatefn[layerIndex] = { [field]: { $set: value } };
+						}
+					}
+				}
+			});
+			return updatefn;
+		},
+
+		updateProjectedLayers: ({ layer, value, field }) => {
+			const projectedLayers = layerState.projectedLayers.get({ noproxy: true });
+			const updatefn = layerController.generateUpdateFn([layer], value, projectedLayers, field);
+
+			layerController.updateState({ projectedLayers: update(projectedLayers, updatefn) });
 		},
 	};
 };

@@ -70,6 +70,7 @@ export const tableGlobalState = hookstate({
 /* -------------------------------------------------------------------------- */
 
 export const layerStateInitialState = {
+	projectedLayers: [],
 	client: null,
 	history: null,
 	boundingStates: null,

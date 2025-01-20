@@ -29,7 +29,7 @@ import { AppContext } from 'AppContext';
 import { ColorPickerStyledBox, useLayerStyle, WidthPicker } from './Common';
 import { getDefaultSettings } from '../SourceLayerManager/fileUploadHelper';
 
-function NewLayerManager(props) {
+function NewLayerManager() {
 	const [stateApp] = useContext(AppContext);
 	const sourceProps = '' + uuid() + '_source';
 
@@ -56,6 +56,7 @@ function NewLayerManager(props) {
 		setLayerClickability,
 		strokeColor,
 		setStrokeColor,
+		handleLayerChange,
 	} = useLayerStyle(layer);
 
 	const [source, setSource] = useState();
@@ -63,14 +64,16 @@ function NewLayerManager(props) {
 
 	const { globalStateValues } = globalStateController.useState(['datasets'], 'globalStateValues');
 
+	const handleClose = () => {
+		mapControlsController.updateState({ manageLayer: false });
+	};
+
 	const createLayer = () => {
 		const layerType = source.name === 'M1 Platform' ? 'data layer' : 'file layer';
 		const layerCategory = source.name === 'M1 Platform' ? 'UD layer' : selectCategory.name;
 		const layerShapeName = source.name === 'M1 Platform' ? null : selectCategory.name;
 		const identifier =
 			source.name === 'M1 Platform' ? selectCategory.label.replace('Tracts', 'Parcels') + uuid() : layerName + uuid();
-
-		const sourceProps = identifier + '_source';
 
 		addLayer({
 			variables: {
@@ -86,12 +89,10 @@ function NewLayerManager(props) {
 					layerName: layerName,
 					layerGeometry: selectCategory.layerGeometry,
 					originalFile: source.originalFile,
-					defaultSettings: getDefaultSettings(
-						selectCategory.layerGeometry,
-						layerName,
-						sourceProps,
-						selectCategory.bbox
-					),
+					defaultSettings: {
+						...handleLayerChange(),
+						bbox: selectCategory?.bbox || [],
+					},
 					layerSchema: shapeFileSchema?.getShapeFileSchema || [],
 					layerPaintProps: undefined,
 					layerSettings: undefined,
@@ -103,10 +104,6 @@ function NewLayerManager(props) {
 		}).then(() => {
 			handleClose();
 		});
-	};
-
-	const handleClose = () => {
-		mapControlsController.updateState({ manageLayer: false });
 	};
 
 	useEffect(() => {
@@ -216,7 +213,7 @@ function NewLayerManager(props) {
 										control={
 											<Switch
 												checked={layerClickability}
-												onChange={e => setLayerClickability(!layerClickability)}
+												onChange={() => setLayerClickability(!layerClickability)}
 												size="small"
 											/>
 										}
