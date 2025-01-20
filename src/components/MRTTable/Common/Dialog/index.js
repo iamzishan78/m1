@@ -28,13 +28,10 @@ function AllDialogs(props) {
 	const tableKey = rest?.tableKey || props.tableKey;
 
 	const {
-		stateValues: { refetchQueries, isClientSide },
+		stateValues: { refetchQueries = [], isClientSide },
 	} = tableController(props.tableKey).useState(['refetchQueries', 'isClientSide']);
 
-	const [gridGenericRemove] = useMutation(GRID_GENERIC_REMOVE, {
-		awaitRefetchQueries: true,
-		refetchQueries,
-	});
+	const [gridGenericRemove] = useMutation(GRID_GENERIC_REMOVE);
 
 	const handleCloseDialog = () => {
 		tableGlobalController.updateState({
@@ -73,7 +70,8 @@ function AllDialogs(props) {
 				isSelectAll: rest?.isSelectAll,
 				cypressDelete: testCase?.cypressDelete,
 			},
-			refetchQueries: ['getDbData', 'getDbDataTotal'],
+			refetchQueries: ['getDbData', 'getDbDataTotal', ...refetchQueries],
+			awaitRefetchQueries: true,
 		}).then(
 			res => {
 				if (res?.data?.gridGenericRemove) {
@@ -101,7 +99,9 @@ function AllDialogs(props) {
 		}
 	};
 
-	if (rest?.tableKey && rest?.tableKey !== props?.tableKey) return null;
+	if (rest?.tableKey && rest?.tableKey !== props?.tableKey) {
+		return null;
+	}
 
 	return (
 		<>
