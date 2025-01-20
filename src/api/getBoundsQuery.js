@@ -51,7 +51,7 @@ const handleQuery = (queryHandler, onData) => {
 		return;
 	}
 
-	return new Promise(async (resolve, reject) => {
+	return new Promise(resolve => {
 		const query = client.watchQuery({
 			query: queryString,
 			variables: queryHandler.variables,
@@ -76,6 +76,7 @@ const handleQuery = (queryHandler, onData) => {
 
 				return resolve(data);
 			}
+			return null;
 		});
 	});
 };
@@ -190,6 +191,7 @@ const getBoundsQuery = async ({
 
 		// Initialize the base projection
 		variables.project = {
+			layer: 1,
 			[geoField]: 1,
 			_id: 1,
 		};
@@ -197,10 +199,10 @@ const getBoundsQuery = async ({
 		// Add layer-specific fields
 		if (isFileLayer) {
 			Object.assign(variables.project, {
-				layer: 1,
 				name: 1,
 				fileId: 1,
 				type: 1,
+				'properties.layerShapeName': 1,
 			});
 		} else if (isWellsQuery) {
 			Object.assign(variables.project, {
@@ -217,6 +219,8 @@ const getBoundsQuery = async ({
 				'shapeJson.properties.shapeSubTitle': 1,
 				'shapeJson.properties.shapeLabel': 1,
 				'shapeJson.properties.layerType': 1,
+				'shapeJson.properties.sdType': 1,
+				'shapeJson.properties.layerSubType': 1,
 				'shapeJson.properties.type': 1,
 				'shapeJson.properties.uName': 1,
 				'shapeJson.properties.agreementName': 1,

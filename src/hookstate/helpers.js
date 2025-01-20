@@ -1,10 +1,11 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
 
-import _ from 'lodash';
+import _, { get } from 'lodash';
 
 import DataType from 'components/Common/DataType';
 import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';
+import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import {
 	customFilterOptions,
 	dateFilterOptions,
@@ -15,14 +16,13 @@ import {
 	stringFilterOptions,
 } from 'components/MRTTable/utils/data';
 import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
+import { formatDate } from 'components/Shared/functions';
 import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 import { tableController } from 'hookstate/tableController';
 
 import { SMALL_TIMEOUT } from 'utils/consts';
-
-import { globalStateController } from './globalStateController';
 
 export const handleVisiblityMenu = () => {
 	const interval2 = setInterval(() => {
@@ -111,14 +111,51 @@ export const handleMRTSchema = ({
 	}
 
 	// Syncing map views with generic grids
-	const mapView = globalStateController.getValue('mapView');
-	const selectedMapViewFilters = mapView?.selectedMapView?.filters || [];
+	const selectedMapView = viewStateController('MapView').getValue('selectedView');
+	const selectedMapViewFilters = selectedMapView?.filters || [];
 
 	const dataSourceViews = selectedMapViewFilters?.filter(view => layerIdentifier === view.dataSourceName);
 	const mapViewFilters =
 		dataSourceViews?.map(view => getFormattedFilterBasedOnType(view.filterType, view.fieldName, view.filterValues)) ||
 		[];
 	const _TableSchema = _Schema.map(schemaColumn => {
+		if (!schemaColumn.accessorFn) {
+			let defaultValue = null;
+
+			switch (schemaColumn.type) {
+				case 'string':
+				case 'number':
+				case 'mongoID':
+				case 'boolean':
+				case 'date':
+					defaultValue = '';
+					break;
+
+				case 'array':
+					defaultValue = [];
+					break;
+
+				default:
+					break;
+			}
+
+			schemaColumn.accessorFn = row => {
+				let value = get(row, schemaColumn.id) ?? defaultValue;
+
+				if (isClientSide) {
+					switch (schemaColumn.type) {
+						case 'date':
+							value = formatDate(value);
+							break;
+
+						default:
+							break;
+					}
+				}
+				return value;
+			};
+		}
+
 		if (schemaColumn.header && !schemaColumn.showInLast) {
 			const HeaderComp = () => {
 				const { header, type } = schemaColumn;
@@ -150,12 +187,19 @@ export const handleMRTSchema = ({
 					options,
 					tableKey,
 					name: schemaColumn.accessorKey || schemaColumn.id,
+					schemaColumn,
 					controller: tableController,
 					layerIdentifier,
 				});
 			}
 
-			return schemaColumn;
+			const updatedFilterModes = tableController(tableKey).setInitialFilterMode(
+				schemaColumn,
+				schemaColumn.type === 'number' ? 'equals' : 'singleselect',
+				schemaColumn.id
+			);
+
+			return { ...schemaColumn, ...updatedFilterModes };
 		}
 
 		if (schemaColumn.filter && !schemaColumn.Filter) {
@@ -256,6 +300,7 @@ export const handleMRTSchema = ({
 				options,
 				tableKey,
 				name: schemaColumn.accessorKey || schemaColumn.id,
+				schemaColumn,
 				controller: tableController,
 				layerIdentifier,
 			});

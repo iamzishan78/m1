@@ -17,11 +17,11 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import AutocompEntityNamesVirtualizeList from 'components/MRTTable/Common/Components/AutocompEntityNamesVirtualizeList';
 import { extractValueRecursively } from 'components/MRTTable/utils/helper';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import parcelOwnerForm from 'components/Shared/FormsFieldsData/RightDialogsSchema/ParcelDetailInterestOwner/parcel_interest_owner_form_schema';
 import { setStateIfDeepEqual } from 'components/Shared/functions';
-import AutocompEntityNamesVirtualizeList from 'components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 
 import { ADDCONTACT } from 'graphQL/useMutationAddContact';
@@ -291,13 +291,7 @@ function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
 			});
 			updateParcelOwner({
 				variables: { parcelOwner },
-				refetchQueries: [
-					'getparcelOwners',
-					'getContactParcelInterests',
-					'getContactParcelInterest',
-					'getDbData',
-					'getCustomLayer',
-				],
+				refetchQueries: ['getparcelOwners', 'getDbData', 'getCustomLayer'],
 				awaitRefetchQueries: true,
 			});
 		} else {
@@ -312,13 +306,7 @@ function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
 			});
 			addOwnerToAParcel({
 				variables: { parcelOwner },
-				refetchQueries: [
-					'getCustomLayer',
-					'getparcelOwners',
-					'getContactParcelInterests',
-					'getContactParcelInterest',
-					'getDbData',
-				],
+				refetchQueries: ['getCustomLayer', 'getparcelOwners', 'getDbData'],
 				awaitRefetchQueries: true,
 			});
 		}

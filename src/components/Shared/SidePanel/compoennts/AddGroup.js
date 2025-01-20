@@ -21,10 +21,8 @@ import SearchIcon from '@material-ui/icons/Search';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { v4 as uuid } from 'uuid';
-// components
 
-// graphql enpoints
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 
 import { ADD_LAYER_GROUP, REMOVE_LAYER_GROUP, UPDATE_LAYER_GROUP } from 'graphQL/useMutationLayerGroup';
 import { GET_LAYER_GROUPS } from 'graphQL/useQueryLayerGroup';
@@ -166,7 +164,7 @@ export default function AddGroup({ userId, above }) {
 		setSearchValue('');
 	}, [tabValue]);
 
-	const handleClick = event => {
+	const handleClick = () => {
 		const ele = document.getElementById('layerGroupMenuBtn')?.getBoundingClientRect();
 
 		setMenuOpen(true);
@@ -301,7 +299,7 @@ const LayerGroupItem = ({ layerGroup }) => {
 					layerGroupId: layerGroup.groupId,
 					layerGroupName: e.target.value,
 				},
-			}).then(res => {
+			}).then(() => {
 				setEditing(false);
 			});
 		}
@@ -354,15 +352,13 @@ const LayerGroupItem = ({ layerGroup }) => {
 				)}
 			</Grid>
 			{openDialog && (
-				<DeleteConfirmationDialogContent
+				<DeleteConfirmationDialog
 					header={'Delete Layer Group'}
 					onClose={() => setOpenDialog(false)}
 					deleteFunc={deleteGroup}
-					m1nSelectedRowsIds={null}
-					setM1nSelectedRowsIndexes={() => {}}
 				>
-					Do you want to delete "{layerGroup.name}" layer group?
-				</DeleteConfirmationDialogContent>
+					Do you want to delete &quot;{layerGroup.name}&quot; layer group?
+				</DeleteConfirmationDialog>
 			)}
 		</Grid>
 	);

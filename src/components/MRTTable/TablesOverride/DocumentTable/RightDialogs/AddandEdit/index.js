@@ -78,7 +78,7 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 					<DetailsPanel selectedDocument={selectedDocument} handleClose={handleClose} tableKey={tableKey} />
 				),
 				props: {},
-				onClick: () => {},
+				onClick: () => { },
 			},
 			{
 				name: 'Wells',
@@ -96,7 +96,7 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 				),
 				Component: () => <AssociatedWells selectedDocument={selectedDocument} />,
 				props: {},
-				onClick: () => {},
+				onClick: () => { },
 			},
 			{
 				name: 'Information',
@@ -113,7 +113,7 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 				),
 				Component: () => <Information selectedDocument={selectedDocument} />,
 				props: {},
-				onClick: () => {},
+				onClick: () => { },
 			},
 		],
 		[selectedDocument, wellsCount]
@@ -134,7 +134,7 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 	useEffect(() => {
 		slideOutState.views.set(views);
 		slideOutState.view.set(views[0]);
-	}, [wellsCount, selectedDocument]);
+	}, [selectedDocument, wellsCount]);
 
 	return <Slideout show={true} deleteFunc={deleteFunc} />;
 }

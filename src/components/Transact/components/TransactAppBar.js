@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { Typography, AppBar, Button, ButtonGroup, Tooltip, IconButton } from '@material-ui/core';
@@ -6,12 +6,16 @@ import { makeStyles } from '@material-ui/core/styles';
 import Add from '@material-ui/icons/Add';
 import SettingsIcon from '@material-ui/icons/Settings';
 
-import { setFlowState } from 'actions';
+import PropTypes from 'prop-types';
 
-import PipelineCustomDialog from './PipelineCustomizeDialog';
 import { tableController } from 'hookstate/tableController';
 
-const useStyles = makeStyles(theme => ({
+import { setFlowState } from 'actions';
+import { AppContext } from 'AppContext';
+
+import PipelineCustomDialog from './PipelineCustomizeDialog';
+
+const useStyles = makeStyles(() => ({
 	root: {
 		minHeight: '50px',
 		maxHeight: '72px',
@@ -167,7 +171,8 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
+const TransactAppBar = ({ dealFilter, setDealFilter }) => {
+	const [stateApp, setStateApp] = useContext(AppContext);
 	const classes = useStyles();
 	const dispatch = useDispatch();
 	const { pipeToShow, selectedPipe, openPipeDialog } = useSelector(({ Flow }) => Flow);
@@ -214,16 +219,19 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
 								</IconButton>
 							</Tooltip>
 						</div>
-						<div>
-							<Button
-								disableRipple={!pipeToShow}
-								onClick={pipeToShow ? handleClickAddDeal : null}
-								className={pipeToShow ? classes.newDealAction : classes.newDealActionDisabled}
-								startIcon={<Add />}
-							>
-								{selectedPipe?.flowLineType === 'general' ? 'New Task' : 'Add Deal'}
-							</Button>
-						</div>
+						{stateApp.dealDisplayType !== 'table' && (
+							<div>
+								<Button
+									disableRipple={!pipeToShow}
+									onClick={pipeToShow ? handleClickAddDeal : null}
+									className={pipeToShow ? classes.newDealAction : classes.newDealActionDisabled}
+									startIcon={<Add />}
+								>
+									{selectedPipe?.flowLineType === 'general' ? 'New Task' : 'Add Deal'}
+								</Button>
+							</div>
+						)}
+
 						<ButtonGroup style={{ minHeight: 36 }}>
 							{(selectedPipe?.flowLineType === 'general'
 								? ['all', 'open', 'closed']
@@ -235,8 +243,11 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
 									className={`${classes.filterToggleBtn} ${dealFilter === filter && classes.activeBtn}`}
 									onClick={() => {
 										setDealFilter(filter);
-										if (filter === 'all') Controller.clearFilter('status');
-										else Controller.setFilter({ field: 'status', value: filter });
+										if (filter === 'all') {
+											Controller.clearFilter('status');
+										} else {
+											Controller.setFilter({ field: 'status', value: filter });
+										}
 									}}
 								>
 									{filter.capitalize()}
@@ -249,6 +260,11 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
 			</AppBar>
 		</>
 	);
+};
+
+TransactAppBar.propTypes = {
+	dealFilter: PropTypes.string.isRequired,
+	setDealFilter: PropTypes.func.isRequired,
 };
 
 export default TransactAppBar;

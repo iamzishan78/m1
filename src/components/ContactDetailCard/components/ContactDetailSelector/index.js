@@ -295,13 +295,14 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 	const RelatedDocumentsOverrideMeta = useMemo(
 		() => ({
 			maxTableHeight: 'calc(50vh - 100px)',
+			gridViewSettings: null,
+			fetchMetaData: null,
 			defaultFilters: [{ field: 'contacts._id', value: contactData?._id }],
 			deletedKeys: {
 				mainRecord: { key: '_id' },
 				parentRecord: { value: contactData?._id },
 			},
 			customValue: { parentRecord: contactData?._id },
-			columnReordering: false,
 		}),
 		[contactData?._id]
 	);
@@ -315,6 +316,14 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 		}),
 		[contactData?._id]
 	);
+
+	const RelatedDealsOverrideMeta = useMemo(() => {
+		return {
+			maxTableHeight: 'calc(50vh - 260px)',
+			defaultFilters: [{ field: 'relatedContacts._id', value: contactData._id }],
+			excludeFields: ['createBy', 'createAt', 'lastUpdateBy', 'lastUpdateAt'],
+		};
+	}, [contactData._id]);
 
 	return (
 		<div className={classes.card}>
@@ -380,7 +389,12 @@ function MapGridCard({ contactData, purchaseData, handleQuickActionActivity }) {
 										overrideMeta={relatedTractInterestOverride}
 									/>
 								)}
-								{searchTapValue.value === 'deals' && <ContactDealsProvider />}
+								{searchTapValue.value === 'deals' && (
+									<>
+										<ContactDealsProvider />
+										<MRTTable name="RelatedDealsTable" overrideMeta={RelatedDealsOverrideMeta} />
+									</>
+								)}
 								{searchTapValue.value === 'documents' && (
 									<DrawerContextProvider>
 										<RelatedDocumentsTable

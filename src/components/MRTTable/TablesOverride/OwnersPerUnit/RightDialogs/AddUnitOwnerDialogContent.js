@@ -145,6 +145,7 @@ export default function AddUnitOwnerDialogContent({
 
 	useEffect(() => {
 		if (selectedRow) {
+			selectedRow.name = selectedRow?.contact?.entityDetail?.name || selectedRow?.name;
 			const filteredSelectedRow = _.pick(selectedRow, Object.keys(unitInterestOwnerState));
 			const rowData = _.merge({}, unitInterestOwnerState, filteredSelectedRow);
 

@@ -1,5 +1,10 @@
+/* eslint-disable react/prop-types */
+import React from 'react';
+
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+
+import { TO_FIXED } from 'utils/consts';
 
 import RelatedBillingPartiesToolbar from '../TablesOverride/RelatedBillingPartiesTable/RelatedBillingPartiesToolbar';
 
@@ -16,23 +21,21 @@ const RelatedBillingPartiesMeta = {
 	maxTableHeight: 'calc(100vh - 550px)',
 	CustomToolBar: RelatedBillingPartiesToolbar,
 	isInFiniteScroll: true,
-	columnReordering: false,
 	isGeneric: false,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
-			accessorKey: 'id',
+			id: 'id',
 		},
 		{
 			...CommonSchema.HIDDEN,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'billingParties.name.keyword',
-			accessorFn: row => row?.billingParties?.name,
 			id: 'billingParties.name',
 			header: 'Billing Party Name',
 			isArrayKey: true,
@@ -66,9 +69,8 @@ const RelatedBillingPartiesMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'billingParties.address.keyword',
-			accessorFn: row => row?.billingParties?.address,
 			id: 'billingParties.address',
 			header: 'Billing Party Address',
 			isArrayKey: true,
@@ -83,9 +85,8 @@ const RelatedBillingPartiesMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'billingParties.allocation.keyword',
-			accessorFn: row => row?.billingParties?.allocation,
 			id: 'billingParties.allocation',
 			header: 'Billing Party Allocation',
 			type: 'number',
@@ -101,13 +102,12 @@ const RelatedBillingPartiesMeta = {
 			},
 			Cell: ({ row }) => {
 				const value = row.original?.billingParties?.allocation;
-				return value ? `${Number(value).toFixed(2)}%` : value === 0 ? '0%' : '';
+				return value ? `${Number(value).toFixed(TO_FIXED)}%` : value === 0 ? '0%' : '';
 			},
 		},
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'billingParties.amount.keyword',
-			accessorFn: row => row?.billingParties?.amount,
 			id: 'billingParties.amount',
 			header: 'Billing Party Amount',
 			type: 'number',
@@ -123,9 +123,8 @@ const RelatedBillingPartiesMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'billingParties.status.keyword',
-			accessorFn: row => row?.billingParties?.status,
 			id: 'billingParties.status',
 			header: 'Status',
 			isArrayKey: true,

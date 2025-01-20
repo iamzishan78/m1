@@ -20,15 +20,14 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 
 import onFeatureClick from 'components/Map/DeckGL/helpers/onFeatureClick';
 import ExpandableSearch from 'components/Shared/Forms/Fields/ExpandableSearch';
 import LayerSelectionIcon from 'components/Shared/svgIcons/layerSelection';
-
-// contexts
 import capitalizeFirstLetter from 'components/Shared/valueformatters/capitalize-first-letter';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {},
 	card: {
 		position: props => props.position,
@@ -134,6 +133,8 @@ const includes = (value, keys) => {
 	return val;
 };
 
+const ELIPSE_LENGTH = 38;
+
 function LayerSelectionPopup(props) {
 	const classes = useStyles(props);
 	const [search, setSearch] = useState('');
@@ -147,44 +148,46 @@ function LayerSelectionPopup(props) {
 	const getLayerName = layer => {
 		const object = layer.object || layer;
 
-		if (object.properties) {
-			const properties = object?.properties;
-
-			const labels = [];
-
-			switch (layer.sourceKey) {
-				case 'Wells':
-				case 'My Wells':
-					labels.push(properties.api);
-					labels.push(properties.wellName);
-					break;
-
-				case 'Parcels':
-				case 'Area of Interest':
-					labels.push(properties.shapeLabel || properties.label);
-					break;
-
-				case 'Units':
-					labels.push(properties.uNumber);
-					labels.push(properties.shapeLabel || properties.label);
-					break;
-
-				case 'Recent Submitted Permits':
-					labels.push(properties.PermitId);
-					break;
-
-				default:
-					if (properties.layerShapeName) {
-						labels.push(properties.Unit_Name || properties.layerShapeName || layer.layer.id);
-					} else {
-						labels.push(properties.agreementNumber);
-						labels.push(properties.agreementName);
-					}
-					break;
-			}
-
-			return labels.filter(Boolean).join(' - ');
+		if (!object.properties) {
+			return '';
 		}
+
+		const properties = object?.properties;
+
+		const labels = [];
+
+		switch (layer.sourceKey) {
+			case 'Wells':
+			case 'My Wells':
+				labels.push(properties.api);
+				labels.push(properties.wellName);
+				break;
+
+			case 'Parcels':
+			case 'Area of Interest':
+				labels.push(properties.shapeLabel || properties.label);
+				break;
+
+			case 'Units':
+				labels.push(properties.uNumber);
+				labels.push(properties.shapeLabel || properties.label);
+				break;
+
+			case 'Recent Submitted Permits':
+				labels.push(properties.PermitId);
+				break;
+
+			default:
+				if (properties.layerShapeName) {
+					labels.push(properties.Unit_Name || properties.layerShapeName || layer.layer.id);
+				} else {
+					labels.push(properties.agreementNumber);
+					labels.push(properties.agreementName);
+				}
+				break;
+		}
+
+		return labels.filter(Boolean).join(' - ');
 	};
 
 	const selectLayer = layer => {
@@ -201,16 +204,32 @@ function LayerSelectionPopup(props) {
 	if (search) {
 		selectionLayers = selectionLayers.filter(selectionLayer => {
 			const properties = selectionLayer?.object?.properties;
-			if (selectionLayer.sourceKey === 'Wells') {
-				return includes(search, [properties.api, properties.wellName]);
-			} else if (selectionLayer.sourceKey === 'Parcels') {
-				return includes(search, [properties.shapeLabel]);
-			} else if (selectionLayer.sourceKey === 'Units') {
-				return includes(search, [properties.uNumber, properties.shapeLabel]);
-			} else if (selectionLayer.sourceKey === 'Recent Submitted Permits') {
-				return includes(search, [properties.PermitId]);
-			} else {
-				return includes(search, [properties.agreementNumber, properties.agreementName]);
+
+			if (!properties) {
+				return true;
+			}
+
+			switch (selectionLayer.sourceKey) {
+				case 'Wells':
+				case 'My Wells':
+					return includes(search, [properties.api, properties.wellName]);
+
+				case 'Parcels':
+				case 'Area of Interest':
+					return includes(search, [properties.shapeLabel || properties.label]);
+
+				case 'Units':
+					return includes(search, [properties.uNumber, properties.shapeLabel || properties.label]);
+
+				case 'Recent Submitted Permits':
+					return includes(search, [properties.PermitId]);
+
+				default:
+					if (properties.layerShapeName) {
+						return includes(search, [properties.Unit_Name || properties.layerShapeName || selectionLayer.layer?.id]);
+					}
+
+					return includes(search, [properties.agreementNumber, properties.agreementName]);
 			}
 		});
 	}
@@ -297,7 +316,7 @@ function LayerSelectionPopup(props) {
 						Object.keys(groupFeatures).map(key => (
 							<Accordion key={key} defaultExpanded={true} className={classes.accordian} data-testid={`${key}-group`}>
 								<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
-									{getSourceName(key).length > 38 ? (
+									{getSourceName(key).length > ELIPSE_LENGTH ? (
 										<Tooltip title={getSourceName(key)}>
 											<Typography className={classes.heading}>{getSourceName(key)}</Typography>
 										</Tooltip>
@@ -326,5 +345,11 @@ function LayerSelectionPopup(props) {
 		</React.Fragment>
 	);
 }
+
+LayerSelectionPopup.propTypes = {
+	selectionLayers: PropTypes.arrayOf(PropTypes.object).isRequired,
+	coordinate: PropTypes.arrayOf(PropTypes.number).isRequired,
+	onFeatureClick: PropTypes.func.isRequired,
+};
 
 export default React.memo(LayerSelectionPopup);

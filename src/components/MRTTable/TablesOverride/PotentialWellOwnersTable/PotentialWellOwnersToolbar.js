@@ -11,6 +11,7 @@ import ToolbarButton from 'components/Shared/ui/ToolbarButton';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
 import { calculateStandardNraForUnit } from 'utils/calculatedNraHelper';
+import { LOD_YEAR, LOD_YEAR_OPTIONS } from 'utils/consts';
 
 const PotentialOwnersToolbar = ({ table, tableKey }) => {
 	const Controller = tableController(tableKey);
@@ -60,8 +61,8 @@ const PotentialOwnersToolbar = ({ table, tableKey }) => {
 	return (
 		<div style={{ display: 'flex', alignItems: 'center' }}>
 			<SelectFilter
-				options={[2019, 2020, 2021, 2022, 2023]}
-				initialValue={2023}
+				options={LOD_YEAR_OPTIONS}
+				initialValue={LOD_YEAR}
 				onValueChange={year => {
 					updateCustomProps({ year });
 					table.resetRowSelection();

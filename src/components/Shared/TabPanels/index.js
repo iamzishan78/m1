@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const TabPanels = ({ panels, value, ignoreUnmount }) => {
+const TabPanels = ({ panels, value, ignoreUnmount, isGenericDetail }) => {
 	const classes = useStyles();
 
 	useTabedTablesUnmount(ignoreUnmount);
@@ -23,7 +23,7 @@ const TabPanels = ({ panels, value, ignoreUnmount }) => {
 		panels &&
 		panels.length &&
 		panels.map((panel, i) => (
-			<TabPanel key={i} value={value} index={i} className={classes.tapsPanels}>
+			<TabPanel key={i} value={value} index={i} className={classes.tapsPanels} isGenericDetail={isGenericDetail}>
 				{panel}
 			</TabPanel>
 		))
@@ -31,7 +31,7 @@ const TabPanels = ({ panels, value, ignoreUnmount }) => {
 };
 
 export const TabPanel = props => {
-	const { children, value, index, ...other } = props;
+	const { children, value, isGenericDetail, index, ...other } = props;
 
 	return (
 		<div
@@ -41,7 +41,11 @@ export const TabPanel = props => {
 			aria-labelledby={`simple-tab-${index}`}
 			{...other}
 		>
-			{value === index && <Box p={3}>{children}</Box>}
+			{value === index && (
+				<Box p={3} style={isGenericDetail ? { height: '100%' } : {}}>
+					{children}
+				</Box>
+			)}
 		</div>
 	);
 };

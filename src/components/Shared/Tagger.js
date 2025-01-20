@@ -301,9 +301,6 @@ export default function Tags(props) {
 						'getObjectsFromTagsArray',
 						'getWellsIdsFromTagsArray',
 						'getOwnersIdsFromTagsArray',
-						'getContactsFilterOptions',
-						'getContactWellInterestsFilterOptions',
-
 						'getDbData',
 					],
 					awaitRefetchQueries: true,
@@ -329,9 +326,6 @@ export default function Tags(props) {
 							'getWellsIdsFromTagsArray',
 							'getOwnersIdsFromTagsArray',
 							'getTagsByObjectsIds',
-							'getContactsFilterOptions',
-							'getContactWellInterestsFilterOptions',
-
 							'getDbData',
 						],
 						awaitRefetchQueries: true,
@@ -372,8 +366,6 @@ export default function Tags(props) {
 					'getOwnersIdsFromTagsArray',
 					'getTagsByObjectsIds',
 					'getPaginatedContacts',
-					'getContactsFilterOptions',
-
 					'getDbData',
 				],
 				awaitRefetchQueries: true,
@@ -397,8 +389,6 @@ export default function Tags(props) {
 						'getOwnersIdsFromTagsArray',
 						'getTagsByObjectsIds',
 						'getPaginatedContacts',
-						'getContactsFilterOptions',
-
 						'getDbData',
 					],
 					awaitRefetchQueries: true,

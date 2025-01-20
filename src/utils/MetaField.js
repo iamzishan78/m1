@@ -25,7 +25,7 @@ import { arrayMoveImmutable } from 'array-move';
 import omit from 'lodash/omit';
 import PropTypes from 'prop-types';
 
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 
 import { ADD_META_DATA } from 'graphQL/useMutationAddMetaData';
 import { UPDATE_META_DATA } from 'graphQL/useMutationUpdateMetaData';
@@ -369,7 +369,7 @@ const MetaField = ({
 					isDeleted: true,
 				},
 			},
-		}).then(res => {
+		}).then(() => {
 			handleClose();
 		});
 	};
@@ -803,23 +803,21 @@ const MetaField = ({
 					fullWidth={false}
 					maxWidth="sm"
 				>
-					<DeleteConfirmationDialogContent
+					<DeleteConfirmationDialog
 						header={'Delete Metadata Field'}
 						onClose={() => setDeleteDialogOpen(false)}
 						deleteFunc={() => handleDeleteMetaData()}
-						m1nSelectedRowsIds={null}
-						setM1nSelectedRowsIndexes={() => {}}
 					>
 						<p>This will permanently delete the selected metadata field and remove it from the application.</p>
 						<p> Note: This action cannot be undone.</p>
-					</DeleteConfirmationDialogContent>
+					</DeleteConfirmationDialog>
 				</Dialog>
 			)}
 		</>
 	);
 };
 
-const useSortableStyles = makeStyles(theme => ({
+const useSortableStyles = makeStyles(() => ({
 	itemContainer: {
 		width: '100%',
 		display: 'flex',

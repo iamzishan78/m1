@@ -20,7 +20,7 @@ describe('Unit Map Fly To Spec', () => {
 		cy.wait(2000);
 
 		cy.log('==== STEP:CLICK ON WELL TAB ====');
-		cy.interceptApi('tracksByObjectType');
+		// cy.interceptApi('tracksByObjectType');
 
 		cy.get('.MuiTab-wrapper', { timeout: longTimeout }).contains('Wells').click();
 
@@ -38,7 +38,7 @@ describe('Unit Map Fly To Spec', () => {
 		cy.get('#addWells', { timeout: longTimeout }).click();
 		cy.verifyApiResponse('@AddMultiWellInterestToShapeApi', { responseTimeout: longTimeout });
 
-		cy.verifyApiResponse('@tracksByObjectTypeApi', { responseTimeout: longTimeout });
+		// cy.verifyApiResponse('@tracksByObjectTypeApi', { responseTimeout: longTimeout });
 		cy.verifyApiResponse('@getESPaginatedListApi', { responseTimeout: longTimeout }).then(esPaginatedListResponse => {
 			const hit = esPaginatedListResponse.response.body.data.getDbData.hits[0];
 

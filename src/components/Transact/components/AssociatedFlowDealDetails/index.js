@@ -160,7 +160,9 @@ function AssociatedFlowDetails(props) {
 
 	const relatedUnitInterestOverride = useMemo(
 		() => ({
-			tableHeading: 'Unit Interests',
+			defaultHeader: {
+				label: 'Unit Interests',
+			},
 			maxTableHeight: 'calc(50vh - 100px)',
 			defaultFilters: [
 				{ field: 'contact._id', value: props.contacts },
@@ -175,7 +177,9 @@ function AssociatedFlowDetails(props) {
 
 	const relatedTractInterestOverride = useMemo(
 		() => ({
-			tableHeading: 'Tract Interests',
+			defaultHeader: {
+				label: 'Tract Interests',
+			},
 			maxTableHeight: 'calc(50vh - 100px)',
 			defaultFilters: [
 				{ field: 'contact._id', value: props.contacts },

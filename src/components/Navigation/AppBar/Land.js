@@ -2,15 +2,14 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { Grid, Typography, Button } from '@material-ui/core';
-import { Add } from '@material-ui/icons';
+import { Grid, Typography } from '@material-ui/core';
 
 import { useMutation } from '@apollo/client';
 import hat from 'hat';
 
 import { SIDE_PANEL_MENU_ITEMS_LIST } from 'components/Land/index';
+import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown';
 import LandSearch from 'components/Navigation/components/LandSearch';
-import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
 
 import { UPSERTCUSTOMLAYER } from 'graphQL/useMutationUpsertCustomLayer';
 
@@ -74,7 +73,6 @@ export default function LandAppBar(props) {
 				},
 			},
 		];
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeModule]);
 
 	return (

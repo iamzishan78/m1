@@ -79,27 +79,27 @@ const CustomAutocomplete = ({
 	const classes = useStyles();
 
 	if (type === 'date') {
-		const handleDateChange = (index, value) => {
-			const updatedValue = [...(field.value || [])]; // Ensure the array is initialized
-			updatedValue[index] = value; // Update the specific index (0 for "from", 1 for "to")
+		const handleDateChange = (key, value) => {
+			const updatedValue = { ...field.value, [key]: value }; // Use `gte` or `lte` as keys
 			field.onChange(updatedValue);
 			onChange?.(updatedValue);
 		};
 
 		return (
-			<div style={{ display: 'flex', gap: '4em' }}>
+			<div style={{ display: 'flex', gap: '3em' }}>
 				<TextField
 					type="date"
 					label={'Date From'}
-					value={field.value?.[0] || ''}
-					onChange={e => handleDateChange(0, e.target.value)}
+					value={field.value?.gte || '1970-01-01'}
+					onChange={e => handleDateChange('gte', e.target.value)}
+					style={{ width: '160px' }}
 					InputLabelProps={{ shrink: true }}
 					InputProps={{
 						inputProps: {
 							max: moment().subtract(1, 'day').format('YYYY-MM-DD'),
 						},
-						endAdornment: field.value?.from && (
-							<IconButton onClick={() => handleDateChange('from', '')}>
+						endAdornment: field.value?.gte && (
+							<IconButton onClick={() => handleDateChange('gte', '')}>
 								<CloseIcon />
 							</IconButton>
 						),
@@ -113,15 +113,16 @@ const CustomAutocomplete = ({
 				<TextField
 					type="date"
 					label={'Date To'}
-					value={field.value?.[1] || ''}
-					onChange={e => handleDateChange(1, e.target.value)}
+					value={field.value?.lte || moment().format('YYYY-MM-DD')}
+					onChange={e => handleDateChange('lte', e.target.value)}
+					style={{ width: '160px' }}
 					InputLabelProps={{ shrink: true }}
 					InputProps={{
 						inputProps: {
 							max: moment().format('YYYY-MM-DD'),
 						},
-						endAdornment: field.value?.to && (
-							<IconButton onClick={() => handleDateChange('to', '')}>
+						endAdornment: field.value?.lte && (
+							<IconButton onClick={() => handleDateChange('lte', '')}>
 								<CloseIcon />
 							</IconButton>
 						),
@@ -198,7 +199,7 @@ const CustomAutocomplete = ({
 			multiple={multiple}
 			options={options.filter(option => (multiple ? !field?.value?.includes(option) : true))}
 			onChange={(e, v, r) => {
-				onChange?.(e, v, r);
+				onChange?.(e, v, r, field?.value);
 				field.onChange(v);
 			}}
 			value={(multiple && typeof field?.value === 'string' ? [field?.value] : field?.value) || (multiple ? [] : '')}

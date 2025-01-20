@@ -1,8 +1,4 @@
-/* eslint-disable react/prop-types */
-import React from 'react';
-
-import moment from 'moment';
-
+ 
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
 import { PRODUCTIONDETAILQUERY } from 'graphQL/useQueryProductionDetail';
@@ -42,67 +38,55 @@ const ProductionWellsMeta = {
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
-			accessorKey: 'Id',
+			id: 'Id',
 			name: 'Id',
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_DATE_COLUMN,
 			header: 'Date',
-			accessorKey: 'ReportDate',
+			id: 'ReportDate',
 			name: 'ReportDate',
-			type: 'date',
-			Cell: ({ row }) => {
-				const value = row?.original?.ReportDate;
-				const displayValue = value ? moment(value).format('MM/YYYY') : '';
-				return <>{displayValue}</>;
-			},
 		},
 		{
 			...CommonSchema.NUMBER_COLUMN,
 			header: 'Oil (BBL)',
-			accessorKey: 'oil',
+			id: 'oil',
 			name: 'oil',
-			accessorFn: row => row?.oil,
 			...CommonSchema.CUMULATIVE_FOOTER('oil', tableKey),
 		},
 		{
 			...CommonSchema.NUMBER_COLUMN,
 			header: 'Gas (MCF)',
-			accessorKey: 'gas',
+			id: 'gas',
 			name: 'gas',
-			accessorFn: row => row?.gas,
 			...CommonSchema.CUMULATIVE_FOOTER('gas', tableKey),
 		},
 		{
 			...CommonSchema.NUMBER_COLUMN,
 			header: 'H2O (BBL)',
-			accessorKey: 'water',
+			id: 'water',
 			name: 'water',
-			accessorFn: row => row?.water,
 			...CommonSchema.CUMULATIVE_FOOTER('water', tableKey),
 		},
 		{
 			...CommonSchema.NUMBER_COLUMN,
 			header: 'Allocated Oil (BBL)',
-			accessorKey: 'allocatedOil',
+			id: 'allocatedOil',
 			name: 'allocatedOil',
-			accessorFn: row => row?.allocatedOil,
 			...CommonSchema.CUMULATIVE_FOOTER('allocatedOil', tableKey),
 		},
 		{
 			...CommonSchema.NUMBER_COLUMN,
 			header: 'Allocated Gas (MCF)',
-			accessorKey: 'allocatedGas',
+			id: 'allocatedGas',
 			name: 'allocatedGas',
-			accessorFn: row => row?.allocatedGas,
 			...CommonSchema.CUMULATIVE_FOOTER('allocatedGas', tableKey),
 		},
 		{
 			...CommonSchema.NUMBER_COLUMN,
 			header: 'Allocated Water (BBL)',
-			accessorKey: 'allocatedWater',
+			id: 'allocatedWater',
 			name: 'allocatedWater',
-			accessorFn: row => row?.allocatedWater,
 			...CommonSchema.CUMULATIVE_FOOTER('allocatedWater', tableKey),
 		},
 	],

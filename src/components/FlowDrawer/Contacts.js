@@ -33,10 +33,12 @@ import SearchIcon from '@material-ui/icons/Search';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import get from 'lodash/get';
 
-import AutocompEntityNamesVirtualizeList from 'components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList';
+import AutocompEntityNamesVirtualizeList from 'components/MRTTable/Common/Components/AutocompEntityNamesVirtualizeList';
 
 import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
+
+import { SMALL_TIMEOUT } from 'utils/consts';
 
 import { AppContext } from '../../AppContext';
 import { REMOVEDEALDESCRIPTOR } from '../../graphQL/useMutationRemoveDealDescriptor';
@@ -144,6 +146,28 @@ export default function Contacts(props) {
 	const [addNewContact, { data: addContactData }] = useMutation(ADDCONTACT);
 	const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
 
+	const GettingContacts = useCallback(() => {
+		const getContactNames = contacts => {
+			return contacts.map(value => {
+				if (get(value, 'relatedObject.entityDetail.name')) {
+					return value.relatedObject.entityDetail.name;
+				} else if (get(value, 'name')) {
+					return value.name;
+				} else {
+					return 'Empty';
+				}
+			});
+		};
+
+		let contactnames;
+		if (stateApp.activeDeal?.contacts?.length) {
+			contactnames = getContactNames(stateApp.activeDeal.contacts);
+		} else if (props?.stateAppKey && stateApp[props.stateAppKey]?.contacts?.length) {
+			contactnames = getContactNames(stateApp[props.stateAppKey].contacts);
+		}
+		setContacts(contactnames);
+	}, [stateApp.activeDeal?.contacts]);
+
 	const handleAccordionChange = panel => (event, isExpanded) => {
 		setExpandedPanel(isExpanded ? panel : false);
 	};
@@ -184,7 +208,7 @@ export default function Contacts(props) {
 	useEffect(() => {
 		if (allContactList?.paginatedContacts && allContactList?.paginatedContacts?.edges[0]) {
 			if (filteredContacts && filteredContacts.length > 0) {
-				let filterData = filteredContacts.map((dataMap, index) => {
+				let filterData = filteredContacts.map(dataMap => {
 					if (dataMap === allContactList?.paginatedContacts?.edges[0].node.name) {
 						contactDetail = {
 							_id: dataMap._id,
@@ -253,15 +277,17 @@ export default function Contacts(props) {
 						uniqueIds.push(element.id);
 						return true;
 					}
+
+					return false;
 				});
 				setFilteredContacts(unique);
 			}
 		}
 	}, [allContactList]);
 
-	const loadNextPage = async pageVariables => {
+	const loadNextPage = async () => {
 		setIsNextPageLoading(true);
-		fetchMorePaginatedContacts(528487);
+		fetchMorePaginatedContacts();
 	};
 
 	useEffect(() => {
@@ -270,28 +296,6 @@ export default function Contacts(props) {
 		);
 		setFilteredContacts(filtered);
 	}, [search, contacts]);
-
-	const GettingContacts = useCallback(() => {
-		const getContactNames = contacts => {
-			return contacts.map(value => {
-				if (get(value, 'relatedObject.entityDetail.name')) {
-					return value.relatedObject.entityDetail.name;
-				} else if (get(value, 'name')) {
-					return value.name;
-				} else {
-					return 'Empty';
-				}
-			});
-		};
-
-		let contactnames;
-		if (stateApp.activeDeal?.contacts?.length) {
-			contactnames = getContactNames(stateApp.activeDeal.contacts);
-		} else if (props?.stateAppKey && stateApp[props.stateAppKey]?.contacts?.length) {
-			contactnames = getContactNames(stateApp[props.stateAppKey].contacts);
-		}
-		setContacts(contactnames);
-	}, [stateApp.activeDeal?.contacts]);
 
 	useEffect(() => {
 		GettingContacts();
@@ -387,7 +391,7 @@ export default function Contacts(props) {
 									onBlur={() =>
 										setTimeout(() => {
 											setSearchState(false);
-										}, 300)
+										}, SMALL_TIMEOUT)
 									}
 									onChange={evt => setSearch(evt.target.value)}
 								/>

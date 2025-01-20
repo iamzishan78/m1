@@ -11,12 +11,13 @@ import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_curre
 
 import { tableController } from 'hookstate/tableController';
 
-import { CURRENCY_TO_FIXED, TO_FIXED } from 'utils/consts';
+import { CURRENCY_TO_FIXED, INTEREST_TO_FIXED } from 'utils/consts';
+import OwnerTypeCell from '../Common/TableCells/OwnerTypeCell';
 
 export const CommonSchema = {
 	COMMENTS: {
 		name: 'comments',
-		accessorKey: 'comments',
+		id: 'comments',
 		header: '',
 		size: 120,
 		isPinned: false,
@@ -36,7 +37,7 @@ export const CommonSchema = {
 	},
 	TAGS: {
 		name: 'tags',
-		accessorKey: 'tags',
+		id: 'tags',
 		header: 'Tags',
 		size: 250,
 		isPinned: false,
@@ -59,7 +60,7 @@ export const CommonSchema = {
 	},
 	IS_TRACKED: {
 		name: 'isTracked',
-		accessorKey: 'isTracked',
+		id: 'isTracked',
 		header: '',
 		size: 120,
 		isPinned: false,
@@ -112,7 +113,7 @@ export const CommonSchema = {
 		enableColumnDragging: false,
 		size: 350,
 	},
-	COMMON_COLUMN: {
+	STRING_COLUMN: {
 		size: 250,
 		isPinned: false,
 		hidden: false,
@@ -140,7 +141,7 @@ export const CommonSchema = {
 	},
 	SELECT_SOME: {
 		name: 'over-ride-checkbox',
-		accessorKey: 'over-ride-checkbox',
+		id: 'over-ride-checkbox',
 		isPinned: true,
 		hidden: false,
 		isSearchField: false,
@@ -158,31 +159,43 @@ export const CommonSchema = {
 	},
 	USER: {
 		name: 'user.name',
-		accessorKey: 'user.name',
+		id: 'user.name',
 		header: 'User',
 		size: 250,
 		filter: true,
-		isSearchField: false,
 		type: 'string',
-		Cell: ({ row }) => {
-			return <>{row.original?.user?.name}</>;
-		},
 	},
 	CREATED_BY: {
 		name: 'createBy.name',
-		accessorKey: 'createBy.name',
+		id: 'createBy.name',
 		header: 'Created By',
 		size: 250,
 		filter: true,
 		isSearchField: false,
 		type: 'string',
 		Cell: ({ row }) => {
-			return <>{row.original?.createBy?.name}</>;
+			// Passing contact owner in common component
+			let contactOwner = row.original?.createBy;
+			return <OwnerTypeCell contactOwner={contactOwner} />;
+		},
+	},
+	OWNER: {
+		name: 'owner.name.keyword',
+		accessorKey: 'owner.name',
+		header: 'Owner',
+		size: 250,
+		filter: true,
+		isSearchField: false,
+		type: 'string',
+		Cell: ({ row }) => {
+			// Passing contact owner in common component
+			let contactOwner = row.original?.owner;
+			return <OwnerTypeCell contactOwner={contactOwner} />;
 		},
 	},
 	CREATED_DATE: {
 		name: 'createAt',
-		accessorKey: 'createAt',
+		id: 'createAt',
 		header: 'Created Date',
 		size: 250,
 		filter: true,
@@ -194,19 +207,21 @@ export const CommonSchema = {
 	},
 	LAST_UPDATED_BY: {
 		name: 'lastUpdateBy.name',
-		accessorKey: 'lastUpdateBy.name',
+		id: 'lastUpdateBy.name',
 		header: 'Last Updated By',
 		size: 250,
 		filter: true,
 		isSearchField: false,
 		type: 'string',
 		Cell: ({ row }) => {
-			return <>{row.original?.lastUpdateBy?.name}</>;
+			// Passing contact owner in common component
+			let contactOwner = row.original?.lastUpdateBy;
+			return <OwnerTypeCell contactOwner={contactOwner} />;
 		},
 	},
 	LAST_UPDATED_DATE: {
 		name: 'lastUpdateAt',
-		accessorKey: 'lastUpdateAt',
+		id: 'lastUpdateAt',
 		header: 'Last Updated Date',
 		size: 250,
 		filter: true,
@@ -230,7 +245,7 @@ export const CommonSchema = {
 						...sx,
 					}}
 				>
-					{parseFloat(cell.getValue().toFixed(TO_FIXED))}
+					{parseFloat(cell.getValue().toFixed(INTEREST_TO_FIXED))}
 				</Box>
 			</>
 		),
@@ -248,7 +263,7 @@ export const CommonSchema = {
 			const mongoKey = `sum_${field}`.replace(/\./g, '_');
 			const value = get(footerProps, `${mongoKey}[0].${mongoKey}`);
 
-			return <div>{value ? addTrailingZeros(parseFloat(value).toFixed(TO_FIXED)) : 0}</div>;
+			return <div>{value ? addTrailingZeros(parseFloat(value).toFixed(INTEREST_TO_FIXED)) : 0}</div>;
 		},
 	}),
 	INTEREST_COLUMN: {
@@ -266,7 +281,7 @@ export const CommonSchema = {
 				return null;
 			}
 
-			return <>{!value ? value : addTrailingZeros(parseFloat(value).toFixed(TO_FIXED))}</>;
+			return <>{!value ? value : addTrailingZeros(parseFloat(value).toFixed(INTEREST_TO_FIXED))}</>;
 		},
 	},
 	CURRENCY_COLUMN: {
@@ -288,7 +303,7 @@ export const CommonSchema = {
 			return <>{!value ? `$${value}` : vf_currency_to_fixed(value, CURRENCY_TO_FIXED)}</>;
 		},
 	},
-	STRING_COLUMN: {
+	SELECT_STRING_COLUMN: {
 		size: 250,
 		isPinned: false,
 		hidden: false,
@@ -296,8 +311,25 @@ export const CommonSchema = {
 		isSearchField: true,
 		enableSorting: true,
 		type: 'string',
-		filterVariant: 'select',
+		filterVariant: 'autocomplete',
+		muiFilterAutocompleteProps: {
+			getOptionLabel: option => {
+				return option.label || '';
+			},
+		},
 	},
+
+	SELECT_DATE_COLUMN: {
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: true,
+		isSearchField: true,
+		enableSorting: true,
+		type: 'date',
+		filterVariant: 'autocomplete',
+	},
+
 	NUMBER_COLUMN: {
 		size: 250,
 		isPinned: false,
@@ -308,7 +340,7 @@ export const CommonSchema = {
 		type: 'number',
 		filterVariant: 'equals',
 	},
-	CUMULATIVE_FOOTER: (field, tableKey, toFixed = TO_FIXED) => ({
+	CUMULATIVE_FOOTER: (field, tableKey, toFixed = INTEREST_TO_FIXED) => ({
 		Footer: () => {
 			const Controller = tableController(tableKey);
 			const footerProps = Controller.getValue('footerProps') || {};
@@ -323,7 +355,7 @@ export const CommonSchema = {
 export const validateRequiredString = value => (!value?.length ? 'Required' : undefined);
 
 export const editFieldProps =
-	(tableKey, type, validate, required = true) =>
+	({ tableKey, type, validate, isSelect = false, required = true, onChange }) =>
 	({ cell, row }) => {
 		const Controller = tableController(tableKey);
 
@@ -336,19 +368,28 @@ export const editFieldProps =
 		const [value, setValue] = useState(cell.getValue());
 
 		const onBlur = event => {
-			const validationError = validate?.(event.currentTarget.value);
+			const target = isSelect ? event.target : event.currentTarget;
+
+			const validationError = validate?.(target.value);
 
 			const rowData = editedData[row.id] || {};
 
-			set(rowData, cell.column.id, event.currentTarget.value);
+			set(rowData, cell.column.id, target.value);
 
 			Controller.setValidationErrors(row.id, cell.column.id, validationError);
-			Controller.setEditedData(row.id, rowData);
+
+			if (onChange) {
+				onChange(target.value, cell.column.id, rowData, row.id);
+			} else {
+				Controller.setEditedData(row.id, rowData);
+			}
 		};
 
 		return {
 			type,
 			required,
+
+			select: isSelect,
 
 			...(type === 'date' && { value: moment(value).format('yyyy-MM-DD') }),
 
@@ -356,9 +397,11 @@ export const editFieldProps =
 			helperText: errorText,
 			//store edited user in state to be saved later
 			onChange: e => {
-				setValue(e.currentTarget.value);
+				const target = isSelect ? e.target : e.currentTarget;
 
-				if (type === 'date') {
+				setValue(target.value);
+
+				if (type === 'date' || isSelect) {
 					onBlur(e);
 				}
 			},

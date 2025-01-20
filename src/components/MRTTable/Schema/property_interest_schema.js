@@ -3,13 +3,11 @@ import React from 'react';
 
 import { Box } from '@mui/material';
 
-import { get } from 'lodash';
-
 import ColumnWithLink from 'components/MRTTable/Common/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
 
-import { TO_FIXED } from 'utils/consts';
+import { INTEREST_TO_FIXED } from 'utils/consts';
 
 const esIndex = 'propertyinterest_flat';
 
@@ -29,14 +27,13 @@ const PropertyIntrestMeta = {
 			...CommonSchema.HIDDEN,
 			name: 'property._id',
 			id: 'property._id',
-			accessorFn: row => get(row, 'property._id'),
 		},
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'property.name.keyword',
 			id: 'property.name',
-			accessorFn: row => get(row, 'property.name'),
 			header: 'Property',
+			isGrouped: true, // Group by property
 			Cell: ({ row }) => {
 				const id = row.getValue('property._id');
 				const value = row.getValue('property.name') || row.getValue('property.number');
@@ -49,52 +46,45 @@ const PropertyIntrestMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.number.keyword',
 			id: 'property.number',
-			accessorFn: row => get(row, 'property.number'),
 			header: 'Operator Property #',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.operator.name.keyword',
 			id: 'property.operator.name',
-			accessorFn: row => get(row, 'property.operator.name'),
 			header: 'Operator',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.purchaser.name.keyword',
 			id: 'property.purchaser.name',
-			accessorFn: row => get(row, 'property.purchaser.name'),
 			header: 'Payor',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.purchaserNumber.keyword',
 			id: 'property.purchaserNumber',
-			accessorFn: row => get(row, 'property.purchaserNumber'),
 			header: 'Payor Property #',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'status.keyword',
 			id: 'status',
-			accessorFn: row => get(row, 'status'),
 			header: 'Status',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'interestType.keyword',
 			id: 'interestType',
-			accessorFn: row => get(row, 'interestType'),
 			header: 'Interest Type',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'interestAmount',
 			id: 'interestAmount',
-			accessorFn: row => get(row, 'interestAmount'),
 			header: 'Interest Amount',
 			isSearchField: false,
 			type: 'number',
@@ -110,53 +100,47 @@ const PropertyIntrestMeta = {
 							paddingLeft: '0.3rem',
 						}}
 					>
-						{parseFloat(cell.getValue().toFixed(TO_FIXED))}
+						{parseFloat(cell.getValue().toFixed(INTEREST_TO_FIXED))}
 					</Box>
 				</>
 			),
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'costFree.keyword',
 			id: 'costFree',
-			accessorFn: row => get(row, 'costFree'),
 			header: 'Cost Free',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'effectiveDate',
 			id: 'effectiveDate',
-			accessorFn: row => get(row, 'effectiveDate'),
 			header: 'Effective Date',
 			type: 'date',
 			Cell: ({ row }) => <>{formatDate(row.original.effectiveDate)}</>,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.state.keyword',
 			id: 'property.state',
-			accessorFn: row => get(row, 'property.state'),
 			header: 'State',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.county.keyword',
 			id: 'property.county',
-			accessorFn: row => get(row, 'property.county'),
 			header: 'County',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'ownerName.keyword',
 			id: 'ownerName',
-			accessorFn: row => get(row, 'ownerName'),
 			header: 'Owner',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.legalDescription.keyword',
 			id: 'property.legalDescription',
-			accessorFn: row => get(row, 'property.legalDescription'),
 			header: 'Description',
 		},
 	],

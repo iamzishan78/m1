@@ -16,9 +16,10 @@ import { UPDATE_CHECK_DETAIL, UPDATE_CHECK_DETAILS } from 'graphQL/useMutationUp
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
+import { TO_FIXED } from 'utils/consts';
+
 import CheckDetailsToolbar from '../TablesOverride/CheckDetailsTable/CheckDetailsToolbar';
 
-const TO_FIXED = 2;
 const esIndex = 'checkdetails_flat';
 
 const CheckDetailsMeta = {
@@ -93,7 +94,7 @@ const CheckDetailsMeta = {
 
 		const defaultValue = {};
 
-		const keys = ['property', 'check'];
+		const keys = ['check'];
 
 		keys.forEach(key => {
 			set(defaultValue, key, get(row, key));
@@ -122,17 +123,18 @@ const CheckDetailsMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 			enableEditing: false,
 		},
 		// Pinned column
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'property.name.keyword',
-			accessorKey: 'property.name',
+			id: 'property.name',
 			header: 'Property',
 			Cell: ({ row }) => {
-				const value = `${row?.original?.property?.purchaserNumber || ''} - ${row?.original?.property?.name || ''}`;
+				const value = `${row?.original?.property?.purchaserNumber || ''} - ${row?.original?.property?.name || row?.original?.property?.number || ''}`;
+
 				return row?.original?.property?.IsDeleted ? (
 					<p style={{ display: 'flex', alignItems: 'center' }}>
 						{value}
@@ -154,47 +156,67 @@ const CheckDetailsMeta = {
 		},
 		// Common columns
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.purchaserNumber.keyword',
-			accessorKey: 'property.purchaserNumber',
+			id: 'property.purchaserNumber',
 			header: 'Payor Prop #',
 			enableEditing: false,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.name.keyword',
-			accessorKey: 'property.name',
+			id: 'property.name',
 			header: 'Property Name',
 			enableEditing: false,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.number.keyword',
-			accessorKey: 'property.number',
+			id: 'property.number',
 			header: 'Operator Prop #',
-			enableEditing: false,
+
+			validate: validateRequiredString,
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'text',
+				validate: validateRequiredString,
+				isSelect: true,
+				onChange: (value, id, rowData, rowId) => {
+					const TableSchema = tableController('CheckDetailsTable').getValue('TableSchema');
+
+					const column = TableSchema.find(c => c.id === id);
+
+					const { originals } = column;
+
+					const property = originals.find(property => property.number === value);
+
+					set(rowData, 'property', property);
+
+					tableController('CheckDetailsTable').setEditedData(rowId, rowData);
+				},
+			}),
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.state.keyword',
-			accessorKey: 'property.state',
+			id: 'property.state',
 			header: 'State',
 			enableEditing: false,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'property.county.keyword',
-			accessorKey: 'property.county',
+			id: 'property.county',
 			header: 'County',
 			enableEditing: false,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'date',
-			accessorKey: 'date',
+			id: 'date',
 			header: 'Sales Date',
 			isSearchField: false,
 			type: 'date',
@@ -203,53 +225,75 @@ const CheckDetailsMeta = {
 			},
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'date', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'date',
+				validate: validateRequiredString,
+			}),
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'product.keyword',
-			accessorKey: 'product',
+			id: 'product',
 			header: 'Product',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'text',
+				validate: validateRequiredString,
+				isSelect: true,
+			}),
 		},
 
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'disbursement',
-			accessorKey: 'disbursement',
+			id: 'disbursement',
 			header: 'Decimal Interest',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'number',
+				validate: validateRequiredString,
+			}),
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'interestType.keyword',
-			accessorKey: 'interestType',
+			id: 'interestType',
 			header: 'Type',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'text',
+				validate: validateRequiredString,
+				isSelect: true,
+			}),
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'price',
-			accessorKey: 'price',
+			id: 'price',
 			header: 'Avg Price',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'number',
+				validate: validateRequiredString,
+			}),
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'grossPropertyVolume',
-			accessorKey: 'grossPropertyVolume',
+			id: 'grossPropertyVolume',
 			header: 'Prop Gross Volume',
 			isSearchField: false,
 			type: 'number',
@@ -259,23 +303,31 @@ const CheckDetailsMeta = {
 			},
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'number',
+				validate: validateRequiredString,
+			}),
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'grossPropertyValue',
-			accessorKey: 'grossPropertyValue',
+			id: 'grossPropertyValue',
 			header: 'Prop Gross Revenue',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'number',
+				validate: validateRequiredString,
+			}),
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'grossOwnerVolume',
-			accessorKey: 'grossOwnerVolume',
+			id: 'grossOwnerVolume',
 			header: 'Owner Volume',
 			isSearchField: false,
 			type: 'number',
@@ -285,72 +337,101 @@ const CheckDetailsMeta = {
 			},
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'number',
+				validate: validateRequiredString,
+			}),
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'grossOwnerValue',
-			accessorKey: 'grossOwnerValue',
+			id: 'grossOwnerValue',
 			header: 'Owner Gross Revenue',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'number',
+				validate: validateRequiredString,
+			}),
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'ownerTax',
-			accessorKey: 'ownerTax',
+			id: 'ownerTax',
 			header: 'Owner Tax Amt',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'number',
+				validate: validateRequiredString,
+			}),
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'taxType.keyword',
-			accessorKey: 'taxType',
+			id: 'taxType',
 			header: 'Tax Type',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'text',
+				validate: validateRequiredString,
+				isSelect: true,
+			}),
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'ownerDeducts',
-			accessorKey: 'ownerDeducts',
+			id: 'ownerDeducts',
 			header: 'Deduct Amt',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'number',
+				validate: validateRequiredString,
+			}),
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'deductType.keyword',
-			accessorKey: 'deductType',
+			id: 'deductType',
 			header: 'Deduct Cd',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'text', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'text',
+				validate: validateRequiredString,
+			}),
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'netOwnerValue',
-			accessorKey: 'netOwnerValue',
+			id: 'netOwnerValue',
 			header: 'Owner Net Rev',
 
 			validate: validateRequiredString,
-			muiEditTextFieldProps: editFieldProps('CheckDetailsTable', 'number', validateRequiredString),
+			muiEditTextFieldProps: editFieldProps({
+				tableKey: 'CheckDetailsTable',
+				type: 'number',
+				validate: validateRequiredString,
+			}),
 		},
 		{
 			...CommonSchema.HIDDEN,
 			name: 'propertyId',
-			accessorKey: 'propertyId',
+			id: 'propertyId',
 			enableEditing: false,
 		},
 		// Comment button

@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
@@ -15,7 +15,7 @@ import {
 	ViewContactData,
 	openSideDialog,
 } from 'components/MRTTable/Common/CommonToolBarActions';
-import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
+import ButtonDropDown from 'components/MRTTable/Common/Components/ButtonDropDown';
 
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
@@ -226,4 +226,4 @@ ContactToolbar.propTypes = {
 	tableKey: PropTypes.string.isRequired,
 };
 
-export default memo(ContactToolbar);
+export default ContactToolbar;

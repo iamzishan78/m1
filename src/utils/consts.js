@@ -1,9 +1,29 @@
-export const TO_FIXED = 8;
+export const TO_FIXED = 2;
+export const INTEREST_TO_FIXED = 8;
 export const CURRENCY_TO_FIXED = 2;
 
 export const SMALL_TIMEOUT = 300;
 
 export const WEEK_DAYS = 7;
+
+export const KEYBOARD_KEYS = {
+	ENTER: 13,
+	TAB: 9,
+	UP: 38,
+	DOWN: 40,
+	LEFT: 37,
+	RIGHT: 39,
+	ESC: 27,
+	SMALL_N: 110,
+	CAPITAL_N: 78,
+};
+
+export const ONE_BYTE = 1024;
+
+export const ONE_MB = 1 * ONE_BYTE * ONE_BYTE;
+
+export const SUCCESS_STATUS = 200;
+export const CREATED_STATUS = 201;
 
 export const colorPallete = [
 	{
@@ -87,3 +107,6 @@ export const colorPallete = [
 		textColor: 'white',
 	},
 ];
+
+export const LOD_YEAR = 2024;
+export const LOD_YEAR_OPTIONS = [2019, 2020, 2021, 2022, 2023, 2024];

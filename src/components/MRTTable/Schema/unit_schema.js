@@ -105,43 +105,48 @@ const UnitMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: 'id',
-			accessorKey: 'id',
+			id: 'id',
 			header: 'ID',
 		},
 
 		{
 			...CommonSchema.MONGO_ID,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'name.keyword',
-			accessorKey: 'name',
+			id: 'name',
 			header: 'Unit Name',
-			Cell: ({ renderedCellValue, row }) => (
-				<div
-					style={{
-						display: 'flex',
-						alignItems: 'center',
-					}}
-				>
-					<ColumnWithLink value={renderedCellValue} link={`/map/units/${row.getValue('_id')}`} />
-				</div>
-			),
+			Cell: ({ renderedCellValue, row }) => {
+				const id = row.original._id; // Get unit id
+				const comments = row.original.comments || []; // Get unit comments
+				return (
+					<div
+						style={{
+							display: 'flex',
+							alignItems: 'center',
+						}}
+					>
+						<ColumnWithLink value={renderedCellValue} link={`/map/units/${id}`} />
+						{/* Added comment icon with unit name */}
+						<CommentCell id={id} value={comments?.length} targetLabel={'unit'} />
+					</div>
+				);
+			},
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.uNumber.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uNumber,
 			id: 'shapeJson.properties.uNumber',
 			header: 'Unit #',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.originalProperties.State.keyword',
 			accessorFn: row =>
 				row?.shapeJson?.properties?.originalProperties?.State || // Use either state of stateAbbreviation
@@ -151,44 +156,39 @@ const UnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.originalProperties.County.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.County,
 			id: 'shapeJson.properties.originalProperties.County',
 			header: 'County',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.originalProperties.surveyMerdian.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.surveyMerdian,
 			id: 'shapeJson.properties.originalProperties.surveyMerdian',
 			header: 'Survey/ Meridian',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.originalProperties.blockTownship.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.blockTownship,
 			id: 'shapeJson.properties.originalProperties.blockTownship',
 			header: 'Block/ Township',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.originalProperties.rangeSection.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.rangeSection,
 			id: 'shapeJson.properties.originalProperties.rangeSection',
 			header: 'Section/ Range',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.originalProperties.abstractNameShortName.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.abstractNameShortName,
 			id: 'shapeJson.properties.originalProperties.abstractNameShortName',
 			header: 'Abstract/ Section',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.uAcres.keyword',
 			accessorFn: row => vf_number(row?.shapeJson?.properties?.uAcres),
 			id: 'shapeJson.properties.uAcres',
@@ -197,7 +197,7 @@ const UnitMeta = {
 
 		{
 			// Total unit NRA column
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.netRoyalityAcres.unitNra.keyword',
 			accessorFn: row => vf_number(row?.shapeJson?.properties?.netRoyalityAcres?.unitNra),
 			id: 'shapeJson.properties.netRoyalityAcres.unitNra',
@@ -205,32 +205,29 @@ const UnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.uStatus.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uStatus,
 			id: 'shapeJson.properties.uStatus',
 			header: 'Unit Status',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.uPrimaryOperator.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uPrimaryOperator,
 			id: 'shapeJson.properties.uPrimaryOperator',
 			header: 'Current Operator',
 		},
 
 		//added Total Unit Interest column from here
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.totalUnitInterest.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.totalUnitInterest,
 			id: 'shapeJson.properties.totalUnitInterest',
 			header: 'Total Unit Interest',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.uUnitPricing.keyword',
 			accessorFn: row => vf_currency_to_fixed(row?.shapeJson?.properties?.uUnitPricing, CURRENCY_TO_FIXED), // format value with $ sign
 			subType: 'price',
@@ -239,7 +236,7 @@ const UnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.uMaxUnitPricing.keyword',
 			accessorFn: row => vf_currency_to_fixed(row?.shapeJson?.properties?.uMaxUnitPricing, CURRENCY_TO_FIXED), // format value with $ sign
 			subType: 'price',
@@ -248,18 +245,17 @@ const UnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'interestSummary.unitInterestCount',
-			accessorKey: 'interestSummary.unitInterestCount',
+			id: 'interestSummary.unitInterestCount',
 			header: 'Owner Count',
 			isSearchField: false,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			type: 'array',
 			name: 'shapeJson.properties.campaigns.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.campaigns,
 			id: 'shapeJson.properties.campaigns',
 			header: 'Campaigns',
 			size: 270,
@@ -269,24 +265,21 @@ const UnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.qualifier.name.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.qualifier?.name,
 			id: 'shapeJson.properties.qualifier.name',
 			header: 'Qualifier',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.reviewer.name.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.reviewer?.name,
 			id: 'shapeJson.properties.reviewer.name',
 			header: 'Reviewer',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'shapeJson.properties.ownerName.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.ownerName,
 			id: 'shapeJson.properties.ownerName',
 			header: 'Owner',
 		},
@@ -322,7 +315,7 @@ const UnitMeta = {
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'coordinates',
-			accessorKey: 'coordinates',
+			id: 'coordinates',
 			header: '',
 			size: 70,
 			Cell: ({ row }) => {

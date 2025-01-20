@@ -1,9 +1,4 @@
-// contexts
-
-//3rd party packages
-
-//@material-ui components
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import AppBar from '@material-ui/core/AppBar';
@@ -18,9 +13,6 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-
-//icons
-
 import Add from '@material-ui/icons/Add';
 import DesktopWindowsIcon from '@material-ui/icons/DesktopWindows';
 import HeadsetIcon from '@material-ui/icons/Headset';
@@ -28,7 +20,6 @@ import HeadsetIcon from '@material-ui/icons/Headset';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 
-// App Bars
 import AdminSettingsAppBar from 'components/Navigation/AppBar/AdminSettings';
 import RevenueAppBar from 'components/Navigation/AppBar/Revenue';
 import ProfileMenu from 'components/Profile/ProfileMenu';
@@ -41,6 +32,7 @@ import { contactManagementRoutes } from 'utils/data';
 
 import { AppContext } from 'AppContext';
 
+import DataAppBar from './AppBar/DataAppBar';
 import LandAppBar from './AppBar/Land';
 import { useStyles } from './Common';
 import ActivityDashboardSearch from './components/ActivityDashboardSearch';
@@ -53,8 +45,8 @@ import DealSearch from './components/DealSearch';
 import DocumentSearch from './components/DocumentSearch';
 import SearchBarWithToggleButton from './components/SearchBarWithToggleButton';
 import SupportCenterModal from './components/SupportCenter';
-import { NavigationContext } from './NavigationContext';
 import SideNavigation from './SideNavigation';
+import { NavigationContext } from './NavigationContext';
 
 const TabPanel = props => {
 	const { children, value, index, ...other } = props;
@@ -80,9 +72,8 @@ TabPanel.propTypes = {
 };
 
 export default function Navigation(props) {
-	// contexts
-	const [stateApp, setStateApp] = useContext(AppContext);
-	const [stateNav, setStateNav] = useContext(NavigationContext);
+	const [stateApp] = useContext(AppContext);
+	const [, setStateNav] = useContext(NavigationContext);
 
 	const [openSupportCenter, setOpenSupportCenter] = useState(false);
 	const [openContactForm, setOpenContactForm] = useState(false);
@@ -101,6 +92,8 @@ export default function Navigation(props) {
 		isMap: location.pathname === '/' || location.pathname.startsWith('/map/') || props.isMap,
 		isCalendar: location.pathname.startsWith('/calendar'),
 	});
+
+	const isCustomAssetDetailPage = /^\/land\/customAsset\/[^/]+\/details/.test(location.pathname);
 
 	useEffect(() => {
 		Object.values(ROUTES).forEach(value => {
@@ -138,8 +131,11 @@ export default function Navigation(props) {
 		} else {
 			setMatchFind(false); // Set matchFind to false if component is not on the map page
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [location.pathname]);
+	}, [location.pathname, props.isMap]);
+
+	const handleDrawerClose = () => {
+		setOpenDrawer(false);
+	};
 
 	const handleListItemClick = path => {
 		history.push(path);
@@ -154,10 +150,6 @@ export default function Navigation(props) {
 		setOpenDrawer(false);
 		setSupportDrawer(false);
 		setOpenSupportCenter(true);
-	};
-
-	const handleDrawerClose = () => {
-		setOpenDrawer(false);
 	};
 
 	const handleOpenContactForm = () => {
@@ -176,23 +168,13 @@ export default function Navigation(props) {
 			location.pathname.startsWith('/revenue/property/details') ||
 			location.pathname.startsWith('/analytics/property/details') ||
 			location.pathname.startsWith('/land/agreement/details') ||
-			location.pathname.startsWith('/contacts/campaign/details')
+			location.pathname.startsWith('/contacts/campaign/details') ||
+			isCustomAssetDetailPage
 		) {
 			return true;
 		}
 		return false;
 	};
-
-	// const checkIfShowBackgroundOnHeader = () => {
-	//   if (location.pathname.startsWith("/revenue/statements") || location.pathname.startsWith("/revenue/properties")) {
-	//     return true;
-	//   }
-	//   return false;
-	// };
-
-	// const matchAgreements = () => {
-	//   return location.pathname === "/landmanagement/agreements";
-	// };
 
 	return (
 		<div className={classes.root}>
@@ -260,6 +242,9 @@ export default function Navigation(props) {
 							{location.pathname.startsWith('/land') && <LandAppBar classes={classes} user={stateApp.user} />}
 							{location.pathname.startsWith('/revenue') && <RevenueAppBar classes={classes} />}
 							{location.pathname.startsWith('/admin') && <AdminSettingsAppBar />}
+
+							{location.pathname.startsWith('/data') && <DataAppBar />}
+
 							{matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
 							{(matchFind || matchDocument) && (
 								<div className={classes.search} id="searchBarDivParent">
@@ -300,9 +285,6 @@ export default function Navigation(props) {
 			{stateApp.user && (
 				<SideNavigation
 					openDrawer={openDrawer}
-					stateNav={stateNav}
-					setStateNav={setStateNav}
-					setStateApp={setStateApp}
 					handleListItemClick={handleListItemClick}
 					handleDrawerClose={handleDrawerClose}
 					handleDrawerOpen={handleDrawerOpen}
@@ -347,3 +329,8 @@ export default function Navigation(props) {
 		</div>
 	);
 }
+
+Navigation.propTypes = {
+	children: PropTypes.node.isRequired, // Ensures `children` is a valid React node and required
+	isMap: PropTypes.bool,
+};

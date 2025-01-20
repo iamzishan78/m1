@@ -21,7 +21,7 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 const esIndex = 'shapeowners_flat';
 
 const onClickedRow = selectedRow => {
-	const Controller = tableController('TractPerUnitTable');
+	const Controller = tableController('TractInterestOwnerTable');
 	const { customLayer } = Controller.getValue('customProps');
 	tableGlobalController.updateState({
 		dialog: {
@@ -33,7 +33,7 @@ const onClickedRow = selectedRow => {
 	});
 };
 
-const TractPerUnitMeta = {
+const TractInterestOwnerMeta = {
 	esIndex,
 	pageSize: 25,
 	pagination: {
@@ -71,19 +71,18 @@ const TractPerUnitMeta = {
 		{
 			...CommonSchema.MONGO_ID,
 			name: '_id',
-			accessorKey: '_id',
+			id: '_id',
 		},
 
 		{
 			...CommonSchema.HIDDEN,
 			name: 'ownerEntity',
-			accessorKey: 'ownerEntity',
+			id: 'ownerEntity',
 		},
 
 		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'contact.entityDetail.name.keyword',
-			accessorFn: row => row?.contact?.entityDetail?.name,
 			id: 'contact.entityDetail.name',
 			header: 'Owner Name',
 			Cell: ({ renderedCellValue, row }) => {
@@ -143,36 +142,34 @@ const TractPerUnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.ownerType.keyword',
 			id: 'contact.ownerType',
-			accessorFn: row => row?.contact?.ownerType,
 			header: 'Entity Type',
 		},
 
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'surface_interest',
-			accessorKey: 'surface_interest',
+			id: 'surface_interest',
 			header: 'Surface Interest',
-			...CommonSchema.AGGREGATED_FOOTER('surface_interest', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('surface_interest', 'TractInterestOwnerTable'),
 		},
 
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			size: 275,
 			name: 'mineral_interest',
-			accessorKey: 'mineral_interest',
+			id: 'mineral_interest',
 			header: 'Mineral Interest',
-			...CommonSchema.AGGREGATED_FOOTER('mineral_interest', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('mineral_interest', 'TractInterestOwnerTable'),
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'nonExecRightsOnly.keyword',
-			accessorKey: 'nonExecRightsOnly',
-			header: 'Non-Exec Rights Only',
 			id: 'nonExecRightsOnly',
+			header: 'Non-Exec Rights Only',
 			size: 200,
 		},
 
@@ -180,111 +177,111 @@ const TractPerUnitMeta = {
 			...CommonSchema.INTEREST_COLUMN,
 			size: 275,
 			name: 'royalty_interest',
-			accessorKey: 'royalty_interest',
+			id: 'royalty_interest',
 			header: 'Royalty Interest (Lease)',
-			...CommonSchema.AGGREGATED_FOOTER('royalty_interest', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('royalty_interest', 'TractInterestOwnerTable'),
 		},
 
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'orri',
-			accessorKey: 'orri',
+			id: 'orri',
 			header: 'ORRI',
 			isSearchField: false,
-			...CommonSchema.AGGREGATED_FOOTER('orri', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('orri', 'TractInterestOwnerTable'),
 		},
 
 		// {
 		// 	...CommonSchema.INTEREST_COLUMN,
 		// 	name: 'record_title',
-		// 	accessorKey: 'record_title',
+		// 	id: 'record_title',
 		// 	header: 'Record Title',
 		// },
 
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'operating_rights',
-			accessorKey: 'operating_rights',
+			id: 'operating_rights',
 			header: 'Working Interest',
-			...CommonSchema.AGGREGATED_FOOTER('operating_rights', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('operating_rights', 'TractInterestOwnerTable'),
 		},
 
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'nri',
-			accessorKey: 'nri',
+			id: 'nri',
 			header: 'NRI',
 		},
 
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'net_acres',
-			accessorKey: 'net_acres',
+			id: 'net_acres',
 			header: 'Net Acres',
-			...CommonSchema.AGGREGATED_FOOTER('net_acres', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('net_acres', 'TractInterestOwnerTable'),
 		},
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'company_net_acres',
-			accessorKey: 'company_net_acres',
+			id: 'company_net_acres',
 			header: 'Co Net Acres',
-			...CommonSchema.AGGREGATED_FOOTER('company_net_acres', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('company_net_acres', 'TractInterestOwnerTable'),
 		},
 
 		{
 			...CommonSchema.INTEREST_COLUMN,
 			name: 'nra',
-			accessorKey: 'nra',
+			id: 'nra',
 			header: 'NRA',
-			...CommonSchema.AGGREGATED_FOOTER('nra', 'TractPerUnitTable'),
+			...CommonSchema.AGGREGATED_FOOTER('nra', 'TractInterestOwnerTable'),
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'offer_price_nma',
-			accessorKey: 'offer_price_nma',
+			id: 'offer_price_nma',
 			header: 'Target Offer (NMA)',
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'max_offer_price_nma',
-			accessorKey: 'max_offer_price_nma',
+			id: 'max_offer_price_nma',
 			header: 'Max Offer (NMA)',
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'offer_price',
-			accessorKey: 'offer_price',
+			id: 'offer_price',
 			header: 'Target Offer (NRA)',
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'max_offer_price',
-			accessorKey: 'max_offer_price',
+			id: 'max_offer_price',
 			header: 'Max Offer (NRA)',
 		},
 		// Bonus payment column
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'bonus_payment',
-			accessorKey: 'bonus_payment',
+			id: 'bonus_payment',
 			header: 'Bonus Payment',
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'seller_asking_price',
-			accessorKey: 'seller_asking_price',
+			id: 'seller_asking_price',
 			header: 'Seller Asking Price',
 		},
 
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'competitor_offer_price',
-			accessorKey: 'competitor_offer_price',
+			id: 'competitor_offer_price',
 			header: 'Competitor Offer Price',
 			size: 300,
 		},
@@ -292,29 +289,27 @@ const TractPerUnitMeta = {
 		{
 			...CommonSchema.CURRENCY_COLUMN,
 			name: 'actual_offer_price',
-			accessorKey: 'actual_offer_price',
+			id: 'actual_offer_price',
 			header: 'Actual Offer Price',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.contactStatus.keyword',
-			accessorFn: row => row?.contact?.contactStatus,
 			id: 'contact.contactStatus',
 			header: 'Contact Status',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.status.keyword',
-			accessorFn: row => row?.contact?.status,
 			id: 'contact.status',
 			header: 'Contact Stage',
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contactOwners.keyword',
-			accessorKey: 'contactOwners',
+			id: 'contactOwners',
 			header: 'Contact Owner',
 			Cell: ({ row }) => {
 				return <div>{row?.original?.contactOwners[0]}</div>;
@@ -322,10 +317,9 @@ const TractPerUnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			type: 'array',
 			name: 'campaigns',
-			accessorFn: row => row?.campaigns,
 			id: 'campaigns',
 			header: 'Campaigns',
 			Cell: ({ row }) => {
@@ -334,32 +328,30 @@ const TractPerUnitMeta = {
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'campaignPriority.keyword',
-			accessorKey: 'campaignPriority',
+			id: 'campaignPriority',
 			header: 'Campaign Priority',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'leaseStatus.keyword',
-			accessorKey: 'leaseStatus',
+			id: 'leaseStatus',
 			header: 'Lease Status',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'dataSource.keyword',
-			accessorKey: 'dataSource',
 			id: 'dataSource',
 			header: 'Data Source',
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'deals.name.keyword',
 			id: 'deals.name',
-			accessorFn: row => row?.deals?.name,
 			isExport: 'dealsName',
 			header: 'Associated Deals',
 			handleArrayExport: {
@@ -387,24 +379,23 @@ const TractPerUnitMeta = {
 			},
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'depthFrom.keyword',
-			accessorKey: 'depthFrom',
+			id: 'depthFrom',
 			header: 'Depth From',
 			isSearchField: true,
 		},
 
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'depthTo.keyword',
-			accessorKey: 'depthTo',
+			id: 'depthTo',
 			header: 'Depth To',
 			isExternalFilter: false,
 		},
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.STRING_COLUMN,
 			name: 'contact.isPurchased',
-			accessorFn: row => row?.contact?.isPurchased,
 			header: 'Purchased Data Exists',
 			filterSelectOptions: [
 				{ label: 'Yes', value: 'true' },
@@ -435,7 +426,7 @@ const TractPerUnitMeta = {
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'isContact',
-			accessorKey: 'isContact',
+			id: 'isContact',
 			Cell: ({ row }) => {
 				const ownerEntity = row.getValue('ownerEntity');
 				return <IsContactCell contactId={ownerEntity} />;
@@ -452,6 +443,7 @@ const TractPerUnitMeta = {
 						value={row?.original?.commentsCount}
 						targetLabel={'Parcel Ownership'}
 						hideShareCommentsToggle
+						type={'commentsWithTags'}
 					/>
 				);
 			},
@@ -460,7 +452,7 @@ const TractPerUnitMeta = {
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'actionMenu',
-			accessorKey: 'actionMenu',
+			id: 'actionMenu',
 			Cell: ({ row }) => {
 				const id = row.getValue('_id');
 				const name = row.getValue('name');
@@ -472,9 +464,9 @@ const TractPerUnitMeta = {
 		{
 			...CommonSchema.HIDDEN,
 			name: 'contact.isPurchased',
-			accessorKey: 'contact.isPurchased',
+			id: 'contact.isPurchased',
 		},
 	],
 };
 
-export default TractPerUnitMeta;
+export default TractInterestOwnerMeta;

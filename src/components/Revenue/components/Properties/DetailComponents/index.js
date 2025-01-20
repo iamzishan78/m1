@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 
@@ -26,12 +25,12 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import { get } from 'lodash';
 
 import AddNewRelatedAgreementDialog from 'components/Land/components/Agreements/detailComponents/relatedAgreements/AddNewRelatedAgreementDialog';
+import DeleteConfirmationDialog from 'components/MRTTable/Common/Dialog/ConfirmationDialog/DeleteConfirmationDialog';
 import MetadataDrawer from 'components/Revenue/components/Common/MetadataDrawer';
 import NavHeader from 'components/Revenue/components/Common/NavHeader';
 import Validation from 'components/Revenue/components/Properties/DetailComponents/Validation';
 import DocViewer from 'components/Shared/DocViewer';
 import { copy } from 'components/Shared/functions';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import Tags from 'components/Shared/Tagger';
 
 import { UPDATE_PROPERTY } from 'graphQL/useMutationUpdateProperty';
@@ -48,12 +47,11 @@ import { getIdFromPath } from 'utils/helper';
 
 import { AppContext } from 'AppContext';
 
-// Components
 import HeaderSection from './HeaderSection';
 import InterestDetailForm from './InterestDetailForm';
 import PropertyInterestDetailsSection from './PropertyInterestDetailsSection';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		height: '100vh',
 		backgroundColor: '#f3f3f3',
@@ -195,12 +193,13 @@ const StyledTabs = withStyles({
 	},
 })(Tabs);
 
+const THEME_SPACING = 4;
 const StyledTab = withStyles(theme => ({
 	root: {
 		textTransform: 'uppercase',
 		minWidth: 72,
 		fontWeight: theme.typography.fontWeightRegular,
-		marginRight: theme.spacing(4),
+		marginRight: theme.spacing(THEME_SPACING),
 		fontFamily: [
 			'-apple-system',
 			'BlinkMacSystemFont',
@@ -346,21 +345,17 @@ export default function DetailComponents(props) {
 		}
 	}, [checkIfOwnersAreContactsData]);
 
-	const deleteFunc = ids => {
-		if (ids.length > 0) {
-			for (let i = 0; i < ids.length; i++) {
-				updateProperty({
-					variables: {
-						property: {
-							_id: propertyDetails._id,
-							IsDeleted: true,
-						},
-					},
-				}).then(res => {
-					history.push('/revenue/properties');
-				});
-			}
-		}
+	const deleteFunc = () => {
+		updateProperty({
+			variables: {
+				property: {
+					_id: propertyDetails._id,
+					IsDeleted: true,
+				},
+			},
+		}).then(() => {
+			history.push('/revenue/properties');
+		});
 	};
 
 	const onUpdateMetaData = data => {
@@ -526,6 +521,7 @@ export default function DetailComponents(props) {
 								setStateApp={setStateApp}
 								ownerTitle="Approver"
 								isApproval={true}
+								showCommentType
 							/>
 						) : (
 							<AddNewRelatedAgreementDialog
@@ -538,15 +534,13 @@ export default function DetailComponents(props) {
 				)}
 			</div>
 			<Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)} fullWidth={true} maxWidth={'sm'}>
-				<DeleteConfirmationDialogContent
+				<DeleteConfirmationDialog
 					header={'Delete Property'}
 					onClose={() => setOpenDeleteDialog(false)}
 					deleteFunc={deleteFunc}
-					m1nSelectedRowsIds={[propertyDetails?._id]}
-					setM1nSelectedRowsIndexes={() => {}}
 				>
 					{'Do you want to delete this property?'}
-				</DeleteConfirmationDialogContent>
+				</DeleteConfirmationDialog>
 			</Dialog>
 			{/**
 			 * Menu for meta data

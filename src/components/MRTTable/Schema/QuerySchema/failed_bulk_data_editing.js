@@ -35,22 +35,18 @@ const FailedBulkDataEditingMeta = {
 	columnVirtualization: false,
 	TableSchema: [
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			size: 350,
-			enableColumnFilter: false,
 			header: 'Time Stamp',
-			accessorKey: 'timestamp',
+			id: 'timestamp',
 			name: 'timestamp',
-			accessorFn: row => row?.timestamp,
 		},
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.SELECT_STRING_COLUMN,
 			size: 800,
-			enableColumnFilter: false,
 			header: 'Description',
-			accessorKey: 'description',
+			id: 'description',
 			name: 'description',
-			accessorFn: row => row?.description,
 		},
 	],
 };

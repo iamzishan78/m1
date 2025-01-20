@@ -4,6 +4,8 @@ import { useHistory } from 'react-router-dom';
 import { Typography, Divider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
+import PropTypes from 'prop-types';
+
 import AgreementAdvanceSearch from 'components/Land/components/Agreements/components/AdvanceSearch/';
 
 const useStyles = makeStyles(() => ({
@@ -17,7 +19,9 @@ export default function AdvanceSearch({ activeModule }) {
 	const classes = useStyles();
 	const history = useHistory();
 	const isASActive = useMemo(
-		() => activeModule.title === 'Agreements' || history.location.pathname === '/land/agreements',
+		() =>
+			activeModule.featureFlag === 'LANDMODULE' &&
+			(activeModule.title === 'Agreements' || history.location.pathname === '/land/agreements'),
 		[activeModule, history.location]
 	);
 
@@ -37,3 +41,7 @@ export default function AdvanceSearch({ activeModule }) {
 		</>
 	);
 }
+
+AdvanceSearch.propTypes = {
+	activeModule: PropTypes.object.isRequired,
+};
