@@ -3,10 +3,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Switch, Route, useLocation } from 'react-router-dom';
 
 import AdminOperation from 'components/Admin/AdminOperation';
+import AssetManagement from 'components/Admin/components/AssetManagement';
 import BulkDataEditing from 'components/Admin/components/BulkDataEditing';
+import ExternalTools from 'components/ExternalTools';
 import QuickActionPanel from 'components/Land/components/QuickActionPanel';
 import AdminSettings from 'components/Shared/AdminSettings';
-import AssetManagement from 'components/Admin/components/AssetManagement';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/Shared/FeatureFlag/FeatureFlagComponent';
 
@@ -25,6 +26,7 @@ const Components = {
 	AdminOperation,
 	BulkDataEditing,
 	BulkDataEditingDetail,
+	ExternalTools,
 	AssetManagement,
 };
 
