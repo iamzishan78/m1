@@ -49,6 +49,16 @@ const People = () => {
 	const [userProfileLoading, setuserProfileLoading] = useState();
 
 	const handlePopoverOpen = user => {
+		setuserProfile({
+			displayName: '',
+			jobTitle: '',
+			email: '',
+			mobilephone: '',
+			about: '',
+			img: '',
+		});
+		setuserProfileLoading(true);
+
 		getUserProfile({
 			variables: { email: user?.email },
 		});
@@ -91,6 +101,17 @@ const People = () => {
 		}
 	}, [profilesData]);
 
+	const handlePopoverClose = () => {
+		setuserProfile({
+			displayName: '',
+			jobTitle: '',
+			email: '',
+			mobilephone: '',
+			about: '',
+			img: '',
+		});
+	};
+
 	const PeopleCardContainer = () => {
 		return (
 			<Grid
@@ -113,11 +134,17 @@ const People = () => {
 									<PopupState variant="popover" popupId="demo-popup-popover-zone">
 										{popupState => (
 											<>
-												<Box display={'flex'} alignItems={'center'} position={'relative'}>
+												<Box
+													display={'flex'}
+													alignItems={'center'}
+													position={'relative'}
+													{...bindHover(popupState)}
+													style={{ cursor: 'pointer' }}
+												>
 													<Box
 														id={`profile-${index}`}
 														onMouseEnter={() => handlePopoverOpen(user)}
-														{...bindHover(popupState)}
+														onMouseLeave={() => handlePopoverClose}
 													>
 														{profilesInfo[user?.email]?.profileImage ? (
 															<Avatar
@@ -137,13 +164,19 @@ const People = () => {
 															/>
 														)}
 													</Box>
-													<Typography fontSize={'0.8rem'} sx={{ marginLeft: '8px' }}>
+													<Typography
+														fontSize={'0.8rem'}
+														sx={{ marginLeft: '8px' }}
+														onMouseEnter={() => handlePopoverOpen(user)}
+														onMouseLeave={() => handlePopoverClose}
+													>
 														{user?.displayName ? user?.displayName : ''}
 													</Typography>
 
 													<HoverPopover
 														{...bindPopover(popupState)}
 														anchorEl={document.getElementById(`profile-${index}`)}
+														onClose={handlePopoverClose}
 														anchorOrigin={{
 															vertical: 'top',
 															horizontal: 'right',
@@ -244,6 +277,7 @@ const People = () => {
 																				component="span"
 																				className={classes.button}
 																				sx={{ display: 'flex', alignItems: 'center', gap: '5px' }}
+																				onClick={() => console.log('Assign Task button is clicked')}
 																			>
 																				<CheckCircle />
 																				<Box sx={{ marginLeft: '3px' }}>Assign task</Box>
