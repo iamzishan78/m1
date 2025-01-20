@@ -84,9 +84,8 @@ const LandSearch = ({ activeModule }) => {
 	}, [activeModule]);
 
 	useEffect(() => {
-		const newSearch = stateValues.globalSearch.replace('*', '');
-		if (newSearch !== search) {
-			setSearch(newSearch);
+		if (stateValues.globalSearch !== search) {
+			setSearch(stateValues.globalSearch);
 		}
 	}, [stateValues.globalSearch]);
 
@@ -131,7 +130,7 @@ const LandSearch = ({ activeModule }) => {
 									className={`${classes.toggleBtn} ${stateApp.activityDisplayType === 'table' && classes.activeBtn}`}
 									onClick={() => {
 										setSearch('');
-										globalStateController.updateState({ globalSearch: '*' });
+										globalStateController.updateState({ globalSearch: '' });
 									}}
 								>
 									<ClearIcon />

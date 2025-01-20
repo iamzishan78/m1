@@ -97,9 +97,7 @@ export default function RevenueStatements() {
 	}, [revenueStatmentTableState?.filters, stateValues.globalSearch]);
 
 	useEffect(() => {
-		tableController('RevenueStatementsTable').setGlobalFilter(
-			stateValues.globalSearch === '*' ? '' : stateValues.globalSearch
-		);
+		tableController('RevenueStatementsTable').setGlobalFilter(stateValues.globalSearch);
 	}, [stateValues.globalSearch]);
 
 	const setESFilters = newFilter => {

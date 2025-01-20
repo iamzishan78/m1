@@ -131,9 +131,7 @@ export default function Properties() {
 	}, [esFilters]);
 
 	useEffect(() => {
-		tableController('PropertiesTable').setGlobalFilter(
-			stateValues.globalSearch === '*' ? '' : stateValues.globalSearch
-		);
+		tableController('PropertiesTable').setGlobalFilter(stateValues.globalSearch);
 	}, [stateValues.globalSearch]);
 
 	// cards default
