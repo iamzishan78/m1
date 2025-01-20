@@ -16,6 +16,9 @@ import { formatLayerForMap } from 'utils/helper';
 const UnitDetailCard = React.lazy(() => import('./Unit/UnitDetailCard'));
 const AgreementDetailCard = React.lazy(() => import('./Agreement/AgreementDetailCard'));
 const ParcelsDetailCard = React.lazy(() => import('components/ParcelsDetailCard/ParcelsDetailCard'));
+const GenericDetailCard = React.lazy(
+	() => import('components/Shared/components/common/DetailCard/Cards/GenericDetail')
+);
 
 const useStyles = makeStyles(() => ({
 	card: {
@@ -38,7 +41,6 @@ export default function ShapeCardProvider({ type }) {
 	const [stateExpandableCard] = useContext(ExpandableCardContext);
 	const classes = useStyles();
 
-
 	const [getCustomLayer, { data: dataCustomLayer, refetch: refetchCustomLayer }] = useLazyQuery(CUSTOMLAYER);
 
 	useEffect(() => {
@@ -48,7 +50,7 @@ export default function ShapeCardProvider({ type }) {
 	}, [globalStateValues?.refetch]);
 
 	useEffect(() => {
-		const id = popupVals.selectedShape.id
+		const id = popupVals.selectedShape.id;
 		if (id) {
 			getCustomLayer({
 				variables: {
@@ -61,9 +63,8 @@ export default function ShapeCardProvider({ type }) {
 	useEffect(() => {
 		if (dataCustomLayer && dataCustomLayer.customLayer) {
 			popupController.updateState({
-				selectedShape: formatLayerForMap(dataCustomLayer).feature
-			})
-
+				selectedShape: formatLayerForMap(dataCustomLayer).feature,
+			});
 		}
 	}, [dataCustomLayer]);
 
@@ -98,6 +99,8 @@ export default function ShapeCardProvider({ type }) {
 					</Card>
 				</div>
 			)}
+
+			{popupVals?.selectedShape?.isGenericAssetShape && <GenericDetailCard />}
 		</>
 	);
 }

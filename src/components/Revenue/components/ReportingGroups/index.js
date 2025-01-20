@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect  } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 
 import { makeStyles } from '@material-ui/styles';
 import { deepEqual } from 'components/Shared/functions';
@@ -29,21 +29,21 @@ export default function ReportingGroups() {
 	const [esFilters, ESFilters] = useState([]);
 
 	const setESFilters = newFilter => {
-		 // If the new filter is an empty array, reset `esFilters` to an empty array
+		// If the new filter is an empty array, reset `esFilters` to an empty array
 		if (newFilter?.length === 0) {
 			ESFilters([]); // Reset filters
 		}
 		// Check if the new filter is deeply equal to the current state; if not, update `esFilters`
-		if(!deepEqual(ESFilters, newFilter)) {
+		if (!deepEqual(ESFilters, newFilter)) {
 			ESFilters(newFilter); // Update filters only if they are different
-		};
+		}
 	};
 
 	useEffect(() => {
 		// Check if `tableStateValues?.filters` differs from the current `esFilters`
 		if (!deepEqual(tableStateValues?.filters, esFilters)) {
-			   // Update the filters in the table controller if they differ
-				tableController('RevenuePropertiesTable').setFilters(esFilters);
+			// Update the filters in the table controller if they differ
+			tableController('RevenuePropertiesTable').setFilters(esFilters);
 		}
 	}, [esFilters, filterToggle]);
 

@@ -480,3 +480,26 @@ export const adminOperationsInitialState = {
 	apiKeys: { dialpad: '' },
 };
 export const adminOperationsState = hookstate(copy(adminOperationsInitialState));
+
+/* -------------------------------------------------------------------------- */
+/*                              View Controller                               */
+/* -------------------------------------------------------------------------- */
+
+export const viewInitialState = {
+	client: null,
+	moduleName: null,
+	isTable: false,
+	icon: { jsxEl: null },
+	label: null,
+	allViews: [],
+	selectedView: null,
+	isViewOpen: false,
+	fetchViewSettings: false,
+	styleOverride: {
+		bgColor: {},
+		color: {},
+	},
+	isLoading: false,
+	shouldSyncView: true,
+};
+export const viewStates = {};

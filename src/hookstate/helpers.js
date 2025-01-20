@@ -5,6 +5,7 @@ import _, { get } from 'lodash';
 
 import DataType from 'components/Common/DataType';
 import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';
+import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import {
 	customFilterOptions,
 	dateFilterOptions,
@@ -15,15 +16,13 @@ import {
 	stringFilterOptions,
 } from 'components/MRTTable/utils/data';
 import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
+import { formatDate } from 'components/Shared/functions';
 import { customLayersFieldAccessors } from 'components/Shared/SidePanel/compoennts/Filters/consts';
 import { getFormattedFilterBasedOnType } from 'components/Shared/SidePanel/compoennts/Filters/UserMapFilter';
 
 import { tableController } from 'hookstate/tableController';
 
 import { SMALL_TIMEOUT } from 'utils/consts';
-
-import { globalStateController } from './globalStateController';
-import { formatDate } from 'components/Shared/functions';
 
 export const handleVisiblityMenu = () => {
 	const interval2 = setInterval(() => {
@@ -112,8 +111,8 @@ export const handleMRTSchema = ({
 	}
 
 	// Syncing map views with generic grids
-	const mapView = globalStateController.getValue('mapView');
-	const selectedMapViewFilters = mapView?.selectedMapView?.filters || [];
+	const selectedMapView = viewStateController('MapView').getValue('selectedView');
+	const selectedMapViewFilters = selectedMapView?.filters || [];
 
 	const dataSourceViews = selectedMapViewFilters?.filter(view => layerIdentifier === view.dataSourceName);
 	const mapViewFilters =

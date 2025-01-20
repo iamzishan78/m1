@@ -158,15 +158,15 @@ export const modifyExandableCardStyle = selectedShape => {
 		backgroundColor = 'white';
 		headerIcons = {
 			'& .MuiIconButton-colorPrimary , & .MuiToggleButton-root, & .MuiSvgIcon-colorSecondary, & .MuiIconButton-label ':
-			{
-				// "&:hover": {
-				//   backgroundColor: 'rgba(0, 0, 0, 0.08) !important'
-				// },
-				color: '#7f7f7f !important',
-				svg: {
-					fill: '#7f7f7f !important',
+				{
+					// "&:hover": {
+					//   backgroundColor: 'rgba(0, 0, 0, 0.08) !important'
+					// },
+					color: '#7f7f7f !important',
+					svg: {
+						fill: '#7f7f7f !important',
+					},
 				},
-			},
 			'& .MuiIconButton-root, & .MuiButtonBase-root': {
 				'&:hover': {
 					backgroundColor: 'rgba(0, 0, 0, 0.08) !important',
@@ -202,7 +202,7 @@ export const calculateLandArea = selectedFeature => {
 			return `${formatNumber(Math.round(distanceInMiles * 100) / 100)} miles`;
 		}
 	}
-	return null
+	return null;
 };
 
 export const parseUserDefinedLayerFeature = (feature, layer) => {

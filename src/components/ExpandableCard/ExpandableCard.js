@@ -1,7 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-
 import {
 	Avatar,
 	Box,
@@ -126,9 +125,7 @@ function ExpandableCard(props) {
 	// Queries
 	const [trackByObjectId, { data: dataTrack }] = useLazyQuery(TRACKBYOBJECTID);
 
-	const { backgroundColor, headerIcons, icons, headerLabelColor } = modifyExandableCardStyle(
-		selectedShape
-	);
+	const { backgroundColor, headerIcons, icons, headerLabelColor } = modifyExandableCardStyle(selectedShape);
 
 	const useStyles = makeStyles(() => ({
 		root: {
@@ -195,8 +192,8 @@ function ExpandableCard(props) {
 			transition: 'height 0.1s',
 			background: '#fff',
 			padding: '0 !important',
-			overflow: 'auto',
-			// overflowY:'hidden',
+			overflowX: 'hidden',
+			overflowY: 'auto',
 			'&::-webkit-scrollbar': {
 				width: '0.4em',
 			},
@@ -286,8 +283,9 @@ function ExpandableCard(props) {
 
 	//  UseEffects
 	useEffect(() => {
-		setTitle(props.title);
-	}, [props.title, props.targetLabel]);
+		const shapeTitle = selectedShape?.assetName || props.title;
+		setTitle(shapeTitle);
+	}, [props.title, props.targetLabel, selectedShape?.assetName]);
 
 	useEffect(() => {
 		const searchParams = new URLSearchParams(window.location.search?.replace('?', ''));
@@ -457,25 +455,25 @@ function ExpandableCard(props) {
 				{selectedShape ? (
 					<>
 						<Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
-							<Grid item>
-								<Avatar color="#1a2341">
-									<FolderIcon fontColor="#1a2341" />
-								</Avatar>
-							</Grid>
+							{!selectedShape?.isGenericAssetShape && (
+								<Grid item>
+									<Avatar color="#1a2341">
+										<FolderIcon fontColor="#1a2341" />
+									</Avatar>
+								</Grid>
+							)}
 							<Grid item>
 								<Box className="name">
 									{title.length > 70 ? `${title.substr(0, 75).toUpperCase()}...` : title.toUpperCase()}
 								</Box>
-								<Box className="description">{subTitle}</Box>
+								{!selectedShape?.isGenericAssetShape && <Box className="description">{subTitle}</Box>}
 								{targetLabel === 'unit' && <Box className="type">Unit</Box>}
 								{targetLabel === 'agreement' && (
 									<Box className="type">
 										{agreementTypes.find(at => at.value === selectedShape?.agreementType)?.label || ''}
 									</Box>
 								)}
-								{targetLabel === 'parcel' && (
-									<Box className="type">Tract</Box>
-								)}
+								{targetLabel === 'parcel' && <Box className="type">Tract</Box>}
 							</Grid>
 						</Grid>
 						{targetLabel === 'parcel' && props.expanded === false && (
@@ -619,10 +617,10 @@ function ExpandableCard(props) {
 						<Typography
 							// className={classes.prevlocation}
 							color="inherit"
-						// onClick={() => {
-						//   setStateApp({ ...stateApp, DocumentDrawer: true });
-						//   history.push("/documents");
-						// }}
+							// onClick={() => {
+							//   setStateApp({ ...stateApp, DocumentDrawer: true });
+							//   history.push("/documents");
+							// }}
 						>
 							Wells
 						</Typography>
@@ -762,16 +760,16 @@ function ExpandableCard(props) {
 								)}
 
 							{stateExpandableCard.expanded &&
-								targetLabel !== 'activity' &&
-								targetLabel !== 'contact' &&
-								parent !== 'table' ? (
+							targetLabel !== 'activity' &&
+							targetLabel !== 'contact' &&
+							parent !== 'table' ? (
 								parent !== 'table' &&
-									targetLabel !== 'well' &&
-									targetLabel !== 'expandedWell' &&
-									targetLabel !== 'parcel' &&
-									!selectedShape &&
-									targetLabel !== 'expandedParcel' &&
-									targetLabel !== 'recent_submitted_permits' ? (
+								targetLabel !== 'well' &&
+								targetLabel !== 'expandedWell' &&
+								targetLabel !== 'parcel' &&
+								!selectedShape &&
+								targetLabel !== 'expandedParcel' &&
+								targetLabel !== 'recent_submitted_permits' ? (
 									<Tooltip title={'Shrink'} placement="top">
 										<IconButton color="secondary" onClick={handleShrink} aria-label="shrink" className={classes.icons}>
 											<ShrinkIcon viewBox="0 0 64 64" color="secondary" />
@@ -828,27 +826,27 @@ function ExpandableCard(props) {
 													targetLabel === 'unit' ||
 													targetLabel === 'agreement' ||
 													targetLabel === 'activity') && (
-														<>
-															{' '}
-															<IconButton size="small" component="span" onClick={handleMenuClick}>
-																<MoreVertIcon id="expandCardVertIcon" color="secondary" size="medium" />
-															</IconButton>
-															<Menu
-																id="dealMenu"
-																anchorEl={anchorEl}
-																open={Boolean(anchorEl)}
-																onClose={handleMenuClose}
-																className={classes.menu}
-															>
-																<MenuItem onClick={openConfirmationDialog} data-testid="delete-icon">
-																	<ListItemIcon>
-																		<DeleteIcon size="medium" />
-																	</ListItemIcon>
-																	<ListItemText>Delete</ListItemText>
-																</MenuItem>
-															</Menu>
-														</>
-													)}
+													<>
+														{' '}
+														<IconButton size="small" component="span" onClick={handleMenuClick}>
+															<MoreVertIcon id="expandCardVertIcon" color="secondary" size="medium" />
+														</IconButton>
+														<Menu
+															id="dealMenu"
+															anchorEl={anchorEl}
+															open={Boolean(anchorEl)}
+															onClose={handleMenuClose}
+															className={classes.menu}
+														>
+															<MenuItem onClick={openConfirmationDialog} data-testid="delete-icon">
+																<ListItemIcon>
+																	<DeleteIcon size="medium" />
+																</ListItemIcon>
+																<ListItemText>Delete</ListItemText>
+															</MenuItem>
+														</Menu>
+													</>
+												)}
 											</>
 										)}
 									</Tooltip>

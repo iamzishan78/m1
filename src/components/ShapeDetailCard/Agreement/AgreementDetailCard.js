@@ -54,7 +54,7 @@ export default function AgreementDetailCard(props) {
 	const classes = detailCardStyles();
 	const history = useHistory();
 	const showSummary = true;
-	const { dataCustomLayer } = props
+	const { dataCustomLayer } = props;
 
 	const [getAgreementProvisions, { data: agreementProvisions }] = useLazyQuery(GET_AGREEMENT_PROVISIONS);
 	const [getStandardProvisions, { data: dataStandardProvisions = [] }] = useLazyQuery(GET_STANDARD_PROVISIONS);

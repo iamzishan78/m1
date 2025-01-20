@@ -247,8 +247,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex, dataCustomLayer 
 	useEffect(() => {
 		if (dataCustomLayer && dataCustomLayer.customLayer) {
 			popupController.updateState({
-				selectedShape: formatLayerForMap(dataCustomLayer).feature
-			})
+				selectedShape: formatLayerForMap(dataCustomLayer).feature,
+			});
 			let shape = copy(dataCustomLayer.customLayer.shape);
 			if (typeof shape === 'string') {
 				shape = JSON.parse(shape);

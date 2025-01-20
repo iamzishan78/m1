@@ -126,14 +126,18 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
 						<Table className={classes.table} aria-label="caption table">
 							<TableHead>
 								<TableRow>
-									<TableCell style={{ paddingLeft: 0, width: '-webkit-fill-available' }} component="th" className={`${classes.nameCell} ${classes.headerCell}`}>
+									<TableCell
+										style={{ paddingLeft: 0, width: '-webkit-fill-available' }}
+										component="th"
+										className={`${classes.nameCell} ${classes.headerCell}`}
+									>
 										<CSVDownloader
 											datas={convertAnalyticsDataToCSV(csvItems, monthsInterval)}
 											filename={'Adjustments'}
 											type="link"
-											style={{ position: 'relative',  left: '15px', width: '30px'   }}
+											style={{ position: 'relative', left: '15px', width: '30px' }}
 										>
-											<IconButton style={{ display: 'flex', padding: '0px',}}>
+											<IconButton style={{ display: 'flex', padding: '0px' }}>
 												<Tooltip title="Download CSV" aria-label="add">
 													<CloudDownloadIcon />
 												</Tooltip>

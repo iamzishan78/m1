@@ -79,3 +79,15 @@ export const getArrayValue = (array, valueKey, id, idKey) => {
 		}
 	}
 };
+
+// Helper for removing spaces
+export const removeSpaces = key => key?.replace(/\s+/g, '_')?.toLowerCase();
+
+export const replaceUnderscoreAndCapitalize = str => {
+	return str
+		?.toLowerCase()
+		?.replace(/_/g, ' ')
+		?.split(' ')
+		?.map(word => word?.charAt(0)?.toUpperCase() + word?.slice(1)) // Capitalize the first letter of each word
+		?.join(' ');
+};

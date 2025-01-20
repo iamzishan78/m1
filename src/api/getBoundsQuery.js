@@ -51,7 +51,7 @@ const handleQuery = (queryHandler, onData) => {
 		return;
 	}
 
-	return new Promise((resolve) => {
+	return new Promise(resolve => {
 		const query = client.watchQuery({
 			query: queryString,
 			variables: queryHandler.variables,
@@ -76,7 +76,7 @@ const handleQuery = (queryHandler, onData) => {
 
 				return resolve(data);
 			}
-			return null
+			return null;
 		});
 	});
 };
