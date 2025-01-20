@@ -651,7 +651,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.NUMBER_COLUMN,
 			name: 'interestSummary.unitNraSum',
 			id: 'interestSummary.unitNraSum',
 			header: 'Unit NRA',
