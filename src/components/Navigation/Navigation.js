@@ -207,7 +207,7 @@ export default function Navigation(props) {
 									<ActivityDashboardSearch showLabel={location.pathname === '/contacts/activityDashboard'} />
 								</>
 							)}
-							{location.pathname === '/documents' && (
+							{location.pathname.startsWith('/documents') && (
 								<>
 									<DocumentSearch />
 								</>
