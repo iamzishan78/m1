@@ -55,7 +55,15 @@ export default function UserManagementContainer() {
 					<HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={handleClose} />
 				</DialogTitle>
 				<DialogContent style={{ height: windowsHeight }}>
-					<MRTTable name="UserManagementTable" />
+					<MRTTable
+						name="UserManagementTable"
+						overrideMeta={{
+							deletedKeys: {
+								mainRecord: { key: '_id' },
+								parentRecord: { value: window.sessionStorage.getItem('tenantOrgId') },
+							},
+						}}
+					/>
 				</DialogContent>
 			</Dialog>
 		</Fragment>
