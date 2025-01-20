@@ -1,6 +1,3 @@
-/* eslint-disable react/prop-types */
-import React from 'react';
-
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import UserManagementToolbar from 'components/MRTTable/TablesOverride/UserManagementTable/UserManagementToolbar';
 
@@ -60,24 +57,14 @@ const UserManagementMeta = {
 			header: 'Role',
 			id: 'role',
 			name: 'role',
-			Cell: ({ row }) => {
-				const value = row?.original?.role;
-				// Use the enum to get the user-friendly name for the role
-				const displayValue = UserRole[value] || '';
-				return <>{displayValue}</>;
-			},
+			accessorFn: row => UserRole[row?.role] || '',
 		},
 		{
 			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Role Privileges',
 			id: 'rolePrivileges',
 			name: 'rolePrivileges',
-			Cell: ({ row }) => {
-				const value = row?.original?.rolePrivileges;
-				// Use the enum to get the user-friendly name for the role privileges
-				const displayValue = RolePrivilege[value] || '';
-				return <>{displayValue}</>;
-			},
+			accessorFn: row => RolePrivilege[row?.rolePrivileges] || '',
 		},
 		{
 			...CommonSchema.SELECT_DATE_COLUMN,
