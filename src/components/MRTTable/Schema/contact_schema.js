@@ -632,7 +632,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.NUMBER_COLUMN,
 			name: 'interestSummary.wellInterestCount',
 			id: 'interestSummary.wellInterestCount',
 			header: 'Well Interest Count',
@@ -642,7 +642,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.NUMBER_COLUMN,
 			name: 'interestSummary.unitInterestCount',
 			id: 'interestSummary.unitInterestCount',
 			header: 'Unit Interest Count',
@@ -660,7 +660,7 @@ const ContactMeta = {
 		},
 
 		{
-			...CommonSchema.STRING_COLUMN,
+			...CommonSchema.NUMBER_COLUMN,
 			name: 'interestSummary.tractInterestCount',
 			id: 'interestSummary.tractInterestCount',
 			header: 'Tract Interest Count',
