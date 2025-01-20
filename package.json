@@ -98,6 +98,7 @@
 		"react-image-crop": "^8.6.6",
 		"react-intersection-observer": "^9.4.0",
 		"react-material-ui-form-validator": "^2.1.4",
+		"react-mentions": "^4.4.10",
 		"react-notifications": "^1.7.2",
 		"react-number-format": "^4.5.0",
 		"react-papaparse": "^3.11.1",
