@@ -2,6 +2,7 @@ import React, { useState, createContext, useEffect } from 'react';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 
+import PropTypes from 'prop-types';
 import queryString from 'query-string';
 
 import { globalStateController } from 'hookstate/globalStateController';
@@ -13,7 +14,7 @@ import { MSALObj, tenantsCredentials } from './components/AzureLogin/AADAuthConf
 import { MSALB2CObj, B2CTenantCredentials } from './components/AzureLogin/AADB2CAuthConfig';
 import { heatLayers, baseMapLayers } from './LayerConfig';
 
-const AppContext = createContext([{}, () => { }]);
+const AppContext = createContext([{}, () => {}]);
 
 const AppProvider = props => {
 	const [stateApp, setStateApp] = useState({
@@ -134,7 +135,6 @@ const AppProvider = props => {
 		selectedAgreement: null,
 		selectedMeta: null,
 		selectedView: null,
-		revenueSearchQuery: '',
 		filtersData: [],
 		shapeEditMode: '',
 		landSearchFilters: {
@@ -176,9 +176,11 @@ const AppProvider = props => {
 							mapCircularLoaderAct: false,
 						};
 					}
+					return stateApp;
 				});
 				return res;
 			}
+			return null;
 		},
 
 		selectedShape: popupController.getValue('selectedShape'),
@@ -203,7 +205,7 @@ const AppProvider = props => {
 
 				let myMSALObjInt = isBypassTenant ? null : MSALObj(tenant);
 				globalStateController.updateState({ apolloClientEndpoint: tenant.apolloClientEndpoint });
-				setStateApp((state, props) => {
+				setStateApp(state => {
 					return {
 						...state,
 						myMSALObj: myMSALObjInt,
@@ -213,7 +215,7 @@ const AppProvider = props => {
 					};
 				});
 			} else {
-				setStateApp((state, props) => {
+				setStateApp(state => {
 					return { ...state, myMSALObj: false };
 				});
 			}
@@ -224,7 +226,7 @@ const AppProvider = props => {
 				let tenant = B2CTenantCredentials(B2CTenantName);
 				if (tenant) {
 					let myMSALB2CObjInt = MSALB2CObj(tenant.tenantId, tenant.clientId);
-					setStateApp((state, props) => {
+					setStateApp(state => {
 						return {
 							...state,
 							myMSALB2CObj: myMSALB2CObjInt,
@@ -233,7 +235,7 @@ const AppProvider = props => {
 					});
 				}
 			} else {
-				setStateApp((state, props) => {
+				setStateApp(state => {
 					return { ...state, myMSALB2CObj: false };
 				});
 			}
@@ -304,6 +306,10 @@ const setApolloHeaders = (config, authToken, idToken) => {
 		config.headers['X-MS-TOKEN-AAD-ID-TOKEN'] = idToken;
 	}
 	return config;
+};
+
+AppProvider.propTypes = {
+	children: PropTypes.node,
 };
 
 export { AppContext, AppProvider, setApolloHeaders, apolloClientEndpointDev };

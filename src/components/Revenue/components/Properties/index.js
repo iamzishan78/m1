@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { makeStyles } from '@material-ui/styles';
 
@@ -11,9 +11,8 @@ import { setStateIfDeepEqual } from 'components/Shared/functions';
 
 import { GET_UNMAPPED_PROPERTY_COUNT } from 'graphQL/useQueryGetProperty';
 
+import { globalStateController } from 'hookstate/globalStateController';
 import { tableController } from 'hookstate/tableController';
-
-import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -84,13 +83,14 @@ const useStyles = makeStyles(theme => ({
 
 export default function Properties() {
 	const classes = useStyles();
-	const [stateApp, setStateApp] = useContext(AppContext);
+
+	const { stateValues } = globalStateController.useState(['globalSearch']);
 	const propertiesTableState = tableController('PropertiesTable').useState([
 		'filters',
 		'data',
 		'globalFilter',
 	]).stateValues;
-	// redux
+
 	const [filterToggle, setFilterToggle] = React.useState(false);
 
 	// props to pass in table
@@ -122,9 +122,7 @@ export default function Properties() {
 
 	useEffect(() => {
 		return () => {
-			setStateApp((state, props) => {
-				return { ...state, revenueSearchQuery: '' };
-			});
+			globalStateController.updateState({ globalSearch: '' });
 		};
 	}, []);
 
@@ -134,9 +132,9 @@ export default function Properties() {
 
 	useEffect(() => {
 		tableController('PropertiesTable').setGlobalFilter(
-			stateApp.revenueSearchQuery === '*' ? '' : stateApp.revenueSearchQuery
+			stateValues.globalSearch === '*' ? '' : stateValues.globalSearch
 		);
-	}, [stateApp.revenueSearchQuery]);
+	}, [stateValues.globalSearch]);
 
 	// cards default
 	const cardsDefault = [
@@ -181,7 +179,7 @@ export default function Properties() {
 				esFilters={propertiesTableState.filters}
 				cardsDefault={cardsDefault}
 				totalCount={propertiesTableState?.data?.total}
-				landSearchQuery={stateApp.revenueSearchQuery}
+				landSearchQuery={stateValues.globalSearch}
 				setESFilters={setESFilters}
 				filterToggle={filterToggle}
 				setFilterToggle={setFilterToggle}

@@ -5,7 +5,11 @@ import { fade, makeStyles } from '@material-ui/core/styles';
 import ClearIcon from '@material-ui/icons/Clear';
 import SearchIcon from '@material-ui/icons/Search';
 
+import PropTypes from 'prop-types';
+
 import { SIDE_PANEL_MENU_ITEMS_LIST } from 'components/Revenue/Revenue';
+
+import { globalStateController } from 'hookstate/globalStateController';
 
 import { AppContext } from 'AppContext';
 
@@ -62,7 +66,10 @@ const useStyles = makeStyles(theme => ({
 
 const LandSearch = ({ activeModule }) => {
 	const classes = useStyles();
-	const [stateApp, setStateApp] = useContext(AppContext);
+
+	const [stateApp] = useContext(AppContext);
+	const { stateValues } = globalStateController.useState(['globalSearch']);
+
 	const [search, setSearch] = useState('');
 
 	const searchPlaceholder = useMemo(() => {
@@ -77,18 +84,15 @@ const LandSearch = ({ activeModule }) => {
 	}, [activeModule]);
 
 	useEffect(() => {
-		const newSearch = stateApp.revenueSearchQuery.replace('*', '');
+		const newSearch = stateValues.globalSearch.replace('*', '');
 		if (newSearch !== search) {
 			setSearch(newSearch);
 		}
-	}, [stateApp.revenueSearchQuery]);
+	}, [stateValues.globalSearch]);
 
 	useEffect(() => {
 		return () => {
-			setStateApp(stateApp => ({
-				...stateApp,
-				revenueSearchQuery: '',
-			}));
+			globalStateController.updateState({ globalSearch: '' });
 		};
 	}, []);
 
@@ -97,12 +101,9 @@ const LandSearch = ({ activeModule }) => {
 			<TextField
 				value={search}
 				onChange={e => {
-					setSearch(e.target.value?.trim());
+					setSearch(e.target.value);
 					setTimeout(() => {
-						setStateApp(stateApp => ({
-							...stateApp,
-							revenueSearchQuery: `${e.target.value?.trim()}*`,
-						}));
+						globalStateController.updateState({ globalSearch: e.target.value });
 					}, 500);
 				}}
 				style={{
@@ -130,11 +131,7 @@ const LandSearch = ({ activeModule }) => {
 									className={`${classes.toggleBtn} ${stateApp.activityDisplayType === 'table' && classes.activeBtn}`}
 									onClick={() => {
 										setSearch('');
-										setStateApp(stateApp => ({
-											...stateApp,
-											revenueSearchQuery: '*',
-											// isLandSearching: true,
-										}));
+										globalStateController.updateState({ globalSearch: '*' });
 									}}
 								>
 									<ClearIcon />
@@ -146,6 +143,10 @@ const LandSearch = ({ activeModule }) => {
 			/>
 		</div>
 	);
+};
+
+LandSearch.propTypes = {
+	activeModule: PropTypes.object.isRequired,
 };
 
 export default LandSearch;
