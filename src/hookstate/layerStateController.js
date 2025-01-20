@@ -1,6 +1,4 @@
 /* eslint-disable no-use-before-define */
-/* eslint-disable no-magic-numbers */
-
 import { NotificationManager } from 'react-notifications';
 
 import { booleanWithin, difference, union, booleanIntersects, bboxPolygon } from '@turf/turf';
@@ -13,6 +11,7 @@ import getBoundsQuery from 'api/getBoundsQuery';
 import { generateFileFilters, makeGeoJSON, getGeoJsonLayerProps } from 'components/Map/DeckGL/helpers/common';
 import DeckGlLayer from 'components/Map/DeckGL/helpers/DeckGlLayer';
 import { drawWellBoundary } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
+import { viewStateController } from 'components/MRTTable/Common/GridView/ViewController';
 import { copy } from 'components/Shared/functions';
 import {
 	deckGlLayerIdentifiers,
@@ -37,6 +36,27 @@ import { mapControlsController } from './mapControlsController';
 import { navController } from './navStateController';
 import { popupController } from './popupStateController';
 
+const TWO = 2;
+const FIFTEEN = 15;
+const TWENTY = 20;
+const THIRTY = 30;
+const FORTY = 40;
+const FIFTY = 50;
+const FIFTY_THREE = 53;
+const FIFTY_EIGHT = 58;
+const SEVENTY_FOUR = 74;
+const SEVENTY_SEVEN = 77;
+const ONE_HUNDRED = 100;
+const ONE_THREE_SIX = 136;
+const ONE_FIVE_TWO = 152;
+const TWO_O_SEVEN = 207;
+const TWO_ELEVEN = 211;
+const TWO_THIRTY = 230;
+const TWO_FORTY_TWO = 242;
+const TWO_FIFTY_ONE = 251;
+const SEVEN_FIFTY = 750;
+const SIX_THOUSAND = 6000;
+
 const getWellColor = w => {
 	// Check if the well status is of Permit type
 	const isWellPermitStatus = ['PERMIT', 'PERMIT - NEW DRILL', 'PERMIT - EXISTING WELL'].includes(
@@ -49,29 +69,29 @@ const getWellColor = w => {
 		// rgb(2, 207, 53)
 		case 'OIL':
 		case 'OIL AND GAS':
-			return [2, 207, 53]; // green
+			return [TWO, TWO_O_SEVEN, FIFTY_THREE]; // green
 
 		// rgb(230, 15, 15)
 		case 'GAS':
-			return [230, 15, 15]; // red
+			return [TWO_THIRTY, FIFTEEN, FIFTEEN]; // red
 
 		// rgb(74, 211, 242)
 		case 'WATER':
-			return [74, 211, 242]; // blue
+			return [SEVENTY_FOUR, TWO_ELEVEN, TWO_FORTY_TWO]; // blue
 
 		// rgb(251, 152, 40)
 		case 'PERMIT':
 		case 'PERMIT - NEW DRILL':
 		case 'PERMIT - EXISTING WELL':
-			return [251, 152, 40]; // orange
+			return [TWO_FIFTY_ONE, ONE_FIVE_TWO, FORTY]; // orange
 
 		// rgba(30, 26, 26, 0.55)
 		case 'PERMITTED':
-			return [251, 152, 40]; // orange
+			return [TWO_FIFTY_ONE, ONE_FIVE_TWO, FORTY]; // orange
 
 		// rgb(192, 0, 0)
 		default:
-			return [58, 58, 58]; // default dark for permitted
+			return [FIFTY_EIGHT, FIFTY_EIGHT, FIFTY_EIGHT]; // default dark for permitted
 	}
 };
 
@@ -231,7 +251,7 @@ const LayerMeta = {
 					getLineColor: [0, 0, 0, 0],
 					lineWidthMinPixels: 1.5,
 					lineWidthMaxPixels: 8,
-					highlightColor: [136, 136, 136, 77],
+					highlightColor: [ONE_THREE_SIX, ONE_THREE_SIX, ONE_THREE_SIX, SEVENTY_SEVEN],
 					autoHighlight: true,
 					parameters: {
 						depthTest: false, // Disable depth testing to draw points on top
@@ -253,7 +273,7 @@ const LayerMeta = {
 					getLineColor: [0, 0, 0, 0],
 					lineWidthMinPixels: 1.5,
 					lineWidthMaxPixels: 8,
-					highlightColor: [136, 136, 136, 77],
+					highlightColor: [ONE_THREE_SIX, ONE_THREE_SIX, ONE_THREE_SIX, SEVENTY_SEVEN],
 					autoHighlight: true,
 					parameters: {
 						depthTest: false, // Disable depth testing to draw points on top
@@ -266,7 +286,7 @@ const LayerMeta = {
 
 const layerStateControllerHandler = state => {
 	const showError = debounce(error => {
-		NotificationManager.error(error, 'Error', 6000);
+		NotificationManager.error(error, 'Error', SIX_THOUSAND);
 	}, 1000);
 	const handleBounds = (layerId, defaultZoom, visible, layerBBox, polygonFilter) => {
 		const { boundingStates, bbox, zoom } = state.get({
@@ -396,6 +416,31 @@ const layerStateControllerHandler = state => {
 		}, 10);
 	};
 
+	const removeLayers = (timeout = true) => {
+		const showableLayers = getShowableLayers();
+		showableLayers.forEach(layer => {
+			if (timeout) {
+				setTimeout(() => {
+					removeLayer(layer);
+				}, FIFTY);
+			} else {
+				removeLayer(layer);
+			}
+		});
+	};
+
+	const recalculate = () => {
+		state.recalculate.set(!state.recalculate.get({ noproxy: true }));
+	};
+
+	const getLayerFromMongoId = layerId => {
+		const layers = getShowableLayers();
+
+		const layer = layers.find(layer => layer.layerId === layerId);
+
+		return layer;
+	};
+
 	const getShowableLayers = () => {
 		let layers = globalStateController.getValue('layers');
 		if (layers?.length === 0) {
@@ -441,31 +486,6 @@ const layerStateControllerHandler = state => {
 
 			return true;
 		});
-	};
-
-	const removeLayers = (timeout = true) => {
-		const showableLayers = getShowableLayers();
-		showableLayers.forEach(layer => {
-			if (timeout) {
-				setTimeout(() => {
-					removeLayer(layer);
-				}, 50);
-			} else {
-				removeLayer(layer);
-			}
-		});
-	};
-
-	const recalculate = () => {
-		state.recalculate.set(!state.recalculate.get({ noproxy: true }));
-	};
-
-	const getLayerFromMongoId = layerId => {
-		const layers = getShowableLayers();
-
-		const layer = layers.find(layer => layer.layerId === layerId);
-
-		return layer;
 	};
 
 	const getBeforeLayerId = identifier => {
@@ -532,8 +552,8 @@ const layerStateControllerHandler = state => {
 			source: `${layerId}-cluster`,
 			filter: ['has', 'point_count'],
 			paint: {
-				'circle-color': ['step', ['get', 'point_count'], '#51bbd6', 100, '#f1f075', 750, '#f28cb1'],
-				'circle-radius': ['step', ['get', 'point_count'], 20, 100, 30, 750, 40],
+				'circle-color': ['step', ['get', 'point_count'], '#51bbd6', 100, '#f1f075', SEVEN_FIFTY, '#f28cb1'],
+				'circle-radius': ['step', ['get', 'point_count'], TWENTY, ONE_HUNDRED, THIRTY, SEVEN_FIFTY, FORTY],
 			},
 		});
 		map.addLayer({
@@ -681,8 +701,7 @@ const layerStateControllerHandler = state => {
 			polygonFilter
 		);
 
-		let pickable =
-			dbLayer.layerSettings.interaction?.interactionAble && dbLayer.layerSettings.interaction?.interactionDetail?.click;
+		let pickable = dbLayer.layerSettings.interaction?.interactionDetail?.click;
 		if (deckGlLandGridIdentifiers.includes(dbLayer?.identifier)) {
 			pickable = true;
 		}
@@ -749,7 +768,7 @@ const layerStateControllerHandler = state => {
 			filters: isFileLayer ? generateFileFilters({ fileLayer: dbLayer, extendFilters: filters }) : filters,
 			onData: data => {
 				if (!Array.isArray(data)) {
-					return;
+					return null;
 				}
 				let geoJson = { features: [] };
 				if (data?.length > 0) {
@@ -758,13 +777,14 @@ const layerStateControllerHandler = state => {
 					}
 					const layerData = data;
 					if (!Array.isArray(layerData)) {
-						return;
+						return null;
 					}
 					geoJson = makeGeoJSON(layerData, labelProps);
 				}
 				if (deckLayers[layerId]?.getData?.feedData) {
 					deckLayers[layerId].getData.feedData(geoJson.features);
 				}
+				return null;
 			},
 		});
 		return null;
@@ -776,13 +796,13 @@ const layerStateControllerHandler = state => {
 		},
 		resetBounds: identifier => {
 			if (typeof identifier !== 'string') {
-				return;
+				return null;
 			}
 			if (identifier === 'Agreements') {
 				['Deeds', 'Leases', 'Contracts', 'Surfaces'].forEach(type => {
 					layerController.resetBounds(type);
 				});
-				return;
+				return null;
 			}
 			const { boundingStates } = state.get({
 				noproxy: true,
@@ -817,7 +837,7 @@ const layerStateControllerHandler = state => {
 						}
 					}
 				});
-				return;
+				return null;
 			}
 
 			const showableLayers = getShowableLayers();
@@ -826,6 +846,8 @@ const layerStateControllerHandler = state => {
 					removeLayer(dbLayer, true);
 				}
 			});
+
+			return null;
 		},
 		updateLayers,
 		updateLayer,
@@ -848,7 +870,7 @@ const layerStateControllerHandler = state => {
 		},
 		changeLayerPosition: (currentLayer, beforeLayer) => {
 			if (!currentLayer) {
-				return;
+				return null;
 			}
 
 			if (currentLayer && !beforeLayer) {
@@ -859,6 +881,7 @@ const layerStateControllerHandler = state => {
 					`${beforeLayer?.identifier}_${beforeLayer._id}`
 				);
 			}
+			return null;
 		},
 		resetMapStates: (mapReady = false) => {
 			const rigsData = layerController.getValue('rigsData');
@@ -867,7 +890,7 @@ const layerStateControllerHandler = state => {
 			popupController.reset();
 			drawController.reset();
 			layerFiltersController.reset();
-			const mapViewFilters = globalStateController.getValue('mapView')?.selectedMapView?.filters || [];
+			const mapViewFilters = viewStateController('MapView').getValue('selectedView')?.filters || [];
 			mapViewFilters.forEach(filter => {
 				const dataSource = filter?.dataSourceName;
 

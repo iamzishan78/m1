@@ -33,19 +33,17 @@ import { AppContext } from 'AppContext';
 import { getShapeSubtitle } from '../helper';
 import { detailCardStyles } from '../style';
 import UnitSummary from './UnitSummary';
+import { globalStateController } from 'hookstate/globalStateController';
+import { LOD_YEAR } from 'utils/consts';
 
 const setSelectedTab = tableGlobalController.setSelectedTab;
 
-export default function UnitDetailCard({ id }) {
+export default function UnitDetailCard({ id, dataCustomLayer }) {
 	const dispatch = useDispatch();
 	const [uniObj, setUniObj] = useState();
 	const [properties, setProperties] = useState();
-	const [stateApp, setStateApp] = useContext(AppContext);
 	const UnitInterestOwnerGridState = tableController('UnitInterestOwnerTable').useState(['data']).stateValue;
 	const [updateCustomLayer, { data: updatedUnit, loading: updatingLayer }] = useMutation(UPDATECUSTOMLAYER);
-
-	const globalState = tableGlobalController.useState(['refetch']);
-	const globalStateValues = globalState.stateValues;
 
 	const {
 		stateValues: { tabKey: selectedTab },
@@ -54,15 +52,7 @@ export default function UnitDetailCard({ id }) {
 	const classes = detailCardStyles();
 	const showSummary = true;
 
-	const [getCustomLayer, { data: dataCustomLayer, refetch: refetchCustomLayer }] = useLazyQuery(CUSTOMLAYER);
-
 	const contactsAdded = useSelector(state => state?.common?.contactsAdded);
-
-	useEffect(() => {
-		if (dataCustomLayer) {
-			refetchCustomLayer();
-		}
-	}, [globalStateValues?.refetch]);
 
 	useEffect(() => {
 		mapControlsController.updateState({
@@ -75,16 +65,6 @@ export default function UnitDetailCard({ id }) {
 			setSelectedTab(0);
 		}
 	}, [contactsAdded]);
-
-	useEffect(() => {
-		if (id) {
-			getCustomLayer({
-				variables: {
-					id: id,
-				},
-			});
-		}
-	}, [getCustomLayer, id]);
 
 	useEffect(() => {
 		if (dataCustomLayer && dataCustomLayer.customLayer) {
@@ -140,16 +120,12 @@ export default function UnitDetailCard({ id }) {
 				popupController.updateState({
 					selectedShape: { ...feature.properties, feature },
 				});
-				setStateApp(state => ({
-					...state,
-					selectedShape: { ...feature.properties, feature },
-				}));
 				setProperties({ ...feature.properties });
 			} else {
 				dispatch(showErrorMessage('Failed to update unit'));
 			}
 		}
-	}, [dispatch, setStateApp, updatedUnit]);
+	}, [dispatch, updatedUnit]);
 
 	const updateProperties = (e, field, value) => {
 		e?.preventDefault();
@@ -200,7 +176,7 @@ export default function UnitDetailCard({ id }) {
 			variables: {
 				customLayerId: uniObj._id,
 				customLayer,
-				userId: stateApp.user.mongoId,
+				userId: globalStateController.getValue('user').mongoId,
 			},
 			refetchQueries: ['getAllLayerSettingsByUser'],
 			awaitRefetchQueries: true,
@@ -224,7 +200,7 @@ export default function UnitDetailCard({ id }) {
 			variables: {
 				customLayerId: uniObj._id,
 				customLayer,
-				userId: stateApp.user.mongoId,
+				userId: globalStateController.getValue('user').mongoId,
 			},
 			refetchQueries: ['allLayerSettingsByUser'],
 			awaitRefetchQueries: true,
@@ -343,7 +319,7 @@ export default function UnitDetailCard({ id }) {
 											tabLabels: ['Unit Ownership', 'Potential Ownership'],
 											customProps: {
 												customLayer: uniObj,
-												year: 2023,
+												year: LOD_YEAR,
 												filterByWells: false,
 											},
 										}}

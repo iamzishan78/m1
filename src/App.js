@@ -88,7 +88,7 @@ function App() {
 							<Route exact path="/signup" component={SignUpCard} />
 							<Route exact path="/forgotpassword" component={ForgotPassword} />
 							<PrivateRoute path="/flow" component={TransactProvider} />
-							<PrivateRoute exact path="/documents" component={DocumentProvider} />
+							<PrivateRoute path="/documents" component={DocumentProvider} />
 							<PrivateRoute exact path="/documents/:documentId/view" component={DocumentProvider} />
 							<PrivateRoute path="/calendar" component={ActivitiesProvider} />
 							<PrivateRoute exact path="/title" component={TitleOpinionProvider} />

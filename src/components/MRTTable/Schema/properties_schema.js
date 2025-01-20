@@ -60,9 +60,10 @@ const PropertiesMeta = {
 		// Column for Property with link
 		{
 			...CommonSchema.INITAIL_PINNED,
-			name: 'purchaserNumber.keyword',
-			id: 'purchaserNumber',
+			name: 'name.keyword',
+			id: 'name',
 			header: 'Property',
+			size: 450,
 			// Cell rendering for Property column
 			Cell: ({ row }) => {
 				const history = useHistory();
@@ -139,12 +140,6 @@ const PropertiesMeta = {
 				}
 			},
 		},
-		// Columns for Property details
-		{
-			...CommonSchema.HIDDEN,
-			name: 'name.keyword',
-			id: 'name',
-		},
 		{
 			...CommonSchema.STRING_COLUMN,
 			name: 'purchaserNumber.keyword',
@@ -192,7 +187,6 @@ const PropertiesMeta = {
 			name: 'status.keyword',
 			id: 'status',
 			header: 'Pay Status',
-			type: 'defaultFiltersOptions',
 			defaultFilterOptions: [
 				{ label: 'In Pay', value: 'inpay' },
 				{ label: 'Not in Pay', value: 'notinpay' },

@@ -15,6 +15,8 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { slidoutStateController } from 'hookstate/slidoutStateController';
 import { tableGlobalController } from 'hookstate/tableController';
 
+import { history } from 'store';
+
 import AssociatedWells from './AssociatedWells';
 import DetailsPanel from './Detail';
 import Information from './Information';
@@ -53,6 +55,8 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 				type: {},
 			},
 		});
+		// Remove the document ID from the URL
+		history.push('/documents'); // Navigates back to the base documents page
 	};
 
 	const views = useMemo(
@@ -74,7 +78,7 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 					<DetailsPanel selectedDocument={selectedDocument} handleClose={handleClose} tableKey={tableKey} />
 				),
 				props: {},
-				onClick: () => {},
+				onClick: () => { },
 			},
 			{
 				name: 'Wells',
@@ -92,7 +96,7 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 				),
 				Component: () => <AssociatedWells selectedDocument={selectedDocument} />,
 				props: {},
-				onClick: () => {},
+				onClick: () => { },
 			},
 			{
 				name: 'Information',
@@ -109,7 +113,7 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 				),
 				Component: () => <Information selectedDocument={selectedDocument} />,
 				props: {},
-				onClick: () => {},
+				onClick: () => { },
 			},
 		],
 		[selectedDocument, wellsCount]
@@ -130,7 +134,7 @@ function CreateAndViewComponent({ selectedDocument, tableKey }) {
 	useEffect(() => {
 		slideOutState.views.set(views);
 		slideOutState.view.set(views[0]);
-	}, [wellsCount]);
+	}, [selectedDocument, wellsCount]);
 
 	return <Slideout show={true} deleteFunc={deleteFunc} />;
 }

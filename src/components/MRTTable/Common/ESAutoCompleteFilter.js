@@ -149,10 +149,6 @@ function ESAutoCompleteFilter({
 				label = value.name || '';
 			}
 
-			// 	case 'boolean':
-			// 	case 'defaultFiltersOptions':
-			// 		return defaultFilterOptions?.find(option => option?.value === value)?.label || value;
-
 			switch (subType || type) {
 				case 'date':
 					if (key_as_string) {
@@ -198,7 +194,7 @@ function ESAutoCompleteFilter({
 		}
 
 		const getValue = option => option?.value || _.find(options, { label: option })?.value || option;
-		let newValue = multiple ? value.map(getValue) : getValue(value);
+		let newValue = multiple ? value.map(getValue) || [] : getValue(value);
 
 		if (type === 'boolean') {
 			newValue = newValue === 'true';
@@ -218,16 +214,14 @@ function ESAutoCompleteFilter({
 		}
 	};
 
+	const optionsToShow = defaultFilterOptions?.length > 0 ? defaultFilterOptions : options;
+
 	return (
 		<Autocomplete
 			multiple={multiple}
 			id={`${compositeFields.join(' ')}-filter-autocomplete`}
 			options={
-				defaultFilterOptions?.length > 0
-					? defaultFilterOptions
-					: multiple
-						? options?.filter(item => !filterValue.find(value => isEqual(value, item.value)))
-						: options
+				multiple ? optionsToShow?.filter(item => !filterValue.find(value => isEqual(value, item.value))) : optionsToShow
 			}
 			getOptionLabel={op => {
 				if (typeof op !== 'object') {
@@ -242,7 +236,7 @@ function ESAutoCompleteFilter({
 			}}
 			loading={loading}
 			filterOptions={searchMapping[searchMode].filterOptions}
-			value={filterValue ?? _value}
+			value={multiple ? (typeof filterValue === 'string' ? [filterValue] : filterValue) : (filterValue ?? _value)}
 			renderInput={params => (
 				<TextField
 					{...params}

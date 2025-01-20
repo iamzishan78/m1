@@ -33,6 +33,7 @@ const PropertyIntrestMeta = {
 			name: 'property.name.keyword',
 			id: 'property.name',
 			header: 'Property',
+			isGrouped: true, // Group by property
 			Cell: ({ row }) => {
 				const id = row.getValue('property._id');
 				const value = row.getValue('property.name') || row.getValue('property.number');

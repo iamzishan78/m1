@@ -12,7 +12,7 @@ import { VIEWFILEQUERY } from 'graphQL/useQueryViewFile';
 
 function FileName({ docInfo }) {
 	const splittedStrings = docInfo?.fileName?.split('.');
-	const docExtention = splittedStrings?.[splittedStrings.length - 1]?.toLowerCase();
+	const docExtention = docInfo?.url ? 'url' : splittedStrings?.[splittedStrings.length - 1]?.toLowerCase();
 	const [openPdfView, setOpenPdfView] = useState(false);
 	let history = useHistory();
 
@@ -82,6 +82,10 @@ function FileName({ docInfo }) {
 								}}
 								onClick={e => {
 									e.stopPropagation();
+									if (docExtention === 'url') {
+										window.open(docInfo?.fileName, '_blank');
+										return
+									}
 									window.history.pushState('', '', `/documents/${docInfo._id}/view`);
 									handleViewFile(docInfo._id);
 								}}

@@ -22,6 +22,7 @@ import TwitterIcon from '@material-ui/icons/Twitter';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { get } from 'lodash';
+import PropTypes from 'prop-types';
 
 import { toggleRightColumn } from 'actions/ContactDetailCard';
 
@@ -392,6 +393,8 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
+const SLICE = 2;
+
 function ContactDetailCard(props) {
 	// contexts
 	const [stateApp, setStateApp] = useContext(AppContext);
@@ -587,7 +590,7 @@ function ContactDetailCard(props) {
 									`${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(' ')[0] : ''}`
 								)
 									.split(' ')
-									.splice(0, 2)
+									.splice(0, SLICE)
 									.join(' ')}
 								size="93"
 								round
@@ -818,6 +821,7 @@ function ContactDetailCard(props) {
 								}}
 								activityLog={contactData.activityLog}
 								isSource={false}
+								showCommentType
 							/>
 
 							<Menu
@@ -1034,5 +1038,7 @@ function ContactDetailCard(props) {
 		</div>
 	);
 }
+
+ContactDetailCard.propTypes = { contactId: PropTypes.string, id: PropTypes.string };
 
 export default PipelinesFetchHoc(ContactDetailCard);

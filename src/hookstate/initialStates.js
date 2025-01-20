@@ -414,7 +414,6 @@ export const popupInitialState = {
 	layerSelectionPopup: false,
 	selectedUserDefinedLayer: null,
 	selectedShape: null,
-	selectedParcel: null,
 	selectedShapeFile: null,
 	selectedWell: null,
 	selectedWellId: null,
@@ -479,5 +478,29 @@ export const adminOperationsInitialState = {
 	createNewFlatData: 'No',
 	warning: null,
 	message: null,
+	apiKeys: { dialpad: '' },
 };
 export const adminOperationsState = hookstate(copy(adminOperationsInitialState));
+
+/* -------------------------------------------------------------------------- */
+/*                              View Controller                               */
+/* -------------------------------------------------------------------------- */
+
+export const viewInitialState = {
+	client: null,
+	moduleName: null,
+	isTable: false,
+	icon: { jsxEl: null },
+	label: null,
+	allViews: [],
+	selectedView: null,
+	isViewOpen: false,
+	fetchViewSettings: false,
+	styleOverride: {
+		bgColor: {},
+		color: {},
+	},
+	isLoading: false,
+	shouldSyncView: true,
+};
+export const viewStates = {};
