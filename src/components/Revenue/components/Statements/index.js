@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -11,11 +11,10 @@ import { copy } from 'components/Shared/functions';
 
 import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
 
+import { globalStateController } from 'hookstate/globalStateController';
 import { tableController } from 'hookstate/tableController';
 
-import { AppContext } from 'AppContext';
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		margin: '75px 0 10px',
 	},
@@ -30,7 +29,8 @@ const useStyles = makeStyles(theme => ({
 
 export default function RevenueStatements() {
 	const classes = useStyles();
-	const [stateApp, setStateApp] = useContext(AppContext);
+
+	const { stateValues } = globalStateController.useState(['globalSearch']);
 	const revenueStatmentTableState = tableController('RevenueStatementsTable').useState([
 		'filters',
 		'data',
@@ -47,40 +47,27 @@ export default function RevenueStatements() {
 		fetchPolicy: 'no-cache',
 	});
 
-	useEffect(() => {
-		return () => {
-			setStateApp((state, props) => {
-				return { ...state, revenueSearchQuery: '' };
+	const getDBCounts = (key, value, type) => {
+		const gridFilters = revenueStatmentTableState?.filters ? revenueStatmentTableState?.filters : [];
+		return new Promise((resolve, reject) => {
+			getDbDataTotal({
+				variables: {
+					index: 'checks_flat',
+					filters: [...gridFilters, { field: key, value: value, type }],
+					search: {
+						query: stateValues.globalSearch,
+						fields: ['checkNumber', '_all'],
+					},
+				},
+				onCompleted: res => {
+					resolve(res?.getDbDataTotal?.data);
+				},
+				onError: error => {
+					console.log(error);
+					reject(0);
+				},
 			});
-		};
-	}, []);
-
-	useEffect(() => {
-		tableController('RevenueStatementsTable').setFilters(esFilters);
-	}, [esFilters]);
-
-	useEffect(() => {
-		getCounts();
-	}, [revenueStatmentTableState?.filters, stateApp.revenueSearchQuery]);
-
-	useEffect(() => {
-		tableController('RevenueStatementsTable').setGlobalFilter(
-			stateApp.revenueSearchQuery === '*' ? '' : stateApp.revenueSearchQuery
-		);
-	}, [stateApp.revenueSearchQuery]);
-
-	const setESFilters = newFilter => {
-		ESFilters(newFilter);
-	};
-
-	const setAnalyticFilters = (filter, status) => {
-		let filters = copy(esFilters);
-		filters = filters.filter(f => f.field !== filter.field);
-		if (status) {
-			filters.push(filter);
-		}
-		setESFilters(filters);
-		setFilterToggle(!filterToggle);
+		});
 	};
 
 	const onGettingPotentialIssues = count => setPotentialIssuesCount(count);
@@ -95,27 +82,36 @@ export default function RevenueStatements() {
 		onGettingPotentialIssues(potentialIssuesCounts);
 	};
 
-	const getDBCounts = (key, value, type) => {
-		const gridFilters = revenueStatmentTableState?.filters ? revenueStatmentTableState?.filters : [];
-		return new Promise((resolve, reject) => {
-			getDbDataTotal({
-				variables: {
-					index: 'checks_flat',
-					filters: [...gridFilters, { field: key, value: value, type }],
-					search: {
-						query: stateApp.revenueSearchQuery,
-						fields: ['checkNumber', '_all'],
-					},
-				},
-				onCompleted: res => {
-					resolve(res?.getDbDataTotal?.data);
-				},
-				onError: error => {
-					console.log(error);
-					reject(0);
-				},
-			});
-		});
+	useEffect(() => {
+		return () => {
+			globalStateController.updateState({ globalSearch: '' });
+		};
+	}, []);
+
+	useEffect(() => {
+		tableController('RevenueStatementsTable').setFilters(esFilters);
+	}, [esFilters]);
+
+	useEffect(() => {
+		getCounts();
+	}, [revenueStatmentTableState?.filters, stateValues.globalSearch]);
+
+	useEffect(() => {
+		tableController('RevenueStatementsTable').setGlobalFilter(stateValues.globalSearch);
+	}, [stateValues.globalSearch]);
+
+	const setESFilters = newFilter => {
+		ESFilters(newFilter);
+	};
+
+	const setAnalyticFilters = (filter, status) => {
+		let filters = copy(esFilters);
+		filters = filters.filter(f => f.field !== filter.field);
+		if (status) {
+			filters.push(filter);
+		}
+		setESFilters(filters);
+		setFilterToggle(!filterToggle);
 	};
 
 	return (
@@ -135,12 +131,12 @@ export default function RevenueStatements() {
 						approvedCount={approvedCount}
 						unapprovedCount={unapprovedCount}
 						potentialIssuesCount={potentialIssuesCount}
-						revenueSearchQuery={stateApp.revenueSearchQuery}
+						revenueSearchQuery={stateValues.globalSearch}
 						setAnalyticFilters={setAnalyticFilters}
 					/>
 				</div>
 
-				<div classes={classes.revenueContainer} style={{}}>
+				<div className={classes.revenueContainer} style={{}}>
 					<MRTTable name="RevenueStatementsTable" />
 				</div>
 			</div>

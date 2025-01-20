@@ -47,6 +47,7 @@ const SalesVolumeComparisonMeta = {
 			name: 'wells.apiNumber.keyword',
 			id: 'wells.apiNumber',
 			header: 'Well API',
+			isExport: 'wells[0].apiNumber',
 			Cell: ({ row }) => {
 				const apiNumbers = row?.original?.wells?.map(item => item.apiNumber) || [];
 				return apiNumbers?.length && apiNumbers?.length > 1 ? 'Multiple' : apiNumbers[0] || '';
@@ -58,6 +59,7 @@ const SalesVolumeComparisonMeta = {
 			name: 'wells.wellName.keyword',
 			id: 'wells.wellName',
 			header: 'Well Name',
+			isExport: 'wells[0].wellName',
 			Cell: ({ row }) => {
 				const wellName = row?.original?.wells?.map(item => item.wellName) || [];
 				return wellName?.length && wellName?.length > 1 ? 'Multiple' : wellName[0] || '';

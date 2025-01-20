@@ -8,11 +8,11 @@ import moment from 'moment';
 
 import { addTrailingZeros, formatDate } from 'components/Shared/functions';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
+import vf_number from 'components/Shared/valueformatters/vf_number';
 
 import { tableController } from 'hookstate/tableController';
 
 import { CURRENCY_TO_FIXED, INTEREST_TO_FIXED, TO_FIXED } from 'utils/consts';
-import vf_number from 'components/Shared/valueformatters/vf_number';
 
 const ACTION_COLUMN = {
 	header: ' ',
@@ -241,7 +241,7 @@ export const CommonSchema = {
 				return null;
 			}
 
-			return <>{!value ? `$${value}` : vf_currency_to_fixed(value, CURRENCY_TO_FIXED)}</>;
+			return <>{vf_currency_to_fixed(value, CURRENCY_TO_FIXED)}</>;
 		},
 	},
 	SELECT_STRING_COLUMN: {
