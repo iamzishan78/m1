@@ -80,7 +80,7 @@ const UserManagementMeta = {
 			},
 		},
 		{
-			...CommonSchema.SELECT_STRING_COLUMN,
+			...CommonSchema.SELECT_DATE_COLUMN,
 			header: 'Last Login',
 			id: 'lastLogin',
 			name: 'lastLogin',
