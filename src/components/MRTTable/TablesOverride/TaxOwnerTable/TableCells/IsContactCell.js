@@ -8,6 +8,8 @@ import Convert_contact from 'components/Shared/svgIcons/convert_contact';
 
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 
+import { UserSession } from 'utils/user';
+
 function IsContactCell({ id: ownerId, selectedRow: singleRow }) {
 	const [selectedRows, setSelectedRows] = useState([]);
 	const Controller = tableController('TaxOwnerTable');
@@ -72,7 +74,7 @@ function IsContactCell({ id: ownerId, selectedRow: singleRow }) {
 				{!contact ? (
 					<Convert_contact />
 				) : (
-					<Link to={`/contact/details/${contact?.isContact}/?tenant=${window.sessionStorage.getItem('tenantName')}`}>
+					<Link to={`/contact/details/${contact?.isContact}/?tenant=${UserSession.getStorageItem('tenantName')}`}>
 						<Contact_card />
 					</Link>
 				)}

@@ -16,7 +16,7 @@ import { setUserAction } from 'store/actions/appActions';
 import { currentUserGridViewSettingsAction } from 'store/actions/sessionActions';
 
 import { apolloClientEndpointDev, isDev } from 'utils/helper';
-import { deleteSession, saveUserSession } from 'utils/user';
+import { UserSession } from 'utils/user';
 
 import { setApolloHeaders } from 'AppContext';
 
@@ -65,7 +65,7 @@ const Auth0Login = props => {
 		window.setStateApp(state => ({ ...state, user }));
 		dispatch(setUserAction(user));
 		dispatch(currentUserGridViewSettingsAction.STARTED(user._id));
-		saveUserSession(user);
+		UserSession.saveUserSession(user);
 		window.setStateNav(stateNav => ({ ...stateNav, defaultOn: true }));
 	};
 
@@ -124,15 +124,17 @@ const Auth0Login = props => {
 		}
 
 		if (!isAuthenticated) {
-			const org_id = window.sessionStorage.getItem('tenantOrgId')
-				? window.sessionStorage.getItem('tenantOrgId')
+			const org_id = UserSession.getStorageItem('tenantOrgId')
+				? UserSession.getStorageItem('tenantOrgId')
 				: globalStateController.getValue('tenant').org_id;
-			loginWithRedirect(org_id ? { authorizationParams: { organization: org_id } } : {});
+			loginWithRedirect(
+				org_id ? { prompt: 'login', authorizationParams: { organization: org_id } } : { prompt: 'login' }
+			);
 			return;
 		}
 
 		let apolloClientEndpoint = globalStateController.getValue('apolloClientEndpoint');
-		const tenantName = window.sessionStorage.getItem('tenantName') || queryString.parse(props.location.search)?.tenant;
+		const tenantName = UserSession.getStorageItem('tenantName') || queryString.parse(props.location.search)?.tenant;
 		if (!apolloClientEndpoint) {
 			let tenant = tenantsCredentials(tenantName);
 			globalStateController.updateState({
@@ -152,20 +154,20 @@ const Auth0Login = props => {
 			try {
 				const id = await getIdTokenClaims();
 				if (!id) {
-					deleteSession();
+					UserSession.deleteSession();
 					return;
 				}
 
 				const loginRes = await loginUser(id.email, id.__raw, id.__raw);
 				if (!loginRes?.user) {
-					deleteSession();
+					UserSession.deleteSession();
 					return;
 				}
 
 				// Store tenant information in session storage
 				const { org_id: tenantOrgId } = id;
-				window.sessionStorage.setItem('tenantOrgId', tenantOrgId);
-				window.sessionStorage.setItem('tenantName', tenantName);
+				UserSession.setStorageItem('tenantOrgId', tenantOrgId);
+				UserSession.setStorageItem('tenantName', tenantName);
 
 				// Fetch user settings
 				const authToken = loginRes.sessionData.auth0Token || loginRes.sessionData.token;
@@ -174,7 +176,7 @@ const Auth0Login = props => {
 				handleLogin(loginRes, userMapSettings);
 			} catch (error) {
 				console.error('An error occurred during the login process:', error);
-				deleteSession();
+				UserSession.deleteSession();
 			}
 		})();
 	}, [isLoading, isAuthenticated]);

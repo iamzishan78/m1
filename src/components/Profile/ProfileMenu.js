@@ -19,7 +19,7 @@ import UserManagementProvider from 'components/UserManagement/UserManagementProv
 
 import { GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
 
-import { deleteSession } from 'utils/user';
+import { UserSession } from 'utils/user';
 
 import { AppContext } from 'AppContext';
 
@@ -120,7 +120,7 @@ export default function UserProfile() {
 		if (currentAccount) {
 			stateApp?.myMSALObj?.logout(logoutRequest);
 		}
-		deleteSession();
+		UserSession.deleteSession();
 	};
 
 	const handleProfileMenuOpen = event => setAnchorEl(event.currentTarget);
@@ -142,7 +142,7 @@ export default function UserProfile() {
 				<CheckIcon />
 				<Typography variant="inherit" color="textPrimary">
 					{' '}
-					{sessionStorage.getItem('tenantName')}{' '}
+					{UserSession.getStorageItem('tenantName')}{' '}
 				</Typography>
 				<FiberManualRecordIcon style={{ color: '#34F125' }} fontSize="small" />
 			</MenuItem>

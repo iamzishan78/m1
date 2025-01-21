@@ -28,6 +28,8 @@ import CommentType from 'components/Shared/components/Comment/CommentType';
 import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
+import { UserSession } from 'utils/user';
+
 import { AppContext } from '../../AppContext';
 import { REMOVECOMMENT } from '../../graphQL/useMutationRemoveComment';
 import { UPSERTCOMMENT } from '../../graphQL/useMutationUpsertComment';
@@ -357,7 +359,7 @@ export default function Comments(props) {
 					objectType: props.targetLabel,
 					commentType: selectedCommentType,
 					pin: false,
-					tenant: window.sessionStorage.getItem('tenantName'),
+					tenant: UserSession.getStorageItem('tenantName'),
 				},
 			},
 			refetchQueries: [
@@ -505,7 +507,7 @@ export default function Comments(props) {
 					objectType: props.targetLabel,
 					public: publicComment,
 					pin: false,
-					tenant: window.sessionStorage.getItem('tenantName'),
+					tenant: UserSession.getStorageItem('tenantName'),
 				},
 			},
 			refetchQueries: [

@@ -23,14 +23,13 @@ import CommentField from 'components/Shared/components/Fields/CommentField';
 import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
 import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
 import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
-import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
-import { GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
+import { GET_PROFILES_IMAGES, GET_PROFILE_IMAGE } from 'graphQL/useQueryGetProfile';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { TOGGLECOMMENTREACTION } from 'graphQL/userMutationToggleCommentReaction';
 
 import { updatePinComments } from 'store/actions/commonActions';
 
-import { dateIsValid } from 'utils/helper';
+import { UserSession } from 'utils/user';
 
 import { AppContext } from 'AppContext';
 
@@ -228,7 +227,7 @@ export default function DealComment(props) {
 				user: { name: stateApp.user.name, email: stateApp.user.email },
 				isNew: true,
 				type: 'comment',
-				tenant: window.sessionStorage.getItem('tenantName'),
+				tenant: UserSession.getStorageItem('tenantName'),
 			});
 			props.setNewCommentId(newlyAddedComment.upsertComment.comment._id);
 			setCommentsArray(sortArrayBasedOnTs([...comments]));
@@ -318,7 +317,7 @@ export default function DealComment(props) {
 					_id: editCommentId,
 					objectType: props.targetLabel,
 					isEdited: true,
-					tenant: window.sessionStorage.getItem('tenantName'),
+					tenant: UserSession.getStorageItem('tenantName'),
 				},
 			},
 			refetchQueries: ['getCommentsByObjectId', 'getCommentsCounter', 'getCommentsByObjectsIds'],
@@ -408,7 +407,7 @@ export default function DealComment(props) {
 					user: stateApp.user.mongoId,
 					commentedOn: targetSourceId,
 					objectType: props.targetLabel,
-					tenant: window.sessionStorage.getItem('tenantName'),
+					tenant: UserSession.getStorageItem('tenantName'),
 				},
 			},
 			refetchQueries: ['getCommentsByObjectId', 'getCommentsCounter', 'getCommentsByObjectsIds'],

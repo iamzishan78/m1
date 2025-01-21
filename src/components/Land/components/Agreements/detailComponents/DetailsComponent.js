@@ -49,9 +49,11 @@ import { SHAPE_SUMMARY_DETAILS } from 'graphQL/useQueryShapeSummaryDetail';
 
 import { detailCardController } from 'hookstate/detailCardController';
 import { jobController } from 'hookstate/jobStateController';
+import { popupController } from 'hookstate/popupStateController';
 import { tableGlobalController } from 'hookstate/tableController';
 
 import { PaymentFeatureTenants } from 'utils/data';
+import { UserSession } from 'utils/user';
 
 import { setLandReduxKey } from 'actions';
 import { AppContext } from 'AppContext';
@@ -59,7 +61,6 @@ import { AppContext } from 'AppContext';
 import { DrawerContext } from './DrawerContext';
 import RelatedDocumets from './relatedDocuments';
 import RelatedPayments from './relatedPayments';
-import { popupController } from 'hookstate/popupStateController';
 
 const useStyles = makeStyles(() => ({
 	mapProvider: {
@@ -251,7 +252,7 @@ export function DetailComponents(props) {
 	const activeAgreement = useSelector(({ Land }) => Land.agreement?.activeAgreement);
 	const [stateApp, setStateApp] = useContext(AppContext);
 	const [drawer, setDrawer] = useContext(DrawerContext);
-	const isPaymentTenant = PaymentFeatureTenants.includes(window.sessionStorage?.getItem('tenantName').toLowerCase());
+	const isPaymentTenant = PaymentFeatureTenants.includes(UserSession.getStorageItem('tenantName').toLowerCase());
 
 	const [tab, setTab] = useState(0);
 	const sectionsRef = useRef([]); // References for all tab sections

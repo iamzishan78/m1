@@ -20,6 +20,8 @@ import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
+import { UserSession } from 'utils/user';
+
 import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles(() => ({
@@ -104,7 +106,7 @@ function ContactActionMenu({ id, name, esIndex, dialogType }) {
 				>
 					<MenuItem className={classes.actionMenuItem}>
 						<Link
-							to={`/contact/details/${id}/?tenant=${window.sessionStorage.getItem('tenantName')}`}
+							to={`/contact/details/${id}/?tenant=${UserSession.getStorageItem('tenantName')}`}
 							className={classes.link}
 						>
 							<ContactPageOutlinedIcon className={classes.menuIcons} />

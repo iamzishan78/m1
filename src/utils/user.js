@@ -2,21 +2,33 @@ import Cookies from 'universal-cookie';
 
 const COOKIES_USER_TOKEN = 'USER_SESSION';
 
-export function saveUserSession({ authToken, accessToken }) {
-	const cookies = new Cookies();
-	const session = { authToken, accessToken };
-	cookies.set(COOKIES_USER_TOKEN, session, { path: '/' });
-}
+class UserSessionManager {
+	constructor() {
+		this.cookies = new Cookies();
+	}
 
-export function getSession() {
-	const cookies = new Cookies();
-	return cookies.get(COOKIES_USER_TOKEN);
-}
+	saveUserSession({ authToken, accessToken }) {
+		const session = { authToken, accessToken };
+		this.cookies.set(COOKIES_USER_TOKEN, session, { path: '/' });
+	}
 
-export function deleteSession() {
-	const cookies = new Cookies();
-	cookies.remove(COOKIES_USER_TOKEN, { path: '/' });
-	sessionStorage.clear();
-	localStorage.clear();
-	window.location.replace(window.location.origin);
+	getSession() {
+		return this.cookies.get(COOKIES_USER_TOKEN);
+	}
+
+	getStorageItem(key) {
+		return window.localStorage.getItem(key);
+	}
+
+	setStorageItem(key, value) {
+		window.localStorage.setItem(key, value);
+	}
+
+	deleteSession() {
+		this.cookies.remove(COOKIES_USER_TOKEN, { path: '/' });
+		sessionStorage.clear();
+		localStorage.clear();
+		window.location.replace(window.location.origin);
+	}
 }
+export const UserSession = new UserSessionManager();
