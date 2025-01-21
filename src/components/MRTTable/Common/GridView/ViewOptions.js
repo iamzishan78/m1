@@ -91,7 +91,6 @@ function ViewOptions({ moduleName, buttonRef }) {
 	const classes = useStyles();
 
 	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
 
 	const ViewController = viewStateController(moduleName);
 	const { stateValues: viewStateValues } = ViewController.useState([
@@ -113,7 +112,7 @@ function ViewOptions({ moduleName, buttonRef }) {
 			let data = null;
 
 			if (isTable) {
-				data = allViews.filter(view => view.favouriteBy?.includes(getUser?._id));
+				data = allViews.filter(view => view.favouriteBy?.includes(user?._id));
 			} else {
 				data = allViews.filter(view => view.isFavourite === true);
 			}
