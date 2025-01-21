@@ -17,7 +17,7 @@ import RevenueProvider from 'components/Revenue/RevenueProvider';
 
 import { globalStateController } from 'hookstate/globalStateController';
 
-import { deleteSession } from 'utils/user';
+import { UserSession } from 'utils/user';
 
 import Providers from 'Providers';
 
@@ -51,7 +51,7 @@ const PrivateRoute = ({ component, ...options }) => {
 	const apolloClient = useApolloClient();
 
 	if (user && Date.parse(user.authTokenExpires) < Date.now()) {
-		deleteSession();
+		UserSession.deleteSession();
 	}
 
 	const finalComponent =

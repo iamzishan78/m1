@@ -19,7 +19,7 @@ import { currentUserGridViewSettingsAction } from 'store/actions/sessionActions'
 
 import { simpleAuthBypass } from 'utils/data';
 import { apolloClientEndpointDev, isDev } from 'utils/helper';
-import { deleteSession, saveUserSession } from 'utils/user';
+import { UserSession } from 'utils/user';
 
 import Api from 'api';
 
@@ -168,7 +168,7 @@ const Login = props => {
 		mapStateController.updateState({ mapVars, defaultMapVars });
 		dispatch(setUserAction(user));
 		dispatch(currentUserGridViewSettingsAction.STARTED(user._id));
-		saveUserSession(user);
+		UserSession.saveUserSession(user);
 		setStateNav(stateNav => ({ ...stateNav, defaultOn: true }));
 
 		setLoadingSigInButton(false);
@@ -267,7 +267,7 @@ const Login = props => {
 						finishAADAuth(accountObj);
 					} else {
 						setLoading(false);
-						deleteSession();
+						UserSession.deleteSession();
 					}
 				})
 				.catch(error => {
@@ -301,7 +301,7 @@ const Login = props => {
 					// in particular when cancelling login to change workspaces
 					stateApp.myMSALObj.logout(logoutRequest);
 
-					deleteSession();
+					UserSession.deleteSession();
 					setLoading(false);
 				});
 		} else {
@@ -316,7 +316,7 @@ const Login = props => {
 		let tenant = tenantsCredentials(tenantName);
 
 		if (globalStateController.getValue('bypassLogin')) {
-			window.sessionStorage.setItem('tenantName', tenant.name);
+			UserSession.setStorageItem('tenantName', tenant.name);
 			history.push(history.location.pathname);
 			return;
 		}
@@ -338,7 +338,7 @@ const Login = props => {
 				});
 			}
 
-			window.sessionStorage.setItem('tenantName', tenant.name);
+			UserSession.setStorageItem('tenantName', tenant.name);
 
 			const signInType = 'loginRedirect';
 
@@ -418,7 +418,7 @@ const Login = props => {
 			});
 		}
 
-		window.sessionStorage.setItem('tenantName', tenant.name);
+		UserSession.setStorageItem('tenantName', tenant.name);
 
 		setTimeout(async () => {
 			try {
