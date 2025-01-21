@@ -66,36 +66,43 @@ const PotentialWellsMeta = {
 		},
 
 		{
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Lease Number',
 			id: 'leaseId',
 			name: 'leaseId',
 		},
 		{
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Lease Name',
 			id: 'lease',
 			name: 'lease',
 		},
 		{
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Operator',
 			id: 'operator',
 			name: 'operator',
 		},
 		{
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Type',
 			id: 'wellType',
 			name: 'wellType',
 		},
 		{
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Profile',
 			id: 'wellBoreProfile',
 			name: 'wellBoreProfile',
 		},
 		{
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Status',
 			id: 'wellStatus',
 			name: 'wellStatus',
 		},
 		{
+			...CommonSchema.SELECT_STRING_COLUMN,
 			header: 'Global Well',
 			id: 'globalWell',
 			name: 'globalWell',

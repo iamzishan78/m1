@@ -47,9 +47,10 @@ const ReportingGroupsMeta = {
 		// Column for Property with link
 		{
 			...CommonSchema.INITAIL_PINNED,
-			name: 'purchaserNumber.keyword',
-			id: 'purchaserNumber',
+			name: 'name.keyword',
+			id: 'name',
 			header: 'Property',
+			size: 450,
 			// Cell rendering for Property column
 			Cell: ({ row }) => {
 				const history = useHistory();
@@ -97,15 +98,6 @@ const ReportingGroupsMeta = {
 				);
 			},
 		},
-		{
-			...CommonSchema.HIDDEN,
-			name: 'name.keyword',
-			header: 'Property Name',
-			id: 'name',
-			isSearchField: true,
-			isHiddenFieldExport: true,
-			hidden: true,
-		},
 		// Columns for Well API Number and Well Name
 		{
 			...CommonSchema.STRING_COLUMN,
@@ -139,6 +131,7 @@ const ReportingGroupsMeta = {
 		{
 			...CommonSchema.STRING_COLUMN,
 			name: 'purchaserNumber.keyword',
+			id: 'purchaserNumber',
 			header: 'Payor Prop #',
 		},
 		{
@@ -188,7 +181,6 @@ const ReportingGroupsMeta = {
 			name: 'status.keyword',
 			id: 'status',
 			header: 'Pay Status',
-			type: 'defaultFiltersOptions',
 			defaultFilterOptions: [
 				{ label: 'In Pay', value: 'InPay' },
 				{ label: 'Not in Pay', value: 'NotInPay' },

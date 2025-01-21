@@ -2,12 +2,14 @@ import React, { useState, createContext, useEffect } from 'react';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 
+import PropTypes from 'prop-types';
 import queryString from 'query-string';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { popupController } from 'hookstate/popupStateController';
 
 import { apolloClientEndpointDev, isDev } from 'utils/helper';
+import { UserSession } from 'utils/user';
 
 import { MSALObj, tenantsCredentials } from './components/AzureLogin/AADAuthConfig';
 import { MSALB2CObj, B2CTenantCredentials } from './components/AzureLogin/AADB2CAuthConfig';
@@ -35,7 +37,6 @@ const AppProvider = props => {
 		selectedWell: null, // move to a selected object context (maybe flyto)
 		selectedWellId: null, // move to a selected object context (maybe flyto)
 		selectedAbstracts: [], // move to a selected object context (maybe flyto)
-		selectedParcel: null, // move to a selected object context (maybe flyto)
 
 		// States for permits
 		selectedPermit: null,
@@ -135,7 +136,6 @@ const AppProvider = props => {
 		selectedAgreement: null,
 		selectedMeta: null,
 		selectedView: null,
-		revenueSearchQuery: '',
 		filtersData: [],
 		shapeEditMode: '',
 		landSearchFilters: {
@@ -177,9 +177,11 @@ const AppProvider = props => {
 							mapCircularLoaderAct: false,
 						};
 					}
+					return stateApp;
 				});
 				return res;
 			}
+			return null;
 		},
 
 		selectedShape: popupController.getValue('selectedShape'),
@@ -191,22 +193,20 @@ const AppProvider = props => {
 		async function wait() {
 			const query = queryString.parse(window.location.search);
 
-			let tenantName = window.sessionStorage.getItem('tenantName');
-
-			if (query.tenant && globalStateController.isBypassTenant(query.tenant)) {
-				tenantName = query.tenant || tenantName;
-			}
+			let tenantName = query.tenant || UserSession.getStorageItem('tenantName') || '';
+			const isBypassTenant = globalStateController.isBypassTenant(tenantName);
 
 			let tenant = tenantsCredentials(tenantName);
-			if (tenant) {
-				window.sessionStorage.setItem('tenantName', tenantName);
+			if (tenant && !query.tenant) {
+				UserSession.setStorageItem('tenantName', tenantName);
 
 				tenant.apolloOriginalClientEndpoint = tenant.apolloClientEndpoint;
 				tenant.apolloClientEndpoint =
 					isDev && tenantName === 'localhost' ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
-				let myMSALObjInt = MSALObj(tenant);
+
+				let myMSALObjInt = isBypassTenant ? null : MSALObj(tenant);
 				globalStateController.updateState({ apolloClientEndpoint: tenant.apolloClientEndpoint });
-				setStateApp((state, props) => {
+				setStateApp(state => {
 					return {
 						...state,
 						myMSALObj: myMSALObjInt,
@@ -216,18 +216,18 @@ const AppProvider = props => {
 					};
 				});
 			} else {
-				setStateApp((state, props) => {
+				setStateApp(state => {
 					return { ...state, myMSALObj: false };
 				});
 			}
 
-			let B2CTenantName = window.sessionStorage.getItem('B2CTenantName');
+			let B2CTenantName = UserSession.getStorageItem('B2CTenantName');
 
 			if (B2CTenantName) {
 				let tenant = B2CTenantCredentials(B2CTenantName);
 				if (tenant) {
 					let myMSALB2CObjInt = MSALB2CObj(tenant.tenantId, tenant.clientId);
-					setStateApp((state, props) => {
+					setStateApp(state => {
 						return {
 							...state,
 							myMSALB2CObj: myMSALB2CObjInt,
@@ -236,7 +236,7 @@ const AppProvider = props => {
 					});
 				}
 			} else {
-				setStateApp((state, props) => {
+				setStateApp(state => {
 					return { ...state, myMSALB2CObj: false };
 				});
 			}
@@ -247,9 +247,6 @@ const AppProvider = props => {
 	useEffect(() => {
 		globalStateController.updateState({ user: stateApp.user });
 	}, [stateApp.user]);
-	useEffect(() => {
-		popupController.updateState({ selectedParcel: stateApp.selectedParcel });
-	}, [stateApp.selectedParcel]);
 
 	const { globalState } = globalStateController.useState(['universalLoader'], 'globalState');
 
@@ -310,6 +307,10 @@ const setApolloHeaders = (config, authToken, idToken) => {
 		config.headers['X-MS-TOKEN-AAD-ID-TOKEN'] = idToken;
 	}
 	return config;
+};
+
+AppProvider.propTypes = {
+	children: PropTypes.node,
 };
 
 export { AppContext, AppProvider, setApolloHeaders, apolloClientEndpointDev };

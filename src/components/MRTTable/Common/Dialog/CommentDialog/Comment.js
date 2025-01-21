@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import Avatar from 'react-avatar';
 
 import { CircularProgress } from '@material-ui/core';
@@ -17,6 +17,7 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
+import TextField from '@material-ui/core/TextField';
 import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
 
@@ -25,22 +26,18 @@ import { useMutation, useLazyQuery, useQuery } from '@apollo/client';
 import { CommonCommentText } from 'components/Shared/CommentComponent';
 import CommentType from 'components/Shared/components/Comment/CommentType';
 
-import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
+// import value formatters
+import capitalizeFirstLetter from 'components/Shared/valueformatters/capitalize-first-letter';
+
+import { REMOVECOMMENT } from 'graphQL/useMutationRemoveComment';
+import { UPSERTCOMMENT } from 'graphQL/useMutationUpsertComment';
+import { COMMENTSBYOBJECTIDQUERY } from 'graphQL/useQueryCommentsByObjectId';
+import { COMMENTSBYOBJECTSIDS } from 'graphQL/useQueryCommentsByObjectsIds';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
 import { UserSession } from 'utils/user';
 
-import { AppContext } from '../../AppContext';
-import { REMOVECOMMENT } from '../../graphQL/useMutationRemoveComment';
-import { UPSERTCOMMENT } from '../../graphQL/useMutationUpsertComment';
-import { COMMENTSBYOBJECTIDQUERY } from '../../graphQL/useQueryCommentsByObjectId';
-import { COMMENTSBYOBJECTSIDS } from '../../graphQL/useQueryCommentsByObjectsIds';
-
-// import value formatters
-import capitalizeFirstLetter from '../Shared/valueformatters/capitalize-first-letter.js';
-import CommentField from './components/Fields/CommentField';
-import MentionsUser from '../Shared/MentionsUser'
-import { tableGlobalController } from 'hookstate/tableController';
+import { AppContext } from 'AppContext';
 
 const AntSwitch = withStyles(theme => ({
 	root: {
@@ -115,12 +112,6 @@ const useStyles = makeStyles(theme => ({
 			width: '0.75em',
 			height: '0.75em',
 		},
-		// "&:hover::-webkit-scrollbar": {
-		//     width: "1.0em",
-		// },
-		// "&::-webkit-scrollbar-track": {
-		//     "-webkitBoxShadow": "inset 0 0 6px rgba(0,0,0,0.00)",
-		// },
 		padding: 0,
 	},
 	listItem: {
@@ -220,16 +211,10 @@ const useStyles = makeStyles(theme => ({
 		display: 'flex',
 		padding: '12px',
 	},
-	commentBtn: {
-		float: 'right',
-		// right: '15px',
-		zIndex: '999',
-		marginTop: '10px'
-	},
 }));
 
 export default function Comments(props) {
-	//// props.detailCard - to show a version for a detail card ////
+	/// / props.detailCard - to show a version for a detail card ////
 	const [stateApp] = useContext(AppContext);
 	const [commentsArray, setCommentsArray] = useState([]);
 	const [textValue, setTextValue] = useState('');
@@ -237,6 +222,8 @@ export default function Comments(props) {
 	const [emptyInput, setEmptyInput] = useState(false);
 	const [publicComment, setPublicComment] = useState(true);
 	const [selectedCommentType, setSelectedCommentType] = useState('General');
+	const [loading, setLoading] = useState(false);
+
 	const classes = useStyles({
 		...props,
 		commentsArrayLength: commentsArray.length,
@@ -251,21 +238,11 @@ export default function Comments(props) {
 	const { data: userLists } = useQuery(GETMONGOUSERS, {
 		fetchPolicy: 'cache-and-network',
 	});
-	const [getProfilesImages, profilesData] = useLazyQuery(GET_PROFILES_IMAGES, {
-		fetchPolicy: 'cache-first',
-	});
 
-	const [upsertComment] = useMutation(UPSERTCOMMENT, 
-		{
-			onCompleted: () => {
-				tableGlobalController.refetch();
-				props.refetch?.();
-			}
-		}
-	);
+	const [upsertComment] = useMutation(UPSERTCOMMENT);
 	const [removeComment] = useMutation(REMOVECOMMENT);
 
-	///////////////////// START FETCHING COMMENTS DATA ////////////////////////////////////////////
+	/// ////////////////// START FETCHING COMMENTS DATA ////////////////////////////////////////////
 
 	useEffect(() => {
 		setLoadingComments(true);
@@ -283,33 +260,36 @@ export default function Comments(props) {
 				},
 			});
 		}
-	}, [props.targetSourceId, props.multipleIds]);
+	}, [props.targetSourceId, props.multipleIds, getCommentsByObjectId, getCommentsByObjectsIds, stateApp.user.mongoId]);
 
-	const sortArrayBasedOnTs = array => {
-		const compare = (a, b) => {
-			if (a.ts > b.ts) {
-				return -1;
+	const sortArrayBasedOnTs = useCallback(
+		array => {
+			const compare = (a, b) => {
+				if (a.ts > b.ts) {
+					return -1;
+				}
+				if (b.ts > a.ts) {
+					return 1;
+				}
+
+				return 0;
+			};
+
+			if (!props.multipleIds) {
+				array.sort(compare);
 			}
-			if (b.ts > a.ts) {
-				return 1;
-			}
 
-			return 0;
-		};
-
-		if (!props.multipleIds) {
-			array.sort(compare);
-		}
-
-		return array;
-	};
+			return array;
+		},
+		[props.multipleIds]
+	);
 
 	useEffect(() => {
 		if (dataComments && dataComments.commentsByObjectId) {
 			setCommentsArray(sortArrayBasedOnTs([...dataComments.commentsByObjectId]));
 		}
 		setLoadingComments(false);
-	}, [dataComments]);
+	}, [dataComments, sortArrayBasedOnTs]);
 
 	useEffect(() => {
 		if (dataCommentsMultiIds && dataCommentsMultiIds.commentsByObjectsIds) {
@@ -322,7 +302,7 @@ export default function Comments(props) {
 				return user[0];
 			};
 
-			let comments = [];
+			const comments = [];
 			for (let i = 0; i < dataCommentsMultiIds.commentsByObjectsIds.length; i++) {
 				const element = dataCommentsMultiIds.commentsByObjectsIds[i];
 				if (
@@ -340,9 +320,9 @@ export default function Comments(props) {
 			setCommentsArray(sortArrayBasedOnTs(comments));
 		}
 		setLoadingComments(false);
-	}, [dataCommentsMultiIds, publicComment]);
+	}, [dataCommentsMultiIds, props.multipleIds?.length, publicComment, sortArrayBasedOnTs, stateApp.user?.mongoId]);
 
-	///////////////////// INSERTING NEW COMMENT ///////////////////////////////////////////////
+	/// ////////////////// INSERTING NEW COMMENT ///////////////////////////////////////////////
 
 	const newCommentCleaner = value =>
 		value.trim()[value.trim().length - 1] === '.'
@@ -352,6 +332,7 @@ export default function Comments(props) {
 						if (line.trim() !== '.') {
 							return line.trim();
 						}
+						return undefined;
 					})
 					.join('\n')
 			: `${value
@@ -360,11 +341,13 @@ export default function Comments(props) {
 						if (line.trim() !== '.') {
 							return line.trim();
 						}
+						return undefined;
 					})
 					.join('\n')}.`;
 
-	const addNewComment = (value, commentedOn) => {
-		upsertComment({
+	const addNewComment = async (value, commentedOn) => {
+		setLoading(true);
+		await upsertComment({
 			variables: {
 				comment: {
 					comment: newCommentCleaner(value),
@@ -381,12 +364,13 @@ export default function Comments(props) {
 				'getCommentsByObjectId',
 				'getCommentsCounter',
 				'getCommentsByObjectsIds',
-
 				'getDbData',
 				...props.refetchQueries,
 			],
 			awaitRefetchQueries: true,
 		});
+		props.refetch?.();
+		setLoading(false);
 	};
 
 	const handleEnteringComment = event => {
@@ -409,11 +393,12 @@ export default function Comments(props) {
 		setTextValue('');
 	};
 
-	///////////////////// DELETING A COMMENT ///////////////////////////////////////////////
+	/// ////////////////// DELETING A COMMENT ///////////////////////////////////////////////
 
-	const handleDeleteClick = comment => {
+	const handleDeleteClick = async comment => {
+		setLoading(true);
 		if (!props.multipleIds) {
-			removeComment({
+			await removeComment({
 				variables: {
 					commentId: comment._id,
 				},
@@ -421,7 +406,6 @@ export default function Comments(props) {
 					'getCommentsByObjectId',
 					'getCommentsCounter',
 					'getCommentsByObjectsIds',
-
 					'getDbData',
 					...props.refetchQueries,
 				],
@@ -429,7 +413,7 @@ export default function Comments(props) {
 			});
 		} else {
 			for (let i = 0; i < comment.ids.length; i++) {
-				removeComment({
+				await removeComment({
 					variables: {
 						commentId: comment.ids[i],
 					},
@@ -437,7 +421,6 @@ export default function Comments(props) {
 						'getCommentsByObjectId',
 						'getCommentsCounter',
 						'getCommentsByObjectsIds',
-
 						'getDbData',
 						...props.refetchQueries,
 					],
@@ -445,9 +428,11 @@ export default function Comments(props) {
 				});
 			}
 		}
+		props.refetch?.();
+		setLoading(false);
 	};
 
-	////////////////////////////////////////////////////////////////////////////////////////
+	/// /////////////////////////////////////////////////////////////////////////////////////
 
 	const textFieldHandleChange = e => {
 		if (e.target.value[e.target.value.length - 1] !== '\\') {
@@ -455,15 +440,11 @@ export default function Comments(props) {
 				setTextValue(
 					e.target.value
 						.split('\n')
-						.map(line => {
-							return capitalizeFirstLetter(line);
-						})
+						.map(line => capitalizeFirstLetter(line))
 						.join('\n')
 				);
-			} else {
-				if (e.target.value[e.target.value.length - 2] !== '\n') {
-					setTextValue(`${textValue}.\n`);
-				}
+			} else if (e.target.value[e.target.value.length - 2] !== '\n') {
+				setTextValue(`${textValue}.\n`);
 			}
 		}
 		if (e.target.value.split('\n').join('').trim() !== '' && emptyInput) {
@@ -473,73 +454,11 @@ export default function Comments(props) {
 
 	useEffect(() => {
 		if (props.focus) {
-			document.getElementById('commentInput')?.focus?.();
+			document.getElementById('commentInput').focus();
 		}
 	}, [props.focus]);
 
 	let commentsDisplayedCount = 0;
-
-	// const [isEdit, setIsEdit] = useState(false);
-	const [profilesInfo, setProfilesInfo] = useState({});
-	const [users, setUsers] = useState([]);
-	const [comment, setComment] = useState('');
-	const [showActions, setShowActions] = useState(false);
-	// const [editCommentId, setEditCommentId] = useState("");
-
-	useEffect(() => {
-		if (userLists && userLists.allMongoUsers) {
-			const data = userLists.allMongoUsers
-				.map(user => ({
-					_id: user._id,
-					name: user.name,
-					email: user.email,
-				}))
-				.filter(user => user._id && user.name);
-			setUsers(data);
-			const emails = userLists.allMongoUsers.map(user => user.email);
-			getProfilesImages({
-				variables: { emails },
-			});
-		}
-	}, [userLists]);
-
-	useEffect(() => {
-		if (profilesData?.data?.profileByEmail?.profiles) {
-			setProfilesInfo(profilesData.data.profileByEmail.profiles);
-		}
-	}, [profilesData]);
-
-	const updateComment = value => {
-		setLoadingComments(true);
-
-		upsertComment({
-			variables: {
-				comment: {
-					comment: typeof value === 'object' ? newCommentCleaner(value.comment) : newCommentCleaner(value),
-					commentType: selectedCommentType,
-					user: stateApp.user.mongoId,
-					commentedOn: props.targetSourceId,
-					objectType: props.targetLabel,
-					public: publicComment,
-					pin: false,
-					tenant: UserSession.getStorageItem('tenantName'),
-				},
-			},
-			refetchQueries: [
-				'getCommentsByObjectId',
-				'getCommentsCounter',
-				'getCommentsByObjectsIds',
-
-				'getDbData',
-				...props.refetchQueries,
-			],
-			awaitRefetchQueries: true,
-		});
-		setShowActions(false);
-		// setComment("");
-		setComment('');
-		// setEditCommentId("");
-	};
 
 	return (
 		<Card
@@ -585,41 +504,72 @@ export default function Comments(props) {
 							)}
 						</Grid>
 					)}
-					<Grid item xs={12} style={{ marginBottom: '8px' }}>
-						<FormGroup style={{ display: 'block' }}>
-							{(props.detailCard || props.handleRightDialogClose) && (
-								<h4 className={classes.sharedCommentLabel}>Share comments</h4>
-							)}
-							<FormControlLabel
-								className={`${classes.switchButtom} ${!publicComment ? classes.switchTextDeselected : ''}`}
-								control={
-									<React.Fragment>
+					{!props.hideShareCommentsToggle && (
+						<Grid item xs={12} style={{ marginBottom: '8px' }} data-testid="shared-comment-section">
+							<FormGroup style={{ display: 'block' }}>
+								{(props.detailCard || props.handleRightDialogClose) && (
+									<h4 className={classes.sharedCommentLabel} data-testid="share-comments-label">
+										Share comments
+									</h4>
+								)}
+								<FormControlLabel
+									className={`${classes.switchButtom} ${!publicComment ? classes.switchTextDeselected : ''}`}
+									control={
 										<AntSwitch
 											checked={publicComment}
 											onChange={() => {
 												setPublicComment(!publicComment);
 											}}
 											name="checkedC"
+											data-testid="share-comments-switch"
 										/>
-									</React.Fragment>
-								}
-								label={!props.detailCard && !props.handleRightDialogClose ? 'Shared' : ''}
-								labelPlacement="start"
-							/>
-						</FormGroup>
-					</Grid>
+									}
+									label={!props.detailCard && !props.handleRightDialogClose ? 'Shared' : ''}
+									labelPlacement="start"
+								/>
+							</FormGroup>
+						</Grid>
+					)}
 					<Grid item xs={12}>
-						<MentionsUser
-							users={users}
-							comment={comment}
-							setComment={setComment}
-							updateComment={updateComment}
-							profilesInfo={profilesInfo}
-							isSaveAllowed={props?.isSaveAllowed}
-							placeholder={props.placeholder}
-							isHelperTextAllow={props.isHelperTextAllow}
+						<TextField
+							className={`${classes.textInput} ${emptyInput ? classes.emptyInput : ''}`}
+							id="commentInput"
+							variant="outlined"
+							label={props.detailCard || props.handleRightDialogClose ? null : 'Comments'}
+							placeholder={props.detailCard || props.handleRightDialogClose ? 'Add Comments' : null}
+							multiline
+							rows="4"
+							onChange={e => {
+								textFieldHandleChange(e);
+							}}
+							value={textValue}
+							onKeyDown={event => {
+								if (event.key === 'Enter' && !event.shiftKey) {
+									event.preventDefault();
+									handleEnteringComment(event);
+								}
+							}}
+							onBlur={() => {
+								setEmptyInput(false);
+							}}
 						/>
 					</Grid>
+					{!emptyInput ? (
+						<Grid item xs={12}>
+							<p className={classes.foodText}>
+								<span>Shift+Enter</span> to add a new line
+							</p>
+							<p className={classes.foodText}>
+								<span>Enter</span> to save
+							</p>
+						</Grid>
+					) : (
+						<Grid item xs={12}>
+							<p className={classes.foodText}>
+								<span className="redColor">Required Field </span>
+							</p>
+						</Grid>
+					)}
 				</Grid>
 			</CardActions>
 			<CardContent
@@ -629,40 +579,40 @@ export default function Comments(props) {
 					height: props.handleRightDialogClose ? 'calc(100vh - 218px)' : null,
 				}}
 			>
+				{loading && <CircularProgress />}
 				{!loadingComments ? (
 					<List className={classes.list}>
 						{commentsArray.map((comment, index) =>
 							props.detailCard
 								? ((publicComment && comment.public) ||
-									(!publicComment && !comment.public && stateApp?.user?.email === comment?.user?.email)) &&
-								(commentsDisplayedCount += 1) &&
-								(props.top && props.top < commentsDisplayedCount ? null : (
-									//// ListItem ////
-									<div key={index}>
-										{commentsDisplayedCount !== 1 && (
-											<Divider
-												style={{
-													marginTop: '13px',
-													marginBottom: '13px',
-												}}
-											/>
-										)}
-										{/* //// name and date line //// */}
-										<h5 className={classes.nameAndDateLine}>{`${comment?.user?.name} · ${new Intl.DateTimeFormat(
-											'en-US',
-											{
-												year: 'numeric',
-												month: 'long',
-												day: '2-digit',
-												hour: '2-digit',
-												minute: '2-digit',
-											}
-										).format(comment.ts)}`}</h5>
+										(!publicComment && !comment.public && stateApp?.user?.email === comment?.user?.email)) &&
+									(commentsDisplayedCount += 1) &&
+									(props.top && props.top < commentsDisplayedCount ? null : (
+										/// / ListItem ////
+										<div key={index}>
+											{commentsDisplayedCount !== 1 && (
+												<Divider
+													style={{
+														marginTop: '13px',
+														marginBottom: '13px',
+													}}
+												/>
+											)}
+											{/* //// name and date line //// */}
+											<h5 className={classes.nameAndDateLine}>{`${comment?.user?.name} · ${new Intl.DateTimeFormat(
+												'en-US',
+												{
+													year: 'numeric',
+													month: 'long',
+													day: '2-digit',
+													hour: '2-digit',
+													minute: '2-digit',
+												}
+											).format(comment.ts)}`}</h5>
 
-										{/* //// comment line //// */}
-										<div style={{ marginTop: '7px', marginBottom: '7px' }}>
-											{comment.comment.split('\n').map((line, i) => {
-												return (
+											{/* //// comment line //// */}
+											<div style={{ marginTop: '7px', marginBottom: '7px' }}>
+												{comment.comment.split('\n').map((line, i) => (
 													<p
 														key={i}
 														style={{
@@ -672,82 +622,63 @@ export default function Comments(props) {
 													>
 														{line}
 													</p>
-												);
-											})}
-										</div>
+												))}
+											</div>
 
-										{/* //// delete line //// */}
-										<h5 className={classes.deleteLine} onClick={() => handleDeleteClick(comment)}>
-											Delete
-										</h5>
-									</div>
-								))
-								: //// ListItem  End ////
-								((publicComment && comment.public) ||
-									(!publicComment && stateApp.user.email === comment?.user?.email && !comment.public)) && (
-									<ListItem key={index} className={classes.listItem} alignItems="flex-start">
-										<ListItemAvatar className={classes.avatar}>
-											<Avatar
-												name={comment?.user?.name}
-												color={Avatar.getRandomColor(comment?.user?.email, [
-													'#b5d2f6',
-													'#ade2e9',
-													'#eaeaea',
-													'#f2c1e2',
-													'#d7d6fb',
-												])}
-												fgColor="#000"
-												size="35"
-												round
+											{/* //// delete line //// */}
+											<h5 className={classes.deleteLine} onClick={() => handleDeleteClick(comment)}>
+												Delete
+											</h5>
+										</div>
+									))
+								: /// / ListItem  End ////
+									((publicComment && comment.public) ||
+										(!publicComment && stateApp.user.email === comment?.user?.email && !comment.public)) && (
+										<ListItem key={index} className={classes.listItem} alignItems="flex-start">
+											<ListItemAvatar className={classes.avatar}>
+												<Avatar
+													name={comment?.user?.name}
+													color={Avatar.getRandomColor(comment?.user?.email, [
+														'#b5d2f6',
+														'#ade2e9',
+														'#eaeaea',
+														'#f2c1e2',
+														'#d7d6fb',
+													])}
+													fgColor="#000"
+													size="35"
+													round
+												/>
+											</ListItemAvatar>
+											<ListItemText
+												className={classes.listItemText}
+												primary={<CommonCommentText users={userLists?.allMongoUsers} eachComment={comment} />}
+												secondary={`${comment?.user?.name}${
+													comment.ids
+														? ''
+														: ` - ${new Intl.DateTimeFormat('en-US', {
+																year: 'numeric',
+																month: 'long',
+																day: '2-digit',
+																hour: '2-digit',
+																minute: '2-digit',
+															}).format(comment.ts)}`
+												}`}
 											/>
-										</ListItemAvatar>
-										<ListItemText
-											className={classes.listItemText}
-											primary={
-												// <div style={{ marginBottom: '8px' }}>
-												//   <div style={{
-												//     marginTop: '2px',
-												//     marginBottom: '5px',
-												//     fontWeight: 'bolder',
-												//     color: '#3e3e3e',
-												//     fontSize: '15px',
-												//   }}>{comment?.commentType || 'General'}</div>
-												//   <CommentText users={userLists?.allMongoUsers} eachComment={comment} />
-												// </div>
-												<CommonCommentText users={userLists?.allMongoUsers} eachComment={comment} />
-											}
-											secondary={
-												`${comment?.user?.name}` +
-												(comment.ids
-													? ''
-													: ` - ${new Intl.DateTimeFormat('en-US', {
-														year: 'numeric',
-														month: 'long',
-														day: '2-digit',
-														hour: '2-digit',
-														minute: '2-digit',
-													}).format(comment.ts)}`)
-											}
-										/>
-										<ListItemSecondaryAction>
-											<IconButton
-												edge="end"
-												aria-label="delete"
-												data-testid={`comment-delete-icon-${index}`}
-												onClick={() => handleDeleteClick(comment)}
-											>
-												<DeleteIcon />
-											</IconButton>
-										</ListItemSecondaryAction>
-									</ListItem>
-								)
+											<ListItemSecondaryAction>
+												<IconButton edge="end" aria-label="delete" onClick={() => handleDeleteClick(comment)}>
+													<DeleteIcon />
+												</IconButton>
+											</ListItemSecondaryAction>
+										</ListItem>
+									)
 						)}
 					</List>
 				) : (
-					<CircularProgress color="secondary"></CircularProgress>
+					<CircularProgress color="secondary" />
 				)}
 				<div className={classes.commentType}>
-					<CommentType showCommentType={true} setSelectedCommentType={setSelectedCommentType} />
+					<CommentType showCommentType setSelectedCommentType={setSelectedCommentType} />
 				</div>
 			</CardContent>
 		</Card>

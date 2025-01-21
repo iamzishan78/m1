@@ -4,15 +4,19 @@ import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, 
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/styles';
 
+import { useQuery } from '@apollo/client';
+
+import PropTypes from 'prop-types';
+
 import RelatedWellsTable from 'components/Common/RelatedTables/Wells';
 import MRTTable from 'components/MRTTable';
 
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { tableGlobalController } from 'hookstate/tableController';
 
 import { useStyles as customStyles } from '../style';
+import { GET_DB_DATA_TOTAL } from 'graphQL/useQueryDbQuery';
 
-// Components
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		padding: '10px 25px',
 	},
@@ -65,11 +69,18 @@ const useStyles = makeStyles(theme => ({
 export default function LagalDescription({ uniObj, agreementId }) {
 	const classes = useStyles();
 	const customClasses = customStyles();
-	const tableState = tableController('RelatedWellsTable').useState(['data']).stateValues;
 
 	const {
 		stateValues: { tabKey: selectedTab },
 	} = tableGlobalController.useState(['tabKey']);
+
+	const { data: response } = useQuery(GET_DB_DATA_TOTAL, {
+		variables: {
+			index: 'shapewellinterests_flat',
+			filters: [{ field: 'shape._id', value: agreementId }],
+		},
+		fetchPolicy: 'no-cache',
+	});
 
 	const RelatedWellsOverrideMeta = useMemo(
 		() => ({
@@ -83,7 +94,6 @@ export default function LagalDescription({ uniObj, agreementId }) {
 			},
 			customValue: { parentRecord: agreementId },
 		}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[agreementId]
 	);
 
@@ -96,14 +106,14 @@ export default function LagalDescription({ uniObj, agreementId }) {
 							<ExpandMoreIcon fontSize="large" />
 						</IconButton>
 					}
-					onClick={e => {}}
+					onClick={() => {}}
 				>
 					<Grid container direction="row" justify="space-between" alignItems="center">
 						<Grid item xs={6} className={classes.accordionHeading}>
 							<Typography variant="h5" className={customClasses.titleText}>
 								Related Wells
 							</Typography>
-							<Chip color="info" label={tableState?.data?.total} />
+							<Chip color="info" label={response?.getDbDataTotal?.data} />
 						</Grid>
 					</Grid>
 				</AccordionSummary>
@@ -126,7 +136,7 @@ export default function LagalDescription({ uniObj, agreementId }) {
 											tabLabels: ['Agreement Wells', 'Potential Wells'],
 											customProps: {
 												customLayer: uniObj,
-												shapeType: 'Unit',
+												shapeType: 'Agreement',
 											},
 										}}
 									/>
@@ -139,3 +149,8 @@ export default function LagalDescription({ uniObj, agreementId }) {
 		</div>
 	);
 }
+
+LagalDescription.propTypes = {
+	uniObj: PropTypes.object,
+	agreementId: PropTypes.string.isRequired,
+};

@@ -6,7 +6,7 @@ import { tenantsCredentials } from 'components/AzureLogin/AADAuthConfig';
 import { globalStateController } from 'hookstate/globalStateController';
 
 import { wellsKeys } from 'utils/data';
-import { getSession } from 'utils/user';
+import { UserSession } from 'utils/user';
 
 import { TO_FIXED, WEEK_DAYS } from './consts';
 
@@ -72,7 +72,7 @@ export const getIdFromPath = path => {
 };
 
 export const getURL = () => {
-	let tenantName = window.sessionStorage.getItem('tenantName');
+	let tenantName = UserSession.getStorageItem('tenantName');
 	if (tenantName) {
 		let tenant = tenantsCredentials(tenantName);
 		return isDev ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
@@ -81,7 +81,7 @@ export const getURL = () => {
 };
 
 export const getHeaders = () => {
-	const session = getSession();
+	const session = UserSession.getSession();
 	const headers = { 'X-ZUMO-AUTH': session.authToken };
 	if (isDev || globalStateController.getValue('bypassLogin')) {
 		headers['X-MS-TOKEN-AAD-ID-TOKEN'] = session.accessToken;
@@ -892,4 +892,28 @@ export const fuzzySearch = (items, query, queryKey = 'name') => {
 		return found;
 	}, []);
 	return ret;
+};
+
+export const formatLayerForMap = layer => {
+	let jsonLayer = layer.customLayer.shapeJson;
+	if (layer.customLayer.shapeJson) {
+		jsonLayer = copy(layer.customLayer.shapeJson);
+	}
+	if (!jsonLayer?.properties?.type && layer?.customLayer?.layer !== 'parcel') {
+		jsonLayer.properties.type = layer.customLayer.layer;
+	}
+	if (!jsonLayer?.properties?.sdType && layer?.customLayer?.layer === 'parcel') {
+		jsonLayer.properties.sdType = layer.customLayer.layer;
+	}
+
+	jsonLayer.layer = { id: layer.customLayer.layer };
+	jsonLayer.id = layer.customLayer._id;
+	return {
+		jsonLayer,
+		feature: {
+			...jsonLayer.properties,
+			feature: jsonLayer,
+			id: layer.customLayer._id,
+		},
+	};
 };

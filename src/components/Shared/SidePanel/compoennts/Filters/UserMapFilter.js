@@ -7,21 +7,21 @@ import { Close as ClearButton } from '@material-ui/icons';
 
 import { useLazyQuery } from '@apollo/client';
 import _ from 'lodash';
+import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import { generateFileFilters } from 'components/Map/DeckGL/helpers/common';
 import { stringFilterOptions, tableESSimpleFilterModes, searchFilterOptions } from 'components/MRTTable/utils/data';
-import { formatDate } from 'components/Shared/functions';
 
 import { GET_DB_FILTERS } from 'graphQL/useQueryDbQuery';
 
 import { globalStateController } from 'hookstate/globalStateController';
 import { tableESState } from 'hookstate/initialStates';
 import { layerFiltersController } from 'hookstate/layerFiltersController';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { tableController } from 'hookstate/tableController';
 
 import { customLayersFieldAccessors } from './consts';
 import CustomAutocomplete from './CustomAutocomplete';
-import moment from 'moment';
 
 // Define custom styles using Material-UI's makeStyles hook
 const useStyles = makeStyles(theme => ({
@@ -129,7 +129,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 	const { control, setValue, watch } = useFormContext(); // Get form control methods
 
 	const [searchText, setSearchText] = useState('');
-
+	const [immediateSearchText, setImmediateSearchText] = useState('');
 	const debouncedSetSearchText = useMemo(() => {
 		return _.debounce(value => {
 			setSearchText(value);
@@ -138,6 +138,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 	}, []);
 
 	const handleChange = e => {
+		setImmediateSearchText(e?.target?.value || '');
 		debouncedSetSearchText(e?.target?.value || '');
 	};
 	// Lazy query to fetch filter list from the GraphQL API when required
@@ -158,6 +159,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 
 	// Debounce the filter values
 	useEffect(() => {
+		console.log(filterValues);
 		const handler = setTimeout(() => {
 			setDebouncedFilterValues(filterValues);
 		}, 1500); // Delay of 1500ms
@@ -167,6 +169,15 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			clearTimeout(handler);
 		};
 	}, [filterValues]);
+
+	const getSelectedField = (fieldName, _dataSource) => {
+		const fileId = dataSourceName?.substring(0, dataSourceName.indexOf('_'));
+		const layerShapeName = dataSourceName?.substring(dataSourceName.indexOf('_') + 1);
+		const layer = layers.find(l => l.file === fileId && l.layerShapeName === layerShapeName);
+		return (
+			customLayersFieldAccessors[_dataSource || mapView?.dataSourceName || dataSourceName]?.keys || layer?.layerSchema
+		)?.find(key => key.value.replace('.keyword', '') === fieldName || key?.value === fieldName);
+	};
 
 	const getMapViewFilters = () => {
 		return mapViews?.map(mapView => {
@@ -301,7 +312,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 					}
 				}
 
-				if (!tableKey)
+				if (!tableKey) {
 					globalStateController.updateState({
 						mapView: {
 							selectedMapView: {
@@ -310,20 +321,11 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 							},
 						},
 					});
+				}
 				layerFiltersController.updateLayerFiltersFromMapViews(dataSourceName, mapViewFilters);
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [debouncedFilterValues, filterType, fieldName, dataSourceName]); // Dependencies trigger re-run when they change
-
-	const getSelectedField = (fieldName, _dataSource) => {
-		const fileId = dataSourceName?.substring(0, dataSourceName.indexOf('_'));
-		const layerShapeName = dataSourceName?.substring(dataSourceName.indexOf('_') + 1);
-		const layer = layers.find(l => l.file === fileId && l.layerShapeName === layerShapeName);
-		return (
-			customLayersFieldAccessors[_dataSource || mapView?.dataSourceName || dataSourceName]?.keys || layer?.layerSchema
-		)?.find(key => key.value.replace('.keyword', '') === fieldName || key?.value === fieldName);
-	};
 
 	// Memoized calculation of autocomplete fields to optimize rendering
 	const autocompleteFields = useMemo(() => {
@@ -390,6 +392,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 					setValue(`mapViews.${index}.filterType`, null);
 					setValue(`mapViews.${index}.filterValues`, null);
 				}, // Reset other fields on change
+				isSearch: false,
 			},
 			{
 				name: `mapViews.${index}.fieldName`,
@@ -421,6 +424,7 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 						);
 					}
 				}, // Reset other fields on change
+				isSearch: false,
 			},
 		];
 
@@ -435,11 +439,13 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				defaultValue: filterTypeOptions.find(filterTypeOption => filterTypeOption.value === mapView?.filterType), // Set default value if mapView is provided
 				onChange: (e, v, r, previousValue) => {
 					setValue(`mapViews.${index}.filterValues`, null);
-					if (!['empty', 'notEmpty'].includes(v?.value) && !['empty', 'notEmpty'].includes(previousValue?.value))
+					if (!['empty', 'notEmpty'].includes(v?.value) && !['empty', 'notEmpty'].includes(previousValue?.value)) {
 						Object.keys(tableESState).map(tableKey =>
 							tableController(tableKey).clearFilter((fieldName?.value || fieldName)?.replace('.keyword', ''), false)
 						);
+					}
 				}, // Reset other fields on change
+				isSearch: false,
 			});
 		}
 
@@ -450,10 +456,10 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 				options: filterValuesOptions || [], // Dynamic based on filter options
 				defaultValue: mapView?.filterValues, // Set default value if mapView is provided
 				type: selectedField?.type,
+				isSearch: true,
 			});
 		}
 		return fields;
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [dataSourceName, filtersData, filterType, fieldName, index, mapView, getSelectedField, setValue]); // Dependencies for recalculating when data changes
 
 	// Function to clear the filter when the clear button is clicked
@@ -501,8 +507,8 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 			</div>
 
 			{/* Render autocomplete fields */}
-			{autocompleteFields.map((field, i) => (
-				<Box mb={2} key={i}>
+			{autocompleteFields.map(field => (
+				<Box mb={2} key={field.name}>
 					<CustomAutocomplete
 						defaultValue={field.defaultValue} // Set default value if mapView is provided
 						onChange={field.onChange} // Triggered when the field value changes
@@ -515,14 +521,49 @@ const UserMapFilter = ({ mapView, index, remove, resetForm }) => {
 						isTextFieldOnly={
 							searchFilterOptions.includes(filterType?.value || filterType) && field.label === 'Filter Values'
 						}
-						searchText={searchText}
+						searchText={immediateSearchText}
 						handleChange={handleChange}
 						multiple={field.label === 'Filter Values' && (filterType?.value || filterType) === 'multiselect'}
+						isSearch={field.isSearch}
 					/>
 				</Box>
 			))}
 		</Box>
 	);
+};
+
+UserMapFilter.propTypes = {
+	mapView: PropTypes.shape({
+		filterValues: PropTypes.oneOfType([
+			PropTypes.string,
+			PropTypes.arrayOf(PropTypes.string),
+			PropTypes.shape({
+				gte: PropTypes.string,
+				lte: PropTypes.string,
+			}),
+		]),
+		fieldName: PropTypes.oneOfType([
+			PropTypes.string,
+			PropTypes.shape({
+				value: PropTypes.string,
+			}),
+		]),
+		dataSourceName: PropTypes.oneOfType([
+			PropTypes.string,
+			PropTypes.shape({
+				value: PropTypes.string,
+			}),
+		]),
+		filterType: PropTypes.oneOfType([
+			PropTypes.string,
+			PropTypes.shape({
+				value: PropTypes.string,
+			}),
+		]),
+	}),
+	index: PropTypes.number.isRequired,
+	remove: PropTypes.func.isRequired,
+	resetForm: PropTypes.func.isRequired,
 };
 
 export default UserMapFilter;

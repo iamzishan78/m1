@@ -11,6 +11,8 @@ import { TextField } from '@mui/material';
 import queryString from 'query-string';
 import styled from 'styled-components';
 
+import { UserSession } from 'utils/user';
+
 const useStyles = makeStyles(theme => ({
 	select: {
 		color: 'white',
@@ -116,7 +118,7 @@ const BypassSignInCard = props => {
 	const history = useHistory();
 	const query = queryString.parse(history.location.search);
 
-	const sessionTenant = window.sessionStorage.getItem('tenantName');
+	const sessionTenant = UserSession.getStorageItem('tenantName');
 
 	const [tenant, setTenant] = useState(
 		props.tenant || query.tenant || sessionTenant ? props.tenant || query.tenant || sessionTenant : ''

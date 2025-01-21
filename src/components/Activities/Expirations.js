@@ -8,6 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useLazyQuery } from '@apollo/client';
 import { uniqueId } from 'lodash';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 import MRTTable from 'components/MRTTable';
 
@@ -59,7 +60,13 @@ const ActivitiesCalendar = props => {
 	);
 };
 
-const useStyles = makeStyles(theme => ({
+ActivitiesCalendar.propTypes = {
+	events: PropTypes.array.isRequired,
+	view: PropTypes.string.isRequired,
+	onEventClick: PropTypes.func.isRequired,
+};
+
+const useStyles = makeStyles(() => ({
 	progress: {
 		marginLeft: '30px',
 		verticalAlign: 'middle',
@@ -142,6 +149,20 @@ const Activities = () => {
 		getAllMongoUsers();
 	}, []);
 
+	const setSelectedActivityId = id => {
+		setStateApp(stateApp => ({
+			...stateApp,
+			selectedActivityId: id,
+		}));
+	};
+
+	const onModalOpen = () => {
+		setStateApp(stateApp => ({
+			...stateApp,
+			activityDialog: true,
+		}));
+	};
+
 	useEffect(() => {
 		if (events.length > 0) {
 			const eventId = history.location.pathname.split('/')[3];
@@ -181,20 +202,6 @@ const Activities = () => {
 		);
 	}, [events, activityFilterByType, activityFilterByTime, activityFilterByOwner, view]);
 
-	const onModalOpen = () => {
-		setStateApp(stateApp => ({
-			...stateApp,
-			activityDialog: true,
-		}));
-	};
-
-	const setSelectedActivityId = id => {
-		setStateApp(stateApp => ({
-			...stateApp,
-			selectedActivityId: id,
-		}));
-	};
-
 	useEffect(() => {
 		if (stateApp.selectedActivityId) {
 			setStateApp(() => ({
@@ -209,6 +216,7 @@ const Activities = () => {
 	useEffect(() => {
 		if (activitiesGridState) {
 			tableController('ActivitiesTable').clearFilters();
+			tableController('ExpirationsTable').clearFilters();
 			const filters = [];
 
 			if (activityFilterByType && activityFilterByType !== 'all') {

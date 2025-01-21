@@ -235,7 +235,7 @@ function MapGridCard() {
 
 	const shapeFileTableOverride = useMemo(() => {
 		// generic generateFileFilters used for files so that it remain consistent in all places.
-		if (mapControlsStateValues?.selectedLayer?.layerShapeName) {
+		if (mapControlsStateValues?.selectedLayer) {
 			const fileQuery = generateFileFilters({ fileLayer: mapControlsStateValues.selectedLayer });
 			const fileId = mapControlsStateValues.selectedLayer?.file;
 			const layerShapeName = mapControlsStateValues?.selectedLayer?.layerShapeName;
@@ -248,7 +248,7 @@ function MapGridCard() {
 			tableGlobalController.reInitialized();
 			return {
 				filterLayerType: layerIdentifier,
-				maxTableHeight: '40vh',
+				maxTableHeight: '45vh',
 				layerSchema: mapControlsStateValues?.selectedLayer?.layerSchema || globalLayer?.layerSchema,
 				toolbarInternalActions: {
 					onClose,
@@ -256,8 +256,8 @@ function MapGridCard() {
 						marginRight: '0.5rem',
 					},
 				},
-				defaultFilters: fileQuery.variables.filters,
-				advanceSearch: fileQuery.variables.search.advanceSearch,
+				defaultFilters: fileQuery?.variables?.filters || [],
+				advanceSearch: fileQuery?.variables?.search?.advanceSearch || [],
 				layerIdentifier,
 			};
 		} else {

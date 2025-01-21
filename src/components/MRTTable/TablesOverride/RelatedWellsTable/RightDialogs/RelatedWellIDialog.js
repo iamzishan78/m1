@@ -156,7 +156,7 @@ function RelatedWellsDialog(props) {
 						},
 					],
 				},
-				refetchQueries: ['getDbData', 'getESFilterList'],
+				refetchQueries: ['getDbData', 'getDbDataTotal', 'getESFilterList'],
 				awaitRefetchQueries: true,
 			});
 		} else {
@@ -170,7 +170,7 @@ function RelatedWellsDialog(props) {
 						...getValues(),
 					},
 				},
-				refetchQueries: ['getDbData', 'getESFilterList', 'getShapeSummaryDetails'],
+				refetchQueries: ['getDbData', 'getDbDataTotal', 'getESFilterList', 'getShapeSummaryDetails'],
 				awaitRefetchQueries: true,
 			});
 		}

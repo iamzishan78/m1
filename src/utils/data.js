@@ -1,3 +1,5 @@
+import { UserSession } from './user';
+
 export const campaignVariables = {
 	esIndex: 'contacts_flat',
 	filterKey: 'campaignName.keyword',
@@ -724,6 +726,7 @@ export const bypassTenants = [
 	'm1dev',
 	'm1cypress',
 	'm1staging',
+	'wildbasin',
 	// "m1Production",
 	// "m1Development",
 	// "GHR",
@@ -763,7 +766,7 @@ export const esIndexFilterKeyMap = {
 };
 
 export const baseTenantsMaps = () => {
-	const tenantId = window.sessionStorage?.getItem('tenantName').toLowerCase();
+	const tenantId = UserSession.getStorageItem('tenantName').toLowerCase();
 	const defaultStyles = ['Satellite', 'Basic', 'Light', 'Outdoors']; // Default for most clients
 	const testNewStyles = [
 		...defaultStyles,

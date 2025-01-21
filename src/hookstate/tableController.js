@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 /* eslint-disable react/prop-types */
 import React from 'react';
 
@@ -114,6 +115,10 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 					);
 				}
 
+				if (item?.type === 'date') {
+					return <>{formatDate(value)}</>;
+				}
+
 				return <>{value}</>;
 			},
 		};
@@ -204,7 +209,6 @@ const tableESStateControllerHandler = state => ({
 				...CommonSchema.SELECT_SOME,
 				Header: () => <TableHeaderMoreOptions tableKey={tableKey} />,
 				Cell: ({ row }) => {
-					// eslint-disable-next-line no-use-before-define
 					const tableState = tableController(tableKey).useState(['mrtTableRef']);
 					const tableStateValues = tableState.stateValues;
 
@@ -292,13 +296,15 @@ const tableESStateControllerHandler = state => ({
 			excludeFields,
 		});
 
+		const rowSelectId = isClientSide ? 'mrt-row-select' : 'over-ride-checkbox';
+
 		// Set default pinning and ordering
-		const defaultColumnsOrdering = ['over-ride-checkbox', 'mrt-row-numbers', ...columnOrder];
+		const defaultColumnsOrdering = [rowSelectId, 'mrt-row-numbers', ...columnOrder];
 		const defaultColumnsPinning = {
 			left: [
 				...(pinnedFields.length > 0
-					? _.concat(['over-ride-checkbox', 'mrt-row-numbers'], _.slice(pinnedFields, 1))
-					: ['over-ride-checkbox', 'mrt-row-numbers']),
+					? _.concat([rowSelectId, 'mrt-row-numbers'], _.slice(pinnedFields, 1))
+					: [rowSelectId, 'mrt-row-numbers']),
 			],
 		};
 
@@ -313,8 +319,8 @@ const tableESStateControllerHandler = state => ({
 		}
 
 		if (rest?.disableRowSelection) {
-			pull(defaultColumnsOrdering, 'over-ride-checkbox');
-			pull(defaultColumnsPinning.left, 'over-ride-checkbox');
+			pull(defaultColumnsOrdering, rowSelectId);
+			pull(defaultColumnsPinning.left, rowSelectId);
 		}
 
 		const formattedMapViewFilters = mapViewFilters
@@ -335,7 +341,7 @@ const tableESStateControllerHandler = state => ({
 			isClientSide,
 			modelName,
 			data: { rows: [], total: 0 },
-			isLoading: false,
+			isLoading: true,
 			isFetching: false,
 			isError: false,
 			customProps: isEmpty(state?.customProps?.get({ noproxy: true }))
@@ -404,6 +410,7 @@ const tableESStateControllerHandler = state => ({
 		// Set default state referneces
 		stateToUpdate = {
 			...stateToUpdate,
+			initialGridView: gridView,
 			defaultTableSchema: _TableSchema,
 			defaultColumnsOrdering: defaultColumnsOrdering,
 			defaultColumnPinning: defaultColumnsPinning,
@@ -416,12 +423,10 @@ const tableESStateControllerHandler = state => ({
 		state.merge(stateToUpdate);
 
 		if (mapViewFilters.length > 0) {
-			// eslint-disable-next-line no-use-before-define
 			tableController(tableKey).setShowColumnFilters(true);
 		}
 		if (customLayersFieldAccessors[layerIdentifier]) {
 			mapViewFilters?.forEach(filter => {
-				// eslint-disable-next-line no-use-before-define
 				tableController(tableKey).setFilterMode(filter?.field.replace('.keyword', ''), filter.searchType);
 			});
 		}
@@ -492,7 +497,6 @@ const tableESStateControllerHandler = state => ({
 		});
 		const tableKey = state.tableKey.get();
 
-		// eslint-disable-next-line no-use-before-define
 		const updatedColumnnSchema = tableController(tableKey).setInitialFilterMode(columnSchema, mode, column);
 
 		state.TableSchema?.[index]?.merge(updatedColumnnSchema);
@@ -743,13 +747,17 @@ const tableESStateControllerHandler = state => ({
 	},
 
 	clearFilters: () => {
+		const tableKey = state.tableKey.get();
 		const filtersState = state.filters?.get({ noproxy: true });
 
-		if (!filtersState?.length === 0) {
+		if (filtersState?.length === 0) {
 			return;
 		}
 
-		state.filters?.set(filtersState.filter(filter => filter.isMapViewFilter));
+		filtersState.forEach(filter => {
+			tableController(tableKey).clearFilter(filter?.field);
+			tableController(tableKey).setFilterMode(filter?.field?.replace('.keyword', ''), 'singleselect', false);
+		});
 	},
 
 	syncFilters: filters => {
@@ -816,8 +824,12 @@ const tableESStateControllerHandler = state => ({
 	},
 
 	setFilters: filters => {
-		const filtersState = state.filters?.get({ noproxy: true });
-		state.filters.set([...filters, ...filtersState.filter(filter => filter?.isMapViewFilter)]);
+		const tableKey = state.tableKey.get();
+		filters.forEach(filter => {
+			const searchType = Array.isArray(filter?.value) ? 'multiselect' : 'singleselect';
+			tableController(tableKey).setFilterMode(filter?.field?.replace('.keyword', ''), filter?.searchType || searchType);
+			tableController(tableKey).setFilter(filter);
+		});
 	},
 
 	setIncludeInactive: isIncludeInactive => {
@@ -955,7 +967,6 @@ const tableESStateControllerHandler = state => ({
 				[rowId]: editedRow,
 			});
 		} else {
-			// eslint-disable-next-line no-use-before-define
 			tableController(tableKey).clearEditedRow(rowId);
 		}
 	},

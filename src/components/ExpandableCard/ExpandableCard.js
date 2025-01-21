@@ -90,8 +90,8 @@ function ExpandableCard(props) {
 	const [anchorEl, setAnchorEl] = useState();
 
 	const {
-		stateValues: { selectedShape, selectedParcel, selectedWell },
-	} = popupController.useState(['selectedShape', 'selectedParcel', 'selectedWell']);
+		stateValues: { selectedShape, selectedWell },
+	} = popupController.useState(['selectedShape', 'selectedWell']);
 
 	const handleMenuClick = event => {
 		setAnchorEl(event.currentTarget);
@@ -127,7 +127,7 @@ function ExpandableCard(props) {
 	const [trackByObjectId, { data: dataTrack }] = useLazyQuery(TRACKBYOBJECTID);
 
 	const { backgroundColor, headerIcons, icons, headerLabelColor } = modifyExandableCardStyle(
-		selectedShape || selectedParcel
+		selectedShape
 	);
 
 	const useStyles = makeStyles(() => ({
@@ -379,7 +379,7 @@ function ExpandableCard(props) {
 				expandedCard: true,
 			});
 			popupController.fitParcelBounds();
-			const newPath = `/map/parcels/${selectedParcel?.id}`;
+			const newPath = `/map/parcels/${selectedShape?.id}`;
 			history.location.pathname !== newPath && history.replace(newPath);
 		}
 		setStateExpandableCard(state => ({ ...state, expanded: true }));
@@ -405,7 +405,7 @@ function ExpandableCard(props) {
 			} else if (selectedShape?.type === 'unit' && !selectedShape?.feature?.properties?.uName) {
 				dispatch(showInfoMessage('Unit Name is required'));
 				return;
-			} else if (selectedParcel && !selectedParcel?.feature?.properties?.shapeLabel) {
+			} else if (selectedShape?.sdType === 'parcel' && !selectedShape?.feature?.properties?.shapeLabel) {
 				dispatch(showInfoMessage('Tract Name is required'));
 				return;
 			}
@@ -455,47 +455,29 @@ function ExpandableCard(props) {
 				}}
 			>
 				{selectedShape ? (
-					<Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
-						<Grid item>
-							<Avatar color="#1a2341">
-								<FolderIcon fontColor="#1a2341" />
-							</Avatar>
-						</Grid>
-						<Grid item>
-							<Box className="name">
-								{title.length > 70 ? `${title.substr(0, 75).toUpperCase()}...` : title.toUpperCase()}
-							</Box>
-							<Box className="description">{subTitle}</Box>
-							{selectedShape.type === 'unit' && <Box className="type">Unit</Box>}
-							{selectedShape.type === 'agreement' && (
-								<Box className="type">
-									{agreementTypes.find(at => at.value === selectedShape?.agreementType)?.label || ''}
-								</Box>
-							)}
-						</Grid>
-					</Grid>
-				) : (
 					<>
-						{' '}
-						{targetLabel !== 'contact' && targetLabel !== 'parcel' && (
-							<div>{title.length > 70 ? `${title.substr(0, 75)}...` : title}</div>
-						)}
-						{targetLabel === 'parcel' && props.expanded === true && (
-							<Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
-								<Grid item>
-									<Avatar color="#1a2341">
-										<FolderIcon fontColor="#1a2341" />
-									</Avatar>
-								</Grid>
-								<Grid item>
-									<Box className="name">
-										{title.length > 70 ? `${title.substr(0, 75).toUpperCase()}...` : title.toUpperCase()}
-									</Box>
-									{subTitle && <Box className="description">{subTitle}</Box>}
-									<Box className="type">Tract</Box>
-								</Grid>
+						<Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
+							<Grid item>
+								<Avatar color="#1a2341">
+									<FolderIcon fontColor="#1a2341" />
+								</Avatar>
 							</Grid>
-						)}
+							<Grid item>
+								<Box className="name">
+									{title.length > 70 ? `${title.substr(0, 75).toUpperCase()}...` : title.toUpperCase()}
+								</Box>
+								<Box className="description">{subTitle}</Box>
+								{targetLabel === 'unit' && <Box className="type">Unit</Box>}
+								{targetLabel === 'agreement' && (
+									<Box className="type">
+										{agreementTypes.find(at => at.value === selectedShape?.agreementType)?.label || ''}
+									</Box>
+								)}
+								{targetLabel === 'parcel' && (
+									<Box className="type">Tract</Box>
+								)}
+							</Grid>
+						</Grid>
 						{targetLabel === 'parcel' && props.expanded === false && (
 							<Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
 								<Box
@@ -508,6 +490,13 @@ function ExpandableCard(props) {
 									{title.length > 70 ? `${title.substr(0, 75).toUpperCase()}...` : title.toUpperCase()}
 								</Box>
 							</Grid>
+						)}
+					</>
+				) : (
+					<>
+						{' '}
+						{targetLabel !== 'contact' && targetLabel !== 'parcel' && (
+							<div>{title.length > 70 ? `${title.substr(0, 75)}...` : title}</div>
 						)}
 						{targetLabel === 'contact' && parent !== 'table' && <ContactSearch />}
 						{targetLabel === 'contact' && parent !== 'table' && (
@@ -567,11 +556,10 @@ function ExpandableCard(props) {
 
 	const handleEditParcelAndShape = () => {
 		handleClose('noreset');
-
 		drawController.updateState({
-			featureToEdit: selectedParcel?.feature || selectedShape?.feature,
-			currentFeature: selectedParcel?.feature || selectedShape?.feature,
-			shapeToExtend: selectedParcel?.feature || selectedShape?.feature,
+			featureToEdit: selectedShape?.feature,
+			currentFeature: selectedShape?.feature,
+			shapeToExtend: selectedShape?.feature,
 			showDrawShapesPopup: true,
 			showShapeActionsPopup: true,
 			editDraw: true,
@@ -579,7 +567,6 @@ function ExpandableCard(props) {
 		});
 
 		popupController.setState({
-			// selectedUserDefinedLayer: selectedParcel?.feature || selectedShape?.feature,
 			popupOpen: false,
 			expandedCard: false,
 		});
@@ -632,10 +619,10 @@ function ExpandableCard(props) {
 						<Typography
 							// className={classes.prevlocation}
 							color="inherit"
-							// onClick={() => {
-							//   setStateApp({ ...stateApp, DocumentDrawer: true });
-							//   history.push("/documents");
-							// }}
+						// onClick={() => {
+						//   setStateApp({ ...stateApp, DocumentDrawer: true });
+						//   history.push("/documents");
+						// }}
 						>
 							Wells
 						</Typography>
@@ -775,16 +762,16 @@ function ExpandableCard(props) {
 								)}
 
 							{stateExpandableCard.expanded &&
-							targetLabel !== 'activity' &&
-							targetLabel !== 'contact' &&
-							parent !== 'table' ? (
+								targetLabel !== 'activity' &&
+								targetLabel !== 'contact' &&
+								parent !== 'table' ? (
 								parent !== 'table' &&
-								targetLabel !== 'well' &&
-								targetLabel !== 'expandedWell' &&
-								targetLabel !== 'parcel' &&
-								!selectedShape &&
-								targetLabel !== 'expandedParcel' &&
-								targetLabel !== 'recent_submitted_permits' ? (
+									targetLabel !== 'well' &&
+									targetLabel !== 'expandedWell' &&
+									targetLabel !== 'parcel' &&
+									!selectedShape &&
+									targetLabel !== 'expandedParcel' &&
+									targetLabel !== 'recent_submitted_permits' ? (
 									<Tooltip title={'Shrink'} placement="top">
 										<IconButton color="secondary" onClick={handleShrink} aria-label="shrink" className={classes.icons}>
 											<ShrinkIcon viewBox="0 0 64 64" color="secondary" />
@@ -841,27 +828,27 @@ function ExpandableCard(props) {
 													targetLabel === 'unit' ||
 													targetLabel === 'agreement' ||
 													targetLabel === 'activity') && (
-													<>
-														{' '}
-														<IconButton size="small" component="span" onClick={handleMenuClick}>
-															<MoreVertIcon id="expandCardVertIcon" color="secondary" size="medium" />
-														</IconButton>
-														<Menu
-															id="dealMenu"
-															anchorEl={anchorEl}
-															open={Boolean(anchorEl)}
-															onClose={handleMenuClose}
-															className={classes.menu}
-														>
-															<MenuItem onClick={openConfirmationDialog} data-testid="delete-icon">
-																<ListItemIcon>
-																	<DeleteIcon size="medium" />
-																</ListItemIcon>
-																<ListItemText>Delete</ListItemText>
-															</MenuItem>
-														</Menu>
-													</>
-												)}
+														<>
+															{' '}
+															<IconButton size="small" component="span" onClick={handleMenuClick}>
+																<MoreVertIcon id="expandCardVertIcon" color="secondary" size="medium" />
+															</IconButton>
+															<Menu
+																id="dealMenu"
+																anchorEl={anchorEl}
+																open={Boolean(anchorEl)}
+																onClose={handleMenuClose}
+																className={classes.menu}
+															>
+																<MenuItem onClick={openConfirmationDialog} data-testid="delete-icon">
+																	<ListItemIcon>
+																		<DeleteIcon size="medium" />
+																	</ListItemIcon>
+																	<ListItemText>Delete</ListItemText>
+																</MenuItem>
+															</Menu>
+														</>
+													)}
 											</>
 										)}
 									</Tooltip>

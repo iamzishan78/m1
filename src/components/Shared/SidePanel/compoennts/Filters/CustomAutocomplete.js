@@ -7,6 +7,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { Autocomplete, TextField, Chip, IconButton } from '@mui/material';
 
 import moment from 'moment';
+import PropTypes from 'prop-types';
 
 /**
  * CustomAutocomplete component integrates MUI Autocomplete with react-hook-form using useController.
@@ -69,6 +70,7 @@ const CustomAutocomplete = ({
 	handleChange,
 	multiple = false,
 	type,
+	isSearch,
 }) => {
 	const { field } = useController({
 		name,
@@ -199,6 +201,7 @@ const CustomAutocomplete = ({
 			multiple={multiple}
 			options={options.filter(option => (multiple ? !field?.value?.includes(option) : true))}
 			onChange={(e, v, r) => {
+				handleChange('');
 				onChange?.(e, v, r, field?.value);
 				field.onChange(v);
 			}}
@@ -207,18 +210,23 @@ const CustomAutocomplete = ({
 				<TextField
 					{...params}
 					label={label}
+					inputProps={{
+						...params.inputProps,
+						value: isSearch ? params?.inputProps?.value || searchText : params?.inputProps?.value,
+					}}
 					className={className}
-					value={searchText}
 					variant="standard"
 					onChange={e => {
-						handleChange(e);
+						if (isSearch) {
+							handleChange(e);
+						}
 					}}
 				/>
 			)}
 			renderTags={(value, getTagProps) =>
 				value.map((option, index) => (
 					<Chip
-						key={index}
+						key={option}
 						label={option}
 						{...getTagProps({ index })}
 						style={{
@@ -233,4 +241,19 @@ const CustomAutocomplete = ({
 	);
 };
 
+CustomAutocomplete.propTypes = {
+	defaultValue: PropTypes.any,
+	name: PropTypes.string.isRequired,
+	control: PropTypes.object.isRequired,
+	options: PropTypes.array.isRequired,
+	label: PropTypes.string,
+	className: PropTypes.string,
+	onChange: PropTypes.func,
+	isTextFieldOnly: PropTypes.bool,
+	searchText: PropTypes.string,
+	handleChange: PropTypes.func,
+	multiple: PropTypes.bool,
+	type: PropTypes.string,
+	isSearch: PropTypes.bool,
+};
 export default CustomAutocomplete;

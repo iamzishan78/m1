@@ -36,7 +36,11 @@ const PropertyRevenueDetailMeta = {
 			Cell: ({ row }) => {
 				return (
 					<ColumnWithLink
-						value={row?.original?.check?.checkNumber}
+						value={
+							row?.original?.check?.checkNumber && row?.original?.check?.payor?.name
+								? `${row?.original?.check?.checkNumber} - ${row?.original?.check?.payor?.name}`
+								: row?.original?.check?.checkNumber || row?.original?.check?.payor?.name || ''
+						}
 						link={`/revenue/statement/details/${row?.original?.check?._id}`}
 						onClick={e => {
 							e.stopPropagation();
@@ -78,10 +82,86 @@ const PropertyRevenueDetailMeta = {
 				return <>{formatDate(row?.original?.check?.checkDate)}</>;
 			},
 		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'property.ownerNumber.keyword',
+			accessorFn: row => row?.property?.ownerNumber,
+			id: 'property.ownerNumber',
+			header: 'Owner Number',
+			hidden: true,
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'property._owner.name.keyword',
+			accessorFn: row => row?.property?._owner?.name,
+			id: 'property._owner.name',
+			header: 'Owner',
+			hidden: true,
+		},
+		{
+            ...CommonSchema.COMMON_COLUMN,
+            name: 'check.depositDate.keyword',
+            accessorFn: row => row?.check?.depositDate,
+            id: 'check.depositDate',
+            header: 'Deposit Date',
+            type: 'date',
+            isSearchField: false,
+            // Cell rendering for Check Date column
+            Cell: ({ renderedCellValue, row }) => {
+                return <>{formatDate(renderedCellValue)}</>;
+            },
+			hidden: true,
+        },
+		{
+			...CommonSchema.CURRENCY_COLUMN,
+			name: 'check.checkAmount',
+			accessorKey: 'check.checkAmount',
+			header: 'Check Amount',
+			hidden: true,
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'check.source.keyword',
+			accessorKey: 'check.source',
+			header: 'Source',
+			hidden: true,
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'check.sourceId.keyword',
+			accessorFn: row => row?.check?.sourceId,
+			id: 'check.sourceId',
+			header: 'Source Id',
+			hidden: true,
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'check.checkNumber.keyword',
+			accessorKey: 'check.checkNumber',
+			id: 'check.checkNumber',
+			header: 'Payor Property #',
+			Cell: ({ row }) => <>{row?.original?.check?.checkNumber}</>,
+			hidden: true,
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'property.state.keyword',
+			accessorKey: 'property.state',
+			header: 'State',
+			hidden: true,
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'property.county.keyword',
+			accessorKey: 'property.county',
+			header: 'County',
+			hidden: true,
+		},
 
 		{
 			...CommonSchema.STRING_COLUMN,
 			name: 'date',
+			accessorKey: 'date',
 			id: 'date',
 			header: 'Sales Date',
 			isSearchField: false,
@@ -192,6 +272,11 @@ const PropertyRevenueDetailMeta = {
 			name: 'netOwnerValue',
 			id: 'netOwnerValue',
 			header: 'Owner Net Rev',
+		},
+		{
+			...CommonSchema.HIDDEN,
+			name: 'propertyId',
+			accessorKey: 'propertyId',
 		},
 	],
 };

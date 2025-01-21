@@ -30,6 +30,8 @@ import { workspaceTenantName } from 'components/Shared/functions';
 
 import { tableGlobalController } from 'hookstate/tableController';
 
+import { UserSession } from 'utils/user';
+
 import ActivitiesEvent from './ActivitiesEvent';
 import { AppContext } from '../../../AppContext';
 import { ADDACTIVITY, DELETEACTIVITY, UPDATEACTIVITY } from '../../../graphQL/useMutationActivity';
@@ -489,7 +491,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 					isClosed: closed,
 					user: stateApp.user._id,
 					createdBy: stateApp?.user?._id,
-					tenant: window.sessionStorage.getItem('tenantName'),
+					tenant: UserSession.getStorageItem('tenantName'),
 				},
 			},
 		});

@@ -17,6 +17,8 @@ import RevenueProvider from 'components/Revenue/RevenueProvider';
 
 import { globalStateController } from 'hookstate/globalStateController';
 
+import { UserSession } from 'utils/user';
+
 import Providers from 'Providers';
 
 import ActivitiesProvider from './components/Activities/ActivitiesProvider';
@@ -49,10 +51,7 @@ const PrivateRoute = ({ component, ...options }) => {
 	const apolloClient = useApolloClient();
 
 	if (user && Date.parse(user.authTokenExpires) < Date.now()) {
-		sessionStorage.clear();
-		window.location.replace(window.location.origin);
-		// setStateApp((stateApp) => ({ ...stateApp, user: null }));
-		// setStateNav((stateNav) => ({ ...stateNav, defaultOn: false }));
+		UserSession.deleteSession();
 	}
 
 	const finalComponent =
