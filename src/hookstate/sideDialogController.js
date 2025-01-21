@@ -24,6 +24,7 @@ export const commonIterestOwnerStates = {
 	campaignPriority: null,
 	deals: [],
 	ownerEntity: null,
+	isPurchased: null
 };
 
 export const tractInterestOwnerState = {
@@ -78,6 +79,7 @@ export const contactState = {
 	zip: null,
 	country: null,
 	contactOwner: null,
+	isPurchased: null
 };
 
 export const payeeState = {

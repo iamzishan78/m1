@@ -45,7 +45,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state, newOwner }) =
 		contactFields.splice(-2);
 		contactFields.push(...contactArray);
 	} else {
-		tractInterestFields.push(contactForm({ getValues, setValue })[3]);
+		tractInterestFields.push(contactForm({ getValues, setValue })[3], contactForm({ getValues, setValue })[14])
 	}
 
 	const formFields = [

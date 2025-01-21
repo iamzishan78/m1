@@ -255,6 +255,7 @@ function AddParcelOwnerDialogContent({ selectedRow, ...props }) {
 						ownerType: ownerToAdd.ownerType && (ownerToAdd.ownerType.value || ownerToAdd.ownerType),
 						campaignPriority:
 							ownerToAdd.campaignPriority && (ownerToAdd.campaignPriority.value || ownerToAdd.campaignPriority),
+							isPurchased: ownerToAdd.isPurchased && (ownerToAdd.isPurchased.value || ownerToAdd.isPurchased),
 					},
 				},
 			});
