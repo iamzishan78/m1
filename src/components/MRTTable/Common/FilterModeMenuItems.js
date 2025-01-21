@@ -20,6 +20,7 @@ function FilterModeMenuItems({ option, tableKey, name, onSelectFilterMode, contr
 
 				if (isBetween && isSingleMulti) {
 					controller(tableKey).setFilterMode(name, 'equals');
+					onSelectFilterMode('equals');
 					setTimeout(() => {
 						controller(tableKey).setFilterMode(name, mode.option);
 						onSelectFilterMode(mode.option);
