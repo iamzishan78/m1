@@ -1,3 +1,5 @@
+import { UserSession } from './user';
+
 export const campaignVariables = {
 	esIndex: 'contacts_flat',
 	filterKey: 'campaignName.keyword',
@@ -780,7 +782,7 @@ export const esIndexFilterKeyMap = {
 };
 
 export const baseTenantsMaps = () => {
-	const tenantId = window.sessionStorage?.getItem('tenantName').toLowerCase();
+	const tenantId = UserSession.getStorageItem('tenantName').toLowerCase();
 	const defaultStyles = ['Satellite', 'Basic', 'Light', 'Outdoors']; // Default for most clients
 	const testNewStyles = [
 		...defaultStyles,

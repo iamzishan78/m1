@@ -37,6 +37,8 @@ import { slidoutState } from 'hookstate/initialStates';
 
 import { updatePinComments } from 'store/actions/commonActions';
 
+import { UserSession } from 'utils/user';
+
 import CommentsAutoComplete from './CommentsAutoComplete';
 
 TimeAgo.addDefaultLocale(en);
@@ -561,7 +563,7 @@ export default function CommentComponent(props) {
 					_id: editCommentId,
 					objectType: props.targetLabel,
 					isEdited: true,
-					tenant: window.sessionStorage.getItem('tenantName'),
+					tenant: UserSession.getStorageItem('tenantName'),
 				},
 			},
 			refetchQueries: ['getCommentsByObjectId', 'getCommentsCounter', 'getCommentsByObjectsIds'],
@@ -685,7 +687,7 @@ export default function CommentComponent(props) {
 			commentedOn: targetSourceId,
 			objectType: props.targetLabel,
 			pin: false,
-			tenant: window.sessionStorage.getItem('tenantName'),
+			tenant: UserSession.getStorageItem('tenantName'),
 		};
 
 		if (props.targetLabel === 'activity') {

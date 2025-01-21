@@ -193,7 +193,7 @@ function ESAutoCompleteFilter({
 			return;
 		}
 
-		const getValue = option => option?.value || _.find(options, { label: option })?.value || option;
+		const getValue = option => option?.value ?? _.find(options, { label: option })?.value ?? option;
 		let newValue = multiple ? value.map(getValue) || [] : getValue(value);
 
 		if (type === 'boolean') {
@@ -221,7 +221,9 @@ function ESAutoCompleteFilter({
 			multiple={multiple}
 			id={`${compositeFields.join(' ')}-filter-autocomplete`}
 			options={
-				multiple ? optionsToShow?.filter(item => !filterValue.find(value => isEqual(value, item.value))) : optionsToShow
+				multiple
+					? optionsToShow?.filter(item => filterValue.find(value => isEqual(value, item.value)) == null)
+					: optionsToShow
 			}
 			getOptionLabel={op => {
 				if (typeof op !== 'object') {
@@ -231,8 +233,7 @@ function ESAutoCompleteFilter({
 						op = foundOption;
 					}
 				}
-
-				return typeof op !== 'object' ? op : (op?.label ?? op?.name ?? '');
+				return op?.label ?? op?.name ?? op ?? '';
 			}}
 			loading={loading}
 			filterOptions={searchMapping[searchMode].filterOptions}

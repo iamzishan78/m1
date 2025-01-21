@@ -5,7 +5,6 @@ import { tableController } from 'hookstate/tableController';
 import FilterModeMenuItems from '../Common/FilterModeMenuItems';
 import { viewStateController } from '../Common/GridView/ViewController';
 
-
 export const columnFilterModesFnRefs = {};
 
 const filterModeMenu =
@@ -21,7 +20,7 @@ const filterModeMenu =
 			? schemaColumn.type === 'number'
 				? 'equals'
 				: 'singleselect'
-			: mapViewFilter?.filterType;
+			: mapViewFilter?.filterType || schemaColumn.type;
 
 		if (!columnFilterModesFnRefs?.[tableKey]) {
 			columnFilterModesFnRefs[tableKey] = {};

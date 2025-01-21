@@ -94,7 +94,7 @@ const TaxRollInterestsMeta = {
 			name: 'taxValue',
 		},
 		{
-			...CommonSchema.NUMBER_COLUMN,
+			...CommonSchema.INTEREST_COLUMN,
 			header: 'NRA',
 			id: 'nra',
 			name: 'nra',

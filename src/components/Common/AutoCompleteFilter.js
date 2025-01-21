@@ -240,7 +240,7 @@ export const AutoCompleteFilter = React.memo(
 							column.activeFilterKey = value2?.esKey;
 						}
 					}
-					if (setFilters) {
+					if (setFilters && esIndex !== 'mywells_flat') {
 						setFilters(filterList);
 					}
 
@@ -248,7 +248,7 @@ export const AutoCompleteFilter = React.memo(
 
 					const filterVal = filterList[index].length > 1 ? [filterList[index]] : filterList[index];
 
-					onChange(filterVal, index, column, value2?.esKey || '');
+					onChange(filterVal, index, column, value2?.esKey || '', reason === 'clear');
 				}}
 				options={options}
 				loading={loading}

@@ -271,7 +271,7 @@ function NewLayerManager() {
 										autoFocus
 										onClick={createLayer}
 										color="primary"
-										disabled={!source || !selectCategory || !layerName}
+										disabled={!source || !selectCategory || !layerName?.trim()}
 									>
 										Create layer
 									</Button>

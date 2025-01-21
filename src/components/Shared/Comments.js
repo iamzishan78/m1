@@ -28,6 +28,8 @@ import CommentType from 'components/Shared/components/Comment/CommentType';
 import { GET_PROFILES_IMAGES } from 'graphQL/useQueryGetProfile';
 import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 
+import { UserSession } from 'utils/user';
+
 import { AppContext } from '../../AppContext';
 import { REMOVECOMMENT } from '../../graphQL/useMutationRemoveComment';
 import { UPSERTCOMMENT } from '../../graphQL/useMutationUpsertComment';
@@ -37,7 +39,7 @@ import { COMMENTSBYOBJECTSIDS } from '../../graphQL/useQueryCommentsByObjectsIds
 // import value formatters
 import capitalizeFirstLetter from '../Shared/valueformatters/capitalize-first-letter.js';
 import CommentField from './components/Fields/CommentField';
-import MentionsUser from '../Shared/MentionsUser'
+import MentionsUser from '../Shared/MentionsUser';
 import { tableGlobalController } from 'hookstate/tableController';
 
 const AntSwitch = withStyles(theme => ({
@@ -222,7 +224,7 @@ const useStyles = makeStyles(theme => ({
 		float: 'right',
 		// right: '15px',
 		zIndex: '999',
-		marginTop: '10px'
+		marginTop: '10px',
 	},
 }));
 
@@ -253,14 +255,12 @@ export default function Comments(props) {
 		fetchPolicy: 'cache-first',
 	});
 
-	const [upsertComment] = useMutation(UPSERTCOMMENT, 
-		{
-			onCompleted: () => {
-				tableGlobalController.refetch();
-				props.refetch?.();
-			}
-		}
-	);
+	const [upsertComment] = useMutation(UPSERTCOMMENT, {
+		onCompleted: () => {
+			tableGlobalController.refetch();
+			props.refetch?.();
+		},
+	});
 	const [removeComment] = useMutation(REMOVECOMMENT);
 
 	///////////////////// START FETCHING COMMENTS DATA ////////////////////////////////////////////
@@ -372,7 +372,7 @@ export default function Comments(props) {
 					objectType: props.targetLabel,
 					commentType: selectedCommentType,
 					pin: false,
-					tenant: window.sessionStorage.getItem('tenantName'),
+					tenant: UserSession.getStorageItem('tenantName'),
 				},
 			},
 			refetchQueries: [
@@ -520,7 +520,7 @@ export default function Comments(props) {
 					objectType: props.targetLabel,
 					public: publicComment,
 					pin: false,
-					tenant: window.sessionStorage.getItem('tenantName'),
+					tenant: UserSession.getStorageItem('tenantName'),
 				},
 			},
 			refetchQueries: [
@@ -632,113 +632,113 @@ export default function Comments(props) {
 						{commentsArray.map((comment, index) =>
 							props.detailCard
 								? ((publicComment && comment.public) ||
-									(!publicComment && !comment.public && stateApp?.user?.email === comment?.user?.email)) &&
-								(commentsDisplayedCount += 1) &&
-								(props.top && props.top < commentsDisplayedCount ? null : (
-									//// ListItem ////
-									<div key={index}>
-										{commentsDisplayedCount !== 1 && (
-											<Divider
-												style={{
-													marginTop: '13px',
-													marginBottom: '13px',
-												}}
-											/>
-										)}
-										{/* //// name and date line //// */}
-										<h5 className={classes.nameAndDateLine}>{`${comment?.user?.name} · ${new Intl.DateTimeFormat(
-											'en-US',
-											{
-												year: 'numeric',
-												month: 'long',
-												day: '2-digit',
-												hour: '2-digit',
-												minute: '2-digit',
-											}
-										).format(comment.ts)}`}</h5>
+										(!publicComment && !comment.public && stateApp?.user?.email === comment?.user?.email)) &&
+									(commentsDisplayedCount += 1) &&
+									(props.top && props.top < commentsDisplayedCount ? null : (
+										//// ListItem ////
+										<div key={index}>
+											{commentsDisplayedCount !== 1 && (
+												<Divider
+													style={{
+														marginTop: '13px',
+														marginBottom: '13px',
+													}}
+												/>
+											)}
+											{/* //// name and date line //// */}
+											<h5 className={classes.nameAndDateLine}>{`${comment?.user?.name} · ${new Intl.DateTimeFormat(
+												'en-US',
+												{
+													year: 'numeric',
+													month: 'long',
+													day: '2-digit',
+													hour: '2-digit',
+													minute: '2-digit',
+												}
+											).format(comment.ts)}`}</h5>
 
-										{/* //// comment line //// */}
-										<div style={{ marginTop: '7px', marginBottom: '7px' }}>
-											{comment.comment.split('\n').map((line, i) => {
-												return (
-													<p
-														key={i}
-														style={{
-															color: '#757575',
-															margin: '0',
-														}}
-													>
-														{line}
-													</p>
-												);
-											})}
+											{/* //// comment line //// */}
+											<div style={{ marginTop: '7px', marginBottom: '7px' }}>
+												{comment.comment.split('\n').map((line, i) => {
+													return (
+														<p
+															key={i}
+															style={{
+																color: '#757575',
+																margin: '0',
+															}}
+														>
+															{line}
+														</p>
+													);
+												})}
+											</div>
+
+											{/* //// delete line //// */}
+											<h5 className={classes.deleteLine} onClick={() => handleDeleteClick(comment)}>
+												Delete
+											</h5>
 										</div>
-
-										{/* //// delete line //// */}
-										<h5 className={classes.deleteLine} onClick={() => handleDeleteClick(comment)}>
-											Delete
-										</h5>
-									</div>
-								))
+									))
 								: //// ListItem  End ////
-								((publicComment && comment.public) ||
-									(!publicComment && stateApp.user.email === comment?.user?.email && !comment.public)) && (
-									<ListItem key={index} className={classes.listItem} alignItems="flex-start">
-										<ListItemAvatar className={classes.avatar}>
-											<Avatar
-												name={comment?.user?.name}
-												color={Avatar.getRandomColor(comment?.user?.email, [
-													'#b5d2f6',
-													'#ade2e9',
-													'#eaeaea',
-													'#f2c1e2',
-													'#d7d6fb',
-												])}
-												fgColor="#000"
-												size="35"
-												round
+									((publicComment && comment.public) ||
+										(!publicComment && stateApp.user.email === comment?.user?.email && !comment.public)) && (
+										<ListItem key={index} className={classes.listItem} alignItems="flex-start">
+											<ListItemAvatar className={classes.avatar}>
+												<Avatar
+													name={comment?.user?.name}
+													color={Avatar.getRandomColor(comment?.user?.email, [
+														'#b5d2f6',
+														'#ade2e9',
+														'#eaeaea',
+														'#f2c1e2',
+														'#d7d6fb',
+													])}
+													fgColor="#000"
+													size="35"
+													round
+												/>
+											</ListItemAvatar>
+											<ListItemText
+												className={classes.listItemText}
+												primary={
+													// <div style={{ marginBottom: '8px' }}>
+													//   <div style={{
+													//     marginTop: '2px',
+													//     marginBottom: '5px',
+													//     fontWeight: 'bolder',
+													//     color: '#3e3e3e',
+													//     fontSize: '15px',
+													//   }}>{comment?.commentType || 'General'}</div>
+													//   <CommentText users={userLists?.allMongoUsers} eachComment={comment} />
+													// </div>
+													<CommonCommentText users={userLists?.allMongoUsers} eachComment={comment} />
+												}
+												secondary={
+													`${comment?.user?.name}` +
+													(comment.ids
+														? ''
+														: ` - ${new Intl.DateTimeFormat('en-US', {
+																year: 'numeric',
+																month: 'long',
+																day: '2-digit',
+																hour: '2-digit',
+																minute: '2-digit',
+															}).format(comment.ts)}`)
+												}
 											/>
-										</ListItemAvatar>
-										<ListItemText
-											className={classes.listItemText}
-											primary={
-												// <div style={{ marginBottom: '8px' }}>
-												//   <div style={{
-												//     marginTop: '2px',
-												//     marginBottom: '5px',
-												//     fontWeight: 'bolder',
-												//     color: '#3e3e3e',
-												//     fontSize: '15px',
-												//   }}>{comment?.commentType || 'General'}</div>
-												//   <CommentText users={userLists?.allMongoUsers} eachComment={comment} />
-												// </div>
-												<CommonCommentText users={userLists?.allMongoUsers} eachComment={comment} />
-											}
-											secondary={
-												`${comment?.user?.name}` +
-												(comment.ids
-													? ''
-													: ` - ${new Intl.DateTimeFormat('en-US', {
-														year: 'numeric',
-														month: 'long',
-														day: '2-digit',
-														hour: '2-digit',
-														minute: '2-digit',
-													}).format(comment.ts)}`)
-											}
-										/>
-										<ListItemSecondaryAction>
-											<IconButton
-												edge="end"
-												aria-label="delete"
-												data-testid={`comment-delete-icon-${index}`}
-												onClick={() => handleDeleteClick(comment)}
-											>
-												<DeleteIcon />
-											</IconButton>
-										</ListItemSecondaryAction>
-									</ListItem>
-								)
+											<ListItemSecondaryAction>
+												<IconButton
+													edge="end"
+													aria-label="delete"
+													data-testid={`comment-delete-icon-${index}`}
+													onClick={() => handleDeleteClick(comment)}
+												>
+													<DeleteIcon />
+												</IconButton>
+											</ListItemSecondaryAction>
+										</ListItem>
+									)
 						)}
 					</List>
 				) : (

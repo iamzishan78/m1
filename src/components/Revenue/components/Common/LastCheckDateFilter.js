@@ -9,12 +9,11 @@ import { useLazyQuery } from '@apollo/client';
 import { get } from 'lodash';
 
 import CustomDates from 'components/Revenue/components/Common/CustomDates';
-import { copy } from 'components/Shared/functions';
 import ReportGroupHeader from 'components/Shared/ReportGroupHeader';
-
-import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
-
 import { dateFilterToDate, getFirstDayOfMonth } from 'utils/helper';
+import { copy, deepEqual } from 'components/Shared/functions';
+import { GET_DB_AGGS } from 'graphQL/useQueryDbQuery';
+import { tableController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(theme => ({
 	actionBar: {
@@ -52,9 +51,11 @@ const LastCheckDateFilter = ({
 	extraFitlers = [],
 	stateESKey = '',
 	isComparisonReport = false,
+	tableKey,
 }) => {
 	const classes = useStyles();
 
+	const [selectedFilter, setSelectedFilter] = useState('');
 	const [fromDate, setFromDate] = React.useState(null);
 	const [toDate, setToDate] = React.useState(null);
 	const [lastCheckMinDate, setLastCheckMinDate] = useState('');
@@ -90,6 +91,15 @@ const LastCheckDateFilter = ({
 		});
 	}, [getDbMinValue, esIndex, field]);
 
+	useEffect(() => {
+		return () => {
+			if (tableKey) {
+				tableController(tableKey).clearFilters(); // clear filter from the table state, when the component is destroyed
+				setESFilters([]); // clear revenue filters and set default values
+			}
+		};
+	}, []); // Empty dependency array means this effect runs only on mount and unmount
+
 	const updateFilters = useCallback(() => {
 		let filters = copy(esFilters) ?? [];
 		const isDuplicateFilter = filters?.findIndex(filter => filter.field === field) !== -1;
@@ -98,6 +108,7 @@ const LastCheckDateFilter = ({
 			filter =>
 				filter.type !== 'range' &&
 				filter.field !== `${stateESKey}state.keyword` &&
+				filter.field !== 'check.checkDate' &&
 				filter.field !== 'check.checkNumber.keyword' &&
 				filter.field !== 'property.number.keyword' &&
 				filter.field !== 'status.keyword'
@@ -108,7 +119,10 @@ const LastCheckDateFilter = ({
 		if (propertyNumberFilter) {
 			filters.push({ field: 'property.number.keyword', value: propertyNumberFilter });
 		}
-		if (fromDate && toDate && !isDuplicateFilter) {
+		if (fromDate && toDate) {
+			if (isDuplicateFilter) {
+				filters = filters?.filter(filter => filter.field !== field);
+			}
 			filters.unshift({
 				field,
 				value: [
@@ -139,7 +153,10 @@ const LastCheckDateFilter = ({
 		// }
 		// Removed the conditional statement because clicking the cross icon in the comparison grid's global filter or selecting all dates was not updating the grid filters as expected.
 
-		setESFilters(filters);
+		if (!deepEqual(filters, copy(esFilters))) {
+			// prevent from unnecessary re rendering
+			setESFilters(filters);
+		}
 		setFilterToggle(!filterToggle);
 		// disabling this because a dependency causes infinite loop in useEffect
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -159,6 +176,7 @@ const LastCheckDateFilter = ({
 					setToDate={setToDate}
 					isProperties
 					lastCheckMinDate={lastCheckMinDate}
+					onChange={setSelectedFilter}
 					datesInputWidth={2}
 				/>
 				{extraFitlers.includes('propertyGroup') && (

@@ -26,6 +26,7 @@ import useStyles from 'components/ContactDetailCard/components/FieldContent/styl
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import ReactSelectField from 'components/MRTTable/Common/Components/ReactSelectField';
 import ContactAutoComplete from 'components/Shared/ContactAutoComplete';
+import { formatDate } from 'components/Shared/functions';
 import GoogleMapIcon from 'components/Shared/svgIcons/GoogleMapIcon';
 import ZillowIcon from 'components/Shared/svgIcons/ZillowIcon';
 
@@ -42,7 +43,6 @@ import AutoCompleteAddNewField from './AutoCompleteAddNewField';
 import CampaignField from './CampaignField';
 import EntityType from './EntityType';
 import { timeZoneOptions } from './timeZoneList';
-import { formatDate } from 'components/Shared/functions';
 
 const filter = createFilterOptions();
 export default function FieldContent({
@@ -347,6 +347,12 @@ export default function FieldContent({
 	const formatFieldValue = (val, metaField) => {
 		if (metaField?.type === 'date') {
 			return formatDate(val);
+		} else if (metaField?.type === 'link') {
+			return (
+				<Link href={val} target="_blank">
+					{val}
+				</Link>
+			);
 		}
 		return val;
 	};

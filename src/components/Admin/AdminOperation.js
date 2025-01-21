@@ -1,10 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import ReactJsonPrint from 'react-json-print';
 
 import { makeStyles } from '@material-ui/styles';
 
 import { Autocomplete, TextField, Button, Grid, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 
 import { useLazyQuery, useMutation } from '@apollo/client';
+
+import { copy } from 'components/Shared/functions';
 
 import { TRIGGER_ADMIN_OPERATIONS } from 'graphQL/useMutationadminESOperations';
 import { GET_DB_OPERATIONS } from 'graphQL/useQueryadminDBOperations';
@@ -42,7 +45,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const useGetDBOperations = options => {
-	const [getDBOperations, { data: operationModels }] = useLazyQuery(GET_DB_OPERATIONS);
+	const [getDBOperations, { data: operationModels }] = useLazyQuery(GET_DB_OPERATIONS, { fetchPolicy: 'no-cache' });
 	useEffect(() => {
 		if (options.callApi !== false) {
 			getDBOperations({
@@ -99,6 +102,8 @@ export default function Flatten() {
 
 	const [warning] = useState(false);
 	const [showMessage, setShowMessage] = useState(false);
+	const [operation, setOperation] = useState(false);
+	const [intervalValue, setIntervalValue] = useState();
 	const [TriggerAdminOperation] = useMutation(TRIGGER_ADMIN_OPERATIONS);
 
 	// Function to build the curl command
@@ -123,6 +128,30 @@ export default function Flatten() {
   -d '${jsonString}'`;
 	};
 
+	const handleOperationsLogs = () => {
+		clearInterval(intervalValue);
+
+		const callOperation = () => {
+			getOperationsLogs({
+				variables: {
+					options: {
+						operationType: 'getOperationsLogs',
+						version: adminOperationsState.version,
+						adminOperationType: adminOperationsState.adminOperationType,
+					},
+				},
+			}).then(({ data }) => {
+				setOperation(copy(data.getDBOperations));
+			});
+		};
+		callOperation();
+		setIntervalValue(
+			setInterval(() => {
+				callOperation();
+			}, 5000)
+		);
+	};
+
 	const handleClick = () => {
 		const options = {};
 		stateKeys.forEach(stateKey => {
@@ -136,6 +165,7 @@ export default function Flatten() {
 			},
 		});
 		setShowMessage(true);
+		handleOperationsLogs();
 	};
 
 	useEffect(() => {});
@@ -322,27 +352,18 @@ export default function Flatten() {
 
 			<div className={classes.buttonBar}>
 				{adminOperationsState.version && adminOperationsState.adminOperationType && (
-					<Button
-						variant="contained"
-						onClick={() =>
-							getOperationsLogs({
-								variables: {
-									options: {
-										operationType: 'getOperationsLogs',
-										version: adminOperationsState.version,
-										adminOperationType: adminOperationsState.adminOperationType,
-									},
-								},
-							}).then(() => {
-								console.log(getOperationsLogsData);
-							})
-						}
-						color="primary"
-					>
-						Fetch AdminOperation Logs (Console Only)
-					</Button>
+					<>
+						<Button variant="contained" onClick={() => handleOperationsLogs()} color="primary">
+							Fetch AdminOperation Logs
+						</Button>
+						<Button variant="contained" onClick={() => clearInterval(intervalValue)} color="primary">
+							Stop Fetching
+						</Button>
+					</>
 				)}
 			</div>
+
+			<ReactJsonPrint dataObject={operation} expanded={true} />
 		</div>
 	);
 }
